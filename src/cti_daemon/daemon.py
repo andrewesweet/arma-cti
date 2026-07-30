@@ -48,11 +48,19 @@ class Daemon:
             # to come back as one, or SQF waits out its read timeout instead.
             reply = protocol.failed(request_id, "internal", f"{type(exc).__name__}: {exc}")
             encoded = protocol.encode(reply)
+        # A refusal is recorded with its reason, not just its shape. Otherwise
+        # every rejection looks identical on disk and the operator learns less
+        # about a failure than the caller who caused it.
+        refusal = reply.envelope.get("reason") or reply.envelope.get("error") or {}
         self._telemetry.record(
             "request",
             id=request_id,
             verb=verb,
             status=reply.envelope["status"],
+            # `code` for a domain rejection, `class` for an error — one column
+            # either way, because when reading a log the question is the same.
+            reason_code=refusal.get("code") or refusal.get("class"),
+            reason_detail=refusal.get("detail"),
             duration_us=(time.perf_counter_ns() - started) // 1_000,
         )
         return encoded

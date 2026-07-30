@@ -179,3 +179,22 @@ def test_a_command_claiming_a_side_the_caller_does_not_hold_is_rejected(tmp_path
         payload={"command": "purchase", "side": "EAST", "acting_side": "WEST"},
     )
     assert reply["reason"]["code"] == "wrong_side"
+
+
+def test_telemetry_records_why_a_request_was_refused(tmp_path: Path) -> None:
+    # Without this, three different rejections are byte-identical server-side:
+    # the caller learns which part was wrong and the operator does not.
+    log = tmp_path / "telemetry.jsonl"
+    daemon = Daemon(telemetry_path=log)
+    reply_to(daemon, id="r-1", verb="command", payload={"command": "purchase", "side": "GUER"})
+    reply_to(daemon, id="r-2", verb="bombard")
+    reply_to(daemon, id="r-3", verb="ping")
+
+    rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+    assert [(row["status"], row["reason_code"]) for row in rows] == [
+        ("rejected", "malformed_command"),
+        ("error", "unknown_verb"),
+        ("ok", None),
+    ]
+    assert "side" in rows[0]["reason_detail"]
+    assert rows[2]["reason_detail"] is None
