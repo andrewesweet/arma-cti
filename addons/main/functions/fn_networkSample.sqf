@@ -1,0 +1,30 @@
+/*
+ * Author: arma-cti
+ * One server-side reading of every connected user's network health.
+ *
+ * `getUserInfo` index 9 is `networkInfo` — [ping, bandwidth, desync] — which
+ * turns "the client felt stuck" into a number (commands/getUserInfo.wiki, since
+ * 2.06, server execution only). Phase 0 found it absent from the server.cfg
+ * scripting VM, so it has to be read from mission context, which is here.
+ *
+ * Index 6 is the client state and 7 the headless flag, both carried through so
+ * a sample says which rung a client is on rather than leaving it to be guessed.
+ *
+ * Arguments: none
+ *
+ * Return Value: <ARRAY> of [name, uid, clientState, isHeadless, ping,
+ * bandwidth, desync], one per connected user
+ */
+if (!isServer) exitWith { [] };
+if (isNil "allUsers") exitWith { [] };
+
+private _samples = [];
+{
+    private _info = getUserInfo _x;
+    if (count _info > 9) then {
+        (_info # 9) params [["_ping", -1], ["_bandwidth", -1], ["_desync", -1]];
+        _samples pushBack [_info # 3, _info # 2, _info # 6, _info # 7, _ping, _bandwidth, _desync];
+    };
+} forEach allUsers;
+
+_samples

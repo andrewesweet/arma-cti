@@ -43,6 +43,8 @@ class CfgFunctions
             class manifestLoad {};
             class sideMarkerColour {};
             class worldInit {};
+            class networkSample {};
+            class desyncWatch {};
         };
 
         // Written by tools/generate_manifest_sqf.py from manifests/*.json.

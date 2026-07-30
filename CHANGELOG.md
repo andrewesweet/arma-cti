@@ -26,6 +26,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Addon functions are declared in `CfgFunctions` and resolve by name as `cti_fnc_*` — from the
   mission, from `remoteExec` and from the addon itself. Verified on the dedicated server, which
   now loads the addon during the Arma tier.
+- Mechanical desync oracle for the open Windows-client desync (#8). The server samples every
+  connected client's `networkInfo` and reports the worst reading over a window, so "a client stays
+  responsive for a sustained period" is a number rather than a recollection. No client in the
+  window is reported as `no_client`, never as steady. The Arma tier can also launch on engine
+  defaults instead of the hand-written `basic.cfg`, which is candidate cause 2 on that issue.
 - Stratis map manifest: eight Objectives with stable authored IDs, capture radii and an adjacency
   graph, plus both Bases and the HQ structure each would lose to Decapitation. Positions are the
   engine's own, read out of `CfgWorlds`, not eyeballed off the map. Authored once as JSON, read by
