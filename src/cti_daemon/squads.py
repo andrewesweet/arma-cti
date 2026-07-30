@@ -44,6 +44,10 @@ class Squad:
     squad_type: str
     size: int
     order: Order = RESERVE
+    # Where the world last saw it, to the nearest authored place: an Objective
+    # id, a Base id, or empty for the open ground between them. Coarse on
+    # purpose — a Commander reasons about places, not coordinates (ADR-0008).
+    at: str = ""
 
 
 @dataclass(slots=True)
@@ -81,3 +85,22 @@ class Roster:
     def roll(self) -> tuple[Squad, ...]:
         """Every Squad on the map, in the order they were bought."""
         return tuple(self._squads.values())
+
+    def reconcile(self, seen: dict[str, tuple[int, str]]) -> tuple[str, ...]:
+        """Take the world's account of which Squads exist, and where.
+
+        Head count and ground underfoot are facts only the world can see, and
+        existence is one of them: a Squad the world no longer holds has been
+        wiped out. Returns the ids that were lost, so a Squad leaving the
+        campaign is something the caller can report rather than something that
+        silently stops appearing.
+        """
+        lost = tuple(squad_id for squad_id in self._squads if squad_id not in seen)
+        for squad_id in lost:
+            del self._squads[squad_id]
+        for squad_id, (size, at) in seen.items():
+            squad = self._squads.get(squad_id)
+            if squad is not None:
+                squad.size = size
+                squad.at = at
+        return lost

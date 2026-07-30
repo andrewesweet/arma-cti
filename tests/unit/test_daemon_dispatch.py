@@ -228,7 +228,7 @@ def test_telemetry_records_why_a_request_was_refused(tmp_path: Path) -> None:
 
 def test_observing_presence_moves_ownership_and_pays(tmp_path: Path) -> None:
     # `observe` is the transport verb ADR-0012 reserved for the world telling
-    # the daemon what it can see. #15 grows it; #13 needs only presence.
+    # the daemon what it can see.
     daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(
         daemon,
@@ -258,3 +258,110 @@ def test_an_observation_without_a_time_is_refused(tmp_path: Path) -> None:
     reply = reply_to(daemon, id="o-4", verb="observe", payload={"presence": {}})
     assert reply["status"] == "error"
     assert reply["error"]["class"] == "malformed_request"
+
+
+def observe(daemon: Daemon, request_id: str, **payload: object) -> dict[str, Any]:
+    """Report what the world can see, and take back the strategic picture."""
+    return reply_to(daemon, id=request_id, verb="observe", payload={"time": 1, **payload})["result"]
+
+
+def test_the_reply_to_an_observation_is_the_whole_strategic_picture(tmp_path: Path) -> None:
+    # #15's return leg: the world reports what only it can see and gets back
+    # what a Commander may know, on the same call. No second channel, no second
+    # cadence, and no callback — so at-most-once delivery never arises.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply_to(
+        daemon,
+        id="o-5",
+        verb="command",
+        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+    )
+    result = observe(daemon, "o-6", squads={"WEST-1": {"size": 7, "at": "nato_airbase"}})
+
+    assert result["funds"]["WEST"] == 200
+    assert result["squads"] == [
+        {
+            "id": "WEST-1",
+            "side": "WEST",
+            "type": "rifle",
+            "size": 7,
+            "order": "reserve",
+            "objective": "",
+            "at": "nato_airbase",
+        }
+    ]
+
+
+def test_a_report_that_says_nothing_about_squads_leaves_the_roster_alone(tmp_path: Path) -> None:
+    # Absent is not the same as empty: a report carrying no `squads` key has no
+    # opinion, and treating it as "the world holds none" would delete the
+    # roster on every report that predates the field.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply_to(
+        daemon,
+        id="o-7",
+        verb="command",
+        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+    )
+    assert len(observe(daemon, "o-8", presence={})["squads"]) == 1
+
+
+def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: Path) -> None:
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply_to(
+        daemon,
+        id="o-9",
+        verb="command",
+        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+    )
+    result = observe(daemon, "o-10", squads={})
+    assert result["squads"] == []
+    assert result["lost"] == ["WEST-1"]
+
+
+def test_a_squad_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> None:
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply = reply_to(
+        daemon,
+        id="o-11",
+        verb="observe",
+        payload={"time": 1, "squads": {"WEST-1": {"size": "eight"}}},
+    )
+    assert reply["error"]["class"] == "malformed_request"
+
+
+def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
+    tmp_path: Path,
+) -> None:
+    # The demo is tailing telemetry and watching ownership and Funds move. A row
+    # per report would bury the moment they did under rows saying they had not.
+    log = tmp_path / "telemetry.jsonl"
+    daemon = Daemon(telemetry_path=log)
+    observe(daemon, "o-13", presence={"agia_marina": ["WEST"]})
+    observe(daemon, "o-14", presence={"agia_marina": ["WEST"]})
+
+    def written() -> list[dict[str, Any]]:
+        rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+        return [row for row in rows if row["event"] == "observation"]
+
+    assert len(written()) == 1
+
+    reply_to(
+        daemon,
+        id="o-15",
+        verb="command",
+        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+    )
+    observe(daemon, "o-16", presence={"agia_marina": ["WEST"]})
+    assert len(written()) == 2
+    assert written()[-1]["funds"]["WEST"] == 200
+
+
+def test_every_reply_records_how_close_it_ran_to_the_return_cap(tmp_path: Path) -> None:
+    # The engine truncates a return over 10,240 bytes in silence (ADR-0004), so
+    # the size of the one reply that grows — the observation — is kept on disk.
+    log = tmp_path / "telemetry.jsonl"
+    daemon = Daemon(telemetry_path=log)
+    observe(daemon, "o-12", presence={})
+    row = json.loads(log.read_text(encoding="utf-8").splitlines()[-1])
+    assert 0 < row["reply_bytes"] < 10_240

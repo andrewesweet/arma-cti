@@ -27,6 +27,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   transport envelope, not the envelope itself. The daemon judges Commands against the Funds
   ledger, one whitelisted server-side gateway admits the human UI, and every world effect rides
   the outbox for both Commanders. `CONTEXT.md` gains **Command**.
+- The return leg: every report the world makes is answered with the whole strategic picture —
+  which side holds each Objective including Contested, what each side has to spend, and every
+  Squad with its side, type, head count, standing Order and the Objective or Base it is standing
+  on. Deliberately the set ADR-0008 persists and nothing it regenerates, so the Phase-2 snapshot
+  schema is this shape rather than a second one. No exact positions, health, ammo or AI knowledge:
+  a Commander reasons about places, not coordinates. Held in memory only.
+  - Assembled rather than reported wholesale. Ownership, Funds and Orders are the daemon's own;
+    the world contributes only the two facts nothing else can see — how many of a Squad are still
+    standing, and where it is. A Squad the world stops reporting has been wiped out, and the
+    roster says so rather than letting it linger.
+  - It rides the report's own reply, so there is no second channel, no second cadence and no
+    callback — which is why at-most-once callback delivery never arises for it.
+  - A crowded Stratis (every Objective owned, sixteen Squads a side) encodes to 4,095 bytes
+    against the engine's 10,240-byte `callExtension` return cap — 6,145 bytes of headroom, about
+    115 bytes a Squad. Every reply's size is recorded in telemetry, and the game fails the run at
+    nine tenths of the cap, because the engine truncates a longer return in silence and the fix is
+    a smaller observation rather than a chunking protocol invented in passing.
+  - Telemetry carries the picture whenever it moves and not otherwise, so tailing it shows the
+    moment ownership or Funds changed instead of a hundred rows saying they had not.
 - Squads take **Orders**, and an Order is standing rather than a waypoint consumed and forgotten.
   A Commander tells one Squad to Capture an Objective, Defend one, or fall back into Reserve, and
   the three are distinct in the world: Capture searches the ground it is sent to, Defend goes

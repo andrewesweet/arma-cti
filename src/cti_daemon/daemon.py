@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from cti_daemon import campaign, commands, economy, manifest, protocol
+from cti_daemon import campaign, commands, economy, manifest, observation, protocol
 from cti_daemon.outbox import Outbox, UnknownSequenceError
 from cti_daemon.port import CommandPort
 from cti_daemon.telemetry import Telemetry
@@ -44,6 +44,9 @@ class Daemon:
             outbox=self.outbox,
         )
         self.port = CommandPort(campaign=self.campaign)
+        # The last strategic picture written to telemetry, so an unchanged one
+        # is not written again. Comparison only, never campaign state.
+        self._last_observation: dict[str, Any] = {}
 
     def handle_line(self, line: str) -> str:
         """Answer one request line. Every path produces a reply."""
@@ -78,6 +81,10 @@ class Daemon:
             reason_code=refusal.get("code") or refusal.get("class"),
             reason_detail=refusal.get("detail"),
             duration_us=(time.perf_counter_ns() - started) // 1_000,
+            # A `callExtension` return caps at 10,240 bytes and truncates in
+            # silence (ADR-0004), so how close a reply runs to it is a number
+            # worth having on disk rather than a thing to find out in a session.
+            reply_bytes=len(encoded),
         )
         return encoded
 
@@ -104,8 +111,9 @@ class Daemon:
         """Take one report of what the world can see (ADR-0012's `observe`).
 
         A transport verb rather than a Command: nobody is instructing anything,
-        the world is saying what is true. #15 grows this into the full
-        observation feed; #13 needs only presence.
+        the world is saying what is true. The reply is the whole strategic
+        picture (#15), which is what makes this the return leg — a planner has
+        something to plan against without a second channel or a second cadence.
         """
         at_time = request.payload.get("time")
         if not isinstance(at_time, (int, float)) or isinstance(at_time, bool):
@@ -117,13 +125,59 @@ class Daemon:
             detail = "`presence` must map Objective ids to the sides present"
             raise protocol.MalformedRequestError(detail, request.id)
 
+        lost = self._reconcile(request)
         paid = self.campaign.observe(float(at_time), presence)
         for payout in paid:
             self._telemetry.record("income", at=at_time, paid=payout)
-        return protocol.accepted(
-            request.id,
-            {"owners": self.campaign.owners(), "funds": self.campaign.funds(), "paid": paid},
-        )
+        for squad_id in lost:
+            self._telemetry.record("squad_lost", at=at_time, squad=squad_id)
+
+        result = observation.serialise(self.campaign.observation())
+        self._record_observation(result)
+        result["paid"] = paid
+        result["lost"] = list(lost)
+        return protocol.accepted(request.id, result)
+
+    def _record_observation(self, document: dict[str, Any]) -> None:
+        """Write the strategic picture out when it has actually changed.
+
+        Reports arrive every few seconds and mostly say the same thing; writing
+        each one would bury the moment ownership moved under a hundred rows
+        saying it had not. The held copy is a comparison only — telemetry is
+        never read back as campaign state (ADR-0003).
+        """
+        moment = {key: value for key, value in document.items() if key != "at"}
+        if moment == self._last_observation:
+            return
+        self._last_observation = moment
+        self._telemetry.record("observation", **document)
+
+    def _reconcile(self, request: protocol.Request) -> tuple[str, ...]:
+        """Fold the world's account of its Squads into the roster.
+
+        Absent entirely, the report says nothing about Squads and the roster is
+        left alone. Present but empty, the world is saying it holds none — which
+        is a real answer, and pruning on it is the point.
+        """
+        seen = request.payload.get("squads")
+        if seen is None:
+            return ()
+        if not isinstance(seen, dict):
+            detail = "`squads` must map Squad ids to what the world sees of them"
+            raise protocol.MalformedRequestError(detail, request.id)
+
+        reported: dict[str, tuple[int, str]] = {}
+        for squad_id, seen_squad in seen.items():
+            if not isinstance(seen_squad, dict):
+                detail = f"`squads.{squad_id}` must be an object"
+                raise protocol.MalformedRequestError(detail, request.id)
+            size = seen_squad.get("size")
+            at = seen_squad.get("at", "")
+            if not isinstance(size, int) or isinstance(size, bool) or not isinstance(at, str):
+                detail = f"`squads.{squad_id}` needs an integer `size` and a place name `at`"
+                raise protocol.MalformedRequestError(detail, request.id)
+            reported[squad_id] = (size, at)
+        return self.campaign.roster.reconcile(reported)
 
     def _command(self, request: protocol.Request) -> protocol.Reply:
         """Carry one Command to the port and return its judgement (ADR-0012)."""

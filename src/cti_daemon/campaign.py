@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
 from cti_daemon.commands import SIDES, Effect, serialise_effect
+from cti_daemon.observation import Observation, SquadView
 from cti_daemon.squads import Roster
 
 if TYPE_CHECKING:
@@ -80,6 +81,31 @@ class Campaign:
     def funds(self) -> dict[str, int]:
         """Return what each side holds, for a Commander and for the UI."""
         return {side: self.ledger.balance(side) for side in SIDES}
+
+    def observation(self) -> Observation:
+        """Assemble the whole strategic picture a Commander may know (#15).
+
+        Assembled rather than reported: ownership, Funds and Orders are the
+        daemon's own, and only the head count and the ground underfoot came
+        from the world. Held nowhere but in memory — persistence is Phase 2.
+        """
+        return Observation(
+            at_time=self.elapsed,
+            owners=self.owners(),
+            funds=self.funds(),
+            squads=tuple(
+                SquadView(
+                    id=squad.id,
+                    side=squad.side,
+                    squad_type=squad.squad_type,
+                    size=squad.size,
+                    order=squad.order.kind,
+                    objective=squad.order.objective,
+                    at=squad.at,
+                )
+                for squad in self.roster.roll()
+            ),
+        )
 
     def observe(self, at_time: float, presence: dict[str, list[str]]) -> list[dict[str, int]]:
         """Take one report of who is standing where, at an in-game time.
