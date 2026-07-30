@@ -50,6 +50,11 @@ if (isNil "cti_fnc_worldInit") then {
         private _owners = missionNamespace getVariable ["cti_objectiveOwner", createHashMap];
         diag_log format ["CTI|objectives_marked count=%1 owners=%2",
             count _owners, values _owners];
+
+        // Effects the daemon has accepted arrive here, through the outbox, for
+        // both Commanders alike. Started after the world is built because an
+        // effect has nowhere to land until the Bases exist.
+        [] call cti_fnc_effectPump;
     };
 };
 

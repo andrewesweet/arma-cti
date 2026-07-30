@@ -27,6 +27,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   transport envelope, not the envelope itself. The daemon judges Commands against the Funds
   ledger, one whitelisted server-side gateway admits the human UI, and every world effect rides
   the outbox for both Commanders. `CONTEXT.md` gains **Command**.
+- Command Port, in-world side: a single server-side gateway is the only function a client may
+  `remoteExec`, with `CfgRemoteExec` locked to mode 1 on **both** `Functions` and `Commands` —
+  a mission that locks only `Functions` leaves the whole scripting-command surface open. The
+  gateway stamps the commanding side from the caller's own identity and overwrites whatever the
+  client claimed. Accepted effects ride the outbox and a server-side pump applies them and
+  acknowledges only what it carried out, so a failed effect is redelivered rather than lost.
+- SQF speaks the Command format through constructors generated from the same Python source the
+  daemon validates with, so the two cannot drift. `toJSON`/`fromJSON` (engine-native since 2.18)
+  carry it, which means no hand-rolled JSON encoder and no escaping bugs.
+- `tools/port_demo.py` issues Commands to a running daemon the way the AI Commander will.
 - Command Port, daemon side: one schema source defines Commands and the effects they produce, the
   daemon is the sole validator, and a single entry function is the only thing that moves strategic
   state. Purchase spends Funds from a per-side ledger, queues its Squad-spawn effect on the outbox

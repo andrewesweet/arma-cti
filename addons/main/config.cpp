@@ -46,6 +46,11 @@ class CfgFunctions
             class networkSample {};
             class desyncWatch {};
             class desyncLoad {};
+            class command {};
+            class portGateway {};
+            class portReply {};
+            class effectApply {};
+            class effectPump {};
         };
 
         // Written by tools/generate_manifest_sqf.py from manifests/*.json.
@@ -54,6 +59,7 @@ class CfgFunctions
         {
             file = "cti\addons\main\generated";
             class manifestData {};
+            class commandSchema {};
         };
     };
 };

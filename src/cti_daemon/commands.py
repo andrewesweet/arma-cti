@@ -19,6 +19,18 @@ from typing import Any, Final, cast
 # Engine side names, matching manifest.SIDES, so SQF needs no translation table.
 SIDES: Final = ("WEST", "EAST")
 
+# The Command catalogue: name -> the argument names it requires. This is the
+# source the SQF constructors are generated from, so a Command the game can
+# build and a Command the daemon accepts cannot drift apart.
+CATALOGUE: Final[dict[str, tuple[str, ...]]] = {
+    "purchase": ("squad_type",),
+}
+
+# The effects a Command can produce, and the arguments each carries.
+EFFECTS: Final[dict[str, tuple[str, ...]]] = {
+    "squad_spawned": ("squad_type", "size"),
+}
+
 
 @dataclass(frozen=True, slots=True)
 class Command:
