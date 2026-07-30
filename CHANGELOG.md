@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Addon functions are declared in `CfgFunctions` and resolve by name as `cti_fnc_*` — from the
   mission, from `remoteExec` and from the addon itself. Verified on the dedicated server, which
   now loads the addon during the Arma tier.
+- The Arma tier can drive a real player client end to end with nobody at the keyboard: it
+  connects, takes a role and enters the mission by itself. `skipLobby = 1` does the work, because
+  the server initialises its own mission before any client connects and there is therefore a
+  running mission to be dropped into. No input injection, and no focus taken from other windows.
 - Mechanical desync oracle for the open Windows-client desync (#8). The server samples every
   connected client's `networkInfo` and reports the worst reading over a window, so "a client stays
   responsive for a sustained period" is a number rather than a recollection. No client in the
