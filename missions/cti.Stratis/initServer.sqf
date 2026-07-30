@@ -51,6 +51,18 @@ private _watchFor = missionNamespace getVariable ["CTI_DESYNC_WATCH_SECS", 0];
 if (_watchFor > 0) then {
     [_watchFor] call cti_fnc_desyncWatch;
     diag_log format ["CTI|desync_watch_started window=%1", _watchFor];
+
+    // Wait for a headless client before loading it, then give it something to
+    // simulate: a clean reading off an idle client says the connection held,
+    // not that the link carries a player's traffic.
+    [] spawn {
+        private _deadline = diag_tickTime + 120;
+        waitUntil {
+            (count allUsers > 0 && {(getUserInfo (allUsers # 0)) param [7, false]})
+                || { diag_tickTime > _deadline }
+        };
+        [] call cti_fnc_desyncLoad;
+    };
 };
 
 diag_log "CTI|done";

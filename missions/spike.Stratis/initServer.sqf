@@ -141,15 +141,14 @@ if (count cti_spike_latencies < _callbacks) then {
 // `allUsers` lists connection-level users even while `allPlayers` is empty, and
 // `getUserInfo` index 6 is the client state, 7 the headless flag — so this says
 // which rung a stuck client is actually on instead of leaving us to guess.
+// The earlier version of this guarded with `isNil "allUsers"` and
+// `isNil "getUserInfo"`, which tests for *variables* of those names. Both are
+// commands, so both guards always fired: every phase-0 run logged
+// "allUsers unavailable" and that line was an artefact of the test, not a
+// finding about the engine.
 CTI_SPIKE_USERS = {
-    if (isNil "allUsers") exitWith { "allUsers unavailable" };
     private _out = [];
-    {
-        private _info = if (isNil "getUserInfo") then { ["getUserInfo unavailable"] } else {
-            getUserInfo _x
-        };
-        _out pushBack _info;
-    } forEach allUsers;
+    { _out pushBack (getUserInfo _x) } forEach allUsers;
     str _out
 };
 

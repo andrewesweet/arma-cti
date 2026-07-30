@@ -41,15 +41,17 @@ if (!isServer) exitWith { scriptNull };
         _samplesTaken = _samplesTaken + 1;
         {
             _x params ["_name", "_uid", "_state", "_headless", "_ping", "_bandwidth", "_desync"];
-            // A headless client shares the server's machine and never crosses
-            // the mirrored-network boundary, so it cannot show this symptom and
-            // would only flatter the numbers.
-            if (!_headless) then {
-                _sawAnyone = true;
-                _worst set [_name, ((_worst getOrDefault [_name, 0]) max _desync)];
-                diag_log format ["CTI|desync_sample name=%1 state=%2 ping=%3 bandwidth=%4 desync=%5",
-                    _name, _state, _ping, _bandwidth, _desync];
-            };
+            // Every connected client counts, headless included. A headless
+            // client on the server's own machine cannot show this symptom, but
+            // one launched on the Windows host crosses exactly the boundary
+            // under suspicion — and since the verdict is a maximum, a quiet
+            // local client cannot hide a noisy remote one.
+            _sawAnyone = true;
+            private _key = format ["%1/%2", _name, _uid];
+            _worst set [_key, ((_worst getOrDefault [_key, 0]) max _desync)];
+            diag_log format [
+                "CTI|desync_sample name=%1 uid=%2 headless=%3 state=%4 ping=%5 bandwidth=%6 desync=%7",
+                _name, _uid, _headless, _state, _ping, _bandwidth, _desync];
         } forEach _samples;
     };
 

@@ -25,6 +25,13 @@ LOG_PREFIX="${CTI_LOG_PREFIX:-SPIKE}"
 # Issue #8 candidate cause 2: spike/basic.cfg is hand-written and unvalidated.
 # Set CTI_BASIC_CFG empty to launch on engine defaults instead.
 BASIC_CFG="${CTI_BASIC_CFG-$REPO/spike/basic.cfg}"
+# Issue #8: a headless client launched on the Windows host crosses the same
+# mirrored-network boundary a human client does, and needs no role selection —
+# so the desync question can be asked without anyone clicking a slot. Set
+# CTI_WINDOWS_HC=1 to launch one. Empty ARMA_WINDOWS_DIR disables it.
+WINDOWS_HC="${CTI_WINDOWS_HC:-0}"
+WINDOWS_ARMA_DIR="${CTI_WINDOWS_ARMA_DIR:-/mnt/d/Apps/Steam/steamapps/common/Arma 3}"
+WINDOWS_CONNECT="${CTI_WINDOWS_CONNECT:-127.0.0.1}"
 
 BOOT_TIMEOUT="${CTI_BOOT_TIMEOUT:-240}"
 HC_TIMEOUT="${CTI_HC_TIMEOUT:-90}"
@@ -50,6 +57,7 @@ RESULTS="$OUT/results.env"
 daemon_pid=""
 server_pid=""
 hc_pid=""
+win_hc_pid=""
 
 log() { printf '[spike] %s\n' "$*" >&2; }
 record() { printf '%s=%s\n' "$1" "$2" >>"$RESULTS"; log "$1=$2"; }
@@ -58,13 +66,16 @@ since() { echo "scale=3; $(now) - $1" | bc; }
 
 cleanup() {
     local code=$?
-    for pid in "$hc_pid" "$server_pid" "$daemon_pid"; do
+    for pid in "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
         [[ -n "$pid" ]] && kill "$pid" 2>/dev/null
     done
     sleep 2
-    for pid in "$hc_pid" "$server_pid" "$daemon_pid"; do
+    for pid in "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
         [[ -n "$pid" ]] && kill -9 "$pid" 2>/dev/null
     done
+    # The Windows process is a child of WSL interop, not of this shell, so a
+    # kill on the interop wrapper does not always reach it.
+    ((WINDOWS_HC == 1)) && taskkill.exe /IM arma3server_x64.exe /F >/dev/null 2>&1
     exit "$code"
 }
 trap cleanup EXIT INT TERM
@@ -254,6 +265,49 @@ if ((SKIP_HC == 0)); then
     esac
 else
     record "hc_joined" "skipped"
+fi
+
+# ---------------------------------------------------------------- windows client
+# A Windows-side headless client. No window, no focus, no role selection: it
+# takes the HC1 slot the same way the Linux one does, but its traffic crosses
+# the WSL2/Windows boundary, which is candidate cause 3 on #8.
+win_hc_pid=""
+if ((WINDOWS_HC == 1)); then
+    WIN_BIN="$WINDOWS_ARMA_DIR/arma3server_x64.exe"
+    if [[ ! -f "$WIN_BIN" ]]; then
+        fail "infra_unavailable" "Windows Arma not found at $WIN_BIN"
+    fi
+    WIN_LOG="$OUT/windows-hc.log"
+    : >"$WIN_LOG"
+    t_win=$(now)
+    (
+        cd "$WINDOWS_ARMA_DIR" || exit 1
+        exec ./arma3server_x64.exe -client \
+            -connect="$WINDOWS_CONNECT" \
+            -port="$PORT" \
+            -password="$SERVER_PASSWORD" \
+            -name=ctiwinhc \
+            -world=empty \
+            -noSound
+    ) >"$WIN_LOG" 2>&1 &
+    win_hc_pid=$!
+    case "$(
+        wait_for "$SERVER_LOG" "Player headlessclient connected \(id=HC" "$HC_TIMEOUT" "$win_hc_pid"
+        echo $?
+    )" in
+    1)
+        record "windows_hc_joined" "false"
+        record "windows_hc_failure" "timeout after ${HC_TIMEOUT}s; see $WIN_LOG"
+        ;;
+    2)
+        record "windows_hc_joined" "false"
+        record "windows_hc_failure" "process exited; see $WIN_LOG"
+        ;;
+    *)
+        record "windows_hc_joined" "true"
+        record "windows_hc_join_secs" "$(since "$t_win")"
+        ;;
+    esac
 fi
 
 # ---------------------------------------------------------------- human client

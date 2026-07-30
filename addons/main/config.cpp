@@ -45,6 +45,7 @@ class CfgFunctions
             class worldInit {};
             class networkSample {};
             class desyncWatch {};
+            class desyncLoad {};
         };
 
         // Written by tools/generate_manifest_sqf.py from manifests/*.json.

@@ -15,8 +15,11 @@
  * Return Value: <ARRAY> of [name, uid, clientState, isHeadless, ping,
  * bandwidth, desync], one per connected user
  */
+// No `isNil "allUsers"` guard: isNil tests a *variable* of that name, and
+// `allUsers` is a command, so such a guard always fires and silently returns
+// nothing. Phase 0 logged "allUsers unavailable" on every run for exactly that
+// reason — the command has been there since 2.06 and this addon requires 2.2.
 if (!isServer) exitWith { [] };
-if (isNil "allUsers") exitWith { [] };
 
 private _samples = [];
 {

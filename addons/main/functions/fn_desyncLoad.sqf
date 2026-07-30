@@ -1,0 +1,67 @@
+/*
+ * Author: arma-cti
+ * Puts a simulation load on a headless client, for the #8 investigation.
+ *
+ * An idle headless client barely exchanges anything — its sampled bandwidth
+ * falls to zero and its ping reads as the engine's "no measurement" sentinel —
+ * so a clean desync reading from one proves the connection stayed up, not that
+ * the link carries a player's traffic. Transferring AI groups to it makes the
+ * server stream real simulation across the same boundary a player would use.
+ *
+ * Not gameplay: this exists to make a diagnostic honest, and nothing in the
+ * Campaign calls it.
+ *
+ * Arguments:
+ * 0: groups to hand over <NUMBER> (optional, default 4)
+ * 1: units per group <NUMBER> (optional, default 8)
+ *
+ * Return Value: <NUMBER> groups actually transferred
+ */
+params [["_groupCount", 4, [0]], ["_unitCount", 8, [0]]];
+
+if (!isServer) exitWith { 0 };
+
+// Index 1 of getUserInfo is the client's owner id, which is what setGroupOwner
+// wants; index 7 says whether it is headless.
+private _target = -1;
+{
+    private _info = getUserInfo _x;
+    if (count _info > 7 && {_info # 7}) then { _target = _info # 1 };
+} forEach allUsers;
+
+if (_target < 0) exitWith {
+    diag_log "CTI|desync_load skipped=no_headless_client";
+    0
+};
+
+private _map = missionNamespace getVariable ["cti_map", createHashMap];
+private _objectives = _map getOrDefault ["objectives", []];
+if (count _objectives isEqualTo 0) exitWith {
+    diag_log "CTI|desync_load skipped=no_objectives";
+    0
+};
+
+private _transferred = 0;
+for "_i" from 0 to (_groupCount - 1) do {
+    private _objective = _objectives select (_i % (count _objectives));
+    (_objective get "position") params ["_east", "_north"];
+    private _spawn = [_east, _north, 0];
+
+    private _group = createGroup [west, true];
+    for "_u" from 1 to _unitCount do {
+        _group createUnit ["B_Soldier_F", _spawn, [], 50, "FORM"];
+    };
+
+    // Somewhere to walk to, so the units keep generating updates rather than
+    // standing still and going quiet like the client they are meant to load.
+    private _destination = _objectives select ((_i + 1) % (count _objectives));
+    (_destination get "position") params ["_toEast", "_toNorth"];
+    _group move [_toEast, _toNorth, 0];
+
+    if (_group setGroupOwner _target) then { _transferred = _transferred + 1 };
+};
+
+diag_log format ["CTI|desync_load groups=%1 units_each=%2 transferred=%3 owner=%4",
+    _groupCount, _unitCount, _transferred, _target];
+
+_transferred
