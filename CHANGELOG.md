@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ADR-0011: the acceptance-harness architecture — Python orchestrator, in-game gtest-style SQF
   asserts, verdict returned through the extension as structured JSON. Bohemia's `-autotest` and
   SQF-VM are rejected as test tiers, with reasons recorded.
+- ADR-0012: the Command Port wire format — a domain protocol carried inside the daemon's
+  transport envelope, not the envelope itself. The daemon judges Commands against the Funds
+  ledger, one whitelisted server-side gateway admits the human UI, and every world effect rides
+  the outbox for both Commanders. `CONTEXT.md` gains **Command**.
 - Addon functions are declared in `CfgFunctions` and resolve by name as `cti_fnc_*` — from the
   mission, from `remoteExec` and from the addon itself. Verified on the dedicated server, which
   now loads the addon during the Arma tier.

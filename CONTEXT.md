@@ -20,6 +20,10 @@ _Avoid_: General, HQ, OPCOM
 The single interface through which every Commander (human or AI) issues orders. No order path exists outside it.
 _Avoid_: Command API, order bus
 
+**Command**:
+One Commander instruction sent through the Command Port: Purchase, Order, or Reinforce.
+_Avoid_: message, request, packet; "command" unqualified for engine scripting commands (say "scripting command")
+
 **Objective**:
 A capturable point of interest on a map's manifest, with a stable authored ID and an owner (side, Neutral, or Contested). MVP uses towns only; the concept is not town-specific.
 _Avoid_: Town, sector, zone, POI
