@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   transport envelope, not the envelope itself. The daemon judges Commands against the Funds
   ledger, one whitelisted server-side gateway admits the human UI, and every world effect rides
   the outbox for both Commanders. `CONTEXT.md` gains **Command**.
+- `CONTEXT.md` gains **Observation**: the whole strategic picture at one moment, as a Commander
+  may know it. Distinct from the Campaign snapshot, which carries the same set of facts durably;
+  an Observation is momentary and in memory.
 - The return leg: every report the world makes is answered with the whole strategic picture —
   which side holds each Objective including Contested, what each side has to spend, and every
   Squad with its side, type, head count, standing Order and the Objective or Base it is standing

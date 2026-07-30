@@ -36,6 +36,10 @@ _Avoid_: Group (reserved for the engine's group concept), team, fireteam
 A Commander's standing instruction to one Squad: Capture(Objective), Defend(Objective), or Reserve. An Order survives leader death. A player-led Squad receives Orders but compliance is voluntary.
 _Avoid_: Task (reserved for the engine task system), waypoint, directive
 
+**Observation**:
+The whole strategic picture at one moment, as a Commander may know it: every Objective's owner, each side's Funds, and every Squad with its side, composition type, member count, standing Order and coarse position. Assembled by the daemon from what it decides plus the two facts only the world can see — how many of a Squad are standing, and where it is. Deliberately the same set the Campaign snapshot persists (ADR-0008): nothing tactical, and places rather than coordinates.
+_Avoid_: State, world state, telemetry; snapshot (reserved for the persisted Campaign)
+
 **Funds**:
 Per-side currency. Earned as income from held Objectives, spent through the Command Port.
 _Avoid_: Money, resources, supply
