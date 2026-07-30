@@ -32,6 +32,11 @@ BASIC_CFG="${CTI_BASIC_CFG-$REPO/spike/basic.cfg}"
 WINDOWS_HC="${CTI_WINDOWS_HC:-0}"
 WINDOWS_ARMA_DIR="${CTI_WINDOWS_ARMA_DIR:-/mnt/d/Apps/Steam/steamapps/common/Arma 3}"
 WINDOWS_CONNECT="${CTI_WINDOWS_CONNECT:-127.0.0.1}"
+# A *headed* Windows client — the thing #8 still needs and the thing that cannot
+# yet get past role selection unattended. Windowed and -noPause so it keeps
+# simulating when it does not have focus.
+WINDOWS_CLIENT="${CTI_WINDOWS_CLIENT:-0}"
+WINDOWS_CLIENT_PROFILE="${CTI_WINDOWS_CLIENT_PROFILE:-ctitest}"
 
 BOOT_TIMEOUT="${CTI_BOOT_TIMEOUT:-240}"
 HC_TIMEOUT="${CTI_HC_TIMEOUT:-90}"
@@ -58,6 +63,7 @@ daemon_pid=""
 server_pid=""
 hc_pid=""
 win_hc_pid=""
+win_client_pid=""
 
 log() { printf '[spike] %s\n' "$*" >&2; }
 record() { printf '%s=%s\n' "$1" "$2" >>"$RESULTS"; log "$1=$2"; }
@@ -66,16 +72,17 @@ since() { echo "scale=3; $(now) - $1" | bc; }
 
 cleanup() {
     local code=$?
-    for pid in "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
+    for pid in "$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
         [[ -n "$pid" ]] && kill "$pid" 2>/dev/null
     done
     sleep 2
-    for pid in "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
+    for pid in "$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
         [[ -n "$pid" ]] && kill -9 "$pid" 2>/dev/null
     done
-    # The Windows process is a child of WSL interop, not of this shell, so a
-    # kill on the interop wrapper does not always reach it.
+    # Windows processes are children of WSL interop, not of this shell, so a
+    # kill on the interop wrapper does not always reach them.
     ((WINDOWS_HC == 1)) && taskkill.exe /IM arma3server_x64.exe /F >/dev/null 2>&1
+    ((WINDOWS_CLIENT == 1)) && taskkill.exe /IM arma3_x64.exe /F >/dev/null 2>&1
     exit "$code"
 }
 trap cleanup EXIT INT TERM
@@ -308,6 +315,37 @@ if ((WINDOWS_HC == 1)); then
         record "windows_hc_join_secs" "$(since "$t_win")"
         ;;
     esac
+fi
+
+# ---------------------------------------------------------------- windows headed client
+win_client_pid=""
+if ((WINDOWS_CLIENT == 1)); then
+    WIN_GAME="$WINDOWS_ARMA_DIR/arma3_x64.exe"
+    [[ -f "$WIN_GAME" ]] || fail "infra_unavailable" "Windows Arma 3 not found at $WIN_GAME"
+    # The client needs the addon too: client-side SQF is the only lever we have
+    # inside the engine, and CfgFunctions compiles per machine.
+    rm -rf "${WINDOWS_ARMA_DIR:?}/$MOD_NAME"
+    mkdir -p "$WINDOWS_ARMA_DIR/$MOD_NAME"
+    cp -r "$BUILT_MOD/addons" "$WINDOWS_ARMA_DIR/$MOD_NAME/"
+    WIN_CLIENT_LOG="$OUT/windows-client.log"
+    : >"$WIN_CLIENT_LOG"
+    t_wc=$(now)
+    (
+        cd "$WINDOWS_ARMA_DIR" || exit 1
+        exec ./arma3_x64.exe \
+            -connect="$WINDOWS_CONNECT" \
+            -port="$PORT" \
+            -password="$SERVER_PASSWORD" \
+            -mod="$MOD_NAME" \
+            -name="$WINDOWS_CLIENT_PROFILE" \
+            -window \
+            -noSplash \
+            -skipIntro \
+            -noPause
+    ) >"$WIN_CLIENT_LOG" 2>&1 &
+    win_client_pid=$!
+    record "windows_client_launched" "true"
+    record "windows_client_connect" "$WINDOWS_CONNECT:$PORT"
 fi
 
 # ---------------------------------------------------------------- human client
