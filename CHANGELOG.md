@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `just` command table in `CLAUDE.md` now lists the recipes that exist; the acceptance tiers are
   marked as Phase 1 work.
+- *Read first* in `CLAUDE.md` now explains how to navigate the wiki snapshot: guessable paths,
+  `MANIFEST.json` as the lookup, per-directory `INDEX.md` instead of listing a 2,672-file
+  directory, and the two traps — categories live in the file header rather than the wikitext, and
+  pre-Arma-3-only pages are excluded, so a miss is not proof the wiki lacks the page.
 - Vendored snapshot of the Bohemia wiki (`docs/reference/arma-wiki/`), because the live wiki is
   unreachable from this project's environment and Arma 3 has been static at 2.20 for over a year.
   Now the whole wiki rather than nine hand-picked pages: 6,690 pages across scripting commands,

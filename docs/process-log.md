@@ -18,6 +18,10 @@ Adopted Conventional Commits 1.0.0, Keep a Changelog 1.1.0, SemVer 2.0.0 (ADR-00
 
 Agent guidance reviewed against Anthropic's official Opus 5 and Fable 5 prompting guides, at the user's direction, optimising each document for its likelier consumer (opus[1m] for day-to-day surfaces). Changes: `CLAUDE.md` gained a Working style section (scope discipline, verification capped at the project gates, subagent-delegation limits, evidence-grounded progress claims, report-everything review passes, deliverable-length calibration); `retro` gained a bias-toward-removal rule (current models degrade under over-prescription); `playtest-brief` gained document-length calibration. `docs/agents/*` (mechanical command reference) and `CONTEXT.md`/ADRs (domain facts, not behavioural prompts) reviewed, unchanged. No existing instruction conflicted with the guides; notably nothing instructs reasoning reproduction (a Fable 5 refusal trigger).
 
+## 2026-07-30 — user-directed amendment: full wiki snapshot (not a retro)
+
+The Phase 0 retro added `docs/reference/arma-wiki/` to *Read first* on the strength of a research failure; it held nine hand-picked pages, which is thin cover for "consult the wiki first". A full BIKI export became available and is now vendored: 6,690 pages, tier A + B plus the non-article namespaces. *Read first* gained the navigation an agent needs to use it — guessable paths, `MANIFEST.json` as the lookup, per-directory `INDEX.md` instead of listing a 2,672-file directory — and two traps worth naming. Game applicability is in each file's `// categories:` header and never in the wikitext, because BIKI generates categories from templates, so grepping page source for `Arma 3` finds nothing. And pre-Arma-3-only pages are excluded, so a miss is not proof the wiki lacks the page.
+
 ## 2026-07-30 — retro: Phase 0 spike (#2)
 
 First real retro. Trigger: phase completion.
