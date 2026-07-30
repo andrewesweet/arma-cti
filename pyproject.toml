@@ -28,6 +28,9 @@ module-root = "src"
 [tool.ruff]
 line-length = 100
 src = ["src", "tests"]
+# ruff formats Python code blocks inside Markdown. Documents under docs/ quote
+# third-party source verbatim, and reformatting a quotation falsifies it.
+extend-exclude = ["docs"]
 
 [tool.ruff.lint]
 select = ["ALL"]
