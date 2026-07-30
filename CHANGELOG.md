@@ -26,6 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Addon functions are declared in `CfgFunctions` and resolve by name as `cti_fnc_*` — from the
   mission, from `remoteExec` and from the addon itself. Verified on the dedicated server, which
   now loads the addon during the Arma tier.
+- Real daemon (`cti-daemon`), replacing the phase-0 echo stub. Same transport the spike measured —
+  newline-delimited JSON on TCP loopback, one connection reused across calls — with an envelope
+  worth relying on: every request carries an id and every reply echoes it, and success, a
+  domain-level rejection and an error are three outcomes the caller can tell apart. A malformed
+  line costs one reply, never the connection.
+- Acknowledged delivery for messages the daemon pushes to the game. Callback delivery is
+  at-most-once across mission boundaries (ADR-0005), so the daemon holds each pushed message until
+  the game acknowledges its sequence number and replays anything unacknowledged. Acknowledging
+  twice is ordinary; acknowledging a sequence that was never issued is refused.
+- Structured daemon telemetry as JSON lines, per request. Observability only, never read back as
+  campaign state (ADR-0003) — which is why a failure to write it is swallowed rather than raised.
 - Seeded PRNG adapter: the only sanctioned source of randomness in SQF. It wraps the engine's own
   `seed random x` rather than a hand-rolled generator, and hides both of that command's silent
   footguns — a seed truncated towards zero, and an upper bound that is included where plain
@@ -68,6 +79,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   all-or-nothing and HEMTT 1.20.1 has no file-scoped suppression, so `random` is exempted there
   and re-banned here with the scope the contract actually wants. `sleep` and `uiSleep` stay banned
   by both.
+
+### Removed
+
+- Phase-0 stub daemon and its test. It echoed requests with timestamps and had no request
+  identity, error vocabulary or delivery guarantees; the real daemon supersedes it.
 
 ### Fixed
 

@@ -137,19 +137,24 @@ mkdir -p "$SERVER_DIR/$MOD_NAME"
 cp -r "$BUILT_MOD/addons" "$SERVER_DIR/$MOD_NAME/"
 record "addon_pbos" "$(find "$SERVER_DIR/$MOD_NAME/addons" -name '*.pbo' | wc -l)"
 
-# ---------------------------------------------------------------- stub daemon
+# ---------------------------------------------------------------- daemon
 DAEMON_LOG="$OUT/daemon.log"
+DAEMON_TELEMETRY="$OUT/daemon-telemetry.jsonl"
 : >"$DAEMON_LOG"
+# Truncate: telemetry is per-run evidence, and appending across runs turns it
+# into a pile nobody can attribute.
+: >"$DAEMON_TELEMETRY"
 t=$(now)
 # Hold mode has to be reachable from the Windows host, so bind every interface
 # for the duration of that test only. Otherwise stay on loopback.
 DAEMON_HOST=127.0.0.1
 ((HOLD == 1)) && DAEMON_HOST=0.0.0.0
-(cd "$REPO" && exec uv run --quiet cti-stub-daemon --host "$DAEMON_HOST" --port "$DAEMON_PORT") \
+(cd "$REPO" && exec uv run --quiet cti-daemon \
+    --host "$DAEMON_HOST" --port "$DAEMON_PORT" --telemetry "$DAEMON_TELEMETRY") \
     >"$DAEMON_LOG" 2>&1 &
 daemon_pid=$!
-if ! wait_for "$DAEMON_LOG" "CTI_STUB_DAEMON_READY" 90 "$daemon_pid"; then
-    fail "infra_unavailable" "stub daemon did not report ready; see $DAEMON_LOG"
+if ! wait_for "$DAEMON_LOG" "CTI_DAEMON_READY" 90 "$daemon_pid"; then
+    fail "infra_unavailable" "daemon did not report ready; see $DAEMON_LOG"
 fi
 record "daemon_ready_secs" "$(since "$t")"
 

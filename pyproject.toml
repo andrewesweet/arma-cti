@@ -6,7 +6,7 @@ requires-python = ">=3.13,<3.14"
 dependencies = ["networkx>=3.5"]
 
 [project.scripts]
-cti-stub-daemon = "cti_daemon.stub:main"
+cti-daemon = "cti_daemon.transport:main"
 
 [build-system]
 requires = ["uv_build>=0.11,<0.12"]

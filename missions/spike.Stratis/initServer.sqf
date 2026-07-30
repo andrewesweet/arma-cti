@@ -79,9 +79,17 @@ private _arrayUs = ((diag_tickTime - _t0) * 1e6) / _iterations;
 ("bench_fresh=" + ((_ext callExtension ["bench", [50, false]]) # 0)) call CTI_SPIKE_LOG;
 ("bench_keepalive=" + ((_ext callExtension ["bench", [50, true]]) # 0)) call CTI_SPIKE_LOG;
 
-// One synchronous call, verbatim, to prove the payload survives the trip.
-private _sync = _ext callExtension ["rpc_keepalive", ["{""cmd"":""echo"",""payload"":""hello-from-sqf""}"]];
+// One synchronous call in the daemon's real envelope, to prove the id survives
+// the round trip: the shim's own transport errors carry no `status`, so a reply
+// that has one came from the daemon and can be matched to the request.
+private _sync = _ext callExtension ["rpc_keepalive", ["{""id"":""spike-1"",""verb"":""ping""}"]];
 ("sync_reply=" + str _sync) call CTI_SPIKE_LOG;
+
+private _quote = """";
+private _echoedId = _quote + "id" + _quote + ":" + _quote + "spike-1" + _quote;
+if (((_sync # 0) find _echoedId) < 0) then {
+    "FAIL class=assertion_failed daemon_did_not_echo_the_request_id" call CTI_SPIKE_LOG;
+};
 
 // ---------------------------------------------------------------- callback path
 // End-to-end as gameplay sees it: callExtension returns immediately, the reply
@@ -103,7 +111,7 @@ private _callbacks = 20;
 for "_i" from 1 to _callbacks do {
     private _id = format ["job%1", _i];
     cti_spike_sent set [_id, diag_tickTime];
-    _ext callExtension ["rpc_async", [_id, format ["{""cmd"":""async"",""n"":%1}", _i]]];
+    _ext callExtension ["rpc_async", [_id, format ["{""id"":""%1"",""verb"":""ping""}", _id]]];
 };
 
 // Bounded wait with an explicit timeout verdict — never a blind sleep that
