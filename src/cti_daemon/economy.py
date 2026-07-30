@@ -1,4 +1,9 @@
-"""Funds: the per-side currency, and what a Squad costs.
+"""The campaign's tunable numbers: Funds, prices, and the rule clocks.
+
+Named for Funds because that is what it started as; it now also carries the
+income tick and capture durations, which are the same kind of thing — numbers
+the MVP scope calls playtest-tuned placeholders, where the structure is the
+contract and the values are expected to move.
 
 The ledger lives in the daemon because strategic state is snapshot-owned
 (ADR-0003) and belongs where it can be property-tested rather than in the world
@@ -47,6 +52,8 @@ class EconomyTable:
 
     starting_funds: int
     stipend: int
+    income_tick_seconds: int
+    capture_seconds: int
     squads: tuple[SquadType, ...]
 
     def price(self, squad_type: str) -> int | None:
@@ -57,16 +64,8 @@ class EconomyTable:
         return None
 
 
-def parse(document: object) -> EconomyTable:
-    """Validate an authored economy document and build the table."""
-    if not isinstance(document, dict):
-        _refuse(f"economy table must be an object, got {type(document).__name__}")
-    table = cast("dict[str, Any]", document)
-
-    if table.get("schema_version") != SCHEMA_VERSION:
-        _refuse(f"schema_version must be {SCHEMA_VERSION}, got {table.get('schema_version')!r}")
-
-    squads: list[dict[str, Any]] = table["squads"]
+def _check_squads(squads: list[dict[str, Any]]) -> None:
+    """Every Squad type is distinct, named, and costs a sane amount."""
     ids = [squad["id"] for squad in squads]
     duplicates = sorted({name for name in ids if ids.count(name) > 1})
     if duplicates:
@@ -80,13 +79,38 @@ def parse(document: object) -> EconomyTable:
         if not isinstance(squad["size"], int) or squad["size"] <= 0:
             _refuse(f"{squad['id']}: size must be a positive whole number")
 
+
+def _check_numbers(table: dict[str, Any]) -> None:
+    """Funds are whole and not negative; the rule clocks take real time."""
     for key in ("starting_funds", "stipend"):
         if not isinstance(table[key], int) or table[key] < 0:
             _refuse(f"{key} must be a whole number of Funds, not negative")
 
+    # A tick or a capture that takes no time would pay continuously, or flip an
+    # Objective the instant anyone walked past it.
+    for key in ("income_tick_seconds", "capture_seconds"):
+        if not isinstance(table[key], int) or table[key] <= 0:
+            _refuse(f"{key} must be a positive whole number of seconds")
+
+
+def parse(document: object) -> EconomyTable:
+    """Validate an authored economy document and build the table."""
+    if not isinstance(document, dict):
+        _refuse(f"economy table must be an object, got {type(document).__name__}")
+    table = cast("dict[str, Any]", document)
+
+    if table.get("schema_version") != SCHEMA_VERSION:
+        _refuse(f"schema_version must be {SCHEMA_VERSION}, got {table.get('schema_version')!r}")
+
+    squads: list[dict[str, Any]] = table["squads"]
+    _check_squads(squads)
+    _check_numbers(table)
+
     return EconomyTable(
         starting_funds=table["starting_funds"],
         stipend=table["stipend"],
+        income_tick_seconds=table["income_tick_seconds"],
+        capture_seconds=table["capture_seconds"],
         squads=tuple(
             SquadType(
                 id=squad["id"],
@@ -118,6 +142,11 @@ class Ledger:
     def can_afford(self, side: str, cost: int) -> bool:
         """Whether `side` could pay `cost` right now."""
         return self.balance(side) >= cost
+
+    def deposit(self, side: str, amount: int) -> int:
+        """Add `amount` to `side` and return the new balance."""
+        self._balances[side] = self.balance(side) + amount
+        return self._balances[side]
 
     def spend(self, side: str, cost: int) -> int:
         """Deduct `cost` from `side` and return the new balance.

@@ -99,3 +99,16 @@ def test_a_command_and_an_effect_are_not_the_same_payload() -> None:
     assert "command" not in effect
     assert "effect" in effect
     assert "effect" not in command
+
+
+def test_an_effect_may_concern_ground_no_side_holds() -> None:
+    # A Command is issued *by* a side, so it takes a side. An Effect reports
+    # what happened, and an Objective going Contested is a real thing to report.
+    for owner in ("NEUTRAL", "CONTESTED"):
+        effect = commands.parse_effect({"effect": "objective_captured", "side": owner})
+        assert effect.side == owner
+
+
+def test_a_command_still_may_not_claim_a_state_as_its_side() -> None:
+    with pytest.raises(commands.MalformedCommandError):
+        commands.parse({"command": "purchase", "side": "CONTESTED"})

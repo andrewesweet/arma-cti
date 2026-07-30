@@ -19,6 +19,11 @@ from typing import Any, Final, cast
 # Engine side names, matching manifest.SIDES, so SQF needs no translation table.
 SIDES: Final = ("WEST", "EAST")
 
+# What an Objective's owner can be. A Command is always *issued by* a side, so
+# it takes SIDES; an Effect reports something that may concern ground no side
+# holds, so it takes these. Contested is a real state, not a transient (#13).
+OWNERS: Final = (*SIDES, "NEUTRAL", "CONTESTED")
+
 # The Command catalogue: name -> the argument names it requires. This is the
 # source the SQF constructors are generated from, so a Command the game can
 # build and a Command the daemon accepts cannot drift apart.
@@ -64,11 +69,13 @@ class MalformedCommandError(Exception):
     """
 
 
-def _side_and_args(payload: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+def _side_and_args(
+    payload: dict[str, Any], allowed: tuple[str, ...] = SIDES
+) -> tuple[str, dict[str, Any]]:
     """Validate the two fields every payload in this format carries."""
     side = payload.get("side")
-    if side not in SIDES:
-        detail = f"`side` must be one of {list(SIDES)}, got {side!r}"
+    if side not in allowed:
+        detail = f"`side` must be one of {list(allowed)}, got {side!r}"
         raise MalformedCommandError(detail)
 
     args = payload.get("args", {})
@@ -110,7 +117,7 @@ def serialise(command: Command) -> dict[str, Any]:
 def parse_effect(payload: object) -> Effect:
     """Build an Effect from a pushed outbox message, or refuse it."""
     name, envelope = _named(payload, "effect", "an Effect")
-    side, args = _side_and_args(envelope)
+    side, args = _side_and_args(envelope, OWNERS)
     return Effect(name=name, side=side, args=args)
 
 

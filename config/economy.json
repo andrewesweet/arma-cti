@@ -2,6 +2,8 @@
   "schema_version": 1,
   "starting_funds": 300,
   "stipend": 5,
+  "income_tick_seconds": 60,
+  "capture_seconds": 30,
   "squads": [
     {
       "id": "rifle",
