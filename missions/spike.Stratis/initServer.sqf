@@ -9,6 +9,15 @@ onPlayerConnected {
     diag_log format ["SPIKE|player_connected name=%1 id=%2 uid=%3 owner=%4 jip=%5",
         _name, _id, _uid, _owner, _jip];
 };
+onPlayerDisconnected {
+    diag_log format ["SPIKE|player_disconnected name=%1 id=%2", _name, _id];
+};
+
+// A human client reports its own shim probe here, so the Windows .dll load test
+// and the join test produce one log rather than two.
+"cti_spike_client_report" addPublicVariableEventHandler {
+    diag_log format ["SPIKE|client_report %1", _this # 1];
+};
 
 ("mission_running tickTime=" + str diag_tickTime) call CTI_SPIKE_LOG;
 ("server_version=" + str productVersion) call CTI_SPIKE_LOG;
