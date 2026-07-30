@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "starting_funds": 300,
+  "stipend": 5,
+  "squads": [
+    {
+      "id": "rifle",
+      "display_name": "Rifle Squad",
+      "price": 100,
+      "size": 8
+    },
+    {
+      "id": "weapons",
+      "display_name": "Weapons Squad",
+      "price": 150,
+      "size": 8
+    }
+  ]
+}

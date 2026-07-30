@@ -3,24 +3,31 @@
 from __future__ import annotations
 
 import time
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from cti_daemon import protocol
+from cti_daemon import commands, economy, protocol
 from cti_daemon.outbox import Outbox, UnknownSequenceError
+from cti_daemon.port import CommandPort
 from cti_daemon.telemetry import Telemetry
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from pathlib import Path
+
+DEFAULT_ECONOMY = Path(__file__).parents[2] / "config" / "economy.json"
 
 
 class Daemon:
     """Dispatches requests and owns the outbox the game reads from."""
 
-    def __init__(self, *, telemetry_path: Path) -> None:
-        """Wire the daemon to its telemetry sink."""
+    def __init__(self, *, telemetry_path: Path, economy_path: Path | None = None) -> None:
+        """Wire the daemon to its telemetry sink and the authored economy."""
         self.outbox = Outbox()
         self._telemetry = Telemetry(telemetry_path)
+        table = economy.load(economy_path or DEFAULT_ECONOMY)
+        self.port = CommandPort(
+            table=table, ledger=economy.Ledger(table.starting_funds), outbox=self.outbox
+        )
 
     def handle_line(self, line: str) -> str:
         """Answer one request line. Every path produces a reply."""
@@ -57,11 +64,34 @@ class Daemon:
         return handler(request)
 
     def _handlers(self) -> dict[str, Callable[[protocol.Request], protocol.Reply]]:
-        return {"ping": self._ping, "poll": self._poll, "ack": self._ack}
+        return {
+            "ping": self._ping,
+            "poll": self._poll,
+            "ack": self._ack,
+            "command": self._command,
+        }
 
     def _ping(self, request: protocol.Request) -> protocol.Reply:
         result: dict[str, Any] = {"pong": True}
         return protocol.accepted(request.id, result)
+
+    def _command(self, request: protocol.Request) -> protocol.Reply:
+        """Carry one Command to the port and return its judgement (ADR-0012)."""
+        try:
+            command = commands.parse(request.payload)
+        except commands.MalformedCommandError as exc:
+            return protocol.rejected(request.id, "malformed_command", str(exc))
+
+        # The SQF gateway stamps the acting side server-side and overwrites the
+        # client's, so the two normally agree and `wrong_side` is unreachable
+        # through the front door. It stays reachable for an in-process planner
+        # bug and for anything that reached the daemon without the gateway —
+        # which is the path #19's audit exists to find.
+        acting_side = request.payload.get("acting_side", command.side)
+        judgement = self.port.submit(command, acting_side=acting_side)
+        if judgement.accepted:
+            return protocol.accepted(request.id, judgement.result)
+        return protocol.rejected(request.id, judgement.code, judgement.detail)
 
     def _poll(self, request: protocol.Request) -> protocol.Reply:
         """Hand over everything the game has not acknowledged yet."""

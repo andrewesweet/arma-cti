@@ -115,3 +115,67 @@ def test_every_request_is_recorded_in_telemetry(tmp_path: Path) -> None:
         (None, None, "error"),
     ]
     assert all(record["duration_us"] >= 0 for record in records)
+
+
+def test_a_command_is_carried_inside_the_envelope_not_beside_it(tmp_path: Path) -> None:
+    # ADR-0012: transport verbs and Commands never share a namespace.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply = reply_to(
+        daemon,
+        id="c-1",
+        verb="command",
+        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+    )
+    assert reply["status"] == "ok"
+    assert reply["result"] == {"funds": 200}
+
+
+def test_an_accepted_command_leaves_its_effect_on_the_outbox(tmp_path: Path) -> None:
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply_to(
+        daemon,
+        id="c-2",
+        verb="command",
+        payload={"command": "purchase", "side": "EAST", "args": {"squad_type": "rifle"}},
+    )
+    polled = reply_to(daemon, id="c-3", verb="poll")
+    (message,) = polled["result"]["messages"]
+    assert message["message"]["effect"] == "squad_spawned"
+    assert message["message"]["side"] == "EAST"
+
+
+def test_a_malformed_command_is_a_rejection_while_a_malformed_request_is_an_error(
+    tmp_path: Path,
+) -> None:
+    # The whole typing split ADR-0012 turns on, asserted side by side: the
+    # caller being wrong is a rejection, our transport failing is an error.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    rejected = reply_to(daemon, id="c-4", verb="command", payload={"side": "WEST"})
+    errored = json.loads(daemon.handle_line("{not json"))
+    assert rejected["status"] == "rejected"
+    assert rejected["reason"]["code"] == "malformed_command"
+    assert errored["status"] == "error"
+    assert errored["error"]["class"] == "malformed_request"
+
+
+def test_an_unknown_command_is_a_rejection_while_an_unknown_verb_is_an_error(
+    tmp_path: Path,
+) -> None:
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    rejected = reply_to(
+        daemon, id="c-5", verb="command", payload={"command": "bombard", "side": "WEST"}
+    )
+    errored = reply_to(daemon, id="c-6", verb="bombard")
+    assert rejected["reason"]["code"] == "unknown_command"
+    assert errored["error"]["class"] == "unknown_verb"
+
+
+def test_a_command_claiming_a_side_the_caller_does_not_hold_is_rejected(tmp_path: Path) -> None:
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply = reply_to(
+        daemon,
+        id="c-7",
+        verb="command",
+        payload={"command": "purchase", "side": "EAST", "acting_side": "WEST"},
+    )
+    assert reply["reason"]["code"] == "wrong_side"

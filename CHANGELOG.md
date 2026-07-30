@@ -27,6 +27,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   transport envelope, not the envelope itself. The daemon judges Commands against the Funds
   ledger, one whitelisted server-side gateway admits the human UI, and every world effect rides
   the outbox for both Commanders. `CONTEXT.md` gains **Command**.
+- Command Port, daemon side: one schema source defines Commands and the effects they produce, the
+  daemon is the sole validator, and a single entry function is the only thing that moves strategic
+  state. Purchase spends Funds from a per-side ledger, queues its Squad-spawn effect on the outbox
+  rather than returning it, and reports only the remaining balance. Insufficient Funds, an unknown
+  Command, a malformed Command and commanding a side that is not yours are four distinct typed
+  rejections — as against an unknown *transport* verb or an unparseable line, which stay errors.
+- Squad prices, the starting balance and the stipend are authored in `config/economy.json`, so
+  playtest tuning is an edit rather than a code change.
 - Addon functions are declared in `CfgFunctions` and resolve by name as `cti_fnc_*` — from the
   mission, from `remoteExec` and from the addon itself. Verified on the dedicated server, which
   now loads the addon during the Arma tier.
