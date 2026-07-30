@@ -11,3 +11,10 @@ severity = "Error"
 # ADR/CLAUDE.md contract: no bare `random`, no bare `sleep` in SQF.
 # Seeded PRNG and CBA scheduler adapters only.
 options.banned = ["random", "sleep", "uiSleep"]
+# `random` is exempted here and re-banned by tools/check_sqf_bans.py, which
+# allows it in the seeded PRNG adapter alone. HEMTT 1.20.1 offers no file- or
+# line-scoped suppression — `#pragma hemtt suppress` covers preprocessor codes
+# only — and this lint's `ignore` is all-or-nothing, so a global exemption plus
+# a scoped gate is the closest thing to the suppression the contract wants.
+# `sleep` and `uiSleep` stay banned here as well as there.
+options.ignore = ["random"]

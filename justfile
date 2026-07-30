@@ -17,8 +17,11 @@ check-commits:
     cog check
 
 # -p adds the pedantic lints; -e makes findings fatal (without it the gate is a no-op).
+# The second step is the scoping HEMTT's banned_commands lint cannot express:
+# `random` in the seeded PRNG adapter and nowhere else.
 check-sqf:
     hemtt check -p -e
+    uv run python tools/check_sqf_bans.py
 
 # Python lint, format check and type check.
 check-python:
@@ -68,7 +71,8 @@ build-missions:
     done
 
 # Arma tier: server + headless client + stub daemon, running the phase-0 measurements.
-spike: build-shim
+# The addon is a launch dependency now that the mission resolves cti_fnc_* by name.
+spike: build-shim build-addon
     ./spike/run.sh
 
 # Everything that does not need Arma.

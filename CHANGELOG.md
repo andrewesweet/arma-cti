@@ -23,6 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ADR-0011: the acceptance-harness architecture — Python orchestrator, in-game gtest-style SQF
   asserts, verdict returned through the extension as structured JSON. Bohemia's `-autotest` and
   SQF-VM are rejected as test tiers, with reasons recorded.
+- Addon functions are declared in `CfgFunctions` and resolve by name as `cti_fnc_*` — from the
+  mission, from `remoteExec` and from the addon itself. Verified on the dedicated server, which
+  now loads the addon during the Arma tier.
+- Seeded PRNG adapter: the only sanctioned source of randomness in SQF. It wraps the engine's own
+  `seed random x` rather than a hand-rolled generator, and hides both of that command's silent
+  footguns — a seed truncated towards zero, and an upper bound that is included where plain
+  `random`'s is excluded. A stream is `[seed, draw count]`, so it survives a snapshot and resumes
+  where it left off. Determinism, both footguns, the integer range and serial independence are
+  asserted against the live engine, not assumed.
 
 ### Changed
 
@@ -54,6 +63,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `MANIFEST.json` is the authoritative title-to-file lookup plus the redirect alias map.
 - Lint-after-edit hook enabled for SQF, config and Rust edits — advisory only; `just check`
   remains the gate.
+- The "no bare `random`" contract is now enforced by `tools/check_sqf_bans.py`, which allows the
+  command in the seeded PRNG adapter and nowhere else. HEMTT's `banned_commands` lint is
+  all-or-nothing and HEMTT 1.20.1 has no file-scoped suppression, so `random` is exempted there
+  and re-banned here with the scope the contract actually wants. `sleep` and `uiSleep` stay banned
+  by both.
 
 ### Fixed
 

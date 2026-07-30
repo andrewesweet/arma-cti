@@ -86,6 +86,15 @@ fail() {
 [[ -x "$SERVER_BIN" ]] || fail "infra_unavailable" "server binary missing at $SERVER_BIN"
 SO="$REPO/extension/target/release/libcti_shim.so"
 [[ -f "$SO" ]] || fail "infra_unavailable" "shim not built: $SO (run: cargo build --release --manifest-path extension/Cargo.toml)"
+# HEMTT's build output is already a mod folder (<dir>/addons/*.pbo). Every
+# machine that runs mission scripts needs it loaded: CfgFunctions compiles per
+# machine, so an unloaded addon means no cti_fnc_*.
+BUILT_MOD="$REPO/.hemttout/build"
+[[ -d "$BUILT_MOD/addons" ]] || fail "infra_unavailable" "addon not built: $BUILT_MOD/addons (run: just build-addon)"
+# -mod= resolves against the game directory, not the working directory: an
+# absolute path outside it lands in the mod table as "GAME DIR (Empty)" and
+# silently loads nothing. Stage it inside the server instead.
+MOD_NAME="@cti"
 
 record "wsl_networking_mode" "$(wslinfo --networking-mode 2>/dev/null || echo unknown)"
 record "wsl_lan_ip" "$(ip -4 -o addr show scope global 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | paste -sd, -)"
@@ -123,6 +132,11 @@ rm -f "$SERVER_DIR/cti_shim.so"
 install -m 0755 "$SO" "$SERVER_DIR/cti_shim_x64.so"
 record "shim_size_bytes" "$(stat -c %s "$SO")"
 
+rm -rf "${SERVER_DIR:?}/$MOD_NAME"
+mkdir -p "$SERVER_DIR/$MOD_NAME"
+cp -r "$BUILT_MOD/addons" "$SERVER_DIR/$MOD_NAME/"
+record "addon_pbos" "$(find "$SERVER_DIR/$MOD_NAME/addons" -name '*.pbo' | wc -l)"
+
 # ---------------------------------------------------------------- stub daemon
 DAEMON_LOG="$OUT/daemon.log"
 : >"$DAEMON_LOG"
@@ -148,6 +162,7 @@ t_boot=$(now)
     exec ./arma3server_x64 \
         -config="$REPO/spike/server.cfg" \
         -cfg="$REPO/spike/basic.cfg" \
+        -mod="$MOD_NAME" \
         -port="$PORT" \
         -name=ctispike \
         -world=empty \
@@ -186,6 +201,7 @@ if ((SKIP_HC == 0)); then
         # The password must match server.cfg or the client never gets past connect.
         exec ./arma3server_x64 -client \
             -connect=127.0.0.1 \
+            -mod="$MOD_NAME" \
             -port="$PORT" \
             -password="$SERVER_PASSWORD" \
             -name=ctihc1 \

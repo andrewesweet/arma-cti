@@ -22,6 +22,25 @@ onPlayerDisconnected {
 ("mission_running tickTime=" + str diag_tickTime) call CTI_SPIKE_LOG;
 ("server_version=" + str productVersion) call CTI_SPIKE_LOG;
 
+// ---------------------------------------------------------------- addon functions
+// CfgFunctions compiles on every machine that loads the addon, so a name that
+// does not resolve here means the addon never loaded — the check that issue #9
+// asks for, on a dedicated server rather than in the editor.
+//
+// The PRNG assertions run here because SQF has no offline runtime tier
+// (ADR-0011 rejects SQF-VM), so determinism, seed truncation and the inclusive
+// upper bound can only be checked against the live engine.
+if (isNil "cti_fnc_prngSelfTest") then {
+    "FAIL class=assertion_failed addon_functions_unresolved" call CTI_SPIKE_LOG;
+} else {
+    private _prngFailures = call cti_fnc_prngSelfTest;
+    if (_prngFailures isEqualTo []) then {
+        (format ["prng_selftest=pass shim_name_fn=%1", call cti_fnc_shimName]) call CTI_SPIKE_LOG;
+    } else {
+        (format ["FAIL class=assertion_failed prng_selftest=%1", _prngFailures]) call CTI_SPIKE_LOG;
+    };
+};
+
 // ---------------------------------------------------------------- extension name
 // The engine appends _x64 on the 64-bit Linux server exactly as it does on
 // Windows, so SQF says "cti_shim" and the engine opens cti_shim_x64.so.

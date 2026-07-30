@@ -18,3 +18,28 @@ class CfgPatches
         versionAr[] = {MAJOR,MINOR,PATCHLVL,BUILD};
     };
 };
+
+// Functions Library declaration. Every function becomes cti_fnc_<name>,
+// compiled at mission start on every machine that loads the addon, so SQF is
+// addressable by name from the mission, from remoteExec and from the addon
+// itself (topics/Arma_3_Functions_Library.wiki).
+//
+// <ROOT> for an addon config is the *game* root, so `file` must carry the PBO
+// prefix in full (addons/main/$PBOPREFIX$). Each entry loads
+// <file>\fn_<name>.sqf.
+class CfgFunctions
+{
+    class cti
+    {
+        class main
+        {
+            file = "cti\addons\main\functions";
+            class shimName {};
+            class prngNew {};
+            class prngNext {};
+            class prngInt {};
+            class prngSelect {};
+            class prngSelfTest {};
+        };
+    };
+};
