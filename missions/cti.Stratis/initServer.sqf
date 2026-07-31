@@ -79,10 +79,21 @@ if (_watchFor > 0) then {
     // off an idle client says the connection held, not that the link carries a
     // player's traffic. Waits for any client, headed or headless — which one
     // turned up decides whether the load is handed over or stays server-owned.
+    //
+    // No client, no load. The loader spawns thirty-two WEST soldiers standing on
+    // the first four Objectives, which is fine as traffic for a client to carry
+    // and is not fine as a Campaign: capture is by presence, so with nobody to
+    // load it was simply handing WEST half the island. #16's probe found it,
+    // because an AI Commander is the first thing to plan against ownership it
+    // did not earn.
     [] spawn {
         private _deadline = diag_tickTime + 120;
         waitUntil { count allUsers > 0 || { diag_tickTime > _deadline } };
-        [] call cti_fnc_desyncLoad;
+        if (count allUsers > 0) then {
+            [] call cti_fnc_desyncLoad;
+        } else {
+            diag_log "CTI|desync_load skipped=no_client";
+        };
     };
 };
 
