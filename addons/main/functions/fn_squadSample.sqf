@@ -32,27 +32,9 @@ private _seen = createHashMap;
     if (!isNull _group) then {
         private _living = { alive _x } count units _group;
         if (_living > 0) then {
-            private _where = getPosATL leader _group;
-            private _at = "";
-
-            {
-                (_x get "position") params ["_east", "_north"];
-                if (_where distance2D [_east, _north, 0] <= (_x get "capture_radius")) exitWith {
-                    _at = _x get "id";
-                };
-            } forEach _objectives;
-
-            if (_at isEqualTo "") then {
-                // Bases have no authored radius — they are not captured, only
-                // lost to Decapitation — so a Squad counts as at its Base when
-                // it is close enough to be standing in it.
-                {
-                    (_x get "position") params ["_east", "_north"];
-                    if (_where distance2D [_east, _north, 0] <= 150) exitWith {
-                        _at = _x get "id";
-                    };
-                } forEach _bases;
-            };
+            // Open ground between places is an honest answer here, so no
+            // nearest-place fallback: a Squad that is marching is marching.
+            private _at = [getPosATL leader _group, _objectives, _bases] call cti_fnc_placeOf;
 
             _seen set [_squadId, createHashMapFromArray [["size", _living], ["at", _at]]];
         };

@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from cti_daemon import campaign, commands, economy, manifest, observation, protocol
+from cti_daemon import campaign, commands, contacts, economy, manifest, observation, protocol
 from cti_daemon.outbox import Outbox, UnknownSequenceError
 from cti_daemon.port import CommandPort
 from cti_daemon.telemetry import Telemetry
@@ -127,6 +127,7 @@ class Daemon:
             raise protocol.MalformedRequestError(detail, request.id)
 
         lost = self._reconcile(request)
+        self._sight(request, float(at_time))
         paid = self.campaign.observe(float(at_time), presence)
         for payout in paid:
             self._telemetry.record("income", at=at_time, paid=payout)
@@ -151,9 +152,17 @@ class Daemon:
         there is no picture carrying both to write (#27) — an operator wanting
         the whole board reads two rows. The held copy is a comparison only —
         telemetry is never read back as campaign state (ADR-0003).
+
+        A Contact's `age` is dropped from the comparison for the same reason
+        `at` is: both are clock readings that advance on their own, and a
+        picture whose only change is that time passed has not moved.
         """
         document = observation.serialise(self.campaign.observation(side))
         moment = {key: value for key, value in document.items() if key != "at"}
+        moment["contacts"] = [
+            {key: value for key, value in contact.items() if key != "age"}
+            for contact in moment.get("contacts", [])
+        ]
         if moment == self._last_observation.get(side):
             return
         self._last_observation[side] = moment
@@ -185,6 +194,83 @@ class Daemon:
                 raise protocol.MalformedRequestError(detail, request.id)
             reported[squad_id] = (size, at)
         return self.campaign.roster.reconcile(reported)
+
+    def _sight(self, request: protocol.Request, at_time: float) -> None:
+        """Fold what each side's leaders saw into that side's Contacts (#28).
+
+        Keyed by the side that did the observing, never by the side observed:
+        the payload has no place to name an enemy Squad, so a Contact traceable
+        to one cannot be built out of what arrives here.
+
+        Absent entirely, the report says nothing about sightings. That matters
+        more here than it does for Squads — `observed` is the removal rule, so
+        reading silence as observed absence would clear the whole map.
+
+        A malformed report is refused rather than folded in as far as it parses.
+        A Commander cannot tell an empty picture from an unreadable one, and one
+        of those is a reason to attack.
+        """
+        seen_by_side = request.payload.get("contacts")
+        if seen_by_side is None:
+            return
+        if not isinstance(seen_by_side, dict):
+            detail = "`contacts` must map each side to what its leaders saw"
+            raise protocol.MalformedRequestError(detail, request.id)
+
+        for side, report in seen_by_side.items():
+            if side not in commands.SIDES:
+                # `Contacts` keys on any string it is handed, so a mistyped side
+                # would file a picture no observation ever reads and lose the
+                # sighting without saying anything.
+                detail = f"`contacts.{side}` names no side that is playing"
+                raise protocol.MalformedRequestError(detail, request.id)
+            if not isinstance(report, dict):
+                detail = f"`contacts.{side}` must be an object"
+                raise protocol.MalformedRequestError(detail, request.id)
+            self.campaign.contacts.report(
+                side,
+                at_time=at_time,
+                seen=self._sightings(request, side, report),
+                observed=self._observed(request, side, report),
+            )
+
+    def _sightings(
+        self, request: protocol.Request, side: str, report: dict[str, Any]
+    ) -> tuple[contacts.Sighting, ...]:
+        """Read one side's sightings out of its report."""
+        seen = report.get("seen", [])
+        if not isinstance(seen, list):
+            detail = f"`contacts.{side}.seen` must be a list of sightings"
+            raise protocol.MalformedRequestError(detail, request.id)
+
+        sightings: list[contacts.Sighting] = []
+        for sighting in seen:
+            if not isinstance(sighting, dict):
+                detail = f"`contacts.{side}.seen` holds something that is not a sighting"
+                raise protocol.MalformedRequestError(detail, request.id)
+            at = sighting.get("at")
+            kind = sighting.get("kind")
+            age = sighting.get("age")
+            if (
+                not isinstance(at, str)
+                or not isinstance(kind, str)
+                or not isinstance(age, (int, float))
+                or isinstance(age, bool)
+            ):
+                detail = f"a `contacts.{side}` sighting needs a place `at`, a `kind` and an `age`"
+                raise protocol.MalformedRequestError(detail, request.id)
+            sightings.append(contacts.Sighting(at=at, kind=kind, age=float(age)))
+        return tuple(sightings)
+
+    def _observed(
+        self, request: protocol.Request, side: str, report: dict[str, Any]
+    ) -> tuple[str, ...]:
+        """Read the places one side's leaders actually looked at."""
+        observed = report.get("observed", [])
+        if not isinstance(observed, list) or not all(isinstance(place, str) for place in observed):
+            detail = f"`contacts.{side}.observed` must be a list of place names"
+            raise protocol.MalformedRequestError(detail, request.id)
+        return tuple(observed)
 
     def _command(self, request: protocol.Request) -> protocol.Reply:
         """Carry one Command to the port and return its judgement (ADR-0012)."""

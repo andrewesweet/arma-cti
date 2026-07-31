@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `targetsQuery`'s side argument ranks results, it does not filter them: asking a NATO leader for
+  east came back with seven of its own riflemen at accuracy 0.01 and no enemy on the list at all.
+  The wiki says so in its first line — "targets, known to the enquirer (including own troops),
+  where the accuracy coefficient reflects how close the result matches the query" — and the
+  Contact design read past it. Sightings are now selected on the *perceived* side the engine
+  returns with each result, which keeps them perceptions rather than ground truth. Found in-world
+  by `spike/probes/contacts.sqf`; no unit test could have caught it.
+
 ### Added
 
 - Founding decisions: domain glossary, ADRs, MVP scope, and the agent development process.
@@ -68,6 +78,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Telemetry carries each side's picture whenever it moves and not otherwise, so tailing it shows
     the moment ownership or Funds changed instead of a hundred rows saying they had not. A row per
     side, because there is no picture carrying both to write.
+- **Contacts**: a Commander now learns something of the enemy, and only what its own squad
+  leaders saw. One Contact per place rather than per enemy Squad — an Objective or Base, carrying
+  an echelon band (`team` 1–3, `squad` 4–8, `platoon` 9–24, `company` 25+) read off the *observed*
+  count, a posture from the heaviest vehicle seen, any notable assets, and how long ago it was
+  seen. Seeing three of eight reports a team, so a Commander is left under-informed rather than
+  over-, and several Squads in one place read as a platoon without naming which ones. A Contact
+  carries no enemy Squad id and no Order, and cannot: the sighting it is made of never had one.
+  - The engine's own knowledge model is the source, through `targetsQuery` — shared instantly
+    within a group, decaying to nothing after 120 s without sight. No visibility rule of ours, and
+    no correcting it against ground truth: what a leader made out is what gets reported, so an
+    unrecognised contact is honestly unidentified. Classification is `BIS_fnc_objectType`'s own
+    vocabulary rather than a table of ours. Armour and air are out of MVP, so `foot` and
+    `motorised`, `AT` and `MG` are what the game can currently produce; the rest of the vocabulary
+    is defined so the schema does not churn when Phase 4 adds vehicles.
+  - Memory is keyed by place, so it is bounded by the island — ten entries on Stratis — and needs
+    no ageing rule: a newer sighting supersedes an older one. The one removal rule is that
+    **observing a place and finding no enemy clears its Contact**. Absence of contact is not
+    evidence; observed absence is. So a Contact outlives the engine forgetting it, with its age
+    growing, which is what a Commander planning at the strategic level needs.
+  - A crowded Stratis now encodes to 2,939 bytes against the 10,240-byte cap — 7,301 bytes of
+    headroom, about 99 bytes a Contact. Contacts are bounded by the map rather than by enemy force
+    size, so ten is the ceiling however much the enemy buys. The server's public reply is
+    unchanged at 222 bytes and carries no Contacts at all.
+  - Measured in-world at the cadence it runs: one `targetsQuery` per squad leader costs 0.0097 ms
+    with 13 targets known, or 0.31 ms across the 32 leaders a full Campaign fields, against a
+    report every 5 s. The whole sampler is 0.35 ms with two leaders. The wiki's CPU-intensive
+    warning is real but nowhere near this scale, so the cadence stands as designed and no
+    sampling-versus-frequency trade needed making.
 - Squads take **Orders**, and an Order is standing rather than a waypoint consumed and forgotten.
   A Commander tells one Squad to Capture an Objective, Defend one, or fall back into Reserve, and
   the three are distinct in the world: Capture searches the ground it is sent to, Defend goes

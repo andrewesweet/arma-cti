@@ -330,6 +330,98 @@ def test_a_squad_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> Non
     assert reply["error"]["class"] == "malformed_request"
 
 
+def test_what_a_sides_leaders_saw_becomes_that_sides_contacts(tmp_path: Path) -> None:
+    # #28's return leg: the world reports the engine's own knowledge model,
+    # keyed by the side that did the observing, and the daemon bands it.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    observe(
+        daemon,
+        "o-15",
+        contacts={
+            "WEST": {
+                "seen": [{"at": "girna", "kind": "Infantry", "age": 0} for _ in range(5)],
+                "observed": ["girna"],
+            }
+        },
+    )
+
+    (contact,) = daemon.campaign.observation("WEST").contacts
+    assert (contact.at, contact.echelon, contact.posture) == ("girna", "squad", "foot")
+    assert daemon.campaign.observation("EAST").contacts == ()
+
+
+def test_a_report_that_says_nothing_about_contacts_leaves_the_picture_alone(
+    tmp_path: Path,
+) -> None:
+    # Absent is not empty here either, and the difference matters more than it
+    # does for Squads: treating silence as observed absence would clear every
+    # Contact on the map on any report that carried no sightings.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    observe(
+        daemon,
+        "o-16",
+        contacts={
+            "WEST": {"seen": [{"at": "girna", "kind": "Infantry", "age": 0}], "observed": ["girna"]}
+        },
+    )
+    observe(daemon, "o-17", presence={})
+    assert [contact.at for contact in daemon.campaign.observation("WEST").contacts] == ["girna"]
+
+
+def test_a_contact_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> None:
+    # A malformed report is a refusal rather than a silently empty picture: a
+    # Commander cannot tell "nobody is out there" from "the report was junk",
+    # and one of those is a reason to attack.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply = reply_to(
+        daemon,
+        id="o-18",
+        verb="observe",
+        payload={"time": 1, "contacts": {"WEST": {"seen": [{"at": "girna"}], "observed": []}}},
+    )
+    assert reply["error"]["class"] == "malformed_request"
+
+
+def test_a_side_nobody_is_playing_has_no_contacts_to_report(tmp_path: Path) -> None:
+    # `Contacts` would key on any string it is handed, so a mistyped side would
+    # file a picture no observation ever reads and lose the sighting in silence.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply = reply_to(
+        daemon,
+        id="o-19",
+        verb="observe",
+        payload={"time": 1, "contacts": {"west": {"seen": [], "observed": []}}},
+    )
+    assert reply["error"]["class"] == "malformed_request"
+
+
+def test_a_contact_growing_older_is_not_the_picture_moving(tmp_path: Path) -> None:
+    # A Contact's age is a clock reading, like `at`: it advances on its own
+    # every report, without anything having happened. Comparing on it would
+    # write a row per report and bury the moment the picture actually moved,
+    # which is the whole point of writing it out only when it changes.
+    log = tmp_path / "telemetry.jsonl"
+    daemon = Daemon(telemetry_path=log)
+    observe(
+        daemon,
+        "o-20",
+        time=10,
+        contacts={
+            "WEST": {"seen": [{"at": "girna", "kind": "Infantry", "age": 0}], "observed": ["girna"]}
+        },
+    )
+    # The clock has to move for the Contact to age, which is exactly the case
+    # that would otherwise write a row every five seconds for as long as anyone
+    # remembers seeing anything.
+    for request_id, at_time in (("o-21", 15), ("o-22", 20), ("o-23", 25)):
+        observe(daemon, request_id, time=at_time, presence={})
+    assert daemon.campaign.observation("WEST").contacts[0].age == 15
+
+    rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+    written = [row for row in rows if row["event"] == "observation"]
+    assert [row["side"] for row in written] == ["WEST", "EAST"]
+
+
 def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
     tmp_path: Path,
 ) -> None:

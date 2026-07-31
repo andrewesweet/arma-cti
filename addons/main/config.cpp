@@ -52,7 +52,9 @@ class CfgFunctions
             class effectApply {};
             class effectPump {};
             class presenceSample {};
+            class placeOf {};
             class squadSample {};
+            class contactSample {};
             class presenceReport {};
             class objectiveOwnerSet {};
             class orderApply {};

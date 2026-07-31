@@ -17,7 +17,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from cti_daemon import campaign, economy, manifest, observation, port, protocol
+from cti_daemon import campaign, contacts, economy, manifest, observation, port, protocol
 from cti_daemon.commands import Command
 from cti_daemon.outbox import Outbox
 
@@ -31,6 +31,16 @@ SQUAD_VIEWS = st.builds(
     order=st.sampled_from(("capture", "defend", "reserve")),
     objective=st.text(max_size=24),
     at=st.text(max_size=24),
+)
+CONTACTS = st.builds(
+    contacts.Contact,
+    at=st.text(min_size=1, max_size=24),
+    echelon=st.sampled_from(("team", "squad", "platoon", "company")),
+    posture=st.sampled_from(contacts.POSTURE_ORDER),
+    assets=st.lists(st.sampled_from([asset for asset, _ in contacts.ASSETS]), max_size=6).map(
+        tuple
+    ),
+    age=st.floats(min_value=0, max_value=1e6, allow_nan=False, allow_infinity=False),
 )
 AT_TIMES = st.floats(min_value=0, max_value=1e6, allow_nan=False, allow_infinity=False)
 OWNERS = st.dictionaries(
@@ -47,6 +57,7 @@ OBSERVATIONS = st.one_of(
         for_side=st.sampled_from(("WEST", "EAST")),
         funds=st.integers(),
         squads=st.lists(SQUAD_VIEWS, max_size=12).map(tuple),
+        contacts=st.lists(CONTACTS, max_size=10).map(tuple),
     ),
 )
 
@@ -142,6 +153,56 @@ def contested() -> campaign.Campaign:
     return world
 
 
+def test_an_observation_carries_what_that_side_has_seen_of_the_enemy() -> None:
+    # #28: the enemy-shaped hole #27 left is filled by Contacts, per place.
+    world = contested()
+    world.contacts.report(
+        "WEST",
+        at_time=world.elapsed,
+        seen=(contacts.Sighting(at="girna", kind="Infantry", age=0.0),) * 5,
+        observed=("girna",),
+    )
+
+    (contact,) = world.observation("WEST").contacts
+    assert contact.at == "girna"
+    assert contact.echelon == "squad"
+    assert world.observation("EAST").contacts == ()
+
+
+def test_a_contact_cannot_be_traced_to_the_squad_it_was_made_of() -> None:
+    # An acceptance criterion phrased as asserted rather than absent: EAST-1 is
+    # standing on girna and is what WEST's leaders saw, and the document WEST
+    # holds still has no way to say so. Echelon is a band and the sighting
+    # carried no id, so there is nothing for a later field to reconstruct from.
+    world = contested()
+    world.contacts.report(
+        "WEST",
+        at_time=world.elapsed,
+        seen=(contacts.Sighting(at="girna", kind="Infantry", age=0.0),) * 5,
+        observed=("girna",),
+    )
+
+    document = observation.serialise(world.observation("WEST"))
+    (rendered,) = document["contacts"]
+    assert set(rendered) == {"at", "echelon", "posture", "assets", "age"}
+    assert "EAST-1" not in json.dumps(document)
+    assert [squad.id for squad in world.roster.roll("EAST")] == ["EAST-1"]
+
+
+def test_the_public_picture_carries_nobodys_contacts() -> None:
+    # The server paints ownership markers and is not a Commander (#27), so a
+    # sighting reaching it would put one side's intelligence on a wire both can
+    # read.
+    world = contested()
+    world.contacts.report(
+        "WEST",
+        at_time=world.elapsed,
+        seen=(contacts.Sighting(at="girna", kind="Infantry", age=0.0),),
+        observed=("girna",),
+    )
+    assert set(observation.serialise(world.observation())) == {"at", "owners"}
+
+
 def test_a_commander_learns_nothing_of_the_enemys_order_of_battle() -> None:
     # #27, the whole point: not that the enemy happens to be absent from this
     # sample, but that the document a Commander holds says nothing about EAST
@@ -216,6 +277,22 @@ def crowded() -> campaign.Campaign:
             for squad in world.roster.roll(side)
         }
     )
+    # A Contact at every place on the map — the ceiling, because Contacts are
+    # keyed by place and Stratis has eight Objectives and two Bases. The enemy
+    # could field an army and there would still be ten.
+    places = [objective.id for objective in world.map_manifest.objectives]
+    places += [base.id for base in world.map_manifest.bases]
+    for side in ("WEST", "EAST"):
+        world.contacts.report(
+            side,
+            at_time=world.elapsed,
+            seen=tuple(
+                contacts.Sighting(at=place, kind=kind, age=0.0)
+                for place in places
+                for kind in ("Infantry",) * 24 + ("AT", "MG", "Tank", "Helicopter")
+            ),
+            observed=tuple(places),
+        )
     return world
 
 
@@ -232,11 +309,15 @@ def test_a_crowded_stratis_observation_fits_inside_one_callextension_return() ->
     )
 
     assert len(world.observation("WEST").squads) == 16
+    # Every place on the map carrying a Contact, which is the ceiling: they are
+    # keyed by place, so they are bounded by the island rather than by how much
+    # the enemy bought. That is why #26's Altis worry eased.
+    assert len(world.observation("WEST").contacts) == 10
     assert len(encoded) < observation.RETURN_CAP_BYTES, (
         f"{len(encoded)} bytes leaves no headroom under {observation.RETURN_CAP_BYTES}"
     )
     # Recorded rather than merely asserted: the number is the headroom later
     # fields get to spend, and a bare "it fits" would hide it shrinking. #28's
-    # Contacts are what spend it next.
+    # Contacts have spent theirs; #18's map UI is what reads them.
     headroom = observation.RETURN_CAP_BYTES - len(encoded)
     assert headroom > 2_000, f"only {headroom} bytes of headroom left"

@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
 from cti_daemon.commands import SIDES, Effect, serialise_effect
+from cti_daemon.contacts import Contacts
 from cti_daemon.observation import PUBLIC, Observation, SquadView
 from cti_daemon.squads import Roster
 
@@ -50,6 +51,10 @@ class Campaign:
     # Ownership, Funds and Squads are one playthrough's strategic state, so they
     # sit behind one object rather than three the caller has to keep in step.
     roster: Roster = field(default_factory=Roster)
+    # What each side has seen of the other (#28), for the same reason: it is
+    # one playthrough's strategic state, and a Commander's picture of the enemy
+    # has to be as private as its own roster.
+    contacts: Contacts = field(default_factory=Contacts)
     elapsed: float = 0.0
     _states: dict[str, ObjectiveState] = field(default_factory=dict)
     _since_payout: float = 0.0
@@ -115,6 +120,10 @@ class Campaign:
                 )
                 for squad in self.roster.roll(for_side)
             ),
+            # Aged to the moment this is being asked, so a Contact nobody has
+            # looked at since grows older rather than vanishing when the
+            # engine's own knowledge model forgets it.
+            contacts=self.contacts.of(for_side, self.elapsed),
         )
 
     def observe(self, at_time: float, presence: dict[str, list[str]]) -> list[dict[str, int]]:

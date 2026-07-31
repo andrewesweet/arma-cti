@@ -31,6 +31,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Final
 
+from cti_daemon.contacts import Contact
+
 # What a `callExtension` return may carry in one call (ADR-0004). An observation
 # that does not fit is an observation to make smaller, never a reason to invent
 # a chunking protocol in passing — Phase 2 decides chunking against the snapshot
@@ -73,6 +75,13 @@ class Observation:
     funds: int | None = None
     # That side's own Squads.
     squads: tuple[SquadView, ...] = ()
+    # What that side has seen of the other (#28). There is no `ContactView`
+    # beside `SquadView` because there is nothing for one to strip: a
+    # `SquadView` exists to drop a Squad's side, and a Contact is assembled
+    # already carrying no enemy identity at all. A field-for-field copy would
+    # be a second definition of the same thing and a translation step whose
+    # only job is to be the identity.
+    contacts: tuple[Contact, ...] = ()
 
     def __post_init__(self) -> None:
         """Refuse a picture belonging to nobody that carries somebody's secrets.
@@ -80,8 +89,8 @@ class Observation:
         The projection is the point of this type (#27), so a mismatch is a bug
         to raise on rather than a field to leave empty and hope about.
         """
-        if self.for_side == PUBLIC and (self.funds is not None or self.squads):
-            message = "the public picture carries no side's Funds or Squads"
+        if self.for_side == PUBLIC and (self.funds is not None or self.squads or self.contacts):
+            message = "the public picture carries no side's Funds, Squads or Contacts"
             raise ValueError(message)
         if self.for_side != PUBLIC and self.funds is None:
             message = f"{self.for_side}'s picture must carry its own Funds"
@@ -105,6 +114,16 @@ def serialise(observation: Observation) -> dict[str, Any]:
             "at": squad.at,
         }
         for squad in observation.squads
+    ]
+    document["contacts"] = [
+        {
+            "at": contact.at,
+            "echelon": contact.echelon,
+            "posture": contact.posture,
+            "assets": list(contact.assets),
+            "age": contact.age,
+        }
+        for contact in observation.contacts
     ]
     return document
 
@@ -131,5 +150,15 @@ def parse(document: dict[str, Any]) -> Observation:
                 at=squad["at"],
             )
             for squad in document["squads"]
+        ),
+        contacts=tuple(
+            Contact(
+                at=contact["at"],
+                echelon=contact["echelon"],
+                posture=contact["posture"],
+                assets=tuple(contact["assets"]),
+                age=contact["age"],
+            )
+            for contact in document["contacts"]
         ),
     )
