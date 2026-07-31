@@ -1,7 +1,16 @@
 // #28 in-world probe: WEST reports what it saw of EAST, and nothing of who EAST is.
 //
-// Run with `just probe spike/probes/contacts.sqf`. Appended to the generated
+// Run with `just probe spike/probes/contacts.sqf 240`. Appended to the generated
 // harness at bring-up, never packed into the mission.
+//
+// The window is raised above the default 150 s because acquisition is a natural
+// process with a wide spread, and it is this probe's setup rather than its
+// subject. At 150 m the first cut of this probe found six men in seconds on two
+// runs and not at all within 90 s on two others. The answer to that was not a
+// longer wait at the same range — a flaky probe waited out is still flaky — but
+// the geometry the decay probe had already shown to be reliable: closer, and
+// with both Squads watching. The deadline is sized to match, and the hold to the
+// deadline.
 //
 // Both sides present, because that is what the acceptance criterion asks for
 // and what no unit test can stand in for: the engine's own knowledge model is
@@ -63,21 +72,45 @@
     // the count is the assertion.
     private _planted = 6;
     private _east = createGroup [east, true];
-    private _muster = _leader getRelPos [150, 0];
+    private _muster = _leader getRelPos [100, 0];
     for "_i" from 1 to _planted do {
         _east createUnit ["O_Soldier_F", _muster, [], 15, "FORM"];
     };
-    { _x setCombatMode "BLUE" } forEach [_east, group _leader];
-    { _x setBehaviour "AWARE" } forEach [_east, group _leader];
+    // Observers woken, enemy held still. A Squad in Reserve is at the engine's
+    // default behaviour with its weapons down and is a poor witness — see
+    // `spike/probes/contact-decay.sqf`, which sat at `knows_east=0` for 120 s
+    // until its observers were put in AWARE. That is the posture a Squad under a
+    // Capture or Defend Order is in anyway. The planted men may not fire back
+    // and may not die, because the head count is what the assertions are made of.
+    { _x setBehaviour "AWARE" } forEach values _squads;
+    _east setCombatMode "BLUE";
+    { _x allowDamage false } forEach units _east;
     diag_log format ["CTI|contacts_probe_planted side=EAST units=%1 at=%2 date=%3",
         count units _east, mapGridPosition _muster, date];
 
     // Wait for the engine to acquire them. A deadline rather than a `reveal`:
     // revealing would hand the knowledge model the answer, and the knowledge
     // model is the thing under test.
-    _deadline = diag_tickTime + 90;
+    // Walked round the compass until somebody sees them, for the reason
+    // `spike/probes/contact-decay.sqf` records: a bearing off the leader's
+    // facing is a guess about line of sight, and on an airfield it lands behind
+    // a hangar often enough to matter. This arranges for there to be something
+    // to see; the engine still decides whether it sees it.
+    private _bearings = [0, 45, 90, 135, 180, 225, 270, 315];
+    private _attempt = 0;
+    private _nextMove = 0;
+
+    _deadline = diag_tickTime + 150;
     private _report = createHashMap;
     waitUntil {
+        if (diag_tickTime > _nextMove) then {
+            _nextMove = diag_tickTime + 15;
+            private _where = _leader getRelPos [100, _bearings select (_attempt mod 8)];
+            {
+                _x setPosATL [(_where # 0) + (_forEachIndex * 3), (_where # 1), 0];
+            } forEach units _east;
+            _attempt = _attempt + 1;
+        };
         _report = (call cti_fnc_contactSample) getOrDefault ["WEST", createHashMap];
         count (_report getOrDefault ["seen", []]) > 0 || { diag_tickTime > _deadline }
     };

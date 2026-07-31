@@ -9,13 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- `targetsQuery`'s side argument ranks results, it does not filter them: asking a NATO leader for
-  east came back with seven of its own riflemen at accuracy 0.01 and no enemy on the list at all.
-  The wiki says so in its first line — "targets, known to the enquirer (including own troops),
-  where the accuracy coefficient reflects how close the result matches the query" — and the
-  Contact design read past it. Sightings are now selected on the *perceived* side the engine
-  returns with each result, which keeps them perceptions rather than ground truth. Found in-world
-  by `spike/probes/contacts.sqf`; no unit test could have caught it.
+- None of `targetsQuery`'s arguments can be relied on to select anything, and the Contact design
+  was written as though all of them could. Three separate findings, each from an in-world probe
+  run and none reachable from a unit test:
+  - **The side argument ranks rather than filters.** Asking a NATO leader for east came back with
+    seven of its own riflemen at accuracy 0.01 and no enemy on the list at all. The wiki says so
+    in its first line — "targets, known to the enquirer (including own troops), where the accuracy
+    coefficient reflects how close the result matches the query" — the arguments are query terms
+    scored into the accuracy the results are sorted by, not a filter.
+  - **The engine does not decay knowledge out of the query.** What decays after 120 s without
+    sight is `knowsAbout`; `targetsQuery` goes on returning the memory with a growing age, 132 s
+    after the observers had withdrawn 3 km. Unbounded, a leader standing on a place would report a
+    ten-minute-old memory of men who had left, and observed absence — the only rule that clears a
+    Contact — could never be observed.
+  - **The max-age argument filters away targets in plain sight.** The obvious fix for the above
+    broke it the other way: a target's age is documented as possibly negative, and a negative age
+    does not survive the bound, so six men at 100 m came back as one — the only one the engine
+    happened to report at a positive age.
+  - So the query asks for the widest answer available and side and age are both selected again on
+    what it actually returned. Sightings stay perceptions rather than ground truth: the side is the
+    one the observer believes, so a man wrongly taken for the enemy is reported as one.
 
 ### Added
 

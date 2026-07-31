@@ -15,16 +15,24 @@
  * unidentified. Correcting it against ground truth would be the
  * perfect-information lever ADR-0012 rejects.
  *
- * Its side argument RANKS, it does not filter. The wiki says so in the first
- * line — "targets, known to the enquirer (including own troops), where the
- * accuracy coefficient reflects how close the result matches the query" — and
- * #28's design read past it. Asking for east and reading the list back gave
- * seven of our own riflemen at accuracy 0.01, in-world, with no enemy on it at
- * all (`spike/probes/contacts.sqf`). So the query is still asked for the enemy,
- * because the ranking is worth having, and the returned `targetSide` is what
- * actually selects. That is still a perception rather than the truth: it is the
- * side the observer believes the target to be, so a man wrongly taken for the
- * enemy is reported as one, which is the honest answer.
+ * Do not trust its arguments to select anything. Three probe runs went on
+ * finding new ways for them not to:
+ *
+ * - `targetSide` ranks rather than filters. The first line of the wiki says as
+ *   much — "targets, known to the enquirer (including own troops), where the
+ *   accuracy coefficient reflects how close the result matches the query" — and
+ *   asking a NATO leader for east returned seven of its own riflemen at accuracy
+ *   0.01, with no enemy on the list at all.
+ * - `targetMaxAge` does filter, and filters away more than it says: a target's
+ *   age is documented as possibly negative, and a negative age does not survive
+ *   the bound. Six men standing in plain sight at 100 m came back as one, the
+ *   only one of them the engine happened to report at a positive age.
+ *
+ * So both are asked for the widest answer available and everything is selected
+ * again here, on what the command actually returned. Selecting on the returned
+ * `targetSide` keeps the data a perception rather than the truth: it is the side
+ * the observer believes the target to be, so a man wrongly taken for the enemy
+ * is reported as one, which is the honest answer.
  *
  * Two lists per side, and the second is not the first:
  *
@@ -46,6 +54,19 @@
  * Return Value: <HASHMAP> side name -> HASHMAP of `seen` and `observed`
  */
 if (!isServer) exitWith { createHashMap };
+
+// How old a memory may be and still count as something a leader currently
+// knows. #28 has it that the engine's knowledge model decays to nothing after
+// 120 s without sight, and it does not: what decays is `knowsAbout`, while
+// `targetsQuery` goes on returning the memory with a growing age for as long as
+// it is held — 132 s after the last sighting, in-world, with the men long out of
+// sight. Unbounded, a leader standing on a place would report a ten-minute-old
+// memory of men who had left, and the daemon's removal rule could never fire,
+// because observed absence would never be observed. So the bound the design
+// assumed is applied explicitly, at the number it assumed. Persistence past it
+// is the daemon's memory, which is where #28 wanted it: a Contact outlives the
+// sighting rather than the sighting outliving itself.
+private _currentKnowledgeSecs = 120;
 
 private _map = missionNamespace getVariable ["cti_map", createHashMap];
 private _objectives = _map getOrDefault ["objectives", []];
@@ -83,16 +104,22 @@ private _report = createHashMap;
                 {
                     _x params ["", "_target", "_targetSide", "_targetType", "_targetPosition", "_targetAge"];
                     private _id = netId _target;
-                    if (_targetSide isEqualTo _enemy) then {
+                    // A negative age is documented and means seen ahead of the
+                    // query; the daemon reads age as "seconds ago", so clamp
+                    // rather than let a Contact be born in the future.
+                    private _age = _targetAge max 0;
+                    if (_targetSide isEqualTo _enemy && { _age <= _currentKnowledgeSecs }) then {
                         private _held = _byTarget getOrDefault [_id, []];
-                        // A negative age is documented and means seen ahead of
-                        // the query; the daemon reads age as "seconds ago", so
-                        // clamp rather than let a Contact be born in the future.
-                        private _age = _targetAge max 0;
                         if (_held isEqualTo [] || { _age < (_held # 1) }) then {
                             _byTarget set [_id, [_targetType, _age, _targetPosition]];
                         };
                     };
+                    // Asked for any age on purpose. Handing the command the
+                    // bound instead drops every target whose age is negative,
+                    // which is most of the ones in plain sight: six men at 100 m
+                    // came back as one, the only one of them the engine happened
+                    // to report at a positive age. The bound is applied above,
+                    // to the age the command returns.
                 } forEach (_leader targetsQuery [objNull, _enemy, "", [], 0]);
             };
         };

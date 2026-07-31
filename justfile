@@ -100,6 +100,15 @@ spike: build-shim build-addon
 # A probe must end by logging a line containing `probe_done`, because the run
 # waits for it: a probe still working when the hold window closes is a timeout,
 # not a pass.
+#
+# `hold` is the window, and a probe whose subject genuinely takes longer than the
+# default may raise it — `just probe spike/probes/contact-decay.sqf 300` waits out
+# the engine's 120 s knowledge decay, which no shorter window can contain. State
+# the reason in the probe's own header, because the distinction that matters is
+# the one the failure-class table draws: sizing the window to what is being
+# measured is not the same as extending a timeout until a flaky probe passes, and
+# only the first is allowed. A probe that fails at 150 s and passes at 300 s
+# without its subject having grown that long is a synchronisation bug to fix.
 probe file="" hold="150": build-shim build-addon
     #!/usr/bin/env bash
     set -euo pipefail
