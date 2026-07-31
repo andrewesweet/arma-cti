@@ -33,8 +33,16 @@ The unit of command. Purchased whole, ordered whole; leadership passes to the en
 _Avoid_: Group (reserved for the engine's group concept), team, fireteam
 
 **Order**:
-A Commander's standing instruction to one Squad: Capture(Objective), Defend(Objective), or Reserve. An Order survives leader death. A player-led Squad receives Orders but compliance is voluntary.
+A Commander's standing instruction to one Squad, naming a Place or nothing: Capture(Objective), Defend(Objective or own Base), Assault(enemy Base), or Reserve. An Order survives leader death. A player-led Squad receives Orders but compliance is voluntary.
 _Avoid_: Task (reserved for the engine task system), waypoint, directive
+
+**Assault**:
+Order kind: close with the enemy Base and destroy its HQ structure — Decapitation as an Order. Only the enemy Base is assaultable; an Objective is captured, never assaulted.
+_Avoid_: attack, raid, rush; destroy (reserved for the engine's Destroy waypoint)
+
+**Place**:
+Any authored ground an Order or a coarse position can name: an Objective or a Base, by its manifest id. Nothing else is a Place — the open ground between them has no name.
+_Avoid_: location, position (reserved for coordinates), target (reserved for the engine's targeting)
 
 **Observation**:
 The strategic picture at one moment as **one** Commander may know it: every Objective's owner, that Commander's own Funds, and each of its own Squads with composition type, member count, standing Order and coarse position. What it knows of the enemy is Contacts, never roster entries. Assembled by the daemon from what it decides plus the two facts only the world can see — how many of a Squad are standing, and where it is. Deliberately the same set the Campaign snapshot persists (ADR-0008): nothing tactical, and places rather than coordinates.
@@ -53,7 +61,7 @@ Small flat Funds amount paid to each side every income tick regardless of Object
 _Avoid_: Basic income, allowance
 
 **Base**:
-A side's fixed, pre-placed home location. Site of Purchase, Reinforce, and free rearm; its destruction is a loss condition.
+A side's fixed, pre-placed home location. Site of Purchase, Reinforce, and free rearm; its destruction is a loss condition. Addressable by Order — Defend by its own side, Assault by the enemy — yet not an Objective: it has no owner by presence and pays no income.
 _Avoid_: HQ, main base, spawn
 
 **Purchase**:
