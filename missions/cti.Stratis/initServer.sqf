@@ -80,20 +80,25 @@ if (_watchFor > 0) then {
     // player's traffic. Waits for any client, headed or headless — which one
     // turned up decides whether the load is handed over or stays server-owned.
     //
-    // No client, no load. The loader spawns thirty-two WEST soldiers standing on
-    // the first four Objectives, which is fine as traffic for a client to carry
-    // and is not fine as a Campaign: capture is by presence, so with nobody to
-    // load it was simply handing WEST half the island. #16's probe found it,
-    // because an AI Commander is the first thing to plan against ownership it
-    // did not earn.
-    [] spawn {
-        private _deadline = diag_tickTime + 120;
-        waitUntil { count allUsers > 0 || { diag_tickTime > _deadline } };
-        if (count allUsers > 0) then {
-            [] call cti_fnc_desyncLoad;
-        } else {
-            diag_log "CTI|desync_load skipped=no_client";
+    // The loader spawns thirty-two WEST soldiers standing on the first four
+    // Objectives, which is fine as traffic for a client to carry and is not fine
+    // as a Campaign: capture is by presence, so it hands WEST half the island.
+    // #16's probe found it running with no client at all; #17 brings a headless
+    // client up on purpose, which would make it run every time. So it is now
+    // asked for explicitly, and a run that has not asked plays a Campaign
+    // nobody was given.
+    if ((missionNamespace getVariable ["CTI_DESYNC_LOAD", 0]) > 0) then {
+        [] spawn {
+            private _deadline = diag_tickTime + 120;
+            waitUntil { count allUsers > 0 || { diag_tickTime > _deadline } };
+            if (count allUsers > 0) then {
+                [] call cti_fnc_desyncLoad;
+            } else {
+                diag_log "CTI|desync_load skipped=no_client";
+            };
         };
+    } else {
+        diag_log "CTI|desync_load skipped=not_requested";
     };
 };
 

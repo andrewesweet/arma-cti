@@ -229,9 +229,10 @@ def test_the_daemon_can_be_brought_up_under_an_ai_commander(tmp_path: Path) -> N
     # How a session actually starts one (#16's demoable): a flag at bring-up,
     # and nothing else to remember. The seed is a flag too, because Phase 2 has
     # to be able to resume a Campaign into the character it had.
-    daemon = transport.build(tmp_path / "telemetry.jsonl", ai=(SIDE, 3))
+    daemon = transport.build(tmp_path / "telemetry.jsonl", ai=[(SIDE, 3)])
     for step in range(4):
         turn(daemon, step)
 
     assert daemon.campaign.roster.roll(SIDE) != ()
-    assert transport.build(tmp_path / "telemetry.jsonl", ai=None)._commander is None  # noqa: SLF001
+    assert daemon.commanders == (SIDE,)
+    assert transport.build(tmp_path / "telemetry.jsonl", ai=None).commanders == ()

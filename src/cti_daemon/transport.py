@@ -18,7 +18,7 @@ from cti_daemon import commands, planner
 from cti_daemon.daemon import Daemon
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterable
 
 DEFAULT_HOST: Final = "127.0.0.1"
 DEFAULT_PORT: Final = 9099
@@ -50,17 +50,19 @@ class _Server(socketserver.ThreadingTCPServer):
     daemon_threads = True
 
 
-def build(telemetry_path: Path, ai: tuple[str, int] | None) -> Daemon:
-    """Build the daemon this process will serve, under command or not (#16).
+def build(telemetry_path: Path, ai: Iterable[tuple[str, int]] | None) -> Daemon:
+    """Build the daemon this process will serve, under command or not (#16, #17).
 
-    `ai` is the side an AI Commander plays and the seed it plays under. The
-    planner is built here rather than inside the daemon because it reads the
-    manifest and the economy table the daemon has just loaded, and loading them
-    twice would be two answers to what the map is.
+    `ai` is one `(side, seed)` per side an AI Commander plays — none, one, or
+    both. A planner apiece rather than one asked twice: a planner holds its seed,
+    and a pair of seeds is what a two-sided Campaign replays from (#17).
+
+    The planners are built here rather than inside the daemon because they read
+    the manifest and the economy table the daemon has just loaded, and loading
+    them twice would be two answers to what the map is.
     """
     daemon = Daemon(telemetry_path=telemetry_path)
-    if ai is not None:
-        side, seed = ai
+    for side, seed in ai or ():
         daemon.commanded_by(
             side,
             planner.UtilityPlanner(
@@ -78,7 +80,7 @@ def serve(
     *,
     telemetry_path: Path = DEFAULT_TELEMETRY,
     on_ready: Callable[[int], None] | None = None,
-    ai: tuple[str, int] | None = None,
+    ai: Iterable[tuple[str, int]] | None = None,
 ) -> None:
     """Serve until interrupted. Calls `on_ready` with the bound port."""
     daemon = build(telemetry_path, ai)
@@ -110,18 +112,37 @@ def serve_in_thread(
     return bound[0]
 
 
+def commander(text: str) -> tuple[str, int]:
+    """Read one `SIDE[:SEED]` bring-up flag, or refuse it.
+
+    Side and seed travel together rather than as two parallel lists, because a
+    seed belongs to the Commander it plays and a session that brought up two
+    sides against one list of seeds would have to keep the order straight in its
+    head. The seed is fixed rather than drawn: the same pair of seeds and the
+    same reports have to produce the same Campaign, which is not a property a
+    clock can hold.
+    """
+    side, _, seed = text.partition(":")
+    side = side.upper()
+    if side not in commands.SIDES:
+        message = f"no side named {side!r} is playing; expected one of {list(commands.SIDES)}"
+        raise argparse.ArgumentTypeError(message)
+    if seed and not seed.lstrip("-").isdigit():
+        message = f"{text!r}: a seed is a whole number, got {seed!r}"
+        raise argparse.ArgumentTypeError(message)
+    return side, int(seed or 0)
+
+
 def main(argv: list[str] | None = None) -> int:
     """Run the daemon from the command line."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--host", default=DEFAULT_HOST)
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     parser.add_argument("--telemetry", type=Path, default=DEFAULT_TELEMETRY)
-    # One side, not both: #17 is where both at once raises its own questions
-    # about isolation and attribution. Absent, nobody is under AI command.
-    parser.add_argument("--ai-side", default="", choices=["", *commands.SIDES])
-    # Fixed rather than drawn: the same seed and the same reports have to
-    # produce the same Orders, which is not a property a clock can hold.
-    parser.add_argument("--ai-seed", type=int, default=0)
+    # One flag per side under AI command, each carrying its own seed (#17).
+    # None of them, and nobody is under AI command — a world brought up for a
+    # human Commander is not quietly played by one.
+    parser.add_argument("--ai", type=commander, action="append", default=[], metavar="SIDE[:SEED]")
     args = parser.parse_args(argv)
     args.telemetry.parent.mkdir(parents=True, exist_ok=True)
 
@@ -134,7 +155,7 @@ def main(argv: list[str] | None = None) -> int:
             args.port,
             telemetry_path=args.telemetry,
             on_ready=announce,
-            ai=(args.ai_side, args.ai_seed) if args.ai_side else None,
+            ai=args.ai,
         )
     except KeyboardInterrupt:
         return 0

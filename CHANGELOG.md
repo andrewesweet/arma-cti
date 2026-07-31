@@ -37,6 +37,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     what it actually returned. Sightings stay perceptions rather than ground truth: the side is the
     one the observer believes, so a man wrongly taken for the enemy is reported as one.
 
+- The desync load generator is now asked for explicitly (`CTI_DESYNC_LOAD=1`) rather than running
+  whenever a client turns up. It spawns thirty-two WEST soldiers standing on the first four
+  Objectives, and capture is by presence — so with a headless client brought up on purpose for
+  #17's topology it would hand WEST half the island on every run. #8's investigation asks for it;
+  a Campaign never does.
+
+- A probe is now waited for over the window the caller asked for, rather than a fixed three
+  minutes. The client wait ends the moment a client connects, so a run with a headless client left
+  the probe 180 s however long a window was requested — and a probe measuring a Squad marching
+  does not fit in three minutes.
+
 - The desync load generator no longer runs when no client turned up. It exists to give a joining
   client traffic to carry (issue #8), and it does that by spawning thirty-two WEST soldiers
   standing on the first four Objectives — which is fine as traffic and is not fine as a Campaign,
@@ -192,6 +203,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - It plays for Domination and not Decapitation: an Order names an Objective and a Base is not
     one, so the port has no way to say "go for the enemy HQ" and neither has this. That is the
     port's vocabulary to widen rather than something for a scorer to route around.
+- **Both sides under an AI Commander at once**: start the daemon with `--ai WEST:1 --ai EAST:4`,
+  walk away, and come back to two AI sides having fought over Stratis. One planner instance per
+  side, each seeded separately, on the dedicated-server-plus-headless-client topology.
+  - Neither Commander can see or spend the other's state, and structurally rather than by a guard:
+    the only input a planner has is its own side's Observation, there is no call that assembles one
+    carrying both sides, and the ledger is keyed by side.
+  - Every Command reaching the port is written down against the Commander that issued it, accepted
+    ones included, carrying both the issuer and the side the Command named — the pair `wrong_side`
+    exists to distinguish. A Command issued for the other side is refused and attributed. Requests
+    arriving over the wire carry the same column, so a human Commander's Command is attributable
+    the same way an AI's is.
+  - Two decision traces share one log and stay separable: every Commander-caused row carries its
+    side, and filtering to one side never turns up the other's Squads.
+  - The same pair of seeds replays the same Campaign — ownership, Funds, rosters, standing Orders,
+    the outbox and the whole decision trace. Commanders play in a fixed side order rather than in
+    the order a session registered them, so the replay does not depend on bring-up order.
+  - `just probe spike/probes/two-commanders.sqf` with `CTI_HOLD_HC=1` runs it unattended in-world
+    and asserts what only appears at two: both sides fielding a force nobody ordered, neither side
+    sending two Squads to one Objective, neither side sitting still, neither side's force growing
+    without a ceiling, and the push path never reaching the engine's hundred-drains-a-frame cap.
+- The push path's budget is measured and recorded by the run itself rather than estimated. The
+  effect pump counts what each drain carried and how many frames it spanned, and
+  `tools/push_path_report.py` turns a run's telemetry into `results.env` numbers: the largest
+  single handover against the 100-per-frame drain cap, and the worst blocking `observe` — which is
+  where both planners run — against ADR-0005's 1000 ms stall cap. Measurements from the first
+  two-sided unattended run are in `docs/spikes/0002-two-commanders.md`.
+- ADR-0015: two Commanders in one daemon — a planner apiece, a fixed turn order, and a pair of
+  seeds as the Campaign's identity. Both sides run the same weights, differing only by seed;
+  asymmetric weights as a difficulty lever are rejected for the MVP, because they make "is the
+  scorer any good" unanswerable in the same way perfect information does.
 - Squads take **Orders**, and an Order is standing rather than a waypoint consumed and forgotten.
   A Commander tells one Squad to Capture an Objective, Defend one, or fall back into Reserve, and
   the three are distinct in the world: Capture searches the ground it is sent to, Defend goes

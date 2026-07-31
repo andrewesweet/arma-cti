@@ -17,6 +17,13 @@
  * blocking-call stall cap. No ExtensionCallback handler is involved, so the
  * ordering hazard it carries does not arise here.
  *
+ * What one drain carried is counted into `cti_effectDrain` as it goes: the
+ * engine drains at most 100 callbacks per frame (ADR-0004) and two Commanders
+ * double what arrives here (#17), so the largest single drain is the number
+ * that bounds this path. Counted in the world rather than inferred from the
+ * daemon's side of it, because what matters is how many effects one frame was
+ * asked to carry out.
+ *
  * Arguments:
  * 0: seconds between polls <NUMBER> (optional, default 2)
  *
@@ -36,6 +43,14 @@ if (!isServer) exitWith { scriptNull };
 
     diag_log format ["CTI|effect_pump_started interval=%1", _interval];
 
+    // The push path's running account, for whatever wants to read it back —
+    // #17's probe does. Held in the mission namespace rather than logged alone,
+    // because a probe cannot read the server log it is writing into.
+    private _drain = createHashMapFromArray [
+        ["polls", 0], ["drains", 0], ["applied", 0], ["max", 0], ["maxFrames", 0], ["deferred", 0]
+    ];
+    missionNamespace setVariable ["cti_effectDrain", _drain];
+
     while { true } do {
         private _next = diag_tickTime + _interval;
         waitUntil { diag_tickTime >= _next };
@@ -46,10 +61,13 @@ if (!isServer) exitWith { scriptNull };
         ];
         private _raw = (_extension callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
         private _reply = fromJSON _raw;
+        _drain set ["polls", (_drain get "polls") + 1];
         if (_reply isEqualType createHashMap) then {
             private _messages = (_reply getOrDefault ["result", createHashMap])
                 getOrDefault ["messages", []];
 
+            private _startedFrame = diag_frameNo;
+            private _applied = 0;
             private _highest = -1;
             {
                 private _sequence = _x getOrDefault ["sequence", -1];
@@ -57,10 +75,25 @@ if (!isServer) exitWith { scriptNull };
                 // sequences are acknowledged through a high-water mark, so
                 // skipping one would retire it unapplied.
                 if !([_x getOrDefault ["message", createHashMap]] call cti_fnc_effectApply) exitWith {
+                    _drain set ["deferred", (_drain get "deferred") + 1];
                     diag_log format ["CTI|effect_deferred sequence=%1", _sequence];
                 };
+                _applied = _applied + 1;
                 _highest = _sequence;
             } forEach _messages;
+
+            if (count _messages > 0) then {
+                // Frames rather than seconds: the cap this is measured against
+                // is per frame, so what a drain cost is how many frames it
+                // spanned and how many effects it carried in them.
+                private _frames = (diag_frameNo - _startedFrame) max 1;
+                _drain set ["drains", (_drain get "drains") + 1];
+                _drain set ["applied", (_drain get "applied") + _applied];
+                _drain set ["max", (_drain get "max") max _applied];
+                _drain set ["maxFrames", (_drain get "maxFrames") max _frames];
+                diag_log format ["CTI|effect_drain handed=%1 applied=%2 frames=%3 max=%4",
+                    count _messages, _applied, _frames, _drain get "max"];
+            };
 
             if (_highest >= 0) then {
                 private _ack = createHashMapFromArray [

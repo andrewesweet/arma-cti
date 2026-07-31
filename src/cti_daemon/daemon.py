@@ -57,10 +57,21 @@ class Daemon:
         # unchanged one is not written again. Comparison only, never campaign
         # state — and never a place a side's view is read from.
         self._last_observation: dict[str, dict[str, Any]] = {}
-        # The one side under an AI Commander, if any (#16). None by default: the
-        # other side belongs to a human or to #17, and a daemon nobody has put
-        # under command must not quietly start playing for somebody.
-        self._commander: tuple[str, planner.Planner] | None = None
+        # Which sides are under an AI Commander, and the brain playing each
+        # (#16, #17). Empty by default: a side belongs to a human until somebody
+        # says otherwise, and a daemon nobody has put under command must not
+        # quietly start playing for somebody.
+        #
+        # One brain per side rather than one brain asked twice. A planner holds
+        # a seed and the authored data, and two sides sharing one object would
+        # be one character playing both — which is also the shape in which a
+        # Commander could carry state from the other side's turn into its own.
+        self._commanders: dict[str, planner.Planner] = {}
+
+    @property
+    def commanders(self) -> tuple[str, ...]:
+        """The sides under AI command, in the order they play."""
+        return tuple(side for side in commands.SIDES if side in self._commanders)
 
     def commanded_by(self, side: str, brain: planner.Planner) -> None:
         """Put one side under an AI Commander for the rest of the session.
@@ -69,22 +80,31 @@ class Daemon:
         is built from the manifest and the economy table this object has just
         loaded, and there is no sense in loading them twice to hand them back.
 
-        One side, and #16 says why: per-side isolation and attribution are #17's
-        problems, so this is deliberately not a list.
+        Called once per side. Both sides at once is what #17 asks for; a second
+        Commander on the *same* side is refused, because two brains on one side
+        are two answers to what that side is doing and both spend the same Funds.
         """
         if side not in commands.SIDES:
             message = f"no side named {side!r} is playing"
             raise ValueError(message)
-        self._commander = (side, brain)
+        if side in self._commanders:
+            message = f"{side} is already under a Commander"
+            raise ValueError(message)
+        self._commanders[side] = brain
 
     def handle_line(self, line: str) -> str:
         """Answer one request line. Every path produces a reply."""
         started = time.perf_counter_ns()
         request_id: str | None = None
         verb: str | None = None
+        # Who the caller was acting for, when the request says. A human-issued
+        # Command is then attributable in the same column an AI-issued one is
+        # (#17), and #19 has one attribution to audit rather than two.
+        acting: str | None = None
         try:
             request = protocol.decode(line)
             request_id, verb = request.id, request.verb
+            acting = self._acting_side(request)
             reply = self._dispatch(request)
             encoded = protocol.encode(reply)
         except protocol.MalformedRequestError as exc:
@@ -104,6 +124,7 @@ class Daemon:
             "request",
             id=request_id,
             verb=verb,
+            side=acting,
             status=reply.envelope["status"],
             # `code` for a domain rejection, `class` for an error — one column
             # either way, because when reading a log the question is the same.
@@ -116,6 +137,21 @@ class Daemon:
             reply_bytes=len(encoded),
         )
         return encoded
+
+    @staticmethod
+    def _acting_side(request: protocol.Request) -> str | None:
+        """Which side a request was issued for, or None when it is nobody's.
+
+        The gateway stamps `acting_side` server-side from its own Commander
+        assignment, so that is the honest answer where it exists; `side` is what
+        the caller claimed. A transport verb belongs to no side and says so by
+        leaving the column empty rather than by guessing.
+        """
+        for key in ("acting_side", "side"):
+            claimed = request.payload.get(key)
+            if isinstance(claimed, str) and claimed:
+                return claimed
+        return None
 
     def _dispatch(self, request: protocol.Request) -> protocol.Reply:
         handler = self._handlers().get(request.verb)
@@ -173,23 +209,35 @@ class Daemon:
         return protocol.accepted(request.id, observation.serialise(self.campaign.observation()))
 
     def _take_command(self, at_time: float) -> None:
-        """Let the AI Commander play its turn on the picture it can see (#16).
+        """Let each AI Commander play its turn on the picture it can see (#16, #17).
 
         On the report's cadence rather than one of its own: the Observation is
         the reply to what the world already sends, so there is no second clock
         and nothing to keep in step. The picture is therefore up to one report
         interval old, which ADR-0005 accepted and #16 was told about.
 
-        It plays through the port every human Command goes through, and there is
-        no other way in — that is what makes Commander symmetry structural
+        Each plays through the port every human Command goes through, and there
+        is no other way in — that is what makes Commander symmetry structural
         rather than a convention (ADR-0012), and what leaves #19 one path to
         audit.
+
+        Sides play in `commands.SIDES` order rather than in the order somebody
+        registered them, so a Campaign replays the same way whichever order a
+        session brought its Commanders up in. Nothing one Commander does inside
+        a cycle is visible to the other in any case: a Command moves that side's
+        own Funds, roster and Orders, and ownership only moves in `observe`
+        above — so playing them one after another is the same Campaign as
+        playing them at once, and cheaper to reason about than a promise of it.
         """
-        if self._commander is None:
-            return
-        side, brain = self._commander
+        for side in self.commanders:
+            self._play(side, self._commanders[side], at_time)
+
+    def _play(self, side: str, brain: planner.Planner, at_time: float) -> None:
+        """One Commander's turn: decide on its own picture, order through the port."""
         # The projected picture, the same call the wire is served from: there is
-        # no unprojected one for an in-process planner to reach (ADR-0012).
+        # no unprojected one for an in-process planner to reach (ADR-0012), and
+        # it carries this side's Funds, this side's Squads and this side's
+        # Contacts alone — which is the whole of per-side isolation (#17).
         plan = brain.plan(self.campaign.observation(side))
 
         for decision in plan.decisions:
@@ -214,6 +262,18 @@ class Daemon:
         for command in plan.commands:
             judgement = self.port.submit(command, acting_side=side)
             if judgement.accepted:
+                # Attribution (#17): every Command reaching the port is written
+                # down against the Commander that issued it, accepted ones
+                # included. A log that recorded only refusals would answer who
+                # did the wrong thing and never who did anything.
+                self._telemetry.record(
+                    "command_issued",
+                    at=at_time,
+                    side=side,
+                    command_side=command.side,
+                    command=command.name,
+                    args=command.args,
+                )
                 continue
             # A refusal here is a planner bug rather than a Commander's mistake,
             # and the world is still waiting on the reply that repaints its map.
@@ -222,6 +282,10 @@ class Daemon:
                 "plan_refused",
                 at=at_time,
                 side=side,
+                # The side the Command named, beside the Commander that issued
+                # it: `wrong_side` is exactly the case where the two differ, and
+                # a row carrying one of them cannot say which happened.
+                command_side=command.side,
                 command=command.name,
                 args=command.args,
                 code=judgement.code,
@@ -381,6 +445,16 @@ class Daemon:
             {"sequence": entry.sequence, "message": entry.message}
             for entry in self.outbox.pending()
         ]
+        if messages:
+            # How much work one drain hands the world in one go. ADR-0004 has
+            # the engine draining at most 100 callbacks per frame, and two
+            # Commanders double what arrives at that path (#17) — so the size of
+            # a drain is a number to have on disk rather than to estimate.
+            # Written only when there is something to hand over: a poll that
+            # found nothing is the ordinary case and would bury the rest.
+            self._telemetry.record(
+                "outbox_handed", handed=len(messages), through=messages[-1]["sequence"]
+            )
         return protocol.accepted(request.id, {"messages": messages})
 
     def _ack(self, request: protocol.Request) -> protocol.Reply:
