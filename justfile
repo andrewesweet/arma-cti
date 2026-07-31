@@ -4,6 +4,12 @@
 
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
+# rustup installs to ~/.cargo/bin, which a non-login shell here does not have on
+# PATH — so every `cargo` step failed unless the caller exported it first. Put it
+# on the tail: a cargo already on PATH still wins, and the toolchain is pinned by
+# rust-toolchain.toml either way.
+export PATH := env_var('PATH') + ":" + env_var('HOME') + "/.cargo/bin"
+
 shim := "--manifest-path extension/Cargo.toml"
 
 _default:
@@ -84,6 +90,26 @@ build-missions:
 # The addon is a launch dependency now that the mission resolves cti_fnc_* by name.
 spike: build-shim build-addon
     ./spike/run.sh
+
+# Arma tier: bring the Phase-1 world up and hold it, so a one-off probe or a
+# human client can exercise it. The probe is appended to the generated harness
+# rather than shipped in the mission — but it lives in spike/probes/ rather than
+# in a session's scratchpad, so the evidence a verification rests on outlives the
+# session that wrote it. No probe named: the world comes up bare.
+#
+# A probe must end by logging a line containing `probe_done`, because the run
+# waits for it: a probe still working when the hold window closes is a timeout,
+# not a pass.
+probe file="" hold="150": build-shim build-addon
+    #!/usr/bin/env bash
+    set -euo pipefail
+    CTI_MISSION=cti.Stratis \
+        CTI_SERVER_CONFIG="{{ justfile_directory() }}/spike/phase1.cfg" \
+        CTI_LOG_PREFIX=CTI \
+        CTI_HOLD_TIMEOUT="{{ hold }}" \
+        CTI_HARNESS_EXTRA="{{ file }}" \
+        CTI_HARNESS_AWAIT="$([[ -n "{{ file }}" ]] && echo probe_done || true)" \
+        ./spike/run.sh --hold
 
 # Everything that does not need Arma.
 fast: check unit

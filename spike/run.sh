@@ -393,6 +393,22 @@ EOF
         fi
         ;;
     esac
+    # A probe that never finished is not a pass either. Waiting for its own
+    # completion line means a probe outliving the hold window is a timeout,
+    # rather than a HOLD-COMPLETE read off a log it had not finished writing.
+    if [[ -n "${CTI_HARNESS_AWAIT:-}" ]]; then
+        case "$(
+            # FAIL ends the wait too: a probe that gave up short-circuits rather
+            # than running out the clock, so the assertion below classifies it
+            # instead of this timing out and calling an assertion a timeout.
+            wait_for "$SERVER_LOG" "$LOG_PREFIX\|(.*$CTI_HARNESS_AWAIT|FAIL)" 180 "$server_pid"
+            echo $?
+        )" in
+        1) fail "timeout" "probe never logged $CTI_HARNESS_AWAIT; see $SERVER_LOG" ;;
+        2) fail "node_crashed" "server exited while the probe ran; see $SERVER_LOG" ;;
+        esac
+    fi
+
     grep -aoE "$LOG_PREFIX\|.*" "$SERVER_LOG" | sed "s/^$LOG_PREFIX|//; s/\"$//" >"$OUT/spike-lines.txt"
     log "--- in-mission results ---"
     cat "$OUT/spike-lines.txt" >&2

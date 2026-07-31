@@ -32,6 +32,7 @@ Interact with the project through `just` only.
 | `just build` | HEMTT addon, shim `.so`, mission PBOs | No | Before any Arma tier |
 | `just build-shim-windows` | Cross-compiled `.dll` | No | Before a play session |
 | `just spike` | Server + HC + stub daemon, phase-0 measurements | Yes | Ad hoc |
+| `just probe [file]` | Phase-1 world, held up, with a probe from `spike/probes/` appended to the harness | Yes | Verifying a change in-world |
 
 Not yet built: `just accept <spec-id>` and `just accept-all`, the acceptance tiers. Phase 1.
 
@@ -73,6 +74,7 @@ Repo hooks (`.claude/hooks/`, wired in `.claude/settings.json`) enforce mechanic
 - Commit messages follow Conventional Commits 1.0.0 (`feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `chore`, `ci`; optional scope; `BREAKING CHANGE:` footer or `!` for breaking). A `commit-msg` hook (`cog verify`) rejects everything else; if the hook is missing on a fresh clone, run `cog install-hook commit-msg`.
 - Any commit with user-visible effect updates the `[Unreleased]` section of `CHANGELOG.md` in the same commit (Keep a Changelog 1.1.0 categories: Added/Changed/Deprecated/Removed/Fixed/Security). The changelog is curated for humans — never paste commit logs into it.
 - Releases: `cog bump --auto` derives the SemVer 2.0.0 bump and tags `vX.Y.Z`. `0.y.z` until MVP scope is fully playable.
+- Landing from an agent worktree: `git push origin HEAD:main`, then `git -C <main checkout> merge --ff-only origin/main`. A bare `git push origin main` pushes the local `main` branch, which the worktree is not on, and is rejected as non-fast-forward.
 
 ## Working style
 
@@ -102,4 +104,4 @@ Single-context: root `CONTEXT.md` + `docs/adr/`. See `docs/agents/domain.md`.
 
 ### Workflow backbone
 
-Use the installed engineering skills rather than improvising process: `/implement` (+ `/tdd`, `/code-review`) for build work, `/research` for fact-finding (primary sources, cited, committed), `/prototype` for design questions, `/diagnosing-bugs` for hard bugs, `/handoff` between sessions. Project-owned skills: `/playtest-brief`, `/playtest-ingest`, `/retro`. Global skills are shared across projects — never edit them; project process learning lands only in this file, the project skills, and `docs/process-log.md`.
+Use the installed engineering skills rather than improvising process: `/implement` (+ `/tdd`, `/code-review`) for build work, `/research` for fact-finding (primary sources, cited, committed), `/prototype` for design questions, `/grill-me` for gameplay and design decisions that need human sign-off, `/diagnosing-bugs` for hard bugs, `/handoff` between sessions. Project-owned skills: `/playtest-brief`, `/playtest-ingest`, `/retro`. Global skills are shared across projects — never edit them; project process learning lands only in this file, the project skills, and `docs/process-log.md`.

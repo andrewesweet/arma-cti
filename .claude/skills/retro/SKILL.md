@@ -5,7 +5,7 @@ description: Review how the development process itself performed and propose ame
 
 # Retro
 
-> Status: unproven — written before first practical use. This skill amends itself only through its own procedure.
+> Status: validated ×3 — three retros, no amendment needed. This skill amends itself only through its own procedure.
 
 Subject is the **process**, not the code: commands, failure classes, gates, skills, conventions in `CLAUDE.md` and `.claude/skills/`. Code defects belong in issues, not here.
 

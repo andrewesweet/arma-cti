@@ -10,8 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Founding decisions: domain glossary, ADRs, MVP scope, and the agent development process.
-- `just` command surface: `check`, `unit`, `build`, `spike`, `fast`. The no-Arma gate
-  (`just check` + `just unit`) runs in under a second.
+- `just` command surface: `check`, `unit`, `build`, `spike`, `probe`, `fast`. The no-Arma gate
+  (`just check` + `just unit`) runs in under a second. `just probe <file>` brings the Phase-1
+  world up and holds it with a probe from `spike/probes/` appended to its harness, and waits for
+  that probe to finish — a probe still working when the hold window closes is a timeout rather
+  than a pass nobody earned.
 - Pinned toolchain: HEMTT, `just`, Rust with `cargo-xwin` for the Windows shim, and a
   `uv`-managed Python environment.
 - HEMTT addon skeleton, with the "no bare `random` or `sleep` in SQF" contract enforced as a
