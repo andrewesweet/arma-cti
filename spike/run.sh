@@ -198,8 +198,17 @@ t=$(now)
 # for the duration of that test only. Otherwise stay on loopback.
 DAEMON_HOST=127.0.0.1
 ((HOLD == 1)) && DAEMON_HOST=0.0.0.0
+# Which side, if any, the AI Commander plays (#16). Off unless asked for, so a
+# world brought up for a human Commander is not quietly being played by one.
+AI_ARGS=()
+if [[ -n "${CTI_AI_SIDE:-}" ]]; then
+    AI_ARGS=(--ai-side "$CTI_AI_SIDE" --ai-seed "${CTI_AI_SEED:-0}")
+    record "ai_side" "$CTI_AI_SIDE"
+    record "ai_seed" "${CTI_AI_SEED:-0}"
+fi
 (cd "$REPO" && exec uv run --quiet cti-daemon \
-    --host "$DAEMON_HOST" --port "$DAEMON_PORT" --telemetry "$DAEMON_TELEMETRY") \
+    --host "$DAEMON_HOST" --port "$DAEMON_PORT" --telemetry "$DAEMON_TELEMETRY" \
+    "${AI_ARGS[@]}") \
     >"$DAEMON_LOG" 2>&1 &
 daemon_pid=$!
 if ! wait_for "$DAEMON_LOG" "CTI_DAEMON_READY" 90 "$daemon_pid"; then

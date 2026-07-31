@@ -101,6 +101,10 @@ spike: build-shim build-addon
 # waits for it: a probe still working when the hold window closes is a timeout,
 # not a pass.
 #
+# `CTI_AI_SIDE=WEST` brings the daemon up with that side under an AI Commander
+# (#16), and `CTI_AI_SEED` fixes what it plays like. Off by default, so a world
+# brought up for a human Commander is not quietly being played by one.
+#
 # `hold` is the window, and a probe whose subject genuinely takes longer than the
 # default may raise it — `just probe spike/probes/contact-decay.sqf 300` waits out
 # the engine's 120 s knowledge decay, which no shorter window can contain. State

@@ -14,6 +14,7 @@ import threading
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
+from cti_daemon import commands, planner
 from cti_daemon.daemon import Daemon
 
 if TYPE_CHECKING:
@@ -49,15 +50,38 @@ class _Server(socketserver.ThreadingTCPServer):
     daemon_threads = True
 
 
+def build(telemetry_path: Path, ai: tuple[str, int] | None) -> Daemon:
+    """Build the daemon this process will serve, under command or not (#16).
+
+    `ai` is the side an AI Commander plays and the seed it plays under. The
+    planner is built here rather than inside the daemon because it reads the
+    manifest and the economy table the daemon has just loaded, and loading them
+    twice would be two answers to what the map is.
+    """
+    daemon = Daemon(telemetry_path=telemetry_path)
+    if ai is not None:
+        side, seed = ai
+        daemon.commanded_by(
+            side,
+            planner.UtilityPlanner(
+                map_manifest=daemon.campaign.map_manifest,
+                table=daemon.campaign.table,
+                seed=seed,
+            ),
+        )
+    return daemon
+
+
 def serve(
     host: str = DEFAULT_HOST,
     port: int = DEFAULT_PORT,
     *,
     telemetry_path: Path = DEFAULT_TELEMETRY,
     on_ready: Callable[[int], None] | None = None,
+    ai: tuple[str, int] | None = None,
 ) -> None:
     """Serve until interrupted. Calls `on_ready` with the bound port."""
-    daemon = Daemon(telemetry_path=telemetry_path)
+    daemon = build(telemetry_path, ai)
     with _Server((host, port), _handler_for(daemon)) as server:
         if on_ready is not None:
             on_ready(int(server.server_address[1]))
@@ -92,6 +116,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--host", default=DEFAULT_HOST)
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     parser.add_argument("--telemetry", type=Path, default=DEFAULT_TELEMETRY)
+    # One side, not both: #17 is where both at once raises its own questions
+    # about isolation and attribution. Absent, nobody is under AI command.
+    parser.add_argument("--ai-side", default="", choices=["", *commands.SIDES])
+    # Fixed rather than drawn: the same seed and the same reports have to
+    # produce the same Orders, which is not a property a clock can hold.
+    parser.add_argument("--ai-seed", type=int, default=0)
     args = parser.parse_args(argv)
     args.telemetry.parent.mkdir(parents=True, exist_ok=True)
 
@@ -99,7 +129,13 @@ def main(argv: list[str] | None = None) -> int:
         print(ready_line(args.host, port), flush=True)  # noqa: T201 — the harness reads stdout
 
     try:
-        serve(args.host, args.port, telemetry_path=args.telemetry, on_ready=announce)
+        serve(
+            args.host,
+            args.port,
+            telemetry_path=args.telemetry,
+            on_ready=announce,
+            ai=(args.ai_side, args.ai_seed) if args.ai_side else None,
+        )
     except KeyboardInterrupt:
         return 0
     return 0

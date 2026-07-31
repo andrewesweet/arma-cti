@@ -6,7 +6,16 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from cti_daemon import campaign, commands, contacts, economy, manifest, observation, protocol
+from cti_daemon import (
+    campaign,
+    commands,
+    contacts,
+    economy,
+    manifest,
+    observation,
+    planner,
+    protocol,
+)
 from cti_daemon.outbox import Outbox, UnknownSequenceError
 from cti_daemon.port import CommandPort
 from cti_daemon.telemetry import Telemetry
@@ -48,6 +57,25 @@ class Daemon:
         # unchanged one is not written again. Comparison only, never campaign
         # state — and never a place a side's view is read from.
         self._last_observation: dict[str, dict[str, Any]] = {}
+        # The one side under an AI Commander, if any (#16). None by default: the
+        # other side belongs to a human or to #17, and a daemon nobody has put
+        # under command must not quietly start playing for somebody.
+        self._commander: tuple[str, planner.Planner] | None = None
+
+    def commanded_by(self, side: str, brain: planner.Planner) -> None:
+        """Put one side under an AI Commander for the rest of the session.
+
+        Set at bring-up rather than passed to the constructor, because a planner
+        is built from the manifest and the economy table this object has just
+        loaded, and there is no sense in loading them twice to hand them back.
+
+        One side, and #16 says why: per-side isolation and attribution are #17's
+        problems, so this is deliberately not a list.
+        """
+        if side not in commands.SIDES:
+            message = f"no side named {side!r} is playing"
+            raise ValueError(message)
+        self._commander = (side, brain)
 
     def handle_line(self, line: str) -> str:
         """Answer one request line. Every path produces a reply."""
@@ -135,6 +163,7 @@ class Daemon:
             self._telemetry.record("squad_lost", at=at_time, squad=squad_id)
         for side in commands.SIDES:
             self._record_observation(side)
+        self._take_command(float(at_time))
 
         # The public picture alone (#27). The server repaints ownership markers
         # from this and needs nothing else, and there is no side whose view it
@@ -142,6 +171,62 @@ class Daemon:
         # What each side moved and lost is on disk above, where an operator
         # reads it and a Commander does not.
         return protocol.accepted(request.id, observation.serialise(self.campaign.observation()))
+
+    def _take_command(self, at_time: float) -> None:
+        """Let the AI Commander play its turn on the picture it can see (#16).
+
+        On the report's cadence rather than one of its own: the Observation is
+        the reply to what the world already sends, so there is no second clock
+        and nothing to keep in step. The picture is therefore up to one report
+        interval old, which ADR-0005 accepted and #16 was told about.
+
+        It plays through the port every human Command goes through, and there is
+        no other way in — that is what makes Commander symmetry structural
+        rather than a convention (ADR-0012), and what leaves #19 one path to
+        audit.
+        """
+        if self._commander is None:
+            return
+        side, brain = self._commander
+        # The projected picture, the same call the wire is served from: there is
+        # no unprojected one for an in-process planner to reach (ADR-0012).
+        plan = brain.plan(self.campaign.observation(side))
+
+        for decision in plan.decisions:
+            self._telemetry.record(
+                "decision",
+                at=at_time,
+                side=side,
+                about=decision.about,
+                chose=decision.chose,
+                because=decision.because,
+                scored=decision.scored,
+                candidates=[
+                    {
+                        "choice": candidate.choice,
+                        "score": round(candidate.score, 2),
+                        "terms": {name: round(value, 2) for name, value in candidate.terms.items()},
+                    }
+                    for candidate in decision.candidates
+                ],
+            )
+
+        for command in plan.commands:
+            judgement = self.port.submit(command, acting_side=side)
+            if judgement.accepted:
+                continue
+            # A refusal here is a planner bug rather than a Commander's mistake,
+            # and the world is still waiting on the reply that repaints its map.
+            # So it is written down and the cycle finishes.
+            self._telemetry.record(
+                "plan_refused",
+                at=at_time,
+                side=side,
+                command=command.name,
+                args=command.args,
+                code=judgement.code,
+                detail=judgement.detail,
+            )
 
     def _record_observation(self, side: str) -> None:
         """Write one side's strategic picture out when it has actually changed.

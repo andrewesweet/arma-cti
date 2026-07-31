@@ -153,6 +153,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     report every 5 s. The whole sampler is 0.35 ms with two leaders. The wiki's CPU-intensive
     warning is real but nowhere near this scale, so the cadence stands as designed and no
     sampling-versus-frequency trade needed making.
+- An **AI Commander** for one side: start the daemon with `--ai-side WEST` and leave it, and that
+  side buys Squads, sends them at ground it does not hold, garrisons what is coming under attack,
+  and reacts as Objectives change hands. It plays through the same Command Port a human does and
+  has no other way in, so the port stays the one thing #19 has to audit.
+  - A seeded deterministic utility scorer over the Objective adjacency graph, as a pure function of
+    one Observation and the authored map and price table. It returns the Commands it would issue
+    and the trace explaining them; writing that trace is the daemon's job, because a function that
+    logs is no longer a pure one. The same seed and the same reports produce the same Orders, which
+    is property-tested rather than asserted.
+  - It plans under the fog, structurally: an Observation is the only input, and there is no
+    unprojected one to reach for. So it sees banded, aged Contacts and no enemy roster, and weighs
+    staleness — a company seen ten minutes ago stops deciding anything. Ground nobody is looking at
+    is scored as holding a team rather than as empty, and a Contact nobody has refreshed decays to
+    that same floor rather than to nothing, so old knowledge becomes ignorance instead of good
+    news.
+  - Every decision reaches telemetry with what was scored, what won and why, each candidate broken
+    into its named terms — income, contested, threat, travel, commitment, jitter. Observability
+    only (ADR-0003): taking the log away entirely changes nothing about the Campaign, which is how
+    that is tested.
+  - A Squad keeps going where it was sent unless something beats it by a margin, so two Objectives
+    whose scores cross and recross do not turn into countermarching. An unchanged world produces no
+    second round of Orders at all.
+  - It buys the cheapest Squad it can afford, up to one per Objective the map has: ground is taken
+    by standing in a capture radius, so what wins is the number of Squads rather than what each
+    carries. A threat-aware purchase is left for when the scorer has a threat model worth spending
+    against.
+  - The interface is one method — an Observation in, a Plan out — so the HTN escalation ADR-0004
+    names, or a post-MVP LLM Commander, changes neither the port nor the trace format. Held by a
+    test that drives the daemon with a planner that scores nothing at all.
+  - It plays for Domination and not Decapitation: an Order names an Objective and a Base is not
+    one, so the port has no way to say "go for the enemy HQ" and neither has this. That is the
+    port's vocabulary to widen rather than something for a scorer to route around.
 - Squads take **Orders**, and an Order is standing rather than a waypoint consumed and forgotten.
   A Commander tells one Squad to Capture an Objective, Defend one, or fall back into Reserve, and
   the three are distinct in the world: Capture searches the ground it is sent to, Defend goes
