@@ -1,6 +1,6 @@
 # The Phase-1 in-game regression tier
 
-`just regress` runs the whole in-world probe corpus against a fresh Phase-1 world per probe and returns one typed verdict per probe; `just regress <name>...` runs a subset. It is the thin early slice of the Phase-3 acceptance harness that issue #23 asks for, pulled forward under ADR-0015 rather than folded into #5. The orchestration is disposable — grown from `spike/run.sh`, replaced wholesale when ADR-0011's Python orchestrator arrives — but three things it establishes are durable and carry into Phase 3 unchanged: the probe corpus in `spike/probes/`, the machine-scoped lock that serialises the Arma tier, and the evidence-directory convention under `~/.arma-cti/runs/`.
+`just regress` runs the whole in-world probe corpus against a fresh Phase-1 world per probe and returns one typed verdict per probe; `just regress <name>...` runs a subset. It is the thin early slice of the Phase-3 acceptance harness that issue #23 asks for, pulled forward under ADR-0016 rather than folded into #5. The orchestration is disposable — grown from `spike/run.sh`, replaced wholesale when ADR-0011's Python orchestrator arrives — but three things it establishes are durable and carry into Phase 3 unchanged: the probe corpus in `spike/probes/`, the machine-scoped lock that serialises the Arma tier, and the evidence-directory convention under `~/.arma-cti/runs/`.
 
 Design only as of 2026-07-31; nothing below is built. The implementation order is at the end.
 
@@ -72,7 +72,7 @@ Phase 1 (this tier): bash orchestration grown from `spike/run.sh`; verdicts synt
 2. **The lock**: `~/.arma-cti/` with `flock` acquire/release and `tier.lock.info`, wrapped around the existing `probe` recipe too, so serialisation protects hand runs the moment it exists.
 3. **The runner**: the corpus loop with fresh world per probe, direct wait on `probe_done` under the header window (no client banner, no hold-window burn), per-probe verdicts, worst-class exit.
 4. **Evidence directories** with `verdict.json` and pass-pruning.
-5. **The `just regress` recipe** and the CLAUDE.md command-table row (run-when: before landing any issue that touches an in-world surface) — the row lands with the recipe, not ahead of it, per the Phase-0 retro rule. Authorised in ADR-0015.
+5. **The `just regress` recipe** and the CLAUDE.md command-table row (run-when: before landing any issue that touches an in-world surface) — the row lands with the recipe, not ahead of it, per the Phase-0 retro rule. Authorised in ADR-0016.
 6. **Windows pre-flight check** for a live play session.
 7. Follow-on probes as their issues land: `CfgRemoteExec` mode=1 refusal (with #21), broken-manifest refusal (needs the runner's staging hook for a corrupted manifest variant).
 

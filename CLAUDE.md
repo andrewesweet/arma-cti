@@ -36,7 +36,7 @@ Interact with the project through `just` only.
 
 Not yet built: `just accept <spec-id>` and `just accept-all`, the acceptance tiers. Phase 1.
 
-`hold` is the probe's window in seconds, default 150. Raise it when the probe's **subject** genuinely takes longer — `spike/probes/contact-decay.sqf` runs at 420 because no shorter window can contain the 120 s of knowledge decay it measures. State the reason in the probe's own header. This is not licence against the `timeout` row above: sizing the window to what is being measured is allowed, extending it until a flaky probe passes is the thing that row forbids. A probe that fails at 150 and passes at 300 without its subject having grown that long is a synchronisation bug, and the fix is in the probe. _(validated ×1 — #28: both probes were flaky and neither fix was a longer wait. Observers left in Reserve sit at the engine's default behaviour with weapons down and never acquired six men at 90 m across a full window; and a bearing off the leader's facing is a guess about line of sight that lands behind a hangar often enough to matter.)_
+`hold` is the probe's window in seconds, default 150. Raise it when the probe's **subject** genuinely takes longer — `spike/probes/contact-decay.sqf` runs at 300 because no shorter window can contain the 120 s of knowledge decay it measures. State the reason in the probe's own header, which is authoritative — this table is not. This is not licence against the `timeout` row above: sizing the window to what is being measured is allowed, extending it until a flaky probe passes is the thing that row forbids. A probe that fails at 150 and passes at 300 without its subject having grown that long is a synchronisation bug, and the fix is in the probe. _(validated ×1 — #28: both probes were flaky and neither fix was a longer wait. Observers left in Reserve sit at the engine's default behaviour with weapons down and never acquired six men at 90 m across a full window; and a bearing off the leader's facing is a guess about line of sight that lands behind a hangar often enough to matter.)_
 
 ## Failure classes
 
@@ -89,6 +89,10 @@ Repo hooks (`.claude/hooks/`, wired in `.claude/settings.json`) enforce mechanic
 - Match written documents to what the task needs — no filler sections, boilerplate, or redundant summaries. Lead every summary with the outcome.
 
 **Human sign-off gates** — nothing lands on these without explicit approval: `CONTEXT.md` term changes; new or changed ADRs; acceptance spec changes; snapshot schema semantics; perceptual checklist growth; gameplay balance/feel decisions; changes to this file or the project skills.
+
+Under the human's standing authorisation, an agent may take one of these decisions in their stead, but only by recording it in an ADR carrying the ADR-0013 marker, so `grep -rl "^Delegated-decision: yes" docs/adr/` answers "tell me every decision made on my behalf" completely. An unrecorded delegated decision is out of policy.
+
+**ADR numbers are claimed, not assigned on write.** Agents run concurrently in separate worktrees, so two of them picking "the next free number" from the same `main` produce two ADR-00NNs — which happened on 2026-07-31 and cost a renumber. Before writing, `git fetch origin` and take the next number above every ADR on `origin/main` **and** every ADR number mentioned in an open issue comment; when landing, if the number collided, renumber yours as part of the rebase rather than leaving both.
 
 ## Agent skills
 
