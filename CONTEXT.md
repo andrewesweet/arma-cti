@@ -40,6 +40,10 @@ _Avoid_: Task (reserved for the engine task system), waypoint, directive
 The whole strategic picture at one moment, as a Commander may know it: every Objective's owner, each side's Funds, and every Squad with its side, composition type, member count, standing Order and coarse position. Assembled by the daemon from what it decides plus the two facts only the world can see — how many of a Squad are standing, and where it is. Deliberately the same set the Campaign snapshot persists (ADR-0008): nothing tactical, and places rather than coordinates.
 _Avoid_: State, world state, telemetry; snapshot (reserved for the persisted Campaign)
 
+**Contact**:
+What one side has seen of the other, as it appears in that side's Observation: aggregated per place, carrying an estimated echelon (team, squad, platoon, company), a posture (foot, motorised, mechanised, armoured, air), any notable assets, and how long ago it was seen. Reported by squad leaders from what their units actually observed. A Contact never names an enemy Squad or its Order — it says what was seen, never what the enemy is or intends. Observing a place and finding nobody clears its Contact.
+_Avoid_: Sighting, blip, intel; enemy Squad (a Contact is not one); target (reserved for the engine's targeting)
+
 **Funds**:
 Per-side currency. Earned as income from held Objectives, spent through the Command Port.
 _Avoid_: Money, resources, supply

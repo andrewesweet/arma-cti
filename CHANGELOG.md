@@ -30,6 +30,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CONTEXT.md` gains **Observation**: the whole strategic picture at one moment, as a Commander
   may know it. Distinct from the Campaign snapshot, which carries the same set of facts durably;
   an Observation is momentary and in memory.
+- Fog of war is in the MVP, and `CONTEXT.md` gains **Contact** to name what a Commander learns
+  through it. A Commander knows its own side in full; Objective ownership and Base HQ status are
+  public, because the win conditions are the scoreboard rather than intelligence; everything else
+  about the enemy arrives as Contacts — what that side's squad leaders actually saw, aggregated per
+  place, carrying an echelon band, a posture, notable assets and an age. Enemy Funds, force count,
+  Squad identity and standing Orders never cross. ADR-0012 amended: Commander symmetry covers
+  knowing as well as commanding, and the AI Commander plays under the same fog, enforced by there
+  being no unprojected picture for an in-process planner to read. Perfect information as a
+  difficulty lever was considered and rejected — it makes "is the scorer any good" unanswerable.
 - The return leg: every report the world makes is answered with the whole strategic picture —
   which side holds each Objective including Contested, what each side has to spend, and every
   Squad with its side, type, head count, standing Order and the Objective or Base it is standing

@@ -74,6 +74,12 @@ planner take a wire hop to consult rules it lives next to. **Async-only command 
 appended and judged via push, no synchronous reply) — uniform with the push path but denies the
 UI immediate rejection feedback that the measured sub-millisecond path provides for free.
 
+Amended 2026-07-31 (#27, grilling session): **Commander symmetry covers knowing as well as commanding.** The argument above — one schema, one validator, one entry function, rather than two implementations kept honest by convention — applies with equal force to what each Commander may know. So the daemon holds the Campaign's truth privately and exposes only a per-side projection: a Commander's own Squads and Funds in full, Objective ownership and Base HQ status as public facts, and everything else about the enemy as **Contacts** (`CONTEXT.md`) rather than roster entries. Enemy Funds, force count, Squad identity and standing Orders never leave the daemon.
+
+Enforced structurally rather than by convention, for the same reason: the planner runs in-process (see above), so a projection applied at the wire would be one the planner walks straight past — and the failure is silent, because a planner reading unprojected state passes every test while quietly seeing everything. There is therefore no unprojected Observation to read.
+
+Rejected: **giving the AI Commander perfect information as a difficulty lever.** It is the cheap route to a competent opponent, and it makes "is the scorer any good" unanswerable — competence and omniscience are indistinguishable from the outside — while leaving the two Commanders playing different games.
+
 Consequences: #14, #15, #16/#17 and #18 all bind to the Command/effect schema, not to the
 envelope; new port verbs are schema additions, not transport changes. The Phase-2 chunking
 protocol stays in the shim's framing layer (ADR-0005) untouched, since payloads remain opaque to

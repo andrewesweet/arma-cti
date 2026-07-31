@@ -15,6 +15,18 @@ Decided 2026-07-30 (grilling session). Session-based persistent campaign ([ADR-0
   - Squad prices in one config table: rifle squad base, weapons ~1.5x, transport +flat premium. Reinforce = missing fraction x price x ~0.8 discount. Starting Funds ~3 squads. No upkeep, refunds, or selling.
   - Placeholders: income 10/obj/min, stipend 5/min, rifle 100, weapons 150, transport +50, start 300.
 - AI Commander for both sides: prioritise objectives, buy squads, order capture/defend.
+- Fog of war at the strategic layer (decided 2026-07-31, grilling session; issues #27 and the
+  Contact-report issue it blocks). A Commander knows its own side in full — Squads, Orders, Funds.
+  Public to both: Objective ownership including Contested, and each Base's HQ intact or destroyed,
+  because the two win conditions are the scoreboard rather than intelligence. Everything else
+  about the enemy arrives as **Contacts**: what that side's squad leaders have actually seen,
+  aggregated per Objective or Base, carrying an echelon band, a posture, notable assets and an
+  age. Enemy Funds, force count, Squad identity and standing Orders never cross. The AI Commander
+  plays under the same fog as the human, enforced structurally — the daemon exposes only a
+  per-side projection, so an in-process planner cannot read past it.
+  - Deliberately deferred, not overlooked: reports are instantaneous and perfectly transmitted
+    (no radio range, delay or jamming), and exact-position-with-age is used rather than the
+    engine's perceived-position-with-error.
 - Player roles, both first-class: Commander (map UI orders) or squad leader (leads one squad).
 - Player respawn (MUST — player death must not end the game).
 - Win, either of:
