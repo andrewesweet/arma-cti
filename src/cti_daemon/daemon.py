@@ -44,9 +44,10 @@ class Daemon:
             outbox=self.outbox,
         )
         self.port = CommandPort(campaign=self.campaign)
-        # The last strategic picture written to telemetry, so an unchanged one
-        # is not written again. Comparison only, never campaign state.
-        self._last_observation: dict[str, Any] = {}
+        # The last strategic picture written to telemetry per side, so an
+        # unchanged one is not written again. Comparison only, never campaign
+        # state — and never a place a side's view is read from.
+        self._last_observation: dict[str, dict[str, Any]] = {}
 
     def handle_line(self, line: str) -> str:
         """Answer one request line. Every path produces a reply."""
@@ -131,25 +132,31 @@ class Daemon:
             self._telemetry.record("income", at=at_time, paid=payout)
         for squad_id in lost:
             self._telemetry.record("squad_lost", at=at_time, squad=squad_id)
+        for side in commands.SIDES:
+            self._record_observation(side)
 
-        result = observation.serialise(self.campaign.observation())
-        self._record_observation(result)
-        result["paid"] = paid
-        result["lost"] = list(lost)
-        return protocol.accepted(request.id, result)
+        # The public picture alone (#27). The server repaints ownership markers
+        # from this and needs nothing else, and there is no side whose view it
+        # could be handed without putting an unprojected picture on the wire.
+        # What each side moved and lost is on disk above, where an operator
+        # reads it and a Commander does not.
+        return protocol.accepted(request.id, observation.serialise(self.campaign.observation()))
 
-    def _record_observation(self, document: dict[str, Any]) -> None:
-        """Write the strategic picture out when it has actually changed.
+    def _record_observation(self, side: str) -> None:
+        """Write one side's strategic picture out when it has actually changed.
 
         Reports arrive every few seconds and mostly say the same thing; writing
         each one would bury the moment ownership moved under a hundred rows
-        saying it had not. The held copy is a comparison only — telemetry is
-        never read back as campaign state (ADR-0003).
+        saying it had not. A row per side rather than one carrying both, because
+        there is no picture carrying both to write (#27) — an operator wanting
+        the whole board reads two rows. The held copy is a comparison only —
+        telemetry is never read back as campaign state (ADR-0003).
         """
+        document = observation.serialise(self.campaign.observation(side))
         moment = {key: value for key, value in document.items() if key != "at"}
-        if moment == self._last_observation:
+        if moment == self._last_observation.get(side):
             return
-        self._last_observation = moment
+        self._last_observation[side] = moment
         self._telemetry.record("observation", **document)
 
     def _reconcile(self, request: protocol.Request) -> tuple[str, ...]:

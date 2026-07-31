@@ -39,25 +39,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   knowing as well as commanding, and the AI Commander plays under the same fog, enforced by there
   being no unprojected picture for an in-process planner to read. Perfect information as a
   difficulty lever was considered and rejected — it makes "is the scorer any good" unanswerable.
-- The return leg: every report the world makes is answered with the whole strategic picture —
-  which side holds each Objective including Contested, what each side has to spend, and every
-  Squad with its side, type, head count, standing Order and the Objective or Base it is standing
-  on. Deliberately the set ADR-0008 persists and nothing it regenerates, so the Phase-2 snapshot
+- The return leg: every report the world makes is answered on the same call, so there is no second
+  channel, no second cadence and no callback — which is why at-most-once callback delivery never
+  arises for it. An **Observation** is what one Commander may know at one moment: which side holds
+  each Objective including Contested, what that Commander has to spend, and each of its own Squads
+  with its type, head count, standing Order and the Objective or Base it is standing on.
+  Deliberately the set ADR-0008 persists and nothing it regenerates, so the Phase-2 snapshot
   schema is this shape rather than a second one. No exact positions, health, ammo or AI knowledge:
   a Commander reasons about places, not coordinates. Held in memory only.
   - Assembled rather than reported wholesale. Ownership, Funds and Orders are the daemon's own;
     the world contributes only the two facts nothing else can see — how many of a Squad are still
     standing, and where it is. A Squad the world stops reporting has been wiped out, and the
     roster says so rather than letting it linger.
-  - It rides the report's own reply, so there is no second channel, no second cadence and no
-    callback — which is why at-most-once callback delivery never arises for it.
-  - A crowded Stratis (every Objective owned, sixteen Squads a side) encodes to 4,095 bytes
-    against the engine's 10,240-byte `callExtension` return cap — 6,145 bytes of headroom, about
-    115 bytes a Squad. Every reply's size is recorded in telemetry, and the game fails the run at
-    nine tenths of the cap, because the engine truncates a longer return in silence and the fix is
-    a smaller observation rather than a chunking protocol invented in passing.
-  - Telemetry carries the picture whenever it moves and not otherwise, so tailing it shows the
-    moment ownership or Funds changed instead of a hundred rows saying they had not.
+  - One side only, and structurally so: Funds are a number rather than a table keyed by side, a
+    Squad view carries no side, and no call hands out the whole map's Squads. There is no
+    unprojected picture to obtain, which is what makes the fog hold against a planner that reads
+    campaign state in-process rather than over the wire. The server, which is not a Commander,
+    takes ownership alone — enough to paint its markers and nothing else.
+  - A crowded Stratis (every Objective owned, sixteen Squads a side) encodes to 1,932 bytes
+    against the engine's 10,240-byte `callExtension` return cap — 8,308 bytes of headroom, about
+    107 bytes a Squad, so roughly 90 Squads a side would fit. The server's own reply is 222 bytes.
+    Every reply's size is recorded in telemetry, and the game fails the run at nine tenths of the
+    cap, because the engine truncates a longer return in silence and the fix is a smaller
+    observation rather than a chunking protocol invented in passing.
+  - Telemetry carries each side's picture whenever it moves and not otherwise, so tailing it shows
+    the moment ownership or Funds changed instead of a hundred rows saying they had not. A row per
+    side, because there is no picture carrying both to write.
 - Squads take **Orders**, and an Order is standing rather than a waypoint consumed and forgotten.
   A Commander tells one Squad to Capture an Objective, Defend one, or fall back into Reserve, and
   the three are distinct in the world: Capture searches the ground it is sent to, Defend goes

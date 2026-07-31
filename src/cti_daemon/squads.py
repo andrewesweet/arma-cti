@@ -82,9 +82,14 @@ class Roster:
             return None
         return squad
 
-    def roll(self) -> tuple[Squad, ...]:
-        """Every Squad on the map, in the order they were bought."""
-        return tuple(self._squads.values())
+    def roll(self, side: str) -> tuple[Squad, ...]:
+        """One side's Squads, in the order they were bought.
+
+        A side rather than the whole map, for the reason `of` takes one: there
+        is no call that hands out the enemy's order of battle, so an in-process
+        planner cannot read it even by accident (#27).
+        """
+        return tuple(squad for squad in self._squads.values() if squad.side == side)
 
     def reconcile(self, seen: dict[str, tuple[int, str]]) -> tuple[str, ...]:
         """Take the world's account of which Squads exist, and where.

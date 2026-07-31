@@ -265,10 +265,12 @@ def observe(daemon: Daemon, request_id: str, **payload: object) -> dict[str, Any
     return reply_to(daemon, id=request_id, verb="observe", payload={"time": 1, **payload})["result"]
 
 
-def test_the_reply_to_an_observation_is_the_whole_strategic_picture(tmp_path: Path) -> None:
+def test_the_reply_to_an_observation_is_the_public_picture_and_no_more(tmp_path: Path) -> None:
     # #15's return leg: the world reports what only it can see and gets back
-    # what a Commander may know, on the same call. No second channel, no second
-    # cadence, and no callback — so at-most-once delivery never arises.
+    # what it needs to paint the map, on the same call. No second channel, no
+    # second cadence, and no callback — so at-most-once delivery never arises.
+    # #27 fixed what "no more" means: the server is not a Commander, so it takes
+    # ownership alone and no side's Funds, Squads or standing Orders.
     daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply_to(
         daemon,
@@ -278,18 +280,7 @@ def test_the_reply_to_an_observation_is_the_whole_strategic_picture(tmp_path: Pa
     )
     result = observe(daemon, "o-6", squads={"WEST-1": {"size": 7, "at": "nato_airbase"}})
 
-    assert result["funds"]["WEST"] == 200
-    assert result["squads"] == [
-        {
-            "id": "WEST-1",
-            "side": "WEST",
-            "type": "rifle",
-            "size": 7,
-            "order": "reserve",
-            "objective": "",
-            "at": "nato_airbase",
-        }
-    ]
+    assert set(result) == {"at", "owners"}
 
 
 def test_a_report_that_says_nothing_about_squads_leaves_the_roster_alone(tmp_path: Path) -> None:
@@ -303,7 +294,8 @@ def test_a_report_that_says_nothing_about_squads_leaves_the_roster_alone(tmp_pat
         verb="command",
         payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
     )
-    assert len(observe(daemon, "o-8", presence={})["squads"]) == 1
+    observe(daemon, "o-8", presence={})
+    assert len(daemon.campaign.observation("WEST").squads) == 1
 
 
 def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: Path) -> None:
@@ -314,9 +306,17 @@ def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: 
         verb="command",
         payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
     )
-    result = observe(daemon, "o-10", squads={})
-    assert result["squads"] == []
-    assert result["lost"] == ["WEST-1"]
+    observe(daemon, "o-10", squads={})
+    assert daemon.campaign.observation("WEST").squads == ()
+    # A Squad leaving the Campaign is reported to the operator's log rather than
+    # to the world, which already knows: it is what said so.
+    rows = tmp_path / "telemetry.jsonl"
+    lost = [
+        json.loads(line)
+        for line in rows.read_text(encoding="utf-8").splitlines()
+        if json.loads(line)["event"] == "squad_lost"
+    ]
+    assert [row["squad"] for row in lost] == ["WEST-1"]
 
 
 def test_a_squad_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> None:
@@ -335,6 +335,8 @@ def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
 ) -> None:
     # The demo is tailing telemetry and watching ownership and Funds move. A row
     # per report would bury the moment they did under rows saying they had not.
+    # One row per side, because there is no picture carrying both to write (#27);
+    # an operator wanting the whole board reads both rows.
     log = tmp_path / "telemetry.jsonl"
     daemon = Daemon(telemetry_path=log)
     observe(daemon, "o-13", presence={"agia_marina": ["WEST"]})
@@ -344,7 +346,7 @@ def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
         rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
         return [row for row in rows if row["event"] == "observation"]
 
-    assert len(written()) == 1
+    assert [row["side"] for row in written()] == ["WEST", "EAST"]
 
     reply_to(
         daemon,
@@ -353,8 +355,9 @@ def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
         payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
     )
     observe(daemon, "o-16", presence={"agia_marina": ["WEST"]})
-    assert len(written()) == 2
-    assert written()[-1]["funds"]["WEST"] == 200
+    # Only the side that spent moved, so only its row is written again.
+    assert [row["side"] for row in written()] == ["WEST", "EAST", "WEST"]
+    assert written()[-1]["funds"] == 200
 
 
 def test_every_reply_records_how_close_it_ran_to_the_return_cap(tmp_path: Path) -> None:

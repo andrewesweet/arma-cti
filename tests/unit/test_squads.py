@@ -49,11 +49,21 @@ def test_a_squad_nobody_bought_is_not_found() -> None:
     assert squads.Roster().of("WEST-9", "WEST") is None
 
 
-def test_the_roll_lists_every_squad_in_the_order_they_were_bought() -> None:
+def test_a_sides_roll_lists_its_own_squads_in_the_order_they_were_bought() -> None:
     roster = squads.Roster()
     roster.add("WEST", "rifle", 8)
     roster.add("EAST", "weapons", 8)
-    assert [squad.id for squad in roster.roll()] == ["WEST-1", "EAST-1"]
+    roster.add("WEST", "weapons", 8)
+    assert [squad.id for squad in roster.roll("WEST")] == ["WEST-1", "WEST-2"]
+
+
+def test_no_call_hands_out_the_whole_map_of_squads() -> None:
+    # #27: the projection has to hold against an in-process planner, so the
+    # roster has no reading that returns both sides for one to reach for.
+    roster = squads.Roster()
+    roster.add("WEST", "rifle", 8)
+    roster.add("EAST", "weapons", 8)
+    assert roster.roll("EAST") == (roster.of("EAST-1", "EAST"),)
 
 
 def test_reserve_is_the_only_order_that_names_no_ground() -> None:

@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
 from cti_daemon.commands import SIDES, Effect, serialise_effect
-from cti_daemon.observation import Observation, SquadView
+from cti_daemon.observation import PUBLIC, Observation, SquadView
 from cti_daemon.squads import Roster
 
 if TYPE_CHECKING:
@@ -78,32 +78,42 @@ class Campaign:
         """Every Objective's owner, for a Commander to reason over."""
         return {name: state.owner for name, state in self._states.items()}
 
-    def funds(self) -> dict[str, int]:
-        """Return what each side holds, for a Commander and for the UI."""
-        return {side: self.ledger.balance(side) for side in SIDES}
-
-    def observation(self) -> Observation:
-        """Assemble the whole strategic picture a Commander may know (#15).
+    def observation(self, for_side: str = PUBLIC) -> Observation:
+        """Assemble the strategic picture `for_side` may know (#15, #27).
 
         Assembled rather than reported: ownership, Funds and Orders are the
         daemon's own, and only the head count and the ground underfoot came
         from the world. Held nowhere but in memory — persistence is Phase 2.
+
+        Projected rather than filtered on the way out: ADR-0012 runs the planner
+        in-process, so a projection applied at the wire is one it never meets.
+        This is the only way to obtain an observation, and it never assembles
+        one carrying both sides. `PUBLIC` — the default, so the safe answer is
+        also the easy one — is ownership alone, which is what the server gets.
         """
+        if for_side == PUBLIC:
+            return Observation(at_time=self.elapsed, owners=self.owners())
+        if for_side not in SIDES:
+            # `Ledger.balance` mints a starting balance for any string it is
+            # handed, so a mistyped side would otherwise return an invented
+            # fortune and an empty roster rather than saying anything.
+            message = f"no side named {for_side!r} has an observation to take"
+            raise ValueError(message)
         return Observation(
             at_time=self.elapsed,
             owners=self.owners(),
-            funds=self.funds(),
+            for_side=for_side,
+            funds=self.ledger.balance(for_side),
             squads=tuple(
                 SquadView(
                     id=squad.id,
-                    side=squad.side,
                     squad_type=squad.squad_type,
                     size=squad.size,
                     order=squad.order.kind,
                     objective=squad.order.objective,
                     at=squad.at,
                 )
-                for squad in self.roster.roll()
+                for squad in self.roster.roll(for_side)
             ),
         )
 
