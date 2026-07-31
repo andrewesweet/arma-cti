@@ -43,10 +43,13 @@ only door: a client loading the shim locally and speaking to the daemon over loo
 path outside the port, and exactly what #19's audit exists to catch.
 
 **All world effects ride the outbox, for both Commanders.** An accepted Purchase spawns its Squad
-via a pushed effect message through the poll-and-ack path (ADR-0005, `outbox.py`), not via the
+via an effect message through the poll-and-ack path (ADR-0005, `outbox.py`), not via the
 synchronous reply — otherwise human-issued effects would ride the reply while AI-issued effects
 (which have no request in flight) ride the outbox, and #19 would have two effect paths to audit.
-Frame-bound push latency (8–17 ms p50, ADR-0004) is comfortably inside what Orders tolerate.
+*(Amended 2026-07-31, ADR-0018: this originally read "a pushed effect message" and cited the
+frame-bound callback latency of 8–17 ms p50. Effects are polled, not pushed; their latency bound
+is the poll interval — 2 s default, mean 1 s, a declared tuning lever — comfortably inside what
+Orders tolerate. The push figure belongs to a path that does not ship; see ADR-0018.)*
 Effect messages are schema'd from the same source as Commands. An `ok` result is advisory only —
 it may carry data for immediate UI display (remaining Funds, say) but never an instruction to
 mutate the world; world mutations are exclusively effect-message-driven.
