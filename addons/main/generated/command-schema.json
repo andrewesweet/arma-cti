@@ -1,0 +1,62 @@
+{
+  "_generated_by": "tools/export_command_schema.py. Do not edit by hand: change the Python source and run `just generate`",
+  "commands": {
+    "purchase": [
+      "squad_type"
+    ],
+    "order": [
+      "squad",
+      "order",
+      "objective"
+    ]
+  },
+  "effects": {
+    "squad_spawned": [
+      "squad",
+      "squad_type",
+      "size"
+    ],
+    "order_issued": [
+      "squad",
+      "order",
+      "objective"
+    ],
+    "objective_captured": [
+      "objective"
+    ]
+  },
+  "sides": [
+    "WEST",
+    "EAST"
+  ],
+  "orders": [
+    "capture",
+    "defend",
+    "reserve"
+  ],
+  "orders_needing_objective": [
+    "capture",
+    "defend"
+  ],
+  "rejection_codes": [
+    "already_held",
+    "insufficient_funds",
+    "malformed_command",
+    "unknown_command",
+    "unknown_squad",
+    "wrong_side"
+  ],
+  "starting_funds": 300,
+  "squads": {
+    "rifle": {
+      "display_name": "Rifle Squad",
+      "price": 100,
+      "size": 8
+    },
+    "weapons": {
+      "display_name": "Weapons Squad",
+      "price": 150,
+      "size": 8
+    }
+  }
+}

@@ -70,11 +70,24 @@ def load(path: Path) -> MapManifest:
 
 
 def load_all(directory: Path) -> dict[str, MapManifest]:
-    """Read every manifest in a directory, keyed by map id."""
-    return {
-        manifest.id: manifest
-        for manifest in (load(path) for path in sorted(directory.glob("*.json")))
-    }
+    """Read every manifest in a directory, keyed by map id.
+
+    The addon ships these files verbatim and resolves one at mission start from
+    `worldName` alone (ADR-0017), so the filename is the lookup key rather than
+    decoration. Python is the only reader that can see the whole directory, so
+    the naming rule is enforced here — a manifest the game could never find
+    fails `just unit` instead of producing an empty world on a server.
+    """
+    maps: dict[str, MapManifest] = {}
+    for path in sorted(directory.glob("*.json")):
+        found = load(path)
+        if path.stem != found.world.lower():
+            _refuse(
+                f"{path.name} describes world {found.world!r}, so the addon would look for "
+                f"{found.world.lower()}.json and find nothing"
+            )
+        maps[found.id] = found
+    return maps
 
 
 def _refuse(detail: str) -> NoReturn:

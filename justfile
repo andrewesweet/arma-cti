@@ -18,15 +18,16 @@ _default:
 # No-Arma static tier: commit hygiene, lints, types, formatting.
 check: check-commits check-generated check-sqf check-python check-rust
 
-# Regenerate everything derived from authored data.
+# Export what SQF cannot read from an authored file. The map manifests are not
+# here: the addon ships and parses the authored JSON itself (ADR-0017), so
+# there is nothing to regenerate. The Command Port schema lives in Python, so
+# it still has to be written out.
 generate:
-    uv run python tools/generate_manifest_sqf.py
-    uv run python tools/generate_command_sqf.py
+    uv run python tools/export_command_schema.py
 
-# A stale generated file is a schema_stale failure, never a silent divergence.
+# A stale export is a schema_stale failure, never a silent divergence.
 check-generated:
-    uv run python tools/generate_manifest_sqf.py --check
-    uv run python tools/generate_command_sqf.py --check
+    uv run python tools/export_command_schema.py --check
 
 # Conventional Commits (ADR-0010).
 check-commits:

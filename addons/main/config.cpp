@@ -41,6 +41,7 @@ class CfgFunctions
             class prngSelect {};
             class prngSelfTest {};
             class manifestLoad {};
+            class commandSchema {};
             class sideMarkerColour {};
             class worldInit {};
             class networkSample {};
@@ -61,13 +62,9 @@ class CfgFunctions
             class orderEnforce {};
         };
 
-        // Written by tools/generate_manifest_sqf.py from manifests/*.json.
-        // Never hand-edited; `just check` fails stale output as schema_stale.
-        class generated
-        {
-            file = "cti\addons\main\generated";
-            class manifestData {};
-            class commandSchema {};
-        };
+        // No generated class any more (ADR-0017). The map manifests ship as the
+        // authored JSON under manifests/ and the Command Port schema is
+        // exported as JSON under generated/; both are read with loadFile +
+        // fromJSON at the point of use, so neither is a function to declare.
     };
 };

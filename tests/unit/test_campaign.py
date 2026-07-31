@@ -25,7 +25,7 @@ REPO = Path(__file__).parents[2]
 def live() -> campaign.Campaign:
     """Return a campaign on the authored Stratis map, everything Neutral."""
     return campaign.Campaign(
-        map_manifest=manifest.load(REPO / "manifests" / "stratis.json"),
+        map_manifest=manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json"),
         table=economy.load(REPO / "config" / "economy.json"),
         ledger=economy.Ledger(300),
         outbox=Outbox(),

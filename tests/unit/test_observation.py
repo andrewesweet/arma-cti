@@ -76,7 +76,7 @@ def live() -> campaign.Campaign:
     """Return a campaign on the authored Stratis map, everything Neutral."""
     table = economy.load(REPO / "config" / "economy.json")
     return campaign.Campaign(
-        map_manifest=manifest.load(REPO / "manifests" / "stratis.json"),
+        map_manifest=manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json"),
         table=table,
         ledger=economy.Ledger(table.starting_funds),
         outbox=Outbox(),

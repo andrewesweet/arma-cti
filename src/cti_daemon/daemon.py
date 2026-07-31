@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 DEFAULT_ECONOMY = Path(__file__).parents[2] / "config" / "economy.json"
-DEFAULT_MANIFESTS = Path(__file__).parents[2] / "manifests"
+DEFAULT_MANIFESTS = Path(__file__).parents[2] / "addons" / "main" / "manifests"
 DEFAULT_MAP = "stratis"
 
 

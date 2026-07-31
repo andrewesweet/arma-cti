@@ -20,23 +20,42 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 REPO = Path(__file__).parents[2]
+# The authored manifests live inside the addon, because the addon ships and
+# reads them verbatim (ADR-0017). There is no second copy to point at.
+MANIFESTS = REPO / "addons" / "main" / "manifests"
 
 
 @pytest.fixture
 def stratis() -> dict[str, Any]:
     """Return the authored Stratis manifest as a mutable document."""
-    return json.loads((REPO / "manifests" / "stratis.json").read_text(encoding="utf-8"))
+    return json.loads((MANIFESTS / "stratis.json").read_text(encoding="utf-8"))
 
 
 def test_the_authored_stratis_manifest_is_valid() -> None:
-    stratis_map = manifest.load(REPO / "manifests" / "stratis.json")
+    stratis_map = manifest.load(MANIFESTS / "stratis.json")
     assert stratis_map.id == "stratis"
     assert stratis_map.world == "Stratis"
 
 
 def test_every_authored_manifest_in_the_repository_is_valid() -> None:
-    maps = manifest.load_all(REPO / "manifests")
+    maps = manifest.load_all(MANIFESTS)
     assert "stratis" in maps
+
+
+def test_a_manifest_filename_that_does_not_name_its_world_is_refused(tmp_path: Path) -> None:
+    # The addon resolves a manifest from `worldName` alone, so the filename is
+    # the lookup key. A manifest the game could never find is an authoring slip
+    # Python is the only reader positioned to catch.
+    document = json.loads((MANIFESTS / "stratis.json").read_text(encoding="utf-8"))
+    (tmp_path / "altis.json").write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(manifest.ManifestError, match=r"altis\.json"):
+        manifest.load_all(tmp_path)
+
+
+def test_a_manifest_filename_that_names_its_world_is_accepted(tmp_path: Path) -> None:
+    document = json.loads((MANIFESTS / "stratis.json").read_text(encoding="utf-8"))
+    (tmp_path / "stratis.json").write_text(json.dumps(document), encoding="utf-8")
+    assert "stratis" in manifest.load_all(tmp_path)
 
 
 def mutate(document: dict[str, Any], change: Callable[[dict[str, Any]], None]) -> dict[str, Any]:

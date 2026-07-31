@@ -67,6 +67,11 @@ precedent; the Squad price table is data in that same pipeline, consumed by the 
 and by the UI for display only. #19's audit becomes mechanical on both sides: SQF-side, no
 Command payload leaves except through the gateway; Python-side, no strategic mutation except
 through the port entry function.
+_(Amended 2026-08-01, ADR-0017, #22: the mechanism changes, the intent stands. SQF reads the schema
+as JSON with `loadFile` + `fromJSON` rather than as generated SQF literals, and the
+manifest→generated-SQF precedent this clause cites is withdrawn — the addon now ships and parses
+the authored manifest itself, so there is no second rendering to keep in step. Generation survives
+only where there is no authored file to ship, which is this schema and not the manifest.)_
 
 Rejected: **(a) port = envelope** (domain verbs flat beside `ping`/`poll`/`ack`) — collapses the
 error/rejection typing above, makes the planner construct transport envelopes with correlation

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The game reads the authored map manifest itself, instead of a generated SQF copy of it. The
+  engine has had a JSON parser since 2.18 and the server runs 2.20, so the addon ships
+  `manifests/stratis.json` verbatim in its own PBO and parses it at mission start with `loadFile`
+  and `fromJSON`. The generator, the generated file, its Functions Library entry and its freshness
+  check are all gone. Before, the same eight Objectives existed twice and a check kept the copies
+  honest; now there is one document, and them disagreeing is not a thing that can be expressed.
+  The addon resolves its manifest from the world's name — world `Stratis` is `stratis.json` — and
+  Python refuses a manifest whose filename the game could never find. See ADR-0017, which amends
+  ADR-0012's generated-SQF clause and records what would overturn the decision.
+
+- The Command Port schema is exported as JSON rather than rendered as SQF. The Command catalogue,
+  the effect catalogue and the rejection codes live in Python and have no authored file to ship, so
+  `just generate` and the `schema_stale` gate survive for that one export — but the hand-rolled SQF
+  literals, quoting and all, do not.
+
 ### Fixed
 
 - A Squad the world has never held is no longer treated as one it has lost. A Purchase is judged in
