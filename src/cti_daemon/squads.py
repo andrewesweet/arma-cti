@@ -48,6 +48,9 @@ class Squad:
     # id, a Base id, or empty for the open ground between them. Coarse on
     # purpose — a Commander reasons about places, not coordinates (ADR-0008).
     at: str = ""
+    # Whether the world has ever reported it standing. A Squad is bought here
+    # and spawned there, so a report taken in between says nothing about it.
+    fielded: bool = False
 
 
 @dataclass(slots=True)
@@ -99,8 +102,18 @@ class Roster:
         wiped out. Returns the ids that were lost, so a Squad leaving the
         campaign is something the caller can report rather than something that
         silently stops appearing.
+
+        A Squad the world has never held is not one it has lost. A Purchase is
+        judged here and carried out there, so a report taken between the two is
+        silent about a Squad that is on its way — and deleting it on that
+        silence leaves the group that arrives answering to an id the roster no
+        longer knows: a Squad nobody can order and nobody counts.
         """
-        lost = tuple(squad_id for squad_id in self._squads if squad_id not in seen)
+        lost = tuple(
+            squad_id
+            for squad_id, squad in self._squads.items()
+            if squad_id not in seen and squad.fielded
+        )
         for squad_id in lost:
             del self._squads[squad_id]
         for squad_id, (size, at) in seen.items():
@@ -108,4 +121,5 @@ class Roster:
             if squad is not None:
                 squad.size = size
                 squad.at = at
+                squad.fielded = True
         return lost

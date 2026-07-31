@@ -306,6 +306,9 @@ def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: 
         verb="command",
         payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
     )
+    # Reported standing once first: a Squad the world has never held is one
+    # still on its way there, not one it has lost (`squads.Roster.reconcile`).
+    observe(daemon, "o-10a", squads={"WEST-1": {"size": 8, "at": ""}})
     observe(daemon, "o-10", squads={})
     assert daemon.campaign.observation("WEST").squads == ()
     # A Squad leaving the Campaign is reported to the operator's log rather than

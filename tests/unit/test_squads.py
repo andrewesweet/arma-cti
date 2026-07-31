@@ -68,3 +68,26 @@ def test_no_call_hands_out_the_whole_map_of_squads() -> None:
 
 def test_reserve_is_the_only_order_that_names_no_ground() -> None:
     assert set(squads.ORDERS) - set(squads.NEEDS_OBJECTIVE) == {"reserve"}
+
+
+def test_a_squad_the_world_has_never_held_is_not_a_squad_the_world_has_lost() -> None:
+    # A Squad is bought in the daemon and spawned in the game, and a report
+    # taken between the two says nothing about it. Reading that silence as a
+    # loss deletes the Squad on its way into the world, and the group that
+    # arrives a moment later answers to an id the roster no longer knows — a
+    # ghost the Commander cannot order and does not count, so it buys another.
+    # The AI Commander (#16) buys on that cadence, which is how this surfaced.
+    roster = squads.Roster()
+    roster.add("WEST", "rifle", 8)
+
+    assert roster.reconcile({}) == ()
+    assert [squad.id for squad in roster.roll("WEST")] == ["WEST-1"]
+
+
+def test_a_squad_the_world_did_hold_and_no_longer_does_is_lost() -> None:
+    roster = squads.Roster()
+    roster.add("WEST", "rifle", 8)
+    roster.reconcile({"WEST-1": (8, "girna")})
+
+    assert roster.reconcile({}) == ("WEST-1",)
+    assert roster.roll("WEST") == ()

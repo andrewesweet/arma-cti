@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- A Squad the world has never held is no longer treated as one it has lost. A Purchase is judged in
+  the daemon and carried out in the game, and a report arriving between the two says nothing about
+  the Squad on its way — reading that silence as a loss deleted it from the roster, so the group
+  that spawned a moment later answered to an id nobody knew: a Squad no Commander could order and
+  none counted, and a Commander short of its intended force bought another. A human Commander buys
+  a few times a session and would have met this rarely; the AI Commander buys every five seconds.
+
 - None of `targetsQuery`'s arguments can be relied on to select anything, and the Contact design
   was written as though all of them could. Three separate findings, each from an in-world probe
   run and none reachable from a unit test:

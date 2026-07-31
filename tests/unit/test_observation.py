@@ -131,6 +131,9 @@ def test_a_squad_the_world_no_longer_holds_leaves_the_observation() -> None:
     for _ in range(2):
         open_port.submit(Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST")
 
+    # Held by the world first: one it has never held is one still on its way
+    # there, and `squads.Roster.reconcile` says so rather than deleting it.
+    world.roster.reconcile({"WEST-1": (8, ""), "WEST-2": (8, "")})
     assert world.roster.reconcile({"WEST-2": (8, "")}) == ("WEST-1",)
     assert [squad.id for squad in world.observation("WEST").squads] == ["WEST-2"]
 
