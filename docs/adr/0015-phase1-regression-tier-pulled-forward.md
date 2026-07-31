@@ -1,0 +1,15 @@
+# The in-game regression tier is pulled forward as a thin Phase-1 slice, machine-scoped and lock-serialised
+
+Delegated-decision: yes
+Date: 2026-07-31
+Stood-in-for: human sign-off on a new ADR; issue #23's explicit "confirm with a human whether to pull it forward or fold it into #5" flag; and the CLAUDE.md command-table row for `just regress` that #23's acceptance criteria require (row to land with the recipe, per the Phase-0 retro rule)
+
+Decided 2026-07-31, on issue #23 and the design in `docs/regression-tier.md`.
+
+**Pulled forward, not folded into #5.** ADR-0011 schedules the acceptance harness for Phase 3, but the gap grew teeth faster than the schedule anticipated: #12, #13, #27 and #28 all landed properties only an in-game run protects, and each was verified by a hand-typed invocation a later session could not reproduce (the #27 retro found one reconstructed from a leftover generated file). The tier is built now as `just regress` — bash orchestration grown from `spike/run.sh`, verdicts by `diag_log` grep as today. It is explicitly disposable: no Python orchestrator, no verdict through the shim, no `EXPECT_*` framework, no `tests/specs/`, no oracle, no failure-bundle schema — those stay Phase 3, and the names `just accept` / `just accept-all` stay reserved for it. Three things are durable and carry into Phase 3: the probe corpus in `spike/probes/` (with machine-readable `probe:`/`issues:`/`window:` headers), the tier lock, and the evidence convention.
+
+**Machine-scoped state at `~/.arma-cti/`.** The Arma tier is single-occupancy per machine — one server install, one port range — while agent worktrees are many and short-lived, so both the lock and the evidence live outside every worktree. Serialisation is `flock(2)` on `~/.arma-cti/tier.lock` (kernel-released on holder death, which is the stale-holder failure Phase 0 actually met), non-blocking by default with a held lock reported as `infra_unavailable` — a stop, never a result — plus holder metadata; `--wait <secs>` bounds a queue, unbounded waiting is not offered. Evidence lands in `~/.arma-cti/runs/<UTC>-<probe>/` including the probe source as staged; passes pruned to the last three per probe, failures kept until their issue closes, and the durable record is the verdict + evidence path + SHA quoted into the gated issue.
+
+**Cost policy.** Full corpus once per issue that touches an in-world surface (`addons/`, `missions/`, `extension/`, the daemon's world-facing half, manifests), before landing; nothing in-game for issues wholly covered below. No per-commit or scheduled runs. Selection-by-issue is deliberately not built at five probes; the `issues:` header keeps it buildable, and growing the corpus past usefulness of full-only is the trigger — a fable-session call.
+
+**Flakes.** The runner never retries. A fail-then-pass with nothing changed gets a `// quarantined: #<issue>` header line pointing at an open synchronisation issue; quarantined probes still run and report `flake_quarantine` but do not gate. A quarantine line without an open issue is out of policy.
