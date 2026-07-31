@@ -3,6 +3,7 @@
 Delegated-decision: yes
 Date: 2026-07-31
 Stood-in-for: gameplay balance/feel sign-off, and the ADR-level choices #17 forced ("both sides AI-commanded, unattended")
+Reviewed-by-human: pending
 
 #17 puts both sides under an AI Commander in one daemon. Four things had to be decided that one
 side never asked, and none of them is reversible cheaply once a Campaign replay depends on it.
@@ -39,6 +40,16 @@ rejected for the MVP for the same reason ADR-0012 rejects perfect information: i
 play by different numbers, an unattended run stops being an experiment about whether the scorer is
 any good and becomes one about which weight set won. Difficulty is a later, deliberate ticket with
 a name; ADR-0014's weight set stands for both sides until then.
+
+**What would overturn these** *(added 2026-08-01 under ADR-0019, which requires a delegated
+decision to state its overturning evidence; the decisions themselves are unchanged)*: the fixed
+turn order falls the day any mechanism makes one Commander's intra-cycle act visible to the other
+before `observe` — at that point ordering is gameplay and wants deciding, not defaulting. The
+shared weight set is overturned only by the future difficulty ticket, and by nothing before it
+(the weight values' own overturning evidence lives in ADR-0014). One-Commander-per-side and the
+seed pair as Campaign identity are overturned by a Phase-2 snapshot/resume design that cannot
+restore both characters — the identity claim is among the first things a resume test should
+assert.
 
 ## Consequences
 

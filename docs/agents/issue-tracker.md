@@ -13,6 +13,10 @@ Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all op
 
 Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
 
+## Closing an issue that carries acceptance criteria
+
+Close it in the same session that lands its work, with a comment addressing every acceptance criterion: evidence for each criterion met, and for any criterion not met as written, a pointer to the recorded decision (ADR or issue) that superseded it — a prose note is not a supersession, and commit titles are not evidence. If you inherit an issue whose work landed in an earlier session, audit every criterion against the tree before closing: that audit on #12 found an architectural pivot (callback-push to poll-and-ack) shipped but decided nowhere, and stopped it closing as "done".
+
 ## Pull requests as a triage surface
 
 **PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_

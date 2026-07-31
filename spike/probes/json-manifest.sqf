@@ -1,3 +1,7 @@
+// probe: json-manifest
+// issues: 22
+// window: 150
+//
 // #22 in-world probe: the addon reads the authored JSON, and the world it
 // builds from it is the same world.
 //

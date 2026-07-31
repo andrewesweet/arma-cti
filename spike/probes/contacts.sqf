@@ -1,3 +1,7 @@
+// probe: contacts
+// issues: 28
+// window: 240
+//
 // #28 in-world probe: WEST reports what it saw of EAST, and nothing of who EAST is.
 //
 // Run with `just probe spike/probes/contacts.sqf 240`. Appended to the generated

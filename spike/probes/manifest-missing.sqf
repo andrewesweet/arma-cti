@@ -1,3 +1,8 @@
+// probe: manifest-missing
+// issues: 22
+// window: 150
+// expect: assertion_failed
+//
 // #22 in-world probe, RED BY DESIGN. A green run of this probe is the bug.
 //
 // Run with `just probe spike/probes/manifest-missing.sqf`. The expected verdict

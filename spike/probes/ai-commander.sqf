@@ -1,3 +1,7 @@
+// probe: ai-commander
+// issues: 16
+// window: 300
+//
 // #16 in-world probe: WEST plays itself, and the world does what it is told.
 //
 // Run with `CTI_AI_SIDE=WEST just probe spike/probes/ai-commander.sqf 300`.

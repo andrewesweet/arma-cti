@@ -1,3 +1,7 @@
+// probe: contact-decay
+// issues: 28
+// window: 300
+//
 // #28 in-world probe: a Contact outlives the engine forgetting the men it was made of.
 //
 // Run with `just probe spike/probes/contact-decay.sqf 300`.

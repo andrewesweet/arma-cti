@@ -3,6 +3,7 @@
 Delegated-decision: yes
 Date: 2026-07-31
 Stood-in-for: human sign-off on a new ADR and on amending ADR-0005/ADR-0012 (issue #12, acceptance criteria 7–8: async path and `ExtensionCallback` registration)
+Reviewed-by-human: pending
 
 #12 was specified with effects arriving by callback push: `rpc_async` fires, the reply lands on
 an `ExtensionCallback` handler registered before the daemon is told to push (ADR-0005's

@@ -3,6 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on a new ADR and on amending ADR-0012; issue #22's explicit "confirm it with a human before ripping the pipeline out" flag
+Reviewed-by-human: pending
 
 Decided 2026-08-01 on issue #22. Amends ADR-0012's clause "SQF constructors are derived from the
 same source, following #11's manifest→generated-SQF precedent."

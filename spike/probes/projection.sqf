@@ -1,3 +1,7 @@
+// probe: projection
+// issues: 27
+// window: 150
+//
 // #27 in-world probe: the server takes the public picture and still repaints.
 //
 // Run with `just probe spike/probes/projection.sqf`. Appended to the generated

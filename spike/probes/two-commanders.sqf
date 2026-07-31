@@ -1,3 +1,7 @@
+// probe: two-commanders
+// issues: 17
+// window: 600
+//
 // #17 in-world probe: both sides under an AI Commander, nobody watching.
 //
 // Run with:

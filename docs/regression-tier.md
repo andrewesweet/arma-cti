@@ -18,7 +18,7 @@ Each probe carries a machine-readable header block the runner parses — the sam
 // window: 240
 ```
 
-`window` is the probe's deadline in seconds, sized to its subject per the rule on the `probe` recipe; the header prose still states the reason. `issues` names what motivated it, which is what makes "run per issue" selectable later. No separate manifest file: the probe is the unit of ownership, and a manifest beside it is a second place to forget.
+`window` is the probe's deadline in seconds, sized to its subject per the rule on the `probe` recipe; the header prose still states the reason. `issues` names what motivated it, which is what makes "run per issue" selectable later. An optional fourth line, `// expect: <class>`, declares a red-by-design probe: the runner passes it exactly when the run fails with that class, and a probe with no `expect:` line expects `PASS` (added 2026-08-01 under ADR-0019 — `manifest-missing.sqf` landed after this design was written and its green run is the bug). No separate manifest file: the probe is the unit of ownership, and a manifest beside it is a second place to forget.
 
 ## The command surface
 
@@ -30,7 +30,7 @@ A failing probe fails the run and the command exits non-zero after finishing the
 
 ## Runtime budget
 
-Bring-up measured 20 s to mission running in Phase 0; with daemon start and staging, call it a minute per probe. Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_done`. Worst case (every probe running out its window: 150 bareworld + 150 projection + 240 contacts + 300 ai-commander + 300 contact-decay) is ~19 minutes of windows plus ~5 of bring-up — under half an hour. Typical passes finish well inside that, because only contact-decay's subject (120 s of engine decay, twice sampled) genuinely fills its window. A full pass is therefore an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number. (CLAUDE.md cites 420 s for contact-decay; the probe's own header, which the justfile makes authoritative, says 300. The runner believes headers.)
+Bring-up measured 20 s to mission running in Phase 0; with daemon start and staging, call it a minute per probe. Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_done`. Worst case (every probe running out its window: 150 bareworld + 150 projection + 240 contacts + 300 ai-commander + 300 contact-decay) is ~19 minutes of windows plus ~5 of bring-up — under half an hour. Typical passes finish well inside that, because only contact-decay's subject (120 s of engine decay, twice sampled) genuinely fills its window. A full pass is therefore an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers.)
 
 ## Serialisation
 
