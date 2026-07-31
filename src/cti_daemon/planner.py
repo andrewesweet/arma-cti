@@ -63,11 +63,17 @@ class Weights:
 
     # What an Objective's authored income is worth to take.
     income: float = 1.0
-    # And to keep. Far lower, because `Campaign._advance` keeps ground taken
-    # once taken: standing on quiet ground buys nothing the Campaign was not
-    # already paying, and a Commander who garrisons everything never wins by
-    # Domination. What makes a garrison worth it is the threat term below; this
-    # only decides which of two threatened Objectives is worth more.
+    # And to keep. This is the whole value of standing on quiet ground, so what
+    # it actually sets is advance against consolidate: whether a Squad that has
+    # just taken an Objective holds it or moves on. Measured on Stratis, at 0.1
+    # the Squad that takes Agia Marina marches on to LZ Baldy and at 1.0 it
+    # stays. Low because `Campaign._advance` keeps ground taken once taken, so a
+    # garrison on quiet ground guards income the Campaign was already paying.
+    #
+    # It multiplies the Objective's authored income, so on a map where every
+    # Objective pays the same — Stratis does — it is a constant across every
+    # Defend option and cannot choose between them. Deciding which garrison is
+    # the urgent one is the threat term below, and always was.
     garrison: float = 0.1
     # Ground half-taken is worth finishing.
     contested: float = 6.0
