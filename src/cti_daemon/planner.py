@@ -54,11 +54,23 @@ UNKNOWN_THREAT: Final = 1.0
 class Weights:
     """What the scorer values. Playtest-tuned placeholders; the terms are the contract.
 
-    Two relations are load-bearing rather than tuning. `jitter` is smaller than
-    `travel`, so the seed can only decide between options geography has already
-    tied to within a third of a kilometre — it never sends a Squad the long way
-    round. And `garrison` is smaller than `income`, so taking ground beats
-    sitting on it while there is ground left to take.
+    Tuned for a Commander that presses (human decision, 2026-07-31): two sides
+    both sitting on what they hold is not a Campaign worth playing, so the
+    default here advances by preference and consolidates only against a real
+    massed incursion. Measured on Stratis with a Squad on the line and the
+    enemy fresh across it, it attacks a Contact of every echelon up to a
+    company, and pulls back only when a company is standing on ground behind
+    it. What the first set of these weights did in the same picture was hold,
+    at every echelon, even with `threat` and `defend` set to zero — because the
+    turtle was never the threat terms. It was `travel` and `commitment`.
+
+    Three relations are load-bearing rather than tuning. `jitter` is smaller
+    than `travel`, so the seed can only decide between options geography has
+    already tied to within three hundred metres — it never sends a Squad the
+    long way round. `commitment` is larger than the whole spread of `jitter`,
+    so the anti-thrash margin still covers what the seed can move. And
+    `garrison` is smaller than `income`, so taking ground beats sitting on it
+    while there is ground left to take.
     """
 
     # What an Objective's authored income is worth to take.
@@ -78,18 +90,35 @@ class Weights:
     # Ground half-taken is worth finishing.
     contested: float = 6.0
     # What a team of assumed enemy costs to attack, and is worth to garrison
-    # against. Both in the units of ECHELON_THREAT.
-    threat: float = 2.0
-    defend: float = 3.0
-    # Per kilometre of marching, measured along the adjacency graph.
-    travel: float = 3.0
+    # against. Both in the units of ECHELON_THREAT. Small against `income`
+    # deliberately: at 0.5 a fresh company on an Objective costs 4 against the
+    # 10 that taking it pays, so heavy ground is attacked later than light
+    # ground rather than never. Raising it past `income / 8` is the point where
+    # a company becomes ground this Commander will not go near.
+    threat: float = 0.5
+    # And what the same Contact is worth to garrison against on our own side of
+    # it. Sized so a company — and only a company — behind the line outbids
+    # marching on: a Commander that turned round for every team sighting would
+    # never finish anything it started.
+    defend: float = 1.0
+    # Per kilometre of marching, measured along the adjacency graph. This is the
+    # main aggression dial, not `garrison` and not `threat`: at the original 3.0
+    # a four-kilometre march cost 12 against an Objective worth 10, so the far
+    # half of the island was never worth walking to and a Squad that reached the
+    # line stopped there. At 1.0 the whole of Stratis stays worth crossing while
+    # the near Objective is still preferred to the far one.
+    travel: float = 1.0
     # What a standing Order is worth on its own. The whole anti-thrash rule: a
     # Squad keeps going where it was sent unless something beats it by this much,
     # so scores that jitter around each other do not turn into countermarching.
-    commitment: float = 5.0
+    # It has to stay above the spread of `jitter` and below what a better
+    # Objective is worth — at 5.0 it was half an Objective's income and a Squad
+    # that had once been told to hold would not be told anything else.
+    commitment: float = 2.0
     # A fixed per-place preference, so two identical Objectives at equal distance
     # are not decided by alphabetical order and a Campaign has a character.
-    jitter: float = 1.0
+    # Three hundred metres of march, in the units of `travel`.
+    jitter: float = 0.3
     # How long a Contact takes to decay from what it said to knowing nothing.
     stale_seconds: float = 300.0
 

@@ -134,13 +134,19 @@ def test_a_squad_on_threatened_ground_its_side_holds_is_told_to_garrison_it() ->
     # ground you do. And never Capture, which the port refuses on ground the
     # side already holds — a scorer that needed telling is one issuing dead
     # Orders every cycle.
+    #
+    # A company, because that is the echelon the weights are tuned to stop for:
+    # a Commander told to press (`Weights`) marches on past a squad-sized
+    # sighting behind it and turns round only for a real massed incursion.
     world = live()
     held(world, "agia_marina", "WEST")
     fielded(world, "WEST", "agia_marina")
     world.contacts.report(
         "WEST",
         at_time=world.elapsed,
-        seen=tuple(contacts.Sighting(at="agia_marina", kind="Infantry", age=0.0) for _ in range(9)),
+        seen=tuple(
+            contacts.Sighting(at="agia_marina", kind="Infantry", age=0.0) for _ in range(25)
+        ),
         observed=("agia_marina",),
     )
 
@@ -234,7 +240,13 @@ def test_a_standing_order_survives_news_too_small_to_act_on() -> None:
     # somewhere does not turn round for a team, and does turn round for a
     # company. Without the margin, two Objectives whose scores cross and recross
     # would have it countermarching every five seconds and arriving nowhere.
+    # Broke for a Commander with Funds: it buys a Squad a cycle, the new Squad
+    # takes the Objective WEST-1 would have turned round for, and WEST-1 keeps
+    # its place for a reason that has nothing to do with the margin. One Squad
+    # and an empty purse is the position where the margin is the only thing
+    # deciding.
     world = quiet_start()
+    world.ledger.spend("WEST", world.ledger.balance("WEST"))
     mind = brain(world)
     first, _ = cycle(world, mind, "WEST")
     (_, marching_on) = orders(first)["WEST-1"]
@@ -244,10 +256,7 @@ def test_a_standing_order_survives_news_too_small_to_act_on() -> None:
     sighted(world, "WEST", marching_on, men=25)
     news, _ = cycle(world, mind, "WEST")
 
-    # Only WEST-1 is under examination: the Commander bought a second Squad on
-    # the first cycle, and a Squad that has never been told anything is not one
-    # holding its Order.
-    assert "WEST-1" not in orders(noise)
+    assert orders(noise) == {}
     assert orders(news)["WEST-1"][1] != marching_on
 
 

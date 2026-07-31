@@ -175,6 +175,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - A Squad keeps going where it was sent unless something beats it by a margin, so two Objectives
     whose scores cross and recross do not turn into countermarching. An unchanged world produces no
     second round of Orders at all.
+  - It presses. Two Commanders both sitting on what they hold is not a Campaign worth playing, so
+    the weights advance by preference and consolidate only against a real massed incursion: a Squad
+    on the line attacks a fresh Contact of any echelon across it, and turns round only for a
+    company standing on ground behind it. The first set of weights held at every echelon — and
+    went on holding with the threat terms set to zero, because the turtle was never the threat
+    terms. Marching cost more per kilometre than an Objective was worth, and a standing Order was
+    worth half an Objective on its own, so a Squad that reached the line stopped there.
   - It buys the cheapest Squad it can afford, up to one per Objective the map has: ground is taken
     by standing in a capture radius, so what wins is the number of Squads rather than what each
     carries. A threat-aware purchase is left for when the scorer has a threat model worth spending
