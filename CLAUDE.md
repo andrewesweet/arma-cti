@@ -32,9 +32,11 @@ Interact with the project through `just` only.
 | `just build` | HEMTT addon, shim `.so`, mission PBOs | No | Before any Arma tier |
 | `just build-shim-windows` | Cross-compiled `.dll` | No | Before a play session |
 | `just spike` | Server + HC + stub daemon, phase-0 measurements | Yes | Ad hoc |
-| `just probe [file]` | Phase-1 world, held up, with a probe from `spike/probes/` appended to the harness | Yes | Verifying a change in-world |
+| `just probe [file] [hold]` | Phase-1 world, held up, with a probe from `spike/probes/` appended to the harness | Yes | Verifying a change in-world |
 
 Not yet built: `just accept <spec-id>` and `just accept-all`, the acceptance tiers. Phase 1.
+
+`hold` is the probe's window in seconds, default 150. Raise it when the probe's **subject** genuinely takes longer — `spike/probes/contact-decay.sqf` runs at 420 because no shorter window can contain the 120 s of knowledge decay it measures. State the reason in the probe's own header. This is not licence against the `timeout` row above: sizing the window to what is being measured is allowed, extending it until a flaky probe passes is the thing that row forbids. A probe that fails at 150 and passes at 300 without its subject having grown that long is a synchronisation bug, and the fix is in the probe. _(validated ×1 — #28: both probes were flaky and neither fix was a longer wait. Observers left in Reserve sit at the engine's default behaviour with weapons down and never acquired six men at 90 m across a full window; and a bearing off the leader's facing is a guess about line of sight that lands behind a hangar often enough to matter.)_
 
 ## Failure classes
 
