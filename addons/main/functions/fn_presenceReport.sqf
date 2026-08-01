@@ -2,9 +2,10 @@
  * Author: arma-cti
  * Reports what the world can see to the daemon on a loop. Runs on the server.
  *
- * Three things only, because they are the three nothing else can see: who is
+ * Four things only, because they are the four nothing else can see: who is
  * standing inside each Objective's capture radius, what has become of each
- * Squad, and what each side's leaders have seen of the other (#28). The rest —
+ * Squad, what each side's leaders have seen of the other (#28), and whether
+ * each Base's HQ structure is still standing (#33). The rest —
  * ownership, Funds, Orders, and what a sighting means — is the daemon's
  * (ADR-0012). The reply is the return leg on the same call rather than a second
  * channel with a cadence of its own — and it is the public picture alone (#27):
@@ -52,7 +53,8 @@ if (!isServer) exitWith { scriptNull };
                 ["time", time],
                 ["presence", call cti_fnc_presenceSample],
                 ["squads", call cti_fnc_squadSample],
-                ["contacts", call cti_fnc_contactSample]
+                ["contacts", call cti_fnc_contactSample],
+                ["hq", call cti_fnc_hqSample]
             ]]
         ];
 

@@ -8,7 +8,8 @@
  * would be two answers to where something is standing.
  *
  * Bases carry no authored radius — they are not captured, only lost to
- * Decapitation — so a fixed 150 m stands in for standing in one.
+ * Decapitation — so cti_fnc_placeRadius stands one in, and it is the same
+ * reading an Order is given for the ground it names.
  *
  * Arguments:
  * 0: position <ARRAY> in [x, y] or [x, y, z]
@@ -26,7 +27,7 @@ private _at = "";
 
 {
     (_x get "position") params ["_placeEast", "_placeNorth"];
-    if (_where distance2D [_placeEast, _placeNorth, 0] <= (_x get "capture_radius")) exitWith {
+    if (_where distance2D [_placeEast, _placeNorth, 0] <= ([_x] call cti_fnc_placeRadius)) exitWith {
         _at = _x get "id";
     };
 } forEach _objectives;
@@ -34,7 +35,7 @@ private _at = "";
 if (_at isEqualTo "") then {
     {
         (_x get "position") params ["_placeEast", "_placeNorth"];
-        if (_where distance2D [_placeEast, _placeNorth, 0] <= 150) exitWith {
+        if (_where distance2D [_placeEast, _placeNorth, 0] <= ([_x] call cti_fnc_placeRadius)) exitWith {
             _at = _x get "id";
         };
     } forEach _bases;

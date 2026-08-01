@@ -455,6 +455,68 @@ def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
     assert written()[-1]["funds"] == 200
 
 
+def hq_rows(log: Path) -> list[dict[str, Any]]:
+    """Every HQ destruction the daemon wrote down."""
+    rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+    return [row for row in rows if row["event"] == "hq_destroyed"]
+
+
+def test_an_hq_the_world_reports_destroyed_is_written_down_once(tmp_path: Path) -> None:
+    # Decapitation is won by destroying a Base's HQ structure, and
+    # docs/mvp-scope.md resolves a mutual one by which destruction telemetry
+    # holds first — so the event has to be written exactly once per Base,
+    # carrying whose Base fell and who brought it down (#33).
+    log = tmp_path / "telemetry.jsonl"
+    daemon = Daemon(telemetry_path=log)
+    observe(daemon, "h-1", time=90, hq={"csat_kamino": {"destroyed": True, "by": "WEST"}})
+    # The world keeps reporting a destroyed HQ for the rest of the session: the
+    # rubble does not stop being rubble, and every later report says so.
+    observe(daemon, "h-2", time=95, hq={"csat_kamino": {"destroyed": True, "by": "WEST"}})
+
+    (row,) = hq_rows(log)
+    assert (row["base"], row["side"], row["by"], row["at"]) == ("csat_kamino", "EAST", "WEST", 90)
+
+
+def test_an_hq_still_standing_is_not_an_event(tmp_path: Path) -> None:
+    log = tmp_path / "telemetry.jsonl"
+    daemon = Daemon(telemetry_path=log)
+    observe(daemon, "h-3", hq={"csat_kamino": {"destroyed": False, "by": ""}})
+
+    assert hq_rows(log) == []
+
+
+def test_an_hq_report_naming_ground_the_map_lacks_is_refused(tmp_path: Path) -> None:
+    # A Base id the manifest does not have cannot be attributed to a side, and
+    # a Decapitation filed against nobody's Base is worse than none at all.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply = reply_to(
+        daemon,
+        id="h-4",
+        verb="observe",
+        payload={"time": 1, "hq": {"agia_marina": {"destroyed": True, "by": "WEST"}}},
+    )
+    assert reply["error"]["class"] == "malformed_request"
+
+
+def test_an_hq_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> None:
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply = reply_to(
+        daemon,
+        id="h-5",
+        verb="observe",
+        payload={"time": 1, "hq": {"csat_kamino": {"destroyed": "yes", "by": "WEST"}}},
+    )
+    assert reply["error"]["class"] == "malformed_request"
+
+
+def test_a_report_that_says_nothing_about_hqs_is_ordinary(tmp_path: Path) -> None:
+    log = tmp_path / "telemetry.jsonl"
+    daemon = Daemon(telemetry_path=log)
+    observe(daemon, "h-6", presence={})
+
+    assert hq_rows(log) == []
+
+
 def test_every_reply_records_how_close_it_ran_to_the_return_cap(tmp_path: Path) -> None:
     # The engine truncates a return over 10,240 bytes in silence (ADR-0004), so
     # the size of the one reply that grows — the observation — is kept on disk.

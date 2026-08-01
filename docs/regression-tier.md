@@ -10,7 +10,7 @@ The corpus is everything under `spike/probes/`, including **bareworld** — the 
 
 Bareworld is a probe file rather than the implicit "mission with no probe appended" this design first described, because a mission with nothing appended has no completion line worth waiting on: `CTI|done` fires before the loops it has just started have polled once, so waiting on it would have meant a sleep after it. See ADR-0021.
 
-The rest of the corpus covers what exists: presence sampling for both sides (`contacts`), Contact survival across engine knowledge decay (`contact-decay`), the projection reply (`projection`), an AI-issued Order landing on real waypoints (`ai-commander`), both sides under Commanders at once (`two-commanders`), the addon parsing its own authored JSON (`json-manifest`), and the manifest guard refusing rather than half-building (`manifest-missing`, red by design).
+The rest of the corpus covers what exists: presence sampling for both sides (`contacts`), Contact survival across engine knowledge decay (`contact-decay`), the projection reply (`projection`), an AI-issued Order landing on real waypoints (`ai-commander`), both sides under Commanders at once (`two-commanders`), an Assault bringing an enemy Base's HQ down and a Defend garrisoning a side's own (`base-assault`), the addon parsing its own authored JSON (`json-manifest`), and the manifest guard refusing rather than half-building (`manifest-missing`, red by design).
 
 One property on #23's list has no probe and is a corpus gap, not a runner feature: `CfgRemoteExec` mode=1 refusing a non-whitelisted call, which overlaps #21 and belongs with it. The broken-manifest refusal, listed here as a second gap when this was written, is now `manifest-missing.sqf` — it asks the guard for a world with no manifest rather than staging a corrupted file, so it needed no runner staging hook. A *corrupted* manifest (present but unparseable) still would.
 
@@ -56,8 +56,9 @@ Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_d
 | `contact-decay` | 300 | 176 |
 | `ai-commander` | 300 | 180 |
 | `two-commanders` | 600 | 210 |
+| `base-assault` | 480 | 173 |
 
-Every figure includes that probe's own bring-up — daemon, server, staging, mission load — which is about 20 s of it. The corpus's declared windows total 34 minutes; it runs in 12½, because no probe fills its window and the two longest are sized for a subject (marching, decay) whose worst case they do not hit. A full pass is an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers.)
+Every figure includes that probe's own bring-up — daemon, server, staging, mission load — which is about 20 s of it. The corpus's declared windows total 42 minutes; it runs in 16, because no probe fills its window and the longest are sized for a subject (marching, decay, an HQ coming down) whose worst case they do not hit. A full pass is an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers.)
 
 ## Serialisation
 

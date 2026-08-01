@@ -9,16 +9,16 @@
  * Order is also recorded on the group so cti_fnc_orderEnforce can re-assert it
  * once the engine considers the waypoint done.
  *
- * The three Orders are distinct in the world, not labels on the same behaviour:
- * Capture searches the ground it is sent to, Defend goes there and stays, and
- * Reserve falls back on the Squad's own Base and holds its fire.
+ * The four Orders are distinct in the world, not labels on the same behaviour:
+ * Capture searches the ground it is sent to, Defend goes there and stays,
+ * Assault closes with the enemy Base's HQ structure and works on it until it
+ * falls, and Reserve falls back on the Squad's own Base and holds its fire.
  *
  * The daemon owns the rules and the game owns the geometry (ADR-0012), so an
- * Order names a Place and this looks up where that is.
- *
- * Assault is accepted by the port but not yet acted on here (ADR-0020, #32):
- * the world side is its own ticket, and a Place this cannot find is reported
- * as an assertion failure rather than silently dropped.
+ * Order names a Place and this looks up where that is. A Place is either kind
+ * of authored ground (ADR-0020), so both lists are searched: an Order naming a
+ * Base that only looked through the Objectives would find no ground and be
+ * dropped, which is what #32 left behind for #33.
  *
  * Arguments:
  * 0: Squad id <STRING>
@@ -43,33 +43,31 @@ if (isNull _group || { count units _group isEqualTo 0 }) exitWith {
 };
 
 private _map = missionNamespace getVariable ["cti_map", createHashMap];
-private _destination = [];
-private _label = "";
-private _radius = 0;
+private _ground = createHashMap;
 
 if (_order isEqualTo "reserve") then {
     // Reserve is the absence of a destination, so the Squad falls back on its
     // own Base rather than standing wherever its last Order left it.
     private _side = str (side _group);
     {
-        if ((_x getOrDefault ["side", ""]) isEqualTo _side) exitWith {
-            _destination = _x get "position";
-            _label = _x get "display_name";
-            _radius = 100;
-        };
+        if ((_x getOrDefault ["side", ""]) isEqualTo _side) exitWith { _ground = _x };
     } forEach (_map getOrDefault ["bases", []]);
 } else {
+    // An Order names a Place, and a Place is an Objective or a Base (ADR-0020).
+    // The two lists share one id namespace, which `manifest._check_one_namespace`
+    // enforces before anything is played on, so searching both in turn cannot
+    // find two answers.
     {
-        if ((_x getOrDefault ["id", ""]) isEqualTo _place) exitWith {
-            _destination = _x get "position";
-            _label = _x get "display_name";
-            // The ground the Squad has to stand on to take or hold it is the
-            // capture radius, so that is also how far it may drift before
-            // cti_fnc_orderEnforce sends it back.
-            _radius = _x get "capture_radius";
-        };
-    } forEach (_map getOrDefault ["objectives", []]);
+        if ((_x getOrDefault ["id", ""]) isEqualTo _place) exitWith { _ground = _x };
+    } forEach ((_map getOrDefault ["objectives", []]) + (_map getOrDefault ["bases", []]));
 };
+
+private _destination = _ground getOrDefault ["position", []];
+private _label = _ground getOrDefault ["display_name", ""];
+// The ground the Squad has to stand on to take or hold a Place is also how far
+// it may drift before cti_fnc_orderEnforce sends it back. Assault sets its own
+// below: it is not held by standing in the Base but by working on one building.
+private _radius = [_ground] call cti_fnc_placeRadius;
 
 if (count _destination isEqualTo 0) exitWith {
     diag_log format ["CTI|FAIL class=assertion_failed order_without_ground squad=%1 order=%2 place=%3",
@@ -79,6 +77,34 @@ if (count _destination isEqualTo 0) exitWith {
 
 _destination params ["_east", "_north"];
 private _at = [_east, _north, 0];
+
+// An Assault is aimed at one building rather than at a Place: the HQ structure
+// the manifest names, which the mission places and initServer.sqf refuses to
+// play without. Its own position is authored data, so the Squad is sent to the
+// building itself rather than to a Base position it may be tens of metres from
+// — and never to a bearing off anybody's facing (#28).
+private _hq = objNull;
+if (_order isEqualTo "assault") then {
+    _hq = missionNamespace getVariable [_ground getOrDefault ["hq", ""], objNull];
+    if (isNull _hq) then {
+        // The world was built without the thing Decapitation destroys. Reported
+        // rather than worked around: the Squad still goes to the Base, so the
+        // Order is not silently dropped, but nothing there can fall.
+        diag_log format ["CTI|FAIL class=assertion_failed order_without_hq squad=%1 place=%2 name=%3",
+            _squadId, _place, _ground getOrDefault ["hq", ""]];
+    } else {
+        _at = getPosATL _hq;
+        // The ground an Assault is held by: at the HQ, rather than merely
+        // inside the Base. Wide enough for a Squad in formation around a
+        // building — the engine keeps a group spread over tens of metres and
+        // will not walk it into a wall — and well inside the 150 m that counts
+        // as standing in the Base. It is the distance cti_fnc_orderEnforce lets
+        // the Squad drift, and cti_fnc_baseAssault's own reach matches it,
+        // because "still under this Order" and "still working on the HQ" are
+        // the same question asked twice.
+        _radius = 75;
+    };
+};
 
 // Replacing the waypoints is what makes a new Order supersede the last one.
 // Backwards, because deleting shifts every index above it down.
@@ -113,6 +139,33 @@ switch (_order) do {
         private _hold = _group addWaypoint [_at, -1];
         _hold setWaypointType "HOLD";
         _hold setWaypointCompletionRadius _radius;
+    };
+    case "assault": {
+        // Two waypoints, because the engine's Destroy waypoint is about the
+        // building and not about getting to it: "this waypoint type works best
+        // when it is attached to an object", and a group that cannot bring the
+        // object down "will move within range of being able to identify the
+        // object, then wait until it is destroyed" (topics/Waypoints.wiki).
+        // Waiting at identification range is not close enough to work on it, so
+        // the Squad is walked onto the HQ first and set on it second.
+        _first setWaypointType "MOVE";
+        // Onto the building rather than into range of it. A completion radius
+        // as wide as the Order's ground would end the walk the moment the
+        // leader was within it, and the first run of `base-assault` did exactly
+        // that: the Squad stopped at 40 m, went to the Destroy waypoint, and
+        // stood there shooting at a building with one man close enough to be
+        // working on it.
+        _first setWaypointCompletionRadius 20;
+        _first setWaypointBehaviour "AWARE";
+        _first setWaypointCombatMode "RED";
+        _first setWaypointSpeed "NORMAL";
+
+        private _press = _group addWaypoint [_at, -1];
+        _press setWaypointType "DESTROY";
+        _press setWaypointCompletionRadius _radius;
+        _press setWaypointBehaviour "AWARE";
+        _press setWaypointCombatMode "RED";
+        if (!isNull _hq) then { _press waypointAttachObject _hq };
     };
     default {
         _first setWaypointType "MOVE";

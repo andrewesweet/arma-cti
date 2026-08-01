@@ -98,3 +98,23 @@ def test_a_squad_the_world_did_hold_and_no_longer_does_is_lost() -> None:
 
     assert roster.reconcile({}) == ("WEST-1",)
     assert roster.roll("WEST") == ()
+
+
+def test_an_assault_outlives_the_leader_who_was_carrying_it() -> None:
+    # An Order is standing rather than a waypoint consumed and forgotten (#14),
+    # and the roster is the unit-level half of that: the world reports how many
+    # of a Squad are standing and where, and the Order it is under is not among
+    # the facts it gets to report. Assault is the case that matters most (#33) —
+    # the Squad is inside the enemy Base when its leader is killed, and one that
+    # fell back to Reserve there would turn round and walk home.
+    roster = squads.Roster()
+    squad = roster.add("WEST", "rifle", 8)
+    squad.order = squads.Order("assault", "csat_kamino")
+    roster.reconcile({"WEST-1": (8, "")})
+
+    roster.reconcile({"WEST-1": (5, "csat_kamino")})
+
+    surviving = roster.of("WEST-1", "WEST")
+    assert surviving is not None
+    assert surviving.order == squads.Order("assault", "csat_kamino")
+    assert (surviving.size, surviving.at) == (5, "csat_kamino")

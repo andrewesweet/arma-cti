@@ -63,6 +63,11 @@ if (isNil "cti_fnc_worldInit") then {
         // An Order outlives the waypoint that carried it, and the leader who
         // was carrying it.
         [] call cti_fnc_orderEnforce;
+
+        // A Squad under an Assault Order brings the enemy HQ down, and an HQ
+        // that falls is said so once (#33). Started after the HQ check above,
+        // because the sweep's whole subject is those structures.
+        [] call cti_fnc_baseAssault;
     };
 };
 

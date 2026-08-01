@@ -40,8 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Decapitation as an Order (ADR-0020). Until now an Order could only name an Objective, so one of
   the two win conditions the MVP decided was unreachable through the only order path there is, by
   a human Commander and an AI alike. The Command Port accepts an Assault and rides it out on the
-  outbox as an `order_issued` effect like any other Order; the world side of carrying one out is
-  its own ticket, and the AI Commander that scores a Base worth assaulting is below.
+  outbox as an `order_issued` effect like any other Order; what the world does with one, and the
+  AI Commander that scores a Base worth assaulting, are both below.
 
 - **The AI Commander plays for both win conditions.** It now scores both Bases alongside the
   Objectives: the enemy's as an Assault, and its own as ground to garrison under the same fog rule
@@ -55,6 +55,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Defend now takes the side's **own Base** as well as any Objective, so rear security is something
   a Commander can order rather than hope for.
+
+- **The world now acts on both**: an Assault sends the Squad at the enemy Base's HQ structure and
+  the building comes down; a Defend on a side's own Base garrisons it. Until now an Order naming a
+  Base was looked up among the Objectives alone, found no ground, and was logged and dropped. The
+  Squad walks onto the HQ and is then set on it with the engine's Destroy waypoint, and a Squad
+  standing at the HQ under an Assault brings it down in ninety seconds. **The means of destruction
+  and the HQ's durability are playtest-tuned placeholders** in the sense ADR-0020 gives the word —
+  the structure is the contract, and the numbers are the first thing a playtest will move. They
+  are set, with their alternatives, in `addons/main/functions/fn_baseAssault.sqf`.
+
+- An HQ that falls is recorded once, as an `hq_destroyed` telemetry row naming the Base, the side
+  that lost it and the side that brought it down. Once per Base, deliberately: the MVP resolves a
+  mutual Decapitation by which destruction came first in telemetry, and a second row for the same
+  Base would make that a question of which report arrived rather than which HQ died. Any HQ death
+  counts, not only an ordered one — the world reports the building's state rather than the
+  Assault's outcome.
 
 - One new rejection code, `wrong_ground`: ground the map has that this Order may not name —
   Capture(Base), Assault(Objective), Assault(own Base), Defend(enemy Base). An id the map does not

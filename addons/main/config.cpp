@@ -54,12 +54,15 @@ class CfgFunctions
             class effectPump {};
             class presenceSample {};
             class placeOf {};
+            class placeRadius {};
             class squadSample {};
             class contactSample {};
+            class hqSample {};
             class presenceReport {};
             class objectiveOwnerSet {};
             class orderApply {};
             class orderEnforce {};
+            class baseAssault {};
         };
 
         // No generated class any more (ADR-0017). The map manifests ship as the

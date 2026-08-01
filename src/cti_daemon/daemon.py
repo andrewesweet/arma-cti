@@ -57,6 +57,11 @@ class Daemon:
         # unchanged one is not written again. Comparison only, never campaign
         # state — and never a place a side's view is read from.
         self._last_observation: dict[str, dict[str, Any]] = {}
+        # The Bases whose HQ has already been written down as destroyed (#33).
+        # A destroyed HQ stays destroyed and every later report says so, so this
+        # is what keeps the event to one per Base. Comparison only, like the
+        # observation above: never campaign state, never read back (ADR-0003).
+        self._decapitated: set[str] = set()
         # Which sides are under an AI Commander, and the brain playing each
         # (#16, #17). Empty by default: a side belongs to a human until somebody
         # says otherwise, and a daemon nobody has put under command must not
@@ -192,6 +197,7 @@ class Daemon:
 
         lost = self._reconcile(request)
         self._sight(request, float(at_time))
+        self._decapitation(request, float(at_time))
         paid = self.campaign.observe(float(at_time), presence)
         for payout in paid:
             self._telemetry.record("income", at=at_time, paid=payout)
@@ -343,6 +349,47 @@ class Daemon:
                 raise protocol.MalformedRequestError(detail, request.id)
             reported[squad_id] = (size, at)
         return self.campaign.roster.reconcile(reported)
+
+    def _decapitation(self, request: protocol.Request, at_time: float) -> None:
+        """Write down each Base HQ the world reports destroyed, once (#33).
+
+        Observability, not campaign state: ADR-0003 keeps the snapshot
+        authoritative and nothing here is ever read back. What the win-condition
+        ticket needs from this is that the row exists, says whose Base fell and
+        who brought it down, and that the *first* such row is the first
+        destruction — `docs/mvp-scope.md` resolves a mutual Decapitation by
+        telemetry order, so a second row for the same Base would make that order
+        a matter of which report arrived rather than which HQ died first.
+
+        The world keeps reporting rubble as rubble on every report, which is
+        what makes the once-only rule the whole of the logic here.
+        """
+        reported = request.payload.get("hq")
+        if reported is None:
+            return
+        if not isinstance(reported, dict):
+            detail = "`hq` must map Base ids to what the world sees of their HQ"
+            raise protocol.MalformedRequestError(detail, request.id)
+
+        for base, seen in reported.items():
+            side = self.campaign.based(base)
+            if side is None:
+                # A Base this map does not have cannot be attributed to a side,
+                # and a Decapitation filed against nobody is worse than none.
+                detail = f"`hq.{base}` names no Base this map has"
+                raise protocol.MalformedRequestError(detail, request.id)
+            if not isinstance(seen, dict):
+                detail = f"`hq.{base}` must be an object"
+                raise protocol.MalformedRequestError(detail, request.id)
+            destroyed = seen.get("destroyed")
+            by = seen.get("by", "")
+            if not isinstance(destroyed, bool) or not isinstance(by, str):
+                detail = f"`hq.{base}` needs a boolean `destroyed` and a side `by`"
+                raise protocol.MalformedRequestError(detail, request.id)
+            if not destroyed or base in self._decapitated:
+                continue
+            self._decapitated.add(base)
+            self._telemetry.record("hq_destroyed", at=at_time, base=base, side=side, by=by)
 
     def _sight(self, request: protocol.Request, at_time: float) -> None:
         """Fold what each side's leaders saw into that side's Contacts (#28).
