@@ -56,6 +56,12 @@ if (isNil "cti_fnc_worldInit") then {
         // effect has nowhere to land until the Bases exist.
         [] call cti_fnc_effectPump;
 
+        // Every death, written down as it happens (#39). Started before the
+        // report loop, because a death between the two would be a death nobody
+        // recorded — and the whole point is that the record has no holes in it
+        // that have to be guessed at afterwards.
+        [] call cti_fnc_casualtyWatch;
+
         // The world reports who is standing where; the daemon decides what
         // that means and pays for it.
         [] call cti_fnc_presenceReport;

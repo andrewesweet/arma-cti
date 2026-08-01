@@ -58,6 +58,8 @@ class CfgFunctions
             class squadSample {};
             class contactSample {};
             class hqSample {};
+            class casualtyWatch {};
+            class casualtySample {};
             class presenceReport {};
             class objectiveOwnerSet {};
             class orderApply {};

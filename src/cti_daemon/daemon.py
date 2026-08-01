@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final, cast
 
 from cti_daemon import (
     archive,
@@ -28,6 +28,10 @@ if TYPE_CHECKING:
 DEFAULT_ECONOMY = Path(__file__).parents[2] / "config" / "economy.json"
 DEFAULT_MANIFESTS = Path(__file__).parents[2] / "addons" / "main" / "manifests"
 DEFAULT_MAP = "stratis"
+
+# A position is three axes. Named because the check that a death carries one
+# reads as arithmetic otherwise.
+_POSITION_AXES: Final = 3
 
 
 class Daemon:
@@ -206,6 +210,7 @@ class Daemon:
         lost = self._reconcile(request)
         self._sight(request, float(at_time))
         self._decapitation(request, float(at_time))
+        self._casualties(request)
         paid = self.campaign.observe(float(at_time), presence)
         for payout in paid:
             self._telemetry.record("income", at=at_time, paid=payout)
@@ -419,6 +424,103 @@ class Daemon:
                 raise protocol.MalformedRequestError(detail, request.id)
             reported[squad_id] = (size, at)
         return self.campaign.roster.reconcile(reported)
+
+    #: What a death the world reports must say, beyond its own clock reading and
+    #: where it happened. All strings, all allowed to be empty: a garrison
+    #: soldier belongs to no Squad and a man drowned by nobody has no killer, and
+    #: both of those are answers rather than gaps.
+    _CASUALTY_NAMES: Final = (
+        "unit",
+        "type",
+        "squad",
+        "side",
+        "place",
+        "by_unit",
+        "by_type",
+        "by_squad",
+        "by_side",
+        "by_vehicle",
+    )
+
+    def _casualties(self, request: protocol.Request) -> None:
+        """Write down every death the world saw since the last report (#39).
+
+        Observability, like everything else in this file's telemetry: ADR-0003
+        keeps the snapshot authoritative, the roster already learns about losses
+        from `squads` going quiet, and nothing here is ever read back as state.
+        What it buys is the question #35's timeout could not answer — a Squad
+        went from eight to three and the record held only the subtraction.
+
+        Each death is written on its own clock reading rather than the report's.
+        A report is five seconds of world and a firefight is not, so timing a
+        batch to the batch would flatten the sequence the row exists to preserve.
+
+        Position is on the row in metres as well as by place id. That is not a
+        breach of ADR-0008, which keeps coordinates out of the *Observation*
+        because a Commander reasons about places: no Commander reads this, and
+        "3.8 km short of its target" is precisely what a place id cannot say.
+
+        A batch the buffer had to refuse is written down as a refusal rather than
+        dropped in silence — a timeline with a hole in it must say so, or the
+        hole reads as quiet.
+        """
+        reported = request.payload.get("casualties")
+        if reported is None:
+            return
+        if not isinstance(reported, dict):
+            detail = "`casualties` must carry the deaths since the last report"
+            raise protocol.MalformedRequestError(detail, request.id)
+
+        deaths = reported.get("deaths", [])
+        if not isinstance(deaths, list):
+            detail = "`casualties.deaths` must be a list of deaths"
+            raise protocol.MalformedRequestError(detail, request.id)
+
+        for death in deaths:
+            self._telemetry.record("casualty", **self._casualty(request, death))
+
+        dropped = reported.get("dropped", 0)
+        if not isinstance(dropped, int) or isinstance(dropped, bool):
+            detail = "`casualties.dropped` must count the deaths the buffer refused"
+            raise protocol.MalformedRequestError(detail, request.id)
+        if dropped > 0:
+            self._telemetry.record("casualties_dropped", count=dropped)
+
+    def _casualty(self, request: protocol.Request, death: object) -> dict[str, Any]:
+        """Read one death off the wire, or refuse the whole report.
+
+        Refusing rather than skipping the bad row: a partly-read batch would
+        leave a timeline that looks complete and is not, and a black box nobody
+        can trust is worse than an obviously broken one.
+        """
+        if not isinstance(death, dict):
+            detail = "`casualties.deaths` holds something that is not a death"
+            raise protocol.MalformedRequestError(detail, request.id)
+        # Checked above; the fields it must carry are checked below.
+        reported = cast("dict[str, Any]", death)
+
+        at = reported.get("at")
+        if not isinstance(at, (int, float)) or isinstance(at, bool):
+            detail = "a death needs the in-game `at` it happened at"
+            raise protocol.MalformedRequestError(detail, request.id)
+
+        position = reported.get("pos", [])
+        if not isinstance(position, list) or len(cast("list[Any]", position)) != _POSITION_AXES:
+            detail = "a death needs a `pos` of three coordinates"
+            raise protocol.MalformedRequestError(detail, request.id)
+        axes = cast("list[Any]", position)
+        if any(not isinstance(axis, (int, float)) or isinstance(axis, bool) for axis in axes):
+            detail = "a death's `pos` must be three numbers"
+            raise protocol.MalformedRequestError(detail, request.id)
+
+        row: dict[str, Any] = {"at": float(at), "pos": [float(axis) for axis in axes]}
+        for name in self._CASUALTY_NAMES:
+            said = reported.get(name, "")
+            if not isinstance(said, str):
+                detail = f"a death's `{name}` must be a string"
+                raise protocol.MalformedRequestError(detail, request.id)
+            row[name] = said
+        return row
 
     def _decapitation(self, request: protocol.Request, at_time: float) -> None:
         """Write down each Base HQ the world reports destroyed, once (#33).

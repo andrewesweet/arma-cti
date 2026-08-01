@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The project has a black box.** Every death in the world is now written down as it happens:
+  who died — the Squad and side, not an engine id nobody recognises — where, on the authored
+  place *and* to the metre, at the death's own clock reading rather than the report's, and by
+  whom, naming the killer's Squad and side and the vehicle where one was involved. Deaths with no
+  Squad behind them are recorded too, and so are deaths nobody can be blamed for. The rows join
+  the daemon's existing telemetry stream rather than opening a second log, and no Commander ever
+  reads them: this is the operator's record, not intelligence. The motivating case is a probe that
+  timed out with a Squad at three of eight and nothing in the evidence saying where the other five
+  went.
+
+- **`tools/timeline.py`** reads a run back out of its telemetry as a sequence a person can follow,
+  and every Arma-tier run now leaves one in its evidence directory. Pointed at a probe's own log
+  with `--expect`, it also checks that every death the world says it staged is actually in the
+  record — which is what lets an in-world casualty test be an assertion instead of a screenshot.
+
+- A `casualties` probe: three staged deaths on two Objectives, each a different shape of row, with
+  the harness failing the run when the daemon's file does not account for all three.
+
 - **A Campaign can now be won.** Both conditions the MVP decided are live. **Domination**: one
   side owns every Objective at once and holds the lot for ten sustained in-game minutes — losing
   one Objective, or having it contested, restarts the ten minutes rather than pausing them, and

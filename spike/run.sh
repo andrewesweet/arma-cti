@@ -492,9 +492,28 @@ EOF
         cd "$REPO" && uv run --quiet python tools/push_path_report.py "$DAEMON_TELEMETRY"
     )
 
+    # The run read back as a sequence, always: it costs nothing and it is the
+    # artefact #35's timeout went without — a Squad at three of eight and no
+    # account of the other five (#39).
+    (cd "$REPO" && uv run --quiet python tools/timeline.py "$DAEMON_TELEMETRY") \
+        >"$OUT/timeline.txt" 2>/dev/null || true
+
     if grep -q '^FAIL' "$OUT/spike-lines.txt"; then
         first_fail="$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
         fail "$(class_of "$first_fail")" "$first_fail"
+    fi
+
+    # A probe that says it staged deaths is checked against the daemon's own
+    # file rather than against its own memory of doing so. This is the crossing:
+    # the world claims, the record answers, and neither is asked to vouch for
+    # itself. Silent for every probe that stages nothing.
+    if grep -q 'casualty_staged' "$OUT/spike-lines.txt"; then
+        if ! (cd "$REPO" && uv run --quiet python tools/timeline.py \
+            "$DAEMON_TELEMETRY" --expect "$OUT/spike-lines.txt") \
+            >"$OUT/timeline.txt" 2>"$OUT/timeline-unmatched.txt"; then
+            fail "assertion_failed" \
+                "staged deaths missing from telemetry: $(tr '\n' ' ' <"$OUT/timeline-unmatched.txt")"
+        fi
     fi
     # HOLD-COMPLETE says "the window closed and nothing failed", which is the
     # right word for a run whose subject was a human joining. A regression run
