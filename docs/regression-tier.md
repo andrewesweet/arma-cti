@@ -172,6 +172,8 @@ The engine binds three UDP ports — game, +1 Steam query, +2 Steam master — s
 
 One finding is worth carrying whatever happens to the pool: the first two-slot attempt had isolated ports, dirs, installs and daemons and **still merged**, because the shim resolves its daemon from `CTI_DAEMON_ADDR` once per process and `run.sh` set only `CTI_DAEMON_PORT`. One daemon received both worlds; the run not asserting on telemetry went green. `run.sh` now exports the address beside the port. A slot boundary is only real where something reads it.
 
+That is the second time a new way of driving the harness has surfaced an assumption the old way shared with the code it tests — building the serial runner (#23) found the harness mistyping every in-world failure `assertion_failed`, and running two slots (#44) found the daemon address the shim read and the harness never set, latent in every serial run because the defaults happened to agree. A capability exploration doubles as an audit of those shared assumptions: budget for what it flushes out, and report it as a first-class finding rather than a detour.
+
 ## Verdicts, and what an agent must do with each
 
 Per probe the runner emits the verdict `run.sh` already synthesises — `PASS`, or `FAIL` with a `class` from the CLAUDE.md table — plus the probe name, evidence path, git SHA and Arma version, in a `verdict.json` in the run's evidence directory and as the last lines on stderr. The required responses are the CLAUDE.md table's, unchanged; the tier adds nothing to them and this document does not restate them. Two get regression-tier-specific teeth:

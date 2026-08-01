@@ -1,5 +1,10 @@
 # Recovering an interrupted agent
 
+> Status: validated ×2 — first two uses as a written procedure, both 2026-08-01: #21's
+> agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Both
+> briefings were written to this document's three-part contract; both resumptions were
+> clean, one of them rebasing through three intervening landings without incident.
+
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
 
@@ -13,6 +18,12 @@ A task-failure notification is death. So is silence: an agent that has stopped r
 and whose worktree has stopped changing is dead for recovery purposes. Do not wait it out
 indefinitely, and do not fear a false positive — recovery starts from commits, so
 recovering an agent that was merely slow costs a briefing, not work.
+
+The two signs can also combine: an agent can stop mid-turn while its run — server, daemon,
+staged world — is still live, with a completion notification firing anyway. That is death
+with live work, not a false alarm. Treat it as death, and treat the still-running work as
+the stale state below: nobody is going to write its verdict, so whatever it eventually
+emits is not a result to cite (ADR-0022). Seen once, 2026-08-01.
 
 ## Before resuming: inspect the worktree
 
