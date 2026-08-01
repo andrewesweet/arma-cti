@@ -54,6 +54,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The leg between a person's client and the Command Port is now exercised unattended, failures
+  and all.** A regression probe launches a real headed client, waits for it to be assigned a side,
+  and drives six Commands across the network from it: an accepted Purchase whose judgement comes
+  back to that client, a Command whose `side` the client filled in with the enemy's — the Squad
+  arrives on the caller's own side and the side it asked for is untouched, which is the server's
+  stamp shown rather than asserted — a Command from a machine the server has not assigned, refused
+  `wrong_side` by the gateway in its own words without the daemon being asked, and two payloads
+  that are not Commands, refused as judgements rather than as silence. Last, the client calls two
+  things the mission does not whitelist, having just proved through the gateway that it can call
+  the one it does: neither lands, and the engine writes both refusals in its own words to the
+  client's log, which the harness now copies back across the WSL2 boundary as evidence.
+
 - **A world can now be held open for a play session.** `spike/playtest/session-hold.sqf` keeps the
   Phase-1 world standing for as long as the boot line asks, or until somebody wins, instead of
   tearing it down the moment a client finishes joining. It lives outside the regression corpus

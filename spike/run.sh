@@ -138,6 +138,44 @@ class_of() {
     printf '%s' "${declared:-assertion_failed}"
 }
 
+# The headed client's own log, off the Windows host. The Linux server's stdout
+# is the only log this harness has otherwise, and there are things only the
+# client's RPT says — a remoteExec its whitelist refused is written there and
+# nowhere else, because the sender is where the engine checks first.
+#
+# The newest .rpt in the client's log directory is this run's: the engine opens
+# a fresh one per launch, and this is called while that client is still alive.
+collect_client_rpt() {
+    local dir newest candidate
+    dir="${CTI_WINDOWS_CLIENT_RPT_DIR:-}"
+    if [[ -z "$dir" ]]; then
+        for candidate in /mnt/c/Users/*/AppData/Local/"Arma 3"; do
+            [[ -d "$candidate" ]] && dir="$candidate"
+        done
+    fi
+    if [[ -z "$dir" || ! -d "$dir" ]]; then
+        record "windows_client_rpt" "unavailable: no client log directory"
+        return 0
+    fi
+    newest="$(ls -t "$dir"/*.rpt 2>/dev/null | head -1)"
+    if [[ -z "$newest" ]]; then
+        record "windows_client_rpt" "unavailable: no .rpt under $dir"
+        return 0
+    fi
+    if cp "$newest" "$OUT/windows-client.rpt"; then
+        record "windows_client_rpt" "$OUT/windows-client.rpt"
+        record "windows_client_rpt_source" "$newest"
+        # The whitelist biting, counted where the engine writes it. Recorded and
+        # never gated on: most runs make no blocked call and zero is the normal
+        # reading. It is here so a run that made one leaves the count in its own
+        # evidence rather than in somebody's shell history (#21).
+        record "windows_client_remoteexec_denied" \
+            "$(grep -aci "is not allowed to be remotely executed" "$OUT/windows-client.rpt")"
+    else
+        record "windows_client_rpt" "unavailable: could not copy $newest"
+    fi
+}
+
 fail() {
     record "verdict" "FAIL"
     record "failure_class" "$1"
@@ -518,6 +556,12 @@ EOF
         2) fail "node_crashed" "server exited while the probe ran; see $SERVER_LOG" ;;
         esac
     fi
+
+    # Fetched while the client is still up, because teardown ends it: the
+    # engine writes a client's own refusals to the client's RPT on the Windows
+    # host and nothing crosses to this side unless it is copied. A remoteExec
+    # the whitelist blocks is observed here or not at all (#21).
+    [[ -n "$win_client_pid" ]] && collect_client_rpt
 
     grep -aoE "$LOG_PREFIX\|.*" "$SERVER_LOG" | sed "s/^$LOG_PREFIX|//; s/\"$//" >"$OUT/spike-lines.txt"
     log "--- in-mission results ---"
