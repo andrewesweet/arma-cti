@@ -25,7 +25,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
-from cti_daemon import commands, economy, port, squads
+from cti_daemon import commands, economy, port, protocol, squads
 
 
 def render(table: economy.EconomyTable) -> str:
@@ -38,6 +38,13 @@ def render(table: economy.EconomyTable) -> str:
             "tools/export_command_schema.py. Do not edit by hand: "
             "change the Python source and run `just generate`"
         ),
+        # What a reply is allowed to be read as, by status (#96/#97,
+        # ADR-0036). Exported beside the Command catalogue for the same reason
+        # the catalogue is: `cti_fnc_daemonCall` branches on these keys, and a
+        # branch derived from the daemon's own module cannot drift from it.
+        "reply_envelope": {
+            outcome: list(keys) for outcome, keys in protocol.REPLY_ENVELOPE.items()
+        },
         "commands": {name: list(args) for name, args in commands.CATALOGUE.items()},
         "effects": {name: list(args) for name, args in commands.EFFECTS.items()},
         "sides": list(commands.SIDES),

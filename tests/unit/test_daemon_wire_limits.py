@@ -62,11 +62,15 @@ def test_the_effects_guard_is_the_observations_guard(tmp_path: Path) -> None:
 
 
 def test_the_pump_carries_the_same_backstop_literal_as_the_daemons_bound() -> None:
-    # The daemon bounds the drain; the pump's own check is the backstop for the
+    # The daemon bounds the drain; the world's own check is the backstop for the
     # bound failing, and it fires on a literal. Two numbers, held together here
     # rather than by whoever next edits one of them — the same device
     # `test_observation.py` uses for the Commander's view.
-    source = (REPO / "addons" / "main" / "functions" / "fn_effectPump.sqf").read_text(
+    #
+    # The backstop lives in `cti_fnc_daemonCall` since #97: one guard for every
+    # verb, rather than the same literal copied into each loop and left out of
+    # whichever loop was written next.
+    source = (REPO / "addons" / "main" / "functions" / "fn_daemonCall.sqf").read_text(
         encoding="utf-8"
     )
     assert f"count _raw >= {POLL_GUARD_BYTES}" in source

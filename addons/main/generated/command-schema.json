@@ -1,5 +1,21 @@
 {
   "_generated_by": "tools/export_command_schema.py. Do not edit by hand: change the Python source and run `just generate`",
+  "reply_envelope": {
+    "always": [
+      "id",
+      "epoch",
+      "status"
+    ],
+    "ok": [
+      "result"
+    ],
+    "rejected": [
+      "reason"
+    ],
+    "error": [
+      "error"
+    ]
+  },
   "commands": {
     "purchase": [
       "squad_type"
@@ -50,6 +66,7 @@
     "campaign_over",
     "insufficient_funds",
     "malformed_command",
+    "port_unavailable",
     "unknown_command",
     "unknown_squad",
     "wrong_ground",

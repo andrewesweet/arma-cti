@@ -474,7 +474,9 @@ def test_the_daemon_and_the_world_guard_at_the_same_number() -> None:
     # The guard that fires is the SQF one; the budget above is measured against
     # the Python one. Two literals, so they are held together here rather than
     # by whoever next edits one of them.
-    source = (REPO / "addons" / "main" / "functions" / "fn_commanderView.sqf").read_text(
+    # In `cti_fnc_daemonCall` since #97: the guard is a property of a reply
+    # crossing the return, not of the verb that asked for it.
+    source = (REPO / "addons" / "main" / "functions" / "fn_daemonCall.sqf").read_text(
         encoding="utf-8"
     )
     assert f"count _raw >= {observation.REPORT_GUARD_BYTES}" in source

@@ -56,51 +56,40 @@ if (!isServer) exitWith { scriptNull };
         private _next = diag_tickTime + _interval;
         waitUntil { diag_tickTime >= _next };
 
-        private _envelope = createHashMapFromArray [
-            // In-game second and real millisecond both: the daemon answers a
-            // line it has already answered from its record rather than folding
-            // the report twice (#69, ADR-0034), so an id has to be unique per
-            // request. In-game time alone is not — it stops when the world is
-            // paused and accelerates when it is not.
-            ["id", format ["obs-%1-%2", round time, round (diag_tickTime * 1000)]],
-            ["verb", "observe"],
-            ["payload", createHashMapFromArray [
-                ["time", time],
-                ["presence", call cti_fnc_presenceSample],
-                ["squads", call cti_fnc_squadSample],
-                ["contacts", call cti_fnc_contactSample],
-                ["hq", call cti_fnc_hqSample],
-                ["casualties", call cti_fnc_casualtySample]
-            ]]
+        private _payload = createHashMapFromArray [
+            ["time", time],
+            ["presence", call cti_fnc_presenceSample],
+            ["squads", call cti_fnc_squadSample],
+            ["contacts", call cti_fnc_contactSample],
+            ["hq", call cti_fnc_hqSample],
+            ["casualties", call cti_fnc_casualtySample]
         ];
 
         _turns set ["sent", (_turns get "sent") + 1];
-        private _raw = (_extension callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
+        // In-game second and real millisecond both: the daemon answers a line it
+        // has already answered from its record rather than folding the report
+        // twice (#69, ADR-0034), so an id has to be unique per request. In-game
+        // time alone is not — it stops when the world is paused and accelerates
+        // when it is not.
+        private _answer = [
+            format ["obs-%1-%2", round time, round (diag_tickTime * 1000)],
+            "observe", _payload
+        ] call cti_fnc_daemonCall;
 
-        // The engine caps a callExtension return at 10,240 bytes and truncates
-        // in silence (ADR-0004). The public picture grows with the map's
-        // Objective count rather than with the Campaign, so it has room to
-        // spare on Stratis and is still worth watching on a bigger island.
-        // Failing at nine tenths means it is found to be outgrowing one call
-        // while there is still room to make it smaller — which is the fix, not
-        // a chunking protocol invented in passing.
-        if (count _raw >= 9216) then {
-            diag_log format ["CTI|FAIL class=assertion_failed observation_near_return_cap chars=%1", count _raw];
-        };
+        // `replied` means the whole leg, out and back, and now it says so. It
+        // used to be incremented for any reply shaped like a HashMap — which a
+        // shim transport error is (#97) — so a dead daemon counted as a
+        // completed round trip and every waiter reading this counter was told
+        // the loop was healthy while nothing was being reported at all.
+        if ((_answer get "outcome") isNotEqualTo "ok") then { continue };
 
-        private _reply = fromJSON _raw;
-        if (_reply isEqualType createHashMap) then {
-            private _owners = (_reply getOrDefault ["result", createHashMap])
-                getOrDefault ["owners", createHashMap];
-            // The daemon's view is authoritative, so the map is drawn from it
-            // rather than from anything decided here.
-            { [_x, _y] call cti_fnc_objectiveOwnerSet } forEach _owners;
-            // Counted after the judgement has been applied, not on receipt: what
-            // a waiter wants to know is that the leg completed, and the marker
-            // repaint is the last thing in it.
-            _turns set ["replied", (_turns get "replied") + 1];
-        } else {
-            diag_log format ["CTI|FAIL class=oracle_disagreement observe_reply_unreadable=%1", _raw];
-        };
+        private _owners = (_answer get "result") getOrDefault ["owners", createHashMap];
+        // The daemon's view is authoritative, so the map is drawn from it
+        // rather than from anything decided here.
+        { [_x, _y] call cti_fnc_objectiveOwnerSet } forEach _owners;
+        // Counted after the judgement has been applied, not on receipt: what
+        // a waiter wants to know is that the leg completed, and the marker
+        // repaint is the last thing in it.
+        _turns set ["replied", (_turns get "replied") + 1];
     };
 };

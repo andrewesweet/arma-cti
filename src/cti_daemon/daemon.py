@@ -54,7 +54,9 @@ POLL_GUARD_BYTES: Final = 9_216
 class Daemon:
     """Dispatches requests and owns the outbox the game reads from."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913 — every argument is one path or identity this
+        # daemon is wired to, all keyword-only, and folding them into a config
+        # object would be one more indirection between a test and what it varies.
         self,
         *,
         telemetry_path: Path,
@@ -62,6 +64,7 @@ class Daemon:
         manifests_path: Path | None = None,
         archive_path: Path | None = None,
         map_id: str = DEFAULT_MAP,
+        epoch: str | None = None,
     ) -> None:
         """Wire the daemon to its telemetry sink, the economy and the map."""
         # One request at a time, whoever is asking (#98). The transport serves
@@ -85,6 +88,14 @@ class Daemon:
         # daemon, and if something ever does it should stop rather than quietly
         # interleave with itself.
         self._lock = threading.Lock()
+        # Who is answering (#96, ADR-0036). Every reply carries it, and the
+        # world latches the first one it sees: this daemon's whole strategic
+        # state is in memory, so a restart is a factory-fresh Campaign wearing
+        # the old world's clothes, and the shim's silent reconnect (ADR-0005)
+        # makes it indistinguishable from a hiccup on the transport alone.
+        # Minted here rather than passed in, because a daemon that could be
+        # handed its predecessor's identity could claim to be it.
+        self.epoch = epoch or protocol.mint_epoch()
         self.outbox = Outbox()
         # What the wire has already been told (#69, ADR-0034). The shim resends
         # a request whose exchange failed on its cached connection, and a write
@@ -183,6 +194,7 @@ class Daemon:
             self._telemetry.record(
                 "request_replayed",
                 id=remembered.id,
+                epoch=self.epoch,
                 verb=remembered.verb,
                 duration_us=(time.perf_counter_ns() - started) // 1_000,
                 reply_bytes=len(remembered.reply),
@@ -199,16 +211,18 @@ class Daemon:
             request_id, verb = request.id, request.verb
             acting = self._acting_side(request)
             reply = self._dispatch(request)
-            encoded = protocol.encode(reply)
         except protocol.MalformedRequestError as exc:
             request_id = exc.request_id
             reply = protocol.failed(request_id, "malformed_request", exc.detail)
-            encoded = protocol.encode(reply)
         except Exception as exc:  # noqa: BLE001 — a bug must answer, not hang the caller
             # The shim is blocked on a line. Anything that escapes a handler has
             # to come back as one, or SQF waits out its read timeout instead.
             reply = protocol.failed(request_id, "internal", f"{type(exc).__name__}: {exc}")
-            encoded = protocol.encode(reply)
+        # Stamped once, on every path out — a malformed line and an internal
+        # bug are exactly the moments the world most needs to know who answered
+        # (#96, ADR-0036), and a branch that could forget the epoch is a branch
+        # through which a restart stays invisible.
+        encoded = protocol.encode(protocol.stamped(reply, self.epoch))
         # A refusal is recorded with its reason, not just its shape. Otherwise
         # every rejection looks identical on disk and the operator learns less
         # about a failure than the caller who caused it.
@@ -216,6 +230,9 @@ class Daemon:
         self._telemetry.record(
             "request",
             id=request_id,
+            # One run's telemetry is appended to across a daemon restart, so
+            # this is what tells two daemons' records apart in one file (#96).
+            epoch=self.epoch,
             verb=verb,
             side=acting,
             status=reply.envelope["status"],

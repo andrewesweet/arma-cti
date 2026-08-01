@@ -35,6 +35,8 @@ class CfgFunctions
         {
             file = "cti\addons\main\functions";
             class shimName {};
+            class daemonCall {};
+            class campaignLost {};
             class prngNew {};
             class prngNext {};
             class prngInt {};

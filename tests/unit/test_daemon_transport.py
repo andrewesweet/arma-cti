@@ -40,6 +40,9 @@ def test_a_reply_comes_back_under_the_id_it_was_asked_with(tmp_path: Path) -> No
     sock, stream = connect(tmp_path)
     with sock, stream:
         reply = exchange(sock, stream, json.dumps({"id": "r-1", "verb": "ping"}))
+    # The epoch is the answering process's own (#96, ADR-0036), so it is checked
+    # for shape here and pinned by name in test_daemon_epoch.py.
+    assert reply.pop("epoch")
     assert reply == {"id": "r-1", "status": "ok", "result": {"pong": True}}
 
 
@@ -167,4 +170,6 @@ def test_concurrent_connections_cannot_spend_the_same_funds_twice(tmp_path: Path
 def test_the_readiness_line_names_the_bound_address() -> None:
     # The Arma tier waits on this line rather than sleeping, so its shape is a
     # contract between the daemon and spike/run.sh.
-    assert transport.ready_line("127.0.0.1", 9099) == "CTI_DAEMON_READY 127.0.0.1:9099"
+    assert transport.ready_line("127.0.0.1", 9099, "e-1").startswith(
+        "CTI_DAEMON_READY 127.0.0.1:9099"
+    )

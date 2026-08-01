@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **A daemon that restarts mid-session can no longer reset your Campaign behind your back.** The
+  daemon holds the whole Campaign in memory, so a restart is a factory-fresh Campaign; the shim
+  reconnects without saying anything, and nothing in the protocol distinguished one daemon from the
+  next. So a mid-session restart repainted every Objective NEUTRAL, put Funds back to the starting
+  balance, restarted the Domination clock and turned every Squad you had bought into an orphan that
+  kept fighting and would not take Orders — with nothing on screen and one line in a log nobody
+  watches. Every reply now carries the identity of the process that gave it, the world latches the
+  first one it sees, and a change stops the world rather than letting it play on: the map is left
+  showing the last thing that was true, no Command spends Funds that no longer exist, and every
+  screen says CAMPAIGN LOST and to restart the mission. Surviving a restart is a later thing
+  (Phase 2); being told about one is not. ADR-0036.
+
 ### Changed
 
 - **The rest of the regression corpus now ends when its subject does, and the settles that stayed
@@ -60,6 +74,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   island's Observation and no precision anything could use.
 
 ### Fixed
+
+- **A dead daemon is no longer indistinguishable from a quiet one.** The shim reports a transport
+  failure as `{"error": "..."}`, which is a JSON object — so it passed every loop's only check and
+  read as *success with nothing in it*. The map froze, income stopped, the AI opponent went quiet,
+  Commands came back as `? — ?`, and no line anywhere said the daemon was down. Every call now goes
+  through one place that tells the four outcomes apart, says so once when the daemon stops answering
+  and once when it comes back, refuses a Command it could not get judged rather than showing you a
+  transport error as a verdict, and counts a report as completed only when it actually completed.
+  The last of those also fixes a counter that several tests and probes had been reading as proof the
+  world was healthy.
 
 - **The daemon answers one request at a time, whoever is asking.** Every connection got its own
   thread and the Campaign — ownership, the Ledger, the Roster, Contacts, the outbox — was written

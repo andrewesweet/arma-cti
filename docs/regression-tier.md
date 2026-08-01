@@ -34,7 +34,7 @@ Each probe carries a machine-readable header block the runner parses — the sam
 
 Three optional lines complete the block:
 
-- `// env: CTI_AI_SIDE=WEST` — what the world must be brought up with for this probe to mean anything. The probe's requirement, not the caller's to remember; `just regress` still takes no environment variables of its own (ADR-0021).
+- `// env: CTI_AI_SIDE=WEST` — what the world must be brought up with for this probe to mean anything. The probe's requirement, not the caller's to remember; `just regress` still takes no environment variables of its own (ADR-0021). One of these is a fault the harness stages rather than a world it builds: `CTI_DAEMON_RESTART_ON=<line>` makes `run.sh` kill the daemon and start a fresh one on the same port the moment the probe logs that line (`daemon-restart.sqf`, #96). Triggered on the probe's own line rather than on a clock, because the probe is what knows when it has a baseline worth losing.
 - `// expect: <class>` — a red-by-design probe. The runner passes it exactly when the run fails with that class, and fails it when the class is wrong or when the probe passes. A probe with no `expect:` line expects `PASS`. Added 2026-08-01 under ADR-0019: `manifest-missing.sqf` landed after this design was written, and its green run is the bug.
 - `// quarantined: #<issue>` — reports `flake_quarantine` and does not gate. Without an issue number the line does not parse, which is how "quarantine without an open issue is out of policy" is enforced.
 

@@ -148,6 +148,9 @@ def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
                 "already_held",
                 "wrong_ground",
                 "campaign_over",
+                # Minted by the gateway, not by this module (#97): the daemon
+                # was never reached, so nothing was judged or spent.
+                "port_unavailable",
             }
         )
         == port.REJECTION_CODES

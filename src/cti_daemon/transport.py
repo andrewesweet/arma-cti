@@ -25,9 +25,15 @@ DEFAULT_PORT: Final = 9099
 DEFAULT_TELEMETRY: Final = Path(".spike-out/daemon-telemetry.jsonl")
 
 
-def ready_line(host: str, port: int) -> str:
-    """Build the line the Arma tier waits for instead of sleeping."""
-    return f"CTI_DAEMON_READY {host}:{port}"
+def ready_line(host: str, port: int, epoch: str) -> str:
+    """Build the line the Arma tier waits for instead of sleeping.
+
+    The epoch rides along because a harness that restarts the daemon mid-run
+    (#96) otherwise has only the world's word for which process answered which
+    request. Appended rather than inserted: `spike/run.sh` and
+    `spike/cycle/cycle.sh` grep for the prefix.
+    """
+    return f"CTI_DAEMON_READY {host}:{port} epoch={epoch}"
 
 
 def _handler_for(daemon: Daemon) -> type[socketserver.StreamRequestHandler]:
@@ -79,14 +85,14 @@ def serve(
     port: int = DEFAULT_PORT,
     *,
     telemetry_path: Path = DEFAULT_TELEMETRY,
-    on_ready: Callable[[int], None] | None = None,
+    on_ready: Callable[[int, str], None] | None = None,
     ai: Iterable[tuple[str, int]] | None = None,
 ) -> None:
-    """Serve until interrupted. Calls `on_ready` with the bound port."""
+    """Serve until interrupted. Calls `on_ready` with the bound port and epoch."""
     daemon = build(telemetry_path, ai)
     with _Server((host, port), _handler_for(daemon)) as server:
         if on_ready is not None:
-            on_ready(int(server.server_address[1]))
+            on_ready(int(server.server_address[1]), daemon.epoch)
         server.serve_forever()
 
 
@@ -97,7 +103,7 @@ def serve_in_thread(
     ready = threading.Event()
     bound: list[int] = []
 
-    def _record(port_: int) -> None:
+    def _record(port_: int, _epoch: str) -> None:
         bound.append(port_)
         ready.set()
 
@@ -146,8 +152,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     args.telemetry.parent.mkdir(parents=True, exist_ok=True)
 
-    def announce(port: int) -> None:
-        print(ready_line(args.host, port), flush=True)  # noqa: T201 — the harness reads stdout
+    def announce(port: int, epoch: str) -> None:
+        line = ready_line(args.host, port, epoch)
+        print(line, flush=True)  # noqa: T201 — the harness reads stdout
 
     try:
         serve(

@@ -55,83 +55,63 @@ if (!isServer) exitWith { scriptNull };
         private _next = diag_tickTime + _interval;
         waitUntil { diag_tickTime >= _next };
 
-        private _envelope = createHashMapFromArray [
-            ["id", format ["poll-%1", round (diag_tickTime * 1000)]],
-            ["verb", "poll"]
-        ];
-        private _raw = (_extension callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
-        private _reply = fromJSON _raw;
+        private _answer = [
+            format ["poll-%1", round (diag_tickTime * 1000)], "poll"
+        ] call cti_fnc_daemonCall;
         _drain set ["polls", (_drain get "polls") + 1];
 
-        // The engine caps a callExtension return at 10,240 bytes and truncates
-        // in silence (ADR-0004), and a truncated poll reply is broken JSON with
-        // effects lost past the cut. The daemon bounds a drain at nine tenths of
-        // the cap and hands the rest over on the next poll (#67), so this is the
-        // backstop rather than the guard: reaching it means the daemon's bound
-        // did not hold, which is a fault rather than a busy world.
-        if (count _raw >= 9216) then {
-            diag_log format ["CTI|FAIL class=assertion_failed poll_near_return_cap chars=%1",
-                count _raw];
+        // Every outcome that is not `ok` has already been classified and logged
+        // by the call (#97): a shim error reply used to reach here shaped like a
+        // HashMap with no `result` in it, so the pump read no messages, counted
+        // the poll and looked healthy while the outbox stalled behind a daemon
+        // that was not there.
+        if ((_answer get "outcome") isNotEqualTo "ok") then { continue };
+
+        private _messages = (_answer get "result") getOrDefault ["messages", []];
+
+        private _startedFrame = diag_frameNo;
+        private _applied = 0;
+        private _highest = -1;
+        {
+            private _sequence = _x getOrDefault ["sequence", -1];
+            // Stop at the first failure rather than acknowledging past it:
+            // sequences are acknowledged through a high-water mark, so
+            // skipping one would retire it unapplied.
+            if !([_x getOrDefault ["message", createHashMap]] call cti_fnc_effectApply) exitWith {
+                _drain set ["deferred", (_drain get "deferred") + 1];
+                diag_log format ["CTI|effect_deferred sequence=%1", _sequence];
+            };
+            _applied = _applied + 1;
+            _highest = _sequence;
+        } forEach _messages;
+
+        if (count _messages > 0) then {
+            // Frames rather than seconds: the cap this is measured against
+            // is per frame, so what a drain cost is how many frames it
+            // spanned and how many effects it carried in them.
+            private _frames = (diag_frameNo - _startedFrame) max 1;
+            _drain set ["drains", (_drain get "drains") + 1];
+            _drain set ["applied", (_drain get "applied") + _applied];
+            _drain set ["max", (_drain get "max") max _applied];
+            _drain set ["maxFrames", (_drain get "maxFrames") max _frames];
+            diag_log format ["CTI|effect_drain handed=%1 applied=%2 frames=%3 max=%4",
+                count _messages, _applied, _frames, _drain get "max"];
         };
 
-        if (_reply isEqualType createHashMap) then {
-            // An error reply carries no `result`, so reading messages out of it
-            // would find none and the pump would look idle while the outbox
-            // stalled. `oversized_message` is the one the daemon raises when a
-            // single effect cannot cross one return at all (#67) — loud, and
-            // the effect stays on the outbox until it is made smaller.
-            private _status = _reply getOrDefault ["status", ""];
-            if (_status isNotEqualTo "ok") then {
-                private _error = _reply getOrDefault ["error", createHashMap];
-                diag_log format ["CTI|FAIL class=assertion_failed poll_refused error=%1 detail=%2",
-                    _error getOrDefault ["class", "?"],
-                    _error getOrDefault ["detail", ""]];
-                continue;
-            };
-
-            private _messages = (_reply getOrDefault ["result", createHashMap])
-                getOrDefault ["messages", []];
-
-            private _startedFrame = diag_frameNo;
-            private _applied = 0;
-            private _highest = -1;
-            {
-                private _sequence = _x getOrDefault ["sequence", -1];
-                // Stop at the first failure rather than acknowledging past it:
-                // sequences are acknowledged through a high-water mark, so
-                // skipping one would retire it unapplied.
-                if !([_x getOrDefault ["message", createHashMap]] call cti_fnc_effectApply) exitWith {
-                    _drain set ["deferred", (_drain get "deferred") + 1];
-                    diag_log format ["CTI|effect_deferred sequence=%1", _sequence];
-                };
-                _applied = _applied + 1;
-                _highest = _sequence;
-            } forEach _messages;
-
-            if (count _messages > 0) then {
-                // Frames rather than seconds: the cap this is measured against
-                // is per frame, so what a drain cost is how many frames it
-                // spanned and how many effects it carried in them.
-                private _frames = (diag_frameNo - _startedFrame) max 1;
-                _drain set ["drains", (_drain get "drains") + 1];
-                _drain set ["applied", (_drain get "applied") + _applied];
-                _drain set ["max", (_drain get "max") max _applied];
-                _drain set ["maxFrames", (_drain get "maxFrames") max _frames];
-                diag_log format ["CTI|effect_drain handed=%1 applied=%2 frames=%3 max=%4",
-                    count _messages, _applied, _frames, _drain get "max"];
-            };
-
-            if (_highest >= 0) then {
-                private _ack = createHashMapFromArray [
-                    ["id", format ["ack-%1", _highest]],
-                    ["verb", "ack"],
-                    ["payload", createHashMapFromArray [["through", _highest]]]
-                ];
-                _extension callExtension ["rpc_keepalive", [toJSON _ack]];
+        if (_highest >= 0) then {
+            // The acknowledgement's own reply is read rather than dropped: it
+            // is what retires the prefix, and an ack that never arrived leaves
+            // the same effects to be applied twice on the next drain.
+            private _acked = [
+                format ["ack-%1", _highest], "ack",
+                createHashMapFromArray [["through", _highest]]
+            ] call cti_fnc_daemonCall;
+            if ((_acked get "outcome") isEqualTo "ok") then {
                 diag_log format ["CTI|effects_acked through=%1", _highest];
+            } else {
+                diag_log format ["CTI|effects_ack_unconfirmed through=%1 outcome=%2",
+                    _highest, _acked get "outcome"];
             };
-        } else {
-            diag_log format ["CTI|FAIL class=oracle_disagreement poll_reply_unreadable=%1", _raw];
         };
     };
 };

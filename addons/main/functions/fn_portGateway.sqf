@@ -55,30 +55,34 @@ if !(_side in (_schema get "sides")) exitWith {
 
 _command set ["side", _side];
 
-private _id = format ["cmd-%1-%2", _owner, round (diag_tickTime * 1000)];
-private _envelope = createHashMapFromArray [
-    ["id", _id],
-    ["verb", "command"],
-    ["payload", _command]
-];
-
 // Synchronous by construction: ADR-0012 makes a Command's reply a judgement and
 // never work, so it never waits on anything and stays far inside the engine's
 // 1000 ms blocking-call stall cap (ADR-0005).
-private _extension = call cti_fnc_shimName;
-if (_extension isEqualTo "") exitWith {
-    diag_log "CTI|FAIL class=infra_unavailable shim_not_loaded";
+private _id = format ["cmd-%1-%2", _owner, round (diag_tickTime * 1000)];
+private _answer = [_id, "command", _command] call cti_fnc_daemonCall;
+private _outcome = _answer get "outcome";
+
+// A judgement is the only thing worth forwarding. Everything else is the port
+// failing to reach the rules rather than the rules speaking, and the Commander
+// used to be handed it anyway: a shim error object rendered as `? — ? —` and a
+// dead daemon looked exactly like a refusal nobody could argue with (#97). The
+// answer here is the port's own, in the port's own vocabulary.
+if !(_outcome in ["ok", "rejected"]) exitWith {
+    diag_log format ["CTI|port_command id=%1 side=%2 command=%3 outcome=%4",
+        _id, _side, _command get "command", _outcome];
+    private _judgement = createHashMapFromArray [
+        ["status", "rejected"],
+        ["reason", createHashMapFromArray [
+            ["code", "port_unavailable"],
+            ["detail", "the Command Port could not reach the daemon, so this "
+                + "Command was not judged and nothing was spent"]
+        ]]
+    ];
+    if (_owner > 0) then { [_judgement] remoteExec ["cti_fnc_portReply", _owner] };
     false
 };
 
-private _reply = (_extension callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
-private _judgement = fromJSON _reply;
-
-if !(_judgement isEqualType createHashMap) exitWith {
-    diag_log format ["CTI|FAIL class=oracle_disagreement port_reply_unreadable=%1", _reply];
-    false
-};
-
+private _judgement = _answer get "reply";
 diag_log format ["CTI|port_command id=%1 side=%2 command=%3 status=%4",
     _id, _side, _command get "command", _judgement getOrDefault ["status", "?"]];
 

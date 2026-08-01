@@ -17,9 +17,10 @@ def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
 
 
 def test_ping_is_answered_with_the_id_it_was_asked_under(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl", epoch="e-1")
     assert reply_to(daemon, id="r-1", verb="ping") == {
         "id": "r-1",
+        "epoch": "e-1",
         "status": "ok",
         "result": {"pong": True},
     }

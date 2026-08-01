@@ -47,6 +47,12 @@ REJECTION_CODES: Final = frozenset(
         # keeps a map screen open until the end screen reaches it, so this is a
         # judgement a Commander can be shown rather than an error.
         "campaign_over",
+        # Minted by the gateway rather than by this module, like `wrong_side`:
+        # the daemon was not reached at all, so nothing was judged and nothing
+        # was spent (#97). It lives in the one vocabulary because a Commander
+        # reads it in the same place as every other refusal, and because the
+        # exported schema is what tells the world which codes exist.
+        "port_unavailable",
     }
 )
 

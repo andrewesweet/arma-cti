@@ -377,15 +377,39 @@ if [[ -n "${CTI_AI_SIDE:-}" ]]; then
     record "ai_sides" "$CTI_AI_SIDE"
     record "ai_seeds" "${CTI_AI_SEED:-}"
 fi
-(cd "$REPO" && exec uv run --quiet cti-daemon \
-    --host "$DAEMON_HOST" --port "$DAEMON_PORT" --telemetry "$DAEMON_TELEMETRY" \
-    "${AI_ARGS[@]}") \
-    >"$DAEMON_LOG" 2>&1 &
-daemon_pid=$!
-if ! wait_for "$DAEMON_LOG" "CTI_DAEMON_READY" 90 "$daemon_pid"; then
+# A function rather than a straight line, because CTI_DAEMON_RESTART_ON needs to
+# do this a second time mid-run (#96). Appends to the same log and the same
+# telemetry file: what a restart costs is a thing to read afterwards, and
+# truncating either would take the first daemon's half of the evidence with it.
+# The epoch is read back off the readiness line so the run records which process
+# answered which half.
+daemon_starts=0
+start_daemon() {
+    daemon_starts=$((daemon_starts + 1))
+    (cd "$REPO" && exec uv run --quiet cti-daemon \
+        --host "$DAEMON_HOST" --port "$DAEMON_PORT" --telemetry "$DAEMON_TELEMETRY" \
+        "${AI_ARGS[@]}") \
+        >>"$DAEMON_LOG" 2>&1 &
+    daemon_pid=$!
+    # Counted rather than pattern-matched: the first daemon's readiness line is
+    # still in the log, so `wait_for` would find it and call a second daemon
+    # ready before it had bound anything.
+    local deadline
+    deadline=$(echo "$(now) + 90" | bc)
+    while :; do
+        (($(grep -c CTI_DAEMON_READY "$DAEMON_LOG" 2>/dev/null || echo 0) >= daemon_starts)) &&
+            return 0
+        kill -0 "$daemon_pid" 2>/dev/null || return 2
+        (($(echo "$(now) > $deadline" | bc))) && return 1
+        sleep 0.25
+    done
+}
+
+if ! start_daemon; then
     fail "infra_unavailable" "daemon did not report ready; see $DAEMON_LOG"
 fi
 record "daemon_ready_secs" "$(since "$t")"
+record "daemon_epoch" "$(sed -n 's/.*CTI_DAEMON_READY .* epoch=//p' "$DAEMON_LOG" | tail -1)"
 
 # ---------------------------------------------------------------- dedicated server
 SERVER_LOG="$OUT/server.stdout.log"
@@ -590,6 +614,34 @@ EOF
             fi
             ;;
         esac
+    fi
+
+    # Fault injection: kill the daemon and start a fresh one, mid-run (#96). The
+    # daemon holds the whole Campaign in memory, so the new process is a
+    # factory-fresh one, and the world's job is to notice rather than to play on
+    # against a stranger's Campaign.
+    #
+    # Triggered on a line the probe writes rather than on a clock: the probe
+    # decides when it has a baseline worth losing, and a restart timed by a sleep
+    # would be a restart that sometimes lands before the world has read anything.
+    if [[ -n "${CTI_DAEMON_RESTART_ON:-}" ]]; then
+        case "$(
+            wait_for "$SERVER_LOG" "$LOG_PREFIX\|($CTI_DAEMON_RESTART_ON|FAIL)" \
+                "${CTI_PROBE_TIMEOUT:-$HOLD_TIMEOUT}" "$server_pid"
+            echo $?
+        )" in
+        1) fail "timeout" "probe never logged $CTI_DAEMON_RESTART_ON; see $SERVER_LOG" ;;
+        2) fail "node_crashed" "server exited before the daemon restart; see $SERVER_LOG" ;;
+        esac
+        t_restart=$(now)
+        kill "$daemon_pid" 2>/dev/null || true
+        wait "$daemon_pid" 2>/dev/null || true
+        if ! start_daemon; then
+            fail "infra_unavailable" "daemon did not come back up; see $DAEMON_LOG"
+        fi
+        record "daemon_restart_secs" "$(since "$t_restart")"
+        record "daemon_epoch_after_restart" \
+            "$(sed -n 's/.*CTI_DAEMON_READY .* epoch=//p' "$DAEMON_LOG" | tail -1)"
     fi
 
     # A probe that never finished is not a pass either. Waiting for its own
