@@ -1,9 +1,12 @@
 # Recovering an interrupted agent
 
-> Status: validated ×2 — first two uses as a written procedure, both 2026-08-01: #21's
-> agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Both
-> briefings were written to this document's three-part contract; both resumptions were
-> clean, one of them rebasing through three intervening landings without incident.
+> Status: validated ×5 — first two uses as a written procedure, both 2026-08-01: #21's
+> agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
+> more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
+> this document's three-part contract, every resumption clean. What failed in that cycle
+> was never the resumption but the noticing — one stall sat unseen ~8 hours behind a
+> monitoring check that could not fail — so the second amendment is the section on
+> noticing, the orchestrator's side of the contract.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
@@ -24,6 +27,29 @@ staged world — is still live, with a completion notification firing anyway. Th
 with live work, not a false alarm. Treat it as death, and treat the still-running work as
 the stale state below: nobody is going to write its verdict, so whatever it eventually
 emits is not a result to cite (ADR-0022). Seen once, 2026-08-01.
+
+## Noticing in time: the orchestrator's side
+
+Recovery is cheap; not noticing is what costs. Three stalls on one agent in one cycle
+each resumed cleanly from a briefing, but one sat unseen for ~8 hours — with a
+*finished* pass nobody read — because the orchestrator was watching the clock and its
+clock-watching lied (ADR-0033).
+
+- **Check when the work signals, not when the clock does.** An agent's observable work
+  has completion edges — a server exits, a pass finishes, a lock frees — and each edge is
+  the moment to look at the agent that owns it. The proven mechanism for the server-backed
+  case: a background watchdog loop that re-invokes the orchestrator when the server
+  exits, re-armed each cycle, plus a grace-then-nudge check when a completion edge passes
+  without the agent reporting.
+- **A self-check must fail closed.** `pgrep -f arma3server` matched the orchestrator's
+  *own command line* and reported SERVER-LIVE for hours over a dead server; `pgrep -x`
+  matches the process, not the prose. Third instance of the shape (#41's bare
+  `tasklist.exe`, #44's daemon-address default agreeing with itself): a check the checker
+  satisfies by existing is not a check, and "could not observe" is never "still running".
+- **Nested subagents report to the session that spawned the tree, not to their parent
+  agent.** A parent waiting on its strand's report waits on something that will arrive at
+  the orchestrator instead; relay it (files plus a message worked, at ~15k tokens of
+  double-handling on #48). Plan the plumbing before fanning out two levels deep.
 
 ## Before resuming: inspect the worktree
 
