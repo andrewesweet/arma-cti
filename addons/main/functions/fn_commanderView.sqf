@@ -66,7 +66,11 @@ if (!isServer) exitWith { scriptNull };
 
             if (_target > 0) then {
                 private _envelope = createHashMapFromArray [
-                    ["id", format ["view-%1-%2", _side, round time]],
+                    // Unique per request, for the reason cti_fnc_presenceReport
+                    // gives: the daemon deduplicates on the whole line (#69,
+                    // ADR-0034) and in-game time is not a clock that only
+                    // advances.
+                    ["id", format ["view-%1-%2", _side, round (diag_tickTime * 1000)]],
                     ["verb", "view"],
                     ["payload", createHashMapFromArray [["side", _side]]]
                 ];

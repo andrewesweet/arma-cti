@@ -57,7 +57,12 @@ if (!isServer) exitWith { scriptNull };
         waitUntil { diag_tickTime >= _next };
 
         private _envelope = createHashMapFromArray [
-            ["id", format ["obs-%1", round time]],
+            // In-game second and real millisecond both: the daemon answers a
+            // line it has already answered from its record rather than folding
+            // the report twice (#69, ADR-0034), so an id has to be unique per
+            // request. In-game time alone is not — it stops when the world is
+            // paused and accelerates when it is not.
+            ["id", format ["obs-%1-%2", round time, round (diag_tickTime * 1000)]],
             ["verb", "observe"],
             ["payload", createHashMapFromArray [
                 ["time", time],

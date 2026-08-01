@@ -4,7 +4,7 @@
 //! owns transport, framing and callback dispatch only.
 
 use std::io::{BufRead, BufReader, Write};
-use std::net::TcpStream;
+use std::net::{TcpStream, ToSocketAddrs};
 use std::sync::{Mutex, OnceLock};
 use std::time::Duration;
 
@@ -14,6 +14,20 @@ use arma_rs::{Context, Extension, arma};
 /// cross the WSL2/Windows boundary).
 const DEFAULT_ADDR: &str = "127.0.0.1:9099";
 const IO_TIMEOUT: Duration = Duration::from_secs(5);
+
+/// How long a connect may take before it is a failure rather than a wait.
+///
+/// One frame-stall budget: ADR-0005 has a blocking `callExtension` past 1000 ms
+/// tripping the engine's `EXECUTION_WARNING_TAKES_TOO_LONG` and stalling the
+/// frame for its whole duration. Without this the OS default applies — about
+/// 21 s on Windows — and `daemon_addrs.sqf` deliberately offers a LAN candidate
+/// a joining client may not be able to reach, so an unreachable address freezes
+/// the client inside one blocking call, per candidate, per retry (#69).
+///
+/// Generous for what it has to cover: the daemon is on loopback or on the same
+/// LAN, and a handshake either way is single-digit milliseconds. A connect that
+/// has not been answered in a second is not slow, it is somewhere else.
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(1);
 
 fn addr_cell() -> &'static Mutex<String> {
     static ADDR: OnceLock<Mutex<String>> = OnceLock::new();
@@ -42,7 +56,7 @@ struct Connection {
 
 impl Connection {
     fn open() -> Result<Self, String> {
-        let stream = TcpStream::connect(daemon_addr()?).map_err(|e| format!("connect: {e}"))?;
+        let stream = Self::connect(&daemon_addr()?)?;
         stream
             .set_nodelay(true)
             .map_err(|e| format!("nodelay: {e}"))?;
@@ -57,6 +71,28 @@ impl Connection {
             reader: BufReader::new(stream),
             writer,
         })
+    }
+
+    /// Connect under our own timeout rather than the OS's.
+    ///
+    /// `TcpStream::connect` takes a host string and applies no deadline;
+    /// `connect_timeout` takes one resolved address, so the candidates are
+    /// walked here. An address that resolves to several is tried in turn and
+    /// each gets the full budget — the addresses the shim is given are numeric
+    /// and resolve to one, and a list of unreachable ones is the operator
+    /// having configured a list of unreachable ones.
+    fn connect(addr: &str) -> Result<TcpStream, String> {
+        let candidates = addr
+            .to_socket_addrs()
+            .map_err(|e| format!("connect: resolving {addr}: {e}"))?;
+        let mut refusal = format!("connect: {addr} resolved to no address");
+        for candidate in candidates {
+            match TcpStream::connect_timeout(&candidate, CONNECT_TIMEOUT) {
+                Ok(stream) => return Ok(stream),
+                Err(e) => refusal = format!("connect: {candidate}: {e}"),
+            }
+        }
+        Err(refusal)
     }
 
     fn exchange(&mut self, payload: &str) -> Result<String, String> {
@@ -87,6 +123,16 @@ fn round_trip_fresh(payload: &str) -> Result<String, String> {
 }
 
 /// Reuse the cached connection; reconnect once on failure.
+///
+/// The resend is at-least-once and deliberately so: an exchange that failed
+/// after the write may already have been carried out at the far end, and the
+/// shim cannot tell that from a request that never arrived. Dropping the retry
+/// would trade a duplicate for a lost Command, and deciding here which verbs
+/// are safe to resend would put the domain inside a shim ADR-0005 keeps
+/// domain-agnostic. So the payload goes back **byte for byte**, request id
+/// included, and the daemon answers a line it has already answered from its
+/// record rather than carrying it out again (ADR-0034). Anything that changes
+/// the resent bytes breaks that, which is what the test below pins.
 fn round_trip_persistent(payload: &str) -> Result<String, String> {
     let mut guard = persistent_cell()
         .lock()
@@ -269,6 +315,46 @@ mod tests {
         (addr, received)
     }
 
+    /// Answers the first line on a connection, then takes the second, records
+    /// it, and dies without answering. That is the exact shape of the #69
+    /// hazard: the request arrived and was acted on, and the caller learns
+    /// nothing except that its read failed.
+    fn spawn_acts_then_dies_stub() -> (String, Arc<Mutex<Vec<String>>>) {
+        let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
+        let addr = listener.local_addr().expect("addr").to_string();
+        let received = Arc::new(Mutex::new(Vec::new()));
+        let sink = Arc::clone(&received);
+        std::thread::spawn(move || {
+            for stream in listener.incoming() {
+                let Ok(stream) = stream else { continue };
+                let sink = Arc::clone(&sink);
+                std::thread::spawn(move || {
+                    let mut writer = stream.try_clone().expect("clone");
+                    let mut reader = BufReader::new(stream);
+                    let mut line = String::new();
+                    let mut taken = 0;
+                    while reader.read_line(&mut line).unwrap_or(0) > 0 {
+                        sink.lock()
+                            .unwrap_or_else(|e| e.into_inner())
+                            .push(line.trim_end().to_string());
+                        taken += 1;
+                        // Acted on, then gone: the caller's read finds a closed
+                        // connection and cannot tell that from never arriving.
+                        if taken > 1 {
+                            break;
+                        }
+                        if writer.write_all(b"{\"status\":\"ok\"}\n").is_err() {
+                            break;
+                        }
+                        let _ = writer.flush();
+                        line.clear();
+                    }
+                });
+            }
+        });
+        (addr, received)
+    }
+
     #[test]
     fn ping_needs_no_daemon() {
         let extension = init().testing();
@@ -345,6 +431,60 @@ mod tests {
         assert_eq!(code, 0);
         let seen = received.lock().unwrap_or_else(|e| e.into_inner());
         assert_eq!(*seen, vec![payload.to_string(); 3]);
+    }
+
+    #[test]
+    fn a_resend_after_a_failed_exchange_carries_the_identical_request() {
+        // #69: the retry cannot be made safe here, only made deduplicable. The
+        // daemon refuses a line it has already answered (ADR-0034), and that
+        // only works if the resent line is the one it recorded — same id, same
+        // payload, byte for byte. A shim that stamped a fresh id per attempt
+        // would defeat the receiver silently, so the bytes are the assertion.
+        let _guard = serialise();
+        let (addr, received) = spawn_acts_then_dies_stub();
+        let extension = init().testing();
+        let _ = extension.call("addr", Some(vec![addr]));
+
+        let first = r#"{"id":"cmd-1","verb":"ping"}"#;
+        let (_, code) = extension.call("rpc_keepalive", Some(vec![first.to_string()]));
+        assert_eq!(code, 0);
+
+        // This one is taken by the far end and never answered. The shim cannot
+        // tell that from a request that never arrived, so it reconnects and
+        // sends the same bytes again — and the far end sees it twice.
+        let second = r#"{"id":"cmd-2","verb":"command"}"#;
+        let (output, code) = extension.call("rpc_keepalive", Some(vec![second.to_string()]));
+        assert_eq!(code, 0);
+        assert_eq!(output, r#"{"status":"ok"}"#);
+
+        let seen = received.lock().unwrap_or_else(|e| e.into_inner());
+        assert_eq!(
+            *seen,
+            vec![first.to_string(), second.to_string(), second.to_string()],
+            "the resend must be the same request, not a new one"
+        );
+    }
+
+    #[test]
+    fn connect_gives_up_inside_the_shims_own_timeout() {
+        // TEST-NET-1 (RFC 5737) is documentation space: nothing routes it, so a
+        // connect either blackholes until a timeout fires or is refused by the
+        // local stack. Without `connect_timeout` the first case waits on the OS
+        // — about 21 s on Windows — inside a blocking `callExtension`.
+        let _guard = serialise();
+        let extension = init().testing();
+        let _ = extension.call("addr", Some(vec!["192.0.2.1:9099".to_string()]));
+
+        let started = std::time::Instant::now();
+        let (output, code) = extension.call("rpc", Some(vec!["{}".to_string()]));
+        let elapsed = started.elapsed();
+
+        assert_eq!(code, 0);
+        assert!(output.contains("\"error\""), "unexpected output: {output}");
+        assert!(
+            elapsed < CONNECT_TIMEOUT * 3,
+            "connect took {elapsed:?}, past the shim's own budget"
+        );
     }
 
     #[test]

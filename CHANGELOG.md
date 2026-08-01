@@ -102,6 +102,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dwell, which the cycle runner had made impossible by staging them without the shared probe
   prelude.
 
+- **A busy outbox no longer hands the world more effects than one `callExtension` return can
+  carry.** The engine truncates a return past 10,240 bytes in silence, and the effects poll handed
+  over every pending entry in one reply — so a world polling slowly, or two Commanders in a burst,
+  would eventually get broken JSON with the effects past the cut lost and nothing said. A drain is
+  now bounded at nine tenths of the cap, the same figure the Commander's view already guards itself
+  at, and the acknowledgement cursor delivers the remainder on the next poll. Measured: 72
+  `squad_spawned` effects in one drain, against the largest drain two AI Commanders have ever
+  produced (4) and the engine's own 100-per-frame limit. A single effect too large to cross one
+  return now fails the poll loudly and stays on the outbox instead of being cut in half.
+
+- **A Command the shim had to send twice is no longer carried out twice.** The shim resends a
+  request when an exchange fails on its cached connection, and a write that succeeded before the
+  read failed had already been executed — so one transport hiccup could spend a side's Funds twice
+  on one Purchase, or give both AI Commanders a second turn on one report. The retry stays, because
+  losing a Command is worse; the daemon now answers a request line identical to one it has already
+  answered from its record rather than acting on it again, and writes the duplicate down. ADR-0034.
+
+- **An unreachable daemon address no longer freezes the client for twenty seconds.** The shim's
+  connect had no timeout of its own, so a LAN candidate a joining client cannot reach blocked for
+  the OS default — about 21 s on Windows, inside a blocking call that stalls the frame for its whole
+  duration. It now gives up after one second, which is a hundred times what a handshake on loopback
+  or the same LAN takes.
+
 - **A test run pointed at a different daemon port now actually talks to that daemon.** The shim
   reads its daemon address from `CTI_DAEMON_ADDR` and defaults to port 9099, and the harness set
   only `CTI_DAEMON_PORT` — so moving the daemon moved the daemon and left the world talking to

@@ -18,7 +18,8 @@ from cti_daemon import (
     protocol,
 )
 from cti_daemon.commands import Effect, serialise_effect
-from cti_daemon.outbox import Outbox, UnknownSequenceError
+from cti_daemon.dedupe import Answered
+from cti_daemon.outbox import Entry, Outbox, UnknownSequenceError
 from cti_daemon.port import CommandPort
 from cti_daemon.telemetry import Telemetry
 
@@ -32,6 +33,21 @@ DEFAULT_MAP = "stratis"
 # A position is three axes. Named because the check that a death carries one
 # reads as arithmetic otherwise.
 _POSITION_AXES: Final = 3
+
+# What one poll reply may hand the world in one go. A `callExtension` return is
+# capped at `observation.RETURN_CAP_BYTES` and truncated in silence (ADR-0004),
+# and a truncated poll reply is broken JSON mid-message: the effects past the
+# cut are lost with nothing said, which is the false-green shape ADR-0028 warns
+# about arriving on the push path (#67).
+#
+# Nine tenths of the cap, the same figure and the same ratio the observation
+# path guards itself at (`observation.REPORT_GUARD_BYTES`), so that a reply
+# merely close to truncating fails a run rather than a Play Session. A test
+# holds the two together. Where the observation path's fix is a smaller picture,
+# this one's is a shorter drain: the outbox already numbers its entries and
+# retires an acknowledged prefix (ADR-0018), so a poll hands over as much as
+# fits and the ack cursor brings the rest on the next one.
+POLL_GUARD_BYTES: Final = 9_216
 
 
 class Daemon:
@@ -48,6 +64,15 @@ class Daemon:
     ) -> None:
         """Wire the daemon to its telemetry sink, the economy and the map."""
         self.outbox = Outbox()
+        # What the wire has already been told (#69, ADR-0034). The shim resends
+        # a request whose exchange failed on its cached connection, and a write
+        # that succeeded before the read failed has already been carried out
+        # here — so an identical line gets the answer it got, not a second
+        # Purchase. Here rather than in the port, because every verb this
+        # answers changes something: `observe` folds a report and lets each
+        # Commander play on it, and a replayed one is a Commander taking two
+        # turns.
+        self.answered = Answered()
         self._telemetry = Telemetry(telemetry_path)
         # Where a won Campaign's record lands, and where its summary is read
         # from (#35, ADR-0023). Beside the telemetry by default, because the two
@@ -110,8 +135,25 @@ class Daemon:
         self._commanders[side] = brain
 
     def handle_line(self, line: str) -> str:
-        """Answer one request line. Every path produces a reply."""
+        """Answer one request line. Every path produces a reply.
+
+        A line identical to one already answered is answered from that answer
+        rather than carried out again (#69, ADR-0034). Nothing downstream sees
+        it: the shim's resend after a failed exchange is indistinguishable from
+        the first attempt at this end, so the receiver is the only place the
+        duplicate can be stopped.
+        """
         started = time.perf_counter_ns()
+        remembered = self.answered.recall(line)
+        if remembered is not None:
+            self._telemetry.record(
+                "request_replayed",
+                id=remembered.id,
+                verb=remembered.verb,
+                duration_us=(time.perf_counter_ns() - started) // 1_000,
+                reply_bytes=len(remembered.reply),
+            )
+            return remembered.reply
         request_id: str | None = None
         verb: str | None = None
         # Who the caller was acting for, when the request says. A human-issued
@@ -153,6 +195,7 @@ class Daemon:
             # worth having on disk rather than a thing to find out in a session.
             reply_bytes=len(encoded),
         )
+        self.answered.remember(line, request_id=request_id, verb=verb, reply=encoded)
         return encoded
 
     @staticmethod
@@ -713,22 +756,67 @@ class Daemon:
         return protocol.rejected(request.id, judgement.code, judgement.detail)
 
     def _poll(self, request: protocol.Request) -> protocol.Reply:
-        """Hand over everything the game has not acknowledged yet."""
-        messages = [
-            {"sequence": entry.sequence, "message": entry.message}
-            for entry in self.outbox.pending()
-        ]
+        """Hand over as much of the unacknowledged outbox as one reply carries.
+
+        A prefix, oldest first, bounded by `POLL_GUARD_BYTES` (#67). Nothing is
+        lost by stopping short: the game acknowledges through a high-water mark
+        and polls again, so the ack cursor delivers the remainder on the next
+        turn of the pump (ADR-0018). Stopping at the first entry that does not
+        fit rather than skipping it is what keeps the order the outbox issued.
+        """
+        pending = self.outbox.pending()
+        messages: list[dict[str, Any]] = []
+        for entry in pending:
+            candidate = [*messages, {"sequence": entry.sequence, "message": entry.message}]
+            if len(protocol.encode(self._drain(request, candidate))) >= POLL_GUARD_BYTES:
+                break
+            messages = candidate
+
+        if pending and not messages:
+            return self._oversized(request, pending[0])
+
         if messages:
-            # How much work one drain hands the world in one go. ADR-0004 has
-            # the engine draining at most 100 callbacks per frame, and two
-            # Commanders double what arrives at that path (#17) — so the size of
-            # a drain is a number to have on disk rather than to estimate.
-            # Written only when there is something to hand over: a poll that
-            # found nothing is the ordinary case and would bury the rest.
+            # How much work one drain hands the world in one go, and how much
+            # was held back. ADR-0004 has the engine draining at most 100
+            # callbacks per frame, and two Commanders double what arrives at
+            # this path (#17) — so the size of a drain is a number to have on
+            # disk rather than to estimate, and a backlog that stops draining
+            # inside one poll has to be visible before it is a Play Session's
+            # problem. Written only when there is something to hand over: a poll
+            # that found nothing is the ordinary case and would bury the rest.
             self._telemetry.record(
-                "outbox_handed", handed=len(messages), through=messages[-1]["sequence"]
+                "outbox_handed",
+                handed=len(messages),
+                through=messages[-1]["sequence"],
+                deferred=len(pending) - len(messages),
             )
+        return self._drain(request, messages)
+
+    @staticmethod
+    def _drain(request: protocol.Request, messages: list[dict[str, Any]]) -> protocol.Reply:
+        """Build the reply one drain goes back in. Measured before it is sent."""
         return protocol.accepted(request.id, {"messages": messages})
+
+    def _oversized(self, request: protocol.Request, entry: Entry) -> protocol.Reply:
+        """Refuse a drain whose oldest entry cannot cross the wire at all.
+
+        Loud rather than truncated, matching the observation path's refusal: an
+        effect that does not fit one return is an effect to make smaller, never
+        a reason to hand the transport something it will cut in half. The entry
+        stays on the outbox and every poll fails the same way until it is fixed
+        — a stalled pump that says so beats a pump that quietly loses the work
+        behind it.
+        """
+        alone = [{"sequence": entry.sequence, "message": entry.message}]
+        size = len(protocol.encode(self._drain(request, alone)))
+        self._telemetry.record(
+            "outbox_oversized", sequence=entry.sequence, reply_bytes=size, guard=POLL_GUARD_BYTES
+        )
+        detail = (
+            f"outbox entry {entry.sequence} needs {size} bytes of a {POLL_GUARD_BYTES}-byte "
+            f"reply guard: it cannot cross one callExtension return and will not be truncated"
+        )
+        return protocol.failed(request.id, "oversized_message", detail)
 
     def _ack(self, request: protocol.Request) -> protocol.Reply:
         """Retire everything up to the sequence the game says it received."""

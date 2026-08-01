@@ -62,7 +62,33 @@ if (!isServer) exitWith { scriptNull };
         private _raw = (_extension callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
         private _reply = fromJSON _raw;
         _drain set ["polls", (_drain get "polls") + 1];
+
+        // The engine caps a callExtension return at 10,240 bytes and truncates
+        // in silence (ADR-0004), and a truncated poll reply is broken JSON with
+        // effects lost past the cut. The daemon bounds a drain at nine tenths of
+        // the cap and hands the rest over on the next poll (#67), so this is the
+        // backstop rather than the guard: reaching it means the daemon's bound
+        // did not hold, which is a fault rather than a busy world.
+        if (count _raw >= 9216) then {
+            diag_log format ["CTI|FAIL class=assertion_failed poll_near_return_cap chars=%1",
+                count _raw];
+        };
+
         if (_reply isEqualType createHashMap) then {
+            // An error reply carries no `result`, so reading messages out of it
+            // would find none and the pump would look idle while the outbox
+            // stalled. `oversized_message` is the one the daemon raises when a
+            // single effect cannot cross one return at all (#67) — loud, and
+            // the effect stays on the outbox until it is made smaller.
+            private _status = _reply getOrDefault ["status", ""];
+            if (_status isNotEqualTo "ok") then {
+                private _error = _reply getOrDefault ["error", createHashMap];
+                diag_log format ["CTI|FAIL class=assertion_failed poll_refused error=%1 detail=%2",
+                    _error getOrDefault ["class", "?"],
+                    _error getOrDefault ["detail", ""]];
+                continue;
+            };
+
             private _messages = (_reply getOrDefault ["result", createHashMap])
                 getOrDefault ["messages", []];
 
