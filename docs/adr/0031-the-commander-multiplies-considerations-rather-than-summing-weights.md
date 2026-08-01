@@ -117,6 +117,10 @@ will recall a Squad from the next Objective over. That is a defensible reading o
 Commander that leaves its rear open is not a competent one" and it is not the reading
 ADR-0020 measured, so it is called out here for the sign-off rather than left in a diff.
 
+**Sign-off received:** the human approved both flagged placeholders — the 1.15 km recall
+radius and `homeland = 10.0` — on 2026-08-01. The ADR's remaining decisions stay
+`Reviewed-by-human: pending`; this note covers only the two gameplay-feel values.
+
 ## Lewis's compensation factor is applied, and proved unable to decide anything
 
 Multiplying eight normalised considerations drives a good option to about 0.3, which is a
