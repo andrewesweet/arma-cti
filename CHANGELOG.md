@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **The in-world regression tier can now be asked for the probes an earlier issue produced.**
+  `just regress --issues 28` runs everything whose `issues:` header names #28; `just regress --list`
+  prints what a selection would run — names, and the deadlines they add up to — without taking the
+  lock, opening a port or bringing a world up. Two things deliberately did not change. The full
+  corpus is still what runs with no arguments and still what gates anything touching an in-world
+  surface, because a probe's header records what motivated it rather than what it covers, and
+  filtering your own change by your own issue number selects only the probes you just wrote. And a
+  filter that matches no probe is an error rather than a very fast green pass — the one way this
+  tier could lie is by being narrowed to nothing.
+
 ### Changed
 
 - **A probe now ends when its subject has finished, not when a clock says it probably has.**

@@ -133,6 +133,11 @@ probe file="" hold="150": build-shim build-addon
 # iterating. Fresh world per probe, one typed verdict per probe from the
 # CLAUDE.md failure-class table, worst class as the exit code.
 #
+# `--issues 28` adds every probe whose `issues:` header names 28 — provenance,
+# not blast radius, so it is not a gate for the issue you are on. A filter that
+# matches no probe is an error, never an empty pass. `--list` prints the
+# selection and runs nothing: no lock, no port, no world.
+#
 # Each probe declares its own deadline in a `window:` header and the run waits on
 # that probe's own completion line, so a probe that finishes early ends early.
 # The corpus takes no environment variables: what a probe's world needs is in its

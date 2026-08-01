@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # The Phase-1 in-game regression tier (issue #23, ADR-0016). Design:
-# docs/regression-tier.md. Invoked as `just regress [--wait <secs>] [name...]`.
+# docs/regression-tier.md. Invoked as
+# `just regress [--wait <secs>] [--issues <n,...>] [--list] [name...]`.
 #
 # One loop over the probe corpus in spike/probes/. Per probe: a fresh Phase-1
 # world, the probe appended to the generated harness, and a wait on that probe's
@@ -71,15 +72,26 @@ die() {
 # ------------------------------------------------------------------ arguments
 WAIT_SECS=0
 SELECTED=()
+WANT_ISSUES=()
+LIST_ONLY=0
 while (($# > 0)); do
     case "$1" in
     --wait)
         WAIT_SECS="${2:-}"
         shift 2
         ;;
+    --issues)
+        spec="${2:-}"
+        [[ -n "$spec" ]] || die "--issues takes one or more issue numbers"
+        for n in ${spec//,/ }; do
+            [[ "$n" =~ ^[0-9]+$ ]] || die "--issues takes issue numbers, got: $n"
+            WANT_ISSUES+=("$n")
+        done
+        shift 2
+        ;;
     --list)
-        for f in "$PROBE_DIR"/*.sqf; do basename "$f" .sqf; done
-        exit 0
+        LIST_ONLY=1
+        shift
         ;;
     -*) die "unknown option: $1" ;;
     *)
@@ -118,17 +130,56 @@ header_of() {
 mapfile -t ALL < <(for f in "$PROBE_DIR"/*.sqf; do basename "$f" .sqf; done | sort)
 ((${#ALL[@]} > 0)) || die "no probes in $PROBE_DIR"
 
-if ((${#SELECTED[@]} == 0)); then
+# Does this probe's `issues:` header name that issue? The header is a comma list
+# ("16, 32, 43") and matching is on whole numbers, so `--issues 3` never selects
+# a probe written for #32.
+names_issue() {
+    local file="$1" want="$2" raw tok
+    raw="$(header_of "$file" issues)"
+    for tok in ${raw//,/ }; do
+        [[ "$tok" == "$want" ]] && return 0
+    done
+    return 1
+}
+
+if ((${#SELECTED[@]} == 0 && ${#WANT_ISSUES[@]} == 0)); then
     CORPUS=("${ALL[@]}")
 else
+    # Names keep the caller's order; `--issues` appends what it selects in corpus
+    # order, minus anything already named. Both filters union, neither subtracts.
+    declare -A PICKED=()
     CORPUS=()
     for want in "${SELECTED[@]}"; do
         found=""
         for have in "${ALL[@]}"; do [[ "$have" == "$want" ]] && found="$have"; done
         [[ -n "$found" ]] || die "no such probe: $want (have: ${ALL[*]})"
+        [[ -n "${PICKED[$found]:-}" ]] && continue
+        PICKED[$found]=1
         CORPUS+=("$found")
     done
+    # An `--issues` filter that matches nothing is an error, never a green pass:
+    # the one way this tier could lie is by silently running an empty corpus and
+    # exiting 0. Reported per number, so a spec that matched three issues out of
+    # four still names the fourth rather than passing on the strength of the rest.
+    unmatched=()
+    for n in "${WANT_ISSUES[@]}"; do
+        matched=0
+        for have in "${ALL[@]}"; do
+            names_issue "$PROBE_DIR/$have.sqf" "$n" || continue
+            matched=1
+            [[ -n "${PICKED[$have]:-}" ]] && continue
+            PICKED[$have]=1
+            CORPUS+=("$have")
+        done
+        ((matched)) || unmatched+=("$n")
+    done
+    ((${#unmatched[@]} == 0)) ||
+        die "no probe's 'issues:' header names: ${unmatched[*]} — an --issues filter that matches no probe is an error, not a pass. Run the full corpus, or name the probes."
 fi
+
+# The invariant the two branches above exist to hold. Selection may narrow the
+# corpus; it may never empty it.
+((${#CORPUS[@]} > 0)) || die "selection is empty"
 
 # Validate every selected probe's header before bringing a single world up: a
 # corpus that fails to parse should cost seconds, not a bring-up per probe.
@@ -148,6 +199,23 @@ for name in "${CORPUS[@]}"; do
             die "$name.sqf is quarantined without an issue number: 'quarantined: $quarantine'"
     fi
 done
+
+# ------------------------------------------------------------------ dry run
+# `--list` is the whole selection path with nothing after it: it resolves the
+# filters, validates the headers of what they chose, prints that and stops. It
+# takes no lock, opens no port and brings no world up, which is what makes
+# selection testable in the no-Arma tier — and what lets an agent see what a
+# filter chose before spending the wall on it. Names to stdout one per line so
+# the output composes; the cost estimate is commentary, on stderr.
+if ((LIST_ONLY)); then
+    budget=0
+    for name in "${CORPUS[@]}"; do
+        printf '%s\n' "$name"
+        budget=$((budget + $(header_of "$PROBE_DIR/$name.sqf" window)))
+    done
+    log "${#CORPUS[@]} of ${#ALL[@]} probe(s); declared windows total ${budget}s (deadlines, not run time)"
+    exit 0
+fi
 
 # ------------------------------------------------------------------ the lock
 # Everything above this line reads files and touches no port, which is why it
