@@ -149,5 +149,22 @@ probe file="" hold="150": build-shim build-addon
 regress *args: build-shim build-addon
     ./spike/regress.sh {{ args }}
 
+# Arma tier: the #45 mission-cycle experiment — two missions in one server
+# process, with the second one's freshness asserted rather than assumed.
+# Exploration scaffolding, not part of the tier: `just regress` never sees it,
+# and docs/research/multiplexing-the-arma-tier.md is what it produced.
+#
+# Kept for one reason: ADR-0028's N=3 is arithmetic rather than measurement, and
+# if the third slot does not fit, cycling is the lever the tier falls back on.
+# Delete this recipe and spike/cycle/ once #47 has three slots standing up
+# together — at that point it is surface for its own sake.
+#
+# `--no-daemon-restart` runs the dishonest cycle on purpose: the Campaign lives
+# in the daemon and the protocol has no reset verb, so a cycle that keeps the
+# daemon inherits a played Campaign, and the run goes red proving it.
+# `--hc` adds a headless client, which survives the mission change.
+cycle-spike *args: build-shim build-addon
+    ./spike/tier-lock.sh --label "just cycle-spike" -- ./spike/cycle/cycle.sh {{ args }}
+
 # Everything that does not need Arma.
 fast: check unit

@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just cycle-spike` runs two test missions in one server process, and proves the second one
+  starts clean.** The dedicated server can be made to change mission unattended with nobody
+  connected — mission rotation cannot, because it waits for a player, but `serverCommand` with a
+  `serverCommandPassword` can — and the switch costs under a second against an eleven-second cold
+  start. It is not part of `just regress` and is not being adopted: behind the parallel pool #47
+  proposes it would save about half a minute a pass, and the port allocation that pool was waiting
+  on has since been granted. It stays only as the fallback if three slots turn out not to fit. The
+  measurements, the corpus classified for whether probes could share one world (one of fourteen
+  can), and the recommendation across all three speed-up levers are in
+  `docs/research/multiplexing-the-arma-tier.md`.
+
 - **The in-world regression tier can now be asked for the probes an earlier issue produced.**
   `just regress --issues 28` runs everything whose `issues:` header names #28; `just regress --list`
   prints what a selection would run — names, and the deadlines they add up to — without taking the
