@@ -276,6 +276,12 @@ DESYNC_LOAD="${CTI_DESYNC_LOAD:-0}"
     # never launched would spend its window on nothing every unattended pass.
     printf 'CTI_PROBE_CLIENT = %s;\n' "${CTI_PROBE_CLIENT:-0}"
 } >"$STAGE/harness.sqf"
+# Shared probe scaffolding, ahead of the probe that uses it. Unconditional: it
+# defines functions and asserts nothing, and staging it always means the staged
+# harness.sqf in the evidence is the whole of what ran (#46).
+PRELUDE="$REPO/spike/probe-prelude.sqf"
+[[ -f "$PRELUDE" ]] || fail "infra_unavailable" "probe prelude missing: $PRELUDE"
+cat "$PRELUDE" >>"$STAGE/harness.sqf"
 # One-off in-world probes go here rather than into the mission: the mission is
 # the thing under test, and a probe that lives in it is one that ships. Named by
 # CTI_HARNESS_EXTRA and appended to the generated harness.

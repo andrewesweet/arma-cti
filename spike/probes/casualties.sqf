@@ -1,5 +1,5 @@
 // probe: casualties
-// issues: 39
+// issues: 39, 46
 // window: 150
 //
 // #39 in-world probe: a death in the world is a row in the daemon's telemetry,
@@ -42,6 +42,12 @@
 //
 // The two Squads stand on different authored Objectives, so a `place` that was
 // really taken per victim can be told from one taken once per report.
+//
+// #46 converted all four of this probe's fixed settles — the bring-up 20, the
+// 5 s drop, the 5 s before the head count, and the 15 s drain — each to a wait
+// on the condition it was standing in for, each keeping its old number as the
+// deadline. The window stays 150: the arithmetic above is the subject's worst
+// case, and it is the worst case a deadline is sized to.
 [] spawn {
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
@@ -54,15 +60,18 @@
         fromJSON _raw
     };
 
+    // The world built and both server loops turned once (#46, replacing a fixed
+    // 20 s settle and keeping its 20 s as the deadline). Ahead of the map read
+    // rather than after it, which is where the settle used to sit: the map is
+    // the first thing this probe asks the world for, so the runway belongs in
+    // front of it.
+    [20] call cti_probe_fnc_worldReady;
+
     private _map = missionNamespace getVariable ["cti_map", createHashMap];
     private _objectives = _map getOrDefault ["objectives", []];
     if (count _objectives < 2) exitWith {
         diag_log "CTI|FAIL class=assertion_failed casualty_probe_needs_two_objectives";
     };
-
-    // Let the world finish building and the report loop get a cycle in.
-    private _next = diag_tickTime + 20;
-    waitUntil { diag_tickTime >= _next };
 
     // One Squad a side, through the port, because that is the only way a Squad
     // gets onto the roster the recorder attributes against (ADR-0012).
@@ -122,10 +131,20 @@
             count units _west, count units _east];
     };
 
-    // Settle: a unit moved by setPosATL is still falling for a frame or two, and
-    // a death recorded mid-drop would carry a position nobody put it at.
-    _next = diag_tickTime + 5;
-    waitUntil { diag_tickTime >= _next };
+    // A unit moved by setPosATL is still falling for a frame or two, and a death
+    // recorded mid-drop would carry a position nobody put it at. So wait for the
+    // drop to be over rather than for five seconds to be (#46): every staged man
+    // on the ground and no longer moving, with the old 5 s as the deadline. A
+    // man who never lands is staged from the same position he was before, which
+    // is the failure the settle also could not have caught.
+    private _staged = (units _west) + (units _east);
+    private _dropDeadline = diag_tickTime + 5;
+    private _landed = 0;
+    waitUntil {
+        _landed = { isTouchingGround _x && { vectorMagnitude velocity _x < 0.5 } } count _staged;
+        _landed isEqualTo count _staged || { diag_tickTime > _dropDeadline }
+    };
+    diag_log format ["CTI|casualty_probe_landed men=%1 of=%2", _landed, count _staged];
 
     // The three deaths. Logged before they are staged rather than after, so a
     // claim cannot be quietly withheld by a probe that died between the two.
@@ -154,10 +173,19 @@
     // fewer WEST and one fewer EAST, or the claims above are about a world that
     // did not happen and the timeline check downstream would be asserting
     // against a fiction.
-    _next = diag_tickTime + 5;
-    waitUntil { diag_tickTime >= _next };
-    private _westNow = { alive _x } count _westMen;
-    private _eastNow = { alive _x } count _eastMen;
+    // Waited for by name rather than by clock (#46): the counts below are the
+    // claim, so they are what the wait is on, with the old 5 s as the deadline.
+    // A death the engine never registered leaves the counts where they were and
+    // fails at 5 s, in the same class, exactly as it did before.
+    private _countDeadline = diag_tickTime + 5;
+    private _westNow = _westWere;
+    private _eastNow = _eastWere;
+    waitUntil {
+        _westNow = { alive _x } count _westMen;
+        _eastNow = { alive _x } count _eastMen;
+        (_westNow isEqualTo (_westWere - 2) && { _eastNow isEqualTo (_eastWere - 1) })
+            || { diag_tickTime > _countDeadline }
+    };
     if (_westNow != _westWere - 2 || { _eastNow != _eastWere - 1 }) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed casualty_probe_staging_missed west=%1/%2 east=%3/%4",
             _westNow, _westWere, _eastNow, _eastWere];
@@ -165,11 +193,23 @@
     diag_log format ["CTI|casualty_probe_staged west=%1 east=%2 alive_west=%3 alive_east=%4",
         _westId, _eastId, _westNow, _eastNow];
 
-    // Two report intervals plus the settling above: the buffer drains on the
-    // report loop's own cadence (5 s), so waiting for one interval would leave
-    // the last death's arrival to whichever side of the tick it fell.
-    _next = diag_tickTime + 15;
-    waitUntil { diag_tickTime >= _next };
+    // The deaths have crossed to the daemon. This used to be two report
+    // intervals of hold, because the buffer drains on the report loop's own
+    // cadence (5 s) and one interval would leave the last death's arrival to
+    // whichever side of the tick it fell. #46 waits for the thing that hold was
+    // a proxy for instead: a report that *began after* the staging having had
+    // its judgement applied, which is the report that carried these deaths, and
+    // an empty buffer to corroborate it. The old 15 s stays as the deadline, so
+    // a report loop that has stopped turning reaches the same line at the same
+    // moment, with `undrained` non-zero to say so.
+    private _turns = missionNamespace getVariable ["cti_presenceReport", createHashMap];
+    private _sentBefore = _turns getOrDefault ["sent", 0];
+    private _drainDeadline = diag_tickTime + 15;
+    waitUntil {
+        ((_turns getOrDefault ["replied", 0]) > _sentBefore
+            && { count (missionNamespace getVariable ["cti_casualties", []]) isEqualTo 0 })
+            || { diag_tickTime > _drainDeadline }
+    };
 
     diag_log format ["CTI|casualty_probe_done staged=3 undrained=%1",
         count (missionNamespace getVariable ["cti_casualties", []])];

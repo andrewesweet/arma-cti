@@ -1,5 +1,5 @@
 // probe: contacts
-// issues: 28
+// issues: 28, 46
 // window: 240
 //
 // #28 in-world probe: WEST reports what it saw of EAST, and nothing of who EAST is.
@@ -21,6 +21,12 @@
 // the source, and whether it acquires a man at 150 m is a question only the
 // engine answers. The daemon's half — banding, ageing, the removal rule — is
 // unit-tested; what is tested here is the half that lives in the world.
+//
+// #46 converted both of this probe's fixed settles: the bring-up one to the
+// shared world-ready wait, and the 30 s knowledge-spread hold to a wait on the
+// overlap it was buying. Each keeps its old number as the deadline, so a run in
+// which the world never comes up, or in which the two leaders never come to know
+// a man in common, reaches the same assertions at the same instant it used to.
 [] spawn {
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
@@ -33,9 +39,9 @@
         fromJSON _raw
     };
 
-    // Let the world finish building and the report loop get a cycle in.
-    private _next = diag_tickTime + 20;
-    waitUntil { diag_tickTime >= _next };
+    // The world built and both server loops turned once (#46, replacing a fixed
+    // 20 s settle and keeping its 20 s as the deadline).
+    [20] call cti_probe_fnc_worldReady;
 
     // Two WEST Squads rather than one: several leaders share knowledge of the
     // same men, so a sample that did not deduplicate would report each of them
@@ -123,11 +129,42 @@
         diag_log "CTI|FAIL class=timeout contacts_probe_never_acquired";
     };
 
-    // Hold once something has been acquired, so knowledge spreads and both
-    // leaders come to know some of the same men. Deduplication is only tested
-    // by an overlap, and the first sighting cannot overlap with anything.
-    _next = diag_tickTime + 30;
-    waitUntil { diag_tickTime >= _next };
+    // Wait for the overlap itself. Deduplication is only tested by two leaders
+    // knowing some of the same men, and the first sighting cannot overlap with
+    // anything — so what this used to buy with a 30 s hold it now waits for by
+    // name (#46), with the 30 s kept as the deadline. Asked of the engine rather
+    // than of the sampler, because the sampler is what the overlap is about to
+    // be used to test; a run where the overlap never forms carries on at 30 s
+    // into exactly the assertions it did before, and the log line says which
+    // kind of run it was.
+    private _overlapDeadline = diag_tickTime + 30;
+    private _overlap = 0;
+    private _knownBy = {
+        params ["_who"];
+        private _ids = [];
+        {
+            if ((_x # 2) isEqualTo east) then {
+                private _id = netId (_x # 1);
+                if !(_id in _ids) then { _ids pushBack _id };
+            };
+        } forEach (_who targetsQuery [objNull, east, "", [], 0]);
+        _ids
+    };
+    // On a 1 s tick, not every frame: `targetsQuery` is CPU-intensive by the
+    // wiki's own word and this probe measures that cost a few lines below, so a
+    // free-running poll would be loading the thing it is about to time.
+    private _nextLook = 0;
+    waitUntil {
+        if (diag_tickTime > _nextLook) then {
+            _nextLook = diag_tickTime + 1;
+            private _first = [leader ((values _squads) # 0)] call _knownBy;
+            private _second = [leader ((values _squads) # 1)] call _knownBy;
+            _overlap = count (_first select { _x in _second });
+        };
+        _overlap > 0 || { diag_tickTime > _overlapDeadline }
+    };
+    diag_log format ["CTI|contacts_probe_overlap men=%1 waited=%2",
+        _overlap, 30 - (_overlapDeadline - diag_tickTime)];
 
     // Sampled here rather than reused from the wait, so the sample and the raw
     // query below read the engine at the same moment and can be compared.

@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The rest of the regression corpus now ends when its subject does, and the settles that stayed
+  say why in their own probe.** Nine more fixed settles converted to waits on the condition being
+  asserted, each keeping its old number as the deadline: eight identical "let the world build" holds
+  became one shared wait on the world's own counters and returned in **5.0 s against 20 s, on all
+  eight**; the `contacts` probe waits for the overlap between two leaders it needs (1.0 s against
+  30 s); `contact-decay` waits for the sighting to actually leave the sample, which records our 120 s
+  ageing bound instead of assuming it; `casualties` waits for the men to land, the deaths to
+  register and the buffer to reach the daemon. **The first measured full passes of all fourteen
+  probes are 23m46s and 23m58s**, against the 26m40s that had only ever been arithmetic — two
+  consecutive greens rather than one, because a conversion is the change most likely to introduce a
+  flake and this tier never averages runs. Four settles were kept and
+  argued for rather than converted — `two-commanders` most importantly, because its 180 s soak is
+  the window the largest-observed drain is measured in and an extremum shrinks with its window.
+  Converting it would have reported a smaller maximum under the same name, which is worse than the
+  settle. The per-probe decisions are in `docs/regression-tier.md`.
+
 - **The AI Commander decides by multiplying considerations through response curves rather than by
   summing eight weights, and a consideration can now veto an option outright.** Each candidate Order
   is normalised to [0, 1] on eight axes, remapped by an authored curve and multiplied, so a zero

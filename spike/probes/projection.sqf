@@ -1,5 +1,5 @@
 // probe: projection
-// issues: 27
+// issues: 27, 46
 // window: 150
 //
 // #27 in-world probe: the server takes the public picture and still repaints.
@@ -14,9 +14,11 @@
         diag_log "CTI|FAIL class=infra_unavailable projection_probe_no_shim";
     };
 
-    // Let the world finish building and the report loop get a cycle in.
-    private _next = diag_tickTime + 20;
-    waitUntil { diag_tickTime >= _next };
+    // The world built and both server loops turned once. #46 replaced the fixed
+    // 20 s settle this used to be with a wait on those three conditions, keeping
+    // the 20 s as the deadline: a ready world is asked sooner, an unready one is
+    // asked at the same moment and fails the same way.
+    [20] call cti_probe_fnc_worldReady;
 
     // Ground a side holds is the thing the reply has to keep carrying. Spawned
     // here rather than bought and walked: what is under test is the marker path,

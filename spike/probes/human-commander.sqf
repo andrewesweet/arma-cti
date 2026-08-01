@@ -1,5 +1,5 @@
 // probe: human-commander
-// issues: 18
+// issues: 18, 46
 // window: 150
 //
 // #18 in-world probe: the human Commander's path, as far as a world with no
@@ -38,9 +38,9 @@
         fromJSON _raw
     };
 
-    // Let the world finish building and the report loop get a cycle in.
-    private _next = diag_tickTime + 20;
-    waitUntil { diag_tickTime >= _next };
+    // The world built and both server loops turned once (#46, replacing a fixed
+    // 20 s settle and keeping its 20 s as the deadline).
+    [20] call cti_probe_fnc_worldReady;
 
     // ---------------------------------------------------------------- whitelist
     // The mission's own config, read out of the running mission rather than out

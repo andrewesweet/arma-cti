@@ -1,5 +1,5 @@
 // probe: two-commanders
-// issues: 17
+// issues: 17, 46
 // window: 600
 // env: CTI_HOLD_HC=1 CTI_AI_SIDE=WEST,EAST CTI_AI_SEED=1,4
 //
@@ -31,6 +31,19 @@
 // nobody is watching both reach the world, that the effects of both travel one
 // outbox without either starving, that the push path has room for two at once,
 // and that neither side sits still.
+//
+// **This probe keeps its 180 s soak, and #46 decided so on purpose.** Every
+// other fixed settle in the corpus was a proxy for a condition the world states,
+// and was converted to a wait on that condition. This one is not a proxy: it is
+// the window the number #17 asks for is measured in — the largest single drain
+// the push path has been seen to carry with two Commanders on it — and an
+// extremum shrinks with its window. Converting it to "exit when a side has
+// closed ground" would end the probe at about forty seconds and report the
+// maximum drain of forty seconds as though it were the maximum drain of a
+// hundred and eighty. That is a conversion that weakens the evidence while
+// looking like a speed-up, which is worse than the settle. So the 180 s is an
+// explicit floor for the measurement, and the soak earns it back by watching the
+// claims it used to sample once at the end.
 [] spawn {
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
@@ -162,12 +175,62 @@
     // the 180 s this probe is sized to, and the longer window buys evidence of
     // what a Campaign left alone *does* — ground changing hands takes about
     // nine minutes of marching — rather than making anything pass that did not.
+    //
+    // #46 kept this soak and converted the corpus's other settles. It is the
+    // extremum-bearing kind: the number below it exists to produce is the
+    // largest single drain the push path has been seen to carry with two
+    // Commanders on it (#17), and an extremum shrinks with the window it was
+    // observed in. Exiting at the first Squad to close ground — the conversion
+    // `ai-commander` took — would leave that number measured over about forty
+    // seconds instead of a hundred and eighty, and quietly report a smaller
+    // maximum as though it were the same evidence. So the 180 s stays as an
+    // explicit floor for the measurement, stated here because the honesty rule
+    // requires a floor to be stated.
+    //
+    // What the soak is *not* allowed to be is dead time. The two claims it used
+    // to read once at the end — a force with no ceiling, and the pump still
+    // turning — are evaluated on every pass of it instead, so they fail at the
+    // instant they are violated rather than only if the violation happened to
+    // survive to t+180. Over the same window that is strictly stronger, which is
+    // the shape #43 gave `ai-commander`'s absence claims; here it costs nothing
+    // at all, because the window is not moving.
     private _pollsBefore = (missionNamespace getVariable ["cti_effectDrain", createHashMap])
         getOrDefault ["polls", 0];
     private _soak = 180 max (missionNamespace getVariable ["CTI_PROBE_SOAK", 0]);
-    diag_log format ["CTI|two_probe_soaking secs=%1", _soak];
+    diag_log format ["CTI|two_probe_soaking secs=%1 floor=%2 for=%3",
+        _soak, 180, "the push-path extremum #17 asks to be measured"];
+    private _runaway = false;
+    private _pollsSeen = _pollsBefore;
     private _next = diag_tickTime + _soak;
-    waitUntil { diag_tickTime >= _next };
+    private _nextWatch = 0;
+    waitUntil {
+        if (diag_tickTime > _nextWatch) then {
+            _nextWatch = diag_tickTime + 2;
+            // Runaway spending has one shape the world can see: a force with no
+            // ceiling. The scorer buys up to one Squad per Objective the map
+            // has, and a Commander spending the other side's Funds — or its own
+            // without counting — shows up here first. Said once per side, the
+            // first time it is true.
+            {
+                private _fielded = [_x] call _squadsOf;
+                if (count _fielded > count _objectives && { !_runaway }) then {
+                    _runaway = true;
+                    diag_log format ["CTI|FAIL class=assertion_failed two_probe_runaway_force side=%1 squads=%2 objectives=%3",
+                        _x, count _fielded, count _objectives];
+                };
+            } forEach _sides;
+            _pollsSeen = (missionNamespace getVariable ["cti_effectDrain", createHashMap])
+                getOrDefault ["polls", 0];
+        };
+        diag_tickTime >= _next
+    };
+    // Nothing deadlocked while nobody was sending it anything: the pump is still
+    // polling a daemon that is still answering. A stopped world would otherwise
+    // read as a quiet one.
+    if (_pollsSeen <= _pollsBefore) then {
+        diag_log format ["CTI|FAIL class=assertion_failed two_probe_pump_stopped before=%1 after=%2",
+            _pollsBefore, _pollsSeen];
+    };
 
     // ------------------------------------------------ neither side is stuck
     // Ground closed rather than ground reached, per side. A side that has not
@@ -193,16 +256,14 @@
         };
     } forEach _sides;
 
-    // Runaway spending has one shape the world can see: a force with no
-    // ceiling. The scorer buys up to one Squad per Objective the map has, and a
-    // Commander spending the other side's Funds — or its own without counting —
-    // shows up here first.
+    // The runaway-force claim is not re-read here: it is watched throughout the
+    // soak above, which fails at the first moment a side is over its ceiling
+    // rather than only if it was still over it at the end. Read once more at the
+    // end it would be weaker, not stronger — a force that ran away and was
+    // reconciled back inside the window would pass.
     {
-        private _fielded = [_x] call _squadsOf;
-        if (count _fielded > count _objectives) then {
-            diag_log format ["CTI|FAIL class=assertion_failed two_probe_runaway_force side=%1 squads=%2 objectives=%3",
-                _x, count _fielded, count _objectives];
-        };
+        diag_log format ["CTI|two_probe_ceiling side=%1 squads=%2 objectives=%3 runaway_seen=%4",
+            _x, count ([_x] call _squadsOf), count _objectives, _runaway];
     } forEach _sides;
 
     // ------------------------------------------------ the push path, at two sides
@@ -222,13 +283,9 @@
             _biggest, 100];
     };
 
-    // Nothing has deadlocked: the pump is still polling a daemon that is still
-    // answering. A stopped world would otherwise read as a quiet one.
+    // Whether the pump was still turning is asserted above, off the count the
+    // watch loop carried out of the soak.
     private _pollsAfter = _drain getOrDefault ["polls", 0];
-    if (_pollsAfter <= _pollsBefore) then {
-        diag_log format ["CTI|FAIL class=assertion_failed two_probe_pump_stopped before=%1 after=%2",
-            _pollsBefore, _pollsAfter];
-    };
 
     // ------------------------------------------------ what the island looked like
     {

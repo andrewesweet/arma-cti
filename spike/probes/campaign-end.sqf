@@ -1,5 +1,5 @@
 // probe: campaign-end
-// issues: 35
+// issues: 35, 46
 // window: 750
 // env: CTI_HOLD_HC=1 CTI_AI_SIDE=WEST,EAST CTI_AI_SEED=1,4
 //
@@ -53,6 +53,19 @@
 // carried through the port that is the only order path there is — this probe
 // waits for it and refuses the run if it never comes. The HQ falls because a
 // Squad worked on it, and the Campaign ends because the daemon read that.
+//
+// ---- the two settles at the end, and why they stay
+//
+// #46 converted the corpus's fixed settles to waits on the conditions they were
+// standing in for, and deliberately left these two. They are the irreducible
+// kind. The claim is that a won Campaign *stops* handing the world work, and an
+// absence has no condition to wait on — only a length of time nothing has
+// happened for (docs/regression-tier.md, "The honesty rule"). Nor can they
+// become watchers: a watcher on "nothing arrived" is the same dwell written
+// differently, and the first twenty seconds are given away on purpose besides —
+// effects already on the outbox when the Campaign ended are still theirs to
+// deliver. The second twenty is the measurement. Both dwells are unchanged, so
+// the evidence behind this probe's quiet-world claim is the evidence #35 landed.
 //
 // ---- why not Domination
 //

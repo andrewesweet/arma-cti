@@ -1,5 +1,5 @@
 // probe: client-port
-// issues: 21
+// issues: 21, 46
 // window: 420
 // env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
 //
@@ -34,6 +34,15 @@
 // income tick — so "Funds unchanged" would be a clock race dressed up as a
 // rule. A Squad appears only when a Purchase is accepted, and for the side the
 // server stamped.
+//
+// #46 converted this probe's bring-up settle and deliberately left the other
+// two alone. The 10 s the client waits after its two blocked calls, and the 15 s
+// the server waits after that, are the irreducible kind: the claim is that
+// nothing arrived, and an absence has no condition to wait on — only a length of
+// time nothing has happened for (docs/regression-tier.md, "The honesty rule").
+// Neither can become a watcher either, because a watcher on `nothing arrived`
+// is the same dwell written differently. Both dwells are unchanged, so the
+// evidence behind the whitelist claim is the evidence #21 landed.
 [] spawn {
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
@@ -60,9 +69,9 @@
         [_result getOrDefault ["funds", -1], count (_result getOrDefault ["squads", []])]
     };
 
-    // Let the world finish building and the report loop get a cycle in.
-    private _next = diag_tickTime + 20;
-    waitUntil { diag_tickTime >= _next };
+    // The world built and both server loops turned once (#46, replacing a fixed
+    // 20 s settle and keeping its 20 s as the deadline).
+    [20] call cti_probe_fnc_worldReady;
 
     // ---------------------------------------------------------------- the caller
     private _waitFor = missionNamespace getVariable ["CTI_PROBE_CLIENT", 0];

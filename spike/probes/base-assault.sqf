@@ -1,5 +1,5 @@
 // probe: base-assault
-// issues: 33
+// issues: 33, 46
 // window: 480
 //
 // #33 in-world probe: the world acts on Assault(enemy Base) and Defend(own Base).
@@ -67,9 +67,9 @@
             _target getOrDefault ["hq", ""]];
     };
 
-    // Let the world finish building and the report loop get a cycle in.
-    private _next = diag_tickTime + 20;
-    waitUntil { diag_tickTime >= _next };
+    // The world built and both server loops turned once (#46, replacing a fixed
+    // 20 s settle and keeping its 20 s as the deadline).
+    [20] call cti_probe_fnc_worldReady;
 
     // Two Squads: one to assault the enemy Base, one to defend its own.
     private _wanted = 2;

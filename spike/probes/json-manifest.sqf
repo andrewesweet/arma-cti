@@ -1,5 +1,5 @@
 // probe: json-manifest
-// issues: 22
+// issues: 22, 46
 // window: 150
 //
 // #22 in-world probe: the addon reads the authored JSON, and the world it
@@ -37,9 +37,11 @@
         fromJSON _raw
     };
 
-    // Let the world finish building.
-    private _next = diag_tickTime + 20;
-    waitUntil { diag_tickTime >= _next };
+    // The world built and both server loops turned once (#46, replacing a fixed
+    // 20 s settle and keeping its 20 s as the deadline). Only the first of the
+    // three is this probe's business, but a shared runway is one place to be
+    // right rather than eight, and the manifest crossing is what the loops carry.
+    [20] call cti_probe_fnc_worldReady;
 
     // ------------------------------------------------ the manifest crossed
     private _map = missionNamespace getVariable ["cti_map", createHashMap];

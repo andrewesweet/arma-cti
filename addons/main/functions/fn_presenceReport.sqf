@@ -43,6 +43,15 @@ if (!isServer) exitWith { scriptNull };
 
     diag_log format ["CTI|presence_report_started interval=%1", _interval];
 
+    // The report loop's own running account, the counterpart to the effect
+    // pump's `cti_effectDrain` and there for the same reason: something outside
+    // the loop needs to know it has turned, and the server log is not readable
+    // from inside the world. `sent` counts reports that left, `replied` reports
+    // whose answer came back and was applied — so a wait on `replied` rising is
+    // a wait on the whole leg, out and back, rather than on a clock (#46).
+    private _turns = createHashMapFromArray [["sent", 0], ["replied", 0]];
+    missionNamespace setVariable ["cti_presenceReport", _turns];
+
     while { true } do {
         private _next = diag_tickTime + _interval;
         waitUntil { diag_tickTime >= _next };
@@ -60,6 +69,7 @@ if (!isServer) exitWith { scriptNull };
             ]]
         ];
 
+        _turns set ["sent", (_turns get "sent") + 1];
         private _raw = (_extension callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
 
         // The engine caps a callExtension return at 10,240 bytes and truncates
@@ -80,6 +90,10 @@ if (!isServer) exitWith { scriptNull };
             // The daemon's view is authoritative, so the map is drawn from it
             // rather than from anything decided here.
             { [_x, _y] call cti_fnc_objectiveOwnerSet } forEach _owners;
+            // Counted after the judgement has been applied, not on receipt: what
+            // a waiter wants to know is that the leg completed, and the marker
+            // repaint is the last thing in it.
+            _turns set ["replied", (_turns get "replied") + 1];
         } else {
             diag_log format ["CTI|FAIL class=oracle_disagreement observe_reply_unreadable=%1", _raw];
         };

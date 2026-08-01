@@ -1,5 +1,5 @@
 // probe: contact-decay
-// issues: 28
+// issues: 28, 46
 // window: 300
 //
 // #28 in-world probe: a Contact outlives the engine forgetting the men it was made of.
@@ -19,6 +19,15 @@
 // that rule rests on: that the engine really does forget, and that when it has,
 // our sampler reports the place as neither seen nor observed, so the removal
 // rule stays silent and the daemon's memory is what carries the Contact.
+//
+// #46 converted both fixed settles here. The bring-up one became the shared
+// world-ready wait; the 140 s age-out became a poll for the crossing itself,
+// with 140 s kept as the deadline. The crossing is ours to read precisely
+// because of what this probe found — the engine does not forget, so the bound
+// that makes the place leave `seen` is our sampler's, and the moment it bites is
+// a moment the sampler states. The window stays 300: it is sized to the 120 s
+// bound, and a converted probe that usually finishes sooner is no reason to
+// shrink a deadline.
 [] spawn {
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
@@ -29,8 +38,9 @@
         (call cti_fnc_contactSample) getOrDefault ["WEST", createHashMap]
     };
 
-    private _next = diag_tickTime + 20;
-    waitUntil { diag_tickTime >= _next };
+    // The world built and both server loops turned once (#46, replacing a fixed
+    // 20 s settle and keeping its 20 s as the deadline).
+    [20] call cti_probe_fnc_worldReady;
 
     // Two Squads rather than one, for the eyes. Acquisition is a natural process
     // with real spread — a single Squad missed six men at 140 m for over 90 s on
@@ -165,14 +175,34 @@
     diag_log format ["CTI|decay_probe_withdrew squads=%1 to=%2 enemy_left_at=%3",
         count _squads, mapGridPosition (leader _group), _place];
 
-    // Past the engine's 120 s, with margin for the report cadence.
-    _next = diag_tickTime + 140;
-    waitUntil { diag_tickTime >= _next };
-
-    _report = call _sample;
-    _seen = _report getOrDefault ["seen", []];
-    private _observed = _report getOrDefault ["observed", []];
-    private _stillSeen = _seen select { (_x get "at") isEqualTo _place };
+    // Wait for the crossing rather than for a clock. The ageing bound is ours
+    // (120 s, `fn_contactSample.sqf`) — the engine never forgets, which is what
+    // this probe found — so the moment the place leaves `seen` is a moment the
+    // sampler states and this probe can read. #46 replaced a fixed 140 s hold
+    // with a poll for exactly the two conditions asserted below, keeping the
+    // 140 s as the deadline: a bound that stopped being applied never crosses,
+    // and the probe fails `assertion_failed` at 140 s as it did before.
+    // Sampled on a 2 s tick rather than every frame: `cti_fnc_contactSample`
+    // runs `targetsQuery` once per leader and the wiki calls that CPU-intensive,
+    // so a free-running poll would put load under the very knowledge model being
+    // measured. Two seconds is finer than the 5 s the report loop asks at, which
+    // is the cadence the crossing is consumed at anyway.
+    private _ageOutDeadline = diag_tickTime + 140;
+    private _observed = [];
+    private _stillSeen = [];
+    private _crossed = false;
+    private _nextSample = 0;
+    waitUntil {
+        if (diag_tickTime > _nextSample) then {
+            _nextSample = diag_tickTime + 2;
+            _report = call _sample;
+            _seen = _report getOrDefault ["seen", []];
+            _observed = _report getOrDefault ["observed", []];
+            _stillSeen = _seen select { (_x get "at") isEqualTo _place };
+            _crossed = count _stillSeen isEqualTo 0 && { !(_place in _observed) };
+        };
+        _crossed || { diag_tickTime > _ageOutDeadline }
+    };
     private _elapsed = diag_tickTime - _acquiredAt;
 
     // The sighting has aged out. Not because the engine forgot — it does not,

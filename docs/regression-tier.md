@@ -58,30 +58,34 @@ A failing probe fails the run and the command exits non-zero after finishing the
 
 Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_done` and the run moves on. Measured on the first full green pass, 2026-08-01 (Arma 2.20.152984, eight probes, twelve minutes thirty-eight seconds end to end). `massed-assault` was added afterwards and is shown at its two consecutive green runs the same day:
 
-| probe | window | measured |
-|---|---|---|
-| `bareworld` | 150 | 19 |
-| `manifest-missing` | 150 | 13 |
-| `json-manifest` | 150 | 34 |
-| `projection` | 150 | 59 |
-| `contacts` | 240 | 77 |
-| `contact-decay` | 300 | 176 |
-| `ai-commander` | 300 | 44 |
-| `two-commanders` | 600 | 210 |
-| `base-assault` | 480 | 174 |
-| `campaign-end` | 750 | 372 |
-| `casualties` | 150 | 59 |
-| `human-commander` | 150 | 33 |
-| `massed-assault` | 480 | 264, 291 |
-| `client-port` | 420 | 66, 66, 66, 67 |
+| probe | window | measured | after #46 |
+|---|---|---|---|
+| `bareworld` | 150 | 19 | 20 |
+| `manifest-missing` | 150 | 13 | 13 |
+| `json-manifest` | 150 | 34 | **20** |
+| `projection` | 150 | 59 | **48** |
+| `contacts` | 240 | 77 | **23** |
+| `contact-decay` | 300 | 176 | **143** |
+| `ai-commander` | 300 | 44 | 45 |
+| `two-commanders` | 600 | 210 | 210 |
+| `base-assault` | 480 | 174 | **155** |
+| `campaign-end` | 750 | 372 | 375 |
+| `casualties` | 150 | 59 | **24** |
+| `human-commander` | 150 | 33 | **19** |
+| `massed-assault` | 480 | 264, 291 | 265 |
+| `client-port` | 420 | 66, 66, 66, 67 | 66 |
 
 Re-measured on a single green full pass of the whole twelve-probe corpus, 2026-08-01, sha `bd9676d`: **21 minutes 10 seconds**, 1,270 s. `client-port` arrived after that pass and is measured on four green runs of its own, one of them inside a full pass of the corpus as it stood before `massed-assault` landed; the thirteen-probe total is therefore arithmetic — about 22 minutes — rather than a pass anybody has watched end to end. The same pass before #43 converted `ai-commander` from a 150 s settle to an event-driven wait would have been 1,405 s. Every figure includes that probe's own bring-up — daemon, server, staging, mission load — which is about 20 s of it. The corpus's declared windows total 59 minutes; it runs in 21, because no probe fills its window and the longest are sized for a subject (marching, decay, an HQ coming down) whose worst case they do not hit. A full pass is an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number.
 
-Summed across all fourteen rows as they stand — the twelve-probe pass at 1,270 s plus `massed-assault` at its first green 264 s and `client-port` at its 66 s — the corpus is **about 1,600 s, 26 m 40 s**. That figure is arithmetic over separately measured runs, not a pass anyone has watched end to end, and it is the number #36 was built against: within four minutes of the 30-minute trigger, close enough that the machinery was built before the trigger rather than during the issue it would first have delayed. A measured fourteen-probe pass is owed and will correct this row when the next full pass is run; #36's own change touches no in-world surface, so it did not buy one. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers.)
+Summed across all fourteen rows as they stood before #46 — the twelve-probe pass at 1,270 s plus `massed-assault` at its first green 264 s and `client-port` at its 66 s — the corpus was **about 1,600 s, 26 m 40 s**. That figure was arithmetic over separately measured runs rather than a pass anybody had watched end to end, and it is the number #36 was built against: within four minutes of the 30-minute trigger, close enough that the machinery was built before the trigger rather than during the issue it would first have delayed.
+
+**The owed fourteen-probe pass has now been run, twice.** Both on 2026-08-01, both all fourteen green including `client-port` on the Windows host: **1,426 s (23 m 46 s)** at `e5da0c4` plus #46's conversions — the `after #46` column above, summed — and **1,438 s (23 m 58 s)** at `c218ed4`, the sha those conversions landed as. Two passes rather than one because conversions are the change most likely to introduce a flake, and the tier never averages runs: this is two consecutive greens per probe with every verdict unchanged, not a best of two. The twelve-second spread between them is bring-up and engine noise.
+
+These are the first figures in this document that are single measured passes of the whole corpus rather than arithmetic across runs. Against the 1,600 s arithmetic they are ~174 s lighter, and 180 s of that is the conversions (`campaign-end`, `bareworld`, `ai-commander` and `massed-assault` each drifted a second or three the other way, which is the noise floor of a bring-up). The 30-minute selection trigger is now six minutes away rather than three and a half. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers. No window moved on #46.)
 
 ## Waiting for the subject
 
-Half of a full pass was a probe watching a clock. Audited on 2026-08-01 for #43: a **fixed settle** is a `waitUntil { diag_tickTime >= _next }` — a wait whose end is a number the author chose, not a condition the world reached. Against the pre-conversion pass of 1,405 s they total **705 s, 50%**. The measured column below is the 2026-08-01 full pass with `ai-commander` shown at its pre-conversion 179 s, so the shares are the ones the audit was made against.
+Half of a full pass was a probe watching a clock; after #43 and #46 it is 18%, and what remains is argued for probe by probe. Audited on 2026-08-01 for #43: a **fixed settle** is a `waitUntil { diag_tickTime >= _next }` — a wait whose end is a number the author chose, not a condition the world reached. Against the pre-conversion pass of 1,405 s they total **705 s, 50%**. The measured column below is the 2026-08-01 full pass with `ai-commander` shown at its pre-conversion 179 s, so the shares are the ones the audit was made against.
 
 | probe | measured | fixed settle | settle share | what the settle is for |
 |---|---|---|---|---|
@@ -99,13 +103,37 @@ Half of a full pass was a probe watching a clock. Audited on 2026-08-01 for #43:
 | `campaign-end` | 372 | 40 | 11% | 20+20, that a won Campaign stops handing the world work |
 | **total** | **1405 → 1270** | **705 → 555** | **50%** | |
 
-`client-port` landed after this audit and is not in its arithmetic. It carries 35 s of fixed settle in a 66 s run: the same 20 s for the world, and 15 s of grace after the client's blocked calls. The second one is the corner the honesty rule names — the claim is that nothing arrived, and there is no condition to wait on for an absence, only a length of time nothing has happened for. Everything else in it waits on the thing it is about to assert: the assignment sweep seeing the client, and each judgement reaching the client that sent the Command.
+`client-port` landed after this audit and is not in its arithmetic. It carried 35 s of fixed settle in a 66 s run: the same 20 s for the world, and 15 s of grace after the client's blocked calls. The second one is the corner the honesty rule names — the claim is that nothing arrived, and there is no condition to wait on for an absence, only a length of time nothing has happened for. Everything else in it waits on the thing it is about to assert: the assignment sweep seeing the client, and each judgement reaching the client that sent the Command.
+
+### What #46 did with each of them
+
+The audit above is what #43 left. #46 went through every remaining settle and made a decision per probe; **the deliverable is not "no settles left" but every settle either converted or justified in its own probe's header**, for the reason under the honesty rule below. Nine settles converted, four kept and argued for, and the argued ones are in the probes as well as here.
+
+| probe | settle | decision | what it waits on now | measured |
+|---|---|---|---|---|
+| `human-commander`, `json-manifest`, `casualties`, `projection`, `contacts`, `base-assault`, `contact-decay`, `client-port` | 8 × 20 s "world built, report loop cycled" | **converted**, shared helper | `cti_map` holding Objectives, `cti_effectDrain.polls > 0`, `cti_presenceReport.replied > 0`; 20 s kept as the deadline | **5.02 s on all eight runs**, every one of them. 120 s off the pass |
+| `contacts` | 30 s knowledge spread | **converted** | two leaders knowing a man in common, read off `targetsQuery` rather than off the sampler about to be tested; 30 s deadline | **1.0 s**, 5 men in common. 77 s → 23 s with the bring-up |
+| `contact-decay` | 140 s age-out | **converted** | the place leaving `seen` *and* leaving `observed` — the two things asserted next; 140 s deadline | crossing at **120.4 s**, which is our own 120 s bound observed rather than assumed. 176 s → 143 s |
+| `casualties` | 5 s drop | **converted** | every staged man `isTouchingGround` and still; 5 s deadline | 16 of 16 immediately |
+| `casualties` | 5 s before the head count | **converted** | the head counts themselves — the claim being made two lines later; 5 s deadline | — |
+| `casualties` | 15 s drain | **converted** | a presence report that *began after* the staging having had its judgement applied, plus an empty buffer; 15 s deadline | `undrained=0`. 59 s → 24 s across all four |
+| `two-commanders` | 180 s soak | **kept, as an explicit floor** | nothing — but the soak is no longer dead time: the runaway-force claim and the pump's liveness are watched every 2 s through it instead of sampled once at the end | 210 s, unchanged by design |
+| `campaign-end` | 20 + 20 s | **kept** | nothing. An absence claim: dwell is the measurement | 375 s |
+| `client-port` | 10 s + 15 s after the blocked calls | **kept** | nothing. The same absence, twice over | 66 s |
+
+Two of the kept four are the irreducible kind — a claim that nothing arrived has no condition to wait on. The third is `two-commanders`, and it is the one worth reading the reasoning for.
+
+**`two-commanders` is not a proxy, and that is why it stayed.** It has the corpus's worst settle-to-subject ratio by wall — 180 s of settle against about 30 s of work — and mechanically it converts exactly as `ai-commander` did, to "exit when a side has closed ground", which would end it near 45 s. But the soak is the window in which #17's number is measured: the largest single drain the push path has been seen to carry with two Commanders on it, against the engine's hundred-per-frame ceiling. **An extremum shrinks with its window.** Converting would have gone on reporting a field called `max` while quietly making it the maximum of forty seconds — a weaker claim wearing the same name, bought with 165 s of wall. So the 180 s stays as a stated floor, said in the probe's header because the honesty rule requires a floor to be said, and the soak earns its keep instead by watching the two claims it used to read once at the end. On the 2026-08-01 pass it recorded `max=4 maxFrames=10 headroom=25`, `runaway_seen=false` throughout.
+
+One conversion bought nothing, and the reason is worth keeping. `client-port` measured 66 s before and 66 s after: its 20 s settle was running *concurrently* with the Windows client launching and being swept into the Commander slot, so removing 15 s of it only moved 15 s onto the assignment wait that follows. The conversion is still right — the probe no longer claims a clock told it the world was up — but the wall was never the settle's to give. A settle inside another wait's shadow is free to remove and free of savings.
 
 ### The honesty rule
 
 **A probe may exit when its subject has finished, and never when the world looks done.** A settle may be replaced only by a wait on the condition the probe is about to assert, with the old settle kept as the deadline. Then a passing run ends sooner and a failing run fails at the same instant, in the same class, as before — which is the test that a conversion is honest. Exiting on a proxy ("two report cycles have gone by, so the row is probably there") is the flake factory the Contract forbids, and it is not made legal by being fast.
 
 The rule has a corner the conversion of `ai-commander` had to answer. A claim that something is **absent** — a force with no ceiling, a Commander playing a side it should not — draws its strength from how long it was observed, so it cannot simply be re-read at an earlier exit. Two answers, in order of preference: evaluate the absence claim on every pass of the wait, so it fails the instant it is violated rather than only if the violation happened to survive to the end (strictly stronger over the same window, weaker only in that the window is shorter); or, where the claim's failure mode has a known cadence, keep an explicit floor derived from that cadence and say so in the probe's header. What is not allowed is dropping the dwell silently.
+
+#46 found a third kind, and it is the one that decides whether a settle may be touched at all. A settle that carries a **measured extremum** — the largest drain, the worst latency, the deepest queue — is not a proxy for anything: it *is* the observation window, and the number shrinks with it. Converting such a settle reports a smaller maximum in the same field name and reads as a speed-up, which makes it the most expensive way to be wrong here. **A conversion that quietly weakens the evidence is worse than the settle it removed.** So the deliverable of a conversion pass is not "no settles left": it is every settle either converted or justified in its probe's header, and the tier's table saying which. Two kinds are expected to survive — the irreducible absence claim, where dwell *is* the measurement, and the extremum-bearing kind, where the window *is* the measurement.
 
 ### Observable, pollable, or neither
 
@@ -119,13 +147,13 @@ The rule has a corner the conversion of `ai-commander` had to answer. A claim th
 | a waypoint completed | **callback, not an event** — `setWaypointStatements`, whose completion statement runs on completion; `currentWaypoint` inside it is the index being completed | `commands/setWaypointStatements.wiki`. There is no `Waypoint` mission EH |
 | a Squad closed ground on its ordered place | **pollable only** — `leader _g distance2D _pos`. No movement or distance event exists | absence from the MEH list above |
 | the engine acquired or forgot a target | **pollable only** — `targetsQuery` / `knowsAbout`. No detection event exists, and #28 found `targetsQuery` never stops returning a memory, so the ageing bound is ours and the crossing is ours to read | `commands/targetsQuery.wiki`, `spike/probes/contact-decay.sqf` |
-| the report loop has cycled / the outbox drained | **pollable only**, but against our own counters (`cti_effectDrain`, the presence report), which is as good as an event because we write them | — |
+| the report loop has cycled / the outbox drained | **pollable only**, but against our own counters — `cti_effectDrain` for the pump, and `cti_presenceReport` (`sent` / `replied`) for the report loop, added on #46 because the loop had no counter and `cti_objectiveOwner` is fully populated at world build, so it could not stand in for one. As good as an event, because we write them | — |
 | a unit dropped by `setPosATL` has landed | **pollable only** — its own Z | — |
 | nothing further happened for N seconds | **neither.** An absence has no event by construction; only dwell measures it | — |
 
 Where a pollable condition wants an engine-side callback rather than a `waitUntil`, `createTrigger` is the engine's own general answer: an arbitrary condition, which the engine checks "approx. every 0.5 second by default" and `setTriggerInterval` (1.98) can speed up to every frame (`commands/createTrigger.wiki`, `commands/setTriggerInterval.wiki`). Our probes already run inside a `spawn`, so a `waitUntil` costs the same and reads better; the trigger matters only for a probe that must not hold a scheduled thread.
 
-### The worked conversion, and what the rest would be worth
+### The worked conversions, and what the rest was worth
 
 `ai-commander` was converted first: its 150 s settle was wholly a proxy — the probe slept, then asked whether any marching Squad had closed more than 50 m on the place it was ordered to, which is a question the world answers at any instant. It now asks continuously, with the 150 s as the deadline.
 
@@ -137,22 +165,26 @@ Where a pollable condition wants an engine-side callback rather than a `waitUnti
 
 The exit fires on the crossing: WEST-1 had closed 50.7 m and 50.4 m on the two runs, against a threshold of 50. `closed=1 of=2` where the old probe recorded `closed=2 of=2` — the assertion was always "at least one", and a fixed settle simply bought a second Squad's crossing nobody was asserting.
 
-Projected across the corpus, on the audit above and conservatively (the 20 s "world built, report loop cycled" settle assumed to convert to ~3 s against our own counters, and the two-sided and decay waits assumed to converge only near their true crossings):
+Projected across the corpus at the time, on the audit above and conservatively (the 20 s "world built, report loop cycled" settle assumed to convert to ~3 s against our own counters, and the two-sided and decay waits assumed to converge only near their true crossings):
 
-| | s |
-|---|---|
-| measured saving, `ai-commander` | 134 |
-| the eight remaining 20 s bring-up settles | ~120 |
-| `contacts` knowledge spread, `contact-decay` age-out, `casualties` drain and drops | ~65 |
-| `two-commanders`, if its drain extremum can keep a floor | ~100 |
-| `campaign-end`'s 2 × 20 s | 0 — an absence claim, dwell is the measurement |
-| **total against a 1,405 s pass** | **~420, 30%** |
+| | projected | measured |
+|---|---|---|
+| `ai-commander` (#43) | — | **134** |
+| the eight 20 s bring-up settles (#46) | ~120 | **120** |
+| `contacts` knowledge spread, `contact-decay` age-out, `casualties` drain and drops (#46) | ~65 | **60** |
+| `two-commanders`, if its drain extremum can keep a floor | ~100 | **0 — it cannot; see the decision above** |
+| `campaign-end`'s 2 × 20 s | 0 — an absence claim, dwell is the measurement | 0 |
+| **total against a 1,405 s pass** | ~420, 30% | **314, 22%** |
 
-Only the first row is measured. The rest is a projection and should be treated as one; `two-commanders` in particular is the corpus's worst settle-to-subject ratio by wall (180 s of settle against about 30 s of work) but the hardest conversion, because #17's push-path number is the largest drain *observed* and an extremum shrinks with the window it was observed in. It is raised as its own issue rather than done here.
+Both columns are now real, and the gap between them is the whole finding. The projection assumed `two-commanders` would convert with a shortened floor; it does not convert at all, because the number it exists to produce is an extremum and an extremum is its window. Everything that *was* a proxy converted at or better than projected — the eight bring-up settles landed on the nose at 15 s saved each, and `contacts` gave back 54 s rather than the ~20 assumed, because the 30 s hold was buying an overlap that forms in one second.
+
+The remaining fixed settle in the corpus is **255 s of a ~1,430 s pass, 18%** — `two-commanders`' 180, `campaign-end`'s 40, `client-port`'s 25 — and all of it is now argued for in the probe that carries it. There is no further conversion work here; the next lever on the wall is #47's pool, which divides what is left rather than shrinking it.
 
 ### What the runner needs
 
-Nothing. `spike/regress.sh` already ends a probe on its own `probe_done` line with the header window as the deadline (#23), so every second a probe stops sleeping is a second off the pass with no runner change at all. Windows stay sized to the subject's worst case; they are deadlines, and shortening one because a converted probe now usually finishes sooner would be sizing a window to the good case.
+Nothing. `spike/regress.sh` already ends a probe on its own `probe_done` line with the header window as the deadline (#23), so every second a probe stops sleeping is a second off the pass with no runner change at all. Windows stay sized to the subject's worst case; they are deadlines, and shortening one because a converted probe now usually finishes sooner would be sizing a window to the good case. **No window was shortened on #43 or #46, and none should be.**
+
+The one piece of shared machinery the conversions did want is `spike/probe-prelude.sqf`, appended to the generated harness by `spike/run.sh` ahead of the probe. Eight probes carried the identical "let the world finish building and the report loop get a cycle in" settle, and eight copies of the replacement would have been eight places to get the deadline wrong; `[20] call cti_probe_fnc_worldReady` is one. It lives outside `spike/probes/` because corpus membership is by directory and it asserts nothing, and outside the addon because it is not game code. It is staged unconditionally, so the `harness.sqf` in a run's evidence is still the whole of what ran.
 
 ## Serialisation
 
