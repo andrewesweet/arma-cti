@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final, cast
@@ -63,6 +64,27 @@ class Daemon:
         map_id: str = DEFAULT_MAP,
     ) -> None:
         """Wire the daemon to its telemetry sink, the economy and the map."""
+        # One request at a time, whoever is asking (#98). The transport serves
+        # every connection on its own thread, and none of the state below —
+        # ownership, the Ledger, the Roster, Contacts, the outbox — is written
+        # under any other lock. Two connections is not a hypothetical: the
+        # shim's resend arrives on a fresh connection while the request it is
+        # resending may still be in flight on the old one (#69, ADR-0034), and
+        # that is precisely the moment a duplicate must meet the record rather
+        # than race it.
+        #
+        # A lock rather than a single-threaded server: a serial server would
+        # accept the resend's connection only after the stuck one closed, which
+        # is the hang the resend exists to escape, and `serve_in_thread` plus
+        # any diagnostic connection would queue behind the game's. A lock rather
+        # than finer-grained locking: a request is 746 µs at p50 and 8.69 ms at
+        # its worst with both planners inside it
+        # (docs/spikes/0002-two-commanders.md), so serialising whole requests
+        # costs nothing measurable and buys an invariant that needs no proof per
+        # field. Non-reentrant on purpose: nothing under `_answer` re-enters the
+        # daemon, and if something ever does it should stop rather than quietly
+        # interleave with itself.
+        self._lock = threading.Lock()
         self.outbox = Outbox()
         # What the wire has already been told (#69, ADR-0034). The shim resends
         # a request whose exchange failed on its cached connection, and a write
@@ -135,7 +157,19 @@ class Daemon:
         self._commanders[side] = brain
 
     def handle_line(self, line: str) -> str:
-        """Answer one request line. Every path produces a reply.
+        """Answer one request line, and only one at a time (#98).
+
+        The lock is the whole of the daemon's concurrency model: every mutation
+        of the Campaign happens inside it, so a second connection's request
+        waits rather than interleaving. It also makes the replay window in
+        `_answer` mean what it says — a resend cannot overtake the request it
+        duplicates, because the answer is recorded before the lock is released.
+        """
+        with self._lock:
+            return self._answer(line)
+
+    def _answer(self, line: str) -> str:
+        """Carry out one request line. Every path produces a reply.
 
         A line identical to one already answered is answered from that answer
         rather than carried out again (#69, ADR-0034). Nothing downstream sees

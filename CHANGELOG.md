@@ -61,6 +61,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The daemon answers one request at a time, whoever is asking.** Every connection got its own
+  thread and the Campaign — ownership, the Ledger, the Roster, Contacts, the outbox — was written
+  under no lock at all, so two connections could interleave a mutation and quietly corrupt Funds or
+  the outbox sequence. Two connections is not hypothetical: the shim's resend after a failed
+  exchange arrives on a fresh connection while the request it duplicates may still be running on the
+  old one, which is exactly the moment the duplicate has to meet the record rather than race it. One
+  lock around the whole request, rather than a lock per field or a serial server: a request is 746 µs
+  at p50 with both planners inside it, and a serial server would have made the resend wait for the
+  stuck connection it exists to escape.
+
+- **A stalled daemon can no longer freeze the server frame for ten seconds at a time, and a slow
+  call can no longer queue a human Commander's click behind it.** The shim's read and write timeouts
+  were 5 s each — five times the engine's own 1000 ms frame-stall budget — and a call that
+  reconnects and resends spent that twice, so every loop turn against a hung daemon was a
+  multi-second hitch the player felt. A synchronous call now carries a single 500 ms budget for the
+  whole round trip — connect, write, read and resend together — which is half the engine's cap and
+  still 57× the slowest call ever measured, so a call that gives up does so without the engine
+  complaining on our behalf. And `rpc_async` — the path defined as the slow one — now takes its own connection
+  instead of the shared one every synchronous judgement queues on, as ADR-0005 required of it before
+  it carries production work.
+
 - **A Campaign that has been won no longer accepts Commands.** The Campaign already refused the
   world's reports after victory and the AI Commanders already stood down, but the Command Port never
   asked: a Purchase arriving after the end screen spent a finished Campaign's Funds, minted a Squad

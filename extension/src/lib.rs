@@ -6,14 +6,44 @@
 use std::io::{BufRead, BufReader, Write};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::sync::{Mutex, OnceLock};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use arma_rs::{Context, Extension, arma};
 
 /// Newline-delimited JSON over TCP loopback (ADR-0005: unix sockets do not
 /// cross the WSL2/Windows boundary).
 const DEFAULT_ADDR: &str = "127.0.0.1:9099";
-const IO_TIMEOUT: Duration = Duration::from_secs(5);
+
+/// What one **synchronous** call may cost the engine, end to end.
+///
+/// ADR-0005: a blocking `callExtension` past 1000 ms trips
+/// `EXECUTION_WARNING_TAKES_TOO_LONG` and stalls the server frame for its whole
+/// duration, and the synchronous path is reserved for round trips that do not
+/// come near that. Measured, they do not: `observe` — the chunkiest of them,
+/// both planners inside it — runs 746 µs at p50 and 8.69 ms at its worst
+/// (docs/spikes/0002-two-commanders.md). Half the cap is therefore ~57× the
+/// slowest call we have ever seen, and it is deliberately *under* the cap
+/// rather than at it: a call that gives up must not also trip the engine's
+/// warning, or our own failure arrives dressed as an engine complaint.
+///
+/// A budget for the **call**, not a timeout per syscall (#99). The old 5 s read
+/// timeout was five times the stall cap on its own, and a call that reconnects
+/// and resends spends its timeout more than once: connect, then read, then —
+/// after a failed exchange — connect and read again. Timeouts that are each
+/// inside the cap still add up to multiples of it, so the deadline is taken
+/// once at the top of the call and every wait under it gets only what is left.
+///
+/// This is the worst one call can cost, not a cure for calling in a loop. A
+/// daemon that stays hung is still asked at the loops' cadence until the
+/// consecutive-failure latch (#72) stops asking.
+const SYNC_BUDGET: Duration = Duration::from_millis(500);
+
+/// What an **asynchronous** call may cost. Off-frame by construction — the
+/// reply comes back through `ExtensionCallback` — so the engine's stall cap
+/// does not bind it, and ADR-0005 reserves this path for calls that are
+/// genuinely slow (Phase-2 snapshot save/load above all). It gets the 5 s that
+/// used to be charged to the synchronous path.
+const ASYNC_BUDGET: Duration = Duration::from_secs(5);
 
 /// How long a connect may take before it is a failure rather than a wait.
 ///
@@ -26,8 +56,40 @@ const IO_TIMEOUT: Duration = Duration::from_secs(5);
 ///
 /// Generous for what it has to cover: the daemon is on loopback or on the same
 /// LAN, and a handshake either way is single-digit milliseconds. A connect that
-/// has not been answered in a second is not slow, it is somewhere else.
+/// has not been answered in a second is not slow, it is somewhere else. It is
+/// the ceiling on any connect and the binding one on the async path, where the
+/// budget above would otherwise allow five seconds of handshake; a synchronous
+/// call's own deadline binds tighter still, and each of `init.sqf`'s address
+/// candidates is a separate `callExtension` with a budget of its own, so a
+/// LAN candidate that cannot be reached costs that call and not the next.
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(1);
+
+/// The time one call has left before it must stop rather than block further.
+///
+/// Taken once, at the top of a call, and consulted before every wait it makes.
+#[derive(Clone, Copy)]
+struct Budget {
+    deadline: Instant,
+}
+
+impl Budget {
+    fn new(total: Duration) -> Self {
+        Self {
+            deadline: Instant::now() + total,
+        }
+    }
+
+    /// What is left, or a refusal once nothing is. Never `Some(0)`: the socket
+    /// options below read a zero timeout as "block forever", which is the one
+    /// thing a spent budget must not do.
+    fn remaining(&self) -> Result<Duration, String> {
+        let left = self.deadline.saturating_duration_since(Instant::now());
+        if left.is_zero() {
+            return Err("budget: the call's time is spent".to_string());
+        }
+        Ok(left)
+    }
+}
 
 fn addr_cell() -> &'static Mutex<String> {
     static ADDR: OnceLock<Mutex<String>> = OnceLock::new();
@@ -55,39 +117,52 @@ struct Connection {
 }
 
 impl Connection {
-    fn open() -> Result<Self, String> {
-        let stream = Self::connect(&daemon_addr()?)?;
+    fn open(budget: Budget) -> Result<Self, String> {
+        let stream = Self::connect(&daemon_addr()?, budget)?;
         stream
             .set_nodelay(true)
             .map_err(|e| format!("nodelay: {e}"))?;
-        stream
-            .set_read_timeout(Some(IO_TIMEOUT))
-            .map_err(|e| format!("read timeout: {e}"))?;
-        stream
-            .set_write_timeout(Some(IO_TIMEOUT))
-            .map_err(|e| format!("write timeout: {e}"))?;
         let writer = stream.try_clone().map_err(|e| format!("clone: {e}"))?;
-        Ok(Self {
+        let conn = Self {
             reader: BufReader::new(stream),
             writer,
-        })
+        };
+        conn.arm(budget)?;
+        Ok(conn)
+    }
+
+    /// Point the socket's own timeouts at what the call has left.
+    ///
+    /// Re-armed before every exchange rather than set once at open: a reused
+    /// connection outlives the call that opened it, and the budget that matters
+    /// is the caller's, now.
+    fn arm(&self, budget: Budget) -> Result<(), String> {
+        let left = budget.remaining()?;
+        self.reader
+            .get_ref()
+            .set_read_timeout(Some(left))
+            .map_err(|e| format!("read timeout: {e}"))?;
+        self.writer
+            .set_write_timeout(Some(left))
+            .map_err(|e| format!("write timeout: {e}"))
     }
 
     /// Connect under our own timeout rather than the OS's.
     ///
     /// `TcpStream::connect` takes a host string and applies no deadline;
     /// `connect_timeout` takes one resolved address, so the candidates are
-    /// walked here. An address that resolves to several is tried in turn and
-    /// each gets the full budget — the addresses the shim is given are numeric
-    /// and resolve to one, and a list of unreachable ones is the operator
-    /// having configured a list of unreachable ones.
-    fn connect(addr: &str) -> Result<TcpStream, String> {
+    /// walked here. An address that resolves to several is tried in turn, each
+    /// under whichever is smaller of the connect timeout and what the call has
+    /// left — so a list of unreachable candidates costs the budget once
+    /// between them, not once each.
+    fn connect(addr: &str, budget: Budget) -> Result<TcpStream, String> {
         let candidates = addr
             .to_socket_addrs()
             .map_err(|e| format!("connect: resolving {addr}: {e}"))?;
         let mut refusal = format!("connect: {addr} resolved to no address");
         for candidate in candidates {
-            match TcpStream::connect_timeout(&candidate, CONNECT_TIMEOUT) {
+            let allowed = budget.remaining()?.min(CONNECT_TIMEOUT);
+            match TcpStream::connect_timeout(&candidate, allowed) {
                 Ok(stream) => return Ok(stream),
                 Err(e) => refusal = format!("connect: {candidate}: {e}"),
             }
@@ -95,7 +170,8 @@ impl Connection {
         Err(refusal)
     }
 
-    fn exchange(&mut self, payload: &str) -> Result<String, String> {
+    fn exchange(&mut self, payload: &str, budget: Budget) -> Result<String, String> {
+        self.arm(budget)?;
         self.writer
             .write_all(payload.as_bytes())
             .and_then(|()| self.writer.write_all(b"\n"))
@@ -118,8 +194,10 @@ fn error_json(context: &str) -> String {
 }
 
 /// One connection per call: the worst-case number, TCP handshake included.
-fn round_trip_fresh(payload: &str) -> Result<String, String> {
-    Connection::open()?.exchange(payload)
+///
+/// Takes no shared lock, which is why the async path uses it (ADR-0005).
+fn round_trip_fresh(payload: &str, budget: Budget) -> Result<String, String> {
+    Connection::open(budget)?.exchange(payload, budget)
 }
 
 /// Reuse the cached connection; reconnect once on failure.
@@ -133,18 +211,27 @@ fn round_trip_fresh(payload: &str) -> Result<String, String> {
 /// included, and the daemon answers a line it has already answered from its
 /// record rather than carrying it out again (ADR-0034). Anything that changes
 /// the resent bytes breaks that, which is what the test below pins.
-fn round_trip_persistent(payload: &str) -> Result<String, String> {
+///
+/// Every caller in the world queues here, on one mutex over one connection
+/// (#99). That is tolerable only because the budget bounds how long the lock
+/// can be held: a stalled poll now blocks a human Commander's click for at most
+/// one `SYNC_BUDGET`, not for as long as the daemon cares to be silent. Two
+/// connections would not have bought more — the daemon answers one request at a
+/// time (#98), so the queue moves rather than disappears — while the call that
+/// really could hold this for seconds, the async one, no longer takes the lock
+/// at all.
+fn round_trip_persistent(payload: &str, budget: Budget) -> Result<String, String> {
     let mut guard = persistent_cell()
         .lock()
         .map_err(|e| format!("conn lock: {e}"))?;
     if let Some(conn) = guard.as_mut() {
-        match conn.exchange(payload) {
+        match conn.exchange(payload, budget) {
             Ok(reply) => return Ok(reply),
             Err(_) => *guard = None,
         }
     }
-    let mut conn = Connection::open()?;
-    let reply = conn.exchange(payload)?;
+    let mut conn = Connection::open(budget)?;
+    let reply = conn.exchange(payload, budget)?;
     *guard = Some(conn);
     Ok(reply)
 }
@@ -170,12 +257,12 @@ pub fn ping() -> &'static str {
 
 /// Blocking round trip on a fresh connection, reply returned to `callExtension`.
 pub fn rpc(payload: String) -> String {
-    round_trip_fresh(&payload).unwrap_or_else(|e| error_json(&e))
+    round_trip_fresh(&payload, Budget::new(SYNC_BUDGET)).unwrap_or_else(|e| error_json(&e))
 }
 
 /// Blocking round trip on the reused connection.
 pub fn rpc_keepalive(payload: String) -> String {
-    round_trip_persistent(&payload).unwrap_or_else(|e| error_json(&e))
+    round_trip_persistent(&payload, Budget::new(SYNC_BUDGET)).unwrap_or_else(|e| error_json(&e))
 }
 
 /// Time `count` round trips inside the extension and return the distribution as
@@ -194,9 +281,9 @@ pub fn bench(count: u32, keepalive: bool, payload: String) -> String {
     for i in 0..count {
         let started = std::time::Instant::now();
         let outcome = if keepalive {
-            round_trip_persistent(&payload)
+            round_trip_persistent(&payload, Budget::new(SYNC_BUDGET))
         } else {
-            round_trip_fresh(&payload)
+            round_trip_fresh(&payload, Budget::new(SYNC_BUDGET))
         };
 
         let elapsed = started.elapsed().as_micros();
@@ -221,9 +308,19 @@ pub fn bench(count: u32, keepalive: bool, payload: String) -> String {
 }
 
 /// Non-blocking round trip; reply arrives on the `ExtensionCallback` event handler.
+///
+/// On a connection of its own, which ADR-0005 requires of this path before it
+/// carries production work and #99 found it was not doing: sharing the
+/// persistent connection meant one slow async call held the mutex every
+/// synchronous judgement queues on — the effect pump, the presence report, the
+/// Commander view and the human's own Command through `fn_portGateway` — so a
+/// path defined as slow would have been the thing stalling the frame. A fresh
+/// connection per call also needs no resend: there is no cached socket to have
+/// gone stale under it.
 pub fn rpc_async(ctx: Context, id: String, payload: String) {
     std::thread::spawn(move || {
-        let reply = round_trip_persistent(&payload).unwrap_or_else(|e| error_json(&e));
+        let reply = round_trip_fresh(&payload, Budget::new(ASYNC_BUDGET))
+            .unwrap_or_else(|e| error_json(&e));
         let _ = ctx.callback_data("cti_shim", &id, reply);
     });
 }
@@ -248,7 +345,7 @@ fn init() -> Extension {
 mod tests {
     use std::io::{BufRead, BufReader, Write};
     use std::net::TcpListener;
-    use std::sync::{Arc, Mutex, MutexGuard, OnceLock};
+    use std::sync::{Arc, Mutex, MutexGuard, OnceLock, mpsc};
     use std::time::Duration;
 
     use super::*;
@@ -283,6 +380,27 @@ mod tests {
             }
         });
         addr
+    }
+
+    /// A daemon that is hung rather than dead: it accepts the connection, says
+    /// who called, and then never answers. The connection is held open so the
+    /// caller waits on its read instead of being told the far end is gone —
+    /// the shape #99 is about, and the one an OS-level refusal cannot produce.
+    fn spawn_hanging_stub() -> (String, mpsc::Receiver<()>) {
+        let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
+        let addr = listener.local_addr().expect("addr").to_string();
+        let (announce, arrivals) = mpsc::channel();
+        std::thread::spawn(move || {
+            let mut held = Vec::new();
+            for stream in listener.incoming() {
+                let Ok(stream) = stream else { continue };
+                held.push(stream);
+                if announce.send(()).is_err() {
+                    break;
+                }
+            }
+        });
+        (addr, arrivals)
     }
 
     /// Echo server that also keeps every line it was sent, so a test can assert
@@ -484,6 +602,75 @@ mod tests {
         assert!(
             elapsed < CONNECT_TIMEOUT * 3,
             "connect took {elapsed:?}, past the shim's own budget"
+        );
+    }
+
+    #[test]
+    fn the_synchronous_budget_never_exceeds_the_engines_stall_cap() {
+        // ADR-0005: a blocking `callExtension` past 1000 ms trips
+        // EXECUTION_WARNING_TAKES_TOO_LONG and stalls the frame for as long as
+        // it runs. Whatever else is tuned here, a synchronous call has to give
+        // up before that rather than at it.
+        assert!(SYNC_BUDGET < Duration::from_secs(1));
+        assert!(CONNECT_TIMEOUT <= Duration::from_secs(1));
+    }
+
+    #[test]
+    fn a_hung_daemon_costs_the_synchronous_path_one_budget_not_several() {
+        // The whole call is deadlined, not each syscall inside it: this one
+        // reads nothing, then reconnects and resends, and the two waits still
+        // have to share a single budget. At the old 5 s per read it was ten
+        // seconds of frozen frame per call, for as long as the daemon stayed
+        // hung.
+        let _guard = serialise();
+        let (addr, _arrivals) = spawn_hanging_stub();
+        let extension = init().testing();
+        let _ = extension.call("addr", Some(vec![addr]));
+
+        let started = Instant::now();
+        let (output, code) = extension.call("rpc_keepalive", Some(vec!["{}".to_string()]));
+        let elapsed = started.elapsed();
+
+        assert_eq!(
+            code, 0,
+            "a transport failure is a payload, not an Arma error"
+        );
+        assert!(output.contains("\"error\""), "unexpected output: {output}");
+        assert!(
+            elapsed < SYNC_BUDGET * 2,
+            "one call spent {elapsed:?}, more than its budget of {SYNC_BUDGET:?}"
+        );
+        assert!(
+            elapsed >= SYNC_BUDGET / 2,
+            "gave up in {elapsed:?}, too early to have been the budget doing it"
+        );
+    }
+
+    #[test]
+    fn the_async_path_never_takes_the_synchronous_paths_connection() {
+        // ADR-0005 requires this path to hold its own connection before it
+        // carries production work: everything a player does synchronously —
+        // their own Command through the gateway included — queues on the
+        // persistent connection's mutex, and this path is the one defined as
+        // slow. Asserted while an async call is in flight against a daemon that
+        // will never answer it, so a shared mutex would be held right now.
+        let _guard = serialise();
+        let (addr, arrivals) = spawn_hanging_stub();
+        let extension = init().testing();
+        let _ = extension.call("addr", Some(vec![addr]));
+
+        let (_, code) = extension.call(
+            "rpc_async",
+            Some(vec!["job-slow".to_string(), "hello".to_string()]),
+        );
+        assert_eq!(code, 0);
+        arrivals
+            .recv_timeout(Duration::from_secs(5))
+            .expect("the async call never reached the daemon");
+
+        assert!(
+            persistent_cell().try_lock().is_ok(),
+            "a slow async call is holding the connection every synchronous call queues on"
         );
     }
 
