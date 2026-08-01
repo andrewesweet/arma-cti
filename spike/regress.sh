@@ -190,13 +190,15 @@ prune_passes() {
 # split (their sessions own 2302-2306, this tier 2402-2406) and second by this:
 # if the game is up on the Windows host a play session may be live, and loading
 # the shared machine underneath it is not something to do for a test.
-if command -v tasklist.exe >/dev/null 2>&1; then
-    if tasklist.exe /FI "IMAGENAME eq arma3_x64.exe" 2>/dev/null | grep -qi arma3_x64.exe; then
-        log "arma3_x64.exe is running on the Windows host — a play session may be live."
-        log "verdict=FAIL failure_class=infra_unavailable"
-        log "This is a stop, not a result. Nothing was launched."
-        exit "${CLASS_RANK[infra_unavailable]}"
-    fi
+#
+# This used to be wrapped in `command -v tasklist.exe`, which is false in an
+# agent's shell, so the guard never ran and failed open every time (#41). It now
+# lives in spike/host-guard.sh, resolves the tool by absolute path, and treats
+# "could not read the process list" as the same stop as "a client is in it".
+# shellcheck source=spike/host-guard.sh
+source "$REPO/spike/host-guard.sh"
+if ! cti_host_guard_main; then
+    exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
 # ------------------------------------------------------------------ the loop

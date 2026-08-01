@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The guard that protects a live play session now actually runs.** The Arma tier asks whether
+  Arma 3 is open on the Windows host before it takes the shared machine, and refuses if it is —
+  but it asked for `tasklist.exe` by name, which is not on an agent's `PATH` here, so the check
+  was skipped in silence and every run proceeded on a question nobody had answered. It now
+  resolves the tool by absolute path and fails *closed*: not being able to read the Windows
+  process list is `infra_unavailable`, the same stop as seeing the game in it. A run that means
+  to drive a client on the Windows host asks the same question before launching anything, so a
+  client already open is left alone rather than killed on teardown by a harness that cannot tell
+  yours from its own.
+
 ### Added
 
 - **A world can now be held open for a play session.** `spike/playtest/session-hold.sqf` keeps the

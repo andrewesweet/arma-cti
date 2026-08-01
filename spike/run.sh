@@ -7,6 +7,10 @@
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Absolute-path resolution for the Windows interop binaries, and the one guard
+# that protects the human rather than another agent (#41).
+# shellcheck source=spike/host-guard.sh
+source "$REPO/spike/host-guard.sh"
 SERVER_DIR="${CTI_SERVER_DIR:-$HOME/arma3server}"
 SERVER_BIN="$SERVER_DIR/arma3server_x64"
 OUT="${CTI_SPIKE_OUT:-$REPO/.spike-out}"
@@ -95,9 +99,16 @@ cleanup() {
         [[ -n "$pid" ]] && kill -9 "$pid" 2>/dev/null
     done
     # Windows processes are children of WSL interop, not of this shell, so a
-    # kill on the interop wrapper does not always reach them.
-    ((WINDOWS_HC == 1)) && taskkill.exe /IM arma3server_x64.exe /F >/dev/null 2>&1
-    ((WINDOWS_CLIENT == 1)) && taskkill.exe /IM arma3_x64.exe /F >/dev/null 2>&1
+    # kill on the interop wrapper does not always reach them. By absolute path:
+    # `taskkill.exe` by name is not on an agent's PATH either, so this silently
+    # left a Windows process alive after every run that launched one (#41).
+    #
+    # Keyed on having launched one, not on having been asked to: a run that
+    # refuses at the pre-flight below exits through here, and killing
+    # arma3_x64.exe on the way out would be this harness doing the exact thing
+    # the pre-flight just refused to do.
+    [[ -n "$win_hc_pid" ]] && cti_windows_taskkill arma3server_x64.exe
+    [[ -n "$win_client_pid" ]] && cti_windows_taskkill arma3_x64.exe
     exit "$code"
 }
 trap cleanup EXIT INT TERM
@@ -136,6 +147,18 @@ fail() {
 }
 
 # ---------------------------------------------------------------- preconditions
+# Asked before anything is launched, and only by a run that means to drive the
+# Windows host: an arma3_x64.exe already up is the human's, the teardown above
+# cannot tell theirs from ours, and the answer is stop rather than kill (#41).
+if ((WINDOWS_CLIENT == 1)); then
+    guard="$(cti_human_client_state)"
+    case "${guard%% *}" in
+    running) fail "infra_unavailable" "${guard#* } — that is a play session, not ours" ;;
+    unavailable) fail "infra_unavailable" "${guard#* }; refusing to take a machine I cannot check" ;;
+    esac
+    record "windows_host_free" "true"
+fi
+
 [[ -x "$SERVER_BIN" ]] || fail "infra_unavailable" "server binary missing at $SERVER_BIN"
 SO="$REPO/extension/target/release/libcti_shim.so"
 [[ -f "$SO" ]] || fail "infra_unavailable" "shim not built: $SO (run: cargo build --release --manifest-path extension/Cargo.toml)"
