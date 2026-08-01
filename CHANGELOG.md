@@ -18,6 +18,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   behind it, and which of our waits the engine can signal versus which must be polled are in
   `docs/regression-tier.md`.
 
+- **The AI Commander now judges how much force a Base needs, instead of always sending one Squad.**
+  It could name the enemy HQ as a target but not take one anybody was standing on: assignment gave
+  every Place one Squad, so a raid arrived eight men strong however much of the enemy was reported
+  on it, and against a defended Base it died there. The Commander now reads the band of what its
+  own men have seen — a team, a squad, a platoon, a company — and details that many Squads to the
+  Assault, or, if it cannot find them, calls the Assault off and puts everyone back on the ground
+  they were second-best at. An undefended Base is still raided by one Squad exactly as before, and
+  the raid still arrives late in a Campaign rather than opening it.
+
+  Two things follow that are worth knowing at the table. Concentration is visible: half the force
+  peeling off a held island for one Place is a Commander going for the throat, and the ground it
+  leaves stays held. And an old sighting still deters less than a fresh one but never excuses a
+  smaller force — a company seen ten minutes ago stops making the Base look expensive, and does not
+  stop four Squads being sent, because the only way to find out that it left is to go and look.
+
 ### Fixed
 
 - **A client that joined and took the Commander seat is no longer recorded as one that never

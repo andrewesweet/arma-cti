@@ -49,6 +49,35 @@ ECHELON_THREAT: Final = {"team": 1.0, "squad": 2.0, "platoon": 4.0, "company": 8
 # ignorance instead of becoming good news.
 UNKNOWN_THREAT: Final = 1.0
 
+# How many Squads an Assault on a Base must bring, read off the Contact standing
+# on it (#38, ADR-0027). This is the whole threat model, and it is a doctrine
+# table keyed on the **band** rather than a force computed from a count: a
+# Contact carries no count and #28 made sure none can be recovered, so a rule
+# that divided men by eight would be inventing the one number the fog exists to
+# withhold. A band in, a number of our own Squads out — nothing about the enemy
+# is learned in between.
+#
+# It is deliberately not `ECHELON_THREAT`. That is a price in teams, paid by the
+# `threat` weight and decayed by age; this is a size, and neither the weights nor
+# the clock touch it. One term could not carry both, which is what ADR-0020 said
+# the escalation would be.
+#
+# Playtest-tuned placeholders, flagged for gameplay-feel sign-off (#38). The
+# bands' floors are 1, 4, 9 and 25 observed men (`contacts.ECHELONS`) and a
+# Squad is eight, so these run from comfortable at a band's floor to thin at its
+# top — on purpose. The map fields eight Squads (one per Objective), so a table
+# that demanded parity with a company would spend the whole force on one raid
+# and concede Domination to buy Decapitation. Measured on Stratis from a held
+# island against a fresh company, 200 seeds: at nine the raid is never assembled
+# at all and one sighting vetoes a win condition permanently; at eight it is
+# assembled by emptying the island, no Objective garrisoned on any seed; at four
+# half the force raids and half stays, on every seed. Below four it arrives at
+# parity with the band's floor — twenty-four men against the twenty-five-plus
+# that banded as a company, which is #35's eight into twenty-four at a larger
+# scale, and the one end of this window that is extrapolated rather than
+# measured. ADR-0027 carries the reasoning and the sign-off flag.
+ASSAULT_MASS: Final = {"team": 1, "squad": 2, "platoon": 3, "company": 4}
+
 
 @dataclass(frozen=True, slots=True)
 class Weights:
@@ -164,6 +193,20 @@ class _Option:
 
 
 @dataclass(frozen=True, slots=True)
+class _Muster:
+    """Who is going where this cycle, and what became of each Assault."""
+
+    # Squad id to the option it was given.
+    taken: dict[str, _Option]
+    # Bases whose Assault was called off for want of mass, so no Squad may be
+    # sent to one even as a fallback.
+    declined: frozenset[str]
+    # Base id to the number of Squads that could be found for it, whether or not
+    # that was enough. Only for Bases whose Assault was sought at all.
+    spared: dict[str, int]
+
+
+@dataclass(frozen=True, slots=True)
 class Candidate:
     """One option the scorer weighed, and what it was worth."""
 
@@ -222,6 +265,14 @@ class UtilityPlanner:
     every other piece of held ground gets. No new geometry was needed for either
     — the adjacency graph already carried both Bases as nodes with authored
     distances — and no existing weight moved to make room (ADR-0014 stands).
+
+    It also judges *how much* force a Base needs (ADR-0027). That judgement is
+    an assignment rule rather than a score: what the Contact's band demands is a
+    number of Squads (`ASSAULT_MASS`), the Assault gets all of them or none, and
+    a Base that cannot be given its mass is one no Squad walks onto. Deliberately
+    not a weight — a term that made a defended Base merely expensive would still
+    send the one Squad that could most afford the trip, which is exactly the
+    Squad that dies there.
     """
 
     map_manifest: MapManifest
@@ -304,7 +355,10 @@ class UtilityPlanner:
             ),
             key=lambda option: (-option.score, option.squad, option.place),
         )
-        taken = self._assign(options)
+        wanted = self._mass(observation)
+        muster = self._muster(options, wanted)
+        taken, declined = muster.taken, muster.declined
+        decisions.extend(self._mustered(observation, wanted, muster))
 
         for squad in observation.squads:
             mine = [option for option in options if option.squad == squad.id]
@@ -313,9 +367,13 @@ class UtilityPlanner:
             # Every Squad gets its own place while there are places, and the
             # scorer buys up to one per Objective so there normally are. A Squad
             # past that — a side a human has also been buying for — takes its own
-            # best option and shares the ground.
-            chosen = taken.get(squad.id, mine[0])
-            decisions.append(self._why(squad, chosen, mine, taken))
+            # best option and shares the ground. Never a declined Assault: the
+            # whole point of declining is that no Squad walks onto that Base, and
+            # a fallback that ignored it would send the loneliest one of all.
+            chosen = taken.get(squad.id) or next(
+                option for option in mine if option.place not in declined
+            )
+            decisions.append(self._why(squad, chosen, mine, taken, declined))
             if (chosen.kind, chosen.place) == (squad.order, squad.place):
                 continue
             commands.append(
@@ -425,20 +483,169 @@ class UtilityPlanner:
         freshness = max(0.0, 1.0 - contact.age / self.weights.stale_seconds)
         return max(floor, ECHELON_THREAT.get(contact.echelon, UNKNOWN_THREAT) * freshness)
 
-    def _assign(self, options: list[_Option]) -> dict[str, _Option]:
+    def _mass(self, observation: Observation) -> dict[str, int]:
+        """How many Squads an Assault on each enemy Base has to arrive with.
+
+        The threat model, and all of it (ADR-0027). It reads the band and only
+        the band: `ASSAULT_MASS` is a doctrine table, so nothing here divides,
+        multiplies or otherwise reconstructs the count #28 withheld.
+
+        Age is read nowhere in this method, and that is the decision rather than
+        an omission. A Contact's age already discounts what the place *costs*
+        (`_threat`), because a ten-minute-old company may well have marched off.
+        It must not discount what an Assault *brings*, because the two errors are
+        not the same size: sending four Squads at an empty Base wastes a march,
+        and sending one at a company that is still there is #35's five dead in
+        twenty-five seconds. Only somebody looking lowers this number — a place
+        observed empty loses its Contact outright (#28's removal rule), which is
+        the honest way to find out and the only one.
+        """
+        seen = {contact.at: contact for contact in observation.contacts}
+        return {
+            base.id: self._demanded(seen.get(base.id))
+            for base in self.map_manifest.bases
+            if base.side != observation.for_side
+        }
+
+    def _demanded(self, contact: Contact | None) -> int:
+        """Read one Contact's band as a number of our own Squads."""
+        if contact is None:
+            # No Contact is not "empty" anywhere else in this scorer, and it is
+            # not here either — it is the fog floor, which `_threat` already
+            # prices at a team. A team is one Squad's worth, so an unreported
+            # Base is assaulted by one Squad exactly as it was before #38.
+            return ASSAULT_MASS["team"]
+        # A band this table has never heard of is treated as the heaviest there
+        # is. `contacts.ECHELONS` and this table are asserted in step, so the
+        # fallback should be unreachable — but the direction to be wrong in is
+        # the one that brings too many men rather than too few.
+        return ASSAULT_MASS.get(contact.echelon, max(ASSAULT_MASS.values()))
+
+    def _muster(self, options: list[_Option], wanted: dict[str, int]) -> _Muster:
+        """Assign Squads to places, and say which Assaults were called off.
+
+        Two stages, and the second one is the whole of #38. Everything a
+        Commander does is decided by Squads bidding for places, one each — but
+        a bid is exactly the wrong shape for massing. A Squad garrisoning quiet
+        ground would rather stay there than march four kilometres at a company,
+        so every Squad but the keenest bids the Assault down, and what arrives
+        is the one Squad that could most afford the trip: precisely the Squad
+        that dies there (#35).
+
+        So the Assault is decided once, at the Commander's level, and the force
+        is then **detailed** to it. Stage one is the ordinary bid, and its only
+        job here is the question *is this Assault worth doing at all* — if no
+        Squad ranked the Base first, nothing is sought and the Campaign goes on.
+        Stage two takes that Squad and tops it up to the mass its Contact
+        demands, cheapest trip first, from Squads that would rather be elsewhere.
+        Ground already taken stays taken (`Campaign._advance`), so what
+        concentration costs is the advance and not the island.
+
+        All-or-nothing: a Base that cannot be given its mass is one no Squad
+        walks onto, so it is called off and the whole thing run again with it
+        barred. Each pass either bars a Base or settles, and there are two Bases.
+        """
+        declined: set[str] = set()
+        spared: dict[str, int] = {}
+        while True:
+            bid = self._assign(options, declined, detailed={})
+            detailed: dict[str, _Option] = {}
+            short = set()
+            for place, needed in sorted(wanted.items()):
+                if place in declined or _sent(bid, place) == 0:
+                    # Not sought this cycle: nothing outbid the ground still
+                    # worth taking, which is #34's arc and not a refusal.
+                    continue
+                crew = self._detail(options, bid, place, needed, detailed)
+                spared[place] = len(crew)
+                if len(crew) < needed:
+                    short.add(place)
+                else:
+                    detailed |= crew
+            if not short:
+                chosen = self._assign(options, declined, detailed)
+                return _Muster(taken=chosen, declined=frozenset(declined), spared=spared)
+            declined |= short
+
+    def _detail(
+        self,
+        options: list[_Option],
+        bid: dict[str, _Option],
+        place: str,
+        needed: int,
+        spoken_for: dict[str, _Option],
+    ) -> dict[str, _Option]:
+        """Name the Squads that go, starting with the one that asked to.
+
+        The Squad the bid gave the Base to is kept rather than recomputed, so an
+        Assault that needs one Squad details exactly the Squad it always did and
+        an undefended Base behaves as it did before #38 — the change is only ever
+        the Squads *added* to it. The rest are taken cheapest trip first, which
+        on this scorer means the highest-scoring Assault option going: `options`
+        is already in that order.
+        """
+        crew = {squad: option for squad, option in bid.items() if option.place == place}
+        for option in options:
+            if len(crew) >= needed:
+                break
+            if option.place != place or option.squad in crew or option.squad in spoken_for:
+                continue
+            crew[option.squad] = option
+        return crew
+
+    def _assign(
+        self, options: list[_Option], declined: set[str], detailed: dict[str, _Option]
+    ) -> dict[str, _Option]:
         """Give each Squad the best free place, best-scoring option first.
 
         One Squad per place: eight Squads all converging on the same Objective
         would take it eight times over and leave the rest of the island alone.
+        `detailed` is the one exception and arrives already decided — the crew
+        massed on a Base, whose place is closed to everyone else on arrival.
         """
-        chosen: dict[str, _Option] = {}
-        held: set[str] = set()
+        chosen: dict[str, _Option] = dict(detailed)
+        held = {option.place for option in detailed.values()}
         for option in options:
-            if option.squad in chosen or option.place in held:
+            if option.squad in chosen or option.place in held or option.place in declined:
                 continue
             chosen[option.squad] = option
             held.add(option.place)
         return chosen
+
+    def _mustered(
+        self, observation: Observation, wanted: dict[str, int], muster: _Muster
+    ) -> list[Decision]:
+        """Say, per enemy Base, what force its Assault asked for and got.
+
+        A row of its own rather than a phrase inside a Squad's, because "no
+        Squad was sent to Kamino" is otherwise a silence, and three quite
+        different things wear it: an Assault massed, an Assault called off for
+        want of force, and an Assault nothing outbid. `scored` is the force the
+        Commander had to draw on.
+        """
+        seen = {contact.at: contact for contact in observation.contacts}
+        rows = []
+        for place, needed in sorted(wanted.items()):
+            contact = seen.get(place)
+            reported = f"{contact.echelon} reported" if contact else "nothing reported"
+            sent = _sent(muster.taken, place)
+            if place in muster.declined:
+                found = muster.spared.get(place, 0)
+                chose, because = "declined", f"{reported}; {needed} wanted, {found} could be spared"
+            elif sent:
+                chose, because = f"massed {sent}", f"{reported}; {needed} wanted"
+            else:
+                chose, because = "not sought", f"{reported}; ground still worth taking outbid it"
+            rows.append(
+                Decision(
+                    about=f"assault {place}",
+                    chose=chose,
+                    because=because,
+                    scored=len(observation.squads),
+                    candidates=(),
+                )
+            )
+        return rows
 
     def _why(
         self,
@@ -446,6 +653,7 @@ class UtilityPlanner:
         chosen: _Option,
         mine: list[_Option],
         taken: dict[str, _Option],
+        declined: frozenset[str],
     ) -> Decision:
         """Say what this Squad was told and what it was chosen over."""
         best = mine[0]
@@ -454,11 +662,19 @@ class UtilityPlanner:
                 because = f"{best.score - mine[1].score:.1f} ahead of {mine[1].choice}"
             else:
                 because = "the only ground on the map"
+        elif best.place in declined:
+            # The one reason a Squad is turned away from its best option that is
+            # not another Squad having got there first (#38).
+            because = f"{best.choice} was called off for want of mass"
         else:
-            rival = next(
-                (other.squad for other in taken.values() if other.place == best.place), "another"
-            )
-            because = f"{best.choice} went to {rival}"
+            rivals = sorted(other.squad for other in taken.values() if other.place == best.place)
+            # Plural since #38: a Base is the one Place several Squads may share,
+            # and "went to WEST-1" about a crew of four is a true sentence that
+            # reads as a false one.
+            if len(rivals) > 1:
+                because = f"{best.choice} went to {len(rivals)} others"
+            else:
+                because = f"{best.choice} went to {rivals[0] if rivals else 'another'}"
         if (chosen.kind, chosen.place) == (squad.order, squad.place):
             because = f"already under this Order; {because}"
         return Decision(
@@ -527,6 +743,11 @@ class UtilityPlanner:
                 candidates=candidates[:TRACE_CANDIDATES],
             )
         )
+
+
+def _sent(chosen: dict[str, _Option], place: str) -> int:
+    """How many Squads an assignment put on one Place."""
+    return sum(1 for option in chosen.values() if option.place == place)
 
 
 def _stable_fraction(seed: int, of: str) -> float:

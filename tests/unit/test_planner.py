@@ -280,6 +280,26 @@ REPORTS = st.lists(
     max_size=8,
 )
 
+# The same reports, played from the other end of the Campaign. `REPORTS` moves
+# ground on six of the eight Objectives, so a run of it never holds the island
+# and therefore never issues an Assault — measured, and it makes the massing
+# property below vacuous rather than false. This one hands WEST the whole island
+# from the first step and generates only what was *seen*, which is the position
+# ADR-0020's arc converges on and the only one where a Base is worth going to.
+LATE = st.lists(
+    st.dictionaries(st.sampled_from(SIGHTED), st.integers(min_value=0, max_value=30)),
+    min_size=4,
+    max_size=8,
+)
+
+
+def late(
+    sightings: list[dict[str, int]],
+) -> list[tuple[dict[str, list[str]], dict[str, int]]]:
+    """Turn a run of sightings into reports off a WEST-held island."""
+    ours = {objective.id: ["WEST"] for objective in live().map_manifest.objectives}
+    return [(dict(ours), seen) for seen in sightings]
+
 
 def drive(
     seed: int, reports: list[tuple[dict[str, list[str]], dict[str, int]]]
@@ -350,6 +370,43 @@ def test_the_same_seed_and_the_same_reports_produce_the_same_commands(
 ) -> None:
     # The determinism ADR-0004 asks for, as a property rather than an aspiration.
     assert drive(seed=7, reports=reports)[0] == drive(seed=7, reports=reports)[0]
+
+
+@given(LATE)
+def test_no_order_issued_off_a_held_island_is_one_the_port_would_refuse(
+    sightings: list[dict[str, int]],
+) -> None:
+    # The never-rejected property at the end of the Campaign, where the Orders
+    # that get issued are Assaults. Several Squads named on one Base is the new
+    # shape #38 puts on the wire, and whether the port minds is not a thing to
+    # reason about from here: it is asked.
+    _, judgements, _ = drive(seed=7, reports=late(sightings))
+    assert [(one.code, one.detail) for one in judgements if not one.accepted] == []
+
+
+@given(LATE)
+def test_no_squad_is_ever_left_alone_against_a_base_that_wants_more(
+    sightings: list[dict[str, int]],
+) -> None:
+    # #38 as a property over played-out Campaigns rather than over three staged
+    # positions: whatever the reports say, at the end of every cycle the Squads
+    # standing under Assault on the enemy Base are either none of them or enough
+    # of them. The standing Order is what is read, not the Commands issued, so a
+    # Squad that was sent when the Base looked empty and is still marching when
+    # a company turns up is covered too — the Order has to be taken back off it.
+    _, _, world = drive(seed=7, reports=late(sightings))
+    contact = {one.at: one for one in world.contacts.of("WEST", world.elapsed)}
+    for base in world.map_manifest.bases:
+        if base.side == "WEST":
+            continue
+        seen = contact.get(base.id)
+        wanted = planner.ASSAULT_MASS[seen.echelon] if seen else planner.ASSAULT_MASS["team"]
+        sent = [
+            squad
+            for squad in world.roster.roll("WEST")
+            if (squad.order.kind, squad.order.place) == ("assault", base.id)
+        ]
+        assert not sent or len(sent) >= wanted
 
 
 def sent_from_agia_marina(seed: int) -> tuple[str, str]:
@@ -548,8 +605,11 @@ def test_adr_0014s_weight_set_is_the_one_this_ticket_found() -> None:
     # make room for Bases, and this is that promise as a test rather than as a
     # sentence in a commit message: the new term is an addition, and if one term
     # cannot carry both ends of the Campaign the escalation is the threat-model
-    # ticket, not a retune.
-    assert planner.Weights(decapitation=0.0) == planner.Weights(
+    # ticket, not a retune. #38 is that escalation, and it went the way the
+    # sentence said it would — a threat model beside the scorer, so the whole
+    # set including `decapitation` is asserted here field by field and none of
+    # it moved.
+    assert planner.Weights() == planner.Weights(
         income=1.0,
         garrison=0.1,
         contested=6.0,
@@ -558,6 +618,147 @@ def test_adr_0014s_weight_set_is_the_one_this_ticket_found() -> None:
         travel=1.0,
         commitment=2.0,
         jitter=0.3,
-        decapitation=0.0,
+        decapitation=8.0,
         stale_seconds=300.0,
     )
+
+
+# The threat model is from here down (#38, ADR-0027): not what a Base is worth,
+# which is above, but how much force one needs. It is an assignment rule rather
+# than a term, so what these read is who was sent rather than what anything
+# scored.
+
+SEEDS = 200
+
+
+def raiders(world: campaign.Campaign, seed: int = 0) -> list[str]:
+    """Return the Squads told to Assault Kamino, under `seed`."""
+    plan = brain(world, seed=seed).plan(world.observation("WEST"))
+    return [squad for squad, order in orders(plan).items() if order == ("assault", "csat_kamino")]
+
+
+def island_held_by(*places: str) -> campaign.Campaign:
+    """Return a WEST-held island garrisoned only at `places`.
+
+    `_advance` keeps ground once taken, so an island can be held by a force too
+    small to stand on all of it — which is what a Commander that has been ground
+    down looks like, and the position where declining is the live answer.
+    """
+    world = live()
+    for objective in world.map_manifest.objectives:
+        held(world, objective.id, "WEST")
+    fielded(world, "WEST", *places)
+    return world
+
+
+def assault_row(world: campaign.Campaign, seed: int = 0) -> planner.Decision:
+    """Return what the Commander decided about the Assault itself."""
+    return only(
+        brain(world, seed=seed).plan(world.observation("WEST")).decisions, "assault csat_kamino"
+    )
+
+
+def test_an_undefended_enemy_base_is_still_raided_by_one_squad_on_every_seed() -> None:
+    # The half of #38 that is a promise not to change anything: an unreported
+    # Base is the fog floor, the fog floor is a team, and a team is one Squad's
+    # worth — so #34's late position plans exactly as #34 measured it. Swept
+    # rather than sampled because the mass is new machinery and a seed that
+    # quietly detailed a second Squad would be a regression nobody saw.
+    for seed in range(SEEDS):
+        assert len(raiders(island_held("nato_airbase"), seed)) == 1
+
+
+def test_a_company_at_the_enemy_base_is_massed_against_on_every_seed() -> None:
+    # The other half, and the ticket: #35's Assault arrived as eight men against
+    # three Squads and lost five of them in twenty-five seconds. The Contact
+    # says company, doctrine says four Squads, and four is what goes — every
+    # seed, out of a force of eight with an island to garrison.
+    for seed in range(SEEDS):
+        world = island_held()
+        sighted(world, "WEST", "csat_kamino", men=25)
+        assert len(raiders(world, seed)) == planner.ASSAULT_MASS["company"]
+
+
+def test_a_commander_that_cannot_mass_declines_the_assault_on_every_seed() -> None:
+    # All-or-nothing, which is the point: three Squads is not a company's worth
+    # under any doctrine, so what a Commander with three does about a defended
+    # Base is nothing. The island is still held — declining costs the Campaign
+    # nothing, and going would cost it three Squads.
+    for seed in range(SEEDS):
+        world = island_held_by("camp_rogain", "lz_baldy", "air_station")
+        sighted(world, "WEST", "csat_kamino", men=25)
+        assert raiders(world, seed) == []
+
+
+def test_the_force_an_assault_brings_is_read_off_the_band_and_off_nothing_else() -> None:
+    # A Contact carries no count and #28 made sure none can be recovered, so the
+    # threat model is a table from a band to a number of our own Squads. Nine
+    # men and twenty-four men are one band and get one answer, which is the
+    # guarantee holding rather than a coincidence: a rule that divided men by
+    # eight would send three Squads at one and would have had to invent the
+    # count to do it.
+    for men, band in ((1, "team"), (4, "squad"), (9, "platoon"), (24, "platoon"), (25, "company")):
+        world = island_held()
+        sighted(world, "WEST", "csat_kamino", men=men)
+        assert len(raiders(world)) == planner.ASSAULT_MASS[band]
+
+
+def test_every_band_the_register_can_report_has_a_mass_to_go_with_it() -> None:
+    # The two tables are written apart and have to stay in step. `_demanded`
+    # falls back to the heaviest mass for a band it does not know, so a drift
+    # here would not crash — it would quietly send four Squads at a team, which
+    # is the kind of bug that reads as a balance complaint.
+    assert set(planner.ASSAULT_MASS) == {band for _, band in contacts.ECHELONS}
+
+
+def test_age_discounts_what_a_base_costs_and_never_what_taking_it_needs() -> None:
+    # #28's honesty signal, read the one way round that is safe. A ten-minute-old
+    # company may well have marched off, so it stops *deterring* the Assault —
+    # the price falls back to the fog floor, exactly as it does for any stale
+    # Contact. It does not stop the Assault *bringing* four Squads, because the
+    # two mistakes are not the same size: four Squads at an empty Base is a
+    # wasted march, and one Squad at a company that never left is #35 again.
+    # Only somebody looking lowers this, and looking clears the Contact outright.
+    world = island_held()
+    sighted(world, "WEST", "csat_kamino", men=25, age=600.0)
+
+    decision = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-1")
+    assert terms(decision, "assault csat_kamino")["threat"] == pytest.approx(
+        -planner.Weights().threat * planner.UNKNOWN_THREAT
+    )
+    assert len(raiders(world)) == planner.ASSAULT_MASS["company"]
+
+
+def test_a_declined_assault_says_so_rather_than_going_quiet() -> None:
+    # "Nobody was sent to Kamino" is otherwise a silence, and three different
+    # things wear it: massed, called off, and never worth it. A Commander that
+    # declined on purpose has to be distinguishable in the trace from one that
+    # never considered the Base, or the only evidence for a threat model is that
+    # nothing happened.
+    world = island_held_by("camp_rogain", "lz_baldy", "air_station")
+    sighted(world, "WEST", "csat_kamino", men=25)
+
+    row = assault_row(world)
+    assert row.chose == "declined"
+    assert row.because == "company reported; 4 wanted, 3 could be spared"
+
+
+def test_a_squad_kept_off_a_declined_assault_is_told_that_is_why() -> None:
+    # The Squad that wanted to go is the one the trace has to explain itself to.
+    # Without this it reads as having lost the Base to another Squad, which is
+    # the one thing that did not happen.
+    world = island_held_by("camp_rogain", "lz_baldy", "air_station")
+    sighted(world, "WEST", "csat_kamino", men=25)
+
+    decision = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-1")
+    assert decision.chose != "assault csat_kamino"
+    assert "called off for want of mass" in decision.because
+
+
+def test_an_assault_nothing_outbid_is_not_the_same_as_one_called_off() -> None:
+    # The opening position: the Base is worth less than the ground still worth
+    # taking, so no Squad asked to go and there was nothing to call off. #34's
+    # arc, which the threat model must not turn into a refusal.
+    world = quiet_start()
+
+    assert assault_row(world).chose == "not sought"
