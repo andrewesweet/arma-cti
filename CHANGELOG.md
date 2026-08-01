@@ -92,6 +92,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   containing a quote can no longer break the run's `verdict.json`, and a Windows process the
   harness could not kill on teardown says so.
 
+- **The mission-cycle spike now fails on the freshness axes it was only writing down.** Its own leg
+  header promises that every axis is an assertion and that a missing reading fails rather than being
+  skipped, but a PRNG stream that carried over into the second mission, and second-mission telemetry
+  carrying rows the first mission wrote, were recorded and then reported `verdict=PASS` — the same
+  false-green shape #44 found. Both gate now, the telemetry one only where the daemon was restarted
+  and carry-over therefore means something, and a reading that could not be taken is a failure
+  rather than a blank. Both legs also wait on the world's own counters instead of a flat 20-second
+  dwell, which the cycle runner had made impossible by staging them without the shared probe
+  prelude.
+
 - **A test run pointed at a different daemon port now actually talks to that daemon.** The shim
   reads its daemon address from `CTI_DAEMON_ADDR` and defaults to port 9099, and the harness set
   only `CTI_DAEMON_PORT` — so moving the daemon moved the daemon and left the world talking to

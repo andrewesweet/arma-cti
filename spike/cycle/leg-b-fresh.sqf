@@ -47,9 +47,12 @@
     };
     diag_log "CTI|cycle_shim leg=b echo=ok";
 
-    // World built and the report loop cycled, exactly as leg A waited.
-    private _next = diag_tickTime + 20;
-    waitUntil { diag_tickTime >= _next };
+    // World built, effect pump polled, report loop cycled — exactly as leg A
+    // waited, on the world's own counters with the old 20 s settle as the
+    // deadline (#46, #81). It matters more here than there: what this leg is
+    // about to read is a *cycled* world's counters, and a fixed dwell would have
+    // read them at whatever state 20 s happened to catch.
+    [20] call cti_probe_fnc_worldReady;
 
     private _view = [createHashMapFromArray [
         ["id", "cycle-b-view"],

@@ -30,9 +30,12 @@
     for "_i" from 1 to 5 do { _draws pushBack ([_stream, 1000] call cti_fnc_prngInt) };
     diag_log format ["CTI|cycle_prng leg=a seed=77777 draws=%1", _draws];
 
-    // World built and the report loop cycled.
-    private _next = diag_tickTime + 20;
-    waitUntil { diag_tickTime >= _next };
+    // World built, effect pump polled, report loop cycled — waited on the
+    // world's own counters with the old 20 s settle kept as the deadline, which
+    // is #46's rule. It was a raw dwell here for as long as cycle.sh staged the
+    // legs without spike/probe-prelude.sqf and this function did not exist in
+    // this world (#81).
+    [20] call cti_probe_fnc_worldReady;
 
     // Roster: two Squads on WEST's books.
     for "_i" from 1 to 2 do {
