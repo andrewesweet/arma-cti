@@ -543,7 +543,8 @@ class UtilityPlanner:
 
         All-or-nothing: a Base that cannot be given its mass is one no Squad
         walks onto, so it is called off and the whole thing run again with it
-        barred. Each pass either bars a Base or settles, and there are two Bases.
+        barred. Each pass either bars one of `wanted`'s Bases or settles, and
+        `wanted` holds the enemy's Bases — one, on a two-sided map.
         """
         declined: set[str] = set()
         spared: dict[str, int] = {}
