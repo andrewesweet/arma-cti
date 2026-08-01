@@ -62,7 +62,7 @@ Every harness verdict carries a `class`. Read it before anything else. Untyped r
 
 **Never**: edit an acceptance spec to make it pass; add a sleep, retry, or timeout extension to make a test pass; introduce a bare `random` or bare `sleep` in SQF (seeded PRNG and CBA scheduler adapters only); treat `infra_unavailable` as a result.
 
-The Arma tier shares this machine with the human's play sessions, and WSL2 mirrored networking shares the port space with Windows. The tier uses **2402–2406** and must never take 2302–2306.
+The Arma tier shares this machine with the human's play sessions, and WSL2 mirrored networking shares the port space with Windows. The tier may allocate within **[2400, 3000)** (human decision, 2026-08-02, on #47) and must never take 2302–2306. Slot scheme: `2402 + 100×N` per ADR-0028, so slot ports are predictable and Steam's derived +1/+2 stay inside the slot's stride.
 
 ## Toolchains
 
