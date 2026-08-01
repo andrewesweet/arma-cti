@@ -78,100 +78,175 @@ UNKNOWN_THREAT: Final = 1.0
 # measured. ADR-0027 carries the reasoning and the sign-off flag.
 ASSAULT_MASS: Final = {"team": 1, "squad": 2, "platoon": 3, "company": 4}
 
+# The heaviest a Contact can read, in the units of `ECHELON_THREAT`. It is the
+# far bookend of both threat curves: a company is the most enemy the register
+# can report, so it is what "as bad as it gets" means to this scorer.
+WORST_THREAT: Final = ECHELON_THREAT["company"]
+
+# Every consideration an option is scored on, in the order they are evaluated
+# (ADR-0031). Cheap first, because the product early-outs on the first zero and
+# `legal` is a dict lookup — half the option space dies on it every cycle.
+#
+# Lewis's three classes (Game AI Pro 3 ch.13), which is the vocabulary this
+# scorer is now built in:
+#
+# - **mandatory** — a zero here vetoes the option outright. `legal` is the
+#   port's refusal matrix (ADR-0020) scored rather than assumed. `worth` and
+#   `proximity` reach zero too, at a Place that pays nothing and at a march
+#   longer than `reach_km`; both are real vetoes rather than decoration, and
+#   neither is reachable on Stratis.
+# - **distinguishing** — separates options that are all viable. `worth`,
+#   `proximity`, `hold` and `danger` are what actually decide a cycle.
+# - **balance/feel** — small, shapes character without deciding. `momentum` and
+#   `flavour`, and they are deliberately the only two: a scorer whose axes are
+#   *all* balance/feel has nothing to gate with, which is the failure Lewis
+#   names and the one #34's single stretched term was.
+#
+# The count is fixed, and that is load-bearing rather than tidy: every option
+# carries every consideration, at 1.0 where the kind makes it inapplicable, so
+# the compensation factor below is the same monotone map on all of them and
+# cannot reorder anything.
+CONSIDERATIONS: Final = (
+    "legal",
+    "worth",
+    "unfinished",
+    "momentum",
+    "flavour",
+    "proximity",
+    "hold",
+    "danger",
+)
+
+
+def _compensated(product: float) -> float:
+    """Lift a product of many considerations back into a legible range.
+
+    Lewis's compensation-factor problem: multiplying N normalised considerations
+    drives every score toward zero, and eight of them put a good option at 0.3
+    where an argument about it wants a number that reads like a preference. The
+    fix that circulates is `final = s + (1 - s) * (1 - 1/N) * s`, and #48 could
+    not trace it to a Mark or Lewis primary — so it is adopted on its algebra
+    and on nothing else.
+
+    The algebra is this: for a fixed `N` the map is strictly increasing on
+    [0, 1], so it **cannot change which option wins**, only how far apart the
+    scores read. That is the whole of what it is being used for here, and
+    `test_the_compensation_factor_cannot_change_which_option_wins` is the proof
+    rather than the claim. It stops being free the day the consideration set
+    stops being fixed per option, because then two options are compensated by
+    different amounts and the transform starts deciding things; the count is
+    fixed above so that day is a deliberate change rather than a drift.
+    """
+    if product <= 0.0:
+        return 0.0
+    return product + (1.0 - product) * (1.0 - 1.0 / len(CONSIDERATIONS)) * product
+
 
 @dataclass(frozen=True, slots=True)
-class Weights:
-    """What the scorer values. Playtest-tuned placeholders; the terms are the contract.
+class Considerations:
+    """The bookends and response curves the scorer weighs an option through.
+
+    ADR-0031 replaced ADR-0014's eight summed weights with this. What it keeps
+    is every call ADR-0014 made; what it changes is the shape they are made in —
+    each consideration is normalised to [0, 1] by a bookend, remapped by an
+    authored curve, and multiplied, so a zero vetoes and a curve can be flat
+    where a weight had to be linear.
 
     Tuned for a Commander that presses (human decision, 2026-07-31): two sides
     both sitting on what they hold is not a Campaign worth playing, so the
     default here advances by preference and consolidates only against a real
-    massed incursion. Measured on Stratis with a Squad on the line and the
-    enemy fresh across it, it attacks a Contact of every echelon up to a
-    company, and pulls back only when a company is standing on ground behind
-    it. What the first set of these weights did in the same picture was hold,
-    at every echelon, even with `threat` and `defend` set to zero — because the
-    turtle was never the threat terms. It was `travel` and `commitment`.
+    massed incursion.
 
-    Three relations are load-bearing rather than tuning. `jitter` is smaller
-    than `travel`, so the seed can only decide between options geography has
-    already tied to within three hundred metres — it never sends a Squad the
-    long way round. `commitment` is larger than the whole spread of `jitter`,
-    so the anti-thrash margin still covers what the seed can move. And
-    `garrison` is smaller than `income`, so taking ground beats sitting on it
-    while there is ground left to take.
+    Three relations are load-bearing rather than tuning, and they are ADR-0014's
+    first call and its consequences restated in the new units. `flavour` spans
+    less than `reach_km` gives back over three hundred metres, so the seed can
+    only decide between options geography has already tied — it never sends a
+    Squad the long way round. `momentum` is larger than the whole span of
+    `flavour`, so the anti-thrash margin still covers what the seed can move.
+    And `hold_floor` is below one, so taking ground beats sitting on it while
+    there is ground left to take.
     """
 
-    # What an Objective's authored income is worth to take.
-    income: float = 1.0
-    # And to keep. This is the whole value of standing on quiet ground, so what
-    # it actually sets is advance against consolidate: whether a Squad that has
-    # just taken an Objective holds it or moves on. Measured on Stratis, at 0.1
-    # the Squad that takes Agia Marina marches on to LZ Baldy and at 1.0 it
-    # stays. Low because `Campaign._advance` keeps ground taken once taken, so a
-    # garrison on quiet ground guards income the Campaign was already paying.
+    # How far a march has to be before distance alone has taken everything off
+    # a Place. Linear, which is Lewis's published `(100 - d) / 100` in
+    # kilometres, and the bookend is set so a kilometre costs a tenth of a
+    # full-value Place — ADR-0014's `travel = 1.0` against `income = 10.0`,
+    # exactly. This is still the main aggression dial: halve it and the far half
+    # of the island stops being worth walking to.
     #
-    # It multiplies the Objective's authored income, so on a map where every
-    # Objective pays the same — Stratis does — it is a constant across every
-    # Defend option and cannot choose between them. Deciding which garrison is
-    # the urgent one is the threat term below, and always was.
-    garrison: float = 0.1
-    # Ground half-taken is worth finishing.
-    contested: float = 6.0
-    # What a team of assumed enemy costs to attack, and is worth to garrison
-    # against. Both in the units of ECHELON_THREAT. Small against `income`
-    # deliberately: at 0.5 a fresh company on an Objective costs 4 against the
-    # 10 that taking it pays, so heavy ground is attacked later than light
-    # ground rather than never. Raising it past `income / 8` is the point where
-    # a company becomes ground this Commander will not go near.
-    threat: float = 0.5
-    # And what the same Contact is worth to garrison against on our own side of
-    # it. Sized so a company — and only a company — behind the line outbids
-    # marching on: a Commander that turned round for every team sighting would
-    # never finish anything it started.
-    defend: float = 1.0
-    # Per kilometre of marching, measured along the adjacency graph. This is the
-    # main aggression dial, not `garrison` and not `threat`: at the original 3.0
-    # a four-kilometre march cost 12 against an Objective worth 10, so the far
-    # half of the island was never worth walking to and a Squad that reached the
-    # line stopped there. At 1.0 the whole of Stratis stays worth crossing while
-    # the near Objective is still preferred to the far one.
-    travel: float = 1.0
+    # Stratis's graph diameter is about five kilometres, so the veto at the far
+    # end is unreachable there. On an island wider than this it would fire, and
+    # the fix is the bookend rather than a clamp somewhere else.
+    reach_km: float = 10.0
+    # What ground that is *not* half-taken is worth against ground that is. A
+    # product can only discount, so ADR-0014's `contested = 6.0` bonus on an
+    # income of 10 is expressed as its absence: 10/16 for everything else.
+    unfinished_floor: float = 0.625
+    # What standing on quiet ground is worth against taking it — ADR-0014's
+    # `garrison = 0.1`, unmoved, and now the floor of a curve rather than a
+    # multiplier of income. It is the whole value of a Defend nobody is coming
+    # for, so what it actually sets is advance against consolidate: at 0.1 the
+    # Squad that takes Agia Marina marches on to LZ Baldy and at 1.0 it stays.
+    hold_floor: float = 0.1
+    # And how fast a garrison becomes urgent as the Contact on it grows, from
+    # that floor to the Place's whole value at a company. Squared rather than
+    # linear so the fog floor barely registers and only a real massed incursion
+    # turns a Squad round: the crossing point sits at about seven teams, which
+    # is between a platoon and a company and nearer the company.
+    hold_power: float = 2.0
+    # What a company standing on ground takes off the value of attacking it —
+    # ADR-0014's `threat = 0.5` per team, eight teams, against an income of 10.
+    # Bounded below by construction at 1 - danger_bite, so heavy ground is
+    # attacked later than light ground rather than never: this Commander presses.
+    danger_bite: float = 0.4
+    # And the shape of getting there. Squared, which is #48's "flat until a
+    # platoon and collapses at a company": a team costs six thousandths and a
+    # company costs the whole bite. A linear term had to charge for the fog
+    # floor on every option on the map, which is a cost that decides nothing.
+    danger_power: float = 2.0
     # What a standing Order is worth on its own. The whole anti-thrash rule: a
-    # Squad keeps going where it was sent unless something beats it by this much,
-    # so scores that jitter around each other do not turn into countermarching.
-    # It has to stay above the spread of `jitter` and below what a better
-    # Objective is worth — at 5.0 it was half an Objective's income and a Squad
-    # that had once been told to hold would not be told anything else.
-    commitment: float = 2.0
-    # What a Base is worth, in the units every other value term is priced in —
-    # an Objective's authored income. ADR-0020's one new term, and it needs to
-    # be new because every existing value term prices income and a Base pays
-    # none: what a Base is worth is the Campaign, the enemy's to end and ours to
-    # keep. Playtest-tuned placeholder, flagged for feel sign-off (#34).
+    # Squad keeps going where it was sent unless something beats it by this
+    # much, so scores that drift around each other do not turn into
+    # countermarching. ADR-0014's `commitment = 2.0` against an income of 10.
     #
-    # A little under what an Objective pays, and the window either side of it is
-    # narrow enough that both ends are behaviours rather than tastes. Measured
-    # on Stratis, where every Objective pays ten:
-    #
-    # Above 8.87 a Squad standing on Agia Marina turns for the WEST Base 1.1 km
-    # away instead of taking LZ Baldy 1.9 km away, and does it with seven
-    # Objectives still unheld — a base rush rather than a Campaign, and the
-    # thing ADR-0020 said to tune first if raids outrun fronts. Below 7.27 a
-    # fresh company standing on our own Base no longer outbids marching on: a
-    # Base's value to hold is this term through `garrison`, so a tenth of too
-    # little is nothing and the Commander walks away from its own HQ at exactly
-    # the moment somebody came for it.
-    #
-    # Eight sits between them. It makes the Assault the third option at the
-    # opening and the first for a Squad that has run out of ground worth taking
-    # — which is the arc, and which is why the raid arrives late without any
-    # rule saying so: what defers it is the 4.7 km between the two Bases.
+    # It is a flat step rather than Lewis's `runtime` curve (`y = 1 - x⁶`,
+    # decaying a decision the longer it has been running) because a runtime
+    # curve needs the age of the standing Order and `SquadView` does not carry
+    # one. That is the degenerate case of the curve, not a rejection of it, and
+    # the field is where the curve would go.
+    momentum: float = 0.2
+    # A fixed per-place preference, so two identical Objectives at equal
+    # distance are not decided by alphabetical order and a Campaign has a
+    # character. The whole span of it, and `flavour * reach_km` is what it is
+    # worth in kilometres of march: three hundred metres, ADR-0014's first call.
+    flavour: float = 0.03
+    # What taking the enemy's Base is worth, in the units every other value is
+    # priced in — an Objective's authored income. ADR-0020's term, unmoved at
+    # 8.0, and still a playtest-tuned placeholder flagged for feel sign-off.
+    # A little under what an Objective pays, which is why the raid arrives late
+    # without any rule saying so: what defers it is the 4.7 km between the Bases.
     decapitation: float = 8.0
-    # A fixed per-place preference, so two identical Objectives at equal distance
-    # are not decided by alphabetical order and a Campaign has a character.
-    # Three hundred metres of march, in the units of `travel`.
-    jitter: float = 0.3
+    # And what keeping our own is worth. New in ADR-0031, and new because the
+    # summed scorer had been getting it for free: what a Base was worth to hold
+    # was `garrison * decapitation` — 0.8 — plus a `defend * threat` term of 8.0
+    # that had nothing to do with the Base at all. A product cannot smuggle a
+    # value in through a threat term, so the value has to be said out loud.
+    #
+    # Measured on Stratis over 200 seeds, where every Objective pays ten. Below
+    # 9.087 a fresh company standing on our own Base no longer outbids marching
+    # on, and the Commander walks away from its HQ at exactly the moment
+    # somebody came for it. Above 27.959 a platoon is enough to stop the
+    # advance, which is the Commander that turns round for every sighting.
+    #
+    # Ten sits near the low end on purpose rather than in the middle, and the
+    # reason is a coupling worth knowing about: `worth` is normalised by the
+    # richest thing on the map, so while `homeland` is at or under the best
+    # Objective's income it raises the Base alone, and past that it is the
+    # ceiling — every other Place's `worth` starts shrinking to make room. Above
+    # ten this stops being a dial on the HQ and becomes a dial on everything
+    # else wearing the HQ's name. Ten is the last value where it means what it
+    # says.
+    homeland: float = 10.0
     # How long a Contact takes to decay from what it said to knowing nothing.
     stale_seconds: float = 300.0
 
@@ -193,6 +268,21 @@ class _Option:
 
 
 @dataclass(frozen=True, slots=True)
+class _Prospect:
+    """What one Place offers one Order kind, before the Squad going there."""
+
+    # Whether the port would accept this kind of Order on this Place at all —
+    # the mandatory consideration, and the only thing computed before the veto.
+    legal: bool
+    # What the Place is worth, in the units every value is priced in: an
+    # Objective's authored income.
+    value: float
+    contested: bool
+    # How much enemy it is assumed to hold, in teams.
+    threat: float
+
+
+@dataclass(frozen=True, slots=True)
 class _Muster:
     """Who is going where this cycle, and what became of each Assault."""
 
@@ -204,6 +294,9 @@ class _Muster:
     # Base id to the number of Squads that could be found for it, whether or not
     # that was enough. Only for Bases whose Assault was sought at all.
     spared: dict[str, int]
+    # Squad id to how many of its options a mandatory consideration refused
+    # before anything weighed them (ADR-0031).
+    vetoed: dict[str, int]
 
 
 @dataclass(frozen=True, slots=True)
@@ -225,6 +318,13 @@ class Decision:
     # How many candidates were scored, against the few `candidates` carries.
     scored: int
     candidates: tuple[Candidate, ...]
+    # And how many never got that far, because a mandatory consideration vetoed
+    # them (ADR-0031). Separate from `scored` because the two answer different
+    # questions: `scored` is how much choice the Commander had, and this is how
+    # much of the option space it was never allowed. Defaulted, so a planner
+    # that is not this one — the daemon knows only the `Planner` protocol — does
+    # not have to have an opinion about vetoes.
+    vetoed: int = 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -272,7 +372,15 @@ class UtilityPlanner:
     a Base that cannot be given its mass is one no Squad walks onto. Deliberately
     not a weight — a term that made a defended Base merely expensive would still
     send the one Squad that could most afford the trip, which is exactly the
-    Squad that dies there.
+    Squad that dies there. It stays out of the scorer under ADR-0031 too: the
+    obvious thing to do with a veto is to make an unmassable Base score zero,
+    and that is the one thing ADR-0027 rules out, because a veto still only
+    decides *whether* a Squad goes and never *how many*.
+
+    Scoring is multiplicative (ADR-0031): every option is a product of the
+    normalised considerations in `CONSIDERATIONS`, each remapped by an authored
+    response curve, so a zero on a mandatory consideration vetoes the option
+    outright and the cheap ones are evaluated first.
     """
 
     map_manifest: MapManifest
@@ -281,10 +389,11 @@ class UtilityPlanner:
     # seed and the same observations must produce the same Orders. Phase 2 puts
     # it in the snapshot, so a resumed Campaign keeps its character.
     seed: int = 0
-    weights: Weights = Weights()
+    considerations: Considerations = Considerations()
     _base_of: dict[str, str] = field(init=False, default_factory=dict)
     _reach: dict[str, dict[str, float]] = field(init=False, default_factory=dict)
     _jitter: dict[str, float] = field(init=False, default_factory=dict)
+    _ceiling: float = field(init=False, default=1.0)
 
     def __post_init__(self) -> None:
         """Derive what the authored data implies, once.
@@ -314,6 +423,15 @@ class UtilityPlanner:
         # of places has a distance and none of this has to cope with infinity.
         self._reach = dict(nx.all_pairs_dijkstra_path_length(graph, weight="km"))
         self._jitter = {place: _stable_fraction(self.seed, place) for place in graph}
+        # The near bookend of `worth`: the most anything on this map is worth,
+        # so the richest Place scores 1.0 and everything else is a fraction of
+        # it. Derived rather than authored, because it has to move with the
+        # manifest — a map whose Objectives paid a hundred would otherwise score
+        # every Place at the ceiling and the value axis would stop deciding.
+        self._ceiling = max(
+            [objective.income for objective in self.map_manifest.objectives]
+            + [self.considerations.decapitation, self.considerations.homeland]
+        )
 
     def _adjacency(self) -> dict[str, tuple[str, ...]]:
         """Return what each authored place touches.
@@ -347,17 +465,23 @@ class UtilityPlanner:
         self, observation: Observation, commands: list[Command], decisions: list[Decision]
     ) -> None:
         """Give every Squad the best thing left for it to be doing."""
+        # Every Squad is scored against the whole option space — both kinds at
+        # every Place — and the vetoed half is dropped here rather than never
+        # generated (ADR-0031). What it is dropped *by* is the port's own
+        # refusal matrix read as a mandatory consideration, so the scorer states
+        # the rule it used to obey silently. The count survives into the trace.
+        weighed = {squad.id: self._options(observation, squad) for squad in observation.squads}
+        vetoed = {
+            squad: sum(1 for option in options if option.score <= 0.0)
+            for squad, options in weighed.items()
+        }
         options = sorted(
-            (
-                option
-                for squad in observation.squads
-                for option in self._options(observation, squad)
-            ),
+            (option for options in weighed.values() for option in options if option.score > 0.0),
             key=lambda option: (-option.score, option.squad, option.place),
         )
         wanted = self._mass(observation)
-        muster = self._muster(options, wanted)
-        taken, declined = muster.taken, muster.declined
+        muster = self._muster(options, wanted, vetoed)
+        declined = muster.declined
         decisions.extend(self._mustered(observation, wanted, muster))
 
         for squad in observation.squads:
@@ -370,10 +494,10 @@ class UtilityPlanner:
             # best option and shares the ground. Never a declined Assault: the
             # whole point of declining is that no Squad walks onto that Base, and
             # a fallback that ignored it would send the loneliest one of all.
-            chosen = taken.get(squad.id) or next(
+            chosen = muster.taken.get(squad.id) or next(
                 option for option in mine if option.place not in declined
             )
-            decisions.append(self._why(squad, chosen, mine, taken, declined))
+            decisions.append(self._why(squad, chosen, mine, muster))
             if (chosen.kind, chosen.place) == (squad.order, squad.place):
                 continue
             commands.append(
@@ -385,7 +509,17 @@ class UtilityPlanner:
             )
 
     def _options(self, observation: Observation, squad: SquadView) -> list[_Option]:
-        """Score everything this one Squad could be sent to do."""
+        """Score everything this one Squad could be sent to do.
+
+        Both kinds at every Place, and the illegal one is scored to zero rather
+        than left ungenerated (ADR-0031). Which kind a Place takes is the port's
+        refusal matrix read forwards (ADR-0020) — Capture for ground the side
+        does not hold, Defend for ground it does, Assault for the enemy's Base —
+        and making the scorer say so out loud is what gives the mandatory class
+        something to do: half the space dies on `legal` every cycle, and the
+        never-rejected property run through the real `CommandPort` is the
+        evidence that the rule the scorer states is the rule the port enforces.
+        """
         side = observation.for_side
         # A Squad in open ground is between places and has no distance of its
         # own, so it is measured from the Base it was bought at.
@@ -396,82 +530,86 @@ class UtilityPlanner:
         options = []
         for objective in self.map_manifest.objectives:
             owner = observation.owners.get(objective.id, "")
-            # One kind per place, because the other is an Order the port would
-            # refuse or a nonsense: Capture is for ground the side does not hold
-            # and Defend is for ground it does.
-            kind = "defend" if owner == side else "capture"
-            terms = self._terms(
-                kind=kind,
-                income=objective.income,
-                contested=owner == CONTESTED,
-                threat=self._threat(contacts.get(objective.id), watched=objective.id in watched),
-            )
-            options.append(self._weigh(squad, kind, objective.id, terms, origin))
+            threat = self._threat(contacts.get(objective.id), watched=objective.id in watched)
+            for kind, legal in (("capture", owner != side), ("defend", owner == side)):
+                offer = _Prospect(
+                    legal=legal,
+                    value=float(objective.income),
+                    contested=owner == CONTESTED,
+                    threat=threat,
+                )
+                options.append(self._weigh(squad, kind, objective.id, origin, offer))
 
         for base in self.map_manifest.bases:
             # The one place whose loss ends the Campaign, on either side of it.
-            # Which kind a Base takes is the port's refusal matrix read forwards
-            # (ADR-0020): Assault names the enemy's and Defend names our own,
-            # and there is no third thing to say about either.
-            kind = "defend" if base.side == side else "assault"
-            terms = self._base_terms(
-                kind=kind,
-                threat=self._threat(contacts.get(base.id), watched=base.id in watched),
-            )
-            options.append(self._weigh(squad, kind, base.id, terms, origin))
+            # Taking the enemy's is worth `decapitation`; keeping ours is worth
+            # `homeland`, which the summed scorer never had to name because a
+            # threat term was quietly carrying it (ADR-0031).
+            threat = self._threat(contacts.get(base.id), watched=base.id in watched)
+            ours = base.side == side
+            for kind, legal, value in (
+                ("assault", not ours, self.considerations.decapitation),
+                ("defend", ours, self.considerations.homeland),
+            ):
+                offer = _Prospect(legal=legal, value=value, contested=False, threat=threat)
+                options.append(self._weigh(squad, kind, base.id, origin, offer))
         return options
 
     def _weigh(
-        self, squad: SquadView, kind: str, place: str, terms: dict[str, float], origin: str
+        self, squad: SquadView, kind: str, place: str, origin: str, offer: _Prospect
     ) -> _Option:
-        """Add what this Squad's own position makes of a place, and total it up."""
-        terms["travel"] = -self.weights.travel * self._reach[origin][place]
-        # What the Squad is already doing, worth something on its own.
-        standing = (kind, place) == (squad.order, squad.place)
-        terms["commitment"] = self.weights.commitment if standing else 0.0
-        terms["jitter"] = self.weights.jitter * self._jitter[place]
+        """Run one option through every consideration and multiply them out."""
+        shape = self.considerations
+        factors: dict[str, float] = {"legal": 1.0 if offer.legal else 0.0}
+        if offer.legal:
+            factors["worth"] = min(1.0, offer.value / self._ceiling)
+            # A product can only discount, so "ground half-taken is worth
+            # finishing" is expressed as the discount everything else takes.
+            factors["unfinished"] = 1.0 if offer.contested else shape.unfinished_floor
+            standing = (kind, place) == (squad.order, squad.place)
+            factors["momentum"] = 1.0 if standing else 1.0 - shape.momentum
+            factors["flavour"] = 1.0 - shape.flavour * self._jitter[place]
+            factors["proximity"] = max(0.0, 1.0 - self._reach[origin][place] / shape.reach_km)
+            # The same Contact, read the two opposite ways it has always been
+            # read: a reason to stand on ground you hold, a reason to stay off
+            # ground you do not. One curve each rather than one signed weight,
+            # which is what lets the two have different shapes.
+            factors["hold"] = self._hold(offer.threat) if kind == "defend" else 1.0
+            factors["danger"] = self._danger(offer.threat) if kind != "defend" else 1.0
+
+        product = 1.0
+        for factor in factors.values():
+            product *= factor
+            if product == 0.0:
+                break
         return _Option(
-            squad=squad.id, kind=kind, place=place, score=sum(terms.values()), terms=terms
+            squad=squad.id, kind=kind, place=place, score=_compensated(product), terms=factors
         )
 
-    def _terms(self, *, kind: str, income: int, contested: bool, threat: float) -> dict[str, float]:
-        """Value one place, before anything about the Squad going to it."""
-        if kind == "capture":
-            return {
-                "income": self.weights.income * income,
-                "contested": self.weights.contested if contested else 0.0,
-                "threat": -self.weights.threat * threat,
-            }
-        return {
-            "income": self.weights.garrison * income,
-            # Threat is a reason to garrison rather than a reason to stay away:
-            # the same Contact reads opposite ways depending on who holds it.
-            "threat": self.weights.defend * threat,
-        }
+    def _hold(self, threat: float) -> float:
+        """Return what standing on ground we hold is worth, against taking it.
 
-    def _base_terms(self, *, kind: str, threat: float) -> dict[str, float]:
-        """Value a Base, whose worth is not income but the Campaign ending on it.
-
-        The same two-sided reading the Objective terms have, one step further
-        along: an Objective changes hands and a Base dies, so what the enemy's
-        is worth is the whole of `decapitation`, and what ours is worth to stand
-        on goes through the same `garrison` multiplier an Objective's income
-        does. That keeps ADR-0014's relation intact — holding is worth a tenth
-        of taking, so a Squad garrisons the Base against something rather than
-        instead of the war — while making the thing it is holding the Campaign
-        rather than ten Funds a tick.
+        `hold_floor` when nobody is coming — ADR-0014's `garrison`, which is
+        what made quiet held ground worth a tenth of fresh ground — rising to
+        the Place's whole value at a company. Squared, so the fog floor barely
+        registers and a Commander told to press does not turn round for a team.
         """
-        if kind == "assault":
-            return {
-                "decapitation": self.weights.decapitation,
-                "threat": -self.weights.threat * threat,
-            }
-        return {
-            "decapitation": self.weights.garrison * self.weights.decapitation,
-            # Read the same way as on any held ground, floor and all: nobody
-            # standing at the Base means possibly-threatened, never safe.
-            "threat": self.weights.defend * threat,
-        }
+        shape = self.considerations
+        return shape.hold_floor + (1.0 - shape.hold_floor) * (threat / WORST_THREAT) ** (
+            shape.hold_power
+        )
+
+    def _danger(self, threat: float) -> float:
+        """Return what a Contact takes off the value of going at the ground it stands on.
+
+        Never to zero: `1 - danger_bite` is the floor, so heavy ground is
+        attacked later than light ground rather than never. That is ADR-0014's
+        `threat` weight's whole point kept intact — the thing that would make a
+        company ground this Commander will not go near is `danger_bite` at 1.0,
+        and it is at 0.4.
+        """
+        shape = self.considerations
+        return 1.0 - shape.danger_bite * (threat / WORST_THREAT) ** shape.danger_power
 
     def _threat(self, contact: Contact | None, *, watched: bool) -> float:
         """How much enemy a place is assumed to hold, in teams."""
@@ -480,7 +618,7 @@ class UtilityPlanner:
         floor = 0.0 if watched else UNKNOWN_THREAT
         if contact is None:
             return floor
-        freshness = max(0.0, 1.0 - contact.age / self.weights.stale_seconds)
+        freshness = max(0.0, 1.0 - contact.age / self.considerations.stale_seconds)
         return max(floor, ECHELON_THREAT.get(contact.echelon, UNKNOWN_THREAT) * freshness)
 
     def _mass(self, observation: Observation) -> dict[str, int]:
@@ -521,7 +659,9 @@ class UtilityPlanner:
         # the one that brings too many men rather than too few.
         return ASSAULT_MASS.get(contact.echelon, max(ASSAULT_MASS.values()))
 
-    def _muster(self, options: list[_Option], wanted: dict[str, int]) -> _Muster:
+    def _muster(
+        self, options: list[_Option], wanted: dict[str, int], vetoed: dict[str, int]
+    ) -> _Muster:
         """Assign Squads to places, and say which Assaults were called off.
 
         Two stages, and the second one is the whole of #38. Everything a
@@ -565,7 +705,12 @@ class UtilityPlanner:
                     detailed |= crew
             if not short:
                 chosen = self._assign(options, declined, detailed)
-                return _Muster(taken=chosen, declined=frozenset(declined), spared=spared)
+                return _Muster(
+                    taken=chosen,
+                    declined=frozenset(declined),
+                    spared=spared,
+                    vetoed=vetoed,
+                )
             declined |= short
 
     def _detail(
@@ -653,22 +798,26 @@ class UtilityPlanner:
         squad: SquadView,
         chosen: _Option,
         mine: list[_Option],
-        taken: dict[str, _Option],
-        declined: frozenset[str],
+        muster: _Muster,
     ) -> Decision:
         """Say what this Squad was told and what it was chosen over."""
         best = mine[0]
         if chosen.choice == best.choice:
             if len(mine) > 1:
-                because = f"{best.score - mine[1].score:.1f} ahead of {mine[1].choice}"
+                # Three decimals since ADR-0031: a score is a compensated
+                # product in [0, 1] rather than a sum of income-like terms, so
+                # one decimal would round most real margins to nothing.
+                because = f"{best.score - mine[1].score:.3f} ahead of {mine[1].choice}"
             else:
                 because = "the only ground on the map"
-        elif best.place in declined:
+        elif best.place in muster.declined:
             # The one reason a Squad is turned away from its best option that is
             # not another Squad having got there first (#38).
             because = f"{best.choice} was called off for want of mass"
         else:
-            rivals = sorted(other.squad for other in taken.values() if other.place == best.place)
+            rivals = sorted(
+                other.squad for other in muster.taken.values() if other.place == best.place
+            )
             # Plural since #38: a Base is the one Place several Squads may share,
             # and "went to WEST-1" about a crew of four is a true sentence that
             # reads as a false one.
@@ -687,6 +836,7 @@ class UtilityPlanner:
                 Candidate(choice=option.choice, score=option.score, terms=option.terms)
                 for option in mine[:TRACE_CANDIDATES]
             ),
+            vetoed=muster.vetoed[squad.id],
         )
 
     def _buy(

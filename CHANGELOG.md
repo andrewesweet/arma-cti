@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The AI Commander decides by multiplying considerations through response curves rather than by
+  summing eight weights, and a consideration can now veto an option outright.** Each candidate Order
+  is normalised to [0, 1] on eight axes, remapped by an authored curve and multiplied, so a zero
+  propagates and the evaluator abandons the option — the pattern every serious utility system in
+  `docs/research/commander-prior-art.md` uses, and the answer to a scorer where `threat` could make
+  ground expensive but never impossible and every axis added diluted the rest. What it plays like is
+  meant to be the same: the opening move is still income-bearing ground on every seed, an undefended
+  enemy Base is still raided by one Squad, a company at our own Base still turns a Squad round and a
+  platoon still does not, and the massing table still sends four Squads at a company and declines
+  when it has three. The one behaviour that changed in degree is that a Squad will now be recalled
+  to its threatened Base from up to 1.15 km away rather than only from the Base itself. ADR-0031
+  carries the reasoning; ADR-0014's four calls survive it and ADR-0027's massing rule is untouched.
+
+- **The decision trace reads differently.** A candidate's `terms` are now the eight considerations
+  as factors in [0, 1] rather than signed contributions that sum to the score, `score` is their
+  compensated product in [0, 1] rather than a total in income units, margins in `because` carry
+  three decimals rather than one, and each decision carries a new `vetoed` count beside `scored` —
+  how much of the option space was refused before it was weighed.
+
 - **A map that could never fit its Observation into one `callExtension` return now fails
   `just unit` when it is authored, instead of truncating in silence in a Play Session.** #26 pinned
   the ceiling at about 35 Squads a side and blamed the Squad count; re-measured after the enemy

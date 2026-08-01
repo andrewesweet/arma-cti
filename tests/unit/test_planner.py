@@ -9,6 +9,7 @@ going to ship.
 
 from __future__ import annotations
 
+import itertools
 from pathlib import Path
 
 import pytest
@@ -135,9 +136,11 @@ def test_a_squad_on_threatened_ground_its_side_holds_is_told_to_garrison_it() ->
     # side already holds — a scorer that needed telling is one issuing dead
     # Orders every cycle.
     #
-    # A company, because that is the echelon the weights are tuned to stop for:
-    # a Commander told to press (`Weights`) marches on past a squad-sized
-    # sighting behind it and turns round only for a real massed incursion.
+    # A company, because that is the echelon the curves are tuned to stop for:
+    # a Commander told to press (`Considerations`) marches on past a squad-sized
+    # sighting behind it and turns round only for a real massed incursion. The
+    # `hold` curve is what carries that since ADR-0031 — squared, so its
+    # crossing point sits between a platoon and a company.
     world = live()
     held(world, "agia_marina", "WEST")
     fielded(world, "WEST", "agia_marina")
@@ -525,18 +528,31 @@ def test_a_defended_enemy_base_is_worth_less_to_assault_than_an_open_one() -> No
     # island held there is nothing left for the Assault to lose to — a Commander
     # with no ground to take and a garrison to fight through still goes, which
     # is the right answer and not the one that would demonstrate the term.
-    def assault_score(men: int) -> float:
+    def assault(men: int) -> tuple[float, dict[str, float]]:
         world = island_held("nato_airbase")
         if men:
             sighted(world, "WEST", "csat_kamino", men=men)
         squad = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-8")
-        return scores(squad)["assault csat_kamino"]
+        return scores(squad)["assault csat_kamino"], terms(squad, "assault csat_kamino")
+
+    open_score, open_terms = assault(0)
+    held_score, held_terms = assault(25)
 
     # Against the fog floor rather than against zero: an unreported Base is
-    # already assumed to hold a team, so what the sighting adds is the seven
-    # teams between a team and a company.
-    news = planner.ECHELON_THREAT["company"] - planner.UNKNOWN_THREAT
-    assert assault_score(0) - assault_score(25) == pytest.approx(planner.Weights().threat * news)
+    # already assumed to hold a team, so what the sighting costs is the distance
+    # along the `danger` curve between a team and a company. Since ADR-0031 that
+    # is the *whole* of what the Contact does to the option — every other
+    # consideration is untouched, which is a stronger claim than the summed
+    # scorer's and the one a product lets us make.
+    assert held_score < open_score
+    assert {name: value for name, value in held_terms.items() if name != "danger"} == pytest.approx(
+        {name: value for name, value in open_terms.items() if name != "danger"}
+    )
+    mind = brain(live())
+    assert held_terms["danger"] == pytest.approx(
+        mind._danger(planner.ECHELON_THREAT["company"])  # noqa: SLF001 — the curve is the claim
+    )
+    assert open_terms["danger"] == pytest.approx(mind._danger(planner.UNKNOWN_THREAT))  # noqa: SLF001
 
 
 def test_a_company_at_its_own_base_turns_a_squad_round_from_marching_on() -> None:
@@ -577,9 +593,13 @@ def test_a_base_nobody_is_standing_on_is_not_scored_as_safe_ground() -> None:
     world = island_held()
 
     decision = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-1")
-    assert terms(decision, "defend nato_airbase")["threat"] == pytest.approx(
-        planner.Weights().defend * planner.UNKNOWN_THREAT
+    assert terms(decision, "defend nato_airbase")["hold"] == pytest.approx(
+        brain(world)._hold(planner.UNKNOWN_THREAT)  # noqa: SLF001 — the curve is the claim
     )
+    # And that the floor is genuinely above the curve's own floor: unknown is
+    # not empty, so an unwatched Base is worth more to stand on than one being
+    # looked at and reporting nobody.
+    assert brain(world)._hold(planner.UNKNOWN_THREAT) > brain(world)._hold(0.0)  # noqa: SLF001
 
 
 def test_the_trace_carries_both_bases_and_says_what_a_base_was_worth() -> None:
@@ -591,36 +611,99 @@ def test_the_trace_carries_both_bases_and_says_what_a_base_was_worth() -> None:
     world = island_held()
     decision = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-1")
 
+    shape = planner.Considerations()
+    ceiling = max(
+        [objective.income for objective in world.map_manifest.objectives]
+        + [shape.decapitation, shape.homeland]
+    )
     assert decision.scored == len(world.map_manifest.objectives) + len(world.map_manifest.bases)
-    assert terms(decision, "assault csat_kamino")["decapitation"] == pytest.approx(
-        planner.Weights().decapitation
+    # And the half of the space that never got that far: one kind per Place is
+    # the one the port would refuse, so exactly as many options are vetoed as
+    # are scored (ADR-0031).
+    assert decision.vetoed == decision.scored
+    assert terms(decision, "assault csat_kamino")["worth"] == pytest.approx(
+        shape.decapitation / ceiling
     )
-    assert terms(decision, "defend nato_airbase")["decapitation"] == pytest.approx(
-        planner.Weights().garrison * planner.Weights().decapitation
+    assert terms(decision, "defend nato_airbase")["worth"] == pytest.approx(
+        shape.homeland / ceiling
     )
 
 
-def test_adr_0014s_weight_set_is_the_one_this_ticket_found() -> None:
-    # ADR-0020 said the eight weights and ADR-0014's four calls do not move to
-    # make room for Bases, and this is that promise as a test rather than as a
-    # sentence in a commit message: the new term is an addition, and if one term
-    # cannot carry both ends of the Campaign the escalation is the threat-model
-    # ticket, not a retune. #38 is that escalation, and it went the way the
-    # sentence said it would — a threat model beside the scorer, so the whole
-    # set including `decapitation` is asserted here field by field and none of
-    # it moved.
-    assert planner.Weights() == planner.Weights(
-        income=1.0,
-        garrison=0.1,
-        contested=6.0,
-        threat=0.5,
-        defend=1.0,
-        travel=1.0,
-        commitment=2.0,
-        jitter=0.3,
-        decapitation=8.0,
-        stale_seconds=300.0,
-    )
+def test_a_vetoed_option_reads_as_vetoed_rather_than_as_a_low_score() -> None:
+    # The mandatory class doing its job (ADR-0031). An option the port would
+    # refuse is not scored badly, it is scored zero and abandoned before any
+    # other consideration is computed — so the trace carries `legal: 0.0` and
+    # nothing else, which is a sentence rather than an arithmetic accident.
+    world = island_held()
+    mind = brain(world)
+    squad = world.observation("WEST").squads[0]
+    refused = [
+        option
+        for option in mind._options(world.observation("WEST"), squad)  # noqa: SLF001
+        if option.score <= 0.0
+    ]
+
+    assert {option.choice for option in refused} == {
+        "capture agia_marina",
+        "capture camp_tempest",
+        "capture girna",
+        "capture camp_maxwell",
+        "capture air_station",
+        "capture lz_baldy",
+        "capture camp_rogain",
+        "capture old_outpost",
+        "defend csat_kamino",
+        "assault nato_airbase",
+    }
+    assert all(option.terms == {"legal": 0.0} for option in refused)
+
+
+def test_adr_0014s_calls_survive_the_curves_that_replaced_its_weights() -> None:
+    # ADR-0031 supersedes ADR-0014's *mechanism* and keeps its *calls*, and this
+    # is that promise as arithmetic rather than as a sentence in a commit
+    # message. The scalars are gone — there is nothing left to assert field by
+    # field — so what is asserted is the three relations the ADR said were
+    # load-bearing rather than tuning, in the units the curves are authored in.
+    shape = planner.Considerations()
+
+    # First call, `jitter < travel`: the seed may only break ties geography has
+    # left within three hundred metres. `flavour` is the whole span of the
+    # preference and `reach_km` is what a kilometre costs, so their product is
+    # the seed's reach in kilometres of march — and it is 0.3, exactly what
+    # ADR-0014 measured `jitter = 0.3` against `travel = 1.0` to be.
+    assert shape.flavour * shape.reach_km == pytest.approx(0.3)
+
+    # Second call, `garrison < income`: holding is worth a fraction of taking,
+    # so quiet ground does not keep a Squad standing on it. The fraction is the
+    # `hold` curve's floor, and it is the same tenth.
+    assert 0.0 < shape.hold_floor < 1.0
+    assert shape.hold_floor == pytest.approx(0.1)
+
+    # The anti-thrash margin still covers what the seed can move — the relation
+    # that keeps `commitment` doing its job rather than `jitter` undoing it.
+    assert shape.momentum > shape.flavour
+
+    # And `threat` never makes ground impossible, only expensive: a Commander
+    # told to press attacks a Contact of every echelon up to a company, so the
+    # danger curve is bounded away from zero.
+    assert 0.0 < shape.danger_bite < 1.0
+
+
+def test_the_compensation_factor_cannot_change_which_option_wins() -> None:
+    # Lewis's compensation-factor problem, answered on the algebra rather than
+    # on an attribution #48 could not trace to a primary. The formula is applied
+    # for legibility — eight considerations put a good option at 0.3 — and the
+    # claim that buys is that it is strictly increasing on [0, 1] for a fixed
+    # consideration count, so it can move the numbers and never the rank order.
+    # Every option carries every consideration, at 1.0 where inapplicable, which
+    # is what makes the count fixed and this proof apply to all of them.
+    rungs = [step / 500 for step in range(501)]
+    lifted = [planner._compensated(rung) for rung in rungs]  # noqa: SLF001 — the claim is the map
+    assert lifted == sorted(lifted)
+    assert all(one < other for one, other in itertools.pairwise(lifted))
+    assert lifted[0] == 0.0
+    assert lifted[-1] == pytest.approx(1.0)
+    assert all(rung <= raised <= 1.0 for rung, raised in zip(rungs, lifted, strict=True))
 
 
 # The threat model is from here down (#38, ADR-0027): not what a Base is worth,
@@ -723,8 +806,8 @@ def test_age_discounts_what_a_base_costs_and_never_what_taking_it_needs() -> Non
     sighted(world, "WEST", "csat_kamino", men=25, age=600.0)
 
     decision = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-1")
-    assert terms(decision, "assault csat_kamino")["threat"] == pytest.approx(
-        -planner.Weights().threat * planner.UNKNOWN_THREAT
+    assert terms(decision, "assault csat_kamino")["danger"] == pytest.approx(
+        brain(world)._danger(planner.UNKNOWN_THREAT)  # noqa: SLF001 — the curve is the claim
     )
     assert len(raiders(world)) == planner.ASSAULT_MASS["company"]
 

@@ -364,11 +364,12 @@ class Daemon:
                 chose=decision.chose,
                 because=decision.because,
                 scored=decision.scored,
+                vetoed=decision.vetoed,
                 candidates=[
                     {
                         "choice": candidate.choice,
-                        "score": round(candidate.score, 2),
-                        "terms": {name: round(value, 2) for name, value in candidate.terms.items()},
+                        "score": round(candidate.score, 3),
+                        "terms": {name: round(value, 3) for name, value in candidate.terms.items()},
                     }
                     for candidate in decision.candidates
                 ],
