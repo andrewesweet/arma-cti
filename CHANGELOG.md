@@ -40,8 +40,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Decapitation as an Order (ADR-0020). Until now an Order could only name an Objective, so one of
   the two win conditions the MVP decided was unreachable through the only order path there is, by
   a human Commander and an AI alike. The Command Port accepts an Assault and rides it out on the
-  outbox as an `order_issued` effect like any other Order; the world side of carrying one out, and
-  an AI that scores a Base worth assaulting, are their own tickets and not in this release.
+  outbox as an `order_issued` effect like any other Order; the world side of carrying one out is
+  its own ticket, and the AI Commander that scores a Base worth assaulting is below.
+
+- **The AI Commander plays for both win conditions.** It now scores both Bases alongside the
+  Objectives: the enemy's as an Assault, and its own as ground to garrison under the same fog rule
+  that already had it covering its rear. Where it used to run out of ideas once the island was
+  held, it now finishes the Campaign — and it will turn a Squad round for a company reported at
+  its own HQ rather than march on and lose the game behind its back. The raid arrives late without
+  any rule saying so: what defers it is the four and a half kilometres between the two Bases, so a
+  Commander still opens by taking the ground that pays. What a Base is worth is one new number
+  (`decapitation`), a playtest-tuned placeholder awaiting feel sign-off like the rest of them; no
+  existing weight moved to make room for it.
 
 - Defend now takes the side's **own Base** as well as any Objective, so rear security is something
   a Commander can order rather than hope for.

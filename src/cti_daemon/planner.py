@@ -115,6 +115,30 @@ class Weights:
     # Objective is worth — at 5.0 it was half an Objective's income and a Squad
     # that had once been told to hold would not be told anything else.
     commitment: float = 2.0
+    # What a Base is worth, in the units every other value term is priced in —
+    # an Objective's authored income. ADR-0020's one new term, and it needs to
+    # be new because every existing value term prices income and a Base pays
+    # none: what a Base is worth is the Campaign, the enemy's to end and ours to
+    # keep. Playtest-tuned placeholder, flagged for feel sign-off (#34).
+    #
+    # A little under what an Objective pays, and the window either side of it is
+    # narrow enough that both ends are behaviours rather than tastes. Measured
+    # on Stratis, where every Objective pays ten:
+    #
+    # Above 8.87 a Squad standing on Agia Marina turns for the WEST Base 1.1 km
+    # away instead of taking LZ Baldy 1.9 km away, and does it with seven
+    # Objectives still unheld — a base rush rather than a Campaign, and the
+    # thing ADR-0020 said to tune first if raids outrun fronts. Below 7.27 a
+    # fresh company standing on our own Base no longer outbids marching on: a
+    # Base's value to hold is this term through `garrison`, so a tenth of too
+    # little is nothing and the Commander walks away from its own HQ at exactly
+    # the moment somebody came for it.
+    #
+    # Eight sits between them. It makes the Assault the third option at the
+    # opening and the first for a Squad that has run out of ground worth taking
+    # — which is the arc, and which is why the raid arrives late without any
+    # rule saying so: what defers it is the 4.7 km between the two Bases.
+    decapitation: float = 8.0
     # A fixed per-place preference, so two identical Objectives at equal distance
     # are not decided by alphabetical order and a Campaign has a character.
     # Three hundred metres of march, in the units of `travel`.
@@ -192,11 +216,12 @@ class UtilityPlanner:
     return the same Plan and `plan` is a pure function in the sense ADR-0004
     asks for.
 
-    It plays for Domination and not for Decapitation. The port's vocabulary no
-    longer stands in the way — ADR-0020 widened an Order to name a Place, so
-    Assault(enemy Base) is expressible — but scoring a Base needs a value term
-    for ending the Campaign that this scorer does not yet have (#32 left it to
-    its own ticket), so no Assault is ever planned here.
+    It plays for both win conditions. ADR-0020 widened an Order to name a Place,
+    so both Bases are candidates here alongside the Objectives: the enemy's as
+    an Assault worth `decapitation`, its own as a Defend under the same fog floor
+    every other piece of held ground gets. No new geometry was needed for either
+    — the adjacency graph already carried both Bases as nodes with authored
+    distances — and no existing weight moved to make room (ADR-0014 stands).
     """
 
     map_manifest: MapManifest
@@ -323,21 +348,33 @@ class UtilityPlanner:
                 contested=owner == CONTESTED,
                 threat=self._threat(contacts.get(objective.id), watched=objective.id in watched),
             )
-            terms["travel"] = -self.weights.travel * self._reach[origin][objective.id]
-            # What the Squad is already doing, worth something on its own.
-            standing = (kind, objective.id) == (squad.order, squad.place)
-            terms["commitment"] = self.weights.commitment if standing else 0.0
-            terms["jitter"] = self.weights.jitter * self._jitter[objective.id]
-            options.append(
-                _Option(
-                    squad=squad.id,
-                    kind=kind,
-                    place=objective.id,
-                    score=sum(terms.values()),
-                    terms=terms,
-                )
+            options.append(self._weigh(squad, kind, objective.id, terms, origin))
+
+        for base in self.map_manifest.bases:
+            # The one place whose loss ends the Campaign, on either side of it.
+            # Which kind a Base takes is the port's refusal matrix read forwards
+            # (ADR-0020): Assault names the enemy's and Defend names our own,
+            # and there is no third thing to say about either.
+            kind = "defend" if base.side == side else "assault"
+            terms = self._base_terms(
+                kind=kind,
+                threat=self._threat(contacts.get(base.id), watched=base.id in watched),
             )
+            options.append(self._weigh(squad, kind, base.id, terms, origin))
         return options
+
+    def _weigh(
+        self, squad: SquadView, kind: str, place: str, terms: dict[str, float], origin: str
+    ) -> _Option:
+        """Add what this Squad's own position makes of a place, and total it up."""
+        terms["travel"] = -self.weights.travel * self._reach[origin][place]
+        # What the Squad is already doing, worth something on its own.
+        standing = (kind, place) == (squad.order, squad.place)
+        terms["commitment"] = self.weights.commitment if standing else 0.0
+        terms["jitter"] = self.weights.jitter * self._jitter[place]
+        return _Option(
+            squad=squad.id, kind=kind, place=place, score=sum(terms.values()), terms=terms
+        )
 
     def _terms(self, *, kind: str, income: int, contested: bool, threat: float) -> dict[str, float]:
         """Value one place, before anything about the Squad going to it."""
@@ -351,6 +388,30 @@ class UtilityPlanner:
             "income": self.weights.garrison * income,
             # Threat is a reason to garrison rather than a reason to stay away:
             # the same Contact reads opposite ways depending on who holds it.
+            "threat": self.weights.defend * threat,
+        }
+
+    def _base_terms(self, *, kind: str, threat: float) -> dict[str, float]:
+        """Value a Base, whose worth is not income but the Campaign ending on it.
+
+        The same two-sided reading the Objective terms have, one step further
+        along: an Objective changes hands and a Base dies, so what the enemy's
+        is worth is the whole of `decapitation`, and what ours is worth to stand
+        on goes through the same `garrison` multiplier an Objective's income
+        does. That keeps ADR-0014's relation intact — holding is worth a tenth
+        of taking, so a Squad garrisons the Base against something rather than
+        instead of the war — while making the thing it is holding the Campaign
+        rather than ten Funds a tick.
+        """
+        if kind == "assault":
+            return {
+                "decapitation": self.weights.decapitation,
+                "threat": -self.weights.threat * threat,
+            }
+        return {
+            "decapitation": self.weights.garrison * self.weights.decapitation,
+            # Read the same way as on any held ground, floor and all: nobody
+            # standing at the Base means possibly-threatened, never safe.
             "threat": self.weights.defend * threat,
         }
 

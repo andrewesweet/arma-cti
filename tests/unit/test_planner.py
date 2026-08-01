@@ -261,6 +261,11 @@ def test_a_standing_order_survives_news_too_small_to_act_on() -> None:
 
 
 PLACES = ("agia_marina", "camp_tempest", "girna", "camp_maxwell", "air_station", "lz_baldy")
+# Ground a Contact may be reported on, which since ADR-0020 includes both Bases:
+# ownership still moves on Objectives alone, but a Squad seen at a Base is the
+# news the two new candidates turn on, and a property run that never generated
+# one would leave them exercised by the examples above only.
+SIGHTED = (*PLACES, "nato_airbase", "csat_kamino")
 REPORTS = st.lists(
     st.builds(
         lambda presence, seen: (presence, seen),
@@ -269,7 +274,7 @@ REPORTS = st.lists(
             st.lists(st.sampled_from(("WEST", "EAST")), max_size=2, unique=True),
             max_size=4,
         ),
-        seen=st.dictionaries(st.sampled_from(PLACES), st.integers(min_value=0, max_value=30)),
+        seen=st.dictionaries(st.sampled_from(SIGHTED), st.integers(min_value=0, max_value=30)),
     ),
     min_size=1,
     max_size=8,
@@ -278,7 +283,7 @@ REPORTS = st.lists(
 
 def drive(
     seed: int, reports: list[tuple[dict[str, list[str]], dict[str, int]]]
-) -> tuple[list[Command], list[port.Judgement]]:
+) -> tuple[list[Command], list[port.Judgement], campaign.Campaign]:
     """Play a Campaign out against a sequence of reports, and say what happened.
 
     The world is a stand-in — Squads arrive wherever they were sent and the
@@ -308,7 +313,7 @@ def drive(
         plan, judgements = cycle(world, mind, "WEST")
         issued.extend(plan.commands)
         judged.extend(judgements)
-    return issued, judged
+    return issued, judged, world
 
 
 @given(REPORTS)
@@ -319,9 +324,24 @@ def test_no_command_the_planner_issues_is_one_the_port_would_refuse(
     # `already_held`, `insufficient_funds` and `unknown_squad` are all reachable
     # by a scorer that plans against ownership it has misread, and a test that
     # re-implemented the port would agree with the planner about the mistake.
-    _, judgements = drive(seed=7, reports=reports)
+    # Since ADR-0020 the port also types which ground each Order kind may name,
+    # so a scorer that offered Capture(Base), Assault(Objective) or Defend on
+    # the enemy's Base would be refused `wrong_ground` here rather than in-world.
+    _, judgements, _ = drive(seed=7, reports=reports)
     refused = [(one.code, one.detail) for one in judgements if not one.accepted]
     assert refused == []
+
+
+@given(REPORTS)
+def test_a_commander_never_spends_funds_it_does_not_have(
+    reports: list[tuple[dict[str, list[str]], dict[str, int]]],
+) -> None:
+    # The port refuses an unaffordable purchase, so overspending would show up
+    # above as a refusal — but the balance is the thing that actually has to
+    # hold, and it holds through the real Ledger rather than through the port's
+    # answer about it.
+    _, _, world = drive(seed=7, reports=reports)
+    assert world.ledger.balance("WEST") >= 0
 
 
 @given(REPORTS)
@@ -384,3 +404,160 @@ def test_the_nearer_of_two_equal_objectives_is_the_one_a_squad_is_sent_to() -> N
 
     (order,) = orders(brain(world).plan(world.observation("WEST"))).values()
     assert order == ("capture", min(reach, key=lambda name: reach[name]))
+
+
+# Both Bases are candidates from here down (#34, ADR-0020). Everything above
+# this line is Domination; everything below is the Campaign having a second way
+# to end, which is a scorer change and not a geometry one — the adjacency graph
+# already carried both Bases as nodes.
+
+
+def terms(decision: planner.Decision, choice: str) -> dict[str, float]:
+    """Return what one candidate in a decision was made of."""
+    (candidate,) = [one for one in decision.candidates if one.choice == choice]
+    return candidate.terms
+
+
+def test_the_opening_move_is_income_bearing_ground_and_not_the_enemy_base() -> None:
+    # The arc the placeholder `decapitation` is sized for: a Commander that
+    # opened with a raid across the whole island would skip the Campaign, and a
+    # Commander that never raided could only win by Domination. Every seed,
+    # because `jitter` may reorder ground the graph has tied and must never
+    # reach as far as this.
+    for seed in range(6):
+        world = quiet_start()
+        (order,) = orders(brain(world, seed=seed).plan(world.observation("WEST"))).values()
+        assert order[0] == "capture"
+
+
+def island_held(*spare: str) -> campaign.Campaign:
+    """Return the late position: WEST holds every Objective and stands on each.
+
+    Plus a Squad at each of `spare`, which is the Commander with nothing left to
+    take — the position the whole second half of the Campaign converges on, and
+    the one Domination-only play had no answer to.
+    """
+    world = live()
+    places = [objective.id for objective in world.map_manifest.objectives]
+    for place in places:
+        held(world, place, "WEST")
+    fielded(world, "WEST", *places, *spare)
+    return world
+
+
+def test_an_undefended_enemy_base_with_a_squad_to_spare_is_assaulted() -> None:
+    # The other end of the arc. The Squad past one-per-Objective has no ground
+    # of its own left to take, and what it is for is ending the Campaign.
+    # Judged by the real port, because Assault is the newest Order kind and the
+    # refusal matrix that types it is the thing a scorer can most easily get
+    # wrong — Capture(Base) and Defend(enemy Base) are both one line away.
+    world = island_held("nato_airbase")
+    (enemy,) = [base for base in world.map_manifest.bases if base.side == "EAST"]
+
+    plan, judgements = cycle(world, brain(world), "WEST")
+
+    assert ("assault", enemy.id) in orders(plan).values()
+    assert [one.code for one in judgements if not one.accepted] == []
+
+
+def test_a_defended_enemy_base_is_worth_less_to_assault_than_an_open_one() -> None:
+    # Threat reads on a Base the way it reads on anything else: a company seen
+    # at Kamino costs the Assault the same four it would cost a Capture, so a
+    # defended Base is reached for after an open one and after anything the
+    # Commander can do more cheaply. Priced rather than chosen, because with the
+    # island held there is nothing left for the Assault to lose to — a Commander
+    # with no ground to take and a garrison to fight through still goes, which
+    # is the right answer and not the one that would demonstrate the term.
+    def assault_score(men: int) -> float:
+        world = island_held("nato_airbase")
+        if men:
+            sighted(world, "WEST", "csat_kamino", men=men)
+        squad = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-8")
+        return scores(squad)["assault csat_kamino"]
+
+    # Against the fog floor rather than against zero: an unreported Base is
+    # already assumed to hold a team, so what the sighting adds is the seven
+    # teams between a team and a company.
+    news = planner.ECHELON_THREAT["company"] - planner.UNKNOWN_THREAT
+    assert assault_score(0) - assault_score(25) == pytest.approx(planner.Weights().threat * news)
+
+
+def test_a_company_at_its_own_base_turns_a_squad_round_from_marching_on() -> None:
+    # The same relation ADR-0014 fixed for held Objectives, at the one place
+    # whose loss ends the Campaign: a Commander told to press marches on past a
+    # sighting behind it and turns round for a massed one. A Base pays no
+    # income, so what makes this hold is the new term rather than the garrison
+    # value of the ground — take the term out and 8.0 of company loses to 8.4
+    # of Agia Marina, and the Commander walks away from its own HQ.
+    world = live()
+    fielded(world, "WEST", "nato_airbase")
+    sighted(world, "WEST", "nato_airbase", men=25)
+
+    (order,) = orders(brain(world).plan(world.observation("WEST"))).values()
+    assert order == ("defend", "nato_airbase")
+
+
+def test_a_platoon_at_its_own_base_does_not_stop_the_advance() -> None:
+    # And the other side of that relation, which is the half that keeps a
+    # Commander playing: a Base is not a reason to sit at home, or the fog floor
+    # alone would garrison it from the first cycle and the Campaign would open
+    # with nobody going anywhere.
+    world = live()
+    fielded(world, "WEST", "nato_airbase")
+    sighted(world, "WEST", "nato_airbase", men=10)
+
+    (order,) = orders(brain(world).plan(world.observation("WEST"))).values()
+    assert order[0] == "capture"
+
+
+def test_a_base_nobody_is_standing_on_is_not_scored_as_safe_ground() -> None:
+    # `UNKNOWN_THREAT` applies to the Base as to any held ground (ADR-0020):
+    # nobody watching it means possibly-threatened, never empty. Every Squad is
+    # forward on an Objective and each is looking at the ground under it, so the
+    # Base behind them all is unknown and scores a team standing on it — the
+    # same fog rule that bought ADR-0014's WEST-4, at the place that would end
+    # the Campaign.
+    world = island_held()
+
+    decision = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-1")
+    assert terms(decision, "defend nato_airbase")["threat"] == pytest.approx(
+        planner.Weights().defend * planner.UNKNOWN_THREAT
+    )
+
+
+def test_the_trace_carries_both_bases_and_says_what_a_base_was_worth() -> None:
+    # #16's bargain: every candidate the scorer weighed is counted and the top
+    # few are carried with the terms that made them, so an argument about a
+    # Base is an argument about numbers. `scored` counts the Places on the map
+    # — both Bases included — rather than the Objectives, because a silent
+    # omission there reads as "the Base was never considered".
+    world = island_held()
+    decision = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-1")
+
+    assert decision.scored == len(world.map_manifest.objectives) + len(world.map_manifest.bases)
+    assert terms(decision, "assault csat_kamino")["decapitation"] == pytest.approx(
+        planner.Weights().decapitation
+    )
+    assert terms(decision, "defend nato_airbase")["decapitation"] == pytest.approx(
+        planner.Weights().garrison * planner.Weights().decapitation
+    )
+
+
+def test_adr_0014s_weight_set_is_the_one_this_ticket_found() -> None:
+    # ADR-0020 said the eight weights and ADR-0014's four calls do not move to
+    # make room for Bases, and this is that promise as a test rather than as a
+    # sentence in a commit message: the new term is an addition, and if one term
+    # cannot carry both ends of the Campaign the escalation is the threat-model
+    # ticket, not a retune.
+    assert planner.Weights(decapitation=0.0) == planner.Weights(
+        income=1.0,
+        garrison=0.1,
+        contested=6.0,
+        threat=0.5,
+        defend=1.0,
+        travel=1.0,
+        commitment=2.0,
+        jitter=0.3,
+        decapitation=0.0,
+        stale_seconds=300.0,
+    )
