@@ -21,6 +21,30 @@ Close it in the same session that lands its work, with a comment addressing ever
 
 A design question that gates implementation travels as its own issue and closes with **no code**: an ADR (with any CONTEXT.md term changes in the same commit) plus implementation issues in dependency order, each carrying acceptance criteria precise enough to implement without a clarifying question. The closing comment names the decision, the issues it spawned, and their ordering rationale. Exemplar: #31 → ADR-0020 + #32–#35; three implementing agents ran concurrently off those criteria and none needed to ask anything. Raise one when a build ticket flags a decision as "not the scorer's to route around" — the flag is the trigger, and the decision ticket is what keeps the build ticket honest about its scope.
 
+## Directed review passes
+
+A whole-project review runs as a set of parallel review tickets, one lens per ticket (a
+named skill or book), each review-only. First run 2026-08-01 (#55–#58 + #95): four
+concurrent fable reviews plus one extension, ~45 findings, the first seven fixed the same
+day — the shape below is what all five independently held to, so reuse it rather than
+re-inventing the ticket.
+
+Each ticket carries: **scope** (the surfaces by name), the **lens**, and **deliverables**
+— a rubric self-assessment per dimension with evidence against a stated numeric target;
+every finding filed as a severity-tagged backlog issue in house style, full sweep before
+severity filtering per CLAUDE.md; and a priority ordering of the findings against the
+open backlog in the summary comment. No code changes in a review ticket.
+
+Two disciplines concurrency makes load-bearing: a reviewer **notes** a neighbouring
+lens's finding rather than re-filing it (each review names which remit a noted item
+belongs to), and where a fix agent is already in flight on the same ground, the review
+cites the in-flight issue as evidence rather than filing over it (#95 did both).
+
+Scope the production surfaces explicitly: a review scoped to the test infrastructure
+reviews the test infrastructure (#58), and the play path a human sits inside for hours
+needed its own extension ticket — which produced the cycle's worst score (#95, ~5/10)
+on exactly the surface no automated tier exercises.
+
 ## Pull requests as a triage surface
 
 **PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_

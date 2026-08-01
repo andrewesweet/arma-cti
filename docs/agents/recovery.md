@@ -6,7 +6,8 @@
 > this document's three-part contract, every resumption clean. What failed in that cycle
 > was never the resumption but the noticing — one stall sat unseen ~8 hours behind a
 > monitoring check that could not fail — so the second amendment is the section on
-> noticing, the orchestrator's side of the contract.
+> noticing, the orchestrator's side of the contract. Third amendment (2026-08-02): the
+> worktree-vanish mode, improvised identically twice before it was written.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
@@ -27,6 +28,16 @@ staged world — is still live, with a completion notification firing anyway. Th
 with live work, not a false alarm. Treat it as death, and treat the still-running work as
 the stale state below: nobody is going to write its verdict, so whatever it eventually
 emits is not a result to cite (ADR-0022). Seen once, 2026-08-01.
+
+A live agent can also lose its ground: its isolation worktree vanishes mid-run and Bash
+starts refusing with "isolated worktree no longer exists". Seen twice (the #48 research
+session's strands; the #56 review, which lost 14 config files unreviewed — #94), cause
+unobservable from inside a session and tracked in #105; both victims were read-only
+sessions whose worktrees held no commits, consistent with the harness reaping a worktree
+it sees as unchanged. The work is not resumable in place: finish any read-only reporting
+from the main checkout, **never commit there**, name what went unexamined instead of
+papering over it (the #56 review shipped with its gap as an issue, which is the model),
+and treat anything uncommitted as dead with the worktree.
 
 ## Noticing in time: the orchestrator's side
 
