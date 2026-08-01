@@ -4,6 +4,14 @@
 #
 # Throwaway measurement scaffolding (issue #2). Phase 1 replaces it with the
 # real `just accept` harness.
+#
+# `-e` is deliberately absent, and that is a decision rather than an omission
+# (#83): a harness whose product is a *typed* verdict cannot afford to die at the
+# failing line, because the trap would then exit with a bare status and no class
+# — the untyped red the failure-class table calls a harness bug. Every command
+# whose failure ends the run is checked here and routed through `fail`, which
+# records the class before exiting. Adding `-e` would not make this file safer;
+# it would make its failures anonymous.
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -94,7 +102,15 @@ win_hc_pid=""
 win_client_pid=""
 
 log() { printf '[spike] %s\n' "$*" >&2; }
-record() { printf '%s=%s\n' "$1" "$2" >>"$RESULTS"; log "$1=$2"; }
+# results.env is read a line at a time — `sed -n 's/^verdict=//p'` in regress.sh
+# — so a newline inside a value would forge a record nobody wrote. Flattened
+# rather than escaped: no reader of this file unescapes anything, and one line
+# per record is what every one of them already assumes (#83).
+record() {
+    local value="${2//$'\n'/ }"
+    printf '%s=%s\n' "$1" "$value" >>"$RESULTS"
+    log "$1=$value"
+}
 now() { date +%s.%N; }
 since() { echo "scale=3; $(now) - $1" | bc; }
 
@@ -116,8 +132,15 @@ cleanup() {
     # refuses at the pre-flight below exits through here, and killing
     # arma3_x64.exe on the way out would be this harness doing the exact thing
     # the pre-flight just refused to do.
-    [[ -n "$win_hc_pid" ]] && cti_windows_taskkill arma3server_x64.exe
-    [[ -n "$win_client_pid" ]] && cti_windows_taskkill arma3_x64.exe
+    #
+    # The return is read rather than discarded: teardown cannot change a verdict
+    # already recorded, but a Windows process this run launched and could not
+    # kill is the next run's infra_unavailable, and it should be in this run's
+    # evidence rather than in nobody's (#83).
+    [[ -n "$win_hc_pid" ]] && { cti_windows_taskkill arma3server_x64.exe ||
+        log "teardown: arma3server_x64.exe may still be running on the Windows host"; }
+    [[ -n "$win_client_pid" ]] && { cti_windows_taskkill arma3_x64.exe ||
+        log "teardown: arma3_x64.exe may still be running on the Windows host"; }
     exit "$code"
 }
 trap cleanup EXIT INT TERM
@@ -213,14 +236,16 @@ unavailable) fail "infra_unavailable" "${guard#* }; refusing to take a machine I
 esac
 record "windows_host_free" "true"
 
-
 [[ -x "$SERVER_BIN" ]] || fail "infra_unavailable" "server binary missing at $SERVER_BIN"
-SO="$REPO/extension/target/release/libcti_shim.so"
+# Overridable for the same reason CTI_SERVER_DIR is: it lets the no-Arma tier
+# drive this script's own verdict path against a stub server, which is where the
+# classification of an in-mission FAIL is asserted (tests/unit/test_run_verdict.py).
+SO="${CTI_SHIM_SO:-$REPO/extension/target/release/libcti_shim.so}"
 [[ -f "$SO" ]] || fail "infra_unavailable" "shim not built: $SO (run: cargo build --release --manifest-path extension/Cargo.toml)"
 # HEMTT's build output is already a mod folder (<dir>/addons/*.pbo). Every
 # machine that runs mission scripts needs it loaded: CfgFunctions compiles per
 # machine, so an unloaded addon means no cti_fnc_*.
-BUILT_MOD="$REPO/.hemttout/build"
+BUILT_MOD="${CTI_BUILT_MOD:-$REPO/.hemttout/build}"
 [[ -d "$BUILT_MOD/addons" ]] || fail "infra_unavailable" "addon not built: $BUILT_MOD/addons (run: just build-addon)"
 # -mod= resolves against the game directory, not the working directory: an
 # absolute path outside it lands in the mod table as "GAME DIR (Empty)" and
@@ -233,7 +258,11 @@ record "wsl_lan_ip" "$(ip -4 -o addr show scope global 2>/dev/null | awk '{print
 
 # ---------------------------------------------------------------- staging
 # Profiles: -profiles= is broken on Linux, the engine insists on these paths.
-mkdir -p "$HOME/.local/share/Arma 3" "$HOME/.local/share/Arma 3 - Other Profiles"
+# Every staging step below is checked: an unchecked `cp` that failed used to
+# surface as a confusing engine-side failure three steps later, when what
+# happened was a full disk or a directory somebody else's run had removed (#83).
+mkdir -p "$HOME/.local/share/Arma 3" "$HOME/.local/share/Arma 3 - Other Profiles" ||
+    fail "infra_unavailable" "could not create the engine's profile directories under $HOME/.local/share"
 
 # A joining Windows client has to be told where the daemon is, and whether
 # mirrored-mode loopback carries it is exactly what the hold test measures — so
@@ -242,9 +271,10 @@ LAN_IP="$(ip -4 -o addr show scope global 2>/dev/null | awk '{print $4}' | cut -
     grep -E '^192\.168\.' | head -1)"
 STAGE="$OUT/mission/$MISSION"
 rm -rf "$OUT/mission"
-mkdir -p "$STAGE"
+mkdir -p "$STAGE" || fail "infra_unavailable" "could not create the staging directory $STAGE"
 [[ -d "$REPO/missions/$MISSION" ]] || fail "infra_unavailable" "no such mission: missions/$MISSION"
-cp -r "$REPO/missions/$MISSION/." "$STAGE/"
+cp -r "$REPO/missions/$MISSION/." "$STAGE/" ||
+    fail "infra_unavailable" "could not stage missions/$MISSION into $STAGE"
 {
     echo "// Generated by spike/run.sh at bring-up. Do not edit."
     printf 'CTI_SPIKE_DAEMON_ADDRS = ["127.0.0.1:%s"' "$DAEMON_PORT"
@@ -309,12 +339,15 @@ rm -rf "${SERVER_DIR:?}/mpmissions/$MISSION" "${SERVER_DIR:?}/mpmissions/$MISSIO
 # The Linux server appends _x64 exactly as the Windows one does: SQF says
 # "cti_shim", the engine opens cti_shim_x64.so.
 rm -f "$SERVER_DIR/cti_shim.so"
-install -m 0755 "$SO" "$SERVER_DIR/cti_shim_x64.so"
+install -m 0755 "$SO" "$SERVER_DIR/cti_shim_x64.so" ||
+    fail "infra_unavailable" "could not install the shim into $SERVER_DIR"
 record "shim_size_bytes" "$(stat -c %s "$SO")"
 
 rm -rf "${SERVER_DIR:?}/$MOD_NAME"
-mkdir -p "$SERVER_DIR/$MOD_NAME"
-cp -r "$BUILT_MOD/addons" "$SERVER_DIR/$MOD_NAME/"
+mkdir -p "$SERVER_DIR/$MOD_NAME" ||
+    fail "infra_unavailable" "could not create $SERVER_DIR/$MOD_NAME"
+cp -r "$BUILT_MOD/addons" "$SERVER_DIR/$MOD_NAME/" ||
+    fail "infra_unavailable" "could not stage the addon into $SERVER_DIR/$MOD_NAME"
 record "addon_pbos" "$(find "$SERVER_DIR/$MOD_NAME/addons" -name '*.pbo' | wc -l)"
 
 # ---------------------------------------------------------------- daemon
@@ -480,8 +513,10 @@ if ((WINDOWS_CLIENT == 1)); then
     # The client needs the addon too: client-side SQF is the only lever we have
     # inside the engine, and CfgFunctions compiles per machine.
     rm -rf "${WINDOWS_ARMA_DIR:?}/$MOD_NAME"
-    mkdir -p "$WINDOWS_ARMA_DIR/$MOD_NAME"
-    cp -r "$BUILT_MOD/addons" "$WINDOWS_ARMA_DIR/$MOD_NAME/"
+    mkdir -p "$WINDOWS_ARMA_DIR/$MOD_NAME" ||
+        fail "infra_unavailable" "could not create $WINDOWS_ARMA_DIR/$MOD_NAME"
+    cp -r "$BUILT_MOD/addons" "$WINDOWS_ARMA_DIR/$MOD_NAME/" ||
+        fail "infra_unavailable" "could not stage the addon onto the Windows host at $WINDOWS_ARMA_DIR/$MOD_NAME"
     WIN_CLIENT_LOG="$OUT/windows-client.log"
     : >"$WIN_CLIENT_LOG"
     t_wc=$(now)
@@ -595,9 +630,20 @@ EOF
     # The push-path budget, off the run's own telemetry (#17). Recorded whatever
     # the verdict, and before it: a run that failed is exactly when the numbers
     # are worth having.
-    while read -r line; do record "${line%%=*}" "${line#*=}"; done < <(
-        cd "$REPO" && uv run --quiet python tools/push_path_report.py "$DAEMON_TELEMETRY"
-    )
+    #
+    # Run into a file rather than through `< <(...)`: pipefail does not cover a
+    # process substitution, so a report that died recorded nothing at all and
+    # read back as a run with no push path rather than as a report that failed
+    # (#83).
+    PUSH_REPORT="$OUT/push-path.env"
+    PUSH_REPORT_ERR="$OUT/push-path.err"
+    if (cd "$REPO" && uv run --quiet python tools/push_path_report.py "$DAEMON_TELEMETRY") \
+        >"$PUSH_REPORT" 2>"$PUSH_REPORT_ERR"; then
+        while read -r line; do record "${line%%=*}" "${line#*=}"; done <"$PUSH_REPORT"
+    else
+        record "push_path_report" \
+            "unavailable: push_path_report.py failed: $(tail -3 "$PUSH_REPORT_ERR" | tr '\n' ' ')"
+    fi
 
     # The run read back as a sequence, always: it costs nothing and it is the
     # artefact #35's timeout went without — a Squad at three of eight and no
@@ -648,8 +694,14 @@ grep -aoE "$LOG_PREFIX\|.*" "$SERVER_LOG" | sed "s/^$LOG_PREFIX|//; s/\"$//" >"$
 log "--- in-mission results ---"
 cat "$OUT/spike-lines.txt" >&2
 
+# Typed off the line the world wrote, exactly as the hold path above does. This
+# path used to hardcode assertion_failed, so an in-mission `FAIL class=timeout`
+# reached the reader as "fix the code under test" when the table says
+# investigate synchronisation — the #23 fix surviving in one of the two paths
+# that need it (#83).
 if grep -q '^FAIL' "$OUT/spike-lines.txt"; then
-    fail "assertion_failed" "$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
+    first_fail="$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
+    fail "$(class_of "$first_fail")" "$first_fail"
 fi
 
 record "server_peak_rss_kb" "$(awk '/VmHWM/{print $2}' "/proc/$server_pid/status" 2>/dev/null || echo unknown)"

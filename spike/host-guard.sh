@@ -75,14 +75,25 @@ cti_human_client_state() {
 # Kill a Windows image on teardown. Same absolute-path resolution, and loud when
 # it cannot: `taskkill.exe` by name failed open in the other direction, leaving a
 # process alive after a run with nothing said about it (#41).
+# Loud in both directions, not just the missing-executable one: a taskkill that
+# ran and refused was discarded, which is the same silence by a different route
+# (#83). "The process was not found" is the benign case and still says so, out
+# loud — teardown cannot fail a run that has already produced its verdict, so the
+# most this can do is put the tool's own words in the run's evidence.
 cti_windows_taskkill() {
-    local image="${1:?image name required}"
+    local image="${1:?image name required}" out status
     if [[ ! -x "$CTI_WINDOWS_TASKKILL" ]]; then
         printf '[host-guard] cannot reach %s; %s may still be running\n' \
             "$CTI_WINDOWS_TASKKILL" "$image" >&2
         return 1
     fi
-    "$CTI_WINDOWS_TASKKILL" /IM "$image" /F >/dev/null 2>&1
+    out="$("$CTI_WINDOWS_TASKKILL" /IM "$image" /F 2>&1)"
+    status=$?
+    if ((status != 0)); then
+        printf '[host-guard] %s /IM %s exited %s: %s\n' \
+            "$CTI_WINDOWS_TASKKILL" "$image" "$status" "$(tr '\n' ' ' <<<"$out")" >&2
+    fi
+    return "$status"
 }
 
 # As a command: one line of reason on stderr and a verdict in the exit code.

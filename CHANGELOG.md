@@ -81,6 +81,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   locked `just regress` run's server install mid-pass. The guard is now asked by `run.sh` itself,
   before anything is launched, and the `spike` recipe serialises on the same lock as everything else.
 
+- **An in-mission `FAIL class=timeout` is no longer reported as a failed assertion.** `spike/run.sh`
+  has two verdict paths, and only the hold/regress one read the class the world declared; the other
+  called every red an `assertion_failed`, sending the reader to fix the code under test when the
+  failure-class table says investigate synchronisation. Both paths now type the failure off the
+  line the world wrote. Alongside it, the harness's staging steps are checked rather than assumed
+  (a failed copy is a clean `infra_unavailable` instead of a confusing engine error three steps
+  later), a push-path report that dies is recorded instead of silently producing nothing, a value
+  containing a newline can no longer forge a second record in `results.env`, a probe header
+  containing a quote can no longer break the run's `verdict.json`, and a Windows process the
+  harness could not kill on teardown says so.
+
 - **A test run pointed at a different daemon port now actually talks to that daemon.** The shim
   reads its daemon address from `CTI_DAEMON_ADDR` and defaults to port 9099, and the harness set
   only `CTI_DAEMON_PORT` — so moving the daemon moved the daemon and left the world talking to

@@ -13,6 +13,12 @@
 # and issue #5 owns it; the names `just accept` / `just accept-all` stay
 # reserved. What survives this script is the corpus, the lock, and the evidence
 # convention.
+#
+# `-e` is deliberately absent (#83): every probe's failure is a *result* here,
+# not an error — `run.sh` exiting non-zero is the normal path through this loop,
+# and exit-on-error would abandon the corpus at the first red instead of
+# reporting all of them and exiting on the worst class. The commands whose
+# failure would be an error rather than a result are checked at their site.
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -35,6 +41,12 @@ declare -A CLASS_RANK=(
     [assertion_failed]=1
     [flake_quarantine]=0
     [pass]=0
+    # Not one of the table's classes: it is what this script calls a run.sh that
+    # exited without typing itself, which the table's preamble calls an untyped
+    # red and a harness bug. It is here because it was reachable and missing —
+    # `worst_class` could be this, miss the table and fall to an undocumented
+    # exit 9 that read as "unknown class" rather than "fix the harness" (#83).
+    [untyped_harness_failure]=8
 )
 # Ranking order is not the numeric one — the numbers are exit codes chosen to be
 # stable, and this is the severity the summary and the exit code sort by.
@@ -109,6 +121,9 @@ done
 #   // issues: 28               what motivated it; makes selection buildable later
 #   // window: 240              this probe's deadline in seconds
 #   // env: CTI_AI_SIDE=WEST    what the world must be brought up with (optional)
+#        — space-separated NAME=VALUE pairs, so a value containing a space is
+#          inexpressible. No probe has needed one; if one does, the header has to
+#          grow a quoting rule rather than the runner guessing at word breaks.
 #   // expect: assertion_failed a probe that is red by design (optional)
 #   // quarantined: #31         reports flake_quarantine, does not gate (optional)
 header_of() {
@@ -371,16 +386,16 @@ for name in "${CORPUS[@]}"; do
   "verdict": "$([[ "$class" == pass ]] && echo PASS || echo FAIL)",
   "class": "$class",
   "raw_class": "$raw_class",
-  "expected": "${expect:-}",
-  "quarantined": "${quarantine:-}",
+  "expected": $(json_string "${expect:-}"),
+  "quarantined": $(json_string "${quarantine:-}"),
   "detail": $(json_string "${detail:-}"),
   "window_secs": $window,
   "elapsed_secs": $elapsed,
-  "issues": "$(header_of "$file" issues)",
+  "issues": $(json_string "$(header_of "$file" issues)"),
   "started_at": "$stamp",
   "git_sha": "$GIT_SHA",
   "git_dirty": $GIT_DIRTY,
-  "arma_version": "$(sed -n 's/^server_version=//p' "$out/results.env" 2>/dev/null | tail -1)",
+  "arma_version": $(json_string "$(sed -n 's/^server_version=//p' "$out/results.env" 2>/dev/null | tail -1)"),
   "evidence": "$out"
 }
 JSON
