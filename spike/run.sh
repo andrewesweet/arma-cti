@@ -19,6 +19,15 @@ OUT="${CTI_SPIKE_OUT:-$REPO/.spike-out}"
 # between server port sets, so the test tier lives at 2402-2406.
 PORT="${CTI_SERVER_PORT:-2402}"
 DAEMON_PORT="${CTI_DAEMON_PORT:-9099}"
+# CTI_DAEMON_PORT moves the daemon; this is what moves the *world* with it. The
+# shim resolves its daemon once per process from CTI_DAEMON_ADDR, defaulting to
+# 127.0.0.1:9099 (extension/src/lib.rs), and nothing here used to set it — so a
+# run on a non-default daemon port brought up a daemon nobody talked to and a
+# world talking to whatever else held 9099. Measured on #44: two concurrent
+# runs, isolated ports and dirs and daemons, and one daemon received both
+# worlds' telemetry while the run that was not asserting on it reported PASS.
+# Identical to the old behaviour at the default port, by construction.
+export CTI_DAEMON_ADDR="${CTI_DAEMON_ADDR:-127.0.0.1:$DAEMON_PORT}"
 SERVER_PASSWORD="${CTI_SERVER_PASSWORD:-ctispike}"
 # Which world to bring up. The phase-0 measurement mission is the default; a
 # Phase-1 mission needs its own server config (its Missions class names the

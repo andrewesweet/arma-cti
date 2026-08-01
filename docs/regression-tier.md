@@ -164,6 +164,14 @@ The lock covers agents, not the human. The human is protected first by the port 
 
 That check **fails closed**, and it says so because for its first day it failed open (#41). It was wrapped in `command -v tasklist.exe`, and the WSL2 interop `PATH` append is not in effect in an agent's shell, so the guard was skipped in silence on every run — a check that could not run, reported as a check that passed. The tool is now resolved by absolute path (`/mnt/c/Windows/System32/tasklist.exe`, overridable with `CTI_WINDOWS_TASKLIST`), and *not being able to read the process list* is the same `infra_unavailable` stop as reading the game in it. Only "the list came back and the game is not in it" is permission to proceed. `taskkill.exe` on teardown is resolved the same way and is now keyed on having launched a Windows process rather than on having been asked to, so a run that refuses at the pre-flight cannot kill the client it just refused to disturb. `tests/unit/test_host_guard.py` exercises both branches without Arma by substituting the tool.
 
+### Running more than one world at once
+
+Measured on #44 and decided in **ADR-0028**: it works, and the blocker is ports rather than the machine. A dedicated server is **1.14–1.23 GB**, a headless client **1.16–1.20 GB**, the daemon **35 MB** — so a slot is ~1.2 GB, or ~2.43 GB for the three probes that need a headless client, not the ~2 GB per *server* the design was braced for. Two heavy worlds concurrently peaked at 4.89 GB and 2.8 cores of twelve, with every probe still passing its own assertions; the pair `two-commanders` + `campaign-end` ran in 365 s against 625 s serial, and `contacts` + `casualties` in 66 s against 125 s.
+
+The engine binds three UDP ports — game, +1 Steam query, +2 Steam master — so slot 0 holds 2402–2404 and two slots need six ports where the Contract allocates five. A pool needs an allocation change nobody has made yet, which is why the tier is still serial.
+
+One finding is worth carrying whatever happens to the pool: the first two-slot attempt had isolated ports, dirs, installs and daemons and **still merged**, because the shim resolves its daemon from `CTI_DAEMON_ADDR` once per process and `run.sh` set only `CTI_DAEMON_PORT`. One daemon received both worlds; the run not asserting on telemetry went green. `run.sh` now exports the address beside the port. A slot boundary is only real where something reads it.
+
 ## Verdicts, and what an agent must do with each
 
 Per probe the runner emits the verdict `run.sh` already synthesises — `PASS`, or `FAIL` with a `class` from the CLAUDE.md table — plus the probe name, evidence path, git SHA and Arma version, in a `verdict.json` in the run's evidence directory and as the last lines on stderr. The required responses are the CLAUDE.md table's, unchanged; the tier adds nothing to them and this document does not restate them. Two get regression-tier-specific teeth:

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **A test run pointed at a different daemon port now actually talks to that daemon.** The shim
+  reads its daemon address from `CTI_DAEMON_ADDR` and defaults to port 9099, and the harness set
+  only `CTI_DAEMON_PORT` — so moving the daemon moved the daemon and left the world talking to
+  whatever still held 9099. The two agreed only because both defaulted to the same number. Found by
+  running two worlds side by side for #44: one daemon received both of them, and the run that was
+  not checking its telemetry passed. Unchanged at the default port.
+
 ### Added
 
 - **The in-world regression tier can now be asked for the probes an earlier issue produced.**
