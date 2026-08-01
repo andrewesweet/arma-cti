@@ -94,6 +94,11 @@ class Mission
 					{
 						isPlayable=1;
 						description="NATO Commander";
+						// The slot the server reads this side's human Commander
+						// from (#18). cti_fnc_commanderAssign matches this name,
+						// in this shape; a side whose slot is unnamed simply has
+						// no human Commander.
+						name="cti_commander_west";
 					};
 					id=1;
 					type="B_Soldier_F";
@@ -127,6 +132,11 @@ class Mission
 					{
 						isPlayable=1;
 						description="CSAT Commander";
+						// The slot the server reads this side's human Commander
+						// from (#18). cti_fnc_commanderAssign matches this name,
+						// in this shape; a side whose slot is unnamed simply has
+						// no human Commander.
+						name="cti_commander_east";
 					};
 					id=3;
 					type="O_Soldier_F";

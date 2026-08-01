@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A human can now command a side from the map.** Take a Commander slot, open the map, click a
+  Place and press a number: Purchase a Squad, or Order one to Capture, Defend, Assault or Reserve.
+  It is crude on purpose — a hint for a panel, local markers for your own Squads and the Contacts
+  you have, the number row for verbs — and every visual choice in it is a playtest-tuned
+  placeholder that Phase 4 replaces wholesale. What is not crude is where the click goes: the same
+  Command Port entry function, the same wire format and the same `remoteExec` whitelist the AI
+  Commander's Commands travel through. The verb list is read out of the port's schema rather than
+  written down in the UI, so a human cannot express an Order the AI cannot, and the port's typed
+  refusals reach the player in the port's own words — `already_held`, `wrong_ground`,
+  `insufficient_funds` — rather than as a dead click. A click never waits: it hands the Command to
+  `remoteExec` and the judgement arrives on its own.
+
+- **Each Commander now sees its own strategic picture on its own map.** The server asks the daemon
+  for the view belonging to the side it has assigned, under a new `view` transport verb, and
+  forwards it to that Commander's client alone. It is the same `Campaign.observation(side)` call
+  the AI planner reads in-process, so Commander symmetry covers knowing as well as commanding: own
+  Funds, own Squads, Contacts for the enemy, and Objective ownership plus Base HQ status as the
+  public scoreboard. The server never reads it, and there is no unprojected picture to ask for.
+
 - **The project has a black box.** Every death in the world is now written down as it happens:
   who died — the Squad and side, not an engine id nobody recognises — where, on the authored
   place *and* to the metre, at the death's own clock reading rather than the report's, and by
@@ -132,6 +151,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a Place of either kind, so one id answering to both is ground the port could not tell apart.
 
 ### Changed
+
+- **Commanding authority is now an assignment rather than a uniform.** The gateway used to stamp
+  the acting side from the side of the caller's own unit, which would have handed the Command Port
+  to every rifleman on the island once players lead squads. It now reads the server's
+  commander-assignment state: the person occupying a side's authored Commander slot, latched by
+  player UID once per Play Session so respawn and reconnection do not change who commands. A
+  machine with no assignment is refused `wrong_side` and told why.
+
+- **A side has one Commander, whichever kind it is.** A Command arriving over the wire for a side
+  already under an AI Commander is refused `wrong_side`, and that side's view is not handed out at
+  all — the same rule that already refused a second AI brain on one side, arriving through the
+  other door. Bring the world up without an AI on the side you mean to play.
 
 - **The Order's ground field is `place`, not `objective`** — in the Command a Commander sends, in
   the `order_issued` effect, in the observation each Commander receives, and in the exported

@@ -200,6 +200,11 @@ DESYNC_LOAD="${CTI_DESYNC_LOAD:-0}"
     # unattended run to see what the Campaign does, not for stretching a window
     # until something passes.
     printf 'CTI_PROBE_SOAK = %s;\n' "${CTI_PROBE_SOAK:-0}"
+    # How long a probe waits for a person to reach a Commander slot, when the run
+    # is sending one (#18). Zero — the corpus default — means no client is coming
+    # and a probe must not wait for one: a probe that waited out a client the run
+    # never launched would spend its window on nothing every unattended pass.
+    printf 'CTI_PROBE_CLIENT = %s;\n' "${CTI_PROBE_CLIENT:-0}"
 } >"$STAGE/harness.sqf"
 # One-off in-world probes go here rather than into the mission: the mission is
 # the thing under test, and a probe that lives in it is one that ships. Named by

@@ -66,6 +66,13 @@ if (isNil "cti_fnc_worldInit") then {
         // that means and pays for it.
         [] call cti_fnc_presenceReport;
 
+        // Who commands each side, when the Commander is a person (#18), and
+        // that person's own Observation on their own map. Started after the
+        // world is built because a view names places, and before anyone can
+        // join because a Commander slot can be taken at any moment.
+        [] call cti_fnc_commanderAssign;
+        [] call cti_fnc_commanderView;
+
         // An Order outlives the waypoint that carried it, and the leader who
         // was carrying it.
         [] call cti_fnc_orderEnforce;

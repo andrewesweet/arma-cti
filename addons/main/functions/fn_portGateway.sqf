@@ -28,12 +28,13 @@ private _owner = remoteExecutedOwner;
 // remoteExecutedOwner is 0 when the call did not arrive over the network — the
 // server calling itself, or the AI Commander, which reaches the port in-process
 // on the Python side and should never be here.
-private _unit = objNull;
-{
-    if (owner _x isEqualTo _owner) exitWith { _unit = _x };
-} forEach allPlayers;
-
-private _side = if (isNull _unit) then { "" } else { str (side group _unit) };
+//
+// The side comes from the server's own commander-assignment state (#18,
+// cti_fnc_commanderAssign) rather than from the caller's unit. A squad leader
+// fighting for WEST is on WEST and is not WEST's Commander, and stamping the
+// group's side would have handed the Command Port to every rifleman on the
+// island.
+private _side = [_owner] call cti_fnc_commanderSide;
 private _schema = call cti_fnc_commandSchema;
 
 if !(_side in (_schema get "sides")) exitWith {
@@ -43,7 +44,8 @@ if !(_side in (_schema get "sides")) exitWith {
         ["status", "rejected"],
         ["reason", createHashMapFromArray [
             ["code", "wrong_side"],
-            ["detail", format ["no commanding side for owner %1", _owner]]
+            ["detail", "this machine commands no side: the Command Port takes "
+                + "Commands from the person in a Commander slot and from nobody else"]
         ]]
     ];
     if (_owner > 0) then { [_judgement] remoteExec ["cti_fnc_portReply", _owner] };

@@ -183,11 +183,45 @@ class Daemon:
             "ack": self._ack,
             "command": self._command,
             "observe": self._observe,
+            "view": self._view,
         }
 
     def _ping(self, request: protocol.Request) -> protocol.Reply:
         result: dict[str, Any] = {"pong": True}
         return protocol.accepted(request.id, result)
+
+    def _view(self, request: protocol.Request) -> protocol.Reply:
+        """Hand one Commander the picture it may see (#18).
+
+        A transport verb beside `observe` rather than a Command: nobody is
+        instructing anything, and ADR-0012 keeps domain Commands and transport
+        verbs out of one namespace. `observe` is the world reporting and gets the
+        public picture back (#27) because the server is not a Commander; this is
+        the server asking, on behalf of a Commander it has assigned, for the one
+        view that Commander is entitled to — and the server forwards it to that
+        client alone rather than reading it.
+
+        It is `Campaign.observation(side)` and there is nothing else to serve: the
+        projection is the only thing that exists (#27), so the human Commander and
+        the in-process planner are reading the same call as well as commanding
+        through the same port. That is what makes Commander symmetry cover knowing
+        as well as commanding without a second assembly step to keep honest.
+
+        A side under an AI Commander has no view to hand out. Not a technicality:
+        that side's Funds, roster and standing Orders are the enemy's secrets to
+        whoever asked, and the one door that could leak them is this one.
+        """
+        side = request.payload.get("side")
+        if not isinstance(side, str) or side not in commands.SIDES:
+            detail = f"`side` must name a side that is playing, got {side!r}"
+            raise protocol.MalformedRequestError(detail, request.id)
+        if side in self._commanders:
+            return protocol.rejected(
+                request.id,
+                "wrong_side",
+                f"{side} is under an AI Commander and has no human view to hand out",
+            )
+        return protocol.accepted(request.id, observation.serialise(self.campaign.observation(side)))
 
     def _observe(self, request: protocol.Request) -> protocol.Reply:
         """Take one report of what the world can see (ADR-0012's `observe`).
@@ -657,6 +691,21 @@ class Daemon:
         # bug and for anything that reached the daemon without the gateway —
         # which is the path #19's audit exists to find.
         acting_side = request.payload.get("acting_side", command.side)
+        # One Commander per side, whichever kind it is (#18). `commanded_by`
+        # already refuses a second AI brain on a side, for the reason ADR-0015
+        # gives: two brains on one side are two answers to what that side is
+        # doing and both spend the same Funds. A human reaching the wire while an
+        # AI plays that side is the same thing arriving through the other door,
+        # so it gets the same answer. Checked here rather than in the port
+        # because the port is what the in-process planner calls, and a planner
+        # refused for being under a Commander would be refused for existing.
+        if acting_side in self._commanders:
+            return protocol.rejected(
+                request.id,
+                "wrong_side",
+                f"{acting_side} is under an AI Commander: a side has one Commander, "
+                f"so bring the world up without an AI on the side you mean to play",
+            )
         judgement = self.port.submit(command, acting_side=acting_side)
         if judgement.accepted:
             return protocol.accepted(request.id, judgement.result)
