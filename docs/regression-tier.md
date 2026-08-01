@@ -48,7 +48,7 @@ A failing probe fails the run and the command exits non-zero after finishing the
 
 ## Runtime budget
 
-Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_done` and the run moves on. Measured on the first full green pass, 2026-08-01 (Arma 2.20.152984, eight probes, twelve minutes thirty-eight seconds end to end):
+Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_done` and the run moves on. Measured on the first full green pass, 2026-08-01 (Arma 2.20.152984, eight probes, twelve minutes thirty-eight seconds end to end). `campaign-end` was added afterwards and measured on its own green run the same day:
 
 | probe | window | measured |
 |---|---|---|
@@ -61,6 +61,7 @@ Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_d
 | `ai-commander` | 300 | 180 |
 | `two-commanders` | 600 | 210 |
 | `base-assault` | 480 | 173 |
+| `campaign-end` | 750 | 370 |
 
 Every figure includes that probe's own bring-up — daemon, server, staging, mission load — which is about 20 s of it. The corpus's declared windows total 42 minutes; it runs in 16, because no probe fills its window and the longest are sized for a subject (marching, decay, an HQ coming down) whose worst case they do not hit. A full pass is an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers.)
 
