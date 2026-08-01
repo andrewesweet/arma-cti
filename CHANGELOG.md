@@ -73,6 +73,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   things the port and daemon did to its parts, so a rule about what a won Campaign will not take
   cannot be missed by a caller that never asked.
 
+- **Every way of bringing the Arma tier up now asks whether the human is playing, and waits its turn
+  for the machine.** The guard that refuses to load the shared host underneath a live play session
+  ran in one place, and `spike/run.sh` asked it only when a run meant to *drive* the Windows host —
+  so `just probe` and `just spike` started a daemon, a dedicated server and a staged world on the
+  human's machine without ever asking. `just spike` also took no tier lock, so it could stage over a
+  locked `just regress` run's server install mid-pass. The guard is now asked by `run.sh` itself,
+  before anything is launched, and the `spike` recipe serialises on the same lock as everything else.
+
 - **A test run pointed at a different daemon port now actually talks to that daemon.** The shim
   reads its daemon address from `CTI_DAEMON_ADDR` and defaults to port 9099, and the harness set
   only `CTI_DAEMON_PORT` — so moving the daemon moved the daemon and left the world talking to

@@ -89,8 +89,13 @@ build-missions:
 
 # Arma tier: server + headless client + stub daemon, running the phase-0 measurements.
 # The addon is a launch dependency now that the mission resolves cti_fnc_* by name.
+#
+# Under the tier lock like every other recipe that brings the tier up: it stages
+# with `rm -rf` into the one server install and binds the one port range, so a
+# hand run beside a locked `just regress` is exactly the collision the lock
+# exists to stop (#68).
 spike: build-shim build-addon
-    ./spike/run.sh
+    ./spike/tier-lock.sh --label "just spike" -- ./spike/run.sh
 
 # Arma tier: bring the Phase-1 world up and hold it, so a one-off probe or a
 # human client can exercise it. The probe is appended to the generated harness

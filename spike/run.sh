@@ -194,17 +194,25 @@ fail() {
 }
 
 # ---------------------------------------------------------------- preconditions
-# Asked before anything is launched, and only by a run that means to drive the
-# Windows host: an arma3_x64.exe already up is the human's, the teardown above
-# cannot tell theirs from ours, and the answer is stop rather than kill (#41).
-if ((WINDOWS_CLIENT == 1)); then
-    guard="$(cti_human_client_state)"
-    case "${guard%% *}" in
-    running) fail "infra_unavailable" "${guard#* } — that is a play session, not ours" ;;
-    unavailable) fail "infra_unavailable" "${guard#* }; refusing to take a machine I cannot check" ;;
-    esac
-    record "windows_host_free" "true"
-fi
+# Asked before anything is launched, on every path into this script: an
+# arma3_x64.exe already up is the human's, the teardown above cannot tell theirs
+# from ours, and the answer is stop rather than kill (#41).
+#
+# It used to be asked only by a run that meant to *drive* the Windows host
+# (CTI_WINDOWS_CLIENT=1) — the loading-the-host case went unguarded, so `just
+# probe` and `just spike` brought a daemon, a dedicated server and a staged world
+# up on the shared machine without ever asking whether a play session was live
+# (#68). The guard belongs where the launching happens, which is here.
+#
+# regress.sh asks the same question again before it queues, on purpose: that copy
+# is the cheap refusal that costs a caller no place in the lock queue.
+guard="$(cti_human_client_state)"
+case "${guard%% *}" in
+running) fail "infra_unavailable" "${guard#* } — that is a play session, not ours" ;;
+unavailable) fail "infra_unavailable" "${guard#* }; refusing to take a machine I cannot check" ;;
+esac
+record "windows_host_free" "true"
+
 
 [[ -x "$SERVER_BIN" ]] || fail "infra_unavailable" "server binary missing at $SERVER_BIN"
 SO="$REPO/extension/target/release/libcti_shim.so"
