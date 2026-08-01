@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **A map that could never fit its Observation into one `callExtension` return now fails
+  `just unit` when it is authored, instead of truncating in silence in a Play Session.** #26 pinned
+  the ceiling at about 35 Squads a side and blamed the Squad count; re-measured after the enemy
+  roster left a Commander's view (#27) and Contacts took its place (#28), the binding term has
+  inverted. Contacts are keyed by place, so an island's size is charged before either side has
+  bought anything: Stratis costs 1,631 bytes of a 9,216-byte budget and carries 70 Squads a side,
+  a forty-Objective island carries 24, and a sixty-Objective one does not fit **empty**. The budget
+  is therefore checked per map rather than per roster (ADR-0030). Nothing in MVP changes — one map
+  ships, and it has five and a half times the headroom it needs.
+
+- **A Contact's age is reported to a tenth of a second.** It was arriving as
+  `47.29999999999927`, seventeen characters of binary-subtraction noise on a field carried once per
+  place, read downstream as a freshness ratio against a window of minutes. Worth 8% of a large
+  island's Observation and no precision anything could use.
+
 ### Fixed
 
 - **A test run pointed at a different daemon port now actually talks to that daemon.** The shim

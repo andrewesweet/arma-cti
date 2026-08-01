@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Final
 
 from cti_daemon.commands import SIDES, Effect, serialise_effect
 from cti_daemon.contacts import Contacts
-from cti_daemon.observation import PUBLIC, Observation, SquadView
+from cti_daemon.observation import DESTROYED, INTACT, PUBLIC, Observation, SquadView
 from cti_daemon.squads import Roster
 
 if TYPE_CHECKING:
@@ -27,11 +27,10 @@ if TYPE_CHECKING:
 NEUTRAL: Final = "NEUTRAL"
 CONTESTED: Final = "CONTESTED"
 
-# What a Base's HQ structure can be. The same shape as an Objective's owner —
-# a place mapped to a status — because both are the scoreboard and a reader of
-# one should not have to learn a second idiom to read the other.
-INTACT: Final = "intact"
-DESTROYED: Final = "destroyed"
+# What a Base's HQ structure can be, re-exported from where the wire document
+# defines it. The same shape as an Objective's owner — a place mapped to a
+# status — because both are the scoreboard and a reader of one should not have
+# to learn a second idiom to read the other.
 
 # The two ways a Campaign ends (docs/mvp-scope.md, decided 2026-07-30). There is
 # no third, and no draw.

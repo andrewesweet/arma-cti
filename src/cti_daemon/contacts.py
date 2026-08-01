@@ -44,6 +44,15 @@ ON_FOOT: Final = "foot"
 # rather than what most of it is. Ascending.
 POSTURE_ORDER: Final = (ON_FOOT, "motorised", "mechanised", "armoured", "air")
 
+# How precisely an age is reported (#26). A Contact's age is read as a freshness
+# ratio against a staleness window measured in whole minutes, so a tenth of a
+# second is already far finer than any decision made from it — and the binary
+# subtraction that produces it renders as `47.29999999999927`, seventeen
+# characters of noise on a field the Observation carries once per place. Rounded
+# where it is computed rather than where it is serialised, so the document is a
+# rendering of what the Commander holds rather than a lossy version of it.
+AGE_PLACES: Final = 1
+
 # The things worth naming on their own, beyond how the place moves. Reported in
 # this order rather than in sighting order, so two reports of the same place
 # read the same. `AT` and `MG` are a weapons Squad's teams and are what MVP can
@@ -160,7 +169,7 @@ class Contacts:
                 echelon=record.echelon,
                 posture=record.posture,
                 assets=record.assets,
-                age=at_time - record.seen_at,
+                age=round(at_time - record.seen_at, AGE_PLACES),
             )
             for (owner, place), record in self._seen.items()
             if owner == side

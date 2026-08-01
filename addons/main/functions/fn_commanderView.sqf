@@ -73,11 +73,13 @@ if (!isServer) exitWith { scriptNull };
                 private _raw = (_extension callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
 
                 // The engine caps a callExtension return at 10,240 bytes and
-                // truncates in silence (ADR-0004). A Commander's view grows with
-                // its own Squads and Contacts rather than with the map, so it is
-                // the observation most able to outgrow one call — and the fix
-                // when it does is a smaller view, never a chunking protocol
-                // invented in passing.
+                // truncates in silence (ADR-0004). A Commander's view is the
+                // observation most able to outgrow one call — and the fix when
+                // it does is a smaller view, never a chunking protocol invented
+                // in passing. This is the backstop rather than the guard: the
+                // budget is enforced per map in `just unit` (ADR-0030), because
+                // Contacts are keyed by place and so a view's size is settled by
+                // the manifest before either side has bought anything.
                 if (count _raw >= 9216) then {
                     diag_log format ["CTI|FAIL class=assertion_failed view_near_return_cap side=%1 chars=%2",
                         _side, count _raw];
