@@ -61,6 +61,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A Campaign that has been won no longer accepts Commands.** The Campaign already refused the
+  world's reports after victory and the AI Commanders already stood down, but the Command Port never
+  asked: a Purchase arriving after the end screen spent a finished Campaign's Funds, minted a Squad
+  and queued a spawn onto an outbox the world may still drain, and an Order rewrote a Squad's
+  standing instruction. Both are now refused with a new rejection code, `campaign_over`, which the
+  game learns from the generated command schema like every other code — a human Commander whose map
+  screen is still open is told why rather than being quietly obeyed. The invariant is stated once,
+  at the Campaign itself: buying a Squad, issuing an Order, folding in the world's account of the
+  Squads and folding in what a side's leaders saw are now the Campaign's own verbs rather than
+  things the port and daemon did to its parts, so a rule about what a won Campaign will not take
+  cannot be missed by a caller that never asked.
+
 - **A test run pointed at a different daemon port now actually talks to that daemon.** The shim
   reads its daemon address from `CTI_DAEMON_ADDR` and defaults to port 9099, and the harness set
   only `CTI_DAEMON_PORT` — so moving the daemon moved the daemon and left the world talking to

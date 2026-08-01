@@ -156,6 +156,30 @@ def test_the_commanders_stand_down_when_the_campaign_is_over(tmp_path: Path) -> 
     assert len(rows(log, "command_issued")) == before
 
 
+def test_a_human_command_after_the_end_screen_is_refused_on_the_wire(tmp_path: Path) -> None:
+    # The other half of the stand-down above (#59). An AI Commander stops being
+    # asked; a human is still holding a map screen and can still click, and the
+    # gateway carries what it clicks to the same port. So the refusal is a
+    # judgement with a code the game already knows — the map says why, rather
+    # than the Command quietly spending a finished Campaign's Funds.
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    raze(daemon, "v-17", "csat_kamino", by="WEST")
+    funds = daemon.campaign.ledger.balance("WEST")
+
+    reply = reply_to(
+        daemon,
+        id="v-18",
+        verb="command",
+        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+    )
+
+    assert reply["status"] == "rejected"
+    assert reply["reason"]["code"] == "campaign_over"
+    assert daemon.campaign.ledger.balance("WEST") == funds
+    assert daemon.campaign.roster.roll("WEST") == ()
+    assert effects(daemon, "squad_spawned") == []
+
+
 def test_the_observation_reply_still_answers_after_the_campaign_ends(tmp_path: Path) -> None:
     # The world is still reporting and still waiting on a reply. A daemon that
     # stopped answering would hang the report loop rather than end a Campaign.

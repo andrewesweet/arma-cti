@@ -47,6 +47,7 @@
   ],
   "rejection_codes": [
     "already_held",
+    "campaign_over",
     "insufficient_funds",
     "malformed_command",
     "unknown_command",

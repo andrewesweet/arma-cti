@@ -17,7 +17,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Final
 
 from cti_daemon import squads
-from cti_daemon.commands import Effect, serialise_effect
 from cti_daemon.economy import InsufficientFundsError
 
 if TYPE_CHECKING:
@@ -44,6 +43,10 @@ REJECTION_CODES: Final = frozenset(
         # never names a Base, Assault only the enemy Base, Defend never the
         # enemy Base. Ground the map lacks stays `malformed_command`.
         "wrong_ground",
+        # A Campaign that has been won takes no more Commands (#59). The world
+        # keeps a map screen open until the end screen reaches it, so this is a
+        # judgement a Commander can be shown rather than an error.
+        "campaign_over",
     }
 )
 
@@ -92,6 +95,17 @@ class CommandPort:
 
     def submit(self, command: Command, *, acting_side: str) -> Judgement:
         """Judge one Command. The only way strategic state ever moves."""
+        # Before anything else, including whose Command this is: a won Campaign
+        # is over for both sides, and there is nothing left for a Command to be
+        # right or wrong about (#59). The AI Commanders are already stood down;
+        # a human still has a map screen up and can still click, so the refusal
+        # is typed and says so rather than being an error or a silent no-op.
+        if self.campaign.complete:
+            return _reject(
+                "campaign_over",
+                "this Campaign has been won: no further Command is judged against it",
+            )
+
         # The gateway stamps the acting side server-side from its own commander
         # assignment; a Command naming another side is a caller reaching past
         # its authority, not a malformed one.
@@ -121,25 +135,15 @@ class CommandPort:
         if price is None:
             return _reject("malformed_command", f"no Squad type {squad_type!r} is sold")
 
+        # Spending the Funds, minting the Squad and telling the world are the
+        # campaign's own single change (#60): this decides whether the Command
+        # is one the rules will take, and the Campaign decides what happens to
+        # itself when it is.
         try:
-            remaining = self.ledger.spend(command.side, price)
+            squad, remaining = self.campaign.purchase(command.side, squad_type)
         except InsufficientFundsError as exc:
             return _reject("insufficient_funds", str(exc))
 
-        # The Base is not named here on purpose: the daemon owns the rules, the
-        # game owns the geometry, and the manifest already tells it where each
-        # side's Base is.
-        bought = next(entry for entry in self.table.squads if entry.id == squad_type)
-        squad = self.campaign.roster.add(command.side, bought.id, bought.size)
-        self.outbox.push(
-            serialise_effect(
-                Effect(
-                    name="squad_spawned",
-                    side=command.side,
-                    args={"squad": squad.id, "squad_type": bought.id, "size": bought.size},
-                )
-            )
-        )
         # The id is advisory like the balance, but it is what a Commander needs
         # to order what it has just bought without waiting for an observation.
         return _accept({"squad": squad.id, "funds": remaining})
@@ -147,9 +151,11 @@ class CommandPort:
     def _order(self, command: Command) -> Judgement:
         """Give one Squad a standing Order (#14).
 
-        Standing, not a waypoint: the Order is recorded against the Squad here
-        and the world is told to act on it, so it outlives the leader who was
-        carrying it when it arrives.
+        Standing, not a waypoint: the Order is recorded against the Squad and
+        the world is told to act on it, so it outlives the leader who was
+        carrying it when it arrives. Which ground each kind may name is judged
+        here (ADR-0020); recording and announcing it is the Campaign's, so the
+        two cannot come apart.
         """
         kind = command.args.get("order")
         if kind not in squads.ORDERS:
@@ -161,8 +167,9 @@ class CommandPort:
         squad_id = command.args.get("squad")
         if not isinstance(squad_id, str) or not squad_id:
             return _reject("malformed_command", "order needs a `squad`")
-        squad = self.campaign.roster.of(squad_id, command.side)
-        if squad is None:
+        # A read, not a reach: the Squad has to exist before the ground it is
+        # being sent to is worth judging, and `issue` below is what changes it.
+        if self.campaign.roster.of(squad_id, command.side) is None:
             return _reject("unknown_squad", f"{command.side} has no Squad {squad_id!r}")
 
         place = command.args.get("place", "")
@@ -170,12 +177,9 @@ class CommandPort:
         if refusal is not None:
             return refusal
 
-        squad.order = squads.Order(kind=str(kind), place=str(place))
-        result = {"squad": squad.id, "order": squad.order.kind, "place": squad.order.place}
-        self.outbox.push(
-            serialise_effect(Effect(name="order_issued", side=command.side, args=dict(result)))
-        )
-        return _accept(result)
+        order = squads.Order(kind=str(kind), place=str(place))
+        squad = self.campaign.issue(squad_id, command.side, order)
+        return _accept({"squad": squad.id, "order": order.kind, "place": order.place})
 
     def _check_ground(self, side: str, kind: str, place: object) -> Judgement | None:
         """Judge the Place an Order names, or None if it names it correctly.

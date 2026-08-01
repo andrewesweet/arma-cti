@@ -147,6 +147,7 @@ def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
                 "unknown_squad",
                 "already_held",
                 "wrong_ground",
+                "campaign_over",
             }
         )
         == port.REJECTION_CODES
@@ -391,3 +392,54 @@ def test_the_two_forms_the_vocabulary_widened_to_are_accepted() -> None:
         )
         assert judgement.accepted, (kind, place)
         assert standing(open_port, squad) == squads.Order(kind, place)
+
+
+# ----------------------------------------------- A Campaign that has been won
+
+
+def won(open_port: port.CommandPort) -> None:
+    """End the Campaign the way the world ends one: WEST takes EAST's HQ."""
+    open_port.campaign.raze(EAST_BASE, at_time=90)
+    assert open_port.campaign.complete
+
+
+def test_a_purchase_after_the_campaign_is_won_is_refused_and_costs_nothing(
+    open_port: port.CommandPort,
+) -> None:
+    # #59: the aggregate's central invariant — a won Campaign is no longer being
+    # played — reaching the one door ADR-0012 calls the only way strategic state
+    # ever moves. Funds spent here would be a finished Campaign's, and the Squad
+    # would spawn into a world that has already had its end screen.
+    funds = open_port.ledger.balance("WEST")
+    won(open_port)
+
+    judgement = open_port.submit(
+        Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
+    )
+
+    assert not judgement.accepted
+    assert judgement.code == "campaign_over"
+    assert open_port.ledger.balance("WEST") == funds
+    assert open_port.campaign.roster.roll("WEST") == ()
+    assert open_port.outbox.pending() == []
+
+
+def test_an_order_after_the_campaign_is_won_leaves_the_squad_carrying_the_last_one(
+    open_port: port.CommandPort,
+) -> None:
+    squad = bought(open_port)
+    open_port.submit(
+        Command("order", "WEST", {"squad": squad, "order": "capture", "place": "girna"}),
+        acting_side="WEST",
+    )
+    won(open_port)
+    queued = len(open_port.outbox.pending())
+
+    judgement = open_port.submit(
+        Command("order", "WEST", {"squad": squad, "order": "defend", "place": "agia_marina"}),
+        acting_side="WEST",
+    )
+
+    assert judgement.code == "campaign_over"
+    assert standing(open_port, squad) == squads.Order("capture", "girna")
+    assert len(open_port.outbox.pending()) == queued

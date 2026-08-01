@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from cti_daemon import campaign, economy, manifest
+from cti_daemon import campaign, contacts, economy, manifest, squads
 from cti_daemon.outbox import Outbox
 
 REPO = Path(__file__).parents[2]
@@ -204,3 +204,62 @@ def test_a_decapitation_after_a_domination_does_not_rewrite_the_winner(
 def test_razing_ground_that_is_no_base_is_refused(live: campaign.Campaign) -> None:
     with pytest.raises(KeyError):
         live.raze("agia_marina", at_time=1)
+
+
+# ------------------------------------------- What a won Campaign will not take
+#
+# #60: the root is where "a won Campaign is no longer being played" is stated,
+# so every way strategic state can move is asked here rather than each caller
+# remembering. A Command is *refused* — somebody asked for something the rules
+# will not do, and the port has a code for that — while a world report is
+# ignored, the way `observe` already ignores one: the world does not know the
+# Campaign is over and goes on reporting until the effect reaches it.
+
+
+def win(live: campaign.Campaign) -> None:
+    """End the Campaign the way the world ends one: WEST takes EAST's HQ."""
+    live.raze("csat_kamino", at_time=90)
+    assert live.complete
+
+
+def test_a_won_campaign_musters_no_further_squad(live: campaign.Campaign) -> None:
+    funds = live.ledger.balance("WEST")
+    win(live)
+
+    with pytest.raises(campaign.CampaignOverError):
+        live.purchase("WEST", "rifle")
+
+    assert live.ledger.balance("WEST") == funds
+    assert live.roster.roll("WEST") == ()
+    assert live.outbox.pending() == []
+
+
+def test_a_won_campaign_issues_no_further_order(live: campaign.Campaign) -> None:
+    squad, _ = live.purchase("WEST", "rifle")
+    win(live)
+
+    with pytest.raises(campaign.CampaignOverError):
+        live.issue(squad.id, "WEST", squads.Order("capture", "girna"))
+
+    assert squad.order == squads.RESERVE
+
+
+def test_a_won_campaign_takes_no_more_of_the_worlds_account_of_its_squads(
+    live: campaign.Campaign,
+) -> None:
+    squad, _ = live.purchase("WEST", "rifle")
+    win(live)
+
+    assert live.reconcile({}) == ()
+    assert live.roster.of(squad.id, "WEST") is not None
+
+
+def test_a_won_campaign_takes_no_more_sightings(live: campaign.Campaign) -> None:
+    win(live)
+    live.sight(
+        "WEST",
+        at_time=95,
+        seen=(contacts.Sighting(at="girna", kind="Infantry", age=0.0),),
+        observed=("girna",),
+    )
+    assert live.contacts.of("WEST", 95) == ()

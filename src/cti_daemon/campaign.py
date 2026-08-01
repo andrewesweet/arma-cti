@@ -17,12 +17,26 @@ from typing import TYPE_CHECKING, Final
 from cti_daemon.commands import SIDES, Effect, serialise_effect
 from cti_daemon.contacts import Contacts
 from cti_daemon.observation import DESTROYED, INTACT, PUBLIC, Observation, SquadView
-from cti_daemon.squads import Roster
+from cti_daemon.squads import Roster, Squad
 
 if TYPE_CHECKING:
+    from cti_daemon.contacts import Sighting
     from cti_daemon.economy import EconomyTable, Ledger
     from cti_daemon.manifest import MapManifest
     from cti_daemon.outbox import Outbox
+    from cti_daemon.squads import Order
+
+
+class CampaignOverError(Exception):
+    """Something tried to change a Campaign that has already been won.
+
+    Raised rather than returned because it is a caller's mistake rather than a
+    Commander's: `complete` is public, the port asks it before it judges
+    anything and answers `campaign_over` on the wire, so anything reaching this
+    has changed strategic state without asking whether there was still a
+    Campaign to change.
+    """
+
 
 NEUTRAL: Final = "NEUTRAL"
 CONTESTED: Final = "CONTESTED"
@@ -185,6 +199,114 @@ class Campaign:
         if self.complete:
             return
         self.outcome = outcome
+
+    def _playing(self) -> None:
+        """Refuse to change a Campaign that has already been won (#60).
+
+        The invariant every mutating verb below shares, stated once. A Command
+        arriving after the end screen is refused at the port with a code the
+        game knows; anything that got past that and reached the state itself is
+        a bug, and this is where it stops rather than where it is discovered.
+        """
+        # `self.outcome` rather than `complete`, which is the same question:
+        # having the Outcome in hand is what lets the refusal say who won.
+        if self.outcome is not None:
+            message = (
+                f"this Campaign was won by {self.outcome.winner} "
+                f"by {self.outcome.condition} and takes no further change"
+            )
+            raise CampaignOverError(message)
+
+    def purchase(self, side: str, squad_type: str) -> tuple[Squad, int]:
+        """Spend a side's Funds to put a new Squad in its roster (#60).
+
+        Funds, roster and the world being told are one change rather than three
+        a caller keeps in step: a Squad that was paid for and never minted, or
+        minted and never announced, is a Campaign disagreeing with itself. What
+        it costs and how many men it is are the authored table's answer, so
+        nothing outside can buy a Squad at a price of its own.
+
+        The Base is not named on purpose: the daemon owns the rules, the game
+        owns the geometry, and the manifest already tells it where each side's
+        Base is. Returns the Squad and what the side has left, both advisory.
+        """
+        self._playing()
+        bought = next((entry for entry in self.table.squads if entry.id == squad_type), None)
+        if bought is None:
+            message = f"no Squad type {squad_type!r} is sold"
+            raise KeyError(message)
+        # Raises `InsufficientFundsError` on an overdraft, which is the Ledger's
+        # own invariant and is left to it.
+        remaining = self.ledger.spend(side, bought.price)
+        squad = self.roster.add(side, bought.id, bought.size)
+        self.outbox.push(
+            serialise_effect(
+                Effect(
+                    name="squad_spawned",
+                    side=side,
+                    args={"squad": squad.id, "squad_type": bought.id, "size": bought.size},
+                )
+            )
+        )
+        return squad, remaining
+
+    def issue(self, squad_id: str, side: str, order: Order) -> Squad:
+        """Give one of a side's Squads its standing Order, and tell the world.
+
+        Whether the Order suits the Place it names is the port's rule (ADR-0020)
+        and is judged before this is called, as is whether the side has such a
+        Squad at all — `roster.of` is the forgiving reading a Commander's
+        mistake deserves, and by here the mistake has been made or ruled out.
+        What is here is the part that must not come apart: recorded against the
+        Squad and announced to the world in one step, so a Squad can never be
+        carrying an Order the world was never told about.
+        """
+        self._playing()
+        squad = self.roster.of(squad_id, side)
+        if squad is None:
+            message = f"{side} has no Squad {squad_id!r} to order"
+            raise KeyError(message)
+        squad.order = order
+        self.outbox.push(
+            serialise_effect(
+                Effect(
+                    name="order_issued",
+                    side=side,
+                    args={"squad": squad.id, "order": order.kind, "place": order.place},
+                )
+            )
+        )
+        return squad
+
+    def reconcile(self, seen: dict[str, tuple[int, str]]) -> tuple[str, ...]:
+        """Take the world's account of which Squads exist, and where.
+
+        Ignored rather than refused once the Campaign is won, for the reason
+        `observe` ignores a report: the world does not know it is over until the
+        effect reaches it, and it goes on saying what it sees in the meantime.
+        Returns the Squad ids the world has lost, so a caller can record them.
+        """
+        if self.complete:
+            return ()
+        return self.roster.reconcile(seen)
+
+    def sight(
+        self,
+        side: str,
+        *,
+        at_time: float,
+        seen: tuple[Sighting, ...],
+        observed: tuple[str, ...],
+    ) -> None:
+        """Fold what one side's leaders saw into that side's Contacts (#28).
+
+        Ignored after the end screen for the same reason `reconcile` is: nobody
+        is planning off this picture any more, and a Campaign that went on
+        rebuilding one would be keeping state past the state it archived.
+        """
+        if self.complete:
+            return
+        self.contacts.report(side, at_time=at_time, seen=seen, observed=observed)
 
     def observation(self, for_side: str = PUBLIC) -> Observation:
         """Assemble the strategic picture `for_side` may know (#15, #27).

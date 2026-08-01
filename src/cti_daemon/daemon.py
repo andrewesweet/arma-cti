@@ -458,7 +458,7 @@ class Daemon:
                 detail = f"`squads.{squad_id}` needs an integer `size` and a place name `at`"
                 raise protocol.MalformedRequestError(detail, request.id)
             reported[squad_id] = (size, at)
-        return self.campaign.roster.reconcile(reported)
+        return self.campaign.reconcile(reported)
 
     #: What a death the world reports must say, beyond its own clock reading and
     #: where it happened. All strings, all allowed to be empty: a garrison
@@ -634,7 +634,7 @@ class Daemon:
             if not isinstance(report, dict):
                 detail = f"`contacts.{side}` must be an object"
                 raise protocol.MalformedRequestError(detail, request.id)
-            self.campaign.contacts.report(
+            self.campaign.sight(
                 side,
                 at_time=at_time,
                 seen=self._sightings(request, side, report),
