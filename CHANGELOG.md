@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A client that joined and took the Commander seat is no longer recorded as one that never
+  arrived.** The hold harness waited three minutes for a log line only the Phase-0 mission writes,
+  then filed the run's evidence as `connected-but-never-entered-mission` — of a client that had
+  connected, entered, been assigned a side and been playing for two of those three minutes. It now
+  also accepts the Phase-1 mission's own signal, which says strictly more: a player whose unit
+  occupies a Commander slot and carries a UID is a person in the mission, not merely a socket.
+
 - **The guard that protects a live play session now actually runs.** The Arma tier asks whether
   Arma 3 is open on the Windows host before it takes the shared machine, and refuses if it is —
   but it asked for `tasklist.exe` by name, which is not on an agent's `PATH` here, so the check

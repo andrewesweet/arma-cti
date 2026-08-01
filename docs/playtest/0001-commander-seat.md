@@ -11,12 +11,16 @@ wants a paragraph.
 
 ## Before you start
 
-- `just build-shim-windows` — CLAUDE.md asks for it before a play session.
-- Close any Arma 3 client you have open. The harness kills `arma3_x64.exe` on teardown, and it
-  cannot tell yours from the one it launched.
+- Close any Arma 3 client you have open. The boot line refuses to start while one is running —
+  it launches a client of its own and kills `arma3_x64.exe` on teardown, and it cannot tell yours
+  from the one it launched, so it stops rather than guessing (#41). The refusal is
+  `infra_unavailable`, not a result.
 - The Arma tier is single-occupancy. If the boot line reports the lock held, an agent has the
-  tier: that is `infra_unavailable`, not a result, and the answer is to wait rather than to force
-  it.
+  tier: that is `infra_unavailable` too, and the answer is to wait rather than to force it.
+- You do **not** need `just build-shim-windows` for this session. CLAUDE.md's row is a general
+  one; this boot line's server is the Linux one and loads the `.so`, and your client never loads
+  the shim at all — a client never speaks to the daemon (ADR-0018). `just probe` builds
+  everything this session does need.
 
 ## Boot line
 
@@ -31,17 +35,27 @@ connected — your side of the port space is untouched. EAST comes up under an A
 has a Commander refuses your Commands `wrong_side` (ADR-0025). The fixture holds the world for
 thirty minutes, or until somebody wins.
 
-In the lobby, take the **NATO Commander** slot. The first thing to check is that the hint says
-`Commander — WEST`; if it says EAST, you are in the wrong slot and the port will tell you so.
+**There is no lobby and no slot to pick.** The mission sets `skipLobby`, so the client drops
+straight into the first free playable role, which is the NATO Commander — you arrive already in
+the seat. The first thing to check is that the hint says `Commander — WEST`. If the map comes up
+with no hint panel at all, the server never assigned you and that is the finding to write down.
 
 If you would rather use your own client and profile: Direct Connect to `127.0.0.1` port `2402`,
 password `ctispike`, and drop `CTI_WINDOWS_CLIENT=1` from the boot line. Your client needs the
 addon — copy `.hemttout/build/addons` into an `@cti` folder in your Arma 3 directory and launch
 with `-mod=@cti`.
 
-**This boot line is unverified.** No agent has run it: the tier was in use and a playtest brief is
-not a reason to take it. If the fixture is broken the world still stands for the full window and
-the run simply ends red afterwards — you lose the verdict, not the session.
+**The boot line is verified** as written, on 2026-08-01, at a shortened `CTI_PROBE_SOAK=180` with
+the window sized to match — the subject was the boot path, not the half hour. The world came up
+with EAST under its AI and WEST under nobody, the client joined unattended in 22 s and was
+assigned WEST, the world stood for the whole soak and closed on `window_closed`, and the run
+ended `HOLD-COMPLETE`. Two things were wrong and are fixed rather than described: the harness
+recorded a client that had joined and taken the seat as
+`windows_client_joined=connected-but-never-entered-mission`, because it waited three minutes for
+a log line only the Phase-0 mission writes; and the pre-flight that was supposed to stop the tier
+taking the machine while you play had never once run. Neither cost a session — the first was a
+false note in the evidence and the second was a guard failing open — but both are gone. What is
+still unverified is the half hour itself: nothing has soaked for 1800 s.
 
 ## The controls, as they are meant to work
 

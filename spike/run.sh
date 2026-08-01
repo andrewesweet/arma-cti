@@ -472,9 +472,21 @@ EOF
         2) fail "node_crashed" "server exited while waiting for a client; see $SERVER_LOG" ;;
         *)
             record "windows_client_connected_secs" "$(since "$t_client")"
-            # Entering the mission is the thing in doubt, not connecting: the client
-            # report only fires once init.sqf has actually run on that machine.
-            if wait_for "$SERVER_LOG" "$LOG_PREFIX\|client_report" 180 "$server_pid"; then
+            # Entering the mission is the thing in doubt, not connecting: the
+            # client report only fires once init.sqf has actually run on that
+            # machine.
+            #
+            # Two lines, because there are two missions. `client_report` is
+            # spike.Stratis's, and the Phase-1 mission does not have one — so a
+            # client that joined cti.Stratis, took a Commander slot and played
+            # was recorded as "connected-but-never-entered-mission" after burning
+            # 180 s waiting for a line that mission cannot write.
+            # `commander_assigned` is the Phase-1 equivalent and says strictly
+            # more: the sweep only sees a player whose unit occupies the slot and
+            # carries a UID, which is a person in the mission rather than merely
+            # on the socket.
+            if wait_for "$SERVER_LOG" \
+                "$LOG_PREFIX\|(client_report|commander_assigned)" 180 "$server_pid"; then
                 record "windows_client_joined" "true"
                 record "windows_client_in_mission_secs" "$(since "$t_client")"
             else
