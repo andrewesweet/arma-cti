@@ -112,6 +112,10 @@ Default five-role vocabulary (`needs-triage`, `needs-info`, `ready-for-agent`, `
 
 Single-context: root `CONTEXT.md` + `docs/adr/`. See `docs/agents/domain.md`.
 
+### Interrupted-agent recovery
+
+A dead agent resumes from its worktree under a two-sided resumption briefing; its leftovers are ADR-0022 stale infra. See `docs/agents/recovery.md` (ADR-0024).
+
 ### Workflow backbone
 
 Use the installed engineering skills rather than improvising process: `/implement` (+ `/tdd`, `/code-review`) for build work, `/research` for fact-finding (primary sources, cited, committed), `/prototype` for design questions, `/grill-me` for gameplay and design decisions that need human sign-off, `/diagnosing-bugs` for hard bugs, `/handoff` between sessions. Project-owned skills: `/playtest-brief`, `/playtest-ingest`, `/retro`. Global skills are shared across projects — never edit them; project process learning lands only in this file, the project skills, and `docs/process-log.md`.
