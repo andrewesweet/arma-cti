@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A world can now be held open for a play session.** `spike/playtest/session-hold.sqf` keeps the
+  Phase-1 world standing for as long as the boot line asks, or until somebody wins, instead of
+  tearing it down the moment a client finishes joining. It lives outside the regression corpus
+  because it asserts nothing and waits for a person. The first brief that uses it is
+  `docs/playtest/0001-commander-seat.md`: half an hour in the WEST Commander seat against the EAST
+  AI, looking at the things automation cannot see.
+
 - **A human can now command a side from the map.** Take a Commander slot, open the map, click a
   Place and press a number: Purchase a Squad, or Order one to Capture, Defend, Assault or Reserve.
   It is crude on purpose — a hint for a panel, local markers for your own Squads and the Contacts
