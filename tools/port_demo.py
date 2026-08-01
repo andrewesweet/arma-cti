@@ -7,7 +7,7 @@ that is the point of there being one wire format.
 
     uv run python tools/port_demo.py purchase --side WEST --squad-type rifle
     uv run python tools/port_demo.py order --side WEST --squad WEST-1 \
-        --order capture --objective agia_marina
+        --order capture --place agia_marina
 """
 
 from __future__ import annotations
@@ -52,8 +52,12 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 
     order = verbs.add_parser("order", parents=[common], help="give a Squad a standing Order")
     order.add_argument("--squad", required=True, help="the id a Purchase reported, e.g. WEST-1")
-    order.add_argument("--order", default="capture", choices=("capture", "defend", "reserve"))
-    order.add_argument("--objective", default="", help="required for Capture and Defend")
+    order.add_argument(
+        "--order", default="capture", choices=("capture", "defend", "assault", "reserve")
+    )
+    order.add_argument(
+        "--place", default="", help="the Objective or Base it names; empty for Reserve"
+    )
 
     return parser.parse_args(argv)
 
@@ -76,7 +80,7 @@ def payloads(args: argparse.Namespace) -> list[dict[str, Any]]:
             "args": {
                 "squad": args.squad,
                 "order": args.order,
-                "objective": args.objective,
+                "place": args.place,
             },
         }
     ]

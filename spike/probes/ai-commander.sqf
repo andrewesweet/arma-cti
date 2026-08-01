@@ -1,5 +1,5 @@
 // probe: ai-commander
-// issues: 16
+// issues: 16, 32
 // window: 300
 // env: CTI_AI_SIDE=WEST
 //
@@ -24,6 +24,12 @@
 // the same outbox and lands on the same waypoints as one a human issued
 // (ADR-0012). The unit tier can prove the planner decided something; only this
 // can prove a Squad started walking because of it.
+//
+// #32 added one claim to the same window rather than a probe of its own: the
+// Order's ground field is now `place` end to end (ADR-0020), so the standing
+// Order the world recorded is checked for carrying one. A rename that stopped
+// at the daemon leaves it empty here, with the Squad marching on ground nobody
+// named — which no unit test can see, because both halves of it pass alone.
 [] spawn {
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
@@ -81,17 +87,25 @@
     };
     private _sentTo = [];
     {
-        private _where = (_y # 0) getVariable ["cti_order", createHashMap] get "objective";
+        private _where = (_y # 0) getVariable ["cti_order", createHashMap]
+            getOrDefault ["place", ""];
+        // #32 renamed the Order's ground field `objective` -> `place` through
+        // the whole wire. An empty one here is that rename half-done: the
+        // effect crossed the outbox without the field the world reads, so the
+        // Squad is marching on ground nobody named.
+        if (_where isEqualTo "") then {
+            diag_log "CTI|FAIL class=assertion_failed ai_probe_order_without_place";
+        };
         if (_where in _sentTo) then {
-            diag_log format ["CTI|FAIL class=assertion_failed ai_probe_two_squads_one_objective objective=%1",
+            diag_log format ["CTI|FAIL class=assertion_failed ai_probe_two_squads_one_place place=%1",
                 _where];
         };
         _sentTo pushBack _where;
     } forEach _marching;
     {
         _y params ["_group", "_range"];
-        diag_log format ["CTI|ai_probe_marching squad=%1 objective=%2 range=%3 waypoints=%4",
-            _x, (_group getVariable ["cti_order", createHashMap]) get "objective",
+        diag_log format ["CTI|ai_probe_marching squad=%1 place=%2 range=%3 waypoints=%4",
+            _x, (_group getVariable ["cti_order", createHashMap]) getOrDefault ["place", ""],
             _range, count waypoints _group];
     } forEach _marching;
 
@@ -109,8 +123,8 @@
         if (!isNull _group && { count units _group > 0 }) then {
             private _order = _group getVariable ["cti_order", createHashMap];
             private _now = leader _group distance2D (_order get "position");
-            diag_log format ["CTI|ai_probe_progress squad=%1 objective=%2 was=%3 now=%4 closed=%5",
-                _x, _order get "objective", _was, _now, _was - _now];
+            diag_log format ["CTI|ai_probe_progress squad=%1 place=%2 was=%3 now=%4 closed=%5",
+                _x, _order getOrDefault ["place", ""], _was, _now, _was - _now];
             if (_was - _now > 50) then { _closed = _closed + 1 };
         };
     } forEach _marching;

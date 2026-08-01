@@ -107,6 +107,22 @@ def _check_unique(ids: list[str], what: str) -> None:
         _refuse(f"duplicate {what} id: {', '.join(duplicates)}")
 
 
+def _check_one_namespace(objectives: list[dict[str, Any]], bases: list[dict[str, Any]]) -> None:
+    """Objectives and Bases share one id namespace (ADR-0020).
+
+    An Order names a Place, and a Place is either kind, so an id both kinds
+    answer to is ambiguous ground: the port could not tell whether Capture was
+    naming an Objective it may take or a Base it may not. Uniqueness within a
+    kind is not enough once one field can hold either.
+    """
+    collisions = sorted({base["id"] for base in bases} & {o["id"] for o in objectives})
+    if collisions:
+        _refuse(
+            f"id names both an Objective and a Base: {', '.join(collisions)}. "
+            f"An Order names a Place of either kind, so one id may name only one of them"
+        )
+
+
 def _check_objective(objective: dict[str, Any]) -> None:
     _check_identifier(objective.get("id"), "objective")
     if not (
@@ -196,6 +212,7 @@ def _validate(document: object) -> dict[str, Any]:
     bases: list[dict[str, Any]] = validated["bases"]
     _check_unique([base["id"] for base in bases], "base")
     _check_bases(bases)
+    _check_one_namespace(objectives, bases)
 
     _check_adjacency(objectives, bases)
     return validated

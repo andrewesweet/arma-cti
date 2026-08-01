@@ -42,7 +42,7 @@ def render(table: economy.EconomyTable) -> str:
         "effects": {name: list(args) for name, args in commands.EFFECTS.items()},
         "sides": list(commands.SIDES),
         "orders": list(squads.ORDERS),
-        "orders_needing_objective": list(squads.NEEDS_OBJECTIVE),
+        "orders_needing_place": list(squads.NEEDS_PLACE),
         "rejection_codes": sorted(port.REJECTION_CODES),
         "starting_funds": table.starting_funds,
         "squads": {

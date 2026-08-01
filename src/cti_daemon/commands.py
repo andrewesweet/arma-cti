@@ -29,10 +29,11 @@ OWNERS: Final = (*SIDES, "NEUTRAL", "CONTESTED")
 # build and a Command the daemon accepts cannot drift apart.
 CATALOGUE: Final[dict[str, tuple[str, ...]]] = {
     "purchase": ("squad_type",),
-    # Reserve names no ground, but it travels in the same shape as the other
-    # two rather than in a second one: a constructor with a fixed argument list
-    # is a constructor SQF cannot build wrong.
-    "order": ("squad", "order", "objective"),
+    # Reserve names no ground, but it travels in the same shape as the others
+    # rather than in a second one: a constructor with a fixed argument list is
+    # a constructor SQF cannot build wrong. The ground field is `place` because
+    # it can hold an Objective id or a Base id (ADR-0020).
+    "order": ("squad", "order", "place"),
 }
 
 # The effects a Command can produce, and the arguments each carries. An
@@ -40,7 +41,7 @@ CATALOGUE: Final[dict[str, tuple[str, ...]]] = {
 # the campaign's own rules push it, and the game applies it the same way.
 EFFECTS: Final[dict[str, tuple[str, ...]]] = {
     "squad_spawned": ("squad", "squad_type", "size"),
-    "order_issued": ("squad", "order", "objective"),
+    "order_issued": ("squad", "order", "place"),
     "objective_captured": ("objective",),
 }
 

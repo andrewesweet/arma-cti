@@ -28,8 +28,8 @@ SQUAD_VIEWS = st.builds(
     id=st.text(min_size=1, max_size=12),
     squad_type=st.text(min_size=1, max_size=12),
     size=st.integers(min_value=0, max_value=64),
-    order=st.sampled_from(("capture", "defend", "reserve")),
-    objective=st.text(max_size=24),
+    order=st.sampled_from(("capture", "defend", "assault", "reserve")),
+    place=st.text(max_size=24),
     at=st.text(max_size=24),
 )
 CONTACTS = st.builds(
@@ -97,7 +97,7 @@ def test_an_observation_reports_each_squad_with_what_it_was_told_to_do() -> None
     open_port = port.CommandPort(campaign=world)
     open_port.submit(Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST")
     open_port.submit(
-        Command("order", "WEST", {"squad": "WEST-1", "order": "capture", "objective": "girna"}),
+        Command("order", "WEST", {"squad": "WEST-1", "order": "capture", "place": "girna"}),
         acting_side="WEST",
     )
     world.roster.reconcile({"WEST-1": (6, "agia_marina")})
@@ -108,7 +108,7 @@ def test_an_observation_reports_each_squad_with_what_it_was_told_to_do() -> None
         squad_type="rifle",
         size=6,
         order="capture",
-        objective="girna",
+        place="girna",
         at="agia_marina",
     )
 
@@ -122,7 +122,7 @@ def test_an_observation_carries_nothing_tactical() -> None:
     )
     document = observation.serialise(world.observation("WEST"))
     (squad,) = document["squads"]
-    assert set(squad) == {"id", "type", "size", "order", "objective", "at"}
+    assert set(squad) == {"id", "type", "size", "order", "place", "at"}
 
 
 def test_a_squad_the_world_no_longer_holds_leaves_the_observation() -> None:
@@ -148,7 +148,7 @@ def contested() -> campaign.Campaign:
             Command(
                 "order",
                 side,
-                {"squad": f"{side}-1", "order": "capture", "objective": "girna"},
+                {"squad": f"{side}-1", "order": "capture", "place": "girna"},
             ),
             acting_side=side,
         )
@@ -268,7 +268,7 @@ def crowded() -> campaign.Campaign:
                     {
                         "squad": f"{side}-{index + 1}",
                         "order": "capture" if side == "EAST" else "defend",
-                        "objective": "camp_rogain",
+                        "place": "camp_rogain",
                     },
                 ),
                 acting_side=side,

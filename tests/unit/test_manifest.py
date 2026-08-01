@@ -78,6 +78,16 @@ def test_a_duplicated_objective_id_is_refused(stratis: dict[str, Any]) -> None:
         manifest.parse(broken)
 
 
+def test_an_objective_id_that_collides_with_a_base_id_is_refused(stratis: dict[str, Any]) -> None:
+    # One id namespace (ADR-0020): an Order names a Place of either kind, so an
+    # id both kinds answer to is ground the port could not tell apart. The
+    # message says which id, because that is the only thing an author can fix.
+    base_id = stratis["bases"][0]["id"]
+    broken = mutate(stratis, lambda d: d["objectives"][0].__setitem__("id", base_id))
+    with pytest.raises(manifest.ManifestError, match=base_id):
+        manifest.parse(broken)
+
+
 def test_an_objective_id_that_is_not_a_stable_slug_is_refused(stratis: dict[str, Any]) -> None:
     # IDs are authored and outlive the positions they name, so they are held to
     # a shape rather than to whatever the author typed.

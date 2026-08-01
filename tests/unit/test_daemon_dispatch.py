@@ -149,7 +149,7 @@ def test_an_order_reaches_the_port_through_the_same_envelope_as_a_purchase(
         payload={
             "command": "order",
             "side": "WEST",
-            "args": {"squad": "WEST-1", "order": "capture", "objective": "agia_marina"},
+            "args": {"squad": "WEST-1", "order": "capture", "place": "agia_marina"},
         },
     )
     assert reply["status"] == "ok"

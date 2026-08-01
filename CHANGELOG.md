@@ -36,7 +36,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the verdict, the logs, the daemon telemetry and the probe exactly as it was staged. Passes are
   pruned to the last three per probe.
 
+- **Assault**, the fourth Order kind: close with the enemy Base and destroy its HQ structure —
+  Decapitation as an Order (ADR-0020). Until now an Order could only name an Objective, so one of
+  the two win conditions the MVP decided was unreachable through the only order path there is, by
+  a human Commander and an AI alike. The Command Port accepts an Assault and rides it out on the
+  outbox as an `order_issued` effect like any other Order; the world side of carrying one out, and
+  an AI that scores a Base worth assaulting, are their own tickets and not in this release.
+
+- Defend now takes the side's **own Base** as well as any Objective, so rear security is something
+  a Commander can order rather than hope for.
+
+- One new rejection code, `wrong_ground`: ground the map has that this Order may not name —
+  Capture(Base), Assault(Objective), Assault(own Base), Defend(enemy Base). An id the map does not
+  have at all stays `malformed_command`, so a typo is not reported as a rules mistake.
+
+- A manifest is refused if an Objective id collides with a Base id, naming the id. An Order names
+  a Place of either kind, so one id answering to both is ground the port could not tell apart.
+
 ### Changed
+
+- **The Order's ground field is `place`, not `objective`** — in the Command a Commander sends, in
+  the `order_issued` effect, in the observation each Commander receives, and in the exported
+  Command schema the game reads (`orders_needing_objective` is now `orders_needing_place`). It can
+  hold an Objective id or a Base id, and a field named `objective` carrying a Base id would have
+  been term drift baked into the wire — and, from Phase 2, into the campaign snapshot. Anything
+  built against the old field name will need updating; nothing persisted holds it yet, which is
+  why the rename is now.
 
 - An in-world `FAIL` line's own `class=` is now believed. The harness called every in-mission
   failure `assertion_failed`, including the ones the world had explicitly typed `timeout` or

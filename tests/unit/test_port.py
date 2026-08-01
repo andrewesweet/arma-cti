@@ -11,6 +11,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 from cti_daemon import campaign, economy, manifest, port, squads
 from cti_daemon.commands import Command
@@ -19,18 +21,28 @@ from cti_daemon.outbox import Outbox
 REPO = Path(__file__).parents[2]
 
 
-@pytest.fixture
-def open_port() -> port.CommandPort:
+MAP = manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json")
+WEST_BASE = next(base.id for base in MAP.bases if base.side == "WEST")
+EAST_BASE = next(base.id for base in MAP.bases if base.side == "EAST")
+
+
+def fresh() -> port.CommandPort:
     """Return a port over the authored map and economy, everything Neutral."""
     table = economy.load(REPO / "config" / "economy.json")
     return port.CommandPort(
         campaign=campaign.Campaign(
-            map_manifest=manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json"),
+            map_manifest=MAP,
             table=table,
             ledger=economy.Ledger(table.starting_funds),
             outbox=Outbox(),
         )
     )
+
+
+@pytest.fixture
+def open_port() -> port.CommandPort:
+    """Return the same port, for a test that wants one example not the matrix."""
+    return fresh()
 
 
 def bought(open_port: port.CommandPort, side: str = "WEST") -> str:
@@ -134,6 +146,7 @@ def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
                 "wrong_side",
                 "unknown_squad",
                 "already_held",
+                "wrong_ground",
             }
         )
         == port.REJECTION_CODES
@@ -145,7 +158,7 @@ def test_an_order_is_recorded_against_the_squad_and_announced_as_an_effect(
 ) -> None:
     squad = bought(open_port)
     judgement = open_port.submit(
-        Command("order", "WEST", {"squad": squad, "order": "capture", "objective": "agia_marina"}),
+        Command("order", "WEST", {"squad": squad, "order": "capture", "place": "agia_marina"}),
         acting_side="WEST",
     )
     assert judgement.accepted
@@ -153,7 +166,7 @@ def test_an_order_is_recorded_against_the_squad_and_announced_as_an_effect(
     assert {
         "effect": "order_issued",
         "side": "WEST",
-        "args": {"squad": squad, "order": "capture", "objective": "agia_marina"},
+        "args": {"squad": squad, "order": "capture", "place": "agia_marina"},
     } in [entry.message for entry in open_port.outbox.pending()]
 
 
@@ -163,28 +176,28 @@ def test_a_later_order_supersedes_the_one_before_it(open_port: port.CommandPort)
     squad = bought(open_port)
     for kind in ("capture", "defend"):
         open_port.submit(
-            Command("order", "WEST", {"squad": squad, "order": kind, "objective": "girna"}),
+            Command("order", "WEST", {"squad": squad, "order": kind, "place": "girna"}),
             acting_side="WEST",
         )
     assert standing(open_port, squad) == squads.Order("defend", "girna")
 
 
-def test_reserve_needs_no_objective(open_port: port.CommandPort) -> None:
+def test_reserve_needs_no_place(open_port: port.CommandPort) -> None:
     squad = bought(open_port)
     judgement = open_port.submit(
-        Command("order", "WEST", {"squad": squad, "order": "reserve", "objective": ""}),
+        Command("order", "WEST", {"squad": squad, "order": "reserve", "place": ""}),
         acting_side="WEST",
     )
     assert judgement.accepted
-    assert judgement.result["objective"] == ""
+    assert judgement.result["place"] == ""
 
 
-def test_reserve_refuses_an_objective_rather_than_ignoring_it(open_port: port.CommandPort) -> None:
+def test_reserve_refuses_a_place_rather_than_ignoring_it(open_port: port.CommandPort) -> None:
     # Dropping it silently would hide a UI bug behind an Order that looked
     # accepted and sent the Squad somewhere else.
     squad = bought(open_port)
     judgement = open_port.submit(
-        Command("order", "WEST", {"squad": squad, "order": "reserve", "objective": "girna"}),
+        Command("order", "WEST", {"squad": squad, "order": "reserve", "place": "girna"}),
         acting_side="WEST",
     )
     assert judgement.code == "malformed_command"
@@ -196,7 +209,7 @@ def test_capturing_ground_your_own_side_holds_is_rejected(open_port: port.Comman
     open_port.campaign.observe(30, {"agia_marina": ["WEST"]})
     squad = bought(open_port)
     judgement = open_port.submit(
-        Command("order", "WEST", {"squad": squad, "order": "capture", "objective": "agia_marina"}),
+        Command("order", "WEST", {"squad": squad, "order": "capture", "place": "agia_marina"}),
         acting_side="WEST",
     )
     assert judgement.code == "already_held"
@@ -210,7 +223,7 @@ def test_defending_ground_your_own_side_holds_is_the_point_of_defending(
     open_port.campaign.observe(30, {"agia_marina": ["WEST"]})
     squad = bought(open_port)
     judgement = open_port.submit(
-        Command("order", "WEST", {"squad": squad, "order": "defend", "objective": "agia_marina"}),
+        Command("order", "WEST", {"squad": squad, "order": "defend", "place": "agia_marina"}),
         acting_side="WEST",
     )
     assert judgement.accepted
@@ -220,7 +233,7 @@ def test_capturing_ground_the_other_side_holds_is_allowed(open_port: port.Comman
     open_port.campaign.observe(30, {"agia_marina": ["EAST"]})
     squad = bought(open_port)
     judgement = open_port.submit(
-        Command("order", "WEST", {"squad": squad, "order": "capture", "objective": "agia_marina"}),
+        Command("order", "WEST", {"squad": squad, "order": "capture", "place": "agia_marina"}),
         acting_side="WEST",
     )
     assert judgement.accepted
@@ -228,7 +241,7 @@ def test_capturing_ground_the_other_side_holds_is_allowed(open_port: port.Comman
 
 def test_ordering_a_squad_that_was_never_bought_is_rejected(open_port: port.CommandPort) -> None:
     judgement = open_port.submit(
-        Command("order", "WEST", {"squad": "WEST-9", "order": "reserve", "objective": ""}),
+        Command("order", "WEST", {"squad": "WEST-9", "order": "reserve", "place": ""}),
         acting_side="WEST",
     )
     assert judgement.code == "unknown_squad"
@@ -237,7 +250,7 @@ def test_ordering_a_squad_that_was_never_bought_is_rejected(open_port: port.Comm
 def test_ordering_the_other_sides_squad_is_rejected(open_port: port.CommandPort) -> None:
     squad = bought(open_port, "EAST")
     judgement = open_port.submit(
-        Command("order", "WEST", {"squad": squad, "order": "reserve", "objective": ""}),
+        Command("order", "WEST", {"squad": squad, "order": "reserve", "place": ""}),
         acting_side="WEST",
     )
     assert judgement.code == "unknown_squad"
@@ -252,7 +265,7 @@ def test_ordering_the_other_sides_squad_is_rejected(open_port: port.CommandPort)
         ({"order": "reserve"}, "no Squad named"),
         ({"squad": "", "order": "reserve"}, "an empty Squad id"),
         ({"squad": "WEST-1", "order": "capture"}, "Capture with no ground"),
-        ({"squad": "WEST-1", "order": "capture", "objective": "narnia"}, "ground off the map"),
+        ({"squad": "WEST-1", "order": "capture", "place": "narnia"}, "ground off the map"),
     ],
 )
 def test_an_order_the_rules_cannot_read_is_rejected(
@@ -268,7 +281,113 @@ def test_an_order_for_a_side_that_is_not_yours_is_refused_before_the_squad_is_lo
 ) -> None:
     squad = bought(open_port, "EAST")
     judgement = open_port.submit(
-        Command("order", "EAST", {"squad": squad, "order": "reserve", "objective": ""}),
+        Command("order", "EAST", {"squad": squad, "order": "reserve", "place": ""}),
         acting_side="WEST",
     )
     assert judgement.code == "wrong_side"
+
+
+# The whole of the ground the map has, in one namespace, because an Order names
+# a Place and a Place is either kind (ADR-0020).
+BASE_SIDES = {base.id: base.side for base in MAP.bases}
+OBJECTIVE_IDS = tuple(objective.id for objective in MAP.objectives)
+PLACE_IDS = (*OBJECTIVE_IDS, *BASE_SIDES)
+GROUND_ORDERS = st.sampled_from(squads.NEEDS_PLACE)
+PLACES = st.sampled_from(PLACE_IDS)
+HOLDERS = st.sampled_from(("", "WEST", "EAST"))
+
+
+def refusal(kind: str, place: str, owner: str, *, side: str = "WEST") -> str:
+    """Say what the rules make of `side` ordering `kind` onto `place`.
+
+    Written out as ADR-0020 states it rather than by calling the port, so the
+    matrix is asserted against the decision and not against the implementation
+    of it.
+    """
+    base_side = BASE_SIDES.get(place)
+    if kind == "capture":
+        if base_side is not None:
+            return "wrong_ground"
+        return "already_held" if owner == side else ""
+    if kind == "assault":
+        return "" if base_side is not None and base_side != side else "wrong_ground"
+    return "wrong_ground" if base_side not in (None, side) else ""
+
+
+@given(kind=GROUND_ORDERS, place=PLACES, holder=HOLDERS)
+def test_the_ground_each_order_may_name_is_the_only_ground_it_is_given(
+    kind: str, place: str, holder: str
+) -> None:
+    # Through the real port over the authored map, in the style #16 used for the
+    # planner: every kind that names ground against every Place the map has,
+    # under every ownership that Place can be in, judged by the rules that will
+    # judge it in play rather than by a restatement of them here.
+    open_port = fresh()
+    if holder and place in OBJECTIVE_IDS:
+        open_port.campaign.observe(30, {place: [holder]})
+    owner = open_port.campaign.holds(place) or ""
+    squad = bought(open_port)
+
+    judgement = open_port.submit(
+        Command("order", "WEST", {"squad": squad, "order": kind, "place": place}),
+        acting_side="WEST",
+    )
+
+    expected = refusal(kind, place, owner)
+    assert judgement.code == expected, (kind, place, owner, judgement.detail)
+    assert judgement.accepted == (expected == "")
+    # A refused Order leaves the Squad under the one it was already carrying,
+    # and puts nothing on the outbox for the world to act on.
+    assert standing(open_port, squad) == (
+        squads.Order(kind, place) if judgement.accepted else squads.RESERVE
+    )
+    issued = [entry.message["effect"] for entry in open_port.outbox.pending()]
+    assert issued.count("order_issued") == int(judgement.accepted)
+
+
+@given(kind=GROUND_ORDERS, place=st.text(max_size=24).filter(lambda name: name not in PLACE_IDS))
+def test_a_place_this_map_does_not_have_is_malformed_rather_than_wrong_ground(
+    kind: str, place: str
+) -> None:
+    # The distinction ADR-0020 draws: `wrong_ground` is ground the map has that
+    # this Order may not name, so an id the map lacks stays the older refusal
+    # and a Commander is not told a typo is a rules mistake.
+    open_port = fresh()
+    squad = bought(open_port)
+    judgement = open_port.submit(
+        Command("order", "WEST", {"squad": squad, "order": kind, "place": place}),
+        acting_side="WEST",
+    )
+    assert judgement.code == "malformed_command"
+
+
+def test_the_four_forms_the_order_vocabulary_refuses_are_all_wrong_ground() -> None:
+    # ADR-0020's matrix as named examples beside the property above, so the four
+    # forms it decided are legible here rather than only derivable from a
+    # strategy.
+    forms = [
+        ("capture", WEST_BASE),
+        ("assault", "girna"),
+        ("assault", WEST_BASE),
+        ("defend", EAST_BASE),
+    ]
+    for kind, place in forms:
+        open_port = fresh()
+        squad = bought(open_port)
+        judgement = open_port.submit(
+            Command("order", "WEST", {"squad": squad, "order": kind, "place": place}),
+            acting_side="WEST",
+        )
+        assert judgement.code == "wrong_ground", (kind, place)
+
+
+def test_the_two_forms_the_vocabulary_widened_to_are_accepted() -> None:
+    for kind, place in (("assault", EAST_BASE), ("defend", WEST_BASE)):
+        open_port = fresh()
+        squad = bought(open_port)
+        judgement = open_port.submit(
+            Command("order", "WEST", {"squad": squad, "order": kind, "place": place}),
+            acting_side="WEST",
+        )
+        assert judgement.accepted, (kind, place)
+        assert standing(open_port, squad) == squads.Order(kind, place)

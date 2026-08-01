@@ -65,9 +65,9 @@ def turn(daemon: Daemon, step: int) -> dict[str, Any]:
     squads: dict[str, dict[str, Any]] = {}
     for side in SIDES:
         for squad in daemon.campaign.roster.roll(side):
-            if squad.order.objective:
-                presence.setdefault(squad.order.objective, []).append(side)
-            squads[squad.id] = {"size": squad.size, "at": squad.order.objective}
+            if squad.order.place:
+                presence.setdefault(squad.order.place, []).append(side)
+            squads[squad.id] = {"size": squad.size, "at": squad.order.place}
     return reply_to(
         daemon,
         id=f"turn-{step}",
@@ -99,7 +99,7 @@ def fingerprint(daemon: Daemon) -> dict[str, Any]:
         "funds": {side: daemon.campaign.ledger.balance(side) for side in SIDES},
         "squads": {
             side: [
-                (squad.id, squad.squad_type, squad.order.kind, squad.order.objective)
+                (squad.id, squad.squad_type, squad.order.kind, squad.order.place)
                 for squad in daemon.campaign.roster.roll(side)
             ]
             for side in SIDES

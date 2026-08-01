@@ -33,7 +33,7 @@ if (_name isEqualTo "objective_captured") exitWith {
 if (_name isEqualTo "order_issued") exitWith {
     [_args getOrDefault ["squad", ""],
         _args getOrDefault ["order", ""],
-        _args getOrDefault ["objective", ""]] call cti_fnc_orderApply
+        _args getOrDefault ["place", ""]] call cti_fnc_orderApply
 };
 
 if (_name isNotEqualTo "squad_spawned") exitWith {

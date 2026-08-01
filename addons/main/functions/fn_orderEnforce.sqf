@@ -47,7 +47,7 @@ if (!isServer) exitWith { scriptNull };
                     private _adrift = (leader _group distance2D (_standing get "position"))
                         > (_standing get "radius");
                     if (_done && _adrift) then {
-                        [_squadId, _standing get "order", _standing get "objective"]
+                        [_squadId, _standing get "order", _standing get "place"]
                             call cti_fnc_orderApply;
                         diag_log format ["CTI|order_reasserted squad=%1 order=%2 leader=%3",
                             _squadId, _standing get "order", name leader _group];

@@ -40,6 +40,10 @@ REJECTION_CODES: Final = frozenset(
         "wrong_side",
         "unknown_squad",
         "already_held",
+        # Ground the map has, that this Order may not name (ADR-0020): Capture
+        # never names a Base, Assault only the enemy Base, Defend never the
+        # enemy Base. Ground the map lacks stays `malformed_command`.
+        "wrong_ground",
     }
 )
 
@@ -161,40 +165,92 @@ class CommandPort:
         if squad is None:
             return _reject("unknown_squad", f"{command.side} has no Squad {squad_id!r}")
 
-        objective = command.args.get("objective", "")
-        refusal = self._check_ground(command.side, str(kind), objective)
+        place = command.args.get("place", "")
+        refusal = self._check_ground(command.side, str(kind), place)
         if refusal is not None:
             return refusal
 
-        squad.order = squads.Order(kind=str(kind), objective=str(objective))
-        result = {"squad": squad.id, "order": squad.order.kind, "objective": squad.order.objective}
+        squad.order = squads.Order(kind=str(kind), place=str(place))
+        result = {"squad": squad.id, "order": squad.order.kind, "place": squad.order.place}
         self.outbox.push(
             serialise_effect(Effect(name="order_issued", side=command.side, args=dict(result)))
         )
         return _accept(result)
 
-    def _check_ground(self, side: str, kind: str, objective: object) -> Judgement | None:
-        """Judge the ground an Order names, or None if it names it correctly."""
-        if kind not in squads.NEEDS_OBJECTIVE:
-            # Silently dropping a stray Objective would hide a UI bug behind an
+    def _check_ground(self, side: str, kind: str, place: object) -> Judgement | None:
+        """Judge the Place an Order names, or None if it names it correctly.
+
+        An Order names a Place — an Objective or a Base (ADR-0020) — and which
+        of the two each kind may name is a rule, so the refusals are typed
+        rather than left to the world to discover: `wrong_ground` for ground
+        this map has that this Order may not name, `malformed_command` for a
+        Place this map does not have at all.
+        """
+        if kind not in squads.NEEDS_PLACE:
+            # Silently dropping a stray Place would hide a UI bug behind an
             # Order that looked accepted and went somewhere else.
-            if objective:
-                return _reject("malformed_command", f"{kind} takes no Objective, got {objective!r}")
+            if place:
+                return _reject("malformed_command", f"{kind} takes no Place, got {place!r}")
             return None
 
-        owner = self.campaign.holds(objective) if isinstance(objective, str) else None
-        if owner is None:
+        named = place if isinstance(place, str) else ""
+        owner = self.campaign.holds(named)
+        base_side = self.campaign.based(named)
+        if owner is None and base_side is None:
+            return _reject("malformed_command", f"{kind} needs a Place this map has, got {place!r}")
+
+        if kind == "capture":
+            return self._check_capture(side, named, owner, base_side)
+        if kind == "assault":
+            return self._check_assault(side, named, owner, base_side)
+        return self._check_defend(side, named, base_side)
+
+    def _check_capture(
+        self, side: str, place: str, owner: str | None, base_side: str | None
+    ) -> Judgement | None:
+        """Capture takes an Objective the side does not hold, and nothing else."""
+        if base_side is not None:
             return _reject(
-                "malformed_command", f"{kind} needs an Objective this map has, got {objective!r}"
+                "wrong_ground",
+                f"{place} is a Base, and a Base is never captured: it has no owner by "
+                f"presence and dies rather than changing hands, so order Assault to "
+                f"destroy the enemy's or Defend to garrison your own",
             )
 
         # A Capture on ground the side already holds is a nonsensical Order, and
         # accepting it as a no-op would leave a Commander waiting on a Squad
         # that was never going anywhere. The detail says what to do instead.
-        if kind == "capture" and owner == side:
+        if owner == side:
             return _reject(
                 "already_held",
-                f"{side} already holds {objective}: Capture is for ground you do not hold, "
+                f"{side} already holds {place}: Capture is for ground you do not hold, "
                 f"so order Defend to garrison it instead",
+            )
+        return None
+
+    def _check_assault(
+        self, side: str, place: str, owner: str | None, base_side: str | None
+    ) -> Judgement | None:
+        """Assault takes the enemy Base, and nothing else."""
+        if owner is not None:
+            return _reject(
+                "wrong_ground",
+                f"{place} is an Objective, and an Objective is captured rather than "
+                f"assaulted: order Capture instead",
+            )
+        if base_side == side:
+            return _reject(
+                "wrong_ground",
+                f"{place} is {side}'s own Base: Assault is for the enemy's, "
+                f"so order Defend to garrison your own",
+            )
+        return None
+
+    def _check_defend(self, side: str, place: str, base_side: str | None) -> Judgement | None:
+        """Defend takes any Objective, or the side's own Base."""
+        if base_side is not None and base_side != side:
+            return _reject(
+                "wrong_ground",
+                f"{place} is {base_side}'s Base, not {side}'s: order Assault to destroy it",
             )
         return None

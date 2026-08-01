@@ -91,7 +91,7 @@ def test_a_commander_that_cannot_afford_anything_says_so_rather_than_buying() ->
 def orders(plan: planner.Plan) -> dict[str, tuple[str, str]]:
     """Return the Order each Squad is being given, keyed by Squad id."""
     return {
-        command.args["squad"]: (command.args["order"], command.args["objective"])
+        command.args["squad"]: (command.args["order"], command.args["place"])
         for command in plan.commands
         if command.name == "order"
     }
@@ -293,7 +293,7 @@ def drive(
     for step, (presence, seen) in enumerate(reports):
         world.observe((step + 1) * 30.0, presence)
         world.roster.reconcile(
-            {squad.id: (8, squad.order.objective) for squad in world.roster.roll("WEST")}
+            {squad.id: (8, squad.order.place) for squad in world.roster.roll("WEST")}
         )
         world.contacts.report(
             "WEST",

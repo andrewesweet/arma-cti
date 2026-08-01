@@ -65,7 +65,7 @@ def test_the_rejection_codes_are_the_ports_own(exported: dict[str, object]) -> N
 def test_the_sides_and_orders_are_the_domains_own(exported: dict[str, object]) -> None:
     assert exported["sides"] == list(commands.SIDES)
     assert exported["orders"] == list(squads.ORDERS)
-    assert exported["orders_needing_objective"] == list(squads.NEEDS_OBJECTIVE)
+    assert exported["orders_needing_place"] == list(squads.NEEDS_PLACE)
 
 
 def test_the_price_table_carries_what_the_ui_displays(exported: dict[str, object]) -> None:

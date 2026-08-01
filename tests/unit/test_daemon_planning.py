@@ -52,8 +52,8 @@ def turn(daemon: Daemon, step: int) -> dict[str, Any]:
     roll = daemon.campaign.roster.roll(SIDE)
     presence: dict[str, list[str]] = {}
     for squad in roll:
-        if squad.order.objective:
-            presence.setdefault(squad.order.objective, []).append(SIDE)
+        if squad.order.place:
+            presence.setdefault(squad.order.place, []).append(SIDE)
     return reply_to(
         daemon,
         id=f"turn-{step}",
@@ -61,9 +61,7 @@ def turn(daemon: Daemon, step: int) -> dict[str, Any]:
         payload={
             "time": (step + 1) * 30,
             "presence": presence,
-            "squads": {
-                squad.id: {"size": squad.size, "at": squad.order.objective} for squad in roll
-            },
+            "squads": {squad.id: {"size": squad.size, "at": squad.order.place} for squad in roll},
         },
     )["result"]
 
@@ -103,7 +101,7 @@ def test_a_commander_reacts_when_ground_changes_hands(tmp_path: Path) -> None:
     held = {name for name, owner in daemon.campaign.owners().items() if owner == SIDE}
     assert held
     ordered = {
-        squad.order.objective
+        squad.order.place
         for squad in daemon.campaign.roster.roll(SIDE)
         if squad.order.kind == "capture"
     }
@@ -193,7 +191,7 @@ class Overreacher:
                 Command(
                     "order",
                     observation.for_side,
-                    {"squad": "WEST-99", "order": "capture", "objective": "girna"},
+                    {"squad": "WEST-99", "order": "capture", "place": "girna"},
                 ),
             ),
             decisions=(),

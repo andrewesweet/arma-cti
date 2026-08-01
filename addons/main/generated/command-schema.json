@@ -7,7 +7,7 @@
     "order": [
       "squad",
       "order",
-      "objective"
+      "place"
     ]
   },
   "effects": {
@@ -19,7 +19,7 @@
     "order_issued": [
       "squad",
       "order",
-      "objective"
+      "place"
     ],
     "objective_captured": [
       "objective"
@@ -32,11 +32,13 @@
   "orders": [
     "capture",
     "defend",
+    "assault",
     "reserve"
   ],
-  "orders_needing_objective": [
+  "orders_needing_place": [
     "capture",
-    "defend"
+    "defend",
+    "assault"
   ],
   "rejection_codes": [
     "already_held",
@@ -44,6 +46,7 @@
     "malformed_command",
     "unknown_command",
     "unknown_squad",
+    "wrong_ground",
     "wrong_side"
   ],
   "starting_funds": 300,

@@ -8,8 +8,8 @@ this shape rather than a second one, and a planner tested against a closed schem
 is tested against the one that survives a resume.
 
 Excluded on purpose, not for want of a field: exact positions, health, ammo,
-vehicle damage and AI knowledge. A Squad's position is the Objective or Base it
-is standing on, because that is the resolution a Commander reasons at.
+vehicle damage and AI knowledge. A Squad's position is the Place it is standing
+on, because that is the resolution a Commander reasons at (ADR-0020).
 
 Excluded on purpose for a second reason (#27): the enemy. ADR-0012's Commander
 symmetry covers knowing as well as commanding, so there is no observation
@@ -54,7 +54,8 @@ class SquadView:
     squad_type: str
     size: int
     order: str
-    objective: str
+    # The Place its Order names: an Objective id, a Base id, or empty.
+    place: str
     # Where it is, to the nearest authored place: an Objective id, a Base id, or
     # empty for open ground between them.
     at: str
@@ -110,7 +111,7 @@ def serialise(observation: Observation) -> dict[str, Any]:
             "type": squad.squad_type,
             "size": squad.size,
             "order": squad.order,
-            "objective": squad.objective,
+            "place": squad.place,
             "at": squad.at,
         }
         for squad in observation.squads
@@ -146,7 +147,7 @@ def parse(document: dict[str, Any]) -> Observation:
                 squad_type=squad["type"],
                 size=squad["size"],
                 order=squad["order"],
-                objective=squad["objective"],
+                place=squad["place"],
                 at=squad["at"],
             )
             for squad in document["squads"]

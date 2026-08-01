@@ -6,7 +6,8 @@ by engine AI or was a player who respawned. That makes an Order *state*, and
 state the world is driven from belongs in the daemon where it is testable — the
 same split ADR-0012 draws for ownership and Funds.
 
-The world holds the geometry: this names an Objective, never a position.
+The world holds the geometry: this names a Place — an Objective or a Base by
+its manifest id (ADR-0020) — never a position.
 """
 
 from __future__ import annotations
@@ -14,12 +15,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Final
 
-# What a Commander may tell a Squad to do.
-ORDERS: Final = ("capture", "defend", "reserve")
+# What a Commander may tell a Squad to do. Assault is Decapitation as an Order
+# (ADR-0020): close with the enemy Base and destroy its HQ structure.
+ORDERS: Final = ("capture", "defend", "assault", "reserve")
 
-# The two that name ground. Reserve is the absence of a destination rather than
-# a destination of its own, so it carries no Objective and refuses one.
-NEEDS_OBJECTIVE: Final = ("capture", "defend")
+# The three that name ground. Reserve is the absence of a destination rather
+# than a destination of its own, so it carries no Place and refuses one. Which
+# Places each of the three may name is the port's rule, not this list's.
+NEEDS_PLACE: Final = ("capture", "defend", "assault")
 
 
 @dataclass(frozen=True, slots=True)
@@ -27,7 +30,8 @@ class Order:
     """One standing instruction to one Squad."""
 
     kind: str
-    objective: str = ""
+    # The Place it names: an Objective id, a Base id, or empty for Reserve.
+    place: str = ""
 
 
 # What a Squad does until told otherwise. A Squad that has just been bought is

@@ -14,17 +14,21 @@
  * Reserve falls back on the Squad's own Base and holds its fire.
  *
  * The daemon owns the rules and the game owns the geometry (ADR-0012), so an
- * Order names an Objective and this looks up where that is.
+ * Order names a Place and this looks up where that is.
+ *
+ * Assault is accepted by the port but not yet acted on here (ADR-0020, #32):
+ * the world side is its own ticket, and a Place this cannot find is reported
+ * as an assertion failure rather than silently dropped.
  *
  * Arguments:
  * 0: Squad id <STRING>
- * 1: order <STRING> — "capture", "defend" or "reserve"
- * 2: Objective id <STRING> — empty for Reserve
+ * 1: order <STRING> — "capture", "defend", "assault" or "reserve"
+ * 2: Place id <STRING> — an Objective or a Base; empty for Reserve
  *
  * Return Value: <BOOL> whether the effect is settled. False leaves it on the
  * outbox to be delivered again.
  */
-params [["_squadId", "", [""]], ["_order", "", [""]], ["_objective", "", [""]]];
+params [["_squadId", "", [""]], ["_order", "", [""]], ["_place", "", [""]]];
 
 if (!isServer) exitWith { false };
 
@@ -56,7 +60,7 @@ if (_order isEqualTo "reserve") then {
     } forEach (_map getOrDefault ["bases", []]);
 } else {
     {
-        if ((_x getOrDefault ["id", ""]) isEqualTo _objective) exitWith {
+        if ((_x getOrDefault ["id", ""]) isEqualTo _place) exitWith {
             _destination = _x get "position";
             _label = _x get "display_name";
             // The ground the Squad has to stand on to take or hold it is the
@@ -68,8 +72,8 @@ if (_order isEqualTo "reserve") then {
 };
 
 if (count _destination isEqualTo 0) exitWith {
-    diag_log format ["CTI|FAIL class=assertion_failed order_without_ground squad=%1 order=%2 objective=%3",
-        _squadId, _order, _objective];
+    diag_log format ["CTI|FAIL class=assertion_failed order_without_ground squad=%1 order=%2 place=%3",
+        _squadId, _order, _place];
     true
 };
 
@@ -123,7 +127,7 @@ _group setCurrentWaypoint _first;
 
 _group setVariable ["cti_order", createHashMapFromArray [
     ["order", _order],
-    ["objective", _objective],
+    ["place", _place],
     ["position", _at],
     ["radius", _radius]
 ], true];
@@ -136,7 +140,7 @@ _group setVariable ["cti_order", createHashMapFromArray [
     [format ["Standing Order: %1 %2.", _order, _label], format ["%1 %2", toUpper _order, _label], ""],
     _at, "ASSIGNED", 1, true] call BIS_fnc_taskCreate;
 
-diag_log format ["CTI|order_applied squad=%1 side=%2 order=%3 objective=%4 waypoints=%5 leader=%6",
-    _squadId, str (side _group), _order, _objective, count waypoints _group, name leader _group];
+diag_log format ["CTI|order_applied squad=%1 side=%2 order=%3 place=%4 waypoints=%5 leader=%6",
+    _squadId, str (side _group), _order, _place, count waypoints _group, name leader _group];
 
 true

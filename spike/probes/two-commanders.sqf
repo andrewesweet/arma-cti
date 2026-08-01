@@ -112,7 +112,7 @@
             private _order = _y getVariable ["cti_order", createHashMap];
             if ((_order getOrDefault ["order", ""]) isEqualTo "capture") then {
                 _found set [_x, [_y, leader _y distance2D (_order get "position"),
-                    _order get "objective"]];
+                    _order getOrDefault ["place", ""]]];
             };
         } forEach ([_name] call _squadsOf);
         _found
@@ -182,8 +182,8 @@
             if (!isNull _group && { count units _group > 0 }) then {
                 private _order = _group getVariable ["cti_order", createHashMap];
                 private _now = leader _group distance2D (_order get "position");
-                diag_log format ["CTI|two_probe_progress side=%1 squad=%2 objective=%3 was=%4 now=%5 closed=%6",
-                    _name, _x, _order get "objective", _was, _now, _was - _now];
+                diag_log format ["CTI|two_probe_progress side=%1 squad=%2 place=%3 was=%4 now=%5 closed=%6",
+                    _name, _x, _order getOrDefault ["place", ""], _was, _now, _was - _now];
                 if (_was - _now > 50) then { _closed = _closed + 1 };
             };
         } forEach (_marching get _name);

@@ -79,6 +79,18 @@ class Campaign:
         state = self._states.get(objective)
         return None if state is None else state.owner
 
+    def based(self, place: str) -> str | None:
+        """Whose Base `place` is, or None when this map has no such Base.
+
+        The Base-shaped half of `holds`, for the same reason: an Order may now
+        name either kind of Place (ADR-0020), so the port has to be able to ask
+        which kind it was handed without reaching into the manifest itself.
+        """
+        for base in self.map_manifest.bases:
+            if base.id == place:
+                return base.side
+        return None
+
     def owners(self) -> dict[str, str]:
         """Every Objective's owner, for a Commander to reason over."""
         return {name: state.owner for name, state in self._states.items()}
@@ -115,7 +127,7 @@ class Campaign:
                     squad_type=squad.squad_type,
                     size=squad.size,
                     order=squad.order.kind,
-                    objective=squad.order.objective,
+                    place=squad.order.place,
                     at=squad.at,
                 )
                 for squad in self.roster.roll(for_side)

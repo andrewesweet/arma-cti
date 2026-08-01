@@ -192,10 +192,11 @@ class UtilityPlanner:
     return the same Plan and `plan` is a pure function in the sense ADR-0004
     asks for.
 
-    It plays for Domination and not for Decapitation, because an Order names an
-    Objective and a Base is not one — the port has no way to say "go for the
-    enemy HQ", so neither has this. That is the port's vocabulary to widen, not
-    something for a scorer to route around.
+    It plays for Domination and not for Decapitation. The port's vocabulary no
+    longer stands in the way — ADR-0020 widened an Order to name a Place, so
+    Assault(enemy Base) is expressible — but scoring a Base needs a value term
+    for ending the Campaign that this scorer does not yet have (#32 left it to
+    its own ticket), so no Assault is ever planned here.
     """
 
     map_manifest: MapManifest
@@ -290,13 +291,13 @@ class UtilityPlanner:
             # best option and shares the ground.
             chosen = taken.get(squad.id, mine[0])
             decisions.append(self._why(squad, chosen, mine, taken))
-            if (chosen.kind, chosen.place) == (squad.order, squad.objective):
+            if (chosen.kind, chosen.place) == (squad.order, squad.place):
                 continue
             commands.append(
                 Command(
                     name="order",
                     side=observation.for_side,
-                    args={"squad": squad.id, "order": chosen.kind, "objective": chosen.place},
+                    args={"squad": squad.id, "order": chosen.kind, "place": chosen.place},
                 )
             )
 
@@ -324,7 +325,7 @@ class UtilityPlanner:
             )
             terms["travel"] = -self.weights.travel * self._reach[origin][objective.id]
             # What the Squad is already doing, worth something on its own.
-            standing = (kind, objective.id) == (squad.order, squad.objective)
+            standing = (kind, objective.id) == (squad.order, squad.place)
             terms["commitment"] = self.weights.commitment if standing else 0.0
             terms["jitter"] = self.weights.jitter * self._jitter[objective.id]
             options.append(
@@ -397,7 +398,7 @@ class UtilityPlanner:
                 (other.squad for other in taken.values() if other.place == best.place), "another"
             )
             because = f"{best.choice} went to {rival}"
-        if (chosen.kind, chosen.place) == (squad.order, squad.objective):
+        if (chosen.kind, chosen.place) == (squad.order, squad.place):
             because = f"already under this Order; {because}"
         return Decision(
             about=squad.id,

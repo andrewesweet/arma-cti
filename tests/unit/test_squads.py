@@ -67,7 +67,14 @@ def test_no_call_hands_out_the_whole_map_of_squads() -> None:
 
 
 def test_reserve_is_the_only_order_that_names_no_ground() -> None:
-    assert set(squads.ORDERS) - set(squads.NEEDS_OBJECTIVE) == {"reserve"}
+    assert set(squads.ORDERS) - set(squads.NEEDS_PLACE) == {"reserve"}
+
+
+def test_assault_is_in_the_vocabulary() -> None:
+    # ADR-0020: Decapitation is a win condition, and until Assault is an Order
+    # a Commander has no words for it. Which Place it may name is the port's
+    # rule; that it exists at all is this one's.
+    assert "assault" in squads.ORDERS
 
 
 def test_a_squad_the_world_has_never_held_is_not_a_squad_the_world_has_lost() -> None:
