@@ -1,5 +1,5 @@
 // probe: ai-commander
-// issues: 16, 32
+// issues: 16, 32, 43
 // window: 300
 // env: CTI_AI_SIDE=WEST
 //
@@ -24,6 +24,17 @@
 // the same outbox and lands on the same waypoints as one a human issued
 // (ADR-0012). The unit tier can prove the planner decided something; only this
 // can prove a Squad started walking because of it.
+//
+// #43 converted this probe's one fixed settle to an event-driven wait. It used
+// to sleep 150 s and then ask whether anything had closed ground; it now asks
+// continuously and stops the moment the answer is yes, with the same 150 s as
+// the deadline it was always a proxy for. The exit fires on the claim being
+// true, never on the world looking done: a run in which nothing moves waits the
+// full 150 s and fails `assertion_failed` exactly as before. The two absence
+// claims that shared that settle — a force with no ceiling, and a Commander
+// playing EAST — became watchers rather than a single sample at the end; see
+// docs/regression-tier.md, "Waiting for the subject", for why that is the only
+// honest way to shorten a window an absence claim was sitting in.
 //
 // #32 added one claim to the same window rather than a probe of its own: the
 // Order's ground field is now `place` end to end (ADR-0020), so the standing
@@ -109,15 +120,71 @@
             _range, count waypoints _group];
     } forEach _marching;
 
-    // Long enough for a Squad on foot to have covered ground worth measuring,
-    // and short enough not to be waiting for it to arrive.
-    private _next = diag_tickTime + 150;
-    waitUntil { diag_tickTime >= _next };
+    // The two claims that used to be read once, when the fixed settle expired.
+    // Both are claims that something is *absent*, and the strength of an absence
+    // claim is the time it was observed for — so a probe that exits early cannot
+    // simply keep them as end-of-window samples. They are evaluated on every
+    // pass of the wait below instead, which fails the instant either is violated
+    // rather than only if the violation survived to the end. Over the same
+    // window that is strictly stronger; over a shorter one it is weaker in the
+    // way every absence claim is, and both rules are unit-tested besides
+    // (`squads.Roster.reconcile`, `tests/unit/test_daemon_planning.py`).
+    private _runaway = false;
+    private _bothSides = false;
+    private _east = 0;
+    private _watch = {
+        // A Squad the world never spawned is not a Squad the world has lost
+        // (`squads.Roster.reconcile`). Before that rule the Commander deleted
+        // every Squad it bought in the window between judging the Purchase and
+        // the effect pump carrying it out, counted itself short, and bought
+        // another — so the symptom is a WEST force with no ceiling. The ceiling
+        // is the map's, because that is what the scorer buys up to.
+        private _fielded = call _westSquads;
+        if (count _fielded > count _objectives && { !_runaway }) then {
+            _runaway = true;
+            diag_log format ["CTI|FAIL class=assertion_failed ai_probe_runaway_force squads=%1 objectives=%2 ids=%3",
+                count _fielded, count _objectives, keys _fielded];
+        };
+        // One side, and #16 says one side. A Commander playing for EAST as well
+        // would be #17 arriving early and unasked.
+        _east = 0;
+        {
+            if (!isNull _y && { side _y isEqualTo east }) then { _east = _east + 1 };
+        } forEach (missionNamespace getVariable ["cti_squads", createHashMap]);
+        if (_east > 0 && { !_bothSides }) then {
+            _bothSides = true;
+            diag_log format ["CTI|FAIL class=assertion_failed ai_probe_commanded_both_sides east=%1", _east];
+        };
+        _fielded
+    };
 
     // The claim: an Order the AI issued is being carried out. Measured as ground
     // closed rather than ground reached, so what is asserted is the thing the
-    // window actually contains.
+    // window actually contains — and read continuously, so the probe ends when
+    // the claim becomes true instead of when a clock says it probably has. 150 s
+    // is the deadline, unchanged from the settle it replaces: it is how long a
+    // Squad on foot may take to cover ground worth measuring, and a run that
+    // never covers it fails at the same moment, in the same class, as before.
+    private _waitedFrom = diag_tickTime;
+    _deadline = diag_tickTime + 150;
+    private _west = createHashMap;
     private _closed = 0;
+    waitUntil {
+        _west = call _watch;
+        _closed = 0;
+        {
+            _y params ["_group", "_was"];
+            if (!isNull _group && { count units _group > 0 }) then {
+                private _order = _group getVariable ["cti_order", createHashMap];
+                if ((_was - (leader _group distance2D (_order get "position"))) > 50) then {
+                    _closed = _closed + 1;
+                };
+            };
+        } forEach _marching;
+        _closed > 0 || { diag_tickTime > _deadline }
+    };
+
+    _closed = 0;
     {
         _y params ["_group", "_was"];
         if (!isNull _group && { count units _group > 0 }) then {
@@ -128,37 +195,16 @@
             if (_was - _now > 50) then { _closed = _closed + 1 };
         };
     } forEach _marching;
+    private _waited = diag_tickTime - _waitedFrom;
     if (_closed isEqualTo 0) exitWith {
-        diag_log format ["CTI|FAIL class=assertion_failed ai_probe_nothing_moved marching=%1",
-            count _marching];
+        diag_log format ["CTI|FAIL class=assertion_failed ai_probe_nothing_moved marching=%1 waited=%2",
+            count _marching, _waited];
     };
 
-    // A Squad the world never spawned is not a Squad the world has lost
-    // (`squads.Roster.reconcile`). Before that rule the Commander deleted every
-    // Squad it bought in the window between judging the Purchase and the effect
-    // pump carrying it out, counted itself short, and bought another — so the
-    // symptom is a WEST force with no ceiling. The ceiling is the map's, because
-    // that is what the scorer buys up to.
-    private _west = call _westSquads;
-    if (count _west > count _objectives) then {
-        diag_log format ["CTI|FAIL class=assertion_failed ai_probe_runaway_force squads=%1 objectives=%2 ids=%3",
-            count _west, count _objectives, keys _west];
-    };
-
-    // One side, and #16 says one side. A Commander playing for EAST as well
-    // would be #17 arriving early and unasked.
-    private _east = 0;
-    {
-        if (!isNull _y && { side _y isEqualTo east }) then { _east = _east + 1 };
-    } forEach (missionNamespace getVariable ["cti_squads", createHashMap]);
-    if (_east > 0) then {
-        diag_log format ["CTI|FAIL class=assertion_failed ai_probe_commanded_both_sides east=%1", _east];
-    };
-
-    diag_log format ["CTI|ai_probe_state west=%1 east=%2 owners=%3 closed=%4 of=%5",
+    diag_log format ["CTI|ai_probe_state west=%1 east=%2 owners=%3 closed=%4 of=%5 waited=%6",
         count _west, _east,
         missionNamespace getVariable ["cti_objectiveOwner", createHashMap],
-        _closed, count _marching];
+        _closed, count _marching, _waited];
 
     diag_log "CTI|ai_probe_done";
 };

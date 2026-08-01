@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **A probe now ends when its subject has finished, not when a clock says it probably has.**
+  Half of a full regression pass — 705 s of 1,398 s — was probes watching a fixed clock rather than
+  the world. The `ai-commander` probe, whose 150 s settle was the worst of them, now reads the claim
+  it is about to assert continuously and stops the moment it becomes true: **179 s to 45 s**, same
+  verdict, twice over. The 150 s survives as the deadline it always was, so a run in which nothing
+  moves still fails at the same instant in the same class. The rule this is allowed under, the audit
+  behind it, and which of our waits the engine can signal versus which must be polled are in
+  `docs/regression-tier.md`.
+
 ### Fixed
 
 - **A client that joined and took the Commander seat is no longer recorded as one that never

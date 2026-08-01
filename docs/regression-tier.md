@@ -62,8 +62,83 @@ Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_d
 | `two-commanders` | 600 | 210 |
 | `base-assault` | 480 | 173 |
 | `campaign-end` | 750 | 370 |
+| `casualties` | 150 | 58 |
+| `human-commander` | 150 | 40 |
 
-Every figure includes that probe's own bring-up — daemon, server, staging, mission load — which is about 20 s of it. The corpus's declared windows total 42 minutes; it runs in 16, because no probe fills its window and the longest are sized for a subject (marching, decay, an HQ coming down) whose worst case they do not hit. A full pass is an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers.)
+The last two rows were added by #39 and #18 and are each that probe's own last green run; the table is now the whole twelve-probe corpus, and its measured column sums to **23 minutes 18 seconds**. Every figure includes that probe's own bring-up — daemon, server, staging, mission load — which is about 20 s of it. The corpus's declared windows total 59 minutes; it runs in 23, because no probe fills its window and the longest are sized for a subject (marching, decay, an HQ coming down) whose worst case they do not hit. A full pass is an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers.)
+
+## Waiting for the subject
+
+Half of a full pass is a probe watching a clock. Audited on 2026-08-01 for #43, over the twelve-probe corpus at its last green run of each probe: a **fixed settle** is a `waitUntil { diag_tickTime >= _next }` — a wait whose end is a number the author chose, not a condition the world reached. They total **705 s of a 1,398 s pass, 50%**.
+
+| probe | measured | fixed settle | settle share | what the settle is for |
+|---|---|---|---|---|
+| `bareworld` | 20 | 0 | — | |
+| `manifest-missing` | 13 | 0 | — | |
+| `json-manifest` | 34 | 20 | 59% | world built, report loop has cycled |
+| `human-commander` | 40 | 20 | 50% | same |
+| `casualties` | 58 | 45 | 78% | 20 same; 5+5 units settling after `setPosATL`; 15 two report intervals for the buffer to drain |
+| `projection` | 59 | 20 | 34% | same 20 |
+| `contacts` | 66 | 50 | 76% | 20 same; 30 for knowledge to spread between two leaders |
+| `base-assault` | 173 | 20 | 12% | same 20 |
+| `contact-decay` | 176 | 160 | 91% | 20 same; 140 past the engine's 120 s knowledge decay |
+| `ai-commander` | 179 | 150 | 84% | ground closed by a marching Squad |
+| `two-commanders` | 210 | 180 | 86% | ground closed per side, plus the drain extremum #17 asks to be measured |
+| `campaign-end` | 370 | 40 | 11% | 20+20, that a won Campaign stops handing the world work |
+| **total** | **1398** | **705** | **50%** | |
+
+### The honesty rule
+
+**A probe may exit when its subject has finished, and never when the world looks done.** A settle may be replaced only by a wait on the condition the probe is about to assert, with the old settle kept as the deadline. Then a passing run ends sooner and a failing run fails at the same instant, in the same class, as before — which is the test that a conversion is honest. Exiting on a proxy ("two report cycles have gone by, so the row is probably there") is the flake factory the Contract forbids, and it is not made legal by being fast.
+
+The rule has a corner the conversion of `ai-commander` had to answer. A claim that something is **absent** — a force with no ceiling, a Commander playing a side it should not — draws its strength from how long it was observed, so it cannot simply be re-read at an earlier exit. Two answers, in order of preference: evaluate the absence claim on every pass of the wait, so it fails the instant it is violated rather than only if the violation happened to survive to the end (strictly stronger over the same window, weaker only in that the window is shorter); or, where the claim's failure mode has a known cadence, keep an explicit floor derived from that cadence and say so in the probe's header. What is not allowed is dropping the dwell silently.
+
+### Observable, pollable, or neither
+
+`topics/Arma_3_Mission_Event_Handlers.wiki` is the authority on the first column. Its full event list is 50 entries and contains no waypoint, detection, knowledge, movement or distance event — the conditions our probes actually wait on are almost all in the second column.
+
+| our condition | mechanism | wiki |
+|---|---|---|
+| a unit died | **event** — `addMissionEventHandler ["EntityKilled"]`, server-wide, no per-unit attachment | `topics/Arma_3_Mission_Event_Handlers.wiki`; #39's rejection table covers `Killed`, `UnitKilled`, `MPKilled`, `HandleDamage`, `Hit` |
+| a Squad was spawned or deleted | **event** — `EntityCreated` / `EntityDeleted` (2.10 / 2.18), `GroupCreated` / `GroupDeleted` | same page. Note `EntityCreated`'s argument is the entity, not an array |
+| a headless client joined | **event** — `PlayerConnected` / `OnUserClientStateChanged` | same page |
+| a waypoint completed | **callback, not an event** — `setWaypointStatements`, whose completion statement runs on completion; `currentWaypoint` inside it is the index being completed | `commands/setWaypointStatements.wiki`. There is no `Waypoint` mission EH |
+| a Squad closed ground on its ordered place | **pollable only** — `leader _g distance2D _pos`. No movement or distance event exists | absence from the MEH list above |
+| the engine acquired or forgot a target | **pollable only** — `targetsQuery` / `knowsAbout`. No detection event exists, and #28 found `targetsQuery` never stops returning a memory, so the ageing bound is ours and the crossing is ours to read | `commands/targetsQuery.wiki`, `spike/probes/contact-decay.sqf` |
+| the report loop has cycled / the outbox drained | **pollable only**, but against our own counters (`cti_effectDrain`, the presence report), which is as good as an event because we write them | — |
+| a unit dropped by `setPosATL` has landed | **pollable only** — its own Z | — |
+| nothing further happened for N seconds | **neither.** An absence has no event by construction; only dwell measures it | — |
+
+Where a pollable condition wants an engine-side callback rather than a `waitUntil`, `createTrigger` is the engine's own general answer: an arbitrary condition, which the engine checks "approx. every 0.5 second by default" and `setTriggerInterval` (1.98) can speed up to every frame (`commands/createTrigger.wiki`, `commands/setTriggerInterval.wiki`). Our probes already run inside a `spawn`, so a `waitUntil` costs the same and reads better; the trigger matters only for a probe that must not hold a scheduled thread.
+
+### The worked conversion, and what the rest would be worth
+
+`ai-commander` was converted first: its 150 s settle was wholly a proxy — the probe slept, then asked whether any marching Squad had closed more than 50 m on the place it was ordered to, which is a question the world answers at any instant. It now asks continuously, with the 150 s as the deadline.
+
+| | before | after |
+|---|---|---|
+| measured | 179 s (`20260801T042112Z`) | **45 s** (`20260801T083740Z`), **45 s** (`20260801T084408Z`) |
+| the wait itself | 150 s, fixed | 14.7 s and 15.2 s, ended by the claim |
+| verdict | PASS | PASS, PASS |
+
+The exit fires on the crossing: WEST-1 had closed 50.7 m and 50.4 m on the two runs, against a threshold of 50. `closed=1 of=2` where the old probe recorded `closed=2 of=2` — the assertion was always "at least one", and a fixed settle simply bought a second Squad's crossing nobody was asserting.
+
+Projected across the corpus, on the audit above and conservatively (the 20 s "world built, report loop cycled" settle assumed to convert to ~3 s against our own counters, and the two-sided and decay waits assumed to converge only near their true crossings):
+
+| | s |
+|---|---|
+| measured saving, `ai-commander` | 134 |
+| the eight remaining 20 s bring-up settles | ~120 |
+| `contacts` knowledge spread, `contact-decay` age-out, `casualties` drain and drops | ~65 |
+| `two-commanders`, if its drain extremum can keep a floor | ~100 |
+| `campaign-end`'s 2 × 20 s | 0 — an absence claim, dwell is the measurement |
+| **total against a 1,398 s pass** | **~420, 30%** |
+
+Only the first row is measured. The rest is a projection and should be treated as one; `two-commanders` in particular is the corpus's worst settle-to-subject ratio by wall (180 s of settle against about 30 s of work) but the hardest conversion, because #17's push-path number is the largest drain *observed* and an extremum shrinks with the window it was observed in. It is raised as its own issue rather than done here.
+
+### What the runner needs
+
+Nothing. `spike/regress.sh` already ends a probe on its own `probe_done` line with the header window as the deadline (#23), so every second a probe stops sleeping is a second off the pass with no runner change at all. Windows stay sized to the subject's worst case; they are deadlines, and shortening one because a converted probe now usually finishes sooner would be sizing a window to the good case.
 
 ## Serialisation
 
@@ -91,7 +166,7 @@ Retention: failures are kept until the issue that consumed them closes; passes a
 
 ## Cost control: what runs per issue, and who decides
 
-Per issue: any issue whose change touches an in-world surface — `addons/`, `missions/`, `extension/`, the daemon's world-facing half, or the manifests — runs the **full corpus** once, green, before landing, and quotes the verdicts into the issue. Full rather than selected, because at eight probes and under half an hour the selection machinery would cost more than it saves, and because the expensive failures to date have been the unselected kind — a projection change breaking contact sampling is exactly what a per-issue filter would have filtered out. The `issues:` header exists so that *when* the corpus grows past the point this stops being true, selection can be built without touching the probes; growing the corpus is what triggers building it, and that call is a fable-session call. That call was made concrete at the 2026-08-01 retro (ADR-0022): a full pass costs a measured ~1.5–2 minutes of wall per probe including bring-up, so **when a full green pass first exceeds 30 minutes measured — roughly 15–18 probes on the current curve — build selection on the `issues:` header before adding the next probe.** Until then the full corpus stays the per-issue gate.
+Per issue: any issue whose change touches an in-world surface — `addons/`, `missions/`, `extension/`, the daemon's world-facing half, or the manifests — runs the **full corpus** once, green, before landing, and quotes the verdicts into the issue. Full rather than selected, because at eight probes and under half an hour the selection machinery would cost more than it saves, and because the expensive failures to date have been the unselected kind — a projection change breaking contact sampling is exactly what a per-issue filter would have filtered out. The `issues:` header exists so that *when* the corpus grows past the point this stops being true, selection can be built without touching the probes; growing the corpus is what triggers building it, and that call is a fable-session call. That call was made concrete at the 2026-08-01 retro (ADR-0022): a full pass costs a measured ~1.5–2 minutes of wall per probe including bring-up, so **when a full green pass first exceeds 30 minutes measured — roughly 15–18 probes on the current curve — build selection on the `issues:` header before adding the next probe.** Until then the full corpus stays the per-issue gate. The event-driven conversions above buy headroom against that trigger rather than replacing it: they lower the wall per probe, so the corpus can hold more probes before 30 minutes, and the trigger stays a measured 30 minutes either way.
 
 Not per issue: docs, tooling, process, and changes wholly covered by the unit tier (income arithmetic, rejection codes, wire formats — the things #23 explicitly keeps out). The implementing agent decides which side of that line an issue falls on, by the surface rule above; when genuinely unsure, the answer is to run it — a false half-hour is cheaper than a false green. During development of an issue, `just regress <name>` on the probes nearest the change is iteration, not gating; the full pass at the end is the gate.
 
