@@ -333,11 +333,10 @@
     };
     private _outcome = missionNamespace getVariable ["cti_campaignOutcome", createHashMap];
     if (count _outcome isEqualTo 0) exitWith {
+        private _attackers = 0;
+        { _attackers = _attackers + ({ alive _x } count units (_x # 1)) } forEach _mass;
         diag_log format ["CTI|FAIL class=timeout mass_probe_base_never_fell damage=%1 attackers=%2 defenders=%3 at=%4",
-            damage _hq,
-            count (_mass select { { alive _x } count units (_x # 1) > 0 }),
-            { alive _x && { side group _x isEqualTo east } } count (_hqAt nearEntities ["CAManBase", 400]),
-            time];
+            damage _hq, _attackers, { alive _x } count units _garrison, time];
     };
 
     private _condition = _outcome getOrDefault ["condition", ""];

@@ -48,7 +48,7 @@ A failing probe fails the run and the command exits non-zero after finishing the
 
 ## Runtime budget
 
-Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_done` and the run moves on. Measured on the first full green pass, 2026-08-01 (Arma 2.20.152984, eight probes, twelve minutes thirty-eight seconds end to end). `campaign-end` was added afterwards and measured on its own green run the same day:
+Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_done` and the run moves on. Measured on the first full green pass, 2026-08-01 (Arma 2.20.152984, eight probes, twelve minutes thirty-eight seconds end to end). `massed-assault` was added afterwards and is shown at its two consecutive green runs the same day:
 
 | probe | window | measured |
 |---|---|---|
@@ -64,6 +64,7 @@ Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_d
 | `campaign-end` | 750 | 372 |
 | `casualties` | 150 | 59 |
 | `human-commander` | 150 | 33 |
+| `massed-assault` | 480 | 264, 291 |
 
 Re-measured on a single green full pass of the whole twelve-probe corpus, 2026-08-01, sha `bd9676d`: **21 minutes 10 seconds**, 1,270 s. The same pass before #43 converted `ai-commander` from a 150 s settle to an event-driven wait would have been 1,405 s. Every figure includes that probe's own bring-up — daemon, server, staging, mission load — which is about 20 s of it. The corpus's declared windows total 59 minutes; it runs in 21, because no probe fills its window and the longest are sized for a subject (marching, decay, an HQ coming down) whose worst case they do not hit. A full pass is an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers.)
 
