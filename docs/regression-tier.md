@@ -52,40 +52,40 @@ Windows are deadlines, not sleeps, so a passing probe ends when it logs `probe_d
 
 | probe | window | measured |
 |---|---|---|
-| `bareworld` | 150 | 20 |
+| `bareworld` | 150 | 19 |
 | `manifest-missing` | 150 | 13 |
 | `json-manifest` | 150 | 34 |
 | `projection` | 150 | 59 |
-| `contacts` | 240 | 66 |
+| `contacts` | 240 | 77 |
 | `contact-decay` | 300 | 176 |
-| `ai-commander` | 300 | 180 |
+| `ai-commander` | 300 | 44 |
 | `two-commanders` | 600 | 210 |
-| `base-assault` | 480 | 173 |
-| `campaign-end` | 750 | 370 |
-| `casualties` | 150 | 58 |
-| `human-commander` | 150 | 40 |
+| `base-assault` | 480 | 174 |
+| `campaign-end` | 750 | 372 |
+| `casualties` | 150 | 59 |
+| `human-commander` | 150 | 33 |
 
-The last two rows were added by #39 and #18 and are each that probe's own last green run; the table is now the whole twelve-probe corpus, and its measured column sums to **23 minutes 18 seconds**. Every figure includes that probe's own bring-up — daemon, server, staging, mission load — which is about 20 s of it. The corpus's declared windows total 59 minutes; it runs in 23, because no probe fills its window and the longest are sized for a subject (marching, decay, an HQ coming down) whose worst case they do not hit. A full pass is an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers.)
+Re-measured on a single green full pass of the whole twelve-probe corpus, 2026-08-01, sha `bd9676d`: **21 minutes 10 seconds**, 1,270 s. The same pass before #43 converted `ai-commander` from a 150 s settle to an event-driven wait would have been 1,405 s. Every figure includes that probe's own bring-up — daemon, server, staging, mission load — which is about 20 s of it. The corpus's declared windows total 59 minutes; it runs in 21, because no probe fills its window and the longest are sized for a subject (marching, decay, an HQ coming down) whose worst case they do not hit. A full pass is an "over coffee" cost, not an inner-loop one, and the cost-control section below is written to that number. (The probe's own header is authoritative for its window — CLAUDE.md says so — and the runner believes headers.)
 
 ## Waiting for the subject
 
-Half of a full pass is a probe watching a clock. Audited on 2026-08-01 for #43, over the twelve-probe corpus at its last green run of each probe: a **fixed settle** is a `waitUntil { diag_tickTime >= _next }` — a wait whose end is a number the author chose, not a condition the world reached. They total **705 s of a 1,398 s pass, 50%**.
+Half of a full pass was a probe watching a clock. Audited on 2026-08-01 for #43: a **fixed settle** is a `waitUntil { diag_tickTime >= _next }` — a wait whose end is a number the author chose, not a condition the world reached. Against the pre-conversion pass of 1,405 s they total **705 s, 50%**. The measured column below is the 2026-08-01 full pass with `ai-commander` shown at its pre-conversion 179 s, so the shares are the ones the audit was made against.
 
 | probe | measured | fixed settle | settle share | what the settle is for |
 |---|---|---|---|---|
-| `bareworld` | 20 | 0 | — | |
+| `bareworld` | 19 | 0 | — | |
 | `manifest-missing` | 13 | 0 | — | |
-| `json-manifest` | 34 | 20 | 59% | world built, report loop has cycled |
-| `human-commander` | 40 | 20 | 50% | same |
-| `casualties` | 58 | 45 | 78% | 20 same; 5+5 units settling after `setPosATL`; 15 two report intervals for the buffer to drain |
+| `human-commander` | 33 | 20 | 61% | world built, report loop has cycled |
+| `json-manifest` | 34 | 20 | 59% | same |
+| `casualties` | 59 | 45 | 76% | 20 same; 5+5 units settling after `setPosATL`; 15 two report intervals for the buffer to drain |
 | `projection` | 59 | 20 | 34% | same 20 |
-| `contacts` | 66 | 50 | 76% | 20 same; 30 for knowledge to spread between two leaders |
-| `base-assault` | 173 | 20 | 12% | same 20 |
+| `contacts` | 77 | 50 | 65% | 20 same; 30 for knowledge to spread between two leaders |
+| `base-assault` | 174 | 20 | 11% | same 20 |
 | `contact-decay` | 176 | 160 | 91% | 20 same; 140 past the engine's 120 s knowledge decay |
-| `ai-commander` | 179 | 150 | 84% | ground closed by a marching Squad |
+| `ai-commander` | 179 → **44** | 150 → **0** | 84% → — | ground closed by a marching Squad — converted, below |
 | `two-commanders` | 210 | 180 | 86% | ground closed per side, plus the drain extremum #17 asks to be measured |
-| `campaign-end` | 370 | 40 | 11% | 20+20, that a won Campaign stops handing the world work |
-| **total** | **1398** | **705** | **50%** | |
+| `campaign-end` | 372 | 40 | 11% | 20+20, that a won Campaign stops handing the world work |
+| **total** | **1405 → 1270** | **705 → 555** | **50%** | |
 
 ### The honesty rule
 
@@ -117,9 +117,9 @@ Where a pollable condition wants an engine-side callback rather than a `waitUnti
 
 | | before | after |
 |---|---|---|
-| measured | 179 s (`20260801T042112Z`) | **45 s** (`20260801T083740Z`), **45 s** (`20260801T084408Z`) |
+| measured | 179 s (`20260801T042112Z`) | **45 s**, **45 s**, **44 s** (`…083740Z`, `…084408Z`, `…084556Z`) |
 | the wait itself | 150 s, fixed | 14.7 s and 15.2 s, ended by the claim |
-| verdict | PASS | PASS, PASS |
+| verdict | PASS | PASS, PASS, PASS |
 
 The exit fires on the crossing: WEST-1 had closed 50.7 m and 50.4 m on the two runs, against a threshold of 50. `closed=1 of=2` where the old probe recorded `closed=2 of=2` — the assertion was always "at least one", and a fixed settle simply bought a second Squad's crossing nobody was asserting.
 
@@ -132,7 +132,7 @@ Projected across the corpus, on the audit above and conservatively (the 20 s "wo
 | `contacts` knowledge spread, `contact-decay` age-out, `casualties` drain and drops | ~65 |
 | `two-commanders`, if its drain extremum can keep a floor | ~100 |
 | `campaign-end`'s 2 × 20 s | 0 — an absence claim, dwell is the measurement |
-| **total against a 1,398 s pass** | **~420, 30%** |
+| **total against a 1,405 s pass** | **~420, 30%** |
 
 Only the first row is measured. The rest is a projection and should be treated as one; `two-commanders` in particular is the corpus's worst settle-to-subject ratio by wall (180 s of settle against about 30 s of work) but the hardest conversion, because #17's push-path number is the largest drain *observed* and an extremum shrinks with the window it was observed in. It is raised as its own issue rather than done here.
 
