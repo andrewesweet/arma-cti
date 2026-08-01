@@ -35,5 +35,19 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Edit(.claude/skills/**)",
+      "Write(.claude/skills/**)",
+      "Edit(docs/**)",
+      "Write(docs/**)",
+      "Edit(CLAUDE.md)",
+      "Edit(CONTEXT.md)",
+      "Edit(CHANGELOG.md)",
+      "Bash(gh issue:*)",
+      "Bash(gh label:*)",
+      "Bash(git push origin HEAD:main)"
+    ]
   }
 }
