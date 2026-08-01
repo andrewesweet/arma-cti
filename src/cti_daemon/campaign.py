@@ -27,6 +27,17 @@ if TYPE_CHECKING:
 NEUTRAL: Final = "NEUTRAL"
 CONTESTED: Final = "CONTESTED"
 
+# What a Base's HQ structure can be. The same shape as an Objective's owner —
+# a place mapped to a status — because both are the scoreboard and a reader of
+# one should not have to learn a second idiom to read the other.
+INTACT: Final = "intact"
+DESTROYED: Final = "destroyed"
+
+# The two ways a Campaign ends (docs/mvp-scope.md, decided 2026-07-30). There is
+# no third, and no draw.
+DOMINATION: Final = "domination"
+DECAPITATION: Final = "decapitation"
+
 
 @dataclass(slots=True)
 class ObjectiveState:
@@ -37,6 +48,19 @@ class ObjectiveState:
     # whenever the ground changes hands or is contested.
     holder: str = ""
     held_seconds: float = 0.0
+
+
+@dataclass(frozen=True, slots=True)
+class Outcome:
+    """How a Campaign ended: who won, by which condition, and when."""
+
+    winner: str
+    condition: str
+    # In-game seconds, the unit every other clock in here is written in.
+    at_time: float
+    # The Base that fell, for a Decapitation. Empty for a Domination, which is
+    # won on ground rather than on a building.
+    base: str = ""
 
 
 @dataclass(slots=True)
@@ -56,14 +80,27 @@ class Campaign:
     # has to be as private as its own roster.
     contacts: Contacts = field(default_factory=Contacts)
     elapsed: float = 0.0
+    # How this Campaign ended, or None while it is still being played. Set once
+    # and never revised: `docs/mvp-scope.md` resolves a mutual Decapitation by
+    # whichever destruction came first, so the first outcome to be reached is
+    # the outcome, and a second one arriving in the same report is too late.
+    outcome: Outcome | None = None
     _states: dict[str, ObjectiveState] = field(default_factory=dict)
+    _hq: dict[str, str] = field(default_factory=dict)
+    # The side that currently owns every Objective, and for how long it has. The
+    # Domination clock, and it is in memory only on purpose: the timer is not
+    # persisted and resets on boot (docs/mvp-scope.md), which a Campaign built
+    # rather than loaded gets for nothing.
+    _dominant: str = ""
+    _dominated_seconds: float = 0.0
     _since_payout: float = 0.0
 
     def __post_init__(self) -> None:
-        """Start every Objective Neutral, as the manifest authored them."""
+        """Start every Objective Neutral and every HQ standing, as authored."""
         self._states = {
             objective.id: ObjectiveState() for objective in self.map_manifest.objectives
         }
+        self._hq = {base.id: INTACT for base in self.map_manifest.bases}
 
     def owner(self, objective: str) -> str:
         """Who holds `objective` — a side, Neutral, or Contested."""
@@ -95,6 +132,61 @@ class Campaign:
         """Every Objective's owner, for a Commander to reason over."""
         return {name: state.owner for name, state in self._states.items()}
 
+    def headquarters(self) -> dict[str, str]:
+        """Every Base's HQ, intact or destroyed.
+
+        Public to both sides like ownership is, and for the same reason: the two
+        win conditions are the scoreboard rather than intelligence
+        (`docs/mvp-scope.md`), so a side must be able to read that its own HQ has
+        fallen and that the enemy's has not.
+        """
+        return dict(self._hq)
+
+    @property
+    def complete(self) -> bool:
+        """Whether this Campaign has been won and is no longer being played."""
+        return self.outcome is not None
+
+    def raze(self, base: str, *, at_time: float) -> bool:
+        """Record that a Base's HQ has been destroyed. True if that is news.
+
+        The world says a building fell; what it costs is decided here, because
+        that is a rule (ADR-0012). The side that loses is the side whose Base it
+        was, and who brought it down is not asked for: an HQ destroyed by its
+        own side's ordnance is still that side's Base gone. Attribution is real
+        and the world reports it, but it belongs to the log rather than to this,
+        and a rule that took it as an argument would invite somebody to use it.
+
+        Returns False for a Base already down, which is the whole of the
+        once-only rule — the world reports rubble as rubble on every report, and
+        the *first* report is what settles a mutual Decapitation.
+        """
+        side = self.based(base)
+        if side is None:
+            message = f"{base!r} is no Base this map has"
+            raise KeyError(message)
+        if self._hq[base] == DESTROYED:
+            return False
+        self._hq[base] = DESTROYED
+        loser = side
+        winner = next(other for other in SIDES if other != loser)
+        self._won(Outcome(winner=winner, condition=DECAPITATION, at_time=at_time, base=base))
+        return True
+
+    def _won(self, outcome: Outcome) -> None:
+        """Declare an outcome, unless this Campaign already has one.
+
+        Recorded rather than announced, which is the one place this object stops
+        short of `objective_captured` beside it. The `campaign_won` effect
+        carries the end screen's summary, that summary is read back off
+        telemetry (`docs/mvp-scope.md`), and telemetry belongs to the daemon —
+        so the daemon pushes it on seeing this appear. A capture has nothing
+        outside these rules to add, which is why that one is pushed here.
+        """
+        if self.complete:
+            return
+        self.outcome = outcome
+
     def observation(self, for_side: str = PUBLIC) -> Observation:
         """Assemble the strategic picture `for_side` may know (#15, #27).
 
@@ -109,7 +201,7 @@ class Campaign:
         also the easy one — is ownership alone, which is what the server gets.
         """
         if for_side == PUBLIC:
-            return Observation(at_time=self.elapsed, owners=self.owners())
+            return Observation(at_time=self.elapsed, owners=self.owners(), hq=self.headquarters())
         if for_side not in SIDES:
             # `Ledger.balance` mints a starting balance for any string it is
             # handed, so a mistyped side would otherwise return an invented
@@ -119,6 +211,7 @@ class Campaign:
         return Observation(
             at_time=self.elapsed,
             owners=self.owners(),
+            hq=self.headquarters(),
             for_side=for_side,
             funds=self.ledger.balance(for_side),
             squads=tuple(
@@ -148,7 +241,16 @@ class Campaign:
         Returns one entry per income tick the elapsed time covered, so a caller
         can record that Funds moved. Paying in silence would leave the economy
         the one part of the campaign nobody can watch.
+
+        A won Campaign takes no more reports. The world keeps sending them —
+        nothing in it knows the Campaign is over until the effect arrives, and
+        the reply is still owed — but ground stops changing hands and Funds stop
+        moving, because a Campaign that kept playing past its end screen would
+        archive a state nobody played to.
         """
+        if self.complete:
+            return []
+
         # In-game time restarts at zero when the mission does. A negative
         # interval would claw back Funds already paid, so a step backwards is a
         # new session rather than a refund.
@@ -160,7 +262,41 @@ class Campaign:
         for name, state in self._states.items():
             self._advance(name, state, presence.get(name, []), interval)
 
-        return self._accrue(interval)
+        paid = self._accrue(interval)
+        self._dominion(interval)
+        return paid
+
+    def _dominion(self, interval: float) -> None:
+        """Move the Domination clock on by `interval` seconds.
+
+        One side owning every Objective *simultaneously*, sustained ten in-game
+        minutes within one Play Session (`docs/mvp-scope.md`). Sustained is the
+        load-bearing word: losing one Objective does not pause the clock, it
+        starts it again, or a Campaign could bank nine minutes and cash them a
+        quarter of an hour later.
+
+        The interval in which totality was reached is not credited. The moment
+        the last Objective changed hands falls somewhere inside it, and crediting
+        the whole of it would be counting time the side did not hold the island.
+        """
+        if not self._states:
+            return
+
+        held = {state.owner for state in self._states.values()}
+        holder = held.pop() if len(held) == 1 else ""
+        if holder not in SIDES:
+            holder = ""
+
+        if holder != self._dominant:
+            self._dominant = holder
+            self._dominated_seconds = 0.0
+            return
+        if not holder:
+            return
+
+        self._dominated_seconds += interval
+        if self._dominated_seconds >= self.table.domination_seconds:
+            self._won(Outcome(winner=holder, condition=DOMINATION, at_time=self.elapsed))
 
     def _advance(self, name: str, state: ObjectiveState, sides: list[str], interval: float) -> None:
         """Move one Objective's capture on by `interval` seconds."""

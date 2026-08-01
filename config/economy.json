@@ -4,6 +4,7 @@
   "stipend": 5,
   "income_tick_seconds": 60,
   "capture_seconds": 30,
+  "domination_seconds": 600,
   "squads": [
     {
       "id": "rifle",

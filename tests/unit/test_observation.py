@@ -48,12 +48,18 @@ OWNERS = st.dictionaries(
     st.sampled_from(("WEST", "EAST", "NEUTRAL", "CONTESTED")),
     max_size=12,
 )
+HQ = st.dictionaries(
+    st.text(min_size=1, max_size=24),
+    st.sampled_from((campaign.INTACT, campaign.DESTROYED)),
+    max_size=2,
+)
 OBSERVATIONS = st.one_of(
-    st.builds(observation.Observation, at_time=AT_TIMES, owners=OWNERS),
+    st.builds(observation.Observation, at_time=AT_TIMES, owners=OWNERS, hq=HQ),
     st.builds(
         observation.Observation,
         at_time=AT_TIMES,
         owners=OWNERS,
+        hq=HQ,
         for_side=st.sampled_from(("WEST", "EAST")),
         funds=st.integers(),
         squads=st.lists(SQUAD_VIEWS, max_size=12).map(tuple),
@@ -203,7 +209,7 @@ def test_the_public_picture_carries_nobodys_contacts() -> None:
         seen=(contacts.Sighting(at="girna", kind="Infantry", age=0.0),),
         observed=("girna",),
     )
-    assert set(observation.serialise(world.observation())) == {"at", "owners"}
+    assert set(observation.serialise(world.observation())) == {"at", "owners", "hq"}
 
 
 def test_a_commander_learns_nothing_of_the_enemys_order_of_battle() -> None:
@@ -227,10 +233,41 @@ def test_enemy_funds_have_no_key_to_arrive_under() -> None:
     assert world.observation("WEST").funds == world.ledger.balance("WEST")
 
 
-def test_the_public_picture_is_ownership_and_nothing_else() -> None:
-    # What the server takes: enough to paint markers, and no side's view.
+def test_the_public_picture_is_the_scoreboard_and_nothing_else() -> None:
+    # What the server takes: enough to paint markers and read the score, and no
+    # side's view. The scoreboard is both win conditions, so it is ownership and
+    # each Base's HQ (#35, docs/mvp-scope.md) — the same two dicts of place to
+    # status, because the two conditions are the same kind of public fact.
     world = contested()
-    assert set(observation.serialise(world.observation())) == {"at", "owners"}
+    assert set(observation.serialise(world.observation())) == {"at", "owners", "hq"}
+
+
+def test_hq_status_is_public_in_every_view_including_the_one_belonging_to_nobody() -> None:
+    # `docs/mvp-scope.md` makes the win conditions the scoreboard rather than
+    # intelligence, so this is the one enemy-shaped fact that crosses (#27's
+    # exception, decided with #27 itself): a Campaign whose score nobody can
+    # read is unplayable, and a side must be able to see its own HQ has fallen.
+    world = live()
+    world.raze("csat_kamino", at_time=90)
+
+    for view in (observation.PUBLIC, "WEST", "EAST"):
+        assert world.observation(view).hq == {
+            "nato_airbase": campaign.INTACT,
+            "csat_kamino": campaign.DESTROYED,
+        }
+
+
+def test_hq_status_costs_the_observation_almost_nothing() -> None:
+    # #26's cap is 10,240 bytes and the growth is measured rather than assumed.
+    # It is bounded by the map: one Base per side, enforced by the manifest, so
+    # this number does not move with the Campaign the way Squads and Contacts do.
+    document = observation.serialise(crowded().observation("WEST"))
+    without = {key: value for key, value in document.items() if key != "hq"}
+
+    def wire(rendered: dict[str, object]) -> int:
+        return len(protocol.encode(protocol.accepted("obs-1", rendered)))
+
+    assert wire(document) - wire(without) == 54
 
 
 def test_a_picture_belonging_to_nobody_cannot_carry_somebodys_secrets() -> None:

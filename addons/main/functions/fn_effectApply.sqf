@@ -30,6 +30,12 @@ if (_name isEqualTo "objective_captured") exitWith {
     true
 };
 
+// The last effect any Campaign produces (#35). The daemon decided the Campaign
+// was over; what is left is the world's half of it.
+if (_name isEqualTo "campaign_won") exitWith {
+    [_sideName, _args] call cti_fnc_campaignEnd
+};
+
 if (_name isEqualTo "order_issued") exitWith {
     [_args getOrDefault ["squad", ""],
         _args getOrDefault ["order", ""],

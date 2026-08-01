@@ -43,6 +43,10 @@ EFFECTS: Final[dict[str, tuple[str, ...]]] = {
     "squad_spawned": ("squad", "squad_type", "size"),
     "order_issued": ("squad", "order", "place"),
     "objective_captured": ("objective",),
+    # The last effect any Campaign produces (#35): which condition ended it, the
+    # in-game moment it ended, and the telemetry-sourced summary the end screen
+    # is drawn from. `side` is the winner, as it is the owner on a capture.
+    "campaign_won": ("condition", "at", "summary"),
 }
 
 

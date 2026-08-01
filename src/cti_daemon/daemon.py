@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from cti_daemon import (
+    archive,
     campaign,
     commands,
     contacts,
@@ -16,6 +17,7 @@ from cti_daemon import (
     planner,
     protocol,
 )
+from cti_daemon.commands import Effect, serialise_effect
 from cti_daemon.outbox import Outbox, UnknownSequenceError
 from cti_daemon.port import CommandPort
 from cti_daemon.telemetry import Telemetry
@@ -37,11 +39,18 @@ class Daemon:
         telemetry_path: Path,
         economy_path: Path | None = None,
         manifests_path: Path | None = None,
+        archive_path: Path | None = None,
         map_id: str = DEFAULT_MAP,
     ) -> None:
         """Wire the daemon to its telemetry sink, the economy and the map."""
         self.outbox = Outbox()
         self._telemetry = Telemetry(telemetry_path)
+        # Where a won Campaign's record lands, and where its summary is read
+        # from (#35, ADR-0023). Beside the telemetry by default, because the two
+        # are one run's evidence and separating them would be one more path for
+        # a session to get wrong.
+        self._telemetry_path = telemetry_path
+        self._archive_path = archive_path or telemetry_path.parent / "campaigns"
         table = economy.load(economy_path or DEFAULT_ECONOMY)
         # One campaign object holds ownership, Funds and Squads, and the port
         # judges against it. Two of anything here would be two answers to how
@@ -57,11 +66,6 @@ class Daemon:
         # unchanged one is not written again. Comparison only, never campaign
         # state — and never a place a side's view is read from.
         self._last_observation: dict[str, dict[str, Any]] = {}
-        # The Bases whose HQ has already been written down as destroyed (#33).
-        # A destroyed HQ stays destroyed and every later report says so, so this
-        # is what keeps the event to one per Base. Comparison only, like the
-        # observation above: never campaign state, never read back (ADR-0003).
-        self._decapitated: set[str] = set()
         # Which sides are under an AI Commander, and the brain playing each
         # (#16, #17). Empty by default: a side belongs to a human until somebody
         # says otherwise, and a daemon nobody has put under command must not
@@ -72,6 +76,10 @@ class Daemon:
         # be one character playing both — which is also the shape in which a
         # Commander could carry state from the other side's turn into its own.
         self._commanders: dict[str, planner.Planner] = {}
+        # Whether the end of this Campaign has already been announced and
+        # archived (#35). Comparison only, like the observation above: the
+        # Campaign holds the outcome, this holds nothing but "said so once".
+        self._concluded = False
 
     @property
     def commanders(self) -> tuple[str, ...]:
@@ -205,6 +213,10 @@ class Daemon:
             self._telemetry.record("squad_lost", at=at_time, squad=squad_id)
         for side in commands.SIDES:
             self._record_observation(side)
+        # Before the Commanders play, so a Campaign that ended on this report
+        # does not get one more cycle of buying and ordering after its own end
+        # screen. `_take_command` reads the same completion.
+        self._conclude()
         self._take_command(float(at_time))
 
         # The public picture alone (#27). The server repaints ownership markers
@@ -213,6 +225,58 @@ class Daemon:
         # What each side moved and lost is on disk above, where an operator
         # reads it and a Commander does not.
         return protocol.accepted(request.id, observation.serialise(self.campaign.observation()))
+
+    def _conclude(self) -> None:
+        """Close a Campaign the rules have just ended (#35).
+
+        Everything a won Campaign needs that is not a rule: the world told once
+        through the outbox every other effect rides, the summary read back off
+        telemetry, and the record archived. Called on every report and does
+        nothing on all but one of them — `_concluded` is what makes it once,
+        because the world keeps reporting rubble as rubble and a Domination stays
+        won on every report after it.
+
+        A fresh Campaign next session needs no code here: the archive is a record
+        rather than a resumable state (ADR-0023), so the next boot has nothing to
+        load and starts a new one by construction.
+        """
+        outcome = self.campaign.outcome
+        if outcome is None or self._concluded:
+            return
+        self._concluded = True
+
+        self._telemetry.record(
+            "campaign_won",
+            at=outcome.at_time,
+            side=outcome.winner,
+            condition=outcome.condition,
+            base=outcome.base,
+        )
+        # Summarised after the winning row is on disk, so the archive is a
+        # complete account of the Campaign rather than one row short of it.
+        summary = archive.summarise(self._telemetry_path, outcome)
+        self.outbox.push(
+            serialise_effect(
+                Effect(
+                    name="campaign_won",
+                    side=outcome.winner,
+                    args={
+                        "condition": outcome.condition,
+                        "at": outcome.at_time,
+                        "summary": summary,
+                    },
+                )
+            )
+        )
+        try:
+            path = archive.write(self._archive_path, summary)
+        except OSError as exc:
+            # A Campaign that was genuinely won stays won: the world has already
+            # been told, and an unwritable directory is an operator's problem
+            # rather than a reason to un-end a Campaign.
+            self._telemetry.record("campaign_archive_failed", detail=f"{type(exc).__name__}: {exc}")
+            return
+        self._telemetry.record("campaign_archived", path=str(path), summary=summary)
 
     def _take_command(self, at_time: float) -> None:
         """Let each AI Commander play its turn on the picture it can see (#16, #17).
@@ -234,7 +298,13 @@ class Daemon:
         own Funds, roster and Orders, and ownership only moves in `observe`
         above — so playing them one after another is the same Campaign as
         playing them at once, and cheaper to reason about than a promise of it.
+
+        Nobody plays a Campaign that has been won. An AI Commander that kept its
+        turn after the end screen would spend a finished Campaign's Funds and
+        fill an outbox the world has stopped acting on.
         """
+        if self.campaign.complete:
+            return
         for side in self.commanders:
             self._play(side, self._commanders[side], at_time)
 
@@ -386,10 +456,14 @@ class Daemon:
             if not isinstance(destroyed, bool) or not isinstance(by, str):
                 detail = f"`hq.{base}` needs a boolean `destroyed` and a side `by`"
                 raise protocol.MalformedRequestError(detail, request.id)
-            if not destroyed or base in self._decapitated:
+            if not destroyed:
                 continue
-            self._decapitated.add(base)
-            self._telemetry.record("hq_destroyed", at=at_time, base=base, side=side, by=by)
+            # The campaign holds the HQ's state because losing one ends a
+            # Campaign and that is a rule (ADR-0012). It answers False for a
+            # Base already down, which is what keeps this row to one per Base —
+            # and what makes telemetry order mean first destruction.
+            if self.campaign.raze(base, at_time=at_time):
+                self._telemetry.record("hq_destroyed", at=at_time, base=base, side=side, by=by)
 
     def _sight(self, request: protocol.Request, at_time: float) -> None:
         """Fold what each side's leaders saw into that side's Contacts (#28).

@@ -169,9 +169,18 @@ def test_neither_commander_is_handed_the_others_state(tmp_path: Path) -> None:
         for picture in watcher.seen:
             assert picture["side"] == side
             assert all(squad["id"].startswith(f"{side}-") for squad in picture["squads"])
-            # Ownership is public to both sides — the scoreboard, not
-            # intelligence — and is the only place the other side is named.
-            assert set(picture) == {"at", "owners", "side", "funds", "squads", "contacts"}
+            # Ownership and HQ status are public to both sides — the scoreboard,
+            # not intelligence (#35) — and are the only place the other side is
+            # named.
+            assert set(picture) == {
+                "at",
+                "owners",
+                "hq",
+                "side",
+                "funds",
+                "squads",
+                "contacts",
+            }
 
 
 class Wanderer:

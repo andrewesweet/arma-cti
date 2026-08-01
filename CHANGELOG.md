@@ -9,6 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A Campaign can now be won.** Both conditions the MVP decided are live. **Domination**: one
+  side owns every Objective at once and holds the lot for ten sustained in-game minutes — losing
+  one Objective, or having it contested, restarts the ten minutes rather than pausing them, and
+  the timer is not persisted, so it starts again on every boot. **Decapitation**: a side's Base HQ
+  structure is destroyed and the other side wins, whoever brought it down; two HQs falling in the
+  same report are resolved by whichever the world reported first, deterministically. There is no
+  draw. Until now a Campaign ran until somebody stopped watching.
+
+- **An end screen, and an archive.** On victory the Campaign is marked complete, both AI
+  Commanders stand down, income stops and ground stops changing hands. The world is told once,
+  through the same outbox every other effect rides, and carries a summary read back off the run's
+  own telemetry — the winner, the condition, the board as it finally stood, income paid and
+  Commands accepted per side, Squads lost, and the HQ that fell. A headed client sees that as a
+  caption; the mission does not end itself, and the laid-out end screen is #18's map UI. The
+  completed Campaign is archived as a JSON record beside the telemetry, and the next session
+  starts a fresh Campaign — because the archive is a record of what happened rather than a state
+  to resume (ADR-0023), so there is nothing to load and the freshness is not a rule anyone has to
+  remember.
+
+- **Each Base's HQ, intact or destroyed, is now in every strategic picture** — including the
+  public one the server paints markers from. The two win conditions are the scoreboard rather than
+  intelligence, so this is the one enemy-shaped fact that crosses the fog boundary, and it was
+  decided that way with the fog itself. It costs 54 bytes on the wire and does not grow with the
+  Campaign: the map has one Base per side.
+
+- `domination_seconds` in `config/economy.json` (600, a playtest-tuned placeholder like the rest of
+  that table).
+
+- A `campaign-end` probe: an unattended two-AI Campaign on the real topology that actually ends, by
+  Decapitation. It engineers two things about *position* and nothing about a rule — the island, so
+  the Campaign reaches the state in which a Commander plays for the enemy HQ, and the march, so
+  nobody waits out the four and a half kilometres between the Bases. The Assault itself is the
+  Commander's own decision through the port, and the probe refuses the run if it never comes.
+
 - `just regress` — the in-game regression tier. It runs the probe corpus in `spike/probes/`
   against a fresh Phase-1 world per probe and returns one typed verdict each, mapped onto the
   documented failure classes, with the worst class as the exit code; `just regress <name>...` runs

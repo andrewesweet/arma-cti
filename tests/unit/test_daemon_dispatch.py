@@ -280,7 +280,9 @@ def test_the_reply_to_an_observation_is_the_public_picture_and_no_more(tmp_path:
     )
     result = observe(daemon, "o-6", squads={"WEST-1": {"size": 7, "at": "nato_airbase"}})
 
-    assert set(result) == {"at", "owners"}
+    # The scoreboard both sides may read (#35) and nothing else: Objective
+    # ownership, and each Base's HQ intact or destroyed.
+    assert set(result) == {"at", "owners", "hq"}
 
 
 def test_a_report_that_says_nothing_about_squads_leaves_the_roster_alone(tmp_path: Path) -> None:

@@ -23,6 +23,11 @@
     ],
     "objective_captured": [
       "objective"
+    ],
+    "campaign_won": [
+      "condition",
+      "at",
+      "summary"
     ]
   },
   "sides": [

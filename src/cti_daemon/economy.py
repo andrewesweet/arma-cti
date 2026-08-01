@@ -54,6 +54,11 @@ class EconomyTable:
     stipend: int
     income_tick_seconds: int
     capture_seconds: int
+    # How long one side must own every Objective at once to win by Domination
+    # (docs/mvp-scope.md: ten in-game minutes). Authored here with the other rule
+    # clocks because it is the same kind of number — the structure is the
+    # contract and the value is expected to move under playtest.
+    domination_seconds: int
     squads: tuple[SquadType, ...]
 
     def price(self, squad_type: str) -> int | None:
@@ -87,8 +92,10 @@ def _check_numbers(table: dict[str, Any]) -> None:
             _refuse(f"{key} must be a whole number of Funds, not negative")
 
     # A tick or a capture that takes no time would pay continuously, or flip an
-    # Objective the instant anyone walked past it.
-    for key in ("income_tick_seconds", "capture_seconds"):
+    # Objective the instant anyone walked past it. A Domination of no length
+    # would end the Campaign on the frame the last Objective changed hands,
+    # which is the grind's opposite failure and just as unplayable.
+    for key in ("income_tick_seconds", "capture_seconds", "domination_seconds"):
         if not isinstance(table[key], int) or table[key] <= 0:
             _refuse(f"{key} must be a positive whole number of seconds")
 
@@ -111,6 +118,7 @@ def parse(document: object) -> EconomyTable:
         stipend=table["stipend"],
         income_tick_seconds=table["income_tick_seconds"],
         capture_seconds=table["capture_seconds"],
+        domination_seconds=table["domination_seconds"],
         squads=tuple(
             SquadType(
                 id=squad["id"],

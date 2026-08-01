@@ -21,6 +21,12 @@ enemy Squad and enemy Funds have nowhere in this schema to live. What a
 Commander learns of the enemy arrives as **Contacts** (`CONTEXT.md`), which is
 #28's shape, not this one.
 
+The one enemy-shaped fact that does cross is the enemy Base's HQ, and it was
+decided with #27 rather than carved out afterwards (ADR-0012's amendment, and
+`docs/mvp-scope.md`): the two win conditions are the scoreboard rather than
+intelligence. Ownership and HQ status are therefore public in every view, the
+one belonging to nobody included.
+
 Assembled here rather than reported wholesale by the world: ownership, Funds and
 Orders are the daemon's own (ADR-0012), and only the head count and the ground
 underfoot are facts the world alone can see.
@@ -28,7 +34,7 @@ underfoot are facts the world alone can see.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Final
 
 from cti_daemon.contacts import Contact
@@ -69,6 +75,13 @@ class Observation:
     # Public to both sides: the win conditions are the scoreboard rather than
     # intelligence, and a Campaign whose score nobody can read is unplayable.
     owners: dict[str, str]
+    # The other half of that scoreboard (#35): each Base's HQ, intact or
+    # destroyed. Public for the same reason and in the same shape — a place
+    # mapped to a status — because Domination and Decapitation are the two
+    # conditions and neither is a secret. It grows with the map rather than with
+    # the Campaign, and the map has one Base per side, so this is fifty-odd
+    # bytes and stays fifty-odd bytes.
+    hq: dict[str, str] = field(default_factory=dict)
     # Whose view this is, or PUBLIC for the view that is nobody's.
     for_side: str = PUBLIC
     # That side's own Funds. None in the public view — absent because there is
@@ -100,7 +113,11 @@ class Observation:
 
 def serialise(observation: Observation) -> dict[str, Any]:
     """Render an observation as the document that crosses the wire."""
-    document: dict[str, Any] = {"at": observation.at_time, "owners": observation.owners}
+    document: dict[str, Any] = {
+        "at": observation.at_time,
+        "owners": observation.owners,
+        "hq": observation.hq,
+    }
     if observation.for_side == PUBLIC:
         return document
     document["side"] = observation.for_side
@@ -133,12 +150,14 @@ def parse(document: dict[str, Any]) -> Observation:
     """Rebuild an observation from its wire document."""
     at_time = document["at"]
     owners = dict(document["owners"])
+    hq = dict(document.get("hq", {}))
     for_side = document.get("side", PUBLIC)
     if for_side == PUBLIC:
-        return Observation(at_time=at_time, owners=owners)
+        return Observation(at_time=at_time, owners=owners, hq=hq)
     return Observation(
         at_time=at_time,
         owners=owners,
+        hq=hq,
         for_side=for_side,
         funds=document["funds"],
         squads=tuple(

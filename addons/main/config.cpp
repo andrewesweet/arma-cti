@@ -63,6 +63,7 @@ class CfgFunctions
             class orderApply {};
             class orderEnforce {};
             class baseAssault {};
+            class campaignEnd {};
         };
 
         // No generated class any more (ADR-0017). The map manifests ship as the
