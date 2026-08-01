@@ -117,13 +117,32 @@ spike: build-shim build-addon
 probe file="" hold="150": build-shim build-addon
     #!/usr/bin/env bash
     set -euo pipefail
+    # Under the tier lock, same as `regress`: the Arma tier is single-occupancy
+    # per machine, and a hand run that ignores the lock is exactly the collision
+    # the lock exists to stop.
     CTI_MISSION=cti.Stratis \
         CTI_SERVER_CONFIG="{{ justfile_directory() }}/spike/phase1.cfg" \
         CTI_LOG_PREFIX=CTI \
         CTI_HOLD_TIMEOUT="{{ hold }}" \
         CTI_HARNESS_EXTRA="{{ file }}" \
         CTI_HARNESS_AWAIT="$([[ -n "{{ file }}" ]] && echo probe_done || true)" \
-        ./spike/run.sh --hold
+        ./spike/tier-lock.sh --label "just probe {{ file }}" -- ./spike/run.sh --hold
+
+# Arma tier: the in-game regression suite (#23, ADR-0016, docs/regression-tier.md).
+# No arguments runs the whole corpus in spike/probes/; names run a subset while
+# iterating. Fresh world per probe, one typed verdict per probe from the
+# CLAUDE.md failure-class table, worst class as the exit code.
+#
+# Each probe declares its own deadline in a `window:` header and the run waits on
+# that probe's own completion line, so a probe that finishes early ends early.
+# The corpus takes no environment variables: what a probe's world needs is in its
+# `env:` header.
+#
+# Serialised on a machine-scoped lock at ~/.arma-cti/tier.lock. A held lock is
+# infra_unavailable and never a result; `--wait <secs>` bounds a queue.
+# Evidence, including the probe as staged, lands in ~/.arma-cti/runs/.
+regress *args: build-shim build-addon
+    ./spike/regress.sh {{ args }}
 
 # Everything that does not need Arma.
 fast: check unit

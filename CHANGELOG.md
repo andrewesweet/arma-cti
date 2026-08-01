@@ -7,7 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `just regress` — the in-game regression tier. It runs the probe corpus in `spike/probes/`
+  against a fresh Phase-1 world per probe and returns one typed verdict each, mapped onto the
+  documented failure classes, with the worst class as the exit code; `just regress <name>...` runs
+  a subset while iterating. Before this, every in-world check was a hand-typed invocation with
+  five bespoke environment variables that nobody who had not typed it could reproduce, and a
+  property proven the day it was built was unprotected the day after. Each probe now declares its
+  own deadline, the issues that motivated it, and any world it needs, in a header block the runner
+  reads — so the command itself takes no environment variables, and a probe that finishes early
+  ends early instead of burning a hold window waiting for a client that a regression run never
+  sends.
+
+- A `bareworld` probe, carrying the properties that had no Phase-1 home: the addon resolving by
+  name on a dedicated server, the seeded PRNG against the real engine, the daemon echoing a
+  request id back through `callExtension`, and the effect pump and presence report actually
+  turning. Three of those existed only in the Phase-0 measurement mission, which nothing runs.
+
+- Serialisation of the Arma tier on a machine-scoped lock at `~/.arma-cti/tier.lock`, wrapped
+  around `just probe` as well as `just regress`. The tier is single-occupancy — one server
+  install, one port range, one machine the human also plays on — while agent worktrees are many
+  and short-lived, so a lock inside any worktree would serialise nobody. A held lock reports
+  `infra_unavailable` with the holder's metadata and launches nothing; `--wait <secs>` bounds a
+  queue. A run also refuses outright if the game is up on the Windows host.
+
+- Evidence directories under `~/.arma-cti/runs/<UTC>-<probe>/`, outside every worktree, carrying
+  the verdict, the logs, the daemon telemetry and the probe exactly as it was staged. Passes are
+  pruned to the last three per probe.
+
 ### Changed
+
+- An in-world `FAIL` line's own `class=` is now believed. The harness called every in-mission
+  failure `assertion_failed`, including the ones the world had explicitly typed `timeout` or
+  `oracle_disagreement` — which sent the reader to fix code when the table said investigate
+  synchronisation or suspect the capture layer.
 
 - The game reads the authored map manifest itself, instead of a generated SQF copy of it. The
   engine has had a JSON parser since 2.18 and the server runs 2.20, so the addon ships

@@ -1,10 +1,11 @@
 // probe: two-commanders
 // issues: 17
 // window: 600
+// env: CTI_HOLD_HC=1 CTI_AI_SIDE=WEST,EAST CTI_AI_SEED=1,4
 //
 // #17 in-world probe: both sides under an AI Commander, nobody watching.
 //
-// Run with:
+// `just regress two-commanders` reads the block above. By hand:
 //   CTI_HOLD_HC=1 CTI_AI_SIDE=WEST,EAST CTI_AI_SEED=1,4 \
 //       just probe spike/probes/two-commanders.sqf 600
 //

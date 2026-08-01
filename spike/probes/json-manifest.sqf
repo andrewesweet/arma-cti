@@ -5,8 +5,9 @@
 // #22 in-world probe: the addon reads the authored JSON, and the world it
 // builds from it is the same world.
 //
-// Run with `just probe spike/probes/json-manifest.sqf`. Appended to the
-// generated harness at bring-up, never packed into the mission.
+// `just regress json-manifest`, or by hand
+// `just probe spike/probes/json-manifest.sqf`. Appended to the generated
+// harness at bring-up, never packed into the mission.
 //
 // The default 150 s window is right: the subject is a file being read at
 // mission start and a Purchase being judged on the synchronous path. Nothing

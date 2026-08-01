@@ -44,9 +44,20 @@ HARNESS_TIMEOUT="${CTI_HARNESS_TIMEOUT:-300}"
 
 SKIP_HC=0
 HOLD=0
+NO_CLIENT_WAIT=0
 HOLD_TIMEOUT="${CTI_HOLD_TIMEOUT:-900}"
 case "${1:-}" in
 --no-hc) SKIP_HC=1 ;;
+# The regression tier's mode (issue #23). Everything --hold does, minus the two
+# things that only make sense when a human is joining: the direct-connect banner
+# and the wait for a client that a regression run never sends. Without this, a
+# probe that finished in forty seconds still costs its whole window, because the
+# client wait runs to the end before the probe wait begins.
+--regress)
+    SKIP_HC=$((1 - ${CTI_HOLD_HC:-0}))
+    HOLD=1
+    NO_CLIENT_WAIT=1
+    ;;
 # Bring everything up and keep it up so a human client can join, then report
 # what that client did. Used for the Windows-client join and .dll load test.
 --hold)
@@ -105,6 +116,17 @@ wait_for() {
     done
 }
 
+# The class an in-mission FAIL line declared, or assertion_failed if it declared
+# none. In-world code writes `FAIL class=timeout ...` and `FAIL
+# class=oracle_disagreement ...` as well as plain assertions, and calling all of
+# them assertion_failed sends the reader to fix code when the failure-class table
+# says investigate synchronisation or suspect the capture layer.
+class_of() {
+    local line="$1" declared
+    declared="$(sed -n 's/.*class=\([a-z_]\+\).*/\1/p' <<<"$line")"
+    printf '%s' "${declared:-assertion_failed}"
+}
+
 fail() {
     record "verdict" "FAIL"
     record "failure_class" "$1"
@@ -158,7 +180,9 @@ cp -r "$REPO/missions/$MISSION/." "$STAGE/"
 # CTI_DESYNC_WINDOW forces it on elsewhere, which is how the watcher itself gets
 # exercised without waiting for a human.
 DESYNC_WINDOW="${CTI_DESYNC_WINDOW:-0}"
-((HOLD == 1)) && DESYNC_WINDOW="${CTI_DESYNC_WINDOW:-$HOLD_TIMEOUT}"
+# Not in --regress: nobody joins, so there is no link to watch, and the watcher
+# would only add noise to every probe's evidence.
+((HOLD == 1 && NO_CLIENT_WAIT == 0)) && DESYNC_WINDOW="${CTI_DESYNC_WINDOW:-$HOLD_TIMEOUT}"
 # The load generator that gives a joining client something to simulate is #8's
 # scaffolding, and it is mutually exclusive with a Campaign: it spawns
 # thirty-two WEST soldiers standing on the first four Objectives, and capture is
@@ -215,7 +239,7 @@ t=$(now)
 # Hold mode has to be reachable from the Windows host, so bind every interface
 # for the duration of that test only. Otherwise stay on loopback.
 DAEMON_HOST=127.0.0.1
-((HOLD == 1)) && DAEMON_HOST=0.0.0.0
+((HOLD == 1 && NO_CLIENT_WAIT == 0)) && DAEMON_HOST=0.0.0.0
 # Which sides, if any, an AI Commander plays (#16, #17). Off unless asked for,
 # so a world brought up for a human Commander is not quietly being played by one.
 # A comma list, one seed per side in the same order: CTI_AI_SIDE=WEST,EAST with
@@ -392,8 +416,11 @@ fi
 
 # ---------------------------------------------------------------- human client
 if ((HOLD == 1)); then
-    lan_ip="$(ip -4 -o addr show scope global 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | grep -E '^192\.168\.' | head -1)"
-    cat >&2 <<EOF
+    # Skipped under --regress: a regression run sends no client, so the banner is
+    # noise and the wait is the whole window burned before the probe wait starts.
+    if ((NO_CLIENT_WAIT == 0)); then
+        lan_ip="$(ip -4 -o addr show scope global 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | grep -E '^192\.168\.' | head -1)"
+        cat >&2 <<EOF
 
   ================ ready for a client ================
   Arma 3 -> MULTIPLAYER -> DIRECT CONNECT
@@ -405,28 +432,30 @@ if ((HOLD == 1)); then
   ====================================================
 
 EOF
-    t_client=$(now)
-    case "$(
-        wait_for "$SERVER_LOG" "$LOG_PREFIX\|player_connected name=(\"\")?[^_]" "$HOLD_TIMEOUT" "$server_pid"
-        echo $?
-    )" in
-    1)
-        record "windows_client_joined" "false"
-        record "windows_client_failure" "no client connected within ${HOLD_TIMEOUT}s"
-        ;;
-    2) fail "node_crashed" "server exited while waiting for a client; see $SERVER_LOG" ;;
-    *)
-        record "windows_client_connected_secs" "$(since "$t_client")"
-        # Entering the mission is the thing in doubt, not connecting: the client
-        # report only fires once init.sqf has actually run on that machine.
-        if wait_for "$SERVER_LOG" "$LOG_PREFIX\|client_report" 180 "$server_pid"; then
-            record "windows_client_joined" "true"
-            record "windows_client_in_mission_secs" "$(since "$t_client")"
-        else
-            record "windows_client_joined" "connected-but-never-entered-mission"
-        fi
-        ;;
-    esac
+        t_client=$(now)
+        case "$(
+            wait_for "$SERVER_LOG" "$LOG_PREFIX\|player_connected name=(\"\")?[^_]" "$HOLD_TIMEOUT" "$server_pid"
+            echo $?
+        )" in
+        1)
+            record "windows_client_joined" "false"
+            record "windows_client_failure" "no client connected within ${HOLD_TIMEOUT}s"
+            ;;
+        2) fail "node_crashed" "server exited while waiting for a client; see $SERVER_LOG" ;;
+        *)
+            record "windows_client_connected_secs" "$(since "$t_client")"
+            # Entering the mission is the thing in doubt, not connecting: the client
+            # report only fires once init.sqf has actually run on that machine.
+            if wait_for "$SERVER_LOG" "$LOG_PREFIX\|client_report" 180 "$server_pid"; then
+                record "windows_client_joined" "true"
+                record "windows_client_in_mission_secs" "$(since "$t_client")"
+            else
+                record "windows_client_joined" "connected-but-never-entered-mission"
+            fi
+            ;;
+        esac
+    fi
+
     # A probe that never finished is not a pass either. Waiting for its own
     # completion line means a probe outliving the hold window is a timeout,
     # rather than a HOLD-COMPLETE read off a log it had not finished writing.
@@ -464,9 +493,18 @@ EOF
     )
 
     if grep -q '^FAIL' "$OUT/spike-lines.txt"; then
-        fail "assertion_failed" "$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
+        first_fail="$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
+        fail "$(class_of "$first_fail")" "$first_fail"
     fi
-    record "verdict" "HOLD-COMPLETE"
+    # HOLD-COMPLETE says "the window closed and nothing failed", which is the
+    # right word for a run whose subject was a human joining. A regression run
+    # has no window to close: it ended because the probe said so, so it gets the
+    # verdict the corpus loop reads.
+    if ((NO_CLIENT_WAIT == 1)); then
+        record "verdict" "PASS"
+    else
+        record "verdict" "HOLD-COMPLETE"
+    fi
     log "results: $RESULTS"
     exit 0
 fi

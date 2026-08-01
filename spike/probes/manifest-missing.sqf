@@ -5,8 +5,13 @@
 //
 // #22 in-world probe, RED BY DESIGN. A green run of this probe is the bug.
 //
-// Run with `just probe spike/probes/manifest-missing.sqf`. The expected verdict
-// is FAIL / assertion_failed, carrying cti_fnc_manifestLoad's own refusal:
+// `expect:` inverts the verdict for the regression tier: the run passes when
+// the class below fires and fails when it does not, so a negative probe can sit
+// in the corpus without permanently reddening it. It is the only such probe.
+//
+// `just regress manifest-missing`, or by hand
+// `just probe spike/probes/manifest-missing.sqf`. The raw verdict is
+// FAIL / assertion_failed, carrying cti_fnc_manifestLoad's own refusal:
 //
 //   FAIL class=assertion_failed no_manifest_for_world=Altis
 //       path=cti\addons\main\manifests\altis.json

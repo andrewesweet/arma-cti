@@ -1,10 +1,12 @@
 // probe: ai-commander
 // issues: 16
 // window: 300
+// env: CTI_AI_SIDE=WEST
 //
 // #16 in-world probe: WEST plays itself, and the world does what it is told.
 //
-// Run with `CTI_AI_SIDE=WEST just probe spike/probes/ai-commander.sqf 300`.
+// `just regress ai-commander` reads the block above. By hand:
+// `CTI_AI_SIDE=WEST just probe spike/probes/ai-commander.sqf 300`.
 // Without the environment variable the daemon comes up under nobody's command
 // and this probe correctly finds nothing — which is the point of the flag.
 //

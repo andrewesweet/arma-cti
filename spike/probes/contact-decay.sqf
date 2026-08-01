@@ -4,7 +4,8 @@
 //
 // #28 in-world probe: a Contact outlives the engine forgetting the men it was made of.
 //
-// Run with `just probe spike/probes/contact-decay.sqf 300`.
+// `just regress contact-decay`, or by hand
+// `just probe spike/probes/contact-decay.sqf 300`.
 //
 // The hold window is raised from the default 150 s because the subject is the
 // engine's 120 s knowledge decay, and no window shorter than that can contain

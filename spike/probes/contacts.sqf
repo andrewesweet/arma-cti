@@ -4,8 +4,8 @@
 //
 // #28 in-world probe: WEST reports what it saw of EAST, and nothing of who EAST is.
 //
-// Run with `just probe spike/probes/contacts.sqf 240`. Appended to the generated
-// harness at bring-up, never packed into the mission.
+// `just regress contacts`, or by hand `just probe spike/probes/contacts.sqf 240`.
+// Appended to the generated harness at bring-up, never packed into the mission.
 //
 // The window is raised above the default 150 s because acquisition is a natural
 // process with a wide spread, and it is this probe's setup rather than its

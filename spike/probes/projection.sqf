@@ -4,7 +4,8 @@
 //
 // #27 in-world probe: the server takes the public picture and still repaints.
 //
-// Run with `just probe spike/probes/projection.sqf`. Appended to the generated
+// `just regress projection`, or by hand
+// `just probe spike/probes/projection.sqf`. Appended to the generated
 // harness at bring-up, never packed into the mission — the mission is the thing
 // under test, and a probe that ships in it is one that ships.
 [] spawn {
