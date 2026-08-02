@@ -18,6 +18,7 @@ import json
 from typing import TYPE_CHECKING, Any
 
 import pytest
+from conftest import reply_to, rows
 
 from cti_daemon import planner, transport
 from cti_daemon.commands import SIDES, Command, serialise_effect
@@ -33,11 +34,6 @@ if TYPE_CHECKING:
 
 # One per side, and different, because a pair of seeds is what fixes a Campaign.
 SEEDS = {"WEST": 1, "EAST": 4}
-
-
-def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
-    """Send one request and return its decoded reply."""
-    return json.loads(daemon.handle_line(json.dumps(envelope)))
 
 
 def commanded(
@@ -82,15 +78,6 @@ def play(daemon: Daemon, turns: int = 8) -> Daemon:
     for step in range(turns):
         turn(daemon, step)
     return daemon
-
-
-def rows(path: Path, event: str) -> list[dict[str, Any]]:
-    """Return the telemetry rows of one kind."""
-    return [
-        record
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if (record := json.loads(line))["event"] == event
-    ]
 
 
 def fingerprint(daemon: Daemon) -> dict[str, Any]:

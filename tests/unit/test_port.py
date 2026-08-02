@@ -8,18 +8,13 @@ Commander symmetry is one validator rather than two kept honest by convention.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
+from conftest import REPO, live
 from hypothesis import given
 from hypothesis import strategies as st
 
-from cti_daemon import campaign, economy, manifest, port, squads
+from cti_daemon import manifest, port, squads
 from cti_daemon.commands import Command, Effect
-from cti_daemon.outbox import Outbox
-
-REPO = Path(__file__).parents[2]
-
 
 MAP = manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json")
 WEST_BASE = next(base.id for base in MAP.bases if base.side == "WEST")
@@ -28,15 +23,7 @@ EAST_BASE = next(base.id for base in MAP.bases if base.side == "EAST")
 
 def fresh() -> port.CommandPort:
     """Return a port over the authored map and economy, everything Neutral."""
-    table = economy.load(REPO / "config" / "economy.json")
-    return port.CommandPort(
-        campaign=campaign.Campaign(
-            map_manifest=MAP,
-            table=table,
-            ledger=economy.Ledger(table.starting_funds),
-            outbox=Outbox(),
-        )
-    )
+    return port.CommandPort(campaign=live())
 
 
 @pytest.fixture
@@ -54,7 +41,11 @@ def bought(open_port: port.CommandPort, side: str = "WEST") -> str:
 
 
 def standing(open_port: port.CommandPort, squad_id: str, side: str = "WEST") -> squads.Order:
-    """Return the Order that Squad is currently carrying."""
+    """Return the Order that Squad is currently carrying, refusing a ghost.
+
+    The assert narrows `Squad | None` and says what it is doing: a Squad the
+    roster does not have has no Order, which is a different failure.
+    """
     squad = open_port.campaign.roster.of(squad_id, side)
     assert squad is not None
     return squad.order

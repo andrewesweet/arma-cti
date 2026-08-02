@@ -7,50 +7,23 @@ So the check that matters here is that it fails when the record is short.
 
 from __future__ import annotations
 
-import importlib.util
 import json
-import sys
-from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from conftest import load_tool
+from conftest import recorded_death as death
+
 if TYPE_CHECKING:
-    from types import ModuleType
+    from pathlib import Path
 
 # Loaded by path for the reason `test_push_path_report.py` does: tools/ holds
 # standalone scripts rather than an importable package.
-_ROOT = Path(__file__).parents[2]
-_SPEC = importlib.util.spec_from_file_location("timeline", _ROOT / "tools" / "timeline.py")
-assert _SPEC is not None
-assert _SPEC.loader is not None
-_TIMELINE: ModuleType = importlib.util.module_from_spec(_SPEC)
-sys.modules["timeline"] = _TIMELINE
-_SPEC.loader.exec_module(_TIMELINE)
+_TIMELINE = load_tool("timeline")
 
 main = _TIMELINE.main
 staged = _TIMELINE.staged
 timeline = _TIMELINE.timeline
 unmatched = _TIMELINE.unmatched
-
-
-def death(**fields: object) -> dict[str, Any]:
-    """One recorded death, in the shape the daemon writes it."""
-    return {
-        "at_ns": 1,
-        "event": "casualty",
-        "at": 431.5,
-        "unit": "2:14",
-        "type": "B_Soldier_F",
-        "squad": "WEST-1",
-        "side": "WEST",
-        "place": "agia_marina",
-        "pos": [3421, 5122, 0],
-        "by_unit": "3:2",
-        "by_type": "O_Soldier_F",
-        "by_squad": "EAST-2",
-        "by_side": "EAST",
-        "by_vehicle": "",
-        **fields,
-    }
 
 
 def written(tmp_path: Path, *records: dict[str, Any]) -> Path:

@@ -13,13 +13,12 @@ than truncating in silence in a Play Session.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
+from conftest import REPO
 
 from cti_daemon import budget, economy, manifest
 
-REPO = Path(__file__).parents[2]
 SCHEMA = REPO / "addons" / "main" / "generated" / "command-schema.json"
 DAEMON_CALL = REPO / "addons" / "main" / "functions" / "fn_daemonCall.sqf"
 

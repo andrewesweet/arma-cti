@@ -10,28 +10,14 @@ going to ship.
 from __future__ import annotations
 
 import itertools
-from pathlib import Path
 
 import pytest
+from conftest import live
 from hypothesis import given
 from hypothesis import strategies as st
 
-from cti_daemon import campaign, contacts, economy, manifest, planner, port
+from cti_daemon import campaign, contacts, planner, port
 from cti_daemon.commands import Command
-from cti_daemon.outbox import Outbox
-
-REPO = Path(__file__).parents[2]
-
-
-def live() -> campaign.Campaign:
-    """Return a campaign on the authored Stratis map, everything Neutral."""
-    table = economy.load(REPO / "config" / "economy.json")
-    return campaign.Campaign(
-        map_manifest=manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json"),
-        table=table,
-        ledger=economy.Ledger(table.starting_funds),
-        outbox=Outbox(),
-    )
 
 
 def brain(world: campaign.Campaign, seed: int = 0) -> planner.UtilityPlanner:

@@ -11,20 +11,17 @@ receiver refuses the second copy (#69, ADR-0034).
 from __future__ import annotations
 
 import json
-from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+from conftest import REPO, reply_to, rows
 
 from cti_daemon import budget
 from cti_daemon.commands import Effect, serialise_effect
 from cti_daemon.daemon import POLL_GUARD_BYTES, Daemon
 from cti_daemon.transport import build_daemon
 
-REPO = Path(__file__).parents[2]
-
-
-def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
-    """Send one request and return its decoded reply."""
-    return json.loads(daemon.handle_line(json.dumps(envelope)))
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def encoded(daemon: Daemon, **envelope: object) -> str:
@@ -39,15 +36,6 @@ def spawn_effect(index: int) -> Effect:
         side="WEST",
         args={"squad": f"WEST-{index}", "squad_type": "weapons", "size": 8},
     )
-
-
-def rows(log: Path, event: str) -> list[dict[str, Any]]:
-    """Every telemetry row of one kind."""
-    return [
-        row
-        for row in (json.loads(line) for line in log.read_text(encoding="utf-8").splitlines())
-        if row["event"] == event
-    ]
 
 
 def test_the_effects_guard_is_the_observations_guard(tmp_path: Path) -> None:

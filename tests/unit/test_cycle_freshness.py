@@ -21,11 +21,14 @@ import shutil
 import socket
 import stat
 import subprocess
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
+from conftest import REPO
 
-REPO = Path(__file__).resolve().parents[2]
+if TYPE_CHECKING:
+    from pathlib import Path
+
 CYCLE = REPO / "spike" / "cycle" / "cycle.sh"
 BASH = shutil.which("bash") or "/bin/bash"
 

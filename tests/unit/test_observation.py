@@ -11,17 +11,14 @@ truncates a longer one in silence.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import pytest
+from conftest import live
 from hypothesis import given
 from hypothesis import strategies as st
 
-from cti_daemon import budget, campaign, contacts, economy, manifest, observation, port, protocol
+from cti_daemon import budget, campaign, contacts, observation, port, protocol
 from cti_daemon.commands import Command
-from cti_daemon.outbox import Outbox
-
-REPO = Path(__file__).parents[2]
 
 SQUAD_VIEWS = st.builds(
     observation.SquadView,
@@ -76,17 +73,6 @@ def test_an_observation_survives_the_wire_unchanged(
     # rather than through the dataclass alone.
     document = json.loads(json.dumps(observation.serialise(original)))
     assert observation.parse(document) == original
-
-
-def live() -> campaign.Campaign:
-    """Return a campaign on the authored Stratis map, everything Neutral."""
-    table = economy.load(REPO / "config" / "economy.json")
-    return campaign.Campaign(
-        map_manifest=manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json"),
-        table=table,
-        ledger=economy.Ledger(table.starting_funds),
-        outbox=Outbox(),
-    )
 
 
 def test_an_observation_reports_every_objective_including_contested_ones() -> None:
@@ -267,7 +253,12 @@ def test_hq_status_costs_the_observation_almost_nothing() -> None:
     def wire(rendered: dict[str, object]) -> int:
         return len(protocol.encode(protocol.accepted("obs-1", rendered)))
 
-    assert wire(document) - wire(without) == 54
+    # Derived rather than pinned bare: two Bases, each contributing its authored
+    # id, a quoted status and JSON's punctuation, inside one `"hq":{...}` key.
+    hq = document["hq"]
+    assert len(hq) == 2, "one Base per side, enforced by the manifest"
+    expected = len(json.dumps({"hq": hq}, separators=(",", ":"))) - len("{}") + len(",")
+    assert wire(document) - wire(without) == expected == 54
 
 
 def test_a_picture_belonging_to_nobody_cannot_carry_somebodys_secrets() -> None:

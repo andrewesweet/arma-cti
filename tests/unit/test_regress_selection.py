@@ -56,6 +56,7 @@ def run(*args: str, tmp_path: Path | None = None) -> subprocess.CompletedProcess
 
 
 def selected(*args: str) -> list[str]:
+    """Return what `--list` selected, failing the test if the run itself did not."""
     result = run(*args)
     assert result.returncode == 0, result.stderr
     return result.stdout.split()

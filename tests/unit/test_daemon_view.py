@@ -12,7 +12,9 @@ under an AI Commander has no view to hand out and no Commands to take.
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
+
+from conftest import reply_to
 
 from cti_daemon import planner
 from cti_daemon.transport import build_daemon
@@ -21,11 +23,6 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from cti_daemon.daemon import Daemon
-
-
-def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
-    """Send one request and return its decoded reply."""
-    return json.loads(daemon.handle_line(json.dumps(envelope)))
 
 
 def under_ai(daemon: Daemon, side: str, seed: int = 1) -> Daemon:

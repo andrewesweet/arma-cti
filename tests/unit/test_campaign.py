@@ -11,26 +11,21 @@ rule that takes time as an argument is a rule that can be tested.
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
+from conftest import live
 
-from cti_daemon import campaign, economy, manifest
 from cti_daemon.commands import Effect
-from cti_daemon.outbox import Outbox
 
-REPO = Path(__file__).parents[2]
+if TYPE_CHECKING:
+    from cti_daemon import campaign
 
 
-@pytest.fixture
-def live() -> campaign.Campaign:
-    """Return a campaign on the authored Stratis map, everything Neutral."""
-    return campaign.Campaign(
-        map_manifest=manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json"),
-        table=economy.load(REPO / "config" / "economy.json"),
-        ledger=economy.Ledger(300),
-        outbox=Outbox(),
-    )
+@pytest.fixture(name="live")
+def live_campaign() -> campaign.Campaign:
+    """Return a Campaign on the authored Stratis map, everything Neutral."""
+    return live()
 
 
 def hold(live: campaign.Campaign, objective: str, sides: list[str], seconds: float) -> None:

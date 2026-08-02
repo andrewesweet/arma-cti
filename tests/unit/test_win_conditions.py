@@ -15,25 +15,17 @@ telemetry order.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
+from conftest import live
 
-from cti_daemon import campaign, contacts, economy, manifest, squads
+from cti_daemon import campaign, contacts, economy, squads
 from cti_daemon.outbox import Outbox
 
-REPO = Path(__file__).parents[2]
 
-
-@pytest.fixture
-def live() -> campaign.Campaign:
-    """Return a campaign on the authored Stratis map, everything Neutral."""
-    return campaign.Campaign(
-        map_manifest=manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json"),
-        table=economy.load(REPO / "config" / "economy.json"),
-        ledger=economy.Ledger(300),
-        outbox=Outbox(),
-    )
+@pytest.fixture(name="live")
+def live_campaign() -> campaign.Campaign:
+    """Return a Campaign on the authored Stratis map, everything Neutral."""
+    return live()
 
 
 def everywhere(live: campaign.Campaign, side: str) -> dict[str, list[str]]:
@@ -42,7 +34,12 @@ def everywhere(live: campaign.Campaign, side: str) -> dict[str, list[str]]:
 
 
 def take_the_island(live: campaign.Campaign, side: str) -> None:
-    """Hold every Objective long enough for `side` to own the lot."""
+    """Hold every Objective long enough for `side` to own the lot, and check it did.
+
+    The assert is the arrangement's own postcondition, stated here so that a
+    Campaign that failed to reach the state under test fails as that rather
+    than as whatever the test went on to measure.
+    """
     live.observe(live.elapsed + 1, everywhere(live, side))
     live.observe(live.elapsed + live.table.capture_seconds, everywhere(live, side))
     assert set(live.owners().values()) == {side}

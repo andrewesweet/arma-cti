@@ -9,25 +9,16 @@ case-folded, or a checkout on Windows or macOS overwrites one page with another.
 
 from __future__ import annotations
 
-import importlib.util
 import json
-import sys
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
+from conftest import load_tool
 
 if TYPE_CHECKING:
-    from types import ModuleType
+    from pathlib import Path
 
-_SPEC = importlib.util.spec_from_file_location(
-    "import_wiki_export", Path(__file__).parents[2] / "tools" / "import_wiki_export.py"
-)
-assert _SPEC is not None
-assert _SPEC.loader is not None
-wiki: ModuleType = importlib.util.module_from_spec(_SPEC)
-sys.modules["import_wiki_export"] = wiki
-_SPEC.loader.exec_module(wiki)
+wiki = load_tool("import_wiki_export")
 
 EXPORT = """<?xml version="1.0"?>
 <mediawiki xmlns="http://www.mediawiki.org/xml/export-0.11/" version="0.11">

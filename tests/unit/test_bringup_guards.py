@@ -20,11 +20,14 @@ import re
 import shutil
 import stat
 import subprocess
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
+from conftest import REPO
 
-REPO = Path(__file__).resolve().parents[2]
+if TYPE_CHECKING:
+    from pathlib import Path
+
 RUN = REPO / "spike" / "run.sh"
 TIER_LOCK = REPO / "spike" / "tier-lock.sh"
 JUSTFILE = REPO / "justfile"

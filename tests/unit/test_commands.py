@@ -29,25 +29,28 @@ def test_a_purchase_command_parses_into_its_parts() -> None:
 
 
 @pytest.mark.parametrize(
-    ("payload", "why"),
+    "payload",
     [
-        ("purchase", "a bare string is not a Command"),
-        ([], "a list is not a Command"),
-        ({"side": "WEST"}, "no command name"),
-        ({"command": "", "side": "WEST"}, "an empty command name"),
-        ({"command": 7, "side": "WEST"}, "a command name that is not a string"),
-        ({"command": "purchase"}, "no side"),
-        ({"command": "purchase", "side": "GUER"}, "a side nobody commands"),
-        ({"command": "purchase", "side": "west"}, "engine side names are upper case"),
-        ({"command": "purchase", "side": "WEST", "args": 3}, "args that are not an object"),
+        pytest.param("purchase", id="a bare string is not a Command"),
+        pytest.param([], id="a list is not a Command"),
+        pytest.param({"side": "WEST"}, id="no command name"),
+        pytest.param({"command": "", "side": "WEST"}, id="an empty command name"),
+        pytest.param({"command": 7, "side": "WEST"}, id="a command name that is not a string"),
+        pytest.param({"command": "purchase"}, id="no side"),
+        pytest.param({"command": "purchase", "side": "GUER"}, id="a side nobody commands"),
+        pytest.param(
+            {"command": "purchase", "side": "west"}, id="engine side names are upper case"
+        ),
+        pytest.param(
+            {"command": "purchase", "side": "WEST", "args": 3}, id="args that are not an object"
+        ),
     ],
 )
-def test_a_payload_that_is_not_a_command_is_refused(payload: object, why: str) -> None:
+def test_a_payload_that_is_not_a_command_is_refused(payload: object) -> None:
     # ADR-0012: a malformed *command* is a rejection, not an error — the caller
     # is at fault, not our transport. The port turns this into that rejection.
     with pytest.raises(commands.MalformedCommandError):
         commands.parse(payload)
-    assert why
 
 
 def test_an_absent_args_object_is_an_empty_one() -> None:

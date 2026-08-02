@@ -8,23 +8,14 @@ use of it.
 
 from __future__ import annotations
 
-import importlib.util
-import sys
-from pathlib import Path
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from types import ModuleType
+from conftest import REPO, load_tool
 
-_ROOT = Path(__file__).parents[2]
-_SPEC = importlib.util.spec_from_file_location(
-    "check_sqf_bans", _ROOT / "tools" / "check_sqf_bans.py"
-)
-assert _SPEC is not None
-assert _SPEC.loader is not None
-check_sqf_bans: ModuleType = importlib.util.module_from_spec(_SPEC)
-sys.modules["check_sqf_bans"] = check_sqf_bans
-_SPEC.loader.exec_module(check_sqf_bans)
+if TYPE_CHECKING:
+    from pathlib import Path
+
+check_sqf_bans = load_tool("check_sqf_bans")
 
 ADAPTER = "addons/main/functions/fn_prngNext.sqf"
 OTHER = "addons/main/functions/fn_other.sqf"
@@ -85,11 +76,11 @@ def test_a_longer_identifier_is_not_the_banned_command() -> None:
 
 
 def test_the_repository_is_clean() -> None:
-    assert check_sqf_bans.scan_tree(_ROOT) == []
+    assert check_sqf_bans.scan_tree(REPO) == []
 
 
 def test_the_vendored_wiki_is_not_scanned() -> None:
-    scanned = {p.relative_to(_ROOT).as_posix() for p in check_sqf_bans.sqf_files(_ROOT)}
+    scanned = {p.relative_to(REPO).as_posix() for p in check_sqf_bans.sqf_files(REPO)}
     assert scanned, "expected to find our own SQF"
     assert not any(path.startswith("docs/") for path in scanned)
 

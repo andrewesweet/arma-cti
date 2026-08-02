@@ -11,9 +11,10 @@ from __future__ import annotations
 
 import json
 import socket
-from typing import IO, TYPE_CHECKING, Any
+from typing import IO, TYPE_CHECKING
 
 import pytest
+from conftest import reply_to
 
 from cti_daemon import protocol, transport
 from cti_daemon.commands import Effect
@@ -21,13 +22,6 @@ from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    from cti_daemon.daemon import Daemon
-
-
-def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
-    """Send one envelope through the whole line-handling path."""
-    return json.loads(daemon.handle_line(json.dumps(envelope)))
 
 
 def test_an_epoch_is_minted_per_process_not_per_request(tmp_path: Path) -> None:

@@ -36,21 +36,22 @@ def test_a_domain_rejection_is_a_reply_not_a_failure() -> None:
 
 
 @pytest.mark.parametrize(
-    ("line", "why"),
+    "line",
     [
-        ("{not json", "not JSON at all"),
-        ("[]", "a JSON array is not an envelope"),
-        ('"r-1"', "a bare string is not an envelope"),
-        ('{"verb": "ping"}', "no id to reply against"),
-        ('{"id": "r-1"}', "no verb to dispatch on"),
-        ('{"id": 7, "verb": "ping"}', "an id that is not a string"),
-        ('{"id": "r-1", "verb": "ping", "payload": 3}', "a payload that is not an object"),
+        pytest.param("{not json", id="not JSON at all"),
+        pytest.param("[]", id="a JSON array is not an envelope"),
+        pytest.param('"r-1"', id="a bare string is not an envelope"),
+        pytest.param('{"verb": "ping"}', id="no id to reply against"),
+        pytest.param('{"id": "r-1"}', id="no verb to dispatch on"),
+        pytest.param('{"id": 7, "verb": "ping"}', id="an id that is not a string"),
+        pytest.param(
+            '{"id": "r-1", "verb": "ping", "payload": 3}', id="a payload that is not an object"
+        ),
     ],
 )
-def test_a_line_that_is_not_a_request_is_refused_at_decode(line: str, why: str) -> None:
+def test_a_line_that_is_not_a_request_is_refused_at_decode(line: str) -> None:
     with pytest.raises(protocol.MalformedRequestError):
         protocol.decode(line)
-    assert why  # names the case in the failure output
 
 
 def test_an_error_reply_names_the_failure_class_and_tolerates_an_unknown_id() -> None:

@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any
 
+from conftest import authored_economy, reply_to, rows
+
 from cti_daemon.commands import Effect
 from cti_daemon.transport import build_daemon
 
@@ -15,11 +17,6 @@ if TYPE_CHECKING:
 
 # One Effect to put on the outbox, the domain object it now holds (#77).
 ORDER_ISSUED = Effect(name="order_issued", side="WEST", args={"squad": "WEST-1"})
-
-
-def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
-    """Send one request and return its decoded reply."""
-    return json.loads(daemon.handle_line(json.dumps(envelope)))
 
 
 def test_ping_is_answered_with_the_id_it_was_asked_under(tmp_path: Path) -> None:
@@ -454,8 +451,7 @@ def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
     observe(daemon, "o-14", presence={"agia_marina": ["WEST"]})
 
     def written() -> list[dict[str, Any]]:
-        rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-        return [row for row in rows if row["event"] == "observation"]
+        return rows(log, "observation")
 
     assert [row["side"] for row in written()] == ["WEST", "EAST"]
 
@@ -468,13 +464,18 @@ def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
     observe(daemon, "o-16", presence={"agia_marina": ["WEST"]})
     # Only the side that spent moved, so only its row is written again.
     assert [row["side"] for row in written()] == ["WEST", "EAST", "WEST"]
-    assert written()[-1]["funds"] == 200
+    # The starting balance less what the rifle Squad cost, derived rather than
+    # pinned: an authored price change should move this test's arithmetic, not
+    # break it.
+    rifle = authored_economy()
+    sold = rifle.sold("rifle")
+    assert sold is not None
+    assert written()[-1]["funds"] == rifle.starting_funds - sold.price
 
 
 def hq_rows(log: Path) -> list[dict[str, Any]]:
     """Every HQ destruction the daemon wrote down."""
-    rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    return [row for row in rows if row["event"] == "hq_destroyed"]
+    return rows(log, "hq_destroyed")
 
 
 def test_an_hq_the_world_reports_destroyed_is_written_down_once(tmp_path: Path) -> None:

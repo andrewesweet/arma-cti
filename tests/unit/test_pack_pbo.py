@@ -7,25 +7,16 @@ the SHA-1 trailer; these tests keep the header arithmetic honest without HEMTT.
 from __future__ import annotations
 
 import hashlib
-import importlib.util
 import struct
-import sys
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
+from conftest import load_tool
 
 if TYPE_CHECKING:
-    from types import ModuleType
+    from pathlib import Path
 
-_SPEC = importlib.util.spec_from_file_location(
-    "pack_pbo", Path(__file__).parents[2] / "tools" / "pack_pbo.py"
-)
-assert _SPEC is not None
-assert _SPEC.loader is not None
-pack_pbo: ModuleType = importlib.util.module_from_spec(_SPEC)
-sys.modules["pack_pbo"] = pack_pbo
-_SPEC.loader.exec_module(pack_pbo)
+pack_pbo = load_tool("pack_pbo")
 
 
 def _read_entries(blob: bytes) -> tuple[list[tuple[str, int, int]], int]:

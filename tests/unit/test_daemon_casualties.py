@@ -7,8 +7,9 @@ worth having, and what the daemon does with a report that cannot be trusted.
 
 from __future__ import annotations
 
-import json
 from typing import TYPE_CHECKING, Any
+
+from conftest import death, reply_to, rows
 
 from cti_daemon.transport import build_daemon
 
@@ -16,36 +17,6 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from cti_daemon.daemon import Daemon
-
-
-def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
-    """Send one request and return its decoded reply."""
-    return json.loads(daemon.handle_line(json.dumps(envelope)))
-
-
-def rows(log: Path, event: str) -> list[dict[str, Any]]:
-    """Every row of one kind the daemon wrote down."""
-    written = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    return [row for row in written if row["event"] == event]
-
-
-def death(**fields: object) -> dict[str, Any]:
-    """One death in the shape the world reports it, with the fields under test."""
-    return {
-        "at": 431.5,
-        "unit": "2:14",
-        "type": "B_Soldier_F",
-        "squad": "WEST-1",
-        "side": "WEST",
-        "place": "agia_marina",
-        "pos": [3421, 5122, 0],
-        "by_unit": "3:2",
-        "by_type": "O_Soldier_F",
-        "by_squad": "EAST-2",
-        "by_side": "EAST",
-        "by_vehicle": "",
-        **fields,
-    }
 
 
 def report(daemon: Daemon, request_id: str, **casualties: object) -> dict[str, Any]:

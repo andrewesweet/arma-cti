@@ -13,28 +13,14 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from conftest import observe, reply_to, rows
+
 from cti_daemon import planner
 from cti_daemon.commands import serialise_effect
 from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
     from cti_daemon.daemon import Daemon
-
-
-def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
-    """Send one request and return its decoded reply."""
-    return json.loads(daemon.handle_line(json.dumps(envelope)))
-
-
-def observe(daemon: Daemon, request_id: str, **payload: object) -> dict[str, Any]:
-    """Report what the world can see, and take back the strategic picture."""
-    return reply_to(daemon, id=request_id, verb="observe", payload={"time": 1, **payload})["result"]
-
-
-def rows(log: Path, event: str) -> list[dict[str, Any]]:
-    """Every telemetry row of one kind."""
-    written = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    return [row for row in written if row["event"] == event]
 
 
 def effects(daemon: Daemon, name: str) -> list[dict[str, Any]]:

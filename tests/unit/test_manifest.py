@@ -9,17 +9,17 @@ from __future__ import annotations
 
 import copy
 import json
-from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 import pytest
+from conftest import REPO
 
 from cti_daemon import manifest
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
 
-REPO = Path(__file__).parents[2]
 # The authored manifests live inside the addon, because the addon ships and
 # reads them verbatim (ADR-0017). There is no second copy to point at.
 MANIFESTS = REPO / "addons" / "main" / "manifests"

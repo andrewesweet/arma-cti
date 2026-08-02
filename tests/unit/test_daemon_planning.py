@@ -8,8 +8,9 @@ lands in telemetry as observability and nothing else (ADR-0003).
 
 from __future__ import annotations
 
-import json
 from typing import TYPE_CHECKING, Any
+
+from conftest import reply_to, rows
 
 from cti_daemon import planner, transport
 from cti_daemon.commands import Command
@@ -23,11 +24,6 @@ if TYPE_CHECKING:
     from cti_daemon.observation import Observation
 
 SIDE = "WEST"
-
-
-def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
-    """Send one request and return its decoded reply."""
-    return json.loads(daemon.handle_line(json.dumps(envelope)))
 
 
 def commanded(path: Path, brain: planner.Planner | None = None, seed: int = 0) -> Daemon:
@@ -65,15 +61,6 @@ def turn(daemon: Daemon, step: int) -> dict[str, Any]:
             "squads": {squad.id: {"size": squad.size, "at": squad.order.place} for squad in roll},
         },
     )["result"]
-
-
-def rows(path: Path, event: str) -> list[dict[str, Any]]:
-    """Return the telemetry rows of one kind."""
-    return [
-        record
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if (record := json.loads(line))["event"] == event
-    ]
 
 
 def test_an_ai_commander_left_alone_buys_squads_and_takes_ground(tmp_path: Path) -> None:

@@ -10,31 +10,18 @@ Python source and stays the Python source.
 
 from __future__ import annotations
 
-import importlib.util
 import json
-import sys
-from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 import pytest
+from conftest import REPO, load_tool
 
 from cti_daemon import commands, economy, port, squads
 
 if TYPE_CHECKING:
-    from types import ModuleType
+    from pathlib import Path
 
-REPO = Path(__file__).parents[2]
-
-# tools/ is a directory of standalone scripts rather than a package, loaded the
-# way tests/unit/test_pack_pbo.py loads its subject.
-_SPEC = importlib.util.spec_from_file_location(
-    "export_command_schema", REPO / "tools" / "export_command_schema.py"
-)
-assert _SPEC is not None
-assert _SPEC.loader is not None
-export_command_schema: ModuleType = importlib.util.module_from_spec(_SPEC)
-sys.modules["export_command_schema"] = export_command_schema
-_SPEC.loader.exec_module(export_command_schema)
+export_command_schema = load_tool("export_command_schema")
 
 
 @pytest.fixture

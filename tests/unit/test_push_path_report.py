@@ -8,26 +8,17 @@ measurement is reproducible from the evidence rather than from a session.
 
 from __future__ import annotations
 
-import importlib.util
 import json
-import sys
-from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from conftest import load_tool
+
 if TYPE_CHECKING:
-    from types import ModuleType
+    from pathlib import Path
 
 # Loaded by path for the reason `test_check_sqf_bans.py` does: tools/ holds
 # standalone scripts rather than an importable package.
-_ROOT = Path(__file__).parents[2]
-_SPEC = importlib.util.spec_from_file_location(
-    "push_path_report", _ROOT / "tools" / "push_path_report.py"
-)
-assert _SPEC is not None
-assert _SPEC.loader is not None
-push_path_report: ModuleType = importlib.util.module_from_spec(_SPEC)
-sys.modules["push_path_report"] = push_path_report
-_SPEC.loader.exec_module(push_path_report)
+push_path_report = load_tool("push_path_report")
 
 
 def telemetry(path: Path, *rows: dict[str, Any]) -> Path:
