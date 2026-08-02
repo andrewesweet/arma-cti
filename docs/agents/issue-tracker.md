@@ -45,6 +45,15 @@ reviews the test infrastructure (#58), and the play path a human sits inside for
 needed its own extension ticket — which produced the cycle's worst score (#95, ~5/10)
 on exactly the surface no automated tier exercises.
 
+A pass does not need a whole-project occasion: a single concrete observation is a
+sufficient trigger for a supplemental single-lens ticket, scoped tightly to the
+observation's own dimension and held to the same deliverable contract. Run twice on
+2026-08-02: two asides about engine idioms became #107 (the systematic
+engine-replaceable sweep #56 had not run — six firm hits) and one sighting of a
+hand-rolled `isServer` guard became #111 (none of the addon's 22 server guards can
+fire, and two probes green with their client leg unexercised, #116). The observation
+supplies the scope; do not widen the ticket beyond it.
+
 ## Pull requests as a triage surface
 
 **PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_
