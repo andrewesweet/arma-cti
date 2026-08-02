@@ -23,6 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A Campaign can no longer buy its way past what the wire carries.** Nothing bounded a side's
+  roster, so a long Campaign with hoarded income could legally buy the Squad whose arrival takes the
+  Commander's view past the engine's 10,240-byte return — after which the engine truncates in
+  silence, the view stops repainting, and the session degrades every cycle with the cause hours
+  behind it. A Purchase that would cross the limit is now refused at the port like any other rule,
+  in words a Commander can act on. The number is measured rather than chosen: it is the point at
+  which this map's worst-case Observation stops fitting one reply, so a bigger island — which pays
+  for its own size in Contacts — gets a smaller one without anybody deciding.
+
 - **One effect the world can never carry out no longer stops the Campaign.** The pump stopped at the
   first effect that failed to apply and retried it every two seconds forever — correct for something
   a later poll could clear, wrong for an effect name this world does not know, a side that is not

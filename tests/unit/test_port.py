@@ -9,11 +9,11 @@ Commander symmetry is one validator rather than two kept honest by convention.
 from __future__ import annotations
 
 import pytest
-from conftest import REPO, live
+from conftest import REPO, authored_economy, live
 from hypothesis import given
 from hypothesis import strategies as st
 
-from cti_daemon import manifest, port, squads
+from cti_daemon import budget, manifest, port, squads
 from cti_daemon.commands import Command, Effect
 
 MAP = manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json")
@@ -139,6 +139,10 @@ def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
                 "already_held",
                 "wrong_ground",
                 "campaign_over",
+                # The wire's own limit on how big a force can get (#101): the
+                # measured point past which a side's Observation stops fitting
+                # one callExtension return.
+                "force_limit",
                 # Minted by the gateway, not by this module (#97): the daemon
                 # was never reached, so nothing was judged or spent.
                 "port_unavailable",
@@ -437,3 +441,74 @@ def test_an_order_after_the_campaign_is_won_leaves_the_squad_carrying_the_last_o
     assert judgement.code == "campaign_over"
     assert standing(open_port, squad) == squads.Order("capture", "girna")
     assert len(open_port.outbox.pending()) == queued
+
+
+def stock(open_port: port.CommandPort, squads_held: int, side: str = "WEST") -> None:
+    """Give a side that many Squads and the Funds to keep buying.
+
+    Minted straight onto the roster rather than bought: what is under test is
+    the bound on the roster's size, and buying forty Squads through the port to
+    reach it would be testing the Ledger.
+    """
+    for _ in range(squads_held):
+        open_port.campaign.roster.add(side, "rifle", 8)
+    open_port.ledger.deposit(side, 10_000)
+
+
+def test_the_squad_ceiling_is_the_one_the_wire_was_measured_at(
+    open_port: port.CommandPort,
+) -> None:
+    # Measured rather than chosen (#101): the port refuses at the point this
+    # map's worst-case Observation stops fitting one callExtension return, so
+    # nobody has picked a force cap and no map carries a number of its own.
+    assert open_port.squad_ceiling == budget.squad_ceiling(MAP, authored_economy())
+
+
+def test_a_purchase_past_what_the_wire_carries_is_refused(open_port: port.CommandPort) -> None:
+    # The 36th Squad truncated a Commander's picture in silence, and the session
+    # degraded every cycle afterwards with the cause hours behind it. Funds were
+    # the only question a Purchase was judged on; the wire is now one too.
+    ceiling = open_port.squad_ceiling
+    assert ceiling is not None
+    stock(open_port, ceiling)
+    funds = open_port.ledger.balance("WEST")
+
+    judgement = open_port.submit(
+        Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
+    )
+
+    assert not judgement.accepted
+    assert judgement.code == "force_limit"
+    assert open_port.ledger.balance("WEST") == funds
+    assert open_port.outbox.pending() == []
+
+
+def test_the_last_squad_the_wire_carries_is_still_bought(open_port: port.CommandPort) -> None:
+    # The bound stops the roster growing past what fits, and not one Squad
+    # earlier: a cap that refused the Squad the wire can carry would be a
+    # balance decision arriving as a safety margin.
+    ceiling = open_port.squad_ceiling
+    assert ceiling is not None
+    stock(open_port, ceiling - 1)
+
+    judgement = open_port.submit(
+        Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
+    )
+
+    assert judgement.accepted
+    assert len(open_port.campaign.roster.roll("WEST")) == ceiling
+
+
+def test_the_wires_limit_binds_each_side_on_its_own(open_port: port.CommandPort) -> None:
+    # An Observation carries one side (#27), so a side at the limit says nothing
+    # about the other's picture and must not spend the enemy's headroom.
+    ceiling = open_port.squad_ceiling
+    assert ceiling is not None
+    stock(open_port, ceiling)
+    open_port.ledger.deposit("EAST", 10_000)
+
+    judgement = open_port.submit(
+        Command("purchase", "EAST", {"squad_type": "rifle"}), acting_side="EAST"
+    )
+
+    assert judgement.accepted

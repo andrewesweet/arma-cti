@@ -16,7 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Final
 
-from cti_daemon import squads
+from cti_daemon import budget, squads
 from cti_daemon.economy import InsufficientFundsError
 
 if TYPE_CHECKING:
@@ -47,6 +47,13 @@ REJECTION_CODES: Final = frozenset(
         # keeps a map screen open until the end screen reaches it, so this is a
         # judgement a Commander can be shown rather than an error.
         "campaign_over",
+        # The roster has a ceiling and it is the wire's, not a balance decision
+        # (#101): past the point where a side's Observation stops fitting one
+        # `callExtension` return, the engine truncates in silence and the
+        # Commander's view stops arriving. A Purchase that would cross it is
+        # refused in the port's own vocabulary rather than accepted into a
+        # session that then degrades every cycle.
+        "force_limit",
         # Minted by the gateway rather than by this module, like `wrong_side`:
         # the daemon was not reached at all, so nothing was judged and nothing
         # was spent (#97). It lives in the one vocabulary because a Commander
@@ -83,6 +90,29 @@ class CommandPort:
     """Validates Commands against the campaign and records what they change."""
 
     campaign: Campaign
+    # How many Squads a side this map's Observation can carry before it stops
+    # fitting one `callExtension` return (#101), measured once on first use. A
+    # property of the map and the economy, both fixed for a Campaign's life, and
+    # the measurement is a binary search over serialisations — so it is measured
+    # when the first Purchase asks and not on every one. Held here rather than on
+    # the Campaign because it is a fact about the wire, and #78 keeps those out
+    # of the aggregate.
+    _ceiling: int | None = None
+    _ceiling_measured: bool = False
+
+    @property
+    def squad_ceiling(self) -> int | None:
+        """The measured Squad ceiling for the map this Campaign is played on.
+
+        Not a balance number and nobody's judgement: it is the point at which
+        this map's worst-case Observation stops fitting one reply. `None` means
+        the map does not fit even with no Squads at all, which `just unit`
+        refuses when a map is authored.
+        """
+        if not self._ceiling_measured:
+            self._ceiling = budget.squad_ceiling(self.campaign.map_manifest, self.table)
+            self._ceiling_measured = True
+        return self._ceiling
 
     @property
     def table(self) -> EconomyTable:
@@ -136,6 +166,10 @@ class CommandPort:
         if self.table.sold(squad_type) is None:
             return _reject("malformed_command", f"no Squad type {squad_type!r} is sold")
 
+        refusal = self._check_force(command.side)
+        if refusal is not None:
+            return refusal
+
         # Spending the Funds, minting the Squad and telling the world are the
         # campaign's own single change (#60): this decides whether the Command
         # is one the rules will take, and the Campaign decides what happens to
@@ -148,6 +182,41 @@ class CommandPort:
         # The id is advisory like the balance, but it is what a Commander needs
         # to order what it has just bought without waiting for an observation.
         return _accept({"squad": squad.id, "funds": remaining})
+
+    def _check_force(self, side: str) -> Judgement | None:
+        """Refuse a Purchase that would take a side past what the wire carries.
+
+        ADR-0005 measured the Observation's ceiling and the SQF side logs when a
+        reply comes within a tenth of the cap, but nothing stopped a side
+        reaching it: Funds were the only question a Purchase was judged on, and a
+        long Campaign with hoarded income buys past the ceiling legally. Past it
+        the engine truncates the return in silence, `fromJSON` fails, and the
+        session degrades every cycle with the cause four hours behind it (#101).
+
+        ADR-0030's budget is checked per map at `just unit` time, and cannot see
+        this: Contacts are keyed by place and so grow with the map, while Squads
+        grow with play. So the rule lives where the growing happens.
+
+        The number is measured rather than chosen — how many Squads this map's
+        worst-case Observation fits — so it is not a balance decision, and a map
+        that pays for its own size in Contacts gets a smaller one for free.
+        """
+        ceiling = self.squad_ceiling
+        if ceiling is None:
+            return _reject(
+                "force_limit",
+                f"this map's Observation does not fit one reply even with no Squads: "
+                f"{side} cannot buy on it at all",
+            )
+        held = len(self.campaign.roster.roll(side))
+        if held >= ceiling:
+            return _reject(
+                "force_limit",
+                f"{side} has {held} Squads and this map's Observation carries {ceiling}: "
+                f"your force is at the limit this wire can carry, so order what you have "
+                f"or wait until you have lost a Squad",
+            )
+        return None
 
     def _order(self, command: Command) -> Judgement:
         """Give one Squad a standing Order (#14).
