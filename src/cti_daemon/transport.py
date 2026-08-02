@@ -57,17 +57,45 @@ def ready_line(host: str, port: int, epoch: str) -> str:
     return f"CTI_DAEMON_READY {host}:{port} epoch={epoch}"
 
 
+# How long a connection may say nothing before the daemon closes it (#142, and
+# #73's last bullet, which is the same surface).
+#
+# A half-open peer — a client whose host vanished without a FIN, or a diagnostic
+# connection somebody opened and walked away from — otherwise parks a handler
+# thread until the process exits, and the threading server puts no bound on how
+# many of those it will hold. The close *is* the whole response: there is
+# nothing to report to a peer that is not listening.
+#
+# Two orders of magnitude above the traffic it must not interrupt. The effect
+# pump polls every 2 s (`fn_effectPump.sqf`) down the one connection the shim
+# caches (ADR-0005), so a live world is never silent this long, and a client
+# that is wrongly closed on reconnects in silence anyway — which is what makes a
+# bound safe to have here at all rather than a thing to be careful with.
+IDLE_SECONDS: Final = 120.0
+
+
 def _handler_for(daemon: Daemon) -> type[socketserver.StreamRequestHandler]:
     """Bind one daemon to a connection handler, one instance per connection."""
 
     class Handler(socketserver.StreamRequestHandler):
+        # Read at class-creation time, which is once per `serve` — so a test
+        # that shortens the bound sets it before bring-up and gets it.
+        timeout = IDLE_SECONDS
+
         def handle(self) -> None:
-            for raw in self.rfile:
-                line = raw.decode("utf-8", errors="replace").strip()
-                if not line:
-                    continue
-                self.wfile.write(daemon.handle_line(line).encode("utf-8") + b"\n")
-                self.wfile.flush()
+            try:
+                for raw in self.rfile:
+                    line = raw.decode("utf-8", errors="replace").strip()
+                    if not line:
+                        continue
+                    self.wfile.write(daemon.handle_line(line).encode("utf-8") + b"\n")
+                    self.wfile.flush()
+            except TimeoutError:
+                # Returning closes the connection and ends this thread, which is
+                # the point. Caught rather than left to `handle_error`, which
+                # would print a traceback for the ordinary end of an idle
+                # connection and bury a real one.
+                return
 
     return Handler
 

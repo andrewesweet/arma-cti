@@ -51,6 +51,35 @@ if TYPE_CHECKING:
 # fits and the ack cursor brings the rest on the next one.
 POLL_GUARD_BYTES: Final = 9_216
 
+# How long a request waits for the daemon's one lock before it is refused (#142).
+#
+# Not a synchronisation wait dressed up as a timeout: nothing here becomes true
+# by waiting, and this never lengthens to make anything pass. It is a bound on
+# how much self-inflicted load a wedged handler may collect. The transport gives
+# every connection a thread and the shim abandons a call at 500 ms and reopens
+# on the next one, so a handler stuck on anything — a filesystem stall in
+# `archive.write`, a planner bug — used to gather one more thread blocked here
+# every couple of seconds, for as long as the session lasted, with nothing shed
+# and nothing said. A refused request returns its thread to the read loop, where
+# an abandoned connection is already at EOF and the thread ends.
+#
+# 250 ms: comfortably inside the shim's 500 ms budget, so the refusal arrives as
+# a typed reply rather than as the shim's own transport failure — the world can
+# tell "the daemon said no" from "the daemon is gone" (#97) only if the daemon
+# gets a word in. And twenty-eight times the worst request ever measured, both
+# planners inside it (8.69 ms, docs/spikes/0002-two-commanders.md), so a healthy
+# daemon under two Commanders never comes near it.
+LOCK_WAIT_SECONDS: Final = 0.25
+
+# How many unacknowledged Effects the outbox grows by between depth rows (#142).
+#
+# ADR-0004 has the engine draining at most 100 callbacks per frame, so a quarter
+# of that is still one handover's worth of work and a poor thing to shout about,
+# while the second row — 50 — is a backlog that several polls in a row have
+# failed to clear. Coarse on purpose: a row per request would bury the log it is
+# written to, and what is being watched for is a trend, not a value.
+OUTBOX_DEPTH_STEP: Final = 25
+
 
 class Daemon:
     """Dispatches requests and owns the outbox the game reads from."""
@@ -103,6 +132,11 @@ class Daemon:
         # handed its predecessor's identity could claim to be it.
         self.epoch = epoch or protocol.mint_epoch()
         self.outbox = Outbox()
+        # Which `OUTBOX_DEPTH_STEP` band the outbox depth was last announced at,
+        # so that a row is written when it changes and not once per request.
+        # Zero is the honest starting value: an empty outbox is band zero, and a
+        # daemon that announced it at bring-up would be announcing nothing.
+        self._depth_band = 0
         # What the wire has already been told (#69, ADR-0034). The shim resends
         # a request whose exchange failed on its cached connection, and a write
         # that succeeded before the read failed has already been carried out
@@ -163,9 +197,72 @@ class Daemon:
         waits rather than interleaving. It also makes the replay window in
         `_answer` mean what it says — a resend cannot overtake the request it
         duplicates, because the answer is recorded before the lock is released.
+
+        The wait for it is bounded (#142). Waiting forever was the whole of the
+        old shed policy, and against a wedged handler it is not one: the caller
+        has already given up at 500 ms and the thread stays parked regardless,
+        so the queue behind a stuck request grew without bound on the process
+        whose single lock *is* the concurrency model. Past `LOCK_WAIT_SECONDS`
+        the request is refused instead — fail fast, in the wire's own language,
+        which costs a healthy daemon nothing because it never waits that long.
         """
-        with self._lock:
+        if not self._lock.acquire(timeout=LOCK_WAIT_SECONDS):
+            return self._shed(line)
+        try:
             return self._answer(line)
+        finally:
+            self._lock.release()
+
+    def _shed(self, line: str) -> str:
+        """Refuse a request the daemon could not get to in time (#142).
+
+        `busy` rather than a rejection code: nothing was judged, so this is not
+        the port's vocabulary (`port.REJECTION_CODES`, and unlike those it never
+        crosses into the exported schema) — it is the daemon saying it could not
+        answer the request as asked, which is what an `error` reply is for. The
+        world already branches on `status` alone and reads the class as text, so
+        a healthy daemon's wire is untouched by this class existing.
+
+        Deliberately *not* remembered by `Answered`: the request was never
+        carried out, so the shim's resend must be carried out rather than
+        answered from a refusal (#69, ADR-0034). A shed Purchase costs its
+        Commander a round trip and nothing else.
+
+        Decoding outside the lock is safe because `protocol.decode` is a pure
+        function of the line, and it is worth doing: a refusal the caller cannot
+        match to its request is barely better than no reply at all.
+        """
+        request_id, verb = self._identify(line)
+        detail = (
+            f"the daemon answers one request at a time (#98) and did not reach this one "
+            f"within {LOCK_WAIT_SECONDS * 1000:.0f} ms: a request already in flight is "
+            f"holding the lock. Nothing was judged and nothing was spent; ask again"
+        )
+        encoded = protocol.encode(
+            protocol.stamped(protocol.failed(request_id, "busy", detail), self.epoch)
+        )
+        # Its own event rather than a `request` row: no request was served, and
+        # a zero-duration `observe` in that column would flatter every
+        # percentile `tools/push_path_report.py` reads out of it. A shed request
+        # is a fact about the daemon's load, and the operator asking why a
+        # session felt unresponsive wants to count these.
+        self._telemetry.record(
+            "request_shed",
+            id=request_id,
+            epoch=self.epoch,
+            verb=verb,
+            waited_ms=round(LOCK_WAIT_SECONDS * 1000),
+        )
+        return encoded
+
+    @staticmethod
+    def _identify(line: str) -> tuple[str | None, str | None]:
+        """Read the id and verb off a line without acting on it."""
+        try:
+            request = protocol.decode(line)
+        except protocol.MalformedRequestError as exc:
+            return exc.request_id, None
+        return request.id, request.verb
 
     def _answer(self, line: str) -> str:
         """Carry out one request line. Every path produces a reply.
@@ -235,7 +332,34 @@ class Daemon:
             reply_bytes=len(encoded),
         )
         self.answered.remember(line, request_id=request_id, verb=verb, reply=encoded)
+        self._gauge_outbox()
         return encoded
+
+    def _gauge_outbox(self) -> None:
+        """Say how deep the outbox is when it crosses a band, polled or not (#142).
+
+        `outbox_handed` is written on a successful drain only, which leaves the
+        one shape that matters unrecorded: the effect pump dies while
+        `presence_report` lives (#102), income keeps paying, both Commanders
+        keep buying, and the undelivered Effects accumulate in memory for a
+        whole session with nothing on disk saying so. #125's starvation had to
+        be diagnosed from outside the daemon for exactly this reason. A poll is
+        the wrong place to look from, because the failure *is* the absence of
+        polls.
+
+        The request path is the right one: every Effect enters the outbox under
+        a request, so this is called wherever the depth can have changed, and it
+        needs no timer thread on a process whose concurrency model is one lock
+        (#98). Bands rather than values, and on the way down as well as up — a
+        backlog that cleared is as much of an event as one that formed.
+        """
+        band = self.outbox.depth // OUTBOX_DEPTH_STEP
+        if band == self._depth_band:
+            return
+        self._depth_band = band
+        self._telemetry.record(
+            "outbox_depth", depth=self.outbox.depth, step=OUTBOX_DEPTH_STEP, epoch=self.epoch
+        )
 
     @staticmethod
     def _acting_side(request: protocol.Request) -> str | None:

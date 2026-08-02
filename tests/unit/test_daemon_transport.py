@@ -14,6 +14,7 @@ import time
 from typing import IO, TYPE_CHECKING, Any
 
 import pytest
+from conftest import rows
 
 from cti_daemon import economy, manifest, transport
 from cti_daemon.daemon import Daemon
@@ -172,6 +173,170 @@ def test_concurrent_connections_cannot_spend_the_same_funds_twice(tmp_path: Path
     bought = [reply["result"] for reply in replies if reply["status"] == "ok"]
     assert sorted(entry["funds"] for entry in bought) == [0, 100, 200]
     assert sorted(entry["squad"] for entry in bought) == ["WEST-1", "WEST-2", "WEST-3"]
+
+
+def _ask(port: int, line: str) -> dict[str, Any]:
+    """Send one line down a connection of its own and close it again.
+
+    A fresh connection per call because that is what the shim does when a call
+    times out on its cached one (ADR-0034), which is the traffic the pileup was
+    made of.
+    """
+    sock = socket.create_connection(("127.0.0.1", port), timeout=30)
+    with sock, sock.makefile("rb") as stream:
+        return exchange(sock, stream, line)
+
+
+class _Wedged(Daemon):
+    """A daemon whose handler sticks until it is let go (#142).
+
+    The finding's shape: `_answer` is the body the request lock holds, so a
+    handler stuck anywhere inside it — a filesystem stall in `archive.write`, a
+    planner bug — holds the lock against every other connection.
+    """
+
+    def __init__(self, *, telemetry_path: Path) -> None:
+        super().__init__(
+            telemetry_path=telemetry_path,
+            table=economy.load(transport.DEFAULT_ECONOMY),
+            map_manifest=manifest.load_all(transport.DEFAULT_MANIFESTS)[transport.DEFAULT_MAP],
+        )
+        self.wedged = threading.Event()
+        self.released = threading.Event()
+
+    def _answer(self, line: str) -> str:
+        if not self.wedged.is_set():
+            self.wedged.set()
+            # Bounded so a failing test ends rather than hangs the tier. The
+            # subject is what happens to *other* callers while this one sticks,
+            # and they are unblocked by the release below, not by this expiring.
+            self.released.wait(timeout=30)
+        return super()._answer(line)
+
+
+def _wedged_daemon(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[_Wedged, int]:
+    """Serve a wedgeable daemon and stick it, returning it and its port."""
+    daemon = _Wedged(telemetry_path=tmp_path / "telemetry.jsonl")
+    monkeypatch.setattr(transport, "build", lambda *_, **__: daemon)
+    port = transport.serve_in_thread(telemetry_path=tmp_path / "unused.jsonl")
+
+    def _stick() -> None:
+        sock = socket.create_connection(("127.0.0.1", port), timeout=30)
+        with sock, sock.makefile("rb") as stream:
+            exchange(sock, stream, json.dumps({"id": "stuck", "verb": "ping"}))
+
+    threading.Thread(target=_stick, daemon=True).start()
+    assert daemon.wedged.wait(timeout=5), "the daemon never took the wedged request"
+    return daemon, port
+
+
+def test_a_wedged_handler_sheds_later_calls_rather_than_parking_their_threads(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # #142: `handle_line` used to wait on the lock with no deadline while the
+    # transport spawned a thread per connection with no bound, so a wedged
+    # handler collected a blocked thread per shim retry for the rest of the
+    # session. Every one of these calls must come back — the count is arbitrary,
+    # the property is that none of them is still parked.
+    daemon, port = _wedged_daemon(tmp_path, monkeypatch)
+    log = tmp_path / "telemetry.jsonl"
+
+    replies: list[dict[str, Any]] = []
+    _in_parallel(
+        lambda tag: replies.append(_ask(port, json.dumps({"id": tag, "verb": "ping"}))),
+        ("a", "b", "c", "d", "e"),
+    )
+    daemon.released.set()
+
+    assert [reply["status"] for reply in replies] == ["error"] * 5
+    assert {reply["error"]["class"] for reply in replies} == {"busy"}
+    assert {reply["id"] for reply in replies} == {"a", "b", "c", "d", "e"}
+    assert {reply["epoch"] for reply in replies} == {daemon.epoch}, (
+        "a shed reply says who refused it, like every other reply (#96, ADR-0036)"
+    )
+    assert len(rows(log, "request_shed")) == 5
+
+
+def test_a_shed_request_is_carried_out_when_it_is_asked_again(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Nothing was judged and nothing was spent, so the shim's resend of the
+    # identical line must be carried out rather than answered from the refusal
+    # it got (#69, ADR-0034 remembers answers, not refusals to answer).
+    daemon, port = _wedged_daemon(tmp_path, monkeypatch)
+    line = json.dumps(
+        {
+            "id": "resent",
+            "verb": "command",
+            "payload": {
+                "command": "purchase",
+                "side": "WEST",
+                "acting_side": "WEST",
+                "args": {"squad_type": "rifle"},
+            },
+        }
+    )
+
+    shed = _ask(port, line)
+    daemon.released.set()
+    again = _ask(port, line)
+
+    assert shed["error"]["class"] == "busy"
+    assert again["status"] == "ok", "a shed Purchase must still be buyable"
+    assert again["result"]["squad"] == "WEST-1"
+
+
+def test_a_healthy_daemon_answers_exactly_as_it_did_before_the_bound(tmp_path: Path) -> None:
+    # The bound sheds nothing a healthy daemon does, so the wire is unchanged:
+    # no `busy` reply, no `request_shed` row, and the reply to a request that
+    # waited its turn is the reply it always was.
+    log = tmp_path / "telemetry.jsonl"
+    port = transport.serve_in_thread(telemetry_path=log)
+
+    replies: list[list[dict[str, Any]]] = []
+    _in_parallel(lambda tag: replies.append(_hammer(port, tag, 8)), ("a", "b"))
+
+    flat = [reply for batch in replies for reply in batch]
+    assert flat, "the connections answered nothing"
+    assert not [reply for reply in flat if reply["status"] == "error"]
+    assert not rows(log, "request_shed")
+
+
+def test_a_connection_that_stops_talking_is_closed_server_side(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # #73's last bullet, folded in here: a half-open peer used to park a handler
+    # thread until process exit. Shortened to keep the test quick — the subject
+    # is that the bound exists and fires, not how long it is.
+    monkeypatch.setattr(transport, "IDLE_SECONDS", 0.2)
+    port = transport.serve_in_thread(telemetry_path=tmp_path / "telemetry.jsonl")
+
+    sock = socket.create_connection(("127.0.0.1", port), timeout=10)
+    with sock, sock.makefile("rb") as stream:
+        # Answered first, so this is an established connection going silent
+        # rather than one that never spoke.
+        assert exchange(sock, stream, json.dumps({"id": "r-1", "verb": "ping"}))["status"] == "ok"
+        assert stream.readline() == b"", "the daemon held a silent connection open"
+
+
+def test_a_connection_that_keeps_talking_is_not_closed_under_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The bound is on silence, not on connection age: the shim caches one
+    # connection for the life of a session (ADR-0005) and must keep it. The
+    # gaps below are the subject rather than a wait for anything to settle —
+    # five of them add to more than the bound while none of them reaches it,
+    # which is the whole distinction under test.
+    monkeypatch.setattr(transport, "IDLE_SECONDS", 0.2)
+    port = transport.serve_in_thread(telemetry_path=tmp_path / "telemetry.jsonl")
+
+    sock = socket.create_connection(("127.0.0.1", port), timeout=10)
+    with sock, sock.makefile("rb") as stream:
+        for n in range(5):
+            assert exchange(sock, stream, json.dumps({"id": f"r-{n}", "verb": "ping"}))["id"] == (
+                f"r-{n}"
+            )
+            time.sleep(0.05)
 
 
 def test_the_readiness_line_names_the_bound_address() -> None:

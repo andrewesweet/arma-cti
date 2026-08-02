@@ -8,10 +8,18 @@ there, so the daemon holds every pushed message until the game says it arrived.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
+from conftest import reply_to, rows
 
 from cti_daemon.commands import Effect
+from cti_daemon.daemon import OUTBOX_DEPTH_STEP
 from cti_daemon.outbox import Outbox, UnknownSequenceError
+from cti_daemon.transport import build_daemon
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def order(n: int = 0) -> Effect:
@@ -63,3 +71,73 @@ def test_acknowledging_a_sequence_that_was_never_issued_is_refused() -> None:
     outbox.push(order(1))
     with pytest.raises(UnknownSequenceError):
         outbox.ack(through=9)
+
+
+def test_depth_counts_what_is_still_waiting() -> None:
+    outbox = Outbox()
+    for n in range(3):
+        outbox.push(order(n))
+    outbox.ack(through=1)
+    assert outbox.depth == 2
+
+
+# The gauge (#142). `outbox_handed` is written on a successful drain only, so
+# the failure that matters — the pump dead while both Commanders keep buying
+# (#102, #125) — is the one that writes no row at all.
+
+
+def test_growth_is_visible_in_telemetry_without_a_single_successful_poll(tmp_path: Path) -> None:
+    log = tmp_path / "telemetry.jsonl"
+    daemon = build_daemon(telemetry_path=log)
+    for n in range(OUTBOX_DEPTH_STEP):
+        daemon.outbox.push(order(n))
+
+    # Any request will do: the depth is gauged wherever it can have changed, and
+    # nothing here polls.
+    reply_to(daemon, id="g-1", verb="ping")
+
+    assert not rows(log, "outbox_handed"), "this test must not have drained anything"
+    (row,) = rows(log, "outbox_depth")
+    assert row["depth"] == OUTBOX_DEPTH_STEP
+    assert row["step"] == OUTBOX_DEPTH_STEP
+    assert row["epoch"] == daemon.epoch
+
+
+def test_a_backlog_below_the_step_is_not_worth_a_row(tmp_path: Path) -> None:
+    # A row per request would bury the log this is written to, and a handful of
+    # undelivered effects between two polls is the ordinary case.
+    log = tmp_path / "telemetry.jsonl"
+    daemon = build_daemon(telemetry_path=log)
+    for n in range(OUTBOX_DEPTH_STEP - 1):
+        daemon.outbox.push(order(n))
+        reply_to(daemon, id=f"g-{n}", verb="ping")
+
+    assert not rows(log, "outbox_depth")
+
+
+def test_each_further_band_is_announced_once(tmp_path: Path) -> None:
+    log = tmp_path / "telemetry.jsonl"
+    daemon = build_daemon(telemetry_path=log)
+    for n in range(3 * OUTBOX_DEPTH_STEP):
+        daemon.outbox.push(order(n))
+        reply_to(daemon, id=f"g-{n}", verb="ping")
+
+    assert [row["depth"] for row in rows(log, "outbox_depth")] == [
+        OUTBOX_DEPTH_STEP,
+        2 * OUTBOX_DEPTH_STEP,
+        3 * OUTBOX_DEPTH_STEP,
+    ]
+
+
+def test_a_backlog_that_cleared_says_so_too(tmp_path: Path) -> None:
+    # Downwards as well as up: an operator reading a growth row needs to know
+    # whether it ever came back, and silence would read as "still deep".
+    log = tmp_path / "telemetry.jsonl"
+    daemon = build_daemon(telemetry_path=log)
+    for n in range(OUTBOX_DEPTH_STEP):
+        daemon.outbox.push(order(n))
+    reply_to(daemon, id="g-1", verb="ping")
+
+    reply_to(daemon, id="g-2", verb="ack", payload={"through": OUTBOX_DEPTH_STEP})
+
+    assert [row["depth"] for row in rows(log, "outbox_depth")] == [OUTBOX_DEPTH_STEP, 0]

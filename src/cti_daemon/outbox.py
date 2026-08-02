@@ -47,6 +47,17 @@ class Outbox:
         """Everything not yet acknowledged, oldest first."""
         return list(self._entries)
 
+    @property
+    def depth(self) -> int:
+        """How many Effects are waiting to be acknowledged.
+
+        A count rather than `len(pending())`, which copies the whole list: the
+        depth is read on every request now that its growth is gauged (#142), and
+        the one moment the number matters — a pump that has stopped draining
+        while income keeps paying — is the moment the list is longest.
+        """
+        return len(self._entries)
+
     def ack(self, *, through: int) -> int:
         """Drop every entry up to and including `through`; return how many went.
 

@@ -98,6 +98,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A wedged daemon now says no instead of quietly collecting a blocked thread per retry.** The
+  daemon answers one request at a time and waited on that lock forever, while the transport gave
+  every connection a thread of its own with no bound — so a handler stuck on anything, a filesystem
+  stall or a planner bug, gathered one more parked thread roughly every two seconds for the rest of
+  the session, none of them going anywhere and nothing on disk saying so. A request that cannot be
+  reached within 250 ms is now refused with a typed `busy` error, which is inside the shim's own
+  500 ms budget, so the world learns the daemon said no rather than guessing it had died. Nothing
+  was judged and nothing spent, so asking again carries the request out. Connections that go silent
+  for two minutes are closed as well, which is the same pile-up arriving through a half-open peer.
+  A healthy daemon is untouched: its requests are three orders of magnitude inside the bound, and
+  the wire is unchanged. #142.
+
+- **An outbox that stops draining is visible before it is a session's problem.** Undelivered Effects
+  were counted only on a successful poll, which is exactly the row that goes missing in the failure
+  that matters: the effect pump dies while income keeps paying and both AI Commanders keep buying,
+  and the backlog accumulates in memory all session with nothing written down — a starvation that
+  had to be diagnosed from outside the daemon when it happened. Depth is now recorded whenever it
+  crosses a band of 25, on the way down as well as up, from the request path rather than the poll.
+  #142.
+
 - **A finished regression run hands its slots back the moment it exits, instead of a few seconds
   later.** The pool measures the machine's memory while it works, and the sampler that does it
   sleeps three seconds between readings. Every child of the run inherits the slot locks, so when
