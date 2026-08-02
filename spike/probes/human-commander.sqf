@@ -1,10 +1,30 @@
 // probe: human-commander
-// issues: 18, 46, 116
+// issues: 18, 19, 46, 116
 // window: 420
-// env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
+// env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240 CTI_AI_SIDE=EAST CTI_AI_SEED=1
 //
 // #18 in-world probe: the human Commander's path, as far as a world with no
 // human in it can be made to answer for it.
+//
+// #19's demo rides on it, and that is why EAST is under an AI Commander here.
+// Every other probe in the corpus has a world with either Commanders or a
+// client in it, never both: `two-commanders` and `campaign-end` play both sides
+// with nobody watching, and this probe used to drive a real client around an
+// empty Campaign. The demo Phase 1 exists to give is one world with both kinds
+// of Commander in it at once, so this probe now is that world — a person in the
+// NATO Commander slot, CSAT played by the seeded scorer, and both commanding
+// through the one port.
+//
+// **The demo's wording does not survive contact with the daemon, and that is a
+// finding rather than a defect.** #3 says "watch both AI sides fight over
+// Objectives, then take over as Commander"; there is no handover, because
+// `Daemon._command` refuses a Command for a side an AI is playing — one
+// Commander per side, whichever kind, for ADR-0015's reason. So the demo is two
+// acts against one build rather than one continuous session: both sides under
+// AI is `two-commanders`/`campaign-end`, and taking a side is a bring-up that
+// leaves that side free. That boundary is asserted below rather than left as
+// prose, because it is the rule the demo's shape is a consequence of. Whether a
+// handover is wanted at all is a gameplay decision and travels as #126.
 //
 // `just regress human-commander`, or by hand
 // `just probe spike/probes/human-commander.sqf`.
@@ -125,13 +145,60 @@
             _before getOrDefault ["funds", "?"], _after getOrDefault ["funds", "?"]];
     };
 
+    // ------------------------------------------------------- one Commander per side
+    // The rule the demo's two-act shape follows from (#19), asked of the daemon
+    // rather than asserted in the header: EAST is under an AI Commander in this
+    // world, so neither its view nor a Command for it is anyone else's to have.
+    // A green run here is what makes "take over a side" mean "bring the world up
+    // with that side free" rather than "join and displace the brain".
+    private _taken = [createHashMapFromArray [
+        ["id", "human-commander-probe-view-east"],
+        ["verb", "view"],
+        ["payload", createHashMapFromArray [["side", "EAST"]]]
+    ]] call cti_probe_fnc_rpc;
+    // `fromJSON` answers nil for a document it cannot read, so the reply is
+    // rendered through a guard rather than straight into the format string.
+    private _refusal = "unreadable_reply";
+    private _shown = "nil";
+    if (!isNil "_taken" && { _taken isEqualType createHashMap }) then {
+        _shown = str _taken;
+        if ((_taken getOrDefault ["status", ""]) isEqualTo "rejected") then {
+            _refusal = (_taken getOrDefault ["reason", createHashMap]) getOrDefault ["code", ""];
+        } else {
+            _refusal = format ["status_%1", _taken getOrDefault ["status", ""]];
+        };
+    };
+    if (_refusal isNotEqualTo "wrong_side") then {
+        diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_ai_side_served got=%1 reply=%2",
+            _refusal, _shown];
+    } else {
+        diag_log "CTI|human_commander_probe_ai_side_withheld code=wrong_side";
+    };
+
     // ---------------------------------------------------------------- the view
-    // Both sides buy, so a leak has something to leak. Sent as Commands on the
-    // wire because that is how the world's own effects arrive, and the Squads
-    // have to exist for the view to carry any.
-    {
-        [format ["human-commander-probe-buy-%1", _x], _x] call cti_probe_fnc_buySquad;
-    } forEach ["WEST", "EAST"];
+    // WEST buys, so its own view has something in it. Sent as a Command on the
+    // wire because that is how the world's own effects arrive, and the Squad has
+    // to exist for the view to carry any.
+    ["human-commander-probe-buy-WEST", "WEST"] call cti_probe_fnc_buySquad;
+
+    // EAST's Squads are not bought here — they cannot be, and that is the point:
+    // its Commander buys its own, off its own picture, in the same world. So the
+    // enemy roster the leak assertion below is made against is a real one rather
+    // than one this probe put there, and waiting for it is also the assertion
+    // that the demo's other Commander is actually playing.
+    private _fieldedBy = diag_tickTime + 90;
+    waitUntil {
+        count (["EAST"] call cti_probe_fnc_squadsOf) > 0 || { diag_tickTime > _fieldedBy }
+    };
+    private _enemy = ["EAST"] call cti_probe_fnc_squadsOf;
+    if (count _enemy isEqualTo 0) exitWith {
+        diag_log format ["CTI|FAIL class=timeout human_commander_probe_no_ai_opponent hint=%1",
+            "is CTI_AI_SIDE=EAST set?"];
+        diag_log "CTI|LEG name=human_commander_client status=unverified reason=no_ai_commander_on_the_other_side";
+        diag_log "CTI|human_commander_probe_done";
+    };
+    diag_log format ["CTI|human_commander_probe_opponent side=EAST squads=%1 at=%2",
+        count _enemy, time];
 
     private _reply = [createHashMapFromArray [
         ["id", "human-commander-probe-view"],

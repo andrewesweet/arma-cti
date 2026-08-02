@@ -49,6 +49,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   watches an Objective change hands now watches it go Contested with both sides inside the radius,
   and then fall to the side left standing there.
 
+- **The audit that Phase 1 exists to produce: no path outside the Command Port.** Every way an
+  Order, a Purchase or any other change to strategic state can reach the world is now enumerated in
+  `docs/command-port-audit.md`, each with the gate that holds it — one whitelisted function for a
+  client, one extension call for the server, one dispatch and one lock in the daemon, one root for
+  human and AI Commands alike, and one applier for effects coming back. Three things outside that
+  envelope are named and justified rather than left to be discovered, and the holes the audit found
+  are written down beside them.
+
+- **The integration demo runs as one thing.** The probe that drives a real client in a Commander
+  seat now does it in a world where the other side is being played by the AI Commander, so a single
+  world holds both kinds of Commander for the first time. Recorded with it: taking over a side means
+  bringing the world up with that side free, because one side has one Commander whichever kind it
+  is — there is no handover, and the probe asserts the refusal rather than describing it.
+
 - **The in-world regression tier runs three worlds at once, and a full pass costs eleven minutes
   instead of twenty-six.** `just regress` now schedules the corpus across a pool of slots — a slot
   being a port block, a daemon, a server install, an engine profile and a world that agree — with
