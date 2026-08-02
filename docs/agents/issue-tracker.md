@@ -20,12 +20,27 @@ Close it in the same session that lands its work, with a comment addressing ever
 A `Closes #N` commit trailer closes the issue on push and skips this audit entirely: #89
 was auto-closed with two acceptance boxes unticked and had to be reopened by its own
 agent, and #24 repeated it despite this paragraph — its criterion-by-criterion comment
-was written and posted, but the trailer skipped the gate rather than passing it. On an
-issue carrying acceptance criteria, reference the commit without a closing keyword and
-close by hand with the criterion-by-criterion comment. Two self-corrected instances
-against a written rule is the document-vs-mechanism shape ADR-0038 named, so the check
-is becoming mechanical: #129 puts a closing-keyword deny in the commit-msg gate,
-matching exactly the syntax GitHub acts on.
+was written and posted, but the trailer skipped the gate rather than passing it. #127's
+landing then did it a third time. On an issue carrying acceptance criteria, reference the
+commit without a closing keyword and close by hand with the criterion-by-criterion
+comment.
+
+Three self-corrected instances against a written rule is the document-vs-mechanism shape
+ADR-0038 named, so the check is mechanical since #129:
+`.claude/hooks/deny-closing-trailer.py` runs at the commit-msg stage (installed by
+`cog install-hook commit-msg` from `cog.toml`, from the main checkout — cog cannot
+install from a linked worktree) and rejects
+any message carrying a keyword GitHub acts on — `close`/`closes`/`closed`,
+`fix`/`fixes`/`fixed`, `resolve`/`resolves`/`resolved`, with or without a colon —
+directly followed by `#N`, `GH-N`, `owner/repo#N` or a github.com issue URL, anywhere in
+the message. It is blanket rather than criteria-scoped: a hook cannot know which issues
+carry criteria without a network call, and the cost of the blanket is one
+`gh issue close --comment`, which the discipline above asks for anyway. Referencing forms
+(`(#N)`, `refs #N`, `#N` on its own) pass, as does prose naming the keywords. Note the
+one trap it will catch: `fix: #129 stop the thing` is GitHub's colon form wearing a
+Conventional Commits type, and really would close the issue. Per ADR-0042 the check runs
+from the committing worktree's copy, so a session predating the landing enforces nothing
+until it rebases.
 
 ## Decision tickets
 

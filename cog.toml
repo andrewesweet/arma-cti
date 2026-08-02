@@ -1,6 +1,15 @@
 tag_prefix = "v"
 
+# Installed by `cog install-hook commit-msg`, so this text is copied into
+# .git/hooks and only changes when someone reinstalls. Keep it a dispatcher: the
+# closing-keyword gate (#129) lives in a tracked file resolved from the
+# committing worktree, so its rules travel with a rebase rather than a reinstall
+# (ADR-0042). A worktree predating that file commits as before rather than
+# failing on a missing script.
 [git_hooks.commit-msg]
 script = """#!/bin/sh
-cog verify --file "$1"
+cog verify --file "$1" || exit 1
+guard="$(git rev-parse --show-toplevel)/.claude/hooks/deny-closing-trailer.py"
+[ -f "$guard" ] || exit 0
+python3 "$guard" "$1" || exit 1
 """
