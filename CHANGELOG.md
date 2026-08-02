@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A delegated decision can no longer land without saying what would overturn it.** ADR-0019 has
+  required that section since the day it retrofitted ADR-0015 for missing one, and nothing checked:
+  three ADRs reached a guided review of all twenty-nine delegated decisions without it, found only
+  because one sitting read every one of them. `just check` now runs `tools/check_adr_form.py`, which
+  asks of every ADR carrying `Delegated-decision: yes` that it name its overturning evidence and
+  carry the human's `Reviewed-by-human:` review-state line. The three — 0016 on pulling the
+  regression tier forward, 0030 on charging the Observation's budget to the map, 0036 on freezing
+  the world when the daemon's identity changes — now state theirs. #137.
+
 - **The recall a human signed off is now something the world has been seen to do.** ADR-0031 grew
   the recall radius from 160 m to 1.15 km and named what keeping your own ground is worth; both
   numbers were approved on a 200-seed sweep and neither had ever happened in a running world,

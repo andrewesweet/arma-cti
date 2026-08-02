@@ -111,3 +111,33 @@ Not confirmed in-world: these are wire-size measurements, which is what the trun
 function of, so a probe would be measuring `json.dumps` twice. What a probe would add is
 confirmation that the SQF guard fires where the Python budget says it should, and that is worth
 folding into whatever next exercises `cti_fnc_commanderView` rather than queueing on its own.
+
+## What would overturn this
+
+*(Added 2026-08-02 under ADR-0019, which requires a delegated decision to state its overturning
+evidence; the decisions themselves are unchanged. Omission found by the #131 review — #137.)*
+
+- **The budget belonging to the map** is overturned by a rules change that puts the enemy term back
+  on force size. The inversion this ADR rests on is #27 removing the enemy roster and #28 replacing
+  it with at-most-one Contact per place; anything that restores per-Squad enemy detail to a
+  Commander's view — a recon feature, a shared-intel mode, an enemy roster for a spectator — makes
+  #26's original diagnosis right again, and the check would have to move back to Squad count.
+- **Checking at authoring time** is overturned by the SQF guard in `cti_fnc_commanderView` firing
+  in-world while `just unit` is green on the same manifest. That is the confirmation this ADR
+  deliberately deferred, and its failure would mean the Python worst case models the document
+  rather than bounding what the wire carries: a field the budget's assembly does not reach, or a
+  runtime value wider than the vocabulary it was measured from. The remedy would be to measure the
+  encoded document rather than to widen the guard.
+- **Whole-second truncation** is overturned by a consumer reading an age at finer resolution than
+  the planner's minutes-wide freshness window. The truncation is free only because nothing
+  downstream can tell; a decay curve, a UI counting down, or #18's map showing sighting age in
+  seconds would make it lossy, and the fix would be to send the untruncated age to that consumer
+  rather than to round.
+- **Leaving positional encoding unbuilt** has a mechanical trigger already stated: the per-map test
+  failing when a second map is authored. It is also overturned earlier by Stratis's headroom
+  disappearing — 1,611 of 9,216 bytes is why there is nothing to buy today, and a schema growth
+  that spends that headroom changes the trade before any second map arrives.
+- **Leaving the Contact cap unreached** is overturned by MVP scope taking on an island the per-map
+  check cannot pass. At that point the only lever that scales is the one behind the gameplay
+  sign-off gate, and the ticket is the human's to decide rather than an authoring failure to work
+  around.

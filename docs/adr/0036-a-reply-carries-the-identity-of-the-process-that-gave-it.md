@@ -124,3 +124,33 @@ against, so it would produce a third Campaign that matches neither.
 - `cti_presenceReport.replied` now means what its comment always claimed: the whole leg, out and
   back. Every waiter reading it — `spike/probe-prelude.sqf`, `casualties.sqf` — was previously
   satisfiable by a dead daemon.
+
+## What would overturn this
+
+*(Added 2026-08-02 under ADR-0019, which requires a delegated decision to state its overturning
+evidence; the decisions themselves are unchanged. Omission found by the #131 review — #137.)*
+
+- **Freezing** is overturned by a false positive, and the cost of one is the whole reason to name
+  it: a frozen world is a dead Campaign for whoever was playing it. An epoch changing while the
+  daemon lived — two daemons answering one port, a mint that varies within a process, a latch
+  reset by something other than a restart — would be freezing a healthy world on a bookkeeping
+  bug. The remedy would be in minting and latching, never in playing on: the requirement that a
+  player must never see a Campaign reset silently underneath them survives the false positive.
+- **Freezing rather than resuming** is overturned by Phase 2 arriving. Once #4's persistence exists
+  (ADR-0008, ADR-0023) a restarted daemon can hold the Campaign it left, and an epoch change
+  becomes the trigger to reconcile rather than a terminal state — `cti_fnc_campaignLost` would
+  demote to what happens when the restore fails. Detection is a prerequisite of ever surviving the
+  reset, so this is the decision succeeding into its replacement rather than being wrong.
+- **Absence of `status` as the discriminator** is overturned by anything that can produce a
+  statusful reply without the daemon having judged it — a shim error object that grows a `status`,
+  a proxy or cache in front of the socket, or a framing layer that synthesises envelopes. The
+  property being relied on is that the shim never reached anything that could mint a `status`; if
+  that stops holding, the shim has to mark its own replies explicitly instead.
+- **One call site** is overturned by a caller whose reply `cti_fnc_daemonCall` cannot classify —
+  ADR-0012 leaves chunking to the shim's framing layer, and a chunked or streamed reply has no
+  single envelope to read a `status` and an `epoch` off. Classification would then belong below
+  SQF, in the shim, rather than at one SQF function.
+- **`node_crashed` as the class this path spends** is overturned by an epoch change that is not a
+  crash — a deliberate daemon replacement during a run, say — at which point the world would be
+  typing an operator action as a node failure, and it wants its own class rather than a louder log
+  line.
