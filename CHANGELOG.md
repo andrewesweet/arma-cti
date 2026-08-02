@@ -137,6 +137,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   instead of the shared one every synchronous judgement queues on, as ADR-0005 required of it before
   it carries production work.
 
+- **A probe can no longer pass green with half of its subject switched off.** `human-commander`'s
+  client leg — the only half of it that crosses the machine boundary, a Command built on a real
+  client and judged on the server — was gated on an environment variable that defaulted to off, so
+  every corpus run of it finished green having tested the server side alone and logged one line
+  about it that nothing scored. Optional legs now default **on** in the corpus, declared in the
+  probe's own `env:` header, and a leg that did not run reports `unverified` and makes the run
+  `infra_unavailable` — which this tier already refuses to read as a result — instead of passing.
+  Every verdict now names its legs: `legs: client_port_caller:ran client_port_accepted:ran …` in the
+  run summary and in `verdict.json`. `client-port`'s six step exits, which short-circuited to a bare
+  completion line, name themselves too. The rule is written down in `docs/regression-tier.md`.
+
+- **A full-corpus run no longer stops itself on its own Windows client.** `taskkill /F` returns when
+  the request has been made rather than when the process is gone, so a client probe would pass, the
+  run would move on, and the next probe's pre-flight two seconds later would see the still-exiting
+  `arma3_x64.exe`, read it as a live play session and abandon the rest of the corpus — reproduced
+  twice, on two shas. The host guard was right and is unchanged: it cannot be taught to excuse a
+  process it recognises without also being able to excuse the human's, and "a process we did not
+  start means stop" stays absolute. Instead the run that launched a client now waits for it to leave
+  the host's process list before releasing the tier, and says so in its evidence if it never does.
+
 - **A Campaign that has been won no longer accepts Commands.** The Campaign already refused the
   world's reports after victory and the AI Commanders already stood down, but the Command Port never
   asked: a Purchase arriving after the end screen spent a finished Campaign's Funds, minted a Squad

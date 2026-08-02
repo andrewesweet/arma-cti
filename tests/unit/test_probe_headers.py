@@ -102,6 +102,42 @@ def test_probe_ends_by_logging_its_completion(path: Path) -> None:
 
 
 @pytest.mark.parametrize("path", PROBES, ids=lambda p: p.stem)
+def test_a_probe_with_a_client_leg_turns_it_on_in_the_corpus(path: Path) -> None:
+    """ADR-0037's vacuity rule at the one place it can be gated cheaply (#116).
+
+    A probe that reads `CTI_PROBE_CLIENT` has a leg only a headed client can
+    exercise, and the corpus run must supply one. `human-commander` left it at
+    the zero default and went green in every corpus run with the only leg that
+    crosses the machine boundary never run. Optional legs default on, or they
+    are legs nobody runs.
+    """
+    body = path.read_text(encoding="utf-8")
+    if 'getVariable ["CTI_PROBE_CLIENT"' not in body:
+        return
+    settings = dict(
+        assignment.split("=", 1) for assignment in header_block(path).get("env", "").split()
+    )
+    assert settings.get("CTI_WINDOWS_CLIENT") == "1", (
+        f"{path.name} drives a headed client but its env: header does not ask for one"
+    )
+    assert int(settings.get("CTI_PROBE_CLIENT", "0")) > 0, (
+        f"{path.name} leaves its client leg off by default; the corpus would run it vacuously"
+    )
+
+
+LEG_LINE = re.compile(r"CTI\|LEG name=\S+ status=(ran|unverified)")
+
+
+@pytest.mark.parametrize("path", PROBES, ids=lambda p: p.stem)
+def test_leg_lines_use_the_grammar_the_runner_parses(path: Path) -> None:
+    """`spike/run.sh` scores these lines; a typo in one is a leg it cannot see."""
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if "CTI|LEG" not in line:
+            continue
+        assert LEG_LINE.search(line), f"{path.name}: unparseable leg line: {line.strip()}"
+
+
+@pytest.mark.parametrize("path", PROBES, ids=lambda p: p.stem)
 def test_env_header_is_assignments(path: Path) -> None:
     env = header_block(path).get("env")
     if env is not None:

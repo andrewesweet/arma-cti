@@ -1,6 +1,7 @@
 // probe: human-commander
-// issues: 18, 46
-// window: 150
+// issues: 18, 46, 116
+// window: 420
+// env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
 //
 // #18 in-world probe: the human Commander's path, as far as a world with no
 // human in it can be made to answer for it.
@@ -20,12 +21,23 @@
 // is a rendered map with a person clicking on it, and that is the human's play
 // session rather than a longer window.
 //
-// The window is the default: the subject is one world build, one report cycle
-// and a handful of synchronous calls. A run that is sending a headed client
-// sets CTI_PROBE_CLIENT to the seconds it may wait for that client to reach a
-// Commander slot, and then drives it — `CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=120
-// just probe spike/probes/human-commander.sqf 420`. The corpus leaves it at 0
-// and waits for nobody.
+// The client leg is on in the corpus and declared in the `env:` header above,
+// not left to a caller to remember (ADR-0037, #116). It used to default off:
+// CTI_PROBE_CLIENT was 0 unless someone set it, so every corpus run of this
+// probe finished green having never crossed the machine boundary that the
+// second half of the ticket is entirely about. A leg that is optional in
+// practice is a leg nobody runs.
+//
+// The window is 420 rather than the default 150 because the subject grew with
+// it, not because a shorter one was flaky: the client has to launch on the
+// Windows host, connect and be swept into the Commander slot (240 s allowed for
+// a cold start, 24.7 s observed on #18's run), and the accepted Purchase is then
+// polled to a 60 s ceiling with a 30 s wait on the client's own report after it.
+//
+// Run by hand without a client — `just probe spike/probes/human-commander.sqf` —
+// this probe reports its client leg `unverified` and the run is
+// infra_unavailable. That is the honest answer to "nothing was measured", and it
+// is the same answer the tier gives for any other condition it could not read.
 [] spawn {
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
@@ -143,6 +155,7 @@
 
     if !((_reply getOrDefault ["status", ""]) isEqualTo "ok") exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_view_refused reply=%1", _reply];
+        diag_log "CTI|LEG name=human_commander_client status=unverified reason=view_refused_before_the_leg";
         diag_log "CTI|human_commander_probe_done";
     };
 
@@ -182,19 +195,26 @@
     };
 
     // ---------------------------------------------------------------- the client leg
-    // The half only a person can answer for. The corpus runs with nobody in a
-    // Commander slot and says so in one line rather than skipping in silence: a
-    // green run that never had a client is a green run about something smaller
-    // than the ticket. A run launched with a headed client (CTI_PROBE_CLIENT,
-    // set by the harness at bring-up) waits for that client to be assigned and
-    // then drives it, which is as close to a person as a machine gets.
+    // The half only a person can answer for, and the half the corpus now runs.
+    // The harness launches a headed client on the Windows host and stages
+    // CTI_PROBE_CLIENT with the seconds this probe may wait for it to be swept
+    // into a Commander slot; the probe then drives that client, which is as
+    // close to a person as a machine gets.
+    //
+    // Every exit from here on names the leg and what became of it. `status=ran`
+    // is claimed once, at the bottom, after the client has actually answered —
+    // so nothing on the way out of this block can leave the verdict saying the
+    // leg happened.
     private _waitFor = missionNamespace getVariable ["CTI_PROBE_CLIENT", 0];
-    if (_waitFor > 0) then {
-        private _deadline = diag_tickTime + _waitFor;
-        waitUntil {
-            count (missionNamespace getVariable ["cti_commanders", createHashMap]) > 0
-                || { diag_tickTime > _deadline }
-        };
+    if (_waitFor <= 0) exitWith {
+        diag_log "CTI|LEG name=human_commander_client status=unverified reason=run_sent_no_headed_client";
+        diag_log "CTI|human_commander_probe_done";
+    };
+
+    private _deadline = diag_tickTime + _waitFor;
+    waitUntil {
+        count (missionNamespace getVariable ["cti_commanders", createHashMap]) > 0
+            || { diag_tickTime > _deadline }
     };
 
     private _assigned = missionNamespace getVariable ["cti_commanders", createHashMap];
@@ -202,11 +222,8 @@
         count allPlayers, keys _assigned, _waitFor];
 
     if (count _assigned isEqualTo 0) exitWith {
-        if (_waitFor > 0) then {
-            diag_log "CTI|FAIL class=timeout human_commander_probe_no_client_assigned";
-        } else {
-            diag_log "CTI|human_commander_probe_unverified reason=no_person_in_a_commander_slot";
-        };
+        diag_log "CTI|FAIL class=timeout human_commander_probe_no_client_assigned";
+        diag_log "CTI|LEG name=human_commander_client status=unverified reason=no_person_in_a_commander_slot";
         diag_log "CTI|human_commander_probe_done";
     };
 
@@ -216,6 +233,7 @@
     { if (getPlayerUID _x isEqualTo _uid) exitWith { _unit = _x } } forEach allPlayers;
     if (isNull _unit) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_assigned_uid_absent uid=%1", _uid];
+        diag_log "CTI|LEG name=human_commander_client status=unverified reason=assigned_uid_holds_no_unit";
         diag_log "CTI|human_commander_probe_done";
     };
     private _target = owner _unit;
@@ -295,5 +313,6 @@
         };
     };
 
+    diag_log "CTI|LEG name=human_commander_client status=ran";
     diag_log "CTI|human_commander_probe_done";
 };

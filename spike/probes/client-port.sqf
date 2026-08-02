@@ -1,5 +1,5 @@
 // probe: client-port
-// issues: 21, 46
+// issues: 21, 46, 116
 // window: 420
 // env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
 //
@@ -78,8 +78,10 @@
     if (_waitFor <= 0) exitWith {
         // Not an assertion about the code: the run did not send the client this
         // probe is entirely about, so nothing was measured under conditions
-        // anyone can read.
-        diag_log "CTI|FAIL class=infra_unavailable client_port_probe_no_client_requested";
+        // anyone can read. Said in the leg grammar the harness scores (#116);
+        // run.sh turns an unverified leg into infra_unavailable, which is the
+        // class this line used to declare for itself.
+        diag_log "CTI|LEG name=client_port_caller status=unverified reason=run_sent_no_headed_client";
         diag_log "CTI|client_port_probe_done";
     };
 
@@ -93,6 +95,7 @@
     if (count _assigned isEqualTo 0) exitWith {
         diag_log format ["CTI|FAIL class=timeout client_port_probe_no_client_assigned waited=%1 players=%2",
             _waitFor, count allPlayers];
+        diag_log "CTI|LEG name=client_port_caller status=unverified reason=no_person_in_a_commander_slot";
         diag_log "CTI|client_port_probe_done";
     };
 
@@ -102,6 +105,7 @@
     { if (getPlayerUID _x isEqualTo _uid) exitWith { _unit = _x } } forEach allPlayers;
     if (isNull _unit) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_assigned_uid_absent uid=%1", _uid];
+        diag_log "CTI|LEG name=client_port_caller status=unverified reason=assigned_uid_holds_no_unit";
         diag_log "CTI|client_port_probe_done";
     };
 
@@ -109,6 +113,7 @@
     private _other = ["WEST", "EAST"] select (_side isEqualTo "WEST");
     diag_log format ["CTI|client_port_probe_commander side=%1 owner=%2 role=%3 other=%4",
         _side, _target, roleDescription _unit, _other];
+    diag_log "CTI|LEG name=client_port_caller status=ran";
 
     // Drive one step on the client and wait for its own account of it. The
     // Command is built and sent on the client, by the client's own path, across
@@ -120,6 +125,21 @@
     //
     // Every ack carries the step name it belongs to, so a late one from the
     // step before is discarded rather than read as this step's answer.
+    // Each step of the leg says what became of it (#116, ADR-0037). The six
+    // step exits below used to be bare `client_port_probe_done` lines: covered
+    // in practice, because `_drive` logs a FAIL before returning [], but a bare
+    // completion is a green verdict short-circuited and the cover was incidental
+    // rather than structural. Now an abandoned step names itself unverified, the
+    // steps that ran name themselves too, and the verdict carries the list —
+    // so a pass says which of the six it is a pass about.
+    private _legRan = {
+        diag_log format ["CTI|LEG name=client_port_%1 status=ran", _this];
+    };
+    private _legLost = {
+        diag_log format ["CTI|LEG name=client_port_%1 status=unverified reason=client_never_acked_the_step", _this];
+        diag_log "CTI|client_port_probe_done";
+    };
+
     private _drive = {
         params ["_step", "_code", ["_wait", 90]];
         cti_probeAck = nil;
@@ -167,7 +187,7 @@
         };
     }] call _drive;
 
-    if (_accepted isEqualTo []) exitWith { diag_log "CTI|client_port_probe_done" };
+    if (_accepted isEqualTo []) exitWith { "accepted" call _legLost };
     if ((_accepted # 1) isNotEqualTo "ok") then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_accepted_not_judged status=%1 code=%2",
             _accepted # 1, _accepted # 2];
@@ -184,6 +204,7 @@
     };
     diag_log format ["CTI|client_port_probe_accepted side=%1 funds=%2->%3 squads=%4->%5 judged_funds=%6",
         _side, _fundsBefore, _fundsAfter, _squadsBefore, _squadsAfter, _accepted # 4];
+    "accepted" call _legRan;
 
     // ------------------------------------------------------------- a lying side
     // The client fills `side` in with the side it does not command. The gateway
@@ -217,7 +238,7 @@
         };
     }] call _drive;
 
-    if (_forged isEqualTo []) exitWith { diag_log "CTI|client_port_probe_done" };
+    if (_forged isEqualTo []) exitWith { "forged" call _legLost };
     if ((_forged # 1) isNotEqualTo "ok") then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_forged_refused status=%1 code=%2 detail=%3",
             _forged # 1, _forged # 2, _forged # 3];
@@ -239,6 +260,7 @@
     };
     diag_log format ["CTI|client_port_probe_stamp claimed=%1 stamped=%2 squads_%2=%3->%4 squads_%1=%5->%6",
         _other, _side, _squadsAfter, _squadsForged, _otherSquadsBefore, _otherSquadsForged];
+    "forged" call _legRan;
 
     // ------------------------------------------------------ a caller nobody knows
     // The refusal a person meets when they reach the port from a machine the
@@ -279,7 +301,7 @@
     ([_side] call _board) params ["_fundsUnknown", "_squadsUnknown"];
     _assigned set [_side, _uid];
 
-    if (_unknown isEqualTo []) exitWith { diag_log "CTI|client_port_probe_done" };
+    if (_unknown isEqualTo []) exitWith { "unassigned" call _legLost };
     if ((_unknown # 1) isNotEqualTo "rejected" || { (_unknown # 2) isNotEqualTo "wrong_side" }) then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_unassigned_not_refused status=%1 code=%2",
             _unknown # 1, _unknown # 2];
@@ -295,6 +317,7 @@
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_unassigned_bought before=%1 after=%2",
             _squadsForged, _squadsUnknown];
     };
+    "unassigned" call _legRan;
 
     // ------------------------------------------------------- payloads that are not Commands
     // Two shapes a client can send that cti_fnc_command would never build, sent
@@ -321,11 +344,12 @@
         };
     }] call _drive;
 
-    if (_junk isEqualTo []) exitWith { diag_log "CTI|client_port_probe_done" };
+    if (_junk isEqualTo []) exitWith { "junk" call _legLost };
     if ((_junk # 1) isNotEqualTo "rejected" || { (_junk # 2) isNotEqualTo "malformed_command" }) then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_junk_not_refused status=%1 code=%2",
             _junk # 1, _junk # 2];
     };
+    "junk" call _legRan;
 
     private _invented = ["invented", {
         [] spawn {
@@ -351,11 +375,12 @@
         };
     }] call _drive;
 
-    if (_invented isEqualTo []) exitWith { diag_log "CTI|client_port_probe_done" };
+    if (_invented isEqualTo []) exitWith { "invented" call _legLost };
     if ((_invented # 1) isNotEqualTo "rejected" || { (_invented # 2) isNotEqualTo "unknown_command" }) then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_invented_not_refused status=%1 code=%2",
             _invented # 1, _invented # 2];
     };
+    "invented" call _legRan;
 
     ([_side] call _board) params ["_fundsJunk", "_squadsJunk"];
     if (_squadsJunk isNotEqualTo _squadsForged) then {
@@ -396,7 +421,7 @@
         };
     }] call _drive;
 
-    if (_breach isEqualTo []) exitWith { diag_log "CTI|client_port_probe_done" };
+    if (_breach isEqualTo []) exitWith { "breach" call _legLost };
 
     // A grace beyond the client's own wait: the assertion is that nothing
     // arrives, and nothing arriving takes longer to establish than something
@@ -414,6 +439,7 @@
     };
     diag_log format ["CTI|client_port_probe_whitelist_bit setVariable_landed=%1 portReply_landed=%2",
         _commandLanded, _functionLanded];
+    "breach" call _legRan;
 
     ([_side] call _board) params ["_fundsEnd", "_squadsEnd"];
     diag_log format ["CTI|client_port_probe_board side=%1 funds=%2 squads=%3", _side, _fundsEnd, _squadsEnd];

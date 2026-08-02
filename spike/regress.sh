@@ -340,6 +340,12 @@ for name in "${CORPUS[@]}"; do
     verdict="$(sed -n 's/^verdict=//p' "$out/results.env" 2>/dev/null | tail -1)"
     raw_class="$(sed -n 's/^failure_class=//p' "$out/results.env" 2>/dev/null | tail -1)"
     detail="$(sed -n 's/^failure_detail=//p' "$out/results.env" 2>/dev/null | tail -1)"
+    # What became of the probe's optional legs, in the verdict rather than in the
+    # log (#116, ADR-0037). Empty for the probes that have none. `run.sh` has
+    # already turned an unverified leg into infra_unavailable, so this is the
+    # naming rather than the gating: it is what lets a reader of verdict.json see
+    # that a green probe ran the leg it is mostly about.
+    legs="$(sed -n 's/^legs=//p' "$out/results.env" 2>/dev/null | tail -1)"
 
     if [[ "$verdict" == "PASS" ]]; then
         raw_class=pass
@@ -388,6 +394,7 @@ for name in "${CORPUS[@]}"; do
   "raw_class": "$raw_class",
   "expected": $(json_string "${expect:-}"),
   "quarantined": $(json_string "${quarantine:-}"),
+  "legs": $(json_string "${legs:-}"),
   "detail": $(json_string "${detail:-}"),
   "window_secs": $window,
   "elapsed_secs": $elapsed,
@@ -418,6 +425,10 @@ JSON
         log "     FAIL class=$class in ${elapsed}s — $out"
         log "     $detail"
     fi
+    # Printed either way. A pass that names the legs it ran is the whole point of
+    # the convention: the reader should not have to open the evidence to find out
+    # whether the half that needed a client happened.
+    [[ -n "$legs" ]] && log "     legs: $legs"
 
     # A failing probe fails the run, and the run finishes anyway: report
     # everything, filter in a separate pass. The one exception is

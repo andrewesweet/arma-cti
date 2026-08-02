@@ -10,6 +10,10 @@ Windows process list showing the game refuses, one showing it absent proceeds,
 and every way of not getting an answer at all refuses too. The Windows tool is
 substituted through `CTI_WINDOWS_TASKLIST`, which is the same seam the real
 runners use to point at `/mnt/c/Windows/System32/tasklist.exe`.
+
+The same seam covers `cti_windows_wait_gone` (issue #119), the teardown-side
+counterpart: the guard stays ownership-blind, so the run that launched a client
+waits for it to leave the process list before handing the tier on.
 """
 
 from __future__ import annotations
@@ -59,6 +63,20 @@ def _run(tasklist: Path | str) -> subprocess.CompletedProcess[str]:
         capture_output=True,
         text=True,
         check=False,
+    )
+
+
+def _wait_gone(tasklist: Path | str, timeout: str = "5") -> subprocess.CompletedProcess[str]:
+    """`cti_windows_wait_gone` sourced, which is how the runners use it."""
+    env = dict(os.environ, CTI_WINDOWS_TASKLIST=str(tasklist))
+    # S603: this repo's own script, sourced by a fixed one-liner.
+    return subprocess.run(  # noqa: S603
+        [BASH, "-c", f"source {GUARD}; cti_windows_wait_gone arma3_x64.exe {timeout}"],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
     )
 
 
@@ -130,6 +148,72 @@ def test_image_match_is_case_insensitive(tmp_path: Path, image: str) -> None:
     listing = TASKLIST_PRESENT.replace("arma3_x64.exe", image)
     tasklist = _stub(tmp_path, "tasklist.sh", f"printf '%s' {listing!r}")
     assert _run(tasklist).returncode == EXIT_INFRA_UNAVAILABLE
+
+
+# ------------------------------------- teardown waits for its own exit (#119)
+def test_wait_gone_returns_once_the_image_leaves_the_list(tmp_path: Path) -> None:
+    """The whole of #119: a client that is still exiting is not yet gone.
+
+    The stub answers "present" for the first two asks and "absent" after, which
+    is the shutdown lag that made a corpus run stop on its own client.
+    """
+    counter = tmp_path / "asks"
+    tasklist = _stub(
+        tmp_path,
+        "tasklist.sh",
+        f"n=$(cat {counter} 2>/dev/null || echo 0)\n"
+        f"echo $((n + 1)) > {counter}\n"
+        f"if ((n < 2)); then printf '%s' {TASKLIST_PRESENT!r}; "
+        f"else printf '%s' {TASKLIST_ABSENT!r}; fi",
+    )
+    result = _wait_gone(tasklist, timeout="20")
+    assert result.returncode == 0, result.stderr
+    assert "has left the Windows process list" in result.stderr
+    assert int(counter.read_text()) >= 3, "it answered before it had asked again"
+
+
+def test_wait_gone_gives_up_loudly_rather_than_waiting_forever(tmp_path: Path) -> None:
+    """A deadline on a shutdown, reported rather than extended.
+
+    A process that never goes leaves the next run's guard to refuse — and that
+    refusal is the correct one, which is why this returns non-zero rather than
+    escalating here.
+    """
+    tasklist = _stub(tmp_path, "tasklist.sh", f"printf '%s' {TASKLIST_PRESENT!r}")
+    result = _wait_gone(tasklist, timeout="1")
+    assert result.returncode != 0
+    assert "still in the Windows process list" in result.stderr
+
+
+def test_wait_gone_does_not_read_an_unreadable_list_as_gone(tmp_path: Path) -> None:
+    """The same fail-closed stance as the guard, on the way out."""
+    result = _wait_gone(tmp_path / "there-is-no-tasklist-here.exe", timeout="1")
+    assert result.returncode != 0
+    assert "cannot tell whether" in result.stderr
+
+
+def test_the_guard_itself_gained_no_ownership_exemption(tmp_path: Path) -> None:
+    """#119's rejected fix, asserted as still rejected.
+
+    The wait above exists because the guard must not learn to excuse a process
+    it recognises: a guard that can excuse ours can be talked into excusing the
+    human's. `cti_human_client_state` takes an image and nothing else, and a
+    client in the list is a stop whatever pid the caller thinks it owns.
+    """
+    tasklist = _stub(tmp_path, "tasklist.sh", f"printf '%s' {TASKLIST_PRESENT!r}")
+    env = dict(
+        os.environ,
+        CTI_WINDOWS_TASKLIST=str(tasklist),
+        # Every shape an "it's ours" exemption could plausibly arrive in.
+        CTI_WINDOWS_CLIENT_PID="24188",
+        CTI_OUR_CLIENT_PID="24188",
+    )
+    # S603: this repo's own script.
+    result = subprocess.run(  # noqa: S603
+        [BASH, str(GUARD)], env=env, capture_output=True, text=True, check=False, timeout=60
+    )
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE
+    assert "24188" not in result.stderr
 
 
 def test_runners_do_not_resolve_the_windows_tools_by_bare_name() -> None:

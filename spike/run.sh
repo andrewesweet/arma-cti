@@ -58,6 +58,11 @@ WINDOWS_CONNECT="${CTI_WINDOWS_CONNECT:-127.0.0.1}"
 # simulating when it does not have focus.
 WINDOWS_CLIENT="${CTI_WINDOWS_CLIENT:-0}"
 WINDOWS_CLIENT_PROFILE="${CTI_WINDOWS_CLIENT_PROFILE:-ctitest}"
+# How long teardown waits for a Windows process this run launched to leave the
+# host's process list before it releases the tier (#119). A deadline on a
+# shutdown, not a window sized until something passes: the engine took under ten
+# seconds to go in every run observed, and a run that blows this reports it.
+WINDOWS_EXIT_TIMEOUT="${CTI_WINDOWS_EXIT_TIMEOUT:-90}"
 
 BOOT_TIMEOUT="${CTI_BOOT_TIMEOUT:-240}"
 HC_TIMEOUT="${CTI_HC_TIMEOUT:-90}"
@@ -123,6 +128,12 @@ cleanup() {
     for pid in "$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
         [[ -n "$pid" ]] && kill -9 "$pid" 2>/dev/null
     done
+    # Reaped, not merely signalled. A pid this shell launched and has not reaped
+    # is a process that may still be holding what it held, and the next thing to
+    # happen after this trap is another run taking the tier (#119).
+    for pid in "$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
+        [[ -n "$pid" ]] && wait "$pid" 2>/dev/null
+    done
     # Windows processes are children of WSL interop, not of this shell, so a
     # kill on the interop wrapper does not always reach them. By absolute path:
     # `taskkill.exe` by name is not on an agent's PATH either, so this silently
@@ -137,10 +148,26 @@ cleanup() {
     # already recorded, but a Windows process this run launched and could not
     # kill is the next run's infra_unavailable, and it should be in this run's
     # evidence rather than in nobody's (#83).
-    [[ -n "$win_hc_pid" ]] && { cti_windows_taskkill arma3server_x64.exe ||
-        log "teardown: arma3server_x64.exe may still be running on the Windows host"; }
-    [[ -n "$win_client_pid" ]] && { cti_windows_taskkill arma3_x64.exe ||
-        log "teardown: arma3_x64.exe may still be running on the Windows host"; }
+    #
+    # And waited for, not just asked. `taskkill /F` returns when the request has
+    # been made, not when the process is gone, so a run used to release the tier
+    # with its own client still in the Windows process list — where the next
+    # run's host guard read it as a play session and stopped the corpus on its
+    # own leavings (#119). The guard cannot be taught to recognise ours without
+    # also being able to excuse the human's, so the wait belongs here, in the run
+    # that owns the process.
+    if [[ -n "$win_hc_pid" ]]; then
+        cti_windows_taskkill arma3server_x64.exe ||
+            log "teardown: arma3server_x64.exe may still be running on the Windows host"
+        cti_windows_wait_gone arma3server_x64.exe "$WINDOWS_EXIT_TIMEOUT" ||
+            log "teardown: arma3server_x64.exe had not left the Windows process list"
+    fi
+    if [[ -n "$win_client_pid" ]]; then
+        cti_windows_taskkill arma3_x64.exe ||
+            log "teardown: arma3_x64.exe may still be running on the Windows host"
+        cti_windows_wait_gone arma3_x64.exe "$WINDOWS_EXIT_TIMEOUT" ||
+            log "teardown: arma3_x64.exe had not left the Windows process list"
+    fi
     exit "$code"
 }
 trap cleanup EXIT INT TERM
@@ -168,6 +195,34 @@ class_of() {
     local line="$1" declared
     declared="$(sed -n 's/.*class=\([a-z_]\+\).*/\1/p' <<<"$line")"
     printf '%s' "${declared:-assertion_failed}"
+}
+
+# The vacuity convention, mechanically (#116, ADR-0037). A probe with an
+# optional leg — a half of its subject that needs something the world alone
+# cannot supply, a headed client above all — says what became of that leg in one
+# line per leg:
+#
+#     CTI|LEG name=<leg> status=ran
+#     CTI|LEG name=<leg> status=unverified reason=<why>
+#
+# and the verdict names them. A leg that did not run is not a pass: it routes to
+# infra_unavailable, which this tier already refuses to read as a result, rather
+# than being counted green. Before this, `human-commander` finished green in
+# every corpus run with the only leg that crosses the machine boundary switched
+# off by an environment default, and said so in a log line nothing scored.
+#
+# Asked after the FAIL sweep on both verdict paths, so a red keeps its own class:
+# a probe that failed produced a result, and an unverified leg is only the story
+# when there is no other one.
+assert_legs_ran() {
+    local lines="$1" seen unverified
+    seen="$(sed -n 's/^LEG name=\([^ ]*\) status=\([^ ]*\).*/\1:\2/p' "$lines" | paste -sd' ' -)"
+    [[ -n "$seen" ]] && record "legs" "$seen"
+    unverified="$(grep -a '^LEG .*status=unverified' "$lines" | sed 's/^LEG //' | paste -sd'; ' -)"
+    if [[ -n "$unverified" ]]; then
+        fail "infra_unavailable" "a leg of this probe did not run: $unverified"
+    fi
+    return 0
 }
 
 # The headed client's own log, off the Windows host. The Linux server's stdout
@@ -309,9 +364,15 @@ DESYNC_LOAD="${CTI_DESYNC_LOAD:-0}"
     # until something passes.
     printf 'CTI_PROBE_SOAK = %s;\n' "${CTI_PROBE_SOAK:-0}"
     # How long a probe waits for a person to reach a Commander slot, when the run
-    # is sending one (#18). Zero — the corpus default — means no client is coming
-    # and a probe must not wait for one: a probe that waited out a client the run
-    # never launched would spend its window on nothing every unattended pass.
+    # is sending one (#18). Zero means no client is coming and a probe must not
+    # wait for one: a probe that waited out a client the run never launched would
+    # spend its window on nothing.
+    #
+    # This is the script's default and no longer the corpus's. A probe whose
+    # subject includes the client leg declares the client in its own `env:`
+    # header and gets a non-zero value there — optional legs default on in the
+    # corpus (ADR-0037, #116) — so zero now means "run by hand without one", and
+    # such a probe reports its client leg unverified rather than green.
     printf 'CTI_PROBE_CLIENT = %s;\n' "${CTI_PROBE_CLIENT:-0}"
 } >"$STAGE/harness.sqf"
 # Shared probe scaffolding, ahead of the probe that uses it. Unconditional: it
@@ -707,6 +768,7 @@ EOF
         first_fail="$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
         fail "$(class_of "$first_fail")" "$first_fail"
     fi
+    assert_legs_ran "$OUT/spike-lines.txt"
 
     # A probe that says it staged deaths is checked against the daemon's own
     # file rather than against its own memory of doing so. This is the crossing:
@@ -755,6 +817,7 @@ if grep -q '^FAIL' "$OUT/spike-lines.txt"; then
     first_fail="$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
     fail "$(class_of "$first_fail")" "$first_fail"
 fi
+assert_legs_ran "$OUT/spike-lines.txt"
 
 record "server_peak_rss_kb" "$(awk '/VmHWM/{print $2}' "/proc/$server_pid/status" 2>/dev/null || echo unknown)"
 if [[ -n "$hc_pid" ]]; then

@@ -23,6 +23,7 @@
 #     source spike/host-guard.sh
 #     cti_human_client_state         # echoes free|running|unavailable + detail
 #     cti_windows_taskkill <image>   # teardown that fails loudly rather than open
+#     cti_windows_wait_gone <image> <secs>   # teardown waits for its own exit
 #
 # Overridable for tests and for a machine that puts Windows somewhere else:
 # CTI_WINDOWS_TASKLIST, CTI_WINDOWS_TASKKILL, CTI_HUMAN_CLIENT_IMAGE.
@@ -94,6 +95,52 @@ cti_windows_taskkill() {
             "$CTI_WINDOWS_TASKKILL" "$image" "$status" "$(tr '\n' ' ' <<<"$out")" >&2
     fi
     return "$status"
+}
+
+# Wait for a Windows image *this run launched* to leave the process list (#119).
+#
+# The guard above asks "is the game running on the host?" and answers stop for
+# yes. That question is ownership-blind on purpose: a guard taught to excuse a
+# pid it recognises is a guard that can be talked into excusing the human's, and
+# "a process we did not start means stop" has to stay absolute. So the asymmetry
+# is resolved on the other side — the run that launched a client owns waiting for
+# it to be gone, and hands the tier on only afterwards. Before this, a corpus run
+# tripped its own guard: `client-port` finished, teardown asked its client to
+# stop, and the next probe's pre-flight two seconds later saw a still-exiting
+# arma3_x64.exe and called it a play session.
+#
+# A poll on the process list rather than a wait on a pid, because the Windows
+# process is a child of WSL interop rather than of this shell: the pid here is
+# the interop wrapper's, and its exit does not mean the game's. Polling the same
+# list the guard reads means "gone" is exactly what the next run's guard will
+# see, which is the only definition that settles anything.
+#
+# Bounded and loud. This is not a retry until something passes: the subject is a
+# process shutting down, the condition is that process's absence, and a deadline
+# reached is reported rather than extended. A run that could not see its own
+# client leave says so in its evidence and leaves the next run's guard to refuse
+# — which, that time, is the correct refusal.
+cti_windows_wait_gone() {
+    local image="${1:?image name required}" timeout="${2:-90}" deadline answer
+    deadline=$((SECONDS + timeout))
+    while :; do
+        answer="$(cti_human_client_state "$image")"
+        case "${answer%% *}" in
+        free)
+            printf '[host-guard] %s has left the Windows process list\n' "$image" >&2
+            return 0
+            ;;
+        unavailable)
+            printf '[host-guard] cannot tell whether %s is gone: %s\n' "$image" "${answer#* }" >&2
+            return 1
+            ;;
+        esac
+        ((SECONDS >= deadline)) && break
+        sleep 1
+    done
+    printf '[host-guard] %s was still in the Windows process list %ss after teardown asked it to stop\n' \
+        "$image" "$timeout" >&2
+    return 1
 }
 
 # As a command: one line of reason on stderr and a verdict in the exit code.
