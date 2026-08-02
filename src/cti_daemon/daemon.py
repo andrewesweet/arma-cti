@@ -374,7 +374,7 @@ class Daemon:
         pending = self.outbox.pending()
         messages: list[dict[str, Any]] = []
         for entry in pending:
-            candidate = [*messages, {"sequence": entry.sequence, "message": entry.message}]
+            candidate = [*messages, self._addressed(entry)]
             if len(protocol.encode(self._drain(request, candidate))) >= POLL_GUARD_BYTES:
                 break
             messages = candidate
@@ -400,6 +400,16 @@ class Daemon:
         return self._drain(request, messages)
 
     @staticmethod
+    def _addressed(entry: Entry) -> dict[str, Any]:
+        """Render one outbox entry as the wire message the game receives.
+
+        The single boundary point (#77). The outbox holds `Effect` objects and
+        the domain never constructs a wire document, so a change to the effect
+        rendering is a change here and nowhere else.
+        """
+        return {"sequence": entry.sequence, "message": commands.serialise_effect(entry.effect)}
+
+    @staticmethod
     def _drain(request: protocol.Request, messages: list[dict[str, Any]]) -> protocol.Reply:
         """Build the reply one drain goes back in. Measured before it is sent."""
         return protocol.accepted(request.id, {"messages": messages})
@@ -414,7 +424,7 @@ class Daemon:
         — a stalled pump that says so beats a pump that quietly loses the work
         behind it.
         """
-        alone = [{"sequence": entry.sequence, "message": entry.message}]
+        alone = [self._addressed(entry)]
         size = len(protocol.encode(self._drain(request, alone)))
         self._telemetry.record(
             "outbox_oversized", sequence=entry.sequence, reply_bytes=size, guard=POLL_GUARD_BYTES

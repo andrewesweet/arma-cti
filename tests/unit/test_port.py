@@ -15,7 +15,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from cti_daemon import campaign, economy, manifest, port, squads
-from cti_daemon.commands import Command
+from cti_daemon.commands import Command, Effect
 from cti_daemon.outbox import Outbox
 
 REPO = Path(__file__).parents[2]
@@ -87,9 +87,9 @@ def test_an_accepted_purchase_queues_its_effect_rather_than_returning_it(
     # effect path to audit rather than two.
     open_port.submit(Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST")
     (entry,) = open_port.outbox.pending()
-    assert entry.message["effect"] == "squad_spawned"
-    assert entry.message["side"] == "WEST"
-    assert entry.message["args"]["squad_type"] == "rifle"
+    assert entry.effect.name == "squad_spawned"
+    assert entry.effect.side == "WEST"
+    assert entry.effect.args["squad_type"] == "rifle"
 
 
 def test_a_purchase_beyond_the_balance_is_rejected_and_costs_nothing(
@@ -167,11 +167,11 @@ def test_an_order_is_recorded_against_the_squad_and_announced_as_an_effect(
     )
     assert judgement.accepted
     assert standing(open_port, squad) == squads.Order("capture", "agia_marina")
-    assert {
-        "effect": "order_issued",
-        "side": "WEST",
-        "args": {"squad": squad, "order": "capture", "place": "agia_marina"},
-    } in [entry.message for entry in open_port.outbox.pending()]
+    assert Effect(
+        name="order_issued",
+        side="WEST",
+        args={"squad": squad, "order": "capture", "place": "agia_marina"},
+    ) in [entry.effect for entry in open_port.outbox.pending()]
 
 
 def test_a_later_order_supersedes_the_one_before_it(open_port: port.CommandPort) -> None:
@@ -345,7 +345,7 @@ def test_the_ground_each_order_may_name_is_the_only_ground_it_is_given(
     assert standing(open_port, squad) == (
         squads.Order(kind, place) if judgement.accepted else squads.RESERVE
     )
-    issued = [entry.message["effect"] for entry in open_port.outbox.pending()]
+    issued = [entry.effect.name for entry in open_port.outbox.pending()]
     assert issued.count("order_issued") == int(judgement.accepted)
 
 

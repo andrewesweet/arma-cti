@@ -1,9 +1,20 @@
-"""Acknowledged delivery for messages pushed from the daemon to the game."""
+"""Acknowledged delivery for Effects pushed from the daemon to the game.
+
+It holds `Effect` objects rather than wire documents (#77). Clean Architecture's
+rule is that data crossing a boundary is in the form most convenient for the
+inner circle and is serialised at the edge; queueing `serialise_effect(...)` here
+had the domain constructing the wire's format, so every effect producer was
+coupled to the rendering and a change to it touched three modules. The rendering
+now happens once, in `Daemon._poll`, which is where effects actually leave.
+"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from cti_daemon.commands import Effect
 
 
 class UnknownSequenceError(Exception):
@@ -12,23 +23,23 @@ class UnknownSequenceError(Exception):
 
 @dataclass(frozen=True, slots=True)
 class Entry:
-    """One pushed message and the sequence number it was issued under."""
+    """One pushed Effect and the sequence number it was issued under."""
 
     sequence: int
-    message: dict[str, Any]
+    effect: Effect
 
 
 @dataclass(slots=True)
 class Outbox:
-    """Holds pushed messages until the game acknowledges them."""
+    """Holds pushed Effects until the game acknowledges them."""
 
     _entries: list[Entry] = field(default_factory=list)
     _issued: int = 0
 
-    def push(self, message: dict[str, Any]) -> Entry:
-        """Queue a message for delivery and return the entry it was issued as."""
+    def push(self, effect: Effect) -> Entry:
+        """Queue an Effect for delivery and return the entry it was issued as."""
         self._issued += 1
-        entry = Entry(self._issued, message)
+        entry = Entry(self._issued, effect)
         self._entries.append(entry)
         return entry
 

@@ -32,14 +32,12 @@ def encoded(daemon: Daemon, **envelope: object) -> str:
     return daemon.handle_line(json.dumps(envelope))
 
 
-def spawn_effect(index: int) -> dict[str, Any]:
+def spawn_effect(index: int) -> Effect:
     """One real effect, the shape and size a Purchase actually queues."""
-    return serialise_effect(
-        Effect(
-            name="squad_spawned",
-            side="WEST",
-            args={"squad": f"WEST-{index}", "squad_type": "weapons", "size": 8},
-        )
+    return Effect(
+        name="squad_spawned",
+        side="WEST",
+        args={"squad": f"WEST-{index}", "squad_type": "weapons", "size": 8},
     )
 
 
@@ -107,7 +105,7 @@ def test_the_drain_is_bounded_at_the_entry_that_would_have_crossed_the_guard(
                 *handed,
                 {
                     "sequence": pending[len(handed)].sequence,
-                    "message": pending[len(handed)].message,
+                    "message": serialise_effect(pending[len(handed)].effect),
                 },
             ]
         },
@@ -154,7 +152,7 @@ def test_a_single_message_too_large_to_fit_is_a_loud_failure_not_a_truncation(
 ) -> None:
     log = tmp_path / "telemetry.jsonl"
     daemon = build_daemon(telemetry_path=log)
-    daemon.outbox.push({"effect": "campaign_won", "side": "WEST", "args": {"blob": "x" * 20_000}})
+    daemon.outbox.push(Effect(name="campaign_won", side="WEST", args={"blob": "x" * 20_000}))
 
     reply = reply_to(daemon, id="w-6", verb="poll")
     assert reply["status"] == "error"
@@ -167,7 +165,7 @@ def test_an_oversized_message_does_not_hide_the_backlog_behind_it(tmp_path: Path
     # It stalls it, loudly, and stays on the outbox. Retiring it to get at what
     # is behind would be the silent loss the guard exists to prevent.
     daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
-    daemon.outbox.push({"effect": "campaign_won", "side": "WEST", "args": {"blob": "x" * 20_000}})
+    daemon.outbox.push(Effect(name="campaign_won", side="WEST", args={"blob": "x" * 20_000}))
     daemon.outbox.push(spawn_effect(1))
 
     assert reply_to(daemon, id="w-7", verb="poll")["status"] == "error"

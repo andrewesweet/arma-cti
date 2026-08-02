@@ -87,7 +87,7 @@ def test_an_ai_commander_left_alone_buys_squads_and_takes_ground(tmp_path: Path)
 
     assert len(daemon.campaign.roster.roll(SIDE)) > 1
     assert SIDE in owners.values()
-    effects = [message.message["effect"] for message in daemon.outbox.pending()]
+    effects = [entry.effect.name for entry in daemon.outbox.pending()]
     assert {"squad_spawned", "order_issued", "objective_captured"} <= set(effects)
 
 

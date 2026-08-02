@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
-from cti_daemon.commands import CONTESTED, NEUTRAL, SIDES, Effect, serialise_effect
+from cti_daemon.commands import CONTESTED, NEUTRAL, SIDES, Effect
 from cti_daemon.contacts import Contacts
 from cti_daemon.observation import DESTROYED, INTACT, PUBLIC, Observation, SquadView
 from cti_daemon.squads import Roster, Squad
@@ -236,12 +236,10 @@ class Campaign:
         remaining = self.ledger.spend(side, bought.price)
         squad = self.roster.add(side, bought.id, bought.size)
         self.outbox.push(
-            serialise_effect(
-                Effect(
-                    name="squad_spawned",
-                    side=side,
-                    args={"squad": squad.id, "squad_type": bought.id, "size": bought.size},
-                )
+            Effect(
+                name="squad_spawned",
+                side=side,
+                args={"squad": squad.id, "squad_type": bought.id, "size": bought.size},
             )
         )
         return squad, remaining
@@ -264,12 +262,10 @@ class Campaign:
             raise KeyError(message)
         squad.order = order
         self.outbox.push(
-            serialise_effect(
-                Effect(
-                    name="order_issued",
-                    side=side,
-                    args={"squad": squad.id, "order": order.kind, "place": order.place},
-                )
+            Effect(
+                name="order_issued",
+                side=side,
+                args={"squad": squad.id, "order": order.kind, "place": order.place},
             )
         )
         return squad
@@ -455,11 +451,7 @@ class Campaign:
         if state.owner == owner:
             return
         state.owner = owner
-        self.outbox.push(
-            serialise_effect(
-                Effect(name="objective_captured", side=owner, args={"objective": name})
-            )
-        )
+        self.outbox.push(Effect(name="objective_captured", side=owner, args={"objective": name}))
 
     def _accrue(self, interval: float) -> list[dict[str, int]]:
         """Pay every income tick the elapsed time covers."""

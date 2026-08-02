@@ -5,12 +5,16 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any
 
+from cti_daemon.commands import Effect
 from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from cti_daemon.daemon import Daemon
+
+# One Effect to put on the outbox, the domain object it now holds (#77).
+ORDER_ISSUED = Effect(name="order_issued", side="WEST", args={"squad": "WEST-1"})
 
 
 def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
@@ -54,15 +58,22 @@ def test_a_malformed_line_that_still_carried_an_id_is_answered_under_it(tmp_path
 
 def test_poll_hands_over_pending_messages_with_their_sequences(tmp_path: Path) -> None:
     daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
-    daemon.outbox.push({"kind": "order"})
+    daemon.outbox.push(ORDER_ISSUED)
 
     reply = reply_to(daemon, id="r-4", verb="poll")
-    assert reply["result"] == {"messages": [{"sequence": 1, "message": {"kind": "order"}}]}
+    assert reply["result"] == {
+        "messages": [
+            {
+                "sequence": 1,
+                "message": {"effect": "order_issued", "side": "WEST", "args": {"squad": "WEST-1"}},
+            }
+        ]
+    }
 
 
 def test_polling_twice_without_acknowledging_delivers_the_same_messages(tmp_path: Path) -> None:
     daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
-    daemon.outbox.push({"kind": "order"})
+    daemon.outbox.push(ORDER_ISSUED)
 
     first = reply_to(daemon, id="r-5", verb="poll")["result"]
     second = reply_to(daemon, id="r-6", verb="poll")["result"]
@@ -71,7 +82,7 @@ def test_polling_twice_without_acknowledging_delivers_the_same_messages(tmp_path
 
 def test_acknowledging_clears_the_messages_from_the_next_poll(tmp_path: Path) -> None:
     daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
-    daemon.outbox.push({"kind": "order"})
+    daemon.outbox.push(ORDER_ISSUED)
 
     acked = reply_to(daemon, id="r-7", verb="ack", payload={"through": 1})
     assert acked["status"] == "ok"
@@ -98,7 +109,7 @@ def test_a_failure_inside_the_daemon_is_answered_as_an_internal_error(tmp_path: 
     # A message that cannot be serialised is the shape of bug a later ticket
     # will produce. The connection must survive it and say what happened.
     daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
-    daemon.outbox.push({"unserialisable": object()})
+    daemon.outbox.push(Effect(name="order_issued", side="WEST", args={"at": object()}))
 
     reply = reply_to(daemon, id="r-11", verb="poll")
     assert reply["id"] == "r-11"

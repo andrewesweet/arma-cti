@@ -25,7 +25,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from cti_daemon import archive, commands, observation, report
-from cti_daemon.commands import Effect, serialise_effect
+from cti_daemon.commands import Effect
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -265,16 +265,14 @@ class ReportCycle:
         # The same outbox every other effect rides, reached through the Campaign
         # that owns it: an end screen is an effect like any other (ADR-0012).
         self.campaign.outbox.push(
-            serialise_effect(
-                Effect(
-                    name="campaign_won",
-                    side=outcome.winner,
-                    args={
-                        "condition": outcome.condition,
-                        "at": outcome.at_time,
-                        "summary": summary,
-                    },
-                )
+            Effect(
+                name="campaign_won",
+                side=outcome.winner,
+                args={
+                    "condition": outcome.condition,
+                    "at": outcome.at_time,
+                    "summary": summary,
+                },
             )
         )
         try:

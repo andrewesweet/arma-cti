@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from cti_daemon import planner
+from cti_daemon.commands import serialise_effect
 from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
@@ -38,7 +39,11 @@ def rows(log: Path, event: str) -> list[dict[str, Any]]:
 
 def effects(daemon: Daemon, name: str) -> list[dict[str, Any]]:
     """Every pending outbox message of one effect kind."""
-    return [entry.message for entry in daemon.outbox.pending() if entry.message["effect"] == name]
+    return [
+        serialise_effect(entry.effect)
+        for entry in daemon.outbox.pending()
+        if entry.effect.name == name
+    ]
 
 
 def raze(daemon: Daemon, request_id: str, base: str, by: str, at_time: float = 90) -> None:

@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 from cti_daemon import planner, transport
-from cti_daemon.commands import SIDES, Command
+from cti_daemon.commands import SIDES, Command, serialise_effect
 from cti_daemon.observation import serialise
 from cti_daemon.planner import Candidate, Decision, Plan
 from cti_daemon.transport import build_daemon
@@ -105,7 +105,7 @@ def fingerprint(daemon: Daemon) -> dict[str, Any]:
             ]
             for side in SIDES
         },
-        "effects": [entry.message for entry in daemon.outbox.pending()],
+        "effects": [serialise_effect(entry.effect) for entry in daemon.outbox.pending()],
     }
 
 

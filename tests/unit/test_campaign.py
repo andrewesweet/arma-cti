@@ -16,6 +16,7 @@ from pathlib import Path
 import pytest
 
 from cti_daemon import campaign, economy, manifest
+from cti_daemon.commands import Effect
 from cti_daemon.outbox import Outbox
 
 REPO = Path(__file__).parents[2]
@@ -84,12 +85,10 @@ def test_taking_an_objective_from_the_other_side_needs_the_same_hold(
 
 def test_a_capture_announces_itself_as_an_effect(live: campaign.Campaign) -> None:
     hold(live, "agia_marina", ["WEST"], 30)
-    effects = [entry.message for entry in live.outbox.pending()]
-    assert {
-        "effect": "objective_captured",
-        "side": "WEST",
-        "args": {"objective": "agia_marina"},
-    } in effects
+    effects = [entry.effect for entry in live.outbox.pending()]
+    assert (
+        Effect(name="objective_captured", side="WEST", args={"objective": "agia_marina"}) in effects
+    )
 
 
 def test_income_pays_the_sum_over_owned_objectives_plus_the_stipend(
