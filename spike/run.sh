@@ -15,10 +15,12 @@
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-# Absolute-path resolution for the Windows interop binaries, and the one guard
-# that protects the human rather than another agent (#41).
-# shellcheck source=spike/host-guard.sh
-source "$REPO/spike/host-guard.sh"
+# Which machine this run is on (ADR-0032, #51), and with it the guard that
+# protects the human rather than another agent (#41) — per host and gated on the
+# host's role since #51. `spike/hosts.sh` sources `spike/host-guard.sh`, so the
+# absolute-path resolution of the Windows interop binaries comes with it.
+# shellcheck source=spike/hosts.sh
+source "$REPO/spike/hosts.sh"
 SERVER_DIR="${CTI_SERVER_DIR:-$HOME/arma3server}"
 SERVER_BIN="$SERVER_DIR/arma3server_x64"
 OUT="${CTI_SPIKE_OUT:-$REPO/.spike-out}"
@@ -301,6 +303,18 @@ fail() {
 }
 
 # ---------------------------------------------------------------- preconditions
+# The slot and the host this run is on, written down before the first thing that
+# can refuse. ADR-0028's rule is that a slot boundary is only real where
+# something reads it, and the corollary is that a reader of the evidence should
+# be able to see which side of it a run was on — including a run that got no
+# further than the guard, because "which machine refused?" is the first question
+# asked of an `infra_unavailable` and it used to be the one the record could not
+# answer (#51).
+record "tier_slot" "${CTI_TIER_SLOT:-0}"
+HOST="$(cti_host_resolve)" ||
+    fail "infra_unavailable" "CTI_TIER_HOST names a host the tier does not know: ${CTI_TIER_HOST:-local}"
+record "tier_host" "$HOST"
+
 # Asked before anything is launched, on every path into this script: an
 # arma3_x64.exe already up is the human's, the teardown above cannot tell theirs
 # from ours, and the answer is stop rather than kill (#41).
@@ -313,7 +327,7 @@ fail() {
 #
 # regress.sh asks the same question again before it queues, on purpose: that copy
 # is the cheap refusal that costs a caller no place in the lock queue.
-guard="$(cti_human_client_state)"
+guard="$(cti_host_client_state "$HOST")"
 case "${guard%% *}" in
 running) fail "infra_unavailable" "${guard#* } — that is a play session, not ours" ;;
 unavailable) fail "infra_unavailable" "${guard#* }; refusing to take a machine I cannot check" ;;
@@ -337,13 +351,9 @@ BUILT_MOD="${CTI_BUILT_MOD:-$REPO/.hemttout/build}"
 MOD_NAME="@cti"
 
 record "mission" "$MISSION"
-# The slot boundary, written down where a reader of the evidence can check it.
-# ADR-0028's rule is that a slot boundary is only real where something reads it,
-# and the corollary is that a reader should be able to see which side of it a run
-# was on: #44's merged runs were only diagnosable because somebody went looking
-# for the daemon address by hand.
-record "tier_slot" "${CTI_TIER_SLOT:-0}"
-record "tier_host" "${CTI_TIER_HOST:-local}"
+# The rest of the slot boundary, beside the two rows recorded above the guard.
+# #44's merged runs were only diagnosable because somebody went looking for the
+# daemon address by hand.
 record "server_port" "$PORT"
 record "daemon_port" "$DAEMON_PORT"
 record "daemon_addr" "$CTI_DAEMON_ADDR"

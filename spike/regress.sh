@@ -29,8 +29,15 @@ set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROBE_DIR="$REPO/spike/probes"
-STATE_DIR="${CTI_TIER_STATE:-$HOME/.arma-cti}"
-RUNS_DIR="$STATE_DIR/runs"
+# Which machine this pass executes on (ADR-0032, #51). One value today, `local`,
+# reached with no transport; the point of naming it at all is that every
+# host-touching operation below goes through the handle rather than through this
+# machine, so a second host is a row in `spike/hosts.sh` and not a rewrite here.
+# Validated before anything is launched — see the pre-flight.
+# shellcheck source=spike/hosts.sh
+source "$REPO/spike/hosts.sh"
+HOST="${CTI_TIER_HOST:-local}"
+RUNS_DIR="$(cti_host_runs "$HOST")"
 KEEP_PASSES=3
 KEEP_POOLS=5
 # ADR-0028 recommends three, and #47 measured that three fit. Changing this
@@ -267,14 +274,31 @@ fi
 POOL_LABEL="just regress --slots $WANT_SLOTS ${CORPUS[*]}"
 
 # ------------------------------------------------------------------ pre-flight
+# The host this pass is aimed at, checked before anything is launched. A name the
+# tier does not know is `infra_unavailable` rather than a fallback to this
+# machine: a run that silently executed here and reported itself as machine B's
+# would be the one failure the host seam exists to make impossible.
+if ! HOST="$(cti_host_resolve)"; then
+    {
+        printf '\n[regress] no such host: %s. Not a result.\n' "${CTI_TIER_HOST:-local}"
+        printf 'verdict=FAIL\n'
+        printf 'failure_class=infra_unavailable\n'
+        printf 'failure_detail=CTI_TIER_HOST names a host the tier does not know\n'
+        printf 'host=%s\n' "${CTI_TIER_HOST:-local}"
+    } >&2
+    exit "${CLASS_RANK[infra_unavailable]}"
+fi
+
 # The host guard covers the whole machine and therefore the whole pool: what it
 # protects is not a port block but a person. `arma3_x64.exe` on the Windows host
 # means a play session may be live, and no number of slots makes it acceptable to
 # load the machine underneath one. Asked before a single lock is taken, so a
 # refusal costs the caller no place in any queue (#41; it fails closed by design).
-# shellcheck source=spike/host-guard.sh
-source "$REPO/spike/host-guard.sh"
-if ! cti_host_guard_main; then
+#
+# Per host and gated on the role since #51: this one is `human`, so it is asked
+# exactly as before. A host the tier owns is not asked, because guarding the
+# tier's own client against the tier would stop every run that used it (ADR-0032).
+if ! cti_host_guard "$HOST"; then
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
@@ -304,7 +328,7 @@ acquire_slots() {
 
 if ! acquire_slots; then
     {
-        printf '\n[regress] every slot of the Arma tier is busy — this is infra_unavailable, not a result.\n'
+        printf '\n[regress] every slot of the Arma tier on %s is busy — this is infra_unavailable, not a result.\n' "$HOST"
         for ((n = 0; n <= CTI_SLOT_MAX; n++)); do
             printf '[regress] slot %s holder:\n' "$n"
             cti_slot_holder "$n"
@@ -313,6 +337,7 @@ if ! acquire_slots; then
         printf 'verdict=FAIL\n'
         printf 'failure_class=infra_unavailable\n'
         printf 'failure_detail=no slot free; see %s\n' "$CTI_SLOT_LOCK_DIR"
+        printf 'host=%s\n' "$HOST"
     } >&2
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
@@ -379,7 +404,12 @@ start_ram_sampler() {
     (
         printf 'epoch\tmem_used_kb\tmem_available_kb\ttier_rss_kb\n'
         while :; do
-            awk -v now="$(date +%s)" '
+            # Read on the host under load, through the handle: the number that
+            # matters is that machine's memory, and the file the answer lands in
+            # is on the machine that started the run. Redirections stay on this
+            # side on purpose — for a remote host that is evidence pull-back,
+            # which ADR-0032 defers to the metal.
+            cti_host_exec "$HOST" awk -v now="$(date +%s)" '
                 /^MemTotal:/     { total = $2 }
                 /^MemAvailable:/ { avail = $2 }
                 END { printf "%s\t%s\t%s\t", now, total - avail, avail }
@@ -387,7 +417,7 @@ start_ram_sampler() {
             # The tier's own share, so a peak can be attributed rather than only
             # observed. The engine by its comm; the daemon by its command line,
             # because it runs as a python interpreter under `uv`.
-            ps -eo rss=,comm=,args= 2>/dev/null | awk '
+            cti_host_exec "$HOST" ps -eo rss=,comm=,args= 2>/dev/null | awk '
                 $2 == "arma3server_x64" { sum += $1; next }
                 /cti-daemon/            { sum += $1 }
                 END { printf "%s\n", sum + 0 }
@@ -489,7 +519,13 @@ run_probe() {
     local -a slot_args=()
     mapfile -t slot_args < <(cti_slot_env "$slot")
 
-    env ${env_args[@]+"${env_args[@]}"} "${slot_args[@]}" \
+    # The launch, through the host handle: this is the operation that becomes
+    # `ssh <host> env …` when a second machine exists (ADR-0032, #53), and the
+    # handle travels with it so the run records the host it ran on rather than
+    # the host that started it.
+    cti_host_exec "$HOST" \
+        env ${env_args[@]+"${env_args[@]}"} "${slot_args[@]}" \
+        CTI_TIER_HOST="$HOST" \
         CTI_SPIKE_OUT="$out" \
         CTI_MISSION=cti.Stratis \
         CTI_SERVER_CONFIG="$REPO/spike/phase1.cfg" \
@@ -569,7 +605,7 @@ run_probe() {
   "git_sha": "$GIT_SHA",
   "git_dirty": $GIT_DIRTY,
   "slot": $slot,
-  "host": $(json_string "${CTI_TIER_HOST:-local}"),
+  "host": $(json_string "$HOST"),
   "arma_version": $(json_string "$(sed -n 's/^server_version=//p' "$out/results.env" 2>/dev/null | tail -1)"),
   "evidence": "$out"
 }
@@ -772,7 +808,7 @@ log "pool evidence: $POOL_OUT"
         IFS=,
         echo "${SLOTS[*]}"
     )"
-    printf '  "host": %s,\n' "$(json_string "${CTI_TIER_HOST:-local}")"
+    printf '  "host": %s,\n' "$(json_string "$HOST")"
     printf '  "wall_secs": %s,\n' "$POOL_ELAPSED"
     printf '  "peak_mem_used_kb": %s,\n' "$PEAK_USED_KB"
     printf '  "peak_tier_rss_kb": %s,\n' "$PEAK_TIER_KB"

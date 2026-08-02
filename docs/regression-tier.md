@@ -263,7 +263,26 @@ That property has one edge the build had to handle. A worker inherits every slot
 
 **The merge** reads verdicts back off the claim directories rather than out of the parent's memory, because the case it has to report honestly is a worker that died: its verdict was never written, and a parent holding an array would simply have no row for it. A claimed probe with no verdict is `infra_unavailable` — ADR-0022 again; nothing was measured under conditions anyone can interpret, and reading the absence of evidence as a failure of the probe would be the untyped green this tier exists to refuse. The pool then clears that slot itself rather than leaving it for the next holder, because a dead worker's children outlive it holding the slot's ports and the descriptor they inherited. `~/.arma-cti/runs/<stamp>-pool/` carries the schedule, the RAM trace, and `pool.json` — the merged verdict set, the wall, and the slots it ran on.
 
-**ADR-0032's host seam** is present as its local shape and nothing more: `verdict.json` and `pool.json` carry a `host` field with one value, `local`. The SSH transport, the host registry and evidence pull-back are #53's, and none of them can be tested before the second machine exists.
+### The host seam
+
+**A pass executes on one host** (ADR-0032's scheduling policy: splitting a corpus pass across machines is explicitly not built, and concurrent full passes take a whole host each). So the host is a property of the run, carried in `CTI_TIER_HOST`, and `spike/hosts.sh` owns it: the table of hosts the tier knows, each one's role and transport, and the operations that touch a machine.
+
+| the handle answers | today |
+|---|---|
+| `cti_host_resolve` | validates `CTI_TIER_HOST`; an unknown name is `infra_unavailable`, never a fallback to this machine |
+| `cti_host_role` | `local` is `human` — the machine the human plays on |
+| `cti_host_transport` | `null` — the command runs here, with this shell's environment |
+| `cti_host_exec` | launch, kill, stat, stage: the one place an SSH transport lands (#53) |
+| `cti_host_state` / `cti_host_runs` | the state and evidence roots on the host that owns them |
+| `cti_host_guard` | the play-session guard, asked only of hosts whose role is `human` |
+
+Machine B is then a second row in that table rather than surgery on the runner, which is the whole of what the seam buys. The **role gate** is the part with teeth even at one host: machine B's headed client is the tier's own, and asking "is a game running on that host?" of it would answer yes on every run that used it — guarding the tier's client against the tier. Today the one host is `human`, so the guard is asked exactly as it always was.
+
+`cti_host_exec` **fails closed**. A host with no transport is refused rather than run here, because a fallback to this machine would run machine B's work on machine A and report it as machine B's — the one failure a host boundary exists to make impossible, and the same failure as #44's merged slots one level up. For the same reason the handle travels *to* the launch and the run records what it received: `verdict.json` and `pool.json` carry `host`, `results.env` carries `tier_host`, and the pair is asserted equal in `tests/unit/test_host_seam.py` rather than written twice from the parent's own variable.
+
+`run.sh` records the slot and the host **above** the guard, so the verdicts that are most about a host — the ones that never got past it — name the machine that refused. The pool's own pre-flight refusals do the same.
+
+What is deliberately absent: the SSH transport, the host registry file, remote cleanup and evidence pull-back. ADR-0032 defers all four to the metal (#52, #53), because none can be tested before the second machine exists and untestable infrastructure built ahead of its hardware arrives wrong.
 
 #### What N=3 measured
 

@@ -27,7 +27,14 @@
 # racing on one install — and what makes `just regress --slots 1` the serial
 # tier, byte for byte.
 
-CTI_SLOT_STATE="${CTI_TIER_STATE:-$HOME/.arma-cti}"
+# Which machine these slots are on (ADR-0032, #51). A pool run executes on one
+# host, so the handle is a property of the run rather than of a slot, and it is
+# what every operation in here that touches a machine — the port sweeps, the
+# kills, the install farm — names instead of naming this one.
+# shellcheck source=spike/hosts.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/hosts.sh"
+
+CTI_SLOT_STATE="$(cti_host_state "$CTI_TIER_HOST")"
 CTI_SLOT_LOCK_DIR="$CTI_SLOT_STATE/slots"
 
 # CLAUDE.md's Contract grants [2400, 3000) and reserves 2302-2306 for the human.
@@ -88,6 +95,8 @@ cti_slot_daemon_port() { echo $((CTI_SLOT_DAEMON_BASE + $1)); }
 
 # Consumer: `run.sh`'s CTI_SERVER_DIR — the directory it stages the mission PBO,
 # `@cti` and the shim into with `rm -rf`, which is why two slots cannot share one.
+# The path is on the host the run executes on, whichever that is: `$HOME` here
+# expands on the machine that owns the install, the same way `~/.arma-cti` does.
 cti_slot_install() {
     local n="$1"
     if ((n == 0)); then
@@ -229,17 +238,23 @@ cti_slot_port_pids() {
     last=$((first + CTI_SLOT_PORT_SPAN - 1))
     {
         for ((port = first; port <= last; port++)); do
-            ss -lunpH "sport = :$port" 2>/dev/null
-            ss -ltnpH "sport = :$port" 2>/dev/null
+            cti_host_exec "$CTI_TIER_HOST" ss -lunpH "sport = :$port" 2>/dev/null
+            cti_host_exec "$CTI_TIER_HOST" ss -ltnpH "sport = :$port" 2>/dev/null
         done
-        ss -lunpH "sport = :$(cti_slot_daemon_port "$n")" 2>/dev/null
-        ss -ltnpH "sport = :$(cti_slot_daemon_port "$n")" 2>/dev/null
+        cti_host_exec "$CTI_TIER_HOST" ss -lunpH "sport = :$(cti_slot_daemon_port "$n")" 2>/dev/null
+        cti_host_exec "$CTI_TIER_HOST" ss -ltnpH "sport = :$(cti_slot_daemon_port "$n")" 2>/dev/null
     } | grep -oE 'pid=[0-9]+' | cut -d= -f2 | sort -u
 }
 
 # Pids running a binary *out of* this slot's install. Catches a squatting engine
 # that has not yet bound, or has already lost, its port — which is the case a
 # port sweep alone reads as a clean slot.
+#
+# The walk itself is over this host's own `/proc`, and it stays a walk rather
+# than becoming N calls through the handle: what crosses a transport is a
+# command, and the remote form of this is `host-guard`-style — ship this file
+# and run the function over there (#53). What the handle owns here are the
+# commands the sweep spawns and the kills it issues.
 #
 # Read off `/proc/<pid>/exe` rather than off the command line, because the engine
 # is launched as `./arma3server_x64` from inside the install and its argv names
@@ -284,17 +299,19 @@ cti_slot_reclaim() {
 
     ((${#pids[@]} > 0)) || return 0
     cti_slot_log "slot $n: clearing a previous holder's leftovers: pids ${pids[*]}"
-    for pid in "${pids[@]}"; do kill "$pid" 2>/dev/null; done
+    for pid in "${pids[@]}"; do cti_host_exec "$CTI_TIER_HOST" kill "$pid" 2>/dev/null; done
     # Bounded, then hard. Not a synchronisation wait on a test — a shutdown
     # deadline on processes we have already decided are stale.
     local deadline=$((SECONDS + 15))
     while ((SECONDS < deadline)); do
         local alive=0
-        for pid in "${pids[@]}"; do kill -0 "$pid" 2>/dev/null && alive=1; done
+        for pid in "${pids[@]}"; do
+            cti_host_exec "$CTI_TIER_HOST" kill -0 "$pid" 2>/dev/null && alive=1
+        done
         ((alive == 0)) && break
         sleep 0.5
     done
-    for pid in "${pids[@]}"; do kill -9 "$pid" 2>/dev/null; done
+    for pid in "${pids[@]}"; do cti_host_exec "$CTI_TIER_HOST" kill -9 "$pid" 2>/dev/null; done
     return 0
 }
 
@@ -328,19 +345,23 @@ cti_slot_install_ready() {
     # stale farm would run last month's engine and report it as this month's.
     # That is `engine_drift` waiting to happen, and it is cheap to preclude.
     if [[ -x "$dst/arma3server_x64" ]] &&
-        [[ "$(stat -c %i "$master/arma3server_x64")" == "$(stat -c %i "$dst/arma3server_x64")" ]]; then
+        [[ "$(cti_host_exec "$CTI_TIER_HOST" stat -c %i "$master/arma3server_x64")" == \
+            "$(cti_host_exec "$CTI_TIER_HOST" stat -c %i "$dst/arma3server_x64")" ]]; then
         return 0
     fi
 
+    # The staging itself, on the host that owns the install. Every one of these
+    # is a command rather than a shell builtin, which is what makes the handle
+    # the only thing between them and a second machine (ADR-0032).
     cti_slot_log "slot $n: building the install farm at $dst"
-    rm -rf "${dst:?}" || return 1
-    cp -al "$master" "$dst" || {
+    cti_host_exec "$CTI_TIER_HOST" rm -rf "${dst:?}" || return 1
+    cti_host_exec "$CTI_TIER_HOST" cp -al "$master" "$dst" || {
         cti_slot_log "slot $n: cp -al of $master failed"
         return 1
     }
     # Out of the farm: everything run.sh writes into the install.
-    rm -rf "${dst:?}/mpmissions" "${dst:?}/@cti" || return 1
-    rm -f "${dst:?}/cti_shim_x64.so" "${dst:?}/cti_shim.so" || return 1
-    mkdir -p "$dst/mpmissions" || return 1
+    cti_host_exec "$CTI_TIER_HOST" rm -rf "${dst:?}/mpmissions" "${dst:?}/@cti" || return 1
+    cti_host_exec "$CTI_TIER_HOST" rm -f "${dst:?}/cti_shim_x64.so" "${dst:?}/cti_shim.so" || return 1
+    cti_host_exec "$CTI_TIER_HOST" mkdir -p "$dst/mpmissions" || return 1
     return 0
 }
