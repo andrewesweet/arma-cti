@@ -16,12 +16,15 @@ if TYPE_CHECKING:
 
 import networkx as nx
 
+# The two playable sides, from the one module that defines them (#65). A
+# manifest is authored against the same side names the wire carries, so a second
+# tuple here would be a second answer to who is playing.
+from cti_daemon.commands import SIDES
+
 SCHEMA_VERSION: Final = 1
 # Authored IDs are referenced from SQF, from telemetry and from a snapshot, so
 # they are held to a shape that survives all three.
 IDENTIFIER: Final = re.compile(r"[a-z][a-z0-9_]*")
-# The two playable sides. Engine side names, so SQF needs no translation table.
-SIDES: Final = ("WEST", "EAST")
 
 
 class ManifestError(Exception):

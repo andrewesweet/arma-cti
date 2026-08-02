@@ -17,6 +17,8 @@ import json
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Final, NoReturn, cast
 
+from cti_daemon.commands import SIDES
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -30,6 +32,15 @@ class EconomyError(Exception):
 
 class InsufficientFundsError(Exception):
     """A side tried to spend more Funds than it holds."""
+
+
+class UnknownSideError(Exception):
+    """Funds were asked of a side this Campaign is not played by (#66).
+
+    A caller's mistake rather than a Commander's — the port judges the side a
+    Command names before anything reaches the Ledger — so it is raised rather
+    than returned, and it is not an `EconomyError`: the authored table is fine.
+    """
 
 
 def _refuse(detail: str) -> NoReturn:
@@ -138,22 +149,50 @@ def load(path: Path) -> EconomyTable:
 
 @dataclass(slots=True)
 class Ledger:
-    """Per-side Funds. The only thing that may move them is a spend."""
+    """Per-side Funds. The only thing that may move them is a spend.
+
+    It knows which sides are playing, and holds Funds for those and no others
+    (#66). Seeded at construction rather than minted on demand: a ledger that
+    invented a starting balance for whatever string it was handed turned a typo
+    into a fortune, made `balance` a query that mutated, and pushed the "only
+    playing sides hold Funds" invariant out to whichever call site remembered it.
+    """
 
     starting_funds: int
+    # Who is playing. The wire's own side vocabulary by default (#65), and
+    # narrowable for a test that wants a one-sided ledger.
+    sides: tuple[str, ...] = SIDES
     _balances: dict[str, int] = field(default_factory=dict)
 
+    def __post_init__(self) -> None:
+        """Open an account for each playing side, and for nobody else."""
+        self._balances = dict.fromkeys(self.sides, self.starting_funds)
+
+    def holdings(self) -> dict[str, int]:
+        """Return what every playing side holds — the whole of who has an account."""
+        return dict(self._balances)
+
+    def _account(self, side: str) -> int:
+        """Return `side`'s balance, or refuse a side that has no account."""
+        held = self._balances.get(side)
+        if held is None:
+            message = (
+                f"no side named {side!r} holds Funds; this Campaign is played by {list(self.sides)}"
+            )
+            raise UnknownSideError(message)
+        return held
+
     def balance(self, side: str) -> int:
-        """Return what `side` currently holds."""
-        return self._balances.setdefault(side, self.starting_funds)
+        """Return what `side` currently holds. A read, and only a read."""
+        return self._account(side)
 
     def can_afford(self, side: str, cost: int) -> bool:
         """Whether `side` could pay `cost` right now."""
-        return self.balance(side) >= cost
+        return self._account(side) >= cost
 
     def deposit(self, side: str, amount: int) -> int:
         """Add `amount` to `side` and return the new balance."""
-        self._balances[side] = self.balance(side) + amount
+        self._balances[side] = self._account(side) + amount
         return self._balances[side]
 
     def spend(self, side: str, cost: int) -> int:
@@ -162,8 +201,9 @@ class Ledger:
         Refuses rather than going negative: Funds are the whole economy, and an
         overdraft would be a silent gift.
         """
-        if not self.can_afford(side, cost):
-            message = f"{side} holds {self.balance(side)}, cannot spend {cost}"
+        held = self._account(side)
+        if held < cost:
+            message = f"{side} holds {held}, cannot spend {cost}"
             raise InsufficientFundsError(message)
-        self._balances[side] = self.balance(side) - cost
+        self._balances[side] = held - cost
         return self._balances[side]

@@ -1,4 +1,4 @@
-"""The AI Commander's brain: what to buy, and where to send what it has.
+"""The AI Commander's brain: what to Purchase, and where to send what it has.
 
 ADR-0004 puts the planner in the daemon as a pure function of campaign state and
 observations, so pytest and hypothesis exercise it at millisecond speed with no
@@ -22,8 +22,7 @@ from typing import TYPE_CHECKING, Final, Protocol
 
 import networkx as nx
 
-from cti_daemon.campaign import CONTESTED
-from cti_daemon.commands import Command
+from cti_daemon.commands import CONTESTED, Command
 from cti_daemon.observation import PUBLIC
 
 if TYPE_CHECKING:
@@ -457,7 +456,7 @@ class UtilityPlanner:
 
         commands: list[Command] = []
         decisions: list[Decision] = []
-        self._buy(observation, commands, decisions)
+        self._purchase(observation, commands, decisions)
         self._deploy(observation, commands, decisions)
         return Plan(commands=tuple(commands), decisions=tuple(decisions))
 
@@ -489,8 +488,8 @@ class UtilityPlanner:
             if not mine:
                 continue
             # Every Squad gets its own place while there are places, and the
-            # scorer buys up to one per Objective so there normally are. A Squad
-            # past that — a side a human has also been buying for — takes its own
+            # scorer Purchases up to one per Objective so there normally are. A
+            # Squad past that — one a human has also been Purchasing for — takes its own
             # best option and shares the ground. Never a declined Assault: the
             # whole point of declining is that no Squad walks onto that Base, and
             # a fallback that ignored it would send the loneliest one of all.
@@ -839,7 +838,7 @@ class UtilityPlanner:
             vetoed=muster.vetoed[squad.id],
         )
 
-    def _buy(
+    def _purchase(
         self, observation: Observation, commands: list[Command], decisions: list[Decision]
     ) -> None:
         """Decide whether to spend, and on what."""
@@ -871,7 +870,7 @@ class UtilityPlanner:
                 Decision(
                     about="funds",
                     chose="nothing",
-                    because=f"{funds} Funds buys no Squad this map sells",
+                    because=f"{funds} Funds purchase no Squad this map sells",
                     scored=len(self.table.squads),
                     candidates=(),
                 )
@@ -879,7 +878,7 @@ class UtilityPlanner:
             return
 
         # Cheapest, because ground is taken by standing in a capture radius and
-        # every Squad stands in exactly one. Funds spent on a costlier Squad buy
+        # every Squad stands in exactly one. Funds spent on a costlier Squad get
         # firepower this scorer has no threat model to value.
         bought = candidates[0]
         commands.append(
@@ -888,7 +887,7 @@ class UtilityPlanner:
         decisions.append(
             Decision(
                 about="funds",
-                chose=f"buy {bought.choice}",
+                chose=f"purchase {bought.choice}",
                 because=f"{len(observation.squads)} Squads fielded",
                 scored=len(self.table.squads),
                 candidates=candidates[:TRACE_CANDIDATES],

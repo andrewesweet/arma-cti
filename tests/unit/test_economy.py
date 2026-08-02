@@ -87,3 +87,28 @@ def test_spending_more_than_the_balance_is_refused_rather_than_going_negative() 
     with pytest.raises(economy.InsufficientFundsError):
         ledger.spend("WEST", 301)
     assert ledger.balance("WEST") == 300
+
+
+@pytest.mark.parametrize("ask", ["balance", "can_afford", "deposit", "spend"])
+def test_a_side_this_campaign_is_not_played_by_holds_no_funds_at_all(ask: str) -> None:
+    # Minting a starting balance for any string it was handed made a typo into a
+    # fortune, and left the "only playing sides hold Funds" invariant to be
+    # remembered at a call site (#66).
+    ledger = economy.Ledger(starting_funds=300)
+    with pytest.raises(economy.UnknownSideError, match="RESISTANCE"):
+        getattr(ledger, ask)("RESISTANCE", *([] if ask == "balance" else [1]))
+
+
+def test_asking_a_balance_does_not_create_one() -> None:
+    # A query that mutates is why the refusal above had to live elsewhere.
+    ledger = economy.Ledger(starting_funds=300)
+    with pytest.raises(economy.UnknownSideError):
+        ledger.balance("WESt")
+    assert sorted(ledger.holdings()) == ["EAST", "WEST"]
+
+
+def test_a_ledger_can_be_built_for_the_sides_it_is_told_about() -> None:
+    ledger = economy.Ledger(starting_funds=50, sides=("WEST",))
+    assert ledger.balance("WEST") == 50
+    with pytest.raises(economy.UnknownSideError):
+        ledger.balance("EAST")

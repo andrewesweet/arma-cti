@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
-from cti_daemon.commands import SIDES, Effect, serialise_effect
+from cti_daemon.commands import CONTESTED, NEUTRAL, SIDES, Effect, serialise_effect
 from cti_daemon.contacts import Contacts
 from cti_daemon.observation import DESTROYED, INTACT, PUBLIC, Observation, SquadView
 from cti_daemon.squads import Roster, Squad
@@ -38,13 +38,9 @@ class CampaignOverError(Exception):
     """
 
 
-NEUTRAL: Final = "NEUTRAL"
-CONTESTED: Final = "CONTESTED"
-
-# What a Base's HQ structure can be, re-exported from where the wire document
-# defines it. The same shape as an Objective's owner — a place mapped to a
-# status — because both are the scoreboard and a reader of one should not have
-# to learn a second idiom to read the other.
+# Owner vocabulary and side names come from `commands`, which is where the wire
+# schema defines them (#65) — restating them here as fresh literals made the
+# rules and the wire two lists nothing held together.
 
 # The two ways a Campaign ends (docs/mvp-scope.md, decided 2026-07-30). There is
 # no third, and no draw.
@@ -324,9 +320,9 @@ class Campaign:
         if for_side == PUBLIC:
             return Observation(at_time=self.elapsed, owners=self.owners(), hq=self.headquarters())
         if for_side not in SIDES:
-            # `Ledger.balance` mints a starting balance for any string it is
-            # handed, so a mistyped side would otherwise return an invented
-            # fortune and an empty roster rather than saying anything.
+            # In this module's own language rather than the Ledger's: what is
+            # missing is a Commander to hand a picture to, and the Ledger's
+            # refusal (#66) is about Funds.
             message = f"no side named {for_side!r} has an observation to take"
             raise ValueError(message)
         return Observation(

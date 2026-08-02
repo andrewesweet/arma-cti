@@ -14,7 +14,7 @@ import pytest
 from hypothesis import given
 from hypothesis import strategies as st
 
-from cti_daemon import commands
+from cti_daemon import campaign, commands, manifest
 
 
 def test_a_purchase_command_parses_into_its_parts() -> None:
@@ -112,3 +112,13 @@ def test_an_effect_may_concern_ground_no_side_holds() -> None:
 def test_a_command_still_may_not_claim_a_state_as_its_side() -> None:
     with pytest.raises(commands.MalformedCommandError):
         commands.parse({"command": "purchase", "side": "CONTESTED"})
+
+
+def test_every_module_that_speaks_of_sides_speaks_of_the_same_ones() -> None:
+    # One definition, not copies held in step by a comment (#65). Identity
+    # rather than equality: an equal tuple declared elsewhere is the thing this
+    # test exists to catch coming back.
+    assert manifest.SIDES is commands.SIDES
+    assert campaign.NEUTRAL is commands.NEUTRAL
+    assert campaign.CONTESTED is commands.CONTESTED
+    assert set(commands.OWNERS) == {*commands.SIDES, commands.NEUTRAL, commands.CONTESTED}

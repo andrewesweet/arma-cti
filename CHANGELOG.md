@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The AI Commander's decision trace says Purchase, the word the rest of the game uses.** Its
+  spending rows read `purchase rifle` and "300 Funds purchase no Squad this map sells" where they
+  used to say "buy" — the one artefact that exists for a human to read and argue with was written in
+  vocabulary the glossary tells everything else to avoid.
+
 - **The rest of the regression corpus now ends when its subject does, and the settles that stayed
   say why in their own probe.** Nine more fixed settles converted to waits on the condition being
   asserted, each keeping its old number as the deadline: eight identical "let the world build" holds

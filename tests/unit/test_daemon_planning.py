@@ -150,16 +150,18 @@ class Contrarian:
     """A planner that is not the scorer, to prove the daemon does not know one."""
 
     def plan(self, observation: Observation) -> Plan:
-        """Buy a weapons Squad on sight and explain itself in the same shape."""
+        """Purchase a weapons Squad on sight and explain itself in the same shape."""
         return Plan(
             commands=(Command("purchase", observation.for_side, {"squad_type": "weapons"}),),
             decisions=(
                 Decision(
                     about="funds",
-                    chose="buy weapons",
+                    chose="purchase weapons",
                     because="because I say so",
                     scored=1,
-                    candidates=(Candidate(choice="buy weapons", score=1.0, terms={"whim": 1.0}),),
+                    candidates=(
+                        Candidate(choice="purchase weapons", score=1.0, terms={"whim": 1.0}),
+                    ),
                 ),
             ),
         )
@@ -175,9 +177,9 @@ def test_a_different_planner_drives_the_same_port_and_the_same_trace(tmp_path: P
 
     assert [squad.squad_type for squad in daemon.campaign.roster.roll(SIDE)] == ["weapons"]
     (decision,) = rows(log, "decision")
-    assert decision["chose"] == "buy weapons"
+    assert decision["chose"] == "purchase weapons"
     assert decision["candidates"] == [
-        {"choice": "buy weapons", "score": 1.0, "terms": {"whim": 1.0}}
+        {"choice": "purchase weapons", "score": 1.0, "terms": {"whim": 1.0}}
     ]
 
 

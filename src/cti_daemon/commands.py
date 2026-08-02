@@ -16,13 +16,22 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Final, cast
 
-# Engine side names, matching manifest.SIDES, so SQF needs no translation table.
+# The ubiquitous language's own tokens, defined here once and imported by
+# everything that speaks them (#65). ADR-0012 already makes this module the
+# single schema source the SQF constructors are generated from, so the sides the
+# wire admits and the sides the rules admit cannot be two lists held in step by
+# a comment. Engine side names, so SQF needs no translation table.
 SIDES: Final = ("WEST", "EAST")
+
+# Ground nobody has taken, and ground two sides are standing on at once.
+# Contested is a real state, not a transient (#13).
+NEUTRAL: Final = "NEUTRAL"
+CONTESTED: Final = "CONTESTED"
 
 # What an Objective's owner can be. A Command is always *issued by* a side, so
 # it takes SIDES; an Effect reports something that may concern ground no side
-# holds, so it takes these. Contested is a real state, not a transient (#13).
-OWNERS: Final = (*SIDES, "NEUTRAL", "CONTESTED")
+# holds, so it takes these.
+OWNERS: Final = (*SIDES, NEUTRAL, CONTESTED)
 
 # The Command catalogue: name -> the argument names it requires. This is the
 # source the SQF constructors are generated from, so a Command the game can
