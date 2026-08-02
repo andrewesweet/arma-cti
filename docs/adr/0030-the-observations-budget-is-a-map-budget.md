@@ -69,7 +69,7 @@ wrong direction to be wrong in. The per-map table above was re-measured against 
 **Not taken: positional encoding** (#26's own first lever — dropping the repeated keys, so a Squad
 reads `["WEST-12","weapons",8,"capture","kavala","kavala"]`). Measured at 60 Objectives and 32
 Squads it cuts 11,932 bytes to 8,172, and re-keying the owners map by side takes it to 7,770 — a
-real 35%. It is not taken now for two reasons. Stratis sits at 1,631 bytes of a 9,216-byte budget,
+real 35%. It is not taken now for two reasons. Stratis sits at 1,611 bytes of a 9,216-byte budget,
 so there is nothing to buy. And 35% buys one band of island size and not the one that matters: a
 ninety-place map is still over the guard afterwards. It would be spending the wire's readability —
 every SQF reader, every log, #18's map UI — on a reprieve rather than a fix.
