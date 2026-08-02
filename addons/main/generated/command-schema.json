@@ -63,6 +63,30 @@
   },
   "return_cap_bytes": 10240,
   "reply_guard_bytes": 9216,
+  "echelons": [
+    [
+      25,
+      "company"
+    ],
+    [
+      9,
+      "platoon"
+    ],
+    [
+      4,
+      "squad"
+    ],
+    [
+      1,
+      "team"
+    ]
+  ],
+  "assault_mass": {
+    "team": 1,
+    "squad": 2,
+    "platoon": 3,
+    "company": 4
+  },
   "commands": {
     "purchase": [
       "squad_type"
@@ -111,6 +135,7 @@
   "rejection_codes": [
     "already_held",
     "campaign_over",
+    "force_limit",
     "insufficient_funds",
     "malformed_command",
     "port_unavailable",

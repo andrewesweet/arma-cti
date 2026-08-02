@@ -28,7 +28,17 @@ from pathlib import Path
 # without the package being installed.
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
-from cti_daemon import budget, commands, economy, port, protocol, report, squads
+from cti_daemon import (
+    budget,
+    commands,
+    contacts,
+    economy,
+    planner,
+    port,
+    protocol,
+    report,
+    squads,
+)
 
 
 def render(table: economy.EconomyTable) -> str:
@@ -61,6 +71,19 @@ def render(table: economy.EconomyTable) -> str:
         # enforces it, and `just check` fails a stale export as `schema_stale`.
         "return_cap_bytes": budget.RETURN_CAP_BYTES,
         "reply_guard_bytes": budget.REPORT_GUARD_BYTES,
+        # How a sighting count becomes a band, and how a band becomes a number
+        # of Squads (#110). Exported for the same reason the catalogue is, and
+        # the reason is a probe: `spike/probes/massed-assault.sqf` asserted
+        # against 4/9/25 and a ceiling of 4 written out in SQF, under a comment
+        # claiming there was no path from a Python table into a mission. There
+        # is — this file is it, and it has been since ADR-0017. A copy costs
+        # nothing until the table is retuned, and then the probe goes red (or
+        # worse, stays green) about a rule it is no longer reading.
+        #
+        # `echelons` keeps the source's own descending order, because the table
+        # is a cascade and the first floor a count clears is the band it is in.
+        "echelons": [[floor, name] for floor, name in contacts.ECHELONS],
+        "assault_mass": dict(planner.ASSAULT_MASS),
         "commands": {name: list(args) for name, args in commands.CATALOGUE.items()},
         "effects": {name: list(args) for name, args in commands.EFFECTS.items()},
         "sides": list(commands.SIDES),
