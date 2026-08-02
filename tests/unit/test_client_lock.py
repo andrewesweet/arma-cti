@@ -25,6 +25,7 @@ Windows process list `tests/unit/test_bringup_guards.py` uses.
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import signal
 import stat
@@ -255,6 +256,36 @@ def test_every_background_launch_in_run_sh_lets_go_of_the_lock() -> None:
     )
 
 
+def test_no_unit_test_drives_these_scripts_against_the_real_lock() -> None:
+    """The other tripwire, one level up: the no-Arma tier owns no machine state.
+
+    `CTI_TIER_STATE` is what moves the tier and client locks out of
+    `$HOME/.arma-cti` and into a `tmp_path`. A unit test that forgets it takes
+    the machine-wide Windows client lock for real — stealing it from a live
+    Arma-tier run, and being refused by one, which run.sh reports as an
+    `infra_unavailable` before it launches anything. That is #132: one red in 26
+    full-suite runs, and reproducible in the no-Arma tier alone by running two
+    suites at once.
+    """
+    drivers = {'"run.sh"', '"regress.sh"', '"client-lock.sh"', '"slots.sh"', '"tier-lock.sh"'}
+    # An assignment, not a mention: the first draft of this check looked for the
+    # bare name, and the comment explaining the fix in `test_run_verdict.py` was
+    # enough to satisfy it — the tripwire passed with the fix deleted. Caught by
+    # mutating the fix and watching this stay green, which is the only way that
+    # kind of vacuity shows up.
+    isolated = re.compile(r"""CTI_TIER_STATE["'\]]*\s*[=:]""")
+    offenders = [
+        path.name
+        for path in sorted(Path(__file__).parent.glob("test_*.py"))
+        for text in [path.read_text()]
+        if any(driver in text for driver in drivers) and not isolated.search(text)
+    ]
+    assert not offenders, (
+        f"{offenders} drive the tier's scripts without setting CTI_TIER_STATE, so they take "
+        "the real locks under $HOME/.arma-cti and collide with the Arma tier and with each other"
+    )
+
+
 # --------------------------------------------------------------------- run.sh
 
 
@@ -353,6 +384,13 @@ def pool_env(tmp_path: Path, tag: str, *, listing: str | Path = TASKLIST_FREE) -
     return {
         **os.environ,
         "CTI_TIER_STATE": str(tmp_path / "state"),
+        # `test_pool_slots.py`'s reason, which this file's own pool runs had
+        # missed (#132): the memory pre-flight reads the real host, so a test
+        # about the client lock goes red about memory whenever the machine is
+        # busy. It did — with a sibling agent's three-slot Arma run holding
+        # 3.5 GiB, the queueing test queued correctly, took the lock, and then
+        # stopped at the floor on 1729 MiB of real free memory.
+        "CTI_SLOT_MEM_AVAILABLE_MB": "1000000",
         "CTI_SLOT_INSTALL_MASTER": str(master),
         "CTI_RUN_SH": str(executable(tmp_path / "stub-run.sh", STUB_RUN)),
         "CTI_WINDOWS_TASKLIST": str(tool),

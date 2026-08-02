@@ -89,6 +89,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The no-Arma test suite no longer competes with the Arma tier for the machine.** One test that
+  drives the harness end to end sends a Windows client, and a run that sends one takes the
+  machine-wide lock on the one headed client — for real, because that test alone never moved its
+  state directory into a temporary one. So `just unit` quietly took the client away from live
+  regression runs for a few seconds at a time, and was refused by them: the refusal is a stop before
+  anything launches, and the test then died reading a record the refused run had never written. That
+  is the one red in twenty-six suite runs nobody could explain; two suites started at once reproduce
+  it every time, with no Arma anywhere. The test now owns its own lock, reports the harness's stated
+  reason instead of a bare missing key when a run refuses, and a tripwire fails the suite if another
+  test ever reaches for the real one. The pool tests in the same file got the same treatment for
+  memory, having gone red about free RAM while a sibling agent's world was up. #132.
+
 - **A regression run no longer launches a world into a slot it failed to clear.** The tier confirms
   that a dead run's leftovers are really gone before reusing a slot, and then the runner threw the
   answer away: a slot whose server and daemon had survived the kill went straight into a bring-up

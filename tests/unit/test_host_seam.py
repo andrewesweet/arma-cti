@@ -179,6 +179,9 @@ def test_a_run_refused_by_the_guard_still_names_the_host(tmp_path: Path) -> None
         "CTI_WINDOWS_TASKLIST": str(executable(tmp_path / "tasklist.sh", TASKLIST_RUNNING)),
         "CTI_TEST_TASKLIST_CALLS": str(tmp_path / "calls"),
         "CTI_TIER_SLOT": "2",
+        # No test of this tier owns machine state (#132): the locks under
+        # $HOME/.arma-cti belong to runs that have Arma in front of them.
+        "CTI_TIER_STATE": str(tmp_path / "state"),
     }
     # S603: this repo's own harness, against a stub this test wrote.
     subprocess.run(  # noqa: S603
@@ -203,6 +206,7 @@ def test_an_unknown_host_is_refused_by_the_harness_too(tmp_path: Path) -> None:
         "CTI_TIER_HOST": "bravo",
         "CTI_WINDOWS_TASKLIST": str(executable(tmp_path / "tasklist.sh", TASKLIST_RUNNING)),
         "CTI_TEST_TASKLIST_CALLS": str(tmp_path / "calls"),
+        "CTI_TIER_STATE": str(tmp_path / "state"),
     }
     # S603: this repo's own harness.
     subprocess.run(  # noqa: S603

@@ -97,6 +97,19 @@ def run_with_lines(
         # took 9099 would collide with whatever else is on this machine.
         CTI_DAEMON_PORT=str(free_port()),
         CTI_SERVER_PORT=str(free_port()),
+        # Its own state directory for the same reason, and this one is a lock
+        # rather than a port (#132). The teardown test below sends a client, and
+        # a client run takes the machine-wide Windows client lock — which lives
+        # at $HOME/.arma-cti/windows-client.lock unless CTI_TIER_STATE moves it,
+        # and which run.sh asks for with a non-blocking try. Left unmoved, this
+        # file's no-Arma test both stole that lock from live Arma-tier runs and
+        # was refused by them: the refusal is an infra_unavailable before the
+        # launch, so the run records no windows_client_launched at all. That is
+        # the one red in 26 full-suite runs #130 reported, and two concurrent
+        # `just unit` runs in sibling worktrees reproduce it with no Arma in
+        # sight. Every other unit test that drives these scripts already isolates
+        # this; this one was the outlier.
+        CTI_TIER_STATE=str(tmp_path / "state"),
         CTI_BASIC_CFG="",
         CTI_HC_TIMEOUT="20",
         CTI_HARNESS_TIMEOUT="60",
@@ -251,8 +264,15 @@ def test_teardown_waits_for_the_windows_client_it_launched_to_be_gone(tmp_path: 
             "CTI_WINDOWS_EXIT_TIMEOUT": "30",
         },
     )
+    # The verdict first, and only then the record the launch writes. A run that
+    # refused before launching has written down why, and reading the launch
+    # record first threw that away as a bare `KeyError: 'windows_client_launched'`
+    # — which is precisely why #132 arrived undiagnosed. A failure here should
+    # quote the harness's own reason.
+    assert records["verdict"] == "PASS", (
+        f"{records.get('failure_class')}: {records.get('failure_detail')}\n{records['_stderr']}"
+    )
     assert records["windows_client_launched"] == "true"
-    assert records["verdict"] == "PASS", records["_stderr"]
     assert killed.exists(), "teardown never asked the client to stop"
     assert "has left the Windows process list" in records["_stderr"]
     assert int(asks.read_text()) >= 3, "teardown took the first answer and did not wait"
