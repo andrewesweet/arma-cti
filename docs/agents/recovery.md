@@ -1,13 +1,19 @@
 # Recovering an interrupted agent
 
-> Status: validated ×5 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×7 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
 > was never the resumption but the noticing — one stall sat unseen ~8 hours behind a
 > monitoring check that could not fail — so the second amendment is the section on
 > noticing, the orchestrator's side of the contract. Third amendment (2026-08-02): the
-> worktree-vanish mode, improvised identically twice before it was written.
+> worktree-vanish mode, improvised identically twice before it was written. Sixth and
+> seventh uses (2026-08-02): session limits killed both review-burn-down tail agents
+> mid-flight; both resumed clean, and one briefing mis-read "clean, zero ahead" as lost
+> work — the resumed agent's fetch-and-verify side caught it and corrected the
+> orchestrator, the first time that half of the contract has earned its keep against a
+> wrong briefing. Fourth amendment: the evidence-not-inference sentence in the briefing
+> section, from that instance.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
@@ -85,6 +91,13 @@ silently corrupts the resumed work into defects that look ordinary:
    (and per ADR-0022, not a result), locks it held that are now free.
 3. **Which of its assumptions no longer hold** — ADR-number claims that collided, files or
    surfaces another agent now owns, eliminations whose tested context changed.
+
+The briefing states what the evidence shows, not what it implies. "Clean, zero ahead" is
+proof of committed-and-pushed, yet one briefing asserted from it that announced work had
+died uncommitted — the agent had pushed and then continued, so the same evidence meant
+landed, not lost (2026-08-02). Landed-vs-lost is the resumed agent's to verify on wake,
+and that verification — the agent checked the tree and corrected the orchestrator rather
+than redoing landed work — is why the error cost nothing.
 
 ## The resumed agent's side
 

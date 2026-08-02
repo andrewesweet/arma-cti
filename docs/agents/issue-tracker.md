@@ -17,6 +17,11 @@ Infer the repo from `git remote -v` — `gh` does this automatically when run in
 
 Close it in the same session that lands its work, with a comment addressing every acceptance criterion: evidence for each criterion met, and for any criterion not met as written, a pointer to the recorded decision (ADR or issue) that superseded it — a prose note is not a supersession, and commit titles are not evidence. If you inherit an issue whose work landed in an earlier session, audit every criterion against the tree before closing: that audit on #12 found an architectural pivot (callback-push to poll-and-ack) shipped but decided nowhere, and stopped it closing as "done".
 
+A `Closes #N` commit trailer closes the issue on push and skips this audit entirely: #89
+was auto-closed with two acceptance boxes unticked and had to be reopened by its own
+agent. On an issue carrying acceptance criteria, reference the commit without a closing
+keyword and close by hand with the criterion-by-criterion comment.
+
 ## Decision tickets
 
 A design question that gates implementation travels as its own issue and closes with **no code**: an ADR (with any CONTEXT.md term changes in the same commit) plus implementation issues in dependency order, each carrying acceptance criteria precise enough to implement without a clarifying question. The closing comment names the decision, the issues it spawned, and their ordering rationale. Exemplar: #31 → ADR-0020 + #32–#35; three implementing agents ran concurrently off those criteria and none needed to ask anything. Raise one when a build ticket flags a decision as "not the scorer's to route around" — the flag is the trigger, and the decision ticket is what keeps the build ticket honest about its scope.
