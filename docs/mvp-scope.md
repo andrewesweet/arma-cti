@@ -43,3 +43,8 @@ Decided 2026-07-30 (grilling session). Session-based persistent campaign ([ADR-0
 - Medical, fatigue, logistics systems; squad-member revive.
 - Additional maps (manifest format designed for it; one authored).
 - Human multiplayer acceptance testing (architecture stays MP-clean).
+- Mid-session Commander takeover — a person taking over a side an AI Commander is playing, or
+  Commander hot-swap between players. Human decision, 2026-08-02, on #126: "Very much a desired
+  long-term feature. Even hot swapping between players (with elections, evictions, and voting)
+  will be desired, but not for MVP." Command stays a bring-up-time assignment (ADR-0025); joining
+  a saved Campaign as Commander needs no takeover, only bringing the world up with that side free.

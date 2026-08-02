@@ -91,6 +91,6 @@ The host guard is unchanged and stays pool-wide: `arma3_x64.exe` on the Windows 
 ## What would overturn this
 
 - **The pool design**, if a slot count above one is measured to change a verdict. Nothing here is worth a probe that passes alone and fails in a pool; the first such probe is a reason to stop, diagnose, and reconsider the whole approach rather than to quarantine it.
-- **N=3**, if the extrapolation from N=2 does not hold — the RAM figure for three slots is arithmetic, not measurement, and the implementation must measure it before the third slot is trusted.
+- **N=3**, if the extrapolation from N=2 does not hold — the RAM figure for three slots is arithmetic, not measurement, and the implementation must measure it before the third slot is trusted. *Measured and confirmed:* the implementation measured 7,338 MiB, the arithmetic to within 1% (docs/regression-tier.md, "What N=3 measured"), and the human confirmed N=3 as the default on #125, 2026-08-02: "N=3".
 - **Recommending a pool at all**, if `campaign-end` gets materially shorter. Most of the win at N=2 comes from the tail; if the tail goes, the arithmetic in the table above changes and #46's conversions are the cheaper lever.
 - **The port stride**, if the 100-port spacing turns out to be advice about routers rather than about the engine. It is BI's own recommendation and the tier already follows it; a measured reason it is unnecessary would let a pool fit in less space.

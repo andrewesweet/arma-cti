@@ -1,9 +1,10 @@
 # Playtest 0001 — the Commander seat
 
 **What this session buys.** Two acceptance criteria on #18 that only eyes can discharge — the map
-UI as rendered, and a refusal appearing on screen — plus first contact with two placeholder
-numbers that are waiting on your feel to be signed off: the `decapitation` weight of 8.0 (#34) and
-the 90 s HQ demolition rate (#33).
+UI as rendered, and a refusal appearing on screen — plus first contact with three placeholder
+numbers that are waiting on your feel to be signed off: the `decapitation` weight of 8.0 (#34),
+the 90 s HQ demolition rate (#33), and the Reinforce discount of 0.8 (#123) — held for playtest by
+your own decision of 2026-08-02: "Hold for playtest."
 
 **Budget: 40 minutes.** Three minutes to bring the world up, half an hour in the seat, the rest
 writing terse answers into `docs/playtest/0001-response.md`. Answer in fragments; nothing here
@@ -61,7 +62,9 @@ still unverified is the half hour itself: nothing has soaked for 1800 s.
 
 Open the map. Click a Place — an Objective or a Base — to select it; clicking open country selects
 nothing on purpose. Then the number row: `1` Capture, `2` Defend, `3` Assault, `4` Reserve,
-`5` Rifle Squad, `6` Weapons Squad. `Tab` cycles which of your Squads the next Order names.
+`5` Reinforce, `6` Rifle Squad, `7` Weapons Squad. `Tab` cycles which of your Squads the next
+Order names. (Reinforce landed after this brief's first verification pushed the purchase keys up
+one — the menu is derived from the schema, so trust the on-screen legend over this line.)
 
 Two different clocks share that screen and it is worth knowing which is which before you judge it:
 the picture rides the world's 5 s report and is up to five seconds stale, while a judgement on a
@@ -121,6 +124,32 @@ Order's ground brings the building down at a fixed 90 s.
   have time to react?
 - Did the Campaign end this session? **y / n** — how.
 - Did EAST read as a competent opponent? **1–5**
+- What felt wrong?
+
+## Scenario 5 — refill what the fight cost (rides scenario 4, ~3 min)
+
+Added 2026-08-02, after Reinforce landed (#123, ADR-0040). The 0.8 discount is **explicitly held
+for playtest judgement** — your decision, verbatim: "Hold for playtest. Explicitly add to playtest
+brief/scope if not already present." Nothing about the number is settled until you have felt it.
+
+The mechanic: a Squad standing at your own Base with men missing can be refilled through the port,
+costing the missing fraction of its purchase price times 0.8 — cheaper than buying the same men
+fresh, priced off what is actually missing, rounded up. The natural moment is scenario 4's raid:
+a Squad that defended your Base has its losses standing exactly where Reinforce works. `Tab` to it,
+press `5`. If EAST never obliges, Reserve a Squad at your Base early and Reinforce whatever it
+loses along the way; a refused `already_held` (nobody missing) or `wrong_ground` (not at your Base)
+is the port doing its job, not a finding.
+
+One honesty note: the squad-leader path — a leader refilling the Squad he himself leads, the case
+the Command exists for — is proven at the wire and has no in-game affordance yet, because the
+squad-leader slot has no UI at all (#123). You are judging the price from the Commander's chair;
+the cost is identical whoever issues it, so the discount judgement transfers.
+
+- Did the price shown feel like a discount worth taking, against buying fresh? **y / n**
+- Did 0.8 feel right? **too cheap / about right / too dear** — gut answer, not arithmetic.
+- Did refilling create a real decision — hold ground with a thin Squad, or walk it home to refill?
+  **y / n**
+- Would you ever refill rather than buy new? **always / sometimes / never**
 - What felt wrong?
 
 ## Two things this brief does not have

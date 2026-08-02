@@ -185,6 +185,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Three decisions from the human, recorded where they bind.** Mid-session Commander takeover is
+  out of MVP — a desired long-term feature, up to hot-swap with elections and evictions, but a
+  session is still joined as Commander at bring-up (docs/mvp-scope.md, #126). N=3 is confirmed as
+  the regression pool's default now that its RAM extrapolation has been measured true (ADR-0028,
+  #125). And the Reinforce discount of 0.8 is explicitly held for playtest judgement: the first
+  playtest brief gains a scenario for feeling it out from the Commander's chair (#123).
+
 - **A machine-locality check now exists only where it can fire, and can no longer refuse in
   silence.** The addon carried twenty-nine of them — "this function runs on the server, not on your
   machine" — and on the evidence of every call path in the repo only two of them could ever fire,
