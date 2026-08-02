@@ -35,6 +35,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Running the no-Arma tests no longer kills whatever the Arma tier is running.** The pool's own
+  unit tests drive the real `spike/regress.sh`, which reclaims each slot it acquires by killing
+  whatever holds that slot's ports or runs out of its install. The tests moved the locks and the
+  install into a temporary directory, but a slot's port block is arithmetic no variable moves — so
+  a `just unit` on this machine swept 2402/2502/2602 and 9099-9101 and killed a live pool's three
+  worlds and their daemons mid-probe, leaving no error line, no dump and a green re-run. Reclaiming
+  now asks first whether it is the machine's tier at all, and a run pointed at another state
+  directory kills nothing on it. #124.
+
 - **A Campaign can no longer buy its way past what the wire carries.** Nothing bounded a side's
   roster, so a long Campaign with hoarded income could legally buy the Squad whose arrival takes the
   Commander's view past the engine's 10,240-byte return — after which the engine truncates in

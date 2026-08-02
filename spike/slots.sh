@@ -35,6 +35,9 @@
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/hosts.sh"
 
 CTI_SLOT_STATE="$(cti_host_state "$CTI_TIER_HOST")"
+# The same host's state root with nothing redirecting it, which is what makes
+# "is this the machine's own tier?" answerable — see cti_slot_reclaim.
+CTI_SLOT_REAL_STATE="$(CTI_TIER_STATE= cti_host_state "$CTI_TIER_HOST")"
 CTI_SLOT_LOCK_DIR="$CTI_SLOT_STATE/slots"
 
 # CLAUDE.md's Contract grants [2400, 3000) and reserves 2302-2306 for the human.
@@ -279,10 +282,27 @@ cti_slot_install_pids() {
 cti_slot_reclaim() {
     local n="$1" pid pids=() marker last_run
     mapfile -t pids < <(
-        cti_slot_port_pids "$n"
-        cti_slot_install_pids "$n"
+        # Only the real tier sweeps the real machine. Both sweeps read facts
+        # nothing virtualises — `ss` sees the one port space, `/proc` sees the one
+        # process table — so a caller pointed at another state directory is by
+        # definition not this machine's tier and must kill nothing on it. Without
+        # this clause the no-Arma tier was the external event in #124: every
+        # `tests/unit/test_pool_slots.py` pool run drove the real `regress.sh`
+        # with `CTI_TIER_STATE` and `CTI_SLOT_INSTALL_MASTER` redirected into
+        # tmp — but the port block is derived arithmetic that no variable moves,
+        # so acquiring "slots 0-2" swept 2402/2502/2602 and 9099-9101 and killed
+        # a live pool's three servers and their daemons mid-probe. Three times:
+        # 2026-08-02 10:38:15, 10:39:21-26 and 13:09:04 UTC, each within seconds
+        # of a `pytest tests/unit` on the same machine.
+        if [[ "$CTI_SLOT_STATE" == "$CTI_SLOT_REAL_STATE" ]]; then
+            cti_slot_port_pids "$n"
+            cti_slot_install_pids "$n"
+        fi
         [[ "${2:-}" == holders ]] && cti_slot_lock_holders "$n"
     )
+    if [[ "$CTI_SLOT_STATE" != "$CTI_SLOT_REAL_STATE" ]]; then
+        cti_slot_log "slot $n: state is $CTI_SLOT_STATE, not the machine's tier — sweeping no ports and no installs"
+    fi
     # Deduplicate; the two sweeps overlap on a live server.
     mapfile -t pids < <(printf '%s\n' "${pids[@]+"${pids[@]}"}" | grep -E '^[0-9]+$' | sort -u)
 

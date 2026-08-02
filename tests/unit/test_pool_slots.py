@@ -98,8 +98,12 @@ TASKLIST_FREE = (
 )
 
 
-def bash_eval(script: str, env: dict[str, str] | None = None) -> str:
-    """Run a snippet with `spike/slots.sh` sourced, and give back its stdout."""
+def bash_eval(script: str, env: dict[str, str] | None = None, *, want_stderr: bool = False) -> str:
+    """Run a snippet with `spike/slots.sh` sourced, and give back its stdout.
+
+    `want_stderr` gives back stderr instead: the library logs its reasoning there,
+    and a caller asserting on why a slot did something has to read it.
+    """
     full = f'source "{SLOTS_SH}"\n{script}'
     # S603: this repo's own library, with a script this test wrote.
     result = subprocess.run(  # noqa: S603
@@ -110,7 +114,7 @@ def bash_eval(script: str, env: dict[str, str] | None = None) -> str:
         env={**os.environ, **(env or {})},
     )
     assert result.returncode == 0, result.stderr
-    return result.stdout.strip()
+    return (result.stderr if want_stderr else result.stdout).strip()
 
 
 def executable(path: Path, text: str) -> Path:
@@ -289,6 +293,49 @@ def test_an_interrupted_previous_holder_is_named_on_acquire(tmp_path: Path) -> N
     )
     assert "interrupted" in result.stderr
     assert str(dead_run) in result.stderr
+
+
+def test_a_tier_that_is_not_the_machines_kills_nothing_on_it(tmp_path: Path) -> None:
+    """Issue #124: the no-Arma tier was the external event that killed the real one.
+
+    Every pool test below drives the real `spike/regress.sh`, which reclaims each
+    slot it acquires. `CTI_TIER_STATE` moves the locks and `CTI_SLOT_INSTALL_MASTER`
+    moves the install, but a slot's port block is arithmetic no variable moves and
+    `/proc` is not virtualised either — so reclaiming "slots 0-2" from a test swept
+    the live tier's 2402/2502/2602 and 9099-9101 and killed three running worlds
+    and their daemons. Three times on 2026-08-02, each within seconds of a
+    `pytest tests/unit` on the same machine, and each read as a mystery crash.
+
+    The guard is on the state directory, because that is the tier's identity: a
+    run pointed somewhere else is not this machine's tier and sweeps nothing. Only
+    this direction is testable — the sweeping direction is exactly what must never
+    run from a test, so its coverage is the real tier's own use of it.
+    """
+    master = tmp_path / "arma3server"
+    master.mkdir(parents=True)
+    # A real binary rather than a shell script, because the sweep reads
+    # `/proc/<pid>/exe` and a script's `exe` is the interpreter — a script victim
+    # is invisible to the very sweep this test is about, and would pass either way.
+    victim_bin = master / "arma3server_x64"
+    shutil.copy(shutil.which("sleep") or "/bin/sleep", victim_bin)
+    # A process running out of slot 0's install, which is precisely what the
+    # install sweep exists to find and kill.
+    # S603: this test's own copy of `sleep`, by absolute path.
+    victim = subprocess.Popen([str(victim_bin), "60"])  # noqa: S603
+    try:
+        result = bash_eval(
+            "cti_slot_reclaim 0",
+            env={
+                "CTI_TIER_STATE": str(tmp_path / "state"),
+                "CTI_SLOT_INSTALL_MASTER": str(master),
+            },
+            want_stderr=True,
+        )
+        assert victim.poll() is None, "reclaim killed a process from a foreign state directory"
+        assert "not the machine's tier" in result
+    finally:
+        victim.kill()
+        victim.wait(timeout=10)
 
 
 def test_the_install_farm_breaks_the_staged_paths_out_of_the_links(tmp_path: Path) -> None:
