@@ -14,7 +14,7 @@ island carry", `just unit` refuses a manifest that cannot answer at all, and the
 found.
 
 Nothing else changes. The wire format keeps its keys, the Observation stays one whole picture, and
-the only encoding change taken is that a Contact's age is rounded to a tenth of a second where it
+the only encoding change taken is that a Contact's age is truncated to whole seconds where it
 is computed.
 
 ## Why the question changed
@@ -33,13 +33,13 @@ included, against the 9,216-byte guard:
 
 | Objectives | bytes with no Squads at all | Squads a side before the guard |
 |---|---|---|
-| 8 (Stratis) | 1,631 | 70 |
-| 20 | 3,469 | 51 |
-| 30 | 5,005 | 37 |
-| 40 | 6,535 | 24 |
-| 50 | 8,073 | 10 |
-| 60 (Altis-ish) | 9,599 | **none** |
-| 90 | 14,223 | **none** |
+| 8 (Stratis) | 1,611 | 71 |
+| 20 | 3,425 | 52 |
+| 30 | 4,941 | 38 |
+| 40 | 6,451 | 24 |
+| 50 | 7,969 | 11 |
+| 60 (Altis-ish) | 9,475 | **none** |
+| 90 | 14,039 | **none** |
 
 The last two rows are the finding. A sixty-Objective island spends its entire budget on the ground
 itself: there is no Squad count small enough, and an empty Campaign on a freshly loaded map would
@@ -53,12 +53,18 @@ it is an authoring act rather than a purchase. `just unit` is where authoring ac
 
 ## What was taken, and what was not
 
-**Taken: rounding a Contact's age.** The subtraction that produces an age renders as
+**Taken: truncating a Contact's age.** The subtraction that produces an age renders as
 `47.29999999999927` — seventeen characters, once per place. The planner reads it as a freshness
-ratio against a window measured in minutes, so nothing downstream can tell. Rounded in
-`Contacts.of` rather than in `serialise`, so the document stays a rendering of what the Commander
-holds rather than a lossy version of it. Worth 13 bytes a place, 8% of a sixty-Objective
-Observation, and it removes false precision that was never true.
+ratio against a window measured in minutes, so nothing downstream can tell. Truncated in
+`Contacts.aged_to` rather than in `serialise`, so the document stays a rendering of what the
+Commander holds rather than a lossy version of it. It removes false precision that was never true.
+
+This ADR first took a tenth of a second. The human's review of it (#134, 2026-08-02) narrowed that
+to a **whole** second, on the ADR's own reasoning: a window measured in minutes cannot tell a tenth
+from a whole any more than it could tell a tenth from the raw float, and whole seconds are cheaper
+on the wire the ADR exists to defend. **Truncated, not rounded** — an age that rounded up would
+read younger than the Contact is, and a Commander told a sighting is fresher than it was is the
+wrong direction to be wrong in. The per-map table above was re-measured against the narrower form.
 
 **Not taken: positional encoding** (#26's own first lever — dropping the repeated keys, so a Squad
 reads `["WEST-12","weapons",8,"capture","kavala","kavala"]`). Measured at 60 Objectives and 32

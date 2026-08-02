@@ -48,9 +48,12 @@ _WORST_POSTURE: Final = max(POSTURE_ORDER, key=len)
 _WORST_ASSETS: Final = tuple(asset for asset, _ in ASSETS)
 _WORST_ORDER: Final = max(ORDERS, key=len)
 _WORST_OWNER: Final = max(OWNERS, key=len)
-# A Campaign runs for hours rather than days and an age is rounded to a tenth
-# (`contacts.AGE_PLACES`), so this is the longest a clock reading gets said in.
+# A Campaign runs for hours rather than days, so this is the longest a clock
+# reading gets said in.
 _WORST_CLOCK: Final = 9_999.9
+# An age is truncated to whole seconds (#134), so it is the same span said in
+# four characters rather than six.
+_WORST_AGE: Final = 9_999
 # Squad ids number from the first ever bought, not from the ones still alive, so
 # a long Campaign's live roster wears four-digit ordinals.
 _WORST_ORDINAL: Final = 1_000
@@ -96,7 +99,7 @@ def worst_case(
                 echelon=_WORST_ECHELON,
                 posture=_WORST_POSTURE,
                 assets=_WORST_ASSETS,
-                age=_WORST_CLOCK,
+                age=_WORST_AGE,
             )
             for place in places
         ),

@@ -84,14 +84,14 @@ def island(objectives: int) -> manifest.MapManifest:
 # are keyed by place, so an island pays for its own size before either side has
 # bought anything.
 CEILINGS = (
-    (8, 1_631, 70),
-    (10, 1_943, 65),
-    (20, 3_469, 51),
-    (30, 5_005, 37),
-    (40, 6_535, 24),
-    (50, 8_073, 10),
-    (60, 9_599, None),
-    (90, 14_223, None),
+    (8, 1_611, 71),
+    (10, 1_919, 65),
+    (20, 3_425, 52),
+    (30, 4_941, 38),
+    (40, 6_451, 24),
+    (50, 7_969, 11),
+    (60, 9_475, None),
+    (90, 14_039, None),
 )
 
 

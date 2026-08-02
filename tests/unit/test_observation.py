@@ -355,11 +355,12 @@ def test_a_crowded_stratis_observation_fits_inside_one_callextension_return() ->
     assert headroom > 2_000, f"only {headroom} bytes of headroom left"
 
 
-def test_a_contacts_age_is_reported_no_finer_than_a_tenth_of_a_second() -> None:
+def test_a_contacts_age_is_reported_in_whole_seconds() -> None:
     # #26: the subtraction that produces an age renders as `47.29999999999927`,
     # seventeen characters on a field carried once per place. The planner reads
     # it as a freshness ratio against a window of minutes, so the precision was
-    # never doing anything but costing bytes.
+    # never doing anything but costing bytes. #134 narrowed the human's tenth of
+    # a second to a whole one.
     register = contacts.Contacts()
     register.report(
         "WEST",
@@ -369,5 +370,21 @@ def test_a_contacts_age_is_reported_no_finer_than_a_tenth_of_a_second() -> None:
     )
 
     (contact,) = register.aged_to("WEST", at_time=47.4)
-    assert contact.age == 47.3
-    assert json.dumps(contact.age) == "47.3"
+    assert contact.age == 47
+    assert json.dumps(contact.age) == "47"
+
+
+def test_a_contacts_age_is_truncated_rather_than_rounded() -> None:
+    # An age that rounded up would read younger than the Contact is, which is
+    # the wrong direction to be wrong in: a Commander would be told a sighting
+    # is fresher than it was.
+    register = contacts.Contacts()
+    register.report(
+        "WEST",
+        at_time=0.0,
+        seen=(contacts.Sighting(at="girna", kind="Infantry", age=0.0),),
+        observed=("girna",),
+    )
+
+    (contact,) = register.aged_to("WEST", at_time=47.9)
+    assert contact.age == 47

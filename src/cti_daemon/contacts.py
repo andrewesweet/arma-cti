@@ -12,6 +12,7 @@ are testable (ADR-0012).
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
@@ -46,15 +47,6 @@ ON_FOOT: Final = "foot"
 # Heaviest wins, because what a Commander needs of a place is what it can do
 # rather than what most of it is. Ascending.
 POSTURE_ORDER: Final = (ON_FOOT, "motorised", "mechanised", "armoured", "air")
-
-# How precisely an age is reported (#26). A Contact's age is read as a freshness
-# ratio against a staleness window measured in whole minutes, so a tenth of a
-# second is already far finer than any decision made from it — and the binary
-# subtraction that produces it renders as `47.29999999999927`, seventeen
-# characters of noise on a field the Observation carries once per place. Rounded
-# where it is computed rather than where it is serialised, so the document is a
-# rendering of what the Commander holds rather than a lossy version of it.
-AGE_PLACES: Final = 1
 
 # The things worth naming on their own, beyond how the place moves. Reported in
 # this order rather than in sighting order, so two reports of the same place
@@ -92,7 +84,13 @@ class Contact:
     echelon: str
     posture: str
     assets: tuple[str, ...]
-    age: float
+    # Whole seconds since it was seen. How precisely an age is reported was #26's
+    # question and the human's call on #134: it is read downstream as a freshness
+    # ratio against a staleness window measured in whole minutes, so a whole
+    # second is already finer than any decision made from it, and the binary
+    # subtraction that produces it renders as `47.29999999999927` — seventeen
+    # characters of noise on a field the Observation carries once per place.
+    age: int
 
 
 def echelon_of(count: int) -> str:
@@ -178,14 +176,20 @@ class Contacts:
             )
 
     def aged_to(self, side: str, at_time: float) -> tuple[Contact, ...]:
-        """One side's Contacts, aged to the moment it is asking."""
+        """One side's Contacts, aged to the moment it is asking.
+
+        Truncated to whole seconds rather than rounded, so an age can never read
+        younger than it is; and truncated here where it is computed rather than
+        in `serialise`, so the document stays a rendering of what the Commander
+        holds rather than a lossy version of it.
+        """
         return tuple(
             Contact(
                 at=place,
                 echelon=record.echelon,
                 posture=record.posture,
                 assets=record.assets,
-                age=round(at_time - record.seen_at, AGE_PLACES),
+                age=math.floor(at_time - record.seen_at),
             )
             for (owner, place), record in self._seen.items()
             if owner == side
