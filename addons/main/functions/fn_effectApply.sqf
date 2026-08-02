@@ -101,11 +101,9 @@ if (_side isEqualTo sideUnknown) exitWith {
     ["refused", "effect_unknown_side"] call _verdict
 };
 
-private _map = missionNamespace getVariable ["cti_map", createHashMap];
-private _base = [];
-{
-    if ((_x getOrDefault ["side", ""]) isEqualTo toUpper _sideName) exitWith { _base = _x };
-} forEach (_map getOrDefault ["bases", []]);
+// Through the index cti_fnc_worldInit derives beside the map (#109).
+private _base = (missionNamespace getVariable ["cti_basesBySide", createHashMap])
+    getOrDefault [toUpper _sideName, createHashMap];
 
 if (count _base isEqualTo 0) exitWith {
     diag_log format ["CTI|FAIL class=assertion_failed no_base_for_side=%1", _sideName];

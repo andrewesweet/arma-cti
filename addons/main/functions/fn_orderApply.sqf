@@ -42,24 +42,18 @@ if (isNull _group || { count units _group isEqualTo 0 }) exitWith {
     true
 };
 
-private _map = missionNamespace getVariable ["cti_map", createHashMap];
-private _ground = createHashMap;
-
-if (_order isEqualTo "reserve") then {
+// Both readings come from the indexes cti_fnc_worldInit derives beside the map
+// (#109). A Place is an Objective or a Base (ADR-0020) and the two share one id
+// namespace, which `manifest._check_one_namespace` enforces before anything is
+// played on — so one lookup cannot find two answers.
+private _ground = if (_order isEqualTo "reserve") then {
     // Reserve is the absence of a destination, so the Squad falls back on its
     // own Base rather than standing wherever its last Order left it.
-    private _side = str (side _group);
-    {
-        if ((_x getOrDefault ["side", ""]) isEqualTo _side) exitWith { _ground = _x };
-    } forEach (_map getOrDefault ["bases", []]);
+    (missionNamespace getVariable ["cti_basesBySide", createHashMap])
+        getOrDefault [toUpper str (side _group), createHashMap]
 } else {
-    // An Order names a Place, and a Place is an Objective or a Base (ADR-0020).
-    // The two lists share one id namespace, which `manifest._check_one_namespace`
-    // enforces before anything is played on, so searching both in turn cannot
-    // find two answers.
-    {
-        if ((_x getOrDefault ["id", ""]) isEqualTo _place) exitWith { _ground = _x };
-    } forEach ((_map getOrDefault ["objectives", []]) + (_map getOrDefault ["bases", []]));
+    (missionNamespace getVariable ["cti_placesById", createHashMap])
+        getOrDefault [_place, createHashMap]
 };
 
 private _destination = _ground getOrDefault ["position", []];

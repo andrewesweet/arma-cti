@@ -62,6 +62,22 @@ private _owners = createHashMap;
 } forEach _bases;
 
 missionNamespace setVariable ["cti_map", _map, true];
+
+// Two readings of the manifest nothing has to scan for (#109): a Place by its
+// id, and a side's Base. Seven call sites walked the `objectives` and `bases`
+// arrays looking for one or the other, one of them inside a per-Squad loop on a
+// five-second sweep. Derived here rather than authored, so the manifest stays
+// the single source and there is nothing to keep in step: the two id namespaces
+// are already one, which `manifest._check_one_namespace` enforces before
+// anything is played on, so the merge cannot collide.
+private _placesById = createHashMap;
+{ _placesById set [_x get "id", _x] } forEach (_objectives + _bases);
+private _basesBySide = createHashMap;
+{ _basesBySide set [toUpper (_x getOrDefault ["side", ""]), _x] } forEach _bases;
+// Broadcast like the map itself: a client draws places too, and the index is a
+// reading of data it already has.
+missionNamespace setVariable ["cti_placesById", _placesById, true];
+missionNamespace setVariable ["cti_basesBySide", _basesBySide, true];
 missionNamespace setVariable ["cti_objectiveOwner", _owners, true];
 // Squad id to group, filled as Squads are bought. An Order names a Squad, so
 // this is what an Order is resolved through (#14).

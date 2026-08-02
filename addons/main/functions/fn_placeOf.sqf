@@ -25,26 +25,28 @@ _position params ["_east", "_north"];
 private _where = [_east, _north, 0];
 private _at = "";
 
+// Objectives first and Bases after, in one pass over the concatenation rather
+// than the same loop written twice (#85): the order is what decided the answer
+// before and it still does, and the fallback below already walks the same list.
+private _places = _objectives + _bases;
+
 {
     (_x get "position") params ["_placeEast", "_placeNorth"];
     if (_where distance2D [_placeEast, _placeNorth, 0] <= ([_x] call cti_fnc_placeRadius)) exitWith {
         _at = _x get "id";
     };
-} forEach _objectives;
-
-if (_at isEqualTo "") then {
-    {
-        (_x get "position") params ["_placeEast", "_placeNorth"];
-        if (_where distance2D [_placeEast, _placeNorth, 0] <= ([_x] call cti_fnc_placeRadius)) exitWith {
-            _at = _x get "id";
-        };
-    } forEach _bases;
-};
+} forEach _places;
 
 // Open ground is an honest answer about our own Squads, and no answer at all
 // about a Contact: a Commander cannot act on "somewhere between two towns", and
 // filing every sighting under a place is what keeps Contacts bounded by the map
 // rather than by how far the enemy has spread out.
+//
+// Kept as an explicit scan rather than `BIS_fnc_nearestPosition`
+// (`functions/BIS_fnc_nearestPosition.wiki`, weighed for #108): the shipped
+// function takes positions and returns an index, so using it here means
+// building a parallel array of positions and mapping the answer back to an id —
+// line-neutral, and one indirection further from the manifest this reads.
 if (_at isEqualTo "" && _nearest) then {
     private _closest = 1e10;
     {
@@ -54,7 +56,7 @@ if (_at isEqualTo "" && _nearest) then {
             _closest = _range;
             _at = _x get "id";
         };
-    } forEach (_objectives + _bases);
+    } forEach _places;
 };
 
 _at
