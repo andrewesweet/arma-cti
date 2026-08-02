@@ -58,6 +58,11 @@ class ObjectiveState:
     holder: str = ""
     held_seconds: float = 0.0
 
+    def reset_hold(self) -> None:
+        """Forget any capture in progress. The two fields always move together."""
+        self.holder = ""
+        self.held_seconds = 0.0
+
 
 @dataclass(frozen=True, slots=True)
 class Outcome:
@@ -227,7 +232,7 @@ class Campaign:
         Base is. Returns the Squad and what the side has left, both advisory.
         """
         self._playing()
-        bought = next((entry for entry in self.table.squads if entry.id == squad_type), None)
+        bought = self.table.sold(squad_type)
         if bought is None:
             message = f"no Squad type {squad_type!r} is sold"
             raise KeyError(message)
@@ -419,21 +424,18 @@ class Campaign:
             # Contested is a state, not a moment: it persists until somebody is
             # alone in the radius again, and it pays nobody while it lasts.
             self._set_owner(name, state, CONTESTED)
-            state.holder = ""
-            state.held_seconds = 0.0
+            state.reset_hold()
             return
 
         if not present:
             # Ground already taken stays taken; holding it should not require
             # standing on it forever.
-            state.holder = ""
-            state.held_seconds = 0.0
+            state.reset_hold()
             return
 
         side = present[0]
         if state.owner == side:
-            state.holder = ""
-            state.held_seconds = 0.0
+            state.reset_hold()
             return
 
         if state.holder != side:
@@ -443,8 +445,7 @@ class Campaign:
 
         if state.held_seconds >= self.table.capture_seconds:
             self._set_owner(name, state, side)
-            state.holder = ""
-            state.held_seconds = 0.0
+            state.reset_hold()
 
     def _set_owner(self, name: str, state: ObjectiveState, owner: str) -> None:
         """Record a change of hands and tell the world about it."""

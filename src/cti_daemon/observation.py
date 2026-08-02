@@ -41,9 +41,12 @@ not have to import the transport to answer it.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Final
+from typing import TYPE_CHECKING, Any, Final
 
 from cti_daemon.contacts import Contact
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # Each Base's HQ, as the wire says it. Here rather than beside the Campaign that
 # razes one, because this is the vocabulary of the document.
@@ -116,6 +119,53 @@ class Observation:
             raise ValueError(message)
 
 
+# The wire names of the two repeated records, declared once (#87). `serialise`
+# and `parse` both read this, so a rename is one edit rather than two held in
+# step by a round-trip test noticing afterwards. Wire name first because that is
+# the side that is fixed: the attribute is ours to rename, the key is not.
+SQUAD_FIELDS: Final[tuple[tuple[str, str], ...]] = (
+    ("id", "id"),
+    ("type", "squad_type"),
+    ("size", "size"),
+    ("order", "order"),
+    ("place", "place"),
+    ("at", "at"),
+)
+CONTACT_FIELDS: Final[tuple[tuple[str, str], ...]] = (
+    ("at", "at"),
+    ("echelon", "echelon"),
+    ("posture", "posture"),
+    # A tuple in the record and a list on the wire: JSON has one sequence.
+    ("assets", "assets"),
+    ("age", "age"),
+)
+
+
+def _rendered(record: object, fields: tuple[tuple[str, str], ...]) -> dict[str, Any]:
+    """Render one record as its wire object.
+
+    A tuple field becomes a list because JSON has one sequence; `_built` puts it
+    back. The pair is the whole translation, which is why neither of them names
+    a field.
+    """
+    rendered: dict[str, Any] = {}
+    for key, attribute in fields:
+        value = getattr(record, attribute)
+        rendered[key] = list(value) if isinstance(value, tuple) else value
+    return rendered
+
+
+def _built[T](
+    record: Callable[..., T], document: dict[str, Any], fields: tuple[tuple[str, str], ...]
+) -> T:
+    """Rebuild one record from its wire object."""
+    values: dict[str, Any] = {}
+    for key, attribute in fields:
+        value = document[key]
+        values[attribute] = tuple(value) if isinstance(value, list) else value
+    return record(**values)
+
+
 def serialise(observation: Observation) -> dict[str, Any]:
     """Render an observation as the document that crosses the wire."""
     document: dict[str, Any] = {
@@ -127,32 +177,19 @@ def serialise(observation: Observation) -> dict[str, Any]:
         return document
     document["side"] = observation.for_side
     document["funds"] = observation.funds
-    document["squads"] = [
-        {
-            "id": squad.id,
-            "type": squad.squad_type,
-            "size": squad.size,
-            "order": squad.order,
-            "place": squad.place,
-            "at": squad.at,
-        }
-        for squad in observation.squads
-    ]
-    document["contacts"] = [
-        {
-            "at": contact.at,
-            "echelon": contact.echelon,
-            "posture": contact.posture,
-            "assets": list(contact.assets),
-            "age": contact.age,
-        }
-        for contact in observation.contacts
-    ]
+    document["squads"] = [_rendered(squad, SQUAD_FIELDS) for squad in observation.squads]
+    document["contacts"] = [_rendered(contact, CONTACT_FIELDS) for contact in observation.contacts]
     return document
 
 
 def parse(document: dict[str, Any]) -> Observation:
-    """Rebuild an observation from its wire document."""
+    """Rebuild an observation from its wire document.
+
+    It reads our own wire and nothing else: the only writer is `serialise` above
+    and the only readers are this project's tests and tools, so a missing key is
+    a broken build rather than untrusted input. Anything arriving from the world
+    is validated in `cti_daemon.report`, which is the module that exists for it.
+    """
     at_time = document["at"]
     owners = dict(document["owners"])
     hq = dict(document.get("hq", {}))
@@ -165,25 +202,8 @@ def parse(document: dict[str, Any]) -> Observation:
         hq=hq,
         for_side=for_side,
         funds=document["funds"],
-        squads=tuple(
-            SquadView(
-                id=squad["id"],
-                squad_type=squad["type"],
-                size=squad["size"],
-                order=squad["order"],
-                place=squad["place"],
-                at=squad["at"],
-            )
-            for squad in document["squads"]
-        ),
+        squads=tuple(_built(SquadView, squad, SQUAD_FIELDS) for squad in document["squads"]),
         contacts=tuple(
-            Contact(
-                at=contact["at"],
-                echelon=contact["echelon"],
-                posture=contact["posture"],
-                assets=tuple(contact["assets"]),
-                age=contact["age"],
-            )
-            for contact in document["contacts"]
+            _built(Contact, contact, CONTACT_FIELDS) for contact in document["contacts"]
         ),
     )

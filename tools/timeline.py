@@ -20,10 +20,17 @@ imports the daemon, so an old run's evidence stays readable.
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
+
+# tools/ holds standalone scripts rather than an importable package, so a
+# sibling import needs the script's own directory on the path — the same device
+# `export_command_schema.py` uses to reach `src/`. Placed before the import it
+# enables, which is why the import below sits apart from the block above.
+sys.path.insert(0, str(Path(__file__).parent))
+
+from telemetry_log import rows
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -48,23 +55,6 @@ NARRATED: Final = (
 # a matching `casualty` row must therefore agree with. A prefix rather than a
 # whole grammar: the probe states only the fields it actually controls.
 STAGED: Final = "casualty_staged"
-
-
-def rows(path: Path) -> list[dict[str, Any]]:
-    """Read a telemetry log, skipping anything that is not a record.
-
-    A truncated last line is ordinary: telemetry is appended while the world
-    runs, and a run that was killed mid-write is still a run worth reading.
-    """
-    records: list[dict[str, Any]] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        try:
-            record = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if isinstance(record, dict):
-            records.append(record)
-    return records
 
 
 def _who(row: dict[str, Any], squad: str, side: str, kind: str) -> str:

@@ -44,6 +44,7 @@ class UnknownSideError(Exception):
 
 
 def _refuse(detail: str) -> NoReturn:
+    """Raise the one error type callers catch. See `manifest._refuse` on why two."""
     raise EconomyError(detail)
 
 
@@ -72,12 +73,23 @@ class EconomyTable:
     domination_seconds: int
     squads: tuple[SquadType, ...]
 
-    def price(self, squad_type: str) -> int | None:
-        """Return what `squad_type` costs, or None when nothing by that name is sold."""
+    def sold(self, squad_type: str) -> SquadType | None:
+        """Return the Squad type sold under that name, or None if none is.
+
+        One lookup for both the callers that had one (#87): the port asked
+        `price` to find out whether a Purchase named anything real, then the
+        Campaign scanned the same tuple again to find the entry the port had
+        already had in its hand.
+        """
         for squad in self.squads:
             if squad.id == squad_type:
-                return squad.price
+                return squad
         return None
+
+    def price(self, squad_type: str) -> int | None:
+        """Return what `squad_type` costs, or None when nothing by that name is sold."""
+        found = self.sold(squad_type)
+        return None if found is None else found.price
 
 
 def _check_squads(squads: list[dict[str, Any]]) -> None:

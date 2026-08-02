@@ -94,7 +94,15 @@ def load_all(directory: Path) -> dict[str, MapManifest]:
 
 
 def _refuse(detail: str) -> NoReturn:
-    """Raise the one error type callers catch."""
+    """Raise the one error type callers catch.
+
+    `economy._refuse` looks identical and is deliberately not shared (#87): the
+    difference between the two is the exception each raises, which is the whole
+    of what they are for — a caller catches `ManifestError` because it was
+    reading a manifest, and would learn nothing from a shared refusal that could
+    be either. Sharing the body would leave the type as a parameter and put the
+    thing that matters furthest from the call.
+    """
     raise ManifestError(detail)
 
 
@@ -105,6 +113,12 @@ def _check_identifier(value: object, what: str) -> None:
 
 
 def _check_unique(ids: list[str], what: str) -> None:
+    """Refuse a repeated authored id. `economy._check_squads` says the same thing.
+
+    Not shared, for `_refuse`'s reason: the duplicate-finding is one expression
+    and the error type is the substance. Kept spelled the same way in both so
+    that reading one tells you what the other does.
+    """
     duplicates = sorted({name for name in ids if ids.count(name) > 1})
     if duplicates:
         _refuse(f"duplicate {what} id: {', '.join(duplicates)}")

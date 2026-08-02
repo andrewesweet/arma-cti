@@ -137,8 +137,7 @@ class CommandPort:
         if not isinstance(squad_type, str) or not squad_type:
             return _reject("malformed_command", "purchase needs a `squad_type`")
 
-        price = self.table.price(squad_type)
-        if price is None:
+        if self.table.sold(squad_type) is None:
             return _reject("malformed_command", f"no Squad type {squad_type!r} is sold")
 
         # Spending the Funds, minting the Squad and telling the world are the

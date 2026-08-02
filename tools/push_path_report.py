@@ -21,10 +21,17 @@ Prints `key=value` lines, which is what `spike/run.sh` records into
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
-from typing import Any, Final
+from typing import Final
+
+# tools/ holds standalone scripts rather than an importable package, so a
+# sibling import needs the script's own directory on the path — the same device
+# `export_command_schema.py` uses to reach `src/`. Placed before the import it
+# enables, which is why the import below sits apart from the block above.
+sys.path.insert(0, str(Path(__file__).parent))
+
+from telemetry_log import rows
 
 # What the engine drains per frame (ADR-0004).
 DRAIN_CAP: Final = 100
@@ -37,23 +44,6 @@ STALL_CAP_US: Final = 1_000_000
 # this reads a log rather than driving a daemon and must survive being pointed
 # at telemetry from a run this checkout did not produce.
 SIDES: Final = ("WEST", "EAST")
-
-
-def rows(path: Path) -> list[dict[str, Any]]:
-    """Read a telemetry log, skipping anything that is not a record.
-
-    A truncated last line is ordinary: telemetry is appended while the world
-    runs, and a run that was killed mid-write is still a run worth measuring.
-    """
-    records: list[dict[str, Any]] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        try:
-            record = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if isinstance(record, dict):
-            records.append(record)
-    return records
 
 
 def _percentile(values: list[int], fraction: float) -> int:
