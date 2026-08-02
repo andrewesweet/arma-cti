@@ -95,7 +95,13 @@ private _watch = [_interval, _beat] spawn {
             private _name = _x;
             private _watched = _y;
 
-            if (_name isNotEqualTo "loop_watch" && { !(_watched get "dead") }) then {
+            // A retired loop is one that finished on purpose and said so
+            // (cti_fnc_everyInterval), not one that went quiet. Announcing it
+            // would put "PART OF THE WORLD HAS STOPPED" on every screen for a
+            // job that is simply done.
+            if (_name isNotEqualTo "loop_watch"
+                && { !(_watched get "dead") }
+                && { !(_watched getOrDefault ["retired", false]) }) then {
                 private _silent = _now - (_watched get "at");
                 // Three turns, and never less than half a minute. The cadences
                 // run from 2 s to 10 s and a server under load hitches for

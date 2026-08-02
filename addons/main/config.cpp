@@ -39,6 +39,7 @@ class CfgFunctions
             class campaignLost {};
             class loopRegister {};
             class loopWatch {};
+            class everyInterval {};
             class prngNew {};
             class prngNext {};
             class prngInt {};

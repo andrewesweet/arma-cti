@@ -42,78 +42,66 @@ if (_extension isEqualTo "") exitWith {
     scriptNull
 };
 
-// The heartbeat the watchdog reads (#102).
-private _beat = ["commander_view", _interval] call cti_fnc_loopRegister;
+diag_log format ["CTI|commander_view_started interval=%1", _interval];
 
-private _pusher = [_interval, _beat] spawn {
-    params ["_interval", "_beat"];
+// Refusals repeat every cycle for as long as the world is set up wrongly, so
+// each is said once per side rather than once per push.
+private _told = createHashMap;
 
-    diag_log format ["CTI|commander_view_started interval=%1", _interval];
+// Paced, heartbeated and watched by the one adapter every loop in the addon
+// runs on (#85).
+["commander_view", _interval, [_told], {
+    params ["_told"];
 
-    // Refusals repeat every cycle for as long as the world is set up wrongly, so
-    // each is said once per side rather than once per push.
-    private _told = createHashMap;
+    private _assigned = missionNamespace getVariable ["cti_commanders", createHashMap];
+    {
+        private _side = _x;
+        private _uid = _y;
 
-    while { true } do {
-        private _next = diag_tickTime + _interval;
-        waitUntil { diag_tickTime >= _next };
-        _beat set ["turns", (_beat get "turns") + 1];
-        _beat set ["at", diag_tickTime];
-
-        private _assigned = missionNamespace getVariable ["cti_commanders", createHashMap];
+        // The Commander's current machine. Resolved per push because a
+        // reconnection is a new machine id and the same Commander.
+        private _target = 0;
         {
-            private _side = _x;
-            private _uid = _y;
+            if (getPlayerUID _x isEqualTo _uid) exitWith { _target = owner _x };
+        } forEach allPlayers;
 
-            // The Commander's current machine. Resolved per push because a
-            // reconnection is a new machine id and the same Commander.
-            private _target = 0;
-            {
-                if (getPlayerUID _x isEqualTo _uid) exitWith { _target = owner _x };
-            } forEach allPlayers;
+        if (_target > 0) then {
+            // Unique per request, for the reason cti_fnc_presenceReport gives:
+            // the daemon deduplicates on the whole line (#69, ADR-0034) and
+            // in-game time is not a clock that only advances.
+            private _answer = [
+                format ["view-%1-%2", _side, round (diag_tickTime * 1000)],
+                "view", createHashMapFromArray [["side", _side]]
+            ] call cti_fnc_daemonCall;
 
-            if (_target > 0) then {
-                // Unique per request, for the reason cti_fnc_presenceReport
-                // gives: the daemon deduplicates on the whole line (#69,
-                // ADR-0034) and in-game time is not a clock that only advances.
-                private _answer = [
-                    format ["view-%1-%2", _side, round (diag_tickTime * 1000)],
-                    "view", createHashMapFromArray [["side", _side]]
-                ] call cti_fnc_daemonCall;
-
-                switch (_answer get "outcome") do {
-                    case "ok": {
-                        _told deleteAt _side;
-                        [_answer get "result"] remoteExec ["cti_fnc_mapObservation", _target];
-                    };
-                    // A side under an AI Commander has no view to hand out and
-                    // the daemon refuses it. That is a Commander's mistake, so
-                    // it goes to the client that caused it in the port's own
-                    // rejection vocabulary — said once per side, because the
-                    // refusal repeats for as long as the world is set up wrongly.
-                    case "rejected": {
-                        if !(_side in _told) then {
-                            private _reason = _answer get "reason";
-                            _told set [_side, true];
-                            diag_log format ["CTI|commander_view_refused side=%1 code=%2 detail=%3",
-                                _side,
-                                _reason getOrDefault ["code", "?"],
-                                _reason getOrDefault ["detail", ""]];
-                            [_answer get "reply"] remoteExec ["cti_fnc_portReply", _target];
-                        };
-                    };
-                    // Anything else is the daemon failing or absent, and it has
-                    // already been classified and logged by the call. It is
-                    // emphatically not forwarded: a shim error object used to
-                    // take this branch and be pushed to the human as if it were
-                    // a port judgement, rendering as `? — ? —` (#97).
-                    default {};
+            switch (_answer get "outcome") do {
+                case "ok": {
+                    _told deleteAt _side;
+                    [_answer get "result"] remoteExec ["cti_fnc_mapObservation", _target];
                 };
+                // A side under an AI Commander has no view to hand out and the
+                // daemon refuses it. That is a Commander's mistake, so it goes
+                // to the client that caused it in the port's own rejection
+                // vocabulary — said once per side, because the refusal repeats
+                // for as long as the world is set up wrongly.
+                case "rejected": {
+                    if !(_side in _told) then {
+                        private _reason = _answer get "reason";
+                        _told set [_side, true];
+                        diag_log format ["CTI|commander_view_refused side=%1 code=%2 detail=%3",
+                            _side,
+                            _reason getOrDefault ["code", "?"],
+                            _reason getOrDefault ["detail", ""]];
+                        [_answer get "reply"] remoteExec ["cti_fnc_portReply", _target];
+                    };
+                };
+                // Anything else is the daemon failing or absent, and it has
+                // already been classified and logged by the call. It is
+                // emphatically not forwarded: a shim error object used to take
+                // this branch and be pushed to the human as if it were a port
+                // judgement, rendering as `? — ? —` (#97).
+                default {};
             };
-        } forEach _assigned;
-    };
-};
-
-// The handle the watchdog reports `script_done` from (#102).
-_beat set ["script", _pusher];
-_pusher
+        };
+    } forEach _assigned;
+}] call cti_fnc_everyInterval

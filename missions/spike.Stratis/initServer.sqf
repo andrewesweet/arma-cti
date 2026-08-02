@@ -44,14 +44,12 @@ if (isNil "cti_fnc_prngSelfTest") then {
 // ---------------------------------------------------------------- extension name
 // The engine appends _x64 on the 64-bit Linux server exactly as it does on
 // Windows, so SQF says "cti_shim" and the engine opens cti_shim_x64.so.
-private _ext = "";
-{
-    if (_ext isEqualTo "") then {
-        private _probe = _x callExtension ["ping", []];
-        (format ["probe name=%1 result=%2", _x, _probe]) call CTI_SPIKE_LOG;
-        if ((_probe # 0) isEqualTo "pong") then { _ext = _x };
-    };
-} forEach ["cti_shim", "cti_shim_x64"];
+// Asked through the addon's own resolver rather than probing both names again
+// here (#85): the list of names the engine might have accepted is one fact, and
+// the copy that lived here had drifted to the array-form call while the addon
+// used the string form.
+private _ext = call cti_fnc_shimName;
+(format ["probe names=%1 accepted=%2", ["cti_shim", "cti_shim_x64"], _ext]) call CTI_SPIKE_LOG;
 
 if (_ext isEqualTo "") exitWith {
     "FAIL extension_not_loaded" call CTI_SPIKE_LOG;

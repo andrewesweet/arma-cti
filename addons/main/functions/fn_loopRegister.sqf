@@ -66,7 +66,12 @@ private _beat = createHashMapFromArray [
     ["at", diag_tickTime],
     // Latched by the watchdog when it gives up on this loop, so a death is
     // announced once rather than every sweep for the rest of the session.
-    ["dead", false]
+    ["dead", false],
+    // Latched by the loop itself when it has nothing left to do (#103's
+    // commander assignment, once both sides are latched). A loop that stopped on
+    // purpose is not one that stopped; without this the watchdog would announce
+    // a finished job as a death on every screen.
+    ["retired", false]
 ];
 _loops set [_name, _beat];
 

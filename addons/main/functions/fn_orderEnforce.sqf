@@ -22,56 +22,40 @@ params [["_interval", 10, [0]]];
 
 if (!isServer) exitWith { scriptNull };
 
-// The heartbeat the watchdog reads (#102), registered before the thread starts
-// so the handle can be written onto it without a race.
-private _beat = ["order_enforce", _interval] call cti_fnc_loopRegister;
+diag_log format ["CTI|order_enforce_started interval=%1", _interval];
 
-private _sweep = [_interval, _beat] spawn {
-    params ["_interval", "_beat"];
+// Paced, heartbeated and watched by the one adapter every loop in the addon
+// runs on (#85).
+["order_enforce", _interval, [], {
+    private _squads = missionNamespace getVariable ["cti_squads", createHashMap];
+    private _lost = [];
 
-    diag_log format ["CTI|order_enforce_started interval=%1", _interval];
+    {
+        private _squadId = _x;
+        private _group = _y;
 
-    while { true } do {
-        private _next = diag_tickTime + _interval;
-        waitUntil { diag_tickTime >= _next };
-        _beat set ["turns", (_beat get "turns") + 1];
-        _beat set ["at", diag_tickTime];
-
-        private _squads = missionNamespace getVariable ["cti_squads", createHashMap];
-        private _lost = [];
-
-        {
-            private _squadId = _x;
-            private _group = _y;
-
-            if (isNull _group || { count units _group isEqualTo 0 }) then {
-                _lost pushBack _squadId;
-            } else {
-                private _standing = _group getVariable ["cti_order", createHashMap];
-                if (count _standing > 0) then {
-                    private _done = (currentWaypoint _group) >= (count waypoints _group);
-                    private _adrift = (leader _group distance2D (_standing get "position"))
-                        > (_standing get "radius");
-                    if (_done && _adrift) then {
-                        [_squadId, _standing get "order", _standing get "place"]
-                            call cti_fnc_orderApply;
-                        diag_log format ["CTI|order_reasserted squad=%1 order=%2 leader=%3",
-                            _squadId, _standing get "order", name leader _group];
-                    };
+        if (isNull _group || { count units _group isEqualTo 0 }) then {
+            _lost pushBack _squadId;
+        } else {
+            private _standing = _group getVariable ["cti_order", createHashMap];
+            if (count _standing > 0) then {
+                private _done = (currentWaypoint _group) >= (count waypoints _group);
+                private _adrift = (leader _group distance2D (_standing get "position"))
+                    > (_standing get "radius");
+                if (_done && _adrift) then {
+                    [_squadId, _standing get "order", _standing get "place"]
+                        call cti_fnc_orderApply;
+                    diag_log format ["CTI|order_reasserted squad=%1 order=%2 leader=%3",
+                        _squadId, _standing get "order", name leader _group];
                 };
             };
-        } forEach _squads;
+        };
+    } forEach _squads;
 
-        // Deleted after the sweep rather than during it: a HashMap being walked
-        // is not one to remove keys from.
-        {
-            _squads deleteAt _x;
-            diag_log format ["CTI|squad_lost squad=%1", _x];
-        } forEach _lost;
-    };
-};
-
-// The handle the watchdog reports `script_done` from, and the one #102's probe
-// terminates to prove it does.
-_beat set ["script", _sweep];
-_sweep
+    // Deleted after the sweep rather than during it: a HashMap being walked
+    // is not one to remove keys from.
+    {
+        _squads deleteAt _x;
+        diag_log format ["CTI|squad_lost squad=%1", _x];
+    } forEach _lost;
+}] call cti_fnc_everyInterval

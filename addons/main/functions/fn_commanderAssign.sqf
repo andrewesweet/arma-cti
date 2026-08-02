@@ -44,44 +44,34 @@ if (count _schema isEqualTo 0) exitWith {
 // answer is kept.
 missionNamespace setVariable ["cti_commanders", createHashMap];
 
-// The heartbeat the watchdog reads (#102). Below the schema guard above, because
-// a loop enters the register only once it is going to run, and above the spawn,
-// because the handle can only be written onto it from out here.
-private _beat = ["commander_assign", _interval] call cti_fnc_loopRegister;
+private _assigned = missionNamespace getVariable ["cti_commanders", createHashMap];
+private _slots = createHashMap;
+{ _slots set [format ["cti_commander_%1", toLower _x], _x] } forEach (_schema get "sides");
 
-private _sweep = [_interval, _schema get "sides", _beat] spawn {
-    params ["_interval", "_sides", "_beat"];
+diag_log format ["CTI|commander_assign_started slots=%1", keys _slots];
 
-    private _assigned = missionNamespace getVariable ["cti_commanders", createHashMap];
-    private _slots = createHashMap;
-    { _slots set [format ["cti_commander_%1", toLower _x], _x] } forEach _sides;
+// Paced, heartbeated and watched by the one adapter every loop in the addon runs
+// on (#85). The first turn is taken before the first wait, because a slot filled
+// at mission start is filled before this loop exists and waiting five seconds to
+// notice would be five seconds of a Commander whose Commands are nobody's.
+["commander_assign", _interval, [_assigned, _slots], {
+    params ["_assigned", "_slots"];
 
-    diag_log format ["CTI|commander_assign_started slots=%1", keys _slots];
-
-    while { true } do {
-        // Stamped at the top of the body rather than after the wait, because
-        // this loop paces itself at the bottom; it is the same moment in the
-        // turn either way (#102).
-        _beat set ["turns", (_beat get "turns") + 1];
-        _beat set ["at", diag_tickTime];
-
-        {
-            private _side = _slots getOrDefault [vehicleVarName _x, ""];
-            if (_side isNotEqualTo "" && { !(_side in _assigned) }) then {
-                private _uid = getPlayerUID _x;
-                if (_uid isNotEqualTo "") then {
-                    _assigned set [_side, _uid];
-                    diag_log format ["CTI|commander_assigned side=%1 uid=%2 name=%3",
-                        _side, _uid, name _x];
-                };
+    {
+        private _side = _slots getOrDefault [vehicleVarName _x, ""];
+        if (_side isNotEqualTo "" && { !(_side in _assigned) }) then {
+            private _uid = getPlayerUID _x;
+            if (_uid isNotEqualTo "") then {
+                _assigned set [_side, _uid];
+                diag_log format ["CTI|commander_assigned side=%1 uid=%2 name=%3",
+                    _side, _uid, name _x];
             };
-        } forEach allPlayers;
+        };
+    } forEach allPlayers;
 
-        private _next = diag_tickTime + _interval;
-        waitUntil { diag_tickTime >= _next };
-    };
-};
-
-// The handle the watchdog reports `script_done` from (#102).
-_beat set ["script", _sweep];
-_sweep
+    // An assignment is latched for the Play Session and can never come undone,
+    // so once every slot the mission authors is filled there is nothing left for
+    // this sweep to see and it retires rather than walking `allPlayers` every
+    // five seconds for the rest of the session (#103).
+    ["", "retire"] select (count _assigned isEqualTo count _slots);
+}, true] call cti_fnc_everyInterval
