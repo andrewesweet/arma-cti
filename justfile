@@ -148,9 +148,24 @@ probe file="" hold="150": build-shim build-addon
 # The corpus takes no environment variables: what a probe's world needs is in its
 # `env:` header.
 #
-# Serialised on a machine-scoped lock at ~/.arma-cti/tier.lock. A held lock is
-# infra_unavailable and never a result; `--wait <secs>` bounds a queue.
-# Evidence, including the probe as staged, lands in ~/.arma-cti/runs/.
+# Runs across a pool of slots (#47, ADR-0028). A slot is a port block, a daemon,
+# a server install, an engine profile and a world that agree; `--slots <n>`
+# chooses how many and defaults to 3. `--slots 1` is the serial tier — slot 0 is
+# ~/arma3server on 2402-2406, which is the install and the port block this tier
+# has always used — so the fast path and the known-correct path are one code path
+# at different N. Slots are taken non-blocking in index order and fewer than
+# asked for is a smaller pool rather than a failure; no slot free at all is
+# infra_unavailable and never a result, with `--wait <secs>` bounding a queue.
+# `just probe`, `just spike` and `just cycle-spike` take slot 0, which is what
+# makes a hand run and a pool run exclude each other where they would collide.
+#
+# The two probes that drive the headed Windows client run last and serially, with
+# the rest of the pool drained: there is one Windows host, and the guard that
+# protects the human's play session cannot tell our client from theirs (#119).
+#
+# Evidence, including the probe as staged, lands in ~/.arma-cti/runs/ per probe,
+# with the pool's own schedule, RAM trace and merged verdict set beside it in
+# ~/.arma-cti/runs/<stamp>-pool/.
 regress *args: build-shim build-addon
     ./spike/regress.sh {{ args }}
 
@@ -159,10 +174,14 @@ regress *args: build-shim build-addon
 # Exploration scaffolding, not part of the tier: `just regress` never sees it,
 # and docs/research/multiplexing-the-arma-tier.md is what it produced.
 #
-# Kept for one reason: ADR-0028's N=3 is arithmetic rather than measurement, and
-# if the third slot does not fit, cycling is the lever the tier falls back on.
-# Delete this recipe and spike/cycle/ once #47 has three slots standing up
-# together — at that point it is surface for its own sake.
+# Kept for one reason: ADR-0028's N=3 was arithmetic rather than measurement, and
+# if the third slot did not fit, cycling was the lever the tier fell back on.
+#
+# **That condition has now fired and this recipe is owed a deletion.** Three
+# slots stood up together on 2026-08-02 and ran the whole corpus green in 646 s
+# (#47), so the fallback is not needed and this is surface for its own sake.
+# Delete this recipe, spike/cycle/ and tests/unit/test_cycle_freshness.py;
+# docs/research/multiplexing-the-arma-tier.md keeps the reasoning either way.
 #
 # `--no-daemon-restart` runs the dishonest cycle on purpose: the Campaign lives
 # in the daemon and the protocol has no reset verb, so a cycle that keeps the

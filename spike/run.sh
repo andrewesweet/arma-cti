@@ -37,6 +37,14 @@ DAEMON_PORT="${CTI_DAEMON_PORT:-9099}"
 # Identical to the old behaviour at the default port, by construction.
 export CTI_DAEMON_ADDR="${CTI_DAEMON_ADDR:-127.0.0.1:$DAEMON_PORT}"
 SERVER_PASSWORD="${CTI_SERVER_PASSWORD:-ctispike}"
+# The engine profile name, and with it where the engine writes `logFile` and its
+# `.rpt`: `-profiles=` is broken on Linux, so `-name=` is the only lever there is.
+# Per slot in a pool run (spike/slots.sh), because two engines writing one
+# profile directory is a bulkhead with a shared wall — #58's reading of #44's
+# doubled host creation, and a path by which one slot's crash corrupts state
+# another slot reads.
+SERVER_NAME="${CTI_SERVER_NAME:-ctispike}"
+HC_NAME="${CTI_HC_NAME:-ctihc1}"
 # Which world to bring up. The phase-0 measurement mission is the default; a
 # Phase-1 mission needs its own server config (its Missions class names the
 # template) and its own log prefix, because the harness greps for that prefix.
@@ -134,6 +142,10 @@ cleanup() {
     for pid in "$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
         [[ -n "$pid" ]] && wait "$pid" 2>/dev/null
     done
+    # The server's own .rpt, now that the engine has stopped writing it. Here
+    # rather than on the happy path so that a run which failed — the run whose
+    # scripting errors are worth reading — carries it too.
+    collect_server_rpt
     # Windows processes are children of WSL interop, not of this shell, so a
     # kill on the interop wrapper does not always reach them. By absolute path:
     # `taskkill.exe` by name is not on an agent's PATH either, so this silently
@@ -263,6 +275,23 @@ collect_client_rpt() {
     fi
 }
 
+# The dedicated server's own `.rpt`, which is where the engine writes scripting
+# errors it never puts on stdout. It lands in the profile directory `-name=`
+# chooses, so it is only *this run's* rpt once the profile is per slot — before
+# that, three concurrent slots wrote one file and the newest-file rule would have
+# handed a run somebody else's errors (#47). Called from teardown so that every
+# exit path, including a `fail`, carries it.
+collect_server_rpt() {
+    local dir newest
+    dir="$HOME/.local/share/Arma 3 - Other Profiles/$SERVER_NAME"
+    [[ -d "$dir" ]] || return 0
+    newest="$(ls -t "$dir"/*.rpt 2>/dev/null | head -1)"
+    [[ -n "$newest" ]] || return 0
+    cp "$newest" "$OUT/server.rpt" 2>/dev/null || return 0
+    record "server_rpt" "$OUT/server.rpt"
+    record "server_rpt_source" "$newest"
+}
+
 fail() {
     record "verdict" "FAIL"
     record "failure_class" "$1"
@@ -308,6 +337,18 @@ BUILT_MOD="${CTI_BUILT_MOD:-$REPO/.hemttout/build}"
 MOD_NAME="@cti"
 
 record "mission" "$MISSION"
+# The slot boundary, written down where a reader of the evidence can check it.
+# ADR-0028's rule is that a slot boundary is only real where something reads it,
+# and the corollary is that a reader should be able to see which side of it a run
+# was on: #44's merged runs were only diagnosable because somebody went looking
+# for the daemon address by hand.
+record "tier_slot" "${CTI_TIER_SLOT:-0}"
+record "tier_host" "${CTI_TIER_HOST:-local}"
+record "server_port" "$PORT"
+record "daemon_port" "$DAEMON_PORT"
+record "daemon_addr" "$CTI_DAEMON_ADDR"
+record "server_dir" "$SERVER_DIR"
+record "server_profile" "$SERVER_NAME"
 record "wsl_networking_mode" "$(wslinfo --networking-mode 2>/dev/null || echo unknown)"
 record "wsl_lan_ip" "$(ip -4 -o addr show scope global 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | paste -sd, -)"
 
@@ -478,7 +519,7 @@ SERVER_LOG="$OUT/server.stdout.log"
 t_boot=$(now)
 (
     cd "$SERVER_DIR" || exit 1
-    args=(-config="$SERVER_CONFIG" -mod="$MOD_NAME" -port="$PORT" -name=ctispike
+    args=(-config="$SERVER_CONFIG" -mod="$MOD_NAME" -port="$PORT" -name="$SERVER_NAME"
         -world=empty -autoInit -noSound -limitFPS=100)
     [[ -n "$BASIC_CFG" ]] && args+=(-cfg="$BASIC_CFG")
     exec ./arma3server_x64 "${args[@]}"
@@ -517,7 +558,7 @@ if ((SKIP_HC == 0)); then
             -mod="$MOD_NAME" \
             -port="$PORT" \
             -password="$SERVER_PASSWORD" \
-            -name=ctihc1 \
+            -name="$HC_NAME" \
             -world=empty \
             -noSound \
             -limitFPS=50

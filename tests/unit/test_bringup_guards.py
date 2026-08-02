@@ -149,23 +149,33 @@ def test_every_bringup_recipe_serialises_on_the_tier_lock(recipe: str) -> None:
     )
 
 
-def test_regress_takes_the_lock_in_the_script_rather_than_the_recipe() -> None:
-    """The one exemption, and the reason it is one: selection runs first."""
+def test_regress_takes_its_locks_in_the_script_rather_than_the_recipe() -> None:
+    """The one exemption, and the reason it is one: selection runs first.
+
+    Since #47 the runner takes one lock per slot rather than the single tier
+    lock, so what the recipe must not do is wrap it in `tier-lock.sh` — that
+    would take slot 0 for the whole pool and reduce N to one.
+    """
     assert "tier-lock.sh" not in recipe_body("regress")
-    assert "tier-lock.sh" in (REPO / "spike" / "regress.sh").read_text()
+    assert "cti_slot_acquire" in (REPO / "spike" / "regress.sh").read_text()
 
 
 def test_a_held_lock_is_infra_unavailable_and_runs_nothing(tmp_path: Path) -> None:
-    """The collision `just spike` used to walk straight through."""
+    """The collision `just spike` used to walk straight through.
+
+    The lock a hand run takes is slot 0's (#47): a hand run uses ~/arma3server on
+    2402-2406, which *is* slot 0, so a pool holding that slot and a `just probe`
+    have to exclude each other on the same file rather than on two.
+    """
     state = tmp_path / "state"
     env = dict(os.environ, CTI_TIER_STATE=str(state))
     ran = tmp_path / "ran"
     holder_script = (
-        f"exec 9>{state}/tier.lock\n"
+        f"exec 9>{state}/slots/0.lock\n"
         "flock -x -n 9 || exit 3\n"
         "read -r _ < /dev/stdin\n"  # holds until this test closes stdin
     )
-    state.mkdir()
+    (state / "slots").mkdir(parents=True)
     # S603: fixed argv, paths this test wrote.
     with subprocess.Popen(  # noqa: S603
         [BASH, "-c", holder_script], env=env, stdin=subprocess.PIPE, text=True

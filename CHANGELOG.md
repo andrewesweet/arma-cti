@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The in-world regression tier runs three worlds at once, and a full pass costs eleven minutes
+  instead of twenty-six.** `just regress` now schedules the corpus across a pool of slots — a slot
+  being a port block, a daemon, a server install, an engine profile and a world that agree — with
+  the longest probe started first so no slot idles behind the tail. `--slots 1` is the serial tier,
+  unchanged and still correct: slot 0 is the install and the port block the tier has always used, so
+  the fast path and the known-correct path are one code path at different N. The two probes that
+  drive the Windows client run last and one at a time, because there is one Windows host and the
+  guard that protects a live play session cannot tell our client from the human's. A probe that
+  fails is a verdict rather than a stop for its siblings; a slot whose worker dies is reported as
+  not-a-result and cleared rather than read as a red. Measured: seventeen probes, seventeen passes,
+  646 s against 1,599 s serial, peaking at 7.3 GB of tier processes with 1.0 GB still free.
+
 - **A daemon that restarts mid-session can no longer reset your Campaign behind your back.** The
   daemon holds the whole Campaign in memory, so a restart is a factory-fresh Campaign; the shim
   reconnects without saying anything, and nothing in the protocol distinguished one daemon from the
