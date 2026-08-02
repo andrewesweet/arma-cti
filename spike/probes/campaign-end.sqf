@@ -109,11 +109,14 @@
 //
 // The walk-clear line grew when the second ring landed (#106): the defenders now
 // have to be 550 m from the HQ along the approach rather than 400 m, which is
-// another ~150 m of engine walking. On the three passes before the change that
-// wait finished at t=179-218 against a 300 s deadline of its own, so the slack
-// is there — but it is slack, not room, and this is the line to read first if
-// the probe ever starts failing `end_probe_base_never_cleared`. The answer then
-// is a staging bearing that is not EAST's egress route, not a longer wait.
+// another ~150 m of engine walking. Measured rather than left as arithmetic —
+// `end_probe_base_clear` moved from t=179-218 across three passes before the
+// change to t=196-225 across four after it, so the ring costs ~10-20 s against a
+// clear-wait deadline of 300 s, and the whole probe went from 365-391 s to
+// 423-425 s inside a 750 s window. That is slack, not room, and this is the line
+// to read first if the probe ever starts failing `end_probe_base_never_cleared`.
+// The answer then is a staging bearing that is not EAST's egress route, not a
+// longer wait.
 [] spawn {
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
