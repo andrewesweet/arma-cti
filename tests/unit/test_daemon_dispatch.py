@@ -5,8 +5,9 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any
 
-from conftest import authored_economy, reply_to, rows
+from conftest import authored_economy, authored_stratis, reply_to, rows
 
+from cti_daemon import planner
 from cti_daemon.commands import Effect
 from cti_daemon.transport import build_daemon
 
@@ -589,3 +590,142 @@ def test_every_reply_records_how_close_it_ran_to_the_return_cap(tmp_path: Path) 
     observe(daemon, "o-12", presence={})
     row = json.loads(log.read_text(encoding="utf-8").splitlines()[-1])
     assert 0 < row["reply_bytes"] < 10_240
+
+
+# ------------------------------- the second principal, through the wire (ADR-0040)
+
+WEST_BASE = next(base.id for base in authored_stratis().bases if base.side == "WEST")
+
+
+def a_squad_at_base(daemon: Daemon, request: str, *, size: int) -> str:
+    """Buy one WEST Squad and have the world report it home and under strength.
+
+    Through the wire both times: the Purchase is a Command and the head count is
+    the world reporting, which are the two paths a Reinforce is judged against.
+    """
+    reply_to(
+        daemon,
+        id=f"{request}-buy",
+        verb="command",
+        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+    )
+    reply_to(
+        daemon,
+        id=f"{request}-see",
+        verb="observe",
+        payload={
+            "time": 30,
+            "presence": {},
+            "squads": {"WEST-1": {"size": size, "at": WEST_BASE}},
+        },
+    )
+    return "WEST-1"
+
+
+def test_a_squad_leaders_reinforce_reaches_the_port_stamped_with_his_squad(
+    tmp_path: Path,
+) -> None:
+    # The gateway resolves the Squad from the caller's own slot and stamps it
+    # beside `acting_side` (ADR-0040); this is the daemon's half of that.
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    squad = a_squad_at_base(daemon, "r-1", size=5)
+
+    reply = reply_to(
+        daemon,
+        id="r-1",
+        verb="command",
+        payload={
+            "command": "reinforce",
+            "side": "WEST",
+            "acting_squad": squad,
+            "args": {"squad": squad},
+        },
+    )
+
+    assert reply["status"] == "ok"
+    assert reply["result"]["cost"] == 30
+
+
+def test_a_squad_leader_reaching_for_another_squad_is_refused_not_your_squad(
+    tmp_path: Path,
+) -> None:
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    a_squad_at_base(daemon, "r-2", size=5)
+
+    reply = reply_to(
+        daemon,
+        id="r-2",
+        verb="command",
+        payload={
+            "command": "reinforce",
+            "side": "WEST",
+            "acting_squad": "WEST-2",
+            "args": {"squad": "WEST-1"},
+        },
+    )
+
+    assert reply["status"] == "rejected"
+    assert reply["reason"]["code"] == "not_your_squad"
+
+
+def test_a_squad_leader_may_reinforce_on_a_side_an_ai_commander_plays(tmp_path: Path) -> None:
+    # The MVP's second mode: both sides AI-commanded while the player leads a
+    # Squad (CONTEXT.md). The one-Commander-per-side refusal is about a second
+    # Commander, and a squad leader is not one — a check that took his Reinforce
+    # away for the AI playing his own side would refuse that mode outright.
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    squad = a_squad_at_base(daemon, "r-3", size=5)
+    daemon.commanded_by(
+        "WEST",
+        planner.UtilityPlanner(
+            map_manifest=daemon.campaign.map_manifest, table=daemon.campaign.table, seed=1
+        ),
+    )
+
+    leader = reply_to(
+        daemon,
+        id="r-3",
+        verb="command",
+        payload={
+            "command": "reinforce",
+            "side": "WEST",
+            "acting_squad": squad,
+            "args": {"squad": squad},
+        },
+    )
+    person = reply_to(
+        daemon,
+        id="r-4",
+        verb="command",
+        payload={"command": "reinforce", "side": "WEST", "args": {"squad": squad}},
+    )
+
+    assert leader["status"] == "ok"
+    # And the door the AI's own side is behind is still shut to a second
+    # Commander, which is what makes the line above about the principal rather
+    # than about the check having been dropped.
+    assert person["reason"]["code"] == "wrong_side"
+
+
+def test_a_stamp_that_is_not_a_squad_id_is_read_as_no_stamp_at_all(tmp_path: Path) -> None:
+    # The stamp is the server's own; anything else reaching this field is a
+    # caller inventing one, and inventing one must not buy authority. Read as
+    # absent, so it is judged as the Commander principal and refused for the
+    # side it is not commanding rather than admitted as a leader.
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    squad = a_squad_at_base(daemon, "r-5", size=5)
+
+    reply = reply_to(
+        daemon,
+        id="r-5",
+        verb="command",
+        payload={
+            "command": "reinforce",
+            "side": "WEST",
+            "acting_side": "EAST",
+            "acting_squad": {"squad": squad},
+            "args": {"squad": squad},
+        },
+    )
+
+    assert reply["reason"]["code"] == "wrong_side"

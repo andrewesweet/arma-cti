@@ -93,6 +93,34 @@ def test_an_effect_survives_the_wire_unchanged(name: str, side: str, args: dict[
     assert restored == effect
 
 
+def test_the_catalogue_holds_the_commands_the_language_names() -> None:
+    # CONTEXT.md: one instruction sent through the Command Port — Purchase,
+    # Order, or Reinforce. Reinforce names a Squad and nothing else (ADR-0040):
+    # what it costs is worked out from what that Squad was bought as, and where
+    # it happens is that Squad's own Base, so there is nothing for a caller to
+    # get wrong and nothing for it to lie about.
+    assert commands.CATALOGUE == {
+        "purchase": ("squad_type",),
+        "order": ("squad", "order", "place"),
+        "reinforce": ("squad",),
+    }
+
+
+@given(name=st.sampled_from(sorted(commands.CATALOGUE)), side=st.sampled_from(commands.SIDES))
+def test_every_command_in_the_catalogue_survives_the_wire_as_the_catalogue_shapes_it(
+    name: str, side: str
+) -> None:
+    # The round trip the siblings had, over the catalogue itself rather than
+    # over one hand-written example each: a Command built with exactly the
+    # arguments the catalogue requires is the Command that comes back, so a new
+    # entry cannot arrive without this coverage.
+    args = {argument: f"a-{argument}" for argument in commands.CATALOGUE[name]}
+    command = commands.Command(name=name, side=side, args=args)
+    restored = commands.parse_command(json.loads(json.dumps(commands.serialise_command(command))))
+    assert restored == command
+    assert set(restored.args) == set(commands.CATALOGUE[name])
+
+
 def test_a_command_and_an_effect_are_not_the_same_payload() -> None:
     # They share a schema source but not a key, so a Command can never be
     # mistaken for an instruction to mutate the world (ADR-0012).

@@ -14,6 +14,7 @@ is an edit, not a code change (docs/mvp-scope.md).
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Final, NoReturn, cast
 
@@ -71,6 +72,14 @@ class EconomyTable:
     # clocks because it is the same kind of number — the structure is the
     # contract and the value is expected to move under playtest.
     domination_seconds: int
+    # What a replacement man costs relative to a new one, as a fraction of the
+    # Squad's price (docs/mvp-scope.md: "missing fraction x price x ~0.8
+    # discount"). A **playtest-tuned placeholder** in ADR-0020's sense: the
+    # structure — Reinforce is priced off what is missing, and priced below
+    # buying the same men fresh — is the contract, and 0.8 is a number nobody
+    # has played against yet. Authored rather than coded so tuning it is an edit
+    # (docs/mvp-scope.md), and it wants a human's sign-off on feel.
+    reinforce_discount: float
     squads: tuple[SquadType, ...]
 
     def sold(self, squad_type: str) -> SquadType | None:
@@ -85,6 +94,25 @@ class EconomyTable:
             if squad.id == squad_type:
                 return squad
         return None
+
+    def reinforce_cost(self, squad_type: str, missing: int) -> int | None:
+        """Return what it costs to put `missing` men back into a Squad of that type.
+
+        The missing fraction of the Squad's price, discounted (ADR-0040, #123).
+        Rounded up rather than down, so replacing one man is never free and a
+        Squad cannot be refilled a man at a time for nothing — which is the one
+        way a fractional price can be exploited rather than merely mistuned.
+
+        None when nothing by that name is sold, for the reason `price` answers
+        None: an authored table that no longer sells a Squad somebody bought is
+        a fault to report, not a free refill.
+        """
+        found = self.sold(squad_type)
+        if found is None:
+            return None
+        if missing <= 0:
+            return 0
+        return math.ceil(found.price * (missing / found.size) * self.reinforce_discount)
 
     def price(self, squad_type: str) -> int | None:
         """Return what `squad_type` costs, or None when nothing by that name is sold."""
@@ -141,6 +169,15 @@ def _check_numbers(table: dict[str, Any]) -> None:
         if not isinstance(_required(table, key, "the economy table"), int) or table[key] <= 0:
             _refuse(f"{key} must be a positive whole number of seconds")
 
+    # A discount, so it is a fraction of the price and never more than it: a
+    # Reinforce dearer than buying the Squad again is a table nobody meant to
+    # author, and a free one is Funds with nothing to spend them on. Bools are
+    # excluded explicitly because `isinstance(True, int)` is true and `True`
+    # would author a full-price refill.
+    discount = _required(table, "reinforce_discount", "the economy table")
+    if isinstance(discount, bool) or not isinstance(discount, int | float) or not 0 < discount <= 1:
+        _refuse("reinforce_discount must be a fraction of the price, above 0 and at most 1")
+
 
 def parse(document: object) -> EconomyTable:
     """Validate an authored economy document and build the table."""
@@ -163,6 +200,7 @@ def parse(document: object) -> EconomyTable:
         income_tick_seconds=table["income_tick_seconds"],
         capture_seconds=table["capture_seconds"],
         domination_seconds=table["domination_seconds"],
+        reinforce_discount=float(table["reinforce_discount"]),
         squads=tuple(
             SquadType(
                 id=squad["id"],

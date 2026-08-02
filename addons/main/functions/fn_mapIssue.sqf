@@ -62,6 +62,17 @@ private _command = createHashMap;
 if (_kind isEqualTo "purchase") then {
     _command = ["purchase", [["squad_type", _name]]] call cti_fnc_command;
 } else {
+    if (_kind isEqualTo "reinforce") exitWith {
+        // Names the selected Squad and nothing else (ADR-0040). Whether that
+        // Squad is at its Base, whether anybody is missing and what the
+        // replacements cost are the port's answers, not this one's — the same
+        // rule the Order path above is written to.
+        if (cti_uiSquad isEqualTo "") exitWith {
+            cti_uiNote = "pick a Squad first — [Tab]";
+            [] call cti_fnc_mapRender;
+        };
+        _command = ["reinforce", [["squad", cti_uiSquad]]] call cti_fnc_command;
+    };
     private _schema = call cti_fnc_commandSchema;
     // Which Orders name a Place is the schema's answer, not the UI's (ADR-0020).
     private _needs = _name in (_schema getOrDefault ["orders_needing_place", []]);

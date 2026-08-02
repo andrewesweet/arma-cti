@@ -342,6 +342,13 @@ class Daemon:
         # bug and for anything that reached the daemon without the gateway —
         # which is the path #19's audit exists to find.
         acting_side = request.payload.get("acting_side", command.side)
+        # Which principal is at the door (ADR-0040). Empty is a Commander; a
+        # Squad id is the squad leader the gateway resolved from the caller's
+        # own slot, and the port holds him to that Squad. Read here rather than
+        # off the Command because it is a stamp, not an argument: a client that
+        # could write it would be a client that could command any Squad.
+        stamped = request.payload.get("acting_squad", "")
+        acting_squad = stamped if isinstance(stamped, str) else ""
         # One Commander per side, whichever kind it is (#18). `commanded_by`
         # already refuses a second AI brain on a side, for the reason ADR-0015
         # gives: two brains on one side are two answers to what that side is
@@ -350,14 +357,20 @@ class Daemon:
         # so it gets the same answer. Checked here rather than in the port
         # because the port is what the in-process planner calls, and a planner
         # refused for being under a Commander would be refused for existing.
-        if self.cycle.commanded(acting_side):
+        #
+        # A squad leader is not a second Commander and is not refused by this:
+        # the MVP's second mode is a person leading a Squad while both sides are
+        # AI-commanded (CONTEXT.md), and a check that took his Reinforce away
+        # for the presence of the AI playing his own side would refuse that mode
+        # entirely. He is held to his own Squad at the port instead (ADR-0040).
+        if not acting_squad and self.cycle.commanded(acting_side):
             return protocol.rejected(
                 request.id,
                 "wrong_side",
                 f"{acting_side} is under an AI Commander: a side has one Commander, "
                 f"so bring the world up without an AI on the side you mean to play",
             )
-        judgement = self.port.submit(command, acting_side=acting_side)
+        judgement = self.port.submit(command, acting_side=acting_side, acting_squad=acting_squad)
         if judgement.accepted:
             return protocol.accepted(request.id, judgement.result)
         return protocol.rejected(request.id, judgement.code, judgement.detail)

@@ -5,6 +5,7 @@
   "income_tick_seconds": 60,
   "capture_seconds": 30,
   "domination_seconds": 600,
+  "reinforce_discount": 0.8,
   "squads": [
     {
       "id": "rifle",

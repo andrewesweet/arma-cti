@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A Squad that has taken losses can be brought back to strength, and its own leader can ask for
+  it.** Reinforce joins Purchase and Order as a Command: name a Squad standing at your own Base and
+  the men who are missing arrive there, costing the missing fraction of what that Squad cost new,
+  discounted. The discount, 0.8, is a playtest-tuned placeholder in the authored economy table and
+  wants a session behind it before anybody calls it balanced. Ammunition and equipment restock is
+  unaffected: it stays free at Base and is not a Command at all. With it, the Command Port gains a
+  second principal — until now every Command came from a side's Commander, and a squad leader may
+  now issue Reinforce for the Squad he actually leads, checked on the server against who the engine
+  says is leading which group rather than against anything the client sends. Reaching for another
+  Squad is refused `not_your_squad`, and Purchase and Order stay the Commander's. A leader can do
+  this while both sides are under AI command, which is the MVP's second mode. ADR-0040.
+
 - **The in-world regression tier runs three worlds at once, and a full pass costs eleven minutes
   instead of twenty-six.** `just regress` now schedules the corpus across a pool of slots — a slot
   being a port block, a daemon, a server install, an engine profile and a world that agree — with

@@ -57,6 +57,7 @@ class CfgFunctions
             class commanderAssign {};
             class commanderSide {};
             class commanderView {};
+            class leaderSquad {};
             class portGateway {};
             class portReply {};
             class mapObservation {};

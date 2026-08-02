@@ -18,8 +18,8 @@
  * Arguments: none
  *
  * Return Value: <ARRAY> of [key <NUMBER>, kind <STRING>, name <STRING>,
- * label <STRING>], where kind is "order" or "purchase" and name is the word the
- * port judges.
+ * label <STRING>], where kind is "order", "reinforce" or "purchase" and name is
+ * the word the port judges.
  */
 private _schema = call cti_fnc_commandSchema;
 if (count _schema isEqualTo 0) exitWith { [] };
@@ -41,6 +41,16 @@ private _key = 2;
     ];
     _key = _key + 1;
 } forEach (_schema getOrDefault ["orders", []]);
+
+// Reinforce is a Command rather than an Order (ADR-0040), so it does not fall
+// out of the `orders` list — but it is the Commander's as much as it is a squad
+// leader's, and a Command the port judges that this UI cannot express is the
+// fork #18 exists to prevent (ADR-0025's second consequence). Derived from the
+// catalogue like everything else here, so it appears because the port grew it.
+if ("reinforce" in (_schema getOrDefault ["commands", createHashMap])) then {
+    _verbs pushBack [_key, "reinforce", "reinforce", "Reinforce"];
+    _key = _key + 1;
+};
 
 private _squads = _schema getOrDefault ["squads", createHashMap];
 private _types = keys _squads;

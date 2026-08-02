@@ -95,6 +95,9 @@
       "squad",
       "order",
       "place"
+    ],
+    "reinforce": [
+      "squad"
     ]
   },
   "effects": {
@@ -107,6 +110,10 @@
       "squad",
       "order",
       "place"
+    ],
+    "squad_reinforced": [
+      "squad",
+      "size"
     ],
     "objective_captured": [
       "objective"
@@ -138,6 +145,7 @@
     "force_limit",
     "insufficient_funds",
     "malformed_command",
+    "not_your_squad",
     "port_unavailable",
     "unknown_command",
     "unknown_squad",

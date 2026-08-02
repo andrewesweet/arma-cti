@@ -139,6 +139,9 @@ def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
                 "already_held",
                 "wrong_ground",
                 "campaign_over",
+                # The second principal's own refusal (ADR-0040): a squad leader
+                # reaching for a Squad that is not the one he leads.
+                "not_your_squad",
                 # The wire's own limit on how big a force can get (#101): the
                 # measured point past which a side's Observation stops fitting
                 # one callExtension return.
@@ -390,6 +393,286 @@ def test_the_two_forms_the_vocabulary_widened_to_are_accepted() -> None:
         )
         assert judgement.accepted, (kind, place)
         assert standing(open_port, squad) == squads.Order(kind, place)
+
+
+# -------------------------------------------- Reinforce, and the two principals
+
+
+BASE_OF = {"WEST": WEST_BASE, "EAST": EAST_BASE}
+
+
+def reported(open_port: port.CommandPort, **standing: squads.Held) -> None:
+    """Have the world report where every bought Squad is, and how many are up.
+
+    Through `reconcile`, which is the only way those two facts ever reach the
+    daemon (ADR-0012): head count and ground underfoot are what the world alone
+    can see. Squads not named are reported where they were, so a test that
+    arranges one Squad does not wipe the rest of the roster out.
+    """
+    seen = {
+        squad.id: standing.get(squad.id, squads.Held(size=squad.size, at=squad.at))
+        for side in ("WEST", "EAST")
+        for squad in open_port.campaign.roster.roll(side)
+    }
+    open_port.campaign.reconcile(seen)
+
+
+def home(open_port: port.CommandPort, squad_id: str, *, size: int = 5, side: str = "WEST") -> None:
+    """Put one Squad at its own Base, `size` men standing."""
+    reported(open_port, **{squad_id: squads.Held(size=size, at=BASE_OF[side])})
+
+
+def test_a_commander_reinforces_a_squad_of_his_own_side(open_port: port.CommandPort) -> None:
+    squad = bought(open_port)
+    home(open_port, squad, size=5)
+    funds = open_port.ledger.balance("WEST")
+
+    judgement = open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
+
+    # Missing fraction x price x discount, rounded up: three of eight men of a
+    # 100-Funds Squad at 0.8 is 30.
+    assert judgement.accepted
+    assert judgement.result == {"squad": squad, "funds": funds - 30, "cost": 30, "size": 8}
+    assert open_port.ledger.balance("WEST") == funds - 30
+
+
+def test_an_accepted_reinforce_rides_the_outbox_like_every_other_effect(
+    open_port: port.CommandPort,
+) -> None:
+    # ADR-0012/0018: a judgement is never work. The men arrive because the world
+    # polled the outbox, on the one path #19 has to audit.
+    squad = bought(open_port)
+    home(open_port, squad, size=5)
+    open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
+
+    assert Effect(name="squad_reinforced", side="WEST", args={"squad": squad, "size": 8}) in [
+        entry.effect for entry in open_port.outbox.pending()
+    ]
+
+
+def test_a_squad_leader_reinforces_the_squad_he_leads(open_port: port.CommandPort) -> None:
+    # The second principal (ADR-0040). The stamp is the server's, not the
+    # caller's: the gateway resolves it from the Squad the caller actually leads.
+    squad = bought(open_port)
+    home(open_port, squad, size=6)
+
+    judgement = open_port.submit(
+        Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST", acting_squad=squad
+    )
+
+    assert judgement.accepted
+    assert open_port.campaign.roster.roll("WEST")[0].size == 8
+
+
+def test_a_squad_leader_may_not_reinforce_another_squad_of_his_own_side(
+    open_port: port.CommandPort,
+) -> None:
+    mine = bought(open_port)
+    theirs = bought(open_port)
+    home(open_port, theirs, size=4)
+    funds = open_port.ledger.balance("WEST")
+
+    judgement = open_port.submit(
+        Command("reinforce", "WEST", {"squad": theirs}), acting_side="WEST", acting_squad=mine
+    )
+
+    assert judgement.code == "not_your_squad"
+    assert open_port.ledger.balance("WEST") == funds
+    assert open_port.campaign.roster.roll("WEST")[1].size == 4
+
+
+def test_a_squad_leader_learns_nothing_about_a_squad_id_he_guessed_at(
+    open_port: port.CommandPort,
+) -> None:
+    # `not_your_squad` before the roster is consulted, so a Squad that exists and
+    # one that never did are refused in the same words: a leader cannot map his
+    # own side's order of battle, let alone the enemy's, by trying ids.
+    mine = bought(open_port)
+    real = bought(open_port, "EAST")
+
+    refusals = {
+        named: open_port.submit(
+            Command("reinforce", "WEST", {"squad": named}), acting_side="WEST", acting_squad=mine
+        )
+        for named in (real, "WEST-99", "EAST-99")
+    }
+
+    assert {named: judgement.code for named, judgement in refusals.items()} == {
+        real: "not_your_squad",
+        "WEST-99": "not_your_squad",
+        "EAST-99": "not_your_squad",
+    }
+    assert len({judgement.detail for judgement in refusals.values()}) == 1
+
+
+@pytest.mark.parametrize(
+    ("name", "args"),
+    [
+        ("purchase", {"squad_type": "rifle"}),
+        ("order", {"squad": "WEST-1", "order": "reserve", "place": ""}),
+    ],
+)
+def test_a_squad_leader_may_not_issue_the_commanders_own_commands(
+    open_port: port.CommandPort, name: str, args: dict[str, object]
+) -> None:
+    # ADR-0040 widened the issuer set for Reinforce alone. Purchase and Order
+    # stay a Commander's, so a leader asking for one is reaching past his
+    # authority — which is what `wrong_side` has always named.
+    squad = bought(open_port)
+    funds = open_port.ledger.balance("WEST")
+
+    judgement = open_port.submit(
+        Command(name, "WEST", args), acting_side="WEST", acting_squad=squad
+    )
+
+    assert judgement.code == "wrong_side"
+    assert open_port.ledger.balance("WEST") == funds
+    assert standing(open_port, squad) == squads.RESERVE
+
+
+def test_a_squad_leader_may_not_reinforce_for_another_side(open_port: port.CommandPort) -> None:
+    # The first axis still binds: a leader stamped for WEST cannot reach EAST's
+    # roster by naming an EAST Squad and an EAST side.
+    theirs = bought(open_port, "EAST")
+    judgement = open_port.submit(
+        Command("reinforce", "EAST", {"squad": theirs}), acting_side="WEST", acting_squad=theirs
+    )
+    assert judgement.code == "wrong_side"
+
+
+def test_reinforcing_a_squad_at_full_strength_is_refused(open_port: port.CommandPort) -> None:
+    # Accepting it would take Funds for nothing and put an effect on the outbox
+    # the world would carry out by spawning nobody.
+    squad = bought(open_port)
+    home(open_port, squad, size=8)
+    funds = open_port.ledger.balance("WEST")
+
+    judgement = open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
+
+    assert judgement.code == "already_held"
+    assert open_port.ledger.balance("WEST") == funds
+    assert [entry.effect.name for entry in open_port.outbox.pending()] == ["squad_spawned"]
+
+
+@pytest.mark.parametrize(
+    ("where", "why"),
+    [
+        ("", "a Squad the world has never reported is nowhere"),
+        ("agia_marina", "an Objective is not a Base"),
+        (EAST_BASE, "the enemy's Base is not its own"),
+    ],
+)
+def test_reinforcing_away_from_its_own_base_is_refused(
+    open_port: port.CommandPort, where: str, why: str
+) -> None:
+    # CONTEXT.md puts Reinforce at own Base. The Place is the coarse one the
+    # world reports, so this is about where the Squad is standing.
+    squad = bought(open_port)
+    reported(open_port, **{squad: squads.Held(size=5, at=where)})
+
+    judgement = open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
+
+    assert judgement.code == "wrong_ground", why
+
+
+def test_reinforcing_beyond_the_balance_is_refused_and_costs_nothing(
+    open_port: port.CommandPort,
+) -> None:
+    squad = bought(open_port)
+    home(open_port, squad, size=1)
+    open_port.ledger.spend("WEST", open_port.ledger.balance("WEST"))
+
+    judgement = open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
+
+    assert judgement.code == "insufficient_funds"
+    assert open_port.ledger.balance("WEST") == 0
+    assert open_port.campaign.roster.roll("WEST")[0].size == 1
+
+
+def test_reinforcing_a_squad_nobody_bought_is_rejected(open_port: port.CommandPort) -> None:
+    judgement = open_port.submit(
+        Command("reinforce", "WEST", {"squad": "WEST-9"}), acting_side="WEST"
+    )
+    assert judgement.code == "unknown_squad"
+
+
+def test_reinforcing_the_other_sides_squad_is_rejected(open_port: port.CommandPort) -> None:
+    theirs = bought(open_port, "EAST")
+    home(open_port, theirs, size=5, side="EAST")
+
+    judgement = open_port.submit(
+        Command("reinforce", "WEST", {"squad": theirs}), acting_side="WEST"
+    )
+
+    assert judgement.code == "unknown_squad"
+    assert open_port.campaign.roster.roll("EAST")[0].size == 5
+
+
+@pytest.mark.parametrize(
+    ("args", "why"),
+    [
+        ({}, "no Squad named"),
+        ({"squad": ""}, "an empty Squad id"),
+        ({"squad": 7}, "a Squad id that is not a string"),
+    ],
+)
+def test_a_reinforce_the_rules_cannot_read_is_rejected(
+    open_port: port.CommandPort, args: dict[str, object], why: str
+) -> None:
+    judgement = open_port.submit(Command("reinforce", "WEST", args), acting_side="WEST")
+    assert judgement.code == "malformed_command", why
+
+
+def test_a_reinforce_after_the_campaign_is_won_is_refused_and_costs_nothing(
+    open_port: port.CommandPort,
+) -> None:
+    squad = bought(open_port)
+    home(open_port, squad, size=5)
+    won(open_port)
+    funds = open_port.ledger.balance("WEST")
+    queued = len(open_port.outbox.pending())
+
+    judgement = open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
+
+    assert judgement.code == "campaign_over"
+    assert open_port.ledger.balance("WEST") == funds
+    assert len(open_port.outbox.pending()) == queued
+
+
+PRINCIPALS = st.sampled_from(("commander", "own_leader", "other_leader"))
+COMMAND_NAMES = st.sampled_from(("purchase", "order", "reinforce"))
+
+
+@given(principal=PRINCIPALS, name=COMMAND_NAMES)
+def test_who_may_issue_what_is_the_matrix_adr_0040_wrote_down(principal: str, name: str) -> None:
+    # The ownership matrix through the real port: every principal against every
+    # Command in the catalogue, judged by the rules that will judge them in play
+    # rather than by a restatement of them here. Asserted on the *code*, so a
+    # refusal arriving under the wrong name is as red as one that never came.
+    open_port = fresh()
+    mine = bought(open_port)
+    other = bought(open_port)
+    home(open_port, mine, size=5)
+    home(open_port, other, size=5)
+    acting_squad = {"commander": "", "own_leader": mine, "other_leader": other}[principal]
+    args: dict[str, str] = {
+        "purchase": {"squad_type": "rifle"},
+        "order": {"squad": mine, "order": "reserve", "place": ""},
+        "reinforce": {"squad": mine},
+    }[name]
+
+    judgement = open_port.submit(
+        Command(name, "WEST", args), acting_side="WEST", acting_squad=acting_squad
+    )
+
+    expected = ""
+    if principal != "commander":
+        # ADR-0040 as written: a squad leader has Reinforce, for his own Squad.
+        expected = "wrong_side" if name != "reinforce" else ""
+        if name == "reinforce" and principal == "other_leader":
+            expected = "not_your_squad"
+    assert judgement.code == expected, (principal, name, judgement.detail)
+    assert judgement.accepted == (expected == "")
 
 
 # ----------------------------------------------- A Campaign that has been won

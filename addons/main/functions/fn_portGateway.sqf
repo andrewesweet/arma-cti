@@ -39,6 +39,25 @@ private _owner = remoteExecutedOwner;
 // group's side would have handed the Command Port to every rifleman on the
 // island.
 private _side = [_owner] call cti_fnc_commanderSide;
+
+// The port has two principals (ADR-0040). A caller the assignment state does not
+// know as a Commander may still be a squad leader, and a squad leader may issue
+// Reinforce for the Squad he leads: so the side is stamped from his slot — the
+// group the server records as his Squad — and the Squad is stamped beside it.
+//
+// A different provenance from the line above, said out loud rather than left to
+// be inferred: "the server knows who commands WEST" is an assignment it latched,
+// "the server trusts the client's slot" is a fact about where the engine has put
+// that player. Both are the server's own state and neither is in the payload,
+// which is what the daemon then holds the caller to — the port refuses anything
+// but Reinforce from a stamped Squad, and refuses a Reinforce for any other one.
+private _squad = "";
+if (_side isEqualTo "") then {
+    ([_owner] call cti_fnc_leaderSquad) params ["_ledSide", "_ledSquad"];
+    _side = _ledSide;
+    _squad = _ledSquad;
+};
+
 private _schema = call cti_fnc_commandSchema;
 
 // Empty is fatal, and cti_fnc_commandSchema's contract says so. This used to
@@ -72,8 +91,9 @@ if !(_side in (_schema get "sides")) exitWith {
         ["status", "rejected"],
         ["reason", createHashMapFromArray [
             ["code", "wrong_side"],
-            ["detail", "this machine commands no side: the Command Port takes "
-                + "Commands from the person in a Commander slot and from nobody else"]
+            ["detail", "this machine commands no side and leads no Squad: the "
+                + "Command Port takes Commands from the person in a Commander slot, "
+                + "and Reinforce from the leader of a Squad, and from nobody else"]
         ]]
     ];
     if (_owner > 0) then { [_judgement] remoteExec ["cti_fnc_portReply", _owner] };
@@ -82,6 +102,11 @@ if !(_side in (_schema get "sides")) exitWith {
 };
 
 _command set ["side", _side];
+// Overwritten rather than merged, for the same reason `side` is: a client that
+// could put a Squad id here would be a client that could command any Squad. A
+// Commander's caller stamps "", which is the port's word for "no Squad holds
+// this caller" and the reason his own Reinforce is not narrowed by this field.
+_command set ["acting_squad", _squad];
 
 // Synchronous by construction: ADR-0012 makes a Command's reply a judgement and
 // never work, so it never waits on anything and stays far inside the engine's
@@ -114,8 +139,8 @@ if !(_outcome in ["ok", "rejected"]) exitWith {
 };
 
 private _judgement = _answer get "reply";
-diag_log format ["CTI|port_command id=%1 side=%2 command=%3 status=%4",
-    _id, _side, _command get "command", _judgement getOrDefault ["status", "?"]];
+diag_log format ["CTI|port_command id=%1 side=%2 squad=%3 command=%4 status=%5",
+    _id, _side, _squad, _command get "command", _judgement getOrDefault ["status", "?"]];
 
 // Server-to-client remoteExec is unrestricted; mode=1 binds clients only.
 if (_owner > 0) then { [_judgement] remoteExec ["cti_fnc_portReply", _owner] };

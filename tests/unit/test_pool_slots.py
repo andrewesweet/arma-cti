@@ -408,6 +408,19 @@ def verdicts_by_probe(tmp_path: Path) -> dict[str, dict]:
 
 ALL_PROBES = sorted(p.stem for p in PROBE_DIR.glob("*.sqf"))
 
+# The probes that drive the one headed client on the one Windows host, read the
+# way `spike/regress.sh` reads them — off the `env:` header — rather than listed
+# by name here. A third such probe arrived with #123, and a list would have been
+# a second declaration of which probes those are (ADR-0028's tail, #119).
+HOST_PROBES = sorted(
+    path.stem
+    for path in PROBE_DIR.glob("*.sqf")
+    if any(
+        line.startswith("// env:") and "CTI_WINDOWS_CLIENT=1" in line
+        for line in path.read_text(encoding="utf-8").splitlines()
+    )
+)
+
 
 def test_the_whole_corpus_gets_a_verdict_across_three_slots(tmp_path: Path) -> None:
     result = pool_run(tmp_path, "--slots", "3")
@@ -438,7 +451,7 @@ def test_one_slot_is_the_serial_tier(tmp_path: Path) -> None:
     # Corpus order, because with one slot there is nothing to schedule — with
     # the Windows-host probes still last, which is where they belong whatever N
     # is: teardown of a headed client is the next probe's guard's problem (#119).
-    host = ["client-port", "human-commander"]
+    host = HOST_PROBES
     trace = [line.split("\t")[0] for line in (tmp_path / "trace.tsv").read_text().splitlines()]
     assert trace == [p for p in ALL_PROBES if p not in host] + host
 
@@ -462,15 +475,15 @@ def test_the_windows_host_probes_are_a_serial_tail_not_part_of_the_schedule(
 
     The guard that protects the human refuses to tell our client from theirs, on
     purpose (#119) — so a slot starting a probe beside another slot's client
-    would read it as a play session and stop the corpus. The two client probes
-    therefore leave the parallel schedule entirely.
+    would read it as a play session and stop the corpus. Every probe that asks
+    for a client therefore leaves the parallel schedule entirely.
     """
     result = pool_run(tmp_path, "--slots", "3")
     schedule = re.search(r"^\[regress\] schedule: (.*)$", result.stderr, re.MULTILINE)
     tail = re.search(r"^\[regress\] windows-host tail[^:]*: (.*)$", result.stderr, re.MULTILINE)
     assert schedule is not None, result.stderr[-2000:]
     assert tail is not None, result.stderr[-2000:]
-    assert sorted(tail.group(1).split()) == ["client-port", "human-commander"]
+    assert sorted(tail.group(1).split()) == HOST_PROBES
     assert not set(tail.group(1).split()) & set(schedule.group(1).split())
 
 

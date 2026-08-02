@@ -82,7 +82,7 @@ if (_name isEqualTo "order_issued") exitWith {
 // A daemon and an addon out of step after a partial upgrade. Permanent: the same
 // name arrives with the same meaning on every poll, and no amount of waiting
 // teaches this addon what it is.
-if (_name isNotEqualTo "squad_spawned") exitWith {
+if !(_name in ["squad_spawned", "squad_reinforced"]) exitWith {
     diag_log format ["CTI|FAIL class=assertion_failed unknown_effect=%1", _name];
     ["refused", "unknown_effect"] call _verdict
 };
@@ -111,6 +111,66 @@ if (count _base isEqualTo 0) exitWith {
 (_base get "position") params ["_east", "_north"];
 private _unitType = ["O_Soldier_F", "B_Soldier_F"] select (_side isEqualTo west);
 private _size = _args getOrDefault ["size", 8];
+private _squadId = _args getOrDefault ["squad", ""];
+
+// Replacements for a Squad that is already standing (ADR-0040). The men arrive
+// at the Base because that is where the rules made the Squad be before they
+// accepted the Reinforce, and they join the group that answers to the id — a
+// second group carrying the same id would be a Squad the world holds twice and
+// the daemon counts once.
+//
+// `size` is the strength to bring it back *to*, and how many that is comes from
+// counting what is standing here rather than from anything the daemon said: the
+// judgement was made a poll ago and a man can have died since. A Squad already
+// at strength therefore spawns nobody and is still applied — there is nothing
+// left to do and nothing a later poll would do differently.
+if (_name isEqualTo "squad_reinforced") exitWith {
+    private _group = (missionNamespace getVariable ["cti_squads", createHashMap])
+        getOrDefault [_squadId, grpNull];
+    if (isNull _group) exitWith {
+        diag_log format ["CTI|FAIL class=assertion_failed reinforce_unknown_squad=%1", _squadId];
+        // Permanent: the world has no group by that id and will not grow one.
+        // A Squad the world has lost is one the daemon is about to be told
+        // about, and refilling it would put men on the map answering to an id
+        // the roster is removing.
+        ["refused", "reinforce_unknown_squad"] call _verdict
+    };
+
+    private _standing = count units _group;
+    private _owed = _size - _standing;
+
+    // Spawned into a group of this machine's own and joined across, rather than
+    // created into the Squad directly. A Squad a player leads is local to that
+    // player's machine — "an AI group with a player-leader will be local to the
+    // player's computer" (topics/Multiplayer_Scripting.wiki, vendored) — and
+    // `createUnit` takes local arguments (commands/createUnit.wiki), so
+    // spawning straight into the target would be the server writing into a
+    // group it does not own. That is the Squad Reinforce exists for: the second
+    // principal is a squad leader, and the Squad he leads is exactly the one
+    // this cannot reach the direct way. `joinSilent` is global in both argument
+    // and effect (commands/joinSilent.wiki), so the join is locality-blind.
+    //
+    // The staging group deletes itself when the last man leaves it, which is
+    // the same breath: `createGroup`'s second element is `deleteWhenEmpty`.
+    if (_owed > 0) then {
+        private _staging = createGroup [_side, true];
+        for "_i" from 1 to _owed do {
+            _staging createUnit [_unitType, [_east, _north, 0], [], 30, "FORM"];
+        };
+        (units _staging) joinSilent _group;
+    };
+
+    diag_log format ["CTI|effect_applied effect=%1 side=%2 squad=%3 standing=%4 added=%5 units=%6 base=%7",
+        _name, _sideName, _squadId, _standing, _owed max 0, count units _group, _base get "id"];
+
+    // No Order is applied here, unlike a spawn. The group already carries the
+    // waypoints its standing Order built and the men have joined *it*, so they
+    // are under that Order by being in the Squad — which is what a replacement
+    // arriving into a Squad should mean. Re-applying it would rebuild the
+    // waypoint list of a Squad that is already carrying out its Order, and a
+    // Reinforce is not a re-Order.
+    ["applied"] call _verdict
+};
 
 private _group = createGroup [_side, true];
 for "_i" from 1 to _size do {
@@ -119,7 +179,6 @@ for "_i" from 1 to _size do {
 
 // The daemon minted the id; the world records which group answers to it, so an
 // Order naming that Squad has something to reach (#14).
-private _squadId = _args getOrDefault ["squad", ""];
 (missionNamespace getVariable ["cti_squads", createHashMap]) set [_squadId, _group];
 _group setVariable ["cti_squad", _squadId, true];
 

@@ -252,6 +252,62 @@ class Campaign:
         )
         return squad, remaining
 
+    def reinforce(self, squad_id: str, side: str) -> tuple[Squad, int, int]:
+        """Spend a side's Funds to bring one of its Squads back to strength.
+
+        The same single change `purchase` is (#60), for the same reason: Funds
+        deducted, the roster's account of the Squad restored, and the world told
+        to put the men there are one change rather than three a caller keeps in
+        step — a Squad paid for and never refilled, or refilled and never paid
+        for, is a Campaign disagreeing with itself. What it costs is
+        the authored table's answer (`reinforce_cost`), so nothing outside can
+        refill a Squad at a price of its own.
+
+        Whether this Squad may be reinforced at all — whether it exists, whether
+        it is standing at its own Base, whether anybody is missing — is the
+        port's rule (ADR-0040) and is judged before this is called.
+
+        Returns the Squad, what the side has left, and what it paid; the last
+        two are advisory, like a Purchase's.
+        """
+        self._playing()
+        squad = self.roster.owned_by(squad_id, side)
+        if squad is None:
+            message = f"{side} has no Squad {squad_id!r} to reinforce"
+            raise KeyError(message)
+        bought = self.table.sold(squad.squad_type)
+        cost = self.table.reinforce_cost(squad.squad_type, self.missing(squad))
+        if bought is None or cost is None:
+            message = f"no Squad type {squad.squad_type!r} is sold"
+            raise KeyError(message)
+
+        remaining = self.ledger.spend(side, cost)
+        # The daemon's account of the Squad is what it has paid for; the world's
+        # is what is standing, and `reconcile` overwrites this with that on the
+        # next report. Left at the old number in between, a Commander would read
+        # a Squad he has just paid to refill as still under strength.
+        squad.size = bought.size
+        self.outbox.push(
+            Effect(
+                name="squad_reinforced",
+                side=side,
+                args={"squad": squad.id, "size": bought.size},
+            )
+        )
+        return squad, remaining, cost
+
+    def missing(self, squad: Squad) -> int:
+        """How many men that Squad is short of what it was bought as.
+
+        Zero for a Squad at strength, and for one the authored table no longer
+        sells — the second is a fault the port reports rather than a Squad
+        nobody may refill, and this is not the place that decides which.
+        """
+        bought = self.table.sold(squad.squad_type)
+        if bought is None:
+            return 0
+        return max(0, bought.size - squad.size)
+
     def issue(self, squad_id: str, side: str, order: Order) -> Squad:
         """Give one of a side's Squads its standing Order, and tell the world.
 

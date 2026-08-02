@@ -34,6 +34,61 @@ def test_a_squad_price_is_looked_up_by_id() -> None:
     assert table.price("rifle") == 100
 
 
+def test_replacements_cost_the_missing_fraction_of_the_price_discounted() -> None:
+    # docs/mvp-scope.md: missing fraction x price x ~0.8 discount. A rifle Squad
+    # is 8 men at 100, so half of it back at 0.8 is 40 — and cheaper than the 50
+    # the same four men cost as a fraction of a fresh Squad, which is the whole
+    # point of the discount.
+    table = economy.load(REPO / "config" / "economy.json")
+    assert table.reinforce_cost("rifle", 4) == 40
+    assert table.reinforce_cost("rifle", 8) == 80
+
+
+def test_replacing_one_man_is_never_free() -> None:
+    # Rounded up: one of eight at 100 and 0.8 is 10 exactly, but the rule is what
+    # is under test — a price that rounded down would let a Squad be refilled a
+    # man at a time for nothing, which is the one way a fraction is exploitable
+    # rather than merely mistuned.
+    table = economy.parse(
+        {
+            "schema_version": economy.SCHEMA_VERSION,
+            "starting_funds": 300,
+            "stipend": 5,
+            "income_tick_seconds": 60,
+            "capture_seconds": 30,
+            "domination_seconds": 600,
+            "reinforce_discount": 0.1,
+            "squads": [{"id": "rifle", "display_name": "Rifle", "price": 10, "size": 8}],
+        }
+    )
+    assert table.reinforce_cost("rifle", 1) == 1
+
+
+def test_a_squad_at_strength_costs_nothing_to_reinforce() -> None:
+    # The rules refuse this at the port; the table answering 0 rather than a
+    # negative price is what keeps a refusal from depending on one.
+    table = economy.load(REPO / "config" / "economy.json")
+    assert table.reinforce_cost("rifle", 0) == 0
+    assert table.reinforce_cost("rifle", -3) == 0
+
+
+def test_replacements_for_something_not_sold_have_no_price() -> None:
+    table = economy.load(REPO / "config" / "economy.json")
+    assert table.reinforce_cost("battleship", 4) is None
+
+
+@pytest.mark.parametrize("discount", [0, -0.5, 1.5, True, "0.8"])
+def test_a_reinforce_discount_that_is_not_a_discount_is_refused(
+    authored: dict[str, Any], discount: object
+) -> None:
+    # Above the price it is not a discount, at zero it is a gift, and `True` is
+    # an `int` to `isinstance` and would author a full-price refill.
+    broken = copy.deepcopy(authored)
+    broken["reinforce_discount"] = discount
+    with pytest.raises(economy.EconomyError, match="reinforce_discount"):
+        economy.parse(broken)
+
+
 def test_an_unknown_squad_type_has_no_price() -> None:
     table = economy.load(REPO / "config" / "economy.json")
     assert table.price("battleship") is None
@@ -61,7 +116,15 @@ def test_an_unknown_schema_version_is_refused(authored: dict[str, Any]) -> None:
 
 
 @pytest.mark.parametrize(
-    "missing", ["squads", "starting_funds", "stipend", "income_tick_seconds", "capture_seconds"]
+    "missing",
+    [
+        "squads",
+        "starting_funds",
+        "stipend",
+        "income_tick_seconds",
+        "capture_seconds",
+        "reinforce_discount",
+    ],
 )
 def test_an_economy_table_missing_a_required_key_is_refused_in_its_own_words(
     authored: dict[str, Any], missing: str
@@ -95,6 +158,7 @@ def test_a_squad_id_that_is_not_a_string_is_refused_rather_than_sorted() -> None
         "income_tick_seconds": 60,
         "capture_seconds": 30,
         "domination_seconds": 600,
+        "reinforce_discount": 0.8,
         "squads": [
             {"id": 7, "display_name": "Seven", "price": 100, "size": 8},
             {"id": "rifle", "display_name": "Rifle", "price": 100, "size": 8},

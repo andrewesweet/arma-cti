@@ -54,6 +54,11 @@ REJECTION_CODES: Final = frozenset(
         # refused in the port's own vocabulary rather than accepted into a
         # session that then degrades every cycle.
         "force_limit",
+        # The second principal's own refusal (ADR-0040, #123): a squad leader
+        # may Reinforce the Squad he leads and no other, so side is no longer
+        # the whole of authority. Answered before the roster is consulted, so a
+        # leader learns nothing about which Squad ids his side has by guessing.
+        "not_your_squad",
         # Minted by the gateway rather than by this module, like `wrong_side`:
         # the daemon was not reached at all, so nothing was judged and nothing
         # was spent (#97). It lives in the one vocabulary because a Commander
@@ -129,8 +134,17 @@ class CommandPort:
         """The one path every world effect takes, whoever issued it."""
         return self.campaign.outbox
 
-    def submit(self, command: Command, *, acting_side: str) -> Judgement:
-        """Judge one Command. The only way strategic state ever moves."""
+    def submit(self, command: Command, *, acting_side: str, acting_squad: str = "") -> Judgement:
+        """Judge one Command. The only way strategic state ever moves.
+
+        Two principals reach this, and `acting_squad` is which (ADR-0040).
+        Empty is a Commander — the AI planner in-process, or the person the
+        server has assigned to a Commander slot — and it may command anything of
+        its own side. A Squad id is a squad leader, stamped server-side from the
+        Squad the caller leads, and he may issue Reinforce for that Squad and
+        nothing else. Both are stamps the caller cannot write: authority is a
+        fact about the server's state, never a claim in a payload.
+        """
         # Before anything else, including whose Command this is: a won Campaign
         # is over for both sides, and there is nothing left for a Command to be
         # right or wrong about (#59). The AI Commanders are already stood down;
@@ -151,11 +165,45 @@ class CommandPort:
                 f"{acting_side} may not command for {command.side}",
             )
 
+        refusal = self._principal_refusal(command, acting_squad)
+        if refusal is not None:
+            return refusal
+
         handler = HANDLERS.get(command.name)
         if handler is None:
             return _reject("unknown_command", f"no such Command: {command.name!r}")
 
         return handler(self, command)
+
+    @staticmethod
+    def _principal_refusal(command: Command, acting_squad: str) -> Judgement | None:
+        """Return what a squad-leader caller's authority refuses, or None.
+
+        The whole of the second principal's authority, in the one place the
+        first principal's is decided (ADR-0040). It sits here rather than inside
+        `_reinforce` because it is a question about the *caller* — which is what
+        `wrong_side` above is too — and because a rule kept next to the Command
+        it constrains is a rule the next Command has to remember to ask for.
+
+        A Commander stamps no Squad and is refused nothing here: Purchase, Order
+        and Reinforce are all his (CONTEXT.md), and a Reinforce for any Squad of
+        his own side is legal at this port whether or not any planner issues one.
+        """
+        if not acting_squad:
+            return None
+        if command.name != "reinforce":
+            return _reject(
+                "wrong_side",
+                f"a squad leader may issue Reinforce for {acting_squad} and nothing else: "
+                f"{command.name} is the Commander's",
+            )
+        if command.args.get("squad") != acting_squad:
+            return _reject(
+                "not_your_squad",
+                f"you lead {acting_squad}: Reinforce refills the Squad you lead, and "
+                f"another Squad's refill is its own leader's or your Commander's to ask for",
+            )
+        return None
 
     def _purchase(self, command: Command) -> Judgement:
         """Spend Funds to put a new Squad at that side's Base."""
@@ -215,6 +263,75 @@ class CommandPort:
                 f"{side} has {held} Squads and this map's Observation carries {ceiling}: "
                 f"your force is at the limit this wire can carry, so order what you have "
                 f"or wait until you have lost a Squad",
+            )
+        return None
+
+    def _reinforce(self, command: Command) -> Judgement:
+        """Spend Funds to put a Squad back to the strength it was bought at (ADR-0040).
+
+        Refill, not rebuild: the men arrive at the Squad's own Base, which is
+        where CONTEXT.md puts Reinforce and why the Squad has to be standing
+        there. Ammunition and equipment are not this — restock is free at Base
+        and is not a Command at all (ADR-0040 pins it), so nothing here asks
+        what a Squad is carrying.
+
+        Whether the caller may ask at all is decided in `submit`; what is here
+        is what the rules make of the Squad it names.
+        """
+        squad_id = command.args.get("squad")
+        if not isinstance(squad_id, str) or not squad_id:
+            return _reject("malformed_command", "reinforce needs a `squad`")
+
+        squad = self.campaign.roster.owned_by(squad_id, command.side)
+        if squad is None:
+            return _reject("unknown_squad", f"{command.side} has no Squad {squad_id!r}")
+
+        refusal = self._refill_refusal(squad)
+        if refusal is not None:
+            return refusal
+
+        try:
+            squad, remaining, cost = self.campaign.reinforce(squad_id, command.side)
+        except InsufficientFundsError as exc:
+            return _reject("insufficient_funds", str(exc))
+
+        # Advisory like a Purchase's: what it cost, what is left, and the
+        # strength the Squad is being brought back to.
+        return _accept({"squad": squad.id, "funds": remaining, "cost": cost, "size": squad.size})
+
+    def _refill_refusal(self, squad: squads.Squad) -> Judgement | None:
+        """Return what the rules refuse this Squad's refill for, or None.
+
+        Named for what it returns rather than for the check it performs, like
+        `_ground_refusal` (#88). The state a Reinforce is judged against, all of
+        it about the Squad rather than about the caller: what it was bought as,
+        how many of it are standing, and where it is standing.
+        """
+        # A Squad type the authored table has stopped selling is a fault in the
+        # table rather than a free refill, and `missing` cannot tell the two
+        # apart on its own — it answers 0 for both.
+        if self.table.sold(squad.squad_type) is None:
+            return _reject(
+                "malformed_command",
+                f"{squad.id} is a {squad.squad_type!r} Squad and no such Squad type is sold: "
+                f"the economy table cannot price its replacements",
+            )
+
+        if self.campaign.missing(squad) <= 0:
+            return _reject(
+                "already_held",
+                f"{squad.id} is at the strength it was bought at: there is nobody to replace",
+            )
+
+        # At own Base, as CONTEXT.md puts it. The Place is the coarse one the
+        # world reports (ADR-0008), so a Squad in the field is refused for where
+        # it is standing rather than for how far it has to walk — and a Squad
+        # the world has never reported at all is nowhere, which is not its Base.
+        if self.campaign.based(squad.at) != squad.side:
+            return _reject(
+                "wrong_ground",
+                f"{squad.id} is at {squad.at or 'no place the world has reported'}: "
+                f"Reinforce refills a Squad at its own Base, so bring it home first",
             )
         return None
 
@@ -340,4 +457,5 @@ class CommandPort:
 HANDLERS: Final[dict[str, Callable[[CommandPort, Command], Judgement]]] = {
     "purchase": CommandPort._purchase,  # noqa: SLF001 — the class's own dispatch table
     "order": CommandPort._order,  # noqa: SLF001 — ditto
+    "reinforce": CommandPort._reinforce,  # noqa: SLF001 — ditto
 }

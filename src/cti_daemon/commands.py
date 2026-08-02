@@ -43,6 +43,13 @@ CATALOGUE: Final[dict[str, tuple[str, ...]]] = {
     # a constructor SQF cannot build wrong. The ground field is `place` because
     # it can hold an Objective id or a Base id (ADR-0020).
     "order": ("squad", "order", "place"),
+    # The one Command a squad leader may issue, and only for the Squad he leads
+    # (ADR-0040). It names the Squad and nothing else: what it costs is the
+    # missing fraction of what that Squad was bought as, which is the daemon's
+    # to work out, and where it happens is the Squad's own Base, which the
+    # manifest already knows. A caller who could name a price or a place could
+    # name a wrong one.
+    "reinforce": ("squad",),
 }
 
 # The effects a Command can produce, and the arguments each carries. An
@@ -51,6 +58,13 @@ CATALOGUE: Final[dict[str, tuple[str, ...]]] = {
 EFFECTS: Final[dict[str, tuple[str, ...]]] = {
     "squad_spawned": ("squad", "squad_type", "size"),
     "order_issued": ("squad", "order", "place"),
+    # An accepted Reinforce, carried out where every other world effect is
+    # (ADR-0012/0018) rather than in the judgement that accepted it. `size` is
+    # the strength the Squad is being brought back *to*, not how many men are
+    # owed: the world counts what is standing and the daemon counts what was
+    # paid for, and only one of those two can be right about a man who died
+    # between the judgement and the effect being applied.
+    "squad_reinforced": ("squad", "size"),
     "objective_captured": ("objective",),
     # The last effect any Campaign produces (#35): which condition ended it, the
     # in-game moment it ended, and the telemetry-sourced summary the end screen
