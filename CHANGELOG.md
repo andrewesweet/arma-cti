@@ -253,6 +253,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **What a Squad is made of is now authored data rather than a classname buried in the addon.**
+  Every Squad spawned into the world was eight copies of one of two hardcoded soldier classnames,
+  and the `squad_type` the Commander had paid for was written to the log and then ignored — a rifle
+  Squad and a weapons Squad were the same eight men. Composition is now an ordered roster of unit
+  classnames per side, authored in `config/economy.json` beside the price it was set against,
+  validated by the schema source, and exported into `command-schema.json` on the route ADR-0017
+  lays down for authored data. `fn_effectApply` reads the roster and holds no classnames, so a
+  Reinforce refills a Squad from its own composition instead of from a literal, and the men the
+  world puts on the ground cannot drift from the table the daemon charged for them. The values are
+  deliberately today's: the same classnames in the same numbers, so in-world behaviour is unchanged
+  and this is the seam and not a balance change. Filling it in is gameplay content and stays behind
+  the human's feel gate. #79, #82.
+
 - **Three decisions from the human, recorded where they bind.** Mid-session Commander takeover is
   out of MVP — a desired long-term feature, up to hot-swap with elections and evictions, but a
   session is still joined as Commander at bring-up (docs/mvp-scope.md, #126). N=3 is confirmed as

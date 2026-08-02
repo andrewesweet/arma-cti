@@ -51,12 +51,34 @@ def _refuse(detail: str) -> NoReturn:
 
 @dataclass(frozen=True, slots=True)
 class SquadType:
-    """One purchasable Squad and what it costs."""
+    """One purchasable Squad, what it costs, and what it is made of."""
 
     id: str
     display_name: str
     price: int
     size: int
+    # What the Squad is made of, as an ordered roster of unit classnames per
+    # side — one entry per man, so the roster's length *is* the Squad's size
+    # (#79, #82). Authored rather than held as a literal in the addon for the
+    # reason the prices are: what a rifle or weapons Squad consists of is a
+    # design decision, and ADR-0020 calls today's values placeholders whose
+    # structure is the contract. Per side because a side's men are its own
+    # faction's classnames and nothing else varies with side.
+    #
+    # Positional: slot 0 is the man the Squad is built around, and a Reinforce
+    # refills from the rear, so a Squad down to five men gets slots 5-7 back.
+    # Unobservable while every slot of a roster is the same classname, which is
+    # exactly the state #79 asked to be able to leave.
+    composition: dict[str, tuple[str, ...]]
+
+    def roster(self, side: str) -> tuple[str, ...]:
+        """Return the classnames this Squad is made of, for that side.
+
+        Empty for a side this Campaign is not played by. A parsed table carries
+        a roster for every side in `SIDES`, so an empty answer means the caller
+        named something that is not one.
+        """
+        return self.composition.get(side, ())
 
 
 @dataclass(frozen=True, slots=True)
@@ -132,6 +154,40 @@ def _required(document: dict[str, Any], key: str, what: str) -> Any:  # noqa: AN
     return document[key]
 
 
+def _check_composition(squad: dict[str, Any]) -> None:
+    """Every Squad type is made of somebody, on both sides, in the right number.
+
+    The check the addon cannot make for itself (#79): `fn_effectApply` reads
+    this roster to decide what to spawn, and the failure it would otherwise
+    meet — a type with no roster, or a roster that is not the size the price was
+    set against — is a world with the wrong number of men in it, discovered in
+    an Arma run. Here it is a red `just unit`.
+    """
+    name = squad["id"]
+    composition = _required(squad, "composition", f"squad {name!r}")
+    if not isinstance(composition, dict):
+        _refuse(f"{name}: composition must be an object keyed by side")
+
+    authored = cast("dict[str, Any]", composition)
+    if set(authored) != set(SIDES):
+        _refuse(f"{name}: composition must carry a roster for exactly {list(SIDES)}")
+
+    for side in SIDES:
+        roster = authored[side]
+        if not isinstance(roster, list):
+            _refuse(f"{name}: {side} composition must be a list of unit classnames")
+        entries = cast("list[Any]", roster)
+        if any(not isinstance(entry, str) or not entry for entry in entries):
+            _refuse(f"{name}: {side} composition entries must be non-empty classnames")
+        # The roster is one entry per man, so a roster of a different length is
+        # a Squad whose price was set against a size the world will not spawn.
+        if len(entries) != squad["size"]:
+            _refuse(
+                f"{name}: {side} composition has {len(entries)} men "
+                f"but the Squad's size is {squad['size']}"
+            )
+
+
 def _check_squads(squads: list[dict[str, Any]]) -> None:
     """Every Squad type is distinct, named, and costs a sane amount."""
     # Ids are checked to be strings *before* they are collected and sorted: a
@@ -148,6 +204,7 @@ def _check_squads(squads: list[dict[str, Any]]) -> None:
             _refuse(f"{squad['id']}: price must be a whole number of Funds, not negative")
         if not isinstance(_required(squad, "size", what), int) or squad["size"] <= 0:
             _refuse(f"{squad['id']}: size must be a positive whole number")
+        _check_composition(squad)
 
     ids = [squad["id"] for squad in squads]
     duplicates = sorted({name for name in ids if ids.count(name) > 1})
@@ -207,6 +264,7 @@ def parse(document: object) -> EconomyTable:
                 display_name=squad["display_name"],
                 price=squad["price"],
                 size=squad["size"],
+                composition={side: tuple(squad["composition"][side]) for side in SIDES},
             )
             for squad in squads
         ),

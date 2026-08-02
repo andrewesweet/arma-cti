@@ -11,13 +11,57 @@
       "id": "rifle",
       "display_name": "Rifle Squad",
       "price": 100,
-      "size": 8
+      "size": 8,
+      "composition": {
+        "WEST": [
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F"
+        ],
+        "EAST": [
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F"
+        ]
+      }
     },
     {
       "id": "weapons",
       "display_name": "Weapons Squad",
       "price": 150,
-      "size": 8
+      "size": 8,
+      "composition": {
+        "WEST": [
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F",
+          "B_Soldier_F"
+        ],
+        "EAST": [
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F",
+          "O_Soldier_F"
+        ]
+      }
     }
   ]
 }

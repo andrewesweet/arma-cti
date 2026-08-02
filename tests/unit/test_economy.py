@@ -58,7 +58,18 @@ def test_replacing_one_man_is_never_free() -> None:
             "capture_seconds": 30,
             "domination_seconds": 600,
             "reinforce_discount": 0.1,
-            "squads": [{"id": "rifle", "display_name": "Rifle", "price": 10, "size": 8}],
+            "squads": [
+                {
+                    "id": "rifle",
+                    "display_name": "Rifle",
+                    "price": 10,
+                    "size": 8,
+                    "composition": {
+                        "WEST": ["B_Soldier_F"] * 8,
+                        "EAST": ["O_Soldier_F"] * 8,
+                    },
+                }
+            ],
         }
     )
     assert table.reinforce_cost("rifle", 1) == 1
@@ -92,6 +103,77 @@ def test_a_reinforce_discount_that_is_not_a_discount_is_refused(
 def test_an_unknown_squad_type_has_no_price() -> None:
     table = economy.load(REPO / "config" / "economy.json")
     assert table.price("battleship") is None
+
+
+def test_every_purchasable_squad_is_made_of_somebody_on_both_sides() -> None:
+    # #79's second criterion: the schema source knows the composition table
+    # exists and is well-formed — every type sold has one, and the sizes agree.
+    table = economy.load(REPO / "config" / "economy.json")
+    for squad in table.squads:
+        for side in ("WEST", "EAST"):
+            assert len(squad.roster(side)) == squad.size
+            assert all(entry for entry in squad.roster(side))
+
+
+def test_a_roster_is_asked_for_by_wire_side_name() -> None:
+    # The addon looks the roster up by the side name the effect carries, so a
+    # side this Campaign is not played by is empty rather than an error — which
+    # is the answer `fn_effectApply` turns into a refusal.
+    table = economy.load(REPO / "config" / "economy.json")
+    rifle = table.sold("rifle")
+    assert rifle is not None
+    assert rifle.roster("RESISTANCE") == ()
+
+
+def test_a_composition_missing_a_side_is_refused(authored: dict[str, Any]) -> None:
+    # Both sides buy from the same catalogue, so a roster for one of them is a
+    # table that spawns nothing for the other — a Purchase the daemon charges
+    # for and the world refuses.
+    broken = copy.deepcopy(authored)
+    del broken["squads"][0]["composition"]["EAST"]
+    with pytest.raises(economy.EconomyError, match="composition"):
+        economy.parse(broken)
+
+
+def test_a_composition_naming_a_side_that_is_not_playing_is_refused(
+    authored: dict[str, Any],
+) -> None:
+    broken = copy.deepcopy(authored)
+    broken["squads"][0]["composition"]["RESISTANCE"] = ["I_Soldier_F"]
+    with pytest.raises(economy.EconomyError, match="composition"):
+        economy.parse(broken)
+
+
+@pytest.mark.parametrize("roster", [[], ["B_Soldier_F"], ["B_Soldier_F"] * 9])
+def test_a_roster_that_is_not_the_squads_size_is_refused(
+    authored: dict[str, Any], roster: list[str]
+) -> None:
+    # The roster is one entry per man, so a length that disagrees with `size` is
+    # a Squad priced against a strength the world will not put on the ground.
+    broken = copy.deepcopy(authored)
+    broken["squads"][0]["composition"]["WEST"] = roster
+    with pytest.raises(economy.EconomyError, match="size is"):
+        economy.parse(broken)
+
+
+@pytest.mark.parametrize("entry", ["", 42, None])
+def test_a_roster_entry_that_is_not_a_classname_is_refused(
+    authored: dict[str, Any], entry: object
+) -> None:
+    broken = copy.deepcopy(authored)
+    broken["squads"][0]["composition"]["WEST"][0] = entry
+    with pytest.raises(economy.EconomyError, match="classnames"):
+        economy.parse(broken)
+
+
+@pytest.mark.parametrize("composition", ["B_Soldier_F", ["B_Soldier_F"], 8])
+def test_a_composition_that_is_not_keyed_by_side_is_refused(
+    authored: dict[str, Any], composition: object
+) -> None:
+    broken = copy.deepcopy(authored)
+    broken["squads"][0]["composition"] = composition
+    with pytest.raises(economy.EconomyError, match="composition"):
+        economy.parse(broken)
 
 
 def test_a_duplicated_squad_id_is_refused(authored: dict[str, Any]) -> None:
@@ -137,7 +219,7 @@ def test_an_economy_table_missing_a_required_key_is_refused_in_its_own_words(
         economy.parse(broken)
 
 
-@pytest.mark.parametrize("missing", ["id", "display_name", "price", "size"])
+@pytest.mark.parametrize("missing", ["id", "display_name", "price", "size", "composition"])
 def test_a_squad_missing_a_required_key_is_refused_in_its_own_words(
     authored: dict[str, Any], missing: str
 ) -> None:

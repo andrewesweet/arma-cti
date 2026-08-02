@@ -91,11 +91,18 @@ def render(table: economy.EconomyTable) -> str:
         "orders_needing_place": list(squads.NEEDS_PLACE),
         "rejection_codes": sorted(port.REJECTION_CODES),
         "starting_funds": table.starting_funds,
+        # The price table the UI displays, and — since #79 — the roster each
+        # Squad type is spawned from. `fn_effectApply` used to hold the two
+        # classnames itself and ignore the `squad_type` it was sold; the
+        # composition travels with the price now, so the table the daemon
+        # charges against and the men the world puts on the ground are one
+        # authored document rather than two that agree by coincidence.
         "squads": {
             squad.id: {
                 "display_name": squad.display_name,
                 "price": squad.price,
                 "size": squad.size,
+                "composition": {side: list(squad.roster(side)) for side in commands.SIDES},
             }
             for squad in table.squads
         },

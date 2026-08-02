@@ -64,7 +64,48 @@ def test_the_price_table_carries_what_the_ui_displays(exported: dict[str, object
             "display_name": squad.display_name,
             "price": squad.price,
             "size": squad.size,
+            "composition": {side: list(squad.roster(side)) for side in commands.SIDES},
         }
+
+
+def test_every_squad_type_is_exported_with_a_roster_the_addon_can_spawn(
+    exported: dict[str, object],
+) -> None:
+    """#79: `fn_effectApply` reads composition from here instead of holding it.
+
+    The addon looks a roster up by `squad_type` and then by side, and treats an
+    empty answer as a stale export it must refuse. So what the export owes it is
+    a non-empty roster under every type the catalogue sells, keyed by the side
+    names the wire uses — not `west`/`east`, and not the display name.
+    """
+    prices = cast("dict[str, dict[str, object]]", exported["squads"])
+    table = economy.load(REPO / "config" / "economy.json")
+    for squad in table.squads:
+        composition = cast("dict[str, list[str]]", prices[squad.id]["composition"])
+        assert set(composition) == set(commands.SIDES)
+        for side in commands.SIDES:
+            # One entry per man: the addon spawns the roster, so its length is
+            # the Squad the Commander paid `price` for.
+            assert len(composition[side]) == squad.size
+            assert all(entry for entry in composition[side])
+
+
+def test_the_export_still_spawns_the_squads_the_world_used_to_hardcode(
+    exported: dict[str, object],
+) -> None:
+    """#79's "in-world behaviour today is identical" criterion, as an assertion.
+
+    `fn_effectApply` used to spawn `size` copies of `B_Soldier_F` for WEST and
+    `O_Soldier_F` for EAST, whatever was bought. Pinned here so the seam landing
+    is provably a seam and not a balance change — the values are ADR-0020
+    placeholders and #6 is expected to move them, at which point this test is
+    the one that says so out loud rather than a silent difference in-world.
+    """
+    prices = cast("dict[str, dict[str, object]]", exported["squads"])
+    for entry in prices.values():
+        composition = cast("dict[str, list[str]]", entry["composition"])
+        assert set(composition["WEST"]) == {"B_Soldier_F"}
+        assert set(composition["EAST"]) == {"O_Soldier_F"}
 
 
 def test_the_echelon_cascade_is_the_registers_own(exported: dict[str, object]) -> None:

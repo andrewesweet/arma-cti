@@ -109,9 +109,50 @@ if (count _base isEqualTo 0) exitWith {
 };
 
 (_base get "position") params ["_east", "_north"];
-private _unitType = ["O_Soldier_F", "B_Soldier_F"] select (_side isEqualTo west);
 private _size = _args getOrDefault ["size", 8];
 private _squadId = _args getOrDefault ["squad", ""];
+
+// What a Squad is made of is authored data, not a literal here (#79, #82).
+// This function used to spawn `_size` copies of one of two hardcoded
+// classnames and ignore the `squad_type` the Commander had paid for entirely —
+// a design decision living in the outermost layer, invisible to the schema
+// pipeline and unreachable by any test that does not boot Arma. It read as
+// finished code while being a placeholder.
+//
+// The roster comes from `config/economy.json` beside the price it was set
+// against, exported into `command-schema.json` by the same tool that exports
+// the Command catalogue, and read here through cti_fnc_commandSchema — ADR-0017's
+// route: ship the authored file, generate only what has none. `just check`
+// fails a stale export as `schema_stale`, so the men this spawns cannot drift
+// from the table the daemon charged for them.
+//
+// The roster is ordered and one entry per man, which is what lets a Reinforce
+// know *which* men are missing: slot 0 is the man the Squad is built around and
+// attrition is accounted from the rear. Today every slot of both rosters is the
+// same classname, so that ordering is unobservable — the structure is the
+// point, and the values are a **playtest-tuned placeholder** in ADR-0020's
+// sense, to be filled by #6 under the human's feel gate.
+private _rosterOf = {
+    params [["_type", "", [""]]];
+    private _entry = ((call cti_fnc_commandSchema) getOrDefault ["squads", createHashMap])
+        getOrDefault [_type, createHashMap];
+    if !(_entry isEqualType createHashMap) exitWith { [] };
+    private _composition = _entry getOrDefault ["composition", createHashMap];
+    if !(_composition isEqualType createHashMap) exitWith { [] };
+    _composition getOrDefault [toUpper _sideName, []]
+};
+
+// A type the exported table does not describe. Permanent, and classified
+// `schema_stale` rather than `assertion_failed` because the daemon selling a
+// Squad this addon has no roster for is a daemon and an addon out of step —
+// the copy on disk is stale, and the response is to regenerate it, not to
+// argue with the effect. The next poll reads the same cached schema.
+private _noRoster = {
+    params [["_type", "", [""]]];
+    diag_log format ["CTI|FAIL class=schema_stale no_composition_for squad_type=%1 side=%2",
+        _type, _sideName];
+    ["refused", "no_composition_for_squad_type"] call _verdict
+};
 
 // Replacements for a Squad that is already standing (ADR-0040). The men arrive
 // at the Base because that is where the rules made the Squad be before they
@@ -136,6 +177,16 @@ if (_name isEqualTo "squad_reinforced") exitWith {
         ["refused", "reinforce_unknown_squad"] call _verdict
     };
 
+    // Which Squad this is comes from the world, not from the effect: a
+    // `squad_reinforced` carries `squad` and `size` and has never carried the
+    // type (`commands.EFFECTS`). The world already records the id on the group
+    // it minted; recording the type alongside it at spawn is the same gesture,
+    // and it keeps the roster lookup out of the wire. A Squad standing without
+    // one is a Squad this addon did not spawn.
+    private _squadType = _group getVariable ["cti_squadType", ""];
+    private _roster = [_squadType] call _rosterOf;
+    if (count _roster isEqualTo 0) exitWith { [_squadType] call _noRoster };
+
     private _standing = count units _group;
     private _owed = _size - _standing;
 
@@ -152,10 +203,18 @@ if (_name isEqualTo "squad_reinforced") exitWith {
     //
     // The staging group deletes itself when the last man leaves it, which is
     // the same breath: `createGroup`'s second element is `deleteWhenEmpty`.
+    //
+    // The replacements are the roster's rear slots — the men a Squad down to
+    // `_standing` is missing — rather than `_owed` copies of one classname.
+    // Clamped into the roster because `size` arrives from the daemon while the
+    // roster is authored: they agree by validation, and if an export ever went
+    // stale the last slot repeats rather than the loop reading off the end.
     if (_owed > 0) then {
         private _staging = createGroup [_side, true];
-        for "_i" from 1 to _owed do {
-            _staging createUnit [_unitType, [_east, _north, 0], [], 30, "FORM"];
+        private _last = count _roster - 1;
+        for "_i" from _standing to (_size - 1) do {
+            private _class = _roster select ((_i max 0) min _last);
+            _staging createUnit [_class, [_east, _north, 0], [], 30, "FORM"];
         };
         (units _staging) joinSilent _group;
     };
@@ -172,19 +231,31 @@ if (_name isEqualTo "squad_reinforced") exitWith {
     ["applied"] call _verdict
 };
 
+// The purchased type is what decides the men, so it is read before any of them
+// exist: a Squad with no roster must refuse before it has put a group on the
+// map, or the refusal leaves the world holding half an effect.
+private _squadType = _args getOrDefault ["squad_type", ""];
+private _roster = [_squadType] call _rosterOf;
+if (count _roster isEqualTo 0) exitWith { [_squadType] call _noRoster };
+
+// One man per roster slot. The count comes from the roster rather than from the
+// effect's `size` because the roster *is* the composition — the daemon's `size`
+// is what it priced, and `economy._check_composition` is what holds the two
+// equal.
 private _group = createGroup [_side, true];
-for "_i" from 1 to _size do {
-    _group createUnit [_unitType, [_east, _north, 0], [], 30, "FORM"];
-};
+{
+    _group createUnit [_x, [_east, _north, 0], [], 30, "FORM"];
+} forEach _roster;
 
 // The daemon minted the id; the world records which group answers to it, so an
-// Order naming that Squad has something to reach (#14).
+// Order naming that Squad has something to reach (#14). The type is recorded
+// with it because a Reinforce arrives without one and has to know what to build.
 (missionNamespace getVariable ["cti_squads", createHashMap]) set [_squadId, _group];
 _group setVariable ["cti_squad", _squadId, true];
+_group setVariable ["cti_squadType", _squadType, true];
 
 diag_log format ["CTI|effect_applied effect=%1 side=%2 squad=%3 squad_type=%4 units=%5 base=%6",
-    _name, _sideName, _squadId, _args getOrDefault ["squad_type", "?"],
-    count units _group, _base get "id"];
+    _name, _sideName, _squadId, _squadType, count units _group, _base get "id"];
 
 // A new Squad is in Reserve until it is told otherwise, which is the daemon's
 // view of it too. Applying it here rather than assuming it means a Squad
