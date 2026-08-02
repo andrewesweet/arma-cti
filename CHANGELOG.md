@@ -41,6 +41,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Squad is refused `not_your_squad`, and Purchase and Order stay the Commander's. A leader can do
   this while both sides are under AI command, which is the MVP's second mode. ADR-0040.
 
+- **The world is now proven to see the enemy standing on your ground.** Every in-game run so far
+  had put NATO units on the ground and nothing else, so that the presence sampler reports a CSAT
+  squad at all — and reports it as CSAT rather than as nobody — was assumed. If it had been wrong,
+  an Objective held by the enemy would have read as empty, never contested, never changed hands and
+  kept paying its old owner, with every unit test still green. The in-world probe that already
+  watches an Objective change hands now watches it go Contested with both sides inside the radius,
+  and then fall to the side left standing there.
+
 - **The in-world regression tier runs three worlds at once, and a full pass costs eleven minutes
   instead of twenty-six.** `just regress` now schedules the corpus across a pool of slots — a slot
   being a port block, a daemon, a server install, an engine profile and a world that agree — with
