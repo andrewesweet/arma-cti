@@ -142,7 +142,7 @@ def recipe_body(name: str) -> str:
     return match.group(1)
 
 
-@pytest.mark.parametrize("recipe", ["spike", "probe", "cycle-spike"])
+@pytest.mark.parametrize("recipe", ["spike", "probe"])
 def test_every_bringup_recipe_serialises_on_the_tier_lock(recipe: str) -> None:
     assert "tier-lock.sh" in recipe_body(recipe), (
         f"`just {recipe}` brings the tier up without taking the lock"

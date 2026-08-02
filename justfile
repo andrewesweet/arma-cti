@@ -156,7 +156,7 @@ probe file="" hold="150": build-shim build-addon
 # at different N. Slots are taken non-blocking in index order and fewer than
 # asked for is a smaller pool rather than a failure; no slot free at all is
 # infra_unavailable and never a result, with `--wait <secs>` bounding a queue.
-# `just probe`, `just spike` and `just cycle-spike` take slot 0, which is what
+# `just probe` and `just spike` take slot 0, which is what
 # makes a hand run and a pool run exclude each other where they would collide.
 #
 # The two probes that drive the headed Windows client run last and serially, with
@@ -168,27 +168,6 @@ probe file="" hold="150": build-shim build-addon
 # ~/.arma-cti/runs/<stamp>-pool/.
 regress *args: build-shim build-addon
     ./spike/regress.sh {{ args }}
-
-# Arma tier: the #45 mission-cycle experiment — two missions in one server
-# process, with the second one's freshness asserted rather than assumed.
-# Exploration scaffolding, not part of the tier: `just regress` never sees it,
-# and docs/research/multiplexing-the-arma-tier.md is what it produced.
-#
-# Kept for one reason: ADR-0028's N=3 was arithmetic rather than measurement, and
-# if the third slot did not fit, cycling was the lever the tier fell back on.
-#
-# **That condition has now fired and this recipe is owed a deletion.** Three
-# slots stood up together on 2026-08-02 and ran the whole corpus green in 646 s
-# (#47), so the fallback is not needed and this is surface for its own sake.
-# Delete this recipe, spike/cycle/ and tests/unit/test_cycle_freshness.py;
-# docs/research/multiplexing-the-arma-tier.md keeps the reasoning either way.
-#
-# `--no-daemon-restart` runs the dishonest cycle on purpose: the Campaign lives
-# in the daemon and the protocol has no reset verb, so a cycle that keeps the
-# daemon inherits a played Campaign, and the run goes red proving it.
-# `--hc` adds a headless client, which survives the mission change.
-cycle-spike *args: build-shim build-addon
-    ./spike/tier-lock.sh --label "just cycle-spike" -- ./spike/cycle/cycle.sh {{ args }}
 
 # Everything that does not need Arma.
 fast: check unit
