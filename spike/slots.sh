@@ -18,7 +18,8 @@
 #   cti_slot_acquire N         non-blocking flock; 0 held, 1 taken by someone else
 #   cti_slot_release N         drop it (the kernel does this anyway on death)
 #   cti_slot_holder N          what the holder wrote beside the lock
-#   cti_slot_reclaim N         ADR-0022 per slot: clear a dead holder's leftovers
+#   cti_slot_reclaim N         ADR-0022 per slot: clear a dead holder's leftovers,
+#                              and confirm they are gone rather than assume it
 #   cti_slot_install_ready N   the cp -al hard-link farm, made and kept honest
 #
 # Slot 0 is the single-occupancy tier as it has always been: ports 2402-2406,
@@ -226,6 +227,19 @@ cti_slot_mem_fit() {
 #
 # The file descriptor is held by *this* shell and inherited by every child, so a
 # worker running in a slot keeps it held for as long as the pool lives.
+#
+# The kernel's release is prompt but it is not simultaneous with the holder's
+# death: the lock goes when the last file description on it closes, and a dead
+# holder's processes close theirs whenever the scheduler gets to them. Asking at
+# t+0 therefore has a window, measured on this machine at up to 3.0 ms idle and
+# 7.4 ms with the box saturated (#130). Acquire stays **non-blocking through it**
+# rather than growing a grace: an acquirer only lands inside a window that short
+# by asking at the instant of a death, which is what the *test* deliberately does
+# and what no caller does — the pool's real case is an agent re-running minutes
+# after its last one was killed. A grace would buy 7 ms of an edge nobody stands
+# on, at the price of an instant refusal, and it would let the test that owns
+# this property pass on the grace rather than on the kernel. `--wait` is where
+# waiting for somebody else's run to end belongs, and it already exists.
 declare -A CTI_SLOT_FD=()
 
 cti_slot_acquire() {
@@ -363,6 +377,50 @@ cti_slot_install_pids() {
     return 0 # a finder, not a test — see cti_slot_lock_holders
 }
 
+# Is this pid still holding anything? Alive, and not a zombie: a zombie answers
+# `kill -0` but let go of its descriptors, its ports and its install at exit, and
+# all that is left of it is a table entry nobody has read yet. Waiting on one
+# would be waiting for a third party to call `wait`, which is not this slot's
+# business and not a thing the deadline below could ever be long enough for.
+cti_slot_pid_holds() {
+    cti_host_exec "$CTI_TIER_HOST" kill -0 "$1" 2>/dev/null || return 1
+    [[ "$(cti_host_exec "$CTI_TIER_HOST" ps -o stat= -p "$1" 2>/dev/null)" == *Z* ]] && return 1
+    return 0
+}
+
+# Which of "$@" are still holding.
+cti_slot_pids_alive() {
+    local pid alive=()
+    for pid in "$@"; do cti_slot_pid_holds "$pid" && alive+=("$pid"); done
+    printf '%s' "${alive[*]-}"
+    return 0 # a finder, not a test — see cti_slot_lock_holders
+}
+
+# Every pid in "$@" gone from the process table, or the deadline in $1 spent.
+#
+# A kill is a *request*. `kill` returns once the signal has been posted, and the
+# process is still there — ports bound, descriptors open, install held — until
+# the kernel gets round to tearing it down. The two events are ordered by the
+# scheduler and nothing else, which on a loaded box is a gap wide enough to
+# matter: #130 measured the same gap on the other side of a death, where an
+# `flock` outlived by up to 7.4 ms the `waitpid` that was being read as proof it
+# had been released. Reclamation had the identical bug and the worse consequence,
+# because what follows a reclaim is `run.sh` binding this slot's ports.
+#
+# Bounded and then reported, never extended: a SIGKILL that has not landed inside
+# the deadline is news about the machine, not something to keep waiting on.
+cti_slot_pids_gone() {
+    local deadline=$((SECONDS + $1)) pid alive
+    shift
+    while :; do
+        alive=0
+        for pid in "$@"; do cti_slot_pid_holds "$pid" && alive=1; done
+        ((alive == 0)) && return 0
+        ((SECONDS < deadline)) || return 1
+        sleep 0.5
+    done
+}
+
 #
 # `$2 == holders` adds the processes still holding the slot's lock, which is only
 # askable once this shell has closed its own descriptor — see
@@ -409,19 +467,19 @@ cti_slot_reclaim() {
     ((${#pids[@]} > 0)) || return 0
     cti_slot_log "slot $n: clearing a previous holder's leftovers: pids ${pids[*]}"
     for pid in "${pids[@]}"; do cti_host_exec "$CTI_TIER_HOST" kill "$pid" 2>/dev/null; done
-    # Bounded, then hard. Not a synchronisation wait on a test — a shutdown
-    # deadline on processes we have already decided are stale.
-    local deadline=$((SECONDS + 15))
-    while ((SECONDS < deadline)); do
-        local alive=0
-        for pid in "${pids[@]}"; do
-            cti_host_exec "$CTI_TIER_HOST" kill -0 "$pid" 2>/dev/null && alive=1
-        done
-        ((alive == 0)) && break
-        sleep 0.5
-    done
+    # Bounded, then hard, then confirmed. Not a synchronisation wait on a test —
+    # a shutdown deadline on processes we have already decided are stale.
+    cti_slot_pids_gone 15 "${pids[@]}" && return 0
     for pid in "${pids[@]}"; do cti_host_exec "$CTI_TIER_HOST" kill -9 "$pid" 2>/dev/null; done
-    return 0
+    # And SIGKILL is confirmed rather than assumed, for the reason in
+    # `cti_slot_pids_gone`: what runs next binds this slot's ports and stages into
+    # this slot's install, and a `kill -9` that has been *posted* leaves both
+    # still taken. Returning here without looking is how a reclaim reports a slot
+    # clear that is not, and the `infra_unavailable` that follows names a bind
+    # failure rather than the dead holder that caused it.
+    cti_slot_pids_gone 10 "${pids[@]}" && return 0
+    cti_slot_log "slot $n: SIGKILL sent and still in the process table 10s later: $(cti_slot_pids_alive "${pids[@]}") — this slot is not clear"
+    return 1
 }
 
 # Record which evidence directory a slot is currently writing, so the next holder

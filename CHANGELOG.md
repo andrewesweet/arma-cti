@@ -112,6 +112,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   human plays does not contain it at all. The tool itself is unchanged and the investigation still
   has it. #128, ADR-0045.
 
+- **Clearing a dead run's leftovers now waits for them to actually go.** `kill` returns when the
+  signal has been posted, not when the process is gone — it still holds its ports and its install
+  until the kernel tears it down — so reclamation sending `SIGKILL` and returning reported a slot
+  clear that was not, and the next thing to run was `run.sh` binding those very ports. It now
+  confirms the hard kill the way it already waited out the polite one, names anything still in the
+  process table afterwards, and reports a failed reclaim rather than a cleared slot. The same
+  misreading, on the other side of a death, is what made `test_a_dead_holders_lock_frees_itself`
+  flaky twice over: `flock` frees on the *last* descriptor closing, which is not the event
+  `proc.wait()` returns on. Measured here at up to 7.4 ms of daylight between them on a loaded box.
+  The test now waits for the observable it means — every descriptor on the lock closed — and then
+  asserts the kernel's promise in a single non-blocking ask. Acquire is deliberately left
+  non-blocking through that window: a grace would let the test pass on the grace rather than on the
+  kernel. #130.
+
 - **A regression run no longer starts into a machine that has no room for it.** The slot locks
   serialise agents but say nothing about memory, so two three-slot pool runs took six worlds onto
   one 12 GB machine, drove it to 39 MiB available, and came back twenty minutes later with two

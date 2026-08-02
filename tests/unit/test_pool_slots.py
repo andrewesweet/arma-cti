@@ -26,6 +26,7 @@ import shutil
 import signal
 import stat
 import subprocess
+import time
 from pathlib import Path
 
 import pytest
@@ -289,6 +290,47 @@ def acquire_from_a_fresh_shell(tmp_path: Path, slot: int) -> subprocess.Complete
     )
 
 
+# A bound on "promptly", not a synchronisation wait. The poll below ends the
+# instant the last descriptor is gone, and reaching this deadline is a real
+# failure of the contract rather than a slow machine: 10 s is three orders of
+# magnitude over the worst teardown measured on this box.
+TEARDOWN_DEADLINE_SECS = 10
+
+
+def wait_until_no_descriptor_is_left(tmp_path: Path, slot: int) -> None:
+    """Block until nothing on the machine still has the slot's lock file open.
+
+    This is the arrangement's own precondition, not a cushion under the assertion
+    that follows. `proc.wait()` says one member of the holder's tree has been
+    reaped; the kernel frees an `flock` when the *last* file description on the
+    lock closes, and those are different events ordered against each other by the
+    scheduler and nothing else. Measured here by killing the group and asking
+    immediately with `fcntl.flock` — no subprocess in the way — the lock was still
+    held on 2 asks in 40 with the box idle (worst 3.0 ms) and 28 in 60 with it
+    saturated (worst 7.4 ms). A holder built out of `sleep` understates it: the
+    real one is an Arma server with a gigabyte of resident pages to give back.
+
+    So the claim being asserted is "a dead holder's lock frees *itself*, promptly
+    and with nobody reaping" — not "it frees simultaneously with the first death
+    in the tree", which is a fiction, and which two rounds of statistics (#121,
+    #130) were spent failing to make true.
+    """
+    deadline = time.monotonic() + TEARDOWN_DEADLINE_SECS
+    env = {"CTI_TIER_STATE": str(tmp_path / "state")}
+    while True:
+        # The pool's own finder, so the test and the runner agree on what "still
+        # held" means — it is the answer `regress.sh` prints to a human staring
+        # at a busy slot.
+        holders = bash_eval(f"cti_slot_lock_holders {slot}", env=env).split()
+        if not holders:
+            return
+        assert time.monotonic() < deadline, (
+            f"slot {slot}'s lock was still open in {holders} "
+            f"{TEARDOWN_DEADLINE_SECS}s after the whole holder was killed"
+        )
+        time.sleep(0.02)
+
+
 def test_a_dead_holders_lock_frees_itself(tmp_path: Path) -> None:
     """The property the whole design rests on: no reaper, no heartbeat, no pidfile.
 
@@ -297,10 +339,16 @@ def test_a_dead_holders_lock_frees_itself(tmp_path: Path) -> None:
     and the kernel handed the slot back. The kernel's guarantee is about the last
     descriptor, so the holder below has a child holding one too, and the test is
     only about the kernel once the tree is gone.
+
+    "Once the tree is gone" is the whole of what the wait above establishes, and
+    it is why the acquire below is a single non-blocking ask rather than a retry:
+    with no descriptor left anywhere, a free lock is the kernel's promise and a
+    held one is a broken design. Nothing reaped, released or swept it.
     """
     proc = start_holder(tmp_path, 2)
     os.killpg(proc.pid, signal.SIGKILL)
     proc.wait(timeout=10)
+    wait_until_no_descriptor_is_left(tmp_path, 2)
     after = acquire_from_a_fresh_shell(tmp_path, 2)
     assert after.returncode == 0, after.stderr
 
@@ -330,6 +378,12 @@ def test_an_orphan_that_inherited_the_lock_is_named_and_reclaimed(tmp_path: Path
         # And the reclaim path the merge calls clears it. Only the lock's own
         # holders: this state directory is not the machine's tier, so the port
         # and install sweeps are refused (#124) and nothing else on the box moves.
+        #
+        # No wait between the reclaim and the acquire, and that is the assertion:
+        # `cti_slot_reclaim` returns when its victims are *gone*, not when their
+        # SIGKILL was posted. It used to return on the posting, which put the
+        # line below on the same losing side of the same race as #130 — and put
+        # `run.sh` binding this slot's ports there too, which is worse.
         bash_eval("cti_slot_reclaim 2 holders", env=env, want_stderr=True)
         assert acquire_from_a_fresh_shell(tmp_path, 2).returncode == 0
     finally:
