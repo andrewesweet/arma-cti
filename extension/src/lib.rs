@@ -91,11 +91,39 @@ impl Budget {
     }
 }
 
+/// The address the shim is pointed at.
+///
+/// Poison on this one is recovered rather than propagated (see `addr_guard`).
 fn addr_cell() -> &'static Mutex<String> {
     static ADDR: OnceLock<Mutex<String>> = OnceLock::new();
     ADDR.get_or_init(|| {
         Mutex::new(std::env::var("CTI_DAEMON_ADDR").unwrap_or_else(|_| DEFAULT_ADDR.to_string()))
     })
+}
+
+/// The address lock, poison and all.
+///
+/// A poisoned mutex means some thread panicked while holding it, and the
+/// question is always whether the value it guards can be half-written. Here it
+/// cannot: the address is a whole `String` replaced in a single assignment, so
+/// there is no torn state for poison to warn about. Propagating it would take
+/// the shim's transport down for the life of the process because of a panic
+/// somewhere else — and, before #93, would have done so by handing `set_addr`'s
+/// caller an `{"error":...}` where its documentation promises an address, which
+/// is a thing no caller can tell apart from an address it did not expect.
+///
+/// The poison is cleared as well as recovered, so a panic somewhere else leaves
+/// no lasting mark on a lock it told us nothing about. The connection lock is
+/// recovered too but not for the same reason — see `connection_guard`.
+fn addr_guard() -> std::sync::MutexGuard<'static, String> {
+    let cell = addr_cell();
+    match cell.lock() {
+        Ok(guard) => guard,
+        Err(poisoned) => {
+            cell.clear_poison();
+            poisoned.into_inner()
+        }
+    }
 }
 
 /// Cached connection, opened on first use and dropped after any failure.
@@ -104,11 +132,33 @@ fn persistent_cell() -> &'static Mutex<Option<Connection>> {
     PERSISTENT.get_or_init(|| Mutex::new(None))
 }
 
-fn daemon_addr() -> Result<String, String> {
-    addr_cell()
-        .lock()
-        .map(|guard| guard.clone())
-        .map_err(|e| format!("addr lock: {e}"))
+/// The connection lock, poison and all.
+///
+/// Poison here means something the address lock's does not: a panic mid exchange
+/// can leave a socket with half a line written down it, so the cached connection
+/// really may be unusable. What follows from that is what this file already does
+/// after *any* failed exchange — drop the connection and open a new one — so the
+/// guard is recovered, emptied, and the poison cleared.
+///
+/// Propagating it instead would brick the keepalive path for the life of the
+/// process over one panic, and the process is an Arma server: every synchronous
+/// call goes through here, and nothing short of restarting the game would get
+/// them back.
+fn connection_guard() -> std::sync::MutexGuard<'static, Option<Connection>> {
+    let cell = persistent_cell();
+    match cell.lock() {
+        Ok(guard) => guard,
+        Err(poisoned) => {
+            let mut guard = poisoned.into_inner();
+            *guard = None;
+            cell.clear_poison();
+            guard
+        }
+    }
+}
+
+fn daemon_addr() -> String {
+    addr_guard().clone()
 }
 
 struct Connection {
@@ -118,7 +168,7 @@ struct Connection {
 
 impl Connection {
     fn open(budget: Budget) -> Result<Self, String> {
-        let stream = Self::connect(&daemon_addr()?, budget)?;
+        let stream = Self::connect(&daemon_addr(), budget)?;
         stream
             .set_nodelay(true)
             .map_err(|e| format!("nodelay: {e}"))?;
@@ -189,8 +239,37 @@ impl Connection {
     }
 }
 
+/// Escape a string so it is legal inside a JSON string literal (RFC 8259 §7:
+/// `"`, `\`, and everything below U+0020 must be escaped; nothing else must).
+///
+/// Written out rather than pulled in with `serde_json`, because this is the only
+/// JSON the shim ever *produces* and a dependency for one function on the error
+/// path is not worth the build (ADR-0005 keeps the shim thin). Before #93 the
+/// only escape was `"` rewritten to `'`, which is lossy where it works and
+/// silent where it does not: a detail carrying a `\` — a Windows path out of an
+/// `io::Error`, most plausibly — or a newline out of a daemon reply produced a
+/// line that is not JSON at all, and the receiver would have failed to parse an
+/// error message rather than reporting it.
+fn escape_json(raw: &str) -> String {
+    let mut out = String::with_capacity(raw.len());
+    for c in raw.chars() {
+        match c {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            // The remaining C0 controls have no short form; \u form is required
+            // for them and permitted for nothing else here.
+            c if (c as u32) < 0x20 => out.push_str(&format!("\\u{:04x}", c as u32)),
+            c => out.push(c),
+        }
+    }
+    out
+}
+
 fn error_json(context: &str) -> String {
-    format!(r#"{{"error":"{}"}}"#, context.replace('"', "'"))
+    format!(r#"{{"error":"{}"}}"#, escape_json(context))
 }
 
 /// One connection per call: the worst-case number, TCP handshake included.
@@ -221,9 +300,7 @@ fn round_trip_fresh(payload: &str, budget: Budget) -> Result<String, String> {
 /// really could hold this for seconds, the async one, no longer takes the lock
 /// at all.
 fn round_trip_persistent(payload: &str, budget: Budget) -> Result<String, String> {
-    let mut guard = persistent_cell()
-        .lock()
-        .map_err(|e| format!("conn lock: {e}"))?;
+    let mut guard = connection_guard();
     if let Some(conn) = guard.as_mut() {
         match conn.exchange(payload, budget) {
             Ok(reply) => return Ok(reply),
@@ -236,18 +313,29 @@ fn round_trip_persistent(payload: &str, budget: Budget) -> Result<String, String
     Ok(reply)
 }
 
-/// Point the shim at a different daemon address. Returns the address in force.
+/// Point the shim at a different daemon address. Returns the address in force —
+/// always an address, never an error (#93): there is no failure left for this
+/// call to have, because both locks it takes recover from poison rather than
+/// propagate it (`addr_guard` and `connection_guard`).
 pub fn set_addr(addr: String) -> String {
-    match addr_cell().lock() {
-        Ok(mut guard) => {
-            *guard = addr;
-            if let Ok(mut conn) = persistent_cell().lock() {
-                *conn = None;
-            }
-            guard.clone()
-        }
-        Err(e) => error_json(&format!("addr lock: {e}")),
-    }
+    // The address lock is released before the connection lock is taken, and the
+    // scope is what does it. `round_trip_persistent` holds the connection while
+    // `Connection::open` reaches for the address, so holding them the other way
+    // round here — which this did until #93 — is a lock-order inversion, and the
+    // two orders meeting deadlock an Arma server on its own main thread. Nothing
+    // needs them both at once: retargeting is a write to one followed by a write
+    // to the other.
+    let in_force = {
+        let mut guard = addr_guard();
+        *guard = addr;
+        guard.clone()
+    };
+    // The cached socket is pointed at the *old* daemon, so retargeting must drop
+    // it unconditionally. Skipping the drop on a poisoned lock, as this did
+    // before #93, would leave the shim answering from the daemon it was just
+    // moved off — and dropping is the response to that poison anyway.
+    *connection_guard() = None;
+    in_force
 }
 
 /// Pure FFI cost: no I/O at all.
@@ -321,6 +409,14 @@ pub fn rpc_async(ctx: Context, id: String, payload: String) {
     std::thread::spawn(move || {
         let reply = round_trip_fresh(&payload, Budget::new(ASYNC_BUDGET))
             .unwrap_or_else(|e| error_json(&e));
+        // Dropped deliberately, and it is the only dropped error in this file.
+        // `callback_data` has exactly one failure, `CallbackError::ChannelClosed`
+        // (arma-rs 1.12.1), which means the engine is no longer collecting
+        // callbacks — the extension is being unloaded or the process is on its
+        // way down. The only route this thread has back to anyone who could act
+        // is the channel that just closed, so there is nothing to report the
+        // failure *to*: logging it would be writing to a world that has stopped
+        // reading, and returning it would be returning to a thread nobody joins.
         let _ = ctx.callback_data("cti_shim", &id, reply);
     });
 }
@@ -479,6 +575,115 @@ mod tests {
         let (output, code) = extension.call("ping", None);
         assert_eq!(output, "pong");
         assert_eq!(code, 0);
+    }
+
+    /// Panic while holding `lock`, so the mutex is poisoned from here on, with
+    /// the panic message swallowed so a deliberate panic does not read as a
+    /// failing test. Poison is process-wide, so the next caller of the lock is
+    /// what has to survive it — which is exactly the claim under test, and why
+    /// the shim's guards clear the poison once they have dealt with it.
+    fn poison<T: Send + 'static>(lock: &'static Mutex<T>) {
+        let previous = std::panic::take_hook();
+        std::panic::set_hook(Box::new(|_| {}));
+        let outcome = std::panic::catch_unwind(|| {
+            let _held = lock.lock().unwrap_or_else(|e| e.into_inner());
+            panic!("poisoning deliberately");
+        });
+        std::panic::set_hook(previous);
+        assert!(outcome.is_err(), "the poisoning panic did not happen");
+        assert!(lock.is_poisoned(), "the lock came out unpoisoned");
+    }
+
+    #[test]
+    fn error_json_survives_a_detail_that_is_not_plain_text() {
+        // The old escape rewrote `"` to `'` and left everything else alone, so a
+        // backslash or a control character produced a line that is not JSON.
+        // Windows paths inside an io::Error are the realistic source of the
+        // first, a daemon reply echoed into a message the source of the second.
+        assert_eq!(
+            error_json(r#"read: C:\Program Files\a "quoted" name"#),
+            r#"{"error":"read: C:\\Program Files\\a \"quoted\" name"}"#
+        );
+        assert_eq!(
+            error_json("write: line one\nline two\ttabbed\r\u{7}"),
+            r#"{"error":"write: line one\nline two\ttabbed\r\u0007"}"#
+        );
+    }
+
+    #[test]
+    fn error_json_leaves_ordinary_text_alone() {
+        // Escaping beyond what RFC 8259 requires would be its own corruption:
+        // the reader gets the message back, not a version of it.
+        assert_eq!(
+            error_json("connect: 127.0.0.1:9099: refused (µs, ≤)"),
+            r#"{"error":"connect: 127.0.0.1:9099: refused (µs, ≤)"}"#
+        );
+    }
+
+    #[test]
+    fn set_addr_answers_an_address_even_when_the_lock_is_poisoned() {
+        // #93: the doc promises "the address in force" and the old code answered
+        // `{"error":...}` on poison — a caller could not tell the two apart. The
+        // guarded value is a whole String replaced in one assignment, so poison
+        // here reports a panic elsewhere and nothing about this address.
+        let _guard = serialise();
+        poison(addr_cell());
+        let answer = set_addr("127.0.0.1:9042".to_string());
+        assert_eq!(answer, "127.0.0.1:9042", "not an address: {answer}");
+        assert_eq!(daemon_addr(), "127.0.0.1:9042");
+        assert!(
+            !addr_cell().is_poisoned(),
+            "the poison outlived the call that dealt with it"
+        );
+    }
+
+    #[test]
+    fn a_poisoned_connection_does_not_brick_the_keepalive_path() {
+        // Every synchronous call queues on this one lock, so propagating its
+        // poison would take the shim's whole synchronous path down for the life
+        // of an Arma server. The response is the file's usual one — drop the
+        // suspect socket and open another.
+        let _guard = serialise();
+        let addr = spawn_stub();
+        let extension = init().testing();
+        let _ = extension.call("addr", Some(vec![addr]));
+
+        poison(persistent_cell());
+        let (output, code) = extension.call("rpc_keepalive", Some(vec!["after".to_string()]));
+        assert_eq!(code, 0);
+        assert_eq!(output, "AFTER", "unexpected output: {output}");
+        assert!(!persistent_cell().is_poisoned());
+    }
+
+    #[test]
+    fn retargeting_drops_the_cached_connection_even_when_it_is_poisoned() {
+        // A poisoned connection cell used to make `set_addr` skip the drop, which
+        // leaves the shim answering over a socket to the daemon it was just moved
+        // off. Dropping is the response to that poison, not a casualty of it.
+        let _guard = serialise();
+        let (first, seen_by_first) = spawn_recording_stub();
+        let (second, seen_by_second) = spawn_recording_stub();
+        let extension = init().testing();
+
+        let _ = extension.call("addr", Some(vec![first]));
+        let (_, code) = extension.call("rpc_keepalive", Some(vec!["to-first".to_string()]));
+        assert_eq!(code, 0);
+
+        poison(persistent_cell());
+        let _ = extension.call("addr", Some(vec![second]));
+        let (_, code) = extension.call("rpc_keepalive", Some(vec!["to-second".to_string()]));
+        assert_eq!(code, 0);
+
+        assert_eq!(
+            *seen_by_first.lock().unwrap_or_else(|e| e.into_inner()),
+            vec!["to-first".to_string()],
+            "the old daemon was still being talked to after retargeting"
+        );
+        assert_eq!(
+            *seen_by_second.lock().unwrap_or_else(|e| e.into_inner()),
+            vec!["to-second".to_string()]
+        );
+        assert!(!persistent_cell().is_poisoned());
     }
 
     #[test]

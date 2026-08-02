@@ -107,6 +107,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   needed one; nothing else about it changed. An ask for a slot in the first second after a run
   returns was refused five times in five before, and granted five times in five after. #138.
 
+- **An error out of the shim is now always valid JSON, and asking the shim for its address always
+  answers an address.** The shim's only escape was rewriting a `"` to a `'`, so any detail carrying
+  a backslash — a Windows path out of an io error, most plausibly — or a newline produced a line
+  the receiving side could not parse: it would have failed to read the error rather than reporting
+  it. Escaping now follows RFC 8259 and leaves everything else alone. Separately, retargeting the
+  shim answered `{"error":...}` if a panic elsewhere had poisoned a lock, where the call's contract
+  is the address in force and no caller can tell one from the other; the address is a whole string
+  replaced in one assignment, so that poison described a panic somewhere else and nothing about the
+  address, and it is now recovered rather than propagated. The cached connection is dropped on
+  retarget unconditionally, which it was not: a poisoned connection cell used to skip the drop and
+  leave the shim answering over a socket to the daemon it had just been moved off. #93.
+
 - **The no-Arma test suite no longer competes with the Arma tier for the machine.** One test that
   drives the harness end to end sends a Windows client, and a run that sends one takes the
   machine-wide lock on the one headed client — for real, because that test alone never moved its
