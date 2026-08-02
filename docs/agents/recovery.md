@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×7 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×8 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -13,7 +13,8 @@
 > work — the resumed agent's fetch-and-verify side caught it and corrected the
 > orchestrator, the first time that half of the contract has earned its keep against a
 > wrong briefing. Fourth amendment: the evidence-not-inference sentence in the briefing
-> section, from that instance.
+> section, from that instance. Eighth use (2026-08-02): #51's agent stalled mid-cycle
+> and resumed clean off a briefing to the same three-part contract, no amendment needed.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
