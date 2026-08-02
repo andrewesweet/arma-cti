@@ -50,7 +50,11 @@ _Avoid_: State, world state, telemetry; snapshot (reserved for the persisted Cam
 
 **Contact**:
 What one side has seen of the other, as it appears in that side's Observation: aggregated per place, carrying an estimated echelon (team, squad, platoon, company), a posture (foot, motorised, mechanised, armoured, air), any notable assets, and how long ago it was seen. Reported by squad leaders from what their units actually observed. A Contact never names an enemy Squad or its Order — it says what was seen, never what the enemy is or intends. Observing a place and finding nobody clears its Contact.
-_Avoid_: Sighting, blip, intel; enemy Squad (a Contact is not one); target (reserved for the engine's targeting)
+_Avoid_: Sighting (that is the raw world-side input a Contact is banded from, never a synonym for the Contact itself), blip, intel; enemy Squad (a Contact is not one); target (reserved for the engine's targeting)
+
+**Sighting**:
+One enemy thing one side's leaders currently know about, as the world reports it: a place, a perceived kind, and an age. The raw input a Contact is banded from; it crosses the boundary and goes no further — an Observation carries Contacts, never Sightings.
+_Avoid_: Contact (the banded output, not a synonym); spotting
 
 **Funds**:
 Per-side currency. Earned as income from held Objectives, spent through the Command Port.
