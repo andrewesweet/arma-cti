@@ -56,6 +56,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Squads are owned by the server for their whole life, and the build now says so.** An Order is
+  issued through nine engine calls, one of which — `setCurrentWaypoint` — is documented to work only
+  on the machine that owns the group, with four more declaring nothing at all. Handing a Squad to a
+  headless client would therefore write its Order and never switch the Squad onto it: an Order that
+  looks issued and is not. That every Squad is server-owned was true already but unwritten; it is now
+  a rule (ADR-0039), stated under **Squad** in the glossary and enforced by `just check`, which
+  rejects `setGroupOwner` anywhere but the headless-client desync diagnostic that predates it.
+
 - **The AI Commander's decision trace says Purchase, the word the rest of the game uses.** Its
   spending rows read `purchase rifle` and "300 Funds purchase no Squad this map sells" where they
   used to say "buy" — the one artefact that exists for a human to read and argue with was written in

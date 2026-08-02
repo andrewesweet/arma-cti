@@ -60,7 +60,7 @@ Every harness verdict carries a `class`. Read it before anything else. Untyped r
 
 **Always**: run `just check` + `just unit` after every edit; read the failure bundle before modifying code when one exists.
 
-**Never**: edit an acceptance spec to make it pass; add a sleep, retry, or timeout extension to make a test pass; introduce a bare `random` or bare `sleep` in SQF (seeded PRNG and the `cti_fnc_everyInterval` scheduler adapter only — deliberately not CBA, for the dependency reasoning its header records; #85); treat `infra_unavailable` as a result.
+**Never**: edit an acceptance spec to make it pass; add a sleep, retry, or timeout extension to make a test pass; introduce a bare `random` or bare `sleep` in SQF (seeded PRNG and the `cti_fnc_everyInterval` scheduler adapter only — deliberately not CBA, for the dependency reasoning its header records; #85); call `setGroupOwner` outside `fn_desyncLoad` — Squads are never transferred off the server, and `tools/check_sqf_bans.py` enforces it (ADR-0039, human decision on #117); treat `infra_unavailable` as a result.
 
 The Arma tier shares this machine with the human's play sessions, and WSL2 mirrored networking shares the port space with Windows. The tier may allocate within **[2400, 3000)** (human decision, 2026-08-02, on #47) and must never take 2302–2306. Slot scheme: `2402 + 100×N` per ADR-0028, so slot ports are predictable and Steam's derived +1/+2 stay inside the slot's stride.
 

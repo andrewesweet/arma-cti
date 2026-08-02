@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 check_sqf_bans = load_tool("check_sqf_bans")
 
 ADAPTER = "addons/main/functions/fn_prngNext.sqf"
+DESYNC_LOAD = "addons/main/functions/fn_desyncLoad.sqf"
 OTHER = "addons/main/functions/fn_other.sqf"
 
 
@@ -72,6 +73,36 @@ def test_matching_is_case_insensitive_because_sqf_is() -> None:
 
 def test_a_longer_identifier_is_not_the_banned_command() -> None:
     source = "private _random = selectRandom _list; _list call cti_fnc_randomish;"
+    assert check_sqf_bans.scan_source(source, OTHER) == []
+
+
+def test_the_order_path_may_not_transfer_a_squad_off_the_server() -> None:
+    # ADR-0039. setCurrentWaypoint is documented arg=local, so an Order issued
+    # to a group the server does not own is written and never taken up.
+    findings = check_sqf_bans.scan_source("_group setGroupOwner _target;", OTHER)
+    assert [(f.line, f.command) for f in findings] == [(1, "setGroupOwner")]
+
+
+def test_the_desync_diagnostic_keeps_its_exemption() -> None:
+    assert check_sqf_bans.scan_source("_group setGroupOwner _target;", DESYNC_LOAD) == []
+
+
+def test_the_desync_exemption_does_not_extend_to_the_prng_adapter() -> None:
+    # Each ban carries its own allowed set; being exempt from one is not
+    # being exempt from the other.
+    findings = check_sqf_bans.scan_source("_group setGroupOwner _target;", ADAPTER)
+    assert [f.command for f in findings] == ["setGroupOwner"]
+
+
+def test_the_ownership_message_cites_the_rule_rather_than_an_adapter() -> None:
+    (finding,) = check_sqf_bans.scan_source("_group setGroupOwner 3;", OTHER)
+    rendered = str(finding)
+    assert rendered.startswith(f"{OTHER}:1: `setGroupOwner` is banned outside {DESYNC_LOAD}")
+    assert rendered.endswith("Squads are never transferred off the server (ADR-0039).")
+
+
+def test_prose_about_ownership_transfer_is_not_a_transfer() -> None:
+    source = '// setGroupOwner hands the group over\ndiag_log "setGroupOwner";\n'
     assert check_sqf_bans.scan_source(source, OTHER) == []
 
 

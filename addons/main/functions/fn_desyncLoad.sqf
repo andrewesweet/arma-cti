@@ -59,6 +59,10 @@ for "_i" from 0 to (_groupCount - 1) do {
     (_destination get "position") params ["_toEast", "_toNorth"];
     _group move [_toEast, _toNorth, 0];
 
+    // The one exemption from ADR-0039's ban on setGroupOwner: these groups are
+    // throwaway load traffic for the #8 investigation, never Squads under
+    // Orders, so nothing here goes near fn_orderApply's local waypoint calls.
+    // tools/check_sqf_bans.py enforces the ban and names this file.
     if (_target >= 0 && {_group setGroupOwner _target}) then {
         _transferred = _transferred + 1;
     };

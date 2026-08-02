@@ -29,7 +29,7 @@ A capturable point of interest on a map's manifest, with a stable authored ID an
 _Avoid_: Town, sector, zone, POI
 
 **Squad**:
-The unit of command. Purchased whole, ordered whole; leadership passes to the engine AI on leader death, but a player squad leader reclaims leadership on respawn.
+The unit of command. Purchased whole, ordered whole; leadership passes to the engine AI on leader death, but a player squad leader reclaims leadership on respawn. A Squad is owned by the server for its whole life and is never transferred off it, because the Order path runs through scripting commands that are local to the owner (ADR-0039).
 _Avoid_: Group (reserved for the engine's group concept), team, fireteam
 
 **Order**:

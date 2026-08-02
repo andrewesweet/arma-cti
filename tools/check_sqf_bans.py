@@ -8,7 +8,8 @@ the one adapter that wraps it, and the same for `sleep` once a CBA scheduler
 adapter exists — so that scoping lives here.
 
 HEMTT still bans `sleep` and `uiSleep` outright; this gate re-bans `random` and
-allows it in the seeded PRNG adapter alone.
+allows it in the seeded PRNG adapter alone, and bans `setGroupOwner` everywhere
+but the one diagnostic that predates the rule (ADR-0039).
 
 Comments and string literals are stripped before matching, so prose that
 mentions a banned command (this file's own doc comments included) is not a
@@ -23,11 +24,26 @@ import sys
 from pathlib import Path
 from typing import Final, NamedTuple
 
-# Banned command -> the repo-relative files allowed to use it. A file earns a
-# place here by being the adapter that makes the command safe, and by carrying
-# an inline comment saying so.
-SCOPED_BANS: Final[dict[str, frozenset[str]]] = {
-    "random": frozenset({"addons/main/functions/fn_prngNext.sqf"}),
+
+class Ban(NamedTuple):
+    """One banned command: who may use it, and what everyone else does instead."""
+
+    allowed: frozenset[str]
+    remedy: str
+
+
+# Banned command -> its ban. A file earns a place on an `allowed` set by being
+# the adapter that makes the command safe, or by being the one place a project
+# rule exempts, and in either case by carrying an inline comment saying so.
+SCOPED_BANS: Final[dict[str, Ban]] = {
+    "random": Ban(
+        frozenset({"addons/main/functions/fn_prngNext.sqf"}),
+        "Draw through the adapter instead.",
+    ),
+    "setGroupOwner": Ban(
+        frozenset({"addons/main/functions/fn_desyncLoad.sqf"}),
+        "Squads are never transferred off the server (ADR-0039).",
+    ),
 }
 
 # Directories that are not our SQF: the vendored wiki quotes engine samples,
@@ -48,10 +64,10 @@ class Finding(NamedTuple):
 
     def __str__(self) -> str:
         """Render as an editor-clickable location."""
-        allowed = ", ".join(sorted(SCOPED_BANS[self.command])) or "nothing"
+        ban = SCOPED_BANS[self.command]
+        allowed = ", ".join(sorted(ban.allowed)) or "nothing"
         return (
-            f"{self.path}:{self.line}: `{self.command}` is banned outside {allowed}. "
-            f"Draw through the adapter instead."
+            f"{self.path}:{self.line}: `{self.command}` is banned outside {allowed}. {ban.remedy}"
         )
 
 
@@ -120,8 +136,8 @@ def scan_source(source: str, path: str) -> list[Finding]:
     """Report every banned command used in `source` that `path` may not use."""
     code = strip_noncode(source)
     findings: list[Finding] = []
-    for command, allowed in SCOPED_BANS.items():
-        if path in allowed:
+    for command, ban in SCOPED_BANS.items():
+        if path in ban.allowed:
             continue
         findings.extend(
             Finding(path, code.count("\n", 0, match.start()) + 1, command)
