@@ -61,6 +61,32 @@
       "by_vehicle"
     ]
   },
+  "observation": {
+    "document": [
+      "at",
+      "owners",
+      "hq",
+      "side",
+      "funds",
+      "squads",
+      "contacts"
+    ],
+    "squad": [
+      "id",
+      "type",
+      "size",
+      "order",
+      "place",
+      "at"
+    ],
+    "contact": [
+      "at",
+      "echelon",
+      "posture",
+      "assets",
+      "age"
+    ]
+  },
   "return_cap_bytes": 10240,
   "reply_guard_bytes": 9216,
   "echelons": [

@@ -33,6 +33,7 @@ from cti_daemon import (
     commands,
     contacts,
     economy,
+    observation,
     planner,
     port,
     protocol,
@@ -64,6 +65,13 @@ def render(table: economy.EconomyTable) -> str:
         # samplers assemble and the document `cti_daemon.report` reads are one
         # declaration rather than two that agree by convention.
         "observe_report": report.exported(),
+        # And what goes back out: the Observation document a Commander plans
+        # against, field by field (#163). The last wire family that was mirrored
+        # by hand — `observation.serialise` named the keys and the map UI read
+        # them as literals, so a rename failed in-world on the human's own path
+        # and nowhere earlier. Declared here, the SQF literals have something to
+        # be tested against without Arma.
+        "observation": observation.exported(),
         # The engine's own return cap, and where the world refuses to go quietly
         # (#78). `cti_fnc_daemonCall` reads the guard from here rather than
         # carrying a literal held equal to the Python one by a source-grep test:

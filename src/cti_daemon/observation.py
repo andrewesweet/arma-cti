@@ -120,6 +120,23 @@ class Observation:
             raise ValueError(message)
 
 
+# The document's own keys, declared once for the same reason the records below
+# are (#163). `serialise` wrote them and `parse` read them as literals, which is
+# two copies of a wire contract agreeing by eye; a Commander's view splits into
+# the part every picture carries and the part only a side's does, because that
+# split *is* the projection `__post_init__` enforces.
+AT_KEY: Final = "at"
+OWNERS_KEY: Final = "owners"
+HQ_KEY: Final = "hq"
+SIDE_KEY: Final = "side"
+FUNDS_KEY: Final = "funds"
+SQUADS_KEY: Final = "squads"
+CONTACTS_KEY: Final = "contacts"
+
+PUBLIC_FIELDS: Final[tuple[str, ...]] = (AT_KEY, OWNERS_KEY, HQ_KEY)
+SIDE_FIELDS: Final[tuple[str, ...]] = (SIDE_KEY, FUNDS_KEY, SQUADS_KEY, CONTACTS_KEY)
+DOCUMENT_FIELDS: Final[tuple[str, ...]] = PUBLIC_FIELDS + SIDE_FIELDS
+
 # The wire names of the two repeated records, declared once (#87). `serialise`
 # and `parse` both read this, so a rename is one edit rather than two held in
 # step by a round-trip test noticing afterwards. Wire name first because that is
@@ -167,19 +184,37 @@ def _built[T](
     return record(**values)
 
 
+def exported() -> dict[str, list[str]]:
+    """Render the document's field names, as the map UI reads them.
+
+    Names only, for the reason `cti_daemon.report.exported` gives on the inbound
+    half: what a field must *be* is judged in Python, and a copy of those rules
+    in SQF would be a second answer to the same question (ADR-0012). This is the
+    outbound half of that seam (#163) — the map UI reads these keys by literal,
+    and `tests/unit/test_observation_schema.py` holds its literals to this list.
+    """
+    return {
+        "document": list(DOCUMENT_FIELDS),
+        "squad": [key for key, _ in SQUAD_FIELDS],
+        "contact": [key for key, _ in CONTACT_FIELDS],
+    }
+
+
 def serialise(observation: Observation) -> dict[str, Any]:
     """Render an observation as the document that crosses the wire."""
     document: dict[str, Any] = {
-        "at": observation.at_time,
-        "owners": observation.owners,
-        "hq": observation.hq,
+        AT_KEY: observation.at_time,
+        OWNERS_KEY: observation.owners,
+        HQ_KEY: observation.hq,
     }
     if observation.for_side == PUBLIC:
         return document
-    document["side"] = observation.for_side
-    document["funds"] = observation.funds
-    document["squads"] = [_rendered(squad, SQUAD_FIELDS) for squad in observation.squads]
-    document["contacts"] = [_rendered(contact, CONTACT_FIELDS) for contact in observation.contacts]
+    document[SIDE_KEY] = observation.for_side
+    document[FUNDS_KEY] = observation.funds
+    document[SQUADS_KEY] = [_rendered(squad, SQUAD_FIELDS) for squad in observation.squads]
+    document[CONTACTS_KEY] = [
+        _rendered(contact, CONTACT_FIELDS) for contact in observation.contacts
+    ]
     return document
 
 
@@ -191,10 +226,10 @@ def parse(document: dict[str, Any]) -> Observation:
     a broken build rather than untrusted input. Anything arriving from the world
     is validated in `cti_daemon.report`, which is the module that exists for it.
     """
-    at_time = document["at"]
-    owners = dict(document["owners"])
-    hq = dict(document.get("hq", {}))
-    for_side = document.get("side", PUBLIC)
+    at_time = document[AT_KEY]
+    owners = dict(document[OWNERS_KEY])
+    hq = dict(document.get(HQ_KEY, {}))
+    for_side = document.get(SIDE_KEY, PUBLIC)
     if for_side == PUBLIC:
         return Observation(at_time=at_time, owners=owners, hq=hq)
     return Observation(
@@ -202,9 +237,9 @@ def parse(document: dict[str, Any]) -> Observation:
         owners=owners,
         hq=hq,
         for_side=for_side,
-        funds=document["funds"],
-        squads=tuple(_built(SquadView, squad, SQUAD_FIELDS) for squad in document["squads"]),
+        funds=document[FUNDS_KEY],
+        squads=tuple(_built(SquadView, squad, SQUAD_FIELDS) for squad in document[SQUADS_KEY]),
         contacts=tuple(
-            _built(Contact, contact, CONTACT_FIELDS) for contact in document["contacts"]
+            _built(Contact, contact, CONTACT_FIELDS) for contact in document[CONTACTS_KEY]
         ),
     )

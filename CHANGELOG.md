@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The Observation a Commander plans against is now a declared wire shape rather than a
+  convention.** It was the last family whose two sides were mirrored by hand: the daemon named the
+  document's keys as literals in `serialise` and read them back as literals in `parse`, and the map
+  UI read them as a third set of literals in SQF — so renaming a Squad's `type` or a Contact's
+  `echelon` failed nowhere until a Play Session, on the human's own path. The names are declared
+  once in `cti_daemon.observation`, exported into `command-schema.json` beside the inbound report's
+  shapes, and the map functions' literals are held to that export by `just unit`. The wire itself is
+  byte-for-byte what it was. #163.
+
 - **A delegated decision can no longer land without saying what would overturn it.** ADR-0019 has
   required that section since the day it retrofitted ADR-0015 for missing one, and nothing checked:
   three ADRs reached a guided review of all twenty-nine delegated decisions without it, found only
