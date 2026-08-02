@@ -17,12 +17,6 @@
     if (_extension isEqualTo "") exitWith {
         diag_log "CTI|FAIL class=infra_unavailable cycle_a_no_shim";
     };
-    private _rpc = {
-        params ["_envelope"];
-        private _raw = ((call cti_fnc_shimName) callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
-        fromJSON _raw
-    };
-
     // The seeded PRNG, drawn from a fixed seed. Whatever this is, leg B must
     // draw the same — a stream that carried over would not.
     private _stream = [77777] call cti_fnc_prngNew;
@@ -37,17 +31,10 @@
     // this world (#81).
     [20] call cti_probe_fnc_worldReady;
 
-    // Roster: two Squads on WEST's books.
+    // Roster: two Squads on WEST's books. Through the shared helper, which reads
+    // the judgement the leg used to throw away (#84, #86).
     for "_i" from 1 to 2 do {
-        [createHashMapFromArray [
-            ["id", format ["cycle-a-buy-%1", _i]],
-            ["verb", "command"],
-            ["payload", createHashMapFromArray [
-                ["command", "purchase"],
-                ["side", "WEST"],
-                ["args", createHashMapFromArray [["squad_type", "rifle"]]]
-            ]]
-        ]] call _rpc;
+        [format ["cycle-a-buy-%1", _i]] call cti_probe_fnc_buySquad;
     };
     private _deadline = diag_tickTime + 60;
     waitUntil {
@@ -88,7 +75,7 @@
         ["id", "cycle-a-view"],
         ["verb", "view"],
         ["payload", createHashMapFromArray [["side", "WEST"]]]
-    ]] call _rpc;
+    ]] call cti_probe_fnc_rpc;
     private _result = _view getOrDefault ["result", createHashMap];
     diag_log format ["CTI|cycle_state leg=a funds=%1 squads=%2 owners=%3",
         _result getOrDefault ["funds", -1],

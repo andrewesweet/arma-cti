@@ -21,12 +21,6 @@
     if (_extension isEqualTo "") exitWith {
         diag_log "CTI|FAIL class=infra_unavailable cycle_b_no_shim";
     };
-    private _rpc = {
-        params ["_envelope"];
-        private _raw = ((call cti_fnc_shimName) callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
-        fromJSON _raw
-    };
-
     // PRNG. Same seed, same five draws, or a stream carried over.
     private _stream = [77777] call cti_fnc_prngNew;
     private _draws = [];
@@ -41,7 +35,7 @@
         ["id", "cycle-b-echo"],
         ["verb", "ping"],
         ["payload", createHashMap]
-    ]] call _rpc;
+    ]] call cti_probe_fnc_rpc;
     if !((_echo getOrDefault ["id", ""]) isEqualTo "cycle-b-echo") exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed cycle_b_shim_no_echo reply=%1", _echo];
     };
@@ -58,7 +52,7 @@
         ["id", "cycle-b-view"],
         ["verb", "view"],
         ["payload", createHashMapFromArray [["side", "WEST"]]]
-    ]] call _rpc;
+    ]] call cti_probe_fnc_rpc;
     private _result = _view getOrDefault ["result", createHashMap];
     if (count _result isEqualTo 0) exitWith {
         diag_log format ["CTI|FAIL class=oracle_disagreement cycle_b_no_view reply=%1", _view];

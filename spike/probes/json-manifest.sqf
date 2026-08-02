@@ -31,12 +31,6 @@
         diag_log "CTI|FAIL class=infra_unavailable json_probe_no_shim";
     };
 
-    private _rpc = {
-        params ["_envelope"];
-        private _raw = ((call cti_fnc_shimName) callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
-        fromJSON _raw
-    };
-
     // The world built and both server loops turned once (#46, replacing a fixed
     // 20 s settle and keeping its 20 s as the deadline). Only the first of the
     // three is this probe's business, but a shared runway is one place to be
@@ -176,7 +170,7 @@
             ["side", "WEST"],
             ["args", createHashMapFromArray [["squad_type", "rifle"]]]
         ]]
-    ]] call _rpc;
+    ]] call cti_probe_fnc_rpc;
     if !(_reply isEqualType createHashMap) exitWith {
         diag_log "CTI|FAIL class=oracle_disagreement json_probe_unreadable_reply";
     };
@@ -199,7 +193,7 @@
             ["side", "WEST"],
             ["args", createHashMapFromArray [["squad_type", "battleship"]]]
         ]]
-    ]] call _rpc;
+    ]] call cti_probe_fnc_rpc;
     private _code = (_refusal getOrDefault ["reason", createHashMap]) getOrDefault ["code", ""];
     if !((_refusal getOrDefault ["status", ""]) isEqualTo "rejected") then {
         diag_log format ["CTI|FAIL class=assertion_failed json_probe_nonsense_not_refused=%1", _refusal];

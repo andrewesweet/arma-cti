@@ -47,20 +47,14 @@
     // one run and found them in seconds on the next — and the subject here is
     // what happens *after* acquisition, so the setup is made reliable rather
     // than waited out.
+    // The reply used to be dropped on the floor here, and by an inline call that
+    // did not even parse it — so a refused Purchase surfaced sixty seconds later
+    // as `timeout decay_probe_no_squad`, which blames synchronisation for a
+    // judgement. The helper reads the status on the synchronous call, where a
+    // refusal is `assertion_failed` (#84, #86).
     private _wanted = 2;
     for "_i" from 1 to _wanted do {
-        [createHashMapFromArray [
-            ["id", format ["decay-probe-buy-%1", _i]],
-            ["verb", "command"],
-            ["payload", createHashMapFromArray [
-                ["command", "purchase"],
-                ["side", "WEST"],
-                ["args", createHashMapFromArray [["squad_type", "rifle"]]]
-            ]]
-        ]] call {
-            params ["_envelope"];
-            ((call cti_fnc_shimName) callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0
-        };
+        [format ["decay-probe-buy-%1", _i]] call cti_probe_fnc_buySquad;
     };
 
     private _deadline = diag_tickTime + 60;
@@ -101,49 +95,13 @@
         count units _east, mapGridPosition _muster, mapGridPosition (leader _group),
         (leader _group) distance2D _muster, alive (leader _group)];
 
-    // Walk the enemy round the compass until somebody sees them. A bearing off
-    // the leader's facing is a guess about line of sight, and on an airfield it
-    // lands behind a hangar often enough to matter: three runs sat at
-    // `knows_east=0` for the whole window with the men standing 90 m away and
-    // nothing between them but a building. Re-placing rather than waiting longer
-    // is the fix, because the wait was never the problem. Nothing here tells the
-    // knowledge model anything — it arranges for there to be something to see,
-    // and the engine still decides whether it sees it.
-    private _bearings = [0, 45, 90, 135, 180, 225, 270, 315];
-    private _attempt = 0;
-    private _nextMove = 0;
-
-    _deadline = diag_tickTime + 150;
-    private _report = createHashMap;
-    private _nextLog = 0;
-    waitUntil {
-        if (diag_tickTime > _nextMove) then {
-            _nextMove = diag_tickTime + 15;
-            private _bearing = _bearings select (_attempt mod (count _bearings));
-            private _where = (leader _group) getRelPos [100, _bearing];
-            {
-                _x setPosATL [(_where # 0) + (_forEachIndex * 3), (_where # 1), 0];
-            } forEach units _east;
-            _attempt = _attempt + 1;
-            diag_log format ["CTI|decay_probe_placing attempt=%1 bearing=%2 at=%3",
-                _attempt, _bearing, mapGridPosition _where];
-        };
-        _report = call _sample;
-        if (diag_tickTime > _nextLog) then {
-            _nextLog = diag_tickTime + 10;
-            private _who = leader _group;
-            diag_log format ["CTI|decay_probe_waiting seen=%1 knows_any=%2 knows_east=%3 range=%4 east_alive=%5 knowsAbout=%6",
-                count (_report getOrDefault ["seen", []]),
-                count (_who targetsQuery [objNull, sideUnknown, "", [], 0]),
-                count ((_who targetsQuery [objNull, east, "", [], 0]) select {
-                    (_x # 2) isEqualTo east
-                }),
-                _who distance2D (leader _east),
-                { alive _x } count units _east,
-                _who knowsAbout (units _east # 0)];
-        };
-        count (_report getOrDefault ["seen", []]) > 0 || { diag_tickTime > _deadline }
-    };
+    // Walk the enemy round the compass until somebody sees them, with the same
+    // 150 s deadline. The loop itself moved to the prelude in #86, where
+    // `contacts.sqf`'s silent near-copy of it was reconciled against this one;
+    // this probe's diagnostics are what won, so the `probe_walk_placing` and
+    // `probe_walk_waiting` lines below are `decay_probe_placing` and
+    // `decay_probe_waiting` under the shared name.
+    private _report = [_east, _group, "WEST", 150] call cti_probe_fnc_walkIntoView;
     private _seen = _report getOrDefault ["seen", []];
     if (count _seen isEqualTo 0) exitWith {
         diag_log "CTI|FAIL class=timeout decay_probe_never_acquired";

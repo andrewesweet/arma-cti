@@ -54,12 +54,6 @@
         diag_log "CTI|FAIL class=infra_unavailable casualty_probe_no_shim";
     };
 
-    private _rpc = {
-        params ["_envelope"];
-        private _raw = ((call cti_fnc_shimName) callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
-        fromJSON _raw
-    };
-
     // The world built and both server loops turned once (#46, replacing a fixed
     // 20 s settle and keeping its 20 s as the deadline). Ahead of the map read
     // rather than after it, which is where the settle used to sit: the map is
@@ -74,17 +68,12 @@
     };
 
     // One Squad a side, through the port, because that is the only way a Squad
-    // gets onto the roster the recorder attributes against (ADR-0012).
+    // gets onto the roster the recorder attributes against (ADR-0012). The
+    // helper reads the reply the loop used to throw away, so a refusal here is
+    // `assertion_failed` about a Purchase rather than the `timeout` about a
+    // Squad that the wait below would otherwise report (#84).
     {
-        [createHashMapFromArray [
-            ["id", format ["casualty-probe-buy-%1", _x]],
-            ["verb", "command"],
-            ["payload", createHashMapFromArray [
-                ["command", "purchase"],
-                ["side", _x],
-                ["args", createHashMapFromArray [["squad_type", "rifle"]]]
-            ]]
-        ]] call _rpc;
+        [format ["casualty-probe-buy-%1", _x], _x] call cti_probe_fnc_buySquad;
     } forEach ["WEST", "EAST"];
 
     private _deadline = diag_tickTime + 60;
@@ -213,5 +202,4 @@
 
     diag_log format ["CTI|casualty_probe_done staged=3 undrained=%1",
         count (missionNamespace getVariable ["cti_casualties", []])];
-    diag_log "CTI|probe_done casualties";
 };

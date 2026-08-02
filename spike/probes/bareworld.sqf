@@ -2,7 +2,7 @@
 // issues: 23
 // window: 150
 //
-// #23 in-world probe: the Phase-1 world stands up, and the four things only a
+// #23 in-world probe: the Phase-1 world stands up, and the six things only a
 // live engine can answer for are true of it.
 //
 // `just regress bareworld`, or by hand `just probe spike/probes/bareworld.sqf`.
@@ -26,7 +26,9 @@
 // the Phase-0 measurement mission, which nothing runs per issue: the addon
 // resolving by name on a dedicated server, the seeded PRNG against the real
 // engine, and the daemon echoing a request id back through `callExtension`.
-// The fourth — the loops actually turning — has never been asserted anywhere.
+// The other three — the world the manifest describes actually getting built,
+// and each of the two server loops actually turning — had never been asserted
+// anywhere when this landed.
 [] spawn {
     // 1. The addon loaded. CfgFunctions compiles per machine, so a name that
     // does not resolve here means the addon never reached this one.

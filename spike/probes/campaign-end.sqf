@@ -105,14 +105,10 @@
         diag_log "CTI|FAIL class=assertion_failed end_probe_no_map";
     };
 
-    private _placeNamed = {
-        params ["_id"];
-        private _found = createHashMap;
-        { if ((_x getOrDefault ["id", ""]) isEqualTo _id) exitWith { _found = _x } }
-            forEach (_objectives + _bases);
-        _found
-    };
-    private _target = ["csat_kamino"] call _placeNamed;
+    // Places by id off the index `cti_fnc_worldInit` derives beside `cti_map`
+    // (#109), rather than the linear scan this and two other probes each carried
+    // a copy of.
+    private _target = ["csat_kamino"] call cti_probe_fnc_placeNamed;
     private _hq = missionNamespace getVariable [_target getOrDefault ["hq", ""], objNull];
     if (isNull _hq) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed end_probe_no_hq name=%1",
@@ -122,17 +118,9 @@
     // ------------------------------------------------ topology
     // The MVP test topology is a dedicated server plus a headless client. A run
     // without the headless client is a different run, so it is refused rather
-    // than reported as a pass.
-    private _deadline = diag_tickTime + 120;
-    private _headless = 0;
-    waitUntil {
-        _headless = 0;
-        {
-            private _info = getUserInfo _x;
-            if (count _info > 7 && { _info # 7 }) then { _headless = _headless + 1 };
-        } forEach allUsers;
-        _headless > 0 || { diag_tickTime > _deadline }
-    };
+    // than reported as a pass. Three probes had this loop verbatim (#86); the
+    // count comes back and each still refuses under its own name.
+    private _headless = [120] call cti_probe_fnc_headlessClients;
     if (_headless isEqualTo 0) exitWith {
         diag_log format ["CTI|FAIL class=infra_unavailable end_probe_no_headless_client users=%1 hint=%2",
             count allUsers, "is CTI_HOLD_HC=1 set?"];
@@ -142,17 +130,15 @@
     // Nobody sends a Command in this probe, here or below. What is waited for is
     // each Commander having bought something off its own picture — otherwise a
     // Campaign could be "won" against a side nobody was playing.
-    private _sideOf = createHashMapFromArray [["WEST", west], ["EAST", east]];
+    // Four probes counted a side's Squads by hand (#86). The prelude's helper
+    // answers the roster itself; two of the four wanted only the size of it, and
+    // `count` is that.
     private _fielded = {
         params ["_name"];
-        private _found = 0;
-        {
-            if (!isNull _y && { side _y isEqualTo (_sideOf get _name) }) then { _found = _found + 1 };
-        } forEach (missionNamespace getVariable ["cti_squads", createHashMap]);
-        _found
+        count ([_name] call cti_probe_fnc_squadsOf)
     };
 
-    _deadline = diag_tickTime + 120;
+    private _deadline = diag_tickTime + 120;
     waitUntil {
         (["WEST"] call _fielded > 0 && { ["EAST"] call _fielded > 0 })
             || { diag_tickTime > _deadline }
@@ -258,19 +244,13 @@
     // On the line between the enemy Base's HQ and the Objective the manifest
     // calls adjacent to that Base, 250 m out. Authored ground rather than a
     // bearing off somebody's facing — #28's lesson, which cost two probes.
-    private _adjacent = [(_target getOrDefault ["adjacent", [""]]) # 0] call _placeNamed;
+    private _adjacent = [(_target getOrDefault ["adjacent", [""]]) # 0] call cti_probe_fnc_placeNamed;
     if (count _adjacent isEqualTo 0) exitWith {
         diag_log "CTI|FAIL class=assertion_failed end_probe_no_adjacent_place";
     };
-    (_adjacent get "position") params ["_fromEast", "_fromNorth"];
-    private _runEast = _fromEast - (_hqAt # 0);
-    private _runNorth = _fromNorth - (_hqAt # 1);
-    private _span = sqrt ((_runEast * _runEast) + (_runNorth * _runNorth));
-    private _approach = [
-        (_hqAt # 0) + (_runEast / _span * 250),
-        (_hqAt # 1) + (_runNorth / _span * 250),
-        0
-    ];
+    // The eight lines of run/span/normalise/scale this used to be are two engine
+    // commands the wiki ships (#108, #86): see `cti_probe_fnc_approach`.
+    ([_hqAt, _adjacent get "position", 250] call cti_probe_fnc_approach) params ["_approach"];
     {
         _x setPosATL [(_approach # 0) + (_forEachIndex * 4), _approach # 1, 0];
     } forEach units _attacker;

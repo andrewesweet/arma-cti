@@ -50,12 +50,6 @@
         diag_log "CTI|client_port_probe_done";
     };
 
-    private _rpc = {
-        params ["_envelope"];
-        private _raw = ((call cti_fnc_shimName) callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
-        fromJSON _raw
-    };
-
     // One side's board as the daemon holds it: [funds, squads]. Read through
     // the same `view` verb the Commander's own picture comes from, so what the
     // probe checks and what the person would see are one answer.
@@ -65,7 +59,7 @@
             ["id", format ["client-port-probe-view-%1-%2", _for, round (diag_tickTime * 1000)]],
             ["verb", "view"],
             ["payload", createHashMapFromArray [["side", _for]]]
-        ]] call _rpc) getOrDefault ["result", createHashMap];
+        ]] call cti_probe_fnc_rpc) getOrDefault ["result", createHashMap];
         [_result getOrDefault ["funds", -1], count (_result getOrDefault ["squads", []])]
     };
 
@@ -85,24 +79,21 @@
         diag_log "CTI|client_port_probe_done";
     };
 
-    private _deadline = diag_tickTime + _waitFor;
-    waitUntil {
-        count (missionNamespace getVariable ["cti_commanders", createHashMap]) > 0
-            || { diag_tickTime > _deadline }
-    };
-
+    // Which client the server swept into a slot, and the unit behind the UID it
+    // latched. `human-commander` had the same lookup (#86); the two refuse
+    // differently — this one in the leg grammar the runner scores — so the helper
+    // finds and this decides.
+    ([_waitFor] call cti_probe_fnc_commanderSlot) params ["_side", "_uid", "_unit"];
+    // The sweep's own HashMap, which the unassigned step below overwrites in
+    // place rather than clearing.
     private _assigned = missionNamespace getVariable ["cti_commanders", createHashMap];
-    if (count _assigned isEqualTo 0) exitWith {
+    if (_side isEqualTo "") exitWith {
         diag_log format ["CTI|FAIL class=timeout client_port_probe_no_client_assigned waited=%1 players=%2",
             _waitFor, count allPlayers];
         diag_log "CTI|LEG name=client_port_caller status=unverified reason=no_person_in_a_commander_slot";
         diag_log "CTI|client_port_probe_done";
     };
 
-    private _side = (keys _assigned) # 0;
-    private _uid = _assigned get _side;
-    private _unit = objNull;
-    { if (getPlayerUID _x isEqualTo _uid) exitWith { _unit = _x } } forEach allPlayers;
     if (isNull _unit) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_assigned_uid_absent uid=%1", _uid];
         diag_log "CTI|LEG name=client_port_caller status=unverified reason=assigned_uid_holds_no_unit";
@@ -140,6 +131,40 @@
         diag_log "CTI|client_port_probe_done";
     };
 
+    // The scaffold four of the five judged steps repeated verbatim: wait for
+    // cti_fnc_portReply to land a judgement on this client, unpack it into the
+    // six-element ack, and publish. #86 moved it onto the client once rather
+    // than writing it out per step — it has to live *there* because that is
+    // where the judgement arrives, and a code block remoteExec'd from here
+    // cannot close over a step's own private variables. The step keeps what is
+    // genuinely its own: what it sends, and the note it sends about itself.
+    //
+    // `_readFunds` is false for the steps that were never asking about Funds and
+    // wrote -1 into the field by hand; the ack keeps saying -1 for those.
+    {
+        cti_probeJudge = {
+            params ["_step", ["_note", ""], ["_readFunds", true]];
+            private _by = diag_tickTime + 60;
+            waitUntil { !isNil "cti_lastJudgement" || { diag_tickTime > _by } };
+            private _judgement = missionNamespace getVariable ["cti_lastJudgement", createHashMap];
+            private _reason = _judgement getOrDefault ["reason", createHashMap];
+            private _funds = -1;
+            if (_readFunds) then {
+                _funds = (_judgement getOrDefault ["result", createHashMap])
+                    getOrDefault ["funds", -1];
+            };
+            cti_probeAck = [
+                _step,
+                _judgement getOrDefault ["status", "nothing-arrived"],
+                _reason getOrDefault ["code", ""],
+                _reason getOrDefault ["detail", ""],
+                _funds,
+                _note
+            ];
+            publicVariable "cti_probeAck";
+        };
+    } remoteExec ["call", _target];
+
     private _drive = {
         params ["_step", "_code", ["_wait", 90]];
         cti_probeAck = nil;
@@ -164,26 +189,15 @@
     // and the judgement back on the client that sent it — which is where
     // cti_fnc_portReply put it, and the only place it may be read from.
     ([_side] call _board) params ["_fundsBefore", "_squadsBefore"];
-    ([_other] call _board) params ["_otherFundsBefore", "_otherSquadsBefore"];
+    ([_other] call _board) params ["", "_otherSquadsBefore"];
 
     private _accepted = ["accepted", {
         [] spawn {
             cti_lastJudgement = nil;
             private _cmd = ["purchase", [["squad_type", "rifle"]]] call cti_fnc_command;
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
-            private _by = diag_tickTime + 60;
-            waitUntil { !isNil "cti_lastJudgement" || { diag_tickTime > _by } };
-            private _judgement = missionNamespace getVariable ["cti_lastJudgement", createHashMap];
-            private _reason = _judgement getOrDefault ["reason", createHashMap];
-            cti_probeAck = [
-                "accepted",
-                _judgement getOrDefault ["status", "nothing-arrived"],
-                _reason getOrDefault ["code", ""],
-                _reason getOrDefault ["detail", ""],
-                (_judgement getOrDefault ["result", createHashMap]) getOrDefault ["funds", -1],
-                format ["sent side=%1", _cmd getOrDefault ["side", "?"]]
-            ];
-            publicVariable "cti_probeAck";
+            ["accepted", format ["sent side=%1", _cmd getOrDefault ["side", "?"]]]
+                call cti_probeJudge;
         };
     }] call _drive;
 
@@ -222,19 +236,7 @@
             private _cmd = ["purchase", [["squad_type", "rifle"]]] call cti_fnc_command;
             _cmd set ["side", _lie];
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
-            _by = diag_tickTime + 60;
-            waitUntil { !isNil "cti_lastJudgement" || { diag_tickTime > _by } };
-            private _judgement = missionNamespace getVariable ["cti_lastJudgement", createHashMap];
-            private _reason = _judgement getOrDefault ["reason", createHashMap];
-            cti_probeAck = [
-                "forged",
-                _judgement getOrDefault ["status", "nothing-arrived"],
-                _reason getOrDefault ["code", ""],
-                _reason getOrDefault ["detail", ""],
-                (_judgement getOrDefault ["result", createHashMap]) getOrDefault ["funds", -1],
-                format ["%1 claimed %2", _mine, _lie]
-            ];
-            publicVariable "cti_probeAck";
+            ["forged", format ["%1 claimed %2", _mine, _lie]] call cti_probeJudge;
         };
     }] call _drive;
 
@@ -248,8 +250,8 @@
             _forged # 5, format ["%1 claimed %2", _side, _other]];
     };
 
-    ([_side] call _board) params ["_fundsForged", "_squadsForged"];
-    ([_other] call _board) params ["_otherFundsForged", "_otherSquadsForged"];
+    ([_side] call _board) params ["", "_squadsForged"];
+    ([_other] call _board) params ["", "_otherSquadsForged"];
     if (_squadsForged isNotEqualTo _squadsAfter + 1) then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_forged_no_squad side=%1 before=%2 after=%3",
             _side, _squadsAfter, _squadsForged];
@@ -282,23 +284,11 @@
             cti_lastJudgement = nil;
             private _cmd = ["purchase", [["squad_type", "rifle"]]] call cti_fnc_command;
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
-            private _by = diag_tickTime + 60;
-            waitUntil { !isNil "cti_lastJudgement" || { diag_tickTime > _by } };
-            private _judgement = missionNamespace getVariable ["cti_lastJudgement", createHashMap];
-            private _reason = _judgement getOrDefault ["reason", createHashMap];
-            cti_probeAck = [
-                "unassigned",
-                _judgement getOrDefault ["status", "nothing-arrived"],
-                _reason getOrDefault ["code", ""],
-                _reason getOrDefault ["detail", ""],
-                (_judgement getOrDefault ["result", createHashMap]) getOrDefault ["funds", -1],
-                ""
-            ];
-            publicVariable "cti_probeAck";
+            ["unassigned"] call cti_probeJudge;
         };
     }] call _drive;
 
-    ([_side] call _board) params ["_fundsUnknown", "_squadsUnknown"];
+    ([_side] call _board) params ["", "_squadsUnknown"];
     _assigned set [_side, _uid];
 
     if (_unknown isEqualTo []) exitWith { "unassigned" call _legLost };
@@ -328,19 +318,7 @@
         [] spawn {
             cti_lastJudgement = nil;
             ["this is not a Command"] remoteExec ["cti_fnc_portGateway", 2];
-            private _by = diag_tickTime + 60;
-            waitUntil { !isNil "cti_lastJudgement" || { diag_tickTime > _by } };
-            private _judgement = missionNamespace getVariable ["cti_lastJudgement", createHashMap];
-            private _reason = _judgement getOrDefault ["reason", createHashMap];
-            cti_probeAck = [
-                "junk",
-                _judgement getOrDefault ["status", "nothing-arrived"],
-                _reason getOrDefault ["code", ""],
-                _reason getOrDefault ["detail", ""],
-                -1,
-                ""
-            ];
-            publicVariable "cti_probeAck";
+            ["junk", "", false] call cti_probeJudge;
         };
     }] call _drive;
 
@@ -359,19 +337,7 @@
                 ["side", ""],
                 ["args", createHashMap]
             ]] remoteExec ["cti_fnc_portGateway", 2];
-            private _by = diag_tickTime + 60;
-            waitUntil { !isNil "cti_lastJudgement" || { diag_tickTime > _by } };
-            private _judgement = missionNamespace getVariable ["cti_lastJudgement", createHashMap];
-            private _reason = _judgement getOrDefault ["reason", createHashMap];
-            cti_probeAck = [
-                "invented",
-                _judgement getOrDefault ["status", "nothing-arrived"],
-                _reason getOrDefault ["code", ""],
-                _reason getOrDefault ["detail", ""],
-                -1,
-                ""
-            ];
-            publicVariable "cti_probeAck";
+            ["invented", "", false] call cti_probeJudge;
         };
     }] call _drive;
 
@@ -382,7 +348,7 @@
     };
     "invented" call _legRan;
 
-    ([_side] call _board) params ["_fundsJunk", "_squadsJunk"];
+    ([_side] call _board) params ["", "_squadsJunk"];
     if (_squadsJunk isNotEqualTo _squadsForged) then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_junk_bought before=%1 after=%2",
             _squadsForged, _squadsJunk];

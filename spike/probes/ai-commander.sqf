@@ -50,13 +50,9 @@
     private _map = missionNamespace getVariable ["cti_map", createHashMap];
     private _objectives = _map getOrDefault ["objectives", []];
 
-    private _westSquads = {
-        private _found = createHashMap;
-        {
-            if (!isNull _y && { side _y isEqualTo west }) then { _found set [_x, _y] };
-        } forEach (missionNamespace getVariable ["cti_squads", createHashMap]);
-        _found
-    };
+    // Four probes counted a side's Squads by hand (#86); this is the prelude's
+    // copy, bound to the one side #16 is about.
+    private _westSquads = { ["WEST"] call cti_probe_fnc_squadsOf };
 
     // Nobody sends a Command here, and that is the whole test. The only input
     // the daemon gets is the report loop the world was already running.
@@ -155,7 +151,6 @@
             _bothSides = true;
             diag_log format ["CTI|FAIL class=assertion_failed ai_probe_commanded_both_sides east=%1", _east];
         };
-        _fielded
     };
 
     // The claim: an Order the AI issued is being carried out. Measured as ground
@@ -167,10 +162,12 @@
     // never covers it fails at the same moment, in the same class, as before.
     private _waitedFrom = diag_tickTime;
     _deadline = diag_tickTime + 150;
-    private _west = createHashMap;
     private _closed = 0;
     waitUntil {
-        _west = call _watch;
+        // `_watch` only watches (#84): it used to hand back the roster it had
+        // just judged, so its caller could not tell which of the two jobs it was
+        // reading. The roster is read where it is wanted, below.
+        call _watch;
         _closed = 0;
         {
             _y params ["_group", "_was"];
@@ -202,7 +199,7 @@
     };
 
     diag_log format ["CTI|ai_probe_state west=%1 east=%2 owners=%3 closed=%4 of=%5 waited=%6",
-        count _west, _east,
+        count (call _westSquads), _east,
         missionNamespace getVariable ["cti_objectiveOwner", createHashMap],
         _closed, count _marching, _waited];
 

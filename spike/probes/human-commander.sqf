@@ -44,12 +44,6 @@
         diag_log "CTI|FAIL class=infra_unavailable human_commander_probe_no_shim";
     };
 
-    private _rpc = {
-        params ["_envelope"];
-        private _raw = ((call cti_fnc_shimName) callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
-        fromJSON _raw
-    };
-
     // The world built and both server loops turned once (#46, replacing a fixed
     // 20 s settle and keeping its 20 s as the deadline).
     [20] call cti_probe_fnc_worldReady;
@@ -111,7 +105,7 @@
         ["id", "human-commander-probe-view-before"],
         ["verb", "view"],
         ["payload", createHashMapFromArray [["side", "WEST"]]]
-    ]] call _rpc) getOrDefault ["result", createHashMap];
+    ]] call cti_probe_fnc_rpc) getOrDefault ["result", createHashMap];
 
     private _sent = [["purchase", [["squad_type", "rifle"]]] call cti_fnc_command]
         call cti_fnc_portGateway;
@@ -125,7 +119,7 @@
         ["id", "human-commander-probe-view-after"],
         ["verb", "view"],
         ["payload", createHashMapFromArray [["side", "WEST"]]]
-    ]] call _rpc) getOrDefault ["result", createHashMap];
+    ]] call cti_probe_fnc_rpc) getOrDefault ["result", createHashMap];
     if ((_after getOrDefault ["funds", -1]) isNotEqualTo (_before getOrDefault ["funds", -2])) then {
         diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_refused_command_spent before=%1 after=%2",
             _before getOrDefault ["funds", "?"], _after getOrDefault ["funds", "?"]];
@@ -136,22 +130,14 @@
     // wire because that is how the world's own effects arrive, and the Squads
     // have to exist for the view to carry any.
     {
-        [createHashMapFromArray [
-            ["id", format ["human-commander-probe-buy-%1", _x]],
-            ["verb", "command"],
-            ["payload", createHashMapFromArray [
-                ["command", "purchase"],
-                ["side", _x],
-                ["args", createHashMapFromArray [["squad_type", "rifle"]]]
-            ]]
-        ]] call _rpc;
+        [format ["human-commander-probe-buy-%1", _x], _x] call cti_probe_fnc_buySquad;
     } forEach ["WEST", "EAST"];
 
     private _reply = [createHashMapFromArray [
         ["id", "human-commander-probe-view"],
         ["verb", "view"],
         ["payload", createHashMapFromArray [["side", "WEST"]]]
-    ]] call _rpc;
+    ]] call cti_probe_fnc_rpc;
 
     if !((_reply getOrDefault ["status", ""]) isEqualTo "ok") exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_view_refused reply=%1", _reply];
@@ -211,26 +197,17 @@
         diag_log "CTI|human_commander_probe_done";
     };
 
-    private _deadline = diag_tickTime + _waitFor;
-    waitUntil {
-        count (missionNamespace getVariable ["cti_commanders", createHashMap]) > 0
-            || { diag_tickTime > _deadline }
-    };
+    // Which client the server swept into a slot, and the unit behind the UID it
+    // latched. `client-port` had the same lookup (#86); the two refuse
+    // differently, so the helper finds and this decides.
+    ([_waitFor] call cti_probe_fnc_commanderSlot) params ["_commanded", "_uid", "_unit"];
 
-    private _assigned = missionNamespace getVariable ["cti_commanders", createHashMap];
-    diag_log format ["CTI|human_commander_probe_client_leg players=%1 assigned=%2 waited=%3",
-        count allPlayers, keys _assigned, _waitFor];
-
-    if (count _assigned isEqualTo 0) exitWith {
+    if (_commanded isEqualTo "") exitWith {
         diag_log "CTI|FAIL class=timeout human_commander_probe_no_client_assigned";
         diag_log "CTI|LEG name=human_commander_client status=unverified reason=no_person_in_a_commander_slot";
         diag_log "CTI|human_commander_probe_done";
     };
 
-    private _commanded = (keys _assigned) # 0;
-    private _uid = _assigned get _commanded;
-    private _unit = objNull;
-    { if (getPlayerUID _x isEqualTo _uid) exitWith { _unit = _x } } forEach allPlayers;
     if (isNull _unit) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_assigned_uid_absent uid=%1", _uid];
         diag_log "CTI|LEG name=human_commander_client status=unverified reason=assigned_uid_holds_no_unit";
@@ -244,7 +221,7 @@
         ["id", "human-commander-probe-client-before"],
         ["verb", "view"],
         ["payload", createHashMapFromArray [["side", _commanded]]]
-    ]] call _rpc) getOrDefault ["result", createHashMap]) getOrDefault ["funds", -1];
+    ]] call cti_probe_fnc_rpc) getOrDefault ["result", createHashMap]) getOrDefault ["funds", -1];
 
     // Driving the client rather than standing in for it: the Command is built on
     // the client, by the client's own UI path, and crosses the network through
@@ -284,7 +261,7 @@
             ["id", format ["human-commander-probe-client-poll-%1", round diag_tickTime]],
             ["verb", "view"],
             ["payload", createHashMapFromArray [["side", _commanded]]]
-        ]] call _rpc) getOrDefault ["result", createHashMap]) getOrDefault ["funds", -1];
+        ]] call cti_probe_fnc_rpc) getOrDefault ["result", createHashMap]) getOrDefault ["funds", -1];
         _now isNotEqualTo _funded || { diag_tickTime > _spentBy }
     };
 

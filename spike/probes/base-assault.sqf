@@ -40,24 +40,20 @@
         diag_log "CTI|FAIL class=infra_unavailable assault_probe_no_shim";
     };
 
-    private _rpc = {
-        params ["_envelope"];
-        private _raw = ((call cti_fnc_shimName) callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
-        fromJSON _raw
-    };
+    // The world built and both server loops turned once (#46, replacing a fixed
+    // 20 s settle and keeping its 20 s as the deadline). Ahead of the map read
+    // rather than behind it, which is where it used to sit: the map is the first
+    // thing this probe asks the world for, so the runway belongs in front of it —
+    // `casualties.sqf` moved its own for the same reason.
+    [20] call cti_probe_fnc_worldReady;
 
     private _map = missionNamespace getVariable ["cti_map", createHashMap];
-    private _placeNamed = {
-        params ["_id"];
-        private _found = createHashMap;
-        {
-            if ((_x getOrDefault ["id", ""]) isEqualTo _id) exitWith { _found = _x };
-        } forEach ((_map getOrDefault ["objectives", []]) + (_map getOrDefault ["bases", []]));
-        _found
-    };
 
-    private _target = ["csat_kamino"] call _placeNamed;
-    private _home = ["nato_airbase"] call _placeNamed;
+    // Places by id off the index `cti_fnc_worldInit` derives beside `cti_map`
+    // (#109), rather than the linear scan over the concatenated arrays this and
+    // two other probes each carried a copy of.
+    private _target = ["csat_kamino"] call cti_probe_fnc_placeNamed;
+    private _home = ["nato_airbase"] call cti_probe_fnc_placeNamed;
     if (count _target isEqualTo 0 || { count _home isEqualTo 0 }) exitWith {
         diag_log "CTI|FAIL class=assertion_failed assault_probe_no_bases";
     };
@@ -67,22 +63,12 @@
             _target getOrDefault ["hq", ""]];
     };
 
-    // The world built and both server loops turned once (#46, replacing a fixed
-    // 20 s settle and keeping its 20 s as the deadline).
-    [20] call cti_probe_fnc_worldReady;
-
-    // Two Squads: one to assault the enemy Base, one to defend its own.
+    // Two Squads: one to assault the enemy Base, one to defend its own. The
+    // helper reads the reply this loop used to throw away, so a refused Purchase
+    // is `assertion_failed` here rather than the `timeout` below (#84).
     private _wanted = 2;
     for "_i" from 1 to _wanted do {
-        [createHashMapFromArray [
-            ["id", format ["assault-probe-buy-%1", _i]],
-            ["verb", "command"],
-            ["payload", createHashMapFromArray [
-                ["command", "purchase"],
-                ["side", "WEST"],
-                ["args", createHashMapFromArray [["squad_type", "rifle"]]]
-            ]]
-        ]] call _rpc;
+        [format ["assault-probe-buy-%1", _i]] call cti_probe_fnc_buySquad;
     };
 
     // Judged on the call, carried out through the outbox: wait for the world to
@@ -105,20 +91,14 @@
 
     // The approach, from authored data alone: the line from the enemy Base's HQ
     // to the Objective the manifest calls adjacent to that Base, 250 m out.
-    private _adjacent = [(_target getOrDefault ["adjacent", [""]]) # 0] call _placeNamed;
+    private _adjacent = [(_target getOrDefault ["adjacent", [""]]) # 0] call cti_probe_fnc_placeNamed;
     if (count _adjacent isEqualTo 0) exitWith {
         diag_log "CTI|FAIL class=assertion_failed assault_probe_no_adjacent_place";
     };
     private _hqAt = getPosATL _hq;
-    (_adjacent get "position") params ["_fromEast", "_fromNorth"];
-    private _runEast = _fromEast - (_hqAt # 0);
-    private _runNorth = _fromNorth - (_hqAt # 1);
-    private _span = sqrt ((_runEast * _runEast) + (_runNorth * _runNorth));
-    private _approach = [
-        (_hqAt # 0) + (_runEast / _span * 250),
-        (_hqAt # 1) + (_runNorth / _span * 250),
-        0
-    ];
+    // The eight lines of run/span/normalise/scale this used to be are two engine
+    // commands the wiki ships (#108, #86): see `cti_probe_fnc_approach`.
+    ([_hqAt, _adjacent get "position", 250] call cti_probe_fnc_approach) params ["_approach"];
     {
         _x setPosATL [(_approach # 0) + (_forEachIndex * 4), _approach # 1, 0];
     } forEach units _attacker;
@@ -140,7 +120,7 @@
                     ["squad", _squadId], ["order", _order], ["place", _place]
                 ]]
             ]]
-        ]] call _rpc;
+        ]] call cti_probe_fnc_rpc;
         if ((_reply getOrDefault ["status", ""]) isNotEqualTo "ok") then {
             diag_log format ["CTI|FAIL class=assertion_failed assault_probe_order_refused squad=%1 order=%2 place=%3 reply=%4",
                 _squadId, _order, _place, _reply];
@@ -262,7 +242,7 @@
         ["id", "assault-probe-observe"],
         ["verb", "observe"],
         ["payload", createHashMapFromArray [["time", time], ["hq", _sample]]]
-    ]] call _rpc;
+    ]] call cti_probe_fnc_rpc;
     if ((_told getOrDefault ["status", ""]) isNotEqualTo "ok") then {
         diag_log format ["CTI|FAIL class=assertion_failed assault_probe_report_refused hq=%1 reply=%2",
             _sample, _told];

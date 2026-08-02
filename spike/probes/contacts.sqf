@@ -33,12 +33,6 @@
         diag_log "CTI|FAIL class=infra_unavailable contacts_probe_no_shim";
     };
 
-    private _rpc = {
-        params ["_envelope"];
-        private _raw = ((call cti_fnc_shimName) callExtension ["rpc_keepalive", [toJSON _envelope]]) # 0;
-        fromJSON _raw
-    };
-
     // The world built and both server loops turned once (#46, replacing a fixed
     // 20 s settle and keeping its 20 s as the deadline).
     [20] call cti_probe_fnc_worldReady;
@@ -48,19 +42,13 @@
     // twice and band a fire team as a squad. One leader could not catch that.
     private _wanted = 2;
     for "_i" from 1 to _wanted do {
-        [createHashMapFromArray [
-            ["id", format ["contacts-probe-buy-%1", _i]],
-            ["verb", "command"],
-            ["payload", createHashMapFromArray [
-                ["command", "purchase"],
-                ["side", "WEST"],
-                ["args", createHashMapFromArray [["squad_type", "rifle"]]]
-            ]]
-        ]] call _rpc;
+        [format ["contacts-probe-buy-%1", _i]] call cti_probe_fnc_buySquad;
     };
 
-    // The purchase is judged on the call; the Squad arrives through the outbox,
-    // so wait for the world to hold it rather than assuming the pump has run.
+    // The purchase is judged on the call — and the helper reads that judgement,
+    // so a refusal is `assertion_failed` here rather than the `timeout` below
+    // (#84). The Squad arrives through the outbox, so wait for the world to hold
+    // it rather than assuming the pump has run.
     private _deadline = diag_tickTime + 60;
     waitUntil {
         count (missionNamespace getVariable ["cti_squads", createHashMap]) >= _wanted
@@ -100,30 +88,12 @@
 
     // Wait for the engine to acquire them. A deadline rather than a `reveal`:
     // revealing would hand the knowledge model the answer, and the knowledge
-    // model is the thing under test.
-    // Walked round the compass until somebody sees them, for the reason
-    // `spike/probes/contact-decay.sqf` records: a bearing off the leader's
-    // facing is a guess about line of sight, and on an airfield it lands behind
-    // a hangar often enough to matter. This arranges for there to be something
-    // to see; the engine still decides whether it sees it.
-    private _bearings = [0, 45, 90, 135, 180, 225, 270, 315];
-    private _attempt = 0;
-    private _nextMove = 0;
-
-    _deadline = diag_tickTime + 150;
-    private _report = createHashMap;
-    waitUntil {
-        if (diag_tickTime > _nextMove) then {
-            _nextMove = diag_tickTime + 15;
-            private _where = _leader getRelPos [100, _bearings select (_attempt mod 8)];
-            {
-                _x setPosATL [(_where # 0) + (_forEachIndex * 3), (_where # 1), 0];
-            } forEach units _east;
-            _attempt = _attempt + 1;
-        };
-        _report = (call cti_fnc_contactSample) getOrDefault ["WEST", createHashMap];
-        count (_report getOrDefault ["seen", []]) > 0 || { diag_tickTime > _deadline }
-    };
+    // model is the thing under test. The compass walk and its 150 s deadline are
+    // unchanged; what moved is where they live — this probe and `contact-decay`
+    // had near-copies of the loop and #86 reconciled them into the prelude, on
+    // the noisier of the two, so this probe now logs the placement and progress
+    // lines it used to walk in silence without.
+    private _report = [_east, (values _squads) # 0, "WEST", 150] call cti_probe_fnc_walkIntoView;
 
     if (count (_report getOrDefault ["seen", []]) isEqualTo 0) exitWith {
         diag_log "CTI|FAIL class=timeout contacts_probe_never_acquired";
@@ -143,10 +113,9 @@
         params ["_who"];
         private _ids = [];
         {
-            if ((_x # 2) isEqualTo east) then {
-                private _id = netId (_x # 1);
-                if !(_id in _ids) then { _ids pushBack _id };
-            };
+            // pushBackUnique is the guarded pushBack this used to spell out
+            // (commands/pushBackUnique.wiki) — #108.
+            if ((_x # 2) isEqualTo east) then { _ids pushBackUnique (netId (_x # 1)) };
         } forEach (_who targetsQuery [objNull, east, "", [], 0]);
         _ids
     };
@@ -159,7 +128,10 @@
             _nextLook = diag_tickTime + 1;
             private _first = [leader ((values _squads) # 0)] call _knownBy;
             private _second = [leader ((values _squads) # 1)] call _knownBy;
-            _overlap = count (_first select { _x in _second });
+            // `_knownBy` already deduplicates, so the intersection and the
+            // hand-written filter are the same count
+            // (commands/arrayIntersect.wiki) — #108.
+            _overlap = count (_first arrayIntersect _second);
         };
         _overlap > 0 || { diag_tickTime > _overlapDeadline }
     };

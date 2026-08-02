@@ -53,35 +53,18 @@
     private _map = missionNamespace getVariable ["cti_map", createHashMap];
     private _objectives = _map getOrDefault ["objectives", []];
     // Keyed by the side's name, which is also the name the daemon and the
-    // manifest use, so nothing here needs a translation table.
-    private _sideOf = createHashMapFromArray [["WEST", west], ["EAST", east]];
+    // manifest use, so nothing here needs a translation table. Every Squad the
+    // world holds for one side, by Squad id, is `cti_probe_fnc_squadsOf` — four
+    // probes had a copy of it (#86).
     private _sides = ["WEST", "EAST"];
-
-    // Every Squad the world holds for one side, by Squad id.
-    private _squadsOf = {
-        params ["_name"];
-        private _side = _sideOf get _name;
-        private _found = createHashMap;
-        {
-            if (!isNull _y && { side _y isEqualTo _side }) then { _found set [_x, _y] };
-        } forEach (missionNamespace getVariable ["cti_squads", createHashMap]);
-        _found
-    };
 
     // ------------------------------------------------ topology
     // The MVP test topology is a dedicated server plus a headless client, and
     // #17 asks for the unattended run on it. A run without the headless client
-    // is a different run, so it is refused rather than reported as a pass.
-    private _deadline = diag_tickTime + 120;
-    private _headless = 0;
-    waitUntil {
-        _headless = 0;
-        {
-            private _info = getUserInfo _x;
-            if (count _info > 7 && { _info # 7 }) then { _headless = _headless + 1 };
-        } forEach allUsers;
-        _headless > 0 || { diag_tickTime > _deadline }
-    };
+    // is a different run, so it is refused rather than reported as a pass. Three
+    // probes had this loop verbatim (#86); the count comes back and each still
+    // refuses under its own name.
+    private _headless = [120] call cti_probe_fnc_headlessClients;
     if (_headless isEqualTo 0) exitWith {
         diag_log format ["CTI|FAIL class=infra_unavailable two_probe_no_headless_client users=%1 hint=%2",
             count allUsers, "is CTI_HOLD_HC=1 set?"];
@@ -92,10 +75,10 @@
     // ------------------------------------------------ both sides field a force
     // Nobody sends a Command here, and that is the whole test. The only input
     // either Commander gets is the report loop the world was already running.
-    _deadline = diag_tickTime + 120;
+    private _deadline = diag_tickTime + 120;
     private _bought = createHashMap;
     waitUntil {
-        { _bought set [_x, [_x] call _squadsOf] } forEach _sides;
+        { _bought set [_x, [_x] call cti_probe_fnc_squadsOf] } forEach _sides;
         (count (_bought get "WEST") >= 2 && { count (_bought get "EAST") >= 2 })
             || { diag_tickTime > _deadline }
     };
@@ -127,7 +110,7 @@
                 _found set [_x, [_y, leader _y distance2D (_order get "position"),
                     _order getOrDefault ["place", ""]]];
             };
-        } forEach ([_name] call _squadsOf);
+        } forEach ([_name] call cti_probe_fnc_squadsOf);
         _found
     };
 
@@ -212,7 +195,7 @@
             // without counting — shows up here first. Said once per side, the
             // first time it is true.
             {
-                private _fielded = [_x] call _squadsOf;
+                private _fielded = [_x] call cti_probe_fnc_squadsOf;
                 if (count _fielded > count _objectives && { !_runaway }) then {
                     _runaway = true;
                     diag_log format ["CTI|FAIL class=assertion_failed two_probe_runaway_force side=%1 squads=%2 objectives=%3",
@@ -263,7 +246,7 @@
     // reconciled back inside the window would pass.
     {
         diag_log format ["CTI|two_probe_ceiling side=%1 squads=%2 objectives=%3 runaway_seen=%4",
-            _x, count ([_x] call _squadsOf), count _objectives, _runaway];
+            _x, count ([_x] call cti_probe_fnc_squadsOf), count _objectives, _runaway];
     } forEach _sides;
 
     // ------------------------------------------------ the push path, at two sides
@@ -289,7 +272,7 @@
 
     // ------------------------------------------------ what the island looked like
     {
-        diag_log format ["CTI|two_probe_state side=%1 squads=%2", _x, count ([_x] call _squadsOf)];
+        diag_log format ["CTI|two_probe_state side=%1 squads=%2", _x, count ([_x] call cti_probe_fnc_squadsOf)];
     } forEach _sides;
     diag_log format ["CTI|two_probe_owners owners=%1 polls=%2",
         missionNamespace getVariable ["cti_objectiveOwner", createHashMap], _pollsAfter];
