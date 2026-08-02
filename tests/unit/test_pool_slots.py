@@ -699,11 +699,9 @@ def test_a_slot_that_dies_mid_probe_is_not_a_result(tmp_path: Path) -> None:
     assert sum(1 for v in got.values() if v["class"] == "pass") >= len(ALL_PROBES) - 3
 
 
-def test_a_dead_slot_leaves_the_lock_free_for_the_next_holder(tmp_path: Path) -> None:
-    """The kernel does this, and this asserts that nothing in the pool undoes it."""
-    pool_run(tmp_path, "--slots", "3", extra_env={"CTI_STUB_KILL": "casualties"})
+def acquire_the_whole_pool(tmp_path: Path) -> subprocess.CompletedProcess[str]:
     # S603: this repo's own library.
-    after = subprocess.run(  # noqa: S603
+    return subprocess.run(  # noqa: S603
         [
             BASH,
             "-c",
@@ -714,6 +712,48 @@ def test_a_dead_slot_leaves_the_lock_free_for_the_next_holder(tmp_path: Path) ->
         check=False,
         env={**os.environ, "CTI_TIER_STATE": str(tmp_path / "state")},
     )
+
+
+def test_a_dead_slot_leaves_the_lock_free_for_the_next_holder(tmp_path: Path) -> None:
+    """The kernel does this, and this asserts that nothing in the pool undoes it.
+
+    The wait is the arrangement's precondition, not a cushion: "the pool has
+    exited" and "the last descriptor on its locks is closed" are different
+    events, and the claim here is about the second. Without it the test asked at
+    an arbitrary instant after teardown and passed on the corpus being longer
+    than whatever was still holding on — which is timing luck, and #138 is the
+    case where the luck ran out.
+    """
+    pool_run(tmp_path, "--slots", "3", extra_env={"CTI_STUB_KILL": "casualties"})
+    for slot in (0, 1, 2):
+        wait_until_no_descriptor_is_left(tmp_path, slot)
+    after = acquire_the_whole_pool(tmp_path)
+    assert after.returncode == 0, after.stderr
+
+
+def test_the_pool_leaves_no_descriptor_behind_when_it_exits(tmp_path: Path) -> None:
+    """Issue #138, and the reason the test above could be lucky rather than right.
+
+    The pool's RAM sampler forks a `sleep` between samples, and `kill` on the
+    sampler does not reach it; every child of the pool inherits the slot-lock
+    descriptors, so that `sleep` kept all three locks held for up to a sample
+    interval after `regress.sh` had returned. The fix is the worker's bulkhead
+    applied one step earlier — the sampler closes every slot before it samples,
+    because a descriptor never held cannot outlive anything (#121's shape rather
+    than #130's).
+
+    A stub pass of the corpus takes about a second, so teardown lands inside the
+    sampler's first `sleep 3` and the arrangement reproduces every time rather
+    than sometimes: on `origin/main` this ask was refused 5 times in 5, and with
+    the fix it succeeded 5 times in 5.
+
+    So this asks at once, with no poll: the poll above bounds how long the
+    *kernel* may take, and this one is about whether we handed it the lock at
+    all. "Exited" has to mean "let go", or a queued run is told a free slot is
+    busy by a process nobody can name.
+    """
+    pool_run(tmp_path, "--slots", "3")
+    after = acquire_the_whole_pool(tmp_path)
     assert after.returncode == 0, after.stderr
 
 

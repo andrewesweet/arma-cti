@@ -576,6 +576,21 @@ prune_passes() {
 ram_sampler_pid=""
 start_ram_sampler() {
     (
+        # The same wall the worker builds below, for the same reason and one
+        # step earlier (#138). This subshell inherits every slot's lock
+        # descriptor, and so does the `sleep` it forks between samples — which
+        # teardown's `kill` does not reach, so the lock stayed held for up to the
+        # sample interval after `regress.sh` had exited. Measured: an ask for a
+        # released slot in the first three seconds after teardown was refused,
+        # with descriptors surviving 3.6–4.4 s.
+        #
+        # The fix is not to hold rather than to kill and confirm (#121 over
+        # #130): a sampler needs no lock at all, and a descriptor never held
+        # cannot outlive anything. Closing here also covers the `awk` and `ps`
+        # children, which inherit from this subshell rather than from the pool.
+        for slot in ${SLOTS[@]+"${SLOTS[@]}"} ${DIRTY_SLOTS[@]+"${DIRTY_SLOTS[@]}"}; do
+            cti_slot_close "$slot"
+        done
         printf 'epoch\tmem_used_kb\tmem_available_kb\ttier_rss_kb\n'
         while :; do
             # Read on the host under load, through the handle: the number that

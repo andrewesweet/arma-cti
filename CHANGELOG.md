@@ -98,6 +98,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A finished regression run hands its slots back the moment it exits, instead of a few seconds
+  later.** The pool measures the machine's memory while it works, and the sampler that does it
+  sleeps three seconds between readings. Every child of the run inherits the slot locks, so when
+  teardown killed the sampler the sleep it had forked survived it holding all three — and a run
+  queued behind this one was told the slots were busy by a process that no longer had any business
+  with them. The sampler now lets go of every slot before it takes its first reading, since it never
+  needed one; nothing else about it changed. An ask for a slot in the first second after a run
+  returns was refused five times in five before, and granted five times in five after. #138.
+
 - **The no-Arma test suite no longer competes with the Arma tier for the machine.** One test that
   drives the harness end to end sends a Windows client, and a run that sends one takes the
   machine-wide lock on the one headed client — for real, because that test alone never moved its
