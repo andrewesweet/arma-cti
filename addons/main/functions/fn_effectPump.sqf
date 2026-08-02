@@ -33,13 +33,23 @@ params [["_interval", 2, [0]]];
 
 if (!isServer) exitWith { scriptNull };
 
-[_interval] spawn {
-    params ["_interval"];
+// Asked before the thread is started rather than inside it (#102): a loop enters
+// the watchdog's register only once it is going to run, so a world with no shim
+// gets this one `infra_unavailable` line and no pump rather than a registered
+// pump the watchdog then reports dead thirty seconds later.
+private _extension = call cti_fnc_shimName;
+if (_extension isEqualTo "") exitWith {
+    diag_log "CTI|FAIL class=infra_unavailable effect_pump_no_shim";
+    scriptNull
+};
 
-    private _extension = call cti_fnc_shimName;
-    if (_extension isEqualTo "") exitWith {
-        diag_log "CTI|FAIL class=infra_unavailable effect_pump_no_shim";
-    };
+// The heartbeat the watchdog reads (#102). Separate from `cti_effectDrain`
+// below, because that counts what the wire carried and this counts that the loop
+// is alive at all — a pump polling a dead daemon drains nothing and is turning.
+private _beat = ["effect_pump", _interval] call cti_fnc_loopRegister;
+
+private _pump = [_interval, _beat] spawn {
+    params ["_interval", "_beat"];
 
     diag_log format ["CTI|effect_pump_started interval=%1", _interval];
 
@@ -54,6 +64,8 @@ if (!isServer) exitWith { scriptNull };
     while { true } do {
         private _next = diag_tickTime + _interval;
         waitUntil { diag_tickTime >= _next };
+        _beat set ["turns", (_beat get "turns") + 1];
+        _beat set ["at", diag_tickTime];
 
         private _answer = [
             format ["poll-%1", round (diag_tickTime * 1000)], "poll"
@@ -115,3 +127,9 @@ if (!isServer) exitWith { scriptNull };
         };
     };
 };
+
+// The handle the watchdog reports `script_done` from, and the one a probe
+// terminates to prove it does (#102). Written here because `spawn` is the only
+// thing that has it and the body cannot be given it without a race.
+_beat set ["script", _pump];
+_pump

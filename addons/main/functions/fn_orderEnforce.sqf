@@ -22,14 +22,20 @@ params [["_interval", 10, [0]]];
 
 if (!isServer) exitWith { scriptNull };
 
-[_interval] spawn {
-    params ["_interval"];
+// The heartbeat the watchdog reads (#102), registered before the thread starts
+// so the handle can be written onto it without a race.
+private _beat = ["order_enforce", _interval] call cti_fnc_loopRegister;
+
+private _sweep = [_interval, _beat] spawn {
+    params ["_interval", "_beat"];
 
     diag_log format ["CTI|order_enforce_started interval=%1", _interval];
 
     while { true } do {
         private _next = diag_tickTime + _interval;
         waitUntil { diag_tickTime >= _next };
+        _beat set ["turns", (_beat get "turns") + 1];
+        _beat set ["at", diag_tickTime];
 
         private _squads = missionNamespace getVariable ["cti_squads", createHashMap];
         private _lost = [];
@@ -64,3 +70,8 @@ if (!isServer) exitWith { scriptNull };
         } forEach _lost;
     };
 };
+
+// The handle the watchdog reports `script_done` from, and the one #102's probe
+// terminates to prove it does.
+_beat set ["script", _sweep];
+_sweep

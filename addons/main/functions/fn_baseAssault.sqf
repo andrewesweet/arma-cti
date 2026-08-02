@@ -43,8 +43,12 @@ if (!isServer) exitWith { scriptNull };
 // for this sweep to keep to one telling. Empty until something falls.
 missionNamespace setVariable ["cti_hqDown", createHashMap, true];
 
-[_interval] spawn {
-    params ["_interval"];
+// The heartbeat the watchdog reads (#102), registered before the thread starts
+// so the handle can be written onto it without a race.
+private _beat = ["base_assault", _interval] call cti_fnc_loopRegister;
+
+private _sweep = [_interval, _beat] spawn {
+    params ["_interval", "_beat"];
 
     // ---- playtest-tuned placeholder (ADR-0020) ---------------------------
     // How long a Squad standing at the HQ needs to bring it down, in seconds.
@@ -66,6 +70,8 @@ missionNamespace setVariable ["cti_hqDown", createHashMap, true];
     while { true } do {
         private _next = diag_tickTime + _interval;
         waitUntil { diag_tickTime >= _next };
+        _beat set ["turns", (_beat get "turns") + 1];
+        _beat set ["at", diag_tickTime];
 
         private _down = missionNamespace getVariable ["cti_hqDown", createHashMap];
 
@@ -135,3 +141,7 @@ missionNamespace setVariable ["cti_hqDown", createHashMap, true];
         } forEach _bases;
     };
 };
+
+// The handle the watchdog reports `script_done` from (#102).
+_beat set ["script", _sweep];
+_sweep

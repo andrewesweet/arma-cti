@@ -37,6 +37,30 @@ private _owner = remoteExecutedOwner;
 private _side = [_owner] call cti_fnc_commanderSide;
 private _schema = call cti_fnc_commandSchema;
 
+// Empty is fatal, and cti_fnc_commandSchema's contract says so. This used to
+// read `_schema get "sides"` straight through it, so a server with no export
+// answered the door with a script error in the middle of judging identity —
+// the one place in the addon where a raw error is also a security surface,
+// because the caller is a client and the thing being decided is whether it may
+// command a side. Refused here, typed as the schema fault it is (#80), and the
+// same guard cti_fnc_commanderAssign already carries.
+//
+// Asked as "is the side list there" rather than "is the schema empty", for the
+// reason cti_fnc_command's guard gives: one condition covers a missing export
+// and an export that parsed into something without a side list in it, and the
+// second is the one that can be staged in-world.
+//
+// No judgement goes back to the caller: a rejection is drawn from the schema's
+// own code vocabulary and there is no schema to draw one from. A client that
+// reached this door at all had a schema of its own to build the Command with,
+// so a server that has none is a broken build to escalate rather than a
+// Commander's mistake to answer.
+if !("sides" in _schema) exitWith {
+    diag_log format ["CTI|FAIL class=schema_stale port_gateway_no_schema owner=%1 schema_keys=%2",
+        _owner, count _schema];
+    false
+};
+
 if !(_side in (_schema get "sides")) exitWith {
     // Identity is the gateway's business, so it answers this one itself rather
     // than asking the daemon about a caller the daemon cannot see.

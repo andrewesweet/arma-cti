@@ -44,8 +44,13 @@ if (count _schema isEqualTo 0) exitWith {
 // answer is kept.
 missionNamespace setVariable ["cti_commanders", createHashMap];
 
-[_interval, _schema get "sides"] spawn {
-    params ["_interval", "_sides"];
+// The heartbeat the watchdog reads (#102). Below the schema guard above, because
+// a loop enters the register only once it is going to run, and above the spawn,
+// because the handle can only be written onto it from out here.
+private _beat = ["commander_assign", _interval] call cti_fnc_loopRegister;
+
+private _sweep = [_interval, _schema get "sides", _beat] spawn {
+    params ["_interval", "_sides", "_beat"];
 
     private _assigned = missionNamespace getVariable ["cti_commanders", createHashMap];
     private _slots = createHashMap;
@@ -54,6 +59,12 @@ missionNamespace setVariable ["cti_commanders", createHashMap];
     diag_log format ["CTI|commander_assign_started slots=%1", keys _slots];
 
     while { true } do {
+        // Stamped at the top of the body rather than after the wait, because
+        // this loop paces itself at the bottom; it is the same moment in the
+        // turn either way (#102).
+        _beat set ["turns", (_beat get "turns") + 1];
+        _beat set ["at", diag_tickTime];
+
         {
             private _side = _slots getOrDefault [vehicleVarName _x, ""];
             if (_side isNotEqualTo "" && { !(_side in _assigned) }) then {
@@ -70,3 +81,7 @@ missionNamespace setVariable ["cti_commanders", createHashMap];
         waitUntil { diag_tickTime >= _next };
     };
 };
+
+// The handle the watchdog reports `script_done` from (#102).
+_beat set ["script", _sweep];
+_sweep

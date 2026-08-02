@@ -75,6 +75,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A crashed background loop no longer takes half the game down in silence.** The world runs on six
+  long-running threads — effects, income and captures, Commander assignment, the Commander's own
+  view, standing Orders, Base assaults — and one scripting error kills the thread it happens in and
+  nothing else. Until now the mission carried on looking healthy with effects never spawning, or
+  income and captures stopped, or Squads drifting off their Orders, for the rest of the session, and
+  the only recovery was the human guessing that something was wrong and restarting. Each loop now
+  stamps a heartbeat every turn and one small watchdog reads them: a loop that has gone quiet for
+  three of its own cadences, or half a minute, whichever is longer, is named in a typed
+  `node_crashed` line and captioned on every screen with what has stopped and that a restart is the
+  fix. Nothing is restarted automatically, deliberately: a loop that died on the state it met would
+  die again on the next turn, and its counters — which probes and reports read as evidence — would
+  silently start again from zero. Being told is the fix; pretending to have recovered is not.
+
+- **An unusable Command Port schema is refused rather than crashing the two callers that read it.**
+  `cti_fnc_commandSchema` answers an empty schema when its export is missing or unreadable and says
+  callers must treat that as fatal; the Command builder and the Command Port's gateway both read
+  straight through it instead. So a broken build met a raw script error — in the gateway's case
+  while it was deciding whether a client may command a side at all, and a script error there kills
+  the script it happens in — rather than the typed `schema_stale` refusal its siblings already gave.
+  Both now ask whether the part they need is present, which covers a missing export and a malformed
+  one alike, and a new red-by-design probe (`schema-stale`) asks each guard the question in-world
+  and lives to tell.
+
 - **A dead daemon is no longer indistinguishable from a quiet one.** The shim reports a transport
   failure as `{"error": "..."}`, which is a JSON object — so it passed every loop's only check and
   read as *success with nothing in it*. The map froze, income stopped, the AI opponent went quiet,

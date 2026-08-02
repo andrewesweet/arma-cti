@@ -37,6 +37,8 @@ class CfgFunctions
             class shimName {};
             class daemonCall {};
             class campaignLost {};
+            class loopRegister {};
+            class loopWatch {};
             class prngNew {};
             class prngNext {};
             class prngInt {};

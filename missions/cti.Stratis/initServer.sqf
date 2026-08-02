@@ -81,6 +81,12 @@ if (isNil "cti_fnc_worldInit") then {
         // that falls is said so once (#33). Started after the HQ check above,
         // because the sweep's whole subject is those structures.
         [] call cti_fnc_baseAssault;
+
+        // Something watches the six loops above (#102). Started last, because a
+        // watchdog registered before the loops it watches would sweep a register
+        // that is still filling; started at all, because a scripting error in
+        // any one of them kills that loop alone and used to do it in silence.
+        [] call cti_fnc_loopWatch;
     };
 };
 

@@ -7,7 +7,9 @@
 //
 // `expect:` inverts the verdict for the regression tier: the run passes when
 // the class below fires and fails when it does not, so a negative probe can sit
-// in the corpus without permanently reddening it. It is the only such probe.
+// in the corpus without permanently reddening it. It was the only such probe
+// until #80 and #102 added `schema-stale` and `loop-watch`, which stage their
+// faults the same way: by asking a guard the question directly.
 //
 // `just regress manifest-missing`, or by hand
 // `just probe spike/probes/manifest-missing.sqf`. The raw verdict is
