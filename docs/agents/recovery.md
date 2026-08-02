@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×8 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×9 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -20,7 +20,12 @@
 > verification evidence survives on my side" rather than inferring what the dead session
 > had seen, and the agent rebased, re-verified from scratch, and landed. Fifth amendment:
 > the orchestrator-death section, codified after its second identical improvisation, the
-> same threshold the worktree-vanish mode earned by.
+> same threshold the worktree-vanish mode earned by. (The fourteenth retro's edit added
+> the ninth use without moving the count — the first violation of the same-edit clause
+> since it was written; fixed by the fifteenth, which per ADR-0038's shape escalates a
+> second violation to a mechanical check.) Sixth amendment (2026-08-02): the
+> shared-assignment variant of the worktree mode, after #105's instances 3–5 in one
+> evening.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
@@ -51,6 +56,16 @@ it sees as unchanged. The work is not resumable in place: finish any read-only r
 from the main checkout, **never commit there**, name what went unexamined instead of
 papering over it (the #56 review shipped with its gap as an issue, which is the model),
 and treat anything uncommitted as dead with the worktree.
+
+The mode has a second variant: the harness hands one worktree to two live agents (#105,
+instances 3–5, all in one evening — including the orchestrator's own primary worktree,
+twice). Nothing looks wrong from inside either session until one agent's routine
+reset-to-origin or the harness's auto-clean destroys the other's uncommitted work, which
+is how instance 3 cost the #132 agent its edits (recovered from notes). Hence the
+pre-flight in CLAUDE.md's working style: verify the worktree is exclusively yours before
+touching it, commit early, and on finding foreign files stop and report — the stopped
+agent loses a dispatch, the reset would have lost another session's work. The pre-flight
+prevented exactly that on its first firing (instance 5, the fifteenth-retro dispatch).
 
 ## Noticing in time: the orchestrator's side
 

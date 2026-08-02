@@ -79,6 +79,21 @@ hand-rolled `isServer` guard became #111 (none of the addon's 22 server guards c
 fire, and two probes green with their client leg unexercised, #116). The observation
 supplies the scope; do not widen the ticket beyond it.
 
+## Clearing the delegated-decision review queue
+
+The `Reviewed-by-human: pending` queue clears through a guided session on a single
+`ready-for-human` issue: the agent presents each pending ADR (singly or in stated
+batches), the human's verdict lands as one comment per ADR quoting the verdict line, the
+`Reviewed-by-human:` flips land as one commit, and the worklist grep is quoted in the
+close-out comment as proof of the new depth. Discipline the first run (#131, 2026-08-02
+— 29 ADRs, all approved, landed `4a83025`) held to and the next should reuse: nitpicks
+carried by an approved ADR are filed as issues (#134), never folded in; longer-term
+intent becomes its own issue (#135); scope expands only on the human's instruction in
+session; and an anomalous verdict line (a duplicate or out-of-set number) is queried
+back, not assumed — both of #131's turned out to be slips, but the query is what made
+"approved" mean approved. The queue's grep is anchored: `^Reviewed-by-human: pending`,
+per ADR-0013 — unanchored, prose mentions of the string over-count it.
+
 ## Pull requests as a triage surface
 
 **PRs as a request surface: no.** _(Set to `yes` if this repo treats external PRs as feature requests; `/triage` reads this flag.)_
