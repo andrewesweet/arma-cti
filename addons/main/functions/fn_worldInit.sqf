@@ -9,7 +9,7 @@
  *
  * Interior to the server's own call graph, so it carries no locality guard: its
  * one caller is `missions/cti.Stratis/initServer.sqf`, which the engine runs on
- * the server and nowhere else (#118, ADR-0040).
+ * the server and nowhere else (#118, ADR-0041).
  *
  * The dedicated server writes no RPT file on Linux and `-profiles=` is broken
  * (ADR-0006), so stdout is the only log and every line here goes there.

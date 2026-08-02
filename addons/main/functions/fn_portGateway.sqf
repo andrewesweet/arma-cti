@@ -24,7 +24,7 @@
 params [["_command", createHashMap, [createHashMap]]];
 
 // Belt and braces against a `description.ext` regression, which is exactly the
-// failure a config cannot defend against itself (#118, ADR-0040).
+// failure a config cannot defend against itself (#118, ADR-0041).
 SERVER_ONLY(false);
 
 private _owner = remoteExecutedOwner;

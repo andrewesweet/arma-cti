@@ -13,7 +13,7 @@
  *
  * Runs on the server, and interior to its call graph, so it carries no locality
  * guard: its one caller is `missions/cti.Stratis/initServer.sqf`, which the
- * engine runs on the server and nowhere else (#118, ADR-0040).
+ * engine runs on the server and nowhere else (#118, ADR-0041).
  *
  * Arguments:
  * 0: groups to hand over <NUMBER> (optional, default 4)

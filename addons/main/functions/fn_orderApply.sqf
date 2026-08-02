@@ -5,7 +5,7 @@
  * Interior to the server's own call graph, so it carries no locality guard: its
  * one caller is cti_fnc_effectApply, reached from the effect pump, which
  * `missions/cti.Stratis/initServer.sqf` starts on the server and nowhere else
- * (#118, ADR-0040).
+ * (#118, ADR-0041).
  *
  * An Order is standing, not a waypoint consumed and forgotten (#14). Waypoints
  * belong to the group rather than to whoever is leading it, so replacing them

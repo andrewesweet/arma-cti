@@ -24,7 +24,7 @@ params [["_view", createHashMap, [createHashMap]]];
 // One of the two doors the server pushes through, and server-to-client
 // remoteExec is unrestricted (topics/Arma_3_CfgRemoteExec.wiki), so
 // `description.ext` offers no protection here and this guard is the only thing
-// there is (#118, ADR-0040).
+// there is (#118, ADR-0041).
 INTERFACE_ONLY(nil);
 
 private _side = _view getOrDefault ["side", ""];

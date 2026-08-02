@@ -1,5 +1,5 @@
 /*
- * Locality guards, as macros (#118, ADR-0040).
+ * Locality guards, as macros (#118, ADR-0041).
  *
  * A locality guard says "this function runs on that machine and nowhere else".
  * Hand-rolled, it was `if (!isServer) exitWith { <some sentinel> }` — and the
@@ -21,7 +21,7 @@
  * ## Where a guard belongs
  *
  * Only where the machine identity is *not* already decided by the call site.
- * ADR-0040 has the derivation; the short form is three kinds of site:
+ * ADR-0041 has the derivation; the short form is three kinds of site:
  *
  * - reachable by remoteExec from a client — `cti_fnc_portGateway` alone;
  * - reachable by remoteExec from the server onto a client — `cti_fnc_portReply`

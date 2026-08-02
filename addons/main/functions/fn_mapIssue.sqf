@@ -5,7 +5,7 @@
  * Interior to the client's own call graph, so it carries no locality guard: it
  * is reached only from the map display's KeyDown handler, which
  * cti_fnc_mapCommander installs and which no machine without a display can fire
- * (#118, ADR-0040).
+ * (#118, ADR-0041).
  *
  * The whole of the UI's order path, and it is four lines of it: build the
  * Command with cti_fnc_command, hand it to remoteExec, and let the port judge.

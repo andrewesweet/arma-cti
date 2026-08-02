@@ -4,7 +4,7 @@
  *
  * Runs on the server, and interior to its call graph, so it carries no locality
  * guard: its one caller is `missions/cti.Stratis/initServer.sqf`, which the
- * engine runs on the server and nowhere else (#118, ADR-0040). It is not a
+ * engine runs on the server and nowhere else (#118, ADR-0041). It is not a
  * supervised loop — it installs an event handler and returns, so there is no
  * thread for cti_fnc_loopWatch to inventory.
  *

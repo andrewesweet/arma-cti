@@ -26,7 +26,7 @@ params [["_judgement", createHashMap, [createHashMap]]];
 // One of the two doors the server pushes through, and server-to-client
 // remoteExec is unrestricted (topics/Arma_3_CfgRemoteExec.wiki), so
 // `description.ext` offers no protection here and this guard is the only thing
-// there is (#114, #118, ADR-0040). `hasInterface` is false for a dedicated
+// there is (#114, #118, ADR-0041). `hasInterface` is false for a dedicated
 // server and a headless client alike (`commands/hasInterface.wiki`), and a
 // judgement is for a person.
 INTERFACE_ONLY(nil);

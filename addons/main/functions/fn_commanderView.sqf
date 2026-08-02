@@ -34,7 +34,7 @@
 
 params [["_interval", 5, [0]]];
 
-// The entry point of a supervised loop, which ADR-0040 keeps guarded: this is the
+// The entry point of a supervised loop, which ADR-0041 keeps guarded: this is the
 // one call site a future restart would re-enter, and the thread it starts is
 // inventoried by name rather than by caller (#118).
 SERVER_ONLY(scriptNull);

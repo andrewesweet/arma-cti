@@ -23,7 +23,7 @@
 //
 // 1. **That `#include` resolves at runtime from a CfgFunctions-compiled `.sqf`
 //    inside a PBO.** Nothing in this repo included anything from SQF before
-//    ADR-0040, and HEMTT resolving the path at build time is not the same
+//    ADR-0041, and HEMTT resolving the path at build time is not the same
 //    question as the engine's runtime preprocessor resolving it — HEMTT has its
 //    own virtual filesystem. If the include silently did not resolve,
 //    `INTERFACE_ONLY(nil)` would reach the compiler as an unknown token and

@@ -4,7 +4,7 @@
  *
  * Interior to the server's own call graph, so it carries no locality guard: its
  * one caller is the effect pump, which `missions/cti.Stratis/initServer.sqf`
- * starts on the server and nowhere else (#118, ADR-0040).
+ * starts on the server and nowhere else (#118, ADR-0041).
  *
  * The daemon owns the rules and the game owns the geometry (ADR-0012), which is
  * why an effect says "a rifle Squad for WEST" and never where it goes: the

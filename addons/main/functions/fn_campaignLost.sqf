@@ -6,7 +6,7 @@
  * Interior to the server's own call graph, so it carries no locality guard: its
  * one caller is cti_fnc_daemonCall, and nothing speaks to the daemon off the
  * server (ADR-0018) — every path in starts in
- * `missions/cti.Stratis/initServer.sqf` (#118, ADR-0040).
+ * `missions/cti.Stratis/initServer.sqf` (#118, ADR-0041).
  *
  * The daemon's whole strategic state is in memory and nothing persists it yet
  * (#4 is Phase 2's, ADR-0008/0023). So a restart mid-session is a factory-fresh

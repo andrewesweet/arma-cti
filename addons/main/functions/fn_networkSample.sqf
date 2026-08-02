@@ -5,7 +5,7 @@
  * Interior to the server's own call graph, so it carries no locality guard: its
  * one caller is cti_fnc_desyncWatch, started from
  * `missions/cti.Stratis/initServer.sqf`, which the engine runs on the server and
- * nowhere else (#118, ADR-0040). `getUserInfo`'s own server-execution-only rule
+ * nowhere else (#118, ADR-0041). `getUserInfo`'s own server-execution-only rule
  * is the second fence, and it is the engine's rather than ours.
  *
  * `getUserInfo` index 9 is `networkInfo` — [ping, bandwidth, desync] — which

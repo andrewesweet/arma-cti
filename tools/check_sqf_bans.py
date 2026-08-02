@@ -12,7 +12,7 @@ allows it in the seeded PRNG adapter alone, and bans `setGroupOwner` everywhere
 but the one diagnostic that predates the rule (ADR-0039).
 
 The second rule is a shape rather than a command: a hand-rolled locality guard,
-`if (!isServer) exitWith { ... }` or the same with `hasInterface`. ADR-0040 puts
+`if (!isServer) exitWith { ... }` or the same with `hasInterface`. ADR-0041 puts
 those behind the `SERVER_ONLY` / `INTERFACE_ONLY` macros in
 `addons/main/script_component.hpp`, because the macro is what supplies the typed
 FAIL line a bare guard cannot — a sentinel returned in silence is #112 and #113
@@ -55,7 +55,7 @@ SCOPED_BANS: Final[dict[str, Ban]] = {
     ),
 }
 
-# The hand-rolled locality guard ADR-0040 replaced. `exitWith` is what makes it a
+# The hand-rolled locality guard ADR-0041 replaced. `exitWith` is what makes it a
 # guard rather than a role question: the shape refuses on the caller's behalf and
 # returns a sentinel, which is the thing that has to carry a log line with it.
 # Both spellings the addon has ever used are matched — `if (!isServer)` and

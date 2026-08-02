@@ -3,8 +3,9 @@
 Delegated-decision: no
 Date: 2026-08-02
 Reviewed-by-human: 2026-08-02 — accepted by the human in session, on the proposal in #118
-Claimed: comment on #118, 2026-08-02, after `git fetch origin` found `docs/adr/` topping
-at 0039 (#117's, landed as `cde0fd0` while this work was in flight)
+Claimed: comment on #118, 2026-08-02. Written as 0040 and renumbered on landing: #117's
+0039 (`cde0fd0`) and #62's 0040 (`6218bb5`) both landed while this was in flight, which
+is what a claim-by-comment cannot prevent when three agents work the same hour.
 
 ## The decision
 

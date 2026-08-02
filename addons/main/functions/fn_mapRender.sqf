@@ -5,7 +5,7 @@
  * Interior to the client's own call graph, so it carries no locality guard:
  * every path into it comes from cti_fnc_mapObservation, cti_fnc_portReply,
  * cti_fnc_mapCommander or cti_fnc_mapIssue, and the first two are the guarded
- * doors the server pushes through (#118, ADR-0040).
+ * doors the server pushes through (#118, ADR-0041).
  *
  * The rule is the whole design: it renders what the Observation gives this side
  * and never reaches for anything the world happens to know locally. The engine

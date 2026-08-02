@@ -4,7 +4,7 @@
  *
  * Interior to the server's own call graph, so it carries no locality guard:
  * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
- * engine runs on the server and nowhere else (#118, ADR-0040).
+ * engine runs on the server and nowhere else (#118, ADR-0041).
  *
  * The owner is the daemon's to decide; this only reflects it. Contested gets
  * its own colour rather than sharing Neutral's, because it is a real state a

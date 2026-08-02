@@ -4,7 +4,7 @@
  *
  * Interior to the server's own call graph, so it carries no locality guard: its
  * callers are cti_fnc_portGateway and cti_fnc_commanderView, both of which have
- * already decided the machine (#118, ADR-0040).
+ * already decided the machine (#118, ADR-0041).
  *
  * The gateway's whole question, asked in one place so the answer cannot differ
  * between the door a Command comes through and the channel an Observation goes

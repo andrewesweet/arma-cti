@@ -15,7 +15,7 @@
  *
  * Interior to the server's own call graph, so it carries no locality guard: its
  * one caller is `missions/cti.Stratis/initServer.sqf`, which the engine runs on
- * the server and nowhere else (#118, ADR-0040). Its thread is a diagnostic with
+ * the server and nowhere else (#118, ADR-0041). Its thread is a diagnostic with
  * a deadline rather than one of the Campaign's loops, so it is not registered
  * with cti_fnc_loopRegister and not watched.
  *

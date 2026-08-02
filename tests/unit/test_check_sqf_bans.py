@@ -5,7 +5,7 @@ Its whole value is the scoping, so that is what these tests pin: the adapter
 may use the command, nothing else may, and prose about the command is not a
 use of it.
 
-The locality-guard rule (ADR-0040) is pinned in both directions, because a rule
+The locality-guard rule (ADR-0041) is pinned in both directions, because a rule
 that only ever passes is indistinguishable from one that does not run: the
 hand-rolled guard is a finding, and the two shapes that are *not* a hand-rolled
 guard — the macro, and `isServer` used to branch rather than to refuse — are not.

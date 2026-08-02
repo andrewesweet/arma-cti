@@ -4,7 +4,7 @@
  *
  * Interior to the client's own call graph, so it carries no locality guard: its
  * one caller is cti_fnc_mapObservation, which is the guarded door the server
- * pushes an Observation through (#118, ADR-0040). The event handlers it installs
+ * pushes an Observation through (#118, ADR-0041). The event handlers it installs
  * are the client's own and can only fire where a display exists.
  *
  * Crude on purpose (#18): this proves the path, not the presentation. Every

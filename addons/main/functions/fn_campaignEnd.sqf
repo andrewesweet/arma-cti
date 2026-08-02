@@ -6,7 +6,7 @@
  * Interior to the server's own call graph, so it carries no locality guard: its
  * one caller is cti_fnc_effectApply, reached from the effect pump, which
  * `missions/cti.Stratis/initServer.sqf` starts on the server and nowhere else
- * (#118, ADR-0040).
+ * (#118, ADR-0041).
  *
  * The daemon decides that a Campaign is over — Domination and Decapitation are
  * rules, and rules live where they are testable (ADR-0012) — and says so once

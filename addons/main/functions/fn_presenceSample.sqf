@@ -4,7 +4,7 @@
  *
  * Interior to the server's own call graph, so it carries no locality guard:
  * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
- * engine runs on the server and nowhere else (#118, ADR-0040).
+ * engine runs on the server and nowhere else (#118, ADR-0041).
  *
  * A fact only the world can report. What it means — whether that is a capture,
  * a contest, or nothing — is decided in the daemon, where the rules are

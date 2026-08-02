@@ -4,7 +4,7 @@
  *
  * Interior to the server's own call graph, so it carries no locality guard:
  * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
- * engine runs on the server and nowhere else (#118, ADR-0040).
+ * engine runs on the server and nowhere else (#118, ADR-0041).
  *
  * cti_fnc_casualtyWatch buffers; this drains. Every report carries what has
  * happened since the last one and then the buffer is empty, so a death is

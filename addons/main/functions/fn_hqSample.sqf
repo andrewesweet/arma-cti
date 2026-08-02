@@ -4,7 +4,7 @@
  *
  * Interior to the server's own call graph, so it carries no locality guard:
  * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
- * engine runs on the server and nowhere else (#118, ADR-0040).
+ * engine runs on the server and nowhere else (#118, ADR-0041).
  *
  * One fact per Base: whether the HQ is destroyed, and which side brought it
  * down. Whether that ends the Campaign is the daemon's (ADR-0012); whether the

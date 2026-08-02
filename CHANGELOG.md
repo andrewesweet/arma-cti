@@ -68,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the three real boundaries — the Command Port's door, the two things the server pushes to a
   player's machine, and the seven long-running loops — and every one of them now writes a typed
   failure line naming the function and the machine before it refuses. `just check` rejects the
-  hand-rolled form, so the next one written has to be a real boundary or not exist. ADR-0040.
+  hand-rolled form, so the next one written has to be a real boundary or not exist. ADR-0041.
 
 - **Squads are owned by the server for their whole life, and the build now says so.** An Order is
   issued through nine engine calls, one of which — `setCurrentWaypoint` — is documented to work only
