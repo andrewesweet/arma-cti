@@ -21,7 +21,7 @@ def test_enemies_seen_at_one_place_become_one_contact_there() -> None:
         observed=("girna",),
     )
 
-    (contact,) = register.of("WEST", at_time=100.0)
+    (contact,) = register.aged_to("WEST", at_time=100.0)
     assert contact.at == "girna"
     assert contact.echelon == "squad"
 
@@ -38,7 +38,7 @@ def test_observing_a_place_and_finding_nobody_clears_its_contact() -> None:
     )
     register.report("WEST", at_time=160.0, seen=(), observed=("girna",))
 
-    assert register.of("WEST", at_time=160.0) == ()
+    assert register.aged_to("WEST", at_time=160.0) == ()
 
 
 def test_a_place_nobody_looked_at_keeps_its_contact_and_ages() -> None:
@@ -59,7 +59,7 @@ def test_a_place_nobody_looked_at_keeps_its_contact_and_ages() -> None:
         observed=("camp_maxwell",),
     )
 
-    aged = {contact.at: contact.age for contact in register.of("WEST", at_time=400.0)}
+    aged = {contact.at: contact.age for contact in register.aged_to("WEST", at_time=400.0)}
     assert aged == {"girna": 300.0, "camp_maxwell": 0.0}
 
 
@@ -72,7 +72,7 @@ def west_saw(*kinds: str) -> contacts.Contact:
         seen=tuple(contacts.Sighting(at="girna", kind=kind, age=0.0) for kind in kinds),
         observed=("girna",),
     )
-    (contact,) = register.of("WEST", at_time=100.0)
+    (contact,) = register.aged_to("WEST", at_time=100.0)
     return contact
 
 

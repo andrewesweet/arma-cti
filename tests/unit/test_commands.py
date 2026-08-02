@@ -18,7 +18,7 @@ from cti_daemon import campaign, commands, manifest
 
 
 def test_a_purchase_command_parses_into_its_parts() -> None:
-    command = commands.parse(
+    command = commands.parse_command(
         {"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}}
     )
     assert (command.name, command.side, command.args) == (
@@ -50,13 +50,13 @@ def test_a_payload_that_is_not_a_command_is_refused(payload: object) -> None:
     # ADR-0012: a malformed *command* is a rejection, not an error — the caller
     # is at fault, not our transport. The port turns this into that rejection.
     with pytest.raises(commands.MalformedCommandError):
-        commands.parse(payload)
+        commands.parse_command(payload)
 
 
 def test_an_absent_args_object_is_an_empty_one() -> None:
     # A Command with no arguments is ordinary; requiring `args: {}` would make
     # every hand-built SQF Command carry an empty object for nothing.
-    assert commands.parse({"command": "purchase", "side": "EAST"}).args == {}
+    assert commands.parse_command({"command": "purchase", "side": "EAST"}).args == {}
 
 
 LEAVES = (
@@ -82,7 +82,7 @@ def test_a_command_survives_the_wire_unchanged(name: str, side: str, args: dict[
     # The payload crosses a socket as JSON, so the round trip is tested through
     # JSON rather than through the dataclass alone.
     command = commands.Command(name=name, side=side, args=args)
-    restored = commands.parse(json.loads(json.dumps(commands.serialise(command))))
+    restored = commands.parse_command(json.loads(json.dumps(commands.serialise_command(command))))
     assert restored == command
 
 
@@ -96,7 +96,7 @@ def test_an_effect_survives_the_wire_unchanged(name: str, side: str, args: dict[
 def test_a_command_and_an_effect_are_not_the_same_payload() -> None:
     # They share a schema source but not a key, so a Command can never be
     # mistaken for an instruction to mutate the world (ADR-0012).
-    command = commands.serialise(commands.Command("purchase", "WEST", {}))
+    command = commands.serialise_command(commands.Command("purchase", "WEST", {}))
     effect = commands.serialise_effect(commands.Effect("squad_spawned", "WEST", {}))
     assert "command" in command
     assert "command" not in effect
@@ -114,7 +114,7 @@ def test_an_effect_may_concern_ground_no_side_holds() -> None:
 
 def test_a_command_still_may_not_claim_a_state_as_its_side() -> None:
     with pytest.raises(commands.MalformedCommandError):
-        commands.parse({"command": "purchase", "side": "CONTESTED"})
+        commands.parse_command({"command": "purchase", "side": "CONTESTED"})
 
 
 def test_every_module_that_speaks_of_sides_speaks_of_the_same_ones() -> None:

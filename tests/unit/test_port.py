@@ -46,7 +46,7 @@ def standing(open_port: port.CommandPort, squad_id: str, side: str = "WEST") -> 
     The assert narrows `Squad | None` and says what it is doing: a Squad the
     roster does not have has no Order, which is a different failure.
     """
-    squad = open_port.campaign.roster.of(squad_id, side)
+    squad = open_port.campaign.roster.owned_by(squad_id, side)
     assert squad is not None
     return squad.order
 

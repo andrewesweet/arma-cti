@@ -332,7 +332,7 @@ class Daemon:
     def _command(self, request: protocol.Request) -> protocol.Reply:
         """Carry one Command to the port and return its judgement (ADR-0012)."""
         try:
-            command = commands.parse(request.payload)
+            command = commands.parse_command(request.payload)
         except commands.MalformedCommandError as exc:
             return protocol.rejected(request.id, "malformed_command", str(exc))
 

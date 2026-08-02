@@ -32,6 +32,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Final, NoReturn, cast
 
 from cti_daemon import commands, contacts, protocol
+from cti_daemon import squads as squads_module
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -265,7 +266,7 @@ class Report:
 
     at_time: float
     presence: dict[str, Any]
-    squads: dict[str, tuple[int, str]] | None
+    squads: dict[str, squads_module.Held] | None
     contacts: dict[str, SideContacts] | None
     hq: dict[str, HqSeen] | None
     casualties: Casualties | None
@@ -322,14 +323,14 @@ def _object(shape: Shape, value: object, path: str, request_id: str | None) -> d
     }
 
 
-def _squads(reported: object, request_id: str | None) -> dict[str, tuple[int, str]] | None:
+def _squads(reported: object, request_id: str | None) -> dict[str, squads_module.Held] | None:
     """Read the world's account of its Squads."""
     if reported is None:
         return None
-    seen: dict[str, tuple[int, str]] = {}
+    seen: dict[str, squads_module.Held] = {}
     for squad_id, said in cast("dict[str, Any]", reported).items():
         squad = _object(SHAPES["squad"], said, f"squads.{squad_id}", request_id)
-        seen[squad_id] = (squad["size"], squad["at"])
+        seen[squad_id] = squads_module.Held(size=squad["size"], at=squad["at"])
     return seen
 
 

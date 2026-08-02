@@ -57,9 +57,14 @@ NARRATED: Final = (
 STAGED: Final = "casualty_staged"
 
 
-def _who(row: dict[str, Any], squad: str, side: str, kind: str) -> str:
-    """Name a party to an event the way a person would: Squad, else side, else type."""
-    named = row.get(squad) or row.get(side) or row.get(kind) or "?"
+def _who(row: dict[str, Any], squad_key: str, side_key: str, kind_key: str) -> str:
+    """Name a party to an event the way a person would: Squad, else side, else type.
+
+    The three arguments are the *keys* to read, not the values — a death names
+    its own party under `squad`/`side`/`type` and its killer under
+    `by_squad`/`by_side`/`by_type`, so one reading serves both (#90).
+    """
+    named = row.get(squad_key) or row.get(side_key) or row.get(kind_key) or "?"
     return str(named)
 
 

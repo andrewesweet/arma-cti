@@ -23,6 +23,9 @@ import json
 import sys
 from pathlib import Path
 
+# tools/ holds standalone scripts rather than an importable package, and the
+# daemon lives under src/. This is what lets `uv run python tools/...` reach it
+# without the package being installed.
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
 from cti_daemon import budget, commands, economy, port, protocol, report, squads
@@ -77,6 +80,16 @@ def render(table: economy.EconomyTable) -> str:
     return json.dumps(document, indent=2, ensure_ascii=True) + "\n"
 
 
+def _verify(output: Path, rendered: str) -> int:
+    """Compare the file on disk against what the source would write."""
+    current = output.read_text(encoding="utf-8") if output.exists() else ""
+    if current != rendered:
+        message = f"schema_stale: {output} is not what the schema source would write."
+        print(f"{message} Run `just generate`.", file=sys.stderr)  # noqa: T201 — the gate's channel
+        return 1
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """Write the exported schema, or check the one on disk is current."""
     repo = Path(__file__).parents[1]
@@ -90,12 +103,7 @@ def main(argv: list[str] | None = None) -> int:
 
     rendered = render(economy.load(args.economy))
     if args.check:
-        current = args.output.read_text(encoding="utf-8") if args.output.exists() else ""
-        if current != rendered:
-            message = f"schema_stale: {args.output} is not what the schema source would write."
-            print(f"{message} Run `just generate`.", file=sys.stderr)  # noqa: T201 — the gate's channel
-            return 1
-        return 0
+        return _verify(args.output, rendered)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(rendered, encoding="utf-8")

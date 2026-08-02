@@ -121,15 +121,11 @@ class CommandPort:
                 f"{acting_side} may not command for {command.side}",
             )
 
-        handlers: dict[str, Callable[[Command], Judgement]] = {
-            "purchase": self._purchase,
-            "order": self._order,
-        }
-        handler = handlers.get(command.name)
+        handler = HANDLERS.get(command.name)
         if handler is None:
             return _reject("unknown_command", f"no such Command: {command.name!r}")
 
-        return handler(command)
+        return handler(self, command)
 
     def _purchase(self, command: Command) -> Judgement:
         """Spend Funds to put a new Squad at that side's Base."""
@@ -174,7 +170,7 @@ class CommandPort:
             return _reject("malformed_command", "order needs a `squad`")
         # A read, not a reach: the Squad has to exist before the ground it is
         # being sent to is worth judging, and `issue` below is what changes it.
-        if self.campaign.roster.of(squad_id, command.side) is None:
+        if self.campaign.roster.owned_by(squad_id, command.side) is None:
             return _reject("unknown_squad", f"{command.side} has no Squad {squad_id!r}")
 
         place = command.args.get("place", "")
@@ -268,3 +264,11 @@ class CommandPort:
                 f"{place} is {base_side}'s Base, not {side}'s: order Assault to destroy it",
             )
         return None
+
+
+# One table rather than a dictionary rebuilt on every Command (#90). Below the
+# class because it names its methods; unbound, so `submit` passes itself.
+HANDLERS: Final[dict[str, Callable[[CommandPort, Command], Judgement]]] = {
+    "purchase": CommandPort._purchase,  # noqa: SLF001 — the class's own dispatch table
+    "order": CommandPort._order,  # noqa: SLF001 — ditto
+}

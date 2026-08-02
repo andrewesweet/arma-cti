@@ -108,7 +108,7 @@ def _side_and_args(
     return side, args
 
 
-def _named(payload: object, key: str, what: str) -> tuple[str, dict[str, Any]]:
+def _validated_envelope(payload: object, key: str, what: str) -> tuple[str, dict[str, Any]]:
     """Validate the envelope shape shared by Commands and Effects."""
     if not isinstance(payload, dict):
         detail = f"{what} must be an object, got {type(payload).__name__}"
@@ -124,21 +124,21 @@ def _named(payload: object, key: str, what: str) -> tuple[str, dict[str, Any]]:
     return name, envelope
 
 
-def parse(payload: object) -> Command:
+def parse_command(payload: object) -> Command:
     """Build a Command from a decoded envelope payload, or refuse it."""
-    name, envelope = _named(payload, "command", "a Command")
+    name, envelope = _validated_envelope(payload, "command", "a Command")
     side, args = _side_and_args(envelope)
     return Command(name=name, side=side, args=args)
 
 
-def serialise(command: Command) -> dict[str, Any]:
+def serialise_command(command: Command) -> dict[str, Any]:
     """Render a Command as the envelope payload that crosses the wire."""
     return {"command": command.name, "side": command.side, "args": command.args}
 
 
 def parse_effect(payload: object) -> Effect:
     """Build an Effect from a pushed outbox message, or refuse it."""
-    name, envelope = _named(payload, "effect", "an Effect")
+    name, envelope = _validated_envelope(payload, "effect", "an Effect")
     side, args = _side_and_args(envelope, OWNERS)
     return Effect(name=name, side=side, args=args)
 

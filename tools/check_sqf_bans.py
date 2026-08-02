@@ -55,45 +55,64 @@ class Finding(NamedTuple):
         )
 
 
+def _blanked(text: str) -> str:
+    """Return `text` as spaces, keeping its newlines so line numbers survive."""
+    return "".join(character if character == "\n" else " " for character in text)
+
+
+def _end_of_line_comment(source: str, index: int) -> int:
+    """Return where a `//` comment starting at `index` ends."""
+    end = source.find("\n", index)
+    return len(source) if end == -1 else end
+
+
+def _end_of_block_comment(source: str, index: int) -> int:
+    """Return where a `/*` comment starting at `index` ends, `*/` included."""
+    end = source.find("*/", index + 2)
+    return len(source) if end == -1 else end + 2
+
+
+def _end_of_string(source: str, index: int) -> int:
+    """Return where the string literal opening at `index` ends.
+
+    SQF escapes a quote by doubling it, so a closing quote followed by the same
+    quote is an escape and the literal continues.
+    """
+    quote = source[index]
+    end = index + 1
+    while end < len(source):
+        if source[end] == quote:
+            if source[end + 1 : end + 2] == quote:
+                end += 2
+                continue
+            return end + 1
+        end += 1
+    return end
+
+
 def strip_noncode(source: str) -> str:
     """Blank out comments and string literals, preserving line numbering.
 
     Everything removed is replaced by spaces (newlines kept), so a match's line
-    number in the result is its line number in the original.
+    number in the result is its line number in the original. The three things
+    that get blanked each know where they end; this only says which one started.
     """
     out: list[str] = []
     index = 0
-    length = len(source)
-    while index < length:
-        char = source[index]
+    while index < len(source):
         pair = source[index : index + 2]
         if pair == "//":
-            end = source.find("\n", index)
-            end = length if end == -1 else end
-            out.append(" " * (end - index))
-            index = end
+            end = _end_of_line_comment(source, index)
         elif pair == "/*":
-            end = source.find("*/", index + 2)
-            end = length if end == -1 else end + 2
-            out.append("".join(c if c == "\n" else " " for c in source[index:end]))
-            index = end
-        elif char in {'"', "'"}:
-            # SQF escapes a quote by doubling it, so a closing quote followed by
-            # the same quote is an escape and the literal continues.
-            end = index + 1
-            while end < length:
-                if source[end] == char:
-                    if source[end + 1 : end + 2] == char:
-                        end += 2
-                        continue
-                    end += 1
-                    break
-                end += 1
-            out.append("".join(c if c == "\n" else " " for c in source[index:end]))
-            index = end
+            end = _end_of_block_comment(source, index)
+        elif source[index] in {'"', "'"}:
+            end = _end_of_string(source, index)
         else:
-            out.append(char)
+            out.append(source[index])
             index += 1
+            continue
+        out.append(_blanked(source[index:end]))
+        index = end
     return "".join(out)
 
 

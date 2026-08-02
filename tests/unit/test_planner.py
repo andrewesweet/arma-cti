@@ -18,6 +18,7 @@ from hypothesis import strategies as st
 
 from cti_daemon import campaign, contacts, planner, port
 from cti_daemon.commands import Command
+from cti_daemon.squads import Held
 
 
 def brain(world: campaign.Campaign, seed: int = 0) -> planner.UtilityPlanner:
@@ -43,7 +44,10 @@ def fielded(world: campaign.Campaign, side: str, *places: str) -> None:
     for _ in places:
         open_port.submit(Command("purchase", side, {"squad_type": "rifle"}), acting_side=side)
     world.roster.reconcile(
-        {squad.id: (8, place) for squad, place in zip(world.roster.roll(side), places, strict=True)}
+        {
+            squad.id: Held(8, place)
+            for squad, place in zip(world.roster.roll(side), places, strict=True)
+        }
     )
 
 
@@ -307,7 +311,7 @@ def drive(
     for step, (presence, seen) in enumerate(reports):
         world.observe((step + 1) * 30.0, presence)
         world.roster.reconcile(
-            {squad.id: (8, squad.order.place) for squad in world.roster.roll("WEST")}
+            {squad.id: Held(8, squad.order.place) for squad in world.roster.roll("WEST")}
         )
         world.contacts.report(
             "WEST",
@@ -384,7 +388,7 @@ def test_no_squad_is_ever_left_alone_against_a_base_that_wants_more(
     # Squad that was sent when the Base looked empty and is still marching when
     # a company turns up is covered too — the Order has to be taken back off it.
     _, _, world = drive(seed=7, reports=late(sightings))
-    contact = {one.at: one for one in world.contacts.of("WEST", world.elapsed)}
+    contact = {one.at: one for one in world.contacts.aged_to("WEST", world.elapsed)}
     for base in world.map_manifest.bases:
         if base.side == "WEST":
             continue

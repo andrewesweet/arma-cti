@@ -357,14 +357,14 @@ def test_a_bring_up_flag_names_one_side_and_the_seed_it_plays_under() -> None:
     # The flag a session actually types, and the reason side and seed travel
     # together: two sides against one list of seeds is an order to keep straight
     # in somebody's head, and the pair is what a replay hangs on.
-    assert [transport.commander(text) for text in ("WEST:1", "east:4", "WEST")] == [
+    assert [transport.parse_commander_flag(text) for text in ("WEST:1", "east:4", "WEST")] == [
         ("WEST", 1),
         ("EAST", 4),
         ("WEST", 0),
     ]
     for refused in ("NORTH:1", "WEST:soon"):
         with pytest.raises(argparse.ArgumentTypeError):
-            transport.commander(refused)
+            transport.parse_commander_flag(refused)
 
 
 def test_a_daemon_under_nobodys_command_still_plans_nothing(tmp_path: Path) -> None:

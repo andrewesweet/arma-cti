@@ -248,7 +248,7 @@ def test_a_won_campaign_takes_no_more_of_the_worlds_account_of_its_squads(
     win(live)
 
     assert live.reconcile({}) == ()
-    assert live.roster.of(squad.id, "WEST") is not None
+    assert live.roster.owned_by(squad.id, "WEST") is not None
 
 
 def test_a_won_campaign_takes_no_more_sightings(live: campaign.Campaign) -> None:
@@ -259,4 +259,4 @@ def test_a_won_campaign_takes_no_more_sightings(live: campaign.Campaign) -> None
         seen=(contacts.Sighting(at="girna", kind="Infantry", age=0.0),),
         observed=("girna",),
     )
-    assert live.contacts.of("WEST", 95) == ()
+    assert live.contacts.aged_to("WEST", 95) == ()

@@ -174,7 +174,7 @@ def serve_in_thread(
     return bound[0]
 
 
-def commander(text: str) -> tuple[str, int]:
+def parse_commander_flag(text: str) -> tuple[str, int]:
     """Read one `SIDE[:SEED]` bring-up flag, or refuse it.
 
     Side and seed travel together rather than as two parallel lists, because a
@@ -204,7 +204,13 @@ def main(argv: list[str] | None = None) -> int:
     # One flag per side under AI command, each carrying its own seed (#17).
     # None of them, and nobody is under AI command — a world brought up for a
     # human Commander is not quietly played by one.
-    parser.add_argument("--ai", type=commander, action="append", default=[], metavar="SIDE[:SEED]")
+    parser.add_argument(
+        "--ai",
+        type=parse_commander_flag,
+        action="append",
+        default=[],
+        metavar="SIDE[:SEED]",
+    )
     args = parser.parse_args(argv)
     args.telemetry.parent.mkdir(parents=True, exist_ok=True)
 

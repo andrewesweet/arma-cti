@@ -47,7 +47,7 @@ def _is_command(row: dict[str, Any]) -> bool:
     )
 
 
-def _read(telemetry_path: Path) -> list[dict[str, Any]]:
+def _telemetry_rows(telemetry_path: Path) -> list[dict[str, Any]]:
     """Every telemetry row written so far, skipping any the writer cut short.
 
     Telemetry is appended under a lock and never rewritten, so a partial line is
@@ -70,7 +70,7 @@ def _read(telemetry_path: Path) -> list[dict[str, Any]]:
 
 def summarise(telemetry_path: Path, outcome: Outcome) -> dict[str, Any]:
     """Build the end screen's summary of one finished Campaign."""
-    rows = _read(telemetry_path)
+    rows = _telemetry_rows(telemetry_path)
 
     commands: dict[str, int] = {}
     squads_lost = 0

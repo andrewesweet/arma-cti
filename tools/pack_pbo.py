@@ -26,8 +26,24 @@ from pathlib import Path
 VERSION_MAGIC = 0x56657273  # "Vers"
 
 
-def _entry(name: str, packing: int, original: int, size: int) -> bytes:
-    return name.encode("utf-8") + b"\0" + struct.pack("<5I", packing, original, 0, 0, size)
+# The two header fields the format defines and nothing reads: `reserved`, and a
+# timestamp Arma does not use. Written as zero rather than as a clock reading, so
+# the same directory packs to the same bytes (#90 asked for them to be named).
+RESERVED = 0
+TIMESTAMP = 0
+
+
+def _entry(*, name: str, packing: int, original: int, size: int) -> bytes:
+    """Render one header entry.
+
+    Keyword-only on purpose: four adjacent uint32s in a binary format is a shape
+    where transposing two arguments compiles, packs, and corrupts the PBO.
+    """
+    return (
+        name.encode("utf-8")
+        + b"\0"
+        + struct.pack("<5I", packing, original, RESERVED, TIMESTAMP, size)
+    )
 
 
 def build_pbo(source: Path, properties: dict[str, str] | None = None) -> bytes:
@@ -37,7 +53,7 @@ def build_pbo(source: Path, properties: dict[str, str] | None = None) -> bytes:
         msg = f"nothing to pack: {source} contains no files"
         raise ValueError(msg)
 
-    header = bytearray(_entry("", VERSION_MAGIC, 0, 0))
+    header = bytearray(_entry(name="", packing=VERSION_MAGIC, original=0, size=0))
     for key, value in (properties or {}).items():
         header += key.encode("utf-8") + b"\0" + value.encode("utf-8") + b"\0"
     header += b"\0"
@@ -46,9 +62,9 @@ def build_pbo(source: Path, properties: dict[str, str] | None = None) -> bytes:
     for path in files:
         data = path.read_bytes()
         name = str(path.relative_to(source)).replace("/", "\\")
-        header += _entry(name, 0, len(data), len(data))
+        header += _entry(name=name, packing=0, original=len(data), size=len(data))
         payloads.append(data)
-    header += _entry("", 0, 0, 0)
+    header += _entry(name="", packing=0, original=0, size=0)
 
     body = bytes(header) + b"".join(payloads)
     return body + b"\0" + hashlib.sha1(body).digest()  # noqa: S324 - the format mandates SHA-1

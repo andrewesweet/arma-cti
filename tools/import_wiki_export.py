@@ -349,13 +349,18 @@ BUCKET_DESCRIPTIONS = {
 def build_index(
     buckets: dict[str, list[Page]],
     redirects: list[Page],
-    tiers: dict[str, int],
+    tier_counts: dict[str, int],
     snapshot: str = "",
 ) -> str:
-    """Render the INDEX.md that fronts the whole snapshot."""
+    """Render the INDEX.md that fronts the whole snapshot.
+
+    `tier_counts` is tier -> how many pages carry it. Named apart from `select`'s
+    `tiers`, which is title -> tier (#90): the two directions are one word in
+    this file and reading either one wrong is a silent wrong number.
+    """
     total = sum(len(pages) for pages in buckets.values())
     payload = sum(len(page.text.encode()) for pages in buckets.values() for page in pages)
-    tier_a, tier_b = tiers.get("A", 0), tiers.get("B", 0)
+    tier_a, tier_b = tier_counts.get("A", 0), tier_counts.get("B", 0)
     lines = [
         "# Arma 3 wiki snapshot",
         "",

@@ -20,6 +20,9 @@ from cti_daemon.observation import DESTROYED, INTACT, PUBLIC, Observation, Squad
 from cti_daemon.squads import Roster, Squad
 
 if TYPE_CHECKING:
+    from cti_daemon.squads import Held
+
+if TYPE_CHECKING:
     from cti_daemon.contacts import Sighting
     from cti_daemon.economy import EconomyTable, Ledger
     from cti_daemon.manifest import MapManifest
@@ -254,14 +257,14 @@ class Campaign:
 
         Whether the Order suits the Place it names is the port's rule (ADR-0020)
         and is judged before this is called, as is whether the side has such a
-        Squad at all — `roster.of` is the forgiving reading a Commander's
+        Squad at all — `roster.owned_by` is the forgiving reading a Commander's
         mistake deserves, and by here the mistake has been made or ruled out.
         What is here is the part that must not come apart: recorded against the
         Squad and announced to the world in one step, so a Squad can never be
         carrying an Order the world was never told about.
         """
         self._playing()
-        squad = self.roster.of(squad_id, side)
+        squad = self.roster.owned_by(squad_id, side)
         if squad is None:
             message = f"{side} has no Squad {squad_id!r} to order"
             raise KeyError(message)
@@ -275,7 +278,7 @@ class Campaign:
         )
         return squad
 
-    def reconcile(self, seen: dict[str, tuple[int, str]]) -> tuple[str, ...]:
+    def reconcile(self, seen: dict[str, Held]) -> tuple[str, ...]:
         """Take the world's account of which Squads exist, and where.
 
         Ignored rather than refused once the Campaign is won, for the reason
@@ -346,7 +349,7 @@ class Campaign:
             # Aged to the moment this is being asked, so a Contact nobody has
             # looked at since grows older rather than vanishing when the
             # engine's own knowledge model forgets it.
-            contacts=self.contacts.of(for_side, self.elapsed),
+            contacts=self.contacts.aged_to(for_side, self.elapsed),
         )
 
     def observe(self, at_time: float, presence: dict[str, list[str]]) -> list[dict[str, int]]:
@@ -378,13 +381,13 @@ class Campaign:
         self.elapsed = at_time
 
         for name, state in self._states.items():
-            self._advance(name, state, presence.get(name, []), interval)
+            self._advance_capture(name, state, presence.get(name, []), interval)
 
         paid = self._accrue(interval)
-        self._dominion(interval)
+        self._advance_domination(interval)
         return paid
 
-    def _dominion(self, interval: float) -> None:
+    def _advance_domination(self, interval: float) -> None:
         """Move the Domination clock on by `interval` seconds.
 
         One side owning every Objective *simultaneously*, sustained ten in-game
@@ -416,7 +419,9 @@ class Campaign:
         if self._dominated_seconds >= self.table.domination_seconds:
             self._won(Outcome(winner=holder, condition=DOMINATION, at_time=self.elapsed))
 
-    def _advance(self, name: str, state: ObjectiveState, sides: list[str], interval: float) -> None:
+    def _advance_capture(
+        self, name: str, state: ObjectiveState, sides: list[str], interval: float
+    ) -> None:
         """Move one Objective's capture on by `interval` seconds."""
         present = sorted({side for side in sides if side in SIDES})
 

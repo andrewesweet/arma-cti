@@ -8,6 +8,7 @@ Squad, not to whoever happens to be leading it.
 from __future__ import annotations
 
 from cti_daemon import squads
+from cti_daemon.squads import Held
 
 
 def test_a_bought_squad_gets_an_id_a_commander_can_say() -> None:
@@ -34,7 +35,7 @@ def test_a_new_squad_is_in_reserve_until_it_is_told_otherwise() -> None:
 def test_a_squad_is_found_by_the_side_that_owns_it() -> None:
     roster = squads.Roster()
     squad = roster.add("WEST", "rifle", 8)
-    assert roster.of(squad.id, "WEST") is squad
+    assert roster.owned_by(squad.id, "WEST") is squad
 
 
 def test_the_other_sides_squad_is_simply_not_found() -> None:
@@ -42,11 +43,11 @@ def test_the_other_sides_squad_is_simply_not_found() -> None:
     # the enemy holds by guessing at ids.
     roster = squads.Roster()
     squad = roster.add("WEST", "rifle", 8)
-    assert roster.of(squad.id, "EAST") is None
+    assert roster.owned_by(squad.id, "EAST") is None
 
 
 def test_a_squad_nobody_bought_is_not_found() -> None:
-    assert squads.Roster().of("WEST-9", "WEST") is None
+    assert squads.Roster().owned_by("WEST-9", "WEST") is None
 
 
 def test_a_sides_roll_lists_its_own_squads_in_the_order_they_were_bought() -> None:
@@ -63,7 +64,7 @@ def test_no_call_hands_out_the_whole_map_of_squads() -> None:
     roster = squads.Roster()
     roster.add("WEST", "rifle", 8)
     roster.add("EAST", "weapons", 8)
-    assert roster.roll("EAST") == (roster.of("EAST-1", "EAST"),)
+    assert roster.roll("EAST") == (roster.owned_by("EAST-1", "EAST"),)
 
 
 def test_reserve_is_the_only_order_that_names_no_ground() -> None:
@@ -94,7 +95,7 @@ def test_a_squad_the_world_has_never_held_is_not_a_squad_the_world_has_lost() ->
 def test_a_squad_the_world_did_hold_and_no_longer_does_is_lost() -> None:
     roster = squads.Roster()
     roster.add("WEST", "rifle", 8)
-    roster.reconcile({"WEST-1": (8, "girna")})
+    roster.reconcile({"WEST-1": Held(8, "girna")})
 
     assert roster.reconcile({}) == ("WEST-1",)
     assert roster.roll("WEST") == ()
@@ -110,11 +111,11 @@ def test_an_assault_outlives_the_leader_who_was_carrying_it() -> None:
     roster = squads.Roster()
     squad = roster.add("WEST", "rifle", 8)
     squad.order = squads.Order("assault", "csat_kamino")
-    roster.reconcile({"WEST-1": (8, "")})
+    roster.reconcile({"WEST-1": Held(8, "")})
 
-    roster.reconcile({"WEST-1": (5, "csat_kamino")})
+    roster.reconcile({"WEST-1": Held(5, "csat_kamino")})
 
-    surviving = roster.of("WEST-1", "WEST")
+    surviving = roster.owned_by("WEST-1", "WEST")
     assert surviving is not None
     assert surviving.order == squads.Order("assault", "csat_kamino")
     assert (surviving.size, surviving.at) == (5, "csat_kamino")

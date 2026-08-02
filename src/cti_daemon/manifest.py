@@ -196,8 +196,13 @@ def _check_adjacency_targets(holders: list[dict[str, Any]], known: set[str]) -> 
                 _refuse(f"{holder['id']} is adjacent to itself")
 
 
-def _check_adjacency_is_mutual(objectives: list[dict[str, Any]], graph: nx.Graph) -> None:
-    """Refuse a front line the planner could cross one way only."""
+def _link_mutual_adjacency(objectives: list[dict[str, Any]], graph: nx.Graph) -> None:
+    """Add each Objective's edges, refusing a front line crossable one way only.
+
+    Named for both jobs rather than for the check alone (#90): it walks the
+    authored adjacency once, and refusing a one-sided edge and adding a mutual
+    one are the two things it can do with what it finds.
+    """
     for objective in objectives:
         for neighbour in objective["adjacent"]:
             other = next(o for o in objectives if o["id"] == neighbour)
@@ -220,7 +225,7 @@ def _check_adjacency(objectives: list[dict[str, Any]], bases: list[dict[str, Any
     graph.add_nodes_from(known)
 
     _check_adjacency_targets([*objectives, *bases], known)
-    _check_adjacency_is_mutual(objectives, graph)
+    _link_mutual_adjacency(objectives, graph)
 
     # Bases anchor the graph: an Objective reachable from neither Base is one
     # neither side can take, so Domination could never be won on this map.

@@ -454,16 +454,23 @@ class UtilityPlanner:
             message = f"no side named {observation.for_side!r} has a Base to command from"
             raise ValueError(message)
 
+        spending, spent_because = self._purchase(observation)
+        deploying, deployed_because = self._deploy(observation)
+        return Plan(
+            commands=(*spending, *deploying),
+            decisions=(*spent_because, *deployed_because),
+        )
+
+    def _deploy(self, observation: Observation) -> tuple[list[Command], list[Decision]]:
+        """Give every Squad the best thing left for it to be doing.
+
+        Returns what it decided rather than appending into lists the caller
+        passed down (#90): output arguments were the one Clean Code smell in
+        this module, and `plan` concatenating two answers says the same thing
+        with nothing to keep in step.
+        """
         commands: list[Command] = []
         decisions: list[Decision] = []
-        self._purchase(observation, commands, decisions)
-        self._deploy(observation, commands, decisions)
-        return Plan(commands=tuple(commands), decisions=tuple(decisions))
-
-    def _deploy(
-        self, observation: Observation, commands: list[Command], decisions: list[Decision]
-    ) -> None:
-        """Give every Squad the best thing left for it to be doing."""
         # Every Squad is scored against the whole option space — both kinds at
         # every Place — and the vetoed half is dropped here rather than never
         # generated (ADR-0031). What it is dropped *by* is the port's own
@@ -506,6 +513,7 @@ class UtilityPlanner:
                     args={"squad": squad.id, "order": chosen.kind, "place": chosen.place},
                 )
             )
+        return commands, decisions
 
     def _options(self, observation: Observation, squad: SquadView) -> list[_Option]:
         """Score everything this one Squad could be sent to do.
@@ -838,10 +846,10 @@ class UtilityPlanner:
             vetoed=muster.vetoed[squad.id],
         )
 
-    def _purchase(
-        self, observation: Observation, commands: list[Command], decisions: list[Decision]
-    ) -> None:
-        """Decide whether to spend, and on what."""
+    def _purchase(self, observation: Observation) -> tuple[list[Command], list[Decision]]:
+        """Decide whether to spend, and on what. Returns what it decided."""
+        commands: list[Command] = []
+        decisions: list[Decision] = []
         funds = observation.funds or 0
         # Ground is taken by standing in a capture radius, and the map has only
         # so many radii. A Squad past that has nowhere of its own to be, and a
@@ -858,7 +866,7 @@ class UtilityPlanner:
                     candidates=(),
                 )
             )
-            return
+            return commands, decisions
 
         affordable = tuple(squad for squad in self.table.squads if squad.price <= funds)
         candidates = tuple(
@@ -875,7 +883,7 @@ class UtilityPlanner:
                     candidates=(),
                 )
             )
-            return
+            return commands, decisions
 
         # Cheapest, because ground is taken by standing in a capture radius and
         # every Squad stands in exactly one. Funds spent on a costlier Squad get
@@ -893,6 +901,7 @@ class UtilityPlanner:
                 candidates=candidates[:TRACE_CANDIDATES],
             )
         )
+        return commands, decisions
 
 
 def _sent(chosen: dict[str, _Option], place: str) -> int:

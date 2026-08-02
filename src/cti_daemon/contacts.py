@@ -13,7 +13,10 @@ are testable (ADR-0012).
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Final
+from typing import TYPE_CHECKING, Final
+
+if TYPE_CHECKING:
+    from collections.abc import KeysView
 
 # What an observed count is reported as. Bands rather than a number, so several
 # of our Squads in one place read as a platoon without revealing which ones.
@@ -147,9 +150,22 @@ class Contacts:
         by_place: dict[str, list[Sighting]] = {}
         for sighting in seen:
             by_place.setdefault(sighting.at, []).append(sighting)
+        self._forget(side, observed, found=by_place.keys())
+        self._fold(side, at_time, by_place)
+
+    def _forget(self, side: str, observed: tuple[str, ...], *, found: KeysView[str]) -> None:
+        """Drop the Contact at every place that was looked at and held nothing.
+
+        The removal rule on its own (#90). Absence of contact is not evidence,
+        observed absence is — so the argument that matters is `observed`, and a
+        place nobody looked at is left exactly as it was.
+        """
         for place in observed:
-            if place not in by_place:
+            if place not in found:
                 self._seen.pop((side, place), None)
+
+    def _fold(self, side: str, at_time: float, by_place: dict[str, list[Sighting]]) -> None:
+        """Turn each place's sightings into the one Contact that stands there."""
         for place, sightings in by_place.items():
             kinds = tuple(sighting.kind for sighting in sightings)
             self._seen[side, place] = _Record(
@@ -161,7 +177,7 @@ class Contacts:
                 seen_at=at_time - min(sighting.age for sighting in sightings),
             )
 
-    def of(self, side: str, at_time: float) -> tuple[Contact, ...]:
+    def aged_to(self, side: str, at_time: float) -> tuple[Contact, ...]:
         """One side's Contacts, aged to the moment it is asking."""
         return tuple(
             Contact(

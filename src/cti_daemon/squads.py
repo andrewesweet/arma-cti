@@ -13,7 +13,7 @@ its manifest id (ADR-0020) — never a position.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Final
+from typing import Final, NamedTuple
 
 # What a Commander may tell a Squad to do. Assault is Decapitation as an Order
 # (ADR-0020): close with the enemy Base and destroy its HQ structure.
@@ -23,6 +23,19 @@ ORDERS: Final = ("capture", "defend", "assault", "reserve")
 # than a destination of its own, so it carries no Place and refuses one. Which
 # Places each of the three may name is the port's rule, not this list's.
 NEEDS_PLACE: Final = ("capture", "defend", "assault")
+
+
+class Held(NamedTuple):
+    """What the world can see of one Squad: how many men, and where.
+
+    Named rather than an anonymous `(int, str)` pair (#90) — the two facts a
+    report carries per Squad are the two the world alone can observe, and a
+    tuple whose members have to be remembered positionally is one transposition
+    away from a Squad standing at "8".
+    """
+
+    size: int
+    at: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -77,7 +90,7 @@ class Roster:
         self._squads[squad.id] = squad
         return squad
 
-    def of(self, squad_id: str, side: str) -> Squad | None:
+    def owned_by(self, squad_id: str, side: str) -> Squad | None:
         """Return `side`'s Squad by that id, or None if it has no such Squad.
 
         Another side's Squad is not found rather than refused separately: a
@@ -98,7 +111,7 @@ class Roster:
         """
         return tuple(squad for squad in self._squads.values() if squad.side == side)
 
-    def reconcile(self, seen: dict[str, tuple[int, str]]) -> tuple[str, ...]:
+    def reconcile(self, seen: dict[str, Held]) -> tuple[str, ...]:
         """Take the world's account of which Squads exist, and where.
 
         Head count and ground underfoot are facts only the world can see, and
@@ -120,10 +133,10 @@ class Roster:
         )
         for squad_id in lost:
             del self._squads[squad_id]
-        for squad_id, (size, at) in seen.items():
+        for squad_id, held in seen.items():
             squad = self._squads.get(squad_id)
             if squad is not None:
-                squad.size = size
-                squad.at = at
+                squad.size = held.size
+                squad.at = held.at
                 squad.fielded = True
         return lost

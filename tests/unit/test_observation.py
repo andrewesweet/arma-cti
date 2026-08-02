@@ -19,6 +19,7 @@ from hypothesis import strategies as st
 
 from cti_daemon import budget, campaign, contacts, observation, port, protocol
 from cti_daemon.commands import Command
+from cti_daemon.squads import Held
 
 SQUAD_VIEWS = st.builds(
     observation.SquadView,
@@ -92,7 +93,7 @@ def test_an_observation_reports_each_squad_with_what_it_was_told_to_do() -> None
         Command("order", "WEST", {"squad": "WEST-1", "order": "capture", "place": "girna"}),
         acting_side="WEST",
     )
-    world.roster.reconcile({"WEST-1": (6, "agia_marina")})
+    world.roster.reconcile({"WEST-1": Held(6, "agia_marina")})
 
     (squad,) = world.observation("WEST").squads
     assert squad == observation.SquadView(
@@ -125,8 +126,8 @@ def test_a_squad_the_world_no_longer_holds_leaves_the_observation() -> None:
 
     # Held by the world first: one it has never held is one still on its way
     # there, and `squads.Roster.reconcile` says so rather than deleting it.
-    world.roster.reconcile({"WEST-1": (8, ""), "WEST-2": (8, "")})
-    assert world.roster.reconcile({"WEST-2": (8, "")}) == ("WEST-1",)
+    world.roster.reconcile({"WEST-1": Held(8, ""), "WEST-2": Held(8, "")})
+    assert world.roster.reconcile({"WEST-2": Held(8, "")}) == ("WEST-1",)
     assert [squad.id for squad in world.observation("WEST").squads] == ["WEST-2"]
 
 
@@ -144,7 +145,7 @@ def contested() -> campaign.Campaign:
             ),
             acting_side=side,
         )
-    world.roster.reconcile({"WEST-1": (8, "agia_marina"), "EAST-1": (5, "girna")})
+    world.roster.reconcile({"WEST-1": Held(8, "agia_marina"), "EAST-1": Held(5, "girna")})
     return world
 
 
@@ -303,7 +304,7 @@ def crowded() -> campaign.Campaign:
             )
     world.roster.reconcile(
         {
-            squad.id: (8, "camp_rogain")
+            squad.id: Held(8, "camp_rogain")
             for side in ("WEST", "EAST")
             for squad in world.roster.roll(side)
         }
@@ -367,6 +368,6 @@ def test_a_contacts_age_is_reported_no_finer_than_a_tenth_of_a_second() -> None:
         observed=("girna",),
     )
 
-    (contact,) = register.of("WEST", at_time=47.4)
+    (contact,) = register.aged_to("WEST", at_time=47.4)
     assert contact.age == 47.3
     assert json.dumps(contact.age) == "47.3"
