@@ -94,3 +94,7 @@ protocol stays in the shim's framing layer (ADR-0005) untouched, since payloads 
 it. Approved for `CONTEXT.md` alongside this ADR: **Command** — one Commander instruction sent
 through the Command Port: Purchase, Order, or Reinforce. _Avoid_: message, request, packet;
 "command" unqualified for engine scripting commands (say "scripting command").
+_(Amended 2026-08-02, ADR-0040, #62: the port has two principals. "One Commander instruction"
+is widened — Reinforce may also be issued by a squad leader for his own Squad, with the gateway
+stamping and authorising that caller as ADR-0040 records. Purchase and Order remain a
+Commander's, and the transport/Command namespace split above is untouched.)_

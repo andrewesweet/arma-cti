@@ -21,7 +21,7 @@ The single interface through which every Commander (human or AI) issues orders. 
 _Avoid_: Command API, order bus
 
 **Command**:
-One Commander instruction sent through the Command Port: Purchase, Order, or Reinforce.
+One instruction sent through the Command Port: Purchase, Order, or Reinforce. Purchase and Order are a Commander's; Reinforce may also be issued by a squad leader for his own Squad (ADR-0040).
 _Avoid_: message, request, packet; "command" unqualified for engine scripting commands (say "scripting command")
 
 **Objective**:
@@ -81,5 +81,5 @@ Victory by destroying the enemy Base's HQ structure.
 _Avoid_: Base kill, HQ rush
 
 **Reinforce**:
-Port verb, usable by squad leader or Commander: refill a Squad at own Base to its purchased composition, costing Funds pro-rata. Ammo and equipment restock is free at Base and is not a port verb.
-_Avoid_: Resupply, heal, replen
+Command, issuable by a squad leader for his own Squad or by that side's Commander (ADR-0040): refill a Squad at own Base to its purchased composition, costing Funds pro-rata. Ammo and equipment restock is free at Base and is not a Command.
+_Avoid_: Resupply, heal, replen; port verb (transport verbs and Commands never share a namespace — ADR-0012)

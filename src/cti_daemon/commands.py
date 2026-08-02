@@ -61,7 +61,7 @@ EFFECTS: Final[dict[str, tuple[str, ...]]] = {
 
 @dataclass(frozen=True, slots=True)
 class Command:
-    """One Commander instruction, in the format both Commanders use."""
+    """One instruction through the Command Port, in the one format every issuer uses (ADR-0040)."""
 
     name: str
     side: str
