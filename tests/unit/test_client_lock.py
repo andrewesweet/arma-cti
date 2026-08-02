@@ -1,0 +1,540 @@
+"""The headed Windows client as a machine-wide resource (issue #127).
+
+The pool schedules its two client probes into a serial tail with every other
+slot drained (#47), which orders them against each other and against nothing
+else. Two agents gating from sibling worktrees each drained their own pool and
+then both drove the one client on the one Windows host: while #125 was landing,
+two corpus attempts were stopped `infra_unavailable` by a sibling's client
+tripping the ownership-blind host guard.
+
+`spike/client-lock.sh` is the missing serialisation — one `flock(2)` on
+`~/.arma-cti/windows-client.lock`, outside every worktree, taken around the
+client leg. What it buys is an ordering: a holder does not release until
+`cti_windows_wait_gone` has watched its own client leave the process list, so
+while a run holds the lock, a client in that list is the human's and the guard's
+refusal is the right one. The guard itself learns nothing — `#119`'s rule that a
+guard which can excuse ours can be talked into excusing the human's is asserted
+still-standing in `tests/unit/test_host_guard.py`.
+
+None of this needs Arma. The lock is `flock`, the queueing is a bounded wait, and
+the two-runs-at-once case is two `regress.sh` processes over a stub `run.sh` —
+the `CTI_RUN_SH` seam `tests/unit/test_pool_slots.py` uses and the substituted
+Windows process list `tests/unit/test_bringup_guards.py` uses.
+"""
+
+from __future__ import annotations
+
+import os
+import shutil
+import signal
+import stat
+import subprocess
+import time
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import suppress
+from pathlib import Path
+
+import pytest
+from conftest import REPO
+
+CLIENT_LOCK_SH = REPO / "spike" / "client-lock.sh"
+REGRESS = REPO / "spike" / "regress.sh"
+RUN = REPO / "spike" / "run.sh"
+BASH = shutil.which("bash") or "/bin/bash"
+
+EXIT_INFRA_UNAVAILABLE = 5
+
+# The two probes whose `env:` header drives the headed client. Read rather than
+# hard-coded would be nicer; named here because the point of these tests is that
+# *these two* are the corpus's contended leg, and a rename should land here.
+HOST_PROBES = ["client-port", "human-commander"]
+
+TASKLIST_FREE = "INFO: No tasks are running which match the specified criteria.\n"
+TASKLIST_PRESENT = (
+    "\n"
+    "Image Name                     PID Session Name        Session#    Mem Usage\n"
+    "========================= ======== ================ =========== ============\n"
+    "arma3_x64.exe                24188 Console                    1  3,412,904 K\n"
+)
+
+# A stand-in for `spike/run.sh` that records *when* it held the client. The
+# client leg is the interval this stub is inside; two runs that never overlap
+# leave two disjoint intervals in the trace, which is the property under test.
+STUB_RUN = r"""#!/usr/bin/env bash
+set -uo pipefail
+name="$(basename "${CTI_HARNESS_EXTRA:-unknown}" .sqf)"
+out="$CTI_SPIKE_OUT"
+if [[ ",${CTI_STUB_HOST_PROBES:-}," == *",$name,"* ]]; then
+    # The pool's tail must have told us it is holding the lock; a client leg
+    # running without it is the bug this file exists for.
+    printf '%s\t%s\t%s\t%s\n' "$CTI_STUB_TAG" "$name" open "$(date +%s%N)" >>"$CTI_STUB_TRACE"
+    printf 'client_lock_held=%s\n' "${CTI_CLIENT_LOCK_HELD:-0}" >>"$out/results.env"
+    sleep 1
+    printf '%s\t%s\t%s\t%s\n' "$CTI_STUB_TAG" "$name" close "$(date +%s%N)" >>"$CTI_STUB_TRACE"
+fi
+printf 'server_version=stub\n' >>"$out/results.env"
+printf 'verdict=PASS\n' >>"$out/results.env"
+"""
+
+
+def executable(path: Path, text: str) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+    path.chmod(path.stat().st_mode | stat.S_IXUSR)
+    return path
+
+
+def tasklist(path: Path, listing: str) -> Path:
+    return executable(path, f"#!/usr/bin/env bash\nprintf '%s' {listing!r}\n")
+
+
+def lock_eval(script: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
+    """Run a snippet with `spike/client-lock.sh` sourced."""
+    full = f'source "{CLIENT_LOCK_SH}"\n{script}'
+    # S603: this repo's own library, with a script this test wrote.
+    return subprocess.run(  # noqa: S603
+        [BASH, "-c", full],
+        capture_output=True,
+        text=True,
+        check=False,
+        env={**os.environ, **(env or {})},
+        timeout=120,
+    )
+
+
+def holding(
+    state: Path, label: str, then: str = "sleep 120\n", **extra: str
+) -> subprocess.Popen[str]:
+    """Hold the client lock in a live process, ready by the time this returns."""
+    script = (
+        f'source "{CLIENT_LOCK_SH}"\n'
+        f'cti_client_lock_acquire 0 "{label}" || exit 9\n'
+        "printf ready\n" + then
+    )
+    # S603: this repo's own library.
+    holder = subprocess.Popen(  # noqa: S603
+        [BASH, "-c", script],
+        env={**os.environ, "CTI_TIER_STATE": str(state), **extra},
+        stdout=subprocess.PIPE,
+        text=True,
+    )
+    assert holder.stdout is not None
+    assert holder.stdout.read(5) == "ready"
+    return holder
+
+
+# ------------------------------------------------------------------- the lock
+
+
+def test_the_lock_lives_outside_every_worktree(tmp_path: Path) -> None:
+    """A repo-scoped lock serialises nobody: sibling worktrees hold their own."""
+    got = lock_eval(
+        "cti_client_lock_path", env={"CTI_TIER_STATE": str(tmp_path / "state")}
+    ).stdout.strip()
+    assert got == str(tmp_path / "state" / "windows-client.lock")
+    # And by default it is beside the tier's own locks rather than in the repo.
+    default = lock_eval("cti_client_lock_path", env={"CTI_TIER_STATE": ""}).stdout.strip()
+    assert default == str(Path.home() / ".arma-cti" / "windows-client.lock")
+    assert str(REPO) not in default
+
+
+def test_a_second_taker_is_refused_and_told_whose_run_it_is_behind(tmp_path: Path) -> None:
+    state = tmp_path / "state"
+    env = {"CTI_TIER_STATE": str(state), "CTI_TIER_ISSUE": "127"}
+    holder = holding(state, "the first run", CTI_TIER_ISSUE="127")
+    try:
+        second = lock_eval(
+            'if cti_client_lock_acquire 0 "the second run"; then echo TOOK; else\n'
+            "  echo REFUSED\n"
+            "  cti_client_lock_holder\n"
+            "fi",
+            env=env,
+        )
+    finally:
+        holder.kill()
+    assert "TOOK" not in second.stdout, "two runs held the one Windows client"
+    assert "REFUSED" in second.stdout
+    assert "label=the first run" in second.stdout
+    assert "issue=127" in second.stdout
+    assert f"pid={holder.pid}" in second.stdout
+
+
+def test_a_bounded_wait_queues_and_a_release_lets_it_through(tmp_path: Path) -> None:
+    """#125's `--wait` precedent: waiting on a resource is a queue, not a retry."""
+    state = tmp_path / "state"
+    env = {"CTI_TIER_STATE": str(state)}
+    holder = holding(state, "holder", then="sleep 2\ncti_client_lock_release\nsleep 30\n")
+    try:
+        waited = lock_eval('cti_client_lock_acquire 30 "queued" && echo TOOK', env=env)
+    finally:
+        holder.kill()
+    assert "TOOK" in waited.stdout, waited.stderr
+
+
+def test_a_dead_holders_lock_frees_itself(tmp_path: Path) -> None:
+    """Use flock rather than a pidfile, for the reason ADR-0016 chose it."""
+    state = tmp_path / "state"
+    env = {"CTI_TIER_STATE": str(state)}
+    holder = holding(state, "doomed", then="sleep 60\n")
+    holder.kill()
+    holder.wait(timeout=30)
+    assert "TOOK" in lock_eval('cti_client_lock_acquire 0 "next" && echo TOOK', env=env).stdout
+
+
+def test_our_own_lock_does_not_read_as_somebody_elses(tmp_path: Path) -> None:
+    """A lock we hold ourselves is not somebody else's.
+
+    `flock` conflicts between two open file descriptions of one process exactly
+    as it does between two processes, so a naive busy check would read our own
+    lock as a sibling's and queue the run behind itself.
+    """
+    env = {"CTI_TIER_STATE": str(tmp_path / "state")}
+    result = lock_eval(
+        'cti_client_lock_acquire 0 "ours" || exit 9\n'
+        "cti_client_lock_busy && echo BUSY || echo FREE\n"
+        "cti_client_lock_release\n",
+        env=env,
+    )
+    assert result.stdout.strip() == "FREE", result.stderr
+
+
+def test_release_takes_the_holder_metadata_with_it(tmp_path: Path) -> None:
+    state = tmp_path / "state"
+    env = {"CTI_TIER_STATE": str(state)}
+    lock_eval('cti_client_lock_acquire 0 "ours" && cti_client_lock_release', env=env)
+    assert not (state / "windows-client.lock.info").exists()
+    stale = lock_eval("cti_client_lock_holder", env=env).stdout
+    assert "no metadata" in stale
+
+
+def test_a_child_that_outlives_the_run_does_not_keep_the_lock(tmp_path: Path) -> None:
+    """The bug this lock arrived with, and the one that would outlast it.
+
+    `flock` frees a lock only when the last open file description closes, and a
+    background subshell inherits every descriptor. The first `just unit` after
+    this lock landed went red: a stub server that outlived its `run.sh` was still
+    holding `~/.arma-cti/windows-client.lock`, against a `.info` its dead parent
+    had already deleted — a machine-wide stop with nobody to name.
+    """
+    state = tmp_path / "state"
+    env = {"CTI_TIER_STATE": str(state)}
+    leaked = tmp_path / "leaked.pid"
+    result = lock_eval(
+        'cti_client_lock_acquire 0 "the parent" || exit 9\n'
+        "(\n"
+        "  cti_client_lock_disown\n"
+        f'  printf "%s" "$BASHPID" > "{leaked}"\n'
+        "  exec sleep 60\n"
+        ") &\n"
+        f'while [[ ! -s "{leaked}" ]]; do sleep 0.05; done\n'
+        "cti_client_lock_release\n"
+        "cti_client_lock_busy && echo STILL-HELD || echo FREE\n",
+        env=env,
+    )
+    try:
+        assert result.stdout.strip() == "FREE", result.stderr
+    finally:
+        pid = int(leaked.read_text())
+        with suppress(ProcessLookupError):
+            os.kill(pid, signal.SIGKILL)
+
+
+def test_every_background_launch_in_run_sh_lets_go_of_the_lock() -> None:
+    """A tripwire for the next launch somebody adds.
+
+    The failure above is silent, machine-wide and outlives the run that caused
+    it, so it is worth catching structurally rather than waiting for the next
+    agent's corpus to be stopped by a process nobody can find.
+    """
+    text = (REPO / "spike" / "run.sh").read_text()
+    launches = [line for line in text.splitlines() if line.rstrip().endswith(" &")]
+    disowns = text.count("cti_client_lock_disown")
+    assert disowns == len(launches), (
+        f"{len(launches)} background launches in run.sh, {disowns} of them disown the "
+        "client lock; a child that keeps it holds the Windows client for every later run"
+    )
+
+
+# --------------------------------------------------------------------- run.sh
+
+
+def run_sh(tmp_path: Path, listing: str, **extra: str) -> subprocess.CompletedProcess[str]:
+    """`spike/run.sh` as far as the missing server install, and no further.
+
+    An empty `CTI_SERVER_DIR` means the first thing after the pre-flight is a
+    refusal of its own, which is what makes "it got past the lock" observable
+    without a server.
+    """
+    env = dict(
+        os.environ,
+        CTI_WINDOWS_TASKLIST=str(tasklist(tmp_path / "tasklist.sh", listing)),
+        CTI_SPIKE_OUT=str(tmp_path / "out"),
+        CTI_SERVER_DIR=str(tmp_path / "no-server"),
+        CTI_TIER_STATE=str(tmp_path / "state"),
+        **extra,
+    )
+    # S603: this repo's own script, with paths this test just wrote.
+    return subprocess.run(  # noqa: S603
+        [BASH, str(RUN)], env=env, capture_output=True, text=True, check=False, timeout=120
+    )
+
+
+def results(tmp_path: Path) -> dict[str, str]:
+    text = (tmp_path / "out" / "results.env").read_text()
+    return dict(line.split("=", 1) for line in text.splitlines() if "=" in line)
+
+
+def held_lock(tmp_path: Path) -> subprocess.Popen[str]:
+    """Hold the client lock in `tmp_path`'s state directory."""
+    return holding(tmp_path / "state", "a sibling agent")
+
+
+def test_a_client_run_refuses_while_another_run_holds_the_client(tmp_path: Path) -> None:
+    holder = held_lock(tmp_path)
+    try:
+        result = run_sh(tmp_path, TASKLIST_FREE, CTI_WINDOWS_CLIENT="1")
+    finally:
+        holder.kill()
+    assert result.returncode != 0
+    got = results(tmp_path)
+    assert got["failure_class"] == "infra_unavailable"
+    assert "another run holds the Windows client" in got["failure_detail"]
+    # And whose run it is behind, so the caller can act on it.
+    assert "label=a sibling agent" in result.stderr
+    # Nothing launched, and the guard never even asked: the refusal is cheaper
+    # than the process list.
+    assert "windows_host_free" not in got
+
+
+def test_a_run_that_sends_no_client_is_not_held_up_by_one(tmp_path: Path) -> None:
+    """The lock is the client's, not the tier's — slots are what serialise those."""
+    holder = held_lock(tmp_path)
+    try:
+        result = run_sh(tmp_path, TASKLIST_FREE)
+    finally:
+        holder.kill()
+    assert result.returncode != 0
+    got = results(tmp_path)
+    assert got["windows_host_free"] == "true"
+    assert "server binary missing" in got["failure_detail"]
+
+
+def test_a_client_run_takes_the_lock_and_gives_it_back(tmp_path: Path) -> None:
+    """The green branch, asserted at the *next* refusal rather than at a pass.
+
+    Without it the lock could be a permanent stop and the test above would still
+    be green — and a lock the teardown never released would stop every later run.
+    """
+    result = run_sh(tmp_path, TASKLIST_FREE, CTI_WINDOWS_CLIENT="1")
+    assert result.returncode != 0
+    got = results(tmp_path)
+    assert got["windows_client_lock"] == "held"
+    assert "server binary missing" in got["failure_detail"]
+    took = lock_eval(
+        'cti_client_lock_acquire 0 "after" && echo TOOK',
+        env={"CTI_TIER_STATE": str(tmp_path / "state")},
+    )
+    assert "TOOK" in took.stdout, "run.sh exited still holding the client lock"
+
+
+# ------------------------------------------------------------- two runs at once
+
+
+def pool_env(tmp_path: Path, tag: str, *, listing: str | Path = TASKLIST_FREE) -> dict[str, str]:
+    """Everything `regress.sh` needs to run without Arma, written once.
+
+    Written by the caller before any concurrency starts: two threads writing one
+    stub script would race the kernel's own "text file busy".
+    """
+    master = tmp_path / "arma3server"
+    executable(master / "arma3server_x64", "#!/usr/bin/env bash\n")
+    (master / "mpmissions").mkdir(exist_ok=True)
+    tool = listing if isinstance(listing, Path) else tasklist(tmp_path / "tasklist.sh", listing)
+    return {
+        **os.environ,
+        "CTI_TIER_STATE": str(tmp_path / "state"),
+        "CTI_SLOT_INSTALL_MASTER": str(master),
+        "CTI_RUN_SH": str(executable(tmp_path / "stub-run.sh", STUB_RUN)),
+        "CTI_WINDOWS_TASKLIST": str(tool),
+        "CTI_STUB_TRACE": str(tmp_path / "trace.tsv"),
+        "CTI_STUB_HOST_PROBES": ",".join(HOST_PROBES),
+        "CTI_STUB_TAG": tag,
+    }
+
+
+def pool_run(
+    env: dict[str, str], *args: str, timeout: int = 300, delay: float = 0.0
+) -> subprocess.CompletedProcess[str]:
+    time.sleep(delay)
+    # S603: this repo's own runner, against a stub this test wrote.
+    return subprocess.run(  # noqa: S603
+        [BASH, str(REGRESS), *args],
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+        timeout=timeout,
+    )
+
+
+def client_legs(tmp_path: Path) -> dict[str, list[tuple[int, int]]]:
+    """Each run's client-leg intervals, in nanoseconds, keyed by its tag."""
+    legs: dict[str, list[tuple[int, int]]] = {}
+    opened: dict[tuple[str, str], int] = {}
+    for line in (tmp_path / "trace.tsv").read_text().splitlines():
+        tag, probe, edge, stamp = line.split("\t")
+        if edge == "open":
+            opened[(tag, probe)] = int(stamp)
+        else:
+            legs.setdefault(tag, []).append((opened.pop((tag, probe)), int(stamp)))
+    assert not opened, f"a client leg opened and never closed: {opened}"
+    return legs
+
+
+def test_two_concurrent_pools_never_hold_the_client_at_once(tmp_path: Path) -> None:
+    """The collision #125 met, run on purpose.
+
+    Two pools, two slots, one machine — the shape of two agents gating from
+    sibling worktrees. Each drains its own parallel phase and then wants the one
+    headed client. With `--wait` they queue; the proof is that their client legs
+    are disjoint in time rather than merely that both went green.
+    """
+    envs = {tag: pool_env(tmp_path, tag) for tag in ("a", "b")}
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = {
+            tag: pool.submit(
+                pool_run,
+                env,
+                "--slots",
+                "1",
+                "--wait",
+                "120",
+                *HOST_PROBES,
+                delay=delay,
+            )
+            for (tag, env), delay in zip(envs.items(), (0.0, 0.2), strict=True)
+        }
+        outcomes = {tag: f.result() for tag, f in futures.items()}
+
+    for tag, result in outcomes.items():
+        assert result.returncode == 0, f"pool {tag}: {result.stderr[-4000:]}"
+
+    legs = client_legs(tmp_path)
+    assert sorted(legs) == ["a", "b"], legs
+    assert all(len(v) == len(HOST_PROBES) for v in legs.values()), legs
+    for start_a, end_a in legs["a"]:
+        for start_b, end_b in legs["b"]:
+            assert end_a <= start_b or end_b <= start_a, (
+                "two pools drove the Windows client at the same time: "
+                f"a={start_a}..{end_a} b={start_b}..{end_b}"
+            )
+
+
+def test_a_client_leg_only_runs_under_the_lock(tmp_path: Path) -> None:
+    """The tail tells its children it holds the lock.
+
+    If it stopped doing so, `run.sh` would queue behind its own parent and the
+    pool would hang rather than run.
+    """
+    result = pool_run(pool_env(tmp_path, "solo"), "--slots", "1", *HOST_PROBES)
+    assert result.returncode == 0, result.stderr[-4000:]
+    for evidence in (tmp_path / "state" / "runs").glob("*/results.env"):
+        text = evidence.read_text()
+        if "client_lock_held" in text:
+            assert "client_lock_held=1" in text, evidence
+
+
+def test_a_pool_whose_tail_is_locked_out_reports_it_rather_than_skipping(
+    tmp_path: Path,
+) -> None:
+    """`not_run` carries no class, so a silently dropped tail exits green."""
+    env = pool_env(tmp_path, "blocked")
+    holder = held_lock(tmp_path)
+    try:
+        result = pool_run(env, "--slots", "1", *HOST_PROBES)
+    finally:
+        holder.kill()
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    assert "another run holds the Windows client" in result.stderr
+    assert "label=a sibling agent" in result.stderr
+
+
+# ------------------------------------------------------- the guard, still blind
+
+
+def test_a_held_client_lock_lets_the_pool_queue_rather_than_refuse(tmp_path: Path) -> None:
+    """A client in the list *while another run holds the lock* is that run's.
+
+    The guard is not told this — it refuses exactly as before. The caller reads
+    the lock and queues, which is the whole of #127's fix and the reason the
+    ownership-blind property survives it.
+    """
+    # The list shows a client until the sibling's leg ends, and not afterwards.
+    # The holder releases at the same moment, which is the ordering the real
+    # teardown gets from waiting on `cti_windows_wait_gone` before releasing.
+    flip = tmp_path / "flip"
+    listing = executable(
+        tmp_path / "tasklist-flip.sh",
+        "#!/usr/bin/env bash\n"
+        f'if [[ -e "{flip}" ]]; then printf "%s" {TASKLIST_FREE!r}; '
+        f'else printf "%s" {TASKLIST_PRESENT!r}; fi\n',
+    )
+    env = pool_env(tmp_path, "queued", listing=listing)
+    holder = holding(
+        tmp_path / "state",
+        "a sibling agent",
+        then=f'sleep 3\ntouch "{flip}"\ncti_client_lock_release\nsleep 60\n',
+    )
+    try:
+        result = pool_run(env, "--slots", "1", "--wait", "60", "contact-decay")
+    finally:
+        holder.kill()
+    assert result.returncode == 0, result.stderr[-4000:]
+    assert "queueing up to 60s" in result.stderr
+
+
+def test_without_a_wait_a_client_in_the_list_still_stops_the_pool(tmp_path: Path) -> None:
+    """The refusal is the default, and the lock does not weaken it."""
+    env = pool_env(tmp_path, "refused", listing=TASKLIST_PRESENT)
+    holder = held_lock(tmp_path)
+    try:
+        result = pool_run(env, "--slots", "1", "contact-decay")
+    finally:
+        holder.kill()
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE
+    assert "play session may be live" in result.stderr
+
+
+def test_an_unheld_client_in_the_list_is_the_humans_however_long_we_wait(
+    tmp_path: Path,
+) -> None:
+    """Nobody holds the lock, so the client in the list is not an agent's.
+
+    Refuse, and do not queue: waiting out a play session is not what `--wait`
+    is for.
+    """
+    env = pool_env(tmp_path, "human", listing=TASKLIST_PRESENT)
+    started = time.monotonic()
+    result = pool_run(env, "--slots", "1", "--wait", "600", "contact-decay")
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE
+    assert time.monotonic() - started < 60, "the pool queued behind a play session"
+
+
+def test_a_process_list_we_cannot_read_is_never_queued_on(tmp_path: Path) -> None:
+    """A check that could not run is not a check that will pass in a minute."""
+    unreadable = tmp_path / "there-is-no-tasklist-here.exe"
+    env = pool_env(tmp_path, "blind", listing=unreadable)
+    holder = held_lock(tmp_path)
+    started = time.monotonic()
+    try:
+        result = pool_run(env, "--slots", "1", "--wait", "600", "contact-decay")
+    finally:
+        holder.kill()
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE
+    assert "could not run is not a check that passed" in result.stderr
+    assert time.monotonic() - started < 60, "the pool queued on a check it could not make"
+
+
+@pytest.mark.parametrize("script", ["run.sh", "regress.sh"])
+def test_every_path_that_drives_the_client_knows_about_the_lock(script: str) -> None:
+    assert "client-lock.sh" in (REPO / "spike" / script).read_text()

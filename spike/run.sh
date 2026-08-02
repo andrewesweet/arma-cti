@@ -21,6 +21,10 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # absolute-path resolution of the Windows interop binaries comes with it.
 # shellcheck source=spike/hosts.sh
 source "$REPO/spike/hosts.sh"
+# The headed Windows client is one machine-wide thing and this run may be one of
+# several agents wanting it (#127). Sourced always, taken only on the client path.
+# shellcheck source=spike/client-lock.sh
+source "$REPO/spike/client-lock.sh"
 SERVER_DIR="${CTI_SERVER_DIR:-$HOME/arma3server}"
 SERVER_BIN="$SERVER_DIR/arma3server_x64"
 OUT="${CTI_SPIKE_OUT:-$REPO/.spike-out}"
@@ -73,6 +77,11 @@ WINDOWS_CLIENT_PROFILE="${CTI_WINDOWS_CLIENT_PROFILE:-ctitest}"
 # shutdown, not a window sized until something passes: the engine took under ten
 # seconds to go in every run observed, and a run that blows this reports it.
 WINDOWS_EXIT_TIMEOUT="${CTI_WINDOWS_EXIT_TIMEOUT:-90}"
+# How long this run will queue for the machine-wide client lock before calling it
+# infra_unavailable (#127). Zero — refuse immediately, naming the holder — is the
+# default, because a hand run's operator would rather be told than left waiting.
+# `just regress --wait` sets it for the pool's tail.
+CLIENT_LOCK_WAIT="${CTI_CLIENT_LOCK_WAIT:-0}"
 
 BOOT_TIMEOUT="${CTI_BOOT_TIMEOUT:-240}"
 HC_TIMEOUT="${CTI_HC_TIMEOUT:-90}"
@@ -182,6 +191,13 @@ cleanup() {
         cti_windows_wait_gone arma3_x64.exe "$WINDOWS_EXIT_TIMEOUT" ||
             log "teardown: arma3_x64.exe had not left the Windows process list"
     fi
+    # Last, and after that wait rather than before it (#127). The whole value of
+    # the client lock is the ordering it guarantees: while a run holds it, no
+    # other run's client is in the process list. Releasing before the wait would
+    # hand the next run a lock whose promise had already been broken, and it
+    # would read our still-exiting client as the human's play session — which is
+    # exactly the #119 collision, moved rather than fixed.
+    cti_client_lock_release
     exit "$code"
 }
 trap cleanup EXIT INT TERM
@@ -327,6 +343,31 @@ record "tier_host" "$HOST"
 #
 # regress.sh asks the same question again before it queues, on purpose: that copy
 # is the cheap refusal that costs a caller no place in the lock queue.
+# Before the guard, not after, when this run means to drive the headed client
+# (#127). There is one client on one Windows host, and the pool's serial tail
+# only orders the probes *inside* one run — two agents gating at once each drove
+# it and each read the other's client as a play session. The lock is machine-
+# scoped, so the second taker either queues for a bounded time or is told whose
+# run it is behind; and because a holder does not let go until its own client has
+# left the process list, a client still visible once we hold the lock is the
+# human's and the guard below is right to refuse for it.
+#
+# CTI_CLIENT_LOCK_HELD is the pool's tail saying it already holds it: flock from
+# a child on a file its parent holds would wait for a lock that cannot be freed
+# until the child returns.
+if ((WINDOWS_CLIENT == 1)) && [[ "${CTI_CLIENT_LOCK_HELD:-0}" != 1 ]]; then
+    if cti_client_lock_acquire "$CLIENT_LOCK_WAIT" "run.sh ${CTI_HARNESS_EXTRA:-hold} on $HOST"; then
+        record "windows_client_lock" "held"
+    else
+        log "the machine-wide Windows client lock is held; holder:"
+        cti_client_lock_holder | sed 's/^/[spike]   /' >&2
+        waited=""
+        ((CLIENT_LOCK_WAIT > 0)) && waited=" after waiting ${CLIENT_LOCK_WAIT}s"
+        fail "infra_unavailable" \
+            "another run holds the Windows client${waited}; see $(cti_client_lock_path).info"
+    fi
+fi
+
 guard="$(cti_host_client_state "$HOST")"
 case "${guard%% *}" in
 running) fail "infra_unavailable" "${guard#* } — that is a play session, not ours" ;;
@@ -498,7 +539,9 @@ fi
 daemon_starts=0
 start_daemon() {
     daemon_starts=$((daemon_starts + 1))
-    (cd "$REPO" && exec uv run --quiet cti-daemon \
+    (
+        cti_client_lock_disown
+        cd "$REPO" && exec uv run --quiet cti-daemon \
         --host "$DAEMON_HOST" --port "$DAEMON_PORT" --telemetry "$DAEMON_TELEMETRY" \
         "${AI_ARGS[@]}") \
         >>"$DAEMON_LOG" 2>&1 &
@@ -528,6 +571,7 @@ SERVER_LOG="$OUT/server.stdout.log"
 : >"$SERVER_LOG"
 t_boot=$(now)
 (
+    cti_client_lock_disown
     cd "$SERVER_DIR" || exit 1
     args=(-config="$SERVER_CONFIG" -mod="$MOD_NAME" -port="$PORT" -name="$SERVER_NAME"
         -world=empty -autoInit -noSound -limitFPS=100)
@@ -561,6 +605,7 @@ if ((SKIP_HC == 0)); then
     : >"$HC_LOG"
     t_hc=$(now)
     (
+        cti_client_lock_disown
         cd "$SERVER_DIR" || exit 1
         # The password must match server.cfg or the client never gets past connect.
         exec ./arma3server_x64 -client \
@@ -612,6 +657,7 @@ if ((WINDOWS_HC == 1)); then
     : >"$WIN_LOG"
     t_win=$(now)
     (
+        cti_client_lock_disown
         cd "$WINDOWS_ARMA_DIR" || exit 1
         exec ./arma3server_x64.exe -client \
             -connect="$WINDOWS_CONNECT" \
@@ -657,6 +703,7 @@ if ((WINDOWS_CLIENT == 1)); then
     : >"$WIN_CLIENT_LOG"
     t_wc=$(now)
     (
+        cti_client_lock_disown
         cd "$WINDOWS_ARMA_DIR" || exit 1
         exec ./arma3_x64.exe \
             -connect="$WINDOWS_CONNECT" \

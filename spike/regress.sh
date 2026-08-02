@@ -36,6 +36,11 @@ PROBE_DIR="$REPO/spike/probes"
 # Validated before anything is launched — see the pre-flight.
 # shellcheck source=spike/hosts.sh
 source "$REPO/spike/hosts.sh"
+# The headed Windows client, machine-scoped rather than pool-scoped (#127): the
+# tail below serialises this pool's two client probes, and this serialises the
+# tail against every other pool on the machine.
+# shellcheck source=spike/client-lock.sh
+source "$REPO/spike/client-lock.sh"
 HOST="${CTI_TIER_HOST:-local}"
 RUNS_DIR="$(cti_host_runs "$HOST")"
 KEEP_PASSES=3
@@ -298,7 +303,38 @@ fi
 # Per host and gated on the role since #51: this one is `human`, so it is asked
 # exactly as before. A host the tier owns is not asked, because guarding the
 # tier's own client against the tier would stop every run that used it (ADR-0032).
-if ! cti_host_guard "$HOST"; then
+#
+# The one thing that changed with #127 is what happens on a refusal, and it
+# changed in the caller rather than in the guard. A client in the process list
+# while *another run holds the machine-wide client lock* is that run's client,
+# not a play session — the holder does not release until its own client has left
+# the list — so it is something to queue behind for the bounded `--wait` this
+# pool was given, exactly as a busy slot is. With no wait asked for, or with the
+# lock free, the refusal stands unchanged: an unheld client in the list is the
+# human's, and the guard is still the only thing that decides that.
+host_guard_or_queue() {
+    cti_host_guard "$HOST" && return 0
+    # Only a client *in* the list is a thing another run can own. A list that
+    # could not be read is not: queueing on it would be waiting out a broken
+    # check rather than a sibling's client leg, and the answer to a check that
+    # could not run is the same stop it has always been.
+    [[ "$(cti_host_client_state "$HOST")" == running* ]] || return 1
+    cti_client_lock_busy || return 1
+    if ((WAIT_SECS == 0)); then
+        log "another run holds the Windows client; --wait would queue behind it"
+        cti_client_lock_holder | sed 's/^/[regress]   /' >&2
+        return 1
+    fi
+    log "that client belongs to another run, not to a play session — queueing up to ${WAIT_SECS}s:"
+    cti_client_lock_holder | sed 's/^/[regress]   /' >&2
+    cti_client_lock_wait_free "$WAIT_SECS" || {
+        log "waited ${WAIT_SECS}s and the Windows client was still held"
+        return 1
+    }
+    cti_host_guard "$HOST"
+}
+
+if ! host_guard_or_queue; then
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
@@ -433,7 +469,11 @@ done
 # ------------------------------------------------------------------ evidence
 mkdir -p "$RUNS_DIR"
 RUN_STARTED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-POOL_STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+# The pid is in the name because two pools are a thing that happens (#127) and
+# `date` has one-second resolution: two agents starting inside the same second
+# would otherwise share one evidence directory, and with it one `claims/`, and
+# each would silently take probes off the other's corpus.
+POOL_STAMP="$(date -u +%Y%m%dT%H%M%SZ)-$$"
 POOL_OUT="$RUNS_DIR/$POOL_STAMP-pool"
 CLAIMS="$POOL_OUT/claims"
 STOP_FLAG="$POOL_OUT/stop"
@@ -797,8 +837,28 @@ fi
 
 # The tail, with every other slot idle: one Windows host, one headed client, one
 # guard that is ownership-blind on purpose.
+#
+# And now under one machine-wide lock (#127). Draining the pool orders these two
+# probes against the rest of *this* run; it does nothing about the sibling agent
+# whose tail is running at the same time in another worktree. The lock is taken
+# here rather than at pre-flight so that the parallel phase of two pools still
+# overlaps — the client is only contended for the length of the tail — and
+# released as soon as the tail is done, before the merge.
+CLIENT_LOCK_BLOCKED=0
 if ((${#HOST_JOBS[@]} > 0)) && [[ ! -f "$STOP_FLAG" ]]; then
-    worker "${SLOTS[0]}" "${HOST_JOBS[@]}"
+    if cti_client_lock_acquire "$WAIT_SECS" "$POOL_LABEL"; then
+        log "windows-host tail holds the machine-wide client lock: $(cti_client_lock_path)"
+        # Told to the tail's children so `run.sh` does not queue for a lock its
+        # own parent is holding.
+        export CTI_CLIENT_LOCK_HELD=1
+        worker "${SLOTS[0]}" "${HOST_JOBS[@]}"
+        unset CTI_CLIENT_LOCK_HELD
+        cti_client_lock_release
+    else
+        CLIENT_LOCK_BLOCKED=1
+        log "another run holds the Windows client — the host tail is not a result:"
+        cti_client_lock_holder | sed 's/^/[regress]   /' >&2
+    fi
 fi
 
 POOL_ELAPSED=$(($(date +%s) - POOL_T0))
@@ -826,33 +886,47 @@ json_field() {
 for name in "${CORPUS[@]}"; do
     claim="$CLAIMS/$name"
     if [[ ! -d "$claim" ]]; then
-        not_run+=("$name")
-        continue
-    fi
-    slot="$(cat "$claim/slot" 2>/dev/null || echo '?')"
-    out="$(cat "$claim/evidence" 2>/dev/null || echo '')"
-    if [[ ! -f "$claim/done" || -z "$out" || ! -f "$out/verdict.json" ]]; then
-        # A claimed probe with no verdict is the dead-slot case, and ADR-0022
-        # says what it is: not a result. The worker was killed, or the machine
-        # took it; either way nothing was measured under conditions anyone can
-        # interpret, and calling it a failure of the *probe* would be a reading
-        # of evidence that does not exist.
-        class=infra_unavailable
-        elapsed=0
-        log "slot $slot claimed $name and wrote no verdict — the worker died mid-probe; not a result (ADR-0022)"
-        # And the slot is cleared here rather than left for whoever comes next.
-        # A dead worker's *children* outlive it — `run.sh`, a server, a headless
-        # client — still on this slot's ports and still holding the descriptor
-        # they inherited, so the lock the kernel is supposed to free stays held.
-        # We still own the slot, so clearing it is ours to do; the next holder's
-        # cleanup-on-acquire is the backstop for the case where nobody did.
-        if [[ "$slot" =~ ^[0-9]+$ ]]; then
-            cti_slot_release "$slot"
-            cti_slot_reclaim "$slot" holders
+        # A host probe the client lock kept us out of is not "not run" in the
+        # silent sense — `not_run` carries no class and so cannot reach the exit
+        # code, and a corpus that quietly dropped the two probes about the client
+        # would exit green having measured neither (#127). It is the same
+        # not-a-result the lock says it is, typed.
+        if ((CLIENT_LOCK_BLOCKED == 1)) && host_probe "$name"; then
+            slot="-"
+            class=infra_unavailable
+            elapsed=0
+            out="$(cti_client_lock_path).info"
+            log "$name never ran: another run held the Windows client; not a result"
+        else
+            not_run+=("$name")
+            continue
         fi
     else
-        class="$(json_field "$out/verdict.json" class)"
-        elapsed="$(sed -n 's/.*"elapsed_secs": \([0-9]*\).*/\1/p' "$out/verdict.json" | head -1)"
+        slot="$(cat "$claim/slot" 2>/dev/null || echo '?')"
+        out="$(cat "$claim/evidence" 2>/dev/null || echo '')"
+        if [[ ! -f "$claim/done" || -z "$out" || ! -f "$out/verdict.json" ]]; then
+            # A claimed probe with no verdict is the dead-slot case, and ADR-0022
+            # says what it is: not a result. The worker was killed, or the machine
+            # took it; either way nothing was measured under conditions anyone can
+            # interpret, and calling it a failure of the *probe* would be a reading
+            # of evidence that does not exist.
+            class=infra_unavailable
+            elapsed=0
+            log "slot $slot claimed $name and wrote no verdict — the worker died mid-probe; not a result (ADR-0022)"
+            # And the slot is cleared here rather than left for whoever comes next.
+            # A dead worker's *children* outlive it — `run.sh`, a server, a headless
+            # client — still on this slot's ports and still holding the descriptor
+            # they inherited, so the lock the kernel is supposed to free stays held.
+            # We still own the slot, so clearing it is ours to do; the next holder's
+            # cleanup-on-acquire is the backstop for the case where nobody did.
+            if [[ "$slot" =~ ^[0-9]+$ ]]; then
+                cti_slot_release "$slot"
+                cti_slot_reclaim "$slot" holders
+            fi
+        else
+            class="$(json_field "$out/verdict.json" class)"
+            elapsed="$(sed -n 's/.*"elapsed_secs": \([0-9]*\).*/\1/p' "$out/verdict.json" | head -1)"
+        fi
     fi
     VERDICT_NAMES+=("$name")
     VERDICT_CLASSES+=("${class:-untyped_harness_failure}")

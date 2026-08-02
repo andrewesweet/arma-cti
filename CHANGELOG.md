@@ -121,6 +121,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   timeout reports the closest range the Squad reached, which is the number that tells "it never
   set off" apart from "it arrived and the assault failed". #106.
 
+- **Two agents testing at once no longer fight over the one Windows client.** The regression pool
+  ran its two client probes last and one at a time, which ordered them against the rest of its own
+  run and against nothing outside it — so two runs starting from sibling worktrees each drained
+  their own pool and then both drove the single headed client on the single Windows host. Each read
+  the other's client as a live play session and stopped, and on a tighter race they would have
+  joined two worlds through one engine profile. The client leg now takes a machine-wide lock for as
+  long as it holds the client, and a second run either queues for the time it was told it may wait
+  or is refused and shown whose run it is behind. The guard that protects a real play session is
+  unchanged and still refuses to tell one client from another; what the lock adds is that a client
+  nobody has claimed is the human's, which is the only case worth stopping for.
+
 - **Running the no-Arma tests no longer kills whatever the Arma tier is running.** The pool's own
   unit tests drive the real `spike/regress.sh`, which reclaims each slot it acquires by killing
   whatever holds that slot's ports or runs out of its install. The tests moved the locks and the
