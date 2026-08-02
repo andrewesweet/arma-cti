@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The recall a human signed off is now something the world has been seen to do.** ADR-0031 grew
+  the recall radius from 160 m to 1.15 km and named what keeping your own ground is worth; both
+  numbers were approved on a 200-seed sweep and neither had ever happened in a running world,
+  because no company had ever stood on ground a side held. A new probe stages exactly that — WEST
+  holding three Objectives, its Squads marching, and enemy riflemen appearing on the held ground in
+  numbers its own leaders have to acquire — and watches the Order that comes back. A platoon is
+  ignored for forty-five continuous seconds; a company turns a marching Squad round inside two, from
+  a Squad measured a kilometre off the ground it is recalled to. Nothing tells the daemon the men
+  are there and nothing asks for the Order. #104.
+
+- **A playtest can start in the middle of a Campaign instead of at its opening.** Half of the first
+  playtest's half hour went on reaching a board rather than playing one, because a fresh Campaign
+  was the only thing that could be booted. A committed fixture now plays the Campaign into a named
+  mid-Campaign state before handing it over — WEST holding three Objectives with a Squad standing on
+  each and EAST massing a kilometre off the front — and every part of that state is reached through
+  the door the game uses: Squads Purchased through the Command Port, ground captured by standing on
+  it, Orders issued through the port, Funds whatever the Campaign says they are. It refuses to open
+  the play window on a board it did not actually reach, so a brief that names it is naming something
+  that was true. Staging costs about forty seconds and the session clock starts after it. #42.
+
 - **A Squad that has taken losses can be brought back to strength, and its own leader can ask for
   it.** Reinforce joins Purchase and Order as a Command: name a Squad standing at your own Base and
   the men who are missing arrive there, costing the missing fraction of what that Squad cost new,
