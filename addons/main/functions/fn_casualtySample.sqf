@@ -2,6 +2,10 @@
  * Author: arma-cti
  * Hands the deaths since the last report to the daemon (#39). Runs on the server.
  *
+ * Interior to the server's own call graph, so it carries no locality guard:
+ * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
+ * engine runs on the server and nowhere else (#118, ADR-0040).
+ *
  * cti_fnc_casualtyWatch buffers; this drains. Every report carries what has
  * happened since the last one and then the buffer is empty, so a death is
  * reported once — unlike cti_fnc_hqSample, which repeats a standing fact every
@@ -23,8 +27,6 @@
  * Return Value: <HASHMAP> `deaths` (the drained records) and `dropped` (how many
  * the buffer's bound refused since the last report)
  */
-if (!isServer) exitWith { ["cti_fnc_casualtySample"] call cti_fnc_offServer };
-
 private _deaths = [];
 private _dropped = 0;
 

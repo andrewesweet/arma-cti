@@ -18,9 +18,14 @@
  *
  * Return Value: <SCRIPT> the sweep thread
  */
+#include "\cti\addons\main\script_component.hpp"
+
 params [["_interval", 10, [0]]];
 
-if (!isServer) exitWith { scriptNull };
+// The entry point of a supervised loop, which ADR-0040 keeps guarded: this is the
+// one call site a future restart would re-enter, and the thread it starts is
+// inventoried by name rather than by caller (#118).
+SERVER_ONLY(scriptNull);
 
 diag_log format ["CTI|order_enforce_started interval=%1", _interval];
 

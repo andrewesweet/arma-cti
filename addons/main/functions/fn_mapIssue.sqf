@@ -2,6 +2,11 @@
  * Author: arma-cti
  * Turns one keypress on the map into one Command. Runs on the client.
  *
+ * Interior to the client's own call graph, so it carries no locality guard: it
+ * is reached only from the map display's KeyDown handler, which
+ * cti_fnc_mapCommander installs and which no machine without a display can fire
+ * (#118, ADR-0040).
+ *
  * The whole of the UI's order path, and it is four lines of it: build the
  * Command with cti_fnc_command, hand it to remoteExec, and let the port judge.
  * Nothing here decides anything the daemon decides — not whether the Funds are
@@ -24,11 +29,9 @@
  */
 params [["_key", -1, [0]]];
 
-// Machine role first, UI readiness second: two questions, and one variable
-// answering both is how the next reader stops knowing which is being asked
-// (#114). No screen on a dedicated server or a headless client; no map to issue
-// an Order from until the first Observation has populated one.
-if (!hasInterface) exitWith {};
+// UI readiness, which is the only one of #114's two questions left here (#118):
+// there is no map to issue an Order from until the first Observation has
+// populated one.
 if (isNil "cti_uiSide") exitWith {};
 
 private _view = missionNamespace getVariable ["cti_view", createHashMap];

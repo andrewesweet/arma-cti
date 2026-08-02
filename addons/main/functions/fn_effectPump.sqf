@@ -39,9 +39,14 @@
  *
  * Return Value: <SCRIPT> the pump thread
  */
+#include "\cti\addons\main\script_component.hpp"
+
 params [["_interval", 2, [0]]];
 
-if (!isServer) exitWith { scriptNull };
+// The entry point of a supervised loop, which ADR-0040 keeps guarded: this is the
+// one call site a future restart would re-enter, and the thread it starts is
+// inventoried by name rather than by caller (#118).
+SERVER_ONLY(scriptNull);
 
 // Asked before the thread is started rather than inside it (#102): a loop enters
 // the watchdog's register only once it is going to run, so a world with no shim

@@ -2,6 +2,10 @@
  * Author: arma-cti
  * Carries out one effect the daemon has accepted. Runs on the server.
  *
+ * Interior to the server's own call graph, so it carries no locality guard: its
+ * one caller is the effect pump, which `missions/cti.Stratis/initServer.sqf`
+ * starts on the server and nowhere else (#118, ADR-0040).
+ *
  * The daemon owns the rules and the game owns the geometry (ADR-0012), which is
  * why an effect says "a rifle Squad for WEST" and never where it goes: the
  * manifest already knows where each side's Base is, and the daemon has no
@@ -39,14 +43,6 @@ params [["_effect", createHashMap, [createHashMap]]];
 private _verdict = {
     params [["_outcome", "", [""]], ["_reason", "", [""]]];
     createHashMapFromArray [["outcome", _outcome], ["reason", _reason]]
-};
-
-// Unreachable in play — every call path into this starts on the server — but a
-// sentinel that a caller could read as a domain refusal is one nobody can
-// attribute (#113), so it says which of the two it is.
-if (!isServer) exitWith {
-    ["cti_fnc_effectApply"] call cti_fnc_offServer;
-    ["refused", "off_server"] call _verdict
 };
 
 private _name = _effect getOrDefault ["effect", ""];

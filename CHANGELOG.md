@@ -56,6 +56,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A machine-locality check now exists only where it can fire, and can no longer refuse in
+  silence.** The addon carried twenty-nine of them — "this function runs on the server, not on your
+  machine" — and on the evidence of every call path in the repo only two of them could ever fire,
+  because the rest start in the mission's own server-side init. Worse, they refused by handing back
+  an empty reading:
+  an empty presence map is indistinguishable from "nobody stands anywhere", so a report assembled
+  on the wrong machine would have been accepted as a truthful picture of an empty island with
+  nothing in any log. Nineteen unreachable checks are gone, each replaced by a sentence in the
+  function's header saying why the caller already decides the machine. The ten that remain sit at
+  the three real boundaries — the Command Port's door, the two things the server pushes to a
+  player's machine, and the seven long-running loops — and every one of them now writes a typed
+  failure line naming the function and the machine before it refuses. `just check` rejects the
+  hand-rolled form, so the next one written has to be a real boundary or not exist. ADR-0040.
+
 - **Squads are owned by the server for their whole life, and the build now says so.** An Order is
   issued through nine engine calls, one of which — `setCurrentWaypoint` — is documented to work only
   on the machine that owns the group, with four more declaring nothing at all. Handing a Squad to a

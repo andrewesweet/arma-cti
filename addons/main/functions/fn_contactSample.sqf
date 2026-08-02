@@ -2,6 +2,10 @@
  * Author: arma-cti
  * What each side's squad leaders have seen of the other. Runs on the server.
  *
+ * Interior to the server's own call graph, so it carries no locality guard:
+ * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
+ * engine runs on the server and nowhere else (#118, ADR-0040).
+ *
  * A fact only the world can report, and the last of them: the engine's own
  * knowledge model, read through `targetsQuery`, which shares instantly within a
  * group and decays to zero after 120 s without sight. We invent no visibility
@@ -53,8 +57,6 @@
  *
  * Return Value: <HASHMAP> side name -> HASHMAP of `seen` and `observed`
  */
-if (!isServer) exitWith { ["cti_fnc_contactSample"] call cti_fnc_offServer };
-
 // How old a memory may be and still count as something a leader currently
 // knows. #28 has it that the engine's knowledge model decays to nothing after
 // 120 s without sight, and it does not: what decays is `knowsAbout`, while

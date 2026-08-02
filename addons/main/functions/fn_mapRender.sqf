@@ -2,6 +2,11 @@
  * Author: arma-cti
  * Draws this Commander's Observation, and nothing else. Runs on the client.
  *
+ * Interior to the client's own call graph, so it carries no locality guard:
+ * every path into it comes from cti_fnc_mapObservation, cti_fnc_portReply,
+ * cti_fnc_mapCommander or cti_fnc_mapIssue, and the first two are the guarded
+ * doors the server pushes through (#118, ADR-0040).
+ *
  * The rule is the whole design: it renders what the Observation gives this side
  * and never reaches for anything the world happens to know locally. The engine
  * would happily tell this machine where every enemy unit is; the Commander's
@@ -22,13 +27,10 @@
  *
  * Return Value: none
  */
-// Two questions, asked separately because they are two (#114). The first is
-// machine role — `hasInterface` is false for a dedicated server and for a
-// headless client alike (`commands/hasInterface.wiki`), and neither has a screen
-// to draw on. The second is UI readiness: `cti_uiSide` is set by
-// cti_fnc_mapObservation when the first Observation arrives, so a headed client
-// that has not had one yet has nothing to render.
-if (!hasInterface) exitWith {};
+// UI readiness, which is a different question from machine role and is the only
+// one left here (#114, #118): `cti_uiSide` is set by cti_fnc_mapObservation when
+// the first Observation arrives, so a client that has not had one yet has
+// nothing to render.
 if (isNil "cti_uiSide") exitWith {};
 
 private _view = missionNamespace getVariable ["cti_view", createHashMap];

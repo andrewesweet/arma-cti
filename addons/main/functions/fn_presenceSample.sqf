@@ -2,6 +2,10 @@
  * Author: arma-cti
  * Who is standing inside each Objective's capture radius. Runs on the server.
  *
+ * Interior to the server's own call graph, so it carries no locality guard:
+ * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
+ * engine runs on the server and nowhere else (#118, ADR-0040).
+ *
  * A fact only the world can report. What it means — whether that is a capture,
  * a contest, or nothing — is decided in the daemon, where the rules are
  * testable (ADR-0012).
@@ -13,8 +17,6 @@
  *
  * Return Value: <HASHMAP> Objective id -> ARRAY of side names present
  */
-if (!isServer) exitWith { ["cti_fnc_presenceSample"] call cti_fnc_offServer };
-
 private _map = missionNamespace getVariable ["cti_map", createHashMap];
 private _objectives = _map getOrDefault ["objectives", []];
 private _presence = createHashMap;

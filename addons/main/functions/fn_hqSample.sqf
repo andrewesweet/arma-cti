@@ -2,6 +2,10 @@
  * Author: arma-cti
  * What the world alone knows about each Base's HQ structure. Runs on the server.
  *
+ * Interior to the server's own call graph, so it carries no locality guard:
+ * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
+ * engine runs on the server and nowhere else (#118, ADR-0040).
+ *
  * One fact per Base: whether the HQ is destroyed, and which side brought it
  * down. Whether that ends the Campaign is the daemon's (ADR-0012); whether the
  * building is standing is nobody else's to say.
@@ -16,8 +20,6 @@
  *
  * Return Value: <HASHMAP> Base id -> HASHMAP of `destroyed` and `by`
  */
-if (!isServer) exitWith { ["cti_fnc_hqSample"] call cti_fnc_offServer };
-
 private _map = missionNamespace getVariable ["cti_map", createHashMap];
 private _down = missionNamespace getVariable ["cti_hqDown", createHashMap];
 private _seen = createHashMap;

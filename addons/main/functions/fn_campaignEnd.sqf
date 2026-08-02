@@ -3,6 +3,11 @@
  * Ends the Campaign in the world: the outcome recorded, and such end screen as
  * this topology can show. Runs on the server.
  *
+ * Interior to the server's own call graph, so it carries no locality guard: its
+ * one caller is cti_fnc_effectApply, reached from the effect pump, which
+ * `missions/cti.Stratis/initServer.sqf` starts on the server and nowhere else
+ * (#118, ADR-0040).
+ *
  * The daemon decides that a Campaign is over — Domination and Decapitation are
  * rules, and rules live where they are testable (ADR-0012) — and says so once
  * through the outbox, like every other effect. What is left here is the part
@@ -29,13 +34,6 @@
  * effect stays unacknowledged and is delivered again.
  */
 params [["_side", "", [""]], ["_args", createHashMap, [createHashMap]]];
-
-// Becomes cti_fnc_effectApply's own `false`, which the pump reads as a refusal —
-// so it is attributable like every other one (#113).
-if (!isServer) exitWith {
-    ["cti_fnc_campaignEnd"] call cti_fnc_offServer;
-    false
-};
 
 private _condition = _args getOrDefault ["condition", ""];
 if (_side isEqualTo "" || { _condition isEqualTo "" }) exitWith {

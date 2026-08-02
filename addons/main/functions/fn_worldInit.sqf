@@ -7,6 +7,10 @@
  * arrive in a later ticket; this function only draws what the manifest
  * authored and records the owner each Objective starts under.
  *
+ * Interior to the server's own call graph, so it carries no locality guard: its
+ * one caller is `missions/cti.Stratis/initServer.sqf`, which the engine runs on
+ * the server and nowhere else (#118, ADR-0040).
+ *
  * The dedicated server writes no RPT file on Linux and `-profiles=` is broken
  * (ADR-0006), so stdout is the only log and every line here goes there.
  *
@@ -15,14 +19,6 @@
  * Return Value: <BOOL> true when the world is built. False is fatal: there is
  * nothing to play on, and the caller must not pretend otherwise.
  */
-// `false` is the right answer here and so is the one below, which is why this
-// one has to say which it is: the caller branches on it and only one of the two
-// used to log (#113).
-if (!isServer) exitWith {
-    ["cti_fnc_worldInit"] call cti_fnc_offServer;
-    false
-};
-
 private _map = call cti_fnc_manifestLoad;
 if (count _map isEqualTo 0) exitWith {
     // cti_fnc_manifestLoad has already logged which failure this is.

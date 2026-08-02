@@ -2,6 +2,12 @@
  * Author: arma-cti
  * Writes down every death the world sees, for the daemon to collect (#39).
  *
+ * Runs on the server, and interior to its call graph, so it carries no locality
+ * guard: its one caller is `missions/cti.Stratis/initServer.sqf`, which the
+ * engine runs on the server and nowhere else (#118, ADR-0040). It is not a
+ * supervised loop — it installs an event handler and returns, so there is no
+ * thread for cti_fnc_loopWatch to inventory.
+ *
  * The engine already has the surface: `EntityKilled` is a mission event handler
  * (topics/Arma_3_Mission_Event_Handlers.wiki, Arma 3 v1.56), registered once on
  * the server, that fires for entities rather than for units somebody remembered
@@ -31,8 +37,6 @@
  *
  * Return Value: <BOOL> true when the world is being watched
  */
-if (!isServer) exitWith { false };
-
 if (!isNil "cti_casualtyWatch") exitWith {
     // Registering twice would file every death twice, and a timeline that
     // double-counts is worse than one that stops early: the second is visibly

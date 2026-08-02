@@ -1,4 +1,4 @@
-"""Scoped bans for SQF commands that must go through an adapter.
+"""Scoped bans for SQF commands and shapes that must go through an adapter.
 
 HEMTT's `banned_commands` lint is all-or-nothing: a command is banned
 everywhere or nowhere, and HEMTT 1.20.1 has no file- or line-scoped
@@ -10,6 +10,15 @@ adapter exists — so that scoping lives here.
 HEMTT still bans `sleep` and `uiSleep` outright; this gate re-bans `random` and
 allows it in the seeded PRNG adapter alone, and bans `setGroupOwner` everywhere
 but the one diagnostic that predates the rule (ADR-0039).
+
+The second rule is a shape rather than a command: a hand-rolled locality guard,
+`if (!isServer) exitWith { ... }` or the same with `hasInterface`. ADR-0040 puts
+those behind the `SERVER_ONLY` / `INTERFACE_ONLY` macros in
+`addons/main/script_component.hpp`, because the macro is what supplies the typed
+FAIL line a bare guard cannot — a sentinel returned in silence is #112 and #113
+all over again. Only the guard shape is banned: asking `isServer` to *branch*
+(`if (!isServer) then { ... }`, as the spike mission does to find the headless
+client) is a role question and not a refusal, and stays legal.
 
 Comments and string literals are stripped before matching, so prose that
 mentions a banned command (this file's own doc comments included) is not a
@@ -46,6 +55,19 @@ SCOPED_BANS: Final[dict[str, Ban]] = {
     ),
 }
 
+# The hand-rolled locality guard ADR-0040 replaced. `exitWith` is what makes it a
+# guard rather than a role question: the shape refuses on the caller's behalf and
+# returns a sentinel, which is the thing that has to carry a log line with it.
+# Both spellings the addon has ever used are matched — `if (!isServer)` and
+# `if !(isServer)` — because they compile the same and read the same.
+GUARD_PATTERN: Final = re.compile(
+    r"\bif\s*(?:\(\s*!\s*|!\s*\(\s*)(isServer|hasInterface)\s*\)\s*exitWith\b",
+    re.IGNORECASE,
+)
+
+# The macros the guard shape has to go through, in the file that defines them.
+GUARD_MACROS: Final = "SERVER_ONLY / INTERFACE_ONLY (addons/main/script_component.hpp)"
+
 # Directories that are not our SQF: the vendored wiki quotes engine samples,
 # build output is a copy of what we already checked, and .claude holds nested
 # agent worktrees — whole checkouts whose files only match the allowlist with
@@ -68,6 +90,22 @@ class Finding(NamedTuple):
         allowed = ", ".join(sorted(ban.allowed)) or "nothing"
         return (
             f"{self.path}:{self.line}: `{self.command}` is banned outside {allowed}. {ban.remedy}"
+        )
+
+
+class GuardFinding(NamedTuple):
+    """One hand-rolled locality guard, which belongs behind a macro."""
+
+    path: str
+    line: int
+    command: str
+
+    def __str__(self) -> str:
+        """Render as an editor-clickable location."""
+        return (
+            f"{self.path}:{self.line}: a bare `{self.command}` guard returns its "
+            f"sentinel in silence. Use {GUARD_MACROS}, or delete the guard and say "
+            f"in the header why the call site already decides the machine."
         )
 
 
@@ -132,10 +170,10 @@ def strip_noncode(source: str) -> str:
     return "".join(out)
 
 
-def scan_source(source: str, path: str) -> list[Finding]:
-    """Report every banned command used in `source` that `path` may not use."""
+def scan_source(source: str, path: str) -> list[Finding | GuardFinding]:
+    """Report everything in `source` that `path` is not allowed to contain."""
     code = strip_noncode(source)
-    findings: list[Finding] = []
+    findings: list[Finding | GuardFinding] = []
     for command, ban in SCOPED_BANS.items():
         if path in ban.allowed:
             continue
@@ -143,6 +181,10 @@ def scan_source(source: str, path: str) -> list[Finding]:
             Finding(path, code.count("\n", 0, match.start()) + 1, command)
             for match in re.finditer(rf"\b{re.escape(command)}\b", code, re.IGNORECASE)
         )
+    findings.extend(
+        GuardFinding(path, code.count("\n", 0, match.start()) + 1, match.group(1))
+        for match in GUARD_PATTERN.finditer(code)
+    )
     return sorted(findings, key=lambda f: (f.path, f.line))
 
 
@@ -155,9 +197,9 @@ def sqf_files(root: Path) -> list[Path]:
     )
 
 
-def scan_tree(root: Path) -> list[Finding]:
+def scan_tree(root: Path) -> list[Finding | GuardFinding]:
     """Report every scoped-ban violation under `root`."""
-    findings: list[Finding] = []
+    findings: list[Finding | GuardFinding] = []
     for path in sqf_files(root):
         relative = path.relative_to(root).as_posix()
         findings.extend(scan_source(path.read_text(encoding="utf-8"), relative))

@@ -2,6 +2,10 @@
  * Author: arma-cti
  * Which side a machine commands, if any. Runs on the server.
  *
+ * Interior to the server's own call graph, so it carries no locality guard: its
+ * callers are cti_fnc_portGateway and cti_fnc_commanderView, both of which have
+ * already decided the machine (#118, ADR-0040).
+ *
  * The gateway's whole question, asked in one place so the answer cannot differ
  * between the door a Command comes through and the channel an Observation goes
  * out on. A machine that commands nothing gets "", which is a refusal at the
@@ -18,8 +22,6 @@
  * Return Value: <STRING> the side that machine commands, or "" for none
  */
 params [["_owner", 0, [0]]];
-
-if (!isServer) exitWith { "" };
 
 // Zero is not a machine. It is what remoteExecutedOwner returns for a call that
 // did not arrive over the network — the server calling itself — and also, by

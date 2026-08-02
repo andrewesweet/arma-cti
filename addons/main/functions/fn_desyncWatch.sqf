@@ -13,6 +13,12 @@
  * the only place that can measure it. Every line goes to stdout, because a
  * Linux server writes no RPT file (ADR-0006).
  *
+ * Interior to the server's own call graph, so it carries no locality guard: its
+ * one caller is `missions/cti.Stratis/initServer.sqf`, which the engine runs on
+ * the server and nowhere else (#118, ADR-0040). Its thread is a diagnostic with
+ * a deadline rather than one of the Campaign's loops, so it is not registered
+ * with cti_fnc_loopRegister and not watched.
+ *
  * Arguments:
  * 0: how long to watch, in seconds <NUMBER> (optional, default 300)
  * 1: seconds between samples <NUMBER> (optional, default 5)
@@ -20,8 +26,6 @@
  * Return Value: <SCRIPT> the watching thread. Its verdict lines are the result.
  */
 params [["_window", 300, [0]], ["_interval", 5, [0]]];
-
-if (!isServer) exitWith { scriptNull };
 
 [_window, _interval] spawn {
     params ["_window", "_interval"];

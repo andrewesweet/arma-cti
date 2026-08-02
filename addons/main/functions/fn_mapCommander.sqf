@@ -2,6 +2,11 @@
  * Author: arma-cti
  * Brings the Commander's map UI up, once. Runs on the client.
  *
+ * Interior to the client's own call graph, so it carries no locality guard: its
+ * one caller is cti_fnc_mapObservation, which is the guarded door the server
+ * pushes an Observation through (#118, ADR-0040). The event handlers it installs
+ * are the client's own and can only fire where a display exists.
+ *
  * Crude on purpose (#18): this proves the path, not the presentation. Every
  * piece of it is a **playtest-tuned placeholder** in the sense ADR-0020 gives
  * the word — click a Place, press a number, read a hint — and Phase 4 replaces
@@ -21,7 +26,6 @@
  *
  * Return Value: none
  */
-if (!hasInterface) exitWith {};
 if !(isNil "cti_uiStarted") exitWith {};
 cti_uiStarted = true;
 

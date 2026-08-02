@@ -3,6 +3,11 @@
  * The world stops pretending: the daemon that holds this Campaign is gone, and
  * the one answering now holds a different one. Runs on the server.
  *
+ * Interior to the server's own call graph, so it carries no locality guard: its
+ * one caller is cti_fnc_daemonCall, and nothing speaks to the daemon off the
+ * server (ADR-0018) — every path in starts in
+ * `missions/cti.Stratis/initServer.sqf` (#118, ADR-0040).
+ *
  * The daemon's whole strategic state is in memory and nothing persists it yet
  * (#4 is Phase 2's, ADR-0008/0023). So a restart mid-session is a factory-fresh
  * Campaign: every Objective NEUTRAL again, Funds back to the starting balance,
@@ -37,7 +42,6 @@
  */
 params [["_was", "", [""]], ["_now", "", [""]]];
 
-if (!isServer) exitWith { false };
 if (missionNamespace getVariable ["cti_campaign_lost", false]) exitWith { false };
 
 // Broadcast, and set before anything else: the caption and the log line below

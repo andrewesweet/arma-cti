@@ -2,6 +2,10 @@
  * Author: arma-cti
  * Records an Objective's owner and repaints it on the map. Runs on the server.
  *
+ * Interior to the server's own call graph, so it carries no locality guard:
+ * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
+ * engine runs on the server and nowhere else (#118, ADR-0040).
+ *
  * The owner is the daemon's to decide; this only reflects it. Contested gets
  * its own colour rather than sharing Neutral's, because it is a real state a
  * Commander has to be able to see and react to (#13).
@@ -13,8 +17,6 @@
  * Return Value: <BOOL> whether the owner changed
  */
 params [["_id", "", [""]], ["_owner", "NEUTRAL", [""]]];
-
-if (!isServer) exitWith { false };
 
 private _owners = missionNamespace getVariable ["cti_objectiveOwner", createHashMap];
 if ((_owners getOrDefault [_id, ""]) isEqualTo _owner) exitWith { false };

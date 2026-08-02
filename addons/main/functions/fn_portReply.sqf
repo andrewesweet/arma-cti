@@ -19,15 +19,17 @@
  *
  * Return Value: none
  */
+#include "\cti\addons\main\script_component.hpp"
+
 params [["_judgement", createHashMap, [createHashMap]]];
 
-// The same locality guard the four client-side functions beside this one carry
-// (#114). It was the odd one out, safe only because cti_fnc_portGateway sends
-// this to `_owner > 0` and the mission's `mode = 1` keeps a client from calling
-// it on another client — both true elsewhere in those files and neither stated
-// here. `hasInterface` is false for a dedicated server and a headless client
-// alike (`commands/hasInterface.wiki`), and a judgement is for a person.
-if (!hasInterface) exitWith {};
+// One of the two doors the server pushes through, and server-to-client
+// remoteExec is unrestricted (topics/Arma_3_CfgRemoteExec.wiki), so
+// `description.ext` offers no protection here and this guard is the only thing
+// there is (#114, #118, ADR-0040). `hasInterface` is false for a dedicated
+// server and a headless client alike (`commands/hasInterface.wiki`), and a
+// judgement is for a person.
+INTERFACE_ONLY(nil);
 
 cti_lastJudgement = _judgement;
 

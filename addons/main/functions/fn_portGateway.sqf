@@ -19,9 +19,13 @@
  * Return Value: <BOOL> whether the Command was sent to the daemon. The
  * judgement itself comes back to the caller through cti_fnc_portReply.
  */
+#include "\cti\addons\main\script_component.hpp"
+
 params [["_command", createHashMap, [createHashMap]]];
 
-if (!isServer) exitWith { false };
+// Belt and braces against a `description.ext` regression, which is exactly the
+// failure a config cannot defend against itself (#118, ADR-0040).
+SERVER_ONLY(false);
 
 private _owner = remoteExecutedOwner;
 

@@ -2,6 +2,10 @@
  * Author: arma-cti
  * What the world alone knows about each Squad. Runs on the server.
  *
+ * Interior to the server's own call graph, so it carries no locality guard:
+ * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
+ * engine runs on the server and nowhere else (#118, ADR-0040).
+ *
  * Two facts only: how many of it are still standing, and where it is. Its side,
  * what it is and what it was told to do are the daemon's (ADR-0012), and
  * reporting them from here would be inventing a second answer to a question
@@ -19,8 +23,6 @@
  *
  * Return Value: <HASHMAP> Squad id -> HASHMAP of `size` and `at`
  */
-if (!isServer) exitWith { ["cti_fnc_squadSample"] call cti_fnc_offServer };
-
 private _map = missionNamespace getVariable ["cti_map", createHashMap];
 private _objectives = _map getOrDefault ["objectives", []];
 private _bases = _map getOrDefault ["bases", []];

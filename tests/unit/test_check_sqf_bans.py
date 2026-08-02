@@ -1,9 +1,14 @@
-"""Tests for the scoped SQF command bans.
+"""Tests for the scoped SQF command bans and the locality-guard rule.
 
 The gate exists because HEMTT can only ban a command everywhere or nowhere.
 Its whole value is the scoping, so that is what these tests pin: the adapter
 may use the command, nothing else may, and prose about the command is not a
 use of it.
+
+The locality-guard rule (ADR-0040) is pinned in both directions, because a rule
+that only ever passes is indistinguishable from one that does not run: the
+hand-rolled guard is a finding, and the two shapes that are *not* a hand-rolled
+guard — the macro, and `isServer` used to branch rather than to refuse — are not.
 """
 
 from __future__ import annotations
@@ -104,6 +109,48 @@ def test_the_ownership_message_cites_the_rule_rather_than_an_adapter() -> None:
 def test_prose_about_ownership_transfer_is_not_a_transfer() -> None:
     source = '// setGroupOwner hands the group over\ndiag_log "setGroupOwner";\n'
     assert check_sqf_bans.scan_source(source, OTHER) == []
+
+
+def test_a_hand_rolled_server_guard_is_a_finding() -> None:
+    findings = check_sqf_bans.scan_source("if (!isServer) exitWith { false };", OTHER)
+    assert [(f.line, f.command) for f in findings] == [(1, "isServer")]
+
+
+def test_a_hand_rolled_interface_guard_is_a_finding() -> None:
+    findings = check_sqf_bans.scan_source("if (!hasInterface) exitWith {};", OTHER)
+    assert [(f.line, f.command) for f in findings] == [(1, "hasInterface")]
+
+
+def test_the_other_spelling_of_the_negation_is_the_same_guard() -> None:
+    findings = check_sqf_bans.scan_source("if !(isServer) exitWith { 0 };", OTHER)
+    assert [f.command for f in findings] == ["isServer"]
+
+
+def test_the_guard_message_names_the_macros_and_the_alternative() -> None:
+    (finding,) = check_sqf_bans.scan_source("\nif (!isServer) exitWith { 0 };", OTHER)
+    rendered = str(finding)
+    assert rendered.startswith(f"{OTHER}:2: a bare `isServer` guard")
+    assert "SERVER_ONLY / INTERFACE_ONLY" in rendered
+    assert "delete the guard" in rendered
+
+
+def test_the_macro_is_not_a_hand_rolled_guard() -> None:
+    # What every kept guard now looks like. The expansion lives in the .hpp,
+    # which is not SQF and is not scanned.
+    assert check_sqf_bans.scan_source("SERVER_ONLY(scriptNull);", OTHER) == []
+    assert check_sqf_bans.scan_source("INTERFACE_ONLY(nil);", OTHER) == []
+
+
+def test_asking_the_machine_role_to_branch_is_not_a_guard() -> None:
+    # missions/spike.Stratis/init.sqf finds the headless client this way. It
+    # refuses nothing and returns no sentinel, so there is nothing to log.
+    source = "if (!isServer && {!hasInterface}) then { cti_hc = clientOwner; };"
+    assert check_sqf_bans.scan_source(source, OTHER) == []
+    assert check_sqf_bans.scan_source("if (hasInterface) then { x = 1; };", OTHER) == []
+
+
+def test_a_guard_in_a_comment_is_not_a_guard() -> None:
+    assert check_sqf_bans.scan_source("// if (!isServer) exitWith {};\n", OTHER) == []
 
 
 def test_the_repository_is_clean() -> None:

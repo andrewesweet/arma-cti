@@ -29,9 +29,14 @@
  *
  * Return Value: <SCRIPT> the assignment thread
  */
+#include "\cti\addons\main\script_component.hpp"
+
 params [["_interval", 5, [0]]];
 
-if (!isServer) exitWith { scriptNull };
+// The entry point of a supervised loop, which ADR-0040 keeps guarded: this is the
+// one call site a future restart would re-enter, and the thread it starts is
+// inventoried by name rather than by caller (#118).
+SERVER_ONLY(scriptNull);
 
 private _schema = call cti_fnc_commandSchema;
 if (count _schema isEqualTo 0) exitWith {

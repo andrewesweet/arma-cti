@@ -35,9 +35,14 @@
  *
  * Return Value: <SCRIPT> the sweep thread
  */
+#include "\cti\addons\main\script_component.hpp"
+
 params [["_interval", 5, [0]]];
 
-if (!isServer) exitWith { scriptNull };
+// The entry point of a supervised loop, which ADR-0040 keeps guarded: this is the
+// one call site a future restart would re-enter, and the thread it starts is
+// inventoried by name rather than by caller (#118).
+SERVER_ONLY(scriptNull);
 
 // What the world knows about each Base's HQ, for cti_fnc_hqSample to report and
 // for this sweep to keep to one telling. Empty until something falls.

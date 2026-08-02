@@ -2,6 +2,11 @@
  * Author: arma-cti
  * Gives one Squad its standing Order and makes the world act on it. Server only.
  *
+ * Interior to the server's own call graph, so it carries no locality guard: its
+ * one caller is cti_fnc_effectApply, reached from the effect pump, which
+ * `missions/cti.Stratis/initServer.sqf` starts on the server and nowhere else
+ * (#118, ADR-0040).
+ *
  * An Order is standing, not a waypoint consumed and forgotten (#14). Waypoints
  * belong to the group rather than to whoever is leading it, so replacing them
  * here is what makes an Order outlive the leader who was carrying it: the
@@ -29,13 +34,6 @@
  * outbox to be delivered again.
  */
 params [["_squadId", "", [""]], ["_order", "", [""]], ["_place", "", [""]]];
-
-// Reaches cti_fnc_effectPump as "this effect failed", the same `false` every
-// domain refusal below returns — so it logs the same typed line they do (#113).
-if (!isServer) exitWith {
-    ["cti_fnc_orderApply"] call cti_fnc_offServer;
-    false
-};
 
 private _group = (missionNamespace getVariable ["cti_squads", createHashMap])
     getOrDefault [_squadId, grpNull];

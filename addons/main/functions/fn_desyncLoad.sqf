@@ -11,6 +11,10 @@
  * Not gameplay: this exists to make a diagnostic honest, and nothing in the
  * Campaign calls it.
  *
+ * Runs on the server, and interior to its call graph, so it carries no locality
+ * guard: its one caller is `missions/cti.Stratis/initServer.sqf`, which the
+ * engine runs on the server and nowhere else (#118, ADR-0040).
+ *
  * Arguments:
  * 0: groups to hand over <NUMBER> (optional, default 4)
  * 1: units per group <NUMBER> (optional, default 8)
@@ -18,8 +22,6 @@
  * Return Value: <NUMBER> groups actually transferred
  */
 params [["_groupCount", 4, [0]], ["_unitCount", 8, [0]]];
-
-if (!isServer) exitWith { 0 };
 
 // Index 1 of getUserInfo is the client's owner id, which is what setGroupOwner
 // wants; index 7 says whether it is headless.
