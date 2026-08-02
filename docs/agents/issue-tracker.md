@@ -19,8 +19,13 @@ Close it in the same session that lands its work, with a comment addressing ever
 
 A `Closes #N` commit trailer closes the issue on push and skips this audit entirely: #89
 was auto-closed with two acceptance boxes unticked and had to be reopened by its own
-agent. On an issue carrying acceptance criteria, reference the commit without a closing
-keyword and close by hand with the criterion-by-criterion comment.
+agent, and #24 repeated it despite this paragraph — its criterion-by-criterion comment
+was written and posted, but the trailer skipped the gate rather than passing it. On an
+issue carrying acceptance criteria, reference the commit without a closing keyword and
+close by hand with the criterion-by-criterion comment. Two self-corrected instances
+against a written rule is the document-vs-mechanism shape ADR-0038 named, so the check
+is becoming mechanical: #129 puts a closing-keyword deny in the commit-msg gate,
+matching exactly the syntax GitHub acts on.
 
 ## Decision tickets
 
