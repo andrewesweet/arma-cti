@@ -102,6 +102,53 @@ def test_an_acknowledgement_without_a_sequence_is_malformed(tmp_path: Path) -> N
     assert reply["error"]["class"] == "malformed_request"
 
 
+def test_an_acknowledgement_records_the_effects_the_world_refused_for_good(
+    tmp_path: Path,
+) -> None:
+    # #100: the world dead-letters an effect it can never apply so the queue
+    # behind it moves. The Campaign paid for that effect and never got it, so the
+    # row belongs in the record and not only in the server's log.
+    log = tmp_path / "telemetry.jsonl"
+    daemon = Daemon(telemetry_path=log)
+    daemon.outbox.push(ORDER_ISSUED)
+
+    reply = reply_to(
+        daemon,
+        id="r-11",
+        verb="ack",
+        payload={
+            "through": 1,
+            "dead": [{"sequence": 1, "effect": "arsenal_opened", "reason": "unknown_effect"}],
+        },
+    )
+
+    assert reply["status"] == "ok"
+    rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+    dead = [row for row in rows if row["event"] == "effect_dead_letter"]
+    assert [(row["sequence"], row["effect"], row["reason"]) for row in dead] == [
+        (1, "arsenal_opened", "unknown_effect")
+    ]
+
+
+def test_an_acknowledgement_whose_dead_letters_are_not_rows_is_malformed(tmp_path: Path) -> None:
+    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon.outbox.push(ORDER_ISSUED)
+    reply = reply_to(daemon, id="r-12", verb="ack", payload={"through": 1, "dead": ["1"]})
+    assert reply["status"] == "error"
+    assert reply["error"]["class"] == "malformed_request"
+
+
+def test_an_acknowledgement_carrying_no_dead_letters_writes_no_row(tmp_path: Path) -> None:
+    log = tmp_path / "telemetry.jsonl"
+    daemon = Daemon(telemetry_path=log)
+    daemon.outbox.push(ORDER_ISSUED)
+
+    reply_to(daemon, id="r-13", verb="ack", payload={"through": 1, "dead": []})
+
+    rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+    assert [row for row in rows if row["event"] == "effect_dead_letter"] == []
+
+
 def test_a_failure_inside_the_daemon_is_answered_as_an_internal_error(tmp_path: Path) -> None:
     # A message that cannot be serialised is the shape of bug a later ticket
     # will produce. The connection must survive it and say what happened.

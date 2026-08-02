@@ -21,6 +21,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   screen says CAMPAIGN LOST and to restart the mission. Surviving a restart is a later thing
   (Phase 2); being told about one is not. ADR-0036.
 
+### Fixed
+
+- **One effect the world can never carry out no longer stops the Campaign.** The pump stopped at the
+  first effect that failed to apply and retried it every two seconds forever — correct for something
+  a later poll could clear, wrong for an effect name this world does not know, a side that is not
+  playing, or a side with no Base, none of which any amount of waiting fixes. Everything behind it —
+  Squad spawns, Orders, the end of the Campaign itself — never arrived, with both sides' Funds
+  already spent and nothing on screen to say why. A refusal is now classified where it happens: a
+  permanent one is dead-lettered — a typed failure line in the world's log and a row in the
+  Campaign's telemetry — and the queue moves on, while a transient one still waits, and a queue that
+  has not moved in three minutes says so whatever the classification claimed.
+
 ### Changed
 
 - **The AI Commander's decision trace says Purchase, the word the rest of the game uses.** Its

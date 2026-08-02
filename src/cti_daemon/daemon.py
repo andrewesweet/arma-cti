@@ -438,16 +438,33 @@ class Daemon:
     def _ack(self, request: protocol.Request) -> protocol.Reply:
         """Retire everything up to the sequence the game says it received.
 
-        A malformed `through` is raised rather than returned, which is what
-        `_view` and `_observe` already do (#88): one convention across the
-        handlers, and `_answer` turns it into the same `malformed_request` reply
-        it built here by hand.
+        An acknowledgement may say that some of what it retired was refused for
+        good rather than carried out (#100). The world dead-letters an effect it
+        can never apply so the queue behind it moves; the row lands here, because
+        an effect the Campaign paid for and never got is part of the Campaign's
+        record and the server's log is not that record.
+
+        A malformed payload is raised rather than returned, which is what `_view`
+        and `_observe` already do (#88): one convention across the handlers, and
+        `_answer` turns it into the same `malformed_request` reply this built by
+        hand.
         """
         through = request.payload.get("through")
         # `bool` is an `int` in Python and is never a sequence number.
         if not isinstance(through, int) or isinstance(through, bool):
             detail = f"`through` must be an integer sequence, got {through!r}"
             raise protocol.MalformedRequestError(detail, request.id)
+        dead = request.payload.get("dead", [])
+        if not isinstance(dead, list) or not all(isinstance(row, dict) for row in dead):
+            detail = f"`dead` must be a list of dead-letter rows, got {dead!r}"
+            raise protocol.MalformedRequestError(detail, request.id)
+        for row in dead:
+            self._telemetry.record(
+                "effect_dead_letter",
+                sequence=row.get("sequence"),
+                effect=row.get("effect"),
+                reason=row.get("reason"),
+            )
         try:
             cleared = self.outbox.ack(through=through)
         except UnknownSequenceError as exc:
