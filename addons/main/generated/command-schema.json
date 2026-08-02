@@ -61,6 +61,8 @@
       "by_vehicle"
     ]
   },
+  "return_cap_bytes": 10240,
+  "reply_guard_bytes": 9216,
   "commands": {
     "purchase": [
       "squad_type"

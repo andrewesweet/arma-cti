@@ -116,7 +116,16 @@ private _raw = (_extension callExtension ["rpc_keepalive", [toJSON _envelope]]) 
 // observation path at nine tenths per map in `just unit` (ADR-0030), the drain
 // at nine tenths in the daemon (#67) — so reaching this is a fault rather than
 // a busy world, and it is worth one line whatever the verb.
-if (count _raw >= 9216) then {
+//
+// The threshold is read from the generated schema rather than written here
+// (#78, ADR-0017). It used to be a literal held equal to `cti_daemon.budget`'s
+// by a test that grepped this file's source; the exported document is the seam
+// that carries a number to SQF, so a changed budget reaches the guard that
+// enforces it through `just generate` instead of through whoever remembered.
+// A missing or unparseable export is already a `schema_stale` FAIL from
+// cti_fnc_commandSchema, which is louder than this line and fires first.
+private _guard = (call cti_fnc_commandSchema) getOrDefault ["reply_guard_bytes", 0];
+if (_guard > 0 && { count _raw >= _guard }) then {
     diag_log format ["CTI|FAIL class=assertion_failed reply_near_return_cap verb=%1 chars=%2",
         _verb, count _raw];
 };

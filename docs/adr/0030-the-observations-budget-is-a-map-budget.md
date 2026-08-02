@@ -8,7 +8,7 @@ Reviewed-by-human: pending
 ## The decision
 
 The Observation's size budget is checked per **map**, at authoring time, against the worst case
-that map's manifest admits. `observation.squad_ceiling` answers "how many Squads a side can this
+that map's manifest admits. `budget.squad_ceiling` (`observation.squad_ceiling` until #78) answers "how many Squads a side can this
 island carry", `just unit` refuses a manifest that cannot answer at all, and the SQF guard in
 `cti_fnc_commanderView` stays as the backstop it always was rather than the place the problem is
 found.

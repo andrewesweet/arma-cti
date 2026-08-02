@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from cti_daemon import observation
+from cti_daemon import budget
 from cti_daemon.commands import Effect, serialise_effect
 from cti_daemon.daemon import POLL_GUARD_BYTES, Daemon
 from cti_daemon.transport import build_daemon
@@ -52,27 +52,24 @@ def rows(log: Path, event: str) -> list[dict[str, Any]]:
 
 def test_the_effects_guard_is_the_observations_guard(tmp_path: Path) -> None:
     # One figure for both directions of the same cap, held together by this
-    # test rather than by two comments hoping about each other — the device
-    # `observation.py` already uses for the SQF literal. Nine tenths of the cap:
-    # a reply merely close to truncating should fail a run, not a Play Session.
-    assert POLL_GUARD_BYTES == observation.REPORT_GUARD_BYTES
-    assert POLL_GUARD_BYTES * 10 == observation.RETURN_CAP_BYTES * 9
+    # test rather than by two comments hoping about each other. Nine tenths of
+    # the cap: a reply merely close to truncating should fail a run, not a Play
+    # Session.
+    assert POLL_GUARD_BYTES == budget.REPORT_GUARD_BYTES
+    assert POLL_GUARD_BYTES * 10 == budget.RETURN_CAP_BYTES * 9
     assert tmp_path.exists()
 
 
-def test_the_pump_carries_the_same_backstop_literal_as_the_daemons_bound() -> None:
+def test_the_pump_carries_the_same_backstop_as_the_daemons_bound() -> None:
     # The daemon bounds the drain; the world's own check is the backstop for the
-    # bound failing, and it fires on a literal. Two numbers, held together here
-    # rather than by whoever next edits one of them — the same device
-    # `test_observation.py` uses for the Commander's view.
-    #
-    # The backstop lives in `cti_fnc_daemonCall` since #97: one guard for every
-    # verb, rather than the same literal copied into each loop and left out of
-    # whichever loop was written next.
-    source = (REPO / "addons" / "main" / "functions" / "fn_daemonCall.sqf").read_text(
-        encoding="utf-8"
+    # bound failing. Since #78 the backstop is not a literal at all: it is read
+    # out of the exported schema, so the two numbers are one number and the
+    # export is what holds them together. `test_budget.py` pins that seam; what
+    # is pinned here is that the drain's bound is the number being exported.
+    exported = json.loads(
+        (REPO / "addons" / "main" / "generated" / "command-schema.json").read_text(encoding="utf-8")
     )
-    assert f"count _raw >= {POLL_GUARD_BYTES}" in source
+    assert exported["reply_guard_bytes"] == POLL_GUARD_BYTES
 
 
 def test_one_poll_reply_stays_under_the_guard_however_long_the_backlog(tmp_path: Path) -> None:

@@ -37,13 +37,13 @@ if TYPE_CHECKING:
     from cti_daemon.manifest import MapManifest
 
 # What one poll reply may hand the world in one go. A `callExtension` return is
-# capped at `observation.RETURN_CAP_BYTES` and truncated in silence (ADR-0004),
+# capped at `budget.RETURN_CAP_BYTES` and truncated in silence (ADR-0004),
 # and a truncated poll reply is broken JSON mid-message: the effects past the
 # cut are lost with nothing said, which is the false-green shape ADR-0028 warns
 # about arriving on the push path (#67).
 #
 # Nine tenths of the cap, the same figure and the same ratio the observation
-# path guards itself at (`observation.REPORT_GUARD_BYTES`), so that a reply
+# path guards itself at (`budget.REPORT_GUARD_BYTES`), so that a reply
 # merely close to truncating fails a run rather than a Play Session. A test
 # holds the two together. Where the observation path's fix is a smaller picture,
 # this one's is a shorter drain: the outbox already numbers its entries and

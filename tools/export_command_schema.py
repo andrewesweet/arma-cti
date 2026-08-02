@@ -25,7 +25,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
-from cti_daemon import commands, economy, port, protocol, report, squads
+from cti_daemon import budget, commands, economy, port, protocol, report, squads
 
 
 def render(table: economy.EconomyTable) -> str:
@@ -51,6 +51,13 @@ def render(table: economy.EconomyTable) -> str:
         # samplers assemble and the document `cti_daemon.report` reads are one
         # declaration rather than two that agree by convention.
         "observe_report": report.exported(),
+        # The engine's own return cap, and where the world refuses to go quietly
+        # (#78). `cti_fnc_daemonCall` reads the guard from here rather than
+        # carrying a literal held equal to the Python one by a source-grep test:
+        # a change to the budget is a `just generate` away from the SQF that
+        # enforces it, and `just check` fails a stale export as `schema_stale`.
+        "return_cap_bytes": budget.RETURN_CAP_BYTES,
+        "reply_guard_bytes": budget.REPORT_GUARD_BYTES,
         "commands": {name: list(args) for name, args in commands.CATALOGUE.items()},
         "effects": {name: list(args) for name, args in commands.EFFECTS.items()},
         "sides": list(commands.SIDES),
