@@ -112,7 +112,17 @@ fi
 # `infra_unavailable` (#58, #70).
 # shellcheck source=spike/slots.sh
 source "$(dirname "${BASH_SOURCE[0]}")/slots.sh"
-cti_slot_reclaim 0
+# Acted on, not logged past — the same defect #133 fixed in `regress.sh`, at the
+# hand-run caller. A failed reclaim means a dead run's processes are still on
+# 2402-2406 or in ~/arma3server, and `"$@"` here is `just probe` about to bind
+# and stage over exactly those. There is no smaller pool to fall back to when the
+# one slot is dirty, so this is infra_unavailable: not a result, and nothing runs.
+if ! survivors="$(cti_slot_reclaim 0)"; then
+    printf '[tier-lock] slot 0 did not come back clear: %s still holding it.\n' "${survivors:-survivors unnamed}" >&2
+    printf '[tier-lock] failure_class=infra_unavailable — not a result. Nothing was launched.\n' >&2
+    rm -f "$INFO"
+    exit "$EXIT_INFRA_UNAVAILABLE"
+fi
 
 "$@"
 status=$?

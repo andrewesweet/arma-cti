@@ -19,7 +19,9 @@
 #   cti_slot_release N         drop it (the kernel does this anyway on death)
 #   cti_slot_holder N          what the holder wrote beside the lock
 #   cti_slot_reclaim N         ADR-0022 per slot: clear a dead holder's leftovers,
-#                              and confirm they are gone rather than assume it
+#                              and confirm they are gone rather than assume it.
+#                              Non-zero, with the survivors on stdout, when they
+#                              are not — a caller has to act on that (#133)
 #   cti_slot_install_ready N   the cp -al hard-link farm, made and kept honest
 #
 # Slot 0 is the single-occupancy tier as it has always been: ports 2402-2406,
@@ -427,7 +429,7 @@ cti_slot_pids_gone() {
 # `cti_slot_lock_holders`. On acquire it is neither wanted nor meaningful: a slot
 # we just took exclusively has no other holder.
 cti_slot_reclaim() {
-    local n="$1" pid pids=() marker last_run
+    local n="$1" pid pids=() marker last_run survivors
     mapfile -t pids < <(
         # Only the real tier sweeps the real machine. Both sweeps read facts
         # nothing virtualises — `ss` sees the one port space, `/proc` sees the one
@@ -478,7 +480,14 @@ cti_slot_reclaim() {
     # clear that is not, and the `infra_unavailable` that follows names a bind
     # failure rather than the dead holder that caused it.
     cti_slot_pids_gone 10 "${pids[@]}" && return 0
-    cti_slot_log "slot $n: SIGKILL sent and still in the process table 10s later: $(cti_slot_pids_alive "${pids[@]}") — this slot is not clear"
+    survivors="$(cti_slot_pids_alive "${pids[@]}")"
+    cti_slot_log "slot $n: SIGKILL sent and still in the process table 10s later: $survivors — this slot is not clear"
+    # The survivors on stdout as well as in the log, because the return value says
+    # only *that* a slot did not come back clear and the caller has to report
+    # *which* processes are still on its ports (#133). stdout rather than a shell
+    # global so the answer survives the caller being a different process — which
+    # is how the no-Arma tier substitutes this command to exercise the response.
+    printf '%s\n' "$survivors"
     return 1
 }
 

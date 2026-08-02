@@ -96,6 +96,24 @@ fi
 printf 'verdict=PASS\n' >>"$out/results.env"
 """
 
+# A stand-in for `cti_slot_reclaim`, named by CTI_SLOT_RECLAIM.
+#
+# The real one is the only part of a slot's bring-up that touches the machine's
+# port space and process table, and it refuses to sweep either from a redirected
+# state directory — that guard is #124, where this suite killed the live tier
+# three times in a day. So the no-Arma tier cannot *produce* a failed reclaim,
+# and what #133 is about is not the reclaim but the response to one. This stub
+# reports the named slots as still occupied, in the contract the real function
+# uses: the survivors on stdout, non-zero exit.
+STUB_RECLAIM = r"""#!/usr/bin/env bash
+set -uo pipefail
+if [[ ",${CTI_STUB_DIRTY_SLOTS:-}," == *",$1,"* ]]; then
+    printf '31337(arma3server_x64) 31338(cti-daemon)\n'
+    exit 1
+fi
+exit 0
+"""
+
 TASKLIST_FREE = (
     "#!/usr/bin/env bash\nprintf 'INFO: No tasks are running which match the criteria.\\n'\n"
 )
@@ -691,6 +709,103 @@ def test_a_dead_slot_leaves_the_lock_free_for_the_next_holder(tmp_path: Path) ->
             "-c",
             f'source "{SLOTS_SH}"; for n in 0 1 2; do cti_slot_acquire "$n" next || exit 1; done',
         ],
+        capture_output=True,
+        text=True,
+        check=False,
+        env={**os.environ, "CTI_TIER_STATE": str(tmp_path / "state")},
+    )
+    assert after.returncode == 0, after.stderr
+
+
+def dirty_slots(tmp_path: Path, slots: str) -> dict[str, str]:
+    """Env that makes `regress.sh` see those slots come back not clear."""
+    return {
+        "CTI_SLOT_RECLAIM": str(executable(tmp_path / "stub-reclaim.sh", STUB_RECLAIM)),
+        "CTI_STUB_DIRTY_SLOTS": slots,
+    }
+
+
+def test_a_slot_that_cannot_be_reclaimed_is_dropped_rather_than_used(tmp_path: Path) -> None:
+    """Issue #133. #130 taught the reclaim to confirm its SIGKILL; this acts on it.
+
+    A slot whose reclaim came back failed still has a dead run's server and daemon
+    on its ports, and the next thing the pool does with a slot is hand it to
+    `run.sh` to bind them. The failure that produces is a bind error blamed on the
+    world rather than on the holder that caused it — so the slot is never used.
+    """
+    result = pool_run(tmp_path, "--slots", "3", extra_env=dirty_slots(tmp_path, "1"))
+    assert result.returncode == EXIT_PASS, result.stderr[-4000:]
+    pool = pool_json(tmp_path)
+    assert pool["slots"] == [0, 2], pool["slots"]
+    # And nothing was scheduled onto it: the trace is what the stub `run.sh` wrote.
+    used = {line.split("\t")[1] for line in (tmp_path / "trace.tsv").read_text().splitlines()}
+    assert used == {"0", "2"}, used
+
+
+def test_a_dropped_slot_is_typed_and_named_rather_than_silent(tmp_path: Path) -> None:
+    """A smaller pool is allowed (ADR-0028); a smaller pool nobody can explain is not.
+
+    The class is `infra_unavailable` because the reclaim is a check that could not
+    complete, and a check that could not run is not a check that passed (#41). The
+    survivors are named because "the pool ran at N=2" and "slot 1 still had a dead
+    run's server on 2502" are different facts, and only the second is actionable.
+    """
+    result = pool_run(tmp_path, "--slots", "3", extra_env=dirty_slots(tmp_path, "1"))
+    dirty = pool_json(tmp_path)["dirty_slots"]
+    assert [d["slot"] for d in dirty] == [1]
+    assert dirty[0]["class"] == "infra_unavailable"
+    assert "31337(arma3server_x64)" in dirty[0]["detail"], dirty[0]["detail"]
+    assert "2502" in dirty[0]["detail"], dirty[0]["detail"]
+    assert "N=2" in result.stderr, result.stderr[-4000:]
+
+
+def test_the_corpus_still_gets_a_complete_set_of_verdicts_on_the_slots_left(
+    tmp_path: Path,
+) -> None:
+    """One dirty slot costs a slot, not everybody else's results.
+
+    The run stays green because every probe got a verdict on a slot whose
+    conditions are interpretable; the dropped slot contributed no verdict to
+    misread. That is the whole difference between this and the all-slots case.
+    """
+    result = pool_run(tmp_path, "--slots", "3", extra_env=dirty_slots(tmp_path, "2"))
+    assert result.returncode == EXIT_PASS, result.stderr[-4000:]
+    got = verdicts_by_probe(tmp_path)
+    assert sorted(got) == ALL_PROBES
+    assert all(v["class"] == "pass" for v in got.values()), got
+
+
+def test_when_every_slot_fails_to_reclaim_the_run_is_not_a_result(tmp_path: Path) -> None:
+    """There is no smaller pool below one slot, and nothing was measured.
+
+    So this is the failure-class table's `infra_unavailable`: stop, do not
+    interpret. A run that went ahead and bound a surviving holder's ports would
+    have reported the bind instead.
+    """
+    result = pool_run(tmp_path, "--slots", "1", extra_env=dirty_slots(tmp_path, "0,1,2,3,4,5"))
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    assert "failure_class=infra_unavailable" in result.stderr
+    assert "31337(arma3server_x64)" in result.stderr
+    assert not (tmp_path / "trace.tsv").exists(), "a probe ran on a slot that is not clear"
+
+
+def test_a_dropped_slot_is_held_for_the_run_and_released_after_it(tmp_path: Path) -> None:
+    """The lock is kept while we are still here to say the slot is not clear.
+
+    Releasing it early would hand a slot we have just proved dirty to the next
+    run in the queue; keeping it forever would leak it. So `pool_teardown`
+    releases the dropped slots with the used ones.
+    """
+    pool_run(tmp_path, "--slots", "3", extra_env=dirty_slots(tmp_path, "1"))
+    # The pool's RAM sampler is `sleep 3` in a loop, and the `sleep` that is
+    # running when the teardown kills the sampler outlives it holding every
+    # descriptor it inherited. So the arrangement's precondition is the same
+    # bounded poll the dead-holder tests use, for the same reason: "released" is
+    # about the last description on the lock, not about the parent's exit.
+    wait_until_no_descriptor_is_left(tmp_path, 1)
+    # S603: this repo's own library.
+    after = subprocess.run(  # noqa: S603
+        [BASH, "-c", f'source "{SLOTS_SH}"; cti_slot_acquire 1 next'],
         capture_output=True,
         text=True,
         check=False,

@@ -89,6 +89,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A regression run no longer launches a world into a slot it failed to clear.** The tier confirms
+  that a dead run's leftovers are really gone before reusing a slot, and then the runner threw the
+  answer away: a slot whose server and daemon had survived the kill went straight into a bring-up
+  that binds those same ports, and the failure came back reading as the world's fault instead of the
+  dead holder's. A slot that does not come back clear is now typed `infra_unavailable`, named
+  together with the survivors and the ports and install they are still holding, and skipped — the
+  run carries on in the slots that were clean, since one dirty slot should cost a slot rather than
+  everybody else's results, and the slot's lock is held for the rest of the run so nothing else is
+  handed it either. When every slot a run holds fails to clear, nothing was measured and the run
+  says so rather than reporting a result. The same applied to a hand run, where slot 0 is the only
+  slot there is. #133.
+
 - **A Command now has to say who is issuing it, and the daemon refuses one that does not.** The
   Command Port's audit found that the acting side fell back to whatever side the payload named, so
   anything that reached the daemon's socket without passing the gateway commanded for the side it

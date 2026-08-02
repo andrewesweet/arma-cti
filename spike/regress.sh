@@ -53,6 +53,14 @@ DEFAULT_SLOTS=3
 # merge against a stub that prints what the engine would have printed
 # (tests/unit/test_pool_scheduling.py). Nothing else sets it.
 RUN_SH="${CTI_RUN_SH:-$REPO/spike/run.sh}"
+# Overridable for the same reason and by the same tier. Reclamation is the one
+# part of a slot's bring-up that touches the real machine's port space and
+# process table, so the no-Arma tier cannot produce a *failed* reclaim to test
+# the response to one: `cti_slot_reclaim` refuses to sweep anything from a
+# redirected state directory, and a test that made it sweep would be #124 — the
+# unit suite killing the live tier — on purpose. So the command is substitutable
+# and the response is what gets tested (#133). Nothing but the tests sets it.
+SLOT_RECLAIM="${CTI_SLOT_RECLAIM:-cti_slot_reclaim}"
 
 # Worst-first. The number is both the rank and the process exit code, so the
 # exit code of a run says which class to read the table row for. infra_unavailable
@@ -461,10 +469,61 @@ log "slots: ${SLOTS[*]}"
 # The lock frees itself when its holder dies; the holder's server, headless
 # client and daemon do not, and they are still on this slot's ports and in this
 # slot's install. The next holder clears them, and the next holder is us.
+#
+# And the reclaim's answer is acted on rather than logged past (#133). #130 taught
+# `cti_slot_reclaim` to confirm its SIGKILL, so a non-zero return means a dead
+# run's processes are *still* on this slot's ports and in its install — and the
+# very next thing this script does with the slot is hand it to `run.sh` to bind
+# those ports. Proceeding turns a known dead holder into a bind failure blamed on
+# the world: the early clear #130 closed inside the reclaim, still open here.
+#
+# The slot is dropped and the run goes on, for ADR-0028's reason: fewer slots than
+# asked for is a smaller pool, not a failure, so one dirty slot costs a slot
+# rather than every other slot's results. Its lock is *kept* — released with the
+# others by `pool_teardown` — so no concurrent run walks into a slot we have just
+# proved is not clear. When every requested slot fails to reclaim there is no
+# smaller pool left and nothing was measured, so the run exits infra_unavailable:
+# not a result, per the failure-class table.
+#
+# What is not done here is poison this run's class when other slots came back
+# clear. Every probe still gets a verdict, on a slot whose conditions are
+# interpretable, so the corpus is a result; the dirty slot contributed no verdict
+# to misread. It is recorded instead — in the log and in `pool.json`'s
+# `dirty_slots` — so a smaller pool is never silent.
+READY_SLOTS=()
+DIRTY_SLOTS=()
+DIRTY_DETAIL=()
 for slot in "${SLOTS[@]}"; do
-    cti_slot_reclaim "$slot"
+    if ! survivors="$("$SLOT_RECLAIM" "$slot")"; then
+        first_port="$(cti_slot_port "$slot")"
+        DIRTY_SLOTS+=("$slot")
+        DIRTY_DETAIL+=("survivors still on ports $first_port-$((first_port + CTI_SLOT_PORT_SPAN - 1))/$(cti_slot_daemon_port "$slot") or in $(cti_slot_install "$slot"): ${survivors:-unnamed}")
+        log "slot $slot: reclaim did not come back clear — ${survivors:-survivors unnamed} still holding it; dropping the slot from this pool (infra_unavailable for that slot, not a result from it)"
+        continue
+    fi
     cti_slot_install_ready "$slot" || die "could not prepare the install for slot $slot"
+    READY_SLOTS+=("$slot")
 done
+
+if ((${#READY_SLOTS[@]} == 0)); then
+    {
+        printf '\n[regress] every slot this run holds failed to reclaim — this is infra_unavailable, not a result.\n'
+        for i in "${!DIRTY_SLOTS[@]}"; do
+            printf '[regress] slot %s: %s\n' "${DIRTY_SLOTS[$i]}" "${DIRTY_DETAIL[$i]}"
+        done
+        printf '[regress] Nothing was launched. A run that binds a surviving holder'"'"'s ports reports the bind, not the holder (#130, #133).\n'
+        printf 'verdict=FAIL\n'
+        printf 'failure_class=infra_unavailable\n'
+        printf 'failure_detail=slot(s) %s not clear after SIGKILL\n' "${DIRTY_SLOTS[*]}"
+        printf 'host=%s\n' "$HOST"
+    } >&2
+    exit "${CLASS_RANK[infra_unavailable]}"
+fi
+
+if ((${#DIRTY_SLOTS[@]} > 0)); then
+    log "${#DIRTY_SLOTS[@]} slot(s) not clear (${DIRTY_SLOTS[*]}) — running smaller, at N=${#READY_SLOTS[@]} over slots ${READY_SLOTS[*]}"
+fi
+SLOTS=("${READY_SLOTS[@]}")
 
 # ------------------------------------------------------------------ evidence
 mkdir -p "$RUNS_DIR"
@@ -548,7 +607,11 @@ pool_teardown() {
     local pid
     [[ -n "$ram_sampler_pid" ]] && kill "$ram_sampler_pid" 2>/dev/null
     for pid in ${WORKER_PIDS[@]+"${WORKER_PIDS[@]}"}; do kill "$pid" 2>/dev/null; done
-    for pid in ${SLOTS[@]+"${SLOTS[@]}"}; do cti_slot_release "$pid"; done
+    # The slots that failed to reclaim are released here too. They ran nothing,
+    # but this run has held their locks all the way through on purpose (#133):
+    # a slot proved not clear is one no concurrent run should be handed while we
+    # are still here to say so, and the lock is the only way to say it.
+    for pid in ${SLOTS[@]+"${SLOTS[@]}"} ${DIRTY_SLOTS[@]+"${DIRTY_SLOTS[@]}"}; do cti_slot_release "$pid"; done
 }
 trap pool_teardown EXIT INT TERM
 
@@ -777,7 +840,10 @@ worker() {
     # a sibling's lock would make a dead slot look occupied by us — so a worker
     # keeps its own slot's descriptor and lets go of the rest. Bulkheads are
     # walls, and an inherited descriptor is a hole in one.
-    for sibling in "${SLOTS[@]}"; do
+    # The slots that failed to reclaim are in this list too: a worker has no
+    # business holding one, and the pool parent's own descriptor is what keeps
+    # that slot out of a concurrent run's hands (#133).
+    for sibling in "${SLOTS[@]}" ${DIRTY_SLOTS[@]+"${DIRTY_SLOTS[@]}"}; do
         [[ "$sibling" == "$slot" ]] || cti_slot_close "$sibling"
     done
     while :; do
@@ -919,9 +985,14 @@ for name in "${CORPUS[@]}"; do
             # they inherited, so the lock the kernel is supposed to free stays held.
             # We still own the slot, so clearing it is ours to do; the next holder's
             # cleanup-on-acquire is the backstop for the case where nobody did.
+            # Whether this one comes back clear changes nothing we could act on:
+            # the probe is already typed infra_unavailable, no bring-up follows on
+            # this slot in this run, and the slot's next holder reclaims on
+            # acquire and refuses itself there if it still cannot (#133). The log
+            # line the reclaim writes is the record.
             if [[ "$slot" =~ ^[0-9]+$ ]]; then
                 cti_slot_release "$slot"
-                cti_slot_reclaim "$slot" holders
+                cti_slot_reclaim "$slot" holders >/dev/null
             fi
         else
             class="$(json_field "$out/verdict.json" class)"
@@ -980,6 +1051,9 @@ done
 ((${#not_run[@]} > 0)) && log "${#not_run[@]} probe(s) not run: ${not_run[*]}"
 [[ -f "$STOP_FLAG" ]] && log "pool stopped early: $(cat "$STOP_FLAG")"
 log "wall: ${POOL_ELAPSED}s across ${#SLOTS[@]} slot(s) — slots ${SLOTS[*]}"
+for i in "${!DIRTY_SLOTS[@]}"; do
+    log "slot ${DIRTY_SLOTS[$i]}: infra_unavailable, never used — ${DIRTY_DETAIL[$i]}"
+done
 log "peak memory in use: $((PEAK_USED_KB / 1024)) MiB (tier processes $((PEAK_TIER_KB / 1024)) MiB, least available $((MIN_AVAIL_KB / 1024)) MiB)"
 log "pool evidence: $POOL_OUT"
 
@@ -997,6 +1071,18 @@ log "pool evidence: $POOL_OUT"
     printf '  "peak_tier_rss_kb": %s,\n' "$PEAK_TIER_KB"
     printf '  "least_mem_available_kb": %s,\n' "$MIN_AVAIL_KB"
     printf '  "stopped_early": %s,\n' "$(json_string "$(cat "$STOP_FLAG" 2>/dev/null || true)")"
+    # A slot this run held, could not clear, and therefore never used. Typed,
+    # because "the pool ran at N=2" and "the pool ran at N=2 because slot 1 still
+    # had a dead run's server on its ports" are different facts and only the
+    # second one is actionable.
+    printf '  "dirty_slots": [%s],\n' "$(
+        sep=""
+        for i in "${!DIRTY_SLOTS[@]}"; do
+            printf '%s{"slot": %s, "class": "infra_unavailable", "detail": %s}' \
+                "$sep" "${DIRTY_SLOTS[$i]}" "$(json_string "${DIRTY_DETAIL[$i]}")"
+            sep=", "
+        done
+    )"
     printf '  "not_run": [%s],\n' "$(
         sep=""
         for n in ${not_run[@]+"${not_run[@]}"}; do
