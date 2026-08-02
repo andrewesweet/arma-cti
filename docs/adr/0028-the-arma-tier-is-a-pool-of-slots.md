@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on a new ADR, and on the tier-architecture change ADR-0016 assigned to the lock. The one thing this ADR does **not** decide is the port allocation it needs — that line in CLAUDE.md exists to protect the human's play sessions, and widening it is left to them.
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 Decided on issue #44, from measurement on the VM (12 GB RAM, 8.6 GB available at rest, 12 cores; Arma 2.20.152984). Everything below is a number this exploration ran, not an estimate, except where it says extrapolated.
 

@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on process-doc changes — this retro's amendments to CLAUDE.md, docs/agents/issue-tracker.md, ADR-0013's convention, and the probe headers (scheduled retro, 2026-08-01; the retro skill itself was left untouched — its proposed amendments are in the process log for the human)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 Decided at the 2026-08-01 retro, after auditing the six delegated-decision ADRs the phase
 produced (0013–0018) as ADR-0013 intends the human to be able to.

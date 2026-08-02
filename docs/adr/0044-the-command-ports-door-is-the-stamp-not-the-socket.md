@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-02
 Stood-in-for: human sign-off on an ADR, and on a wire-format change to ADR-0012 (#128, holes 1 and 2 of `docs/command-port-audit.md`)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 Claimed: comment on #128, 2026-08-02, after `git fetch origin` (origin/main at `92a53f9`,
 `docs/adr/` topping at 0042) and a scan of open-issue comments found 0043 claimed by #127's
 retro batch

@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: gameplay decision (which win conditions the Order vocabulary must serve, and which failure mode to prefer) and CONTEXT.md term changes (Order, Base; new Assault and Place) — #31, flagged from #16
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 #16 shipped an AI Commander that plays for Domination only, and said why: an Order names an
 Objective, a Base is not one, so the port cannot express "go for the enemy HQ" — the port's

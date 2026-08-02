@@ -5,7 +5,7 @@ Date: 2026-08-01
 Stood-in-for: snapshot schema semantics — what `docs/mvp-scope.md`'s word "archived" means at
 ADR-0008's persistence boundary, and what a completed Campaign leaves behind for Phase 2 to
 inherit (#35)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 `docs/mvp-scope.md` (2026-07-30) says that on victory the Campaign is "marked complete, end screen
 with summary from telemetry, archived; fresh Campaign next session". #35 has to build that, and

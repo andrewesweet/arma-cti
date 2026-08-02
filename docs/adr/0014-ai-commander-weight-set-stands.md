@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-07-31
 Stood-in-for: gameplay balance/feel sign-off on the judgement calls flagged in #16 ("The weights are a gameplay-feel surface and want sign-off")
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 The seeded utility scorer (`src/cti_daemon/planner.py`, `Weights`) shipped with judgement calls flagged for sign-off rather than assumed. The aggression retune ("press rather than hold", `00836cf`) was already a human decision on 2026-07-31; this ADR discharges the rest. Judged against the North Star — engaging tactical combat for squad-leader players, meaningful strategic control for Commander players, competent and challenging AI Commanders — all four stand unchanged. No code moves.
 

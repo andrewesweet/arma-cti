@@ -4,7 +4,7 @@ Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on a wire-contract change (issue #69, from the #58 review) — the
 request `id` and the request line acquire a meaning every future client is bound by
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 The shim holds one persistent TCP connection (ADR-0005) and, when an exchange on it fails,
 opens a fresh one and sends the payload again. That retry is at-least-once and cannot be

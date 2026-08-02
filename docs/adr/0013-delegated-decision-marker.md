@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-07-31
 Stood-in-for: human sign-off on process-doc changes (the marker's exact form; the authorisation itself is the human's)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 On 2026-07-31 the human granted standing authorisation: agents may decide in their stead where CLAUDE.md would otherwise require sign-off, provided every such decision is recorded in an ADR and is straightforwardly findable when they ask "tell me all decisions made on my behalf".
 

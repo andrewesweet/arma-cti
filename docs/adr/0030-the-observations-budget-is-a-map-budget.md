@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on an ADR-0012-adjacent wire-format decision — #26's ceiling, re-measured after #27, #28 and #35 moved it
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 ## The decision
 

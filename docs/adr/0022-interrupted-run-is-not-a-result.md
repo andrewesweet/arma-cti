@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on process-doc changes — this retro's amendments to CLAUDE.md and its status markers (scheduled retro on #31, #23, #32, #34, #33; docs/process-log.md carries the full entry). The retro skill's two blocked edits from the previous retro stay pending for the human and are not retried here.
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 Decided at the second scheduled retro of 2026-08-01, from one event the process had no
 words for: a session limit killed two agents mid-flight, one of them mid-Arma-run,

@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-02
 Stood-in-for: human sign-off on an ADR, on a CLAUDE.md rule's wording, and on amending ADR-0039's exempt path (#128, hole 3 of `docs/command-port-audit.md`)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 Claimed: comment on #128, 2026-08-02, alongside ADR-0044
 
 ## The decision

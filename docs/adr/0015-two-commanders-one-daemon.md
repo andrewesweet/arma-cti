@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-07-31
 Stood-in-for: gameplay balance/feel sign-off, and the ADR-level choices #17 forced ("both sides AI-commanded, unattended")
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 #17 puts both sides under an AI Commander in one daemon. Four things had to be decided that one
 side never asked, and none of them is reversible cheaply once a Campaign replay depends on it.

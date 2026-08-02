@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-07-31
 Stood-in-for: human sign-off on a new ADR; issue #23's explicit "confirm with a human whether to pull it forward or fold it into #5" flag; and the CLAUDE.md command-table row for `just regress` that #23's acceptance criteria require (row to land with the recipe, per the Phase-0 retro rule)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 Decided 2026-07-31, on issue #23 and the design in `docs/regression-tier.md`.
 

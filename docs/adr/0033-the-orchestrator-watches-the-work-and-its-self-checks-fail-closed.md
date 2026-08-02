@@ -4,7 +4,7 @@ Delegated-decision: yes
 Date: 2026-08-02
 Stood-in-for: human sign-off on changes to CLAUDE.md, the project skills, and the agent
 process docs — the eighth retro's amendment batch (five issues: #45, #48, #26, #50, #46)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 ## The decision
 

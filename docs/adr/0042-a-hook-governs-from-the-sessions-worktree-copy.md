@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-02
 Stood-in-for: human sign-off on CLAUDE.md changes, an ADR-0013 amendment, and the retro/recovery markers (twelfth retro's amendment batch, session unattended)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 Amendment batch for the twelfth retro (scheduled: eight issues closed since
 `536706f` — #47, #117, #118, #120, #61, #62, #63, #51; #122 closed as a duplicate

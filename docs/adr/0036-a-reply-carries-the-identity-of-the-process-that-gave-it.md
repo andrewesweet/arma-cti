@@ -4,7 +4,7 @@ Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on a wire-contract change (issues #96 and #97, from the #95 Release It
 review) — every reply gains a field, and the world gains a state it can be in
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 The daemon's whole strategic state is in memory: ownership, Funds, the roster, Contacts, the
 outbox, the Commanders. Nothing persists it — that is #4's, Phase 2's, gated behind ADR-0008 and

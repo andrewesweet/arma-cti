@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on process-doc changes — three conventions the `just regress` runner needed that ADR-0016's design did not settle (issue #23, implementation)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 Decided while building the runner ADR-0016 authorised. Everything here is a detail
 the design left open and the code could not; the design's own decisions are

@@ -5,7 +5,7 @@ Date: 2026-08-02
 Stood-in-for: human sign-off on changes to CLAUDE.md, the project skills, and the agent
 process docs — the ninth retro's amendment batch (the review phase: #55–#58, #95, #49,
 and fixes #59, #60, #67, #68, #69, #81, #83)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 ## The decision
 

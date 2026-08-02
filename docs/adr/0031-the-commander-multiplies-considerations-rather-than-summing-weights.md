@@ -4,7 +4,7 @@ Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: gameplay balance/feel sign-off on the AI Commander's scoring shape — the mechanism ADR-0014 fixed and #48's steal-list item S1 proposed replacing (#49)
 
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 ADR-0014 fixed eight summed linear weights and four calls about what the Commander
 values. #48 read the prior art and found that every serious utility system multiplies

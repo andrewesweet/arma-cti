@@ -6,7 +6,7 @@ Stood-in-for: human sign-off on changes to CLAUDE.md, the project skills, and th
 process docs — the tenth retro's amendment batch (eight issues closed since `fa22f54`:
 fixes #98/#99, #96/#97, #80/#102; reviews #107, #111; plus #104/#106 raised and the
 #108–#118 findings)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 Claimed: comment on #116, 2026-08-02, after `git fetch origin` and a scan of open-issue
 comments found no claim above 0036
 

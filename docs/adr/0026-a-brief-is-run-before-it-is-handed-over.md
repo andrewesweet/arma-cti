@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on changes to CLAUDE.md and the project skills — the 2026-08-01 evening retro's amendment batch (five issues: #35, #37, #39, #40, #41; plus brief 0001 and its verification pass)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 ## The decision
 

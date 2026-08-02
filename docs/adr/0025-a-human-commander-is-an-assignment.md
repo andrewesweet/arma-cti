@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on schema semantics (the `view` transport verb and what it may carry) and on a gameplay rule (one Commander per side, across both kinds), for #18
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 #18 puts a person where a planner would run. ADR-0012 already fixed the commanding half — one
 schema, one validator, one entry function, and a single whitelisted gateway — and its #27

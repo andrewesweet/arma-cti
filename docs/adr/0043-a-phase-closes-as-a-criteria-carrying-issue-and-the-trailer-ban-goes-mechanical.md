@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-02
 Stood-in-for: human sign-off on CLAUDE.md changes and the process-doc/skill markers (thirteenth retro's amendment batch, session unattended)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 Amendment batch for the thirteenth retro (scheduled: five issues closed since
 `af4c09b` — #123, #104, #121, #125's landing, #24 — plus the phase boundary:

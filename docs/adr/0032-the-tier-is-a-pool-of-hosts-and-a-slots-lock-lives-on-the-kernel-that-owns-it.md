@@ -2,7 +2,7 @@
 
 Delegated-decision: yes
 Date: 2026-08-01
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 Stood-in-for: human sign-off on a new ADR (#50, fable research task directed by the human). The purchases §3 of the research recommends — the machine rebuild and any licence — are the human's and are not taken here; nor is any CLAUDE.md Contract change (machine B's ports need none: the [2400,3000) grant is per-machine address space).
 
 Decided on issue #50, from docs/research/second-machine.md. The numbers cited are ADR-0028's and docs/regression-tier.md's measurements, not new ones.

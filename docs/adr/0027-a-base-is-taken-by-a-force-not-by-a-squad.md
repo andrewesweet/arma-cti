@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: gameplay balance/feel sign-off on how an AI Commander reasons about force — the threat model ADR-0014 anticipated and ADR-0020 named as this escalation (#38)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 ADR-0020 wrote down the condition under which this ADR would have to exist: *"if a single
 term cannot make the AI attempt Decapitation when it should and refrain when it should not, the

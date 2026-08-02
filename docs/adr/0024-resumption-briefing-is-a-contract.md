@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-01
 Stood-in-for: human sign-off on new ADRs and on changes to CLAUDE.md — this ADR, `docs/agents/recovery.md`, and the CLAUDE.md agent-skills reference (#37; directed by the human as top priority, shape delegated)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02
 
 Amends ADR-0022's declined-runbook clause and nothing else in it. The stale-infra rule —
 a dead run's leftovers carry no `verdict.json`, are not results, and its world is state
