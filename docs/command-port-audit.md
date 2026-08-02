@@ -7,7 +7,9 @@ document is the read of the surface #19 asks for: every way an Order, a Purchase
 change to strategic state can reach the world, enumerated, each one either going through the port
 or justified in writing.
 
-Read at `dadf65f`, against `missions/cti.Stratis` and the addon as they ship. Three instruments,
+Read at `dadf65f`, against `missions/cti.Stratis` and the addon as they ship. The three holes
+below were closed under #128 on 2026-08-02, and the paths that changed with them are marked in
+place; nothing else in this read has been restated. Three instruments,
 because no one of them is sufficient: a static inventory of the call graph (what calls the shim,
 what mutates Campaign, what mutates the world); the mission's own `CfgRemoteExec`, read out of the
 running mission by `human-commander`; and the engine's refusal of a real client's calls, observed
@@ -36,7 +38,7 @@ and that the second cannot be used to instruct anything.
 |---|---|
 | `remoteExec` from a client to a server function | `missions/cti.Stratis/description.ext:39-59`. `CfgRemoteExec` `class Functions` is `mode = 1` with a whitelist of exactly one entry, `cti_fnc_portGateway`, `allowedTargets = 2`, `jip = 0`. `class Commands` is `mode = 1` with an **empty** whitelist, so no scripting command is remote-executable by a client at all. |
 | `cti_fnc_portGateway` itself | `addons/main/functions/fn_portGateway.sqf:28` — `SERVER_ONLY(false)` (ADR-0041). Belt-and-braces against a `description.ext` regression, which is the one failure a config cannot defend against itself. The gateway then stamps the acting side from the server's own state and never from the payload, so a client cannot command a side it was not given. |
-| the port's **two principals** (ADR-0040) | `fn_portGateway.sqf:41-59`. A Commander's side comes from the assignment state `cti_fnc_commanderAssign` latched (`cti_fnc_commanderSide`); a caller that state does not know may still be a squad leader, and then the side *and the Squad* are stamped from the group the server records as his (`cti_fnc_leaderSquad`). Two different provenances, both the server's own state, neither in the payload. `port.py:179 _principal_refusal` then holds the caller to it: a stamped Squad may issue Reinforce and nothing else, and only for that Squad. |
+| the port's **two principals** (ADR-0040) | `fn_portGateway.sqf:41-59`. A Commander's side comes from the assignment state `cti_fnc_commanderAssign` latched (`cti_fnc_commanderSide`); a caller that state does not know may still be a squad leader, and then the side *and the Squad* are stamped from the group the server records as his (`cti_fnc_leaderSquad`). Two different provenances, both the server's own state, neither in the payload. `port.py:179 _principal_refusal` then holds the caller to it: a stamped Squad may issue Reinforce and nothing else, and only for that Squad. Since #128 the side is written to the payload as `acting_side` beside the Squad, and a Command that carries no such stamp is refused `unknown_caller` at the daemon (ADR-0044). |
 | the map UI | `fn_mapCommander.sqf:41,55,71` (map click, map open, key down) → `fn_mapIssue.sqf:63,79-83` builds a Command through `cti_fnc_command` → `fn_mapIssue.sqf:95` `remoteExec ["cti_fnc_portGateway", 2]`. The UI decides nothing and refuses only Commands it cannot build (`fn_mapIssue.sqf:10-18, 86-90`); it has no second route. |
 
 **Negative evidence.** `spike/probes/client-port.sqf:357-408` is the leg that asks the engine rather
@@ -99,8 +101,9 @@ changes: `squad_spawned` creates the group and units, `order_issued` goes to `ct
 (`:55`), `squad_reinforced` refills a Squad at its own Base (`:127`, ADR-0040), and an effect it
 does not recognise is refused rather than ignored.
 
-Nothing else applies an effect, and no SQF anywhere spawns a Squad outside this path except
-`fn_desyncLoad.sqf` — see the exceptions below.
+Nothing else applies an effect, and no SQF in the addon spawns units outside this path at all —
+`fn_desyncLoad.sqf` was the exception when this was read, and #128 moved it out of the addon
+entirely (ADR-0045).
 
 ### 6. World state that changes without an effect
 
@@ -131,35 +134,51 @@ down here rather than discovered later.
    (`init.sqf:33-54`). This is the Phase-0 measurement mission, which nothing runs per issue and
    which ADR-0011 retires when `just accept` arrives. It is not the shipped mission and never
    loads the shipped `description.ext`.
-2. **Probes purchase and order by building `verb: "command"` envelopes straight to the shim**,
-   skipping the gateway's side stamp (`spike/probe-prelude.sqf:108`, `base-assault.sqf:115`,
-   `json-manifest.sqf:167,190`, `schema-stale.sqf:77`). A probe is appended to the harness on the
-   **server**, so it is already inside the boundary the whitelist defends; what it bypasses is the
-   side stamp, which is why `daemon.py:339-343` keeps `wrong_side` reachable and
-   `client-port.sqf:229-265` asserts that a *client* cannot do the same thing.
-3. **`fn_desyncLoad.sqf:53-62` spawns 32 soldiers with no daemon involvement**, and it is reachable
-   in the shipped mission (`initServer.sqf:114`) behind `CTI_DESYNC_LOAD`, which only the harness
-   sets. It is #8's load generator, not a Campaign mechanism: it changes what is standing on the
-   ground and therefore what the presence sampler reports, which `initServer.sqf:107-113` already
-   records as "it hands WEST half the island". It is the one shipped path that changes world state
-   without a judgement, it is off unless asked for, and it should not survive into a build a human
-   plays.
+2. **Probes purchase and order by building `verb: "command"` envelopes straight to the shim**
+   (`spike/probe-prelude.sqf`, `base-assault.sqf`, `json-manifest.sqf`, `schema-stale.sqf:77`). A
+   probe is appended to the harness on the **server**, so it is already inside the boundary the
+   whitelist defends. When this was read it skipped the gateway's side stamp altogether; since #128
+   it stamps `acting_side` for itself, so what a probe bypasses is the *resolution* of a caller and
+   not the statement of who is acting. `client-port.sqf:229-265` asserts that a *client* cannot do
+   either.
+3. **`fn_desyncLoad.sqf:53-62` spawned 32 soldiers with no daemon involvement**, reachable in the
+   shipped mission (`initServer.sqf:114`) behind `CTI_DESYNC_LOAD`, which only the harness sets. It
+   is #8's load generator, not a Campaign mechanism: it changes what is standing on the ground and
+   therefore what the presence sampler reports, which the mission's own comment already recorded as
+   "it hands WEST half the island". It was the one shipped path that changed world state without a
+   judgement. **No longer in the envelope's edge case, because it is no longer in the build**:
+   `spike/desync-load.sqf`, staged by the run that asks for it (#128, ADR-0045).
 
 ## The holes this audit found
 
-Reported rather than filtered, per the review rule; none of them is a client-reachable order path.
+Reported rather than filtered, per the review rule; none of them was a client-reachable order path.
+All three were closed under #128 on 2026-08-02; what each said when found, and what became of it:
 
-- **`acting_side` defaults to the caller's claimed side** (`daemon.py:339-343`). Safe only because
-  `fn_portGateway.sqf:84` overwrites `side` server-side. Anything that reaches the socket without
-  the gateway commands for any side it names — which is exactly what the probes do (exception 2),
-  so the default is load-bearing for the corpus as well as a hole. Documented in place, and the
-  refusal it leaves reachable is what `client-port`'s `forged` and `unassigned` legs assert.
+- **`acting_side` defaulted to the caller's claimed side** (`daemon.py:339-343` as read). Safe only
+  because `fn_portGateway.sqf` overwrites `side` server-side. Anything that reached the socket
+  without the gateway commanded for any side it named — which is exactly what the probes do
+  (exception 2), so the default was load-bearing for the corpus as well as a hole.
+  **Closed (ADR-0044).** The gateway now stamps `acting_side` beside `acting_squad`, and the daemon
+  refuses a `command` line carrying no stamp with a new rejection code, `unknown_caller`. The
+  probes stamp for themselves, which is the honest form of exception 2: what a probe skips is the
+  *resolution* of a caller, not the statement of who is acting. Asserted at the wire in
+  `tests/unit/test_daemon_dispatch.py` and in-world by `client-port.sqf`'s `unstamped` leg.
 - **The daemon's socket is unauthenticated loopback** (`transport.py:23`, `extension/src/lib.rs:15`,
-  `127.0.0.1:9099`). Any process on the server host can speak the protocol. The guarantee this
-  audit makes is about the *world's* paths; it is not a security boundary, and ADR-0018's "a client
-  never speaks to the daemon" is what keeps the two apart. Worth stating because "no path outside
-  the port" could otherwise be read as a claim it does not make.
-- **`fn_desyncLoad`** as above: shipped, harness-gated, and world-mutating.
+  `127.0.0.1:9099`). Any process on the server host can speak the protocol. **Accepted, with the
+  bind scoped back (ADR-0044).** No shared secret: every process on this host that could speak the
+  protocol is ours and is authorised to command both sides, and a secret those same processes can
+  read is an accident filter rather than an authentication boundary — one already covered by
+  per-slot daemon ports and, now, by the stamp above. What was closed instead is the widening the
+  audit did not catch: hold mode bound `0.0.0.0`, putting the socket on the LAN for exactly the
+  sessions a human joins. The daemon now refuses a non-loopback bind and `spike/run.sh` no longer
+  asks for one. The guarantee this audit makes remains about the *world's* paths; ADR-0018's "a
+  client never speaks to the daemon" is what keeps the two apart.
+- **`fn_desyncLoad` shipped**: harness-gated and world-mutating, in every build. **Closed
+  (ADR-0045).** It is `spike/desync-load.sqf` now, staged into the generated harness by the run
+  that sets `CTI_DESYNC_LOAD` and present in no build otherwise — the rule `spike/run.sh` already
+  stated for probes, applied to the other kind of harness-only code. #8's tool is preserved, not
+  deleted; its `setGroupOwner` exemption moved with it, and `check_sqf_bans` now catches anything
+  put back at the vacated addon path.
 
 ## Phase-1 exit criteria, recorded
 
@@ -235,6 +254,8 @@ down when a person takes the slot — is a gameplay decision and travels as #126
 | `CfgRemoteExec` modes are 1/1 and the whitelist is one function | `human-commander.sqf:56-72` (read out of the running mission) |
 | A client's non-whitelisted call does not land, in both classes | `client-port.sqf:357-408` |
 | A client cannot command a side it was not assigned | `client-port.sqf:229-265` (forged), `:279-310` (unassigned) |
+| A `command` line that reached the daemon without a server-side stamp is refused | `client-port.sqf` (the `unstamped` leg), `tests/unit/test_daemon_dispatch.py` |
+| The daemon listens on loopback and nowhere else | `tests/unit/test_daemon_transport.py` (the bind refusal), `spike/run.sh` |
 | A squad leader's authority stops at Reinforce for his own Squad | `spike/probes/reinforce.sqf` — a real client leading a Squad refills it, is refused `not_your_squad` for another, and is refused a Purchase (ADR-0040) |
 | Malformed and invented Commands are refused by the port | `client-port.sqf:317-330`, `:332-349` |
 | The UI's vocabulary is the port's schema, not a fork of it | `human-commander.sqf:74-97` |

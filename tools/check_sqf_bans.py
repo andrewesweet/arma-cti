@@ -9,7 +9,8 @@ adapter exists — so that scoping lives here.
 
 HEMTT still bans `sleep` and `uiSleep` outright; this gate re-bans `random` and
 allows it in the seeded PRNG adapter alone, and bans `setGroupOwner` everywhere
-but the one diagnostic that predates the rule (ADR-0039).
+but the one diagnostic that predates the rule (ADR-0039) — which is staged by
+the harness rather than shipped in the addon (ADR-0045).
 
 The second rule is a shape rather than a command: a hand-rolled locality guard,
 `if (!isServer) exitWith { ... }` or the same with `hasInterface`. ADR-0041 puts
@@ -49,8 +50,12 @@ SCOPED_BANS: Final[dict[str, Ban]] = {
         frozenset({"addons/main/functions/fn_prngNext.sqf"}),
         "Draw through the adapter instead.",
     ),
+    # The exemption travels with the file it names: #8's load generator moved out
+    # of the shipped addon and into the harness's staging (#128, ADR-0045), and
+    # an allowlist entry left pointing at the old path would have re-banned the
+    # one caller the rule was written around.
     "setGroupOwner": Ban(
-        frozenset({"addons/main/functions/fn_desyncLoad.sqf"}),
+        frozenset({"spike/desync-load.sqf"}),
         "Squads are never transferred off the server (ADR-0039).",
     ),
 }

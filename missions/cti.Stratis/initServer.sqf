@@ -98,32 +98,14 @@ private _watchFor = missionNamespace getVariable ["CTI_DESYNC_WATCH_SECS", 0];
 if (_watchFor > 0) then {
     [_watchFor] call cti_fnc_desyncWatch;
     diag_log format ["CTI|desync_watch_started window=%1", _watchFor];
-
-    // Wait for a client, then give it something to simulate: a clean reading
-    // off an idle client says the connection held, not that the link carries a
-    // player's traffic. Waits for any client, headed or headless — which one
-    // turned up decides whether the load is handed over or stays server-owned.
-    //
-    // The loader spawns thirty-two WEST soldiers standing on the first four
-    // Objectives, which is fine as traffic for a client to carry and is not fine
-    // as a Campaign: capture is by presence, so it hands WEST half the island.
-    // #16's probe found it running with no client at all; #17 brings a headless
-    // client up on purpose, which would make it run every time. So it is now
-    // asked for explicitly, and a run that has not asked plays a Campaign
-    // nobody was given.
-    if ((missionNamespace getVariable ["CTI_DESYNC_LOAD", 0]) > 0) then {
-        [] spawn {
-            private _deadline = diag_tickTime + 120;
-            waitUntil { count allUsers > 0 || { diag_tickTime > _deadline } };
-            if (count allUsers > 0) then {
-                [] call cti_fnc_desyncLoad;
-            } else {
-                diag_log "CTI|desync_load skipped=no_client";
-            };
-        };
-    } else {
-        diag_log "CTI|desync_load skipped=not_requested";
-    };
 };
+
+// The load generator that gives a joining client something to simulate used to
+// live here, behind CTI_DESYNC_LOAD, and in the addon as `cti_fnc_desyncLoad`.
+// It is `spike/desync-load.sqf` now, staged into the harness by the run that
+// asks for it and shipped in nothing (#128, ADR-0045): the watcher above is
+// diagnostics the mission is entitled to carry, and the loader is an
+// investigation tool that spawns thirty-two WEST soldiers on the first four
+// Objectives — which capture-by-presence turns into half the island.
 
 diag_log "CTI|done";

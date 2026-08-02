@@ -336,12 +336,24 @@ class Daemon:
         except commands.MalformedCommandError as exc:
             return protocol.rejected(request.id, "malformed_command", str(exc))
 
-        # The SQF gateway stamps the acting side server-side and overwrites the
-        # client's, so the two normally agree and `wrong_side` is unreachable
-        # through the front door. It stays reachable for an in-process planner
-        # bug and for anything that reached the daemon without the gateway —
-        # which is the path #19's audit exists to find.
-        acting_side = request.payload.get("acting_side", command.side)
+        # Who the server resolved this caller to be (ADR-0044). The gateway
+        # stamps it from its own state — a Commander's assignment or a squad
+        # leader's slot — and a Command that carries no stamp is a caller nobody
+        # vouched for. It used to default to the side named in the payload,
+        # which made "who is acting" a claim the caller could write: #19's audit
+        # found it, and the fix is that the field is required rather than
+        # defaulted. `wrong_side` below stays for the resolved caller who
+        # reaches past his own side; this is the caller who was never resolved.
+        stamped_side = request.payload.get("acting_side")
+        if not isinstance(stamped_side, str) or stamped_side not in commands.SIDES:
+            return protocol.rejected(
+                request.id,
+                "unknown_caller",
+                "this Command carries no server-side `acting_side` stamp, so the daemon "
+                "cannot tell who is acting: a Command reaches the port through the gateway, "
+                "which stamps the caller from the server's own state",
+            )
+        acting_side = stamped_side
         # Which principal is at the door (ADR-0040). Empty is a Commander; a
         # Squad id is the squad leader the gateway resolved from the caller's
         # own slot, and the port holds him to that Squad. Read here rather than

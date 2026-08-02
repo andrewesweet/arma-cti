@@ -70,7 +70,12 @@ def test_the_end_screen_carries_a_summary_drawn_from_telemetry(tmp_path: Path) -
         daemon,
         id="v-4",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
     observe(daemon, "v-5", time=30, presence={"agia_marina": ["WEST"]})
     observe(daemon, "v-6", time=61, presence={"agia_marina": ["WEST"]})
@@ -164,7 +169,12 @@ def test_a_human_command_after_the_end_screen_is_refused_on_the_wire(tmp_path: P
         daemon,
         id="v-18",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
 
     assert reply["status"] == "rejected"

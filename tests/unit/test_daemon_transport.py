@@ -118,6 +118,7 @@ def _hammer(port: int, tag: str, count: int) -> list[dict[str, Any]]:
                         "payload": {
                             "command": "purchase",
                             "side": "WEST",
+                            "acting_side": "WEST",
                             "args": {"squad_type": "rifle"},
                         },
                     }
@@ -193,3 +194,28 @@ def test_a_daemon_that_never_binds_says_so_rather_than_indexing_nothing(
 
     with pytest.raises(transport.DaemonNeverCameUpError, match="never came up"):
         transport.serve_in_thread(telemetry_path=tmp_path / "telemetry.jsonl")
+
+
+def test_the_daemon_refuses_to_listen_anywhere_but_this_machine() -> None:
+    # The socket carries no authentication and ADR-0044 decides it will not
+    # grow any, which makes the bind address the whole of the boundary. A
+    # widened one is not a smaller guarantee, it is none — so it is refused
+    # rather than warned about (ADR-0033, fail closed).
+    for host in ("0.0.0.0", "192.168.1.10", "::", "not-an-address"):  # noqa: S104 — the address under refusal
+        with pytest.raises(transport.NonLoopbackBindError):
+            transport.check_loopback(host)
+
+
+def test_the_loopback_addresses_the_tier_actually_uses_are_allowed() -> None:
+    for host in ("127.0.0.1", "localhost", "::1"):
+        transport.check_loopback(host)
+
+
+def test_a_non_loopback_bind_is_refused_before_anything_is_written(tmp_path: Path) -> None:
+    # On stderr with a non-zero exit rather than a traceback, and without
+    # creating the telemetry directory: a run that will not start leaves
+    # nothing behind for the next one to read as evidence.
+    telemetry = tmp_path / "evidence" / "telemetry.jsonl"
+    code = transport.main(["--host", "0.0.0.0", "--telemetry", str(telemetry)])  # noqa: S104 — the address under refusal
+    assert code == 2
+    assert not telemetry.parent.exists()

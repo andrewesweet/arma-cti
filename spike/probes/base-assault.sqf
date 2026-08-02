@@ -116,6 +116,9 @@
             ["payload", createHashMapFromArray [
                 ["command", "order"],
                 ["side", "WEST"],
+                // Stamped by the probe because there is no gateway on this path
+                // (ADR-0044): an unstamped line is refused `unknown_caller`.
+                ["acting_side", "WEST"],
                 ["args", createHashMapFromArray [
                     ["squad", _squadId], ["order", _order], ["place", _place]
                 ]]

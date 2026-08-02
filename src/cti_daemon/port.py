@@ -59,6 +59,13 @@ REJECTION_CODES: Final = frozenset(
         # the whole of authority. Answered before the roster is consulted, so a
         # leader learns nothing about which Squad ids his side has by guessing.
         "not_your_squad",
+        # Nobody stamped this caller (#128, ADR-0044). A Command arrives with the
+        # side its caller was resolved to server-side; a line that carries none
+        # is a caller the daemon cannot attribute, and an unattributable caller
+        # is refused rather than taken at the word of its own payload. Distinct
+        # from `wrong_side`, which is a caller the server *did* resolve reaching
+        # past the side it holds.
+        "unknown_caller",
         # Minted by the gateway rather than by this module, like `wrong_side`:
         # the daemon was not reached at all, so nothing was judged and nothing
         # was spent (#97). It lives in the one vocabulary because a Commander

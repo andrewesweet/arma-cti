@@ -89,6 +89,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A Command now has to say who is issuing it, and the daemon refuses one that does not.** The
+  Command Port's audit found that the acting side fell back to whatever side the payload named, so
+  anything that reached the daemon's socket without passing the gateway commanded for the side it
+  wrote down. The gateway stamps the caller's side alongside his Squad now, and a Command carrying
+  no stamp is refused `unknown_caller` — a new refusal in the same vocabulary every other one comes
+  back in. Nothing a player does changes: a Commander's Command was always stamped from the
+  server's own assignment state. What changes is that the stamp, rather than the socket, is the
+  door. #128, ADR-0044.
+
+- **The daemon no longer puts its socket on the LAN for the sessions a human joins.** It bound
+  every interface whenever the world was held up for a client, on a Phase-0 reason — the
+  measurement mission's clients called the daemon themselves — that the shipped mission has never
+  had. The daemon now refuses to listen anywhere but this machine's own loopback, and says so and
+  exits rather than starting somewhere it should not be. The socket stays unauthenticated by
+  decision, with the reasoning and the evidence that would overturn it written down. #128, ADR-0044.
+
+- **The build no longer carries the tool that can hand WEST half the island.** The desync
+  investigation's load generator spawned thirty-two soldiers onto the first four Objectives; it was
+  off unless asked for, and present in every build regardless, including one a person could play.
+  It now lives beside the harness and is copied in only by a run that asks for it, so a build a
+  human plays does not contain it at all. The tool itself is unchanged and the investigation still
+  has it. #128, ADR-0045.
+
 - **A regression run no longer starts into a machine that has no room for it.** The slot locks
   serialise agents but say nothing about memory, so two three-slot pool runs took six worlds onto
   one 12 GB machine, drove it to 39 MiB available, and came back twenty minutes later with two

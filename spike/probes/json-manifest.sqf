@@ -168,6 +168,9 @@
         ["payload", createHashMapFromArray [
             ["command", "purchase"],
             ["side", "WEST"],
+            // Stamped by the probe because there is no gateway on this path
+            // (ADR-0044): an unstamped line is refused `unknown_caller`.
+            ["acting_side", "WEST"],
             ["args", createHashMapFromArray [["squad_type", "rifle"]]]
         ]]
     ]] call cti_probe_fnc_rpc;
@@ -191,6 +194,9 @@
         ["payload", createHashMapFromArray [
             ["command", "purchase"],
             ["side", "WEST"],
+            // Stamped, so the refusal under test is the catalogue's and not the
+            // `unknown_caller` an unstamped line would earn first (ADR-0044).
+            ["acting_side", "WEST"],
             ["args", createHashMapFromArray [["squad_type", "battleship"]]]
         ]]
     ]] call cti_probe_fnc_rpc;

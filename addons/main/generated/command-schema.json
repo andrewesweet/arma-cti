@@ -147,6 +147,7 @@
     "malformed_command",
     "not_your_squad",
     "port_unavailable",
+    "unknown_caller",
     "unknown_command",
     "unknown_squad",
     "wrong_ground",

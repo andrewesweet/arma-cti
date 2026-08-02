@@ -52,7 +52,6 @@ class CfgFunctions
             class worldInit {};
             class networkSample {};
             class desyncWatch {};
-            class desyncLoad {};
             class command {};
             class commanderAssign {};
             class commanderSide {};

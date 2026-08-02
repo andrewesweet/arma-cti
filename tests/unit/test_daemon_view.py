@@ -44,7 +44,12 @@ def test_a_view_carries_that_side_and_what_only_it_may_know(tmp_path: Path) -> N
         daemon,
         id="r-1",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
 
     reply = reply_to(daemon, id="r-2", verb="view", payload={"side": "WEST"})
@@ -68,7 +73,12 @@ def test_a_view_is_one_sides_projection_and_never_the_board(tmp_path: Path) -> N
         daemon,
         id="r-1",
         verb="command",
-        payload={"command": "purchase", "side": "EAST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "EAST",
+            "acting_side": "EAST",
+            "args": {"squad_type": "rifle"},
+        },
     )
 
     west = reply_to(daemon, id="r-2", verb="view", payload={"side": "WEST"})["result"]
@@ -122,7 +132,12 @@ def test_a_wire_command_for_a_side_under_an_ai_commander_is_refused(tmp_path: Pa
         daemon,
         id="r-1",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
 
     assert reply["status"] == "rejected"

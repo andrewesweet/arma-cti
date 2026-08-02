@@ -102,6 +102,14 @@ if !(_side in (_schema get "sides")) exitWith {
 };
 
 _command set ["side", _side];
+// The stamp the daemon holds this Command to (ADR-0044). `side` is the Command's
+// own — which side it is for — and this is the caller's: who the server resolved
+// as issuing it. They are written together here and separately on the wire,
+// because the daemon refuses a Command carrying no `acting_side` rather than
+// falling back to the side the payload names. Without this field the door is the
+// socket; with it the door is this function, and the daemon can tell the
+// difference.
+_command set ["acting_side", _side];
 // Overwritten rather than merged, for the same reason `side` is: a client that
 // could put a Squad id here would be a client that could command any Squad. A
 // Commander's caller stamps "", which is the port's word for "no Squad holds

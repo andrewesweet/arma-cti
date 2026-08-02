@@ -8,6 +8,7 @@ reconnecting per call costs about three times as much).
 from __future__ import annotations
 
 import argparse
+import ipaddress
 import socketserver
 import sys
 import threading
@@ -127,6 +128,38 @@ def build(telemetry_path: Path, ai: Iterable[tuple[str, int]] | None) -> Daemon:
     return daemon
 
 
+class NonLoopbackBindError(Exception):
+    """The daemon was asked to listen somewhere off this machine (ADR-0044)."""
+
+
+def check_loopback(host: str) -> None:
+    """Refuse a bind address that is not this machine's own loopback.
+
+    The socket carries no authentication and ADR-0044 decides it will not grow
+    any: what makes it safe is that nothing off this machine can reach it, so
+    the bind address *is* the boundary and a widened one is the whole guarantee
+    gone. `spike/run.sh` used to widen it to 0.0.0.0 for hold mode, which was
+    the Phase-0 mission's clients calling the shim directly and has had no
+    caller since `missions/cti.Stratis` (ADR-0018: a client never speaks to the
+    daemon). Fail-closed rather than warn, per ADR-0033.
+
+    #53's remote slots do not overturn this: an SSH-carried transport is
+    loopback at both ends, which is the point of carrying it over SSH.
+    """
+    try:
+        loopback = host == "localhost" or ipaddress.ip_address(host).is_loopback
+    except ValueError as exc:
+        message = f"{host!r} is not an address this daemon can bind"
+        raise NonLoopbackBindError(message) from exc
+    if not loopback:
+        message = (
+            f"the daemon binds loopback only and was asked for {host!r} (ADR-0044): "
+            f"the socket is unauthenticated, so its address is the whole of the "
+            f"boundary. Carry it over SSH rather than widening the bind"
+        )
+        raise NonLoopbackBindError(message)
+
+
 def serve(
     host: str = DEFAULT_HOST,
     port: int = DEFAULT_PORT,
@@ -136,6 +169,7 @@ def serve(
     ai: Iterable[tuple[str, int]] | None = None,
 ) -> None:
     """Serve until interrupted. Calls `on_ready` with the bound port and epoch."""
+    check_loopback(host)
     daemon = build(telemetry_path, ai)
     with _Server((host, port), _handler_for(daemon)) as server:
         if on_ready is not None:
@@ -162,6 +196,10 @@ def serve_in_thread(
     Raises rather than indexing an empty list: a bind failure used to surface as
     a bare `IndexError` out of `bound[0]`, which says nothing about a daemon.
     """
+    # Asked here as well as inside `serve`, because a refusal raised on the
+    # background thread would reach the caller as "nothing bound in five
+    # seconds" — a bind that was never attempted reported as a slow one.
+    check_loopback(host)
     ready = threading.Event()
     bound: list[int] = []
 
@@ -223,6 +261,14 @@ def main(argv: list[str] | None = None) -> int:
         metavar="SIDE[:SEED]",
     )
     args = parser.parse_args(argv)
+    # Before the telemetry directory is made, so a run that will not start
+    # leaves nothing behind: the harness reads a missing readiness line as
+    # infra_unavailable, and this says on stderr why there will never be one.
+    try:
+        check_loopback(args.host)
+    except NonLoopbackBindError as exc:
+        print(f"cti-daemon: {exc}", file=sys.stderr)  # noqa: T201 — the operator reads stderr
+        return 2
     args.telemetry.parent.mkdir(parents=True, exist_ok=True)
 
     def announce(port: int, epoch: str) -> None:

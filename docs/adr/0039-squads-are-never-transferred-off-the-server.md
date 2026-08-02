@@ -9,8 +9,13 @@ Claimed: comment on #117, 2026-08-02, after `git fetch origin` (origin/main at `
 ## The decision
 
 Every Squad is owned by the server, for its whole life. `setGroupOwner` is banned in our
-SQF outside `addons/main/functions/fn_desyncLoad.sqf`, the #8 headless-client desync
-investigation tool, whose groups are throwaway load traffic and never Squads.
+SQF outside `spike/desync-load.sqf`, the #8 headless-client desync investigation tool,
+whose groups are throwaway load traffic and never Squads.
+
+*(Path amended 2026-08-02 by ADR-0045, #128: the tool was
+`addons/main/functions/fn_desyncLoad.sqf` when this was written and is now staged by the
+harness rather than shipped in the addon. The exemption is the same one and follows the
+file; the decision above is untouched.)*
 
 This is #117's Option A, chosen over the alternative on the table: an object-locality
 convention (`local`, `groupOwner`, `owner` guards) that would let Squads move and make

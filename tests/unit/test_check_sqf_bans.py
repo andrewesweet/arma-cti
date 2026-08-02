@@ -23,7 +23,9 @@ if TYPE_CHECKING:
 check_sqf_bans = load_tool("check_sqf_bans")
 
 ADAPTER = "addons/main/functions/fn_prngNext.sqf"
-DESYNC_LOAD = "addons/main/functions/fn_desyncLoad.sqf"
+# Harness-staged, not shipped (ADR-0045): the exemption names where the tool
+# lives, so it moved with it.
+DESYNC_LOAD = "spike/desync-load.sqf"
 OTHER = "addons/main/functions/fn_other.sqf"
 
 
@@ -90,6 +92,15 @@ def test_the_order_path_may_not_transfer_a_squad_off_the_server() -> None:
 
 def test_the_desync_diagnostic_keeps_its_exemption() -> None:
     assert check_sqf_bans.scan_source("_group setGroupOwner _target;", DESYNC_LOAD) == []
+
+
+def test_the_exemption_did_not_stay_behind_in_the_addon() -> None:
+    # The path the tool used to occupy has no standing of its own: a file put
+    # back there would be shipped, which is the thing ADR-0045 stops.
+    findings = check_sqf_bans.scan_source(
+        "_group setGroupOwner _target;", "addons/main/functions/fn_desyncLoad.sqf"
+    )
+    assert [f.command for f in findings] == ["setGroupOwner"]
 
 
 def test_the_desync_exemption_does_not_extend_to_the_prng_adapter() -> None:

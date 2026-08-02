@@ -109,6 +109,13 @@ cti_probe_fnc_buySquad = {
         ["payload", createHashMapFromArray [
             ["command", "purchase"],
             ["side", _side],
+            // The stamp the gateway would have written (ADR-0044). A probe runs
+            // on the server, inside the boundary the whitelist defends, and
+            // speaks to the shim rather than through the gateway — so it stamps
+            // for itself. What it skips is the *resolution* of a caller, which
+            // is the gateway's; what it may not skip is saying who is acting,
+            // because an unstamped line is refused `unknown_caller`.
+            ["acting_side", _side],
             ["args", createHashMapFromArray [["squad_type", _type]]]
         ]]
     ]] call cti_probe_fnc_rpc;

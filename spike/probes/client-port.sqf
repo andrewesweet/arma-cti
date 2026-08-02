@@ -1,5 +1,5 @@
 // probe: client-port
-// issues: 21, 46, 116
+// issues: 21, 46, 116, 128
 // window: 420
 // env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
 //
@@ -12,8 +12,9 @@
 // Funds move, which settles the happy path and nothing else. This probe is the
 // rest of the leg: the judgement's return trip for an accepted *and* a refused
 // Command, the server's stamp beating a side the client lied about, a client
-// the server has not assigned, payloads that are not Commands, and the
-// whitelist refusing a call to anything but the gateway.
+// the server has not assigned, payloads that are not Commands, the whitelist
+// refusing a call to anything but the gateway, and — added by #128 — the daemon
+// refusing a `command` line that reached it carrying no stamp at all.
 //
 // A headless client cannot stand in for the caller. `remoteExecutedOwner`
 // returns 0 for a call arriving from an HC by engine design (BIKI, vendored)
@@ -122,7 +123,8 @@
     // completion is a green verdict short-circuited and the cover was incidental
     // rather than structural. Now an abandoned step names itself unverified, the
     // steps that ran name themselves too, and the verdict carries the list —
-    // so a pass says which of the six it is a pass about.
+    // so a pass says which legs it is a pass about. The unstamped leg at the end
+    // uses the same grammar without a client step behind it (#128).
     private _legRan = {
         diag_log format ["CTI|LEG name=client_port_%1 status=ran", _this];
     };
@@ -406,6 +408,42 @@
     diag_log format ["CTI|client_port_probe_whitelist_bit setVariable_landed=%1 portReply_landed=%2",
         _commandLanded, _functionLanded];
     "breach" call _legRan;
+
+    // ------------------------------------------------- a line nobody stamped
+    // The socket's own half of the same question, and it is asked from the
+    // server because the whitelist above is exactly what stops a client asking
+    // it. A `command` line that reaches the daemon without passing the gateway
+    // carries no `acting_side`, and until #128 it was judged for whichever side
+    // its own payload named — #19's audit found that default and this is the
+    // in-world assertion that it is gone. The door is the stamp, not the socket
+    // (ADR-0044): a probe inside the boundary can still command, but only by
+    // saying who it is acting as, and a line that says nothing is refused.
+    ([_side] call _board) params ["", "_squadsBeforeUnstamped"];
+    private _unstamped = [createHashMapFromArray [
+        ["id", format ["client-port-probe-unstamped-%1", round (diag_tickTime * 1000)]],
+        ["verb", "command"],
+        ["payload", createHashMapFromArray [
+            ["command", "purchase"],
+            ["side", _side],
+            ["args", createHashMapFromArray [["squad_type", "rifle"]]]
+        ]]
+    ]] call cti_probe_fnc_rpc;
+    private _unstampedStatus = _unstamped getOrDefault ["status", ""];
+    private _unstampedCode =
+        (_unstamped getOrDefault ["reason", createHashMap]) getOrDefault ["code", ""];
+    if (_unstampedStatus isNotEqualTo "rejected"
+        || { _unstampedCode isNotEqualTo "unknown_caller" }) then {
+        diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_unstamped_not_refused status=%1 code=%2",
+            _unstampedStatus, _unstampedCode];
+    };
+    ([_side] call _board) params ["", "_squadsUnstamped"];
+    if (_squadsUnstamped isNotEqualTo _squadsBeforeUnstamped) then {
+        diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_unstamped_bought before=%1 after=%2",
+            _squadsBeforeUnstamped, _squadsUnstamped];
+    };
+    diag_log format ["CTI|client_port_probe_unstamped code=%1 squads=%2->%3",
+        _unstampedCode, _squadsBeforeUnstamped, _squadsUnstamped];
+    "unstamped" call _legRan;
 
     ([_side] call _board) params ["_fundsEnd", "_squadsEnd"];
     diag_log format ["CTI|client_port_probe_board side=%1 funds=%2 squads=%3", _side, _fundsEnd, _squadsEnd];

@@ -149,6 +149,9 @@ def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
                 # Minted by the gateway, not by this module (#97): the daemon
                 # was never reached, so nothing was judged or spent.
                 "port_unavailable",
+                # A caller nobody stamped (ADR-0044): the line carried no
+                # server-side `acting_side`, so who is acting is unknown.
+                "unknown_caller",
             }
         )
         == port.REJECTION_CODES

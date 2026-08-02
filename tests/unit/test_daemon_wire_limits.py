@@ -175,7 +175,12 @@ def purchase(daemon: Daemon, request_id: str, side: str = "WEST") -> dict[str, A
         daemon,
         id=request_id,
         verb="command",
-        payload={"command": "purchase", "side": side, "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": side,
+            "acting_side": side,
+            "args": {"squad_type": "rifle"},
+        },
     )
 
 

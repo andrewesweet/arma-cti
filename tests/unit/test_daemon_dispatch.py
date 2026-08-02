@@ -183,7 +183,12 @@ def test_a_command_is_carried_inside_the_envelope_not_beside_it(tmp_path: Path) 
         daemon,
         id="c-1",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
     assert reply["status"] == "ok"
     assert reply["result"] == {"squad": "WEST-1", "funds": 200}
@@ -199,7 +204,12 @@ def test_an_order_reaches_the_port_through_the_same_envelope_as_a_purchase(
         daemon,
         id="c-7",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
     reply = reply_to(
         daemon,
@@ -208,6 +218,7 @@ def test_an_order_reaches_the_port_through_the_same_envelope_as_a_purchase(
         payload={
             "command": "order",
             "side": "WEST",
+            "acting_side": "WEST",
             "args": {"squad": "WEST-1", "order": "capture", "place": "agia_marina"},
         },
     )
@@ -221,7 +232,12 @@ def test_an_accepted_command_leaves_its_effect_on_the_outbox(tmp_path: Path) -> 
         daemon,
         id="c-2",
         verb="command",
-        payload={"command": "purchase", "side": "EAST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "EAST",
+            "acting_side": "EAST",
+            "args": {"squad_type": "rifle"},
+        },
     )
     polled = reply_to(daemon, id="c-3", verb="poll")
     (message,) = polled["result"]["messages"]
@@ -248,7 +264,10 @@ def test_an_unknown_command_is_a_rejection_while_an_unknown_verb_is_an_error(
 ) -> None:
     daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     rejected = reply_to(
-        daemon, id="c-5", verb="command", payload={"command": "bombard", "side": "WEST"}
+        daemon,
+        id="c-5",
+        verb="command",
+        payload={"command": "bombard", "side": "WEST", "acting_side": "WEST"},
     )
     errored = reply_to(daemon, id="c-6", verb="bombard")
     assert rejected["reason"]["code"] == "unknown_command"
@@ -264,6 +283,49 @@ def test_a_command_claiming_a_side_the_caller_does_not_hold_is_rejected(tmp_path
         payload={"command": "purchase", "side": "EAST", "acting_side": "WEST"},
     )
     assert reply["reason"]["code"] == "wrong_side"
+
+
+def test_a_command_nobody_stamped_is_refused_rather_than_taken_at_its_word(
+    tmp_path: Path,
+) -> None:
+    # #19's audit found the default that used to sit here: `acting_side` fell
+    # back to the side the payload named, so a line that never passed the
+    # gateway commanded for whichever side it wrote down. The stamp is the
+    # server's own or the caller is nobody (ADR-0044).
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    reply = reply_to(
+        daemon,
+        id="u-1",
+        verb="command",
+        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+    )
+    assert reply["status"] == "rejected"
+    assert reply["reason"]["code"] == "unknown_caller"
+    # And nothing was spent on the way to that answer.
+    assert daemon.campaign.ledger.balance("WEST") == 300
+    assert daemon.outbox.pending() == []
+
+
+def test_a_stamp_that_is_not_a_side_is_no_stamp_at_all(tmp_path: Path) -> None:
+    # The three shapes an unstamped caller arrives in — absent, empty, and a
+    # side nobody plays — get one answer, because "who is acting" is not a
+    # question the payload gets to answer badly.
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    codes = []
+    for index, stamp in enumerate(["", "GUER", 7, None]):
+        reply = reply_to(
+            daemon,
+            id=f"u-{index}",
+            verb="command",
+            payload={
+                "command": "purchase",
+                "side": "WEST",
+                "acting_side": stamp,
+                "args": {"squad_type": "rifle"},
+            },
+        )
+        codes.append(reply["reason"]["code"])
+    assert codes == ["unknown_caller"] * 4
 
 
 def test_telemetry_records_why_a_request_was_refused(tmp_path: Path) -> None:
@@ -335,7 +397,12 @@ def test_the_reply_to_an_observation_is_the_public_picture_and_no_more(tmp_path:
         daemon,
         id="o-5",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
     result = observe(daemon, "o-6", squads={"WEST-1": {"size": 7, "at": "nato_airbase"}})
 
@@ -353,7 +420,12 @@ def test_a_report_that_says_nothing_about_squads_leaves_the_roster_alone(tmp_pat
         daemon,
         id="o-7",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
     observe(daemon, "o-8", presence={})
     assert len(daemon.campaign.observation("WEST").squads) == 1
@@ -365,7 +437,12 @@ def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: 
         daemon,
         id="o-9",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
     # Reported standing once first: a Squad the world has never held is one
     # still on its way there, not one it has lost (`squads.Roster.reconcile`).
@@ -507,7 +584,12 @@ def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
         daemon,
         id="o-15",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
     observe(daemon, "o-16", presence={"agia_marina": ["WEST"]})
     # Only the side that spent moved, so only its row is written again.
@@ -607,7 +689,12 @@ def a_squad_at_base(daemon: Daemon, request: str, *, size: int) -> str:
         daemon,
         id=f"{request}-buy",
         verb="command",
-        payload={"command": "purchase", "side": "WEST", "args": {"squad_type": "rifle"}},
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
     )
     reply_to(
         daemon,
@@ -637,6 +724,7 @@ def test_a_squad_leaders_reinforce_reaches_the_port_stamped_with_his_squad(
         payload={
             "command": "reinforce",
             "side": "WEST",
+            "acting_side": "WEST",
             "acting_squad": squad,
             "args": {"squad": squad},
         },
@@ -659,6 +747,7 @@ def test_a_squad_leader_reaching_for_another_squad_is_refused_not_your_squad(
         payload={
             "command": "reinforce",
             "side": "WEST",
+            "acting_side": "WEST",
             "acting_squad": "WEST-2",
             "args": {"squad": "WEST-1"},
         },
@@ -689,6 +778,7 @@ def test_a_squad_leader_may_reinforce_on_a_side_an_ai_commander_plays(tmp_path: 
         payload={
             "command": "reinforce",
             "side": "WEST",
+            "acting_side": "WEST",
             "acting_squad": squad,
             "args": {"squad": squad},
         },
@@ -697,7 +787,12 @@ def test_a_squad_leader_may_reinforce_on_a_side_an_ai_commander_plays(tmp_path: 
         daemon,
         id="r-4",
         verb="command",
-        payload={"command": "reinforce", "side": "WEST", "args": {"squad": squad}},
+        payload={
+            "command": "reinforce",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad": squad},
+        },
     )
 
     assert leader["status"] == "ok"
