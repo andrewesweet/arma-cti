@@ -54,7 +54,7 @@ Every harness verdict carries a `class`. Read it before anything else. Untyped r
 | `infra_unavailable` | Stop. Not a result. Do not interpret |
 | `engine_drift` | Arma build changed. Suspect the engine, escalate; do not "fix" our code against it |
 | `schema_stale` | Regenerate; never hand-edit generated files |
-| `flake_quarantine` | Do not act. Fix synchronisation separately |
+| `flake_quarantine` | Do not act. Fix synchronisation separately, and state the fix's reproduction baseline — arrangement, run count, reds, pre- and post-fix — in the flake's issue, so a recurrence knows what this box could and could not reproduce (#130: three rounds on one flake because rounds argued from pass rates; the close stated 535 pre-fix runs, 0 reds) |
 
 ## Contract
 
@@ -79,7 +79,7 @@ Repo hooks (`.claude/hooks/`, wired in `.claude/settings.json`) enforce mechanic
 - Commit messages follow Conventional Commits 1.0.0 (`feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `chore`, `ci`; optional scope; `BREAKING CHANGE:` footer or `!` for breaking). A `commit-msg` hook (`cog verify`) rejects everything else; if the hook is missing on a fresh clone, run `cog install-hook commit-msg`.
 - Any commit with user-visible effect updates the `[Unreleased]` section of `CHANGELOG.md` in the same commit (Keep a Changelog 1.1.0 categories: Added/Changed/Deprecated/Removed/Fixed/Security). The changelog is curated for humans — never paste commit logs into it.
 - Releases: `cog bump --auto` derives the SemVer 2.0.0 bump and tags `vX.Y.Z`. `0.y.z` until MVP scope is fully playable.
-- Landing from an agent worktree: `git push origin HEAD:main`, then `git -C <main checkout> merge --ff-only origin/main`. A bare `git push origin main` pushes the local `main` branch, which the worktree is not on, and is rejected as non-fast-forward.
+- Landing from an agent worktree: `git push origin HEAD:main`, then `git -C <main checkout> merge --ff-only origin/main`. A bare `git push origin main` pushes the local `main` branch, which the worktree is not on, and is rejected as non-fast-forward. When sandboxing blocks the merge step, hand it to the orchestrator in the report — never skip it silently, since a stale main checkout is where ADR-0042's stale-hook window comes from (#130).
 
 ## Working style
 

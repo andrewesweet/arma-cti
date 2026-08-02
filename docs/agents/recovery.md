@@ -15,6 +15,12 @@
 > wrong briefing. Fourth amendment: the evidence-not-inference sentence in the briefing
 > section, from that instance. Eighth use (2026-08-02): #51's agent stalled mid-cycle
 > and resumed clean off a briefing to the same three-part contract, no amendment needed.
+> Ninth use (2026-08-02): the orchestrating session itself died mid-cycle — the second
+> such death — taking the #130 agent with it; the successor's briefing said "no
+> verification evidence survives on my side" rather than inferring what the dead session
+> had seen, and the agent rebased, re-verified from scratch, and landed. Fifth amendment:
+> the orchestrator-death section, codified after its second identical improvisation, the
+> same threshold the worktree-vanish mode earned by.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
@@ -68,6 +74,19 @@ clock-watching lied (ADR-0033).
   agent.** A parent waiting on its strand's report waits on something that will arrive at
   the orchestrator instead; relay it (files plus a message worked, at ~15k tokens of
   double-handling on #48). Plan the plumbing before fanning out two levels deep.
+
+## When the orchestrator itself dies
+
+Seen twice (both 2026-08-02), both recovered at zero cost, and the reason generalises: the
+orchestrator holds no durable state of its own. Everything that matters lives on `main`,
+in the issues, and in the agents' worktrees, so a successor session rebuilds its picture
+from those plus the harness's task-notification breadcrumbs — there is nothing else to
+look for, and nothing on the dead orchestrator's side to mourn. It then treats every
+in-flight agent as an interrupted agent under this document, one briefing each. The one
+asymmetry: the briefer is the party that lost its memory, so the evidence-not-inference
+sentence binds hardest here — the second crash's briefing said "no verification evidence
+survives on my side" outright, which is what let the resumed agent re-verify from scratch
+rather than trust a ghost's summary.
 
 ## Before resuming: inspect the worktree
 

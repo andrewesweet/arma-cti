@@ -5,7 +5,7 @@ description: Review how the development process itself performed and propose ame
 
 # Retro
 
-> Status: validated ×13 — thirteen retros; first amendment (the sign-off wording below) approved by the human 2026-08-01, and the sixth use ran under it unattended without needing another. The seventh added the review-queue sentence to step 3 through this skill's own procedure; the eighth ran under both unchanged; the ninth added the same-edit clause to step 5 after the count lagged its exemplar list in two consecutive retro commits; the tenth through thirteenth ran under all three unchanged. This skill amends itself only through its own procedure.
+> Status: validated ×14 — fourteen retros; first amendment (the sign-off wording below) approved by the human 2026-08-01, and the sixth use ran under it unattended without needing another. The seventh added the review-queue sentence to step 3 through this skill's own procedure; the eighth ran under both unchanged; the ninth added the same-edit clause to step 5 after the count lagged its exemplar list in two consecutive retro commits; the tenth through fourteenth ran under all three unchanged — the fourteenth concurrently with the first #131 review session clearing the queue step 3 surfaces, which is the human's cadence operating, not a skill change. This skill amends itself only through its own procedure.
 
 Subject is the **process**, not the code: commands, failure classes, gates, skills, conventions in `CLAUDE.md` and `.claude/skills/`. Code defects belong in issues, not here.
 
