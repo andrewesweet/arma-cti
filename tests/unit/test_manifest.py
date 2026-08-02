@@ -174,3 +174,37 @@ def test_a_base_adjacent_to_an_objective_that_does_not_exist_is_refused(
     broken = mutate(stratis, lambda d: d["bases"][0]["adjacent"].append("atlantis"))
     with pytest.raises(manifest.ManifestError, match="atlantis"):
         manifest.parse(broken)
+
+
+@pytest.mark.parametrize("missing", ["objectives", "bases", "world", "display_name"])
+def test_a_manifest_missing_a_required_key_is_refused_in_its_own_words(
+    stratis: dict[str, Any], missing: str
+) -> None:
+    # A bare KeyError names the key and nothing else, and escapes the one error
+    # type every caller of this module catches (#88).
+    broken = copy.deepcopy(stratis)
+    del broken[missing]
+    with pytest.raises(manifest.ManifestError, match=missing):
+        manifest.parse(broken)
+
+
+@pytest.mark.parametrize(
+    "missing", ["display_name", "position", "capture_radius", "income", "adjacent"]
+)
+def test_an_objective_missing_a_required_key_is_refused_in_its_own_words(
+    stratis: dict[str, Any], missing: str
+) -> None:
+    broken = copy.deepcopy(stratis)
+    del broken["objectives"][0][missing]
+    with pytest.raises(manifest.ManifestError, match=missing):
+        manifest.parse(broken)
+
+
+@pytest.mark.parametrize("missing", ["side", "display_name", "position", "hq", "adjacent"])
+def test_a_base_missing_a_required_key_is_refused_in_its_own_words(
+    stratis: dict[str, Any], missing: str
+) -> None:
+    broken = copy.deepcopy(stratis)
+    del broken["bases"][0][missing]
+    with pytest.raises(manifest.ManifestError, match=missing):
+        manifest.parse(broken)

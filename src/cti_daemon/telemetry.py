@@ -26,12 +26,20 @@ class Telemetry:
         self._lock = threading.Lock()
 
     def record(self, event: str, **fields: object) -> None:
-        """Append one event. Never raises."""
+        """Append one event. Never raises.
+
+        The promise is kept over the whole of the write, encoding included (#88).
+        It used to catch `OSError` alone, with the `json.dumps` outside the
+        `try` — so a field `default=repr` could not rescue, a non-string key or
+        a cycle, escaped as a `TypeError` or `ValueError` and failed the request
+        it was merely describing.
+        """
         record = {"at_ns": time.time_ns(), "event": event, **fields}
-        line = json.dumps(record, separators=(",", ":"), default=repr)
         try:
+            line = json.dumps(record, separators=(",", ":"), default=repr)
             with self._lock, self._path.open("a", encoding="utf-8") as sink:
                 sink.write(line + "\n")
-        except OSError:
-            # Observability must never be able to fail a request (ADR-0003).
+        except Exception:  # noqa: BLE001 — the docstring's promise is the whole point:
+            # observability must never be able to fail a request (ADR-0003), and a
+            # narrower catch is a list of the failures somebody thought of.
             return

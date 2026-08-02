@@ -92,26 +92,45 @@ class EconomyTable:
         return None if found is None else found.price
 
 
+def _required(document: dict[str, Any], key: str, what: str) -> Any:  # noqa: ANN401 — the
+    # value is whatever the document held; every caller checks its type next.
+    """Return an authored key, or refuse the document for not having it.
+
+    A missing key used to raise a bare `KeyError` naming the key and nothing
+    else, past the one error type every caller of this module catches (#88).
+    """
+    if key not in document:
+        _refuse(f"{what} must carry {key!r}")
+    return document[key]
+
+
 def _check_squads(squads: list[dict[str, Any]]) -> None:
     """Every Squad type is distinct, named, and costs a sane amount."""
+    # Ids are checked to be strings *before* they are collected and sorted: a
+    # numeric id used to die comparing int against str inside `sorted` (#88),
+    # which is neither this module's error type nor a sentence about the table.
+    for squad in squads:
+        what = "a squad"
+        if not isinstance(_required(squad, "id", what), str) or not squad["id"]:
+            _refuse(IDENTIFIER_ERROR)
+        what = f"squad {squad['id']!r}"
+        if not isinstance(_required(squad, "display_name", what), str) or not squad["display_name"]:
+            _refuse(f"{squad['id']}: display_name must be a non-empty string")
+        if not isinstance(_required(squad, "price", what), int) or squad["price"] < 0:
+            _refuse(f"{squad['id']}: price must be a whole number of Funds, not negative")
+        if not isinstance(_required(squad, "size", what), int) or squad["size"] <= 0:
+            _refuse(f"{squad['id']}: size must be a positive whole number")
+
     ids = [squad["id"] for squad in squads]
     duplicates = sorted({name for name in ids if ids.count(name) > 1})
     if duplicates:
         _refuse(f"duplicate squad id: {', '.join(duplicates)}")
 
-    for squad in squads:
-        if not isinstance(squad["id"], str) or not squad["id"]:
-            _refuse(IDENTIFIER_ERROR)
-        if not isinstance(squad["price"], int) or squad["price"] < 0:
-            _refuse(f"{squad['id']}: price must be a whole number of Funds, not negative")
-        if not isinstance(squad["size"], int) or squad["size"] <= 0:
-            _refuse(f"{squad['id']}: size must be a positive whole number")
-
 
 def _check_numbers(table: dict[str, Any]) -> None:
     """Funds are whole and not negative; the rule clocks take real time."""
     for key in ("starting_funds", "stipend"):
-        if not isinstance(table[key], int) or table[key] < 0:
+        if not isinstance(_required(table, key, "the economy table"), int) or table[key] < 0:
             _refuse(f"{key} must be a whole number of Funds, not negative")
 
     # A tick or a capture that takes no time would pay continuously, or flip an
@@ -119,7 +138,7 @@ def _check_numbers(table: dict[str, Any]) -> None:
     # would end the Campaign on the frame the last Objective changed hands,
     # which is the grind's opposite failure and just as unplayable.
     for key in ("income_tick_seconds", "capture_seconds", "domination_seconds"):
-        if not isinstance(table[key], int) or table[key] <= 0:
+        if not isinstance(_required(table, key, "the economy table"), int) or table[key] <= 0:
             _refuse(f"{key} must be a positive whole number of seconds")
 
 
@@ -132,7 +151,9 @@ def parse(document: object) -> EconomyTable:
     if table.get("schema_version") != SCHEMA_VERSION:
         _refuse(f"schema_version must be {SCHEMA_VERSION}, got {table.get('schema_version')!r}")
 
-    squads: list[dict[str, Any]] = table["squads"]
+    squads: list[dict[str, Any]] = _required(table, "squads", "the economy table")
+    if not isinstance(squads, list):
+        _refuse(f"squads must be a list, got {type(squads).__name__}")
     _check_squads(squads)
     _check_numbers(table)
 

@@ -46,3 +46,18 @@ def test_a_telemetry_failure_is_swallowed(tmp_path: Path) -> None:
     blocker = tmp_path / "not-a-directory"
     blocker.write_text("", encoding="utf-8")
     Telemetry(blocker / "telemetry.jsonl").record("request", verb="ping")
+
+
+def test_a_field_that_cannot_be_encoded_is_swallowed_like_any_other_failure(
+    tmp_path: Path,
+) -> None:
+    # "Never raises" is a promise over the whole write, encoding included (#88).
+    # A cycle is the one shape `default=repr` cannot rescue, and it used to
+    # escape as a ValueError from outside the try and fail the request the row
+    # was merely describing.
+    cyclic: dict[str, object] = {}
+    cyclic["self"] = cyclic
+    log = tmp_path / "telemetry.jsonl"
+    Telemetry(log).record("request", loop=cyclic)
+
+    assert not log.exists() or log.read_text(encoding="utf-8") == ""

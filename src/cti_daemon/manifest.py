@@ -106,6 +106,29 @@ def _refuse(detail: str) -> NoReturn:
     raise ManifestError(detail)
 
 
+# Every key the rules below index, by the kind of thing that must carry it.
+# Declared rather than discovered one KeyError at a time (#88), and checked in
+# one pass before any rule runs, so an authoring slip is one sentence about the
+# manifest rather than an exception about a dictionary.
+MAP_KEYS: Final = ("id", "world", "display_name", "bases", "objectives")
+OBJECTIVE_KEYS: Final = ("id", "display_name", "position", "capture_radius", "income", "adjacent")
+BASE_KEYS: Final = ("id", "side", "display_name", "position", "hq", "adjacent")
+
+
+def _check_keys(document: dict[str, Any], keys: tuple[str, ...], what: str) -> None:
+    """Refuse anything not carrying every key the rules will read off it."""
+    missing = [key for key in keys if key not in document]
+    if missing:
+        _refuse(f"{what} must carry {', '.join(missing)}")
+
+
+def _checked_list(value: object, what: str) -> list[dict[str, Any]]:
+    """Read a list of authored objects, or refuse whatever was there instead."""
+    if not isinstance(value, list) or any(not isinstance(entry, dict) for entry in value):
+        _refuse(f"{what} must be a list of objects, got {type(value).__name__}")
+    return cast("list[dict[str, Any]]", value)
+
+
 def _check_identifier(value: object, what: str) -> None:
     """Hold an authored ID to a shape: it outlives the position it names."""
     if not isinstance(value, str) or not IDENTIFIER.fullmatch(value):
@@ -219,14 +242,23 @@ def _validate(document: object) -> dict[str, Any]:
 
     if validated.get("schema_version") != SCHEMA_VERSION:
         _refuse(f"schema_version must be {SCHEMA_VERSION}, got {validated.get('schema_version')!r}")
+    _check_keys(validated, MAP_KEYS, "the manifest")
     _check_identifier(validated.get("id"), "map")
 
-    objectives: list[dict[str, Any]] = validated["objectives"]
+    objectives: list[dict[str, Any]] = _checked_list(validated["objectives"], "objectives")
+    bases: list[dict[str, Any]] = _checked_list(validated["bases"], "bases")
+    # Every key every rule below indexes, before any of them run. A rule that
+    # met a missing key raised a bare KeyError naming the key and nothing else,
+    # past the one error type callers of this module catch (#88).
+    for objective in objectives:
+        _check_keys(objective, OBJECTIVE_KEYS, "an objective")
+    for base in bases:
+        _check_keys(base, BASE_KEYS, "a base")
+
     _check_unique([objective["id"] for objective in objectives], "objective")
     for objective in objectives:
         _check_objective(objective)
 
-    bases: list[dict[str, Any]] = validated["bases"]
     _check_unique([base["id"] for base in bases], "base")
     _check_bases(bases)
     _check_one_namespace(objectives, bases)

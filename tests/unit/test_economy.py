@@ -62,6 +62,50 @@ def test_an_unknown_schema_version_is_refused(authored: dict[str, Any]) -> None:
         economy.parse(broken)
 
 
+@pytest.mark.parametrize(
+    "missing", ["squads", "starting_funds", "stipend", "income_tick_seconds", "capture_seconds"]
+)
+def test_an_economy_table_missing_a_required_key_is_refused_in_its_own_words(
+    authored: dict[str, Any], missing: str
+) -> None:
+    # A bare KeyError names the key and nothing else, and escapes the one error
+    # type every caller of this module catches (#88).
+    broken = copy.deepcopy(authored)
+    del broken[missing]
+    with pytest.raises(economy.EconomyError, match=missing):
+        economy.parse(broken)
+
+
+@pytest.mark.parametrize("missing", ["id", "display_name", "price", "size"])
+def test_a_squad_missing_a_required_key_is_refused_in_its_own_words(
+    authored: dict[str, Any], missing: str
+) -> None:
+    broken = copy.deepcopy(authored)
+    del broken["squads"][0][missing]
+    with pytest.raises(economy.EconomyError, match=missing):
+        economy.parse(broken)
+
+
+def test_a_squad_id_that_is_not_a_string_is_refused_rather_than_sorted() -> None:
+    # The duplicate check built and sorted the id list before anything checked
+    # the ids were strings, so a numeric id died in `sorted` with a TypeError
+    # about int and str (#88).
+    broken = {
+        "schema_version": economy.SCHEMA_VERSION,
+        "starting_funds": 300,
+        "stipend": 5,
+        "income_tick_seconds": 60,
+        "capture_seconds": 30,
+        "domination_seconds": 600,
+        "squads": [
+            {"id": 7, "display_name": "Seven", "price": 100, "size": 8},
+            {"id": "rifle", "display_name": "Rifle", "price": 100, "size": 8},
+        ],
+    }
+    with pytest.raises(economy.EconomyError, match=economy.IDENTIFIER_ERROR):
+        economy.parse(broken)
+
+
 def test_both_sides_start_with_the_authored_balance() -> None:
     ledger = economy.Ledger(starting_funds=300)
     assert ledger.balance("WEST") == 300

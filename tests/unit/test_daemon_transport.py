@@ -13,14 +13,14 @@ import threading
 import time
 from typing import IO, TYPE_CHECKING, Any
 
+import pytest
+
 from cti_daemon import economy, manifest, transport
 from cti_daemon.daemon import Daemon
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from pathlib import Path
-
-    import pytest
 
 
 def connect(tmp_path: Path) -> tuple[socket.socket, IO[bytes]]:
@@ -179,3 +179,17 @@ def test_the_readiness_line_names_the_bound_address() -> None:
     assert transport.ready_line("127.0.0.1", 9099, "e-1").startswith(
         "CTI_DAEMON_READY 127.0.0.1:9099"
     )
+
+
+def test_a_daemon_that_never_binds_says_so_rather_than_indexing_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # A bind failure used to surface as a bare IndexError out of `bound[0]`,
+    # which says nothing about a daemon (#88). Provoked by a `serve` that never
+    # calls back, which is what a bind that raised on the worker thread looks
+    # like from here.
+    monkeypatch.setattr(transport, "serve", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(transport, "BRING_UP_SECONDS", 0.05)
+
+    with pytest.raises(transport.DaemonNeverCameUpError, match="never came up"):
+        transport.serve_in_thread(telemetry_path=tmp_path / "telemetry.jsonl")

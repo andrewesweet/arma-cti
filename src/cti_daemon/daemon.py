@@ -436,12 +436,18 @@ class Daemon:
         return protocol.failed(request.id, "oversized_message", detail)
 
     def _ack(self, request: protocol.Request) -> protocol.Reply:
-        """Retire everything up to the sequence the game says it received."""
+        """Retire everything up to the sequence the game says it received.
+
+        A malformed `through` is raised rather than returned, which is what
+        `_view` and `_observe` already do (#88): one convention across the
+        handlers, and `_answer` turns it into the same `malformed_request` reply
+        it built here by hand.
+        """
         through = request.payload.get("through")
+        # `bool` is an `int` in Python and is never a sequence number.
         if not isinstance(through, int) or isinstance(through, bool):
-            return protocol.failed(
-                request.id, "malformed_request", "`through` must be an integer sequence"
-            )
+            detail = f"`through` must be an integer sequence, got {through!r}"
+            raise protocol.MalformedRequestError(detail, request.id)
         try:
             cleared = self.outbox.ack(through=through)
         except UnknownSequenceError as exc:

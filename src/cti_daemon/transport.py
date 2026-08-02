@@ -132,10 +132,25 @@ def serve(
         server.serve_forever()
 
 
+class DaemonNeverCameUpError(Exception):
+    """The background daemon did not bind inside its bring-up window (#88)."""
+
+
+# How long bring-up waits for the socket to bind. Generous: binding a loopback
+# port is microseconds, so anything approaching this is a failure rather than a
+# slow machine, and the wait exists only so a bind that never happens says so
+# instead of hanging.
+BRING_UP_SECONDS: Final = 5.0
+
+
 def serve_in_thread(
     host: str = DEFAULT_HOST, port: int = 0, *, telemetry_path: Path = DEFAULT_TELEMETRY
 ) -> int:
-    """Start the daemon on a background thread and return the bound port."""
+    """Start the daemon on a background thread and return the bound port.
+
+    Raises rather than indexing an empty list: a bind failure used to surface as
+    a bare `IndexError` out of `bound[0]`, which says nothing about a daemon.
+    """
     ready = threading.Event()
     bound: list[int] = []
 
@@ -150,7 +165,12 @@ def serve_in_thread(
         daemon=True,
     )
     thread.start()
-    ready.wait(timeout=5)
+    if not ready.wait(timeout=BRING_UP_SECONDS) or not bound:
+        message = (
+            f"daemon never came up: nothing bound on {host}:{port} "
+            f"within {BRING_UP_SECONDS} seconds"
+        )
+        raise DaemonNeverCameUpError(message)
     return bound[0]
 
 

@@ -178,7 +178,7 @@ class CommandPort:
             return _reject("unknown_squad", f"{command.side} has no Squad {squad_id!r}")
 
         place = command.args.get("place", "")
-        refusal = self._check_ground(command.side, str(kind), place)
+        refusal = self._ground_refusal(command.side, str(kind), place)
         if refusal is not None:
             return refusal
 
@@ -186,8 +186,13 @@ class CommandPort:
         squad = self.campaign.issue(squad_id, command.side, order)
         return _accept({"squad": squad.id, "order": order.kind, "place": order.place})
 
-    def _check_ground(self, side: str, kind: str, place: object) -> Judgement | None:
-        """Judge the Place an Order names, or None if it names it correctly.
+    def _ground_refusal(self, side: str, kind: str, place: object) -> Judgement | None:
+        """Return the refusal the Place an Order names earns, or None if it earns none.
+
+        Named for what it returns rather than for the check it performs (#88).
+        The family used to be `_check_*` returning `Judgement | None` where None
+        meant success, which is an inverted null every docstring had to
+        re-explain; a refusal that is absent is the same sentence read forwards.
 
         An Order names a Place — an Objective or a Base (ADR-0020) — and which
         of the two each kind may name is a rule, so the refusals are typed
@@ -209,12 +214,12 @@ class CommandPort:
             return _reject("malformed_command", f"{kind} needs a Place this map has, got {place!r}")
 
         if kind == "capture":
-            return self._check_capture(side, named, owner, base_side)
+            return self._capture_refusal(side, named, owner, base_side)
         if kind == "assault":
-            return self._check_assault(side, named, owner, base_side)
-        return self._check_defend(side, named, base_side)
+            return self._assault_refusal(side, named, owner, base_side)
+        return self._defend_refusal(side, named, base_side)
 
-    def _check_capture(
+    def _capture_refusal(
         self, side: str, place: str, owner: str | None, base_side: str | None
     ) -> Judgement | None:
         """Capture takes an Objective the side does not hold, and nothing else."""
@@ -237,7 +242,7 @@ class CommandPort:
             )
         return None
 
-    def _check_assault(
+    def _assault_refusal(
         self, side: str, place: str, owner: str | None, base_side: str | None
     ) -> Judgement | None:
         """Assault takes the enemy Base, and nothing else."""
@@ -255,7 +260,7 @@ class CommandPort:
             )
         return None
 
-    def _check_defend(self, side: str, place: str, base_side: str | None) -> Judgement | None:
+    def _defend_refusal(self, side: str, place: str, base_side: str | None) -> Judgement | None:
         """Defend takes any Objective, or the side's own Base."""
         if base_side is not None and base_side != side:
             return _reject(
