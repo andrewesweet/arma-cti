@@ -63,12 +63,22 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 
 
 def payloads(args: argparse.Namespace) -> list[dict[str, Any]]:
-    """Render the run as Command payloads, in the order they go out."""
+    """Render the run as Command payloads, in the order they go out.
+
+    `acting_side` is the stamp the SQF gateway writes from the server's own
+    state (ADR-0044), and the daemon refuses a Command without one. This tool
+    stamps it from `--side`, which is honest about what it is: an operator at
+    the socket, on the same machine, saying which side they are issuing for.
+    Nothing resolved them — that is the gateway's job and there is no gateway
+    here — so a run of this tool is exactly as authoritative as the machine it
+    is run on, which is the acceptance ADR-0044 records.
+    """
     if args.verb == "purchase":
         return [
             {
                 "command": "purchase",
                 "side": args.side,
+                "acting_side": args.side,
                 "args": {"squad_type": args.squad_type},
             }
             for _ in range(args.count)
@@ -77,6 +87,7 @@ def payloads(args: argparse.Namespace) -> list[dict[str, Any]]:
         {
             "command": "order",
             "side": args.side,
+            "acting_side": args.side,
             "args": {
                 "squad": args.squad,
                 "order": args.order,
