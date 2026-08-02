@@ -13,7 +13,7 @@ import threading
 import time
 from typing import IO, TYPE_CHECKING, Any
 
-from cti_daemon import transport
+from cti_daemon import economy, manifest, transport
 from cti_daemon.daemon import Daemon
 
 if TYPE_CHECKING:
@@ -76,7 +76,13 @@ class _Watched(Daemon):
     """
 
     def __init__(self, *, telemetry_path: Path) -> None:
-        super().__init__(telemetry_path=telemetry_path)
+        # The authored files come from the composition root (#76), which is what
+        # `build_daemon` does for everything that is not a subclass.
+        super().__init__(
+            telemetry_path=telemetry_path,
+            table=economy.load(transport.DEFAULT_ECONOMY),
+            map_manifest=manifest.load_all(transport.DEFAULT_MANIFESTS)[transport.DEFAULT_MAP],
+        )
         self.most_inside = 0
         self._inside = 0
         self._counter = threading.Lock()

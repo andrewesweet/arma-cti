@@ -15,10 +15,12 @@ import json
 from typing import TYPE_CHECKING, Any
 
 from cti_daemon import planner
-from cti_daemon.daemon import Daemon
+from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    from cti_daemon.daemon import Daemon
 
 
 def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
@@ -40,7 +42,7 @@ def under_ai(daemon: Daemon, side: str, seed: int = 1) -> Daemon:
 
 
 def test_a_view_carries_that_side_and_what_only_it_may_know(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply_to(
         daemon,
         id="r-1",
@@ -64,7 +66,7 @@ def test_a_view_carries_that_side_and_what_only_it_may_know(tmp_path: Path) -> N
 
 
 def test_a_view_is_one_sides_projection_and_never_the_board(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply_to(
         daemon,
         id="r-1",
@@ -81,7 +83,7 @@ def test_a_view_is_one_sides_projection_and_never_the_board(tmp_path: Path) -> N
 
 
 def test_a_side_under_an_ai_commander_has_no_view_to_hand_out(tmp_path: Path) -> None:
-    daemon = under_ai(Daemon(telemetry_path=tmp_path / "telemetry.jsonl"), "EAST")
+    daemon = under_ai(build_daemon(telemetry_path=tmp_path / "telemetry.jsonl"), "EAST")
 
     reply = reply_to(daemon, id="r-1", verb="view", payload={"side": "EAST"})
 
@@ -90,7 +92,7 @@ def test_a_side_under_an_ai_commander_has_no_view_to_hand_out(tmp_path: Path) ->
 
 
 def test_the_side_a_human_plays_still_has_a_view_when_the_other_is_ai(tmp_path: Path) -> None:
-    daemon = under_ai(Daemon(telemetry_path=tmp_path / "telemetry.jsonl"), "EAST")
+    daemon = under_ai(build_daemon(telemetry_path=tmp_path / "telemetry.jsonl"), "EAST")
 
     reply = reply_to(daemon, id="r-1", verb="view", payload={"side": "WEST"})
 
@@ -99,7 +101,7 @@ def test_the_side_a_human_plays_still_has_a_view_when_the_other_is_ai(tmp_path: 
 
 
 def test_a_view_of_a_side_that_is_not_playing_is_malformed(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
 
     reply = reply_to(daemon, id="r-1", verb="view", payload={"side": "RESISTANCE"})
 
@@ -108,7 +110,7 @@ def test_a_view_of_a_side_that_is_not_playing_is_malformed(tmp_path: Path) -> No
 
 
 def test_a_view_with_no_side_named_is_malformed(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
 
     reply = reply_to(daemon, id="r-1", verb="view", payload={})
 
@@ -117,7 +119,7 @@ def test_a_view_with_no_side_named_is_malformed(tmp_path: Path) -> None:
 
 
 def test_a_wire_command_for_a_side_under_an_ai_commander_is_refused(tmp_path: Path) -> None:
-    daemon = under_ai(Daemon(telemetry_path=tmp_path / "telemetry.jsonl"), "WEST")
+    daemon = under_ai(build_daemon(telemetry_path=tmp_path / "telemetry.jsonl"), "WEST")
 
     reply = reply_to(
         daemon,
@@ -137,7 +139,7 @@ def test_the_ai_commander_itself_is_not_refused_by_that_rule(tmp_path: Path) -> 
     # The check is on the wire, not in the port: the planner reaches the port
     # in-process, and one refused for being under a Commander is one refused for
     # existing.
-    daemon = under_ai(Daemon(telemetry_path=tmp_path / "telemetry.jsonl"), "WEST")
+    daemon = under_ai(build_daemon(telemetry_path=tmp_path / "telemetry.jsonl"), "WEST")
 
     reply_to(daemon, id="r-1", verb="observe", payload={"time": 10.0, "presence": {}})
 
@@ -146,7 +148,7 @@ def test_the_ai_commander_itself_is_not_refused_by_that_rule(tmp_path: Path) -> 
 
 def test_a_view_is_attributed_to_the_side_that_asked(tmp_path: Path) -> None:
     telemetry = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=telemetry)
+    daemon = build_daemon(telemetry_path=telemetry)
 
     reply_to(daemon, id="r-1", verb="view", payload={"side": "WEST"})
 

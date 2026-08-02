@@ -11,10 +11,10 @@ from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
-from cti_daemon.daemon import Daemon
 from cti_daemon.report import HqSeen, Report, SideContacts
 from cti_daemon.report_cycle import ReportCycle, UnknownPlaceError
 from cti_daemon.telemetry import Telemetry
+from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -54,7 +54,7 @@ def _cycle(tmp_path: Path) -> tuple[ReportCycle, _Recording]:
     log = tmp_path / "telemetry.jsonl"
     # A real Campaign, built the way the daemon builds one: the order under test
     # is an order of real calls, not of a double's expectations.
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     recording = _Recording(daemon.campaign)
     return (
         ReportCycle(

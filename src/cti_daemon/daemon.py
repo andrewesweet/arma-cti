@@ -18,7 +18,6 @@ from cti_daemon import (
     campaign,
     commands,
     economy,
-    manifest,
     observation,
     protocol,
     report,
@@ -31,12 +30,11 @@ from cti_daemon.telemetry import Telemetry
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
 
     from cti_daemon import planner
-
-DEFAULT_ECONOMY = Path(__file__).parents[2] / "config" / "economy.json"
-DEFAULT_MANIFESTS = Path(__file__).parents[2] / "addons" / "main" / "manifests"
-DEFAULT_MAP = "stratis"
+    from cti_daemon.economy import EconomyTable
+    from cti_daemon.manifest import MapManifest
 
 # What one poll reply may hand the world in one go. A `callExtension` return is
 # capped at `observation.RETURN_CAP_BYTES` and truncated in silence (ADR-0004),
@@ -57,19 +55,24 @@ POLL_GUARD_BYTES: Final = 9_216
 class Daemon:
     """Dispatches requests and owns the outbox the game reads from."""
 
-    def __init__(  # noqa: PLR0913 — every argument is one path or identity this
-        # daemon is wired to, all keyword-only, and folding them into a config
-        # object would be one more indirection between a test and what it varies.
+    def __init__(
         self,
         *,
         telemetry_path: Path,
-        economy_path: Path | None = None,
-        manifests_path: Path | None = None,
+        table: EconomyTable,
+        map_manifest: MapManifest,
         archive_path: Path | None = None,
-        map_id: str = DEFAULT_MAP,
         epoch: str | None = None,
     ) -> None:
-        """Wire the daemon to its telemetry sink, the economy and the map."""
+        """Wire the daemon to its telemetry sink, the economy and the map.
+
+        Handed the authored economy and the map it is playing rather than told
+        where the repo keeps them (#76). Resolving `config/` and `addons/` from
+        `__file__` made this module a composition root as well as an adapter,
+        and bound a daemon to a source checkout: an installed or relocated
+        package resolved those paths into nothing. Where the authored files live
+        is `cti_daemon.transport`'s, which is Main.
+        """
         # One request at a time, whoever is asking (#98). The transport serves
         # every connection on its own thread, and none of the state below —
         # ownership, the Ledger, the Roster, Contacts, the outbox — is written
@@ -110,12 +113,11 @@ class Daemon:
         # turns.
         self.answered = Answered()
         self._telemetry = Telemetry(telemetry_path)
-        table = economy.load(economy_path or DEFAULT_ECONOMY)
         # One campaign object holds ownership, Funds and Squads, and the port
         # judges against it. Two of anything here would be two answers to how
         # much a side has or what it owns.
         self.campaign = campaign.Campaign(
-            map_manifest=manifest.load_all(manifests_path or DEFAULT_MANIFESTS)[map_id],
+            map_manifest=map_manifest,
             table=table,
             ledger=economy.Ledger(table.starting_funds),
             outbox=self.outbox,

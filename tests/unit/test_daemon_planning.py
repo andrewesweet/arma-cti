@@ -13,12 +13,13 @@ from typing import TYPE_CHECKING, Any
 
 from cti_daemon import planner, transport
 from cti_daemon.commands import Command
-from cti_daemon.daemon import Daemon
 from cti_daemon.planner import Candidate, Decision, Plan
+from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from cti_daemon.daemon import Daemon
     from cti_daemon.observation import Observation
 
 SIDE = "WEST"
@@ -31,7 +32,7 @@ def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
 
 def commanded(path: Path, brain: planner.Planner | None = None, seed: int = 0) -> Daemon:
     """Return a daemon with WEST under an AI Commander."""
-    daemon = Daemon(telemetry_path=path)
+    daemon = build_daemon(telemetry_path=path)
     daemon.commanded_by(
         SIDE,
         brain
@@ -217,7 +218,7 @@ def test_a_daemon_under_nobodys_command_plans_nothing(tmp_path: Path) -> None:
     # #16 drives one side; the other is the human's, or #17's. A daemon nobody
     # has put under command must not quietly start playing for somebody.
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     for step in range(4):
         turn(daemon, step)
 

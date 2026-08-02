@@ -16,10 +16,12 @@ from typing import IO, TYPE_CHECKING, Any
 import pytest
 
 from cti_daemon import protocol, transport
-from cti_daemon.daemon import Daemon
+from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    from cti_daemon.daemon import Daemon
 
 
 def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
@@ -28,7 +30,7 @@ def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
 
 
 def test_an_epoch_is_minted_per_process_not_per_request(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     epochs = {reply_to(daemon, id=f"r-{n}", verb="ping")["epoch"] for n in range(3)}
     assert epochs == {daemon.epoch}
 
@@ -36,8 +38,8 @@ def test_an_epoch_is_minted_per_process_not_per_request(tmp_path: Path) -> None:
 def test_two_daemons_never_share_an_epoch(tmp_path: Path) -> None:
     # This is the whole point: a restarted daemon is a different daemon, and
     # nothing else on the wire says so.
-    first = Daemon(telemetry_path=tmp_path / "one.jsonl")
-    second = Daemon(telemetry_path=tmp_path / "two.jsonl")
+    first = build_daemon(telemetry_path=tmp_path / "one.jsonl")
+    second = build_daemon(telemetry_path=tmp_path / "two.jsonl")
     assert first.epoch != second.epoch
 
 
@@ -55,7 +57,7 @@ def test_every_reply_carries_the_epoch_whatever_its_status(
 ) -> None:
     # A world that only learned the epoch from successful replies would go blind
     # exactly when the daemon was in trouble.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = json.loads(daemon.handle_line(line))
     assert reply["status"] == status
     assert reply["epoch"] == daemon.epoch
@@ -66,7 +68,7 @@ def test_a_replayed_line_is_answered_under_the_epoch_that_first_answered_it(
 ) -> None:
     # The dedupe window hands back the bytes it stored (#69, ADR-0034), and those
     # bytes were stamped by this process. Stamping twice would be a second answer.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     line = json.dumps({"id": "r-1", "verb": "ping"})
     first = json.loads(daemon.handle_line(line))
     replayed = json.loads(daemon.handle_line(line))
@@ -80,11 +82,11 @@ def test_a_restart_neither_remembers_the_answer_nor_reuses_the_epoch(tmp_path: P
     # sequence a restart produces on the wire — and the world has to be able to
     # tell the second answer from a replay of the first.
     line = json.dumps({"id": "obs-1", "verb": "poll"})
-    before = Daemon(telemetry_path=tmp_path / "before.jsonl")
+    before = build_daemon(telemetry_path=tmp_path / "before.jsonl")
     before.outbox.push({"kind": "order"})
     first = json.loads(before.handle_line(line))
 
-    after = Daemon(telemetry_path=tmp_path / "after.jsonl")
+    after = build_daemon(telemetry_path=tmp_path / "after.jsonl")
     second = json.loads(after.handle_line(line))
 
     assert first["epoch"] != second["epoch"]
@@ -98,14 +100,14 @@ def test_the_epoch_is_recorded_against_every_request(tmp_path: Path) -> None:
     # One run's telemetry is appended to across a restart, so the epoch is what
     # separates two daemons' records in one file.
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     daemon.handle_line(json.dumps({"id": "r-1", "verb": "ping"}))
     records = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
     assert [record["epoch"] for record in records] == [daemon.epoch]
 
 
 def test_a_daemon_may_be_told_its_epoch_so_a_test_can_name_it(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl", epoch="epoch-under-test")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl", epoch="epoch-under-test")
     assert reply_to(daemon, id="r-1", verb="ping")["epoch"] == "epoch-under-test"
 
 

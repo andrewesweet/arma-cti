@@ -11,10 +11,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from cti_daemon import planner
-from cti_daemon.daemon import Daemon
+from cti_daemon.transport import build_daemon
+
+if TYPE_CHECKING:
+    from cti_daemon.daemon import Daemon
 
 
 def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
@@ -44,7 +47,7 @@ def raze(daemon: Daemon, request_id: str, base: str, by: str, at_time: float = 9
 
 
 def test_a_decapitation_reported_by_the_world_ends_the_campaign(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     raze(daemon, "v-1", "csat_kamino", by="WEST")
 
     assert daemon.campaign.outcome is not None
@@ -55,7 +58,7 @@ def test_the_world_is_told_once_that_the_campaign_is_over(tmp_path: Path) -> Non
     # Through the outbox, like every other world effect: a human-issued Campaign
     # and an AI-issued one end down the same path, and #19 has one to audit
     # (ADR-0012). Once, because the world keeps reporting rubble as rubble.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     raze(daemon, "v-2", "csat_kamino", by="WEST")
     raze(daemon, "v-3", "csat_kamino", by="WEST", at_time=95)
 
@@ -71,7 +74,7 @@ def test_the_end_screen_carries_a_summary_drawn_from_telemetry(tmp_path: Path) -
     # is read back off the telemetry file rather than assembled from campaign
     # state — which is the only way the numbers on it are the numbers on disk.
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     reply_to(
         daemon,
         id="v-4",
@@ -99,7 +102,7 @@ def test_the_summary_is_small_enough_to_cross_one_extension_return(tmp_path: Pat
     # truncated in silence (ADR-0004). A summary that counted rows rather than
     # listing them is what keeps this true of a long Campaign as well as a short
     # one, so the shape is asserted rather than the length alone.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     for index in range(200):
         observe(daemon, f"v-8-{index}", time=index, presence={"agia_marina": ["WEST"]})
     raze(daemon, "v-9", "csat_kamino", by="WEST", at_time=500)
@@ -110,7 +113,7 @@ def test_the_summary_is_small_enough_to_cross_one_extension_return(tmp_path: Pat
 
 def test_a_won_campaign_is_written_down_and_archived(tmp_path: Path) -> None:
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     raze(daemon, "v-10", "csat_kamino", by="WEST")
 
     (won,) = rows(log, "campaign_won")
@@ -127,9 +130,9 @@ def test_the_archive_is_a_record_rather_than_a_campaign_to_resume(tmp_path: Path
     # daemon on the same directory therefore starts a fresh Campaign — nothing
     # here reads the archive back, and there is nothing in it to read back.
     log = tmp_path / "telemetry.jsonl"
-    raze(Daemon(telemetry_path=log), "v-11", "csat_kamino", by="WEST")
+    raze(build_daemon(telemetry_path=log), "v-11", "csat_kamino", by="WEST")
 
-    reborn = Daemon(telemetry_path=log)
+    reborn = build_daemon(telemetry_path=log)
     assert reborn.campaign.outcome is None
     assert reborn.campaign.headquarters() == {"nato_airbase": "intact", "csat_kamino": "intact"}
     assert set(reborn.campaign.owners().values()) == {"NEUTRAL"}
@@ -140,7 +143,7 @@ def test_the_commanders_stand_down_when_the_campaign_is_over(tmp_path: Path) -> 
     # spend a finished Campaign's Funds and fill the outbox the world has stopped
     # caring about.
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     daemon.commanded_by(
         "WEST",
         planner.UtilityPlanner(
@@ -162,7 +165,7 @@ def test_a_human_command_after_the_end_screen_is_refused_on_the_wire(tmp_path: P
     # gateway carries what it clicks to the same port. So the refusal is a
     # judgement with a code the game already knows — the map says why, rather
     # than the Command quietly spending a finished Campaign's Funds.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     raze(daemon, "v-17", "csat_kamino", by="WEST")
     funds = daemon.campaign.ledger.balance("WEST")
 
@@ -183,7 +186,7 @@ def test_a_human_command_after_the_end_screen_is_refused_on_the_wire(tmp_path: P
 def test_the_observation_reply_still_answers_after_the_campaign_ends(tmp_path: Path) -> None:
     # The world is still reporting and still waiting on a reply. A daemon that
     # stopped answering would hang the report loop rather than end a Campaign.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     raze(daemon, "v-15", "csat_kamino", by="WEST")
     reply = observe(daemon, "v-16", time=95, presence={"agia_marina": ["WEST"]})
 

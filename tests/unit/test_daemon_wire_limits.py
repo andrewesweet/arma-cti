@@ -17,6 +17,7 @@ from typing import Any
 from cti_daemon import observation
 from cti_daemon.commands import Effect, serialise_effect
 from cti_daemon.daemon import POLL_GUARD_BYTES, Daemon
+from cti_daemon.transport import build_daemon
 
 REPO = Path(__file__).parents[2]
 
@@ -77,7 +78,7 @@ def test_the_pump_carries_the_same_backstop_literal_as_the_daemons_bound() -> No
 
 
 def test_one_poll_reply_stays_under_the_guard_however_long_the_backlog(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     for index in range(500):
         daemon.outbox.push(spawn_effect(index))
 
@@ -91,7 +92,7 @@ def test_the_drain_is_bounded_at_the_entry_that_would_have_crossed_the_guard(
     # The boundary itself: one more entry than the reply carried would have put
     # it over. Without that, "under the guard" is satisfied by handing over one
     # message at a time.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     for index in range(500):
         daemon.outbox.push(spawn_effect(index))
 
@@ -123,7 +124,7 @@ def test_one_drain_carries_a_measured_number_of_real_effects(tmp_path: Path) -> 
     # ordinary play by 18 times and just under the frame cap, which is where a bound
     # on this path wants to be. It catches a runaway backlog rather than
     # throttling a busy one.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     for index in range(500):
         daemon.outbox.push(spawn_effect(index))
 
@@ -132,7 +133,7 @@ def test_one_drain_carries_a_measured_number_of_real_effects(tmp_path: Path) -> 
 
 
 def test_a_backlog_larger_than_one_reply_drains_across_polls_in_order(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     for index in range(200):
         daemon.outbox.push(spawn_effect(index))
 
@@ -152,7 +153,7 @@ def test_a_single_message_too_large_to_fit_is_a_loud_failure_not_a_truncation(
     tmp_path: Path,
 ) -> None:
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     daemon.outbox.push({"effect": "campaign_won", "side": "WEST", "args": {"blob": "x" * 20_000}})
 
     reply = reply_to(daemon, id="w-6", verb="poll")
@@ -165,7 +166,7 @@ def test_a_single_message_too_large_to_fit_is_a_loud_failure_not_a_truncation(
 def test_an_oversized_message_does_not_hide_the_backlog_behind_it(tmp_path: Path) -> None:
     # It stalls it, loudly, and stays on the outbox. Retiring it to get at what
     # is behind would be the silent loss the guard exists to prevent.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     daemon.outbox.push({"effect": "campaign_won", "side": "WEST", "args": {"blob": "x" * 20_000}})
     daemon.outbox.push(spawn_effect(1))
 
@@ -175,7 +176,7 @@ def test_an_oversized_message_does_not_hide_the_backlog_behind_it(tmp_path: Path
 
 def test_the_drain_telemetry_says_how_much_was_left_behind(tmp_path: Path) -> None:
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     for index in range(500):
         daemon.outbox.push(spawn_effect(index))
 
@@ -199,7 +200,7 @@ def test_a_resent_purchase_spends_funds_once(tmp_path: Path) -> None:
     # The #69 hazard end to end: the shim wrote the line, the read failed, and
     # it sent the identical line again on a fresh connection. The receiver is
     # what makes that safe — the second copy is answered from the first answer.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     first = purchase(daemon, "cmd-1")
     second = purchase(daemon, "cmd-1")
 
@@ -211,7 +212,7 @@ def test_a_resent_purchase_spends_funds_once(tmp_path: Path) -> None:
 def test_a_resent_purchase_queues_its_effect_once(tmp_path: Path) -> None:
     # Not just the Funds: a second `squad_spawned` on the outbox is a second
     # Squad in the world, which is the same duplicate arriving one path along.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     purchase(daemon, "cmd-2")
     purchase(daemon, "cmd-2")
 
@@ -220,7 +221,7 @@ def test_a_resent_purchase_queues_its_effect_once(tmp_path: Path) -> None:
 
 def test_a_replayed_request_is_written_down_as_a_replay(tmp_path: Path) -> None:
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     purchase(daemon, "cmd-3")
     purchase(daemon, "cmd-3")
 
@@ -233,7 +234,7 @@ def test_a_different_request_under_a_reused_id_is_carried_out(tmp_path: Path) ->
     # The key is the request, not the label on it. A resend is byte-identical by
     # construction; anything else is a different request whose caller reused an
     # id, and refusing to act on it would lose real work.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     purchase(daemon, "cmd-4", side="WEST")
     purchase(daemon, "cmd-4", side="EAST")
 
@@ -247,7 +248,7 @@ def test_a_resent_report_does_not_give_the_commanders_a_second_turn(tmp_path: Pa
     # taking two turns on one report and spending twice.
     from cti_daemon import planner  # noqa: PLC0415 — one test needs a Commander
 
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     daemon.commanded_by(
         "WEST",
         planner.UtilityPlanner(
@@ -270,7 +271,7 @@ def test_the_window_of_remembered_answers_is_bounded(tmp_path: Path) -> None:
     # process. The shim only ever resends the request it just sent, so the
     # window has one request's worth of work to do and a few hundred is already
     # generous.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     for index in range(1_000):
         reply_to(daemon, id=f"ping-{index}", verb="ping")
 

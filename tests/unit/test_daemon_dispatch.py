@@ -5,10 +5,12 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any
 
-from cti_daemon.daemon import Daemon
+from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    from cti_daemon.daemon import Daemon
 
 
 def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
@@ -17,7 +19,7 @@ def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
 
 
 def test_ping_is_answered_with_the_id_it_was_asked_under(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl", epoch="e-1")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl", epoch="e-1")
     assert reply_to(daemon, id="r-1", verb="ping") == {
         "id": "r-1",
         "epoch": "e-1",
@@ -28,7 +30,7 @@ def test_ping_is_answered_with_the_id_it_was_asked_under(tmp_path: Path) -> None
 
 def test_a_verb_the_daemon_does_not_know_is_an_error_not_a_rejection(tmp_path: Path) -> None:
     # Rejection means "understood and refused"; this was not understood.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(daemon, id="r-2", verb="purchase")
     assert reply["id"] == "r-2"
     assert reply["status"] == "error"
@@ -36,7 +38,7 @@ def test_a_verb_the_daemon_does_not_know_is_an_error_not_a_rejection(tmp_path: P
 
 
 def test_a_malformed_line_is_answered_rather_than_dropped(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = json.loads(daemon.handle_line("{not json"))
     assert reply["id"] is None
     assert reply["status"] == "error"
@@ -44,14 +46,14 @@ def test_a_malformed_line_is_answered_rather_than_dropped(tmp_path: Path) -> Non
 
 
 def test_a_malformed_line_that_still_carried_an_id_is_answered_under_it(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = json.loads(daemon.handle_line('{"id": "r-3", "verb": 7}'))
     assert reply["id"] == "r-3"
     assert reply["error"]["class"] == "malformed_request"
 
 
 def test_poll_hands_over_pending_messages_with_their_sequences(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     daemon.outbox.push({"kind": "order"})
 
     reply = reply_to(daemon, id="r-4", verb="poll")
@@ -59,7 +61,7 @@ def test_poll_hands_over_pending_messages_with_their_sequences(tmp_path: Path) -
 
 
 def test_polling_twice_without_acknowledging_delivers_the_same_messages(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     daemon.outbox.push({"kind": "order"})
 
     first = reply_to(daemon, id="r-5", verb="poll")["result"]
@@ -68,7 +70,7 @@ def test_polling_twice_without_acknowledging_delivers_the_same_messages(tmp_path
 
 
 def test_acknowledging_clears_the_messages_from_the_next_poll(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     daemon.outbox.push({"kind": "order"})
 
     acked = reply_to(daemon, id="r-7", verb="ack", payload={"through": 1})
@@ -79,14 +81,14 @@ def test_acknowledging_clears_the_messages_from_the_next_poll(tmp_path: Path) ->
 def test_acknowledging_a_sequence_never_issued_is_a_domain_rejection(tmp_path: Path) -> None:
     # The request was well formed and the daemon understood it. It is refused
     # on the rules, which is the third outcome, not an error.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(daemon, id="r-9", verb="ack", payload={"through": 9})
     assert reply["status"] == "rejected"
     assert reply["reason"]["code"] == "unknown_sequence"
 
 
 def test_an_acknowledgement_without_a_sequence_is_malformed(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(daemon, id="r-10", verb="ack", payload={"through": "soon"})
     assert reply["status"] == "error"
     assert reply["error"]["class"] == "malformed_request"
@@ -95,7 +97,7 @@ def test_an_acknowledgement_without_a_sequence_is_malformed(tmp_path: Path) -> N
 def test_a_failure_inside_the_daemon_is_answered_as_an_internal_error(tmp_path: Path) -> None:
     # A message that cannot be serialised is the shape of bug a later ticket
     # will produce. The connection must survive it and say what happened.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     daemon.outbox.push({"unserialisable": object()})
 
     reply = reply_to(daemon, id="r-11", verb="poll")
@@ -106,7 +108,7 @@ def test_a_failure_inside_the_daemon_is_answered_as_an_internal_error(tmp_path: 
 
 def test_every_request_is_recorded_in_telemetry(tmp_path: Path) -> None:
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     daemon.handle_line(json.dumps({"id": "r-12", "verb": "ping"}))
     daemon.handle_line("{not json")
 
@@ -120,7 +122,7 @@ def test_every_request_is_recorded_in_telemetry(tmp_path: Path) -> None:
 
 def test_a_command_is_carried_inside_the_envelope_not_beside_it(tmp_path: Path) -> None:
     # ADR-0012: transport verbs and Commands never share a namespace.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(
         daemon,
         id="c-1",
@@ -136,7 +138,7 @@ def test_an_order_reaches_the_port_through_the_same_envelope_as_a_purchase(
 ) -> None:
     # One wire format for every Command (#14): the Order verb is a payload the
     # port judges, not a second transport verb beside `command`.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply_to(
         daemon,
         id="c-7",
@@ -158,7 +160,7 @@ def test_an_order_reaches_the_port_through_the_same_envelope_as_a_purchase(
 
 
 def test_an_accepted_command_leaves_its_effect_on_the_outbox(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply_to(
         daemon,
         id="c-2",
@@ -176,7 +178,7 @@ def test_a_malformed_command_is_a_rejection_while_a_malformed_request_is_an_erro
 ) -> None:
     # The whole typing split ADR-0012 turns on, asserted side by side: the
     # caller being wrong is a rejection, our transport failing is an error.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     rejected = reply_to(daemon, id="c-4", verb="command", payload={"side": "WEST"})
     errored = json.loads(daemon.handle_line("{not json"))
     assert rejected["status"] == "rejected"
@@ -188,7 +190,7 @@ def test_a_malformed_command_is_a_rejection_while_a_malformed_request_is_an_erro
 def test_an_unknown_command_is_a_rejection_while_an_unknown_verb_is_an_error(
     tmp_path: Path,
 ) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     rejected = reply_to(
         daemon, id="c-5", verb="command", payload={"command": "bombard", "side": "WEST"}
     )
@@ -198,7 +200,7 @@ def test_an_unknown_command_is_a_rejection_while_an_unknown_verb_is_an_error(
 
 
 def test_a_command_claiming_a_side_the_caller_does_not_hold_is_rejected(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(
         daemon,
         id="c-7",
@@ -212,7 +214,7 @@ def test_telemetry_records_why_a_request_was_refused(tmp_path: Path) -> None:
     # Without this, three different rejections are byte-identical server-side:
     # the caller learns which part was wrong and the operator does not.
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     reply_to(daemon, id="r-1", verb="command", payload={"command": "purchase", "side": "GUER"})
     reply_to(daemon, id="r-2", verb="bombard")
     reply_to(daemon, id="r-3", verb="ping")
@@ -230,7 +232,7 @@ def test_telemetry_records_why_a_request_was_refused(tmp_path: Path) -> None:
 def test_observing_presence_moves_ownership_and_pays(tmp_path: Path) -> None:
     # `observe` is the transport verb ADR-0012 reserved for the world telling
     # the daemon what it can see.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(
         daemon,
         id="o-1",
@@ -242,7 +244,7 @@ def test_observing_presence_moves_ownership_and_pays(tmp_path: Path) -> None:
 
 
 def test_a_capture_reaches_the_game_as_an_effect(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply_to(
         daemon,
         id="o-2",
@@ -255,7 +257,7 @@ def test_a_capture_reaches_the_game_as_an_effect(tmp_path: Path) -> None:
 
 
 def test_an_observation_without_a_time_is_refused(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(daemon, id="o-4", verb="observe", payload={"presence": {}})
     assert reply["status"] == "error"
     assert reply["error"]["class"] == "malformed_request"
@@ -272,7 +274,7 @@ def test_the_reply_to_an_observation_is_the_public_picture_and_no_more(tmp_path:
     # second cadence, and no callback — so at-most-once delivery never arises.
     # #27 fixed what "no more" means: the server is not a Commander, so it takes
     # ownership alone and no side's Funds, Squads or standing Orders.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply_to(
         daemon,
         id="o-5",
@@ -290,7 +292,7 @@ def test_a_report_that_says_nothing_about_squads_leaves_the_roster_alone(tmp_pat
     # Absent is not the same as empty: a report carrying no `squads` key has no
     # opinion, and treating it as "the world holds none" would delete the
     # roster on every report that predates the field.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply_to(
         daemon,
         id="o-7",
@@ -302,7 +304,7 @@ def test_a_report_that_says_nothing_about_squads_leaves_the_roster_alone(tmp_pat
 
 
 def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply_to(
         daemon,
         id="o-9",
@@ -326,7 +328,7 @@ def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: 
 
 
 def test_a_squad_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(
         daemon,
         id="o-11",
@@ -339,7 +341,7 @@ def test_a_squad_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> Non
 def test_what_a_sides_leaders_saw_becomes_that_sides_contacts(tmp_path: Path) -> None:
     # #28's return leg: the world reports the engine's own knowledge model,
     # keyed by the side that did the observing, and the daemon bands it.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     observe(
         daemon,
         "o-15",
@@ -362,7 +364,7 @@ def test_a_report_that_says_nothing_about_contacts_leaves_the_picture_alone(
     # Absent is not empty here either, and the difference matters more than it
     # does for Squads: treating silence as observed absence would clear every
     # Contact on the map on any report that carried no sightings.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     observe(
         daemon,
         "o-16",
@@ -378,7 +380,7 @@ def test_a_contact_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> N
     # A malformed report is a refusal rather than a silently empty picture: a
     # Commander cannot tell "nobody is out there" from "the report was junk",
     # and one of those is a reason to attack.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(
         daemon,
         id="o-18",
@@ -391,7 +393,7 @@ def test_a_contact_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> N
 def test_a_side_nobody_is_playing_has_no_contacts_to_report(tmp_path: Path) -> None:
     # `Contacts` would key on any string it is handed, so a mistyped side would
     # file a picture no observation ever reads and lose the sighting in silence.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(
         daemon,
         id="o-19",
@@ -407,7 +409,7 @@ def test_a_contact_growing_older_is_not_the_picture_moving(tmp_path: Path) -> No
     # write a row per report and bury the moment the picture actually moved,
     # which is the whole point of writing it out only when it changes.
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     observe(
         daemon,
         "o-20",
@@ -436,7 +438,7 @@ def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
     # One row per side, because there is no picture carrying both to write (#27);
     # an operator wanting the whole board reads both rows.
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     observe(daemon, "o-13", presence={"agia_marina": ["WEST"]})
     observe(daemon, "o-14", presence={"agia_marina": ["WEST"]})
 
@@ -470,7 +472,7 @@ def test_an_hq_the_world_reports_destroyed_is_written_down_once(tmp_path: Path) 
     # holds first — so the event has to be written exactly once per Base,
     # carrying whose Base fell and who brought it down (#33).
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     observe(daemon, "h-1", time=90, hq={"csat_kamino": {"destroyed": True, "by": "WEST"}})
     # The world keeps reporting a destroyed HQ for the rest of the session: the
     # rubble does not stop being rubble, and every later report says so.
@@ -482,7 +484,7 @@ def test_an_hq_the_world_reports_destroyed_is_written_down_once(tmp_path: Path) 
 
 def test_an_hq_still_standing_is_not_an_event(tmp_path: Path) -> None:
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     observe(daemon, "h-3", hq={"csat_kamino": {"destroyed": False, "by": ""}})
 
     assert hq_rows(log) == []
@@ -491,7 +493,7 @@ def test_an_hq_still_standing_is_not_an_event(tmp_path: Path) -> None:
 def test_an_hq_report_naming_ground_the_map_lacks_is_refused(tmp_path: Path) -> None:
     # A Base id the manifest does not have cannot be attributed to a side, and
     # a Decapitation filed against nobody's Base is worse than none at all.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(
         daemon,
         id="h-4",
@@ -502,7 +504,7 @@ def test_an_hq_report_naming_ground_the_map_lacks_is_refused(tmp_path: Path) -> 
 
 
 def test_an_hq_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     reply = reply_to(
         daemon,
         id="h-5",
@@ -514,7 +516,7 @@ def test_an_hq_report_the_daemon_cannot_read_is_refused(tmp_path: Path) -> None:
 
 def test_a_report_that_says_nothing_about_hqs_is_ordinary(tmp_path: Path) -> None:
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     observe(daemon, "h-6", presence={})
 
     assert hq_rows(log) == []
@@ -524,7 +526,7 @@ def test_every_reply_records_how_close_it_ran_to_the_return_cap(tmp_path: Path) 
     # The engine truncates a return over 10,240 bytes in silence (ADR-0004), so
     # the size of the one reply that grows — the observation — is kept on disk.
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     observe(daemon, "o-12", presence={})
     row = json.loads(log.read_text(encoding="utf-8").splitlines()[-1])
     assert 0 < row["reply_bytes"] < 10_240

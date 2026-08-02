@@ -14,7 +14,7 @@ import threading
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from cti_daemon import commands, planner
+from cti_daemon import commands, economy, manifest, planner
 from cti_daemon.daemon import Daemon
 
 if TYPE_CHECKING:
@@ -23,6 +23,15 @@ if TYPE_CHECKING:
 DEFAULT_HOST: Final = "127.0.0.1"
 DEFAULT_PORT: Final = 9099
 DEFAULT_TELEMETRY: Final = Path(".spike-out/daemon-telemetry.jsonl")
+
+# Where this checkout keeps its authored files. Here rather than in `daemon.py`
+# because this module is Main (#76): knowing the repo layout is a composition
+# root's job, and a daemon that resolved `config/` from its own `__file__` was
+# an adapter bound to a source tree.
+REPO: Final = Path(__file__).parents[2]
+DEFAULT_ECONOMY: Final = REPO / "config" / "economy.json"
+DEFAULT_MANIFESTS: Final = REPO / "addons" / "main" / "manifests"
+DEFAULT_MAP: Final = "stratis"
 
 
 def ready_line(host: str, port: int, epoch: str) -> str:
@@ -56,6 +65,33 @@ class _Server(socketserver.ThreadingTCPServer):
     daemon_threads = True
 
 
+def build_daemon(  # noqa: PLR0913 — every argument is one authored input or one
+    # identity this daemon is wired to, all keyword-only, and folding them into a
+    # config object would be one more indirection between a caller and what it varies.
+    *,
+    telemetry_path: Path,
+    economy_path: Path | None = None,
+    manifests_path: Path | None = None,
+    map_id: str = DEFAULT_MAP,
+    archive_path: Path | None = None,
+    epoch: str | None = None,
+) -> Daemon:
+    """Load this checkout's authored files and build a daemon on them (#76).
+
+    The one place default paths are resolved. Everything downstream is handed
+    the loaded `EconomyTable` and `MapManifest`, so nothing inside the package
+    knows where a repo keeps them, and a caller that has its own files says so
+    here rather than reaching past a default.
+    """
+    return Daemon(
+        telemetry_path=telemetry_path,
+        table=economy.load(economy_path or DEFAULT_ECONOMY),
+        map_manifest=manifest.load_all(manifests_path or DEFAULT_MANIFESTS)[map_id],
+        archive_path=archive_path,
+        epoch=epoch,
+    )
+
+
 def build(telemetry_path: Path, ai: Iterable[tuple[str, int]] | None) -> Daemon:
     """Build the daemon this process will serve, under command or not (#16, #17).
 
@@ -67,7 +103,7 @@ def build(telemetry_path: Path, ai: Iterable[tuple[str, int]] | None) -> Daemon:
     the manifest and the economy table the daemon has just loaded, and loading
     them twice would be two answers to what the map is.
     """
-    daemon = Daemon(telemetry_path=telemetry_path)
+    daemon = build_daemon(telemetry_path=telemetry_path)
     for side, seed in ai or ():
         daemon.commanded_by(
             side,

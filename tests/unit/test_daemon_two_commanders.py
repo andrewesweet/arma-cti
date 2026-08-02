@@ -21,13 +21,14 @@ import pytest
 
 from cti_daemon import planner, transport
 from cti_daemon.commands import SIDES, Command
-from cti_daemon.daemon import Daemon
 from cti_daemon.observation import serialise
 from cti_daemon.planner import Candidate, Decision, Plan
+from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from cti_daemon.daemon import Daemon
     from cti_daemon.observation import Observation
 
 # One per side, and different, because a pair of seeds is what fixes a Campaign.
@@ -45,7 +46,7 @@ def commanded(
     brains: dict[str, planner.Planner] | None = None,
 ) -> Daemon:
     """Return a daemon with every named side under its own AI Commander."""
-    daemon = Daemon(telemetry_path=path)
+    daemon = build_daemon(telemetry_path=path)
     for side, seed in (seeds or SEEDS).items():
         daemon.commanded_by(
             side,
@@ -158,7 +159,7 @@ def test_neither_commander_is_handed_the_others_state(tmp_path: Path) -> None:
     # naming the enemy's Squads or Funds would be #27's leak arriving at two
     # sides, and the planner reads campaign state in-process — so there is
     # nowhere else to catch it.
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     watchers = {side: recording(daemon, seed) for side, seed in SEEDS.items()}
     for side, watcher in watchers.items():
         daemon.commanded_by(side, watcher)
@@ -383,7 +384,7 @@ def test_a_daemon_under_nobodys_command_still_plans_nothing(tmp_path: Path) -> N
     # The default #16 set, unchanged by there being room for two: a daemon
     # nobody has put under command must not quietly start playing for anybody.
     log = tmp_path / "telemetry.jsonl"
-    play(Daemon(telemetry_path=log), turns=4)
+    play(build_daemon(telemetry_path=log), turns=4)
 
     assert rows(log, "decision") == []
     assert transport.build(log, ai=()).commanders == ()
