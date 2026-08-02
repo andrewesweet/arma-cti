@@ -46,9 +46,24 @@ def load_tool(name: str) -> ModuleType:
     `push_path_report` both import `telemetry_log` — finds the same module the
     caller does.
     """
-    spec = importlib.util.spec_from_file_location(name, REPO / "tools" / f"{name}.py")
+    return _load_script(name, REPO / "tools" / f"{name}.py")
+
+
+def load_hook(name: str) -> ModuleType:
+    """Import a `.claude/hooks/` script by path and return the module.
+
+    Same reason as `load_tool`, plus one of its own: hook filenames are
+    hyphenated, so `block-no-verify` is not a module name any import statement
+    could spell. The decision function is what the tests drive; running the
+    script's stdin/exit-code contract is the harness's job.
+    """
+    return _load_script(name.replace("-", "_"), REPO / ".claude" / "hooks" / f"{name}.py")
+
+
+def _load_script(name: str, path: Path) -> ModuleType:
+    spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
-        message = f"no tool named {name!r} in {REPO / 'tools'}"
+        message = f"no script at {path}"
         raise ModuleNotFoundError(message)
     module = importlib.util.module_from_spec(spec)
     sys.modules[name] = module
