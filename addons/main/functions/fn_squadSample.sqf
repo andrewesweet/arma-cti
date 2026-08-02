@@ -19,7 +19,7 @@
  *
  * Return Value: <HASHMAP> Squad id -> HASHMAP of `size` and `at`
  */
-if (!isServer) exitWith { createHashMap };
+if (!isServer) exitWith { ["cti_fnc_squadSample"] call cti_fnc_offServer };
 
 private _map = missionNamespace getVariable ["cti_map", createHashMap];
 private _objectives = _map getOrDefault ["objectives", []];

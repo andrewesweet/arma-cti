@@ -53,7 +53,7 @@
  *
  * Return Value: <HASHMAP> side name -> HASHMAP of `seen` and `observed`
  */
-if (!isServer) exitWith { createHashMap };
+if (!isServer) exitWith { ["cti_fnc_contactSample"] call cti_fnc_offServer };
 
 // How old a memory may be and still count as something a leader currently
 // knows. #28 has it that the engine's knowledge model decays to nothing after
@@ -97,8 +97,8 @@ private _report = createHashMap;
                 // Where this leader can clear a Contact: strictly the place it
                 // is standing in, or nowhere at all.
                 private _standing = [getPosATL _leader, _objectives, _bases, false] call cti_fnc_placeOf;
-                if (_standing isNotEqualTo "" && { !(_standing in _observed) }) then {
-                    _observed pushBack _standing;
+                if (_standing isNotEqualTo "") then {
+                    _observed pushBackUnique _standing;
                 };
 
                 {

@@ -23,7 +23,7 @@
  * Return Value: <HASHMAP> `deaths` (the drained records) and `dropped` (how many
  * the buffer's bound refused since the last report)
  */
-if (!isServer) exitWith { createHashMapFromArray [["deaths", []], ["dropped", 0]] };
+if (!isServer) exitWith { ["cti_fnc_casualtySample"] call cti_fnc_offServer };
 
 private _deaths = [];
 private _dropped = 0;

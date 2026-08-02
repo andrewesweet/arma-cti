@@ -22,7 +22,14 @@
  *
  * Return Value: none
  */
-if (!hasInterface || { isNil "cti_uiSide" }) exitWith {};
+// Two questions, asked separately because they are two (#114). The first is
+// machine role — `hasInterface` is false for a dedicated server and for a
+// headless client alike (`commands/hasInterface.wiki`), and neither has a screen
+// to draw on. The second is UI readiness: `cti_uiSide` is set by
+// cti_fnc_mapObservation when the first Observation arrives, so a headed client
+// that has not had one yet has nothing to render.
+if (!hasInterface) exitWith {};
+if (isNil "cti_uiSide") exitWith {};
 
 private _view = missionNamespace getVariable ["cti_view", createHashMap];
 

@@ -45,7 +45,7 @@ private _verdict = {
 // sentinel that a caller could read as a domain refusal is one nobody can
 // attribute (#113), so it says which of the two it is.
 if (!isServer) exitWith {
-    diag_log "CTI|FAIL class=assertion_failed effect_apply_off_server";
+    ["cti_fnc_effectApply"] call cti_fnc_offServer;
     ["refused", "off_server"] call _verdict
 };
 

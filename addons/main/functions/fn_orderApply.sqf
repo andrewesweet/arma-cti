@@ -30,7 +30,12 @@
  */
 params [["_squadId", "", [""]], ["_order", "", [""]], ["_place", "", [""]]];
 
-if (!isServer) exitWith { false };
+// Reaches cti_fnc_effectPump as "this effect failed", the same `false` every
+// domain refusal below returns — so it logs the same typed line they do (#113).
+if (!isServer) exitWith {
+    ["cti_fnc_orderApply"] call cti_fnc_offServer;
+    false
+};
 
 private _group = (missionNamespace getVariable ["cti_squads", createHashMap])
     getOrDefault [_squadId, grpNull];
@@ -100,11 +105,10 @@ if (_order isEqualTo "assault") then {
     };
 };
 
-// Replacing the waypoints is what makes a new Order supersede the last one.
-// Backwards, because deleting shifts every index above it down.
-for "_i" from (count waypoints _group) - 1 to 0 step -1 do {
-    deleteWaypoint [_group, _i];
-};
+// Replacing the waypoints is what makes a new Order supersede the last one. The
+// engine ships the idiom, deletion shifting every index and all
+// (`commands/deleteWaypoint.wiki`).
+{ deleteWaypoint _x } forEachReversed waypoints _group;
 
 // Behaviour rides on the waypoint rather than being set on the group: the
 // engine applies it when the waypoint becomes active, so it travels with the

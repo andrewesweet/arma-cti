@@ -21,6 +21,14 @@
  */
 params [["_judgement", createHashMap, [createHashMap]]];
 
+// The same locality guard the four client-side functions beside this one carry
+// (#114). It was the odd one out, safe only because cti_fnc_portGateway sends
+// this to `_owner > 0` and the mission's `mode = 1` keeps a client from calling
+// it on another client — both true elsewhere in those files and neither stated
+// here. `hasInterface` is false for a dedicated server and a headless client
+// alike (`commands/hasInterface.wiki`), and a judgement is for a person.
+if (!hasInterface) exitWith {};
+
 cti_lastJudgement = _judgement;
 
 private _status = _judgement getOrDefault ["status", "?"];
@@ -45,7 +53,8 @@ cti_lastJudgementText = format ["<t color='#ff8888'>%1</t> — %2 — %3",
 
 // A player who has no UI up still gets told: the first thing a mis-slotted
 // client does is send a Command and get `wrong_side` back, and a dead click is
-// exactly what #18 exists to stop.
+// exactly what #18 exists to stop. This is the UI-readiness question and only
+// that — whether this machine is a person's is asked once, at the top (#114).
 if (isNil "cti_uiSide") then {
     hint parseText cti_lastJudgementText;
 } else {

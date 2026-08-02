@@ -40,6 +40,7 @@ class CfgFunctions
             class loopRegister {};
             class loopWatch {};
             class everyInterval {};
+            class offServer {};
             class prngNew {};
             class prngNext {};
             class prngInt {};

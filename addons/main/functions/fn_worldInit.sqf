@@ -15,7 +15,13 @@
  * Return Value: <BOOL> true when the world is built. False is fatal: there is
  * nothing to play on, and the caller must not pretend otherwise.
  */
-if (!isServer) exitWith { false };
+// `false` is the right answer here and so is the one below, which is why this
+// one has to say which it is: the caller branches on it and only one of the two
+// used to log (#113).
+if (!isServer) exitWith {
+    ["cti_fnc_worldInit"] call cti_fnc_offServer;
+    false
+};
 
 private _map = call cti_fnc_manifestLoad;
 if (count _map isEqualTo 0) exitWith {

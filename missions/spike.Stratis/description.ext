@@ -19,3 +19,16 @@ respawnDialog = 0;
 disabledAI = 1;
 joinUnassigned = 1;
 enableDebugConsole = 1;
+
+// No CfgRemoteExec here, deliberately (#115). The engine's default is mode 2 —
+// "remote execution is fully allowed, ignoring the whitelist"
+// (topics/Arma_3_CfgRemoteExec.wiki) — which the wiki keeps only for backward
+// compatibility, so this mission lets any machine remote-execute anything, and
+// the debug console above is open beside it. That is what a spike is: it boots
+// on a local dedicated server on one person's own machine with no untrusted
+// joiner, and the harness reaches into it on purpose. missions/cti.Stratis is
+// the mission that is played, and it locks Functions and Commands to mode 1
+// with the gateway whitelisted to target the server alone. Copying that block
+// here would put a lock on scaffolding that Phase 3 deletes, and would say this
+// mission had been thought about as a play surface. It has not: it is a
+// laboratory, and this comment is the sign on the door.

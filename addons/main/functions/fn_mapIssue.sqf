@@ -24,7 +24,12 @@
  */
 params [["_key", -1, [0]]];
 
-if (!hasInterface || { isNil "cti_uiSide" }) exitWith {};
+// Machine role first, UI readiness second: two questions, and one variable
+// answering both is how the next reader stops knowing which is being asked
+// (#114). No screen on a dedicated server or a headless client; no map to issue
+// an Order from until the first Observation has populated one.
+if (!hasInterface) exitWith {};
+if (isNil "cti_uiSide") exitWith {};
 
 private _view = missionNamespace getVariable ["cti_view", createHashMap];
 private _squads = _view getOrDefault ["squads", []];

@@ -30,7 +30,12 @@
  */
 params [["_side", "", [""]], ["_args", createHashMap, [createHashMap]]];
 
-if (!isServer) exitWith { false };
+// Becomes cti_fnc_effectApply's own `false`, which the pump reads as a refusal —
+// so it is attributable like every other one (#113).
+if (!isServer) exitWith {
+    ["cti_fnc_campaignEnd"] call cti_fnc_offServer;
+    false
+};
 
 private _condition = _args getOrDefault ["condition", ""];
 if (_side isEqualTo "" || { _condition isEqualTo "" }) exitWith {

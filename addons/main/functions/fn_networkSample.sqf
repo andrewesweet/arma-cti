@@ -19,7 +19,15 @@
 // `allUsers` is a command, so such a guard always fires and silently returns
 // nothing. Phase 0 logged "allUsers unavailable" on every run for exactly that
 // reason — the command has been there since 2.06 and this addon requires 2.2.
-if (!isServer) exitWith { [] };
+// An empty list off the server would read as "nobody is connected", which is a
+// reading rather than a refusal (#112). The list is still what the caller
+// iterates — there is no shape of array that says "not me" — so the refusal is
+// the typed line, and cti_fnc_desyncWatch's own `no_client` verdict is what
+// keeps silence from being read as health.
+if (!isServer) exitWith {
+    ["cti_fnc_networkSample"] call cti_fnc_offServer;
+    []
+};
 
 private _samples = [];
 {

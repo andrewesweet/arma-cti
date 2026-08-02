@@ -16,7 +16,7 @@
  *
  * Return Value: <HASHMAP> Base id -> HASHMAP of `destroyed` and `by`
  */
-if (!isServer) exitWith { createHashMap };
+if (!isServer) exitWith { ["cti_fnc_hqSample"] call cti_fnc_offServer };
 
 private _map = missionNamespace getVariable ["cti_map", createHashMap];
 private _down = missionNamespace getVariable ["cti_hqDown", createHashMap];

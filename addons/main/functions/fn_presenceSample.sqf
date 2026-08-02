@@ -13,7 +13,7 @@
  *
  * Return Value: <HASHMAP> Objective id -> ARRAY of side names present
  */
-if (!isServer) exitWith { createHashMap };
+if (!isServer) exitWith { ["cti_fnc_presenceSample"] call cti_fnc_offServer };
 
 private _map = missionNamespace getVariable ["cti_map", createHashMap];
 private _objectives = _map getOrDefault ["objectives", []];
@@ -29,8 +29,8 @@ private _presence = createHashMap;
     {
         if (alive _x) then {
             private _side = str (side group _x);
-            if (_side in ["WEST", "EAST"] && {!(_side in _sides)}) then {
-                _sides pushBack _side;
+            if (_side in ["WEST", "EAST"]) then {
+                _sides pushBackUnique _side;
             };
         };
     } forEach (_centre nearEntities ["CAManBase", _radius]);

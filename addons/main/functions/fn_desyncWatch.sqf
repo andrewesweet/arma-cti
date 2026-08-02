@@ -62,8 +62,10 @@ if (!isServer) exitWith { scriptNull };
             _samplesTaken, _window];
     };
 
-    private _peak = 0;
-    { _peak = _peak max _y } forEach _worst;
+    // `selectMax` over the readings themselves (`commands/selectMax.wiki`): the
+    // verdict is the worst any one client saw, and the accumulator that said so
+    // was four lines of the engine's own command.
+    private _peak = selectMax values _worst;
     diag_log format ["CTI|desync_verdict result=%1 peak=%2 per_client=%3 samples=%4 window=%5",
         ["desynced", "steady"] select (_peak < 1), _peak, _worst, _samplesTaken, _window];
 };
