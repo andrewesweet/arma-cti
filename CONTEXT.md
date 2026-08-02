@@ -45,7 +45,7 @@ Any authored ground an Order or a coarse position can name: an Objective or a Ba
 _Avoid_: location, position (reserved for coordinates), target (reserved for the engine's targeting)
 
 **Observation**:
-The strategic picture at one moment as **one** Commander may know it: every Objective's owner, that Commander's own Funds, and each of its own Squads with composition type, member count, standing Order and coarse position. What it knows of the enemy is Contacts, never roster entries. Assembled by the daemon from what it decides plus the two facts only the world can see — how many of a Squad are standing, and where it is. Deliberately the same set the Campaign snapshot persists (ADR-0008): nothing tactical, and places rather than coordinates.
+The strategic picture at one moment as **one** Commander may know it: every Objective's owner, that Commander's own Funds, and each of its own Squads with composition type, member count, standing Order and coarse position. What it knows of the enemy is Contacts, never roster entries. Assembled by the daemon from what it decides plus the facts only the world can see — how many of a Squad are standing, the ground underfoot, the Sightings its leaders report, and an HQ falling. Deliberately the same set the Campaign snapshot persists (ADR-0008): nothing tactical, and places rather than coordinates.
 _Avoid_: State, world state, telemetry; snapshot (reserved for the persisted Campaign)
 
 **Contact**:

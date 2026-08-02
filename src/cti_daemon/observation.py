@@ -28,8 +28,9 @@ intelligence. Ownership and HQ status are therefore public in every view, the
 one belonging to nobody included.
 
 Assembled here rather than reported wholesale by the world: ownership, Funds and
-Orders are the daemon's own (ADR-0012), and only the head count and the ground
-underfoot are facts the world alone can see.
+Orders are the daemon's own (ADR-0012). The facts the world alone can see are
+the head count, the ground underfoot, the sightings its leaders report (#28)
+and an HQ falling (#33).
 
 What one of these costs on the wire, and how many Squads a map can carry before
 that cost trips the engine's return cap, is `cti_daemon.budget` (#78). That is a

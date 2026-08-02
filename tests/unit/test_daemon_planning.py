@@ -43,8 +43,10 @@ def turn(daemon: Daemon, step: int) -> dict[str, Any]:
     """One turn of a world that spawns what it is told and goes where it is sent.
 
     A stand-in for Arma, and only for Arma: the campaign, the port and the
-    planner are the real ones, and this supplies the two facts only the world
-    can report — who is standing where, and what has become of each Squad.
+    planner are the real ones, and this supplies the world's side of the
+    exchange — who is standing where, and what has become of each Squad. (Of
+    the facts only the world can see, sightings and HQ fates stay quiet here:
+    a world that reports neither is legal, and planning must not need them.)
     """
     roll = daemon.campaign.roster.roll(SIDE)
     presence: dict[str, list[str]] = {}
