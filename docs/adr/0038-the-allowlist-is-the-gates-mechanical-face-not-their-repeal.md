@@ -6,7 +6,7 @@ Stood-in-for: human sign-off on changes to CLAUDE.md, the project skills, and th
 process docs — the eleventh retro's amendment batch (the review burn-down's completion:
 ~25 issues closed since `82fe67e` across the #74/#75 and #116/#119 waves and the Python
 and SQF tail tracks, plus #120 raised here)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-02 — approved in session ("Agreed. Alternatively, amend the ADR."), the decision and the CLAUDE.md sentence both
 Claimed: comment on #120, 2026-08-02, after `git fetch origin` (origin/main tops at
 0037) and a scan of open-issue comments found no claim above 0037 — the #47 pool agent
 had claimed none
