@@ -67,6 +67,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A regression run no longer starts into a machine that has no room for it.** The slot locks
+  serialise agents but say nothing about memory, so two three-slot pool runs took six worlds onto
+  one 12 GB machine, drove it to 39 MiB available, and came back twenty minutes later with two
+  worlds alive but starved — a loop silent for four minutes, reported as a crashed node, which
+  reads like the code's fault and is not. The pool now takes a memory reading before it takes a
+  lock, in the same fail-closed shape as the guard that protects a live play session, and answers
+  in one of three ways: run, run in fewer slots and say so, or refuse with the reading and launch
+  nothing. The floor is `N × 2,500 MiB + 1,024 MiB`, and both numbers come from what the tier has
+  actually been measured using rather than from arithmetic. It is re-asked between probes too, so
+  somebody else arriving at minute eight stops the pool taking new work instead of starving what is
+  already running. #125.
+
+- **The Arma tier's own test suite no longer fails one full run in two.** The test for the property
+  the whole slot design rests on — the kernel frees a dead holder's lock, with no reaper and no
+  pidfile — killed only the top of the holder's process tree and then raced its own child. It was
+  the test that was wrong, but the thing it was wrong about is real: half a dead holder keeps the
+  slot, because the lock is freed by the last descriptor and not the first. So the case is now
+  asserted rather than raced, and a run that finds every slot busy prints the pids actually holding
+  each lock beside the metadata — which otherwise names the dead parent and sends the reader after
+  a process that no longer exists. #121.
+
+- **The Campaign's end-to-end probe no longer stages its own ambush.** `campaign-end` shortens a
+  4.4 km march by putting the assaulting Squad 250 m from the enemy HQ, after waiting for the
+  defenders to leave. The wait watched a 400 m ring around the HQ and the Squad lands at 250 m on
+  the one road out — so "clear" could mean an enemy Squad standing 150 m in front of where eight
+  men were about to appear. On one run in six they appeared, turned round, spent three minutes
+  winning a firefight the probe had created, never reached the HQ, and the run timed out on an
+  assault it had itself prevented. The wait now covers the approach as well as the HQ, and the
+  timeout reports the closest range the Squad reached, which is the number that tells "it never
+  set off" apart from "it arrived and the assault failed". #106.
+
 - **Running the no-Arma tests no longer kills whatever the Arma tier is running.** The pool's own
   unit tests drive the real `spike/regress.sh`, which reclaims each slot it acquires by killing
   whatever holds that slot's ports or runs out of its install. The tests moved the locks and the

@@ -302,6 +302,47 @@ if ! cti_host_guard "$HOST"; then
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
+# ------------------------------------------------------------- memory pre-flight
+# The second guard on the whole pool, and the same shape as the first: asked
+# before a lock is taken, answered from a reading, and fail-closed (#125). A
+# slot lock cannot tell a run that the machine is already full, and on
+# 2026-08-02 a second pool started into one that was and produced two
+# `node_crashed` non-results twenty minutes later. The reading is logged whether
+# it refuses or not, because "how close was that?" is a question every pool run
+# should be able to answer from its own log.
+if ! MEM_AVAILABLE_MB="$(cti_slot_mem_available_mb)"; then
+    {
+        printf '\n[regress] the memory pre-flight could not read %s'"'"'s memory.\n' "$HOST"
+        printf '[regress] A check that could not run is not a check that passed.\n'
+        printf 'verdict=FAIL\n'
+        printf 'failure_class=infra_unavailable\n'
+        printf 'failure_detail=could not read MemAvailable on %s\n' "$HOST"
+    } >&2
+    exit "${CLASS_RANK[infra_unavailable]}"
+fi
+MEM_FIT="$(cti_slot_mem_fit "$WANT_SLOTS" "$MEM_AVAILABLE_MB")"
+log "memory: ${MEM_AVAILABLE_MB} MiB available on $HOST; $WANT_SLOTS slot(s) want $(cti_slot_mem_floor_mb "$WANT_SLOTS") MiB (${CTI_SLOT_MEM_PER_SLOT_MB} MiB a slot + ${CTI_SLOT_MEM_HEADROOM_MB} MiB headroom)"
+if ((MEM_FIT == 0)); then
+    {
+        printf '\n[regress] %s has %s MiB available and one slot needs %s MiB — this is infra_unavailable, not a result.\n' \
+            "$HOST" "$MEM_AVAILABLE_MB" "$(cti_slot_mem_floor_mb 1)"
+        printf '[regress] Nothing was launched. A pool started under the floor produces non-results N at a time (#125).\n'
+        printf 'verdict=FAIL\n'
+        printf 'failure_class=infra_unavailable\n'
+        printf 'failure_detail=%s MiB available, floor for one slot is %s MiB\n' \
+            "$MEM_AVAILABLE_MB" "$(cti_slot_mem_floor_mb 1)"
+        printf 'host=%s\n' "$HOST"
+        printf 'mem_available_mb=%s\n' "$MEM_AVAILABLE_MB"
+    } >&2
+    exit "${CLASS_RANK[infra_unavailable]}"
+fi
+if ((MEM_FIT < WANT_SLOTS)); then
+    # The middle answer. A smaller pool is a slower run, not a wrong one, and it
+    # is a great deal better than N worlds sharing a machine that fits N-1.
+    log "asked for $WANT_SLOTS slot(s) but $MEM_AVAILABLE_MB MiB fits $MEM_FIT — running at N=$MEM_FIT"
+    WANT_SLOTS="$MEM_FIT"
+fi
+
 # ------------------------------------------------------------------ allocation
 # One flock per slot, non-blocking, in index order until we have the N we asked
 # for or the indices run out (ADR-0028). Fewer slots than asked for is a smaller
@@ -332,6 +373,15 @@ if ! acquire_slots; then
         for ((n = 0; n <= CTI_SLOT_MAX; n++)); do
             printf '[regress] slot %s holder:\n' "$n"
             cti_slot_holder "$n"
+            # And who is actually holding the descriptor, which is not always who
+            # the metadata says. A dead pool's server, headless client or `run.sh`
+            # keeps the lock its worker inherited it from (#121), and then the
+            # `pid=` beside the lock names a process that no longer exists while
+            # the slot stays taken. Reported, not swept: killing a lock holder we
+            # do not own is how the no-Arma tier killed the real one (#124), and a
+            # human reading this needs the live pids to decide.
+            live="$(cti_slot_lock_holders "$n" | tr '\n' ' ' | sed 's/ *$//')"
+            printf '    live holders: %s\n' "${live:-none — the lock is free and something else refused it}"
         done
         ((WAIT_SECS > 0)) && printf '[regress] waited %ss and gave up.\n' "$WAIT_SECS"
         printf 'verdict=FAIL\n'
@@ -656,7 +706,7 @@ worker() {
     local slot="$1"
     shift
     local -a jobs=("$@")
-    local cand name sibling
+    local cand name sibling avail
     # A worker inherits every slot's lock descriptor from the pool that forked
     # it, and `flock` frees a lock only when the last descriptor closes. Holding
     # a sibling's lock would make a dead slot look occupied by us — so a worker
@@ -674,6 +724,30 @@ worker() {
             break
         done
         [[ -n "$name" ]] || break
+        # Re-read the machine's memory between probes, not only at bring-up
+        # (#125). It costs one `awk` over `/proc/meminfo` per probe against a
+        # world that takes minutes, and the thing it catches is the case the
+        # bring-up reading cannot: somebody else — another pool, a build, a
+        # browser — arriving after we started. The floor here is the running one
+        # rather than the bring-up one, because N-1 worlds are already up and
+        # counted; what is being asked is whether any margin is left at all.
+        #
+        # It stops the pool taking *new* work rather than interrupting the work
+        # in flight, which is exactly what `infra_unavailable` already means to
+        # this loop: interrupting a running world would manufacture the
+        # non-result being avoided.
+        avail="$(cti_slot_mem_available_mb || echo 0)"
+        if ((avail < CTI_SLOT_MEM_RUNNING_FLOOR_MB)); then
+            log "[slot $slot] $avail MiB available, under the ${CTI_SLOT_MEM_RUNNING_FLOOR_MB} MiB running floor — not launching $name into a machine with no margin"
+            printf 'only %s MiB available before %s in slot %s; the running floor is %s MiB\n' \
+                "$avail" "$name" "$slot" "$CTI_SLOT_MEM_RUNNING_FLOOR_MB" >"$STOP_FLAG"
+            # Read by the merge. No probe will carry this class in a verdict —
+            # the whole point is that none launched — so the pool has to raise it
+            # itself, or a run that stopped for the machine exits green.
+            printf '%s\n' "$avail" >"$POOL_OUT/mem-stop"
+            rmdir "$CLAIMS/$name" 2>/dev/null
+            break
+        fi
         printf '%s\n' "$slot" >"$CLAIMS/$name/slot"
         run_probe "$name" "$slot"
     done
@@ -767,6 +841,16 @@ for name in "${CORPUS[@]}"; do
         worst_class="${class:-untyped_harness_failure}"
     fi
 done
+
+# A pool that stopped because the machine ran out is `infra_unavailable` at the
+# pool level (#125), not a green run over the probes that got in first.
+if [[ -f "$POOL_OUT/mem-stop" ]]; then
+    severity="$(class_severity infra_unavailable)"
+    if ((severity > worst_severity)); then
+        worst_severity=$severity
+        worst_class=infra_unavailable
+    fi
+fi
 
 # ------------------------------------------------------------------ RAM verdict
 PEAK_USED_KB=0

@@ -1,5 +1,5 @@
 // probe: campaign-end
-// issues: 35, 46
+// issues: 35, 46, 106
 // window: 750
 // env: CTI_HOLD_HC=1 CTI_AI_SIDE=WEST,EAST CTI_AI_SEED=1,4
 //
@@ -48,6 +48,20 @@
 // still has to be reached and worked on, and whatever EAST left behind is still
 // there.
 //
+// That wait was measured once more, on the run that timed out at
+// 2026-08-01T23:01:58Z, and it was asking about the wrong ground (#106). It
+// cleared a 400 m ring around the HQ, but the Squad is placed at 250 m on the
+// line to `camp_rogain`, which is the road EAST's Squads march out along — so
+// "clear" was reached at the instant the last defender passed 400 m from the
+// HQ, standing 150 m in front of where the eight men were about to appear. They
+// appeared, turned round, and spent t=230-427 killing EAST-2 in open ground
+// 429-545 m from the HQ, losing nobody and creeping 250 m to 184.8 m without
+// ever reaching the Order's 75 m damage radius. The staging had manufactured a
+// meeting engagement and then timed out waiting for the Assault it prevented.
+// So the wait is now two rings — 400 m around the HQ and 300 m around the
+// approach point — and the Assault-never-ended failure reports the closest range
+// the Squad reached, which is the number that tells those two failures apart.
+//
 // Not engineered: the decision or the detection. Nothing here issues a Command.
 // The Assault is the Commander's own, chosen off its own projected picture and
 // carried through the port that is the only order path there is — this probe
@@ -92,6 +106,14 @@
 // ended Campaign stay ended. About 590 s of subject; 750 s is that plus the
 // engine's pathfinding around an airfield. If this ever needs *more*, the answer
 // is not a bigger number: it is that the Squad is not arriving.
+//
+// The walk-clear line grew when the second ring landed (#106): the defenders now
+// have to be 550 m from the HQ along the approach rather than 400 m, which is
+// another ~150 m of engine walking. On the three passes before the change that
+// wait finished at t=179-218 against a 300 s deadline of its own, so the slack
+// is there — but it is slack, not room, and this is the line to read first if
+// the probe ever starts failing `end_probe_base_never_cleared`. The answer then
+// is a staging bearing that is not EAST's egress route, not a longer wait.
 [] spawn {
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
@@ -214,36 +236,14 @@
     diag_log format ["CTI|end_probe_assault_ordered squad=%1 at=%2 range=%3",
         _attackerId, time, (leader _attacker) distance2D (getPosATL _hq)];
 
-    // ------------------------------------------------ let the defenders leave
-    // EAST spawns its Squads on its own Base and its Commander marches them out
-    // at the opening. A Squad put on the approach before they have gone is a
-    // Squad dropped into an army — see the header: that was measured, and it
-    // cost a run. Waited on as the ground actually being clear rather than as a
-    // fixed delay, because how long three Squads take to walk off their own Base
-    // is the engine's business and not a number to guess.
-    private _hqAt = getPosATL _hq;
-    private _defenders = {
-        private _men = 0;
-        {
-            if (alive _x && { side group _x isEqualTo east }) then { _men = _men + 1 };
-        } forEach (_hqAt nearEntities ["CAManBase", 400]);
-        _men
-    };
-    _deadline = diag_tickTime + 300;
-    waitUntil { call _defenders isEqualTo 0 || { diag_tickTime > _deadline } };
-    if (call _defenders > 0) exitWith {
-        // Not a probe fault: EAST has chosen to sit on its own Base, which is a
-        // Campaign this probe cannot shorten and a finding worth the red.
-        diag_log format ["CTI|FAIL class=timeout end_probe_base_never_cleared men=%1 at=%2",
-            call _defenders, time];
-    };
-    diag_log format ["CTI|end_probe_base_clear at=%1 squad_men=%2",
-        time, { alive _x } count units _attacker];
-
-    // ------------------------------------------------ engineered start: the march
+    // ------------------------------------------------ where the march will start
     // On the line between the enemy Base's HQ and the Objective the manifest
     // calls adjacent to that Base, 250 m out. Authored ground rather than a
     // bearing off somebody's facing — #28's lesson, which cost two probes.
+    //
+    // Computed *before* the clear-wait below, because it is one of the two
+    // places that wait has to be about (#106).
+    private _hqAt = getPosATL _hq;
     private _adjacent = [(_target getOrDefault ["adjacent", [""]]) # 0] call cti_probe_fnc_placeNamed;
     if (count _adjacent isEqualTo 0) exitWith {
         diag_log "CTI|FAIL class=assertion_failed end_probe_no_adjacent_place";
@@ -251,6 +251,53 @@
     // The eight lines of run/span/normalise/scale this used to be are two engine
     // commands the wiki ships (#108, #86): see `cti_probe_fnc_approach`.
     ([_hqAt, _adjacent get "position", 250] call cti_probe_fnc_approach) params ["_approach"];
+
+    // ------------------------------------------------ let the defenders leave
+    // EAST spawns its Squads on its own Base and its Commander marches them out
+    // at the opening. A Squad put on the approach before they have gone is a
+    // Squad dropped into an army — see the header: that was measured, and it
+    // cost a run. Waited on as the ground actually being clear rather than as a
+    // fixed delay, because how long three Squads take to walk off their own Base
+    // is the engine's business and not a number to guess.
+    //
+    // Two rings, not one (#106). A ring around the HQ alone was the wrong
+    // question: it clears the moment the last defender passes 400 m from the HQ,
+    // and the approach point is at 250 m on the same line, so "clear" could mean
+    // an EAST Squad standing 150 m in front of where this probe is about to put
+    // eight men. That is what the timeout of 2026-08-01T23:01:58Z was. Its
+    // Squad was dropped in front of EAST-2, turned round, and spent t=230-427
+    // killing it — a meeting engagement the staging created, at 429-545 m from
+    // the HQ and therefore invisible to the old ring. It closed 250 m to 184.8 m
+    // in five minutes and never reached the Order's 75 m damage radius.
+    //
+    // The second ring is 300 m around the approach point, which contains that
+    // engagement's whole span (the first shots were exchanged at ~190 m from it
+    // and its Contact formed 11 s after staging). Both rings clear together in
+    // the ordinary case, because EAST's Squads are marching *out* past both.
+    private _defendersNear = {
+        params ["_at", "_radius"];
+        private _men = 0;
+        {
+            if (alive _x && { side group _x isEqualTo east }) then { _men = _men + 1 };
+        } forEach (_at nearEntities ["CAManBase", _radius]);
+        _men
+    };
+    private _defenders = {
+        ([_hqAt, 400] call _defendersNear) + ([_approach, 300] call _defendersNear)
+    };
+    _deadline = diag_tickTime + 300;
+    waitUntil { call _defenders isEqualTo 0 || { diag_tickTime > _deadline } };
+    if (call _defenders > 0) exitWith {
+        // Not a probe fault: EAST has chosen to sit on its own Base, or on the
+        // one road off it, which is a Campaign this probe cannot shorten and a
+        // finding worth the red. Both counts, so a reader can tell which ring.
+        diag_log format ["CTI|FAIL class=timeout end_probe_base_never_cleared hq=%1 approach=%2 at=%3",
+            [_hqAt, 400] call _defendersNear, [_approach, 300] call _defendersNear, time];
+    };
+    diag_log format ["CTI|end_probe_base_clear at=%1 squad_men=%2",
+        time, { alive _x } count units _attacker];
+
+    // ------------------------------------------------ engineered start: the march
     {
         _x setPosATL [(_approach # 0) + (_forEachIndex * 4), _approach # 1, 0];
     } forEach units _attacker;
@@ -259,16 +306,28 @@
         (leader _attacker) distance2D _hqAt];
 
     // ------------------------------------------------ the Campaign ends
+    // The closest the staged Squad ever got is tracked alongside the wait, because
+    // it is the one number that tells a reader which half failed if this times
+    // out (#106). `fn_orderApply.sqf` gives an Assault a 75 m radius and
+    // `fn_baseAssault.sqf` reads it back, so damage only accrues inside 75 m: a
+    // closest of ~250 m says the Squad never left its start and the staging is
+    // the suspect, and a closest under 75 m says it arrived and the Assault
+    // itself did not finish. Without it the timeout of 2026-08-01T23:01:58Z
+    // reported a single range at the deadline and cost an evening to read back.
+    private _closest = (leader _attacker) distance2D _hqAt;
     _deadline = diag_tickTime + 300;
     waitUntil {
+        private _range = (leader _attacker) distance2D _hqAt;
+        if (_range < _closest) then { _closest = _range };
         count (missionNamespace getVariable ["cti_campaignOutcome", createHashMap]) > 0
             || { diag_tickTime > _deadline }
     };
     private _outcome = missionNamespace getVariable ["cti_campaignOutcome", createHashMap];
     if (count _outcome isEqualTo 0) exitWith {
-        diag_log format ["CTI|FAIL class=timeout end_probe_campaign_never_ended damage=%1 range=%2 men=%3 down=%4",
-            damage _hq, (leader _attacker) distance2D _hqAt,
+        diag_log format ["CTI|FAIL class=timeout end_probe_campaign_never_ended damage=%1 range=%2 closest=%3 men=%4 contacts=%5 down=%6",
+            damage _hq, (leader _attacker) distance2D _hqAt, _closest,
             { alive _x } count units _attacker,
+            count ((call cti_fnc_contactSample) getOrDefault ["WEST", createHashMap]),
             missionNamespace getVariable ["cti_hqDown", createHashMap]];
     };
 

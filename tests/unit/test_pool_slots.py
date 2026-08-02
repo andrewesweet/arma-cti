@@ -18,10 +18,12 @@ and the class handling mean something. Nothing here launches a server.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import re
 import shutil
+import signal
 import stat
 import subprocess
 from pathlib import Path
@@ -241,34 +243,99 @@ def test_the_hand_run_lock_and_slot_zero_are_the_same_lock(tmp_path: Path) -> No
     assert result.stdout.split() == ["held", "excluded"], result.stderr
 
 
-def test_a_dead_holders_lock_frees_itself(tmp_path: Path) -> None:
-    """The property the whole design rests on: no reaper, no heartbeat, no pidfile."""
-    state = tmp_path / "state"
+def start_holder(tmp_path: Path, slot: int) -> subprocess.Popen[str]:
+    """Start a holder of `slot` that has forked a child before it says `ready`.
+
+    The child matters: `flock` frees a lock when the *last* descriptor on it
+    closes, and a slot holder in anger is a process tree — `regress.sh`'s worker
+    with `run.sh`, a server and a headless client under it, every one of them
+    carrying the descriptor it inherited. A holder that is a single process would
+    let both tests below assert something easier than the thing that happens.
+
+    Its own session, so a test can kill the tree the way the machine kills an
+    agent, without the process group reaching pytest.
+    """
     holder = executable(
-        tmp_path / "holder.sh",
+        tmp_path / f"holder{slot}.sh",
         f'#!/usr/bin/env bash\nsource "{SLOTS_SH}"\n'
-        "cti_slot_acquire 2 dead && echo ready\nsleep 60\n",
+        f"cti_slot_acquire {slot} dead || exit 1\n"
+        # Forked and reaped-for before `ready`: at the moment the test reads that
+        # line the inheriting child exists. The old version echoed `ready` and
+        # then forked, so whether the child existed when the kill landed was a
+        # race the test lost about one full-suite run in two (#121).
+        "sleep 60 &\necho ready\nwait\n",
     )
     # S603: a script this test wrote.
     proc = subprocess.Popen(  # noqa: S603
         [BASH, str(holder)],
         stdout=subprocess.PIPE,
         text=True,
-        env={**os.environ, "CTI_TIER_STATE": str(state)},
+        start_new_session=True,
+        env={**os.environ, "CTI_TIER_STATE": str(tmp_path / "state")},
     )
     assert proc.stdout is not None
     assert proc.stdout.readline().strip() == "ready"
-    proc.kill()
-    proc.wait(timeout=10)
+    return proc
+
+
+def acquire_from_a_fresh_shell(tmp_path: Path, slot: int) -> subprocess.CompletedProcess[str]:
     # S603: this repo's own library.
-    after = subprocess.run(  # noqa: S603
-        [BASH, "-c", f'source "{SLOTS_SH}"; cti_slot_acquire 2 next'],
+    return subprocess.run(  # noqa: S603
+        [BASH, "-c", f'source "{SLOTS_SH}"; cti_slot_acquire {slot} next'],
         capture_output=True,
         text=True,
         check=False,
-        env={**os.environ, "CTI_TIER_STATE": str(state)},
+        env={**os.environ, "CTI_TIER_STATE": str(tmp_path / "state")},
     )
+
+
+def test_a_dead_holders_lock_frees_itself(tmp_path: Path) -> None:
+    """The property the whole design rests on: no reaper, no heartbeat, no pidfile.
+
+    Death here is the whole holder's, process group and all, because that is what
+    killed a slot holder in anger: a session limit took the agent on 2026-08-01
+    and the kernel handed the slot back. The kernel's guarantee is about the last
+    descriptor, so the holder below has a child holding one too, and the test is
+    only about the kernel once the tree is gone.
+    """
+    proc = start_holder(tmp_path, 2)
+    os.killpg(proc.pid, signal.SIGKILL)
+    proc.wait(timeout=10)
+    after = acquire_from_a_fresh_shell(tmp_path, 2)
     assert after.returncode == 0, after.stderr
+
+
+def test_an_orphan_that_inherited_the_lock_is_named_and_reclaimed(tmp_path: Path) -> None:
+    """Half a dead holder keeps the slot, and the pool has to say so rather than guess.
+
+    `regress.sh`'s merge already knows this case — a worker dies, its `run.sh`,
+    server and headless client outlive it holding the descriptor they inherited,
+    and the lock the kernel is supposed to free stays held. What #121 showed is
+    that it is not exotic: killing only the top of the tree reproduces it every
+    time. So the two things that make it recoverable are asserted here — the
+    slot refuses the next holder rather than handing out a squatted world, and
+    `cti_slot_lock_holders` names the pid that is actually holding it.
+    """
+    env = {"CTI_TIER_STATE": str(tmp_path / "state")}
+    proc = start_holder(tmp_path, 2)
+    proc.kill()  # the parent only: the `sleep` child inherits the descriptor
+    proc.wait(timeout=10)
+    orphans = [int(pid) for pid in bash_eval("cti_slot_lock_holders 2", env=env).split()]
+    try:
+        assert acquire_from_a_fresh_shell(tmp_path, 2).returncode == 1
+        assert orphans, "nothing was named as holding a lock that is demonstrably held"
+        assert [Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")[0] for pid in orphans] == [
+            b"sleep"
+        ]
+        # And the reclaim path the merge calls clears it. Only the lock's own
+        # holders: this state directory is not the machine's tier, so the port
+        # and install sweeps are refused (#124) and nothing else on the box moves.
+        bash_eval("cti_slot_reclaim 2 holders", env=env, want_stderr=True)
+        assert acquire_from_a_fresh_shell(tmp_path, 2).returncode == 0
+    finally:
+        for pid in orphans:
+            with contextlib.suppress(ProcessLookupError):
+                os.kill(pid, signal.SIGKILL)
 
 
 def test_an_interrupted_previous_holder_is_named_on_acquire(tmp_path: Path) -> None:
@@ -383,6 +450,14 @@ def pool_run(
         "CTI_RUN_SH": str(executable(tmp_path / "stub-run.sh", STUB_RUN)),
         "CTI_WINDOWS_TASKLIST": str(executable(tmp_path / "tasklist.sh", TASKLIST_FREE)),
         "CTI_STUB_TRACE": str(tmp_path / "trace.tsv"),
+        # A machine with room for any N, so a test about scheduling is about
+        # scheduling. The memory pre-flight (#125) reads the real host, and this
+        # suite runs several pool runs at once on a box that also has to have
+        # room for the Arma tier — so left unstaged, "three slots are all used"
+        # would fail whenever the machine happened to be busy, which is a red
+        # about the wrong thing. The tests that are about the pre-flight stage a
+        # smaller number over the top of this one.
+        "CTI_SLOT_MEM_AVAILABLE_MB": "1000000",
         **(extra_env or {}),
     }
     # S603: this repo's own runner, against a stub this test wrote.
@@ -582,6 +657,132 @@ def test_the_run_records_the_memory_it_actually_used(tmp_path: Path) -> None:
     assert pool["peak_mem_used_kb"] > 0
     assert pool["least_mem_available_kb"] > 0
     assert pool["wall_secs"] >= 0
+
+
+# ------------------------------------------------------------ memory pre-flight
+# Issue #125. A slot lock answers "is anyone else in slot 2?" and cannot answer
+# "is there room for a third world?" — so two pools took three slots each on one
+# 12 GB machine, six worlds bottomed it out at 39 MiB available, and two probes
+# came back `node_crashed` twenty minutes later. The pre-flight is the host
+# guard's shape applied to memory: a reading before anything is launched.
+
+
+def mem_floor(slots: int) -> int:
+    return int(bash_eval(f"cti_slot_mem_floor_mb {slots}"))
+
+
+def test_the_memory_floor_is_the_measured_per_slot_footprint_with_headroom() -> None:
+    """The number has to come from the measurements, not from a round figure.
+
+    #44 measured a heavy slot at ~2.43 GB, and clean N=3 pool runs have since
+    measured the whole tier at 7,293-7,365 MiB peak RSS. So the floor for three
+    slots must clear the heaviest of those runs with real margin on top — and
+    must not clear it by so much that a machine which has carried the corpus at
+    N=3 would be refused it (8.6 GB available at rest, ADR-0028).
+    """
+    heaviest_measured_n3 = 7365
+    available_at_rest = int(8.6 * 1024)
+    assert heaviest_measured_n3 + 512 <= mem_floor(3) <= available_at_rest
+    # Monotonic, and each slot costs the same: a fourth is never cheaper.
+    assert [mem_floor(n) for n in (1, 2, 3)] == sorted(mem_floor(n) for n in (1, 2, 3))
+    assert mem_floor(2) - mem_floor(1) == mem_floor(3) - mem_floor(2)
+
+
+def test_the_fit_is_the_largest_slot_count_the_reading_carries() -> None:
+    def fit(want: int, avail: int) -> int:
+        return int(bash_eval(f"cti_slot_mem_fit {want} {avail}"))
+
+    assert fit(3, mem_floor(3)) == 3
+    assert fit(3, mem_floor(3) - 1) == 2
+    assert fit(3, mem_floor(1)) == 1
+    assert fit(3, mem_floor(1) - 1) == 0
+    # Never more than was asked for: the floor is a ceiling on N, not a target.
+    assert fit(1, mem_floor(3)) == 1
+
+
+def test_a_machine_under_the_floor_is_refused_before_anything_is_launched(
+    tmp_path: Path,
+) -> None:
+    """Fail-closed, and cheap for the caller: nothing was launched, so nothing is lost.
+
+    The alternative is what #125 recorded — a run that starts under the floor
+    and produces non-results N at a time, twenty minutes later, wearing a class
+    that reads like the code's fault.
+    """
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "3",
+        extra_env={"CTI_SLOT_MEM_AVAILABLE_MB": str(mem_floor(1) - 1)},
+    )
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    assert "failure_class=infra_unavailable" in result.stderr
+    # The reading, not a mystery: both numbers that made the decision.
+    assert str(mem_floor(1) - 1) in result.stderr
+    assert str(mem_floor(1)) in result.stderr
+    assert not (tmp_path / "trace.tsv").exists(), "a world was launched under the floor"
+
+
+def test_a_reading_that_could_not_be_taken_is_not_a_reading_that_passed(
+    tmp_path: Path,
+) -> None:
+    """The host guard's rule, applied to the other guard on the same machine."""
+    result = pool_run(tmp_path, "--slots", "3", extra_env={"CTI_SLOT_MEM_AVAILABLE_MB": "unknown"})
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    assert "failure_class=infra_unavailable" in result.stderr
+    assert not (tmp_path / "trace.tsv").exists()
+
+
+def test_a_machine_that_fits_two_slots_runs_at_two_and_says_so(tmp_path: Path) -> None:
+    """The middle answer. A smaller pool is a slower run, not a wrong one.
+
+    Refusing outright would make a machine with a browser open unable to run the
+    corpus at all, which is worse than running it in two slots.
+    """
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "3",
+        extra_env={"CTI_SLOT_MEM_AVAILABLE_MB": str(mem_floor(2))},
+    )
+    assert result.returncode == EXIT_PASS, result.stderr[-4000:]
+    assert len(pool_json(tmp_path)["slots"]) == 2
+    assert "running at N=2" in result.stderr
+    assert sorted(verdicts_by_probe(tmp_path)) == ALL_PROBES
+
+
+def test_the_reading_is_logged_even_when_it_lets_the_run_through(tmp_path: Path) -> None:
+    """How close was that? A green run's own log should answer it."""
+    result = pool_run(tmp_path, "--slots", "3")
+    assert result.returncode == EXIT_PASS, result.stderr[-4000:]
+    assert re.search(r"memory: \d+ MiB available on local", result.stderr), result.stderr[-4000:]
+    assert f"{mem_floor(3)} MiB" in result.stderr
+
+
+def test_the_pool_stops_taking_new_work_when_the_machine_runs_out_mid_run(
+    tmp_path: Path,
+) -> None:
+    """The re-check between probes, which is one `awk` against a world of minutes.
+
+    What it catches is what the bring-up reading cannot: somebody else arriving
+    afterwards. It stops the pool taking *new* work rather than interrupting the
+    work in flight — interrupting a running world would manufacture the
+    non-result being avoided — and the pool carries the class itself, because
+    the whole point is that no probe launched to carry it.
+    """
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "2",
+        extra_env={
+            "CTI_SLOT_MEM_AVAILABLE_MB": str(mem_floor(2)),
+            "CTI_SLOT_MEM_RUNNING_FLOOR_MB": str(mem_floor(2) + 1),
+        },
+    )
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    pool = pool_json(tmp_path)
+    assert "running floor" in pool["stopped_early"]
+    assert pool["not_run"] == ALL_PROBES, pool["not_run"]
 
 
 def test_the_verdict_names_the_slot_and_the_host(tmp_path: Path) -> None:

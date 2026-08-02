@@ -137,6 +137,87 @@ cti_slot_env() {
     printf 'CTI_TIER_SLOT=%s\n' "$n"
 }
 
+# ---------------------------------------------------------------------- memory
+# How many slots the machine has room for *right now* (#125).
+#
+# A slot lock answers "is anyone else in slot 2?" and nothing else. It cannot
+# answer "is there memory for a third world?", and on 2026-08-02 that gap became
+# a red: two pools ran on one 12 GB machine, `20260802T141637Z-pool` on slots
+# 0-2 and `20260802T141804Z-pool` on slots 3-5, six worlds between them. Both
+# bottomed out at ~39 MiB available, and both watched a 2 s loop go silent for
+# four minutes and typed it `node_crashed`. Neither had done anything wrong by
+# the locks; the second simply started into a machine that was already full.
+#
+# So the pool asks the same question the host guard asks about the human, in the
+# same fail-closed shape: a reading taken before anything is launched, and a
+# refusal that costs the caller nothing because nothing was launched. The
+# difference is that a pool has a middle answer — fewer slots — and it takes it,
+# out loud, rather than refusing a run the machine could still have carried.
+#
+# The floor is measurement, not arithmetic. #44 measured a heavy slot (server
+# 1.14-1.23 GB + headless client 1.16-1.20 GB + daemon 35 MB) at ~2.43 GB, and
+# ADR-0028 warned its N=3 figure was extrapolated from that. Three clean N=3
+# pool runs have since measured it: peak tier RSS 7,293 / 7,349 / 7,365 MiB, so
+# 2,431-2,455 MiB a slot. The extrapolation held, and 2,500 is it rounded up.
+CTI_SLOT_MEM_PER_SLOT_MB="${CTI_SLOT_MEM_PER_SLOT_MB:-2500}"
+# What is left over when a healthy pool is at its heaviest. The same three runs
+# bottomed out at 1,465 / 1,528 / 1,871 MiB available; 1,024 is under all three,
+# so a run that would have been one of them is not refused, and the run that
+# reached 39 MiB would have been.
+CTI_SLOT_MEM_HEADROOM_MB="${CTI_SLOT_MEM_HEADROOM_MB:-1024}"
+# The between-probes re-check, which is a different question: the pool is
+# already up, N-1 worlds are already counted, and what is being asked is only
+# whether the machine still has margin at all. Half the lowest healthy trough
+# above, so it clears a good run by 2x and the starved one by 26x.
+CTI_SLOT_MEM_RUNNING_FLOOR_MB="${CTI_SLOT_MEM_RUNNING_FLOOR_MB:-512}"
+
+# MemAvailable on the host the run executes on, in MiB. The kernel's own
+# estimate of what a new workload can have without swapping, which is the
+# question being asked — MemFree is not, because the page cache is reclaimable
+# and a machine with none free may still have room for a world.
+#
+# `CTI_SLOT_MEM_AVAILABLE_MB` overrides it, for a test that needs to stage a
+# machine at a memory it does not have.
+cti_slot_mem_available_mb() {
+    local kb
+    if [[ -n "${CTI_SLOT_MEM_AVAILABLE_MB:-}" ]]; then
+        # Validated like the real reading, so a staged machine cannot be given a
+        # memory the check would have refused to believe.
+        [[ "$CTI_SLOT_MEM_AVAILABLE_MB" =~ ^[0-9]+$ ]] || {
+            cti_slot_log "CTI_SLOT_MEM_AVAILABLE_MB is not a number of MiB: $CTI_SLOT_MEM_AVAILABLE_MB"
+            return 1
+        }
+        printf '%s\n' "$CTI_SLOT_MEM_AVAILABLE_MB"
+        return 0
+    fi
+    kb="$(cti_host_exec "$CTI_TIER_HOST" awk '/^MemAvailable:/ { print $2; exit }' /proc/meminfo 2>/dev/null)"
+    [[ "$kb" =~ ^[0-9]+$ ]] || {
+        # A reading that could not be taken is not a reading that passed — the
+        # host guard's rule, and the same class comes out the other end.
+        cti_slot_log "could not read MemAvailable on $CTI_TIER_HOST"
+        return 1
+    }
+    printf '%s\n' $((kb / 1024))
+}
+
+# What N slots need, in MiB.
+cti_slot_mem_floor_mb() {
+    printf '%s\n' $(($1 * CTI_SLOT_MEM_PER_SLOT_MB + CTI_SLOT_MEM_HEADROOM_MB))
+}
+
+# The largest slot count at or below `$1` that fits in `$2` MiB. `0` means not
+# even one slot fits, which is the refusal.
+cti_slot_mem_fit() {
+    local want="$1" avail="$2" n
+    for ((n = want; n >= 1; n--)); do
+        ((avail >= $(cti_slot_mem_floor_mb "$n"))) && {
+            printf '%s\n' "$n"
+            return 0
+        }
+    done
+    printf '0\n'
+}
+
 # ------------------------------------------------------------------ allocation
 # One flock(2) per slot, non-blocking, exactly as ADR-0016's single lock but N
 # times. flock rather than a pidfile for the property that makes "which slot is
@@ -211,6 +292,13 @@ cti_slot_lock_holders() {
             }
         done
     done
+    # Explicit, because without it this function's exit status is whatever the
+    # last `[[ ]]` in the last process's last descriptor happened to be — which
+    # is `1` on any machine whose highest-numbered pid is not a lock holder, i.e.
+    # nearly always. It printed the right answer and returned failure with it,
+    # and under load that was a red one full-suite run in three (#121). A finder
+    # reports what it found; not finding one more thing is not an error.
+    return 0
 }
 
 cti_slot_holder() {
@@ -272,6 +360,7 @@ cti_slot_install_pids() {
         exe="$(readlink "/proc/$pid/exe" 2>/dev/null)" || continue
         [[ "$exe" == "$install"* ]] && printf '%s\n' "$pid"
     done
+    return 0 # a finder, not a test — see cti_slot_lock_holders
 }
 
 #
