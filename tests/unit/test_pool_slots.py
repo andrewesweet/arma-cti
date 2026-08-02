@@ -723,6 +723,28 @@ def test_a_machine_under_the_floor_is_refused_before_anything_is_launched(
     assert not (tmp_path / "trace.tsv").exists(), "a world was launched under the floor"
 
 
+def test_a_caller_who_asked_to_wait_queues_on_the_machine_too(tmp_path: Path) -> None:
+    """`--wait` queues on the locks; a full machine is somebody else's run as surely.
+
+    Met in anger on 2026-08-02: a `--wait 1800` was refused in two seconds
+    because a sibling agent's three worlds were up — a condition that clears
+    when the thing it is queueing behind finishes. Refusing that caller is the
+    wrong half of fail-closed. Asserted through the deadline rather than through
+    a clock: `--wait 0` refuses at once, and a `--wait` that is set says it is
+    waiting before it gives up.
+    """
+    starved = {"CTI_SLOT_MEM_AVAILABLE_MB": str(mem_floor(1) - 1)}
+    at_once = pool_run(tmp_path, "--slots", "1", "--wait", "0", extra_env=starved)
+    assert at_once.returncode == EXIT_INFRA_UNAVAILABLE, at_once.stderr[-4000:]
+    assert "waited" not in at_once.stderr
+
+    queued = pool_run(tmp_path, "--slots", "1", "--wait", "6", extra_env=starved)
+    assert queued.returncode == EXIT_INFRA_UNAVAILABLE, queued.stderr[-4000:]
+    assert "waiting up to 6s for the machine" in queued.stderr
+    assert "waited 6s for the machine and gave up" in queued.stderr
+    assert not (tmp_path / "trace.tsv").exists()
+
+
 def test_a_reading_that_could_not_be_taken_is_not_a_reading_that_passed(
     tmp_path: Path,
 ) -> None:

@@ -310,7 +310,31 @@ fi
 # `node_crashed` non-results twenty minutes later. The reading is logged whether
 # it refuses or not, because "how close was that?" is a question every pool run
 # should be able to answer from its own log.
-if ! MEM_AVAILABLE_MB="$(cti_slot_mem_available_mb)"; then
+#
+# `--wait` queues on this exactly as it queues on the locks, and for the same
+# stated reason: it "sleeps until somebody else's run ends, which is the whole of
+# what --wait is for". A full machine is somebody else's run as surely as a held
+# lock is — met on 2026-08-02, when a `--wait 1800` was refused in two seconds
+# because a sibling agent's three worlds were up. Refusing a caller who asked to
+# queue, on a condition that clears when the thing it is queueing behind
+# finishes, is the wrong half of fail-closed.
+memory_preflight() {
+    local deadline=$((SECONDS + WAIT_SECS)) said=0
+    while :; do
+        MEM_AVAILABLE_MB="$(cti_slot_mem_available_mb)" || return 2
+        MEM_FIT="$(cti_slot_mem_fit "$WANT_SLOTS" "$MEM_AVAILABLE_MB")"
+        ((MEM_FIT > 0)) && return 0
+        ((SECONDS < deadline)) || return 1
+        ((said == 0)) && {
+            log "memory: ${MEM_AVAILABLE_MB} MiB available on $HOST, under the $(cti_slot_mem_floor_mb 1) MiB one slot needs — waiting up to ${WAIT_SECS}s for the machine"
+            said=1
+        }
+        sleep 5
+    done
+}
+memory_preflight
+case $? in
+2)
     {
         printf '\n[regress] the memory pre-flight could not read %s'"'"'s memory.\n' "$HOST"
         printf '[regress] A check that could not run is not a check that passed.\n'
@@ -319,14 +343,15 @@ if ! MEM_AVAILABLE_MB="$(cti_slot_mem_available_mb)"; then
         printf 'failure_detail=could not read MemAvailable on %s\n' "$HOST"
     } >&2
     exit "${CLASS_RANK[infra_unavailable]}"
-fi
-MEM_FIT="$(cti_slot_mem_fit "$WANT_SLOTS" "$MEM_AVAILABLE_MB")"
+    ;;
+esac
 log "memory: ${MEM_AVAILABLE_MB} MiB available on $HOST; $WANT_SLOTS slot(s) want $(cti_slot_mem_floor_mb "$WANT_SLOTS") MiB (${CTI_SLOT_MEM_PER_SLOT_MB} MiB a slot + ${CTI_SLOT_MEM_HEADROOM_MB} MiB headroom)"
 if ((MEM_FIT == 0)); then
     {
         printf '\n[regress] %s has %s MiB available and one slot needs %s MiB — this is infra_unavailable, not a result.\n' \
             "$HOST" "$MEM_AVAILABLE_MB" "$(cti_slot_mem_floor_mb 1)"
         printf '[regress] Nothing was launched. A pool started under the floor produces non-results N at a time (#125).\n'
+        ((WAIT_SECS > 0)) && printf '[regress] waited %ss for the machine and gave up.\n' "$WAIT_SECS"
         printf 'verdict=FAIL\n'
         printf 'failure_class=infra_unavailable\n'
         printf 'failure_detail=%s MiB available, floor for one slot is %s MiB\n' \

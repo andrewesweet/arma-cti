@@ -77,7 +77,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   nothing. The floor is `N × 2,500 MiB + 1,024 MiB`, and both numbers come from what the tier has
   actually been measured using rather than from arithmetic. It is re-asked between probes too, so
   somebody else arriving at minute eight stops the pool taking new work instead of starving what is
-  already running. #125.
+  already running, and `--wait` queues on the machine the way it already queued on the locks — a
+  full machine is somebody else's run as surely as a held lock is. #125.
 
 - **The Arma tier's own test suite no longer fails one full run in two.** The test for the property
   the whole slot design rests on — the kernel frees a dead holder's lock, with no reaper and no
