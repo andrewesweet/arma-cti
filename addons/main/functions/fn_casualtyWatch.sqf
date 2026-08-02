@@ -79,7 +79,9 @@ cti_casualtyWatch = addMissionEventHandler ["EntityKilled", {
     ([_instigator] call _whose) params ["_bySquad", "_bySide"];
 
     private _at = getPosATL _unit;
-    private _record = createHashMapFromArray [
+    // Built through the exported schema (#74): twelve fields is where a copy of
+    // the daemon's declaration would drift first, so this is the declaration.
+    private _record = ["death", [
         // The death's own clock reading, not the report's: reports are five
         // seconds apart and a firefight is not, so timing every casualty in a
         // batch to the batch would flatten the thing being reconstructed.
@@ -97,7 +99,7 @@ cti_casualtyWatch = addMissionEventHandler ["EntityKilled", {
         // The vehicle only when it is not the shooter, so a row saying
         // `by_vehicle` says something happened that a rifle could not do.
         ["by_vehicle", ["", typeOf _killer] select (!isNull _killer && {_killer isNotEqualTo _instigator})]
-    ];
+    ]] call cti_fnc_reportObject;
 
     private _pending = missionNamespace getVariable ["cti_casualties", []];
     // A bound, because a daemon that has stopped collecting must not be able to

@@ -66,14 +66,19 @@ private _reporter = [_interval, _beat] spawn {
         _beat set ["turns", (_beat get "turns") + 1];
         _beat set ["at", diag_tickTime];
 
-        private _payload = createHashMapFromArray [
+        // The whole report, built through the schema the daemon reads it with
+        // (#74). Which five things the world reports and what each is called is
+        // one declaration in `cti_daemon.report`, exported into the same JSON
+        // the Command catalogue rides in, rather than a list here that has to
+        // be kept in step with a list there.
+        private _payload = ["payload", [
             ["time", time],
             ["presence", call cti_fnc_presenceSample],
             ["squads", call cti_fnc_squadSample],
             ["contacts", call cti_fnc_contactSample],
             ["hq", call cti_fnc_hqSample],
             ["casualties", call cti_fnc_casualtySample]
-        ];
+        ]] call cti_fnc_reportObject;
 
         _turns set ["sent", (_turns get "sent") + 1];
         // In-game second and real millisecond both: the daemon answers a line it

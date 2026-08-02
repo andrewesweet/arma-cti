@@ -98,6 +98,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   one alike, and a new red-by-design probe (`schema-stale`) asks each guard the question in-world
   and lives to tell.
 
+- **A report the daemon cannot read no longer leaves half of itself behind.** The observe report was
+  folded into the Campaign field by field as it was read, so a batch of casualties whose fourth row
+  was malformed had already written the first three when the refusal was raised — a timeline that
+  looks complete and is not. The whole report is now read before any of it is acted on, so a refusal
+  leaves the Campaign and its record exactly as they were. The refusal also names the field that was
+  wrong, by its path in the document (`casualties.deaths[3].by_side`), rather than saying that
+  something in the report was.
+
 - **A dead daemon is no longer indistinguishable from a quiet one.** The shim reports a transport
   failure as `{"error": "..."}`, which is a JSON object — so it passed every loop's only check and
   read as *success with nothing in it*. The map froze, income stopped, the AI opponent went quiet,

@@ -64,6 +64,7 @@ class CfgFunctions
             class mapIssue {};
             class effectApply {};
             class effectPump {};
+            class reportObject {};
             class presenceSample {};
             class placeOf {};
             class placePosition {};

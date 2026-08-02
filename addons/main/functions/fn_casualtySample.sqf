@@ -35,4 +35,7 @@ isNil {
     missionNamespace setVariable ["cti_casualtiesDropped", 0];
 };
 
-createHashMapFromArray [["deaths", _deaths], ["dropped", _dropped]]
+// Built through the exported schema (#74), like every named object in the
+// report. The early exit above is the same two fields spelled out, because a
+// machine that is not the server has no schema question to ask.
+["casualties", [["deaths", _deaths], ["dropped", _dropped]]] call cti_fnc_reportObject

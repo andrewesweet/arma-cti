@@ -133,17 +133,20 @@ private _report = createHashMap;
         if (_targetType isNotEqualTo "") then {
             _kind = (_targetType call BIS_fnc_objectType) # 1;
         };
-        _seen pushBack (createHashMapFromArray [
+        // Built through the exported schema (#74): a sighting says a place, a
+        // perceived kind and an age, and which words those are is the daemon's
+        // declaration rather than a copy kept in step by hand.
+        _seen pushBack (["sighting", [
             ["at", [_targetPosition, _objectives, _bases, true] call cti_fnc_placeOf],
             ["kind", _kind],
             ["age", _age]
-        ]);
+        ]] call cti_fnc_reportObject);
     } forEach _byTarget;
 
-    _report set [_sideName, createHashMapFromArray [
+    _report set [_sideName, ["contact", [
         ["seen", _seen],
         ["observed", _observed]
-    ]];
+    ]] call cti_fnc_reportObject];
 } forEach _enemyOf;
 
 _report

@@ -25,10 +25,12 @@ private _seen = createHashMap;
 {
     private _baseId = _x getOrDefault ["id", ""];
     private _fell = _down getOrDefault [_baseId, createHashMap];
-    _seen set [_baseId, createHashMapFromArray [
+    // Built through the exported schema (#74), like every other named object in
+    // the report: the daemon declares the fields and this reads them back.
+    _seen set [_baseId, ["hq", [
         ["destroyed", _baseId in _down],
         ["by", _fell getOrDefault ["by", ""]]
-    ]];
+    ]] call cti_fnc_reportObject];
 } forEach (_map getOrDefault ["bases", []]);
 
 _seen

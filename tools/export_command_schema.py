@@ -25,7 +25,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
-from cti_daemon import commands, economy, port, protocol, squads
+from cti_daemon import commands, economy, port, protocol, report, squads
 
 
 def render(table: economy.EconomyTable) -> str:
@@ -45,6 +45,12 @@ def render(table: economy.EconomyTable) -> str:
         "reply_envelope": {
             outcome: list(keys) for outcome, keys in protocol.REPLY_ENVELOPE.items()
         },
+        # What the world reports back, shape by shape (#74). The outbound
+        # catalogue's counterpart: `cti_fnc_reportObject` builds every named
+        # object in the observe report against these names, so the document the
+        # samplers assemble and the document `cti_daemon.report` reads are one
+        # declaration rather than two that agree by convention.
+        "observe_report": report.exported(),
         "commands": {name: list(args) for name, args in commands.CATALOGUE.items()},
         "effects": {name: list(args) for name, args in commands.EFFECTS.items()},
         "sides": list(commands.SIDES),

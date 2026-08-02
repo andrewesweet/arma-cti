@@ -36,7 +36,10 @@ private _seen = createHashMap;
             // nearest-place fallback: a Squad that is marching is marching.
             private _at = [getPosATL leader _group, _objectives, _bases] call cti_fnc_placeOf;
 
-            _seen set [_squadId, createHashMapFromArray [["size", _living], ["at", _at]]];
+            // Built through the exported schema (#74): the field names are the
+            // daemon's own declaration rather than a copy of it kept in step by
+            // hand.
+            _seen set [_squadId, ["squad", [["size", _living], ["at", _at]]] call cti_fnc_reportObject];
         };
     };
 } forEach (missionNamespace getVariable ["cti_squads", createHashMap]);

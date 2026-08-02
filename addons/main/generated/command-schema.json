@@ -16,6 +16,51 @@
       "error"
     ]
   },
+  "observe_report": {
+    "payload": [
+      "time",
+      "presence",
+      "squads",
+      "contacts",
+      "hq",
+      "casualties"
+    ],
+    "squad": [
+      "size",
+      "at"
+    ],
+    "contact": [
+      "seen",
+      "observed"
+    ],
+    "sighting": [
+      "at",
+      "kind",
+      "age"
+    ],
+    "hq": [
+      "destroyed",
+      "by"
+    ],
+    "casualties": [
+      "deaths",
+      "dropped"
+    ],
+    "death": [
+      "at",
+      "pos",
+      "unit",
+      "type",
+      "squad",
+      "side",
+      "place",
+      "by_unit",
+      "by_type",
+      "by_squad",
+      "by_side",
+      "by_vehicle"
+    ]
+  },
   "commands": {
     "purchase": [
       "squad_type"

@@ -179,12 +179,18 @@ def test_a_death_whose_identity_is_not_a_name_is_refused(tmp_path: Path) -> None
 def test_one_unreadable_death_refuses_the_whole_batch(tmp_path: Path) -> None:
     # Not a partial read: a batch half-written is a timeline that looks complete
     # and is not, and a record nobody can trust is worse than a refusal.
+    #
+    # It used to be a partial read, and this test asserted the half — the rows
+    # ahead of the bad one were already on disk when the refusal was raised,
+    # which is exactly what the paragraph above says must not happen. #74 made
+    # the whole report parse before any of it is folded, so a refusal now leaves
+    # the record it arrived at.
     log = tmp_path / "telemetry.jsonl"
     daemon = Daemon(telemetry_path=log)
     reply = report(daemon, "c-13", deaths=[death(unit="first"), "not a death"])
 
     assert reply["error"]["class"] == "malformed_request"
-    assert [row["unit"] for row in rows(log, "casualty")] == ["first"]
+    assert [row["unit"] for row in rows(log, "casualty")] == []
 
 
 def test_a_casualties_field_that_is_not_a_batch_is_refused(tmp_path: Path) -> None:
