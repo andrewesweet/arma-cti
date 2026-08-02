@@ -84,9 +84,7 @@ private _stuckAfter = 90;
 ["effect_pump", _interval, [_drain, _deferrals, _stuckAfter], {
     params ["_drain", "_deferrals", "_stuckAfter"];
 
-    private _answer = [
-        format ["poll-%1", round (diag_tickTime * 1000)], "poll"
-    ] call cti_fnc_daemonCall;
+    private _answer = [["poll"] call cti_fnc_requestId, "poll"] call cti_fnc_daemonCall;
     _drain set ["polls", (_drain get "polls") + 1];
 
     // Every outcome that is not `ok` has already been classified and logged

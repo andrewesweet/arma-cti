@@ -109,7 +109,7 @@ def test_an_acknowledgement_records_the_effects_the_world_refused_for_good(
     # behind it moves. The Campaign paid for that effect and never got it, so the
     # row belongs in the record and not only in the server's log.
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     daemon.outbox.push(ORDER_ISSUED)
 
     reply = reply_to(
@@ -131,7 +131,7 @@ def test_an_acknowledgement_records_the_effects_the_world_refused_for_good(
 
 
 def test_an_acknowledgement_whose_dead_letters_are_not_rows_is_malformed(tmp_path: Path) -> None:
-    daemon = Daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
     daemon.outbox.push(ORDER_ISSUED)
     reply = reply_to(daemon, id="r-12", verb="ack", payload={"through": 1, "dead": ["1"]})
     assert reply["status"] == "error"
@@ -140,7 +140,7 @@ def test_an_acknowledgement_whose_dead_letters_are_not_rows_is_malformed(tmp_pat
 
 def test_an_acknowledgement_carrying_no_dead_letters_writes_no_row(tmp_path: Path) -> None:
     log = tmp_path / "telemetry.jsonl"
-    daemon = Daemon(telemetry_path=log)
+    daemon = build_daemon(telemetry_path=log)
     daemon.outbox.push(ORDER_ISSUED)
 
     reply_to(daemon, id="r-13", verb="ack", payload={"through": 1, "dead": []})

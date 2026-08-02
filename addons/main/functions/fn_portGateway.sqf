@@ -82,7 +82,10 @@ _command set ["side", _side];
 // Synchronous by construction: ADR-0012 makes a Command's reply a judgement and
 // never work, so it never waits on anything and stays far inside the engine's
 // 1000 ms blocking-call stall cap (ADR-0005).
-private _id = format ["cmd-%1-%2", _owner, round (diag_tickTime * 1000)];
+// Counted rather than clocked: two Commands from two machines in the same
+// millisecond after a scheduler stall shared an id, and an id is what the daemon
+// deduplicates on (#103, ADR-0034).
+private _id = ["cmd", str _owner] call cti_fnc_requestId;
 private _answer = [_id, "command", _command] call cti_fnc_daemonCall;
 private _outcome = _answer get "outcome";
 

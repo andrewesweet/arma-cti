@@ -67,10 +67,9 @@ private _told = createHashMap;
 
         if (_target > 0) then {
             // Unique per request, for the reason cti_fnc_presenceReport gives:
-            // the daemon deduplicates on the whole line (#69, ADR-0034) and
-            // in-game time is not a clock that only advances.
+            // the daemon deduplicates on the whole line (#69, ADR-0034).
             private _answer = [
-                format ["view-%1-%2", _side, round (diag_tickTime * 1000)],
+                ["view", _side] call cti_fnc_requestId,
                 "view", createHashMapFromArray [["side", _side]]
             ] call cti_fnc_daemonCall;
 

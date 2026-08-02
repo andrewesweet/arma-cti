@@ -22,6 +22,7 @@ caller's language is.
 
 from __future__ import annotations
 
+import time
 from typing import TYPE_CHECKING, Any
 
 from cti_daemon import archive, commands, observation, report
@@ -261,7 +262,16 @@ class ReportCycle:
         )
         # Summarised after the winning row is on disk, so the archive is a
         # complete account of the Campaign rather than one row short of it.
+        #
+        # Measured, because this reads a file that has grown all session and it
+        # does it inside the `observe` the world is blocked on (#103): the read
+        # is streamed rather than slurped, and how long it took is a number on
+        # disk rather than an assumption, against ADR-0005's 1000 ms stall cap.
+        started = time.perf_counter_ns()
         summary = archive.summarise(self._telemetry_path, outcome)
+        self._telemetry.record(
+            "campaign_summarised", read_us=(time.perf_counter_ns() - started) // 1_000
+        )
         # The same outbox every other effect rides, reached through the Campaign
         # that owns it: an end screen is an effect like any other (ADR-0012).
         self.campaign.outbox.push(

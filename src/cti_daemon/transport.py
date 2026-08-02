@@ -22,7 +22,18 @@ if TYPE_CHECKING:
 
 DEFAULT_HOST: Final = "127.0.0.1"
 DEFAULT_PORT: Final = 9099
-DEFAULT_TELEMETRY: Final = Path(".spike-out/daemon-telemetry.jsonl")
+# Where a *play* session's evidence lands when nobody says otherwise. Not
+# `.spike-out/` any more (#103): that directory belongs to the harness, which
+# truncates it at the start of every run because per-run evidence is what it
+# holds (ADR-0023 says so of the file by name). A Play Session's telemetry is the
+# record of a Campaign that was actually played, and the harness deleting it on
+# its next run would be the loss nobody noticed until they went looking.
+#
+# Retention: kept until the human deletes it, and appended to across sessions.
+# Nothing truncates this file — the archive of a finished Campaign is written
+# beside it under `campaigns/` (ADR-0023) and is the durable record; this is the
+# raw account the archive is summarised from.
+DEFAULT_TELEMETRY: Final = Path(".cti-play/daemon-telemetry.jsonl")
 
 # Where this checkout keeps its authored files. Here rather than in `daemon.py`
 # because this module is Main (#76): knowing the repo layout is a composition

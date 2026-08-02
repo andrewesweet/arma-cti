@@ -148,7 +148,13 @@ class Mission
 			};
 			id=2;
 		};
-		// The headless client runs Squad AI. The wiki: "Don't forget to set NAME
+		// A headless client slot, and today it simulates nothing: every group is
+		// created on the server (cti_fnc_effectApply) and the only setGroupOwner
+		// in the tree is the diagnostic cti_fnc_desyncLoad, so an HC crash costs
+		// the world nothing (#103). It is here because the MVP test topology has
+		// one and because offloading Squad AI to it is Phase-4 work — see #117
+		// for what has to be settled in-world before a Squad may be handed over.
+		// The wiki: "Don't forget to set NAME
 		// property, it is necessary for the Headless Client to work correctly."
 		// Name at item level, not in Attributes — an unnamed slot is never
 		// assigned and the client never leaves role selection (phase-0 blocker).

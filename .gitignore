@@ -25,3 +25,6 @@ mutants/
 
 # Spike output
 .spike-out/
+
+# Play-session evidence: the daemon's default telemetry and campaign archives
+.cti-play/

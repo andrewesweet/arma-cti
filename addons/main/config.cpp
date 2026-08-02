@@ -41,6 +41,7 @@ class CfgFunctions
             class loopWatch {};
             class everyInterval {};
             class offServer {};
+            class requestId {};
             class prngNew {};
             class prngNext {};
             class prngInt {};

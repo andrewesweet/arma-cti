@@ -75,14 +75,12 @@ missionNamespace setVariable ["cti_presenceReport", _turns];
     ]] call cti_fnc_reportObject;
 
     _turns set ["sent", (_turns get "sent") + 1];
-    // In-game second and real millisecond both: the daemon answers a line it has
-    // already answered from its record rather than folding the report twice
-    // (#69, ADR-0034), so an id has to be unique per request. In-game time alone
-    // is not — it stops when the world is paused and accelerates when it is not.
-    private _answer = [
-        format ["obs-%1-%2", round time, round (diag_tickTime * 1000)],
-        "observe", _payload
-    ] call cti_fnc_daemonCall;
+    // The daemon answers a line it has already answered from its record rather
+    // than folding the report twice (#69, ADR-0034), so an id has to be unique
+    // per request — which a clock, in-game or otherwise, does not guarantee
+    // (#103). cti_fnc_requestId counts.
+    private _answer = [["obs"] call cti_fnc_requestId, "observe", _payload]
+        call cti_fnc_daemonCall;
 
     // `replied` means the whole leg, out and back, and now it says so. It used
     // to be incremented for any reply shaped like a HashMap — which a shim

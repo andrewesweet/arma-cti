@@ -26,6 +26,7 @@ import json
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from pathlib import Path
 
     from cti_daemon.campaign import Outcome
@@ -47,25 +48,30 @@ def _is_command(row: dict[str, Any]) -> bool:
     )
 
 
-def _telemetry_rows(telemetry_path: Path) -> list[dict[str, Any]]:
+def _telemetry_rows(telemetry_path: Path) -> Iterator[dict[str, Any]]:
     """Every telemetry row written so far, skipping any the writer cut short.
 
     Telemetry is appended under a lock and never rewritten, so a partial line is
     only possible at the very end of a file being written as it is read. One
     unreadable line loses a number off a summary; raising here would lose the
     archive of a Campaign that had genuinely been won.
+
+    Streamed a line at a time rather than read whole (#103). This runs inside the
+    `observe` the world is blocked on, and the file has grown for the length of a
+    Campaign: holding the whole of a long session's telemetry in memory to count
+    five kinds of row is a cost that rises with exactly the Campaigns worth
+    summarising, and the frame behind the call waits for all of it.
     """
     if not telemetry_path.exists():
-        return []
-    rows: list[dict[str, Any]] = []
-    for line in telemetry_path.read_text(encoding="utf-8").splitlines():
-        try:
-            row = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if isinstance(row, dict):
-            rows.append(row)
-    return rows
+        return
+    with telemetry_path.open(encoding="utf-8") as sink:
+        for line in sink:
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(row, dict):
+                yield row
 
 
 def summarise(telemetry_path: Path, outcome: Outcome) -> dict[str, Any]:
