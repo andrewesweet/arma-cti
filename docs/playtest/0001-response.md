@@ -109,5 +109,9 @@ line is an answer too — it means you did not get to it.
 
 ## Anything else
 
+- General feedback: reported UI issues limit enjoyment for human commander right now. I issue
+  orders and get little feedback on anything after that until either an Objective changes hands
+  (which could do with a notification like you get in singleplayer when your objectives are
+  satisfied/changes) or a squad is silently wiped (which again could use a notification).
 - Worth looking at in *every* future session (candidate perceptual-checklist items):
 - Anything that made you want to stop playing:
