@@ -17,11 +17,12 @@ from conftest import REPO, reply_to, rows
 
 from cti_daemon import budget
 from cti_daemon.commands import Effect, serialise_effect
-from cti_daemon.daemon import POLL_GUARD_BYTES, Daemon
 from cti_daemon.transport import build_daemon
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    from cti_daemon.daemon import Daemon
 
 
 def encoded(daemon: Daemon, **envelope: object) -> str:
@@ -38,26 +39,18 @@ def spawn_effect(index: int) -> Effect:
     )
 
 
-def test_the_effects_guard_is_the_observations_guard(tmp_path: Path) -> None:
-    # One figure for both directions of the same cap, held together by this
-    # test rather than by two comments hoping about each other. Nine tenths of
-    # the cap: a reply merely close to truncating should fail a run, not a Play
-    # Session.
-    assert POLL_GUARD_BYTES == budget.REPORT_GUARD_BYTES
-    assert POLL_GUARD_BYTES * 10 == budget.RETURN_CAP_BYTES * 9
-    assert tmp_path.exists()
-
-
-def test_the_pump_carries_the_same_backstop_as_the_daemons_bound() -> None:
-    # The daemon bounds the drain; the world's own check is the backstop for the
-    # bound failing. Since #78 the backstop is not a literal at all: it is read
-    # out of the exported schema, so the two numbers are one number and the
-    # export is what holds them together. `test_budget.py` pins that seam; what
-    # is pinned here is that the drain's bound is the number being exported.
-    exported = json.loads(
-        (REPO / "addons" / "main" / "generated" / "command-schema.json").read_text(encoding="utf-8")
-    )
-    assert exported["reply_guard_bytes"] == POLL_GUARD_BYTES
+def test_the_drain_is_bounded_by_the_budget_module_rather_than_a_second_literal() -> None:
+    # #164: the drain used to carry its own `POLL_GUARD_BYTES = 9_216`, held
+    # equal to the budget's figure by a test — the two-literals-and-a-pairing-
+    # test shape #78 took out of SQF, surviving one module from the one built to
+    # own the wire caps. There is one figure now, so there is nothing left to
+    # hold together: what `test_budget.py` pins about the number (nine tenths of
+    # the cap, and exported to the world's own backstop) is what the drain is
+    # bounded by, by construction. Pinned here is only that the drain reads it
+    # from there rather than from a copy.
+    source = (REPO / "src" / "cti_daemon" / "daemon.py").read_text(encoding="utf-8")
+    assert "budget.REPORT_GUARD_BYTES" in source
+    assert str(budget.REPORT_GUARD_BYTES) not in source
 
 
 def test_one_poll_reply_stays_under_the_guard_however_long_the_backlog(tmp_path: Path) -> None:
@@ -66,7 +59,7 @@ def test_one_poll_reply_stays_under_the_guard_however_long_the_backlog(tmp_path:
         daemon.outbox.push(spawn_effect(index))
 
     line = encoded(daemon, id="w-1", verb="poll")
-    assert len(line) < POLL_GUARD_BYTES
+    assert len(line) < budget.REPORT_GUARD_BYTES
 
 
 def test_the_drain_is_bounded_at_the_entry_that_would_have_crossed_the_guard(
@@ -95,7 +88,7 @@ def test_the_drain_is_bounded_at_the_entry_that_would_have_crossed_the_guard(
             ]
         },
     }
-    assert len(json.dumps(one_more, separators=(",", ":"))) >= POLL_GUARD_BYTES
+    assert len(json.dumps(one_more, separators=(",", ":"))) >= budget.REPORT_GUARD_BYTES
 
 
 def test_one_drain_carries_a_measured_number_of_real_effects(tmp_path: Path) -> None:

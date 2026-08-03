@@ -24,6 +24,15 @@ against the map this Campaign is playing is a judgement about the world rather
 than about the document, and it lives in `cti_daemon.report_cycle` with the rest
 of the folding. This module turns a wire document into domain values and nothing
 else, which is what makes it testable without a daemon.
+
+A report this module cannot read is refused as `MalformedReportError`, naming
+the field path that was wrong, and `Daemon._observe` is the one place that turns
+it into the wire's own refusal (#164). One convention on one seam: `report_cycle`
+already raised its own `UnknownPlaceError` for the same edge to translate, while
+this module reached for `protocol.MalformedRequestError` and had a `request_id`
+threaded through every parser to build it with — a request id being a fact about
+the envelope a document knows nothing about. The edge holds the envelope; these
+two say what was wrong with the document.
 """
 
 from __future__ import annotations
@@ -31,7 +40,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Final, NoReturn, cast
 
-from cti_daemon import commands, contacts, protocol
+from cti_daemon import commands, contacts
 from cti_daemon import squads as squads_module
 
 if TYPE_CHECKING:
@@ -272,9 +281,22 @@ class Report:
     casualties: Casualties | None
 
 
-def _refuse(path: str, says: str, request_id: str | None) -> NoReturn:
-    detail = f"`{path}` must be {says}"
-    raise protocol.MalformedRequestError(detail, request_id)
+class MalformedReportError(Exception):
+    """The report is not one this schema can read.
+
+    Carries the field path the parsers already build, so a caller can say where
+    the report went wrong without parsing the sentence back apart.
+    """
+
+    def __init__(self, path: str, detail: str) -> None:
+        """Record which field was wrong, and the whole sentence that says so."""
+        super().__init__(detail)
+        self.path = path
+        self.detail = detail
+
+
+def _refuse(path: str, says: str) -> NoReturn:
+    raise MalformedReportError(path, f"`{path}` must be {says}")
 
 
 def _checked(
@@ -282,18 +304,17 @@ def _checked(
     says: str,
     value: object,
     path: str,
-    request_id: str | None,
     # The declared kind is what decides the type at run time, so a narrower
     # return here would be a lie every caller had to cast away.
 ) -> Any:  # noqa: ANN401 — see above
     """Read one value as the kind the schema declares, or refuse the report."""
     read = _CHECKERS[kind](value)
     if read is None:
-        _refuse(path, says, request_id)
+        _refuse(path, says)
     return read
 
 
-def _object(shape: Shape, value: object, path: str, request_id: str | None) -> dict[str, Any]:
+def _object(shape: Shape, value: object, path: str) -> dict[str, Any]:
     """Read one named object through its shape, or refuse the report.
 
     Refusing rather than reading as far as it parses: a Commander cannot tell an
@@ -302,7 +323,7 @@ def _object(shape: Shape, value: object, path: str, request_id: str | None) -> d
     """
     source = _as_object(value)
     if source is None:
-        _refuse(path, shape.says, request_id)
+        _refuse(path, shape.says)
     prefix = f"{path}." if path else ""
     return {
         field.name: (
@@ -314,7 +335,6 @@ def _object(shape: Shape, value: object, path: str, request_id: str | None) -> d
                 field.says,
                 source.get(field.name),
                 f"{prefix}{field.name}",
-                request_id,
             )
             if field.name in source or field.absent is REQUIRED
             else field.absent
@@ -323,18 +343,18 @@ def _object(shape: Shape, value: object, path: str, request_id: str | None) -> d
     }
 
 
-def _squads(reported: object, request_id: str | None) -> dict[str, squads_module.Held] | None:
+def _squads(reported: object) -> dict[str, squads_module.Held] | None:
     """Read the world's account of its Squads."""
     if reported is None:
         return None
     seen: dict[str, squads_module.Held] = {}
     for squad_id, said in cast("dict[str, Any]", reported).items():
-        squad = _object(SHAPES["squad"], said, f"squads.{squad_id}", request_id)
+        squad = _object(SHAPES["squad"], said, f"squads.{squad_id}")
         seen[squad_id] = squads_module.Held(size=squad["size"], at=squad["at"])
     return seen
 
 
-def _contacts(reported: object, request_id: str | None) -> dict[str, SideContacts] | None:
+def _contacts(reported: object) -> dict[str, SideContacts] | None:
     """Read what each side's leaders saw, keyed by the side that did the seeing."""
     if reported is None:
         return None
@@ -344,72 +364,70 @@ def _contacts(reported: object, request_id: str | None) -> dict[str, SideContact
             # `Contacts` keys on any string it is handed, so a mistyped side
             # would file a picture no observation ever reads and lose the
             # sighting without saying anything.
-            detail = f"`contacts.{side}` names no side that is playing"
-            raise protocol.MalformedRequestError(detail, request_id)
-        report = _object(SHAPES["contact"], said, f"contacts.{side}", request_id)
+            path = f"contacts.{side}"
+            raise MalformedReportError(path, f"`{path}` names no side that is playing")
+        report = _object(SHAPES["contact"], said, f"contacts.{side}")
         by_side[side] = SideContacts(
             seen=tuple(
-                _sighting(sighting, f"contacts.{side}.seen[{index}]", request_id)
+                _sighting(sighting, f"contacts.{side}.seen[{index}]")
                 for index, sighting in enumerate(report["seen"])
             ),
             observed=tuple(
-                _checked(
-                    STRING, "a place name", place, f"contacts.{side}.observed[{index}]", request_id
-                )
+                _checked(STRING, "a place name", place, f"contacts.{side}.observed[{index}]")
                 for index, place in enumerate(report["observed"])
             ),
         )
     return by_side
 
 
-def _sighting(said: object, path: str, request_id: str | None) -> contacts.Sighting:
+def _sighting(said: object, path: str) -> contacts.Sighting:
     """Read one sighting: a place, a perceived kind, and how old it is."""
-    sighting = _object(SHAPES["sighting"], said, path, request_id)
+    sighting = _object(SHAPES["sighting"], said, path)
     return contacts.Sighting(at=sighting["at"], kind=sighting["kind"], age=sighting["age"])
 
 
-def _hq(reported: object, request_id: str | None) -> dict[str, HqSeen] | None:
+def _hq(reported: object) -> dict[str, HqSeen] | None:
     """Read what the world says of each Base's HQ structure."""
     if reported is None:
         return None
     return {
-        base: HqSeen(**_object(SHAPES["hq"], said, f"hq.{base}", request_id))
+        base: HqSeen(**_object(SHAPES["hq"], said, f"hq.{base}"))
         for base, said in cast("dict[str, Any]", reported).items()
     }
 
 
-def _casualties(reported: object, request_id: str | None) -> Casualties | None:
+def _casualties(reported: object) -> Casualties | None:
     """Read the deaths the world saw since the last report."""
     if reported is None:
         return None
-    batch = _object(SHAPES["casualties"], reported, "casualties", request_id)
+    batch = _object(SHAPES["casualties"], reported, "casualties")
     return Casualties(
         # Every row or none: a partly-read batch would leave a timeline that
         # looks complete and is not, and a black box nobody can trust is worse
         # than an obviously broken one.
         deaths=tuple(
-            _object(SHAPES["death"], death, f"casualties.deaths[{index}]", request_id)
+            _object(SHAPES["death"], death, f"casualties.deaths[{index}]")
             for index, death in enumerate(batch["deaths"])
         ),
         dropped=batch["dropped"],
     )
 
 
-def parse(payload: dict[str, Any], *, request_id: str | None = None) -> Report:
+def parse(payload: dict[str, Any]) -> Report:
     """Read one observe report off the wire, or refuse it whole.
 
     Nothing is folded into anything here, so a report that fails half way
     through has changed nothing: what a malformed report leaves behind is the
     Campaign it arrived at.
     """
-    told = _object(SHAPES["payload"], payload, "", request_id)
+    told = _object(SHAPES["payload"], payload, "")
     return Report(
         at_time=told["time"],
         presence=dict(told["presence"]),
-        squads=_squads(told["squads"], request_id),
-        contacts=_contacts(told["contacts"], request_id),
-        hq=_hq(told["hq"], request_id),
-        casualties=_casualties(told["casualties"], request_id),
+        squads=_squads(told["squads"]),
+        contacts=_contacts(told["contacts"]),
+        hq=_hq(told["hq"]),
+        casualties=_casualties(told["casualties"]),
     )
 
 

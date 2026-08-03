@@ -11,45 +11,28 @@ from __future__ import annotations
 
 import threading
 import time
-from pathlib import Path
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Final
 
 from cti_daemon import (
-    campaign,
+    budget,
     commands,
-    economy,
     observation,
     protocol,
     report,
     report_cycle,
 )
 from cti_daemon.dedupe import Answered
-from cti_daemon.outbox import Entry, Outbox, UnknownSequenceError
-from cti_daemon.port import CommandPort
-from cti_daemon.telemetry import Telemetry
+from cti_daemon.outbox import UnknownSequenceError
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from pathlib import Path
 
+    from cti_daemon import campaign as campaign_module
     from cti_daemon import planner
-    from cti_daemon.economy import EconomyTable
-    from cti_daemon.manifest import MapManifest
-
-# What one poll reply may hand the world in one go. A `callExtension` return is
-# capped at `budget.RETURN_CAP_BYTES` and truncated in silence (ADR-0004),
-# and a truncated poll reply is broken JSON mid-message: the effects past the
-# cut are lost with nothing said, which is the false-green shape ADR-0028 warns
-# about arriving on the push path (#67).
-#
-# Nine tenths of the cap, the same figure and the same ratio the observation
-# path guards itself at (`budget.REPORT_GUARD_BYTES`), so that a reply
-# merely close to truncating fails a run rather than a Play Session. A test
-# holds the two together. Where the observation path's fix is a smaller picture,
-# this one's is a shorter drain: the outbox already numbers its entries and
-# retires an acknowledged prefix (ADR-0018), so a poll hands over as much as
-# fits and the ack cursor brings the rest on the next one.
-POLL_GUARD_BYTES: Final = 9_216
+    from cti_daemon.outbox import Entry, Outbox
+    from cti_daemon.port import CommandPort
+    from cti_daemon.telemetry import Telemetry
 
 # How long a request waits for the daemon's one lock before it is refused (#142).
 #
@@ -81,26 +64,44 @@ LOCK_WAIT_SECONDS: Final = 0.25
 OUTBOX_DEPTH_STEP: Final = 25
 
 
+@dataclass(frozen=True, slots=True)
+class Wiring:
+    """Everything a daemon answers requests with, assembled by Main.
+
+    Declared here, where the adapter says what it needs, and filled in
+    `cti_daemon.transport.wire`, which is the composition root and decides what
+    those things are made of (#164).
+
+    One record rather than four parameters, and deliberately unlike the authored
+    inputs `build_daemon` keeps as separate arguments: those are knobs a caller
+    varies one at a time, these four are one object graph. The port judges
+    against the Campaign the cycle plays and both write to the telemetry the
+    daemon writes to, so a caller free to mix collaborators from two wirings
+    could build a daemon whose port and cycle disagree about which Campaign is
+    being played.
+    """
+
+    campaign: campaign_module.Campaign
+    port: CommandPort
+    cycle: report_cycle.ReportCycle
+    telemetry: Telemetry
+
+
 class Daemon:
-    """Dispatches requests and owns the outbox the game reads from."""
+    """Dispatches requests and drains the outbox the game reads from."""
 
-    def __init__(
-        self,
-        *,
-        telemetry_path: Path,
-        table: EconomyTable,
-        map_manifest: MapManifest,
-        archive_path: Path | None = None,
-        epoch: str | None = None,
-    ) -> None:
-        """Wire the daemon to its telemetry sink, the economy and the map.
+    def __init__(self, *, wiring: Wiring, epoch: str | None = None) -> None:
+        """Take the collaborators Main built, and mint this daemon's identity.
 
-        Handed the authored economy and the map it is playing rather than told
-        where the repo keeps them (#76). Resolving `config/` and `addons/` from
-        `__file__` made this module a composition root as well as an adapter,
-        and bound a daemon to a source checkout: an installed or relocated
-        package resolved those paths into nothing. Where the authored files live
-        is `cti_daemon.transport`'s, which is Main.
+        Handed its object graph rather than building one (#164). #76 moved the
+        authored *paths* out — resolving `config/` and `addons/` from `__file__`
+        made this module a composition root as well as an adapter, and bound a
+        daemon to a source checkout — but the graph itself was still assembled
+        here, so an adapter still decided what a Campaign in play is made of.
+        `cti_daemon.transport.build_daemon` is Main and decides that now: it
+        loads the authored files, wires the Campaign, the port and the cycle,
+        and hands them over. What is left here is the wire: a lock, a dedupe
+        window, an epoch, and a verb table.
         """
         # One request at a time, whoever is asking (#98). The transport serves
         # every connection on its own thread, and none of the state below —
@@ -131,7 +132,6 @@ class Daemon:
         # Minted here rather than passed in, because a daemon that could be
         # handed its predecessor's identity could claim to be it.
         self.epoch = epoch or protocol.mint_epoch()
-        self.outbox = Outbox()
         # Which `OUTBOX_DEPTH_STEP` band the outbox depth was last announced at,
         # so that a row is written when it changes and not once per request.
         # Zero is the honest starting value: an empty outbox is band zero, and a
@@ -146,32 +146,30 @@ class Daemon:
         # Commander play on it, and a replayed one is a Commander taking two
         # turns.
         self.answered = Answered()
-        self._telemetry = Telemetry(telemetry_path)
+        self._telemetry = wiring.telemetry
         # One campaign object holds ownership, Funds and Squads, and the port
         # judges against it. Two of anything here would be two answers to how
-        # much a side has or what it owns.
-        self.campaign = campaign.Campaign(
-            map_manifest=map_manifest,
-            table=table,
-            ledger=economy.Ledger(table.starting_funds),
-            outbox=self.outbox,
-        )
-        self.port = CommandPort(campaign=self.campaign)
+        # much a side has or what it owns — which is why these arrive together
+        # as one wiring rather than being built here from parts.
+        self.campaign = wiring.campaign
+        self.port = wiring.port
         # The Campaign in play, and everything one report does to it (#75). The
         # daemon holds it rather than is it: this object answers a socket, that
         # one plays a Campaign, and Phase 2's `save` lands there because what it
         # persists is what that object holds (ADR-0008).
-        self.cycle = report_cycle.ReportCycle(
-            campaign=self.campaign,
-            port=self.port,
-            telemetry=self._telemetry,
-            telemetry_path=telemetry_path,
-            # Where a won Campaign's record lands, and where its summary is read
-            # from (#35, ADR-0023). Beside the telemetry by default, because the
-            # two are one run's evidence and separating them would be one more
-            # path for a session to get wrong.
-            archive_path=archive_path or telemetry_path.parent / "campaigns",
-        )
+        self.cycle = wiring.cycle
+
+    @property
+    def outbox(self) -> Outbox:
+        """The queue of Effects the world has not acknowledged yet.
+
+        The Campaign's, read through here rather than held twice: the outbox is
+        where the domain puts an Effect and where `poll` takes one from, and a
+        daemon holding its own reference to the same object would be a second
+        answer to which queue is the queue the moment Main wired one of them to
+        something else.
+        """
+        return self.campaign.outbox
 
     @property
     def commanders(self) -> tuple[str, ...]:
@@ -182,10 +180,11 @@ class Daemon:
         """Put one side under an AI Commander for the rest of the session.
 
         Set at bring-up rather than passed to the constructor, because a planner
-        is built from the manifest and the economy table this object has just
-        loaded, and there is no sense in loading them twice to hand them back.
-        Named here as well as on the cycle because bring-up talks to the daemon:
-        `transport.build` has one object to hand a brain to.
+        is built from the manifest and the economy table Main has just loaded,
+        and `transport.build` reads them back off the Campaign it wired rather
+        than loading them a second time. Named here as well as on the cycle
+        because bring-up talks to the daemon: `transport.build` has one object
+        to hand a brain to.
         """
         self.cycle.commanded_by(side, brain)
 
@@ -443,13 +442,14 @@ class Daemon:
         The picture that comes back is the public one (#27), which is what the
         server repaints its markers from and all it is entitled to.
         """
-        told = report.parse(request.payload, request_id=request.id)
         try:
-            picture = self.cycle.fold(told)
-        except report_cycle.UnknownPlaceError as exc:
-            # Ground this map does not have is a report the daemon cannot read,
-            # and it is refused in the wire's language here rather than in the
-            # Campaign's language there.
+            picture = self.cycle.fold(report.parse(request.payload))
+        except (report.MalformedReportError, report_cycle.UnknownPlaceError) as exc:
+            # The one place a refusal from either side of the observe path
+            # crosses into the wire's language (#164). A document the schema
+            # cannot read and ground this map does not have are the same kind of
+            # answer — the daemon cannot read this report — and neither module
+            # has to know what a request id is to say so.
             raise protocol.MalformedRequestError(str(exc), request.id) from exc
         return protocol.accepted(request.id, observation.serialise(picture))
 
@@ -514,17 +514,27 @@ class Daemon:
     def _poll(self, request: protocol.Request) -> protocol.Reply:
         """Hand over as much of the unacknowledged outbox as one reply carries.
 
-        A prefix, oldest first, bounded by `POLL_GUARD_BYTES` (#67). Nothing is
-        lost by stopping short: the game acknowledges through a high-water mark
-        and polls again, so the ack cursor delivers the remainder on the next
-        turn of the pump (ADR-0018). Stopping at the first entry that does not
-        fit rather than skipping it is what keeps the order the outbox issued.
+        A prefix, oldest first, bounded by `budget.REPORT_GUARD_BYTES` (#67). A
+        `callExtension` return is capped at `budget.RETURN_CAP_BYTES` and
+        truncated in silence (ADR-0004), and a truncated poll reply is broken
+        JSON mid-message: the effects past the cut are lost with nothing said,
+        which is the false-green shape ADR-0028 warns about arriving on the push
+        path. One figure guards both directions of that one cap, and it lives in
+        `cti_daemon.budget`, which owns the wire-cap numbers — a second literal
+        here held equal by a test was the shape #78 removed from SQF (#164).
+
+        Nothing is lost by stopping short: the game acknowledges through a
+        high-water mark and polls again, so the ack cursor delivers the
+        remainder on the next turn of the pump (ADR-0018). Where the observation
+        path's answer to the guard is a smaller picture, this one's is a shorter
+        drain. Stopping at the first entry that does not fit rather than
+        skipping it is what keeps the order the outbox issued.
         """
         pending = self.outbox.pending()
         messages: list[dict[str, Any]] = []
         for entry in pending:
             candidate = [*messages, self._addressed(entry)]
-            if len(protocol.encode(self._drain(request, candidate))) >= POLL_GUARD_BYTES:
+            if len(protocol.encode(self._drain(request, candidate))) >= budget.REPORT_GUARD_BYTES:
                 break
             messages = candidate
 
@@ -575,12 +585,13 @@ class Daemon:
         """
         alone = [self._addressed(entry)]
         size = len(protocol.encode(self._drain(request, alone)))
+        guard = budget.REPORT_GUARD_BYTES
         self._telemetry.record(
-            "outbox_oversized", sequence=entry.sequence, reply_bytes=size, guard=POLL_GUARD_BYTES
+            "outbox_oversized", sequence=entry.sequence, reply_bytes=size, guard=guard
         )
         detail = (
-            f"outbox entry {entry.sequence} needs {size} bytes of a {POLL_GUARD_BYTES}-byte "
-            f"reply guard: it cannot cross one callExtension return and will not be truncated"
+            f"outbox entry {entry.sequence} needs {size} bytes of a {guard}-byte reply guard: "
+            f"it cannot cross one callExtension return and will not be truncated"
         )
         return protocol.failed(request.id, "oversized_message", detail)
 

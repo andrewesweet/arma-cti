@@ -16,8 +16,12 @@ import threading
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from cti_daemon import commands, economy, manifest, planner
-from cti_daemon.daemon import Daemon
+from cti_daemon import campaign as campaign_module
+from cti_daemon import commands, economy, manifest, planner, report_cycle
+from cti_daemon.daemon import Daemon, Wiring
+from cti_daemon.outbox import Outbox
+from cti_daemon.port import CommandPort
+from cti_daemon.telemetry import Telemetry
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
@@ -106,9 +110,68 @@ class _Server(socketserver.ThreadingTCPServer):
     daemon_threads = True
 
 
-def build_daemon(  # noqa: PLR0913 — every argument is one authored input or one
-    # identity this daemon is wired to, all keyword-only, and folding them into a
-    # config object would be one more indirection between a caller and what it varies.
+def wire(
+    # Every argument is one authored input this wiring is built from, all
+    # keyword-only: folding them into a config object would be one more
+    # indirection between a caller and what it varies.
+    *,
+    telemetry_path: Path,
+    economy_path: Path | None = None,
+    manifests_path: Path | None = None,
+    map_id: str = DEFAULT_MAP,
+    archive_path: Path | None = None,
+) -> Wiring:
+    """Load this checkout's authored files and assemble a Campaign in play (#164).
+
+    Main's own work. The one place default paths are resolved (#76), and the one
+    place the object graph is built: the Campaign the rules are judged against,
+    the port that judges them, the cycle that plays one report, and the telemetry
+    sink all three write to. `Daemon` is handed the result and answers a socket
+    with it, so what a Campaign in play is made of is decided here rather than
+    inside an adapter — and a Phase-2 caller that wants a *loaded* Campaign
+    rather than a fresh one has one function to change (ADR-0008).
+
+    Separate from `build_daemon` so that a caller which is not building a stock
+    daemon — the tier's instrumented subclasses, and whatever Phase 2 loads a
+    snapshot into — takes the same wiring rather than restating it.
+    """
+    table = economy.load(economy_path or DEFAULT_ECONOMY)
+    map_manifest = manifest.load_all(manifests_path or DEFAULT_MANIFESTS)[map_id]
+    telemetry = Telemetry(telemetry_path)
+    # One campaign object holds ownership, Funds and Squads, and the port judges
+    # against it: two of anything here would be two answers to how much a side
+    # has or what it owns. The outbox is the Campaign's because the domain is
+    # what puts an Effect on it; the daemon drains it.
+    campaign = campaign_module.Campaign(
+        map_manifest=map_manifest,
+        table=table,
+        ledger=economy.Ledger(table.starting_funds),
+        outbox=Outbox(),
+    )
+    port = CommandPort(campaign=campaign)
+    return Wiring(
+        campaign=campaign,
+        port=port,
+        # The Campaign in play, and everything one report does to it (#75). The
+        # daemon holds it rather than is it: that object answers a socket, this
+        # one plays a Campaign, and Phase 2's `save` lands there because what it
+        # persists is what this object holds (ADR-0008).
+        cycle=report_cycle.ReportCycle(
+            campaign=campaign,
+            port=port,
+            telemetry=telemetry,
+            telemetry_path=telemetry_path,
+            # Where a won Campaign's record lands, and where its summary is read
+            # from (#35, ADR-0023). Beside the telemetry by default, because the
+            # two are one run's evidence and separating them would be one more
+            # path for a session to get wrong.
+            archive_path=archive_path or telemetry_path.parent / "campaigns",
+        ),
+        telemetry=telemetry,
+    )
+
+
+def build_daemon(  # noqa: PLR0913 — see `wire`, whose arguments these are.
     *,
     telemetry_path: Path,
     economy_path: Path | None = None,
@@ -117,23 +180,32 @@ def build_daemon(  # noqa: PLR0913 — every argument is one authored input or o
     archive_path: Path | None = None,
     epoch: str | None = None,
 ) -> Daemon:
-    """Load this checkout's authored files and build a daemon on them (#76).
+    """Build a stock daemon on this checkout's authored files (#76, #164).
 
-    The one place default paths are resolved. Everything downstream is handed
-    the loaded `EconomyTable` and `MapManifest`, so nothing inside the package
-    knows where a repo keeps them, and a caller that has its own files says so
-    here rather than reaching past a default.
+    A caller that has its own files says so here rather than reaching past a
+    default. The epoch is this daemon's identity rather than one of the wiring's
+    parts, which is why it stops here instead of going into `wire`.
     """
     return Daemon(
-        telemetry_path=telemetry_path,
-        table=economy.load(economy_path or DEFAULT_ECONOMY),
-        map_manifest=manifest.load_all(manifests_path or DEFAULT_MANIFESTS)[map_id],
-        archive_path=archive_path,
+        wiring=wire(
+            telemetry_path=telemetry_path,
+            economy_path=economy_path,
+            manifests_path=manifests_path,
+            map_id=map_id,
+            archive_path=archive_path,
+        ),
         epoch=epoch,
     )
 
 
-def build(telemetry_path: Path, ai: Iterable[tuple[str, int]] | None) -> Daemon:
+def build(
+    telemetry_path: Path,
+    ai: Iterable[tuple[str, int]] | None,
+    *,
+    economy_path: Path | None = None,
+    manifests_path: Path | None = None,
+    map_id: str = DEFAULT_MAP,
+) -> Daemon:
     """Build the daemon this process will serve, under command or not (#16, #17).
 
     `ai` is one `(side, seed)` per side an AI Commander plays — none, one, or
@@ -141,10 +213,16 @@ def build(telemetry_path: Path, ai: Iterable[tuple[str, int]] | None) -> Daemon:
     and a pair of seeds is what a two-sided Campaign replays from (#17).
 
     The planners are built here rather than inside the daemon because they read
-    the manifest and the economy table the daemon has just loaded, and loading
-    them twice would be two answers to what the map is.
+    the manifest and the economy table `build_daemon` has just loaded — read
+    back off the Campaign it wired — and loading them twice would be two answers
+    to what the map is.
     """
-    daemon = build_daemon(telemetry_path=telemetry_path)
+    daemon = build_daemon(
+        telemetry_path=telemetry_path,
+        economy_path=economy_path,
+        manifests_path=manifests_path,
+        map_id=map_id,
+    )
     for side, seed in ai or ():
         daemon.commanded_by(
             side,
@@ -189,17 +267,29 @@ def check_loopback(host: str) -> None:
         raise NonLoopbackBindError(message)
 
 
-def serve(
+def serve(  # noqa: PLR0913 — Main's knobs, one parameter apiece: where to listen,
+    # where the evidence goes, who is under AI command, and which authored files
+    # to play on. Folding them into a config object would put one indirection
+    # between the command line and what it varies (`build_daemon` says the same).
     host: str = DEFAULT_HOST,
     port: int = DEFAULT_PORT,
     *,
     telemetry_path: Path = DEFAULT_TELEMETRY,
     on_ready: Callable[[int, str], None] | None = None,
     ai: Iterable[tuple[str, int]] | None = None,
+    economy_path: Path | None = None,
+    manifests_path: Path | None = None,
+    map_id: str = DEFAULT_MAP,
 ) -> None:
     """Serve until interrupted. Calls `on_ready` with the bound port and epoch."""
     check_loopback(host)
-    daemon = build(telemetry_path, ai)
+    daemon = build(
+        telemetry_path,
+        ai,
+        economy_path=economy_path,
+        manifests_path=manifests_path,
+        map_id=map_id,
+    )
     with _Server((host, port), _handler_for(daemon)) as server:
         if on_ready is not None:
             on_ready(int(server.server_address[1]), daemon.epoch)
@@ -296,6 +386,16 @@ def main(argv: list[str] | None = None) -> int:
         default=[],
         metavar="SIDE[:SEED]",
     )
+    # The authored files this daemon plays on (#164). `build_daemon` has taken
+    # these since #76 and nothing could reach them from a command line, so
+    # booting a non-default map or a hand-authored fixture economy meant editing
+    # the composition root — which is exactly what #4's "a hand-authored fixture
+    # boots directly" criterion may not require of whoever is booting it.
+    # Defaulting to `None` rather than to the constants keeps one answer to
+    # where the authored files live: `build_daemon`'s.
+    parser.add_argument("--economy", type=Path, default=None, metavar="PATH")
+    parser.add_argument("--manifests", type=Path, default=None, metavar="DIR")
+    parser.add_argument("--map", dest="map_id", default=DEFAULT_MAP, metavar="MAP_ID")
     args = parser.parse_args(argv)
     # Before the telemetry directory is made, so a run that will not start
     # leaves nothing behind: the harness reads a missing readiness line as
@@ -318,9 +418,22 @@ def main(argv: list[str] | None = None) -> int:
             telemetry_path=args.telemetry,
             on_ready=announce,
             ai=args.ai,
+            economy_path=args.economy,
+            manifests_path=args.manifests,
+            map_id=args.map_id,
         )
     except KeyboardInterrupt:
         return 0
+    # A map id no manifest in the directory carries is the operator's mistake
+    # rather than a crash to read a traceback out of: `load_all` keys on the id
+    # each manifest declares, so this is the one lookup a flag can miss.
+    except KeyError:
+        looked = args.manifests or DEFAULT_MANIFESTS
+        print(  # noqa: T201 — the operator reads stderr
+            f"cti-daemon: no manifest in {looked} describes a map called {args.map_id!r}",
+            file=sys.stderr,
+        )
+        return 2
     return 0
 
 

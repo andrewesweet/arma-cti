@@ -13,7 +13,7 @@ from typing import Any
 
 import pytest
 
-from cti_daemon import protocol, report
+from cti_daemon import report
 
 
 def _payload(**named: Any) -> dict[str, Any]:  # noqa: ANN401 — a wire document is
@@ -75,9 +75,10 @@ def test_a_sighting_carries_a_place_a_kind_and_an_age() -> None:
 
 
 def test_a_side_nobody_is_playing_has_no_contacts_to_report() -> None:
-    with pytest.raises(protocol.MalformedRequestError) as refusal:
+    with pytest.raises(report.MalformedReportError) as refusal:
         report.parse(_payload(contacts={"west": {"seen": [], "observed": []}}))
 
+    assert refusal.value.path == "contacts.west"
     assert refusal.value.detail == "`contacts.west` names no side that is playing"
 
 
@@ -134,17 +135,20 @@ def test_a_refusal_names_the_field_that_was_wrong(payload: dict[str, Any], path:
     # A report the daemon cannot read is refused whole, and the refusal says
     # where: one field per message, by its path in the document, so an operator
     # reading the log is told what to fix rather than that something was wrong.
-    with pytest.raises(protocol.MalformedRequestError) as refusal:
-        report.parse(payload, request_id="o-1")
+    # The refusal is this module's own and carries no request id (#164): what a
+    # document is wrong about is not a fact about the envelope it arrived in,
+    # and `Daemon._observe` is the one place the two are put together.
+    with pytest.raises(report.MalformedReportError) as refusal:
+        report.parse(payload)
 
-    assert refusal.value.request_id == "o-1"
+    assert refusal.value.path == path
     assert refusal.value.detail.startswith(f"`{path}` must be ")
 
 
 def test_the_refusal_prose_is_the_schemas_own() -> None:
     # The sentence and the check are one declaration: `says` is what the field
     # must be, and it is both what is enforced and what is said.
-    with pytest.raises(protocol.MalformedRequestError) as refusal:
+    with pytest.raises(report.MalformedReportError) as refusal:
         report.parse({"time": True})
 
     assert refusal.value.detail == "`time` must be the in-game time in seconds"
@@ -152,7 +156,7 @@ def test_the_refusal_prose_is_the_schemas_own() -> None:
 
 def test_a_boolean_is_never_a_number_however_python_feels_about_it() -> None:
     # `bool` is an `int` in Python, and `true` seconds is not a clock reading.
-    with pytest.raises(protocol.MalformedRequestError):
+    with pytest.raises(report.MalformedReportError):
         report.parse(_payload(squads={"w-1": {"size": True}}))
 
 

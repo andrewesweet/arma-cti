@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   shapes, and the map functions' literals are held to that export by `just unit`. The wire itself is
   byte-for-byte what it was. #163.
 
+- **The daemon can be booted on hand-authored files without editing its source.** Which economy
+  table, which manifests directory and which map a daemon plays on have been arguments since #76,
+  and nothing could reach them from a command line, so booting a fixture Campaign meant editing the
+  composition root. `--economy`, `--manifests` and `--map` now say so directly, defaulting to
+  today's authored files, and a map id no manifest in the directory describes is refused in words
+  naming both the id and where it looked, rather than a traceback. #164.
+
 - **A delegated decision can no longer land without saying what would overturn it.** ADR-0019 has
   required that section since the day it retrofitted ADR-0015 for missing one, and nothing checked:
   three ADRs reached a guided review of all twenty-nine delegated decisions without it, found only
@@ -142,19 +149,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   played Campaign lost to a name; the name is now claimed rather than assumed, and a taken one steps
   aside. And banding an empty sighting returned an empty echelon, a valid-looking band that would
   have put a place on a Commander's picture with nothing standing at it. #155.
-
-- **Writing about the commit-hook bypass no longer denies the agent writing it — the third
-  sighting, and the first after the rewrite meant to end them.** `.claude/hooks/block-no-verify.py`
-  read a command as one open quote at a time, which cannot see that `--body "$(cat <<'EOF' … EOF )"`
-  — the shape an agent actually posts an issue comment in — opens a heredoc *inside* a double-quoted
-  command substitution. That heredoc went unnoticed, so its body was parsed as shell rather than
-  dropped as prose, and a single `"` anywhere in the prose flipped the rest of the body into command
-  position: a review comment's own `git commit --no-verify` code span became a bypass to deny. The
-  denial did not even need that much — the observed one was a comment naming no git command at all,
-  where the unbalanced quote simply left the command unreadable and the hook's fail-safe denied what
-  it could not parse. The reader now tracks nested contexts, so a substitution is code even inside a
-  quote and a heredoc opened there is prose again. A substitution that really does run the bypass is
-  still denied, and so is one left unclosed. #167.
 
 - **A wedged daemon now says no instead of quietly collecting a blocked thread per retry.** The
   daemon answers one request at a time and waited on that lock forever, while the transport gave
