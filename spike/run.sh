@@ -86,6 +86,17 @@ CLIENT_LOCK_WAIT="${CTI_CLIENT_LOCK_WAIT:-0}"
 BOOT_TIMEOUT="${CTI_BOOT_TIMEOUT:-240}"
 HC_TIMEOUT="${CTI_HC_TIMEOUT:-90}"
 HARNESS_TIMEOUT="${CTI_HARNESS_TIMEOUT:-300}"
+# How long teardown will wait for a child it has just SIGKILLed before giving up
+# on reaping it. `wait` has no deadline of its own, and a process wedged in
+# uninterruptible sleep made teardown unbounded — with this run's slot lock and
+# the machine-wide client lock still held (#144).
+REAP_TIMEOUT="${CTI_REAP_TIMEOUT:-30}"
+# The deadline on every `uv run` this harness makes. These are bounds on
+# infrastructure — packing a mission, reading telemetry back — and never on a
+# probe's subject: none of them runs while the world is being measured. A cold
+# `uv` cache or a stalled index used to hang the run mid-slot-hold with nothing
+# said about it.
+UV_TIMEOUT="${CTI_UV_TIMEOUT:-300}"
 
 SKIP_HC=0
 HOLD=0
@@ -135,8 +146,64 @@ record() {
     printf '%s=%s\n' "$1" "$value" >>"$RESULTS"
     log "$1=$value"
 }
-now() { date +%s.%N; }
-since() { echo "scale=3; $(now) - $1" | bc; }
+# The clock every deadline in this file is built on, in whole milliseconds, and
+# integer arithmetic all the way down.
+#
+# This used to be `date +%s.%N` compared through `bc`, which made `bc` a
+# load-bearing dependency of the timeout mechanism itself — and one that failed
+# *open* (#144). `(($(echo "$(now) > $deadline" | bc)))` with no `bc` on PATH
+# evaluates an empty operand, which is false, so the deadline never fired and
+# every wait in this harness ran until the process it watched happened to die.
+# That is #41's shape (a check that could not run reported as a check that
+# passed) inside the thing that enforces deadlines. Bash carries its own clock
+# and its own arithmetic, and neither of those can go missing.
+now() {
+    local t="${EPOCHREALTIME:-}"
+    t="${t/,/.}" # some locales put a comma there
+    if [[ "$t" =~ ^([0-9]+)\.([0-9]+)$ ]]; then
+        local frac="${BASH_REMATCH[2]}000"
+        printf '%s%s' "${BASH_REMATCH[1]}" "${frac:0:3}"
+        return 0
+    fi
+    # bash before 5.0 has no EPOCHREALTIME. `date` is still not `bc`: a failure
+    # here is reported rather than swallowed, and the pre-flight below refuses
+    # the run outright if this cannot produce a number.
+    t="$(date +%s%3N 2>/dev/null)"
+    [[ "$t" =~ ^[0-9]+$ ]] || return 1
+    printf '%s' "$t"
+}
+# Whole seconds and milliseconds, the shape `scale=3` used to print.
+since() {
+    local start="$1" end delta
+    end="$(now)" || {
+        printf 'unknown'
+        return 1
+    }
+    delta=$((end - start))
+    ((delta < 0)) && delta=0
+    printf '%d.%03d' $((delta / 1000)) $((delta % 1000))
+}
+
+# `wait` with a deadline, which bash does not have (#144). A child that has
+# exited — vanished, or a zombie this shell has not collected — is reaped
+# immediately, because `wait` on it returns at once. One that has not is polled
+# to the bound and then reported rather than waited on: the state comes from
+# `/proc/<pid>/stat`, whose comm field can contain anything including spaces and
+# brackets, so it is read after the last `)` rather than as field three.
+reap_bounded() {
+    local pid="$1" deadline=$((SECONDS + REAP_TIMEOUT)) state
+    while :; do
+        state="$(sed -e 's/^.*) //' -e 's/ .*//' "/proc/$pid/stat" 2>/dev/null)"
+        if [[ -z "$state" || "$state" == Z ]]; then
+            wait "$pid" 2>/dev/null
+            return 0
+        fi
+        ((SECONDS >= deadline)) && break
+        sleep 0.25
+    done
+    log "teardown: pid $pid was still alive (state ${state:-unknown}) ${REAP_TIMEOUT}s after SIGKILL; not waiting on it"
+    return 1
+}
 
 cleanup() {
     local code=$?
@@ -150,8 +217,15 @@ cleanup() {
     # Reaped, not merely signalled. A pid this shell launched and has not reaped
     # is a process that may still be holding what it held, and the next thing to
     # happen after this trap is another run taking the tier (#119).
+    #
+    # And reaped under a deadline (#144). A bare `wait` on a process that will
+    # not die — D state, a stuck driver — is teardown hanging while this run
+    # holds its slot lock and the machine-wide client lock, which is the one
+    # thing teardown must never do. A pid that survives the bound is reported and
+    # left: teardown cannot fix it, and the next holder of this slot recovers it
+    # as stale state (ADR-0022).
     for pid in "$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
-        [[ -n "$pid" ]] && wait "$pid" 2>/dev/null
+        [[ -n "$pid" ]] && reap_bounded "$pid"
     done
     # The server's own .rpt, now that the engine has stopped writing it. Here
     # rather than on the happy path so that a run which failed — the run whose
@@ -204,16 +278,22 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-# Wait for a regex to appear in a growing log. Returns 1 on timeout, and 2 if
-# the process being waited on died first — a distinct failure class, never a pass.
+# Wait for a regex to appear in a growing log. Returns 1 on timeout, 2 if the
+# process being waited on died first — a distinct failure class, never a pass —
+# and 3 if no deadline could be computed at all, which is a harness bug and is
+# never allowed to become a wait without an end (#144). Every caller types all
+# three, because a wait whose bound could not be set has measured nothing.
 wait_for() {
     local file="$1" pattern="$2" timeout="$3" pid="${4:-}"
-    local deadline
-    deadline=$(echo "$(now) + $timeout" | bc)
+    local deadline start t
+    [[ "$timeout" =~ ^[0-9]+$ ]] || return 3
+    start="$(now)" || return 3
+    deadline=$((start + timeout * 1000))
     while :; do
         if [[ -f "$file" ]] && grep -qE "$pattern" "$file" 2>/dev/null; then return 0; fi
         if [[ -n "$pid" ]] && ! kill -0 "$pid" 2>/dev/null; then return 2; fi
-        if (($(echo "$(now) > $deadline" | bc))); then return 1; fi
+        t="$(now)" || return 3
+        ((t > deadline)) && return 1
         sleep 0.25
     done
 }
@@ -329,6 +409,19 @@ fail() {
 # asked of an `infra_unavailable` and it used to be the one the record could not
 # answer (#51).
 record "tier_slot" "${CTI_TIER_SLOT:-0}"
+
+# What every deadline in this file is made of, checked before the first one is
+# set (#144). The old arithmetic's failure mode was that a missing dependency
+# made the timeouts silently never fire, so these fail *closed*, here, with the
+# class the table gives a run that measured nothing. A harness that cannot bound
+# its own waits has not run a probe; it has started one.
+now >/dev/null 2>&1 ||
+    fail "infra_unavailable" "no usable clock: neither bash's EPOCHREALTIME nor date +%s%3N returned a number"
+command -v timeout >/dev/null 2>&1 ||
+    fail "infra_unavailable" "timeout(1) is missing, so every external call this run makes would be unbounded"
+[[ "$UV_TIMEOUT" =~ ^[1-9][0-9]*$ ]] ||
+    fail "infra_unavailable" "CTI_UV_TIMEOUT must be a positive whole number of seconds, got: $UV_TIMEOUT"
+
 HOST="$(cti_host_resolve)" ||
     fail "infra_unavailable" "CTI_TIER_HOST names a host the tier does not know: ${CTI_TIER_HOST:-local}"
 record "tier_host" "$HOST"
@@ -499,9 +592,14 @@ fi
 # Pack rather than copy the folder: an unpacked mission cannot be transmitted to
 # a joining client, and a client without file patching never finishes loading one.
 rm -rf "${SERVER_DIR:?}/mpmissions/$MISSION" "${SERVER_DIR:?}/mpmissions/$MISSION.pbo"
-(cd "$REPO" && uv run --quiet python tools/pack_pbo.py "$STAGE" \
-    "$SERVER_DIR/mpmissions/$MISSION.pbo") >/dev/null ||
+(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pack_pbo.py "$STAGE" \
+    "$SERVER_DIR/mpmissions/$MISSION.pbo") >/dev/null
+pack_status=$?
+if ((pack_status == 124)); then
+    fail "infra_unavailable" "mission pack did not finish within ${UV_TIMEOUT}s (uv run tools/pack_pbo.py)"
+elif ((pack_status != 0)); then
     fail "infra_unavailable" "mission pack failed"
+fi
 
 # The Linux server appends _x64 exactly as the Windows one does: SQF says
 # "cti_shim", the engine opens cti_shim_x64.so.
@@ -568,13 +666,18 @@ start_daemon() {
     # Counted rather than pattern-matched: the first daemon's readiness line is
     # still in the log, so `wait_for` would find it and call a second daemon
     # ready before it had bound anything.
-    local deadline
-    deadline=$(echo "$(now) + 90" | bc)
+    # Ninety seconds, in integer milliseconds off the same clock `wait_for` uses.
+    # Any failure to compute or hold the deadline returns non-zero, and every
+    # caller of this function types that infra_unavailable (#144).
+    local deadline start t
+    start="$(now)" || return 1
+    deadline=$((start + 90000))
     while :; do
         (($(grep -c CTI_DAEMON_READY "$DAEMON_LOG" 2>/dev/null || echo 0) >= daemon_starts)) &&
             return 0
         kill -0 "$daemon_pid" 2>/dev/null || return 2
-        (($(echo "$(now) > $deadline" | bc))) && return 1
+        t="$(now)" || return 1
+        ((t > deadline)) && return 1
         sleep 0.25
     done
 }
@@ -604,6 +707,7 @@ case "$(
     echo $?
 )" in
 1) fail "timeout" "server never created a host in 120s; see $SERVER_LOG" ;;
+3) fail "infra_unavailable" "no deadline could be set for the server-boot wait" ;;
 2) fail "node_crashed" "server process exited during boot; see $SERVER_LOG" ;;
 esac
 record "server_host_up_secs" "$(since "$t_boot")"
@@ -613,6 +717,7 @@ case "$(
     echo $?
 )" in
 1) fail "timeout" "mission did not reach running state in ${BOOT_TIMEOUT}s; see $SERVER_LOG" ;;
+3) fail "infra_unavailable" "CTI_BOOT_TIMEOUT is not a whole number of seconds: $BOOT_TIMEOUT" ;;
 2) fail "node_crashed" "server process exited while loading the mission; see $SERVER_LOG" ;;
 esac
 record "server_mission_running_secs" "$(since "$t_boot")"
@@ -653,6 +758,7 @@ if ((SKIP_HC == 0)); then
         record "hc_joined" "false"
         record "hc_failure" "headless client process exited; see $HC_LOG"
         ;;
+    3) fail "infra_unavailable" "CTI_HC_TIMEOUT is not a whole number of seconds: $HC_TIMEOUT" ;;
     *)
         record "hc_joined" "true"
         record "hc_join_secs" "$(since "$t_hc")"
@@ -699,6 +805,7 @@ if ((WINDOWS_HC == 1)); then
         record "windows_hc_joined" "false"
         record "windows_hc_failure" "process exited; see $WIN_LOG"
         ;;
+    3) fail "infra_unavailable" "CTI_HC_TIMEOUT is not a whole number of seconds: $HC_TIMEOUT" ;;
     *)
         record "windows_hc_joined" "true"
         record "windows_hc_join_secs" "$(since "$t_win")"
@@ -768,6 +875,7 @@ EOF
             record "windows_client_failure" "no client connected within ${HOLD_TIMEOUT}s"
             ;;
         2) fail "node_crashed" "server exited while waiting for a client; see $SERVER_LOG" ;;
+        3) fail "infra_unavailable" "CTI_HOLD_TIMEOUT is not a whole number of seconds: $HOLD_TIMEOUT" ;;
         *)
             record "windows_client_connected_secs" "$(since "$t_client")"
             # Entering the mission is the thing in doubt, not connecting: the
@@ -810,6 +918,7 @@ EOF
         )" in
         1) fail "timeout" "probe never logged $CTI_DAEMON_RESTART_ON; see $SERVER_LOG" ;;
         2) fail "node_crashed" "server exited before the daemon restart; see $SERVER_LOG" ;;
+        3) fail "infra_unavailable" "no deadline could be set for the daemon-restart trigger wait" ;;
         esac
         t_restart=$(now)
         kill "$daemon_pid" 2>/dev/null || true
@@ -842,6 +951,7 @@ EOF
         )" in
         1) fail "timeout" "probe never logged $CTI_HARNESS_AWAIT; see $SERVER_LOG" ;;
         2) fail "node_crashed" "server exited while the probe ran; see $SERVER_LOG" ;;
+        3) fail "infra_unavailable" "the probe window is not a whole number of seconds: $PROBE_TIMEOUT" ;;
         esac
     fi
 
@@ -867,9 +977,14 @@ EOF
     # (#83).
     PUSH_REPORT="$OUT/push-path.env"
     PUSH_REPORT_ERR="$OUT/push-path.err"
-    if (cd "$REPO" && uv run --quiet python tools/push_path_report.py "$DAEMON_TELEMETRY") \
-        >"$PUSH_REPORT" 2>"$PUSH_REPORT_ERR"; then
+    (cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/push_path_report.py \
+        "$DAEMON_TELEMETRY") >"$PUSH_REPORT" 2>"$PUSH_REPORT_ERR"
+    push_status=$?
+    if ((push_status == 0)); then
         while read -r line; do record "${line%%=*}" "${line#*=}"; done <"$PUSH_REPORT"
+    elif ((push_status == 124)); then
+        record "push_path_report" \
+            "unavailable: push_path_report.py did not finish within ${UV_TIMEOUT}s"
     else
         record "push_path_report" \
             "unavailable: push_path_report.py failed: $(tail -3 "$PUSH_REPORT_ERR" | tr '\n' ' ')"
@@ -878,8 +993,8 @@ EOF
     # The run read back as a sequence, always: it costs nothing and it is the
     # artefact #35's timeout went without — a Squad at three of eight and no
     # account of the other five (#39).
-    (cd "$REPO" && uv run --quiet python tools/timeline.py "$DAEMON_TELEMETRY") \
-        >"$OUT/timeline.txt" 2>/dev/null || true
+    (cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/timeline.py \
+        "$DAEMON_TELEMETRY") >"$OUT/timeline.txt" 2>/dev/null || true
 
     if grep -q '^FAIL' "$OUT/spike-lines.txt"; then
         first_fail="$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
@@ -892,9 +1007,17 @@ EOF
     # the world claims, the record answers, and neither is asked to vouch for
     # itself. Silent for every probe that stages nothing.
     if grep -q 'casualty_staged' "$OUT/spike-lines.txt"; then
-        if ! (cd "$REPO" && uv run --quiet python tools/timeline.py \
+        (cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/timeline.py \
             "$DAEMON_TELEMETRY" --expect "$OUT/spike-lines.txt") \
-            >"$OUT/timeline.txt" 2>"$OUT/timeline-unmatched.txt"; then
+            >"$OUT/timeline.txt" 2>"$OUT/timeline-unmatched.txt"
+        expect_status=$?
+        # The cross-check not *finishing* is not the cross-check disagreeing. A
+        # deadline here typed assertion_failed would send the reader to fix world
+        # code over a tool that never ran (#144, and the table's own rule).
+        if ((expect_status == 124)); then
+            fail "infra_unavailable" \
+                "the telemetry cross-check did not finish within ${UV_TIMEOUT}s (uv run tools/timeline.py --expect)"
+        elif ((expect_status != 0)); then
             fail "assertion_failed" \
                 "staged deaths missing from telemetry: $(tr '\n' ' ' <"$OUT/timeline-unmatched.txt")"
         fi
@@ -919,6 +1042,7 @@ case "$(
 )" in
 1) fail "timeout" "in-mission harness never logged done; see $SERVER_LOG" ;;
 2) fail "node_crashed" "server exited during the harness; see $SERVER_LOG" ;;
+3) fail "infra_unavailable" "CTI_HARNESS_TIMEOUT is not a whole number of seconds: $HARNESS_TIMEOUT" ;;
 esac
 
 grep -aoE "$LOG_PREFIX\|.*" "$SERVER_LOG" | sed "s/^$LOG_PREFIX|//; s/\"$//" >"$OUT/spike-lines.txt"

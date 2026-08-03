@@ -62,6 +62,34 @@ RUN_SH="${CTI_RUN_SH:-$REPO/spike/run.sh}"
 # and the response is what gets tested (#133). Nothing but the tests sets it.
 SLOT_RECLAIM="${CTI_SLOT_RECLAIM:-cti_slot_reclaim}"
 
+# The watchdog above `run.sh`, one per probe (#144). Nothing used to bound a
+# probe at all: `run.sh` has deadlines on the things it waits *for*, and a hang
+# anywhere else — a wedged WSL interop call, a stalled `uv`, a child that would
+# not be reaped — wedged this worker with its slot lock held until a human
+# noticed. A pool of three turns that into three slots nobody can take.
+#
+# It sits ABOVE the probe's own window, with headroom, and it bounds
+# infrastructure rather than the subject. The window is what the probe's header
+# sized to what it measures; the margin is everything around it — a 240 s server
+# boot, a 90 s daemon, a mission pack, a 90 s wait for a Windows client to leave
+# the process list. So expiry is never "the probe was too slow": a probe that
+# outran its own window is a `timeout` typed by `run.sh` minutes earlier. It is
+# `infra_unavailable`, which this tier already refuses to read as a result.
+#
+# CTI_PROBE_WATCHDOG_SECS replaces the sum outright, which is how the no-Arma
+# tier drives this. It cannot manufacture a green: a watchdog under a probe's
+# window turns that probe into `infra_unavailable`, which is not a result and
+# gates nothing.
+WATCHDOG_MARGIN="${CTI_PROBE_WATCHDOG_MARGIN:-600}"
+# SIGTERM first, so `run.sh`'s own trap tears its world down and releases the
+# machine-wide client lock; SIGKILL this long after, for the case where the trap
+# is itself what is wedged.
+WATCHDOG_KILL_AFTER="${CTI_PROBE_WATCHDOG_KILL_AFTER:-60}"
+# GNU timeout's two statuses for "the deadline was reached": the second is what a
+# process killed by the follow-up SIGKILL reports.
+EXIT_TIMED_OUT=124
+EXIT_KILLED=137
+
 # Worst-first. The number is both the rank and the process exit code, so the
 # exit code of a run says which class to read the table row for. infra_unavailable
 # outranks everything because it is not a result at all: nothing below it was
@@ -298,6 +326,21 @@ if ! HOST="$(cti_host_resolve)"; then
         printf 'failure_class=infra_unavailable\n'
         printf 'failure_detail=CTI_TIER_HOST names a host the tier does not know\n'
         printf 'host=%s\n' "${CTI_TIER_HOST:-local}"
+    } >&2
+    exit "${CLASS_RANK[infra_unavailable]}"
+fi
+
+# The watchdog's own dependency, checked before a lock is taken and refused
+# rather than skipped (#144). A pool that could not bound its probes is a pool
+# whose first hang costs every slot it holds, and "the bound could not be set" is
+# the same non-result as "the machine is busy" — #41's rule, applied to the thing
+# that enforces deadlines rather than to a guard.
+if ! command -v timeout >/dev/null 2>&1; then
+    {
+        printf '\n[regress] timeout(1) is missing, so no watchdog can be set above run.sh. Not a result.\n'
+        printf 'verdict=FAIL\n'
+        printf 'failure_class=infra_unavailable\n'
+        printf 'failure_detail=timeout(1) is not on PATH; the per-probe watchdog cannot be set\n'
     } >&2
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
@@ -678,7 +721,7 @@ GIT_DIRTY="$(git -C "$REPO" status --porcelain 2>/dev/null | head -1)"
 run_probe() {
     local name="$1" slot="$2"
     local file="$PROBE_DIR/$name.sqf"
-    local window expect quarantine probe_env stamp out t0 elapsed run_status
+    local window expect quarantine probe_env stamp out t0 elapsed run_status watchdog
     local verdict raw_class detail legs class
     window="$(header_of "$file" window)"
     expect="$(header_of "$file" expect)"
@@ -695,7 +738,12 @@ run_probe() {
     # holder was interrupted, and its leftovers are stale state to clear.
     cti_slot_mark_run "$slot" "$out"
 
-    log "[slot $slot] ---- $name (window ${window}s${expect:+, expects $expect}${quarantine:+, quarantined $quarantine})"
+    # The bound above `run.sh` for this probe, and the window it sits above, in
+    # the pool's own log: a reader asking "was that a hang or a slow probe?"
+    # should be able to tell the two deadlines apart without opening this file.
+    # See CTI_PROBE_WATCHDOG_SECS at the head of the script for the override.
+    watchdog="${CTI_PROBE_WATCHDOG_SECS:-$((window + WATCHDOG_MARGIN))}"
+    log "[slot $slot] ---- $name (window ${window}s, watchdog ${watchdog}s${expect:+, expects $expect}${quarantine:+, quarantined $quarantine})"
     t0=$(date +%s)
 
     # The env: header is the probe's own bring-up requirement, not the caller's
@@ -716,7 +764,12 @@ run_probe() {
     # `ssh <host> env …` when a second machine exists (ADR-0032, #53), and the
     # handle travels with it so the run records the host it ran on rather than
     # the host that started it.
+    # The watchdog, inside `cti_host_exec` rather than around it: it has to run on
+    # the host the probe runs on, or a second machine's hang would be bounded from
+    # here and its process tree left alive over there (ADR-0032's seam, #53).
+    #
     cti_host_exec "$HOST" \
+        timeout --kill-after="$WATCHDOG_KILL_AFTER" "$watchdog" \
         env ${env_args[@]+"${env_args[@]}"} "${slot_args[@]}" \
         CTI_TIER_HOST="$HOST" \
         CTI_SPIKE_OUT="$out" \
@@ -742,7 +795,16 @@ run_probe() {
     # that a green probe ran the leg it is mostly about.
     legs="$(sed -n 's/^legs=//p' "$out/results.env" 2>/dev/null | tail -1)"
 
-    if [[ "$verdict" == "PASS" ]]; then
+    if ((run_status == EXIT_TIMED_OUT || run_status == EXIT_KILLED)); then
+        # The watchdog fired, or something else killed the run from outside. This
+        # outranks whatever half-written `results.env` the wedged run left behind:
+        # its process tree was killed mid-measurement, so nothing it was watching
+        # reached an end, and the class for a run that measured nothing is
+        # infra_unavailable — stop, not a result (#144).
+        verdict=FAIL
+        raw_class=infra_unavailable
+        detail="run.sh was killed at the ${watchdog}s watchdog (probe window ${window}s plus ${WATCHDOG_MARGIN}s for bring-up and teardown), exit $run_status; see $out/regress.log"
+    elif [[ "$verdict" == "PASS" ]]; then
         raw_class=pass
     elif [[ -z "$raw_class" ]]; then
         # run.sh died without typing itself. An untyped red is a harness bug, and
@@ -912,6 +974,11 @@ if ((${#PARALLEL_JOBS[@]} > 0)); then
         worker "$slot" "${PARALLEL_JOBS[@]}" &
         WORKER_PIDS+=($!)
     done
+    # Unbounded on purpose, and bounded in fact: a worker's only long-running
+    # step is a probe, and every probe now runs under the watchdog above. Putting
+    # a second deadline here would be a bound on "the pool's remaining work",
+    # which is the sum of windows the corpus declared — a number no one can size
+    # without sizing it to the subject (#144).
     for pid in "${WORKER_PIDS[@]}"; do wait "$pid"; done
     WORKER_PIDS=()
 fi

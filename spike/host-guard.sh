@@ -29,11 +29,28 @@
 #     cti_windows_wait_gone <image> <secs>   # teardown waits for its own exit
 #
 # Overridable for tests and for a machine that puts Windows somewhere else:
-# CTI_WINDOWS_TASKLIST, CTI_WINDOWS_TASKKILL, CTI_HUMAN_CLIENT_IMAGE.
+# CTI_WINDOWS_TASKLIST, CTI_WINDOWS_TASKKILL, CTI_HUMAN_CLIENT_IMAGE,
+# CTI_WINDOWS_INTEROP_TIMEOUT.
 
 CTI_WINDOWS_TASKLIST="${CTI_WINDOWS_TASKLIST:-/mnt/c/Windows/System32/tasklist.exe}"
 CTI_WINDOWS_TASKKILL="${CTI_WINDOWS_TASKKILL:-/mnt/c/Windows/System32/taskkill.exe}"
 CTI_HUMAN_CLIENT_IMAGE="${CTI_HUMAN_CLIENT_IMAGE:-arma3_x64.exe}"
+
+# Every crossing of the WSL interop boundary is bounded (#144). Wedged interop is
+# a known failure mode of this machine, and an unbounded call to it hangs either
+# the pre-flight — before anything is launched, but after the run has queued —
+# or the teardown, which runs while this run still holds its slot lock and the
+# machine-wide client lock. Neither hang is typed as anything: it is an
+# `infra_unavailable` nobody ever gets told about.
+#
+# Twenty seconds bounds *the tool answering*, not anything being measured:
+# `tasklist.exe` returns in well under a second when interop is healthy. It is
+# therefore not the timeout-extension the Contract forbids — there is no subject
+# here whose length the number could be sized to.
+CTI_WINDOWS_INTEROP_TIMEOUT="${CTI_WINDOWS_INTEROP_TIMEOUT:-20}"
+# GNU timeout's "the deadline was reached" status, which these callers have to
+# tell apart from the Windows tool's own exit codes.
+CTI_EXIT_TIMED_OUT=124
 
 # The infra_unavailable exit code, kept the same number spike/tier-lock.sh and
 # spike/regress.sh use so a caller reads one value for "not a result".
@@ -55,8 +72,23 @@ cti_human_client_state() {
         return 0
     fi
 
-    out="$("$CTI_WINDOWS_TASKLIST" /FI "IMAGENAME eq $image" 2>&1)"
+    # No `timeout` is the same shape of answer as no `tasklist.exe`: the check
+    # can be made, but not bounded, and an unbounded check is one that can never
+    # come back to say anything (#144).
+    if ! command -v timeout >/dev/null 2>&1; then
+        printf 'unavailable timeout(1) is missing, so %s cannot be asked under a deadline\n' \
+            "$CTI_WINDOWS_TASKLIST"
+        return 0
+    fi
+
+    out="$(timeout "$CTI_WINDOWS_INTEROP_TIMEOUT" \
+        "$CTI_WINDOWS_TASKLIST" /FI "IMAGENAME eq $image" 2>&1)"
     status=$?
+    if ((status == CTI_EXIT_TIMED_OUT)); then
+        printf 'unavailable %s did not answer within %ss; WSL interop may be wedged\n' \
+            "$CTI_WINDOWS_TASKLIST" "$CTI_WINDOWS_INTEROP_TIMEOUT"
+        return 0
+    fi
     if ((status != 0)); then
         printf 'unavailable %s exited %s: %s\n' \
             "$CTI_WINDOWS_TASKLIST" "$status" "$(tr '\n' ' ' <<<"$out")"
@@ -91,9 +123,20 @@ cti_windows_taskkill() {
             "$CTI_WINDOWS_TASKKILL" "$image" >&2
         return 1
     fi
-    out="$("$CTI_WINDOWS_TASKKILL" /IM "$image" /F 2>&1)"
+    if ! command -v timeout >/dev/null 2>&1; then
+        printf '[host-guard] timeout(1) is missing; not asking %s unbounded — %s may still be running\n' \
+            "$CTI_WINDOWS_TASKKILL" "$image" >&2
+        return 1
+    fi
+    out="$(timeout "$CTI_WINDOWS_INTEROP_TIMEOUT" "$CTI_WINDOWS_TASKKILL" /IM "$image" /F 2>&1)"
     status=$?
-    if ((status != 0)); then
+    if ((status == CTI_EXIT_TIMED_OUT)); then
+        # Teardown, so this cannot change a verdict already recorded — but a kill
+        # request that never returned is the next run's guard refusing, and it
+        # belongs in this run's evidence rather than in nobody's.
+        printf '[host-guard] %s /IM %s did not return within %ss; WSL interop may be wedged, and %s may still be running\n' \
+            "$CTI_WINDOWS_TASKKILL" "$image" "$CTI_WINDOWS_INTEROP_TIMEOUT" "$image" >&2
+    elif ((status != 0)); then
         printf '[host-guard] %s /IM %s exited %s: %s\n' \
             "$CTI_WINDOWS_TASKKILL" "$image" "$status" "$(tr '\n' ' ' <<<"$out")" >&2
     fi
@@ -125,6 +168,14 @@ cti_windows_taskkill() {
 # — which, that time, is the correct refusal.
 cti_windows_wait_gone() {
     local image="${1:?image name required}" timeout="${2:-90}" deadline answer
+    # A window that is not a number is not a window. Left to the arithmetic
+    # below it would produce an empty deadline and a wait with no end — the same
+    # fail-open shape the `bc` deadlines had (#144).
+    if [[ ! "$timeout" =~ ^[0-9]+$ ]]; then
+        printf '[host-guard] %s is not a number of seconds; refusing an unbounded wait for %s\n' \
+            "$timeout" "$image" >&2
+        return 1
+    fi
     deadline=$((SECONDS + timeout))
     while :; do
         answer="$(cti_human_client_state "$image")"

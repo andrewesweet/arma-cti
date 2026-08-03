@@ -71,7 +71,13 @@ printf '%s\t%s\t%s\n' "$name" "${CTI_TIER_SLOT:-}" "$(date +%s%N)" >>"$CTI_STUB_
 # A worker that dies mid-probe, on purpose: the claim is made, no verdict is
 # ever written, and the merge has to call that not-a-result rather than a red.
 if [[ "$name" == "${CTI_STUB_KILL:-}" ]]; then
-    kill -9 "$PPID" 2>/dev/null
+    # The worker is this process's *grandparent*, not its parent: the per-probe
+    # watchdog runs between them (#144), and killing the parent would kill the
+    # watchdog instead — which is a different scenario, and one that produces a
+    # typed verdict rather than the missing one this stub exists to stage.
+    # Read after the last `)` because a comm field can contain anything.
+    worker="$(sed -e 's/^.*) //' "/proc/$PPID/stat" 2>/dev/null | awk '{print $2}')"
+    kill -9 "${worker:-$PPID}" 2>/dev/null
     sleep 30
 fi
 
@@ -1062,3 +1068,80 @@ def test_each_probe_ran_against_its_own_slots_daemon(tmp_path: Path) -> None:
             )
         checked += 1
     assert checked == len(ALL_PROBES)
+
+
+# --------------------------------------- the watchdog above run.sh (#144)
+# A `run.sh` that never returns: the shape a wedged WSL interop call, a stalled
+# `uv` or an unreapable child gave the pool, from the pool's point of view.
+#
+# Reproduction baseline: with no watchdog, this run holds its slot lock and the
+# worker blocks in `wait` for as long as the hang lasts — the pool eventually
+# idle behind slots nobody can take, and no verdict of any class ever produced.
+# The `timeout=` on the subprocess below is what a human's Ctrl-C used to be.
+STUB_RUN_HANGS = "#!/usr/bin/env bash\nsleep 600\n"
+WATCHDOG_ENV = {"CTI_PROBE_WATCHDOG_SECS": "3", "CTI_PROBE_WATCHDOG_KILL_AFTER": "2"}
+
+
+def test_a_run_that_never_exits_is_killed_at_the_watchdog(tmp_path: Path) -> None:
+    hanging = executable(tmp_path / "hanging-run.sh", STUB_RUN_HANGS)
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "1",
+        "contacts",
+        extra_env={"CTI_RUN_SH": str(hanging), **WATCHDOG_ENV},
+        timeout=120,
+    )
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    verdict = verdicts_by_probe(tmp_path)["contacts"]
+    # infra_unavailable rather than `timeout`: a timeout is about the probe's own
+    # window, and this run never reached anything it was measuring. The table's
+    # answer for a run that measured nothing is stop, not a result.
+    assert verdict["class"] == "infra_unavailable"
+    assert verdict["elapsed_secs"] < 60
+    detail = json.loads((Path(verdict["evidence"]) / "verdict.json").read_text())["detail"]
+    assert "watchdog" in detail, detail
+
+
+def test_the_watchdog_leaves_no_process_of_the_run_behind(tmp_path: Path) -> None:
+    """A slot freed with the run's children still on it is a slot freed on paper.
+
+    `timeout` signals the child's whole process group, so the tree a wedged
+    `run.sh` had started goes with it — which is what makes the freed lock mean
+    something to the next holder.
+    """
+    marker = tmp_path / "grandchild-alive"
+    hanging = executable(
+        tmp_path / "hanging-run.sh",
+        f"#!/usr/bin/env bash\n(while :; do touch {marker}; sleep 0.2; done) &\nsleep 600\n",
+    )
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "1",
+        "contacts",
+        extra_env={"CTI_RUN_SH": str(hanging), **WATCHDOG_ENV},
+        timeout=120,
+    )
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    assert marker.exists(), "the stub never started the child this test is about"
+    settled = marker.stat().st_mtime
+    time.sleep(3)
+    assert marker.stat().st_mtime == settled, "a process of the killed run is still running"
+
+
+def test_every_probes_watchdog_sits_above_its_own_window(tmp_path: Path) -> None:
+    """The probe-window honesty rule, mechanically.
+
+    A watchdog at or under a probe's declared window would be a second, shorter
+    deadline on the thing the probe measures — and it would report that as
+    infrastructure rather than as the `timeout` the probe had earned. The margin
+    has to cover bring-up and teardown around the window: a 240 s server boot, a
+    90 s daemon, and a 90 s wait for a Windows client to leave the process list.
+    """
+    result = pool_run(tmp_path, "--slots", "3")
+    assert result.returncode == EXIT_PASS, result.stderr[-4000:]
+    bounds = re.findall(r"---- (\S+) \(window (\d+)s, watchdog (\d+)s", result.stderr, re.MULTILINE)
+    assert sorted(name for name, _, _ in bounds) == ALL_PROBES
+    for name, window, watchdog in bounds:
+        assert int(watchdog) >= int(window) + 420, f"{name}: {watchdog}s over a {window}s window"

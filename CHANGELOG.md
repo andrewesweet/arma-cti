@@ -98,6 +98,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A wedged Arma-tier run now frees its slot instead of holding the pool until a human notices.**
+  The tier's own timeout mechanism could fail open. Every deadline in `spike/run.sh` was computed
+  through `bc`, and without it `(($(echo … | bc)))` compares an empty operand, which is false — so
+  the deadline never fired and each wait ran until the process it watched happened to die. The
+  deadlines are bash integer arithmetic now, over bash's own clock, and a run that cannot compute a
+  bound refuses at the pre-flight as `infra_unavailable` rather than running without one. The three
+  unbounded calls around them are bounded too: the WSL interop calls the play-session guard and
+  teardown make, whose wedging is a known failure mode of this machine; every `uv run` the harness
+  makes; and teardown's wait for a child it has just killed. Above all of it, `just regress` now
+  runs each probe under a watchdog — the probe's own window plus ten minutes for bring-up and
+  teardown — and kills the process tree of a run that blows it, typed `infra_unavailable`, which is
+  not a result and gates nothing. The watchdog sits above the window and never inside it: a probe
+  that outran what it measures is still the `timeout` its own harness typed. #144.
+
 - **Four validators now refuse in their own words rather than through whatever exception fell out
   first.** A manifest whose `position` was not two numbers, or whose `adjacent` was not a list of
   ids, passed the key checks and then raised a bare `IndexError` or `TypeError` from deep inside the

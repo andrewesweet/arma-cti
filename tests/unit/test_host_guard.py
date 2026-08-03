@@ -26,6 +26,7 @@ import os
 import shutil
 import stat
 import subprocess
+import time
 from pathlib import Path
 
 import pytest
@@ -58,8 +59,8 @@ def _stub(tmp_path: Path, name: str, body: str, *, executable: bool = True) -> P
     return path
 
 
-def _run(tasklist: Path | str) -> subprocess.CompletedProcess[str]:
-    env = dict(os.environ, CTI_WINDOWS_TASKLIST=str(tasklist))
+def _run(tasklist: Path | str, **extra_env: str) -> subprocess.CompletedProcess[str]:
+    env = dict(os.environ, CTI_WINDOWS_TASKLIST=str(tasklist), **extra_env)
     # S603: the argv is this repo's own script and a path this test just wrote.
     return subprocess.run(  # noqa: S603
         [BASH, str(GUARD)],
@@ -67,6 +68,9 @@ def _run(tasklist: Path | str) -> subprocess.CompletedProcess[str]:
         capture_output=True,
         text=True,
         check=False,
+        # The guard's own bound is the subject of the interop tests below; this
+        # one is the test's, so a regression is a red rather than a hung suite.
+        timeout=60,
     )
 
 
@@ -268,6 +272,87 @@ def test_the_guard_itself_gained_no_ownership_exemption(tmp_path: Path) -> None:
     )
     assert result.returncode == EXIT_INFRA_UNAVAILABLE
     assert "24188" not in result.stderr
+
+
+# ------------------------------------------- every interop call is bounded (#144)
+# Reproduction baseline for all three: before the bound, each of these stubs held
+# its caller for the full 60 s of `sleep` — in anger, for as long as WSL interop
+# stayed wedged, with the run's slot lock and the machine-wide client lock held
+# and no verdict of any class ever produced.
+HANGS = "sleep 60"
+
+
+def test_a_wedged_process_list_is_unavailable_rather_than_a_hang(tmp_path: Path) -> None:
+    """A tool that never answers is a check that could not run, on a deadline.
+
+    #41's rule with #144's teeth: the guard already refused a `tasklist.exe` it
+    could not execute, and would have waited forever for one that started and
+    never returned — which is the failure mode WSL interop actually has.
+    """
+    tasklist = _stub(tmp_path, "wedged-tasklist.sh", HANGS)
+    started = time.monotonic()
+    result = _run(tasklist, CTI_WINDOWS_INTEROP_TIMEOUT="2")
+    elapsed = time.monotonic() - started
+
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE
+    assert "did not answer within 2s" in result.stderr
+    assert "failure_class=infra_unavailable" in result.stderr
+    assert elapsed < 30, f"the guard waited {elapsed:.1f}s on a bound of 2s"
+
+
+def test_a_wedged_taskkill_does_not_hang_teardown(tmp_path: Path) -> None:
+    """Teardown's half. It runs while the run still holds every lock it took."""
+    taskkill = _stub(tmp_path, "wedged-taskkill.sh", HANGS)
+    env = dict(os.environ, CTI_WINDOWS_TASKKILL=str(taskkill), CTI_WINDOWS_INTEROP_TIMEOUT="2")
+    started = time.monotonic()
+    # S603: this repo's own script, sourced by a fixed one-liner.
+    result = subprocess.run(  # noqa: S603
+        [BASH, "-c", f"source {GUARD}; cti_windows_taskkill arma3_x64.exe"],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    elapsed = time.monotonic() - started
+
+    assert result.returncode != 0
+    assert "did not return within 2s" in result.stderr
+    assert "may still be running" in result.stderr
+    assert elapsed < 30, f"teardown waited {elapsed:.1f}s on a bound of 2s"
+
+
+def test_wait_gone_bounds_each_ask_as_well_as_the_whole_wait(tmp_path: Path) -> None:
+    """The loop had a deadline; the call inside it did not.
+
+    `cti_windows_wait_gone` polls the same list the guard reads, so one wedged
+    ask hung the whole wait however short its window was.
+    """
+    tasklist = _stub(tmp_path, "wedged-tasklist.sh", HANGS)
+    env = dict(os.environ, CTI_WINDOWS_TASKLIST=str(tasklist), CTI_WINDOWS_INTEROP_TIMEOUT="2")
+    started = time.monotonic()
+    # S603: this repo's own script, sourced by a fixed one-liner.
+    result = subprocess.run(  # noqa: S603
+        [BASH, "-c", f"source {GUARD}; cti_windows_wait_gone arma3_x64.exe 5"],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    elapsed = time.monotonic() - started
+
+    assert result.returncode != 0
+    assert "cannot tell whether" in result.stderr
+    assert elapsed < 30, f"the wait took {elapsed:.1f}s with a 2s bound on each ask"
+
+
+def test_wait_gone_refuses_a_window_that_is_not_a_number(tmp_path: Path) -> None:
+    """An unparsable window used to produce an empty deadline and an endless loop."""
+    tasklist = _stub(tmp_path, "tasklist.sh", f"printf '%s' {TASKLIST_PRESENT!r}")
+    result = _wait_gone(tasklist, timeout="soon")
+    assert result.returncode != 0
+    assert "not a number of seconds" in result.stderr
 
 
 def test_runners_do_not_resolve_the_windows_tools_by_bare_name() -> None:
