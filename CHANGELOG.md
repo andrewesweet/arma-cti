@@ -98,6 +98,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Four validators now refuse in their own words rather than through whatever exception fell out
+  first.** A manifest whose `position` was not two numbers, or whose `adjacent` was not a list of
+  ids, passed the key checks and then raised a bare `IndexError` or `TypeError` from deep inside the
+  loader — past the one error type every caller of that module catches — so an authoring slip read
+  as a crash rather than as a sentence naming the field and what it costs. `--ai WEST:--5` slipped
+  through a sign-stripping digit check and drew argparse's generic complaint instead of the seed
+  refusal written for it. Two Campaigns ending on the same condition in the same in-game second
+  wrote the same archive filename, and the second silently replaced the first — the record of a
+  played Campaign lost to a name; the name is now claimed rather than assumed, and a taken one steps
+  aside. And banding an empty sighting returned an empty echelon, a valid-looking band that would
+  have put a place on a Commander's picture with nothing standing at it. #155.
+
 - **A wedged daemon now says no instead of quietly collecting a blocked thread per retry.** The
   daemon answers one request at a time and waited on that lock forever, while the transport gave
   every connection a thread of its own with no bound — so a handler stuck on anything, a filesystem

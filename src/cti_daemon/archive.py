@@ -127,8 +127,27 @@ def write(directory: Path, summary: dict[str, Any]) -> Path:
     Named for the in-game moment it ended rather than for a wall clock: that is
     the number every other row of the run is stamped with, so an archive and the
     telemetry beside it can be lined up without a translation.
+
+    That name is not unique, though, and nothing above makes it so: two
+    Campaigns ending on the same condition in the same whole second — one
+    directory serving a pool slot's repeated runs, most plausibly — write the
+    same filename, and a plain write would let the second silently replace the
+    first. So the name is claimed rather than assumed: created exclusively, and
+    a taken one steps to `-2`, `-3` and so on. An archive that only ever exists
+    to be read afterwards loses nothing by being the second file; it loses
+    everything by not being written down (#155).
     """
     directory.mkdir(parents=True, exist_ok=True)
-    path = directory / f"campaign-{summary['condition']}-{int(summary['at'])}.json"
-    path.write_text(json.dumps(summary, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
-    return path
+    document = json.dumps(summary, indent=2, ensure_ascii=True) + "\n"
+    stem = f"campaign-{summary['condition']}-{int(summary['at'])}"
+    attempt = 1
+    while True:
+        suffix = "" if attempt == 1 else f"-{attempt}"
+        path = directory / f"{stem}{suffix}.json"
+        try:
+            with path.open("x", encoding="utf-8") as sink:
+                sink.write(document)
+        except FileExistsError:
+            attempt += 1
+            continue
+        return path

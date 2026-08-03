@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import copy
 import json
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 from conftest import REPO
@@ -207,4 +207,40 @@ def test_a_base_missing_a_required_key_is_refused_in_its_own_words(
     broken = copy.deepcopy(stratis)
     del broken["bases"][0][missing]
     with pytest.raises(manifest.ManifestError, match=missing):
+        manifest.parse(broken)
+
+
+# The same class one level in from the keys above (#155): the key was there and
+# what sat under it was not what the rules read. `"position": []` used to reach
+# `_build` and raise a bare IndexError, and a non-list `adjacent` a bare
+# TypeError, both past the error type callers of this module catch.
+MALFORMED_POSITIONS: Final = [[], [1.0], [1.0, 2.0, 3.0], "1,2", {"x": 1, "y": 2}, None, [1.0, "y"]]
+MALFORMED_ADJACENCIES: Final = ["camp_tempest", 7, None, {"camp_tempest": True}, [["camp_tempest"]]]
+
+
+@pytest.mark.parametrize("kind", ["objectives", "bases"])
+@pytest.mark.parametrize("position", MALFORMED_POSITIONS)
+def test_a_place_whose_position_is_not_two_numbers_is_refused(
+    stratis: dict[str, Any], kind: str, position: object
+) -> None:
+    broken = mutate(stratis, lambda d: d[kind][0].__setitem__("position", position))
+    with pytest.raises(manifest.ManifestError, match="position"):
+        manifest.parse(broken)
+
+
+@pytest.mark.parametrize("kind", ["objectives", "bases"])
+@pytest.mark.parametrize("adjacent", MALFORMED_ADJACENCIES)
+def test_a_place_whose_adjacency_is_not_a_list_of_ids_is_refused(
+    stratis: dict[str, Any], kind: str, adjacent: object
+) -> None:
+    broken = mutate(stratis, lambda d: d[kind][0].__setitem__("adjacent", adjacent))
+    with pytest.raises(manifest.ManifestError, match="adjacent"):
+        manifest.parse(broken)
+
+
+def test_a_refused_position_says_what_a_position_is_and_why(stratis: dict[str, Any]) -> None:
+    # The author reading this has typed something wrong once; the message is the
+    # whole of what they get back, so it carries the rule and its consequence.
+    broken = mutate(stratis, lambda d: d["objectives"][0].__setitem__("position", []))
+    with pytest.raises(manifest.ManifestError, match=r"two numbers \[x, y\].*nowhere on the map"):
         manifest.parse(broken)

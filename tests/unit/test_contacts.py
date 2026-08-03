@@ -8,6 +8,8 @@ produces is a band rather than a count.
 
 from __future__ import annotations
 
+import pytest
+
 from cti_daemon import contacts
 
 
@@ -116,3 +118,12 @@ def test_an_unrecognised_contact_is_honestly_unidentified() -> None:
     assert unknown.posture == "foot"
     assert unknown.assets == ()
     assert unknown.echelon == "team"
+
+
+def test_banding_nothing_says_so_rather_than_returning_an_empty_band() -> None:
+    # `_fold` bands a place that held sightings, so this arm is unreachable
+    # through the register — but nothing structural holds it that way, and an
+    # empty echelon is a valid-looking band that would put a place on a
+    # Commander's picture with nothing standing at it (#155).
+    with pytest.raises(ValueError, match="no Contact to band"):
+        contacts.echelon_of(0)

@@ -7,6 +7,7 @@ about the daemon is tested at the module seams.
 
 from __future__ import annotations
 
+import argparse
 import json
 import socket
 import threading
@@ -384,3 +385,22 @@ def test_a_non_loopback_bind_is_refused_before_anything_is_written(tmp_path: Pat
     code = transport.main(["--host", "0.0.0.0", "--telemetry", str(telemetry)])  # noqa: S104 — the address under refusal
     assert code == 2
     assert not telemetry.parent.exists()
+
+
+@pytest.mark.parametrize("seed", ["--5", "5-", "-", "- 5", "+5", "5.0", "0x5", "five"])
+def test_a_seed_that_is_not_a_whole_number_draws_this_modules_own_refusal(seed: str) -> None:
+    # `"--5"` used to pass a sign-stripping digit check and reach `int()`, which
+    # raised argparse's generic "invalid value" instead of the sentence that
+    # says what a seed is (#155). The refusal is the contract, not the failure.
+    with pytest.raises(argparse.ArgumentTypeError, match="a seed is a whole number"):
+        transport.parse_commander_flag(f"WEST:{seed}")
+
+
+@pytest.mark.parametrize(("text", "expected"), [("WEST:-5", -5), ("WEST:5", 5), ("WEST", 0)])
+def test_the_seeds_a_session_actually_brings_up_with_are_read(text: str, expected: int) -> None:
+    assert transport.parse_commander_flag(text) == ("WEST", expected)
+
+
+def test_an_unknown_side_is_refused_by_name() -> None:
+    with pytest.raises(argparse.ArgumentTypeError, match="no side named 'EAST_OF_HERE'"):
+        transport.parse_commander_flag("east_of_here:5")

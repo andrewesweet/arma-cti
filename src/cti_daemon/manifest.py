@@ -135,6 +135,38 @@ def _check_identifier(value: object, what: str) -> None:
         _refuse(f"{what} id must match {IDENTIFIER.pattern}, got {value!r}")
 
 
+# A position is a plan-view coordinate pair. Height is the world's business —
+# nothing here reasons about it, and `_build` reads exactly these two.
+POSITION_AXES: Final = 2
+
+
+def _check_place(place: dict[str, Any], what: str) -> None:
+    """Hold the two fields both kinds of Place carry to the shape rules read them at.
+
+    Value shapes rather than key presence (#155). `_check_keys` proves the keys
+    are there; nothing proved what was under them, so `"position": []` reached
+    `_build` and raised a bare `IndexError`, and a non-list `adjacent` raised a
+    bare `TypeError` inside the graph rules — both past the one error type
+    callers of this module catch, exactly as the missing keys did before #88.
+    """
+    if (
+        not isinstance(place["position"], list)
+        or len(place["position"]) != POSITION_AXES
+        or any(not isinstance(number, (int, float)) for number in place["position"])
+    ):
+        _refuse(
+            f"{what} position must be two numbers [x, y], got {place['position']!r} — "
+            f"there is nowhere on the map to put a Place without one"
+        )
+    if not isinstance(place["adjacent"], list) or any(
+        not isinstance(neighbour, str) for neighbour in place["adjacent"]
+    ):
+        _refuse(
+            f"{what} adjacent must be a list of Objective ids, got {place['adjacent']!r} — "
+            f"the front line the planner reasons over is read off it"
+        )
+
+
 def _check_unique(ids: list[str], what: str) -> None:
     """Refuse a repeated authored id. `economy._check_squads` says the same thing.
 
@@ -257,8 +289,10 @@ def _validate(document: object) -> dict[str, Any]:
     # past the one error type callers of this module catch (#88).
     for objective in objectives:
         _check_keys(objective, OBJECTIVE_KEYS, "an objective")
+        _check_place(objective, "an objective")
     for base in bases:
         _check_keys(base, BASE_KEYS, "a base")
+        _check_place(base, "a base")
 
     _check_unique([objective["id"] for objective in objectives], "objective")
     for objective in objectives:

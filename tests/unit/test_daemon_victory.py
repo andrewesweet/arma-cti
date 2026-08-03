@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 
 from conftest import observe, reply_to, rows
 
-from cti_daemon import planner
+from cti_daemon import archive, planner
 from cti_daemon.commands import serialise_effect
 from cti_daemon.transport import build_daemon
 
@@ -193,3 +193,24 @@ def test_the_observation_reply_still_answers_after_the_campaign_ends(tmp_path: P
 
     assert reply["hq"]["csat_kamino"] == "destroyed"
     assert reply["owners"]["agia_marina"] == "NEUTRAL"
+
+
+def test_two_campaigns_ending_the_same_way_in_the_same_second_both_survive(tmp_path: Path) -> None:
+    # The archive is named for the in-game second a Campaign ended on, and two
+    # runs against one directory can end on the same condition at the same
+    # second. Overwriting the first would lose the record of a Campaign that was
+    # played, which is the one thing an archive exists to hold (#155).
+    summary: dict[str, Any] = {"condition": "decapitation", "at": 90.0, "winner": "WEST"}
+    first = archive.write(tmp_path, summary)
+    second = archive.write(tmp_path, {**summary, "winner": "EAST"})
+
+    assert first != second
+    assert json.loads(first.read_text(encoding="utf-8"))["winner"] == "WEST"
+    assert json.loads(second.read_text(encoding="utf-8"))["winner"] == "EAST"
+
+
+def test_the_first_archive_of_a_second_is_named_for_that_second_alone(tmp_path: Path) -> None:
+    # Disambiguation is what a collision costs, not what every archive pays: an
+    # uncollided name still lines up with the telemetry stamped the same way.
+    path = archive.write(tmp_path, {"condition": "domination", "at": 412.7, "winner": "EAST"})
+    assert path.name == "campaign-domination-412.json"

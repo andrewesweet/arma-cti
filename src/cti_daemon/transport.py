@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import ipaddress
+import re
 import socketserver
 import sys
 import threading
@@ -251,6 +252,13 @@ def serve_in_thread(
     return bound[0]
 
 
+# What a seed may read as. Matched whole rather than stripped of its sign
+# (#155): `seed.lstrip("-").isdigit()` let `"--5"` through to `int()`, which
+# raised argparse's generic "invalid value" where this module's own refusal —
+# the one that says what a seed is — had been promised.
+SEED_TEXT: Final = re.compile(r"-?[0-9]+")
+
+
 def parse_commander_flag(text: str) -> tuple[str, int]:
     """Read one `SIDE[:SEED]` bring-up flag, or refuse it.
 
@@ -266,7 +274,7 @@ def parse_commander_flag(text: str) -> tuple[str, int]:
     if side not in commands.SIDES:
         message = f"no side named {side!r} is playing; expected one of {list(commands.SIDES)}"
         raise argparse.ArgumentTypeError(message)
-    if seed and not seed.lstrip("-").isdigit():
+    if seed and not SEED_TEXT.fullmatch(seed):
         message = f"{text!r}: a seed is a whole number, got {seed!r}"
         raise argparse.ArgumentTypeError(message)
     return side, int(seed or 0)

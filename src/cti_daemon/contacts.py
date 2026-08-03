@@ -99,11 +99,18 @@ def echelon_of(count: int) -> str:
     The *observed* count, so seeing three of eight reports a team: a Commander
     is left under-informed rather than over-, which needs no extra machinery and
     is the right direction to be wrong in.
+
+    A count below the lowest band is nothing seen at all, and there is no such
+    Contact: `_fold` bands a place's sightings and reaches here only with at
+    least one. It says so rather than returning `""` (#155), because an empty
+    echelon is a valid-looking band that would put a place on a Commander's
+    picture with nothing standing at it.
     """
     for floor, name in ECHELONS:
         if count >= floor:
             return name
-    return ""
+    message = f"nothing was seen, so there is no Contact to band, got a count of {count}"
+    raise ValueError(message)
 
 
 def posture_of(kinds: tuple[str, ...]) -> str:
