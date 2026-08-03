@@ -12,9 +12,10 @@ from __future__ import annotations
 
 import io
 import json
+import subprocess
 from typing import TYPE_CHECKING
 
-from conftest import load_hook
+from conftest import REPO, load_hook
 
 if TYPE_CHECKING:
     import pytest
@@ -216,3 +217,34 @@ def test_unreadable_stdin_is_denied(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_an_edit_call_without_a_path_is_denied(monkeypatch: pytest.MonkeyPatch) -> None:
     assert call(monkeypatch, json.dumps({"tool_name": "Edit", "tool_input": {}})) == 2
+
+
+def test_the_wiring_denies_when_the_interpreter_is_missing() -> None:
+    """A missing python3 must deny, and only exit 2 blocks a PreToolUse hook.
+
+    A bare `python3 hook.py` exits 127 with no interpreter on PATH, Claude Code
+    reads any exit other than 2 as non-blocking, and the write lands — the #94
+    fail-open class, one layer further out than the hook's own code can reach.
+    So the settings.json wiring itself maps every hook failure to 2, and this
+    test runs that wiring, verbatim, with an empty PATH.
+    """
+    settings = json.loads((REPO / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    commands = [
+        wired["command"]
+        for entry in settings["hooks"]["PreToolUse"]
+        for wired in entry["hooks"]
+        if "protect-gated-paths" in wired["command"]
+    ]
+    assert len(commands) == 2  # wired on Edit|Write and on Bash
+    for command in commands:
+        # S603: the repo's own settings.json wiring, quoted verbatim.
+        completed = subprocess.run(  # noqa: S603
+            ["/bin/sh", "-c", command],
+            input="{}",
+            env={"PATH": "/nonexistent", "CLAUDE_PROJECT_DIR": str(REPO)},
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30,
+        )
+        assert completed.returncode == 2

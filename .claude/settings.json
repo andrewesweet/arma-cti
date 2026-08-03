@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect-gated-paths.py\""
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect-gated-paths.py\" || exit 2"
           }
         ]
       },
@@ -19,7 +19,7 @@
           },
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect-gated-paths.py\""
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect-gated-paths.py\" || exit 2"
           }
         ]
       }
