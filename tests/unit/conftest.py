@@ -35,6 +35,7 @@ ECONOMY = REPO / "config" / "economy.json"
 # The authored manifests live inside the addon, because the addon ships and
 # reads them verbatim (ADR-0017). There is no second copy to point at.
 MANIFESTS = REPO / "addons" / "main" / "manifests"
+HOOKS = REPO / ".claude" / "hooks"
 
 
 def load_tool(name: str) -> ModuleType:
@@ -56,8 +57,14 @@ def load_hook(name: str) -> ModuleType:
     hyphenated, so `block-no-verify` is not a module name any import statement
     could spell. The decision function is what the tests drive; running the
     script's stdin/exit-code contract is the harness's job.
+
+    The hooks directory goes on `sys.path` first, because the Bash hooks import
+    their shared reader (`shell_reading`) as a sibling — which resolves by
+    itself when the harness runs a hook as a script, but not from here.
     """
-    return _load_script(name.replace("-", "_"), REPO / ".claude" / "hooks" / f"{name}.py")
+    if str(HOOKS) not in sys.path:
+        sys.path.insert(0, str(HOOKS))
+    return _load_script(name.replace("-", "_"), HOOKS / f"{name}.py")
 
 
 def _load_script(name: str, path: Path) -> ModuleType:

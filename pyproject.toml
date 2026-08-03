@@ -58,6 +58,8 @@ ignore = [
   "PLW1510",  # a formatter's exit code is deliberately ignored
   "S110",     # a failing formatter must never block the edit
   "BLE001",   # ditto: any formatter exception is swallowed by design
+  "INP001",   # deliberately not a package: hooks run as scripts, and their one
+              # shared module (shell_reading) resolves off the script directory
 ]
 
 [tool.pytest.ini_options]
