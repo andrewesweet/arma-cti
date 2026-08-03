@@ -11,6 +11,13 @@ structurally instead — prose is removed (heredoc bodies, shell comments), what
 is left is tokenised, split on command separators, and only a segment whose
 command word is `git` with a `commit` subcommand and a bypass flag is denied.
 
+The reader tracks nested contexts, not one open quote, because the shape agents
+actually write a comment body in — `--body "$(cat <<'EOF' ... EOF )"` — opens a
+heredoc inside a double-quoted command substitution. Read as one flat quote,
+that heredoc goes unnoticed, its body is parsed as shell, and a single `"` in
+the prose flips the rest of the body into command position: #167, where a
+review comment's own code span became a `git commit` to deny.
+
 Where the line is drawn, deliberately, because a hook too clever to audit is
 worse than a blunt one:
 
@@ -40,6 +47,10 @@ _SHORT_BYPASS = re.compile(r"-[A-Za-z]*n[A-Za-z]*\Z")
 _ASSIGNMENT = re.compile(r"[A-Za-z_]\w*=")
 # A heredoc delimiter, quoted or bare, after `<<` or `<<-`.
 _DELIMITER = re.compile(r"-?\s*(?:'([^']*)'|\"([^\"]*)\"|([A-Za-z_][\w.-]*))")
+# The nestable contexts a character can be read in. A command substitution is
+# code again even when it opens inside a double-quoted string, which is what
+# `--body "$(cat <<'EOF' ... )"` relies on (#167).
+_SINGLE, _DOUBLE, _SUBSTITUTION = "'", '"', "$("
 # `;`, `&&`, `||`, `|`, `&`, `(`, `)` — shlex.punctuation_chars emits these as
 # their own tokens, and each of them ends a command.
 _SEPARATORS = frozenset({";", "&", "&&", "|", "||", "|&", "(", ")", ";;"})
@@ -50,28 +61,62 @@ DENIAL = (
 )
 
 
-def _read_line(line: str, quote: str) -> tuple[str, str, list[str], bool] | None:
+def _in_code(contexts: list[str]) -> bool:
+    """Report whether the reader is at a command position rather than inside a quote."""
+    return not contexts or contexts[-1] == _SUBSTITUTION
+
+
+def _read_quoted(line: str, index: int, contexts: list[str], kept: list[str]) -> int:
+    """Consume one character of the quoted string `contexts` is innermost inside.
+
+    Appends what it keeps and returns the next index, popping the context when
+    the string closes.
+    """
+    char = line[index]
+    if contexts[-1] == _SINGLE:
+        kept.append(char)  # nothing but the closing quote is special in here
+        if char == _SINGLE:
+            contexts.pop()
+        return index + 1
+    if char == "\\" and index + 1 < len(line):
+        kept.append(line[index : index + 2])  # an escaped quote does not close it
+        return index + 2
+    kept.append(char)
+    if char == _DOUBLE:
+        contexts.pop()
+    return index + 1
+
+
+def _read_line(line: str, contexts: list[str]) -> tuple[str, list[str], list[str], bool] | None:
     """Read one line of shell text outside of any heredoc body.
 
-    Returns the code with an unquoted trailing comment removed, the quote still
-    open at the end of it, the heredoc delimiters the line opened, and whether
-    it ends in a backslash continuation. `None` if the line could not be read.
+    Returns the code with an unquoted trailing comment removed, the contexts
+    still open at the end of it, the heredoc delimiters the line opened, and
+    whether it ends in a backslash continuation. `None` if it could not be read.
     """
     kept: list[str] = []
     delimiters: list[str] = []
+    contexts = list(contexts)
     index = 0
     while index < len(line):
         char = line[index]
-        if quote == '"' and char == "\\" and index + 1 < len(line):
-            kept.append(line[index : index + 2])  # an escaped quote does not close it
+        top = contexts[-1] if contexts else ""
+        if top != _SINGLE and line.startswith("$(", index):
+            # Code again, even inside a double-quoted string — and the emitted
+            # text closes that string, so the tokeniser sees the substitution's
+            # contents in command position rather than as one quoted word.
+            kept.append('" $(' if top == _DOUBLE else "$(")
+            contexts.append(_SUBSTITUTION)
             index += 2
-        elif quote:
-            kept.append(char)
-            quote = "" if char == quote else quote
-            index += 1
+        elif top in (_SINGLE, _DOUBLE):
+            index = _read_quoted(line, index, contexts, kept)
         elif char in "'\"":
-            quote = char
+            contexts.append(char)
             kept.append(char)
+            index += 1
+        elif char == ")" and top == _SUBSTITUTION:
+            contexts.pop()
+            kept.append(') "' if contexts and contexts[-1] == _DOUBLE else ")")
             index += 1
         elif char == "\\" and index + 1 < len(line):
             kept.append(line[index : index + 2])
@@ -89,7 +134,7 @@ def _read_line(line: str, quote: str) -> tuple[str, str, list[str], bool] | None
             kept.append(char)
             index += 1
     code = "".join(kept)
-    return code, quote, delimiters, not quote and code.endswith("\\")
+    return code, contexts, delimiters, _in_code(contexts) and code.endswith("\\")
 
 
 def _shell_code(command: str) -> str | None:
@@ -100,25 +145,25 @@ def _shell_code(command: str) -> str | None:
     would otherwise run two commands together into one.
     """
     pieces: list[str] = []
-    quote = ""
+    contexts: list[str] = []
     pending: list[str] = []
     for line in command.split("\n"):
         if pending:
             if line.strip() == pending[0]:
                 pending.pop(0)
             continue  # heredoc body: text, not commands
-        read = _read_line(line, quote)
+        read = _read_line(line, contexts)
         if read is None:
             return None
-        code, quote, delimiters, continued = read
+        code, contexts, delimiters, continued = read
         pending.extend(delimiters)
         pieces.append(code)
-        if quote or continued:
+        if not _in_code(contexts) or continued:
             pieces.append("\n")  # inside a string, or a wrapped command line
         else:
             pieces.append(" ; ")
-    if quote or pending:
-        return None  # unbalanced quote, or a heredoc that never ends
+    if contexts or pending:
+        return None  # unbalanced quote or substitution, or a heredoc that never ends
     return "".join(pieces)
 
 

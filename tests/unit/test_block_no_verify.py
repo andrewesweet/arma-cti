@@ -55,6 +55,65 @@ def test_an_issue_body_naming_the_flag_over_several_lines_is_not_a_bypass() -> N
     assert not hook.blocks(command)
 
 
+# --- #167: the same class again, in the shape agents really write bodies in ---
+
+
+def commented(prose: str) -> str:
+    """Build the shape a review agent posts a body in: heredoc inside `"$(...)"`."""
+    return f"gh issue comment 167 --body \"$(cat <<'EOF'\n{prose}\nEOF\n)\""
+
+
+def test_a_heredoc_inside_a_quoted_substitution_is_still_prose() -> None:
+    """Reproduction 4 (2026-08-03 Clean Architecture review), post-#120-rewrite.
+
+    A heredoc opened inside `"$(...)"` was not seen as a heredoc, so its body was
+    parsed as shell; the stray `"` in the prose then put the code span that
+    follows it in command position.
+    """
+    assert not hook.blocks(commented(f'The reviewer wrote "the flag `{BYPASS}` is prose here.'))
+
+
+def test_such_a_body_naming_neither_the_flag_nor_a_commit_is_not_a_bypass() -> None:
+    """The live denial that reopened this: the body mentions no git command at all.
+
+    The pre-fix hook could not read the command — the heredoc opened inside
+    `"$(...)"` went unseen, the body's lone `"` unbalanced the quoting, and
+    `_shell_code` returned `None`. Denial then came from the fail-safe path
+    rather than from any match, so nothing in the text had to resemble the
+    bypass for a plain review comment to be blocked.
+    """
+    assert not hook.blocks(
+        commented(
+            "The reviewer's note said \"the guard is fail-safe here.\n"
+            "Nothing in this paragraph is a command at all."
+        )
+    )
+
+
+def test_an_odd_quote_in_such_a_body_does_not_leak_into_command_position() -> None:
+    assert not hook.blocks(
+        commented(
+            f'The hook printed "Bypassing the commit-msg hook is blocked.\n'
+            f"Nothing in this body is a {BYPASS} invocation."
+        )
+    )
+
+
+def test_an_apostrophe_in_such_a_body_is_not_an_unbalanced_quote() -> None:
+    assert not hook.blocks(
+        commented(f"It said \"blocked and the agent's command carried {FLAG} as text.")
+    )
+
+
+def test_a_substitution_inside_a_body_is_still_a_command_position() -> None:
+    """The context stack must not become a licence: `"$(...)"` really does run."""
+    assert hook.blocks(f'gh issue comment 167 --body "$({BYPASS} -m wip)"')
+
+
+def test_an_unclosed_substitution_is_denied() -> None:
+    assert hook.blocks('gh issue comment 167 --body "$(cat notes.md"')
+
+
 def test_an_escaped_quote_inside_a_body_does_not_confuse_the_reader() -> None:
     command = f'gh issue comment 120 --body "it says \\"{FLAG}\\" in prose"'
     assert not hook.blocks(command)

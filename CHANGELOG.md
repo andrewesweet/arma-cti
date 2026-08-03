@@ -110,6 +110,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   aside. And banding an empty sighting returned an empty echelon, a valid-looking band that would
   have put a place on a Commander's picture with nothing standing at it. #155.
 
+- **Writing about the commit-hook bypass no longer denies the agent writing it — the third
+  sighting, and the first after the rewrite meant to end them.** `.claude/hooks/block-no-verify.py`
+  read a command as one open quote at a time, which cannot see that `--body "$(cat <<'EOF' … EOF )"`
+  — the shape an agent actually posts an issue comment in — opens a heredoc *inside* a double-quoted
+  command substitution. That heredoc went unnoticed, so its body was parsed as shell rather than
+  dropped as prose, and a single `"` anywhere in the prose flipped the rest of the body into command
+  position: a review comment's own `git commit --no-verify` code span became a bypass to deny. The
+  denial did not even need that much — the observed one was a comment naming no git command at all,
+  where the unbalanced quote simply left the command unreadable and the hook's fail-safe denied what
+  it could not parse. The reader now tracks nested contexts, so a substitution is code even inside a
+  quote and a heredoc opened there is prose again. A substitution that really does run the bypass is
+  still denied, and so is one left unclosed. #167.
+
 - **A wedged daemon now says no instead of quietly collecting a blocked thread per retry.** The
   daemon answers one request at a time and waited on that lock forever, while the transport gave
   every connection a thread of its own with no bound — so a handler stuck on anything, a filesystem
