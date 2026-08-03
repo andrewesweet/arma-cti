@@ -115,7 +115,10 @@ private _stuckAfter = 90;
     {
         private _sequence = _x getOrDefault ["sequence", -1];
         private _message = _x getOrDefault ["message", createHashMap];
-        private _verdict = [_message] call cti_fnc_effectApply;
+        // The sequence goes with the message because redelivery is this loop's
+        // own doing: an effect whose ack was lost comes back through here, and
+        // the line that says so has to name which delivery it was (#141).
+        private _verdict = [_message, _sequence] call cti_fnc_effectApply;
         private _outcome = _verdict getOrDefault ["outcome", "deferred"];
 
         // A transient failure stops the drain rather than being acknowledged
@@ -177,7 +180,11 @@ private _stuckAfter = 90;
     if (_highest >= 0) then {
         // The acknowledgement's own reply is read rather than dropped: it
         // is what retires the prefix, and an ack that never arrived leaves
-        // the same effects to be applied twice on the next drain.
+        // the same effects to be applied twice on the next drain. That is
+        // survivable because cti_fnc_effectApply is idempotent, not because
+        // it is rare — #141 found the one effect for which it was not, and
+        // the guard is there rather than here: the pump cannot tell a
+        // redelivery from a first delivery, and the world can.
         private _acked = [
             format ["ack-%1", _highest], "ack",
             createHashMapFromArray [["through", _highest], ["dead", _dead]]

@@ -107,6 +107,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A Squad bought once is spawned once, even when the wire hiccups.** The game applies an effect
+  and only then tells the daemon it has, so an acknowledgement lost on the way back leaves the
+  daemon holding the effect and handing it over again on the next poll — which is the design, and
+  every effect but one survived it. A repeated Squad spawn did not: it stood a second full Squad on
+  the map, pointed the roster at the new one, and left the first group's men on the ground answering
+  to nobody — alive, still fighting, reachable by no Order, counted by neither the world nor the
+  daemon, and there for the rest of the session. The Campaign said nothing about any of it. The game
+  now recognises a Squad it has already spawned and treats the repeat as the redelivery it is,
+  saying so once in the log with the sequence and the Squad id. #141.
+
 - **A wedged Arma-tier run now frees its slot instead of holding the pool until a human notices.**
   The tier's own timeout mechanism could fail open. Every deadline in `spike/run.sh` was computed
   through `bc`, and without it `(($(echo … | bc)))` compares an empty operand, which is false — so

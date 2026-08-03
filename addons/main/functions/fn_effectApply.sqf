@@ -29,14 +29,29 @@
  * first genuinely transient failure has somewhere to go that is not an unbounded
  * retry, and so that the choice has to be made deliberately.
  *
+ * ## Why delivery is at-least-once, and what that costs here
+ *
+ * Nothing is acknowledged until it has been applied, so an acknowledgement lost
+ * on the wire leaves the daemon holding the same sequences and the next poll
+ * hands them over again (ADR-0018, and the pump says so in its own words). That
+ * makes every effect here something that may be applied twice, and applying one
+ * twice must mean what applying it once meant. Most of them already do — a
+ * capture is a log line, a Reinforce counts what is standing, an Order re-lays
+ * the same waypoints, a won Campaign re-broadcasts a caption — and the one that
+ * did not is guarded below (#141).
+ *
  * Arguments:
  * 0: the effect <HASHMAP> — `effect`, `side`, `args`
+ * 1: the sequence it was delivered under <NUMBER> (optional, default -1). Carried
+ *    for the log line a redelivery writes and for nothing else: the pump is what
+ *    knows a sequence, and a redelivery is a fact about delivery, so the line
+ *    that reports one has to be able to name which delivery it was.
  *
  * Return Value: <HASHMAP> the verdict — `outcome` one of "applied", "refused"
  * (permanent: acknowledge and dead-letter it) or "deferred" (transient: leave it
  * unacknowledged and try again), and `reason`, the word its FAIL line carries.
  */
-params [["_effect", createHashMap, [createHashMap]]];
+params [["_effect", createHashMap, [createHashMap]], ["_sequence", -1, [0]]];
 
 // The verdict, in the vocabulary above. `_refused` is every failure below; the
 // reason is the same word the accompanying FAIL line names.
@@ -228,6 +243,45 @@ if (_name isEqualTo "squad_reinforced") exitWith {
     // arriving into a Squad should mean. Re-applying it would rebuild the
     // waypoint list of a Squad that is already carrying out its Order, and a
     // Reinforce is not a re-Order.
+    ["applied"] call _verdict
+};
+
+// Everything below is `squad_spawned`: it is the only name left, the unknown
+// ones having been refused above and `squad_reinforced` having exited.
+//
+// A redelivery, not a second Squad (#141). Delivery is at-least-once by design,
+// as the header says, and a spawn is the one effect in the set for which that
+// was not survivable: `createGroup` obeys, so the same effect arriving twice put
+// a second full Squad on the map, overwrote `cti_squads`'s entry with it, and
+// left the first group's men standing — real soldiers, still fighting, no longer
+// in the roster map, so no Order reaches them (cti_fnc_orderEnforce walks
+// `cti_squads`), nothing samples them, and the daemon is told about them by
+// nobody. The world and the daemon's picture then disagree for the rest of the
+// session, and neither says so.
+//
+// The fix is the receiver deduplicating, which is ADR-0034's shape one layer up:
+// there, a resent *request* is answered from the answer it was already given;
+// here, a redelivered *effect* is answered from the world it has already made.
+// The discriminator is the one both ends already carry rather than a new one —
+// the daemon mints `squad` on its roster and holds the effect under it until the
+// ack, and the world records which group answers to that id at the bottom of
+// this function. So a Squad id already standing is an effect already applied,
+// and the answer is `applied`, mirroring what `squad_reinforced` says about a
+// Squad already at strength: nothing left to do, and nothing a later poll would
+// do differently.
+//
+// `isNull` rather than presence alone. A group the engine has since deleted —
+// every man dead, and `createGroup`'s `deleteWhenEmpty` collecting it — leaves
+// the id in the map pointing at `grpNull`, and that is a Squad the world no
+// longer holds at all rather than one it holds twice. Re-applying the spawn
+// there puts the world back where the daemon (which still has the Squad on its
+// roster, the ack having never landed) believes it is. What this can never do is
+// stand a second group behind a living one, which is the whole of the finding.
+private _standing = (missionNamespace getVariable ["cti_squads", createHashMap])
+    getOrDefault [_squadId, grpNull];
+if (!isNull _standing) exitWith {
+    diag_log format ["CTI|effect_redelivered sequence=%1 effect=%2 side=%3 squad=%4 units=%5",
+        _sequence, _name, _sideName, _squadId, count units _standing];
     ["applied"] call _verdict
 };
 

@@ -11,9 +11,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-from conftest import reply_to, rows
+from conftest import live, reply_to, rows
 
-from cti_daemon.commands import Effect
+from cti_daemon.commands import Effect, serialise_effect
 from cti_daemon.daemon import OUTBOX_DEPTH_STEP
 from cti_daemon.outbox import Outbox, UnknownSequenceError
 from cti_daemon.transport import build_daemon
@@ -56,6 +56,43 @@ def test_an_unacknowledged_message_is_delivered_again() -> None:
     first_retry = [entry.sequence for entry in outbox.pending()]
     second_retry = [entry.sequence for entry in outbox.pending()]
     assert first_retry == second_retry == [2]
+
+
+def test_a_redelivered_squad_spawn_carries_the_same_squad_id() -> None:
+    # The daemon's half of #141. The world deduplicates a redelivered effect by
+    # the Squad id it carries (`fn_effectApply`), and that only works because
+    # this side re-hands the *same* effect rather than a fresh rendering of the
+    # same intent: the outbox holds the `Effect` object the Purchase minted, so
+    # every redelivery of an unacknowledged `squad_spawned` renders identically,
+    # down to the id the roster minted once.
+    #
+    # Asserted through a real Purchase rather than a hand-built Effect, because
+    # what is being claimed is end-to-end: the id the world dedupes on is the id
+    # the roster minted, and nothing between the two re-mints it.
+    campaign = live()
+    squad, _ = campaign.purchase("WEST", "rifle")
+
+    handed = [serialise_effect(entry.effect) for entry in campaign.outbox.pending()]
+    again = [serialise_effect(entry.effect) for entry in campaign.outbox.pending()]
+
+    assert handed == again
+    assert [message["effect"] for message in handed] == ["squad_spawned"]
+    assert handed[0]["args"]["squad"] == squad.id
+
+
+def test_redelivery_does_not_mint_a_second_squad() -> None:
+    # The other half of the same claim, and the reason the guard belongs in the
+    # world rather than here: an unacknowledged effect being handed over again
+    # is a read of the outbox, so the daemon's roster still holds exactly the
+    # one Squad it was paid for however many times the world is told about it.
+    # The daemon therefore cannot see the duplicate the world would make, which
+    # is what made #141 silent.
+    campaign = live()
+    campaign.purchase("WEST", "rifle")
+
+    for _ in range(3):
+        assert [entry.sequence for entry in campaign.outbox.pending()] == [1]
+    assert [squad.id for squad in campaign.roster.roll("WEST")] == ["WEST-1"]
 
 
 def test_acknowledging_twice_is_not_an_error() -> None:
