@@ -3,9 +3,14 @@
 Fill in and leave it here; `/playtest-ingest` reads this file. Fragments are enough, and a blank
 line is an answer too — it means you did not get to it.
 
-- Date:
-- Boot line worked as written: y / n —
-- Minutes in the seat:
+- Date: 2026-08-03
+- Boot line worked as written: **y** — verbatim, no edits. Server, daemon and the Windows client
+  came up unattended; `commander_assigned side=WEST` 34 s after the client connected. Run ended
+  `verdict=HOLD-COMPLETE`, `window_closed at=1813`.
+- Minutes in the seat: **28** (client connected 20:30:45, window closed 20:59:14)
+
+_(These three filled from the run's own evidence rather than by the player — the session was
+attended by an agent, so the mechanical fields did not need asking.)_
 
 ## Live notes (dictated during the session, verbatim)
 
