@@ -106,6 +106,13 @@ attended by an agent, so the mechanical fields did not need asking.)_
 
 ## 5 — refill what the fight cost
 
+**Deferred by the human, 2026-08-03**, to a session run after the Commander map and visuals have
+improved (#174, #175, #176). Not abandoned: the 0.8 discount is still explicitly held for playtest
+judgement and still has not had one, and this scenario carries forward to the next brief. The
+reason for deferring rather than re-running now is that the seat's own defects limited what this
+session could observe about anything else — judging a price through a picture that cannot show a
+Squad's strength or whether it is alive would be judging the wrong thing.
+
 - Price shown felt like a discount worth taking, against buying fresh: y / n
 - 0.8 felt: too cheap / about right / too dear
 - Refilling created a real decision (thin Squad forward vs walk it home): y / n
