@@ -2,8 +2,12 @@
 
 `spike/host-guard.sh` decides whether the Arma tier may take the shared machine.
 It was previously inline in `spike/regress.sh` behind `command -v tasklist.exe`,
-which is false in an agent's shell — so the guard never ran and every run was
-permitted by a check that had not happened.
+which was false in the shells #41's runs got — so the guard never ran and every
+run was permitted by a check that had not happened. Whether the WSL interop
+PATH append reaches a given session varies with how the session was entered
+(#180: mosh/ssh-descended shells lack it, wsl.exe-descended shells carry it),
+which is the deeper reason resolution is by absolute path: a check keyed on
+PATH is keyed on session ancestry.
 
 The point of these tests is that both branches are exercised without Arma: a
 Windows process list showing the game refuses, one showing it absent proceeds,
@@ -105,19 +109,69 @@ def test_missing_tool_refuses_rather_than_failing_open(tmp_path: Path) -> None:
     assert "no executable Windows process list" in result.stderr
 
 
-def test_bare_name_on_path_is_not_how_the_tool_is_found() -> None:
-    """The regression #41 reports, asserted at its cause rather than its effect.
+def test_bare_name_on_path_is_not_how_the_tool_is_found(tmp_path: Path) -> None:
+    """The regression #41 reports, asserted on the guard rather than the shell.
 
-    `tasklist.exe` is not on an agent's PATH here, so any guard that resolves it
-    by name is a guard that never runs. If this ever starts passing the guard is
-    still correct — it resolves by absolute path — but the bug's own premise has
-    changed and the comments explaining it should be reread.
+    The first draft asserted the premise itself — that `tasklist.exe` is not on
+    an agent's PATH — and went red the day a session's shell carried the WSL
+    interop PATH append (#180). Whether that append is in effect varies with how
+    a session was entered, so a test gating on it could go red with nothing in
+    the tree having changed. What must hold in both worlds is behavioural: PATH
+    is not how the guard finds the tool, in either direction. This is the first
+    direction — the bare name resolves, to a decoy answering "absent", the exact
+    answer that fails open — while the configured absolute path is missing. A
+    guard that reaches for PATH proceeds; the real one refuses.
     """
+    bindir = tmp_path / "on-path"
+    bindir.mkdir()
+    invoked = tmp_path / "decoy-was-invoked"
+    _stub(bindir, "tasklist.exe", f"touch '{invoked}'\nprintf '%s' {TASKLIST_ABSENT!r}")
+    env = dict(
+        os.environ,
+        PATH=f"{bindir}:{os.environ.get('PATH', '')}",
+        CTI_WINDOWS_TASKLIST=str(tmp_path / "there-is-no-tasklist-here.exe"),
+    )
+    # The staging must have taken effect: the bare name resolves, to the decoy.
     # S603: a fixed literal command line with no input of any kind.
     probe = subprocess.run(  # noqa: S603
-        [BASH, "-c", "command -v tasklist.exe"], capture_output=True, check=False
+        [BASH, "-c", "command -v tasklist.exe"],
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
     )
-    assert probe.returncode != 0, "tasklist.exe is on PATH now; #41's premise has changed"
+    assert probe.stdout.strip() == str(bindir / "tasklist.exe"), probe.stdout
+    # S603: the argv is this repo's own script.
+    result = subprocess.run(  # noqa: S603
+        [BASH, str(GUARD)], env=env, capture_output=True, text=True, check=False
+    )
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE
+    assert "no executable Windows process list" in result.stderr
+    assert not invoked.exists(), "the guard executed the PATH-resolved decoy"
+
+
+def test_guard_runs_with_no_bare_name_to_resolve(tmp_path: Path) -> None:
+    """The other direction: #41's original world, rebuilt rather than assumed.
+
+    No `tasklist.exe` is reachable by name anywhere on this PATH, and the guard
+    still runs to a verdict — the absolute-path seam is the only resolution it
+    has. The guard that #41 replaced, wrapped in `command -v tasklist.exe`,
+    silently skips itself here.
+    """
+    tasklist = _stub(tmp_path, "tasklist.sh", f"printf '%s' {TASKLIST_ABSENT!r}")
+    env = dict(os.environ, PATH="/usr/bin:/bin", CTI_WINDOWS_TASKLIST=str(tasklist))
+    # The staging must have taken effect: the rebuilt PATH resolves no bare name.
+    # S603: a fixed literal command line with no input of any kind.
+    probe = subprocess.run(  # noqa: S603
+        [BASH, "-c", "command -v tasklist.exe"], env=env, capture_output=True, check=False
+    )
+    assert probe.returncode != 0, "the rebuilt PATH still resolves tasklist.exe"
+    # S603: the argv is this repo's own script and a path this test just wrote.
+    result = subprocess.run(  # noqa: S603
+        [BASH, str(GUARD)], env=env, capture_output=True, text=True, check=False
+    )
+    assert result.returncode == 0, result.stderr
+    assert "is not in the Windows process list" in result.stderr
 
 
 def test_non_executable_tool_refuses(tmp_path: Path) -> None:

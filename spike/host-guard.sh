@@ -8,13 +8,16 @@
 # neither stops `spike/run.sh`'s teardown from killing a client it did not
 # launch. That is this file's job, and it is asked before anything is launched.
 #
-# Resolved by absolute path, not by name. In an agent's shell on this machine
-# the WSL2 interop PATH append is not in effect, so `command -v tasklist.exe` is
-# false and the guard that was wrapped in it never ran once (#41). A check that
-# could not run is not a check that passed: not being able to see the Windows
-# process list is `infra_unavailable`, the same verdict as seeing a client in
-# it. Both are a stop. Only "the list came back and the game is not in it" is
-# permission to proceed.
+# Resolved by absolute path, not by name. In the shells #41's runs got, the
+# WSL2 interop PATH append was not in effect, so `command -v tasklist.exe` was
+# false and the guard that was wrapped in it never ran once (#41). Whether that
+# append reaches a given session varies with how the session was entered (#180:
+# mosh/ssh-descended shells lack it, wsl.exe-descended shells carry it), which
+# is the deeper reason for the absolute path: a check keyed on PATH is keyed on
+# session ancestry. A check that could not run is not a check that passed: not
+# being able to see the Windows process list is `infra_unavailable`, the same
+# verdict as seeing a client in it. Both are a stop. Only "the list came back
+# and the game is not in it" is permission to proceed.
 #
 # Usage, as a command:
 #     spike/host-guard.sh            # exit 0 free, exit 5 stop, reason on stderr

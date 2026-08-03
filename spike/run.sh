@@ -159,8 +159,10 @@ cleanup() {
     collect_server_rpt
     # Windows processes are children of WSL interop, not of this shell, so a
     # kill on the interop wrapper does not always reach them. By absolute path:
-    # `taskkill.exe` by name is not on an agent's PATH either, so this silently
-    # left a Windows process alive after every run that launched one (#41).
+    # `taskkill.exe` by name was not on the agent's PATH either, so this
+    # silently left a Windows process alive after every run that launched one
+    # (#41). Whether the bare name resolves varies by session (#180), which is
+    # more reason for the absolute path, not less.
     #
     # Keyed on having launched one, not on having been asked to: a run that
     # refuses at the pre-flight below exits through here, and killing
