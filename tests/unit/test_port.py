@@ -727,8 +727,13 @@ def test_each_handler_reads_exactly_the_arguments_its_catalogue_entry_declares(
             "reinforce": {"squad": squad},
         }[name]
     )
+    command = Command(name, "WEST", args)
+    # A Command copies what it is handed behind a read-only view (#152), so the
+    # spy has to be planted after construction — handed in normally, it is
+    # copied away and records nothing.
+    object.__setattr__(command, "args", args)
 
-    judgement = open_port.submit(Command(name, "WEST", args), acting_side="WEST")
+    judgement = open_port.submit(command, acting_side="WEST")
 
     assert judgement.accepted, judgement.detail
     assert args.read == set(commands.CATALOGUE[name])

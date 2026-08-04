@@ -366,7 +366,9 @@ class ReportCycle:
                     side=side,
                     command_side=command.side,
                     command=command.name,
-                    args=command.args,
+                    # A plain dict, so the row carries a JSON object rather than
+                    # the read-only view's repr (#152).
+                    args=dict(command.args),
                 )
                 continue
             # A refusal here is a planner bug rather than a Commander's mistake,
@@ -381,7 +383,8 @@ class ReportCycle:
                 # a row carrying one of them cannot say which happened.
                 command_side=command.side,
                 command=command.name,
-                args=command.args,
+                # A plain dict, for the accepted row's reason (#152).
+                args=dict(command.args),
                 code=judgement.code,
                 detail=judgement.detail,
             )

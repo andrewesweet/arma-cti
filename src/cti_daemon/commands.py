@@ -14,7 +14,11 @@ not share a namespace.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Final, cast
+from types import MappingProxyType
+from typing import TYPE_CHECKING, Any, Final, cast
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 # The ubiquitous language's own tokens, defined here once and imported by
 # everything that speaks them (#65). ADR-0012 already makes this module the
@@ -82,7 +86,15 @@ class Command:
 
     name: str
     side: str
-    args: dict[str, Any]
+    # A read-only view over a private copy (#152): `frozen` stops the field
+    # being rebound, but a plain dict behind it could still be written through —
+    # including the caller's own dict, which `parse_command` would otherwise
+    # share with the request payload it was read from.
+    args: Mapping[str, Any]
+
+    def __post_init__(self) -> None:
+        """Fix what this carries at construction; see the field's comment."""
+        object.__setattr__(self, "args", MappingProxyType(dict(self.args)))
 
 
 @dataclass(frozen=True, slots=True)
@@ -96,7 +108,15 @@ class Effect:
 
     name: str
     side: str
-    args: dict[str, Any]
+    # Read-only for the reason a Command's is, and with more riding on it: an
+    # Effect sits on the outbox between push and acknowledgement, and one that
+    # could be written to there would be an event the record disagrees with
+    # (#152). Immutability is structural rather than a convention.
+    args: Mapping[str, Any]
+
+    def __post_init__(self) -> None:
+        """Fix what this carries at construction; see the field's comment."""
+        object.__setattr__(self, "args", MappingProxyType(dict(self.args)))
 
 
 class MalformedCommandError(Exception):
@@ -150,7 +170,9 @@ def parse_command(payload: object) -> Command:
 
 def serialise_command(command: Command) -> dict[str, Any]:
     """Render a Command as the envelope payload that crosses the wire."""
-    return {"command": command.name, "side": command.side, "args": command.args}
+    # A plain dict, because the read-only view is not JSON-serialisable and the
+    # wire document is the edge's own copy anyway (#152).
+    return {"command": command.name, "side": command.side, "args": dict(command.args)}
 
 
 def parse_effect(payload: object) -> Effect:
@@ -162,4 +184,5 @@ def parse_effect(payload: object) -> Effect:
 
 def serialise_effect(effect: Effect) -> dict[str, Any]:
     """Render an Effect as the outbox message that crosses the wire."""
-    return {"effect": effect.name, "side": effect.side, "args": effect.args}
+    # A plain dict, for `serialise_command`'s reason (#152).
+    return {"effect": effect.name, "side": effect.side, "args": dict(effect.args)}

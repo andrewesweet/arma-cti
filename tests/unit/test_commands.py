@@ -121,6 +121,24 @@ def test_every_command_in_the_catalogue_survives_the_wire_as_the_catalogue_shape
     assert set(restored.args) == set(commands.CATALOGUE[name])
 
 
+def test_what_a_command_or_effect_carries_is_fixed_at_construction() -> None:
+    # A6 of #139 (#152): `frozen` stopped the field being rebound, but a plain
+    # dict behind it could still be written through — so an Effect already on
+    # the outbox could be edited between push and delivery. Structural now, in
+    # both directions: the caller's own dict is copied, and the view refuses a
+    # write.
+    handed: dict[str, Any] = {"squad_type": "rifle"}
+    command = commands.Command("purchase", "WEST", handed)
+    effect = commands.Effect("squad_spawned", "WEST", handed)
+    handed["squad_type"] = "battleship"
+    assert command.args["squad_type"] == "rifle"
+    assert effect.args["squad_type"] == "rifle"
+    for carried in (command.args, effect.args):
+        with pytest.raises(TypeError):
+            # The refused write is the whole subject under test here.
+            carried["squad_type"] = "battleship"  # ty: ignore[invalid-assignment]
+
+
 def test_a_command_and_an_effect_are_not_the_same_payload() -> None:
     # They share a schema source but not a key, so a Command can never be
     # mistaken for an instruction to mutate the world (ADR-0012).
