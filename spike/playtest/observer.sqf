@@ -57,6 +57,13 @@
 //     seconds after its player left the camera is five seconds of a Commander
 //     who cannot move, and the sweep cannot be the thing that ends that.
 //
+// So the split has a visible seam, and it is the harmless one: for up to one
+// sweep turn after the camera opens, a body that is already frozen and already
+// out of the AI's reckoning is still drawn on any *other* human's screen. The
+// asymmetry is deliberate. Nothing acts on what is drawn, and the half that
+// something acts on — his own control of his own body — is never behind a
+// sweep in either direction.
+//
 // Simulation off is the half the AI reads. A unit subjected to it "may stay
 // unrecognised for a long time even after simulation was re-enabled, returning
 // objNull as cursorTarget" (commands/enableSimulation.wiki), which is the
