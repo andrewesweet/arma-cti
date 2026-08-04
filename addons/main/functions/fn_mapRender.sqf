@@ -43,19 +43,56 @@ private _drawn = [];
 
 private _own = ([cti_uiSide] call cti_fnc_sideMarkerColour);
 
+// ---- playtest-tuned placeholder (ADR-0020) ------------------------------
+// Marker text renders at the marker position, a Place's position is the town
+// centre, and the town centre is exactly where the engine prints its own town
+// name — so anything drawn *at* a Place writes over that label, every Place,
+// every time (#174: playtest 0001 found a Squad, a Contact and "Agia Marina"
+// in one unreadable stack). Squads are pulled north of the label and Contacts
+// south, in world metres so the pair stays with its town at every zoom; a
+// second Squad at the same Place stacks a step further north, because two
+// Squads in Reserve at one Base is the opening state of every Campaign.
+private _squadOffset = [0, 120];
+private _contactOffset = [0, -120];
+private _stackStep = 60;
+
+// Current strength is drawn against establishment strength (#174: playtest
+// 0001 read `rifle/8` as a fraction, and the live count the daemon serves has
+// no denominator). The establishment comes from the same catalogue the price
+// does — `command-schema.json`, via the Squad's own type — because writing an
+// 8 down here would be #159's finding again: SQF inventing a number the
+// daemon owns. A type the catalogue no longer sells renders "?", the same
+// honest non-answer the fields around it give.
+private _schema = call cti_fnc_commandSchema;
+// Reads the enclosing forEach's _x, which is the Squad record at both call
+// sites: the marker text below and the hint's Squad line.
+private _squadLabel = {
+    private _sold = (_schema getOrDefault ["squads", createHashMap])
+        getOrDefault [_x getOrDefault ["type", ""], createHashMap];
+    format ["%1 %2 %3/%4 — %5 %6",
+        _x getOrDefault ["id", ""],
+        _x getOrDefault ["type", "?"],
+        _x getOrDefault ["size", "?"],
+        _sold getOrDefault ["size", "?"],
+        _x getOrDefault ["order", "?"],
+        _x getOrDefault ["place", ""]]
+};
+
+private _crowd = createHashMap;
 {
     private _id = _x getOrDefault ["id", ""];
-    private _at = [_x getOrDefault ["at", ""]] call cti_fnc_placePosition;
+    private _place = _x getOrDefault ["at", ""];
+    private _at = [_place] call cti_fnc_placePosition;
     if (_at isNotEqualTo []) then {
-        private _marker = createMarkerLocal [format ["cti_ui_squad_%1", _id], _at];
+        private _row = _crowd getOrDefault [_place, 0];
+        _crowd set [_place, _row + 1];
+        _at params ["_east", "_north"];
+        _squadOffset params ["_offEast", "_offNorth"];
+        private _marker = createMarkerLocal [format ["cti_ui_squad_%1", _id],
+            [_east + _offEast, _north + _offNorth + _row * _stackStep, 0]];
         _marker setMarkerTypeLocal "mil_triangle";
         _marker setMarkerColorLocal _own;
-        _marker setMarkerTextLocal format ["%1 %2/%3 — %4 %5",
-            _id,
-            _x getOrDefault ["type", "?"],
-            _x getOrDefault ["size", "?"],
-            _x getOrDefault ["order", "?"],
-            _x getOrDefault ["place", ""]];
+        _marker setMarkerTextLocal (call _squadLabel);
         _drawn pushBack _marker;
     };
 } forEach (_view getOrDefault ["squads", []]);
@@ -66,7 +103,10 @@ private _own = ([cti_uiSide] call cti_fnc_sideMarkerColour);
     private _place = _x getOrDefault ["at", ""];
     private _at = [_place] call cti_fnc_placePosition;
     if (_at isNotEqualTo []) then {
-        private _marker = createMarkerLocal [format ["cti_ui_contact_%1", _place], _at];
+        _at params ["_east", "_north"];
+        _contactOffset params ["_offEast", "_offNorth"];
+        private _marker = createMarkerLocal [format ["cti_ui_contact_%1", _place],
+            [_east + _offEast, _north + _offNorth, 0]];
         _marker setMarkerTypeLocal "mil_warning";
         _marker setMarkerColorLocal "ColorRed";
         _marker setMarkerTextLocal format ["%1 %2%3 — seen %4s ago",
@@ -78,6 +118,23 @@ private _own = ([cti_uiSide] call cti_fnc_sideMarkerColour);
         _drawn pushBack _marker;
     };
 } forEach (_view getOrDefault ["contacts", []]);
+
+// What the Commander has selected (#174: playtest 0001 clicked the map and
+// read the answer only in the hint's Place line). Drawn at the Place itself —
+// it is the one marker whose job is to point at the ground the click named —
+// and icon-only, because text here would sit exactly on the engine's label,
+// which is the collision the offsets above exist to avoid. Redrawn wholesale
+// with the rest, so a click on open country — which cti_fnc_placeOf answers
+// with "" on purpose — removes it rather than leaving a stale selection.
+if (cti_uiPlace isNotEqualTo "") then {
+    private _at = [cti_uiPlace] call cti_fnc_placePosition;
+    if (_at isNotEqualTo []) then {
+        private _marker = createMarkerLocal ["cti_ui_place", _at];
+        _marker setMarkerTypeLocal "mil_pickup";
+        _marker setMarkerColorLocal "ColorYellow";
+        _drawn pushBack _marker;
+    };
+};
 
 missionNamespace setVariable ["cti_uiMarkers", _drawn];
 
@@ -92,12 +149,7 @@ private _place = if (cti_uiPlace isEqualTo "") then { "—" } else {
 private _squad = "— [Tab] to pick";
 {
     if ((_x getOrDefault ["id", ""]) isEqualTo cti_uiSquad) exitWith {
-        _squad = format ["%1 %2/%3 — %4 %5",
-            cti_uiSquad,
-            _x getOrDefault ["type", "?"],
-            _x getOrDefault ["size", "?"],
-            _x getOrDefault ["order", "?"],
-            _x getOrDefault ["place", ""]];
+        _squad = call _squadLabel;
     };
 } forEach (_view getOrDefault ["squads", []]);
 

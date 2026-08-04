@@ -33,21 +33,12 @@ cti_uiPlace = "";
 cti_uiSquad = "";
 cti_uiNote = "";
 
-// Clicking the map picks the ground an Order will name. `placeOf` without the
-// nearest-place fallback, so clicking open country selects nothing rather than
-// silently naming a town two kilometres away — the open ground between places
-// has no name (CONTEXT.md), and an Order that quietly acquired one would be an
-// Order the Commander did not give.
+// Clicking the map picks the ground an Order will name. The body lives in
+// cti_fnc_mapSelect so a probe can make the same click with a position (#174);
+// what remains here is only the wiring the engine owns.
 addMissionEventHandler ["MapSingleClick", {
     params ["", "_pos"];
-    private _map = missionNamespace getVariable ["cti_map", createHashMap];
-    cti_uiPlace = [
-        _pos,
-        _map getOrDefault ["objectives", []],
-        _map getOrDefault ["bases", []]
-    ] call cti_fnc_placeOf;
-    cti_uiNote = "";
-    [] call cti_fnc_mapRender;
+    [_pos] call cti_fnc_mapSelect;
 }];
 
 // The key handler lives on the map display, which exists only while the map is

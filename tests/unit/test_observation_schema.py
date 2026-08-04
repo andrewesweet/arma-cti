@@ -49,10 +49,13 @@ READERS = ("fn_mapObservation.sqf", "fn_mapRender.sqf", "fn_mapIssue.sqf")
 # `<receiver> getOrDefault ["<key>"` — the only form a literal key is read in.
 _READ = re.compile(r'(\w+) +getOrDefault +\["([^"]+)"')
 
-# What each receiver in those functions is holding.
+# What each receiver in those functions is holding. `_sold` is one Command
+# catalogue *entry* — the Squad type the map divides current strength by
+# (#174) — and belongs to the catalogue's owner with `_schema`, not to this
+# seam: `test_export_command_schema.py` pins `size` into every sold entry.
 _DOCUMENT = "_view"
 _RECORD = "_x"
-_COMMAND_SCHEMA = "_schema"
+_CATALOGUE = ("_schema", "_sold")
 
 
 def _reads() -> list[tuple[str, str, str]]:
@@ -124,5 +127,5 @@ def test_every_key_the_map_reads_is_one_the_export_declares() -> None:
             assert key in records, f"{name} reads an undeclared squad or contact field"
         else:
             # Anything else is a hashmap this seam does not own — and the only
-            # one there is is the Command catalogue.
-            assert receiver == _COMMAND_SCHEMA, f"{name} reads {receiver}, which nothing pins"
+            # ones there are hold the Command catalogue.
+            assert receiver in _CATALOGUE, f"{name} reads {receiver}, which nothing pins"

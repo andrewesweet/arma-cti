@@ -61,6 +61,7 @@ class CfgFunctions
             class portReply {};
             class mapObservation {};
             class mapCommander {};
+            class mapSelect {};
             class mapRender {};
             class mapVerbs {};
             class mapIssue {};

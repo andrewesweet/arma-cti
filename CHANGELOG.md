@@ -17,6 +17,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   logic lives in Python under pytest, bash keeps the process seams — launching, `flock`,
   environment, timeouts — where the shell is the actual subject. #171.
 
+### Fixed
+
+- **The Commander's map picture is readable in the three ways playtest 0001 said it was not.**
+  Clicking the map now draws a yellow selection marker on the Place the click named — the answer
+  used to live only in the hint's `Place:` line — and a click on open country removes it, because
+  open ground deliberately selects nothing. A Squad's marker text and a Contact's no longer print at
+  the town centre, which is exactly where the engine prints its own town name, so all three stacked
+  into one unreadable pile at every Place: Squads now sit north of the label, Contacts south, and a
+  second Squad at the same Place steps further north instead of overprinting the first. And a
+  Squad's strength finally has a denominator — `rifle 4/8` instead of `rifle/8`, where the 8 is the
+  establishment strength read from the same catalogue the price comes from rather than a number
+  written down again in SQF. All of it is presentation on `cti_fnc_mapRender`; the Observation on
+  the wire is untouched. #174.
+
 ### Added
 
 - **A playtest session now has an observer mode: press Y to fly free, press Y to come back.**
