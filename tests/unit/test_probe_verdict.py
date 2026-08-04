@@ -119,6 +119,78 @@ def test_a_sigkill_before_the_deadline_is_the_machine_not_the_watchdog() -> None
     assert "killed at the" not in typed.detail
 
 
+def test_a_starved_flight_is_infra_unavailable_whatever_it_recorded() -> None:
+    """The floor under a granted run (#182, ADR-0054).
+
+    The starvation watch stopped this probe mid-flight; whatever its world was
+    about to report — the episodes wore `timeout` and `node_crashed` — was
+    measured on a machine at the running floor, which is not a condition anyone
+    can interpret. The marker outranks even the class the run declared.
+    """
+    typed = probe_verdict.type_verdict(
+        outcome(
+            run_status=143,
+            starved="97 MiB available, under the 512 MiB running floor",
+            results={
+                "verdict": "FAIL",
+                "failure_class": "timeout",
+                "failure_detail": "never closed on the objective",
+            },
+        )
+    )
+    assert typed.verdict == "FAIL"
+    assert typed.class_ == "infra_unavailable"
+    assert "starved" in typed.detail
+    assert "97 MiB available, under the 512 MiB running floor" in typed.detail
+    assert "/runs/20260804T000000Z-contacts/regress.log" in typed.detail
+
+
+def test_a_starved_marker_outranks_even_a_recorded_pass() -> None:
+    """Fail-closed picks the discarded pass over the forged one.
+
+    A run that squeaked a PASS out while the box was under the floor measured
+    it under the same uninterpretable conditions as the forged reds; a pass
+    discarded as infra_unavailable costs a re-run, a forged pass costs a false
+    green.
+    """
+    typed = probe_verdict.type_verdict(
+        outcome(run_status=0, starved="40 MiB available, under the 512 MiB running floor")
+    )
+    assert typed.verdict == "FAIL"
+    assert typed.class_ == "infra_unavailable"
+    assert "starved" in typed.detail
+
+
+def test_a_starved_marker_outranks_the_watchdog_story() -> None:
+    """A starved world that then blew its watchdog is still the starvation's red."""
+    typed = probe_verdict.type_verdict(
+        outcome(
+            run_status=124,
+            elapsed_secs=812,
+            starved="19 MiB available, under the 512 MiB running floor",
+            results={},
+        )
+    )
+    assert typed.class_ == "infra_unavailable"
+    assert "starved" in typed.detail
+    assert "killed at the" not in typed.detail
+
+
+def test_a_starved_expected_red_probe_does_not_invert_to_a_pass() -> None:
+    """A red-by-design probe starved mid-flight measured nothing it expects."""
+    typed = probe_verdict.type_verdict(
+        outcome(
+            run_status=143,
+            expect="node_crashed",
+            starved="20 MiB available, under the 512 MiB running floor",
+            results={"verdict": "FAIL", "failure_class": "node_crashed"},
+        )
+    )
+    assert typed.verdict == "FAIL"
+    assert typed.class_ == "infra_unavailable"
+    assert "expects node_crashed, got infra_unavailable" in typed.detail
+
+
 def test_a_signal_killed_run_is_the_machines_doing_not_a_harness_bug() -> None:
     """#147 item 2: a 128+SIG exit used to fold into `untyped_harness_failure`.
 

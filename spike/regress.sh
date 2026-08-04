@@ -107,6 +107,16 @@ EXIT_KILLED=137
 # the time any of them runs. `run.sh` bounds its own `uv run`s for the same
 # reason and under the same variable (#144).
 UV_TIMEOUT="${CTI_UV_TIMEOUT:-300}"
+# The starvation watch's cadence (#182, ADR-0054) — the floor *under* a granted
+# run. Admission (#125) reads the machine before a lock is taken; the
+# between-probes re-check reads it before each launch; neither can see the
+# machine sicken while a world is in flight, and a starved world does not fail
+# honestly — it forges a plausible class. `base-assault` timed out at 458 s on a
+# box at 19 MiB; `campaign-end` and `two-commanders` crashed nodes at 20 MiB;
+# all three reds were about the machine and none wore its class. The watch
+# polls the same substitutable reader the other two readings use, on the lock
+# queue's own cadence. What a trip does is beside the watch itself, below.
+MEM_WATCH_SECS="${CTI_SLOT_MEM_WATCH_SECS:-5}"
 
 # One stable exit code per class, and nothing more: the exit code of a run
 # says which class to read the table row for. The numbers 1-5 were once also
@@ -559,10 +569,12 @@ log "slots: ${SLOTS[*]}"
 # exiting with locks freed only by the kernel and each slot's `.info` file
 # left beside a free lock for the next holder to misread (#147).
 ram_sampler_pid=""
+starve_watch_pid=""
 WORKER_PIDS=()
 pool_teardown() {
     local pid slot
     [[ -n "$ram_sampler_pid" ]] && kill "$ram_sampler_pid" 2>/dev/null
+    [[ -n "$starve_watch_pid" ]] && kill "$starve_watch_pid" 2>/dev/null
     for pid in ${WORKER_PIDS[@]+"${WORKER_PIDS[@]}"}; do kill "$pid" 2>/dev/null; done
     # The slots that failed to reclaim are released here too. They ran nothing,
     # but this run has held their locks all the way through on purpose (#133):
@@ -766,6 +778,118 @@ start_ram_sampler() {
     ram_sampler_pid=$!
 }
 
+# ------------------------------------------------------------ the starvation watch
+# TERM one launched probe through its watchdog. The pid recorded beside the
+# claim is the host-seam subshell — `cti_host_exec` is a function call, so `$!`
+# is a bash between us and the launch — and signalling it would kill the
+# wrapper while the probe ran on. The GNU `timeout` under it is the process
+# that can end the flight: it leads the probe's own process group and forwards
+# a received TERM to the whole group (run.sh, server, headless client, daemon),
+# so run.sh's own trap still tears its world down and releases what it holds,
+# while the subshell survives to reap the status the verdict typer reads. The
+# walk is bounded: anything deeper than the watchdog is run.sh's own business.
+starve_signal() {
+    local generation="$1" next pid child comm depth
+    for depth in 1 2 3; do
+        next=""
+        for pid in $generation; do
+            for child in $(ps -o pid= --ppid "$pid" 2>/dev/null); do
+                comm="$(ps -o comm= -p "$child" 2>/dev/null)"
+                if [[ "$comm" == timeout ]]; then
+                    kill -TERM "$child" 2>/dev/null
+                    return 0
+                fi
+                next+=" $child"
+            done
+        done
+        generation="$next"
+        [[ -n "${generation// /}" ]] || return 1
+    done
+    return 1
+}
+
+# The floor under a granted run (#182, ADR-0054), watching for what neither the
+# admission reading nor the between-probes re-check can see: the machine
+# sickening while a world is in flight — another agent's pool arriving, or the
+# OS itself (the #164 cluster was Windows OS-drive exhaustion). The reading is
+# the same substitutable reader and the same running floor as the re-check,
+# because the question is the same — is any margin left at all? — and 512 MiB
+# separates every healthy trough on record (1,014 MiB at its lowest) from both
+# starvation episodes (19–40 MiB) by an order of magnitude each way.
+#
+# A trip stops the pool AND its flights. Stopping work in flight is the
+# bulkhead rule's one sanctioned exception, and the reasoning is the rule's
+# own: interrupting a healthy world would manufacture a non-result, but a
+# starved world's result is already a non-result wearing a plausible class,
+# and letting it run to term only launders the forgery into `timeout` or
+# `node_crashed`. Each stopped claim gains a `starved` marker, which the
+# verdict typer reads above every other rung — the probe is
+# `infra_unavailable`, stop, not a result. Verdicts that completed before the
+# trip stand: their flights ran on the machine the between-probes reading
+# admitted them to.
+#
+# Two deliberate asymmetries. A reader failure is logged and NOT acted on:
+# killing granted work on a reading never taken would fabricate the very
+# measurement #147 removed, and the between-probes re-check already stops new
+# work on an unreadable machine. And a trip needs a flight to stop — a claim
+# with a launch pid and no `done` — so a reading that collapses with nothing
+# in flight is the between-probes re-check's to answer at the next launch,
+# never a post-hoc stop over a corpus that finished measuring.
+start_starvation_watch() {
+    (
+        # No lock is the watch's to hold — #138's sampler rule, one process over.
+        for slot in ${SLOTS[@]+"${SLOTS[@]}"} ${DIRTY_SLOTS[@]+"${DIRTY_SLOTS[@]}"}; do
+            cti_slot_close "$slot"
+        done
+        local avail said_unreadable=0 tripped=0 claim name in_flight
+        while :; do
+            sleep "$MEM_WATCH_SECS"
+            if ! avail="$("$SLOT_MEM_READER")"; then
+                ((said_unreadable)) || log "the starvation watch could not read the machine's memory — watching on; the between-probes re-check stops new work on an unreadable machine"
+                said_unreadable=1
+                continue
+            fi
+            said_unreadable=0
+            in_flight=()
+            for claim in "$CLAIMS"/*/pid; do
+                [[ -f "$claim" && ! -f "${claim%/pid}/done" ]] || continue
+                in_flight+=("${claim%/pid}")
+            done
+            if ((avail >= CTI_SLOT_MEM_RUNNING_FLOOR_MB || ${#in_flight[@]} == 0)); then
+                # Nothing left to stop after a trip: the watch's work is done.
+                ((tripped)) && exit 0
+                continue
+            fi
+            if ((tripped == 0)); then
+                tripped=1
+                log "starvation: $avail MiB available, under the ${CTI_SLOT_MEM_RUNNING_FLOOR_MB} MiB running floor, with ${#in_flight[@]} probe(s) in flight — stopping the pool and its flights (#182, ADR-0054)"
+                # Read by the merge, as the between-probes stop's is: the
+                # pool-level class rides this file. An existing stop flag is
+                # not clobbered — the first story is the story.
+                printf '%s\n' "$avail" >"$POOL_OUT/mem-stop"
+                if [[ ! -f "$STOP_FLAG" ]]; then
+                    printf 'only %s MiB available with %s probe(s) in flight; the running floor is %s MiB — the pool and its flights were stopped (#182, ADR-0054)\n' \
+                        "$avail" "${#in_flight[@]}" "$CTI_SLOT_MEM_RUNNING_FLOOR_MB" >"$STOP_FLAG"
+                fi
+            fi
+            for claim in "${in_flight[@]}"; do
+                name="$(basename "$claim")"
+                if [[ ! -f "$claim/starved" ]]; then
+                    printf '%s MiB available, under the %s MiB running floor\n' \
+                        "$avail" "$CTI_SLOT_MEM_RUNNING_FLOOR_MB" >"$claim/starved"
+                    log "starvation: stopping $name mid-flight — its verdict is infra_unavailable, not a result"
+                fi
+                # Re-sent every sweep until the flight is gone: a TERM that
+                # raced the launch has the next cadence to land, and run.sh's
+                # trap is idempotent. A flight that will not die is bounded by
+                # its own watchdog either way.
+                starve_signal "$(cat "$claim/pid")"
+            done
+        done
+    ) &
+    starve_watch_pid=$!
+}
+
 # ------------------------------------------------------------------ scheduling
 # Longest-job-first, on the probe's own declared window. A window is a deadline
 # rather than a measurement, so it is only an estimate of cost — but it is the
@@ -815,7 +939,7 @@ run_probe() {
     local name="$1" slot="$2"
     local file="$PROBE_DIR/$name.sqf"
     local window expect quarantine probe_env stamp out t0 elapsed run_status watchdog
-    local typed typer_status detail legs class
+    local typed typer_status detail legs class probe_pid
     window="$(header_of "$file" window)"
     expect="$(header_of "$file" expect)"
     quarantine="$(header_of "$file" quarantined)"
@@ -873,7 +997,13 @@ run_probe() {
         CTI_HARNESS_AWAIT=probe_done \
         CTI_HOLD_TIMEOUT="$window" \
         CTI_PROBE_TIMEOUT="$window" \
-        "$RUN_SH" --regress >"$out/regress.log" 2>&1
+        "$RUN_SH" --regress >"$out/regress.log" 2>&1 &
+    probe_pid=$!
+    # The launch pid, beside the claim, for the starvation watch (#182): a
+    # flight the watch has to stop is found here, and signalled through the
+    # `timeout` under this pid rather than at it — see starve_signal.
+    printf '%s\n' "$probe_pid" >"$CLAIMS/$name/pid"
+    wait "$probe_pid"
     run_status=$?
     elapsed=$(($(date +%s) - t0))
 
@@ -897,6 +1027,7 @@ run_probe() {
             --elapsed "$elapsed" \
             --expect "$expect" \
             --quarantined "$quarantine" \
+            --starved "$(cat "$CLAIMS/$name/starved" 2>/dev/null)" \
             --issues "$(header_of "$file" issues)" \
             --stamp "$stamp" \
             --git-sha "$GIT_SHA" \
@@ -958,11 +1089,16 @@ run_probe() {
     # #58's reading of #72, whose effect-pump half is still #72's. Neither kills
     # a probe already in flight: interrupting a running world would itself
     # manufacture the non-result being avoided.
+    # First writer wins on the stop flag: a probe the starvation watch stopped
+    # types infra_unavailable here too, and its generic line overwriting the
+    # watch's — which names the reading and the floor — would bury the story a
+    # reader acts on (#182).
     if [[ "$class" == infra_unavailable ]]; then
-        printf 'infra_unavailable in slot %s on %s\n' "$slot" "$name" >"$STOP_FLAG"
+        [[ -f "$STOP_FLAG" ]] ||
+            printf 'infra_unavailable in slot %s on %s\n' "$slot" "$name" >"$STOP_FLAG"
     elif [[ "$class" == node_crashed ]]; then
         printf '%s\n' "$name" >>"$POOL_OUT/crashes"
-        if (($(wc -l <"$POOL_OUT/crashes") >= 2)); then
+        if (($(wc -l <"$POOL_OUT/crashes") >= 2)) && [[ ! -f "$STOP_FLAG" ]]; then
             printf 'two probes crashed a node (%s) — stopping rather than hammering it N slots at a time\n' \
                 "$(tr '\n' ' ' <"$POOL_OUT/crashes")" >"$STOP_FLAG"
         fi
@@ -1051,6 +1187,7 @@ log "sha: $GIT_SHA dirty: $GIT_DIRTY started: $RUN_STARTED"
 
 POOL_T0=$(date +%s)
 start_ram_sampler
+start_starvation_watch
 
 if ((${#PARALLEL_JOBS[@]} > 0)); then
     for slot in "${SLOTS[@]}"; do
@@ -1104,6 +1241,8 @@ fi
 POOL_ELAPSED=$(($(date +%s) - POOL_T0))
 [[ -n "$ram_sampler_pid" ]] && kill "$ram_sampler_pid" 2>/dev/null
 ram_sampler_pid=""
+[[ -n "$starve_watch_pid" ]] && kill "$starve_watch_pid" 2>/dev/null
+starve_watch_pid=""
 
 # ------------------------------------------------------------------ RAM verdict
 PEAK_USED_KB=0

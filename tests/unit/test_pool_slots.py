@@ -72,12 +72,15 @@ printf '%s\t%s\t%s\n' "$name" "${CTI_TIER_SLOT:-}" "$(date +%s%N)" >>"$CTI_STUB_
 # A worker that dies mid-probe, on purpose: the claim is made, no verdict is
 # ever written, and the merge has to call that not-a-result rather than a red.
 if [[ "$name" == "${CTI_STUB_KILL:-}" ]]; then
-    # The worker is this process's *grandparent*, not its parent: the per-probe
-    # watchdog runs between them (#144), and killing the parent would kill the
-    # watchdog instead — which is a different scenario, and one that produces a
+    # The worker is three levels up, not one: the per-probe watchdog runs
+    # between them (#144), and since #182 backgrounded the launch so the
+    # starvation watch can name it, the host-seam subshell sits between the
+    # watchdog and the worker. Killing anything nearer would kill the watchdog
+    # or the wrapper instead — different scenarios, and ones that produce a
     # typed verdict rather than the missing one this stub exists to stage.
     # Read after the last `)` because a comm field can contain anything.
-    worker="$(sed -e 's/^.*) //' "/proc/$PPID/stat" 2>/dev/null | awk '{print $2}')"
+    parent() { sed -e 's/^.*) //' "/proc/$1/stat" 2>/dev/null | awk '{print $2}'; }
+    worker="$(parent "$(parent "$PPID")")"
     kill -9 "${worker:-$PPID}" 2>/dev/null
     sleep 30
 fi
@@ -1050,6 +1053,70 @@ def test_a_mid_run_reading_that_fails_stops_the_pool_without_fabricating_zero(
     assert "could not be taken" in pool["stopped_early"], pool["stopped_early"]
     assert "0 MiB" not in pool["stopped_early"], pool["stopped_early"]
     assert pool["not_run"] == ["contacts"]
+
+
+def test_a_granted_run_is_floored_when_the_machine_starves_mid_flight(tmp_path: Path) -> None:
+    """The floor under a granted run (#182, ADR-0054).
+
+    Twice past the pre-flight, a machine that sickened *during* a flight typed
+    its verdicts `timeout` and `node_crashed` — false reds about the code under
+    test, wearing classes that read like the probe's fault. The watch polls the
+    same substitutable reader as the other two memory readings (#133's
+    pattern), and a reading under the running floor with a probe in flight
+    stops the pool and the flight: the probe is `infra_unavailable`, stop, not
+    a result. The verdict a completed probe already earned stands.
+
+    Staged serially so the starvation has an unambiguous before and after: the
+    first probe completes on a healthy machine, the second's own world is what
+    tips it — the stub declares the machine starved the moment it is up, then
+    holds far past the test's patience, so only the watch ending the flight
+    lets this test finish.
+    """
+    starved_now = tmp_path / "machine-starves-now"
+    stub = executable(
+        tmp_path / "starving-run.sh",
+        "#!/usr/bin/env bash\n"
+        'name="$(basename "${CTI_HARNESS_EXTRA:-unknown}" .sqf)"\n'
+        'if [[ "$name" == campaign-end ]]; then\n'
+        f"    touch {starved_now}\n"
+        "    sleep 300\n"
+        "fi\n"
+        "printf 'verdict=PASS\\n' >>\"$CTI_SPIKE_OUT/results.env\"\n",
+    )
+    reader = executable(
+        tmp_path / "reader.sh",
+        f"#!/usr/bin/env bash\nif [[ -f {starved_now} ]]; then echo 100; else echo 1000000; fi\n",
+    )
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "1",
+        "bareworld",
+        "campaign-end",
+        extra_env={
+            "CTI_RUN_SH": str(stub),
+            "CTI_SLOT_MEM_READER": str(reader),
+            "CTI_SLOT_MEM_WATCH_SECS": "1",
+        },
+        timeout=120,
+    )
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    got = verdicts_by_probe(tmp_path)
+    # The completed probe's verdict stands: its flight ran on the machine the
+    # between-probes reading admitted it to.
+    assert got["bareworld"]["class"] == "pass"
+    # The starved flight is the machine's stop, never the world's class.
+    assert got["campaign-end"]["class"] == "infra_unavailable"
+    detail = json.loads((Path(got["campaign-end"]["evidence"]) / "verdict.json").read_text())[
+        "detail"
+    ]
+    assert "starved" in detail, detail
+    assert "running floor" in detail, detail
+    # Ended by the watch, not by the stub's 300 s hold or any watchdog.
+    assert got["campaign-end"]["elapsed_secs"] < 60
+    pool = pool_json(tmp_path)
+    assert "running floor" in pool["stopped_early"], pool["stopped_early"]
+    assert "flights" in pool["stopped_early"], pool["stopped_early"]
 
 
 def test_the_verdict_names_the_slot_and_the_host(tmp_path: Path) -> None:

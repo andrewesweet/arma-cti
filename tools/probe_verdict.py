@@ -6,6 +6,12 @@ here, where pytest can reach it — #83's precedent, that a wrong class is a
 harness bug and the no-Arma tier is where a harness bug should turn red. The
 ladder, in the order the shell applied it:
 
+0. The starvation watch stopped this probe's flight (#182, ADR-0054): the
+   machine went under the running floor while its world was up, and nothing a
+   starved world reports is a result — the two episodes past the memory
+   pre-flight wore `timeout` and `node_crashed`, both about the machine and
+   neither wearing its class. Above every other rung, whatever the run managed
+   to record: `infra_unavailable`, stop, not a result.
 1. The watchdog killed `run.sh` — a `timeout` status of 124, or the follow-up
    SIGKILL's 137 with the deadline actually reached. Its process tree died
    mid-measurement, so whatever half-written `results.env` it left behind is
@@ -93,6 +99,9 @@ class Outcome:
     margin_secs: int = 0
     elapsed_secs: int = 0
     evidence: str = ""
+    # The starvation watch's marker for this probe, empty when it never fired:
+    # the reading and the floor, in the watch's own words (#182, ADR-0054).
+    starved: str = ""
 
 
 class TypedVerdict(NamedTuple):
@@ -109,11 +118,23 @@ def type_verdict(outcome: Outcome) -> TypedVerdict:
     raw = outcome.results.get("failure_class", "")
     detail = outcome.results.get("failure_detail", "")
 
+    # The starvation marker wins over every other reading of the run,
+    # including a verdict the run managed to record: a flight the watch marked
+    # overlapped a reading under the running floor, so whatever it measured was
+    # measured under conditions nobody can interpret. Fail-closed picks the
+    # discarded pass over the forged one (#182, ADR-0054).
+    if outcome.starved:
+        raw = "infra_unavailable"
+        detail = (
+            f"the machine starved while this probe was in flight — {outcome.starved}; "
+            f"the flight was stopped rather than let a starved world forge a plausible "
+            f"class (#182); see {outcome.evidence}/regress.log"
+        )
     # 124 is `timeout` saying the deadline was reached, whatever the command
     # then exited; 137 is a SIGKILL, which is only the watchdog's follow-up
     # kill if the deadline had actually passed — before it, nothing of the
     # watchdog's has fired yet and the kill is the machine's (#147).
-    if outcome.run_status == EXIT_TIMED_OUT or (
+    elif outcome.run_status == EXIT_TIMED_OUT or (
         outcome.run_status == EXIT_KILLED and outcome.elapsed_secs >= outcome.watchdog_secs
     ):
         raw = "infra_unavailable"
@@ -192,6 +213,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--elapsed", required=True, type=int)
     parser.add_argument("--expect", default="")
     parser.add_argument("--quarantined", default="")
+    parser.add_argument("--starved", default="")
     parser.add_argument("--issues", default="")
     parser.add_argument("--stamp", required=True)
     parser.add_argument("--git-sha", required=True)
@@ -217,6 +239,7 @@ def main(argv: list[str] | None = None) -> int:
             margin_secs=args.margin,
             elapsed_secs=args.elapsed,
             evidence=args.evidence,
+            starved=args.starved,
         )
     )
     document = {

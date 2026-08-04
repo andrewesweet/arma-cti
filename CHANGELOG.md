@@ -19,6 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A starved machine can no longer forge a probe's class.** Twice, memory starvation arriving
+  *after* admission — another agent's corpus, or the OS itself sickening — typed its verdicts
+  `timeout` and `node_crashed`: false reds about the code under test, wearing classes whose table
+  rows send the reader to the wrong response. A starvation watch now polls the same substitutable
+  memory reader as the admission and between-probes readings, and a reading under the 512 MiB
+  running floor with a probe in flight stops the pool and the flight: the probe is typed
+  `infra_unavailable` — stop, not a result — above every other reading of its run, including a
+  recorded pass. Completed verdicts stand. The one sanctioned interruption of work in flight,
+  because a starved flight's result is already a non-result wearing a plausible class. #182,
+  ADR-0054.
 - **The regression tier's residual failure paths are typed, and its exit codes stop lying.** A
   `run.sh` the machine killed (an OOM kill above all) is now `infra_unavailable` with the signal
   named, not a "fix the harness" red; an in-mission class typo (`class=timout` — or a smuggled
