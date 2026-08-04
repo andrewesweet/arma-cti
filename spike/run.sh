@@ -102,6 +102,14 @@ SKIP_HC=0
 HOLD=0
 NO_CLIENT_WAIT=0
 HOLD_TIMEOUT="${CTI_HOLD_TIMEOUT:-900}"
+# One mode flag at most. A second argument used to be read by nobody and
+# silently dropped, which is how a mistyped invocation runs in a mode the
+# caller did not ask for. A usage error exits 2, like regress.sh's `die`:
+# nothing was brought up, so there is no verdict to type.
+if (($# > 1)); then
+    printf '[spike] too many arguments: %s — one mode flag at most (--no-hc | --hold | --regress)\n' "$*" >&2
+    exit 2
+fi
 case "${1:-}" in
 --no-hc) SKIP_HC=1 ;;
 # --hold brings everything up and keeps it up so a human client can join, then
@@ -377,10 +385,10 @@ class_of() {
 # a probe that failed produced a result, and an unverified leg is only the story
 # when there is no other one.
 assert_legs_ran() {
-    local lines="$1" seen unverified
-    seen="$(sed -n 's/^LEG name=\([^ ]*\) status=\([^ ]*\).*/\1:\2/p' "$lines" | paste -sd' ' -)"
+    local lines_file="$1" seen unverified
+    seen="$(sed -n 's/^LEG name=\([^ ]*\) status=\([^ ]*\).*/\1:\2/p' "$lines_file" | paste -sd' ' -)"
     [[ -n "$seen" ]] && record "legs" "$seen"
-    unverified="$(grep -a '^LEG .*status=unverified' "$lines" | sed 's/^LEG //' | paste -sd'; ' -)"
+    unverified="$(grep -a '^LEG .*status=unverified' "$lines_file" | sed 's/^LEG //' | paste -sd'; ' -)"
     if [[ -n "$unverified" ]]; then
         fail "infra_unavailable" "a leg of this probe did not run: $unverified"
     fi
@@ -393,12 +401,12 @@ assert_legs_ran() {
 # carrying parallel copies of this block is the exact structure that let #23's
 # fix survive on one path and rot on the other (#83, #161).
 assert_clean_run() {
-    local lines="$1" first_fail
-    if grep -q '^FAIL' "$lines"; then
-        first_fail="$(grep '^FAIL' "$lines" | head -1)"
+    local lines_file="$1" first_fail
+    if grep -q '^FAIL' "$lines_file"; then
+        first_fail="$(grep '^FAIL' "$lines_file" | head -1)"
         fail "$(class_of "$first_fail")" "$first_fail"
     fi
-    assert_legs_ran "$lines"
+    assert_legs_ran "$lines_file"
 }
 
 # The headed client's own log, off the Windows host. The Linux server's stdout
@@ -412,6 +420,9 @@ collect_client_rpt() {
     local dir newest candidate
     dir="${CTI_WINDOWS_CLIENT_RPT_DIR:-}"
     if [[ -z "$dir" ]]; then
+        # The glob sorts, so on a machine with more than one Windows user
+        # profile the alphabetically last one wins — arbitrary but stable, and
+        # CTI_WINDOWS_CLIENT_RPT_DIR is the lever where it picks the wrong one.
         for candidate in /mnt/c/Users/*/AppData/Local/"Arma 3"; do
             [[ -d "$candidate" ]] && dir="$candidate"
         done
@@ -591,11 +602,10 @@ cp -r "$REPO/missions/$MISSION/." "$STAGE/" ||
     printf '];\n'
 } >"$STAGE/daemon_addrs.sqf"
 
-# Issue #8: hold mode is the only mode a real client joins in, so that is the
-# only mode worth watching desync in. Zero elsewhere keeps the sampling off.
-# Hold mode is the only mode a real client joins in, so it watches by default.
-# CTI_DESYNC_WINDOW forces it on elsewhere, which is how the watcher itself gets
-# exercised without waiting for a human.
+# Issue #8: hold mode is the only mode a real client joins in, so it is the
+# only mode that watches desync by default; zero elsewhere keeps the sampling
+# off. CTI_DESYNC_WINDOW forces it on elsewhere, which is how the watcher
+# itself gets exercised without waiting for a human.
 DESYNC_WINDOW="${CTI_DESYNC_WINDOW:-0}"
 # Not in --regress: nobody joins, so there is no link to watch, and the watcher
 # would only add noise to every probe's evidence.
@@ -705,7 +715,7 @@ DAEMON_TELEMETRY="$OUT/daemon-telemetry.jsonl"
 # Truncate: telemetry is per-run evidence, and appending across runs turns it
 # into a pile nobody can attribute.
 : >"$DAEMON_TELEMETRY"
-t=$(now)
+t_daemon=$(now)
 # Loopback, in every mode (ADR-0044). Hold mode used to bind every interface, on
 # the Phase-0 reasoning that the Windows host had to reach the daemon: that was
 # `missions/spike.Stratis`, whose clients call the shim themselves through
@@ -768,7 +778,7 @@ start_daemon() {
 if ! start_daemon; then
     fail "infra_unavailable" "daemon did not report ready; see $DAEMON_LOG"
 fi
-record "daemon_ready_secs" "$(since "$t")"
+record "daemon_ready_secs" "$(since "$t_daemon")"
 record "daemon_epoch" "$(sed -n 's/.*CTI_DAEMON_READY .* epoch=//p' "$DAEMON_LOG" | tail -1)"
 
 # ---------------------------------------------------------------- dedicated server
@@ -908,6 +918,12 @@ EOF
         # The one wait_for site not folded into await_or_fail (#161): a human
         # who never joined is a recorded fact about a hold run, not a failure,
         # so its first rung records where every other site's fails.
+        #
+        # `[^_]` keeps the wait honest: the dedicated server's own player entry
+        # fires onPlayerConnected as `__SERVER__` the moment the mission
+        # starts, and without it this matched the server greeting itself. The
+        # optional `""` accepts a client that connects before the engine has
+        # resolved its name.
         case "$(
             wait_for "$SERVER_LOG" "$LOG_PREFIX\|player_connected name=(\"\")?[^_]" "$HOLD_TIMEOUT" "$server_pid"
             echo $?

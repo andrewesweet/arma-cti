@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   hardcoding `WEST`, so a longer side name widens the budget by itself. No wire change anywhere.
   #152.
 
+- **`spike/run.sh` refuses a second command-line argument instead of silently dropping it.** A
+  mistyped invocation used to run in a mode the caller did not ask for; it is a usage error now,
+  exit 2, with nothing brought up. #162.
+
 - **Each seam the pool libraries had triplicated has one home.** The host guard's
   free/running/unavailable → verdict ladder ran as three near-verbatim bash copies across the pool
   libraries; it is decided in `tools/host_guard_verdict.py` under `just unit` now (ADR-0049's
