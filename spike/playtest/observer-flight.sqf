@@ -137,7 +137,20 @@
         waitUntil { !isNull (getAssignedCuratorLogic player) || { diag_tickTime > _deadline } };
         private _curator = !isNull (getAssignedCuratorLogic player);
         openCuratorInterface;
-        diag_log format ["CTI|observer_flight_client_opened curator=%1", _curator];
+
+        // Leaves on the first signal, so this costs nothing when the camera
+        // comes up. It is here for the run in which it does not: the watcher
+        // reads `findDisplay 312` alone, and this is the one line that could
+        // say the interface had opened while that display stayed null — which
+        // would be a finding about the detector rather than about the body.
+        private _saw = diag_tickTime + 10;
+        waitUntil {
+            !isNull (findDisplay 312) || { !isNull curatorCamera } || { diag_tickTime > _saw }
+        };
+        diag_log format [
+            "CTI|observer_flight_client_opened curator=%1 display312=%2 curator_camera=%3 camera_on_it=%4",
+            _curator, !isNull (findDisplay 312), !isNull curatorCamera,
+            cameraOn isEqualTo curatorCamera];
     }] remoteExec ["spawn", _unit];
 
     _deadline = diag_tickTime + 60;
