@@ -144,6 +144,21 @@ def test_an_effect_whose_args_are_not_its_catalogue_entrys_is_refused(
         Outbox().push(Effect(name="order_issued", side="WEST", args=args))
 
 
+def test_a_squad_spawn_missing_its_size_is_refused_not_defaulted() -> None:
+    # #159's daemon half, stated on the exact effect the finding named. The
+    # world used to answer a `squad_spawned` without `size` by inventing an
+    # 8-man Squad; now both ends refuse the document — the world against the
+    # exported catalogue (`fn_effectApply`), and this end here, so a producer
+    # that stopped carrying the strength it priced is a red `just unit` rather
+    # than an in-world discovery.
+    with pytest.raises(ValueError, match="squad_spawned"):
+        Outbox().push(
+            Effect(
+                name="squad_spawned", side="WEST", args={"squad": "WEST-1", "squad_type": "rifle"}
+            )
+        )
+
+
 def test_every_effect_in_the_catalogue_is_accepted_with_exactly_its_declared_args() -> None:
     # The guard refuses drift, never the catalogue itself: every declared
     # effect, built with exactly its declared arguments, goes through.

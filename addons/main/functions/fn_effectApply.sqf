@@ -102,6 +102,34 @@ if !(_name in ["squad_spawned", "squad_reinforced"]) exitWith {
     ["refused", "unknown_effect"] call _verdict
 };
 
+// What a squad effect carries is the catalogue's declaration (`commands.EFFECTS`),
+// exported into the same schema the roster below comes from; the daemon holds
+// its own end to that list at `Outbox.push` (#145). This is the world's end of
+// the contract, in cti_fnc_command's shape — name declared, every declared
+// argument carried — and it is read from the export rather than restated here,
+// because a fact restated is a fact guessed at: a missing `size` used to be
+// answered with an invented 8-man Squad (#159), a strength appearing nowhere in
+// the economy the daemon charged against. An effect short of a declared argument
+// is a daemon and an addon out of step, which the next poll meets unchanged, so
+// it is refused rather than defaulted. Required rather than exact, deliberately:
+// an argument this addon does not read yet is no reason to refuse an effect it
+// can carry out, and the exact-set half already lives at the daemon's door.
+private _catalogue = (call cti_fnc_commandSchema) getOrDefault ["effects", createHashMap];
+if !(_name in _catalogue) exitWith {
+    // One guard for both absences — no schema loaded at all, and a schema whose
+    // effect catalogue has lost a name line 100 knows. Either way the export on
+    // disk is not the daemon's, and the response is to regenerate it.
+    diag_log format ["CTI|FAIL class=schema_stale effect_not_declared=%1 catalogue=%2",
+        _name, count _catalogue];
+    ["refused", "effect_not_declared"] call _verdict
+};
+private _missing = (_catalogue get _name) select { !(_x in _args) };
+if (_missing isNotEqualTo []) exitWith {
+    diag_log format ["CTI|FAIL class=assertion_failed effect=%1 side=%2 missing_args=%3",
+        _name, _sideName, _missing];
+    ["refused", "effect_missing_args"] call _verdict
+};
+
 private _side = switch (toUpper _sideName) do {
     case "WEST": { west };
     case "EAST": { east };
@@ -124,8 +152,11 @@ if (count _base isEqualTo 0) exitWith {
 };
 
 (_base get "position") params ["_east", "_north"];
-private _size = _args getOrDefault ["size", 8];
-private _squadId = _args getOrDefault ["squad", ""];
+// Plain `get`, not `getOrDefault`: both are declared for both squad effects, so
+// the check above guarantees them, and a default here is exactly how the
+// invented 8 lived (#159).
+private _size = _args get "size";
+private _squadId = _args get "squad";
 
 // What a Squad is made of is authored data, not a literal here (#79, #82).
 // This function used to spawn `_size` copies of one of two hardcoded
@@ -288,7 +319,7 @@ if (!isNull _standing) exitWith {
 // The purchased type is what decides the men, so it is read before any of them
 // exist: a Squad with no roster must refuse before it has put a group on the
 // map, or the refusal leaves the world holding half an effect.
-private _squadType = _args getOrDefault ["squad_type", ""];
+private _squadType = _args get "squad_type";
 private _roster = [_squadType] call _rosterOf;
 if (count _roster isEqualTo 0) exitWith { [_squadType] call _noRoster };
 

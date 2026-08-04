@@ -55,6 +55,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A squad effect short of a declared argument is refused instead of guessed at.** The world's
+  effect receiver used to answer a `squad_spawned` or `squad_reinforced` arriving without `size` by
+  inventing an 8-man strength — a number appearing nowhere in the economy the daemon charged
+  against, on a fact the daemon owns. The receiver now holds a squad effect's arguments to the
+  declared catalogue the daemon's own door already enforces, read from the exported schema rather
+  than restated in SQF, and refuses the malformed document with a typed verdict the pump
+  dead-letters. #159.
+
 - **The Commander's map picture is readable in the three ways playtest 0001 said it was not.**
   Clicking the map now draws a yellow selection marker on the Place the click named — the answer
   used to live only in the hint's `Place:` line — and a click on open country removes it, because

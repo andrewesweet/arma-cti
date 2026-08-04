@@ -40,8 +40,10 @@
 //
 //   * a wrong `effect` name, or a missing `side` — `cti_fnc_effectApply` refuses
 //     it, and the verdict is asserted to be `applied`;
-//   * a wrong or absent `args.squad` — the id misses the guard, a second group
-//     spawns, and the count of groups carrying this Squad's id goes to two;
+//   * a wrong `args.squad` — the id misses the guard, a second group spawns,
+//     and the count of groups carrying this Squad's id goes to two; an absent
+//     one is refused against the declared catalogue (#159), which the same
+//     verdict assertion catches;
 //   * a document that reached no branch at all — the same assertion, from the
 //     other side: the verdict would not be `applied` either.
 //
