@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The playtest observer's body leaves the world while he flies.** Under the human ruling on
+  #190 (2026-08-04, the flag #178 left open), entering the Zeus-style observer camera in a
+  playtest session now hides the human's own body and stops simulating it, and leaving the camera
+  puts both back where he left them. Neither of the alternatives: a body that stays killable is
+  what the old debug-console workaround cost him, and an invulnerable visible one is a target the
+  AI can see and shoot at forever. Playtest path only, on the same boundary as the observer
+  itself — nothing the regression corpus boots contains any of it. #190.
+
 - **The AI Commander Reinforces.** Under the human ruling on #150 (2026-08-04), an understrength
   Squad standing at its own Base is now refilled by an AI-commanded side: when the side is at the
   force limit — where a Purchase is refused and Reinforce is the only way to add men — or when the

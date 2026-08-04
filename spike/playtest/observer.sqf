@@ -35,6 +35,77 @@
 //     nothing the AI can perceive; there is no curator surface that turns them
 //     off, so the choice #178 asks be stated is: markers stay, everything else
 //     is off.
+//   - **His body is out of the world while he flies, and back when he lands**
+//     (#190). #178 left that flag open deliberately and the human ruled on it
+//     on 2026-08-04: hide the body and stop simulating it for the duration of
+//     the flight, restore both on the way out, where the body was left. Neither
+//     of the two alternatives — a killable body is the cost of the
+//     BIS_fnc_camera workaround this replaces, and an invulnerable visible one
+//     is an unkillable target the AI can perceive and engage, a worse
+//     divergence from the Campaign than an absent one.
+//
+// ## The body: two commands, two machines, and the engine chooses both
+//
+//   - `hideObjectGlobal` is `serverExec= server` with global effect
+//     (commands/hideObjectGlobal.wiki), so hiding the body on every machine at
+//     once is the server's to do and this sweep's half of the work.
+//   - `enableSimulationGlobal` takes a **local argument on a client** since
+//     Arma 3 2.06 (commands/enableSimulationGlobal.wiki), and a human's own
+//     unit is local to that human's own machine. So the client stops
+//     simulating it itself, on the turn it sees the camera, rather than a sweep
+//     later. The direction that matters is the way out: a body unfrozen five
+//     seconds after its player left the camera is five seconds of a Commander
+//     who cannot move, and the sweep cannot be the thing that ends that.
+//
+// Simulation off is the half the AI reads. A unit subjected to it "may stay
+// unrecognised for a long time even after simulation was re-enabled, returning
+// objNull as cursorTarget" (commands/enableSimulation.wiki), which is the
+// engine saying it has left the reckoning; hiding is what takes it off the
+// other Commander's screen, and disables its collision besides. What survives,
+// stated because the ruling chose it: the body can still take damage
+// (enableSimulation's own description), so a shell already in the air is not
+// waved away. The ruling rejected invulnerability; this is its residue.
+//
+// ## Why a client-side watcher, and how it gets there
+//
+// There is no server-side signal that a curator camera is up. `curatorCamera`
+// "is local to the curator owner" (topics/Arma_3_Curator.wiki) and every
+// curator command the server can ask reports *assignment*, which is a fact
+// about the whole session rather than about this moment. So the watcher runs on
+// the human's own machine, pushed there by this sweep — the harness is compiled
+// by initServer.sqf and runs nowhere else — and reports back by broadcasting
+// one variable on the unit itself (`setVariable [..., true]`, global effect,
+// commands/setVariable.wiki). The server hides on that and polls nothing.
+//
+// The push is `remoteExec ["spawn", _unit]`. The wiki cautions against
+// remote-executing `spawn` "to prevent issues in cases where the remote
+// execution of call or spawn is blocked by CfgRemoteExec"
+// (commands/remoteExec.wiki) — it is not blocked here and cannot be, because
+// those rules "only apply to clients. The server is not subject to any
+// limitations" (topics/Arma_3_CfgRemoteExec.wiki), the same fact ADR-0041 leans
+// on for cti_fnc_portReply. The alternative the wiki recommends, a named
+// function to remote-execute, would be a function in the addon, and the addon
+// is what every probe boots: #178's boundary is why this file exists at all.
+// `_unit` as the target names the one machine where that unit is local, so the
+// call site decides the machine and ADR-0041 asks for no locality guard on the
+// far side. Whether the push landed is not assumed either — the watcher's first
+// turn broadcasts its state unconditionally, and a curator whose read-back
+// never arrives is said out loud as `body_watch_silent`.
+//
+// Detection is `findDisplay 312`, the Zeus display (commands/findDisplay.wiki's
+// own list of common IDDs; `IDD_RSCDISPLAYCURATOR 312` in
+// topics/Arma_3_IDD_List.wiki), polled once a second so that both edges are
+// found the same way — the interface opens on a keypress and closes on one, and
+// nothing the engine offers reports either to script. The two corroborating
+// signals ride every transition line (`curator_camera`, `camera_on_it`) so that
+// the first session's evidence says whether they agree with the display rather
+// than leaving the choice of detector a matter of belief.
+//
+// The one thing the human has to know if the watcher ever dies mid-flight: his
+// body stays frozen, and `player enableSimulationGlobal true` in the debug
+// console (`enableDebugConsole = 1` in this mission) hands it back. Not
+// automated, because the automation would be a heartbeat guarding a ten-line
+// loop of engine calls, and a session's worth of network chatter to guard it.
 //
 // One logic per human, keyed by UID, because "Two players cannot act as one
 // curator" (commands/assignCurator.wiki) — and kept assigned by sweep rather
@@ -61,8 +132,53 @@ if (isNil "cti_playtest_observer") then {
         diag_log "CTI|playtest_observer_unavailable reason=addon_functions_unresolved";
     } else {
         private _disabled = ["place", "edit", "delete", "destroy", "group", "synchronize"];
-        ["playtest_observer", 5, [createHashMap, createHashMap, _disabled], {
-            params ["_logics", "_ready", "_disabled"];
+
+        // Runs on the human's machine, not this one. Compiled here and carried
+        // there by the push below, so it closes over nothing: SQF code is
+        // source, and everything it names is either global or its own.
+        private _bodyWatch = {
+            if (isNil "cti_playtest_observer_body") then {
+                cti_playtest_observer_body = true;
+
+                if (isNil "cti_fnc_everyInterval") then {
+                    diag_log "CTI|playtest_observer_unavailable reason=addon_functions_unresolved machine=client";
+                } else {
+                    // A second, rather than this sweep's five: this is the loop
+                    // that decides how long a Commander stands still after he
+                    // stops flying.
+                    ["playtest_observer_body", 1, [createHashMap], {
+                        params ["_seen"];
+
+                        private _unit = player;
+                        if (!isNull _unit) then {
+                            private _flying = !isNull (findDisplay 312);
+                            // "unset" rather than false, so the first turn is a
+                            // transition too and the server hears from the
+                            // watcher before it has anything to report.
+                            if (_flying isNotEqualTo (_seen getOrDefault ["flying", "unset"])
+                                || { _unit isNotEqualTo (_seen getOrDefault ["unit", objNull]) }) then {
+                                _seen set ["flying", _flying];
+                                _seen set ["unit", _unit];
+
+                                _unit enableSimulationGlobal !_flying;
+                                _unit setVariable ["cti_playtest_observerBody", _flying, true];
+
+                                diag_log format [
+                                    "CTI|playtest_observer_body_%1 uid=%2 simulation=%3 curator_camera=%4 camera_on_it=%5",
+                                    ["grounded", "flying"] select _flying, getPlayerUID _unit,
+                                    simulationEnabled _unit, !isNull curatorCamera,
+                                    cameraOn isEqualTo curatorCamera];
+                            };
+                        };
+                    }, true] call cti_fnc_everyInterval;
+
+                    diag_log "CTI|playtest_observer_body_watching interval=1";
+                };
+            };
+        };
+
+        ["playtest_observer", 5, [createHashMap, createHashMap, _disabled, createHashMap, _bodyWatch], {
+            params ["_logics", "_ready", "_disabled", "_bodies", "_bodyWatch"];
 
             {
                 private _unit = _x;
@@ -120,6 +236,61 @@ if (isNil "cti_playtest_observer") then {
                             diag_log format [
                                 "CTI|playtest_observer_assigning uid=%1 name=%2",
                                 _uid, name _unit];
+                        };
+
+                        // The body, for as long as its player is flying (#190).
+                        // Kept per UID beside the curator and not inside the
+                        // ready branch: a player who can be assigned a camera is
+                        // a player who can be in one, and the watcher is what
+                        // decides which — this only hides what it is told has
+                        // gone. Two fields: the unit the watcher was pushed onto,
+                        // and the last thing said about it, so a state that has
+                        // not changed is not said twice.
+                        private _body = _bodies getOrDefault [_uid, []];
+                        if (_body isEqualTo []) then {
+                            _body = [objNull, ""];
+                            _bodies set [_uid, _body];
+                        };
+
+                        if ((_body # 0) isNotEqualTo _unit) then {
+                            // A respawn hands the player a new unit, and the
+                            // watcher follows `player` rather than the body it
+                            // started on — so this is the push and the re-push
+                            // both, and the latch on the far side makes the
+                            // second one inert.
+                            _body set [0, _unit];
+                            _body set [1, "pushed"];
+                            [[], _bodyWatch] remoteExec ["spawn", _unit];
+                            diag_log format [
+                                "CTI|playtest_observer_body_pushed uid=%1 name=%2", _uid, name _unit];
+                        } else {
+                            // The sentinel rather than a nil, so "the watcher has
+                            // not spoken" is a value this can compare instead of
+                            // a question about scope.
+                            private _flying = _unit getVariable
+                                ["cti_playtest_observerBody", "unset"];
+                            if (_flying isEqualTo "unset") then {
+                                if ((_body # 1) isNotEqualTo "silent") then {
+                                    _body set [1, "silent"];
+                                    diag_log format [
+                                        "CTI|playtest_observer_unavailable reason=body_watch_silent uid=%1",
+                                        _uid];
+                                };
+                            } else {
+                                private _word = ["grounded", "flying"] select _flying;
+                                if ((_body # 1) isNotEqualTo _word) then {
+                                    _body set [1, _word];
+                                    _unit hideObjectGlobal _flying;
+                                    // Read back out of the world rather than
+                                    // reported from the intent (#80): both halves
+                                    // are commands the engine may decline, and
+                                    // the client's half was issued on another
+                                    // machine entirely.
+                                    diag_log format [
+                                        "CTI|playtest_observer_body uid=%1 state=%2 hidden=%3 simulation=%4",
+                                        _uid, _word, isObjectHidden _unit, simulationEnabled _unit];
+                                };
+                            };
                         };
                     };
                 };

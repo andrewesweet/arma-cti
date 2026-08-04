@@ -19,7 +19,9 @@
 // Because this fixture marks the session as a human one, run.sh stages the
 // Zeus-style observer beside it (spike/playtest/observer.sqf, #178): press Y
 // to fly free without touching the world, Y again to come back to your body
-// and the Commander's map.
+// and the Commander's map. Your body leaves the world while you fly and is
+// back where you left it when you land (#190) — hidden and unsimulated in
+// between, so nothing engages it and nothing learns anything from it.
 //
 // Runs on the server: initServer.sqf is what compiles the harness.
 [] spawn {
