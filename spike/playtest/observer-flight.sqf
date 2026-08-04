@@ -21,18 +21,21 @@
 // Needs the headed Windows client, because the subject is a display that only
 // exists on a machine with a screen:
 //
-//     CTI_WINDOWS_CLIENT=1 just probe spike/playtest/observer-flight.sqf 420
+//     CTI_WINDOWS_CLIENT=1 just probe spike/playtest/observer-flight.sqf 540
 //
 // ## The window, which is arithmetic and not a dial
 //
-// 420 s is 20 (the world builds and both server loops turn once) + 180 (a
-// client boots on the Windows host, connects, takes the one Commander slot and
-// is assigned a curator — 31 s in #178's evidence, and the bound is for a cold
-// host) + 60 (the sweep pushes the watcher and the watcher answers: 5 s and 1 s
-// of cadence, bounded well above both) + 60 + 60 (each edge of the flight: the
-// client sees the display within 1 s, the server hides within 5) + slack. Each
-// wait below carries its own bound, so a run that loses one leg says which and
-// stops there rather than spending the rest of the window.
+// 540 s is the sum of this fixture's own bounds plus the bring-up in front of
+// them: 20 (the world builds and both server loops turn once) + 180 (a client
+// boots on the Windows host, connects and takes the one Commander slot — 25 s
+// measured, and the bound is for a cold host) + 90 (the sweep creates a curator
+// logic, assigns it, and the engine reflects the assignment: three sweep turns
+// at 5 s, bounded far above) + 60 (the sweep pushes the body watcher and the
+// watcher answers) + 60 + 60 (each edge of the flight: the client sees the
+// display within 1 s, the server hides within 5) = 470, plus the ~13 s of
+// server bring-up before the mission runs and the slack over it. Each wait
+// below carries its own bound, so a run that loses one leg says which and stops
+// there rather than spending the rest of the window on nothing.
 //
 // ## What it asserts, and what it deliberately does not
 //
@@ -57,8 +60,6 @@
     // The world built, so any FAIL below is this fixture's own.
     [20] call cti_probe_fnc_worldReady;
 
-    private _standing = count allUnits;
-
     // The human's machine, whichever slot it took. A headless client is not a
     // player in this sense and never gets a curator — observer.sqf's own filter.
     private _deadline = diag_tickTime + 180;
@@ -77,16 +78,27 @@
     };
 
     private _uid = getPlayerUID _unit;
-    diag_log format ["CTI|observer_flight_client uid=%1 name=%2", _uid, name _unit];
+    // Counted from here rather than from world-ready: a Commander's own body is
+    // a unit, and a baseline taken before he joined would make his arrival look
+    // like something the camera spawned. It did, on this fixture's first run.
+    private _standing = count allUnits;
+    diag_log format ["CTI|observer_flight_client uid=%1 name=%2 units_alive=%3",
+        _uid, name _unit, _standing];
 
-    // The curator, which is what makes a camera openable at all. The engine
-    // needs a moment after assignCurator before it will admit to it
-    // (commands/getAssignedCuratorLogic.wiki's note), which is why the sweep
-    // separates `_assigning` from `_ready` and why this waits rather than reads.
-    _deadline = diag_tickTime + 60;
-    waitUntil { !isNull (getAssignedCuratorLogic _unit) || { diag_tickTime > _deadline } };
-    if (isNull (getAssignedCuratorLogic _unit)) exitWith {
-        diag_log format ["CTI|FAIL class=assertion_failed observer_flight_no_curator uid=%1", _uid];
+    // The curator, *assigned and reflected*, which is what makes a camera
+    // openable at all. Not merely `getAssignedCuratorLogic`: the first run of
+    // this fixture opened on that and the second the sweep called assignCurator,
+    // five seconds before the engine would admit to the assignment
+    // (commands/getAssignedCuratorLogic.wiki's note, and the reason the sweep
+    // separates `_assigning` from `_ready`). The camera never opened, the
+    // watcher had nothing to see, and the body stayed in the world for a whole
+    // sixty-second window. The fix is the condition, not the window.
+    _deadline = diag_tickTime + 90;
+    private _held = { (getAssignedCuratorUnit (getAssignedCuratorLogic _unit)) isEqualTo _unit };
+    waitUntil { call _held || { diag_tickTime > _deadline } };
+    if !(call _held) exitWith {
+        diag_log format ["CTI|FAIL class=assertion_failed observer_flight_no_curator uid=%1 logic=%2",
+            _uid, !isNull (getAssignedCuratorLogic _unit)];
         diag_log "CTI|observer_flight probe_done reason=no_curator";
     };
 
@@ -112,8 +124,21 @@
     };
 
     // ---- into the camera
+    //
+    // Pushed as code rather than as a bare `remoteExec ["openCuratorInterface"]`
+    // for one reason: the client's own view of the assignment is the one the
+    // command needs, and only the client can wait on it. The line it logs is
+    // what turns "the camera did not open" from a guess into a reading — the
+    // first run had no such line and the two readings, a command that never
+    // arrived and a command that arrived too early, were indistinguishable.
     diag_log format ["CTI|observer_flight_opening uid=%1", _uid];
-    remoteExec ["openCuratorInterface", _unit];
+    [[], {
+        private _deadline = diag_tickTime + 30;
+        waitUntil { !isNull (getAssignedCuratorLogic player) || { diag_tickTime > _deadline } };
+        private _curator = !isNull (getAssignedCuratorLogic player);
+        openCuratorInterface;
+        diag_log format ["CTI|observer_flight_client_opened curator=%1", _curator];
+    }] remoteExec ["spawn", _unit];
 
     _deadline = diag_tickTime + 60;
     waitUntil {
