@@ -17,6 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the trigger named in its sentence. Nothing about ADR-0040's two-principal port changes: a squad
   leader's own refill works exactly as before. #150, #191.
 
+- **The pool's RAM trace attributes its own share.** The sampler's tier figure is machine-wide by
+  `comm` on purpose — the right scope for a memory-ceiling question — but a peak could not be
+  read without reconstructing which sibling pools shared the night (the unattributed 9.6 GiB of
+  2026-08-02 took exactly that reconstruction). `ram.tsv` and `pool.json` now carry both figures:
+  the machine-wide tier RSS and this pool's own, attributed by the values its slots already own —
+  engine profiles and daemon ports. The healthy-box re-measure this enabled held the admission
+  floor where it was: 2,439–2,463 MiB a slot across the 2026-08-04 full-corpus runs, against the
+  2,500 MiB figure. #182, #125.
+
 ### Fixed
 
 - **A starved machine can no longer forge a probe's class.** Twice, memory starvation arriving

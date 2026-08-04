@@ -747,7 +747,13 @@ start_ram_sampler() {
         for slot in ${SLOTS[@]+"${SLOTS[@]}"} ${DIRTY_SLOTS[@]+"${DIRTY_SLOTS[@]}"}; do
             cti_slot_close "$slot"
         done
-        printf 'epoch\tmem_used_kb\tmem_available_kb\ttier_rss_kb\n'
+        # What of the tier is *ours*, by the values this pool's slots already
+        # own (#182): the tier column stays machine-wide — the right scope for
+        # a ceiling question — and the own column is what lets a peak be read
+        # without reconstructing the night's schedule of sibling pools.
+        local pool_pattern
+        pool_pattern="$(cti_slot_pool_ps_pattern ${SLOTS[@]+"${SLOTS[@]}"})"
+        printf 'epoch\tmem_used_kb\tmem_available_kb\ttier_rss_kb\tpool_rss_kb\n'
         while :; do
             # Read on the host under load, through the handle: the number that
             # matters is that machine's memory, and the file the answer lands in
@@ -759,19 +765,19 @@ start_ram_sampler() {
                 /^MemAvailable:/ { avail = $2 }
                 END { printf "%s\t%s\t%s\t", now, total - avail, avail }
             ' /proc/meminfo
-            # The tier's own share, so a peak can be attributed rather than only
-            # observed. The engine by its comm; the daemon by its command line,
-            # because it runs as a python interpreter under `uv`.
+            # The tier's share, so a peak can be attributed rather than only
+            # observed — twice over since #182: machine-wide (the engine by
+            # its comm, the daemon by its command line, because it runs as a
+            # python interpreter under `uv`) and this pool's own, by the
+            # pattern above. The listing is read on the host; the arithmetic
+            # is ours.
             #
-            # This awk finishes the row the one above deliberately left open:
-            # the meminfo printf ends on a tab with no newline, and the "\n"
-            # here is the row's only one. Two commands, one TSV line — reorder
+            # cti_slot_rss_kb finishes the row the awk above deliberately left
+            # open: the meminfo printf ends on a tab with no newline, and its
+            # "\n" is the row's only one. Two commands, one TSV line — reorder
             # them, or "fix" either printf, and every row breaks in the reader.
-            cti_host_exec "$HOST" ps -eo rss=,comm=,args= 2>/dev/null | awk '
-                $2 == "arma3server_x64" { sum += $1; next }
-                /cti-daemon/            { sum += $1 }
-                END { printf "%s\n", sum + 0 }
-            '
+            cti_host_exec "$HOST" ps -eo rss=,comm=,args= 2>/dev/null |
+                cti_slot_rss_kb "$pool_pattern"
             sleep 3
         done
     ) >"$POOL_OUT/ram.tsv" 2>/dev/null &
@@ -1248,13 +1254,15 @@ starve_watch_pid=""
 PEAK_USED_KB=0
 MIN_AVAIL_KB=0
 PEAK_TIER_KB=0
+PEAK_POOL_KB=0
 if [[ -s "$POOL_OUT/ram.tsv" ]]; then
-    read -r PEAK_USED_KB MIN_AVAIL_KB PEAK_TIER_KB < <(
+    read -r PEAK_USED_KB MIN_AVAIL_KB PEAK_TIER_KB PEAK_POOL_KB < <(
         awk -F'\t' 'NR > 1 {
             if ($2 > used) used = $2
             if (min == 0 || $3 < min) min = $3
             if ($4 > tier) tier = $4
-        } END { printf "%d %d %d\n", used, min, tier }' "$POOL_OUT/ram.tsv"
+            if ($5 > own) own = $5
+        } END { printf "%d %d %d %d\n", used, min, tier, own }' "$POOL_OUT/ram.tsv"
     )
 fi
 
@@ -1282,6 +1290,7 @@ merge_args=(
     --wall-secs "$POOL_ELAPSED"
     --peak-mem-used-kb "$PEAK_USED_KB"
     --peak-tier-rss-kb "$PEAK_TIER_KB"
+    --peak-pool-rss-kb "$PEAK_POOL_KB"
     --least-mem-available-kb "$MIN_AVAIL_KB"
 )
 ((${#HOST_JOBS[@]} > 0)) && merge_args+=(--host-probes "${HOST_JOBS[@]}")
@@ -1324,7 +1333,7 @@ log "wall: ${POOL_ELAPSED}s across ${#SLOTS[@]} slot(s) — slots ${SLOTS[*]}"
 for i in "${!DIRTY_SLOTS[@]}"; do
     log "slot ${DIRTY_SLOTS[$i]}: infra_unavailable, never used — ${DIRTY_DETAIL[$i]}"
 done
-log "peak memory in use: $((PEAK_USED_KB / 1024)) MiB (tier processes $((PEAK_TIER_KB / 1024)) MiB, least available $((MIN_AVAIL_KB / 1024)) MiB)"
+log "peak memory in use: $((PEAK_USED_KB / 1024)) MiB (tier processes $((PEAK_TIER_KB / 1024)) MiB, this pool's own $((PEAK_POOL_KB / 1024)) MiB, least available $((MIN_AVAIL_KB / 1024)) MiB)"
 log "pool evidence: $POOL_OUT"
 
 exit_code="${CLASS_RANK[$worst_class]:-}"

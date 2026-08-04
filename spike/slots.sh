@@ -220,6 +220,45 @@ cti_slot_mem_floor_mb() {
     printf '%s\n' $(($1 * CTI_SLOT_MEM_PER_SLOT_MB + CTI_SLOT_MEM_HEADROOM_MB))
 }
 
+# Which rows of a process listing are *these slots'* own (#182; #125's open
+# box). The RAM sampler's tier sum is machine-wide by `comm` on purpose — the
+# right scope for a memory-ceiling question — but a reader of a peak could not
+# tell this pool's share from a sibling pool's without reconstructing the
+# night's schedule: the unattributed 9.6 GiB of 2026-08-02 took exactly that
+# reconstruction, and #164's sick-box reading nearly moved a threshold the
+# healthy re-measure then held. So both figures are recorded, and this pattern
+# is what attributes the second one: an ERE over the listing's own lines,
+# built from the values a slot already owns and something already reads —
+# the engine profiles (`-name=`, ADR-0028's table) and the daemon's port. The
+# trailing `( |$)` is load-bearing: slot 0's `ctispike` is a prefix of every
+# other slot's profile, and 9099 of nothing but itself only because ports
+# stop at 9104.
+cti_slot_pool_ps_pattern() {
+    local n parts=()
+    for n in "$@"; do
+        parts+=("-name=$(cti_slot_profile "$n")( |$)")
+        parts+=("-name=$(cti_slot_hc_profile "$n")( |$)")
+        parts+=("cti-daemon .*--port $(cti_slot_daemon_port "$n")( |$)")
+    done
+    local IFS='|'
+    printf '%s\n' "${parts[*]}"
+}
+
+# Sum the tier's RSS from `ps -eo rss=,comm=,args=` on stdin, twice over: every
+# tier-shaped process on the machine (the engine by its comm, the daemon by its
+# command line, exactly as the sampler always counted them), and the subset the
+# pattern in $1 attributes to the caller's own slots. One line out,
+# `tier_kb<TAB>own_kb`, so the sampler's row stays one write.
+cti_slot_rss_kb() {
+    awk -v pool="$1" '
+        $2 == "arma3server_x64" || /cti-daemon/ {
+            tier += $1
+            if (pool != "" && $0 ~ pool) own += $1
+        }
+        END { printf "%s\t%s\n", tier + 0, own + 0 }
+    '
+}
+
 # The largest slot count at or below `$1` that fits in `$2` MiB. `0` means not
 # even one slot fits, which is the refusal.
 cti_slot_mem_fit() {

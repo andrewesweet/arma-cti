@@ -261,6 +261,7 @@ def pool_document(  # noqa: PLR0913 — pool.json's fields, one parameter apiece
     wall_secs: int,
     peak_mem_used_kb: int,
     peak_tier_rss_kb: int,
+    peak_pool_rss_kb: int,
     least_mem_available_kb: int,
     stopped_early: str,
     dirty_slots: list[tuple[int, str]],
@@ -279,6 +280,11 @@ def pool_document(  # noqa: PLR0913 — pool.json's fields, one parameter apiece
         "wall_secs": wall_secs,
         "peak_mem_used_kb": peak_mem_used_kb,
         "peak_tier_rss_kb": peak_tier_rss_kb,
+        # The tier figure is machine-wide by design — the right scope for a
+        # ceiling question — and this is the pool's own share of it (#182,
+        # #125's open box), so a peak can be read without reconstructing which
+        # sibling pools shared the night.
+        "peak_pool_rss_kb": peak_pool_rss_kb,
         "least_mem_available_kb": least_mem_available_kb,
         "stopped_early": flattened(stopped_early),
         # A slot this run held, could not clear, and therefore never used.
@@ -365,6 +371,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     merge.add_argument("--wall-secs", required=True, type=int)
     merge.add_argument("--peak-mem-used-kb", required=True, type=int)
     merge.add_argument("--peak-tier-rss-kb", required=True, type=int)
+    merge.add_argument("--peak-pool-rss-kb", required=True, type=int)
     merge.add_argument("--least-mem-available-kb", required=True, type=int)
     merge.add_argument("--dirty-slot", action="append", default=[], metavar="SLOT:DETAIL")
 
@@ -445,6 +452,7 @@ def run_merge(args: argparse.Namespace) -> int:
         wall_secs=args.wall_secs,
         peak_mem_used_kb=args.peak_mem_used_kb,
         peak_tier_rss_kb=args.peak_tier_rss_kb,
+        peak_pool_rss_kb=args.peak_pool_rss_kb,
         least_mem_available_kb=args.least_mem_available_kb,
         stopped_early=stopped_early,
         dirty_slots=split_dirty(args.dirty_slot),

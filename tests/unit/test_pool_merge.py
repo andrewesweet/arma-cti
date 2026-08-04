@@ -356,6 +356,8 @@ def run_merge(
         "7100000",
         "--peak-tier-rss-kb",
         "5100000",
+        "--peak-pool-rss-kb",
+        "4800000",
         "--least-mem-available-kb",
         "3900000",
         *extra,
@@ -386,6 +388,8 @@ def test_main_writes_the_pool_document_the_suites_read(
     assert document["wall_secs"] == 61
     assert document["peak_mem_used_kb"] == 7100000
     assert document["peak_tier_rss_kb"] == 5100000
+    # Both figures, recorded (#182): tier is machine-wide, pool is ours.
+    assert document["peak_pool_rss_kb"] == 4800000
     assert document["least_mem_available_kb"] == 3900000
     assert document["stopped_early"] == "two probes crashed a node (a b)"
     assert document["dirty_slots"] == [
@@ -492,6 +496,8 @@ def test_main_refuses_a_pool_out_with_no_claims_directory(
         "--peak-mem-used-kb",
         "0",
         "--peak-tier-rss-kb",
+        "0",
+        "--peak-pool-rss-kb",
         "0",
         "--least-mem-available-kb",
         "0",

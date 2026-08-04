@@ -876,6 +876,50 @@ def test_the_run_records_the_memory_it_actually_used(tmp_path: Path) -> None:
     assert pool["peak_mem_used_kb"] > 0
     assert pool["least_mem_available_kb"] > 0
     assert pool["wall_secs"] >= 0
+    # Both RSS figures are recorded (#182): the machine-wide tier sum, and this
+    # pool's own share of it. A stub corpus launches no engine and no daemon,
+    # so both are legitimately zero here; what is asserted is that the fields
+    # exist and are numbers — the attribution itself is pinned below, on a
+    # staged listing.
+    assert pool["peak_tier_rss_kb"] >= 0
+    assert pool["peak_pool_rss_kb"] >= 0
+
+
+# The RAM sampler's attribution (#182; #125's open box): the tier column is
+# machine-wide by comm on purpose, and the pool column is the subset the
+# pattern built from this pool's own slots attributes to it. Asserted on a
+# staged `ps -eo rss=,comm=,args=` listing, because the wrongness available
+# here is the quiet kind: slot 0's `ctispike` is a prefix of every other
+# slot's profile, and a pattern that matched by prefix would report a sibling
+# pool's world as ours and go green.
+
+
+def test_the_pool_pattern_attributes_only_its_own_slots_processes() -> None:
+    # Slots 0 and 2 are ours; slot 1 is a sibling pool's, and `ctispike` must
+    # not prefix-match `ctispike1`, nor daemon port 9099 match anything but
+    # itself; firefox is not the tier at all.
+    listing = (
+        "1200000 arma3server_x64 ./arma3server_x64 -config=x.cfg -port=2402 -name=ctispike\n"
+        "1100000 arma3server_x64 ./arma3server_x64 -client -port=2402 -name=ctihc1\n"
+        "35000 python3 /x/bin/python /x/bin/cti-daemon --host 127.0.0.1 --port 9099 -t a.jsonl\n"
+        "1150000 arma3server_x64 ./arma3server_x64 -config=x.cfg -port=2602 -name=ctispike2\n"
+        "1300000 arma3server_x64 ./arma3server_x64 -config=x.cfg -port=2502 -name=ctispike1\n"
+        "1250000 arma3server_x64 ./arma3server_x64 -client -port=2502 -name=ctihc2\n"
+        "36000 python3 /y/bin/python /y/bin/cti-daemon --host 127.0.0.1 --port 9100 -t b.jsonl\n"
+        "500000 firefox /usr/lib/firefox/firefox"
+    )
+    pattern = bash_eval("cti_slot_pool_ps_pattern 0 2")
+    out = bash_eval(f"cti_slot_rss_kb '{pattern}' <<'EOF'\n{listing}\nEOF")
+    tier, own = (int(v) for v in out.split("\t"))
+    assert tier == 1200000 + 1100000 + 35000 + 1150000 + 1300000 + 1250000 + 36000
+    assert own == 1200000 + 1100000 + 35000 + 1150000
+
+
+def test_an_empty_pattern_attributes_nothing_and_still_counts_the_tier() -> None:
+    """A row that cannot be attributed must never default to being ours."""
+    listing = "990000 arma3server_x64 ./arma3server_x64 -port=2402 -name=ctispike"
+    out = bash_eval(f"cti_slot_rss_kb '' <<'EOF'\n{listing}\nEOF")
+    assert out == "990000\t0"
 
 
 # ------------------------------------------------------------ memory pre-flight
