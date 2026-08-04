@@ -349,7 +349,10 @@
                 // read n over establishment if the denominator is real; the
                 // second stands at the same Place so stacking is observable.
                 private _staged = createHashMapFromArray [
-                    ["side", cti_uiSide],
+                    // Through getVariable rather than bare, so a client whose
+                    // UI never came up fails the checks below in words instead
+                    // of killing this spawn on a nil access.
+                    ["side", missionNamespace getVariable ["cti_uiSide", ""]],
                     ["funds", 0],
                     ["owners", createHashMap],
                     ["hq", createHashMap],
