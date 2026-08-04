@@ -12,12 +12,13 @@ from __future__ import annotations
 import itertools
 
 import pytest
-from conftest import live
+from conftest import authored_economy, live
 from hypothesis import given
 from hypothesis import strategies as st
 
-from cti_daemon import campaign, contacts, planner, port
+from cti_daemon import budget, campaign, contacts, economy, manifest, planner, port
 from cti_daemon.commands import Command
+from cti_daemon.outbox import Outbox
 from cti_daemon.squads import Held
 
 
@@ -959,3 +960,319 @@ def test_a_committed_assault_the_force_can_no_longer_mass_for_is_released() -> N
     released = {squad for squad, order in orders(plan).items() if squad in committed}
     assert released == set(committed)
     assert all(order != ("assault", "csat_kamino") for order in orders(plan).values())
+
+
+# The Reinforce consideration is from here down (#150, human ruling 2026-08-04;
+# #191). The AI Commander Reinforces: an understrength Squad standing at Base
+# is refilled when a fresh Squad is off the table — the wire's force limit, the
+# map's cap, or a purse no fresh Squad fits — or when the discounted pro-rata
+# refill beats the fresh Squad the planner would otherwise buy. These are the
+# offline proof in the #104 pattern: the real planner and the real port over
+# staged boards, across seeds 0-29.
+
+
+def reinforces(plan: planner.Plan) -> list[str]:
+    """Return the Squads this plan refills."""
+    return [command.args["squad"] for command in plan.commands if command.name == "reinforce"]
+
+
+def purchases(plan: planner.Plan) -> list[str]:
+    """Return the Squad types this plan buys."""
+    return [command.args["squad_type"] for command in plan.commands if command.name == "purchase"]
+
+
+def bought(world: campaign.Campaign, side: str, squad_type: str = "rifle") -> str:
+    """Buy one Squad through the port and return its id."""
+    judged = port.CommandPort(campaign=world).submit(
+        Command("purchase", side, {"squad_type": squad_type}), acting_side=side
+    )
+    assert judged.accepted, judged.detail
+    return judged.result["squad"]
+
+
+def test_a_refill_that_undercuts_a_fresh_squad_is_bought_instead_on_every_seed() -> None:
+    # Trigger (b) of the #150 ruling: a rifle Squad missing three refills at 30
+    # against a fresh rifle at 100, so the refill is the cheaper way to add men
+    # and wins the cycle's one spend. Judged by the real port, and the roster
+    # read back refilled — the Campaign applied it, not merely planned it.
+    for seed in range(30):
+        world = live()
+        squad = bought(world, "WEST")
+        world.roster.reconcile({squad: Held(5, "nato_airbase")})
+
+        plan, judgements = cycle(world, brain(world, seed=seed), "WEST")
+
+        assert reinforces(plan) == [squad]
+        assert purchases(plan) == []
+        assert [one.code for one in judgements if not one.accepted] == []
+        (refilled,) = [one for one in world.roster.roll("WEST") if one.id == squad]
+        assert refilled.size == 8
+
+
+def test_a_refill_dearer_than_a_fresh_squad_loses_to_the_purchase_on_every_seed() -> None:
+    # The comparison is live with the authored prices, not a hypothetical: a
+    # weapons Squad missing seven refills at 105, a fresh rifle costs 100, so
+    # the fresh Squad is the cheaper way to add men and the refill waits.
+    for seed in range(30):
+        world = live()
+        squad = bought(world, "WEST", "weapons")
+        world.roster.reconcile({squad: Held(1, "nato_airbase")})
+
+        plan, judgements = cycle(world, brain(world, seed=seed), "WEST")
+
+        assert reinforces(plan) == []
+        assert purchases(plan) == ["rifle"]
+        assert [one.code for one in judgements if not one.accepted] == []
+
+
+def capped_with_a_thinned_squad(men: int) -> tuple[campaign.Campaign, str]:
+    """Return a map-capped WEST force whose first Squad stands `men` strong at Base."""
+    world = live()
+    places = [objective.id for objective in world.map_manifest.objectives]
+    fielded(world, "WEST", *places)
+    thinned = world.roster.roll("WEST")[0].id
+    picture = {squad.id: Held(squad.size, squad.at) for squad in world.roster.roll("WEST")}
+    picture[thinned] = Held(men, "nato_airbase")
+    world.roster.reconcile(picture)
+    return world, thinned
+
+
+def test_at_the_maps_cap_an_understrength_squad_at_base_is_still_refilled_on_every_seed() -> None:
+    # Trigger (a) in the planner's own economy: at one Squad per Objective the
+    # scorer stops buying, and before #150 the funds row read "nothing" while a
+    # five-man Squad stood at Base with a full purse. A refill adds men without
+    # adding a Squad, so neither ceiling bars it.
+    for seed in range(30):
+        world, thinned = capped_with_a_thinned_squad(5)
+
+        plan, judgements = cycle(world, brain(world, seed=seed), "WEST")
+
+        assert reinforces(plan) == [thinned]
+        assert purchases(plan) == []
+        assert [one.code for one in judgements if not one.accepted] == []
+
+
+def long_frontier() -> campaign.Campaign:
+    """Return a Campaign on a map long enough that the wire binds before the map.
+
+    Stratis cannot stage the #150 ruling's force-limit trigger: its wire
+    carries 71 Squads and its map caps the scorer at eight, so `force_limit`
+    sits far behind a ceiling the planner reaches first. Contacts are keyed by
+    place and grow with the map (#26), so a fifty-Objective chain pulls
+    `budget.squad_ceiling` down to 17 — under the fifty the map would
+    otherwise invite — and the wire becomes the ceiling that binds.
+    """
+    count = 50
+    objectives = []
+    for index in range(count):
+        adjacent = []
+        if index > 0:
+            adjacent.append(f"town_{index - 1:02d}")
+        if index < count - 1:
+            adjacent.append(f"town_{index + 1:02d}")
+        objectives.append(
+            {
+                "id": f"town_{index:02d}",
+                "display_name": f"Town {index}",
+                "position": [1_000.0 + index * 500, 5_000.0],
+                "capture_radius": 100,
+                "income": 10,
+                "adjacent": adjacent,
+            }
+        )
+    table = authored_economy()
+    return campaign.Campaign(
+        map_manifest=manifest.parse(
+            {
+                "schema_version": 1,
+                "id": "frontier",
+                "world": "Frontier",
+                "display_name": "Frontier",
+                "bases": [
+                    {
+                        "id": "west_base",
+                        "side": "WEST",
+                        "display_name": "West Base",
+                        "position": [500.0, 5_000.0],
+                        "hq": "hq_west",
+                        "adjacent": ["town_00"],
+                    },
+                    {
+                        "id": "east_base",
+                        "side": "EAST",
+                        "display_name": "East Base",
+                        "position": [1_000.0 + count * 500, 5_000.0],
+                        "hq": "hq_east",
+                        "adjacent": [f"town_{count - 1:02d}"],
+                    },
+                ],
+                "objectives": objectives,
+            }
+        ),
+        table=table,
+        ledger=economy.Ledger(table.starting_funds),
+        outbox=Outbox(),
+    )
+
+
+def test_at_the_force_limit_the_refill_is_the_only_way_men_are_added_on_every_seed() -> None:
+    # Trigger (a) as ruled: at `force_limit` a Purchase is refused, and the
+    # planner reads the same measurement the port refuses by
+    # (`budget.squad_ceiling` over the same manifest and table), so it
+    # Reinforces instead of issuing a Command whose refusal it cannot read.
+    # The staging is proven through the port before anything is planned: the
+    # Purchase past the ceiling really is refused `force_limit`.
+    world = long_frontier()
+    limit = budget.squad_ceiling(world.map_manifest, world.table)
+    assert limit is not None
+    assert limit < len(world.map_manifest.objectives)
+
+    world.ledger.deposit("WEST", 100 * limit + 1_000)
+    open_port = port.CommandPort(campaign=world)
+    for _ in range(limit):
+        judged = open_port.submit(
+            Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
+        )
+        assert judged.accepted, judged.detail
+    refused = open_port.submit(
+        Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
+    )
+    assert refused.code == "force_limit"
+
+    thinned = world.roster.roll("WEST")[0].id
+    picture = {squad.id: Held(8, "") for squad in world.roster.roll("WEST")}
+    picture[thinned] = Held(5, "west_base")
+    world.roster.reconcile(picture)
+
+    for seed in range(30):
+        plan = brain(world, seed=seed).plan(world.observation("WEST"))
+        assert reinforces(plan) == [thinned]
+        assert purchases(plan) == []
+        row = only(plan.decisions, "funds")
+        assert row.because == (
+            f"3 men short at Base; {limit} Squads fielded of {limit} the wire carries"
+        )
+
+    # And the whole plan through the real port once, because the sweep above is
+    # pure: every Command the force-limited Commander issues is one the port
+    # takes, the Reinforce included.
+    _, judgements = cycle(world, brain(world), "WEST")
+    assert [one.code for one in judgements if not one.accepted] == []
+    (refilled,) = [one for one in world.roster.roll("WEST") if one.id == thinned]
+    assert refilled.size == 8
+
+
+def test_a_refill_the_purse_cannot_pay_for_is_not_asked_for() -> None:
+    # The port would refuse it `insufficient_funds`, and the planner does not
+    # issue Commands it can see refused. Five Funds refill nobody, and the row
+    # says which silence this is rather than going quiet.
+    world = live()
+    squad = bought(world, "WEST")
+    world.roster.reconcile({squad: Held(5, "nato_airbase")})
+    world.ledger.spend("WEST", world.ledger.balance("WEST") - 5)
+
+    plan, judgements = cycle(world, brain(world), "WEST")
+
+    assert reinforces(plan) == []
+    assert purchases(plan) == []
+    assert [one.code for one in judgements if not one.accepted] == []
+    row = only(plan.decisions, "funds")
+    assert row.chose == "nothing"
+    assert row.because == "5 Funds purchase no Squad this map sells and refill none"
+
+
+def test_a_squad_short_of_men_in_the_field_is_not_reinforced() -> None:
+    # Reinforce refills a Squad at its own Base (CONTEXT.md, ADR-0040), and the
+    # port would refuse `wrong_ground` anywhere else. A five-man Squad standing
+    # on an Objective is the deploy scorer's problem, not the purse's.
+    world = live()
+    squad = bought(world, "WEST")
+    world.roster.reconcile({squad: Held(5, "agia_marina")})
+
+    plan, judgements = cycle(world, brain(world), "WEST")
+
+    assert reinforces(plan) == []
+    assert [one.code for one in judgements if not one.accepted] == []
+
+
+def test_a_refill_that_wins_traces_what_it_beat() -> None:
+    # The funds row carries both ways to add men on the one price axis, winner
+    # first as every Decision row promises, with the refill's `missing` beside
+    # its price — a refill's cost means nothing without it.
+    world = live()
+    squad = bought(world, "WEST")
+    world.roster.reconcile({squad: Held(5, "nato_airbase")})
+
+    row = only(brain(world).plan(world.observation("WEST")).decisions, "funds")
+
+    assert row.chose == f"reinforce {squad}"
+    assert row.because == "3 men short at Base; 30 beats rifle at 100"
+    assert row.candidates[0].choice == f"reinforce {squad}"
+    assert terms(row, f"reinforce {squad}") == {"price": -30, "missing": 3}
+    assert scores(row)["rifle"] == -100.0
+    assert row.scored == len(world.table.squads) + 1
+
+
+def test_a_refill_forced_by_the_maps_cap_names_the_bar_in_the_trace() -> None:
+    # The trigger has to be arguable from the row alone: a refill chosen with
+    # no fresh price beside it would otherwise read as a comparison nobody can
+    # reconstruct. Fresh Squads a cap barred are absent from the candidates —
+    # a listed candidate outscoring the winner and losing anyway is a trace
+    # lying about its own arithmetic — and the bar is named in the sentence.
+    world, thinned = capped_with_a_thinned_squad(5)
+
+    row = only(brain(world).plan(world.observation("WEST")).decisions, "funds")
+
+    assert row.chose == f"reinforce {thinned}"
+    assert row.because == "3 men short at Base; 8 Squads fielded of 8 the map holds"
+    assert [candidate.choice for candidate in row.candidates] == [f"reinforce {thinned}"]
+
+
+def test_a_purchase_chosen_over_a_live_refill_says_what_it_beat() -> None:
+    world = live()
+    squad = bought(world, "WEST", "weapons")
+    world.roster.reconcile({squad: Held(1, "nato_airbase")})
+
+    row = only(brain(world).plan(world.observation("WEST")).decisions, "funds")
+
+    assert row.chose == "purchase rifle"
+    assert row.because == (
+        f"1 Squads fielded; rifle at 100 adds a whole Squad against refilling {squad} at 105"
+    )
+    assert [candidate.choice for candidate in row.candidates] == [
+        "rifle",
+        f"reinforce {squad}",
+        "weapons",
+    ]
+
+
+ROSTER = st.lists(st.integers(min_value=1, max_value=8), min_size=1, max_size=8)
+
+
+@given(ROSTER, st.integers(min_value=0, max_value=3))
+def test_no_reinforce_the_planner_issues_is_one_the_port_would_refuse(
+    sizes: list[int], cycles: int
+) -> None:
+    # The never-refused family (ADR-0031's detector) over the boards #150 adds:
+    # rosters of every strength standing at Base, played for several cycles so
+    # a Squad refilled last cycle is a board this cycle plans against.
+    # `already_held`, `wrong_ground` and `insufficient_funds` are each one
+    # misread comparison away, and the real port is the judge.
+    world = live()
+    world.ledger.deposit("WEST", 10_000)
+    open_port = port.CommandPort(campaign=world)
+    for _ in sizes:
+        judged = open_port.submit(
+            Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
+        )
+        assert judged.accepted, judged.detail
+    world.roster.reconcile(
+        {
+            squad.id: Held(size, "nato_airbase")
+            for squad, size in zip(world.roster.roll("WEST"), sizes, strict=True)
+        }
+    )
+    mind = brain(world)
+    for _ in range(cycles + 1):
+        _, judgements = cycle(world, mind, "WEST")
+        assert [(one.code, one.detail) for one in judgements if not one.accepted] == []

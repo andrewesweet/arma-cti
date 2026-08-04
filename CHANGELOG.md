@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **The AI Commander Reinforces.** Under the human ruling on #150 (2026-08-04), an understrength
+  Squad standing at its own Base is now refilled by an AI-commanded side: when the side is at the
+  force limit — where a Purchase is refused and Reinforce is the only way to add men — or when the
+  discounted pro-rata refill undercuts the fresh Squad the Commander would otherwise buy. One
+  spend per cycle, ties to the fresh Squad, and the funds trace carries both ways to add men with
+  the trigger named in its sentence. Nothing about ADR-0040's two-principal port changes: a squad
+  leader's own refill works exactly as before. #150, #191.
+
 ### Fixed
 
 - **The regression tier's residual failure paths are typed, and its exit codes stop lying.** A

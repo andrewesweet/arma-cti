@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING, Final, Protocol
 
 import networkx as nx
 
+from cti_daemon import budget
 from cti_daemon.commands import CONTESTED, Command
 from cti_daemon.observation import PUBLIC
 
@@ -306,6 +307,23 @@ class _Demand:
 
 
 @dataclass(frozen=True, slots=True)
+class _Refill:
+    """One understrength Squad standing at its own Base, and what a refill costs.
+
+    The port's Reinforce preconditions read forwards (#150, ADR-0040), the way
+    `legal` reads the refusal matrix for Orders: a record exists only for a
+    Squad the port would accept a Reinforce for right now.
+    """
+
+    squad: str
+    # How many men short of the strength it was bought at — the port's own
+    # `missing`, read from the same roster numbers the Observation carries.
+    missing: int
+    # The discounted pro-rata price (`EconomyTable.reinforce_cost`).
+    cost: int
+
+
+@dataclass(frozen=True, slots=True)
 class _Muster:
     """Who is going where this cycle, and what became of each Assault."""
 
@@ -407,6 +425,17 @@ class UtilityPlanner:
     normalised considerations in `CONSIDERATIONS`, each remapped by an authored
     response curve, so a zero on a mandatory consideration vetoes the option
     outright and the cheap ones are evaluated first.
+
+    It Reinforces as well as Purchases (#150, human ruling 2026-08-04; #191): an
+    understrength Squad standing at its own Base is refilled when a fresh Squad
+    is off the table — the wire's force limit, the map's one-Squad-per-Objective
+    cap, or a purse no fresh Squad fits — or when the discounted pro-rata refill
+    undercuts the fresh Squad the planner would otherwise buy. The choice lives
+    in `_spend` beside the Purchase it competes with, deliberately not in
+    `CONSIDERATIONS`: that tuple scores Orders, and its fixed count is what the
+    compensation factor's rank-preservation proof rests on. If #136 grows a
+    spending-consideration framework, this choice migrates into it (the ruling
+    says so) rather than living beside it.
     """
 
     map_manifest: MapManifest
@@ -420,6 +449,12 @@ class UtilityPlanner:
     _reach: dict[str, dict[str, float]] = field(init=False, default_factory=dict)
     _jitter: dict[str, float] = field(init=False, default_factory=dict)
     _ceiling: float = field(init=False, default=1.0)
+    # The wire's Squad ceiling, measured lazily like the port's own (#150): a
+    # binary search over serialisations is not `__post_init__` money, and the
+    # common boards never ask — the map's own cap is checked first and is
+    # usually the one that binds.
+    _force_limit: int | None = field(init=False, default=None)
+    _force_limit_measured: bool = field(init=False, default=False)
 
     def __post_init__(self) -> None:
         """Derive what the authored data implies, once.
@@ -481,7 +516,7 @@ class UtilityPlanner:
             message = f"no side named {observation.for_side!r} has a Base to command from"
             raise ValueError(message)
 
-        spending, spent_because = self._purchase(observation)
+        spending, spent_because = self._spend(observation)
         deploying, deployed_because = self._deploy(observation)
         return Plan(
             commands=(*spending, *deploying),
@@ -908,62 +943,206 @@ class UtilityPlanner:
             vetoed=muster.vetoed[squad.id],
         )
 
-    def _purchase(self, observation: Observation) -> tuple[list[Command], list[Decision]]:
-        """Decide whether to spend, and on what. Returns what it decided."""
+    def _spend(self, observation: Observation) -> tuple[list[Command], list[Decision]]:
+        """Decide whether to spend, and on what: a fresh Squad, or a refill (#150).
+
+        One spend per cycle, chosen among the ways the economy offers to add
+        men. A fresh Squad is on the table while one may actually be added —
+        under the map's cap and under the wire's force limit (`_fresh_barred`)
+        — and the cheapest affordable one is the fresh candidate, because
+        ground is taken by standing in a capture radius and every Squad stands
+        in exactly one; Funds spent on a costlier Squad buy firepower this
+        scorer has no threat model to value (#136). A refill is on the table
+        for any Squad the port would accept a Reinforce for (`_refills`).
+
+        The refill wins under the #150 ruling's two triggers: when no fresh
+        Squad is on the table — at the force limit a Purchase is refused and
+        Reinforce is the only way to add men, and the map's cap and an empty
+        purse bar the fresh Squad the same way — or when its discounted
+        pro-rata cost strictly beats the fresh Squad the planner would
+        otherwise buy. A tie goes to the fresh Squad, which adds a whole Squad
+        for the same Funds.
+        """
         commands: list[Command] = []
-        decisions: list[Decision] = []
         funds = observation.funds or 0
-        # Ground is taken by standing in a capture radius, and the map has only
-        # so many radii. A Squad past that has nowhere of its own to be, and a
-        # force that grows without a ceiling is what runs an Observation into
-        # #26's 10,240-byte return cap.
-        wanted = len(self.map_manifest.objectives)
-        if len(observation.squads) >= wanted:
-            decisions.append(
-                Decision(
-                    about="funds",
-                    chose="nothing",
-                    because=f"{len(observation.squads)} Squads fielded of {wanted} the map holds",
-                    scored=0,
-                    candidates=(),
-                )
+        refills = self._refills(observation)
+        affordable = [refill for refill in refills if refill.cost <= funds]
+        barred = self._fresh_barred(observation)
+        priced = (
+            ()
+            if barred
+            else tuple(
+                squad
+                for squad in sorted(self.table.squads, key=lambda squad: (squad.price, squad.id))
+                if squad.price <= funds
             )
-            return commands, decisions
-
-        affordable = tuple(squad for squad in self.table.squads if squad.price <= funds)
-        candidates = tuple(
-            Candidate(choice=squad.id, score=float(-squad.price), terms={"price": -squad.price})
-            for squad in sorted(affordable, key=lambda squad: (squad.price, squad.id))
         )
-        if not affordable:
-            decisions.append(
-                Decision(
-                    about="funds",
-                    chose="nothing",
-                    because=f"{funds} Funds purchase no Squad this map sells",
-                    scored=len(self.table.squads),
-                    candidates=(),
+        # How much choice there was: every fresh Squad weighed — none, when a
+        # cap barred them all — plus every refillable Squad.
+        scored = (0 if barred else len(self.table.squads)) + len(refills)
+
+        # Winner first, as every Decision row promises. Cheapest way to add men
+        # first, and where a refill ties a fresh Squad the fresh Squad leads,
+        # because that is the way the tie is decided below.
+        weighed = [
+            ((float(squad.price), 0, squad.id), _priced_candidate(squad.id, squad.price))
+            for squad in priced
+        ]
+        weighed += [((float(one.cost), 1, one.squad), _refill_candidate(one)) for one in affordable]
+        candidates = tuple(candidate for _, candidate in sorted(weighed, key=lambda pair: pair[0]))
+
+        fresh = priced[0] if priced else None
+        refill = affordable[0] if affordable else None
+        fielded = len(observation.squads)
+
+        if refill is not None and (fresh is None or refill.cost < fresh.price):
+            if barred:
+                because = f"{refill.missing} men short at Base; {barred}"
+            elif fresh is None:
+                because = f"{refill.missing} men short at Base; {funds} Funds buy no fresh Squad"
+            else:
+                because = (
+                    f"{refill.missing} men short at Base; "
+                    f"{refill.cost} beats {fresh.id} at {fresh.price}"
                 )
+            commands.append(
+                Command(name="reinforce", side=observation.for_side, args={"squad": refill.squad})
             )
-            return commands, decisions
-
-        # Cheapest, because ground is taken by standing in a capture radius and
-        # every Squad stands in exactly one. Funds spent on a costlier Squad get
-        # firepower this scorer has no threat model to value.
-        bought = candidates[0]
-        commands.append(
-            Command(name="purchase", side=observation.for_side, args={"squad_type": bought.choice})
-        )
-        decisions.append(
-            Decision(
+            decision = Decision(
                 about="funds",
-                chose=f"purchase {bought.choice}",
-                because=f"{len(observation.squads)} Squads fielded",
-                scored=len(self.table.squads),
+                chose=f"reinforce {refill.squad}",
+                because=because,
+                scored=scored,
                 candidates=candidates[:TRACE_CANDIDATES],
             )
-        )
-        return commands, decisions
+        elif fresh is not None:
+            because = f"{fielded} Squads fielded"
+            if refill is not None:
+                # A live refill lost the comparison, and the row says to what:
+                # a trace that went quiet about the runner-up would read as the
+                # refill never having been weighed (#150).
+                because = (
+                    f"{fielded} Squads fielded; {fresh.id} at {fresh.price} adds a whole "
+                    f"Squad against refilling {refill.squad} at {refill.cost}"
+                )
+            commands.append(
+                Command(name="purchase", side=observation.for_side, args={"squad_type": fresh.id})
+            )
+            decision = Decision(
+                about="funds",
+                chose=f"purchase {fresh.id}",
+                because=because,
+                scored=scored,
+                candidates=candidates[:TRACE_CANDIDATES],
+            )
+        else:
+            decision = Decision(
+                about="funds",
+                chose="nothing",
+                because=self._spent_nothing(barred, funds, refills),
+                scored=scored,
+                candidates=(),
+            )
+        return commands, [decision]
+
+    def _fresh_barred(self, observation: Observation) -> str:
+        """Why no fresh Squad may be added this cycle, or "" while one may.
+
+        Two ceilings, one sentence each. The map's: ground is taken by standing
+        in a capture radius, the map has only so many radii, and a Squad past
+        that has nowhere of its own to be. The wire's: past `force_limit` the
+        port refuses the Purchase outright (#101), and the number here is the
+        port's own measurement (`budget.squad_ceiling`) over the same manifest
+        and table — so the planner declines exactly where the port would
+        refuse, rather than issuing a Command whose refusal it cannot read.
+        On the authored map the wire's ceiling (71) sits far behind the map's
+        cap (8), so the map's sentence is the one Stratis ever says.
+        """
+        fielded = len(observation.squads)
+        wanted = len(self.map_manifest.objectives)
+        if fielded >= wanted:
+            return f"{fielded} Squads fielded of {wanted} the map holds"
+        if fielded >= self._force_ceiling():
+            return f"{fielded} Squads fielded of {self._force_ceiling()} the wire carries"
+        return ""
+
+    def _force_ceiling(self) -> int:
+        """How many Squads the wire lets this side field, measured once.
+
+        The port's measurement reused rather than restated (#150): a Purchase
+        past it is refused `force_limit`, which under the ruling is the one
+        place a Reinforce is the only way to add men. Lazy like the port's own
+        `squad_ceiling`, because it costs a binary search over serialisations.
+        None — a map whose Observation fits no reply at all — reads as zero:
+        no Purchase is ever legal there.
+        """
+        if not self._force_limit_measured:
+            self._force_limit = budget.squad_ceiling(self.map_manifest, self.table)
+            self._force_limit_measured = True
+        return self._force_limit or 0
+
+    def _refills(self, observation: Observation) -> list[_Refill]:
+        """Every Squad a Reinforce would be accepted for, cheapest refill first.
+
+        The port's refusal matrix read forwards, exactly as `legal` reads it
+        for Orders (ADR-0031): bought as a type the table still sells, short of
+        the strength it was bought at, and standing at its own Base — which is
+        where CONTEXT.md puts Reinforce and what `_refill_refusal` holds it to.
+        The planner and the port read the same roster numbers (the
+        Observation's `size` is the roster's own), so a candidate here is never
+        `already_held` there.
+        """
+        base = self._base_of[observation.for_side]
+        found = []
+        for squad in observation.squads:
+            if squad.at != base:
+                continue
+            sold = self.table.sold(squad.squad_type)
+            if sold is None:
+                # A type the table no longer sells cannot be priced. The port
+                # reports that as a fault in the table (`malformed_command`),
+                # and a fault in the table is not this cycle's to spend on.
+                continue
+            missing = sold.size - squad.size
+            cost = self.table.reinforce_cost(squad.squad_type, missing)
+            if missing <= 0 or cost is None:
+                continue
+            found.append(_Refill(squad=squad.id, missing=missing, cost=cost))
+        return sorted(found, key=lambda refill: (refill.cost, refill.squad))
+
+    def _spent_nothing(self, barred: str, funds: int, refills: list[_Refill]) -> str:
+        """Say why no Funds moved, distinguishing every silence (#150).
+
+        Four of them now: barred from buying with nothing to refill, barred
+        with refills the Funds cannot pay for, free to buy but too poor for
+        anything, and too poor for a Squad with the refill also out of reach.
+        """
+        if barred and not refills:
+            return barred
+        if barred:
+            return f"{barred}; {funds} Funds refill none"
+        if not refills:
+            return f"{funds} Funds purchase no Squad this map sells"
+        return f"{funds} Funds purchase no Squad this map sells and refill none"
+
+
+def _priced_candidate(squad_type: str, price: int) -> Candidate:
+    """Render one fresh Squad as the funds row carries it, unchanged since #16."""
+    return Candidate(choice=squad_type, score=float(-price), terms={"price": -price})
+
+
+def _refill_candidate(refill: _Refill) -> Candidate:
+    """Render one refill as the funds row carries it (#150).
+
+    The same price axis the fresh Squads score on, so the row is one argument —
+    the cheapest way to add men wins — plus the `missing` the cost was priced
+    off, because a refill's price means nothing without it.
+    """
+    return Candidate(
+        choice=f"reinforce {refill.squad}",
+        score=float(-refill.cost),
+        terms={"price": -refill.cost, "missing": refill.missing},
+    )
 
 
 def _sent(chosen: dict[str, _Option], place: str) -> int:
