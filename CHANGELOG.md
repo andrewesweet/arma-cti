@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Each seam the pool libraries had triplicated has one home.** The host guard's
+  free/running/unavailable → verdict ladder ran as three near-verbatim bash copies across the pool
+  libraries; it is decided in `tools/host_guard_verdict.py` under `just unit` now (ADR-0049's
+  second migration), and a guard whose mapper cannot run fails closed to a stop rather than open to
+  a pass. The lock holder's `.info` block and the `infra_unavailable` exit code — each defined in
+  three files — have one sourced home each, the hand-run tier lock takes slot 0 through the same
+  acquire the pool uses, and `run.sh`'s duplicated verdict sweep — the two-copy structure behind
+  #83's misclassification — is one function on both paths. #161.
+
 - **Two daemon hot paths shed rebuilt work.** Dispatch looked its handler up in a verb table
   rebuilt on every request — the shape #90 already removed from the port — and a `poll` re-encoded
   the whole candidate reply once per pending Effect, so pricing one drain read the backlog
