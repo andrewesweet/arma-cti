@@ -16,6 +16,11 @@
 // running out or the Campaign being won. It is sized by CTI_PROBE_SOAK so the
 // session length lives on the boot line rather than in this file.
 //
+// Because this fixture marks the session as a human one, run.sh stages the
+// Zeus-style observer beside it (spike/playtest/observer.sqf, #178): press Y
+// to fly free without touching the world, Y again to come back to your body
+// and the Commander's map.
+//
 // Runs on the server: initServer.sqf is what compiles the harness.
 [] spawn {
     private _window = 1800;

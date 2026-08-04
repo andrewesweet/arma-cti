@@ -14,6 +14,11 @@
 // says out loud when it is done. You will be in the seat while it stages — the
 // Campaign is being played into position rather than assembled around you.
 //
+// Because this fixture marks the session as a human one, run.sh stages the
+// Zeus-style observer beside it (spike/playtest/observer.sqf, #178): press Y
+// to fly free without touching the world, Y again to come back to your body
+// and the Commander's map.
+//
 // ---- why this exists (#42)
 //
 // The playtest-brief skill says a boot line boots "a committed fixture that
