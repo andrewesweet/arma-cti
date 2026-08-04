@@ -246,6 +246,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   logic lives in Python under pytest, bash keeps the process seams — launching, `flock`,
   environment, timeouts — where the shell is the actual subject. #171.
 
+- **The addon's side vocabulary has one home.** The side-name↔engine-side pairing was restated by
+  hand five times across the addon — two switches, a hand-built enemy-of table, a `str` respelling,
+  and a membership literal in the presence sampler that was fail-silent: presence on a side the
+  literal did not list was simply never reported, and nothing asserted on the gap.
+  `cti_fnc_sideVocabulary` now owns the pairing — the names come from the exported schema's
+  `sides`, the engine objects are the one half SQF must own — and derives both directions and the
+  enemy-of relation once, refusing whole rather than translating in part; the five sites read it,
+  as does a sixth born since the finding (`fn_baseAssault`'s destroyed-by attribution). What the
+  daemon sees on the wire is unchanged. #149.
+
 ### Fixed
 
 - **A squad effect short of a declared argument is refused instead of guessed at.** The world's
