@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×12 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×13 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -41,6 +41,13 @@
 > Twelfth use (2026-08-04): the fourth stall, the fourth watcher catch — the #162
 > agent parked after its corpus run finished, prodded with the verdict in hand. Four
 > for four; the permanence sentence in the noticing section is from this instance.
+> Thirteenth use (2026-08-04): stalls five and six, both #149, both watcher catches
+> (orchestrator-side observations) — 90 minutes silent on uncommitted work across five
+> addon files, the commit-early violation corrected on the prod; then 2+ hours silent
+> through a usage-conservation window, resumed clean. Six for six, the permanence
+> sentence operating; the first of the pair adds the sharper edge — a stall sitting on
+> uncommitted work is what turns an orchestrator death from a prod into work at risk,
+> the commit-early line's price read from the stall's side.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
