@@ -18,7 +18,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from cti_daemon import protocol
-from cti_daemon.commands import OWNERS
+from cti_daemon.commands import OWNERS, SIDES
 from cti_daemon.contacts import ASSETS, ECHELONS, POSTURE_ORDER, Contact
 from cti_daemon.observation import DESTROYED, Observation, SquadView, serialise
 from cti_daemon.squads import ORDERS
@@ -48,6 +48,10 @@ _WORST_POSTURE: Final = max(POSTURE_ORDER, key=len)
 _WORST_ASSETS: Final = tuple(asset for asset, _ in ASSETS)
 _WORST_ORDER: Final = max(ORDERS, key=len)
 _WORST_OWNER: Final = max(OWNERS, key=len)
+# The side whose name costs the most, like every other term here taken from
+# where its vocabulary is defined rather than restated (#152): it is the
+# observation's `for_side`, and Squad ids wear it as their stem.
+_WORST_SIDE: Final = max(SIDES, key=len)
 # A Campaign runs for hours rather than days, so this is the longest a clock
 # reading gets said in.
 _WORST_CLOCK: Final = 9_999.9
@@ -58,7 +62,7 @@ _WORST_AGE: Final = 9_999
 # a long Campaign's live roster wears four-digit ordinals.
 _WORST_ORDINAL: Final = 1_000
 # `cti_fnc_commanderView` correlates on `view-<side>-<time>`.
-_WORST_REQUEST_ID: Final = "view-WEST-99999"
+_WORST_REQUEST_ID: Final = f"view-{_WORST_SIDE}-99999"
 
 
 def worst_case(
@@ -80,11 +84,11 @@ def worst_case(
         at_time=_WORST_CLOCK,
         owners={objective.id: _WORST_OWNER for objective in map_manifest.objectives},
         hq={base.id: DESTROYED for base in map_manifest.bases},
-        for_side="WEST",
+        for_side=_WORST_SIDE,
         funds=999_999,
         squads=tuple(
             SquadView(
-                id=f"WEST-{_WORST_ORDINAL + index}",
+                id=f"{_WORST_SIDE}-{_WORST_ORDINAL + index}",
                 squad_type=max((squad.id for squad in table.squads), key=len),
                 size=99,
                 order=_WORST_ORDER,
