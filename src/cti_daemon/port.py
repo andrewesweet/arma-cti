@@ -24,8 +24,7 @@ if TYPE_CHECKING:
 
     from cti_daemon.campaign import Campaign
     from cti_daemon.commands import Command
-    from cti_daemon.economy import EconomyTable, Ledger
-    from cti_daemon.outbox import Outbox
+    from cti_daemon.economy import EconomyTable
 
 # ADR-0012 fixed the first four for #12; #14's Order adds the last two, and the
 # ADR's own consequences anticipate that ("new port verbs are schema
@@ -130,16 +129,6 @@ class CommandPort:
     def table(self) -> EconomyTable:
         """The authored prices and timings the rules are judged against."""
         return self.campaign.table
-
-    @property
-    def ledger(self) -> Ledger:
-        """The Funds each side holds. One ledger: spending and income are one."""
-        return self.campaign.ledger
-
-    @property
-    def outbox(self) -> Outbox:
-        """The one path every world effect takes, whoever issued it."""
-        return self.campaign.outbox
 
     def submit(self, command: Command, *, acting_side: str, acting_squad: str = "") -> Judgement:
         """Judge one Command. The only way strategic state ever moves.
@@ -263,7 +252,7 @@ class CommandPort:
                 f"this map's Observation does not fit one reply even with no Squads: "
                 f"{side} cannot buy on it at all",
             )
-        held = len(self.campaign.roster.roll(side))
+        held = self.campaign.squad_count(side)
         if held >= ceiling:
             return _reject(
                 "force_limit",
@@ -289,7 +278,7 @@ class CommandPort:
         if not isinstance(squad_id, str) or not squad_id:
             return _reject("malformed_command", "reinforce needs a `squad`")
 
-        squad = self.campaign.roster.owned_by(squad_id, command.side)
+        squad = self.campaign.squad(squad_id, command.side)
         if squad is None:
             return _reject("unknown_squad", f"{command.side} has no Squad {squad_id!r}")
 
@@ -363,7 +352,7 @@ class CommandPort:
             return _reject("malformed_command", "order needs a `squad`")
         # A read, not a reach: the Squad has to exist before the ground it is
         # being sent to is worth judging, and `issue` below is what changes it.
-        if self.campaign.roster.owned_by(squad_id, command.side) is None:
+        if self.campaign.squad(squad_id, command.side) is None:
             return _reject("unknown_squad", f"{command.side} has no Squad {squad_id!r}")
 
         place = command.args.get("place", "")

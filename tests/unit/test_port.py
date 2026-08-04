@@ -58,7 +58,7 @@ def test_a_purchase_is_accepted_and_costs_its_price(open_port: port.CommandPort)
         Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
     )
     assert judgement.accepted
-    assert open_port.ledger.balance("WEST") == 200
+    assert open_port.campaign.ledger.balance("WEST") == 200
 
 
 def test_an_accepted_purchase_reports_the_remaining_funds_and_what_it_bought(
@@ -79,7 +79,7 @@ def test_an_accepted_purchase_queues_its_effect_rather_than_returning_it(
     # Every world effect rides the outbox, for both Commanders, so #19 has one
     # effect path to audit rather than two.
     open_port.submit(Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST")
-    (entry,) = open_port.outbox.pending()
+    (entry,) = open_port.campaign.outbox.pending()
     assert entry.effect.name == "squad_spawned"
     assert entry.effect.side == "WEST"
     assert entry.effect.args["squad_type"] == "rifle"
@@ -95,8 +95,8 @@ def test_a_purchase_beyond_the_balance_is_rejected_and_costs_nothing(
     )
     assert not judgement.accepted
     assert judgement.code == "insufficient_funds"
-    assert open_port.ledger.balance("WEST") == 0
-    assert len(open_port.outbox.pending()) == 3
+    assert open_port.campaign.ledger.balance("WEST") == 0
+    assert len(open_port.campaign.outbox.pending()) == 3
 
 
 def test_a_command_nobody_implements_is_rejected(open_port: port.CommandPort) -> None:
@@ -123,8 +123,8 @@ def test_commanding_a_side_that_is_not_yours_is_rejected(open_port: port.Command
         Command("purchase", "EAST", {"squad_type": "rifle"}), acting_side="WEST"
     )
     assert judgement.code == "wrong_side"
-    assert open_port.ledger.balance("EAST") == 300
-    assert open_port.outbox.pending() == []
+    assert open_port.campaign.ledger.balance("EAST") == 300
+    assert open_port.campaign.outbox.pending() == []
 
 
 def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
@@ -183,7 +183,7 @@ def test_an_order_is_recorded_against_the_squad_and_announced_as_an_effect(
         name="order_issued",
         side="WEST",
         args={"squad": squad, "order": "capture", "place": "agia_marina"},
-    ) in [entry.effect for entry in open_port.outbox.pending()]
+    ) in [entry.effect for entry in open_port.campaign.outbox.pending()]
 
 
 def test_a_later_order_supersedes_the_one_before_it(open_port: port.CommandPort) -> None:
@@ -357,7 +357,7 @@ def test_the_ground_each_order_may_name_is_the_only_ground_it_is_given(
     assert standing(open_port, squad) == (
         squads.Order(kind, place) if judgement.accepted else squads.RESERVE
     )
-    issued = [entry.effect.name for entry in open_port.outbox.pending()]
+    issued = [entry.effect.name for entry in open_port.campaign.outbox.pending()]
     assert issued.count("order_issued") == int(judgement.accepted)
 
 
@@ -439,7 +439,7 @@ def home(open_port: port.CommandPort, squad_id: str, *, size: int = 5, side: str
 def test_a_commander_reinforces_a_squad_of_his_own_side(open_port: port.CommandPort) -> None:
     squad = bought(open_port)
     home(open_port, squad, size=5)
-    funds = open_port.ledger.balance("WEST")
+    funds = open_port.campaign.ledger.balance("WEST")
 
     judgement = open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
 
@@ -447,7 +447,7 @@ def test_a_commander_reinforces_a_squad_of_his_own_side(open_port: port.CommandP
     # 100-Funds Squad at 0.8 is 30.
     assert judgement.accepted
     assert judgement.result == {"squad": squad, "funds": funds - 30, "cost": 30, "size": 8}
-    assert open_port.ledger.balance("WEST") == funds - 30
+    assert open_port.campaign.ledger.balance("WEST") == funds - 30
 
 
 def test_an_accepted_reinforce_rides_the_outbox_like_every_other_effect(
@@ -460,7 +460,7 @@ def test_an_accepted_reinforce_rides_the_outbox_like_every_other_effect(
     open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
 
     assert Effect(name="squad_reinforced", side="WEST", args={"squad": squad, "size": 8}) in [
-        entry.effect for entry in open_port.outbox.pending()
+        entry.effect for entry in open_port.campaign.outbox.pending()
     ]
 
 
@@ -484,14 +484,14 @@ def test_a_squad_leader_may_not_reinforce_another_squad_of_his_own_side(
     mine = bought(open_port)
     theirs = bought(open_port)
     home(open_port, theirs, size=4)
-    funds = open_port.ledger.balance("WEST")
+    funds = open_port.campaign.ledger.balance("WEST")
 
     judgement = open_port.submit(
         Command("reinforce", "WEST", {"squad": theirs}), acting_side="WEST", acting_squad=mine
     )
 
     assert judgement.code == "not_your_squad"
-    assert open_port.ledger.balance("WEST") == funds
+    assert open_port.campaign.ledger.balance("WEST") == funds
     assert open_port.campaign.roster.roll("WEST")[1].size == 4
 
 
@@ -533,14 +533,14 @@ def test_a_squad_leader_may_not_issue_the_commanders_own_commands(
     # stay a Commander's, so a leader asking for one is reaching past his
     # authority — which is what `wrong_side` has always named.
     squad = bought(open_port)
-    funds = open_port.ledger.balance("WEST")
+    funds = open_port.campaign.ledger.balance("WEST")
 
     judgement = open_port.submit(
         Command(name, "WEST", args), acting_side="WEST", acting_squad=squad
     )
 
     assert judgement.code == "wrong_side"
-    assert open_port.ledger.balance("WEST") == funds
+    assert open_port.campaign.ledger.balance("WEST") == funds
     assert standing(open_port, squad) == squads.RESERVE
 
 
@@ -559,13 +559,13 @@ def test_reinforcing_a_squad_at_full_strength_is_refused(open_port: port.Command
     # the world would carry out by spawning nobody.
     squad = bought(open_port)
     home(open_port, squad, size=8)
-    funds = open_port.ledger.balance("WEST")
+    funds = open_port.campaign.ledger.balance("WEST")
 
     judgement = open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
 
     assert judgement.code == "already_held"
-    assert open_port.ledger.balance("WEST") == funds
-    assert [entry.effect.name for entry in open_port.outbox.pending()] == ["squad_spawned"]
+    assert open_port.campaign.ledger.balance("WEST") == funds
+    assert [entry.effect.name for entry in open_port.campaign.outbox.pending()] == ["squad_spawned"]
 
 
 @pytest.mark.parametrize(
@@ -594,12 +594,12 @@ def test_reinforcing_beyond_the_balance_is_refused_and_costs_nothing(
 ) -> None:
     squad = bought(open_port)
     home(open_port, squad, size=1)
-    open_port.ledger.spend("WEST", open_port.ledger.balance("WEST"))
+    open_port.campaign.ledger.spend("WEST", open_port.campaign.ledger.balance("WEST"))
 
     judgement = open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
 
     assert judgement.code == "insufficient_funds"
-    assert open_port.ledger.balance("WEST") == 0
+    assert open_port.campaign.ledger.balance("WEST") == 0
     assert open_port.campaign.roster.roll("WEST")[0].size == 1
 
 
@@ -643,14 +643,14 @@ def test_a_reinforce_after_the_campaign_is_won_is_refused_and_costs_nothing(
     squad = bought(open_port)
     home(open_port, squad, size=5)
     won(open_port)
-    funds = open_port.ledger.balance("WEST")
-    queued = len(open_port.outbox.pending())
+    funds = open_port.campaign.ledger.balance("WEST")
+    queued = len(open_port.campaign.outbox.pending())
 
     judgement = open_port.submit(Command("reinforce", "WEST", {"squad": squad}), acting_side="WEST")
 
     assert judgement.code == "campaign_over"
-    assert open_port.ledger.balance("WEST") == funds
-    assert len(open_port.outbox.pending()) == queued
+    assert open_port.campaign.ledger.balance("WEST") == funds
+    assert len(open_port.campaign.outbox.pending()) == queued
 
 
 PRINCIPALS = st.sampled_from(("commander", "own_leader", "other_leader"))
@@ -750,7 +750,7 @@ def test_a_purchase_after_the_campaign_is_won_is_refused_and_costs_nothing(
     # played — reaching the one door ADR-0012 calls the only way strategic state
     # ever moves. Funds spent here would be a finished Campaign's, and the Squad
     # would spawn into a world that has already had its end screen.
-    funds = open_port.ledger.balance("WEST")
+    funds = open_port.campaign.ledger.balance("WEST")
     won(open_port)
 
     judgement = open_port.submit(
@@ -759,9 +759,9 @@ def test_a_purchase_after_the_campaign_is_won_is_refused_and_costs_nothing(
 
     assert not judgement.accepted
     assert judgement.code == "campaign_over"
-    assert open_port.ledger.balance("WEST") == funds
+    assert open_port.campaign.ledger.balance("WEST") == funds
     assert open_port.campaign.roster.roll("WEST") == ()
-    assert open_port.outbox.pending() == []
+    assert open_port.campaign.outbox.pending() == []
 
 
 def test_an_order_after_the_campaign_is_won_leaves_the_squad_carrying_the_last_one(
@@ -773,7 +773,7 @@ def test_an_order_after_the_campaign_is_won_leaves_the_squad_carrying_the_last_o
         acting_side="WEST",
     )
     won(open_port)
-    queued = len(open_port.outbox.pending())
+    queued = len(open_port.campaign.outbox.pending())
 
     judgement = open_port.submit(
         Command("order", "WEST", {"squad": squad, "order": "defend", "place": "agia_marina"}),
@@ -782,7 +782,7 @@ def test_an_order_after_the_campaign_is_won_leaves_the_squad_carrying_the_last_o
 
     assert judgement.code == "campaign_over"
     assert standing(open_port, squad) == squads.Order("capture", "girna")
-    assert len(open_port.outbox.pending()) == queued
+    assert len(open_port.campaign.outbox.pending()) == queued
 
 
 def stock(open_port: port.CommandPort, squads_held: int, side: str = "WEST") -> None:
@@ -794,7 +794,7 @@ def stock(open_port: port.CommandPort, squads_held: int, side: str = "WEST") -> 
     """
     for _ in range(squads_held):
         open_port.campaign.roster.add(side, "rifle", 8)
-    open_port.ledger.deposit(side, 10_000)
+    open_port.campaign.ledger.deposit(side, 10_000)
 
 
 def test_the_squad_ceiling_is_the_one_the_wire_was_measured_at(
@@ -813,7 +813,7 @@ def test_a_purchase_past_what_the_wire_carries_is_refused(open_port: port.Comman
     ceiling = open_port.squad_ceiling
     assert ceiling is not None
     stock(open_port, ceiling)
-    funds = open_port.ledger.balance("WEST")
+    funds = open_port.campaign.ledger.balance("WEST")
 
     judgement = open_port.submit(
         Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
@@ -821,8 +821,8 @@ def test_a_purchase_past_what_the_wire_carries_is_refused(open_port: port.Comman
 
     assert not judgement.accepted
     assert judgement.code == "force_limit"
-    assert open_port.ledger.balance("WEST") == funds
-    assert open_port.outbox.pending() == []
+    assert open_port.campaign.ledger.balance("WEST") == funds
+    assert open_port.campaign.outbox.pending() == []
 
 
 def test_the_last_squad_the_wire_carries_is_still_bought(open_port: port.CommandPort) -> None:
@@ -847,7 +847,7 @@ def test_the_wires_limit_binds_each_side_on_its_own(open_port: port.CommandPort)
     ceiling = open_port.squad_ceiling
     assert ceiling is not None
     stock(open_port, ceiling)
-    open_port.ledger.deposit("EAST", 10_000)
+    open_port.campaign.ledger.deposit("EAST", 10_000)
 
     judgement = open_port.submit(
         Command("purchase", "EAST", {"squad_type": "rifle"}), acting_side="EAST"

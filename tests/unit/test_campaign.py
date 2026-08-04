@@ -16,7 +16,10 @@ from typing import TYPE_CHECKING
 import pytest
 from conftest import live
 
+from cti_daemon import campaign as campaign_module
+from cti_daemon import economy
 from cti_daemon.commands import Effect
+from cti_daemon.outbox import Outbox
 
 if TYPE_CHECKING:
     from cti_daemon import campaign
@@ -149,3 +152,31 @@ def test_a_payout_is_reported_so_the_economy_can_be_watched(live: campaign.Campa
 
 def test_a_report_covering_no_tick_reports_no_payout(live: campaign.Campaign) -> None:
     assert live.observe(live.elapsed + 10, {}) == []
+
+
+def test_a_ledger_seeded_off_its_own_table_is_refused(live: campaign.Campaign) -> None:
+    # A5 of #139 (#152): the composition root seeds the Ledger with
+    # `table.starting_funds` by hand, and nothing held the two together — a
+    # wiring that opened the Ledger at any other figure would play a Campaign
+    # whose table and Funds disagree about what a side starts with.
+    with pytest.raises(ValueError, match="starting_funds"):
+        campaign_module.Campaign(
+            map_manifest=live.map_manifest,
+            table=live.table,
+            ledger=economy.Ledger(live.table.starting_funds + 1),
+            outbox=Outbox(),
+        )
+
+
+def test_the_port_reads_squads_through_the_campaign_not_the_roster(
+    live: campaign.Campaign,
+) -> None:
+    # A3 of #139 (#152): the two questions the port may ask about Squads,
+    # answered by the root so a rule never reaches through to the aggregate's
+    # parts. The forgiving read finds a side's own Squad and nobody else's.
+    squad, _ = live.purchase("WEST", "rifle")
+    assert live.squad(squad.id, "WEST") is squad
+    assert live.squad(squad.id, "EAST") is None
+    assert live.squad("WEST-99", "WEST") is None
+    assert live.squad_count("WEST") == 1
+    assert live.squad_count("EAST") == 0

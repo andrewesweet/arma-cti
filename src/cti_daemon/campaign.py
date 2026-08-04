@@ -114,6 +114,16 @@ class Campaign:
 
     def __post_init__(self) -> None:
         """Start every Objective Neutral and every HQ standing, as authored."""
+        # The Ledger's seed is the table's to set (#152). Both arrive as parts
+        # of one Campaign, and a Ledger opened at any other figure is two
+        # answers to what a side starts with — a wiring bug, not a Campaign to
+        # play, so it is refused where the two first meet.
+        if self.ledger.starting_funds != self.table.starting_funds:
+            message = (
+                f"this Campaign's Ledger opened at {self.ledger.starting_funds} Funds "
+                f"but its table authors starting_funds of {self.table.starting_funds}"
+            )
+            raise ValueError(message)
         self._states = {
             objective.id: ObjectiveState() for objective in self.map_manifest.objectives
         }
@@ -158,6 +168,27 @@ class Campaign:
         fallen and that the enemy's has not.
         """
         return dict(self._hq)
+
+    def squad(self, squad_id: str, side: str) -> Squad | None:
+        """Return `side`'s Squad by that id, or None if it has no such Squad.
+
+        The roster's forgiving read, offered by the root (#152): the port judges
+        a Command against the Campaign, so what it may ask, it asks here rather
+        than by reaching through to the aggregate's parts. Another side's Squad
+        is not found rather than refused separately, for the roster's own
+        reason — a Commander has no business learning the enemy's ids by
+        guessing.
+        """
+        return self.roster.owned_by(squad_id, side)
+
+    def squad_count(self, side: str) -> int:
+        """How many Squads `side` holds, for rules that cap a force (#152).
+
+        A count rather than the roll itself: the one rule that asks — the
+        port's `force_limit` — needs the number, and a caller handed the tuple
+        would be back to reading the roster through the root.
+        """
+        return len(self.roster.roll(side))
 
     @property
     def complete(self) -> bool:
