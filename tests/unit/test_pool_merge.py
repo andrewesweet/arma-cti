@@ -385,6 +385,10 @@ def test_main_writes_the_pool_document_the_suites_read(
     assert document["git_sha"] == SHA
     assert document["slots"] == [0, 1]
     assert document["host"] == "local"
+    # The merge's own answer, recorded (#182): contacts passed, and a not_run
+    # probe contributes no row, so the worst class here is pass — the field is
+    # what the pool pruner believes.
+    assert document["worst_class"] == "pass"
     assert document["wall_secs"] == 61
     assert document["peak_mem_used_kb"] == 7100000
     assert document["peak_tier_rss_kb"] == 5100000
@@ -566,6 +570,91 @@ def test_prune_main_prints_one_doomed_directory_per_line(
     status = pool_merge.main(
         ["prune-passes", "--runs-dir", str(tmp_path), "--probe", "contacts", "--keep", "3"]
     )
+    assert status == 0
+    assert capsys.readouterr().out.splitlines() == [str(oldest)]
+
+
+# -------------------------------------------------------------- prune-pools
+# Verdict-aware, where the old prune was count-only (#182): the starvation
+# episodes' primary RAM traces were pruned while the issues that needed them
+# were still open. Only a pool whose own record reads green is a candidate.
+
+
+def pool_dir(runs: Path, stamp: str, document: object) -> Path:
+    directory = runs / f"{stamp}-pool"
+    directory.mkdir(parents=True)
+    if document is not None:
+        text = document if isinstance(document, str) else json.dumps(document, indent=2) + "\n"
+        (directory / "pool.json").write_text(text, encoding="utf-8")
+    return directory
+
+
+def test_pool_prune_lists_the_oldest_greens_beyond_the_room(tmp_path: Path) -> None:
+    """Room is left for the pool the run is about to record, as prune-passes leaves it."""
+    oldest = pool_dir(tmp_path, "20260801T000000Z-1", {"worst_class": "pass"})
+    older = pool_dir(tmp_path, "20260801T000001Z-1", {"worst_class": "pass"})
+    for stamp in ("20260802T000000Z-1", "20260803T000000Z-1", "20260804T000000Z-1"):
+        pool_dir(tmp_path, stamp, {"worst_class": "pass"})
+    assert pool_merge.prune_pool_candidates(tmp_path, keep=4) == [oldest, older]
+    assert pool_merge.prune_pool_candidates(tmp_path, keep=5) == [oldest]
+    assert pool_merge.prune_pool_candidates(tmp_path, keep=6) == []
+
+
+def test_pool_prune_never_lists_a_pool_an_issue_may_still_need(tmp_path: Path) -> None:
+    """A failed pool's RAM trace is the primary record of its episode.
+
+    The recorded worst_class is believed as written — including the mem-stop
+    shape, where every verdict is a pass and the pool-level overlay is the
+    whole story.
+    """
+    pool_dir(tmp_path, "20260801T000000Z-1", {"worst_class": "timeout"})
+    pool_dir(
+        tmp_path,
+        "20260801T000001Z-1",
+        {"worst_class": "infra_unavailable", "verdicts": [{"class": "pass"}]},
+    )
+    for stamp in ("20260802T000000Z-1", "20260803T000000Z-1"):
+        pool_dir(tmp_path, stamp, {"worst_class": "pass"})
+    assert pool_merge.prune_pool_candidates(tmp_path, keep=2) == [
+        tmp_path / "20260802T000000Z-1-pool"
+    ]
+
+
+def test_pool_prune_reads_a_legacy_document_off_its_verdicts(tmp_path: Path) -> None:
+    """Pools recorded before worst_class existed are judged by what they carry.
+
+    A non-empty stopped_early is not green: those runs' mem-stop overlay lived
+    only in the exit code nobody kept.
+    """
+    green = pool_dir(
+        tmp_path,
+        "20260801T000000Z-1",
+        {"verdicts": [{"class": "pass"}, {"class": "flake_quarantine"}], "stopped_early": ""},
+    )
+    pool_dir(tmp_path, "20260801T000001Z-1", {"verdicts": [{"class": "timeout"}]})
+    pool_dir(
+        tmp_path,
+        "20260801T000002Z-1",
+        {"verdicts": [{"class": "pass"}], "stopped_early": "only 40 MiB available"},
+    )
+    assert pool_merge.prune_pool_candidates(tmp_path, keep=1) == [green]
+
+
+def test_pool_prune_keeps_what_it_cannot_read(tmp_path: Path) -> None:
+    """A torn pool.json, or a run that died before its merge, is not the pruner's call."""
+    pool_dir(tmp_path, "20260801T000000Z-1", "{torn")
+    pool_dir(tmp_path, "20260801T000001Z-1", None)
+    pool_dir(tmp_path, "20260801T000002Z-1", {"verdicts": []})
+    green = pool_dir(tmp_path, "20260801T000003Z-1", {"worst_class": "pass"})
+    assert pool_merge.prune_pool_candidates(tmp_path, keep=1) == [green]
+
+
+def test_pool_prune_main_prints_one_doomed_directory_per_line(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    oldest = pool_dir(tmp_path, "20260801T000000Z-1", {"worst_class": "pass"})
+    pool_dir(tmp_path, "20260801T000001Z-1", {"worst_class": "pass"})
+    status = pool_merge.main(["prune-pools", "--runs-dir", str(tmp_path), "--keep", "2"])
     assert status == 0
     assert capsys.readouterr().out.splitlines() == [str(oldest)]
 

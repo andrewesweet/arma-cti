@@ -29,9 +29,12 @@ classes added since #83 took the next free numbers. The mem-stop overlay
 (#125) raises `infra_unavailable` at the pool level, because the whole point
 of that stop is that no probe launched to carry the class.
 
-Three riders travel with the merge because they read and write the same files
+Four riders travel with the merge because they read and write the same files
 or the same table: `prune-passes` decides which old green evidence has
 outlived the retention convention (the shell does the deleting),
+`prune-pools` decides the same for pool directories off the `worst_class`
+the merge itself records — verdict-aware because the count-only prune kept
+no failed pools and the starvation episodes' RAM traces went with it (#182),
 `fallback-verdict` writes the minimal `verdict.json` for a probe whose typer
 failed (#171's call site) — the least the merge reads, so a slot that is fine
 is not reclaimed as dead — and `class-of` validates the class an in-mission
@@ -277,6 +280,11 @@ def pool_document(  # noqa: PLR0913 — pool.json's fields, one parameter apiece
         "git_sha": git_sha,
         "slots": slots,
         "host": host,
+        # The merge's own answer, mem-stop overlay included, recorded so the
+        # run's outcome survives in its evidence rather than only in an exit
+        # code nobody kept — and so the pool pruner can tell a green pool from
+        # one an open issue still needs (#182).
+        "worst_class": merged.worst_class,
         "wall_secs": wall_secs,
         "peak_mem_used_kb": peak_mem_used_kb,
         "peak_tier_rss_kb": peak_tier_rss_kb,
@@ -333,6 +341,58 @@ def prune_candidates(runs_dir: Path, probe: str, keep: int) -> list[Path]:
     return passes[: len(passes) - room]
 
 
+def pool_reads_green(document: object) -> bool:
+    """Decide whether this `pool.json` records a run whose worst class was `pass`.
+
+    Documents since #182 carry `worst_class` — the merge's own answer, mem-stop
+    overlay included — and it is believed as written. Older ones are derived
+    from their verdicts, with a non-empty `stopped_early` read as not green:
+    those runs' mem-stop overlay lived only in the exit code, and a pool that
+    stopped early is not a pool whose record says green. Anything unreadable or
+    shapeless is not green, because the pruner fails closed on it.
+    """
+    if not isinstance(document, dict):
+        return False
+    worst = document.get("worst_class")
+    if isinstance(worst, str) and worst:
+        return worst == "pass"
+    if document.get("stopped_early"):
+        return False
+    verdicts = document.get("verdicts")
+    if not isinstance(verdicts, list) or not verdicts:
+        return False
+    classes = [row.get("class") for row in verdicts if isinstance(row, dict)]
+    if len(classes) != len(verdicts) or not all(isinstance(c, str) for c in classes):
+        return False
+    return all(severity(c) <= CLASS_SEVERITY["pass"] for c in classes)
+
+
+def prune_pool_candidates(runs_dir: Path, keep: int) -> list[Path]:
+    """Name the green pool directories that have outlived retention (#182).
+
+    The old prune was count-only, so it kept no failed pools: the starvation
+    episodes' primary RAM traces were pruned while the issues that needed them
+    were still open (#182's filing, finding 3). Only a pool whose own record
+    reads green is ever a candidate — a failure is kept until the issue that
+    consumed it closes, and a directory whose `pool.json` cannot be read, or
+    that never got one (a run that died before its merge), is evidence the
+    pruner has no business deciding on. Room is left for the pool the caller's
+    run is about to record, as `prune_candidates` leaves it for the pass.
+    """
+    greens: list[Path] = []
+    for pool_json in sorted(runs_dir.glob("*-pool/pool.json")):
+        try:
+            document = json.loads(pool_json.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+            continue
+        if pool_reads_green(document):
+            greens.append(pool_json.parent)
+    room = keep - 1
+    if len(greens) <= room:
+        return []
+    return greens[: len(greens) - room]
+
+
 def fallback_document(
     probe: str, class_: str, detail: str, elapsed_secs: int, evidence: str
 ) -> dict[str, object]:
@@ -354,7 +414,7 @@ def fallback_document(
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """Four doors: the merge, and the riders that share its files or its table."""
+    """Five doors: the merge, and the riders that share its files or its table."""
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
 
@@ -379,6 +439,12 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     prune.add_argument("--runs-dir", required=True, type=Path)
     prune.add_argument("--probe", required=True)
     prune.add_argument("--keep", required=True, type=int)
+
+    prune_pools = commands.add_parser(
+        "prune-pools", help="name the green pool directories past retention"
+    )
+    prune_pools.add_argument("--runs-dir", required=True, type=Path)
+    prune_pools.add_argument("--keep", required=True, type=int)
 
     fallback = commands.add_parser(
         "fallback-verdict", help="write the minimal verdict.json for a failed typer"
@@ -472,6 +538,13 @@ def run_prune(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_prune_pools(args: argparse.Namespace) -> int:
+    """Print one doomed pool directory per line; the shell logs and deletes."""
+    for directory in prune_pool_candidates(args.runs_dir, args.keep):
+        print(directory)  # noqa: T201 — the shell reads these lines
+    return 0
+
+
 def run_fallback(args: argparse.Namespace) -> int:
     """Write the fallback `verdict.json` — the heredoc's one home now."""
     document = fallback_document(args.probe, args.class_, args.detail, args.elapsed, args.evidence)
@@ -493,6 +566,7 @@ def main(argv: list[str] | None = None) -> int:
     handlers = {
         "merge": run_merge,
         "prune-passes": run_prune,
+        "prune-pools": run_prune_pools,
         "fallback-verdict": run_fallback,
         "class-of": run_class_of,
     }

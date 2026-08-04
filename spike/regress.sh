@@ -685,14 +685,33 @@ mkdir -p "$CLAIMS" || {
     exit "${CLASS_RANK[infra_unavailable]}"
 }
 
-# The pool's own evidence is bounded the way a probe's passes are. It is small —
-# a schedule, a RAM trace and the merged verdict set — but unbounded is unbounded.
-mapfile -t old_pools < <(ls -d "$RUNS_DIR"/*-pool 2>/dev/null | sort)
-if ((${#old_pools[@]} > KEEP_POOLS)); then
-    for dir in "${old_pools[@]:0:$((${#old_pools[@]} - KEEP_POOLS))}"; do
-        [[ "$dir" == "$POOL_OUT" ]] || rm -rf "$dir"
-    done
-fi
+# The pool's own evidence is bounded the way a probe's passes are — green runs
+# to the last KEEP_POOLS, failures kept until the issue that consumed them
+# closes. The old prune was count-only, so the starvation episodes' primary RAM
+# traces were pruned while their issues were still open (#182, finding 3 of the
+# filing); which pools read green is decided in the merge's Python home off the
+# `worst_class` pool.json now records, and this shell does the deleting.
+# Failing closed here means deleting nothing: a pool kept an extra run is
+# recoverable, evidence deleted by a pruner that could not read is not.
+prune_pools() {
+    local doomed status dir
+    doomed="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py prune-pools \
+        --runs-dir "$RUNS_DIR" --keep "$KEEP_POOLS")"
+    status=$?
+    if ((status != 0)); then
+        log "prune-pools could not run (exit $status) — deleting nothing"
+        return 0
+    fi
+    while IFS= read -r dir; do
+        # Structural, as prune_passes' check is: the pruner can only ever name
+        # pool directories under the runs directory, never this run's own.
+        [[ -n "$dir" && "$dir" == "$RUNS_DIR"/*-pool ]] || continue
+        [[ "$dir" == "$POOL_OUT" ]] && continue
+        log "pruning old green pool: $dir"
+        rm -rf "$dir"
+    done <<<"$doomed"
+}
+prune_pools
 
 # Passes pruned before the probe runs rather than after, so a run that dies
 # halfway still leaves the directory bounded, and so a failure's evidence is

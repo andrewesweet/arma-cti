@@ -38,6 +38,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   recorded pass. Completed verdicts stand. The one sanctioned interruption of work in flight,
   because a starved flight's result is already a non-result wearing a plausible class. #182,
   ADR-0054.
+- **Failed pool evidence outlives the run that produced it.** Pool-directory pruning was
+  count-only, so the starvation episodes' primary RAM traces were pruned while the issues that
+  needed them were still open — only the numbers quoted into the issues survived. `pool.json` now
+  records the run's `worst_class`, and the runner prunes only pools whose record reads green, to
+  the last five; a failed pool, a torn record, or a run that died before its merge is kept. #182.
 - **The regression tier's residual failure paths are typed, and its exit codes stop lying.** A
   `run.sh` the machine killed (an OOM kill above all) is now `infra_unavailable` with the signal
   named, not a "fix the harness" red; an in-mission class typo (`class=timout` — or a smuggled

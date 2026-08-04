@@ -864,6 +864,38 @@ def test_a_dropped_slot_is_held_for_the_run_and_released_after_it(tmp_path: Path
     assert after.returncode == 0, after.stderr
 
 
+def test_pool_pruning_is_verdict_aware_and_keeps_what_an_issue_may_need(tmp_path: Path) -> None:
+    """The count-only prune kept no failed pools (#182, finding 3 of the filing).
+
+    The starvation episodes' primary RAM traces — the pool directories — were
+    pruned while the issues that needed them were still open; only the numbers
+    quoted into the issues survived. The runner now prunes only pools whose own
+    record reads green, to the last KEEP_POOLS, with room for the run's own;
+    a failed pool and a dead run's directory are kept.
+    """
+    runs = tmp_path / "state" / "runs"
+    starved = runs / "20260701T000001Z-1-pool"
+    starved.mkdir(parents=True)
+    (starved / "pool.json").write_text(
+        json.dumps({"worst_class": "node_crashed"}) + "\n", encoding="utf-8"
+    )
+    dead = runs / "20260701T000002Z-1-pool"
+    dead.mkdir(parents=True)
+    greens = [runs / f"2026070{n}T000003Z-1-pool" for n in range(1, 7)]
+    for green in greens:
+        green.mkdir(parents=True)
+        (green / "pool.json").write_text(
+            json.dumps({"worst_class": "pass"}) + "\n", encoding="utf-8"
+        )
+    result = pool_run(tmp_path, "--slots", "1", "contacts")
+    assert result.returncode == EXIT_PASS, result.stderr[-4000:]
+    assert starved.is_dir(), "a failed pool's evidence was pruned while its issue may be open"
+    assert dead.is_dir(), "a dead run's directory is not the pruner's call"
+    # Six staged greens, room left for this run's own: the two oldest go, and
+    # with the new pool.json written the directory holds KEEP_POOLS greens.
+    assert [green for green in greens if green.is_dir()] == greens[2:]
+
+
 def test_the_run_records_the_memory_it_actually_used(tmp_path: Path) -> None:
     """The RAM figure is measured by every run, not extrapolated once.
 
