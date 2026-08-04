@@ -3,8 +3,8 @@
 #
 #   spike/tier-lock.sh [--wait <secs>] [--label <text>] -- <command> [args...]
 #
-# A hand run — `just probe`, `just spike`, `just cycle-spike` — uses the one
-# install at ~/arma3server and the port block 2402-2406, which is slot 0 and
+# A hand run — `just probe`, `just spike` — uses the one install at
+# ~/arma3server and the port block 2402-2406, which is slot 0 and
 # nothing else. So this takes **slot 0's lock**, `~/.arma-cti/slots/0.lock`,
 # rather than a lock of its own: a pool run holds every slot it is using, and the
 # two exclude each other on slot 0 exactly where they would otherwise collide.

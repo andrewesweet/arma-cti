@@ -127,15 +127,16 @@ spike: build-shim build-addon
 probe file="" hold="150": build-shim build-addon
     #!/usr/bin/env bash
     set -euo pipefail
-    # Under the tier lock, same as `regress`: the Arma tier is single-occupancy
-    # per machine, and a hand run that ignores the lock is exactly the collision
-    # the lock exists to stop.
+    # Under slot 0's lock, which tier-lock.sh takes (ADR-0028): a hand run uses
+    # the install and port block that *are* slot 0, a pool run holds every slot
+    # it is using, and so `just probe` and `just regress` exclude each other
+    # exactly where they would collide.
     CTI_MISSION=cti.Stratis \
         CTI_SERVER_CONFIG="{{ justfile_directory() }}/spike/phase1.cfg" \
         CTI_LOG_PREFIX=CTI \
         CTI_HOLD_TIMEOUT="{{ hold }}" \
         CTI_HARNESS_EXTRA="{{ file }}" \
-        CTI_HARNESS_AWAIT="$([[ -n "{{ file }}" ]] && echo probe_done || true)" \
+        CTI_HARNESS_AWAIT="$(if [[ -n "{{ file }}" ]]; then echo probe_done; fi)" \
         ./spike/tier-lock.sh --label "just probe {{ file }}" -- ./spike/run.sh --hold
 
 # Arma tier: the in-game regression suite (#23, ADR-0016, docs/regression-tier.md).
