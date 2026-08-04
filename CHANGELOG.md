@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **An empty probes directory is a refusal, not a phantom corpus.** Without `nullglob`,
+  `spike/regress.sh` read an empty `spike/probes/` as one probe named `*` and the "no probes"
+  refusal never fired; it fires now. #162.
+
 ### Changed
 
 - **The daemon's domain seams tightened along the second DDD pass's low-severity findings.** The

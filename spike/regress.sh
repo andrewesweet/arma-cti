@@ -41,7 +41,12 @@ source "$REPO/spike/hosts.sh"
 # tail against every other pool on the machine.
 # shellcheck source=spike/client-lock.sh
 source "$REPO/spike/client-lock.sh"
-HOST="${CTI_TIER_HOST:-local}"
+# HOST is born once, at the pre-flight's `cti_host_resolve` below: an
+# unvalidated copy used to be taken here too, and two birth-points for one name
+# is how a refused host still gets read somewhere (#162). The evidence root
+# does not wait for it because it does not depend on it: the path is
+# host-invariant by construction (#161) — `~/.arma-cti` on whichever host owns
+# the state.
 RUNS_DIR="$(cti_host_runs)"
 KEEP_PASSES=3
 KEEP_POOLS=5
@@ -95,10 +100,12 @@ EXIT_KILLED=137
 # the same reason and under the same variable (#144).
 UV_TIMEOUT="${CTI_UV_TIMEOUT:-300}"
 
-# Worst-first. The number is both the rank and the process exit code, so the
-# exit code of a run says which class to read the table row for. infra_unavailable
-# outranks everything because it is not a result at all: nothing below it was
-# measured under conditions anyone can interpret.
+# One stable exit code per class, and nothing more: the exit code of a run
+# says which class to read the table row for. The numbers 1-5 were once also
+# the severity order, and the classes added since — engine_drift, schema_stale,
+# untyped_harness_failure — took the next free codes rather than renumbering a
+# meaning callers already read, so severity now lives only in class_severity
+# below, which is what the summary and the choice of worst class sort by.
 declare -A CLASS_RANK=(
     [infra_unavailable]=5
     [node_crashed]=4
@@ -155,36 +162,42 @@ SELECTED=()
 WANT_ISSUES=()
 LIST_ONLY=0
 WANT_SLOTS="$DEFAULT_SLOTS"
-while (($# > 0)); do
-    case "$1" in
-    --wait)
-        WAIT_SECS="${2:-}"
-        shift 2
-        ;;
-    --slots)
-        WANT_SLOTS="${2:-}"
-        shift 2
-        ;;
-    --issues)
-        spec="${2:-}"
-        [[ -n "$spec" ]] || die "--issues takes one or more issue numbers"
-        for n in ${spec//,/ }; do
-            [[ "$n" =~ ^[0-9]+$ ]] || die "--issues takes issue numbers, got: $n"
-            WANT_ISSUES+=("$n")
-        done
-        shift 2
-        ;;
-    --list)
-        LIST_ONLY=1
-        shift
-        ;;
-    -*) die "unknown option: $1" ;;
-    *)
-        SELECTED+=("$1")
-        shift
-        ;;
-    esac
-done
+# A function so the parse's temporaries are locals rather than script state
+# that outlives the parse; everything assigned above stays global on purpose.
+parse_args() {
+    local spec n
+    while (($# > 0)); do
+        case "$1" in
+        --wait)
+            WAIT_SECS="${2:-}"
+            shift 2
+            ;;
+        --slots)
+            WANT_SLOTS="${2:-}"
+            shift 2
+            ;;
+        --issues)
+            spec="${2:-}"
+            [[ -n "$spec" ]] || die "--issues takes one or more issue numbers"
+            for n in ${spec//,/ }; do
+                [[ "$n" =~ ^[0-9]+$ ]] || die "--issues takes issue numbers, got: $n"
+                WANT_ISSUES+=("$n")
+            done
+            shift 2
+            ;;
+        --list)
+            LIST_ONLY=1
+            shift
+            ;;
+        -*) die "unknown option: $1" ;;
+        *)
+            SELECTED+=("$1")
+            shift
+            ;;
+        esac
+    done
+}
+parse_args "$@"
 
 [[ "$WANT_SLOTS" =~ ^[1-9][0-9]*$ ]] || die "--slots takes a whole number of slots, got: $WANT_SLOTS"
 # shellcheck source=spike/slots.sh
@@ -221,7 +234,13 @@ header_of() {
 }
 
 # ------------------------------------------------------------------ corpus
+# nullglob, or an empty probes directory hands the loop the literal pattern:
+# basename would strip it to `*`, ALL would hold one phantom probe, and the
+# "no probes" die below would never fire. The process substitution inherits the
+# option; it is turned back off before anything else globs.
+shopt -s nullglob
 mapfile -t ALL < <(for f in "$PROBE_DIR"/*.sqf; do basename "$f" .sqf; done | sort)
+shopt -u nullglob
 ((${#ALL[@]} > 0)) || die "no probes in $PROBE_DIR"
 
 # Does this probe's `issues:` header name that issue? The header is a comma list
@@ -654,6 +673,11 @@ start_ram_sampler() {
             # The tier's own share, so a peak can be attributed rather than only
             # observed. The engine by its comm; the daemon by its command line,
             # because it runs as a python interpreter under `uv`.
+            #
+            # This awk finishes the row the one above deliberately left open:
+            # the meminfo printf ends on a tab with no newline, and the "\n"
+            # here is the row's only one. Two commands, one TSV line — reorder
+            # them, or "fix" either printf, and every row breaks in the reader.
             cti_host_exec "$HOST" ps -eo rss=,comm=,args= 2>/dev/null | awk '
                 $2 == "arma3server_x64" { sum += $1; next }
                 /cti-daemon/            { sum += $1 }
@@ -667,14 +691,14 @@ start_ram_sampler() {
 
 WORKER_PIDS=()
 pool_teardown() {
-    local pid
+    local pid slot
     [[ -n "$ram_sampler_pid" ]] && kill "$ram_sampler_pid" 2>/dev/null
     for pid in ${WORKER_PIDS[@]+"${WORKER_PIDS[@]}"}; do kill "$pid" 2>/dev/null; done
     # The slots that failed to reclaim are released here too. They ran nothing,
     # but this run has held their locks all the way through on purpose (#133):
     # a slot proved not clear is one no concurrent run should be handed while we
     # are still here to say so, and the lock is the only way to say it.
-    for pid in ${SLOTS[@]+"${SLOTS[@]}"} ${DIRTY_SLOTS[@]+"${DIRTY_SLOTS[@]}"}; do cti_slot_release "$pid"; done
+    for slot in ${SLOTS[@]+"${SLOTS[@]}"} ${DIRTY_SLOTS[@]+"${DIRTY_SLOTS[@]}"}; do cti_slot_release "$slot"; done
 }
 trap pool_teardown EXIT INT TERM
 
