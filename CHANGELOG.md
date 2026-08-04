@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **What a probe's outcome means is now decided in Python, not bash.** The regression runner's
+  typing ladder — the watchdog rule, the untyped-red rule, `expect:` inversion, quarantine — and
+  its hand-rolled `verdict.json` heredoc were sixty lines of shell, testable only by a bring-up;
+  they are now `tools/probe_verdict.py` under `just unit`, so a wrong class is a red unit test
+  rather than an in-world discovery. First instance of the standing policy (ADR-0049): non-trivial
+  logic lives in Python under pytest, bash keeps the process seams — launching, `flock`,
+  environment, timeouts — where the shell is the actual subject. #171.
+
 ### Added
 
 - **The Observation a Commander plans against is now a declared wire shape rather than a

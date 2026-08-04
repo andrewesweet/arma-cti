@@ -89,6 +89,11 @@ WATCHDOG_KILL_AFTER="${CTI_PROBE_WATCHDOG_KILL_AFTER:-60}"
 # process killed by the follow-up SIGKILL reports.
 EXIT_TIMED_OUT=124
 EXIT_KILLED=137
+# The deadline on the one `uv run` this runner makes per probe — the verdict
+# typer. A bound on infrastructure, never on the probe's subject, which has
+# already finished by the time it runs. `run.sh` bounds its own `uv run`s for
+# the same reason and under the same variable (#144).
+UV_TIMEOUT="${CTI_UV_TIMEOUT:-300}"
 
 # Worst-first. The number is both the rank and the process exit code, so the
 # exit code of a run says which class to read the table row for. infra_unavailable
@@ -722,7 +727,7 @@ run_probe() {
     local name="$1" slot="$2"
     local file="$PROBE_DIR/$name.sqf"
     local window expect quarantine probe_env stamp out t0 elapsed run_status watchdog
-    local verdict raw_class detail legs class
+    local typed typer_status detail legs class
     window="$(header_of "$file" window)"
     expect="$(header_of "$file" expect)"
     quarantine="$(header_of "$file" quarantined)"
@@ -784,87 +789,68 @@ run_probe() {
     run_status=$?
     elapsed=$(($(date +%s) - t0))
 
-    verdict="$(sed -n 's/^verdict=//p' "$out/results.env" 2>/dev/null | tail -1)"
-    raw_class="$(sed -n 's/^failure_class=//p' "$out/results.env" 2>/dev/null | tail -1)"
-    detail="$(sed -n 's/^failure_detail=//p' "$out/results.env" 2>/dev/null | tail -1)"
-    class=""
-    # What became of the probe's optional legs, in the verdict rather than in the
-    # log (#116, ADR-0037). Empty for the probes that have none. `run.sh` has
-    # already turned an unverified leg into infra_unavailable, so this is the
-    # naming rather than the gating: it is what lets a reader of verdict.json see
-    # that a green probe ran the leg it is mostly about.
-    legs="$(sed -n 's/^legs=//p' "$out/results.env" 2>/dev/null | tail -1)"
-
-    if ((run_status == EXIT_TIMED_OUT || run_status == EXIT_KILLED)); then
-        # The watchdog fired, or something else killed the run from outside. This
-        # outranks whatever half-written `results.env` the wedged run left behind:
-        # its process tree was killed mid-measurement, so nothing it was watching
-        # reached an end, and the class for a run that measured nothing is
-        # infra_unavailable — stop, not a result (#144).
-        verdict=FAIL
-        raw_class=infra_unavailable
-        detail="run.sh was killed at the ${watchdog}s watchdog (probe window ${window}s plus ${WATCHDOG_MARGIN}s for bring-up and teardown), exit $run_status; see $out/regress.log"
-    elif [[ "$verdict" == "PASS" ]]; then
-        raw_class=pass
-    elif [[ -z "$raw_class" ]]; then
-        # run.sh died without typing itself. An untyped red is a harness bug, and
-        # the failure-class table says fix the harness first — so it is reported
-        # as one rather than being folded into the nearest plausible class.
-        raw_class="untyped_harness_failure"
-        detail="${detail:-run.sh exited $run_status without recording a class; see $out/regress.log}"
-        verdict=FAIL
-    fi
-
-    # `expect:` inverts the verdict for a probe that is red by design. The class
-    # must be the declared one: a negative probe failing for the wrong reason is
-    # still a failure, and reporting it green would be exactly the untyped pass
-    # the harness exists to refuse.
-    if [[ -n "$expect" ]]; then
-        if [[ "$raw_class" == "$expect" ]]; then
-            log "[slot $slot]      expected $expect and got it — inverted to a pass"
-            detail="expected-red: $detail"
-            class=pass
-        elif [[ "$raw_class" == pass ]]; then
-            class=assertion_failed
-            detail="probe expects $expect and passed instead; a green run of this probe is the bug"
-        else
-            class="$raw_class"
-            detail="probe expects $expect, got $raw_class: $detail"
-        fi
+    # What happened is now a decision rather than a process, so it is decided in
+    # Python under pytest rather than here (#171, ADR-0049): the watchdog rule,
+    # the untyped-red rule, `expect:` inversion and quarantine live in
+    # `tools/probe_verdict.py`, which reads `results.env`, writes `verdict.json`
+    # and hands back the class this loop acts on. A wrong class is by definition
+    # a harness bug (#83), and this is what makes one a red `just unit` rather
+    # than an in-world discovery. Bounded like every `uv run` `run.sh` makes
+    # (#144), and checked at its site per the `-e` note up top.
+    typed="$(
+        cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/probe_verdict.py \
+            --probe "$name" \
+            --results "$out/results.env" \
+            --verdict-json "$out/verdict.json" \
+            --run-status "$run_status" \
+            --window "$window" \
+            --watchdog "$watchdog" \
+            --margin "$WATCHDOG_MARGIN" \
+            --elapsed "$elapsed" \
+            --expect "$expect" \
+            --quarantined "$quarantine" \
+            --issues "$(header_of "$file" issues)" \
+            --stamp "$stamp" \
+            --git-sha "$GIT_SHA" \
+            --git-dirty "$GIT_DIRTY" \
+            --slot "$slot" \
+            --host "$HOST" \
+            --evidence "$out" \
+            2>>"$out/regress.log"
+    )"
+    typer_status=$?
+    if ((typer_status == 0)); then
+        class="$(sed -n 's/^class=//p' <<<"$typed" | tail -1)"
+        detail="$(sed -n 's/^detail=//p' <<<"$typed" | tail -1)"
+        legs="$(sed -n 's/^legs=//p' <<<"$typed" | tail -1)"
     else
-        class="$raw_class"
-    fi
-
-    # Quarantine is applied last, over whatever the run said: the point is that
-    # the corpus keeps gathering evidence about the flake without the flake
-    # gating anyone. The tier never retries — one run, one verdict.
-    if [[ -n "$quarantine" && "$class" != pass ]]; then
-        detail="quarantined $quarantine (not gating): $class — $detail"
-        class=flake_quarantine
-    fi
-
-    cat >"$out/verdict.json" <<JSON
+        # The typer itself could not run, so this probe's outcome was never
+        # read. A typer `timeout` killed is the #41 shape — a check that could
+        # not run is not a check that passed — and infra_unavailable; a typer
+        # that ran and failed left the red untyped, which is a harness bug and
+        # reported as one. The verdict.json here is a fallback carrying the
+        # least the merge reads (class, elapsed_secs), not a second writer of
+        # the real thing: without it the merge would read this probe as a dead
+        # worker and reclaim a slot that is fine.
+        if ((typer_status == EXIT_TIMED_OUT || typer_status == EXIT_KILLED)); then
+            class=infra_unavailable
+            detail="the verdict typer did not finish within ${UV_TIMEOUT}s (uv run tools/probe_verdict.py); see $out/regress.log"
+        else
+            class=untyped_harness_failure
+            detail="the verdict typer failed (exit $typer_status) — harness bug; see $out/regress.log"
+        fi
+        legs=""
+        cat >"$out/verdict.json" <<JSON
 {
-  "probe": "$name",
-  "verdict": "$([[ "$class" == pass ]] && echo PASS || echo FAIL)",
+  "probe": $(json_string "$name"),
+  "verdict": "FAIL",
   "class": "$class",
-  "raw_class": "$raw_class",
-  "expected": $(json_string "${expect:-}"),
-  "quarantined": $(json_string "${quarantine:-}"),
-  "legs": $(json_string "${legs:-}"),
-  "detail": $(json_string "${detail:-}"),
-  "window_secs": $window,
+  "detail": $(json_string "$detail"),
   "elapsed_secs": $elapsed,
-  "issues": $(json_string "$(header_of "$file" issues)"),
-  "started_at": "$stamp",
-  "git_sha": "$GIT_SHA",
-  "git_dirty": $GIT_DIRTY,
-  "slot": $slot,
-  "host": $(json_string "$HOST"),
-  "arma_version": $(json_string "$(sed -n 's/^server_version=//p' "$out/results.env" 2>/dev/null | tail -1)"),
-  "evidence": "$out"
+  "evidence": $(json_string "$out")
 }
 JSON
+    fi
 
     if [[ "$class" == pass ]]; then
         log "[slot $slot]      PASS in ${elapsed}s — $out"

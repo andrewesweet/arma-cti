@@ -1,0 +1,214 @@
+"""Type one probe's outcome into the verdict the pool records (#171, ADR-0049).
+
+`spike/regress.sh` launches the probe, holds the slot and owns the pool's flag
+files; what happened is then a decision rather than a process, so it is decided
+here, where pytest can reach it — #83's precedent, that a wrong class is a
+harness bug and the no-Arma tier is where a harness bug should turn red. The
+ladder, in the order the shell applied it:
+
+1. The watchdog (or anything else outside) killed `run.sh`. Its process tree
+   died mid-measurement, so whatever half-written `results.env` it left behind
+   is not evidence of anything: `infra_unavailable` — stop, not a result (#144).
+2. `run.sh` said PASS: the raw class is `pass`.
+3. `run.sh` failed without typing itself. An untyped red is a harness bug, and
+   the failure-class table says fix the harness first — so it is reported as
+   one (`untyped_harness_failure`) rather than folded into the nearest
+   plausible class (#83).
+4. `expect:` inverts the verdict for a probe that is red by design, and only
+   for the declared class: a negative probe failing for the wrong reason is
+   still a failure, and a green run of it is the bug (#80, #96, #102).
+5. `quarantined:` is applied last, over whatever the run said: the corpus keeps
+   gathering evidence about a flake without the flake gating anyone, and the
+   tier never retries — one run, one verdict (#130).
+
+Writes `verdict.json` — the shape the pool's merge, `prune_passes` and the
+next slot holder's ADR-0022 check read — and prints `key=value` lines for the
+shell to act on, which is the tier's own recording format.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Final, NamedTuple
+
+# GNU timeout's two statuses for "the deadline was reached": the second is what
+# a process killed by the follow-up SIGKILL reports.
+EXIT_TIMED_OUT: Final = 124
+EXIT_KILLED: Final = 137
+
+
+def read_results(path: Path) -> dict[str, str]:
+    """Read a run's `results.env` as `key=value` pairs, the last write winning.
+
+    `run.sh` appends, so the final word is the one that stands — the rule the
+    old `sed | tail -1` readers applied. A watchdog-killed run may have left no
+    file at all; that is data rather than an error, and the ladder's first rung
+    is about exactly that run.
+    """
+    if not path.exists():
+        return {}
+    results: dict[str, str] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        key, sep, value = line.partition("=")
+        if sep:
+            results[key] = value
+    return results
+
+
+@dataclass(frozen=True)
+class Outcome:
+    """Everything the ladder needs to know about one finished probe run."""
+
+    run_status: int
+    results: dict[str, str] = field(default_factory=dict)
+    expect: str = ""
+    quarantined: str = ""
+    window_secs: int = 0
+    watchdog_secs: int = 0
+    margin_secs: int = 0
+    evidence: str = ""
+
+
+class TypedVerdict(NamedTuple):
+    """The verdict the pool records, and the raw class it was typed from."""
+
+    verdict: str
+    class_: str
+    raw_class: str
+    detail: str
+
+
+def type_verdict(outcome: Outcome) -> TypedVerdict:
+    """Apply the module docstring's ladder, in that order."""
+    raw = outcome.results.get("failure_class", "")
+    detail = outcome.results.get("failure_detail", "")
+
+    if outcome.run_status in (EXIT_TIMED_OUT, EXIT_KILLED):
+        raw = "infra_unavailable"
+        detail = (
+            f"run.sh was killed at the {outcome.watchdog_secs}s watchdog "
+            f"(probe window {outcome.window_secs}s plus {outcome.margin_secs}s "
+            f"for bring-up and teardown), exit {outcome.run_status}; "
+            f"see {outcome.evidence}/regress.log"
+        )
+    elif outcome.results.get("verdict") == "PASS":
+        raw = "pass"
+    elif not raw:
+        raw = "untyped_harness_failure"
+        detail = detail or (
+            f"run.sh exited {outcome.run_status} without recording a class; "
+            f"see {outcome.evidence}/regress.log"
+        )
+
+    if not outcome.expect:
+        typed = raw
+    elif raw == outcome.expect:
+        typed = "pass"
+        detail = f"expected-red: {detail}"
+    elif raw == "pass":
+        typed = "assertion_failed"
+        detail = (
+            f"probe expects {outcome.expect} and passed instead; "
+            "a green run of this probe is the bug"
+        )
+    else:
+        typed = raw
+        detail = f"probe expects {outcome.expect}, got {raw}: {detail}"
+
+    if outcome.quarantined and typed != "pass":
+        detail = f"quarantined {outcome.quarantined} (not gating): {typed} — {detail}"
+        typed = "flake_quarantine"
+
+    return TypedVerdict(
+        verdict="PASS" if typed == "pass" else "FAIL",
+        class_=typed,
+        raw_class=raw,
+        detail=detail,
+    )
+
+
+def parse_args(argv: list[str] | None) -> argparse.Namespace:
+    """Parse the facts `regress.sh` gathered, one flag each.
+
+    All of them are required except the three headers a probe may not carry:
+    plumbing that forgot a fact should fail loudly here rather than record a
+    verdict with a hole in it.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--probe", required=True)
+    parser.add_argument("--results", required=True, type=Path)
+    parser.add_argument("--verdict-json", required=True, type=Path)
+    parser.add_argument("--run-status", required=True, type=int)
+    parser.add_argument("--window", required=True, type=int)
+    parser.add_argument("--watchdog", required=True, type=int)
+    parser.add_argument("--margin", required=True, type=int)
+    parser.add_argument("--elapsed", required=True, type=int)
+    parser.add_argument("--expect", default="")
+    parser.add_argument("--quarantined", default="")
+    parser.add_argument("--issues", default="")
+    parser.add_argument("--stamp", required=True)
+    parser.add_argument("--git-sha", required=True)
+    parser.add_argument("--git-dirty", required=True, choices=("true", "false"))
+    parser.add_argument("--slot", required=True, type=int)
+    parser.add_argument("--host", required=True)
+    parser.add_argument("--evidence", required=True)
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Type the verdict, write `verdict.json`, print the lines the shell acts on."""
+    args = parse_args(argv)
+    results = read_results(args.results)
+    typed = type_verdict(
+        Outcome(
+            run_status=args.run_status,
+            results=results,
+            expect=args.expect,
+            quarantined=args.quarantined,
+            window_secs=args.window,
+            watchdog_secs=args.watchdog,
+            margin_secs=args.margin,
+            evidence=args.evidence,
+        )
+    )
+    document = {
+        "probe": args.probe,
+        "verdict": typed.verdict,
+        "class": typed.class_,
+        "raw_class": typed.raw_class,
+        "expected": args.expect,
+        "quarantined": args.quarantined,
+        "legs": results.get("legs", ""),
+        "detail": typed.detail,
+        "window_secs": args.window,
+        "elapsed_secs": args.elapsed,
+        "issues": args.issues,
+        "started_at": args.stamp,
+        "git_sha": args.git_sha,
+        "git_dirty": args.git_dirty == "true",
+        "slot": args.slot,
+        "host": args.host,
+        "arma_version": results.get("server_version", ""),
+        "evidence": args.evidence,
+    }
+    # indent=2 is load-bearing: the merge's `json_field` sed reads top-level
+    # keys behind exactly two spaces, and `prune_passes` greps the rendered
+    # `"verdict": "PASS"` byte sequence.
+    args.verdict_json.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+    lines = (
+        ("class", typed.class_),
+        ("verdict", typed.verdict),
+        ("detail", typed.detail),
+        ("legs", results.get("legs", "")),
+    )
+    for key, value in lines:
+        print(f"{key}={value}")  # noqa: T201 — the shell reads these lines
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
