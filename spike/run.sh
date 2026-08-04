@@ -587,6 +587,22 @@ if [[ -n "${CTI_HARNESS_EXTRA:-}" ]]; then
     [[ -f "$CTI_HARNESS_EXTRA" ]] || fail "infra_unavailable" "no such harness extra: $CTI_HARNESS_EXTRA"
     cat "$CTI_HARNESS_EXTRA" >>"$STAGE/harness.sqf"
     record "harness_extra" "$CTI_HARNESS_EXTRA"
+    # A fixture under spike/playtest/ is what marks a session as a human one
+    # (session-hold.sqf's header), and a human session gets the Zeus-style
+    # observer (#178) — staged with the fixture rather than switched by another
+    # boot-line knob, so the affordance rides the boot lines briefs already
+    # quote. The corpus never stages a file from that directory, which is the
+    # boundary #178 draws: a curator must not be present in anything the
+    # regression corpus boots. observer.sqf itself guards against being staged
+    # twice, so naming it as the fixture stays harmless.
+    case "$CTI_HARNESS_EXTRA" in
+    *spike/playtest/*)
+        OBSERVER="$REPO/spike/playtest/observer.sqf"
+        [[ -f "$OBSERVER" ]] || fail "infra_unavailable" "playtest observer missing: $OBSERVER"
+        cat "$OBSERVER" >>"$STAGE/harness.sqf"
+        record "playtest_observer" "staged"
+        ;;
+    esac
 fi
 
 # Pack rather than copy the folder: an unpacked mission cannot be transmitted to

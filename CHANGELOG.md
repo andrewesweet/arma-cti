@@ -19,6 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A playtest session now has an observer mode: press Y to fly free, press Y to come back.**
+  Playtest 0001's feedback stopped at what the Commander's map shows, and the live workaround — a
+  camera typed into the debug console — left the map unreachable and the incantation to remember.
+  Any session booted on a `spike/playtest/` fixture now assigns the human a Zeus-style curator: the
+  engine's own keybind toggles a free-fly camera that spawns no unit and changes nothing the AI can
+  perceive, and leaving it lands back in the body the Commander's map is one keypress from. A camera
+  with no edit rights, deliberately — no addons, nothing editable, every curator action disabled;
+  map markers are the one power the engine keeps free. The regression corpus stages none of it. #178.
+
 - **The Observation a Commander plans against is now a declared wire shape rather than a
   convention.** It was the last family whose two sides were mirrored by hand: the daemon named the
   document's keys as literals in `serialise` and read them back as literals in `parse`, and the map
