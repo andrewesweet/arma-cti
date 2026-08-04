@@ -1,5 +1,5 @@
 // probe: human-commander
-// issues: 18, 19, 46, 116, 174
+// issues: 18, 19, 46, 116, 174, 176
 // window: 420
 // env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240 CTI_AI_SIDE=EAST CTI_AI_SEED=1
 //
@@ -56,7 +56,9 @@
 // The #174 map-picture checks ride the same client without moving the window:
 // they run on the client right after it publishes its first report, stage and
 // read in one unscheduled block, and their 30 s server-side wait overlaps the
-// 60 s Purchase poll that runs concurrently.
+// 60 s Purchase poll that runs concurrently. The #176 notification checks ride
+// the same way — staged pushes through the real Observation door, read in one
+// unscheduled block — and their wait overlaps the same poll.
 //
 // Run by hand without a client — `just probe spike/probes/human-commander.sqf` —
 // this probe reports its client leg `unverified` and the run is
@@ -437,6 +439,108 @@
             };
             cti_probeMap = _results;
             publicVariable "cti_probeMap";
+
+            // ---- #176: the event channel ------------------------------------
+            // Playtest 0001's summary judgement, asserted on the machine whose
+            // silence it was about: ground changing hands and a Squad reaching
+            // zero raise a notification on the Commander's client. Every push
+            // below goes through cti_fnc_mapObservation — the real door, the
+            // real diff, the real presenter — and the whole run is one
+            // unscheduled block for #174's reason: the 5 s push cannot
+            // interleave, so every count delta is this block's own doing. The
+            // client-side facts asserted are cti_fnc_notify's own record: what
+            // it told the Commander, and `queued` — BIS_fnc_showNotification's
+            // return, the engine's notification system accepting the event —
+            // which draws with or without the map open by construction.
+            private _notices = [];
+            isNil {
+                private _real = missionNamespace getVariable ["cti_view", createHashMap];
+                private _side = missionNamespace getVariable ["cti_uiSide", ""];
+                private _townId = (((missionNamespace getVariable ["cti_map", createHashMap])
+                    getOrDefault ["objectives", []]) param [0, createHashMap])
+                    getOrDefault ["id", ""];
+
+                // A served view in miniature: one town with an owner, and the
+                // Squads the step stages. Fresh hashmaps per push, because the
+                // door diffs the arriving picture against the object it kept.
+                private _staged = {
+                    params ["_owner", "_squads"];
+                    createHashMapFromArray [
+                        ["side", _side], ["funds", 0],
+                        ["owners", createHashMapFromArray [[_townId, _owner]]],
+                        ["hq", createHashMap],
+                        ["squads", _squads], ["contacts", []]]
+                };
+                private _squadAt = {
+                    params ["_size"];
+                    [createHashMapFromArray [["id", "probe-n-1"], ["type", "rifle"],
+                        ["size", _size], ["order", "reserve"], ["place", ""], ["at", ""]]]
+                };
+                private _countNow = { missionNamespace getVariable ["cti_notificationCount", 0] };
+                private _lastOf = { missionNamespace getVariable ["cti_lastNotification", createHashMap] };
+
+                // The baseline every delta below is measured from. Its own
+                // arrival may notify — the real picture differs from it, and
+                // the mechanism honestly says so — which is why the count is
+                // read after it rather than assumed zero.
+                [["WEST", [8] call _squadAt] call _staged] call cti_fnc_mapObservation;
+                private _from = call _countNow;
+
+                // Ground changing hands, named and with the new owner.
+                [["EAST", [8] call _squadAt] call _staged] call cti_fnc_mapObservation;
+                private _last = call _lastOf;
+                _notices pushBack ["ground_lost_notifies",
+                    (call _countNow) isEqualTo (_from + 1)
+                        && { (_last getOrDefault ["event", ""]) isEqualTo "place_taken" }
+                        && { (_last getOrDefault ["place", ""]) isEqualTo _townId }
+                        && { (_last getOrDefault ["owner", ""]) isEqualTo "EAST" }
+                        && { _last getOrDefault ["queued", false] },
+                    format ["count=%1 from=%2 last=%3", call _countNow, _from, _last]];
+
+                // Either way means both ways: the same town coming back.
+                [["WEST", [8] call _squadAt] call _staged] call cti_fnc_mapObservation;
+                _last = call _lastOf;
+                _notices pushBack ["ground_taken_notifies",
+                    (call _countNow) isEqualTo (_from + 2)
+                        && { (_last getOrDefault ["event", ""]) isEqualTo "place_taken" }
+                        && { (_last getOrDefault ["owner", ""]) isEqualTo "WEST" }
+                        && { _last getOrDefault ["queued", false] },
+                    format ["count=%1 from=%2 last=%3", call _countNow, _from, _last]];
+
+                // A Squad reaching zero, in the issue's own words: still on the
+                // wire at size 0, the shape the world can report for one cycle
+                // before the roster drops it.
+                [["WEST", [0] call _squadAt] call _staged] call cti_fnc_mapObservation;
+                _last = call _lastOf;
+                _notices pushBack ["squad_wipe_notifies",
+                    (call _countNow) isEqualTo (_from + 3)
+                        && { (_last getOrDefault ["event", ""]) isEqualTo "squad_wiped" }
+                        && { (_last getOrDefault ["squad", ""]) isEqualTo "probe-n-1" }
+                        && { _last getOrDefault ["queued", false] },
+                    format ["count=%1 from=%2 last=%3", call _countNow, _from, _last]];
+
+                // Gone from the wire the next push, as Roster.reconcile makes
+                // it: the same wipe must not announce itself twice.
+                [["WEST", []] call _staged] call cti_fnc_mapObservation;
+                _notices pushBack ["wipe_notifies_once",
+                    (call _countNow) isEqualTo (_from + 3),
+                    format ["count=%1 from=%2", call _countNow, _from]];
+
+                // An unchanged picture raises nothing: the push repeats every
+                // 5 s, and events re-announced as state would be spam.
+                [["WEST", []] call _staged] call cti_fnc_mapObservation;
+                _notices pushBack ["steady_picture_is_silent",
+                    (call _countNow) isEqualTo (_from + 3),
+                    format ["count=%1 from=%2", call _countNow, _from]];
+
+                // Handed back as found — directly, not through the door, so the
+                // restore is not itself an event and the next real push diffs
+                // the real picture against the real picture.
+                missionNamespace setVariable ["cti_view", _real];
+                [] call cti_fnc_mapRender;
+            };
+            cti_probeNotices = _notices;
+            publicVariable "cti_probeNotices";
         };
     } remoteExec ["call", _target];
 
@@ -497,6 +601,26 @@
                     _check, _detail];
             };
         } forEach cti_probeMap;
+    };
+
+    // The #176 notification verdicts, made on the client the notifications
+    // fired on and judged here for the same reason the map's are: the harness
+    // reads the server's log, and a client that fell silent after the map
+    // checks would otherwise read as green.
+    private _noticeBy = diag_tickTime + 30;
+    waitUntil { !isNil "cti_probeNotices" || { diag_tickTime > _noticeBy } };
+    if (isNil "cti_probeNotices") then {
+        diag_log "CTI|FAIL class=assertion_failed human_commander_probe_notices_silent";
+    } else {
+        {
+            _x params ["_check", "_held", "_detail"];
+            if (_held) then {
+                diag_log format ["CTI|human_commander_probe_notify check=%1 %2", _check, _detail];
+            } else {
+                diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_notify_%1 %2",
+                    _check, _detail];
+            };
+        } forEach cti_probeNotices;
     };
 
     diag_log "CTI|LEG name=human_commander_client status=ran";
