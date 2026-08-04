@@ -95,10 +95,47 @@ def test_the_watchdog_outranks_whatever_the_run_left() -> None:
     assert "window 150s plus 600s" in typed.detail
 
 
-def test_the_follow_up_sigkill_is_the_same_watchdog_story() -> None:
-    typed = probe_verdict.type_verdict(outcome(run_status=137, results={}))
+def test_the_follow_up_sigkill_at_the_deadline_is_the_same_watchdog_story() -> None:
+    """A SIGKILL landing after the watchdog's deadline is the follow-up kill."""
+    typed = probe_verdict.type_verdict(outcome(run_status=137, elapsed_secs=812, results={}))
     assert typed.class_ == "infra_unavailable"
-    assert "watchdog" in typed.detail
+    assert "killed at the 750s watchdog" in typed.detail
+
+
+def test_a_sigkill_before_the_deadline_is_the_machine_not_the_watchdog() -> None:
+    """#147: an OOM kill — #125's scenario — used to wear the watchdog's detail.
+
+    The class was already right; the recorded story fabricated a deadline that
+    never fired. A SIGKILL forty seconds into a 750 s watchdog cannot be the
+    watchdog's.
+    """
+    typed = probe_verdict.type_verdict(
+        outcome(run_status=137, elapsed_secs=44, results={"verdict": "PASS"})
+    )
+    assert typed.verdict == "FAIL"
+    assert typed.class_ == "infra_unavailable"
+    assert "SIGKILL" in typed.detail
+    assert "OOM" in typed.detail
+    assert "killed at the" not in typed.detail
+
+
+def test_a_signal_killed_run_is_the_machines_doing_not_a_harness_bug() -> None:
+    """#147 item 2: a 128+SIG exit used to fold into `untyped_harness_failure`.
+
+    That sent the reader to fix the harness for a machine event; the honest
+    class is `infra_unavailable` — stop, not a result.
+    """
+    typed = probe_verdict.type_verdict(outcome(run_status=143, results={}))
+    assert typed.class_ == "infra_unavailable"
+    assert "SIGTERM" in typed.detail
+    assert "/runs/20260804T000000Z-contacts/regress.log" in typed.detail
+
+
+def test_an_exit_past_the_signal_range_is_still_an_untyped_red() -> None:
+    """255 is a process's own exit, not a signal death; the untyped rule stands."""
+    typed = probe_verdict.type_verdict(outcome(run_status=255, results={}))
+    assert typed.class_ == "untyped_harness_failure"
+    assert "exited 255 without recording a class" in typed.detail
 
 
 def test_an_expected_red_inverts_to_a_pass() -> None:

@@ -6,18 +6,24 @@ here, where pytest can reach it — #83's precedent, that a wrong class is a
 harness bug and the no-Arma tier is where a harness bug should turn red. The
 ladder, in the order the shell applied it:
 
-1. The watchdog (or anything else outside) killed `run.sh`. Its process tree
-   died mid-measurement, so whatever half-written `results.env` it left behind
-   is not evidence of anything: `infra_unavailable` — stop, not a result (#144).
-2. `run.sh` said PASS: the raw class is `pass`.
-3. `run.sh` failed without typing itself. An untyped red is a harness bug, and
+1. The watchdog killed `run.sh` — a `timeout` status of 124, or the follow-up
+   SIGKILL's 137 with the deadline actually reached. Its process tree died
+   mid-measurement, so whatever half-written `results.env` it left behind is
+   not evidence of anything: `infra_unavailable` — stop, not a result (#144).
+2. Something *else* killed `run.sh`: any 128+SIG exit, including a SIGKILL
+   landing before the watchdog's deadline, which cannot be the watchdog's and
+   is the OOM killer's shape (#125). The machine's doing, not the harness's,
+   so it is `infra_unavailable` rather than the untyped-red rule below — a
+   reader sent to "fix the harness" for a machine event fixes nothing (#147).
+3. `run.sh` said PASS: the raw class is `pass`.
+4. `run.sh` failed without typing itself. An untyped red is a harness bug, and
    the failure-class table says fix the harness first — so it is reported as
    one (`untyped_harness_failure`) rather than folded into the nearest
    plausible class (#83).
-4. `expect:` inverts the verdict for a probe that is red by design, and only
+5. `expect:` inverts the verdict for a probe that is red by design, and only
    for the declared class: a negative probe failing for the wrong reason is
    still a failure, and a green run of it is the bug (#80, #96, #102).
-5. `quarantined:` is applied last, over whatever the run said: the corpus keeps
+6. `quarantined:` is applied last, over whatever the run said: the corpus keeps
    gathering evidence about a flake without the flake gating anyone, and the
    tier never retries — one run, one verdict (#130).
 
@@ -30,15 +36,30 @@ from __future__ import annotations
 
 import argparse
 import json
+import signal
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final, NamedTuple
 
 # GNU timeout's two statuses for "the deadline was reached": the second is what
-# a process killed by the follow-up SIGKILL reports.
+# a process killed by the follow-up SIGKILL reports. 137 is also what *any*
+# SIGKILL reports — the OOM killer's included — so the deadline having been
+# reached is what tells the two apart (#147).
 EXIT_TIMED_OUT: Final = 124
 EXIT_KILLED: Final = 137
+# The shell reports a command killed by signal N as 128+N. Codes past the real
+# signal range (255 above all) are a process's own exits, not signal deaths.
+SIGNAL_EXIT_BASE: Final = 128
+MAX_SIGNAL: Final = 64
+
+
+def signal_name(number: int) -> str:
+    """SIGKILL for 9, and a plain number for a signal the platform has no name for."""
+    try:
+        return signal.Signals(number).name
+    except ValueError:
+        return f"signal {number}"
 
 
 def read_results(path: Path) -> dict[str, str]:
@@ -70,6 +91,7 @@ class Outcome:
     window_secs: int = 0
     watchdog_secs: int = 0
     margin_secs: int = 0
+    elapsed_secs: int = 0
     evidence: str = ""
 
 
@@ -87,12 +109,33 @@ def type_verdict(outcome: Outcome) -> TypedVerdict:
     raw = outcome.results.get("failure_class", "")
     detail = outcome.results.get("failure_detail", "")
 
-    if outcome.run_status in (EXIT_TIMED_OUT, EXIT_KILLED):
+    # 124 is `timeout` saying the deadline was reached, whatever the command
+    # then exited; 137 is a SIGKILL, which is only the watchdog's follow-up
+    # kill if the deadline had actually passed — before it, nothing of the
+    # watchdog's has fired yet and the kill is the machine's (#147).
+    if outcome.run_status == EXIT_TIMED_OUT or (
+        outcome.run_status == EXIT_KILLED and outcome.elapsed_secs >= outcome.watchdog_secs
+    ):
         raw = "infra_unavailable"
         detail = (
             f"run.sh was killed at the {outcome.watchdog_secs}s watchdog "
             f"(probe window {outcome.window_secs}s plus {outcome.margin_secs}s "
             f"for bring-up and teardown), exit {outcome.run_status}; "
+            f"see {outcome.evidence}/regress.log"
+        )
+    elif SIGNAL_EXIT_BASE < outcome.run_status <= SIGNAL_EXIT_BASE + MAX_SIGNAL:
+        # Signal-killed, and not by the watchdog: the machine's doing, so the
+        # honest class is the stop, not the untyped-red rule — a reader sent
+        # to fix the harness for an OOM kill fixes nothing (#147, #125).
+        number = outcome.run_status - SIGNAL_EXIT_BASE
+        suspect = (
+            " — the OOM killer is the usual suspect (#125)" if number == signal.SIGKILL else ""
+        )
+        raw = "infra_unavailable"
+        detail = (
+            f"run.sh was killed by {signal_name(number)} (exit {outcome.run_status}) "
+            f"{outcome.elapsed_secs}s into its {outcome.watchdog_secs}s watchdog: "
+            f"the machine's doing, not the probe's or the harness's{suspect}; "
             f"see {outcome.evidence}/regress.log"
         )
     elif outcome.results.get("verdict") == "PASS":
@@ -172,6 +215,7 @@ def main(argv: list[str] | None = None) -> int:
             window_secs=args.window,
             watchdog_secs=args.watchdog,
             margin_secs=args.margin,
+            elapsed_secs=args.elapsed,
             evidence=args.evidence,
         )
     )
