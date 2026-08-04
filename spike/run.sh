@@ -104,25 +104,22 @@ NO_CLIENT_WAIT=0
 HOLD_TIMEOUT="${CTI_HOLD_TIMEOUT:-900}"
 case "${1:-}" in
 --no-hc) SKIP_HC=1 ;;
-# The regression tier's mode (issue #23). Everything --hold does, minus the two
-# things that only make sense when a human is joining: the direct-connect banner
-# and the wait for a client that a regression run never sends. Without this, a
-# probe that finished in forty seconds still costs its whole window, because the
-# client wait runs to the end before the probe wait begins.
---regress)
+# --hold brings everything up and keeps it up so a human client can join, then
+# reports what that client did — the Windows-client join and .dll load test.
+# --regress is the regression tier's mode (issue #23): everything --hold does,
+# minus the two things that only make sense when a human is joining — the
+# direct-connect banner, and the wait for a client that a regression run never
+# sends and would otherwise cost every quick probe its whole window. One arm,
+# because that one difference is NO_CLIENT_WAIT and the shared SKIP_HC line had
+# already been copied apart once (#161).
+--hold | --regress)
+    # The headless client is off by default because hold mode was built for a
+    # human joining. CTI_HOLD_HC=1 brings it back: #17's unattended run has to
+    # happen on the dedicated-server-plus-headless-client topology the MVP
+    # names, and a probe cannot assert a node the harness never started.
     SKIP_HC=$((1 - ${CTI_HOLD_HC:-0}))
     HOLD=1
-    NO_CLIENT_WAIT=1
-    ;;
-# Bring everything up and keep it up so a human client can join, then report
-# what that client did. Used for the Windows-client join and .dll load test.
---hold)
-    # The headless client is off by default here because hold mode was built
-    # for a human joining. CTI_HOLD_HC=1 brings it back: #17's unattended run
-    # has to happen on the dedicated-server-plus-headless-client topology the
-    # MVP names, and a probe cannot assert a node the harness never started.
-    SKIP_HC=$((1 - ${CTI_HOLD_HC:-0}))
-    HOLD=1
+    [[ "$1" == --regress ]] && NO_CLIENT_WAIT=1
     ;;
 esac
 
@@ -298,11 +295,64 @@ wait_for() {
     done
 }
 
+# wait_for's status ladder, applied: 1 is the subject outrunning its deadline,
+# 2 is the process dying first, 3 is a bound that could not be set (#144). The
+# classes are the failure-class table's and identical at every site — only the
+# words differ, so the words are the arguments. This idiom was eight inline
+# copies of the same case block before it was one function (#161).
+await_or_fail() {
+    local file="$1" pattern="$2" timeout="$3" pid="$4"
+    local on_timeout="$5" on_died="$6" on_unbounded="$7"
+    case "$(
+        wait_for "$file" "$pattern" "$timeout" "$pid"
+        echo $?
+    )" in
+    1) fail "timeout" "$on_timeout" ;;
+    2) fail "node_crashed" "$on_died" ;;
+    3) fail "infra_unavailable" "$on_unbounded" ;;
+    esac
+}
+
+# The optional headless-client legs, Linux and Windows, record rather than fail:
+# an HC that did not join is a fact about the run that the verdict names through
+# the legs convention (#116), not a stop. Only the third rung fails, because a
+# wait that could not be bounded has measured nothing (#144). One body for the
+# two legs — they were verbatim copies but for the record prefix (#161).
+await_hc_join() {
+    local prefix="$1" pid="$2" t0="$3" hclog="$4"
+    case "$(
+        # The HC's player name is "headlessclient" regardless of -name=, and it
+        # is assigned an id=HC… rather than a numeric slot id.
+        wait_for "$SERVER_LOG" "Player headlessclient connected \(id=HC" "$HC_TIMEOUT" "$pid"
+        echo $?
+    )" in
+    1)
+        record "${prefix}joined" "false"
+        record "${prefix}failure" "timeout after ${HC_TIMEOUT}s; see $hclog"
+        ;;
+    2)
+        record "${prefix}joined" "false"
+        record "${prefix}failure" "process exited; see $hclog"
+        ;;
+    3) fail "infra_unavailable" "CTI_HC_TIMEOUT is not a whole number of seconds: $HC_TIMEOUT" ;;
+    *)
+        record "${prefix}joined" "true"
+        record "${prefix}join_secs" "$(since "$t0")"
+        ;;
+    esac
+}
+
 # The class an in-mission FAIL line declared, or assertion_failed if it declared
 # none. In-world code writes `FAIL class=timeout ...` and `FAIL
 # class=oracle_disagreement ...` as well as plain assertions, and calling all of
 # them assertion_failed sends the reader to fix code when the failure-class table
 # says investigate synchronisation or suspect the capture layer.
+#
+# Deliberately not moved to Python under #161: this mapping is one row of the
+# class table that also lives twice in spike/regress.sh (CLASS_RANK,
+# class_severity), and the one (class, exit, severity) home — the natural place
+# for it, beside tools/probe_verdict.py — is that table's own seam (#92, #147),
+# not this issue's. Migrated together there, not copied apart further here.
 class_of() {
     local line="$1" declared
     declared="$(sed -n 's/.*class=\([a-z_]\+\).*/\1/p' <<<"$line")"
@@ -335,6 +385,20 @@ assert_legs_ran() {
         fail "infra_unavailable" "a leg of this probe did not run: $unverified"
     fi
     return 0
+}
+
+# Both verdict paths end their sweep here: the first FAIL line keeps the class
+# the world declared (#23), then the legs convention is asked — after the sweep,
+# so a red keeps its own class (#116). One function, because the two paths
+# carrying parallel copies of this block is the exact structure that let #23's
+# fix survive on one path and rot on the other (#83, #161).
+assert_clean_run() {
+    local lines="$1" first_fail
+    if grep -q '^FAIL' "$lines"; then
+        first_fail="$(grep '^FAIL' "$lines" | head -1)"
+        fail "$(class_of "$first_fail")" "$first_fail"
+    fi
+    assert_legs_ran "$lines"
 }
 
 # The headed client's own log, off the Windows host. The Linux server's stdout
@@ -721,24 +785,16 @@ t_boot=$(now)
 ) >"$SERVER_LOG" 2>&1 &
 server_pid=$!
 
-case "$(
-    wait_for "$SERVER_LOG" "Host identity created|Dedicated host created" 120 "$server_pid"
-    echo $?
-)" in
-1) fail "timeout" "server never created a host in 120s; see $SERVER_LOG" ;;
-3) fail "infra_unavailable" "no deadline could be set for the server-boot wait" ;;
-2) fail "node_crashed" "server process exited during boot; see $SERVER_LOG" ;;
-esac
+await_or_fail "$SERVER_LOG" "Host identity created|Dedicated host created" 120 "$server_pid" \
+    "server never created a host in 120s; see $SERVER_LOG" \
+    "server process exited during boot; see $SERVER_LOG" \
+    "no deadline could be set for the server-boot wait"
 record "server_host_up_secs" "$(since "$t_boot")"
 
-case "$(
-    wait_for "$SERVER_LOG" "$LOG_PREFIX\|mission_running" "$BOOT_TIMEOUT" "$server_pid"
-    echo $?
-)" in
-1) fail "timeout" "mission did not reach running state in ${BOOT_TIMEOUT}s; see $SERVER_LOG" ;;
-3) fail "infra_unavailable" "CTI_BOOT_TIMEOUT is not a whole number of seconds: $BOOT_TIMEOUT" ;;
-2) fail "node_crashed" "server process exited while loading the mission; see $SERVER_LOG" ;;
-esac
+await_or_fail "$SERVER_LOG" "$LOG_PREFIX\|mission_running" "$BOOT_TIMEOUT" "$server_pid" \
+    "mission did not reach running state in ${BOOT_TIMEOUT}s; see $SERVER_LOG" \
+    "server process exited while loading the mission; see $SERVER_LOG" \
+    "CTI_BOOT_TIMEOUT is not a whole number of seconds: $BOOT_TIMEOUT"
 record "server_mission_running_secs" "$(since "$t_boot")"
 record "server_version" "$(grep -aoE 'Arma 3 Console version [0-9.]+' "$SERVER_LOG" | head -1 | awk '{print $NF}')"
 
@@ -763,26 +819,7 @@ if ((SKIP_HC == 0)); then
     ) >"$HC_LOG" 2>&1 &
     hc_pid=$!
 
-    case "$(
-        # The HC's player name is "headlessclient" regardless of -name=, and it
-        # is assigned an id=HC… rather than a numeric slot id.
-        wait_for "$SERVER_LOG" "Player headlessclient connected \(id=HC" "$HC_TIMEOUT" "$hc_pid"
-        echo $?
-    )" in
-    1)
-        record "hc_joined" "false"
-        record "hc_failure" "timeout after ${HC_TIMEOUT}s"
-        ;;
-    2)
-        record "hc_joined" "false"
-        record "hc_failure" "headless client process exited; see $HC_LOG"
-        ;;
-    3) fail "infra_unavailable" "CTI_HC_TIMEOUT is not a whole number of seconds: $HC_TIMEOUT" ;;
-    *)
-        record "hc_joined" "true"
-        record "hc_join_secs" "$(since "$t_hc")"
-        ;;
-    esac
+    await_hc_join "hc_" "$hc_pid" "$t_hc" "$HC_LOG"
 else
     record "hc_joined" "skipped"
 fi
@@ -812,24 +849,7 @@ if ((WINDOWS_HC == 1)); then
             -noSound
     ) >"$WIN_LOG" 2>&1 &
     win_hc_pid=$!
-    case "$(
-        wait_for "$SERVER_LOG" "Player headlessclient connected \(id=HC" "$HC_TIMEOUT" "$win_hc_pid"
-        echo $?
-    )" in
-    1)
-        record "windows_hc_joined" "false"
-        record "windows_hc_failure" "timeout after ${HC_TIMEOUT}s; see $WIN_LOG"
-        ;;
-    2)
-        record "windows_hc_joined" "false"
-        record "windows_hc_failure" "process exited; see $WIN_LOG"
-        ;;
-    3) fail "infra_unavailable" "CTI_HC_TIMEOUT is not a whole number of seconds: $HC_TIMEOUT" ;;
-    *)
-        record "windows_hc_joined" "true"
-        record "windows_hc_join_secs" "$(since "$t_win")"
-        ;;
-    esac
+    await_hc_join "windows_hc_" "$win_hc_pid" "$t_win" "$WIN_LOG"
 fi
 
 # ---------------------------------------------------------------- windows headed client
@@ -885,6 +905,9 @@ if ((HOLD == 1)); then
 
 EOF
         t_client=$(now)
+        # The one wait_for site not folded into await_or_fail (#161): a human
+        # who never joined is a recorded fact about a hold run, not a failure,
+        # so its first rung records where every other site's fails.
         case "$(
             wait_for "$SERVER_LOG" "$LOG_PREFIX\|player_connected name=(\"\")?[^_]" "$HOLD_TIMEOUT" "$server_pid"
             echo $?
@@ -930,15 +953,11 @@ EOF
     # decides when it has a baseline worth losing, and a restart timed by a sleep
     # would be a restart that sometimes lands before the world has read anything.
     if [[ -n "${CTI_DAEMON_RESTART_ON:-}" ]]; then
-        case "$(
-            wait_for "$SERVER_LOG" "$LOG_PREFIX\|($CTI_DAEMON_RESTART_ON|FAIL)" \
-                "${CTI_PROBE_TIMEOUT:-$HOLD_TIMEOUT}" "$server_pid"
-            echo $?
-        )" in
-        1) fail "timeout" "probe never logged $CTI_DAEMON_RESTART_ON; see $SERVER_LOG" ;;
-        2) fail "node_crashed" "server exited before the daemon restart; see $SERVER_LOG" ;;
-        3) fail "infra_unavailable" "no deadline could be set for the daemon-restart trigger wait" ;;
-        esac
+        await_or_fail "$SERVER_LOG" "$LOG_PREFIX\|($CTI_DAEMON_RESTART_ON|FAIL)" \
+            "${CTI_PROBE_TIMEOUT:-$HOLD_TIMEOUT}" "$server_pid" \
+            "probe never logged $CTI_DAEMON_RESTART_ON; see $SERVER_LOG" \
+            "server exited before the daemon restart; see $SERVER_LOG" \
+            "no deadline could be set for the daemon-restart trigger wait"
         t_restart=$(now)
         kill "$daemon_pid" 2>/dev/null || true
         wait "$daemon_pid" 2>/dev/null || true
@@ -961,17 +980,14 @@ EOF
         # is the hold window the caller sized to the subject, applied to the
         # subject; it is not a timeout stretched until something passes.
         PROBE_TIMEOUT="${CTI_PROBE_TIMEOUT:-$HOLD_TIMEOUT}"
-        case "$(
-            # FAIL ends the wait too: a probe that gave up short-circuits rather
-            # than running out the clock, so the assertion below classifies it
-            # instead of this timing out and calling an assertion a timeout.
-            wait_for "$SERVER_LOG" "$LOG_PREFIX\|(.*$CTI_HARNESS_AWAIT|FAIL)" "$PROBE_TIMEOUT" "$server_pid"
-            echo $?
-        )" in
-        1) fail "timeout" "probe never logged $CTI_HARNESS_AWAIT; see $SERVER_LOG" ;;
-        2) fail "node_crashed" "server exited while the probe ran; see $SERVER_LOG" ;;
-        3) fail "infra_unavailable" "the probe window is not a whole number of seconds: $PROBE_TIMEOUT" ;;
-        esac
+        # FAIL ends the wait too: a probe that gave up short-circuits rather
+        # than running out the clock, so the sweep below classifies it instead
+        # of this timing out and calling an assertion a timeout.
+        await_or_fail "$SERVER_LOG" "$LOG_PREFIX\|(.*$CTI_HARNESS_AWAIT|FAIL)" \
+            "$PROBE_TIMEOUT" "$server_pid" \
+            "probe never logged $CTI_HARNESS_AWAIT; see $SERVER_LOG" \
+            "server exited while the probe ran; see $SERVER_LOG" \
+            "the probe window is not a whole number of seconds: $PROBE_TIMEOUT"
     fi
 
     # Fetched while the client is still up, because teardown ends it: the
@@ -1015,11 +1031,7 @@ EOF
     (cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/timeline.py \
         "$DAEMON_TELEMETRY") >"$OUT/timeline.txt" 2>/dev/null || true
 
-    if grep -q '^FAIL' "$OUT/spike-lines.txt"; then
-        first_fail="$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
-        fail "$(class_of "$first_fail")" "$first_fail"
-    fi
-    assert_legs_ran "$OUT/spike-lines.txt"
+    assert_clean_run "$OUT/spike-lines.txt"
 
     # A probe that says it staged deaths is checked against the daemon's own
     # file rather than against its own memory of doing so. This is the crossing:
@@ -1055,29 +1067,16 @@ EOF
 fi
 
 # ---------------------------------------------------------------- harness verdict
-case "$(
-    wait_for "$SERVER_LOG" "$LOG_PREFIX\|done" "$HARNESS_TIMEOUT" "$server_pid"
-    echo $?
-)" in
-1) fail "timeout" "in-mission harness never logged done; see $SERVER_LOG" ;;
-2) fail "node_crashed" "server exited during the harness; see $SERVER_LOG" ;;
-3) fail "infra_unavailable" "CTI_HARNESS_TIMEOUT is not a whole number of seconds: $HARNESS_TIMEOUT" ;;
-esac
+await_or_fail "$SERVER_LOG" "$LOG_PREFIX\|done" "$HARNESS_TIMEOUT" "$server_pid" \
+    "in-mission harness never logged done; see $SERVER_LOG" \
+    "server exited during the harness; see $SERVER_LOG" \
+    "CTI_HARNESS_TIMEOUT is not a whole number of seconds: $HARNESS_TIMEOUT"
 
 grep -aoE "$LOG_PREFIX\|.*" "$SERVER_LOG" | sed "s/^$LOG_PREFIX|//; s/\"$//" >"$OUT/spike-lines.txt"
 log "--- in-mission results ---"
 cat "$OUT/spike-lines.txt" >&2
 
-# Typed off the line the world wrote, exactly as the hold path above does. This
-# path used to hardcode assertion_failed, so an in-mission `FAIL class=timeout`
-# reached the reader as "fix the code under test" when the table says
-# investigate synchronisation — the #23 fix surviving in one of the two paths
-# that need it (#83).
-if grep -q '^FAIL' "$OUT/spike-lines.txt"; then
-    first_fail="$(grep '^FAIL' "$OUT/spike-lines.txt" | head -1)"
-    fail "$(class_of "$first_fail")" "$first_fail"
-fi
-assert_legs_ran "$OUT/spike-lines.txt"
+assert_clean_run "$OUT/spike-lines.txt"
 
 record "server_peak_rss_kb" "$(awk '/VmHWM/{print $2}' "/proc/$server_pid/status" 2>/dev/null || echo unknown)"
 if [[ -n "$hc_pid" ]]; then
