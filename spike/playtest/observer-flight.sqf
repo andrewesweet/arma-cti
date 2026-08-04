@@ -133,24 +133,45 @@
     // arrived and a command that arrived too early, were indistinguishable.
     diag_log format ["CTI|observer_flight_opening uid=%1", _uid];
     [[], {
-        private _deadline = diag_tickTime + 30;
-        waitUntil { !isNull (getAssignedCuratorLogic player) || { diag_tickTime > _deadline } };
-        private _curator = !isNull (getAssignedCuratorLogic player);
-        openCuratorInterface;
-
-        // Leaves on the first signal, so this costs nothing when the camera
-        // comes up. It is here for the run in which it does not: the watcher
-        // reads `findDisplay 312` alone, and this is the one line that could
-        // say the interface had opened while that display stayed null — which
-        // would be a finding about the detector rather than about the body.
-        private _saw = diag_tickTime + 10;
+        // The client has to be in the world before it can be handed a display.
+        // `findDisplay 46` is the mission display, and the wiki's own way of
+        // saying a machine has no screen is that it returns displayNull
+        // (commands/findDisplay.wiki).
+        private _deadline = diag_tickTime + 60;
         waitUntil {
-            !isNull (findDisplay 312) || { !isNull curatorCamera } || { diag_tickTime > _saw }
+            ((!isNull (findDisplay 46)) && { !isNull (getAssignedCuratorLogic player) })
+                || { diag_tickTime > _deadline }
         };
+        private _mission = !isNull (findDisplay 46);
+        private _curator = !isNull (getAssignedCuratorLogic player);
+
+        private _up = { !isNull (findDisplay 312) || { !isNull curatorCamera } };
+
+        openCuratorInterface;
+        // Leaves on the first signal, so this costs nothing when the camera
+        // comes up. It is here for the run in which it does not.
+        private _saw = diag_tickTime + 10;
+        waitUntil { call _up || { diag_tickTime > _saw } };
         diag_log format [
-            "CTI|observer_flight_client_opened curator=%1 display312=%2 curator_camera=%3 camera_on_it=%4",
-            _curator, !isNull (findDisplay 312), !isNull curatorCamera,
-            cameraOn isEqualTo curatorCamera];
+            "CTI|observer_flight_client_opened via=openCuratorInterface mission_display=%1 curator=%2 display312=%3 curator_camera=%4",
+            _mission, _curator, !isNull (findDisplay 312), !isNull curatorCamera];
+
+        // The second rung, and the reason there is one: BI's own function to
+        // open this interface carries a "keep trying until the interface is
+        // actually opened" flag (functions/BIS_fnc_forceCuratorInterface.wiki),
+        // which is the engine's authors saying a single open can be swallowed.
+        // Reached only when the first rung produced nothing, and logged
+        // separately, so one run says which of the two the camera needs — the
+        // difference between an arrangement that opens too eagerly and a
+        // runtime-built curator that cannot present an interface at all.
+        if !(call _up) then {
+            [true, true] spawn BIS_fnc_forceCuratorInterface;
+            private _saw2 = diag_tickTime + 20;
+            waitUntil { call _up || { diag_tickTime > _saw2 } };
+            diag_log format [
+                "CTI|observer_flight_client_opened via=forceCuratorInterface display312=%1 curator_camera=%2",
+                !isNull (findDisplay 312), !isNull curatorCamera];
+        };
     }] remoteExec ["spawn", _unit];
 
     _deadline = diag_tickTime + 60;
@@ -177,8 +198,17 @@
     };
 
     // ---- and back out of it
+    //
+    // The unforce first, because the second rung above may have taken the Zeus
+    // key away from the interface, and `closeDisplay 2` is that page's own way
+    // of closing it (commands/openCuratorInterface.wiki, example 2).
     diag_log format ["CTI|observer_flight_closing uid=%1", _uid];
-    [[], { findDisplay 312 closeDisplay 2 }] remoteExec ["spawn", _unit];
+    [[], {
+        [false] call BIS_fnc_forceCuratorInterface;
+        findDisplay 312 closeDisplay 2;
+        diag_log format ["CTI|observer_flight_client_closed display312=%1 curator_camera=%2",
+            !isNull (findDisplay 312), !isNull curatorCamera];
+    }] remoteExec ["spawn", _unit];
 
     _deadline = diag_tickTime + 60;
     waitUntil {
