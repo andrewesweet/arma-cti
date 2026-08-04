@@ -318,7 +318,7 @@ Testing that response is the part worth writing down. The reclaim is the only pi
 | `cti_host_role` | `local` is `human` — the machine the human plays on |
 | `cti_host_transport` | `null` — the command runs here, with this shell's environment |
 | `cti_host_exec` | launch, kill, stat, stage: the one place an SSH transport lands (#53) |
-| `cti_host_state` / `cti_host_runs` | the state and evidence roots on the host that owns them |
+| `cti_host_state` / `cti_host_runs` | the state and evidence roots — host-invariant by construction, so they take no host (#161) |
 | `cti_host_guard` | the play-session guard, asked only of hosts whose role is `human` |
 
 Machine B is then a second row in that table rather than surgery on the runner, which is the whole of what the seam buys. The **role gate** is the part with teeth even at one host: machine B's headed client is the tier's own, and asking "is a game running on that host?" of it would answer yes on every run that used it — guarding the tier's client against the tier. Today the one host is `human`, so the guard is asked exactly as it always was.

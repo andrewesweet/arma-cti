@@ -37,10 +37,10 @@
 # shellcheck source=spike/hosts.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/hosts.sh"
 
-CTI_SLOT_STATE="$(cti_host_state "$CTI_TIER_HOST")"
-# The same host's state root with nothing redirecting it, which is what makes
+CTI_SLOT_STATE="$(cti_host_state)"
+# The same state root with nothing redirecting it, which is what makes
 # "is this the machine's own tier?" answerable — see cti_slot_reclaim.
-CTI_SLOT_REAL_STATE="$(CTI_TIER_STATE= cti_host_state "$CTI_TIER_HOST")"
+CTI_SLOT_REAL_STATE="$(CTI_TIER_STATE= cti_host_state)"
 CTI_SLOT_LOCK_DIR="$CTI_SLOT_STATE/slots"
 
 # CLAUDE.md's Contract grants [2400, 3000) and reserves 2302-2306 for the human.

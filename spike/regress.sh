@@ -42,7 +42,7 @@ source "$REPO/spike/hosts.sh"
 # shellcheck source=spike/client-lock.sh
 source "$REPO/spike/client-lock.sh"
 HOST="${CTI_TIER_HOST:-local}"
-RUNS_DIR="$(cti_host_runs "$HOST")"
+RUNS_DIR="$(cti_host_runs)"
 KEEP_PASSES=3
 KEEP_POOLS=5
 # ADR-0028 recommends three, and #47 measured that three fit. Changing this

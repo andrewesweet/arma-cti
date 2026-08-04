@@ -19,8 +19,8 @@
 #   cti_host_role NAME           human | tier — whose machine it is
 #   cti_host_transport NAME      null today; the ssh row is #53's
 #   cti_host_resolve             validate CTI_TIER_HOST and echo it, or refuse
-#   cti_host_state NAME          that host's tier state root
-#   cti_host_runs NAME           that host's evidence root
+#   cti_host_state               the tier state root (host-invariant; see below)
+#   cti_host_runs                the evidence root, under it
 #   cti_host_exec NAME cmd...    run a command on that host
 #   cti_host_client_state NAME   the play-session question, per host and role
 #   cti_host_guard NAME          ask it, and map the answer onto a verdict
@@ -70,17 +70,20 @@ cti_host_resolve() {
     printf '%s\n' "$host"
 }
 
-# Where that host keeps its tier state — locks, run evidence. Machine-scoped
+# Where a host keeps its tier state — locks, run evidence. Machine-scoped
 # rather than repo-scoped (ADR-0016): agent worktrees are siblings, and a lock
 # inside any of them serialises nobody. `CTI_TIER_STATE` overrides it for tests.
 #
-# The path is the same on every host by construction — `~/.arma-cti` on the host
-# that owns the state, which is where ADR-0032 puts a remote slot's lock so that
-# the kernel freeing it is the kernel that owns it. What differs for a remote
-# host is *whose* `$HOME` expands, and that is resolved on that host by the
-# transport rather than here.
+# No host parameter, on purpose (#161): the path is the same on every host by
+# construction — `~/.arma-cti` on the host that owns the state, which is where
+# ADR-0032 puts a remote slot's lock so that the kernel freeing it is the kernel
+# that owns it. What differs for a remote host is *whose* `$HOME` expands, and
+# that is resolved on that host by the transport rather than here. These used to
+# document and accept a host argument they ignored, and callers passed one
+# believing it mattered — a boundary nothing reads, this file's own
+# header-warning shape.
 cti_host_state() { printf '%s\n' "${CTI_TIER_STATE:-$HOME/.arma-cti}"; }
-cti_host_runs() { printf '%s/runs\n' "$(cti_host_state "$1")"; }
+cti_host_runs() { printf '%s/runs\n' "$(cti_host_state)"; }
 
 # Run a command on a host. This is the seam: the one place that decides how a
 # host is reached, and therefore the one place an SSH transport lands (#53).
