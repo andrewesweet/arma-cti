@@ -1,0 +1,534 @@
+"""How N slots' worth of claims become one verdict set (#185, ADR-0049).
+
+The pool's merge lived in `spike/regress.sh` as decision logic end to end —
+the dead-slot rule (ADR-0022), client-lock-blocked typing (#127), the mem-stop
+overlay (#125), worst-class ranking, and `pool.json` assembled by forty lines
+of `printf` over a hand-rolled `json_string` — read back through `json_field`,
+an indentation-dependent `sed`. `tools/pool_merge.py` is that merge as
+functions under pytest, plus the two riders that go wherever the merge goes:
+`prune-passes` (the `grep -l '"verdict": "PASS"'` reader) and
+`fallback-verdict` (the typer-failed heredoc, `verdict.json`'s second writer).
+
+The behaviour asserted is the one `regress.sh` had, byte-for-byte where a
+reader depends on the bytes: `tests/unit/test_pool_slots.py` asserts on the
+summary's stderr and reads `pool.json` back, and the shell acts on the
+`key=value` stdout lines.
+"""
+
+from __future__ import annotations
+
+import json
+from typing import TYPE_CHECKING
+
+from conftest import load_tool
+
+if TYPE_CHECKING:
+    from pathlib import Path
+    from typing import Any
+
+    import pytest
+
+pool_merge = load_tool("pool_merge")
+probe_verdict = load_tool("probe_verdict")
+
+STARTED = "2026-08-04T10:11:12Z"
+SHA = "4ccaed031df054a7a36e"
+
+
+# ------------------------------------------------------------------- severity
+
+
+def test_the_severity_ladder_is_the_failure_class_table() -> None:
+    """Severity orders the summary and picks the worst class; exit codes do not."""
+    ladder = [
+        ("untyped_harness_failure", 90),
+        ("infra_unavailable", 80),
+        ("node_crashed", 70),
+        ("engine_drift", 60),
+        ("oracle_disagreement", 50),
+        ("schema_stale", 40),
+        ("timeout", 30),
+        ("assertion_failed", 20),
+        ("flake_quarantine", 0),
+        ("pass", 0),
+    ]
+    for class_, expected in ladder:
+        assert pool_merge.severity(class_) == expected, class_
+
+
+def test_an_unknown_class_is_an_untyped_red_worst_of_all() -> None:
+    assert pool_merge.severity("banana") == 90
+
+
+# ------------------------------------------------------------------ the merge
+
+
+def claim(  # noqa: PLR0913 — the facts a worker leaves behind, one parameter apiece.
+    pool: Path,
+    name: str,
+    *,
+    slot: str = "1",
+    verdict: dict | None = None,
+    raw: str | None = None,
+    done: bool = True,
+) -> Path:
+    """Stage one claim directory the way a worker leaves it, and return the evidence dir."""
+    directory = pool / "claims" / name
+    directory.mkdir(parents=True)
+    (directory / "slot").write_text(f"{slot}\n", encoding="utf-8")
+    out = pool / "runs" / f"20260804T000000Z-{name}"
+    out.mkdir(parents=True, exist_ok=True)
+    (directory / "evidence").write_text(f"{out}\n", encoding="utf-8")
+    if raw is not None:
+        (out / "verdict.json").write_text(raw, encoding="utf-8")
+    elif verdict is not None:
+        (out / "verdict.json").write_text(json.dumps(verdict, indent=2) + "\n", encoding="utf-8")
+    if done:
+        (directory / "done").write_text("done\n", encoding="utf-8")
+    return out
+
+
+def merged(pool: Path, corpus: list[str], **overrides: object) -> Any:  # noqa: ANN401 — a
+    # MergedPool, but the module is loaded by path and its types are its own.
+    fields: dict[str, object] = {
+        "corpus": corpus,
+        "claims_dir": pool / "claims",
+        "host_probes": frozenset(),
+        "client_lock_blocked": False,
+        "client_lock_evidence": "",
+        "mem_stopped": False,
+        **overrides,
+    }
+    return pool_merge.merge_claims(**fields)
+
+
+def test_a_verdicts_class_and_elapsed_come_from_its_json(tmp_path: Path) -> None:
+    out = claim(tmp_path, "contacts", verdict={"class": "timeout", "elapsed_secs": 97})
+    pool = merged(tmp_path, ["contacts"])
+    (row,) = pool.rows
+    assert row.class_ == "timeout"
+    assert row.elapsed_secs == 97
+    assert row.slot == "1"
+    assert row.evidence == str(out)
+    assert pool.worst_class == "timeout"
+    assert pool.reclaim_slots == []
+
+
+def test_a_claim_with_no_verdict_is_a_dead_worker_not_a_result(tmp_path: Path) -> None:
+    """ADR-0022: nothing was measured under conditions anyone can interpret."""
+    claim(tmp_path, "casualties", slot="2", verdict=None, done=False)
+    pool = merged(tmp_path, ["casualties"])
+    (row,) = pool.rows
+    assert row.class_ == "infra_unavailable"
+    assert row.elapsed_secs == 0
+    assert pool.worst_class == "infra_unavailable"
+    # The merge decides; the shell releases and reclaims (ADR-0049).
+    assert pool.reclaim_slots == ["2"]
+    assert pool.notices == [
+        (
+            "slot 2 claimed casualties and wrote no verdict — "
+            "the worker died mid-probe; not a result (ADR-0022)"
+        )
+    ]
+
+
+def test_a_dead_worker_on_an_unknown_slot_reclaims_nothing(tmp_path: Path) -> None:
+    """A slot nobody recorded is not a slot the shell can release."""
+    directory = tmp_path / "claims" / "contacts"
+    directory.mkdir(parents=True)
+    pool = merged(tmp_path, ["contacts"])
+    (row,) = pool.rows
+    assert row.class_ == "infra_unavailable"
+    assert row.slot == "?"
+    assert row.evidence == str(directory)
+    assert pool.reclaim_slots == []
+
+
+def test_a_corrupt_verdict_is_a_harness_bug_not_a_crash(tmp_path: Path) -> None:
+    """The failure-class table's preamble: an untyped red says fix the harness first."""
+    claim(tmp_path, "contacts", raw="{half a document")
+    pool = merged(tmp_path, ["contacts"])
+    assert pool.rows[0].class_ == "untyped_harness_failure"
+    assert pool.rows[0].elapsed_secs == 0
+
+
+def test_a_verdict_missing_its_class_is_untyped(tmp_path: Path) -> None:
+    claim(tmp_path, "contacts", verdict={"verdict": "FAIL"})
+    pool = merged(tmp_path, ["contacts"])
+    assert pool.rows[0].class_ == "untyped_harness_failure"
+
+
+def test_an_unclaimed_probe_is_not_run_and_carries_no_class(tmp_path: Path) -> None:
+    (tmp_path / "claims").mkdir()
+    pool = merged(tmp_path, ["contacts", "bareworld"])
+    assert pool.rows == []
+    assert pool.not_run == ["contacts", "bareworld"]
+    assert pool.worst_class == "pass"
+
+
+def test_a_lock_blocked_host_probe_is_typed_rather_than_dropped(tmp_path: Path) -> None:
+    """#127: `not_run` carries no class, so a silently dropped tail exits green."""
+    (tmp_path / "claims").mkdir()
+    pool = merged(
+        tmp_path,
+        ["client-port"],
+        host_probes=frozenset({"client-port"}),
+        client_lock_blocked=True,
+        client_lock_evidence="/state/windows-client.lock.info",
+    )
+    (row,) = pool.rows
+    assert row.class_ == "infra_unavailable"
+    assert row.slot == "-"
+    assert row.evidence == "/state/windows-client.lock.info"
+    assert pool.not_run == []
+    assert pool.worst_class == "infra_unavailable"
+    assert pool.notices == [
+        "client-port never ran: another run held the Windows client; not a result"
+    ]
+
+
+def test_a_lock_blocked_ordinary_probe_is_still_not_run(tmp_path: Path) -> None:
+    """The lock is about the one headed client; a parallel probe it kept out is not typed."""
+    (tmp_path / "claims").mkdir()
+    pool = merged(tmp_path, ["contacts"], client_lock_blocked=True)
+    assert pool.not_run == ["contacts"]
+    assert pool.worst_class == "pass"
+
+
+def test_worst_class_ranks_by_severity_not_by_exit_code(tmp_path: Path) -> None:
+    """`schema_stale` exits 7 and `infra_unavailable` exits 5; severity says who wins."""
+    claim(tmp_path, "schema-stale", verdict={"class": "schema_stale", "elapsed_secs": 1})
+    claim(tmp_path, "contacts", verdict={"class": "infra_unavailable", "elapsed_secs": 1})
+    pool = merged(tmp_path, ["schema-stale", "contacts"])
+    assert pool.worst_class == "infra_unavailable"
+
+
+def test_mem_stop_overlays_infra_unavailable_on_a_green_pool(tmp_path: Path) -> None:
+    """#125: no probe carries the class — none launched — so the pool raises it itself."""
+    claim(tmp_path, "contacts", verdict={"class": "pass", "elapsed_secs": 3})
+    pool = merged(tmp_path, ["contacts"], mem_stopped=True)
+    assert pool.worst_class == "infra_unavailable"
+
+
+def test_mem_stop_does_not_soften_a_worse_class(tmp_path: Path) -> None:
+    claim(tmp_path, "contacts", raw="not json at all")
+    pool = merged(tmp_path, ["contacts"], mem_stopped=True)
+    assert pool.worst_class == "untyped_harness_failure"
+
+
+def test_the_merge_reads_what_the_typer_writes(tmp_path: Path) -> None:
+    """The two tools share `verdict.json`; a drift between them is pinned here."""
+    results = tmp_path / "results.env"
+    results.write_text("verdict=FAIL\nfailure_class=oracle_disagreement\n", encoding="utf-8")
+    out = claim(tmp_path, "contacts")
+    assert (
+        probe_verdict.main(
+            [
+                "--probe",
+                "contacts",
+                "--results",
+                str(results),
+                "--verdict-json",
+                str(out / "verdict.json"),
+                "--run-status",
+                "1",
+                "--window",
+                "240",
+                "--watchdog",
+                "840",
+                "--margin",
+                "600",
+                "--elapsed",
+                "97",
+                "--stamp",
+                "20260804T101112Z",
+                "--git-sha",
+                SHA,
+                "--git-dirty",
+                "false",
+                "--slot",
+                "1",
+                "--host",
+                "local",
+                "--evidence",
+                str(out),
+            ]
+        )
+        == 0
+    )
+    pool = merged(tmp_path, ["contacts"])
+    assert pool.rows[0].class_ == "oracle_disagreement"
+    assert pool.rows[0].elapsed_secs == 97
+
+
+# ----------------------------------------------------------------- the CLI
+
+
+def run_merge(
+    pool: Path, capsys: pytest.CaptureFixture[str], corpus: list[str], *extra: str
+) -> tuple[int, str, str]:
+    """Drive `merge` once; give back the exit status, stdout and stderr."""
+    (pool / "claims").mkdir(parents=True, exist_ok=True)
+    argv = [
+        "merge",
+        "--pool-out",
+        str(pool),
+        "--corpus",
+        *corpus,
+        "--started-at",
+        STARTED,
+        "--git-sha",
+        SHA,
+        "--host",
+        "local",
+        "--slots",
+        "0",
+        "1",
+        "--wall-secs",
+        "61",
+        "--peak-mem-used-kb",
+        "7100000",
+        "--peak-tier-rss-kb",
+        "5100000",
+        "--least-mem-available-kb",
+        "3900000",
+        *extra,
+    ]
+    status = pool_merge.main(argv)
+    captured = capsys.readouterr()
+    return status, captured.out, captured.err
+
+
+def test_main_writes_the_pool_document_the_suites_read(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    claim(tmp_path, "contacts", slot="0", verdict={"class": "pass", "elapsed_secs": 42})
+    (tmp_path / "stop").write_text("two probes crashed a node (a b)\n", encoding="utf-8")
+    status, _, _ = run_merge(
+        tmp_path,
+        capsys,
+        ["contacts", "bareworld"],
+        "--dirty-slot",
+        "2:survivors still on ports 2602-2606/9101: 31337(arma3server_x64)",
+    )
+    assert status == 0
+    document = json.loads((tmp_path / "pool.json").read_text(encoding="utf-8"))
+    assert document["started_at"] == STARTED
+    assert document["git_sha"] == SHA
+    assert document["slots"] == [0, 1]
+    assert document["host"] == "local"
+    assert document["wall_secs"] == 61
+    assert document["peak_mem_used_kb"] == 7100000
+    assert document["peak_tier_rss_kb"] == 5100000
+    assert document["least_mem_available_kb"] == 3900000
+    assert document["stopped_early"] == "two probes crashed a node (a b)"
+    assert document["dirty_slots"] == [
+        {
+            "slot": 2,
+            "class": "infra_unavailable",
+            "detail": "survivors still on ports 2602-2606/9101: 31337(arma3server_x64)",
+        }
+    ]
+    assert document["not_run"] == ["bareworld"]
+    # The slot is a string in `pool.json` — it can be `-` or `?` — and a number
+    # in each probe's own `verdict.json`; both suites read them as they are.
+    assert document["verdicts"] == [
+        {
+            "probe": "contacts",
+            "class": "pass",
+            "slot": "0",
+            "elapsed_secs": 42,
+            "evidence": str(tmp_path / "runs" / "20260804T000000Z-contacts"),
+        }
+    ]
+
+
+def test_a_dirty_details_newlines_flatten_as_json_string_did(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The reclaim's survivors arrive one per line; the record is one line, as ever."""
+    claim(tmp_path, "contacts", verdict={"class": "pass", "elapsed_secs": 1})
+    status, _, _ = run_merge(
+        tmp_path, capsys, ["contacts"], "--dirty-slot", "1:31337(a)\n31338(b)\tc"
+    )
+    assert status == 0
+    document = json.loads((tmp_path / "pool.json").read_text(encoding="utf-8"))
+    assert document["dirty_slots"][0]["detail"] == "31337(a) 31338(b) c"
+
+
+def test_main_prints_the_lines_the_shell_acts_on(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The Python home decides, the shell acts: release and reclaim are process seams."""
+    claim(tmp_path, "casualties", slot="2", verdict=None, done=False)
+    claim(tmp_path, "contacts", slot="0", verdict={"class": "pass", "elapsed_secs": 3})
+    status, out, _ = run_merge(tmp_path, capsys, ["contacts", "casualties"])
+    assert status == 0
+    lines = out.splitlines()
+    assert "worst_class=infra_unavailable" in lines
+    assert "reclaim_slot=2" in lines
+
+
+def test_main_renders_the_summary_worst_first_in_the_runners_own_format(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The stderr the runner has always printed, byte for byte, worst class first."""
+    out_pass = claim(tmp_path, "contacts", slot="0", verdict={"class": "pass", "elapsed_secs": 3})
+    out_red = claim(
+        tmp_path, "bareworld", slot="1", verdict={"class": "timeout", "elapsed_secs": 151}
+    )
+    status, _, err = run_merge(tmp_path, capsys, ["contacts", "bareworld", "recall"])
+    assert status == 0
+    assert err.splitlines() == [
+        "",
+        f"[regress] ==== verdicts ({STARTED}, sha 4ccaed031df0, N=2) ====",
+        f"[regress] bareworld            timeout             151s  slot 1  {out_red}",
+        f"[regress] contacts             pass                  3s  slot 0  {out_pass}",
+        "[regress] 1 probe(s) not run: recall",
+    ]
+
+
+def test_main_logs_the_dead_worker_before_the_summary(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    claim(tmp_path, "casualties", slot="2", verdict=None, done=False)
+    _, _, err = run_merge(tmp_path, capsys, ["casualties"])
+    assert err.splitlines()[0] == (
+        "[regress] slot 2 claimed casualties and wrote no verdict — "
+        "the worker died mid-probe; not a result (ADR-0022)"
+    )
+
+
+def test_main_refuses_a_pool_out_with_no_claims_directory(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A merge pointed somewhere the pool never wrote must stop, not report all-not-run.
+
+    The call site fails closed on any non-zero exit (ADR-0049), and this is the
+    one wrong invocation that would otherwise read as a quietly green pool.
+    """
+    argv = [
+        "merge",
+        "--pool-out",
+        str(tmp_path / "absent"),
+        "--corpus",
+        "contacts",
+        "--started-at",
+        STARTED,
+        "--git-sha",
+        SHA,
+        "--host",
+        "local",
+        "--slots",
+        "0",
+        "--wall-secs",
+        "0",
+        "--peak-mem-used-kb",
+        "0",
+        "--peak-tier-rss-kb",
+        "0",
+        "--least-mem-available-kb",
+        "0",
+    ]
+    assert pool_merge.main(argv) != 0
+    assert "claims" in capsys.readouterr().err
+
+
+# ------------------------------------------------------------- prune-passes
+
+
+def pass_dir(runs: Path, stamp: str, name: str, verdict: str = "PASS") -> Path:
+    directory = runs / f"{stamp}-{name}"
+    directory.mkdir(parents=True)
+    (directory / "verdict.json").write_text(
+        json.dumps({"probe": name, "verdict": verdict, "class": "pass"}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return directory
+
+
+def test_prune_lists_the_oldest_passes_beyond_the_room(tmp_path: Path) -> None:
+    """Room is left for the pass the run is about to write, exactly as the grep did."""
+    oldest = pass_dir(tmp_path, "20260801T000000Z", "contacts")
+    older = pass_dir(tmp_path, "20260802T000000Z", "contacts")
+    pass_dir(tmp_path, "20260803T000000Z", "contacts")
+    pass_dir(tmp_path, "20260804T000000Z", "contacts")
+    doomed = pool_merge.prune_candidates(tmp_path, "contacts", keep=3)
+    assert doomed == [oldest, older]
+
+
+def test_prune_never_lists_a_failure_or_another_probes_pass(tmp_path: Path) -> None:
+    """Failures are kept until the issue that consumed them closes."""
+    pass_dir(tmp_path, "20260801T000000Z", "contacts", verdict="FAIL")
+    pass_dir(tmp_path, "20260801T000001Z", "bareworld")
+    pass_dir(tmp_path, "20260801T000002Z", "bareworld")
+    pass_dir(tmp_path, "20260801T000003Z", "bareworld")
+    pass_dir(tmp_path, "20260801T000004Z", "bareworld")
+    assert pool_merge.prune_candidates(tmp_path, "contacts", keep=3) == []
+
+
+def test_prune_leaves_a_short_history_alone(tmp_path: Path) -> None:
+    pass_dir(tmp_path, "20260801T000000Z", "contacts")
+    pass_dir(tmp_path, "20260802T000000Z", "contacts")
+    assert pool_merge.prune_candidates(tmp_path, "contacts", keep=3) == []
+
+
+def test_prune_keeps_a_directory_whose_verdict_cannot_be_read(tmp_path: Path) -> None:
+    """Deciding on evidence it cannot read is the one thing the pruner must not do."""
+    directory = tmp_path / "20260801T000000Z-contacts"
+    directory.mkdir(parents=True)
+    (directory / "verdict.json").write_text("{torn", encoding="utf-8")
+    for stamp in ("20260802T000000Z", "20260803T000000Z", "20260804T000000Z"):
+        pass_dir(tmp_path, stamp, "contacts")
+    doomed = pool_merge.prune_candidates(tmp_path, "contacts", keep=3)
+    assert directory not in doomed
+    assert doomed == [tmp_path / "20260802T000000Z-contacts"]
+
+
+def test_prune_main_prints_one_doomed_directory_per_line(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    oldest = pass_dir(tmp_path, "20260801T000000Z", "contacts")
+    for stamp in ("20260802T000000Z", "20260803T000000Z"):
+        pass_dir(tmp_path, stamp, "contacts")
+    status = pool_merge.main(
+        ["prune-passes", "--runs-dir", str(tmp_path), "--probe", "contacts", "--keep", "3"]
+    )
+    assert status == 0
+    assert capsys.readouterr().out.splitlines() == [str(oldest)]
+
+
+# --------------------------------------------------------- fallback-verdict
+
+
+def test_fallback_writes_the_least_the_merge_reads(tmp_path: Path) -> None:
+    """#171 left this heredoc in bash; it has one writer now, and the merge is its reader."""
+    verdict_json = tmp_path / "verdict.json"
+    status = pool_merge.main(
+        [
+            "fallback-verdict",
+            "--probe",
+            "contacts",
+            "--class",
+            "untyped_harness_failure",
+            "--detail",
+            'the verdict typer failed (exit 3) — "harness\\bug"',
+            "--elapsed",
+            "97",
+            "--evidence",
+            str(tmp_path),
+            "--verdict-json",
+            str(verdict_json),
+        ]
+    )
+    assert status == 0
+    document = json.loads(verdict_json.read_text(encoding="utf-8"))
+    assert document == {
+        "probe": "contacts",
+        "verdict": "FAIL",
+        "class": "untyped_harness_failure",
+        "detail": 'the verdict typer failed (exit 3) — "harness\\bug"',
+        "elapsed_secs": 97,
+        "evidence": str(tmp_path),
+    }
+    assert pool_merge.read_verdict(verdict_json) == ("untyped_harness_failure", 97)
