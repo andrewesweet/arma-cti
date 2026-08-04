@@ -290,10 +290,11 @@ class Daemon:
         # Command is then attributable in the same column an AI-issued one is
         # (#17), and #19 has one attribution to audit rather than two.
         acting: str | None = None
+        acting_source: str | None = None
         try:
             request = protocol.decode(line)
             request_id, verb = request.id, request.verb
-            acting = self._acting_side(request)
+            acting, acting_source = self._acting_side(request)
             reply = self._dispatch(request)
         except protocol.MalformedRequestError as exc:
             request_id = exc.request_id
@@ -319,6 +320,10 @@ class Daemon:
             epoch=self.epoch,
             verb=verb,
             side=acting,
+            # Where `side` came from (#152): a gateway stamp is a fact and the
+            # payload's own word is a claim, and a column that mixed the two
+            # under one name could not be audited for which it held.
+            side_source=acting_source,
             status=reply.envelope["status"],
             # `code` for a domain rejection, `class` for an error — one column
             # either way, because when reading a log the question is the same.
@@ -361,19 +366,22 @@ class Daemon:
         )
 
     @staticmethod
-    def _acting_side(request: protocol.Request) -> str | None:
-        """Which side a request was issued for, or None when it is nobody's.
+    def _acting_side(request: protocol.Request) -> tuple[str | None, str | None]:
+        """Which side a request was issued for, and how this daemon knows.
 
         The gateway stamps `acting_side` server-side from its own Commander
         assignment, so that is the honest answer where it exists; `side` is what
-        the caller claimed. A transport verb belongs to no side and says so by
-        leaving the column empty rather than by guessing.
+        the caller claimed, still worth attributing a log row to. The two are
+        different kinds of fact, so the provenance travels beside the value —
+        `"stamped"` or `"claimed"` — rather than both wearing one name (#152).
+        A transport verb belongs to no side and says so by leaving both empty
+        rather than by guessing.
         """
-        for key in ("acting_side", "side"):
+        for key, provenance in (("acting_side", "stamped"), ("side", "claimed")):
             claimed = request.payload.get(key)
             if isinstance(claimed, str) and claimed:
-                return claimed
-        return None
+                return claimed, provenance
+        return None, None
 
     def _dispatch(self, request: protocol.Request) -> protocol.Reply:
         handler = HANDLERS.get(request.verb)

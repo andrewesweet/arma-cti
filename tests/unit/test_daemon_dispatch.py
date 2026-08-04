@@ -364,6 +364,36 @@ def test_telemetry_records_why_a_request_was_refused(tmp_path: Path) -> None:
     assert rows[2]["reason_detail"] is None
 
 
+def test_telemetry_says_whether_the_side_column_is_a_stamp_or_a_claim(tmp_path: Path) -> None:
+    # B3 of #139 (#152): the `side` column falls back from the gateway's
+    # server-side stamp to the side the payload claimed, which are different
+    # kinds of fact. The provenance rides beside the value, so an audit can
+    # tell a row the server vouched for from one taken at the caller's word —
+    # and a verb that belongs to no side leaves both empty.
+    log = tmp_path / "telemetry.jsonl"
+    daemon = build_daemon(telemetry_path=log)
+    reply_to(
+        daemon,
+        id="s-1",
+        verb="command",
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": "WEST",
+            "args": {"squad_type": "rifle"},
+        },
+    )
+    reply_to(daemon, id="s-2", verb="view", payload={"side": "WEST"})
+    reply_to(daemon, id="s-3", verb="ping")
+
+    written = rows(log, "request")
+    assert [(row["side"], row["side_source"]) for row in written] == [
+        ("WEST", "stamped"),
+        ("WEST", "claimed"),
+        (None, None),
+    ]
+
+
 def test_observing_presence_moves_ownership_and_pays(tmp_path: Path) -> None:
     # `observe` is the transport verb ADR-0012 reserved for the world telling
     # the daemon what it can see.

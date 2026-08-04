@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The daemon's domain seams tightened along the second DDD pass's low-severity findings.** The
+  port now asks the Campaign the two Squad questions it used to read off the roster directly, and
+  its test-only `ledger`/`outbox` pass-throughs are gone, so its surface is judgement only. A
+  Campaign refuses a Ledger opened at any figure other than its table's `starting_funds`. What a
+  Command or an Effect carries is fixed at construction, so an Effect on the outbox can no longer
+  be edited between push and delivery. The telemetry `side` column now carries its provenance
+  beside it — `side_source` says whether the row holds the gateway's stamp or the payload's own
+  claim. And the wire budget's worst case takes the widest side name from `SIDES` rather than
+  hardcoding `WEST`, so a longer side name widens the budget by itself. No wire change anywhere.
+  #152.
+
 - **Each seam the pool libraries had triplicated has one home.** The host guard's
   free/running/unavailable → verdict ladder ran as three near-verbatim bash copies across the pool
   libraries; it is decided in `tools/host_guard_verdict.py` under `just unit` now (ADR-0049's
