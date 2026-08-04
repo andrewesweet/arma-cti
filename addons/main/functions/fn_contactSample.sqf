@@ -76,8 +76,12 @@ private _bases = _map getOrDefault ["bases", []];
 private _squads = missionNamespace getVariable ["cti_squads", createHashMap];
 
 // The enemy each side queries for. `targetsQuery` filters by Side, so this is
-// what turns "what has WEST seen" into a query the engine can answer.
-private _enemyOf = createHashMapFromArray [["WEST", east], ["EAST", west]];
+// what turns "what has WEST seen" into a query the engine can answer. Both
+// tables come from the vocabulary's one home (#149), built from the same
+// schema `sides`, so a name one carries the other cannot lack.
+private _vocabulary = call cti_fnc_sideVocabulary;
+private _enemyOf = _vocabulary getOrDefault ["enemyByName", createHashMap];
+private _sideByName = _vocabulary getOrDefault ["sideByName", createHashMap];
 
 private _report = createHashMap;
 
@@ -93,7 +97,7 @@ private _report = createHashMap;
 
     {
         private _group = _x;
-        if (!isNull _group && { str side _group isEqualTo _sideName }) then {
+        if (!isNull _group && { side _group isEqualTo (_sideByName get _sideName) }) then {
             private _leader = leader _group;
             if (alive _leader) then {
                 // Where this leader can clear a Contact: strictly the place it

@@ -78,6 +78,10 @@ private _places = missionNamespace getVariable ["cti_placesById", createHashMap]
     // Assault says so by carrying no attacker rather than by guessing at one.
     private _pressing = createHashMap;
 
+    // Engine side→name through the vocabulary's one home (#149), fetched once
+    // per sweep rather than respelled per Squad.
+    private _nameBySide = (call cti_fnc_sideVocabulary) getOrDefault ["nameBySide", createHashMap];
+
     {
         private _squadId = _x;
         private _group = _y;
@@ -101,12 +105,13 @@ private _places = missionNamespace getVariable ["cti_placesById", createHashMap]
                         alive _x && { (getPosATL _x) distance _at <= _reach }
                     } count units _group;
                     if (_working > 0) then {
-                        _pressing set [_place, str (side _group)];
+                        private _by = _nameBySide getOrDefault [side _group, ""];
+                        _pressing set [_place, _by];
                         private _was = damage _hq;
                         private _now = _was + (_interval / _durability);
                         _hq setDamage (_now min 1);
                         diag_log format ["CTI|hq_pressed base=%1 squad=%2 side=%3 men=%4 damage=%5",
-                            _place, _squadId, str (side _group), _working, damage _hq];
+                            _place, _squadId, _by, _working, damage _hq];
                     };
                 };
             };

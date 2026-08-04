@@ -51,9 +51,13 @@ if (isNull _group || { count units _group isEqualTo 0 }) exitWith {
 // played on — so one lookup cannot find two answers.
 private _ground = if (_order isEqualTo "reserve") then {
     // Reserve is the absence of a destination, so the Squad falls back on its
-    // own Base rather than standing wherever its last Order left it.
+    // own Base rather than standing wherever its last Order left it. Its
+    // side's name comes from the vocabulary's one home (#149), not a `str`
+    // respelling of it.
+    private _sideName = ((call cti_fnc_sideVocabulary) getOrDefault ["nameBySide", createHashMap])
+        getOrDefault [side _group, ""];
     (missionNamespace getVariable ["cti_basesBySide", createHashMap])
-        getOrDefault [toUpper str (side _group), createHashMap]
+        getOrDefault [_sideName, createHashMap]
 } else {
     (missionNamespace getVariable ["cti_placesById", createHashMap])
         getOrDefault [_place, createHashMap]

@@ -130,11 +130,11 @@ if (_missing isNotEqualTo []) exitWith {
     ["refused", "effect_missing_args"] call _verdict
 };
 
-private _side = switch (toUpper _sideName) do {
-    case "WEST": { west };
-    case "EAST": { east };
-    default { sideUnknown };
-};
+// The side's engine object, through the one owner of the name↔side pairing
+// (#149). A name the vocabulary does not carry falls through to the refusal
+// below; a vocabulary that could not be built, likewise.
+private _side = ((call cti_fnc_sideVocabulary) getOrDefault ["sideByName", createHashMap])
+    getOrDefault [toUpper _sideName, sideUnknown];
 if (_side isEqualTo sideUnknown) exitWith {
     diag_log format ["CTI|FAIL class=assertion_failed effect_unknown_side=%1", _sideName];
     ["refused", "effect_unknown_side"] call _verdict

@@ -48,6 +48,7 @@ class CfgFunctions
             class prngSelfTest {};
             class manifestLoad {};
             class commandSchema {};
+            class sideVocabulary {};
             class sideMarkerColour {};
             class worldInit {};
             class networkSample {};

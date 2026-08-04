@@ -21,6 +21,12 @@ private _map = missionNamespace getVariable ["cti_map", createHashMap];
 private _objectives = _map getOrDefault ["objectives", []];
 private _presence = createHashMap;
 
+// Which sides count comes from the schema's `sides` through the vocabulary's
+// one home (#149). This used to be a hand-written ["WEST", "EAST"] literal —
+// the fail-silent copy: presence on a side the literal did not list was simply
+// never reported, and nothing asserted on the gap.
+private _nameBySide = (call cti_fnc_sideVocabulary) getOrDefault ["nameBySide", createHashMap];
+
 {
     private _id = _x get "id";
     private _radius = _x get "capture_radius";
@@ -30,8 +36,8 @@ private _presence = createHashMap;
     private _sides = [];
     {
         if (alive _x) then {
-            private _side = str (side group _x);
-            if (_side in ["WEST", "EAST"]) then {
+            private _side = _nameBySide getOrDefault [side group _x, ""];
+            if (_side isNotEqualTo "") then {
                 _sides pushBackUnique _side;
             };
         };

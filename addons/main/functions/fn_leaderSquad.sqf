@@ -49,11 +49,9 @@ private _answer = ["", ""];
         // the Command Port widened its issuer set for (ADR-0040), and `leader`
         // is the engine's own answer to which of them is.
         if (_squad isNotEqualTo "" && { leader _group isEqualTo _x }) then {
-            private _side = switch (side _group) do {
-                case west: { "WEST" };
-                case east: { "EAST" };
-                default { "" };
-            };
+            // Engine side→name through the vocabulary's one home (#149).
+            private _side = ((call cti_fnc_sideVocabulary) getOrDefault ["nameBySide", createHashMap])
+                getOrDefault [side _group, ""];
             // A Squad on a side the daemon does not play is a world built
             // wrongly rather than a caller's mistake, and it stays "" rather
             // than stamping a side nothing can judge.
