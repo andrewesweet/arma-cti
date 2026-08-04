@@ -195,9 +195,10 @@ def main(argv: list[str] | None = None) -> int:
         "arma_version": results.get("server_version", ""),
         "evidence": args.evidence,
     }
-    # indent=2 is load-bearing: the merge's `json_field` sed reads top-level
-    # keys behind exactly two spaces, and `prune_passes` greps the rendered
-    # `"verdict": "PASS"` byte sequence.
+    # The merge and the pruner read this document as JSON now (#185,
+    # tools/pool_merge.py), so no in-repo reader depends on the bytes any
+    # more; indent=2 stays because the rendering is the evidence a human
+    # greps, and churning it would break every stored run's uniformity.
     args.verdict_json.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
     lines = (
         ("class", typed.class_),

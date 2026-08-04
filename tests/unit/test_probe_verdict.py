@@ -9,9 +9,10 @@ ladder as a pure function plus one writer, so a wrong class is a red
 
 The behaviour asserted is the one `regress.sh` had, byte-for-byte where a
 reader depends on the bytes: `tests/unit/test_pool_slots.py` asserts
-"watchdog" appears in a watchdog kill's detail, `prune_passes` greps
-`"verdict": "PASS"`, and the merge's `json_field` reads two-space-indented
-keys.
+"watchdog" appears in a watchdog kill's detail, and the rendered document is
+pinned as the stable evidence format — the merge and the pruner read it as
+JSON now (#185, `tools/pool_merge.py`), so the bytes serve the human grepping
+stored runs rather than any in-repo reader.
 """
 
 from __future__ import annotations
@@ -235,8 +236,9 @@ def test_main_writes_the_document_the_merge_reads(
     assert lines["class"] == "pass"
     assert lines["verdict"] == "PASS"
     assert lines["legs"] == "client:ran"
-    # `prune_passes` greps this exact byte sequence, and the merge's `json_field`
-    # sed expects top-level keys behind exactly two spaces.
+    # The stable evidence rendering: no in-repo reader depends on these bytes
+    # since #185, but stored runs are grepped by humans, so the format is
+    # pinned rather than free to drift.
     text = (tmp_path / "verdict.json").read_text(encoding="utf-8")
     assert '"verdict": "PASS"' in text
     assert '\n  "class": "pass",' in text

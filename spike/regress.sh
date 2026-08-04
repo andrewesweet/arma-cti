@@ -94,18 +94,22 @@ WATCHDOG_KILL_AFTER="${CTI_PROBE_WATCHDOG_KILL_AFTER:-60}"
 # process killed by the follow-up SIGKILL reports.
 EXIT_TIMED_OUT=124
 EXIT_KILLED=137
-# The deadline on the one `uv run` this runner makes per probe — the verdict
-# typer. A bound on infrastructure, never on the probe's subject, which has
-# already finished by the time it runs. `run.sh` bounds its own `uv run`s for
-# the same reason and under the same variable (#144).
+# The deadline on every `uv run` this runner makes — the pass pruner and the
+# verdict typer per probe, the pool merge once at the end. A bound on
+# infrastructure, never on the probe's subject, which has already finished by
+# the time any of them runs. `run.sh` bounds its own `uv run`s for the same
+# reason and under the same variable (#144).
 UV_TIMEOUT="${CTI_UV_TIMEOUT:-300}"
 
 # One stable exit code per class, and nothing more: the exit code of a run
 # says which class to read the table row for. The numbers 1-5 were once also
 # the severity order, and the classes added since — engine_drift, schema_stale,
 # untyped_harness_failure — took the next free codes rather than renumbering a
-# meaning callers already read, so severity now lives only in class_severity
-# below, which is what the summary and the choice of worst class sort by.
+# meaning callers already read, so severity now lives only in
+# tools/pool_merge.py's CLASS_SEVERITY (#185), which is what the merge's
+# summary and its choice of worst class sort by. This table and run.sh's
+# class_of are the class table's remaining bash halves — #92/#147's seam, and
+# they join that home when it lands rather than a parallel table growing here.
 declare -A CLASS_RANK=(
     [infra_unavailable]=5
     [node_crashed]=4
@@ -123,34 +127,8 @@ declare -A CLASS_RANK=(
     # exit 9 that read as "unknown class" rather than "fix the harness" (#83).
     [untyped_harness_failure]=8
 )
-# Ranking order is not the numeric one — the numbers are exit codes chosen to be
-# stable, and this is the severity the summary and the exit code sort by.
-class_severity() {
-    case "$1" in
-    infra_unavailable) echo 80 ;;
-    node_crashed) echo 70 ;;
-    engine_drift) echo 60 ;;
-    oracle_disagreement) echo 50 ;;
-    schema_stale) echo 40 ;;
-    timeout) echo 30 ;;
-    assertion_failed) echo 20 ;;
-    flake_quarantine) echo 0 ;; # runs, reports, does not gate
-    pass) echo 0 ;;
-    *) echo 90 ;;               # an unknown class is an untyped red: worst of all
-    esac
-}
-
 log() { printf '[regress] %s\n' "$*" >&2; }
 
-# A JSON string literal from arbitrary text. `sed` alone eats the empty case —
-# no input line, no output, and `"detail": ,` in the middle of verdict.json.
-json_string() {
-    local text="${1:-}"
-    text="${text//\\/\\\\}"
-    text="${text//\"/\\\"}"
-    text="${text//$'\t'/ }"
-    printf '"%s"' "${text//$'\n'/ }"
-}
 die() {
     log "$*"
     exit 2
@@ -616,23 +594,32 @@ fi
 
 # Passes pruned before the probe runs rather than after, so a run that dies
 # halfway still leaves the directory bounded, and so a failure's evidence is
-# never pruned by the run that produced it. Room is left for the pass this run is
-# about to write, which is what makes "the last three passes" the count a reader
-# finds afterwards rather than four.
+# never pruned by the run that produced it. Which directories have outlived
+# retention is decided in the merge's Python home (#185, ADR-0049) — room left
+# for the pass this run is about to write, failures kept, a verdict that
+# cannot be read never decided on — and this shell does the deleting. Failing
+# closed here means deleting nothing: a pass kept an extra run is recoverable,
+# evidence deleted by a pruner that could not read is not.
 prune_passes() {
-    local name="$1" dir keep room
-    local -a dirs
-    mapfile -t dirs < <(
-        grep -l '"verdict": "PASS"' "$RUNS_DIR"/*-"$name"/verdict.json 2>/dev/null |
-            xargs -r -n1 dirname | sort
-    )
-    keep=${#dirs[@]}
-    room=$((KEEP_PASSES - 1))
-    ((keep > room)) || return 0
-    for dir in "${dirs[@]:0:$((keep - room))}"; do
+    local name="$1" doomed status dir
+    # Nothing to decide without at least one earlier run of this probe; the
+    # no-Arma pool suite would otherwise pay one uv start-up per probe to be
+    # told an empty directory is empty.
+    compgen -G "$RUNS_DIR/*-$name" >/dev/null || return 0
+    doomed="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py prune-passes \
+        --runs-dir "$RUNS_DIR" --probe "$name" --keep "$KEEP_PASSES")"
+    status=$?
+    if ((status != 0)); then
+        log "prune-passes could not run for $name (exit $status) — deleting nothing"
+        return 0
+    fi
+    while IFS= read -r dir; do
+        # Structural, as the old glob was: the pruner can only ever name
+        # children of the runs directory, and rm -rf holds it to that.
+        [[ -n "$dir" && "$dir" == "$RUNS_DIR"/* ]] || continue
         log "pruning old pass: $dir"
         rm -rf "$dir"
-    done
+    done <<<"$doomed"
 }
 
 # ------------------------------------------------------------------ RAM
@@ -852,10 +839,12 @@ run_probe() {
         # read. A typer `timeout` killed is the #41 shape — a check that could
         # not run is not a check that passed — and infra_unavailable; a typer
         # that ran and failed left the red untyped, which is a harness bug and
-        # reported as one. The verdict.json here is a fallback carrying the
-        # least the merge reads (class, elapsed_secs), not a second writer of
-        # the real thing: without it the merge would read this probe as a dead
-        # worker and reclaim a slot that is fine.
+        # reported as one. That call is this site's to make (ADR-0049's own
+        # mechanics); the fallback verdict.json it implies — the least the
+        # merge reads, so a slot that is fine is not reclaimed as dead — has
+        # one writer, the merge's own home (#185). If that writer cannot run
+        # either, uv is broken beyond this probe: the merge will not run
+        # either, and the run fails closed there rather than green here.
         if ((typer_status == EXIT_TIMED_OUT || typer_status == EXIT_KILLED)); then
             class=infra_unavailable
             detail="the verdict typer did not finish within ${UV_TIMEOUT}s (uv run tools/probe_verdict.py); see $out/regress.log"
@@ -864,16 +853,10 @@ run_probe() {
             detail="the verdict typer failed (exit $typer_status) — harness bug; see $out/regress.log"
         fi
         legs=""
-        cat >"$out/verdict.json" <<JSON
-{
-  "probe": $(json_string "$name"),
-  "verdict": "FAIL",
-  "class": "$class",
-  "detail": $(json_string "$detail"),
-  "elapsed_secs": $elapsed,
-  "evidence": $(json_string "$out")
-}
-JSON
+        (cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py fallback-verdict \
+            --probe "$name" --class "$class" --detail "$detail" --elapsed "$elapsed" \
+            --evidence "$out" --verdict-json "$out/verdict.json") 2>>"$out/regress.log" ||
+            log "[slot $slot]      the fallback verdict writer failed too — the merge will read $name as not a result"
     fi
 
     if [[ "$class" == pass ]]; then
@@ -1023,97 +1006,6 @@ POOL_ELAPSED=$(($(date +%s) - POOL_T0))
 [[ -n "$ram_sampler_pid" ]] && kill "$ram_sampler_pid" 2>/dev/null
 ram_sampler_pid=""
 
-# ------------------------------------------------------------------ the merge
-# One verdict set out of N slots. Read back off the claim directories rather than
-# accumulated in memory, because the thing this has to report honestly is a
-# worker that died: its verdict was never written, and a parent holding an array
-# would simply have no row for it.
-VERDICT_NAMES=()
-VERDICT_CLASSES=()
-VERDICT_PATHS=()
-VERDICT_SECS=()
-VERDICT_SLOTS=()
-worst_severity=0
-worst_class=pass
-not_run=()
-
-json_field() {
-    sed -n "s/^  \"$2\": \"\\{0,1\\}\\(.*\\)/\\1/p" "$1" | head -1 | sed 's/,$//; s/^"//; s/"$//'
-}
-
-for name in "${CORPUS[@]}"; do
-    claim="$CLAIMS/$name"
-    if [[ ! -d "$claim" ]]; then
-        # A host probe the client lock kept us out of is not "not run" in the
-        # silent sense — `not_run` carries no class and so cannot reach the exit
-        # code, and a corpus that quietly dropped the two probes about the client
-        # would exit green having measured neither (#127). It is the same
-        # not-a-result the lock says it is, typed.
-        if ((CLIENT_LOCK_BLOCKED == 1)) && host_probe "$name"; then
-            slot="-"
-            class=infra_unavailable
-            elapsed=0
-            out="$(cti_client_lock_path).info"
-            log "$name never ran: another run held the Windows client; not a result"
-        else
-            not_run+=("$name")
-            continue
-        fi
-    else
-        slot="$(cat "$claim/slot" 2>/dev/null || echo '?')"
-        out="$(cat "$claim/evidence" 2>/dev/null || echo '')"
-        if [[ ! -f "$claim/done" || -z "$out" || ! -f "$out/verdict.json" ]]; then
-            # A claimed probe with no verdict is the dead-slot case, and ADR-0022
-            # says what it is: not a result. The worker was killed, or the machine
-            # took it; either way nothing was measured under conditions anyone can
-            # interpret, and calling it a failure of the *probe* would be a reading
-            # of evidence that does not exist.
-            class=infra_unavailable
-            elapsed=0
-            log "slot $slot claimed $name and wrote no verdict — the worker died mid-probe; not a result (ADR-0022)"
-            # And the slot is cleared here rather than left for whoever comes next.
-            # A dead worker's *children* outlive it — `run.sh`, a server, a headless
-            # client — still on this slot's ports and still holding the descriptor
-            # they inherited, so the lock the kernel is supposed to free stays held.
-            # We still own the slot, so clearing it is ours to do; the next holder's
-            # cleanup-on-acquire is the backstop for the case where nobody did.
-            # Whether this one comes back clear changes nothing we could act on:
-            # the probe is already typed infra_unavailable, no bring-up follows on
-            # this slot in this run, and the slot's next holder reclaims on
-            # acquire and refuses itself there if it still cannot (#133). The log
-            # line the reclaim writes is the record.
-            if [[ "$slot" =~ ^[0-9]+$ ]]; then
-                cti_slot_release "$slot"
-                cti_slot_reclaim "$slot" holders >/dev/null
-            fi
-        else
-            class="$(json_field "$out/verdict.json" class)"
-            elapsed="$(sed -n 's/.*"elapsed_secs": \([0-9]*\).*/\1/p' "$out/verdict.json" | head -1)"
-        fi
-    fi
-    VERDICT_NAMES+=("$name")
-    VERDICT_CLASSES+=("${class:-untyped_harness_failure}")
-    VERDICT_PATHS+=("${out:-$claim}")
-    VERDICT_SECS+=("${elapsed:-0}")
-    VERDICT_SLOTS+=("$slot")
-
-    severity="$(class_severity "${class:-untyped_harness_failure}")"
-    if ((severity > worst_severity)); then
-        worst_severity=$severity
-        worst_class="${class:-untyped_harness_failure}"
-    fi
-done
-
-# A pool that stopped because the machine ran out is `infra_unavailable` at the
-# pool level (#125), not a green run over the probes that got in first.
-if [[ -f "$POOL_OUT/mem-stop" ]]; then
-    severity="$(class_severity infra_unavailable)"
-    if ((severity > worst_severity)); then
-        worst_severity=$severity
-        worst_class=infra_unavailable
-    fi
-fi
-
 # ------------------------------------------------------------------ RAM verdict
 PEAK_USED_KB=0
 MIN_AVAIL_KB=0
@@ -1128,19 +1020,66 @@ if [[ -s "$POOL_OUT/ram.tsv" ]]; then
     )
 fi
 
-# ------------------------------------------------------------------ summary
-printf '\n' >&2
-log "==== verdicts (${RUN_STARTED}, sha ${GIT_SHA:0:12}, N=${#SLOTS[@]}) ===="
-# Worst class first, so the thing to read is the first line.
-for i in "${!VERDICT_NAMES[@]}"; do
-    printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
-        "$(class_severity "${VERDICT_CLASSES[$i]}")" "${VERDICT_CLASSES[$i]}" \
-        "${VERDICT_NAMES[$i]}" "${VERDICT_SECS[$i]}" "${VERDICT_SLOTS[$i]}" "${VERDICT_PATHS[$i]}"
-done | sort -rn -k1,1 | while IFS=$'\t' read -r _sev cls nm secs slot path; do
-    printf '[regress] %-20s %-18s %4ss  slot %s  %s\n' "$nm" "$cls" "$secs" "$slot" "$path" >&2
+# ------------------------------------------------------------------ the merge
+# One verdict set out of N slots, decided in Python where pytest can reach it
+# (#185, ADR-0049): the dead-slot rule (ADR-0022), client-lock-blocked typing
+# (#127), the mem-stop overlay (#125) and the worst-class ranking live in
+# tools/pool_merge.py, which reads the claim directories back off disk — the
+# case it has to report honestly is a worker that died, whose verdict was
+# never written and would have no row in any parent's array — writes
+# pool.json, prints the summary, and hands back the key=value lines this
+# shell acts on. Bounded like every uv run the tier makes (#144), and checked
+# at its site per ADR-0049's mechanics: a merge that could not run has read no
+# verdict anyone can act on, so the run is infra_unavailable — never a green
+# exit over verdicts nobody merged.
+merge_args=(
+    --pool-out "$POOL_OUT"
+    --corpus "${CORPUS[@]}"
+    --client-lock-blocked "$CLIENT_LOCK_BLOCKED"
+    --client-lock-evidence "$(cti_client_lock_info_path)"
+    --started-at "$RUN_STARTED"
+    --git-sha "$GIT_SHA"
+    --host "$HOST"
+    --slots "${SLOTS[@]}"
+    --wall-secs "$POOL_ELAPSED"
+    --peak-mem-used-kb "$PEAK_USED_KB"
+    --peak-tier-rss-kb "$PEAK_TIER_KB"
+    --least-mem-available-kb "$MIN_AVAIL_KB"
+)
+((${#HOST_JOBS[@]} > 0)) && merge_args+=(--host-probes "${HOST_JOBS[@]}")
+for i in "${!DIRTY_SLOTS[@]}"; do
+    merge_args+=(--dirty-slot "${DIRTY_SLOTS[$i]}:${DIRTY_DETAIL[$i]}")
 done
+merged="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py merge "${merge_args[@]}")"
+merge_status=$?
+worst_class="$(sed -n 's/^worst_class=//p' <<<"$merged" | tail -1)"
+if ((merge_status != 0)) || [[ -z "$worst_class" ]]; then
+    {
+        printf '\n[regress] the merge could not run (uv run tools/pool_merge.py exited %s) — no verdict was read. Not a result.\n' "$merge_status"
+        printf 'verdict=FAIL\n'
+        printf 'failure_class=infra_unavailable\n'
+        printf 'failure_detail=the pool merge exited %s; the workers'"'"' evidence is under %s\n' "$merge_status" "$POOL_OUT"
+    } >&2
+    exit "${CLASS_RANK[infra_unavailable]}"
+fi
 
-((${#not_run[@]} > 0)) && log "${#not_run[@]} probe(s) not run: ${not_run[*]}"
+# The merge decides, this shell acts (ADR-0049): a dead worker's slot is
+# cleared here rather than left for whoever comes next. The worker's children
+# outlive it — `run.sh`, a server, a headless client — still on this slot's
+# ports and still holding the descriptor they inherited, so the lock the
+# kernel is supposed to free stays held. We still own the slot, so clearing it
+# is ours to do; the next holder's cleanup-on-acquire is the backstop for the
+# case where nobody did. Whether it comes back clear changes nothing we could
+# act on: the probe is already typed infra_unavailable, no bring-up follows on
+# this slot in this run, and the slot's next holder reclaims on acquire and
+# refuses itself there if it still cannot (#133). The log line the reclaim
+# writes is the record.
+while IFS= read -r dead_slot; do
+    [[ "$dead_slot" =~ ^[0-9]+$ ]] || continue
+    cti_slot_release "$dead_slot"
+    cti_slot_reclaim "$dead_slot" holders >/dev/null
+done < <(sed -n 's/^reclaim_slot=//p' <<<"$merged")
+
 [[ -f "$STOP_FLAG" ]] && log "pool stopped early: $(cat "$STOP_FLAG")"
 log "wall: ${POOL_ELAPSED}s across ${#SLOTS[@]} slot(s) — slots ${SLOTS[*]}"
 for i in "${!DIRTY_SLOTS[@]}"; do
@@ -1148,52 +1087,6 @@ for i in "${!DIRTY_SLOTS[@]}"; do
 done
 log "peak memory in use: $((PEAK_USED_KB / 1024)) MiB (tier processes $((PEAK_TIER_KB / 1024)) MiB, least available $((MIN_AVAIL_KB / 1024)) MiB)"
 log "pool evidence: $POOL_OUT"
-
-{
-    printf '{\n'
-    printf '  "started_at": "%s",\n' "$RUN_STARTED"
-    printf '  "git_sha": "%s",\n' "$GIT_SHA"
-    printf '  "slots": [%s],\n' "$(
-        IFS=,
-        echo "${SLOTS[*]}"
-    )"
-    printf '  "host": %s,\n' "$(json_string "$HOST")"
-    printf '  "wall_secs": %s,\n' "$POOL_ELAPSED"
-    printf '  "peak_mem_used_kb": %s,\n' "$PEAK_USED_KB"
-    printf '  "peak_tier_rss_kb": %s,\n' "$PEAK_TIER_KB"
-    printf '  "least_mem_available_kb": %s,\n' "$MIN_AVAIL_KB"
-    printf '  "stopped_early": %s,\n' "$(json_string "$(cat "$STOP_FLAG" 2>/dev/null || true)")"
-    # A slot this run held, could not clear, and therefore never used. Typed,
-    # because "the pool ran at N=2" and "the pool ran at N=2 because slot 1 still
-    # had a dead run's server on its ports" are different facts and only the
-    # second one is actionable.
-    printf '  "dirty_slots": [%s],\n' "$(
-        sep=""
-        for i in "${!DIRTY_SLOTS[@]}"; do
-            printf '%s{"slot": %s, "class": "infra_unavailable", "detail": %s}' \
-                "$sep" "${DIRTY_SLOTS[$i]}" "$(json_string "${DIRTY_DETAIL[$i]}")"
-            sep=", "
-        done
-    )"
-    printf '  "not_run": [%s],\n' "$(
-        sep=""
-        for n in ${not_run[@]+"${not_run[@]}"}; do
-            printf '%s%s' "$sep" "$(json_string "$n")"
-            sep=", "
-        done
-    )"
-    printf '  "verdicts": [\n'
-    for i in "${!VERDICT_NAMES[@]}"; do
-        comma=","
-        ((i + 1 == ${#VERDICT_NAMES[@]})) && comma=""
-        printf '    {"probe": %s, "class": %s, "slot": %s, "elapsed_secs": %s, "evidence": %s}%s\n' \
-            "$(json_string "${VERDICT_NAMES[$i]}")" "$(json_string "${VERDICT_CLASSES[$i]}")" \
-            "$(json_string "${VERDICT_SLOTS[$i]}")" "${VERDICT_SECS[$i]}" \
-            "$(json_string "${VERDICT_PATHS[$i]}")" "$comma"
-    done
-    printf '  ]\n'
-    printf '}\n'
-} >"$POOL_OUT/pool.json"
 
 exit_code="${CLASS_RANK[$worst_class]:-9}"
 log "worst class: $worst_class (exit $exit_code)"
