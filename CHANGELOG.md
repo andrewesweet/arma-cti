@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The regression tier's residual failure paths are typed, and its exit codes stop lying.** A
+  `run.sh` the machine killed (an OOM kill above all) is now `infra_unavailable` with the signal
+  named, not a "fix the harness" red; an in-mission class typo (`class=timout` — or a smuggled
+  `class=pass`, which would have read back as a green verdict) is caught where the line is first
+  read, in the class table's Python home; a mistyped flag exits 64 instead of `timeout`'s exit
+  code; an unknown worst class exits as the harness bug it is instead of an undocumented 9; a
+  failure after slots are acquired (a failed install prep, an evidence directory that cannot be
+  created) emits a typed verdict and runs teardown instead of dying untyped with `.info` files
+  left behind; a memory reading that fails mid-run says so instead of recording "0 MiB
+  available"; a client-lock-blocked tail's evidence outlives the holder that caused it; and every
+  pre-flight refusal leaves one durable line under `~/.arma-cti/runs/refusals.log`. #147.
+
 - **The AI Commander no longer unpicks a Squad from a committed assault when its picture of the
   Base flickers.** The force an Assault had to bring was re-derived from the Contact's band every
   cycle, and in-world the band flickers — a leader standing on the Base can lose sight of the
