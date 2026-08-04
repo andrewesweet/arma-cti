@@ -39,6 +39,15 @@ def spawn_effect(index: int) -> Effect:
     )
 
 
+def oversized_win() -> Effect:
+    """One `campaign_won` too big for one reply: catalogue-shaped (#145), the blob its summary."""
+    return Effect(
+        name="campaign_won",
+        side="WEST",
+        args={"condition": "domination", "at": 600.0, "summary": "x" * 20_000},
+    )
+
+
 def test_the_drain_is_bounded_by_the_budget_module_rather_than_a_second_literal() -> None:
     # #164: the drain used to carry its own `POLL_GUARD_BYTES = 9_216`, held
     # equal to the budget's figure by a test — the two-literals-and-a-pairing-
@@ -130,7 +139,7 @@ def test_a_single_message_too_large_to_fit_is_a_loud_failure_not_a_truncation(
 ) -> None:
     log = tmp_path / "telemetry.jsonl"
     daemon = build_daemon(telemetry_path=log)
-    daemon.outbox.push(Effect(name="campaign_won", side="WEST", args={"blob": "x" * 20_000}))
+    daemon.outbox.push(oversized_win())
 
     reply = reply_to(daemon, id="w-6", verb="poll")
     assert reply["status"] == "error"
@@ -143,7 +152,7 @@ def test_an_oversized_message_does_not_hide_the_backlog_behind_it(tmp_path: Path
     # It stalls it, loudly, and stays on the outbox. Retiring it to get at what
     # is behind would be the silent loss the guard exists to prevent.
     daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
-    daemon.outbox.push(Effect(name="campaign_won", side="WEST", args={"blob": "x" * 20_000}))
+    daemon.outbox.push(oversized_win())
     daemon.outbox.push(spawn_effect(1))
 
     assert reply_to(daemon, id="w-7", verb="poll")["status"] == "error"

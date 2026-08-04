@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The daemon now reads its own Command catalogue instead of restating it.** The catalogue claims
+  a Command the game can build and one the daemon accepts cannot drift apart, but the daemon's own
+  validation never read it: the handler table restated the verb set, each handler restated its
+  Command's arguments, and the five Effects the daemon pushes were held to the declared effect
+  schema entirely by hand — so a verb or argument changed on one side landed as an in-world
+  discovery. The handler table and every handler's argument reads are now pinned to the catalogue
+  by unit tests, and the outbox refuses any Effect whose name or arguments the catalogue does not
+  declare, at the one door every world effect leaves through. The wire format is byte-for-byte what
+  it was. #145.
+
 - **What a probe's outcome means is now decided in Python, not bash.** The regression runner's
   typing ladder — the watchdog rule, the untyped-red rule, `expect:` inversion, quarantine — and
   its hand-rolled `verdict.json` heredoc were sixty lines of shell, testable only by a bring-up;

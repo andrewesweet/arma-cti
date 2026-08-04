@@ -8,12 +8,14 @@ Commander symmetry is one validator rather than two kept honest by convention.
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 from conftest import REPO, authored_economy, live
 from hypothesis import given
 from hypothesis import strategies as st
 
-from cti_daemon import budget, manifest, port, squads
+from cti_daemon import budget, commands, manifest, port, squads
 from cti_daemon.commands import Command, Effect
 
 MAP = manifest.load(REPO / "addons" / "main" / "manifests" / "stratis.json")
@@ -156,6 +158,15 @@ def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
         )
         == port.REJECTION_CODES
     )
+
+
+def test_the_handlers_are_exactly_the_commands_the_catalogue_declares() -> None:
+    # B1 of #139 (#145): the catalogue claims a Command the game can build and
+    # one the daemon accepts cannot drift apart, and HANDLERS restating the
+    # verb set as its keys was the daemon's half of that claim held by hand. A
+    # verb added to either alone is now this test going red rather than an
+    # `unknown_command` discovered in-world.
+    assert set(port.HANDLERS) == set(commands.CATALOGUE)
 
 
 def test_an_order_is_recorded_against_the_squad_and_announced_as_an_effect(
@@ -676,6 +687,51 @@ def test_who_may_issue_what_is_the_matrix_adr_0040_wrote_down(principal: str, na
             expected = "not_your_squad"
     assert judgement.code == expected, (principal, name, judgement.detail)
     assert judgement.accepted == (expected == "")
+
+
+class ReadArgs(dict[str, Any]):
+    """A Command's args that write down each argument name the rules ask for."""
+
+    def __init__(self, args: dict[str, Any]) -> None:
+        """Hold `args`, with nothing read yet."""
+        super().__init__(args)
+        self.read: set[str] = set()
+
+    def get(self, key: object, default: object = None) -> object:
+        """Record that the rules asked for `key`, then answer as a dict would."""
+        # `object` because that is `dict.get`'s own signature; the rules only
+        # ever ask by name, and anything else deserves the loud failure.
+        assert isinstance(key, str)
+        self.read.add(key)
+        return super().get(key, default)
+
+
+@pytest.mark.parametrize("name", sorted(commands.CATALOGUE))
+def test_each_handler_reads_exactly_the_arguments_its_catalogue_entry_declares(
+    name: str,
+) -> None:
+    # The other half of #145's coupling, from the reading side: on the accepted
+    # path a handler asks its Command's args for every argument the catalogue
+    # declares and nothing else, so an argument added to either side alone is a
+    # red here. The accepted path on purpose — a refusal legitimately stops
+    # reading early. Coupled by this test rather than derived from the
+    # catalogue, because the reads carry per-argument typed refusals a generic
+    # presence check would flatten.
+    open_port = fresh()
+    squad = bought(open_port)
+    home(open_port, squad, size=5)
+    args = ReadArgs(
+        {
+            "purchase": {"squad_type": "rifle"},
+            "order": {"squad": squad, "order": "reserve", "place": ""},
+            "reinforce": {"squad": squad},
+        }[name]
+    )
+
+    judgement = open_port.submit(Command(name, "WEST", args), acting_side="WEST")
+
+    assert judgement.accepted, judgement.detail
+    assert args.read == set(commands.CATALOGUE[name])
 
 
 # ----------------------------------------------- A Campaign that has been won

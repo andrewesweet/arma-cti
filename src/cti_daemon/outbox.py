@@ -6,15 +6,20 @@ inner circle and is serialised at the edge; queueing `serialise_effect(...)` her
 had the domain constructing the wire's format, so every effect producer was
 coupled to the rendering and a change to it touched three modules. The rendering
 now happens once, in `Daemon._poll`, which is where effects actually leave.
+
+`push` is also where the effect catalogue binds (#145). Every world effect
+leaves through here whoever produced it, so refusing an Effect the catalogue
+does not declare binds every producer, present and future, and every producer's
+unit test exercises the check. It is not on `Effect` construction, because that
+also serves `parse_effect` — the codec's decode half, which deliberately
+validates envelope shape and nothing more.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from cti_daemon.commands import Effect
+from cti_daemon.commands import EFFECTS, Effect
 
 
 class UnknownSequenceError(Exception):
@@ -37,7 +42,24 @@ class Outbox:
     _issued: int = 0
 
     def push(self, effect: Effect) -> Entry:
-        """Queue an Effect for delivery and return the entry it was issued as."""
+        """Queue an Effect for delivery and return the entry it was issued as.
+
+        Refuses one the catalogue does not declare (#145): an out-of-catalogue
+        Effect is a producer's bug, not a rejection the world is owed, so it is
+        raised — in the same spirit as the port refusing a rejection code off
+        its own list — and a producer drifting from `commands.EFFECTS` is a red
+        `just unit` rather than an in-world discovery.
+        """
+        declared = EFFECTS.get(effect.name)
+        if declared is None:
+            message = f"{effect.name!r} is not an effect the catalogue declares"
+            raise ValueError(message)
+        if set(effect.args) != set(declared):
+            message = (
+                f"a {effect.name} effect carries exactly {sorted(declared)}, "
+                f"got {sorted(effect.args)}"
+            )
+            raise ValueError(message)
         self._issued += 1
         entry = Entry(self._issued, effect)
         self._entries.append(entry)

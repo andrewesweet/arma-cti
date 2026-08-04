@@ -78,7 +78,13 @@ def test_a_restart_neither_remembers_the_answer_nor_reuses_the_epoch(tmp_path: P
     # tell the second answer from a replay of the first.
     line = json.dumps({"id": "obs-1", "verb": "poll"})
     before = build_daemon(telemetry_path=tmp_path / "before.jsonl")
-    before.outbox.push(Effect(name="order_issued", side="WEST", args={"squad": "WEST-1"}))
+    before.outbox.push(
+        Effect(
+            name="order_issued",
+            side="WEST",
+            args={"squad": "WEST-1", "order": "reserve", "place": ""},
+        )
+    )
     first = json.loads(before.handle_line(line))
 
     after = build_daemon(telemetry_path=tmp_path / "after.jsonl")

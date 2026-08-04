@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 import pytest
 from conftest import live, reply_to, rows
 
-from cti_daemon.commands import Effect, serialise_effect
+from cti_daemon.commands import EFFECTS, Effect, serialise_effect
 from cti_daemon.daemon import OUTBOX_DEPTH_STEP
 from cti_daemon.outbox import Outbox, UnknownSequenceError
 from cti_daemon.transport import build_daemon
@@ -23,8 +23,12 @@ if TYPE_CHECKING:
 
 
 def order(n: int = 0) -> Effect:
-    """One Effect, the domain object the outbox now holds (#77)."""
-    return Effect(name="order_issued", side="WEST", args={"squad": f"WEST-{n}"})
+    """One Effect, the domain object the outbox now holds (#77), catalogue-shaped (#145)."""
+    return Effect(
+        name="order_issued",
+        side="WEST",
+        args={"squad": f"WEST-{n}", "order": "reserve", "place": ""},
+    )
 
 
 def test_a_pushed_message_is_pending_until_it_is_acknowledged() -> None:
@@ -108,6 +112,45 @@ def test_acknowledging_a_sequence_that_was_never_issued_is_refused() -> None:
     outbox.push(order(1))
     with pytest.raises(UnknownSequenceError):
         outbox.ack(through=9)
+
+
+def test_an_effect_the_catalogue_does_not_declare_is_refused_at_the_door() -> None:
+    # #145: this is the one path every world effect takes (ADR-0012), so the
+    # catalogue binding here binds every producer, present and future — the
+    # outbound half of what #74 did for the inbound path. Raised rather than
+    # rejected, because an out-of-catalogue Effect is a producer's bug, not a
+    # payload some caller sent.
+    with pytest.raises(ValueError, match="arsenal_opened"):
+        Outbox().push(Effect(name="arsenal_opened", side="WEST", args={}))
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        pytest.param({"squad": "WEST-1", "order": "reserve"}, id="a declared argument missing"),
+        pytest.param(
+            {"squad": "WEST-1", "order": "reserve", "place": "", "speed": "fast"},
+            id="an argument the catalogue does not declare",
+        ),
+        pytest.param({}, id="no arguments at all"),
+    ],
+)
+def test_an_effect_whose_args_are_not_its_catalogue_entrys_is_refused(
+    args: dict[str, str],
+) -> None:
+    # Exactly the declared set, not a superset: an extra argument riding a real
+    # effect is the same undeclared schema a whole undeclared effect is.
+    with pytest.raises(ValueError, match="order_issued"):
+        Outbox().push(Effect(name="order_issued", side="WEST", args=args))
+
+
+def test_every_effect_in_the_catalogue_is_accepted_with_exactly_its_declared_args() -> None:
+    # The guard refuses drift, never the catalogue itself: every declared
+    # effect, built with exactly its declared arguments, goes through.
+    outbox = Outbox()
+    for name, declared in EFFECTS.items():
+        outbox.push(Effect(name=name, side="WEST", args=dict.fromkeys(declared, "x")))
+    assert outbox.depth == len(EFFECTS)
 
 
 def test_depth_counts_what_is_still_waiting() -> None:

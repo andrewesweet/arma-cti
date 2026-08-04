@@ -16,8 +16,13 @@ if TYPE_CHECKING:
 
     from cti_daemon.daemon import Daemon
 
-# One Effect to put on the outbox, the domain object it now holds (#77).
-ORDER_ISSUED = Effect(name="order_issued", side="WEST", args={"squad": "WEST-1"})
+# One Effect to put on the outbox, the domain object it now holds (#77), in the
+# shape the catalogue declares — the outbox refuses any other (#145).
+ORDER_ISSUED = Effect(
+    name="order_issued",
+    side="WEST",
+    args={"squad": "WEST-1", "order": "reserve", "place": ""},
+)
 
 
 def test_ping_is_answered_with_the_id_it_was_asked_under(tmp_path: Path) -> None:
@@ -63,7 +68,11 @@ def test_poll_hands_over_pending_messages_with_their_sequences(tmp_path: Path) -
         "messages": [
             {
                 "sequence": 1,
-                "message": {"effect": "order_issued", "side": "WEST", "args": {"squad": "WEST-1"}},
+                "message": {
+                    "effect": "order_issued",
+                    "side": "WEST",
+                    "args": {"squad": "WEST-1", "order": "reserve", "place": ""},
+                },
             }
         ]
     }
@@ -154,7 +163,15 @@ def test_a_failure_inside_the_daemon_is_answered_as_an_internal_error(tmp_path: 
     # A message that cannot be serialised is the shape of bug a later ticket
     # will produce. The connection must survive it and say what happened.
     daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
-    daemon.outbox.push(Effect(name="order_issued", side="WEST", args={"at": object()}))
+    daemon.outbox.push(
+        Effect(
+            name="order_issued",
+            side="WEST",
+            # Catalogue-shaped, so it clears the door (#145); the Place is what
+            # no JSON encoder can carry.
+            args={"squad": "WEST-1", "order": "reserve", "place": object()},
+        )
+    )
 
     reply = reply_to(daemon, id="r-11", verb="poll")
     assert reply["id"] == "r-11"

@@ -461,6 +461,10 @@ class CommandPort:
 
 # One table rather than a dictionary rebuilt on every Command (#90). Below the
 # class because it names its methods; unbound, so `submit` passes itself.
+# Its keys are `commands.CATALOGUE`'s names and each handler reads exactly its
+# entry's arguments — held to the catalogue by test_port rather than derived
+# from it, because the reads carry per-argument typed refusals a generic
+# presence check would flatten (#145).
 HANDLERS: Final[dict[str, Callable[[CommandPort, Command], Judgement]]] = {
     "purchase": CommandPort._purchase,  # noqa: SLF001 — the class's own dispatch table
     "order": CommandPort._order,  # noqa: SLF001 — ditto
