@@ -45,6 +45,31 @@ processes are the realistic interference on this machine, and both of those miti
 are aimed at it. A secret would add a key to distribute, a rotation question, and a new
 `infra_unavailable` mode, for a threat the machine does not have.
 
+Amended 2026-08-04 (#166, F7 of the #158 review; human decision on #166's thread): **the
+socket's acceptance covers `observe`, `ack` and `view`, without a stamp, on purpose.**
+This ADR argues from Commands throughout, and the socket also carries three verbs that
+move or reveal state with no door but the socket itself: `observe` folds the world's
+report into the Campaign and turns both AI Commanders, `ack` retires delivered Effects
+and files dead-letters, `view` serves a human side's picture. That is not a gap the stamp
+missed but the stamp's own logic running out where there is no principal to resolve: a
+Command has an author the gateway can vouch for, while these verbs' callers are the
+server's own loops — the world reporting what is true, the world saying what it received,
+the server asking for the view of the Commander it has itself assigned — which never pass
+the gateway at all, so a stamp on them would be the server vouching for itself, a thing
+the acceptance already does wholesale when it trusts every local process as ours. Their
+honesty therefore rests on exactly the ground above: the callers are ours, per-slot ports
+keep concurrent runs apart, and the dedupe answers a resend from its record rather than
+folding it twice. A fabricated `observe` from a process on this host is deliberate
+forgery, which the shared-secret paragraph already places outside the hazard this machine
+has. The overturning evidence below is unchanged and now explicitly reaches these verbs:
+a cross-run line despite per-slot ports would show the accident filter was needed, and
+the extension it would buy is the one #166 declined — the world's reporter stamping its
+lines the way the gateway stamps Commands. ADR-0052's aliveness check at the gateway
+contradicts none of this: it refuses a dead principal's Commands before resolution and
+deliberately keeps serving `view` — a judgement about who may act, made on the Command
+path, not a door on the transport verbs. Named here so the next audit reads a decision
+rather than re-deriving one from hole 2 of `docs/command-port-audit.md`.
+
 **Why the bind scoping is nevertheless real.** Hold mode bound every interface, which put
 the socket on the LAN for exactly the sessions a human joins. The reason was Phase-0:
 `missions/spike.Stratis`'s clients call the shim themselves through
