@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×10 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×11 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -31,7 +31,13 @@
 > loss), root-caused by the human to a full Windows OS drive, every recovery the
 > codified move at near-zero cost to commit-early. Seventh and eighth amendments
 > (2026-08-04, from that cluster): the checkpoint-diff bullet in the resumed agent's
-> side, and the monitor-claim clause in the noticing section.
+> side, and the monitor-claim clause in the noticing section. Eleventh use
+> (2026-08-04): the standing watcher's first catch since it was codified — the #159
+> agent sat silent for 40 minutes after its corpus run finished green (21/21,
+> worktree clean and unlanded), dispatched with the do-not-park briefing line carried
+> and CLAUDE.md's watching sentence live. Three stalls, three watcher catches, none
+> prevented or caught by text: the attribution question the eighteenth retro left
+> open is answered, and the layer this document made standing is the one that works.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
@@ -103,7 +109,10 @@ clock-watching lied (ADR-0033).
   by the orchestrator's external watcher and cleared only by an explicit prod naming what
   had finished. Two identical saves is this document's codification threshold: an agent
   dispatched with a run attached gets a watcher armed at dispatch. The agent-side rule is
-  CLAUDE.md's watching-inside-turn sentence.
+  CLAUDE.md's watching-inside-turn sentence. A third catch (2026-08-04: #159's agent, 40
+  minutes silent after a green corpus run, both text layers demonstrably live) settled
+  the attribution: the text does not prevent the stall and the watcher catches it, three
+  for three. Keep the sentence because it is true; rely on the watcher because it works.
 
 ## When the orchestrator itself dies
 
