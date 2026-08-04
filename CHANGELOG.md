@@ -30,6 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   mistyped invocation used to run in a mode the caller did not ask for; it is a usage error now,
   exit 2, with nothing brought up. #162.
 
+- **`just regress --slots 1` is the serial tier byte for byte, as its header always claimed.**
+  Pool slot 0 wrote engine profile `ctispike0` and headless-client profile `ctihc0` where a hand
+  run writes `ctispike` and `ctihc1`; slot 0 now keeps the hand tier's own names, the way it
+  already keeps `~/arma3server` and ports 2402–2406. Slots 1+ renumber their headless-client
+  profiles to `ctihc2`… with them. #162.
+
 - **Each seam the pool libraries had triplicated has one home.** The host guard's
   free/running/unavailable → verdict ladder ran as three near-verbatim bash copies across the pool
   libraries; it is decided in `tools/host_guard_verdict.py` under `just unit` now (ADR-0049's

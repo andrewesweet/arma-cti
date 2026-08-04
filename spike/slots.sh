@@ -118,8 +118,19 @@ cti_slot_install() {
 # profile — and the profile directory is where `logFile` and the `.rpt` land.
 # Every slot ran as `ctispike` during #44's exploration, which #58 called a
 # bulkhead with a shared wall: one slot's crash corrupting state another reads.
-cti_slot_profile() { echo "ctispike$1"; }
-cti_slot_hc_profile() { echo "ctihc$1"; }
+#
+# Slot 0 keeps the hand tier's own names — `ctispike`, and `ctihc1` for the
+# headless client, which is why the HC numbering starts at 1 — for the same
+# reason cti_slot_install keeps ~/arma3server: slot 0 *is* the serial tier,
+# byte for byte, and its lock is what keeps a pool run and a hand run from
+# ever sharing the profile live. Before #162 pool slot 0 wrote `ctispike0`
+# where a hand run wrote `ctispike`, and the header's byte-for-byte claim
+# overstated by exactly that byte.
+cti_slot_profile() {
+    local n="$1"
+    if ((n == 0)); then echo "ctispike"; else echo "ctispike$n"; fi
+}
+cti_slot_hc_profile() { echo "ctihc$(($1 + 1))"; }
 
 cti_slot_lock_path() { echo "$CTI_SLOT_LOCK_DIR/$1.lock"; }
 
@@ -424,6 +435,10 @@ cti_slot_pids_gone() {
     done
 }
 
+# Clear a dead holder's leftovers from slot `$1` — every pid on the slot's
+# ports or running out of its install — then confirm they are gone rather than
+# assume the kill landed (#130): non-zero, with the survivors on stdout, when
+# they are not, and the caller has to act on that (#133).
 #
 # `$2 == holders` adds the processes still holding the slot's lock, which is only
 # askable once this shell has closed its own descriptor — see
@@ -495,8 +510,9 @@ cti_slot_reclaim() {
 # Record which evidence directory a slot is currently writing, so the next holder
 # can apply the rule above. Consumer: cti_slot_reclaim.
 cti_slot_mark_run() {
+    local n="$1" evidence_dir="$2"
     mkdir -p "$CTI_SLOT_LOCK_DIR"
-    printf '%s\n' "$2" >"$CTI_SLOT_LOCK_DIR/$1.last"
+    printf '%s\n' "$evidence_dir" >"$CTI_SLOT_LOCK_DIR/$n.last"
 }
 
 # ------------------------------------------------------------------ the install
