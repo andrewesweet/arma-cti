@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×11 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×12 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -38,6 +38,9 @@
 > and CLAUDE.md's watching sentence live. Three stalls, three watcher catches, none
 > prevented or caught by text: the attribution question the eighteenth retro left
 > open is answered, and the layer this document made standing is the one that works.
+> Twelfth use (2026-08-04): the fourth stall, the fourth watcher catch — the #162
+> agent parked after its corpus run finished, prodded with the verdict in hand. Four
+> for four; the permanence sentence in the noticing section is from this instance.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
@@ -113,6 +116,11 @@ clock-watching lied (ADR-0033).
   minutes silent after a green corpus run, both text layers demonstrably live) settled
   the attribution: the text does not prevent the stall and the watcher catches it, three
   for three. Keep the sentence because it is true; rely on the watcher because it works.
+  A fourth catch (2026-08-04: #162's agent, parked after its corpus finished) made it
+  four for four and closes the question: the defect underneath — a parked run's
+  completion does not wake the agent that parked it — is Claude Code harness behaviour,
+  not this repo's to fix, so the watcher is the permanent compensation rather than a
+  stopgap awaiting an in-repo fix. Further catches are it working, not new findings.
 
 ## When the orchestrator itself dies
 
