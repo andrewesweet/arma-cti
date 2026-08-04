@@ -44,16 +44,18 @@ SCHEMA = REPO / "addons" / "main" / "generated" / "command-schema.json"
 # reads it too and is deliberately not scanned: a probe that reads a renamed
 # field goes red in the tier it belongs to, whereas the map UI's only tier was a
 # Play Session.
-READERS = ("fn_mapObservation.sqf", "fn_mapRender.sqf", "fn_mapIssue.sqf")
+READERS = ("fn_mapObservation.sqf", "fn_mapRender.sqf", "fn_mapIssue.sqf", "fn_viewEvents.sqf")
 
 # `<receiver> getOrDefault ["<key>"` — the only form a literal key is read in.
 _READ = re.compile(r'(\w+) +getOrDefault +\["([^"]+)"')
 
-# What each receiver in those functions is holding. `_sold` is one Command
-# catalogue *entry* — the Squad type the map divides current strength by
-# (#174) — and belongs to the catalogue's owner with `_schema`, not to this
-# seam: `test_export_command_schema.py` pins `size` into every sold entry.
-_DOCUMENT = "_view"
+# What each receiver in those functions is holding. `_was` and `_now` are the
+# two documents `fn_viewEvents` diffs (#176) — both are served views, so both
+# read declared keys. `_sold` is one Command catalogue *entry* — the Squad type
+# the map divides current strength by (#174) — and belongs to the catalogue's
+# owner with `_schema`, not to this seam: `test_export_command_schema.py` pins
+# `size` into every sold entry.
+_DOCUMENTS = ("_view", "_was", "_now")
 _RECORD = "_x"
 _CATALOGUE = ("_schema", "_sold")
 
@@ -113,7 +115,7 @@ def test_the_shipped_export_carries_the_observation_shapes() -> None:
 def test_the_map_functions_read_the_document_at_all() -> None:
     # Non-vacuity, the way the report scan takes it: if this finds nothing, the
     # pairing below is true of an empty set.
-    assert [read for read in _reads() if read[1] == _DOCUMENT]
+    assert [read for read in _reads() if read[1] in _DOCUMENTS]
     assert [read for read in _reads() if read[1] == _RECORD]
 
 
@@ -121,7 +123,7 @@ def test_every_key_the_map_reads_is_one_the_export_declares() -> None:
     exported = observation.exported()
     records = set(exported["squad"]) | set(exported["contact"])
     for name, receiver, key in _reads():
-        if receiver == _DOCUMENT:
+        if receiver in _DOCUMENTS:
             assert key in exported["document"], f"{name} reads an undeclared document key"
         elif receiver == _RECORD:
             assert key in records, f"{name} reads an undeclared squad or contact field"

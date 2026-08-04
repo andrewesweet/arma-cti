@@ -65,6 +65,8 @@ class CfgFunctions
             class mapRender {};
             class mapVerbs {};
             class mapIssue {};
+            class viewEvents {};
+            class notify {};
             class effectApply {};
             class effectPump {};
             class reportObject {};
@@ -89,5 +91,40 @@ class CfgFunctions
         // authored JSON under manifests/ and the Command Port schema is
         // exported as JSON under generated/; both are read with loadFile +
         // fromJSON at the point of use, so neither is a function to declare.
+    };
+};
+
+// The Commander's event channel (#176), in the shape Arma's own singleplayer
+// task notifications take (topics/Arma_3_Notification.wiki): the two moments
+// playtest 0001 said arrive silently, shown by cti_fnc_notify through
+// BIS_fnc_showNotification, which draws with or without the map open. Here
+// rather than in a mission's description.ext because every rule lives in the
+// addon (ADR-0007) and both missions inherit configFile's templates.
+//
+// ---- playtest-tuned placeholder (ADR-0020) --------------------------------
+// Wording, icon, colour and priority are feel, not rules. "wiped" is the
+// playtest response's own word; CONTEXT.md has no term for a Squad at zero yet
+// and the issue routes that to /domain-modeling rather than settling it here.
+class CfgNotifications
+{
+    // %1 the Place, %2 its new owner, %3 the owner it had. "now %2" rather
+    // than "taken by %2" because the owner vocabulary includes NEUTRAL and
+    // CONTESTED, and a town nobody took can still stop being yours.
+    class cti_PlaceTaken
+    {
+        title = "%1 — now %2";
+        iconPicture = "\A3\ui_f\data\map\mapcontrol\taskIcon_ca.paa";
+        description = "was %3";
+        priority = 7;
+    };
+
+    // %1 the Squad's id.
+    class cti_SquadWiped
+    {
+        title = "Squad %1 wiped";
+        iconPicture = "\A3\ui_f\data\map\mapcontrol\taskIcon_ca.paa";
+        description = "%1 has no men left standing";
+        color[] = {0.9, 0.4, 0.4, 1};
+        priority = 7;
     };
 };

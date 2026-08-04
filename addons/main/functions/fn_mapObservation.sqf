@@ -34,8 +34,19 @@ if (_side isEqualTo "") exitWith {
     diag_log "CTI|FAIL class=assertion_failed map_view_without_side";
 };
 
+// The difference between the picture this Commander held and the one arriving
+// is the one client-side moment an *event* exists (#176): the wire carries
+// state, and the two moments playtest 0001 missed — ground changing hands and
+// a Squad wiped — are read off that difference before the old picture is
+// overwritten. Computed first, presented last, so the notifications point at a
+// map already repainted with what they announce.
+private _events = [missionNamespace getVariable ["cti_view", createHashMap], _view]
+    call cti_fnc_viewEvents;
+
 cti_view = _view;
 cti_uiSide = _side;
 
 [] call cti_fnc_mapCommander;
 [] call cti_fnc_mapRender;
+
+{ [_x] call cti_fnc_notify } forEach _events;

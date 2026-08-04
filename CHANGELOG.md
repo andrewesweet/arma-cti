@@ -49,6 +49,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The Commander is now told when ground changes hands and when one of his Squads is wiped.**
+  Playtest 0001's summary judgement on the seat: orders went out and nothing came back until the
+  map's picture silently differed. Both moments now raise a notification on the Commander's screen
+  in the shape Arma's own singleplayer task notifications take, visible with or without the map
+  open — an Objective changing hands is named with its new owner (going CONTESTED announces itself
+  the same way), and a Squad reaching zero men is named once, not re-announced on every 5 s push.
+  Read client-side off the difference between consecutive Observations, so the wire, the mode=1
+  whitelist and the AI Commander's inputs are all untouched. Wording and look are a playtest-tuned
+  placeholder. #176.
+
 - **A playtest session now has an observer mode: press Y to fly free, press Y to come back.**
   Playtest 0001's feedback stopped at what the Commander's map shows, and the live workaround — a
   camera typed into the debug console — left the map unreachable and the incantation to remember.
