@@ -29,11 +29,11 @@ from typing import TYPE_CHECKING
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from harness import SQUAD_MEN, rally_point  # noqa: E402
+from harness import SQUAD_MEN, rally_point
 
-from cti_daemon import planner  # noqa: E402
-from cti_daemon.commands import Command  # noqa: E402
-from cti_daemon.observation import Observation, SquadView  # noqa: E402
+from cti_daemon import planner
+from cti_daemon.commands import Command
+from cti_daemon.observation import Observation, SquadView
 
 if TYPE_CHECKING:
     from cti_daemon.contacts import Contact
@@ -131,10 +131,10 @@ class ConcentrationTerm(Baseline):
 
     def _assign(
         self,
-        options: list[planner._Option],  # noqa: SLF001
+        options: list[planner._Option],
         declined: set[str],
-        detailed: dict[str, planner._Option],  # noqa: SLF001
-    ) -> dict[str, planner._Option]:  # noqa: SLF001
+        detailed: dict[str, planner._Option],
+    ) -> dict[str, planner._Option]:
         """Best-first, with the concentration term re-ranking as places fill up."""
         chosen: dict[str, planner._Option] = dict(detailed)
         crowd: dict[str, int] = {}
@@ -212,7 +212,7 @@ class ConcentrationMuster(Baseline):
     "massed 1, 2 wanted". The override is the second half of this arm's cost.
     """
 
-    def _mass(self, observation: Observation) -> dict[str, planner._Demand]:  # noqa: SLF001
+    def _mass(self, observation: Observation) -> dict[str, planner._Demand]:
         """What every contested place's attack must arrive with."""
         seen = {contact.at: contact for contact in observation.contacts}
         committed: dict[str, int] = {}
@@ -236,12 +236,12 @@ class ConcentrationMuster(Baseline):
 
     def _detail(
         self,
-        options: list[planner._Option],  # noqa: SLF001
-        bid: dict[str, planner._Option],  # noqa: SLF001
+        options: list[planner._Option],
+        bid: dict[str, planner._Option],
         place: str,
         needed: int,
-        spoken_for: dict[str, planner._Option],  # noqa: SLF001
-    ) -> dict[str, planner._Option]:  # noqa: SLF001
+        spoken_for: dict[str, planner._Option],
+    ) -> dict[str, planner._Option]:
         """The shipped `_detail`, with the bid's seed held to `spoken_for` too.
 
         One line changed — the seed comprehension gains `and squad not in

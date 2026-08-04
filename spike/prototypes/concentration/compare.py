@@ -16,11 +16,11 @@ from typing import TYPE_CHECKING
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import arms  # noqa: E402
-import harness  # noqa: E402
+import arms
+import harness
 
-from cti_daemon import planner, port  # noqa: E402
-from cti_daemon.squads import Held  # noqa: E402
+from cti_daemon import planner, port
+from cti_daemon.squads import Held
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -162,7 +162,8 @@ def report(title: str, note: str, rows: dict[str, Row]) -> None:
     print(f"  {note}")
     print(
         f"  {'arm':<15}{'sent':>6}{'men @ contact':>15}{'1st contact s':>15}"
-        f"{'separation s':>14}{'all-on-target s':>17}{'other places':>14}{'rally':>14}{'refused':>9}"
+        f"{'separation s':>14}{'all-on-target s':>17}{'other places':>14}"
+        f"{'rally':>14}{'refused':>9}"
     )
     for name, _, _ in ARMS:
         row = rows[name]

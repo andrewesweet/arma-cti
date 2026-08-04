@@ -50,6 +50,18 @@ ignore = [
 ]
 # Standalone build tools, run as scripts rather than imported.
 "tools/*.py" = ["INP001"]
+# THROWAWAY — the #187 concentration prototype. Lives on the prototype branch
+# only and never lands on main, so this entry goes with it. The /prototype skill
+# asks for no abstractions, no error handling and state printed after every
+# step, which is most of this list.
+"spike/prototypes/**" = [
+  "T201",    # printing the state IS the prototype's output
+  "INP001",  # run as a script, not imported
+  "PLR2004", # a prototype's constants are the thing being varied
+  "ERA001",  # prose about the shipped code reads as commented-out code
+  "D401",    # docstrings here argue rather than instruct
+  "ARG002",  # an override that ignores its argument is the experiment
+]
 # Claude Code hooks: single-purpose scripts on a stdin/stderr/exit-code contract.
 ".claude/hooks/*.py" = [
   "T201",     # stdout/stderr text IS the hook's output channel
