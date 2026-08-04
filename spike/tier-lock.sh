@@ -27,10 +27,15 @@
 # wait forever should be doing other work.
 set -uo pipefail
 
+# Slot 0's geometry, lock and reclamation — and, through spike/hosts.sh and
+# spike/host-guard.sh underneath it, the one home of the infra_unavailable
+# exit code, CTI_EXIT_INFRA_UNAVAILABLE (#161).
+# shellcheck source=spike/slots.sh
+source "$(dirname "${BASH_SOURCE[0]}")/slots.sh"
+
 STATE_DIR="${CTI_TIER_STATE:-$HOME/.arma-cti}"
 LOCK="$STATE_DIR/slots/0.lock"
 INFO="$LOCK.info"
-EXIT_INFRA_UNAVAILABLE=5
 
 WAIT_SECS=0
 LABEL=""
@@ -89,7 +94,7 @@ if ((acquired == 0)); then
         printf 'failure_class=infra_unavailable\n'
         printf 'failure_detail=tier lock held; see %s\n' "$INFO"
     } >&2
-    exit "$EXIT_INFRA_UNAVAILABLE"
+    exit "$CTI_EXIT_INFRA_UNAVAILABLE"
 fi
 
 # Held. Publish who by, for whoever queues behind us. Truncate rather than
@@ -110,8 +115,6 @@ fi
 # left on slot 0's ports or in slot 0's install is stale state for us to clear
 # before we launch, never state to inherit or to report as somebody else's
 # `infra_unavailable` (#58, #70).
-# shellcheck source=spike/slots.sh
-source "$(dirname "${BASH_SOURCE[0]}")/slots.sh"
 # Acted on, not logged past — the same defect #133 fixed in `regress.sh`, at the
 # hand-run caller. A failed reclaim means a dead run's processes are still on
 # 2402-2406 or in ~/arma3server, and `"$@"` here is `just probe` about to bind
@@ -121,7 +124,7 @@ if ! survivors="$(cti_slot_reclaim 0)"; then
     printf '[tier-lock] slot 0 did not come back clear: %s still holding it.\n' "${survivors:-survivors unnamed}" >&2
     printf '[tier-lock] failure_class=infra_unavailable — not a result. Nothing was launched.\n' >&2
     rm -f "$INFO"
-    exit "$EXIT_INFRA_UNAVAILABLE"
+    exit "$CTI_EXIT_INFRA_UNAVAILABLE"
 fi
 
 "$@"

@@ -161,9 +161,17 @@ def test_guard_runs_with_no_bare_name_to_resolve(tmp_path: Path) -> None:
     still runs to a verdict — the absolute-path seam is the only resolution it
     has. The guard that #41 replaced, wrapped in `command -v tasklist.exe`,
     silently skips itself here.
+
+    The rebuilt PATH keeps `uv`'s own directory: since #161 the answer→verdict
+    mapping is a bounded `uv run` (ADR-0049), so the *proceed* branch needs the
+    mapper reachable. That is not the #41 shape creeping back — a missing
+    mapper fails closed to a stop (asserted below), where the missing tasklist
+    failed open to a pass — and the tier cannot run without uv anywhere else
+    either.
     """
     tasklist = _stub(tmp_path, "tasklist.sh", f"printf '%s' {TASKLIST_ABSENT!r}")
-    env = dict(os.environ, PATH="/usr/bin:/bin", CTI_WINDOWS_TASKLIST=str(tasklist))
+    uv_dir = Path(shutil.which("uv") or "/usr/bin/uv").parent
+    env = dict(os.environ, PATH=f"/usr/bin:/bin:{uv_dir}", CTI_WINDOWS_TASKLIST=str(tasklist))
     # The staging must have taken effect: the rebuilt PATH resolves no bare name.
     # S603: a fixed literal command line with no input of any kind.
     probe = subprocess.run(  # noqa: S603
@@ -353,6 +361,24 @@ def test_wait_gone_refuses_a_window_that_is_not_a_number(tmp_path: Path) -> None
     result = _wait_gone(tasklist, timeout="soon")
     assert result.returncode != 0
     assert "not a number of seconds" in result.stderr
+
+
+def test_an_unreachable_verdict_mapper_fails_closed_not_open(tmp_path: Path) -> None:
+    """#161's new dependency, held to #41's rule at the call site.
+
+    The answer→verdict mapping is a `uv run` since ADR-0049 put the ladder in
+    Python. A mapper that cannot be invoked must be a stop even when the process
+    list read "free" — the one direction the old inline ladders could never get
+    wrong, and therefore the one this migration has to pin. `CTI_UV_TIMEOUT` set
+    to a non-number makes `timeout` refuse before `uv` launches, which is the
+    cheapest stand-in for every way the mapper can fail to run.
+    """
+    tasklist = _stub(tmp_path, "tasklist.sh", f"printf '%s' {TASKLIST_ABSENT!r}")
+    result = _run(tasklist, CTI_UV_TIMEOUT="banana")
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE
+    assert "could not be decided" in result.stderr
+    assert "failing closed" in result.stderr
+    assert "A check that could not run is not a check that passed" in result.stderr
 
 
 def test_runners_do_not_resolve_the_windows_tools_by_bare_name() -> None:

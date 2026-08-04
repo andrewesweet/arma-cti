@@ -138,29 +138,10 @@ cti_host_client_state() {
 }
 
 # The guard as a verdict: 0 to proceed, the infra_unavailable exit code to stop.
-# `cti_host_guard_main`'s wording, per host — the difference is only that a host
-# the tier owns is not asked, and says so.
+# Per host — a host the tier owns is not asked, and its answer says so — with
+# the answer→verdict mapping decided in its one home, tools/host_guard_verdict.py
+# (#161, ADR-0049), rather than by a third copy of the case ladder here.
 cti_host_guard() {
-    local host="${1:-local}" answer state detail
-    answer="$(cti_host_client_state "$host")"
-    state="${answer%% *}"
-    detail="${answer#* }"
-    case "$state" in
-    free)
-        printf '[host-guard] %s: %s\n' "$host" "$detail" >&2
-        return 0
-        ;;
-    running)
-        printf '[host-guard] %s: %s — a play session may be live.\n' "$host" "$detail" >&2
-        printf '[host-guard] verdict=FAIL failure_class=infra_unavailable host=%s\n' "$host" >&2
-        printf '[host-guard] This is a stop, not a result. Nothing was launched.\n' >&2
-        return "$CTI_EXIT_INFRA_UNAVAILABLE"
-        ;;
-    *)
-        printf '[host-guard] %s: %s\n' "$host" "$detail" >&2
-        printf '[host-guard] verdict=FAIL failure_class=infra_unavailable host=%s\n' "$host" >&2
-        printf '[host-guard] A check that could not run is not a check that passed.\n' >&2
-        return "$CTI_EXIT_INFRA_UNAVAILABLE"
-        ;;
-    esac
+    local host="${1:-local}"
+    cti_guard_verdict block "$(cti_host_client_state "$host")" "$host" >&2
 }

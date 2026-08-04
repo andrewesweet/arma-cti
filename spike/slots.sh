@@ -61,9 +61,6 @@ CTI_SLOT_GRANT_HIGH=3000 # exclusive
 CTI_SLOT_HUMAN_LOW=2302
 CTI_SLOT_HUMAN_HIGH=2306
 
-# The exit code every part of this tier uses for "not a result".
-CTI_SLOT_EXIT_INFRA=5
-
 cti_slot_log() { printf '[slots] %s\n' "$*" >&2; }
 
 # Refuse an index whose port block would leave the grant or touch the human's

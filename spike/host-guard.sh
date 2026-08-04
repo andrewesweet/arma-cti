@@ -25,6 +25,7 @@
 # Usage, sourced:
 #     source spike/host-guard.sh
 #     cti_human_client_state         # echoes free|running|unavailable + detail
+#     cti_guard_verdict fmt answer [host]   # that answer mapped onto a verdict
 #     cti_windows_taskkill <image>   # teardown that fails loudly rather than open
 #     cti_windows_wait_gone <image> <secs>   # teardown waits for its own exit
 #
@@ -52,8 +53,13 @@ CTI_WINDOWS_INTEROP_TIMEOUT="${CTI_WINDOWS_INTEROP_TIMEOUT:-20}"
 # tell apart from the Windows tool's own exit codes.
 CTI_EXIT_TIMED_OUT=124
 
-# The infra_unavailable exit code, kept the same number spike/tier-lock.sh and
-# spike/regress.sh use so a caller reads one value for "not a result".
+# The infra_unavailable exit code, in its one bash home (#161): this file sits
+# at the bottom of the source graph (spike/hosts.sh pulls it in; spike/slots.sh,
+# spike/tier-lock.sh and the runners arrive through hosts.sh), so everything
+# above reads this name rather than minting its own 5. Two places must agree
+# with it and say so at their site: tools/host_guard_verdict.py's
+# EXIT_INFRA_UNAVAILABLE, and the infra_unavailable row of spike/regress.sh's
+# CLASS_RANK — the whole class→exit table, whose own consolidation is #92/#147.
 CTI_EXIT_INFRA_UNAVAILABLE=5
 
 # Echoes one of:
@@ -106,6 +112,50 @@ cti_human_client_state() {
         return 0
     fi
     printf 'free %s is not in the Windows process list\n' "$image"
+}
+
+# The free/running/unavailable answer mapped onto the tier's verdict. The
+# mapping is decision logic, so it is decided in Python under pytest rather than
+# here (#161, ADR-0049): tools/host_guard_verdict.py is the one home of a ladder
+# that had grown three near-verbatim copies — this file's command form,
+# `cti_host_guard` in spike/hosts.sh, and inline above spike/run.sh's launch.
+#
+# $1 is the rendering (`block` for the [host-guard] lines a guard prints,
+# `env` for the key=value lines the harness folds into results.env), $2 the
+# answer, $3 the host name when the caller has one. The mapper's lines land on
+# this function's stdout for the caller to place; the verdict is the return
+# value — 0 proceed, CTI_EXIT_INFRA_UNAVAILABLE stop.
+#
+# Fails closed at this site, per ADR-0049's mechanics: a mapper that could not
+# run — no timeout(1) to bound it, no uv, killed at the bound — is a check that
+# could not run, and that is a stop, never a proceed (#41). This adds no
+# dependency the tier did not already carry — the daemon and the verdict typer
+# are `uv run`s too — but it does mean the *guard* now needs uv reachable, and
+# the shape that must never come back is the old one, where a missing tool made
+# the guard silently pass.
+cti_guard_verdict() {
+    local format="$1" answer="$2" host="${3:-}" repo status
+    local -a host_arg=()
+    [[ -n "$host" ]] && host_arg=(--host "$host")
+    repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+    if command -v timeout >/dev/null 2>&1; then
+        (cd "$repo" && timeout "${CTI_UV_TIMEOUT:-300}" \
+            uv run --quiet python tools/host_guard_verdict.py \
+            --format "$format" "${host_arg[@]}" -- "$answer")
+        status=$?
+        case "$status" in
+        0 | "$CTI_EXIT_INFRA_UNAVAILABLE") return "$status" ;;
+        esac
+        printf '[host-guard] the guard verdict could not be decided (host_guard_verdict.py exited %s); failing closed.\n' \
+            "$status" >&2
+    else
+        printf '[host-guard] the guard verdict could not be decided (timeout(1) is missing, so the mapper cannot be bounded); failing closed.\n' >&2
+    fi
+    printf '[host-guard] verdict=FAIL failure_class=infra_unavailable%s\n' "${host:+ host=$host}" >&2
+    printf '[host-guard] A check that could not run is not a check that passed.\n' >&2
+    # For the env consumer, which reads a stop's detail off stdout.
+    printf 'failure_detail=the host-guard verdict could not be decided; a check that could not run is not a check that passed\n'
+    return "$CTI_EXIT_INFRA_UNAVAILABLE"
 }
 
 # Kill a Windows image on teardown. Same absolute-path resolution, and loud when
@@ -197,30 +247,10 @@ cti_windows_wait_gone() {
     return 1
 }
 
-# As a command: one line of reason on stderr and a verdict in the exit code.
+# As a command: the reasons on stderr and the verdict in the exit code, mapped
+# in the ladder's one home rather than by a case block of this file's own.
 cti_host_guard_main() {
-    local state detail answer
-    answer="$(cti_human_client_state)"
-    state="${answer%% *}"
-    detail="${answer#* }"
-    case "$state" in
-    free)
-        printf '[host-guard] %s\n' "$detail" >&2
-        return 0
-        ;;
-    running)
-        printf '[host-guard] %s — a play session may be live.\n' "$detail" >&2
-        printf '[host-guard] verdict=FAIL failure_class=infra_unavailable\n' >&2
-        printf '[host-guard] This is a stop, not a result. Nothing was launched.\n' >&2
-        return "$CTI_EXIT_INFRA_UNAVAILABLE"
-        ;;
-    *)
-        printf '[host-guard] %s\n' "$detail" >&2
-        printf '[host-guard] verdict=FAIL failure_class=infra_unavailable\n' >&2
-        printf '[host-guard] A check that could not run is not a check that passed.\n' >&2
-        return "$CTI_EXIT_INFRA_UNAVAILABLE"
-        ;;
-    esac
+    cti_guard_verdict block "$(cti_human_client_state)" >&2
 }
 
 # Sourced by a runner, run by a test and by hand.

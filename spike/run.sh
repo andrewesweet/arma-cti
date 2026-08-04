@@ -463,11 +463,14 @@ if ((WINDOWS_CLIENT == 1)) && [[ "${CTI_CLIENT_LOCK_HELD:-0}" != 1 ]]; then
     fi
 fi
 
-guard="$(cti_host_client_state "$HOST")"
-case "${guard%% *}" in
-running) fail "infra_unavailable" "${guard#* } — that is a play session, not ours" ;;
-unavailable) fail "infra_unavailable" "${guard#* }; refusing to take a machine I cannot check" ;;
-esac
+# The answer mapped onto this run's verdict in the ladder's one home (#161,
+# ADR-0049), env rendering: on a stop, the mapped failure_detail is what `fail`
+# records. The wrapper fails closed, so a mapper that could not run stops this
+# run exactly as a process list that could not be read does.
+if ! guard_env="$(cti_guard_verdict env "$(cti_host_client_state "$HOST")" "$HOST")"; then
+    guard_detail="$(sed -n 's/^failure_detail=//p' <<<"$guard_env" | head -1)"
+    fail "infra_unavailable" "${guard_detail:-the host guard refused and named no detail (harness bug)}"
+fi
 record "windows_host_free" "true"
 
 [[ -x "$SERVER_BIN" ]] || fail "infra_unavailable" "server binary missing at $SERVER_BIN"
