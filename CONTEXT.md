@@ -24,6 +24,14 @@ _Avoid_: Command API, order bus
 One instruction sent through the Command Port: Purchase, Order, or Reinforce. Purchase and Order are a Commander's; Reinforce may also be issued by a squad leader for his own Squad (ADR-0040).
 _Avoid_: message, request, packet; "command" unqualified for engine scripting commands (say "scripting command")
 
+**Judgement**:
+What the rules made of one Command, returned in its synchronous reply: accepted, carrying advisory data a UI may show at once (remaining Funds, say), or rejected, carrying a typed code from the port's fixed vocabulary. Every Command gets one from the same port entry function — the AI planner's in-process, a human's through the gateway — and the wire spells it `status` and `reason`; the word itself never crosses. A Judgement is never work: the world change an accepted Command earns travels as an Effect (ADR-0012).
+_Avoid_: Decision (reserved for the planner's trace — why a Command was built, not what the rules made of it); error (a Command the rules refuse is rejected, never an error — ADR-0012); ack, response (transport's, not the port's)
+
+**Effect**:
+One world change the daemon has accepted and the world must carry out, delivered through the outbox the world polls (ADR-0018) and never through a Command's reply. Past-tense named (`squad_spawned`, `order_issued`, `objective_captured`, `squad_reinforced`, `campaign_won`). A Command's reply is a judgement; an Effect is the work.
+_Avoid_: event (unqualified), callback, push message; reply (a judgement is never work — ADR-0012)
+
 **Objective**:
 A capturable point of interest on a map's manifest, with a stable authored ID and an owner (side, Neutral, or Contested). MVP uses towns only; the concept is not town-specific.
 _Avoid_: Town, sector, zone, POI
@@ -49,7 +57,7 @@ The strategic picture at one moment as **one** Commander may know it: every Obje
 _Avoid_: State, world state, telemetry; snapshot (reserved for the persisted Campaign)
 
 **Contact**:
-What one side has seen of the other, as it appears in that side's Observation: aggregated per place, carrying an estimated echelon (team, squad, platoon, company), a posture (foot, motorised, mechanised, armoured, air), any notable assets, and how long ago it was seen. Reported by squad leaders from what their units actually observed. A Contact never names an enemy Squad or its Order — it says what was seen, never what the enemy is or intends. Observing a place and finding nobody clears its Contact.
+What one side has seen of the other, as it appears in that side's Observation: aggregated per place, carrying an estimated echelon (team, squad, platoon, company), a posture (foot, motorised, mechanised, armoured, air), any notable assets, and how long ago it was seen. Reported by squad leaders from what their units actually observed. A Contact never names an enemy Squad or its Order — it says what was seen, never what the enemy is or intends. An echelon band is a size estimate, never a unit of command: a Contact of echelon squad does not name a Squad. Observing a place and finding nobody clears its Contact.
 _Avoid_: Sighting (that is the raw world-side input a Contact is banded from, never a synonym for the Contact itself), blip, intel; enemy Squad (a Contact is not one); target (reserved for the engine's targeting)
 
 **Sighting**:
