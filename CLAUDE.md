@@ -16,9 +16,15 @@ Personal Arma 3 Capture the Island scenario, developed primarily by autonomous a
 
 ## Model roles
 
-- **fable[1m], effort high** — planning sessions, architecture and periodic review, anything touching ADRs, CONTEXT.md, schema semantics, or process docs. Defer structural decisions to a fable session rather than improvising.
-- **opus[1m], effort xhigh** — implementation and day-to-day review. May delegate to sonnet/haiku subagents and chooses their effort freely.
-- Sessions hand over via `/handoff`.
+Ratified (model, effort) ↔ task mapping (human decision, 2026-08-04, in the orchestrator session; replaces the two-role list this section carried since 2026-07-30):
+
+- **fable[1m], effort high** — the orchestration seat, retros, anything touching ADRs, CONTEXT.md, schema semantics, or process docs; and, by exception, diagnosis-shaped fixes where no gate catches a subtly wrong answer (the #181 shape: a planner defect whose plausible wrong fix would also have gone green). Defer structural decisions to a fable session rather than improvising.
+- **opus[1m], effort xhigh** — complex implementation and review: corpus-gated features, planner work, prototypes (#187's shape; escalate a prototype's synthesis to fable only if it disappoints). Human decision sessions run here (existing practice).
+- **opus[1m], effort high** — small-fry batches and routine gated implementation.
+- **sonnet, effort medium** — mechanical one-commit executions: ruling transcriptions, CHANGELOG/docs sweeps, worktree hygiene.
+- **haiku, effort low** — read-only reconnaissance, search, triage sweeps.
+
+Mechanism, and why this section exists: the Agent tool carries no effort parameter, and a subagent silently inherits its dispatcher's model unless overridden — which is how every implementation agent of 2026-08-04 ran on fable and consumed the bulk of a weekly budget. Effort becomes real only through agent definitions, so the enforcing seats live in `.claude/agents/` (`cti-implementer` opus/xhigh, `cti-implementer-light` opus/high, `cti-mechanical` sonnet/medium, `cti-recon` haiku/low read-only); dispatch through them rather than by naming a bare model. Sessions hand over via `/handoff`.
 
 ## Command surface
 
