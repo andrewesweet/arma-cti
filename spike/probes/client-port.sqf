@@ -57,7 +57,7 @@
     private _board = {
         params ["_for"];
         private _result = ([createHashMapFromArray [
-            ["id", format ["client-port-probe-view-%1-%2", _for, round (diag_tickTime * 1000)]],
+            ["id", ["client-port-probe-view", _for] call cti_fnc_requestId],
             ["verb", "view"],
             ["payload", createHashMapFromArray [["side", _for]]]
         ]] call cti_probe_fnc_rpc) getOrDefault ["result", createHashMap];
@@ -420,7 +420,7 @@
     // saying who it is acting as, and a line that says nothing is refused.
     ([_side] call _board) params ["", "_squadsBeforeUnstamped"];
     private _unstamped = [createHashMapFromArray [
-        ["id", format ["client-port-probe-unstamped-%1", round (diag_tickTime * 1000)]],
+        ["id", ["client-port-probe-unstamped"] call cti_fnc_requestId],
         ["verb", "command"],
         ["payload", createHashMapFromArray [
             ["command", "purchase"],

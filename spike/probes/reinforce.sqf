@@ -62,7 +62,7 @@
     private _board = {
         params ["_for"];
         private _result = ([createHashMapFromArray [
-            ["id", format ["reinforce-probe-view-%1-%2", _for, round (diag_tickTime * 1000)]],
+            ["id", ["reinforce-probe-view", _for] call cti_fnc_requestId],
             ["verb", "view"],
             ["payload", createHashMapFromArray [["side", _for]]]
         ]] call cti_probe_fnc_rpc) getOrDefault ["result", createHashMap];
