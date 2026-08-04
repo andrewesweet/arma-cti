@@ -46,6 +46,7 @@ HUMAN_PORTS = range(2302, 2307)
 EXIT_PASS = 0
 EXIT_ASSERTION_FAILED = 1
 EXIT_INFRA_UNAVAILABLE = 5
+EXIT_UNTYPED_HARNESS_FAILURE = 8
 
 # A stand-in for `spike/run.sh`. It reproduces the only part of the contract the
 # runner reads: `results.env` with a verdict and, when the verdict is FAIL, the
@@ -1068,6 +1069,67 @@ def test_each_probe_ran_against_its_own_slots_daemon(tmp_path: Path) -> None:
             )
         checked += 1
     assert checked == len(ALL_PROBES)
+
+
+# -------------------------------------------- verdict-typing residues (#147)
+
+
+def test_a_failed_install_prep_after_acquisition_is_typed_and_torn_down(tmp_path: Path) -> None:
+    """#147 item 1: a die on a held pool was an untyped red without teardown.
+
+    The path exited via `die` — an untyped red on an infra condition, on an
+    exit code that collided with `timeout`'s — and, with the trap not yet
+    installed, without running pool_teardown, so the slots' `.info` files were
+    left beside kernel-freed locks for the next holder to misread.
+    """
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "2",
+        "contacts",
+        extra_env={"CTI_SLOT_INSTALL_MASTER": str(tmp_path / "no-master")},
+    )
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    assert "failure_class=infra_unavailable" in result.stderr
+    assert not (tmp_path / "trace.tsv").exists(), "a probe ran without an install"
+    for slot in (0, 1):
+        assert not (tmp_path / "state" / "slots" / f"{slot}.lock.info").exists(), (
+            "teardown did not run: a released slot still carries holder metadata"
+        )
+
+
+def test_an_unknown_worst_class_exits_as_the_harness_bug_it_is(tmp_path: Path) -> None:
+    """#147 item 3: an unknown class used to exit 9, a code documented nowhere.
+
+    A class the table has never heard of is by the table preamble's own rule an
+    untyped red — the merge already ranks it at that severity (#185) — so the
+    exit says the same thing rather than minting a tenth code.
+    """
+    result = pool_run(
+        tmp_path,
+        "--slots",
+        "1",
+        "contacts",
+        extra_env={"CTI_STUB_FAIL": "contacts", "CTI_STUB_FAIL_CLASS": "timout"},
+    )
+    assert result.returncode == EXIT_UNTYPED_HARNESS_FAILURE, result.stderr[-4000:]
+    assert "untyped_harness_failure" in result.stderr
+
+
+def test_a_preflight_refusal_leaves_a_durable_record(tmp_path: Path) -> None:
+    """#147 item 7: a refusal typed only to stderr is a record nobody keeps.
+
+    It survives exactly as long as the invoker keeps its captured output, so
+    one line per refusal lands under the tier's own evidence root, with the
+    class, the detail and the pool's label.
+    """
+    starved = str(mem_floor(1) - 1)
+    result = pool_run(tmp_path, "--slots", "3", extra_env={"CTI_SLOT_MEM_AVAILABLE_MB": starved})
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    record = (tmp_path / "state" / "runs" / "refusals.log").read_text()
+    assert "infra_unavailable" in record
+    assert starved in record
+    assert "just regress --slots 3" in record
 
 
 # --------------------------------------- the watchdog above run.sh (#144)

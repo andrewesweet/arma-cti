@@ -323,6 +323,27 @@ fi
 
 POOL_LABEL="just regress --slots $WANT_SLOTS ${CORPUS[*]}"
 
+# One line per refusal, under the tier's own evidence root: a typed refusal
+# that went only to stderr survives exactly as long as the invoker keeps its
+# captured output (#147), and "why did my run refuse last night?" deserves a
+# better answer than scrollback. Best-effort by design — a refusal that cannot
+# be recorded still refuses, which is the right half of fail-closed — and
+# bounded, because unbounded is unbounded: the newest 200 lines are kept once
+# the file passes 400.
+record_refusal() {
+    local class="$1" detail="${2//$'\n'/ }" file="$RUNS_DIR/refusals.log" lines
+    {
+        mkdir -p "$RUNS_DIR" &&
+            printf '%s\t%s\t%s\t%s\n' \
+                "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$class" "$detail" "$POOL_LABEL" >>"$file"
+    } 2>/dev/null || return 0
+    lines="$(wc -l <"$file" 2>/dev/null)" || return 0
+    if ((lines > 400)); then
+        tail -n 200 "$file" >"$file.tmp" 2>/dev/null && mv "$file.tmp" "$file" 2>/dev/null
+    fi
+    return 0
+}
+
 # ------------------------------------------------------------------ pre-flight
 # The host this pass is aimed at, checked before anything is launched. A name the
 # tier does not know is `infra_unavailable` rather than a fallback to this
@@ -336,6 +357,7 @@ if ! HOST="$(cti_host_resolve)"; then
         printf 'failure_detail=CTI_TIER_HOST names a host the tier does not know\n'
         printf 'host=%s\n' "${CTI_TIER_HOST:-local}"
     } >&2
+    record_refusal infra_unavailable "CTI_TIER_HOST names a host the tier does not know: ${CTI_TIER_HOST:-local}"
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
@@ -351,6 +373,7 @@ if ! command -v timeout >/dev/null 2>&1; then
         printf 'failure_class=infra_unavailable\n'
         printf 'failure_detail=timeout(1) is not on PATH; the per-probe watchdog cannot be set\n'
     } >&2
+    record_refusal infra_unavailable "timeout(1) is not on PATH; the per-probe watchdog cannot be set"
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
@@ -395,6 +418,8 @@ host_guard_or_queue() {
 }
 
 if ! host_guard_or_queue; then
+    # The guard's own words went to stderr above; this is the durable line.
+    record_refusal infra_unavailable "the host guard refused $HOST — a play session may be live, another run held the Windows client, or the check could not run"
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
@@ -438,6 +463,7 @@ case $? in
         printf 'failure_class=infra_unavailable\n'
         printf 'failure_detail=could not read MemAvailable on %s\n' "$HOST"
     } >&2
+    record_refusal infra_unavailable "could not read MemAvailable on $HOST"
     exit "${CLASS_RANK[infra_unavailable]}"
     ;;
 esac
@@ -455,6 +481,7 @@ if ((MEM_FIT == 0)); then
         printf 'host=%s\n' "$HOST"
         printf 'mem_available_mb=%s\n' "$MEM_AVAILABLE_MB"
     } >&2
+    record_refusal infra_unavailable "$MEM_AVAILABLE_MB MiB available on $HOST, floor for one slot is $(cti_slot_mem_floor_mb 1) MiB"
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 if ((MEM_FIT < WANT_SLOTS)); then
@@ -510,12 +537,33 @@ if ! acquire_slots; then
         printf 'failure_detail=no slot free; see %s\n' "$CTI_SLOT_LOCK_DIR"
         printf 'host=%s\n' "$HOST"
     } >&2
+    record_refusal infra_unavailable "no slot free on $HOST; see $CTI_SLOT_LOCK_DIR"
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
 ((${#SLOTS[@]} < WANT_SLOTS)) &&
     log "asked for $WANT_SLOTS slot(s), ${#SLOTS[@]} free — running at N=${#SLOTS[@]}"
 log "slots: ${SLOTS[*]}"
+
+# Teardown, installed the moment this run holds anything worth tearing down.
+# It used to be installed just before the workers forked, which left every
+# failure path between acquisition and there — a failed reclaim of every slot,
+# a failed install prep, an evidence directory that could not be created —
+# exiting with locks freed only by the kernel and each slot's `.info` file
+# left beside a free lock for the next holder to misread (#147).
+ram_sampler_pid=""
+WORKER_PIDS=()
+pool_teardown() {
+    local pid slot
+    [[ -n "$ram_sampler_pid" ]] && kill "$ram_sampler_pid" 2>/dev/null
+    for pid in ${WORKER_PIDS[@]+"${WORKER_PIDS[@]}"}; do kill "$pid" 2>/dev/null; done
+    # The slots that failed to reclaim are released here too. They ran nothing,
+    # but this run has held their locks all the way through on purpose (#133):
+    # a slot proved not clear is one no concurrent run should be handed while we
+    # are still here to say so, and the lock is the only way to say it.
+    for slot in ${SLOTS[@]+"${SLOTS[@]}"} ${DIRTY_SLOTS[@]+"${DIRTY_SLOTS[@]}"}; do cti_slot_release "$slot"; done
+}
+trap pool_teardown EXIT INT TERM
 
 # Stale state, per slot, on acquire rather than on release (ADR-0022, #58, #70).
 # The lock frees itself when its holder dies; the holder's server, headless
@@ -553,7 +601,22 @@ for slot in "${SLOTS[@]}"; do
         log "slot $slot: reclaim did not come back clear — ${survivors:-survivors unnamed} still holding it; dropping the slot from this pool (infra_unavailable for that slot, not a result from it)"
         continue
     fi
-    cti_slot_install_ready "$slot" || die "could not prepare the install for slot $slot"
+    # Typed, not `die`: slots are held, so this is a failure path out of a run
+    # that has taken something — an untyped red on an infra condition, exiting
+    # on a code that read as `timeout`, was #147's worst case. The trap above
+    # runs the teardown on the way out.
+    cti_slot_install_ready "$slot" || {
+        {
+            printf '\n[regress] could not prepare the install for slot %s — this is infra_unavailable, not a result.\n' "$slot"
+            printf '[regress] Nothing was launched.\n'
+            printf 'verdict=FAIL\n'
+            printf 'failure_class=infra_unavailable\n'
+            printf 'failure_detail=install prep failed for slot %s (cti_slot_install_ready); master or clone at fault\n' "$slot"
+            printf 'host=%s\n' "$HOST"
+        } >&2
+        record_refusal infra_unavailable "install prep failed for slot $slot (cti_slot_install_ready)"
+        exit "${CLASS_RANK[infra_unavailable]}"
+    }
     READY_SLOTS+=("$slot")
 done
 
@@ -569,6 +632,7 @@ if ((${#READY_SLOTS[@]} == 0)); then
         printf 'failure_detail=slot(s) %s not clear after SIGKILL\n' "${DIRTY_SLOTS[*]}"
         printf 'host=%s\n' "$HOST"
     } >&2
+    record_refusal infra_unavailable "slot(s) ${DIRTY_SLOTS[*]} not clear after SIGKILL"
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
@@ -588,7 +652,19 @@ POOL_STAMP="$(date -u +%Y%m%dT%H%M%SZ)-$$"
 POOL_OUT="$RUNS_DIR/$POOL_STAMP-pool"
 CLAIMS="$POOL_OUT/claims"
 STOP_FLAG="$POOL_OUT/stop"
-mkdir -p "$CLAIMS" || die "could not create the pool's evidence directory $POOL_OUT"
+# Typed for the same reason as the install prep above: slots are held, so an
+# exit here is a failure path out of a run in flight, not a usage refusal.
+mkdir -p "$CLAIMS" || {
+    {
+        printf '\n[regress] could not create the pool'"'"'s evidence directory %s — this is infra_unavailable, not a result.\n' "$POOL_OUT"
+        printf 'verdict=FAIL\n'
+        printf 'failure_class=infra_unavailable\n'
+        printf 'failure_detail=could not create %s\n' "$CLAIMS"
+        printf 'host=%s\n' "$HOST"
+    } >&2
+    record_refusal infra_unavailable "could not create the pool evidence directory $CLAIMS"
+    exit "${CLASS_RANK[infra_unavailable]}"
+}
 
 # The pool's own evidence is bounded the way a probe's passes are. It is small —
 # a schedule, a RAM trace and the merged verdict set — but unbounded is unbounded.
@@ -633,8 +709,8 @@ prune_passes() {
 # ADR-0028's N=3 figure was arithmetic from a measured N=2, and its own
 # overturning conditions say the third slot is not trusted until the number has
 # been measured. So every pool run measures it, and the number lands in the run's
-# evidence rather than in a session's memory.
-ram_sampler_pid=""
+# evidence rather than in a session's memory. (`ram_sampler_pid` is initialised
+# beside the trap, which has to be able to read it from the moment it exists.)
 start_ram_sampler() {
     (
         # The same wall the worker builds below, for the same reason and one
@@ -682,19 +758,6 @@ start_ram_sampler() {
     ) >"$POOL_OUT/ram.tsv" 2>/dev/null &
     ram_sampler_pid=$!
 }
-
-WORKER_PIDS=()
-pool_teardown() {
-    local pid slot
-    [[ -n "$ram_sampler_pid" ]] && kill "$ram_sampler_pid" 2>/dev/null
-    for pid in ${WORKER_PIDS[@]+"${WORKER_PIDS[@]}"}; do kill "$pid" 2>/dev/null; done
-    # The slots that failed to reclaim are released here too. They ran nothing,
-    # but this run has held their locks all the way through on purpose (#133):
-    # a slot proved not clear is one no concurrent run should be handed while we
-    # are still here to say so, and the lock is the only way to say it.
-    for slot in ${SLOTS[@]+"${SLOTS[@]}"} ${DIRTY_SLOTS[@]+"${DIRTY_SLOTS[@]}"}; do cti_slot_release "$slot"; done
-}
-trap pool_teardown EXIT INT TERM
 
 # ------------------------------------------------------------------ scheduling
 # Longest-job-first, on the probe's own declared window. A window is a deadline
@@ -1067,6 +1130,7 @@ if ((merge_status != 0)) || [[ -z "$worst_class" ]]; then
         printf 'failure_class=infra_unavailable\n'
         printf 'failure_detail=the pool merge exited %s; the workers'"'"' evidence is under %s\n' "$merge_status" "$POOL_OUT"
     } >&2
+    record_refusal infra_unavailable "the pool merge exited $merge_status; the workers' evidence is under $POOL_OUT"
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
@@ -1095,6 +1159,15 @@ done
 log "peak memory in use: $((PEAK_USED_KB / 1024)) MiB (tier processes $((PEAK_TIER_KB / 1024)) MiB, least available $((MIN_AVAIL_KB / 1024)) MiB)"
 log "pool evidence: $POOL_OUT"
 
-exit_code="${CLASS_RANK[$worst_class]:-9}"
+exit_code="${CLASS_RANK[$worst_class]:-}"
+if [[ -z "$exit_code" ]]; then
+    # A worst class this table has never heard of is, by the failure-class
+    # table's own preamble, an untyped red: a harness bug, and the merge
+    # already ranks it at that severity (#185). The exit says the same thing
+    # rather than the undocumented 9 it used to fall to (#147) — the row to
+    # read is untyped_harness_failure, and the row says fix the harness first.
+    log "worst class '$worst_class' is not in the exit table — exiting as untyped_harness_failure (a class nobody can read is a harness bug)"
+    exit_code="${CLASS_RANK[untyped_harness_failure]}"
+fi
 log "worst class: $worst_class (exit $exit_code)"
 exit "$exit_code"
