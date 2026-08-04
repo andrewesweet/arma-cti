@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×9 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×10 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -25,7 +25,13 @@
 > since it was written; fixed by the fifteenth, which per ADR-0038's shape escalates a
 > second violation to a mechanical check.) Sixth amendment (2026-08-02): the
 > shared-assignment variant of the worktree mode, after #105's instances 3–5 in one
-> evening.
+> evening. Tenth use (2026-08-03/04): the disk-exhaustion crash cluster — four
+> orchestrator deaths in one window (the orchestrator's count; in-repo corroboration in
+> #164's crash-killed corpus attempt and crash-recovery checkpoint and #144's attempt-3
+> loss), root-caused by the human to a full Windows OS drive, every recovery the
+> codified move at near-zero cost to commit-early. Seventh and eighth amendments
+> (2026-08-04, from that cluster): the checkpoint-diff bullet in the resumed agent's
+> side, and the monitor-claim clause in the noticing section.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
@@ -89,6 +95,15 @@ clock-watching lied (ADR-0033).
   agent.** A parent waiting on its strand's report waits on something that will arrive at
   the orchestrator instead; relay it (files plus a message worked, at ~15k tokens of
   double-handling on #48). Plan the plumbing before fanning out two levels deep.
+- **A subagent's "monitor armed" is a claim about time after its own turn, which nothing
+  it arms survives — so the insurance watcher is standing, not an ad-hoc save.** Twice on
+  2026-08-04 the claim coincided with a turn that had already stopped with no live
+  children, and the #168 agent stalled twice in one evening at the identical point:
+  background `just unit` launched, run finished, agent never woke, each stall caught only
+  by the orchestrator's external watcher and cleared only by an explicit prod naming what
+  had finished. Two identical saves is this document's codification threshold: an agent
+  dispatched with a run attached gets a watcher armed at dispatch. The agent-side rule is
+  CLAUDE.md's watching-inside-turn sentence.
 
 ## When the orchestrator itself dies
 
@@ -144,4 +159,10 @@ resumed agent must:
 - re-verify every claim its transcript makes that the briefing marks moved — ADR numbers,
   ownership, eliminations — rather than trusting its own memory over the tree;
 - treat its dead run's uncommitted output and in-flight results as ADR-0022 stale state:
-  redo the verification, do not cite the corpse.
+  redo the verification, do not cite the corpse;
+- audit any blanket checkpoint (`git add -A`) taken around the death by diff, not by
+  file list: a checkpoint can sweep in pre-landing copies of files other agents have
+  since landed, so replaying it reverts their work on `main`. Read the staged diff
+  against `origin/main` and confirm every hunk is yours — #164's checkpoint carried the
+  pre-#167 copy of `block-no-verify.py` after #167's fix had landed in between, and the
+  revert showed only in `git diff --cached`, never in the file list.

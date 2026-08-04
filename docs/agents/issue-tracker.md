@@ -42,6 +42,16 @@ Conventional Commits type, and really would close the issue. Per ADR-0042 the ch
 from the committing worktree's copy, so a session predating the landing enforces nothing
 until it rebases.
 
+## A defect named in a close-out is filed in the same session
+
+"Worth its own issue" in a closing comment files that issue before the session ends.
+Twice in one cycle (2026-08-03/04) a close named a defect worth filing — #164's
+admission-gate per-slot figure, #163's cross-agent machine-wide memory exhaustion — and
+no issue existed until the next retro swept for them, while `docs/regression-tier.md`'s
+own "worth a look if it recurs" line also recurred unfiled. Triage selects from the
+tracker, not from prose in closed issues; naming without filing leaves the defect
+invisible to it.
+
 ## Decision tickets
 
 A design question that gates implementation travels as its own issue and closes with **no code**: an ADR (with any CONTEXT.md term changes in the same commit) plus implementation issues in dependency order, each carrying acceptance criteria precise enough to implement without a clarifying question. The closing comment names the decision, the issues it spawned, and their ordering rationale. Exemplar: #31 → ADR-0020 + #32–#35; three implementing agents ran concurrently off those criteria and none needed to ask anything. Raise one when a build ticket flags a decision as "not the scorer's to route around" — the flag is the trigger, and the decision ticket is what keeps the build ticket honest about its scope.
