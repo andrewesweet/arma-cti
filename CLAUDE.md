@@ -2,7 +2,7 @@
 
 Personal Arma 3 Capture the Island scenario, developed primarily by autonomous agents with maximal automated testing. Session-based persistent campaign; player as Commander or squad leader.
 
-> **Process status: unproven — written 2026-07-30, before first practical use.** Every rule here is a hypothesis until a retro validates it. Propose changes only via `/retro`; never drift silently. Audit trail: `docs/process-log.md`.
+> **Process status: written 2026-07-30 before first practical use; since exercised by twenty-one retros.** A rule's earned standing is its own `validated ×N` marker; a rule without one is still a hypothesis until a retro validates it. Propose changes only via `/retro`; never drift silently. Audit trail: `docs/process-log.md`.
 
 ## Read first
 
@@ -26,7 +26,7 @@ Interact with the project through `just` only. The rule binds work that lands an
 
 | Command | Purpose | Requires Arma | Run when |
 |---|---|---|---|
-| `just check` | cog, generated-schema check, HEMTT lints, ruff, ty, rustfmt, clippy | No | Every edit |
+| `just check` | cog, generated-schema check, ADR-form check, HEMTT lints, ruff, ty, rustfmt, clippy | No | Every edit |
 | `just unit` | pytest, cargo test | No | Every edit |
 | `just fast` | `check` + `unit` | No | Every edit |
 | `just generate` | Regenerate the Command Port schema export (`tools/export_command_schema.py`) | No | After changing the daemon's Command Port schema |
@@ -70,9 +70,9 @@ The Arma tier shares this machine with the human's play sessions, and WSL2 mirro
 
 Strictness principle: every tool runs in its strictest practical mode and warnings are errors. A suppression (`# noqa`, `#[allow]`, ignore entry) requires an inline comment justifying it.
 
-- **Python** (daemon, planner, tests): managed by `uv` (locked deps, pinned interpreter; run everything via `uv run`). `ruff` for lint + format; `ty` (Astral) for type checking; `pytest` + `hypothesis`; `coverage.py`; `mutmut` scoped to snapshot save/load and the planner.
-- **Rust** (shim only): toolchain pinned in `rust-toolchain.toml`; `cargo clippy -- -D warnings` and `rustfmt --check` in `just check`; `cargo-xwin` for the Windows `.dll`.
-- **SQF**: HEMTT lints are the primary static tier (SQF-VM optional — see docs/research/arma-toolchain.md).
+- **Python** (daemon + planner in `src/cti_daemon/`, tests in `tests/`): managed by `uv` (locked deps, pinned interpreter; run everything via `uv run`). `ruff` for lint + format; `ty` (Astral) for type checking; `pytest` + `hypothesis`; `coverage.py`; `mutmut` scoped to snapshot save/load and the planner.
+- **Rust** (shim only, `extension/`): toolchain pinned in `rust-toolchain.toml`; `cargo clippy -- -D warnings` and `rustfmt --check` in `just check`; `cargo-xwin` for the Windows `.dll`.
+- **SQF** (`addons/`, `missions/`): HEMTT lints are the primary static tier (SQF-VM optional — see docs/research/arma-toolchain.md).
 - **Bash** (harness orchestration only): the shell keeps the seams where it is the subject — launching and holding processes, `flock`, environment assembly, signals, `timeout`, flag files between workers. Non-trivial logic — a decision ladder, aggregation, a structured format, arithmetic past a counter — lands in Python under pytest, invoked through a `timeout`-bounded `uv run` and checked at its site; logic already in bash past that line migrates one seam per issue with its tests, never as a big-bang rewrite of the tier that runs the corpus (ADR-0049, #171; inventory on #171. Three conversions landed clean and regression-free — `tools/probe_verdict.py` #171, `tools/host_guard_verdict.py` #161, `tools/pool_merge.py` #185 — each red-first pins into one Python home with every caller failing closed, and #185 routed the class-table residue to #92/#147 at the `CLASS_RANK` comment rather than leaving a parallel table).
 
 Repo hooks (`.claude/hooks/`, wired in `.claude/settings.json`) enforce mechanically: no edits to generated files or acceptance specs (`tests/specs/`), no `git commit --no-verify`, auto-format on edit. A hook denial is a signal you're on a gated surface — propose, don't work around. Hooks run from each session's own worktree copy of `.claude/hooks/`, so a hook fix landed on `main` governs a session only once that session's worktree rebases: a denial the landed fix should have prevented means a stale copy, not a failed fix (#120's fourth false positive fired exactly this way, during the fix itself).
