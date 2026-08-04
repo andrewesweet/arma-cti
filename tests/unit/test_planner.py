@@ -835,3 +835,127 @@ def test_an_assault_nothing_outbid_is_not_the_same_as_one_called_off() -> None:
     world = quiet_start()
 
     assert assault_row(world).chose == "not sought"
+
+
+# The commitment hysteresis is from here down (#181; human ruling on #177,
+# 2026-08-04: a committed assault holds). The demand above is re-derived from
+# the picture every cycle, and in-world the picture flickers — the red run's
+# Decision rows went "squad reported; 2 wanted" to "nothing reported; 1 wanted"
+# in one cycle, with a leader standing on the Base, and the demand shed a Squad
+# whose own top-scored option was still the assault. These are the offline
+# proof in the #104 pattern: the real planner and the real port over the staged
+# board, across seeds. Pre-fix both disturbances re-task a committed Squad on
+# 30 of 30 seeds; the fix is the `_Demand` floor, not anything in these tests.
+
+
+def massed_on_kamino(seed: int) -> tuple[campaign.Campaign, planner.UtilityPlanner, list[str]]:
+    """Return the probe's position: a mass of two ordered onto Kamino, arrived.
+
+    A WEST-held island, a squad-banded Contact on the enemy Base, the mass
+    ordered through the real port, and every Squad standing where it was sent —
+    which puts the crew on the Base itself, looking at the ground the Contact
+    is about to vanish from, exactly as the red run had it.
+    """
+    world = island_held()
+    sighted(world, "WEST", "csat_kamino", men=4)
+    mind = brain(world, seed=seed)
+    cycle(world, mind, "WEST")
+    committed = [
+        squad.id
+        for squad in world.roster.roll("WEST")
+        if (squad.order.kind, squad.order.place) == ("assault", "csat_kamino")
+    ]
+    world.roster.reconcile(
+        {squad.id: Held(8, squad.order.place) for squad in world.roster.roll("WEST")}
+    )
+    return world, mind, committed
+
+
+def unpicked(plan: planner.Plan, committed: list[str]) -> dict[str, tuple[str, str]]:
+    """Return every Order this plan takes off a committed Squad."""
+    return {
+        squad: order
+        for squad, order in orders(plan).items()
+        if squad in committed and order != ("assault", "csat_kamino")
+    }
+
+
+def test_a_committed_assault_survives_its_contact_flickering_out_on_every_seed() -> None:
+    # #181's red run exactly: "observed empty" is the engine's knowledge model,
+    # and a leader standing on the Base lost sight of a garrison 25 m away for
+    # one sample, so #28's removal rule cleared the Contact and the demand fell
+    # to the fog floor's one Squad. The commitment floor is what holds: the
+    # picture may raise what an Assault brings, never shed what it sent.
+    for seed in range(30):
+        world, mind, committed = massed_on_kamino(seed)
+        assert len(committed) == planner.ASSAULT_MASS["squad"]
+
+        world.contacts.report("WEST", at_time=world.elapsed, seen=(), observed=("csat_kamino",))
+        plan, judgements = cycle(world, mind, "WEST")
+
+        assert unpicked(plan, committed) == {}
+        assert [one.code for one in judgements if not one.accepted] == []
+
+
+def test_a_committed_assault_survives_its_contact_rebanding_down_on_every_seed() -> None:
+    # The gentler flicker: the Contact does not vanish, the band drops a rung —
+    # one man still in sight bands team, and a team wants one Squad. Same
+    # doctrine, same floor: an estimate shrinking is not a commitment shrinking.
+    for seed in range(30):
+        world, mind, committed = massed_on_kamino(seed)
+        assert len(committed) == planner.ASSAULT_MASS["squad"]
+
+        sighted(world, "WEST", "csat_kamino", men=1)
+        plan, _ = cycle(world, mind, "WEST")
+
+        assert unpicked(plan, committed) == {}
+
+
+def test_a_mass_held_by_commitment_says_so_in_the_trace() -> None:
+    # The trace has to carry the hysteresis or it lies about the arithmetic: a
+    # row reading "1 wanted" over a mass of two is an argument no reader could
+    # follow. The banded demand and the commitment are both said, so the row
+    # names the thing that actually held the number up.
+    world, mind, committed = massed_on_kamino(seed=0)
+    world.contacts.report("WEST", at_time=world.elapsed, seen=(), observed=("csat_kamino",))
+
+    plan, _ = cycle(world, mind, "WEST")
+
+    row = only(plan.decisions, "assault csat_kamino")
+    assert row.chose == f"massed {len(committed)}"
+    assert row.because == "nothing reported; 1 wanted, 2 committed"
+
+
+def test_a_committed_assault_the_force_can_no_longer_mass_for_is_released() -> None:
+    # The release condition, named: hysteresis is not a deadlock, and a
+    # committed assault that is genuinely lost still retreats. The garrison
+    # rebands to company, doctrine wants four, three Squads is all there is —
+    # so all-or-nothing declines exactly as it always did, the commitment floor
+    # notwithstanding, and both committed Squads are taken off the Base rather
+    # than left to press a fight the Commander has already called off.
+    world = island_held_by("camp_rogain", "lz_baldy", "air_station")
+    # Broke, before this line existed, for the reason the standing-order test
+    # names: `fielded` leaves the purse full, the Commander buys a fourth Squad
+    # a cycle, and the company masses instead of declining. Three Squads and an
+    # empty purse is the position where the force genuinely cannot answer.
+    world.ledger.spend("WEST", world.ledger.balance("WEST"))
+    sighted(world, "WEST", "csat_kamino", men=4)
+    mind = brain(world)
+    cycle(world, mind, "WEST")
+    committed = [
+        squad.id
+        for squad in world.roster.roll("WEST")
+        if (squad.order.kind, squad.order.place) == ("assault", "csat_kamino")
+    ]
+    assert len(committed) == planner.ASSAULT_MASS["squad"]
+    world.roster.reconcile(
+        {squad.id: Held(8, squad.order.place) for squad in world.roster.roll("WEST")}
+    )
+
+    sighted(world, "WEST", "csat_kamino", men=25)
+    plan, _ = cycle(world, mind, "WEST")
+
+    assert only(plan.decisions, "assault csat_kamino").chose == "declined"
+    released = {squad for squad, order in orders(plan).items() if squad in committed}
+    assert released == set(committed)
+    assert all(order != ("assault", "csat_kamino") for order in orders(plan).values())

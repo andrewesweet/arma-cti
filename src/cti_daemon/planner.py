@@ -282,6 +282,30 @@ class _Prospect:
 
 
 @dataclass(frozen=True, slots=True)
+class _Demand:
+    """What one enemy Base's Assault must arrive with, and where the number came from.
+
+    Two sources rather than one since #181, and kept apart because the trace
+    has to say which one bound: what the Contact's band demands (ADR-0027), and
+    what the Commander has already committed.
+    """
+
+    # What the band demands — the fog floor's one Squad when nothing is
+    # reported. This half may move every cycle, because the picture does.
+    banded: int
+    # Our own Squads already standing under an Assault on this Base. The
+    # commitment hysteresis (#181, human ruling on #177, 2026-08-04): a demand
+    # re-derived from the picture alone shed a committed Squad twenty seconds
+    # after ordering it, because the picture flickers and a commitment must not.
+    committed: int
+
+    @property
+    def needed(self) -> int:
+        """The force the Assault must arrive with — or, once sent, keep."""
+        return max(self.banded, self.committed)
+
+
+@dataclass(frozen=True, slots=True)
 class _Muster:
     """Who is going where this cycle, and what became of each Assault."""
 
@@ -368,7 +392,10 @@ class UtilityPlanner:
     It also judges *how much* force a Base needs (ADR-0027). That judgement is
     an assignment rule rather than a score: what the Contact's band demands is a
     number of Squads (`ASSAULT_MASS`), the Assault gets all of them or none, and
-    a Base that cannot be given its mass is one no Squad walks onto. Deliberately
+    a Base that cannot be given its mass is one no Squad walks onto. Since #181
+    that demand is floored by the force already standing under the Assault — a
+    committed assault carries hysteresis (`_mass`), so a flickering picture may
+    raise what an Assault brings and never shed what it sent. Deliberately
     not a weight — a term that made a defended Base merely expensive would still
     send the one Squad that could most afford the trip, which is exactly the
     Squad that dies there. It stays out of the scorer under ADR-0031 too: the
@@ -628,12 +655,13 @@ class UtilityPlanner:
         freshness = max(0.0, 1.0 - contact.age / self.considerations.stale_seconds)
         return max(floor, ECHELON_THREAT.get(contact.echelon, UNKNOWN_THREAT) * freshness)
 
-    def _mass(self, observation: Observation) -> dict[str, int]:
+    def _mass(self, observation: Observation) -> dict[str, _Demand]:
         """How many Squads an Assault on each enemy Base has to arrive with.
 
-        The threat model, and all of it (ADR-0027). It reads the band and only
-        the band: `ASSAULT_MASS` is a doctrine table, so nothing here divides,
-        multiplies or otherwise reconstructs the count #28 withheld.
+        The threat model (ADR-0027), floored by the commitment (#181). The
+        banded half reads the band and only the band: `ASSAULT_MASS` is a
+        doctrine table, so nothing here divides, multiplies or otherwise
+        reconstructs the count #28 withheld.
 
         Age is read nowhere in this method, and that is the decision rather than
         an omission. A Contact's age already discounts what the place *costs*
@@ -644,10 +672,35 @@ class UtilityPlanner:
         twenty-five seconds. Only somebody looking lowers this number — a place
         observed empty loses its Contact outright (#28's removal rule), which is
         the honest way to find out and the only one.
+
+        Honest, and still not steady enough to unmake a commitment on (#181):
+        in-world, "observed empty" is the engine's knowledge model, and a leader
+        standing on the Base can lose sight of a garrison 25 m away for one
+        sample. The red run's Decision rows show exactly that — "squad reported;
+        2 wanted" one cycle, "nothing reported; 1 wanted" the next — and the
+        demand shedding a Squad whose own top-scored option was still the
+        assault. So a committed assault carries hysteresis (human ruling on
+        #177, 2026-08-04): the Squads already standing under the Assault floor
+        the demand, and the picture may raise what an Assault brings but never
+        shed force the Commander has committed. The ruling's three releases all
+        stay open, none of them through this floor: the objective falling ends
+        the Campaign and the planning with it; a force that breaks leaves the
+        Observation and takes the floor down with it, and a band the remainder
+        cannot mass for is declined all-or-nothing as ever, retreat included;
+        and a plan that clears the standing-Order margin (`momentum`, the
+        stated threshold) moves the bid off the Base, the Assault is not
+        sought, and every committed Squad is released to it.
         """
         seen = {contact.at: contact for contact in observation.contacts}
+        committed: dict[str, int] = {}
+        for squad in observation.squads:
+            if squad.order == "assault":
+                committed[squad.place] = committed.get(squad.place, 0) + 1
         return {
-            base.id: self._demanded(seen.get(base.id))
+            base.id: _Demand(
+                banded=self._demanded(seen.get(base.id)),
+                committed=committed.get(base.id, 0),
+            )
             for base in self.map_manifest.bases
             if base.side != observation.for_side
         }
@@ -667,7 +720,7 @@ class UtilityPlanner:
         return ASSAULT_MASS.get(contact.echelon, max(ASSAULT_MASS.values()))
 
     def _muster(
-        self, options: list[_Option], wanted: dict[str, int], vetoed: dict[str, int]
+        self, options: list[_Option], wanted: dict[str, _Demand], vetoed: dict[str, int]
     ) -> _Muster:
         """Assign Squads to places, and say which Assaults were called off.
 
@@ -699,14 +752,17 @@ class UtilityPlanner:
             bid = self._assign(options, declined, detailed={})
             detailed: dict[str, _Option] = {}
             short = set()
-            for place, needed in sorted(wanted.items()):
+            for place, demand in sorted(wanted.items()):
                 if place in declined or _sent(bid, place) == 0:
                     # Not sought this cycle: nothing outbid the ground still
-                    # worth taking, which is #34's arc and not a refusal.
+                    # worth taking, which is #34's arc and not a refusal — and
+                    # the one way a committed Assault dissolves whole (#181),
+                    # because a bid only leaves a standing Order past the
+                    # `momentum` margin.
                     continue
-                crew = self._detail(options, bid, place, needed, detailed)
+                crew = self._detail(options, bid, place, demand.needed, detailed)
                 spared[place] = len(crew)
-                if len(crew) < needed:
+                if len(crew) < demand.needed:
                     short.add(place)
                 else:
                     detailed |= crew
@@ -766,7 +822,7 @@ class UtilityPlanner:
         return chosen
 
     def _mustered(
-        self, observation: Observation, wanted: dict[str, int], muster: _Muster
+        self, observation: Observation, wanted: dict[str, _Demand], muster: _Muster
     ) -> list[Decision]:
         """Say, per enemy Base, what force its Assault asked for and got.
 
@@ -774,19 +830,25 @@ class UtilityPlanner:
         Squad was sent to Kamino" is otherwise a silence, and three quite
         different things wear it: an Assault massed, an Assault called off for
         want of force, and an Assault nothing outbid. `scored` is the force the
-        Commander had to draw on.
+        Commander had to draw on. When the commitment floor is what held the
+        number up (#181), the row says so — "1 wanted, 2 committed" is the
+        hysteresis operating, and a trace that read "1 wanted" over a mass of
+        two would be an argument the reader could not follow.
         """
         seen = {contact.at: contact for contact in observation.contacts}
         rows = []
-        for place, needed in sorted(wanted.items()):
+        for place, demand in sorted(wanted.items()):
             contact = seen.get(place)
             reported = f"{contact.echelon} reported" if contact else "nothing reported"
+            asked = f"{demand.needed} wanted"
+            if demand.committed > demand.banded:
+                asked = f"{demand.banded} wanted, {demand.committed} committed"
             sent = _sent(muster.taken, place)
             if place in muster.declined:
                 found = muster.spared.get(place, 0)
-                chose, because = "declined", f"{reported}; {needed} wanted, {found} could be spared"
+                chose, because = "declined", f"{reported}; {asked}, {found} could be spared"
             elif sent:
-                chose, because = f"massed {sent}", f"{reported}; {needed} wanted"
+                chose, because = f"massed {sent}", f"{reported}; {asked}"
             else:
                 chose, because = "not sought", f"{reported}; ground still worth taking outbid it"
             rows.append(

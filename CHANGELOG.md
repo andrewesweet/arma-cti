@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The AI Commander no longer unpicks a Squad from a committed assault when its picture of the
+  Base flickers.** The force an Assault had to bring was re-derived from the Contact's band every
+  cycle, and in-world the band flickers — a leader standing on the Base can lose sight of the
+  garrison for one sample — so a committed Squad was re-tasked to a defend twenty seconds after
+  being ordered in. A committed assault now carries hysteresis (human ruling, 2026-08-04): the
+  Squads already standing under an Assault floor its demanded mass, so the picture may raise what
+  an Assault brings and never shed force the Commander committed. Still releasable — a genuinely
+  lost assault declines and retreats exactly as before, and a materially better plan clears the
+  standing-Order margin as ever. The Commander's trace says when the floor held the number up:
+  "1 wanted, 2 committed". #181.
+
 - **An empty probes directory is a refusal, not a phantom corpus.** Without `nullglob`,
   `spike/regress.sh` read an empty `spike/probes/` as one probe named `*` and the "no probes"
   refusal never fired; it fires now. #162.
