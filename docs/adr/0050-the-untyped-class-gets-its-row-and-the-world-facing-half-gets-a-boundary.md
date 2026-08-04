@@ -5,7 +5,7 @@ Date: 2026-08-04
 Stood-in-for: human sign-off on CLAUDE.md changes (a failure-class table row, a
 status-marker upgrade) and the retro skill's marker (eighteenth retro's
 amendment batch, session unattended)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-04
 Claimed: comment on #184, 2026-08-04, after `git fetch origin` (docs/adr/ on
 origin/main topping at 0049) and a scan of open-issue comments finding no
 claim above 0049

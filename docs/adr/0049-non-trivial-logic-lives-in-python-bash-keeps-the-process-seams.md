@@ -3,7 +3,7 @@
 Delegated-decision: yes
 Date: 2026-08-04
 Stood-in-for: human sign-off on a CLAUDE.md convention (a Toolchains bullet). The direction itself is the human's, stated 2026-08-03 and quoted in #171; what is delegated is its wording as a rule, where the triviality line sits, and the migration discipline.
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-04
 Claimed: comment on #171, 2026-08-04
 
 ## The decision
