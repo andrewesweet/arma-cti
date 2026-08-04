@@ -31,6 +31,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The pool's merge is decided in Python, not bash.** The regression runner's merge — the
+  dead-slot rule, client-lock-blocked typing, the mem-stop overlay, worst-class ranking — and the
+  `pool.json` it writes were hand-rolled JSON on both sides: a `printf` writer, an
+  indentation-dependent `sed` reader, and a byte-grep pruner, each coupled to the other's exact
+  rendering. They are now `tools/pool_merge.py` under `just unit` (ADR-0049's third migration),
+  the fallback `verdict.json` a failed typer implies has one writer, and the shell keeps the
+  acting: releasing dead slots, deleting pruned passes, exiting the worst class. A merge that
+  cannot run fails closed to `infra_unavailable` rather than open to a green pool. #185.
+
 - **The daemon's domain seams tightened along the second DDD pass's low-severity findings.** The
   port now asks the Campaign the two Squad questions it used to read off the roster directly, and
   its test-only `ledger`/`outbox` pass-throughs are gone, so its surface is judgement only. A
