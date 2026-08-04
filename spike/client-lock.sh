@@ -45,6 +45,10 @@
 # is what a queue is, and the Contract's ban is on sleeping until a *test*
 # passes. Nothing here is ever extended to make a probe green.
 
+# The holder-metadata block every tier lock writes, in its one home (#161).
+# shellcheck source=spike/lock-info.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lock-info.sh"
+
 CTI_CLIENT_LOCK_STATE="${CTI_TIER_STATE:-$HOME/.arma-cti}"
 # The fd this shell holds it on, empty when we do not hold it. Inherited by
 # children, which is deliberate: `spike/run.sh` under the pool's tail must not
@@ -78,16 +82,9 @@ cti_client_lock_acquire() {
         return 1
     }
     CTI_CLIENT_LOCK_FD=$fd
-    # Truncated rather than created: a holder killed with -9 leaves its metadata
-    # behind and the kernel has already handed us the lock over the top of it.
-    {
-        printf 'pid=%s\n' "$$"
-        printf 'started_at=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-        printf 'worktree=%s\n' "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-        printf 'branch=%s\n' "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
-        printf 'issue=%s\n' "${CTI_TIER_ISSUE:-unstated}"
-        printf 'label=%s\n' "$label"
-    } >"$lock.info"
+    # Holder metadata from its one home (#161, spike/lock-info.sh). No slot:
+    # this lock is machine-scoped.
+    cti_lock_info_write "$lock.info" "$label"
     return 0
 }
 

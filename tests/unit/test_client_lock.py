@@ -240,6 +240,23 @@ def test_a_child_that_outlives_the_run_does_not_keep_the_lock(tmp_path: Path) ->
             os.kill(pid, signal.SIGKILL)
 
 
+def test_the_holder_metadata_block_has_one_home() -> None:
+    """#161: the `.info` block beside a lock was written in three places.
+
+    Slot locks, the client lock and the hand-run tier lock each carried a
+    near-copy of the seven-field block, so a field added to one drifted from
+    the others. `spike/lock-info.sh` is the one writer now, and this holds
+    spike/*.sh to it — the block's first line is the fingerprint, because every
+    copy began by naming the holder's pid.
+    """
+    writers = [
+        script.name
+        for script in sorted((REPO / "spike").glob("*.sh"))
+        if "printf 'pid=" in script.read_text()
+    ]
+    assert writers == ["lock-info.sh"], writers
+
+
 def test_every_background_launch_in_run_sh_lets_go_of_the_lock() -> None:
     """A tripwire for the next launch somebody adds.
 

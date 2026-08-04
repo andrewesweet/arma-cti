@@ -15,7 +15,8 @@
 #   cti_slot_install N         the server install this slot stages into
 #   cti_slot_profile N         the engine profile name (-name=), and with it the RPT
 #   cti_slot_env N             the whole per-slot environment, as NAME=VALUE lines
-#   cti_slot_acquire N         non-blocking flock; 0 held, 1 taken by someone else
+#   cti_slot_acquire N [label] [wait]   non-blocking flock, or bounded-blocking
+#                              with a wait; 0 held, 1 taken by someone else
 #   cti_slot_release N         drop it (the kernel does this anyway on death)
 #   cti_slot_holder N          what the holder wrote beside the lock
 #   cti_slot_reclaim N         ADR-0022 per slot: clear a dead holder's leftovers,
@@ -36,6 +37,9 @@
 # kills, the install farm — names instead of naming this one.
 # shellcheck source=spike/hosts.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/hosts.sh"
+# The holder-metadata block every tier lock writes, in its one home (#161).
+# shellcheck source=spike/lock-info.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lock-info.sh"
 
 CTI_SLOT_STATE="$(cti_host_state)"
 # The same state root with nothing redirecting it, which is what makes
@@ -238,32 +242,32 @@ cti_slot_mem_fit() {
 # after its last one was killed. A grace would buy 7 ms of an edge nobody stands
 # on, at the price of an instant refusal, and it would let the test that owns
 # this property pass on the grace rather than on the kernel. `--wait` is where
-# waiting for somebody else's run to end belongs, and it already exists.
+# waiting for somebody else's run to end belongs — as the optional third
+# argument for a caller queueing on *one* lock (`tier-lock.sh`'s `--wait`,
+# #161), and as the pool's own poll loop when it is asking about several.
 declare -A CTI_SLOT_FD=()
 
 cti_slot_acquire() {
-    local n="$1" label="${2:-}" lock fd
+    local n="$1" label="${2:-}" wait_secs="${3:-0}" lock fd
     cti_slot_valid "$n" || return 2
+    [[ "$wait_secs" =~ ^[0-9]+$ ]] || {
+        cti_slot_log "a bounded acquire takes whole seconds, got: $wait_secs"
+        return 2
+    }
     mkdir -p "$CTI_SLOT_LOCK_DIR" || return 2
     lock="$(cti_slot_lock_path "$n")"
     exec {fd}>"$lock" || return 2
-    if ! flock -x -n "$fd" 2>/dev/null; then
+    if ((wait_secs > 0)); then
+        flock -x -w "$wait_secs" "$fd" 2>/dev/null
+    else
+        flock -x -n "$fd" 2>/dev/null
+    fi || {
         exec {fd}>&-
         return 1
-    fi
+    }
     CTI_SLOT_FD[$n]=$fd
-    # Holder metadata, per slot, exactly as tier.lock.info is written today.
-    # Truncated rather than created: a holder killed with -9 leaves its metadata
-    # behind and the kernel has already handed us the lock over the top of it.
-    {
-        printf 'pid=%s\n' "$$"
-        printf 'slot=%s\n' "$n"
-        printf 'started_at=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-        printf 'worktree=%s\n' "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-        printf 'branch=%s\n' "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
-        printf 'issue=%s\n' "${CTI_TIER_ISSUE:-unstated}"
-        printf 'label=%s\n' "${label:-unstated}"
-    } >"$lock.info"
+    # Holder metadata, per slot, from its one home (#161, spike/lock-info.sh).
+    cti_lock_info_write "$lock.info" "${label:-unstated}" "$n"
     return 0
 }
 

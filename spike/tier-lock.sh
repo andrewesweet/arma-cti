@@ -33,10 +33,6 @@ set -uo pipefail
 # shellcheck source=spike/slots.sh
 source "$(dirname "${BASH_SOURCE[0]}")/slots.sh"
 
-STATE_DIR="${CTI_TIER_STATE:-$HOME/.arma-cti}"
-LOCK="$STATE_DIR/slots/0.lock"
-INFO="$LOCK.info"
-
 WAIT_SECS=0
 LABEL=""
 while (($# > 0)); do
@@ -70,45 +66,25 @@ if [[ ! "$WAIT_SECS" =~ ^[0-9]+$ ]]; then
     exit 2
 fi
 
-mkdir -p "$(dirname "$LOCK")"
-exec 9>"$LOCK"
-
-acquired=0
-if ((WAIT_SECS > 0)); then
-    flock -x -w "$WAIT_SECS" 9 && acquired=1
-else
-    flock -x -n 9 && acquired=1
-fi
-if ((acquired == 0)); then
+# Taken through the slot library's own acquire rather than a hand-rolled flock
+# (#161): the hand-run tier lock *is* slot 0's lock, so the same function the
+# pool uses takes it, and the holder metadata — publishing who holds it, for
+# whoever queues behind us — comes from its one home (spike/lock-info.sh)
+# rather than a third copy of the block. `--wait` maps onto the acquire's
+# bounded `flock -w`; the default stays the non-blocking try.
+if ! cti_slot_acquire 0 "${LABEL:-$*}" "$WAIT_SECS"; then
     {
         printf '\n[tier-lock] slot 0 of the Arma tier is busy — this is infra_unavailable, not a result.\n'
-        printf '[tier-lock] lock: %s\n' "$LOCK"
-        if [[ -r "$INFO" ]]; then
-            printf '[tier-lock] holder:\n'
-            sed 's/^/[tier-lock]   /' "$INFO"
-        else
-            printf '[tier-lock] holder: no metadata beside the lock (holder died, or predates this file)\n'
-        fi
+        printf '[tier-lock] lock: %s\n' "$(cti_slot_lock_path 0)"
+        printf '[tier-lock] holder:\n'
+        cti_slot_holder 0
         ((WAIT_SECS > 0)) && printf '[tier-lock] waited %ss and gave up.\n' "$WAIT_SECS"
         printf 'verdict=FAIL\n'
         printf 'failure_class=infra_unavailable\n'
-        printf 'failure_detail=tier lock held; see %s\n' "$INFO"
+        printf 'failure_detail=tier lock held; see %s\n' "$(cti_slot_lock_path 0).info"
     } >&2
     exit "$CTI_EXIT_INFRA_UNAVAILABLE"
 fi
-
-# Held. Publish who by, for whoever queues behind us. Truncate rather than
-# create: a previous holder killed with -9 leaves its metadata behind, and the
-# kernel has already handed us the lock over the top of it.
-{
-    printf 'pid=%s\n' "$$"
-    printf 'slot=0\n'
-    printf 'started_at=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-    printf 'worktree=%s\n' "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-    printf 'branch=%s\n' "$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
-    printf 'issue=%s\n' "${CTI_TIER_ISSUE:-unstated}"
-    printf 'label=%s\n' "${LABEL:-$*}"
-} >"$INFO"
 
 # ADR-0022, on acquire rather than on release: the lock frees itself when its
 # holder dies, and the holder's *processes* do not. A server or daemon a dead run
@@ -123,12 +99,12 @@ fi
 if ! survivors="$(cti_slot_reclaim 0)"; then
     printf '[tier-lock] slot 0 did not come back clear: %s still holding it.\n' "${survivors:-survivors unnamed}" >&2
     printf '[tier-lock] failure_class=infra_unavailable — not a result. Nothing was launched.\n' >&2
-    rm -f "$INFO"
+    cti_slot_release 0
     exit "$CTI_EXIT_INFRA_UNAVAILABLE"
 fi
 
 "$@"
 status=$?
 
-rm -f "$INFO"
+cti_slot_release 0
 exit "$status"
