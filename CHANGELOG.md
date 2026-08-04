@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `spike/regress.sh` read an empty `spike/probes/` as one probe named `*` and the "no probes"
   refusal never fired; it fires now. #162.
 
+- **A keepalive RPC that fails twice reports both failures.** The shim discarded the cached
+  connection's error the moment it decided to reconnect, so when the reconnect also failed the
+  caller saw only the second error and lost what the cached socket actually died of. Both now
+  arrive in the one error payload. #162.
+
 ### Changed
 
 - **The daemon's domain seams tightened along the second DDD pass's low-severity findings.** The

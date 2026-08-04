@@ -1,4 +1,6 @@
-//! Phase-0 spike shim: prove the Arma <-> Python daemon RPC path and measure it.
+//! The Arma <-> Python RPC shim: every `callExtension` the mission makes goes
+//! through here to reach the daemon. Built as the Phase-0 spike (issue #2), it
+//! has carried production traffic since Phase 1.
 //!
 //! Domain-agnostic by design (ADR-0005): payloads are opaque strings, the shim
 //! owns transport, framing and callback dispatch only.
@@ -301,14 +303,28 @@ fn round_trip_fresh(payload: &str, budget: Budget) -> Result<String, String> {
 /// at all.
 fn round_trip_persistent(payload: &str, budget: Budget) -> Result<String, String> {
     let mut guard = connection_guard();
+    // The cached connection's failure is kept, not discarded (#162): when the
+    // reconnect also fails, the caller gets both halves of the story — what
+    // the retry could not do, and what the cached socket died of first. One
+    // error where two things went wrong sends the reader after the wrong one.
+    let mut cached_failure: Option<String> = None;
     if let Some(conn) = guard.as_mut() {
         match conn.exchange(payload, budget) {
             Ok(reply) => return Ok(reply),
-            Err(_) => *guard = None,
+            Err(e) => {
+                *guard = None;
+                cached_failure = Some(e);
+            }
         }
     }
-    let mut conn = Connection::open(budget)?;
-    let reply = conn.exchange(payload, budget)?;
+    let report = |retry_failure: String| match &cached_failure {
+        Some(first) => {
+            format!("{retry_failure} (after the cached connection failed: {first})")
+        }
+        None => retry_failure,
+    };
+    let mut conn = Connection::open(budget).map_err(&report)?;
+    let reply = conn.exchange(payload, budget).map_err(&report)?;
     *guard = Some(conn);
     Ok(reply)
 }
@@ -569,6 +585,28 @@ mod tests {
         (addr, received)
     }
 
+    /// Answers one line on one connection, then closes the connection and the
+    /// listener and says so. The next exchange fails on the cached socket and
+    /// the reconnect is refused — the two-failures case, staged.
+    fn spawn_answers_once_then_quits() -> (String, mpsc::Receiver<()>) {
+        let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
+        let addr = listener.local_addr().expect("addr").to_string();
+        let (gone, closed) = mpsc::channel();
+        std::thread::spawn(move || {
+            let (stream, _) = listener.accept().expect("accept");
+            let mut writer = stream.try_clone().expect("clone");
+            let mut reader = BufReader::new(stream);
+            let mut line = String::new();
+            let _ = reader.read_line(&mut line);
+            let _ = writer.write_all(b"ok\n");
+            drop(reader);
+            drop(writer);
+            drop(listener);
+            let _ = gone.send(());
+        });
+        (addr, closed)
+    }
+
     #[test]
     fn ping_needs_no_daemon() {
         let extension = init().testing();
@@ -785,6 +823,32 @@ mod tests {
             *seen,
             vec![first.to_string(), second.to_string(), second.to_string()],
             "the resend must be the same request, not a new one"
+        );
+    }
+
+    #[test]
+    fn a_failed_retry_reports_the_cached_connections_failure_too() {
+        // #162: the first exchange's error used to be discarded on the spot,
+        // so a retry that also failed reported only its own connect error and
+        // the reader lost what the cached connection actually died of.
+        let _guard = serialise();
+        let (addr, closed) = spawn_answers_once_then_quits();
+        let extension = init().testing();
+        let _ = extension.call("addr", Some(vec![addr]));
+
+        let (output, code) = extension.call("rpc_keepalive", Some(vec!["one".to_string()]));
+        assert_eq!(code, 0);
+        assert_eq!(output, "ok", "unexpected output: {output}");
+
+        closed
+            .recv_timeout(Duration::from_secs(5))
+            .expect("the stub never closed");
+        let (output, code) = extension.call("rpc_keepalive", Some(vec!["two".to_string()]));
+        assert_eq!(code, 0);
+        assert!(output.contains("\"error\""), "unexpected output: {output}");
+        assert!(
+            output.contains("after the cached connection failed"),
+            "the cached connection's failure was discarded: {output}"
         );
     }
 
