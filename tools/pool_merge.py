@@ -29,22 +29,28 @@ classes added since #83 took the next free numbers. The mem-stop overlay
 (#125) raises `infra_unavailable` at the pool level, because the whole point
 of that stop is that no probe launched to carry the class.
 
-Two riders travel with the merge because they read and write the same files:
-`prune-passes` decides which old green evidence has outlived the retention
-convention (the shell does the deleting), and `fallback-verdict` writes the
-minimal `verdict.json` for a probe whose typer failed (#171's call site) — the
-least the merge reads, so a slot that is fine is not reclaimed as dead.
+Three riders travel with the merge because they read and write the same files
+or the same table: `prune-passes` decides which old green evidence has
+outlived the retention convention (the shell does the deleting),
+`fallback-verdict` writes the minimal `verdict.json` for a probe whose typer
+failed (#171's call site) — the least the merge reads, so a slot that is fine
+is not reclaimed as dead — and `class-of` validates the class an in-mission
+FAIL line declared against the table below, where `run.sh` reads the line
+(#147; the mapping was `class_of`, a bash sed with no notion of which classes
+exist, and #161's routing sent it here rather than minting a parallel table).
 
-Severity is the class table's other half; its exit half (CLASS_RANK in
-`regress.sh`) and `run.sh`'s `class_of` are that table's own seam (#92, #147)
-and join this home when it lands, rather than a parallel table being minted
-here.
+Severity and the in-mission mapping are the class table's Python halves. Its
+exit half (CLASS_RANK in `regress.sh`) stays in bash deliberately: the paths
+that exit through it include the ones where `uv` itself is what broke, and an
+exit code that must be produced when Python cannot run cannot be asked of
+Python. Any further consolidation is #92's.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Final, NamedTuple
@@ -70,10 +76,43 @@ CLASS_SEVERITY: Final[dict[str, int]] = {
 }
 UNTYPED_SEVERITY: Final = 90
 
+# The classes an in-mission FAIL line may declare (#147): the table's rows
+# minus the three no world code may claim. `pass` on a FAIL line would invert
+# the verdict downstream; `untyped_harness_failure` is the harness's own word
+# for a red nobody typed, never the world's; `flake_quarantine` is applied by
+# the probe header's `quarantined:` line, and a world that could claim it
+# would be a probe that quarantines itself past the open-issue policy.
+MISSION_CLASSES: Final[frozenset[str]] = frozenset(CLASS_SEVERITY) - {
+    "pass",
+    "untyped_harness_failure",
+    "flake_quarantine",
+}
+
 
 def severity(class_: str) -> int:
     """Rank one class; a class the table has never heard of is an untyped red."""
     return CLASS_SEVERITY.get(class_, UNTYPED_SEVERITY)
+
+
+def mission_class(line: str) -> tuple[str, str]:
+    """Validate the class an in-mission FAIL line declared, where it is read (#147).
+
+    No declared class is still an assertion — the behaviour #23 kept — and the
+    last `class=` token wins, as the old sed's greedy prefix read it. A class
+    the table has never heard of (`class=timout`), or one no FAIL line may
+    claim, is caught at this boundary as the harness bug it is rather than
+    flowing to the far end of the tier as an unknown class.
+    """
+    declared = re.findall(r"class=([a-z_]+)", line)
+    if not declared:
+        return "assertion_failed", line
+    if declared[-1] in MISSION_CLASSES:
+        return declared[-1], line
+    detail = (
+        f"in-mission FAIL line declares class '{declared[-1]}', which no FAIL line "
+        f"may carry — a wrong class is a harness bug (#83); line: {line}"
+    )
+    return "untyped_harness_failure", detail
 
 
 class ProbeRow(NamedTuple):
@@ -309,7 +348,7 @@ def fallback_document(
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """Three doors: the merge, and the two riders that share its files."""
+    """Four doors: the merge, and the riders that share its files or its table."""
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
 
@@ -343,6 +382,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     fallback.add_argument("--elapsed", required=True, type=int)
     fallback.add_argument("--evidence", required=True)
     fallback.add_argument("--verdict-json", required=True, type=Path)
+
+    class_of = commands.add_parser(
+        "class-of", help="validate the class an in-mission FAIL line declared"
+    )
+    class_of.add_argument("--line", required=True)
 
     return parser.parse_args(argv)
 
@@ -427,10 +471,23 @@ def run_fallback(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_class_of(args: argparse.Namespace) -> int:
+    """Print the validated class and detail; `run.sh`'s `fail` records them."""
+    class_, detail = mission_class(args.line)
+    print(f"class={class_}")  # noqa: T201 — the shell reads these lines
+    print(f"detail={flattened(detail)}")  # noqa: T201 — the shell reads these lines
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """Dispatch on the subcommand."""
     args = parse_args(argv)
-    handlers = {"merge": run_merge, "prune-passes": run_prune, "fallback-verdict": run_fallback}
+    handlers = {
+        "merge": run_merge,
+        "prune-passes": run_prune,
+        "fallback-verdict": run_fallback,
+        "class-of": run_class_of,
+    }
     return handlers[args.command](args)
 
 

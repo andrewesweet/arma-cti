@@ -20,13 +20,12 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
+import pytest
 from conftest import load_tool
 
 if TYPE_CHECKING:
     from pathlib import Path
     from typing import Any
-
-    import pytest
 
 pool_merge = load_tool("pool_merge")
 probe_verdict = load_tool("probe_verdict")
@@ -58,6 +57,73 @@ def test_the_severity_ladder_is_the_failure_class_table() -> None:
 
 def test_an_unknown_class_is_an_untyped_red_worst_of_all() -> None:
     assert pool_merge.severity("banana") == 90
+
+
+# ------------------------------------------------- the in-mission boundary (#147)
+# `run.sh`'s `class_of` was a bash sed with no notion of which classes exist, so
+# an in-world typo (`class=timout`) flowed through the whole tier as an unknown
+# class and surfaced as an undocumented exit. The mapping joined this home —
+# the class table's own seam, per the routing #161 wrote at its definition —
+# and validates where the line is first read.
+
+
+@pytest.mark.parametrize(
+    "declared",
+    [
+        "assertion_failed",
+        "timeout",
+        "node_crashed",
+        "oracle_disagreement",
+        "infra_unavailable",
+        "engine_drift",
+        "schema_stale",
+    ],
+)
+def test_a_declared_table_class_is_kept_with_the_line_as_detail(declared: str) -> None:
+    line = f"FAIL class={declared} probe_never_finished step=3"
+    assert pool_merge.mission_class(line) == (declared, line)
+
+
+def test_a_bare_fail_is_still_an_assertion() -> None:
+    """No class declared is the old behaviour, kept (#23)."""
+    line = "FAIL nothing_matched expected=3 got=0"
+    assert pool_merge.mission_class(line) == ("assertion_failed", line)
+
+
+def test_a_class_the_table_never_heard_of_is_caught_as_the_harness_bug_it_is() -> None:
+    class_, detail = pool_merge.mission_class("FAIL class=timout probe_never_finished")
+    assert class_ == "untyped_harness_failure"
+    assert "timout" in detail
+    assert "FAIL class=timout probe_never_finished" in detail
+
+
+@pytest.mark.parametrize("smuggled", ["pass", "untyped_harness_failure", "flake_quarantine"])
+def test_a_class_no_fail_line_may_claim_is_refused_at_the_boundary(smuggled: str) -> None:
+    """A world-claimed class the boundary reserves for the harness is refused.
+
+    `class=pass` would invert the verdict downstream; the other two are the
+    harness's and the quarantine header's words, never the world's.
+    """
+    class_, detail = pool_merge.mission_class(f"FAIL class={smuggled} smuggled")
+    assert class_ == "untyped_harness_failure"
+    assert smuggled in detail
+
+
+def test_the_last_class_token_wins_as_the_old_sed_read_it() -> None:
+    """The greedy `.*class=` matched the final occurrence; the reader keeps that."""
+    line = "FAIL class=timeout detail=class=oracle_disagreement"
+    assert pool_merge.mission_class(line) == ("oracle_disagreement", line)
+
+
+def test_class_of_main_prints_the_lines_the_shell_acts_on(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    status = pool_merge.main(["class-of", "--line", "FAIL class=timeout probe_never_finished"])
+    assert status == 0
+    assert capsys.readouterr().out.splitlines() == [
+        "class=timeout",
+        "detail=FAIL class=timeout probe_never_finished",
+    ]
 
 
 # ------------------------------------------------------------------ the merge

@@ -350,21 +350,38 @@ await_hc_join() {
     esac
 }
 
-# The class an in-mission FAIL line declared, or assertion_failed if it declared
-# none. In-world code writes `FAIL class=timeout ...` and `FAIL
-# class=oracle_disagreement ...` as well as plain assertions, and calling all of
-# them assertion_failed sends the reader to fix code when the failure-class table
-# says investigate synchronisation or suspect the capture layer.
+# Fail with the class an in-mission FAIL line declared, decided in the class
+# table's own Python home (tools/pool_merge.py `class-of` — #147, joining the
+# home #161's routing named). In-world code writes `FAIL class=timeout ...` as
+# well as plain assertions, and calling every red assertion_failed sends the
+# reader to fix code when the table says investigate synchronisation; while a
+# class the table has never heard of (`class=timout`), or one no FAIL line may
+# claim (`class=pass` would invert the verdict downstream), used to flow
+# through the whole tier as an unknown class — it is caught here, where the
+# line is first read, as the harness bug it is.
 #
-# Deliberately not moved to Python under #161: this mapping is one row of the
-# class table that also lives twice in spike/regress.sh (CLASS_RANK,
-# class_severity), and the one (class, exit, severity) home — the natural place
-# for it, beside tools/probe_verdict.py — is that table's own seam (#92, #147),
-# not this issue's. Migrated together there, not copied apart further here.
-class_of() {
-    local line="$1" declared
-    declared="$(sed -n 's/.*class=\([a-z_]\+\).*/\1/p' <<<"$line")"
-    printf '%s' "${declared:-assertion_failed}"
+# Fails closed at this site per ADR-0049's mechanics: a mapper `timeout`
+# killed is infra_unavailable — a check that could not run is not a check that
+# passed (#41) — and a mapper that ran and failed leaves the red it was typing
+# untyped, which is a harness bug and reported as one.
+fail_with_mission_class() {
+    local line="$1" typed status class detail
+    typed="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py \
+        class-of --line "$line")"
+    status=$?
+    if ((status == 124)); then
+        fail "infra_unavailable" \
+            "the in-mission class mapper did not finish within ${UV_TIMEOUT}s (uv run tools/pool_merge.py class-of); the line it was typing: $line"
+    elif ((status != 0)); then
+        fail "untyped_harness_failure" \
+            "the in-mission class mapper failed (exit $status) — harness bug; the line it was typing: $line"
+    fi
+    class="$(sed -n 's/^class=//p' <<<"$typed" | head -1)"
+    detail="$(sed -n 's/^detail=//p' <<<"$typed" | head -1)"
+    [[ -n "$class" ]] ||
+        fail "untyped_harness_failure" \
+            "the in-mission class mapper answered no class= line — harness bug; the line it was typing: $line"
+    fail "$class" "$detail"
 }
 
 # The vacuity convention, mechanically (#116, ADR-0037). A probe with an
@@ -404,7 +421,7 @@ assert_clean_run() {
     local lines_file="$1" first_fail
     if grep -q '^FAIL' "$lines_file"; then
         first_fail="$(grep '^FAIL' "$lines_file" | head -1)"
-        fail "$(class_of "$first_fail")" "$first_fail"
+        fail_with_mission_class "$first_fail"
     fi
     assert_legs_ran "$lines_file"
 }

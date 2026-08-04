@@ -153,6 +153,26 @@ def test_an_in_mission_fail_keeps_the_class_the_world_declared(
     assert records["_returncode"] == "1"
 
 
+def test_a_typoed_in_mission_class_is_caught_at_the_boundary(tmp_path: Path) -> None:
+    """#147 item 4: `class=timout` used to flow through as an unknown class.
+
+    It surfaced at the far end of the tier as an undocumented exit code rather
+    than being caught where the line is first read, as the harness bug it is.
+    The mapping is decided in the class table's own home (tools/pool_merge.py).
+    """
+    records = run_with_lines(tmp_path, ["FAIL class=timout probe_never_finished"])
+    assert records["verdict"] == "FAIL"
+    assert records["failure_class"] == "untyped_harness_failure"
+    assert "timout" in records["failure_detail"]
+
+
+def test_a_fail_line_cannot_declare_itself_a_pass(tmp_path: Path) -> None:
+    """`FAIL class=pass` would read back as a green verdict downstream (#147)."""
+    records = run_with_lines(tmp_path, ["FAIL class=pass smuggled"])
+    assert records["verdict"] == "FAIL"
+    assert records["failure_class"] == "untyped_harness_failure"
+
+
 def test_a_run_with_no_fail_line_passes(tmp_path: Path) -> None:
     """The other half of the branch: this must not have become a permanent red."""
     records = run_with_lines(tmp_path, ["measurement thing=1"])

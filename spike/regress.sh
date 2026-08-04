@@ -107,9 +107,12 @@ UV_TIMEOUT="${CTI_UV_TIMEOUT:-300}"
 # untyped_harness_failure — took the next free codes rather than renumbering a
 # meaning callers already read, so severity now lives only in
 # tools/pool_merge.py's CLASS_SEVERITY (#185), which is what the merge's
-# summary and its choice of worst class sort by. This table and run.sh's
-# class_of are the class table's remaining bash halves — #92/#147's seam, and
-# they join that home when it lands rather than a parallel table growing here.
+# summary and its choice of worst class sort by. The in-mission mapping run.sh
+# applied joined the same home under #147 (`class-of`), so this exit table is
+# the class table's one remaining bash half — deliberately: the paths that
+# exit through it include the ones where uv itself is what broke, and an exit
+# code that must be produced when Python cannot run cannot be asked of Python.
+# Any further consolidation is #92's.
 declare -A CLASS_RANK=(
     [infra_unavailable]=5
     [node_crashed]=4
