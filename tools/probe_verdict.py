@@ -6,7 +6,7 @@ here, where pytest can reach it — #83's precedent, that a wrong class is a
 harness bug and the no-Arma tier is where a harness bug should turn red. The
 ladder, in the order the shell applied it:
 
-0. The starvation watch stopped this probe's flight (#182, ADR-0054): the
+0. The starvation watch stopped this probe's flight (#182, ADR-0055): the
    machine went under the running floor while its world was up, and nothing a
    starved world reports is a result — the two episodes past the memory
    pre-flight wore `timeout` and `node_crashed`, both about the machine and
@@ -100,7 +100,7 @@ class Outcome:
     elapsed_secs: int = 0
     evidence: str = ""
     # The starvation watch's marker for this probe, empty when it never fired:
-    # the reading and the floor, in the watch's own words (#182, ADR-0054).
+    # the reading and the floor, in the watch's own words (#182, ADR-0055).
     starved: str = ""
 
 
@@ -122,7 +122,7 @@ def type_verdict(outcome: Outcome) -> TypedVerdict:
     # including a verdict the run managed to record: a flight the watch marked
     # overlapped a reading under the running floor, so whatever it measured was
     # measured under conditions nobody can interpret. Fail-closed picks the
-    # discarded pass over the forged one (#182, ADR-0054).
+    # discarded pass over the forged one (#182, ADR-0055).
     if outcome.starved:
         raw = "infra_unavailable"
         detail = (

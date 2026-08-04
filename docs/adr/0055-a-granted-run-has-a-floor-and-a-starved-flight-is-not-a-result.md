@@ -8,9 +8,11 @@ comment on #182 ruled the direction verbatim: "Design the floor under a
 than letting a starved world forge a plausible `timeout`/`node_crashed`", and
 pre-approved the design "without reserving the floor semantics for a second
 review". The four resolutions that comment left open are flagged below.
-Claimed: comment on #182, 2026-08-04, after `git fetch origin` (`docs/adr/` on
-origin/main topping at 0053) and a scan of every open issue's comments finding
-no claim above 0053
+Claimed: comment on #182, 2026-08-04, as ADR-0054, after `git fetch origin`
+(`docs/adr/` on origin/main topping at 0053) and a scan of every open issue's
+comments finding no claim above 0053. The twenty-first retro claimed 0054 on
+#186 the same evening and landed first; renumbered to 0055 on the landing
+rebase, per the standing rule, after a fresh scan found no claim above 0054
 
 ## Context
 

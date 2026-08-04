@@ -120,7 +120,7 @@ def test_a_sigkill_before_the_deadline_is_the_machine_not_the_watchdog() -> None
 
 
 def test_a_starved_flight_is_infra_unavailable_whatever_it_recorded() -> None:
-    """The floor under a granted run (#182, ADR-0054).
+    """The floor under a granted run (#182, ADR-0055).
 
     The starvation watch stopped this probe mid-flight; whatever its world was
     about to report — the episodes wore `timeout` and `node_crashed` — was

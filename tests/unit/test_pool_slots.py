@@ -1132,7 +1132,7 @@ def test_a_mid_run_reading_that_fails_stops_the_pool_without_fabricating_zero(
 
 
 def test_a_granted_run_is_floored_when_the_machine_starves_mid_flight(tmp_path: Path) -> None:
-    """The floor under a granted run (#182, ADR-0054).
+    """The floor under a granted run (#182, ADR-0055).
 
     Twice past the pre-flight, a machine that sickened *during* a flight typed
     its verdicts `timeout` and `node_crashed` — false reds about the code under

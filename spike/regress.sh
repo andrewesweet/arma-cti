@@ -107,7 +107,7 @@ EXIT_KILLED=137
 # the time any of them runs. `run.sh` bounds its own `uv run`s for the same
 # reason and under the same variable (#144).
 UV_TIMEOUT="${CTI_UV_TIMEOUT:-300}"
-# The starvation watch's cadence (#182, ADR-0054) — the floor *under* a granted
+# The starvation watch's cadence (#182, ADR-0055) — the floor *under* a granted
 # run. Admission (#125) reads the machine before a lock is taken; the
 # between-probes re-check reads it before each launch; neither can see the
 # machine sicken while a world is in flight, and a starved world does not fail
@@ -833,7 +833,7 @@ starve_signal() {
     return 1
 }
 
-# The floor under a granted run (#182, ADR-0054), watching for what neither the
+# The floor under a granted run (#182, ADR-0055), watching for what neither the
 # admission reading nor the between-probes re-check can see: the machine
 # sickening while a world is in flight — another agent's pool arriving, or the
 # OS itself (the #164 cluster was Windows OS-drive exhaustion). The reading is
@@ -887,13 +887,13 @@ start_starvation_watch() {
             fi
             if ((tripped == 0)); then
                 tripped=1
-                log "starvation: $avail MiB available, under the ${CTI_SLOT_MEM_RUNNING_FLOOR_MB} MiB running floor, with ${#in_flight[@]} probe(s) in flight — stopping the pool and its flights (#182, ADR-0054)"
+                log "starvation: $avail MiB available, under the ${CTI_SLOT_MEM_RUNNING_FLOOR_MB} MiB running floor, with ${#in_flight[@]} probe(s) in flight — stopping the pool and its flights (#182, ADR-0055)"
                 # Read by the merge, as the between-probes stop's is: the
                 # pool-level class rides this file. An existing stop flag is
                 # not clobbered — the first story is the story.
                 printf '%s\n' "$avail" >"$POOL_OUT/mem-stop"
                 if [[ ! -f "$STOP_FLAG" ]]; then
-                    printf 'only %s MiB available with %s probe(s) in flight; the running floor is %s MiB — the pool and its flights were stopped (#182, ADR-0054)\n' \
+                    printf 'only %s MiB available with %s probe(s) in flight; the running floor is %s MiB — the pool and its flights were stopped (#182, ADR-0055)\n' \
                         "$avail" "${#in_flight[@]}" "$CTI_SLOT_MEM_RUNNING_FLOOR_MB" >"$STOP_FLAG"
                 fi
             fi

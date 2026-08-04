@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `infra_unavailable` — stop, not a result — above every other reading of its run, including a
   recorded pass. Completed verdicts stand. The one sanctioned interruption of work in flight,
   because a starved flight's result is already a non-result wearing a plausible class. #182,
-  ADR-0054.
+  ADR-0055.
 - **Failed pool evidence outlives the run that produced it.** Pool-directory pruning was
   count-only, so the starvation episodes' primary RAM traces were pruned while the issues that
   needed them were still open — only the numbers quoted into the issues survived. `pool.json` now
