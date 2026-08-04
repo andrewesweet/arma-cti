@@ -5,13 +5,34 @@
 // so plainly — "this run proved the assignment, not the keypress". #190 hangs
 // the body's disappearance off that keypress, so a second run proving only that
 // a variable was set would prove nothing new. This fixture is the keypress
-// standing in: `openCuratorInterface` "force opens curator interface"
-// (commands/openCuratorInterface.wiki) and `findDisplay 312 closeDisplay 2` is
-// that page's own way of closing it again, both pushed onto the human's machine
-// exactly the way the watcher itself is pushed. What it still cannot exercise is
-// the Y key, which is engine-owned behaviour of an assigned curator; if Y does
-// nothing in a human session, that is a finding against #178 and not against
-// this.
+// standing in, and `findDisplay 312 closeDisplay 2` is
+// commands/openCuratorInterface.wiki's own way of closing it again, both pushed
+// onto the human's machine exactly the way the watcher itself is pushed. What it
+// still cannot exercise is the Y key, which is engine-owned behaviour of an
+// assigned curator; if Y does nothing in a human session, that is a finding
+// against #178 and not against this.
+//
+// ## Why the opener is a ladder, and what its rungs measured
+//
+// `openCuratorInterface` alone did not open this curator's interface, and the
+// evidence is not ambiguous about it
+// (`~/.arma-cti/runs/20260804T234450Z-issue-190-observer-body`, client RPT):
+//
+//     via=openCuratorInterface mission_display=true curator=true
+//         display312=false curator_camera=false
+//     via=forceCuratorInterface display312=true curator_camera=true
+//
+// The client held a mission display and its own curator, the command ran, and
+// ten seconds later neither signal had moved. `BIS_fnc_forceCuratorInterface`
+// with its documented "keep trying until the interface is actually opened" flag
+// then opened it inside a second — both lines carry the same timestamp — so the
+// difference between the two rungs is the mechanism and not the wait. What that
+// means for `openCuratorInterface` is not diagnosed here and is not guessed at:
+// the fixture needs a camera up, and this is what puts one up.
+//
+// The first rung stays because it costs ten seconds and buys the reading above
+// on every run: an engine build that starts honouring the cheaper call says so
+// in its own line rather than in nobody's.
 //
 // Deliberately **not** in spike/probes/, for the reason session-hold.sqf gives
 // and #178's third criterion requires: the corpus must boot no curator, and

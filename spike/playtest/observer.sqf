@@ -104,9 +104,17 @@
 // topics/Arma_3_IDD_List.wiki), polled once a second so that both edges are
 // found the same way — the interface opens on a keypress and closes on one, and
 // nothing the engine offers reports either to script. The two corroborating
-// signals ride every transition line (`curator_camera`, `camera_on_it`) so that
-// the first session's evidence says whether they agree with the display rather
-// than leaving the choice of detector a matter of belief.
+// signals ride every transition line rather than the choice of detector being a
+// matter of belief, and the first in-world flight has now answered them
+// (`~/.arma-cti/runs/20260804T234450Z-issue-190-observer-body`):
+//
+//   - `curator_camera` tracks the display exactly — false on both grounded
+//     lines, true on the flying one. Either would serve as the detector.
+//   - `camera_on_it` never became true, in flight or out of it. So `cameraOn`
+//     is *not* the curator camera even while the curator camera is what the
+//     player is looking through, and the obvious-sounding test
+//     `cameraOn isEqualTo curatorCamera` would have hidden nobody's body ever.
+//     The field stays in the line as the record of that.
 //
 // The one thing the human has to know if the watcher ever dies mid-flight: his
 // body stays frozen, and `player enableSimulationGlobal true` in the debug
