@@ -129,6 +129,16 @@ def assets_of(kinds: tuple[str, ...]) -> tuple[str, ...]:
 
 
 @dataclass(slots=True)
+class _Record:
+    """One place's sighting, held in the terms it will be aged from."""
+
+    echelon: str
+    posture: str
+    assets: tuple[str, ...]
+    seen_at: float
+
+
+@dataclass(slots=True)
 class Contacts:
     """Every side's picture of the other, keyed by place.
 
@@ -136,7 +146,10 @@ class Contacts:
     so a newer sighting supersedes an older one and no ageing rule is needed.
     """
 
-    _seen: dict[tuple[str, str], _Record] = field(default_factory=dict)
+    # Banded already, so named for what it holds (#156): "seen" is Sighting
+    # vocabulary — the raw world-side input a Contact is banded from — and
+    # CONTEXT.md's Avoid list keeps it off the banded output.
+    _records: dict[tuple[str, str], _Record] = field(default_factory=dict)
 
     def report(
         self,
@@ -167,13 +180,13 @@ class Contacts:
         """
         for place in observed:
             if place not in found:
-                self._seen.pop((side, place), None)
+                self._records.pop((side, place), None)
 
     def _fold(self, side: str, at_time: float, by_place: dict[str, list[Sighting]]) -> None:
         """Turn each place's sightings into the one Contact that stands there."""
         for place, sightings in by_place.items():
             kinds = tuple(sighting.kind for sighting in sightings)
-            self._seen[side, place] = _Record(
+            self._records[side, place] = _Record(
                 echelon=echelon_of(len(sightings)),
                 posture=posture_of(kinds),
                 assets=assets_of(kinds),
@@ -198,16 +211,6 @@ class Contacts:
                 assets=record.assets,
                 age=math.floor(at_time - record.seen_at),
             )
-            for (owner, place), record in self._seen.items()
+            for (owner, place), record in self._records.items()
             if owner == side
         )
-
-
-@dataclass(slots=True)
-class _Record:
-    """One place's sighting, held in the terms it will be aged from."""
-
-    echelon: str
-    posture: str
-    assets: tuple[str, ...]
-    seen_at: float

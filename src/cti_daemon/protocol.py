@@ -138,4 +138,20 @@ def mint_epoch() -> str:
 
 def encode(reply: Reply) -> str:
     """Serialise a reply to the one line that goes back over the socket."""
-    return json.dumps(reply.envelope, separators=(",", ":"))
+    return _render(reply.envelope)
+
+
+def measure(document: dict[str, Any]) -> int:
+    """Say what a document adds to any line `encode` renders it inside.
+
+    Exact rather than an estimate, which is what lets `Daemon._poll` price a
+    drain incrementally instead of re-encoding the whole candidate reply per
+    pending entry (#156): the rendering is `encode`'s own, fixed and ASCII-only,
+    and JSON renders a document identically alone and nested.
+    """
+    return len(_render(document))
+
+
+def _render(document: dict[str, Any]) -> str:
+    """Render the one JSON form every encoded line and every measurement shares."""
+    return json.dumps(document, separators=(",", ":"))

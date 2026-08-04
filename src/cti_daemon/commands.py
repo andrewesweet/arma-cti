@@ -35,7 +35,10 @@ OWNERS: Final = (*SIDES, NEUTRAL, CONTESTED)
 
 # The Command catalogue: name -> the argument names it requires. This is the
 # source the SQF constructors are generated from, so a Command the game can
-# build and a Command the daemon accepts cannot drift apart.
+# build and a Command the daemon accepts cannot drift apart. The port's
+# handlers keep their own per-argument reads rather than deriving a generic
+# presence check from these tuples — the reason is at `port.HANDLERS`, and
+# test_port holds the two to each other (#145, #156).
 CATALOGUE: Final[dict[str, tuple[str, ...]]] = {
     "purchase": ("squad_type",),
     # Reserve names no ground, but it travels in the same shape as the others

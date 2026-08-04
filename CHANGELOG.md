@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Two daemon hot paths shed rebuilt work.** Dispatch looked its handler up in a verb table
+  rebuilt on every request — the shape #90 already removed from the port — and a `poll` re-encoded
+  the whole candidate reply once per pending Effect, so pricing one drain read the backlog
+  quadratically. The table is now built once, and a drain is priced incrementally, to the byte the
+  full encoding gives. The wire is byte-for-byte what it was. #156.
+
 - **The daemon now reads its own Command catalogue instead of restating it.** The catalogue claims
   a Command the game can build and one the daemon accepts cannot drift apart, but the daemon's own
   validation never read it: the handler table restated the verb set, each handler restated its

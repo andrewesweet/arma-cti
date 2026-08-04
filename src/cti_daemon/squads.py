@@ -105,7 +105,7 @@ class Roster:
     def roll(self, side: str) -> tuple[Squad, ...]:
         """One side's Squads, in the order they were bought.
 
-        A side rather than the whole map, for the reason `of` takes one: there
+        A side rather than the whole map, for the reason `owned_by` takes one: there
         is no call that hands out the enemy's order of battle, so an in-process
         planner cannot read it even by accident (#27).
         """

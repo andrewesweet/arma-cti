@@ -54,6 +54,20 @@ def test_a_line_that_is_not_a_request_is_refused_at_decode(line: str) -> None:
         protocol.decode(line)
 
 
+def test_measure_prices_a_document_exactly_as_encode_renders_it_nested() -> None:
+    # `Daemon._poll` prices a drain incrementally with this (#156): a reply
+    # grows by the message's own measure, plus one comma once it has a
+    # neighbour, so the sum must be the encoding it stands in for — not close
+    # to it. The non-ASCII place pins that escaping cannot split the two.
+    first = {"sequence": 1, "message": {"effect": "order_issued", "args": {}}}
+    second = {"sequence": 2, "message": {"effect": "order_issued", "args": {"place": "café"}}}
+    empty = len(protocol.encode(protocol.accepted("r-3", {"messages": []})))
+    one = len(protocol.encode(protocol.accepted("r-3", {"messages": [first]})))
+    both = len(protocol.encode(protocol.accepted("r-3", {"messages": [first, second]})))
+    assert one == empty + protocol.measure(first)
+    assert both == one + 1 + protocol.measure(second)
+
+
 def test_an_error_reply_names_the_failure_class_and_tolerates_an_unknown_id() -> None:
     line = protocol.encode(protocol.failed(None, "malformed_request", "not JSON: bad token"))
     assert json.loads(line) == {

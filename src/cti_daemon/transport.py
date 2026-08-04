@@ -322,8 +322,8 @@ def serve_in_thread(
     ready = threading.Event()
     bound: list[int] = []
 
-    def _record(port_: int, _epoch: str) -> None:
-        bound.append(port_)
+    def _record(bound_port: int, _epoch: str) -> None:
+        bound.append(bound_port)
         ready.set()
 
     thread = threading.Thread(

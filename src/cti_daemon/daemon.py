@@ -376,20 +376,10 @@ class Daemon:
         return None
 
     def _dispatch(self, request: protocol.Request) -> protocol.Reply:
-        handler = self._handlers().get(request.verb)
+        handler = HANDLERS.get(request.verb)
         if handler is None:
             return protocol.failed(request.id, "unknown_verb", f"no handler for {request.verb!r}")
-        return handler(request)
-
-    def _handlers(self) -> dict[str, Callable[[protocol.Request], protocol.Reply]]:
-        return {
-            "ping": self._ping,
-            "poll": self._poll,
-            "ack": self._ack,
-            "command": self._command,
-            "observe": self._observe,
-            "view": self._view,
-        }
+        return handler(self, request)
 
     def _ping(self, request: protocol.Request) -> protocol.Reply:
         result: dict[str, Any] = {"pong": True}
@@ -532,11 +522,20 @@ class Daemon:
         """
         pending = self.outbox.pending()
         messages: list[dict[str, Any]] = []
+        # Priced incrementally rather than by re-encoding the whole candidate
+        # reply once per entry, which read the backlog quadratically (#156).
+        # Exact, not an estimate: `protocol.measure` shares `encode`'s fixed
+        # rendering, under which a document encodes the same alone as nested —
+        # so a longer drain costs the empty drain plus each message plus one
+        # comma between neighbours, to the byte.
+        size = len(protocol.encode(self._drain(request, messages)))
         for entry in pending:
-            candidate = [*messages, self._addressed(entry)]
-            if len(protocol.encode(self._drain(request, candidate))) >= budget.REPORT_GUARD_BYTES:
+            message = self._addressed(entry)
+            grown = size + protocol.measure(message) + (1 if messages else 0)
+            if grown >= budget.REPORT_GUARD_BYTES:
                 break
-            messages = candidate
+            messages.append(message)
+            size = grown
 
         if pending and not messages:
             return self._oversized(request, pending[0])
@@ -630,3 +629,18 @@ class Daemon:
         except UnknownSequenceError as exc:
             return protocol.rejected(request.id, "unknown_sequence", str(exc))
         return protocol.accepted(request.id, {"cleared": cleared})
+
+
+# One table rather than a dictionary rebuilt on every request (#156) — the fix
+# #90 already applied to the port's Command dispatch, one module along. Below
+# the class because it names its methods; unbound, so `_dispatch` passes the
+# daemon. These are ADR-0012's transport verbs, not Commands: the catalogue
+# binds one level down, at `port.HANDLERS`.
+HANDLERS: Final[dict[str, Callable[[Daemon, protocol.Request], protocol.Reply]]] = {
+    "ping": Daemon._ping,  # noqa: SLF001 — the class's own dispatch table
+    "poll": Daemon._poll,  # noqa: SLF001 — ditto
+    "ack": Daemon._ack,  # noqa: SLF001 — ditto
+    "command": Daemon._command,  # noqa: SLF001 — ditto
+    "observe": Daemon._observe,  # noqa: SLF001 — ditto
+    "view": Daemon._view,  # noqa: SLF001 — ditto
+}
