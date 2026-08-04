@@ -1,5 +1,5 @@
 // probe: human-commander
-// issues: 18, 19, 46, 116
+// issues: 18, 19, 46, 116, 174
 // window: 420
 // env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240 CTI_AI_SIDE=EAST CTI_AI_SEED=1
 //
@@ -53,6 +53,10 @@
 // Windows host, connect and be swept into the Commander slot (240 s allowed for
 // a cold start, 24.7 s observed on #18's run), and the accepted Purchase is then
 // polled to a 60 s ceiling with a 30 s wait on the client's own report after it.
+// The #174 map-picture checks ride the same client without moving the window:
+// they run on the client right after it publishes its first report, stage and
+// read in one unscheduled block, and their 30 s server-side wait overlaps the
+// 60 s Purchase poll that runs concurrently.
 //
 // Run by hand without a client — `just probe spike/probes/human-commander.sqf` —
 // this probe reports its client leg `unverified` and the run is
@@ -315,6 +319,121 @@
 
             [["purchase", [["squad_type", "rifle"]]] call cti_fnc_command]
                 remoteExec ["cti_fnc_portGateway", 2];
+
+            // ---- #174: the map picture --------------------------------------
+            // Playtest 0001's three presentation defects, asserted on the one
+            // machine in the corpus that draws a Commander's map. Each entry is
+            // [check, held, detail]; the server logs the verdicts, because the
+            // harness reads the server's log. Staged and read inside one
+            // unscheduled block (isNil) so the 5 s view push cannot repaint the
+            // picture between a render and the read that judges it.
+            private _results = [];
+            isNil {
+                private _real = missionNamespace getVariable ["cti_view", createHashMap];
+                private _town = ((missionNamespace getVariable ["cti_map", createHashMap])
+                    getOrDefault ["objectives", []]) param [0, createHashMap];
+                private _townId = _town getOrDefault ["id", ""];
+                (_town getOrDefault ["position", [0, 0]]) params ["_east", "_north"];
+                private _townAt = [_east, _north, 0];
+
+                // The real click path minus only the engine's event dispatch:
+                // a click that resolves to a Place selects it.
+                [[_east, _north]] call cti_fnc_mapSelect;
+                _results pushBack ["selection_resolves", cti_uiPlace isEqualTo _townId,
+                    format ["picked=%1 expected=%2", cti_uiPlace, _townId]];
+
+                // The collision playtest 0001 photographed, restaged: a Squad
+                // and a Contact at the selected Place, through the same
+                // variable the push writes, rendered by the real renderer. The
+                // first Squad is down three men so its strength text can only
+                // read n over establishment if the denominator is real; the
+                // second stands at the same Place so stacking is observable.
+                private _staged = createHashMapFromArray [
+                    ["side", cti_uiSide],
+                    ["funds", 0],
+                    ["owners", createHashMap],
+                    ["hq", createHashMap],
+                    ["squads", [
+                        createHashMapFromArray [["id", "probe-map-a"], ["type", "rifle"],
+                            ["size", 5], ["order", "defend"], ["place", _townId], ["at", _townId]],
+                        createHashMapFromArray [["id", "probe-map-b"], ["type", "rifle"],
+                            ["size", 8], ["order", "reserve"], ["place", ""], ["at", _townId]]
+                    ]],
+                    ["contacts", [
+                        createHashMapFromArray [["at", _townId], ["echelon", "team"],
+                            ["posture", "foot"], ["assets", []], ["age", 30]]
+                    ]]
+                ];
+                missionNamespace setVariable ["cti_view", _staged];
+                [] call cti_fnc_mapRender;
+
+                // The staging took effect (#80's sibling): every marker the
+                // claims below are about exists, or the claims are vacuous.
+                private _contactName = format ["cti_ui_contact_%1", _townId];
+                private _squadKind = markerType "cti_ui_squad_probe-map-a";
+                private _contactKind = markerType _contactName;
+                private _selectionKind = markerType "cti_ui_place";
+                _results pushBack ["staged_markers_drawn",
+                    _squadKind isNotEqualTo "" && { _contactKind isNotEqualTo "" }
+                        && { markerType "cti_ui_squad_probe-map-b" isNotEqualTo "" }
+                        && { _selectionKind isNotEqualTo "" },
+                    format ["squad=%1 contact=%2 selection=%3", _squadKind, _contactKind,
+                        _selectionKind]];
+
+                // 1. The selection marker sits at the Place the click named and
+                // is its own kind of marker, not a Squad's or a Contact's.
+                private _selectionAt = getMarkerPos "cti_ui_place";
+                _results pushBack ["selection_at_the_place",
+                    _selectionAt distance2D _townAt < 1,
+                    format ["marker=%1 place=%2", _selectionAt, _townAt]];
+                _results pushBack ["selection_distinct",
+                    _selectionKind isNotEqualTo _squadKind
+                        && { _selectionKind isNotEqualTo _contactKind },
+                    format ["selection=%1 squad=%2 contact=%3", _selectionKind, _squadKind,
+                        _contactKind]];
+
+                // 2. Nothing with text draws at the town centre, which is where
+                // the engine prints its own label, and the two kinds do not
+                // draw at the same point as each other — or as each other's
+                // stackmates.
+                private _squadA = getMarkerPos "cti_ui_squad_probe-map-a";
+                private _squadB = getMarkerPos "cti_ui_squad_probe-map-b";
+                private _contactAt = getMarkerPos _contactName;
+                _results pushBack ["text_off_the_engine_label",
+                    _squadA distance2D _townAt > 25 && { _contactAt distance2D _townAt > 25 },
+                    format ["squad=%1 contact=%2 label=%3", _squadA, _contactAt, _townAt]];
+                _results pushBack ["kinds_separated",
+                    _squadA distance2D _contactAt > 25,
+                    format ["squad=%1 contact=%2", _squadA, _contactAt]];
+                _results pushBack ["squads_stacked",
+                    _squadA distance2D _squadB > 25,
+                    format ["first=%1 second=%2", _squadA, _squadB]];
+
+                // 3. Strength carries a denominator, and the denominator is the
+                // establishment the catalogue sells — read from the same schema
+                // the renderer reads, not written down here again (#159).
+                private _establishment = (((call cti_fnc_commandSchema)
+                    getOrDefault ["squads", createHashMap])
+                    getOrDefault ["rifle", createHashMap]) getOrDefault ["size", -1];
+                private _text = markerText "cti_ui_squad_probe-map-a";
+                _results pushBack ["strength_has_a_denominator",
+                    _text find (format ["%1/%2", 5, _establishment]) > -1,
+                    format ["text=%1 establishment=%2", _text, _establishment]];
+
+                // A click on open country selects nothing on purpose
+                // (cti_fnc_placeOf without the fallback), and the marker goes
+                // with the selection.
+                [[10, 10]] call cti_fnc_mapSelect;
+                _results pushBack ["selection_cleared",
+                    cti_uiPlace isEqualTo "" && { markerType "cti_ui_place" isEqualTo "" },
+                    format ["place=%1 marker=%2", cti_uiPlace, markerType "cti_ui_place"]];
+
+                // The picture handed back to the session as it was found.
+                missionNamespace setVariable ["cti_view", _real];
+                [] call cti_fnc_mapRender;
+            };
+            cti_probeMap = _results;
+            publicVariable "cti_probeMap";
         };
     } remoteExec ["call", _target];
 
@@ -355,6 +474,26 @@
         if !(_clientUI) then {
             diag_log "CTI|FAIL class=assertion_failed human_commander_probe_client_ui_not_started";
         };
+    };
+
+    // The #174 map-picture verdicts, made on the client that draws the picture
+    // and judged here because the harness reads the server's log. A client that
+    // reported above but never sent these is a half-run leg, and silence would
+    // otherwise read as green.
+    private _mapBy = diag_tickTime + 30;
+    waitUntil { !isNil "cti_probeMap" || { diag_tickTime > _mapBy } };
+    if (isNil "cti_probeMap") then {
+        diag_log "CTI|FAIL class=assertion_failed human_commander_probe_map_silent";
+    } else {
+        {
+            _x params ["_check", "_held", "_detail"];
+            if (_held) then {
+                diag_log format ["CTI|human_commander_probe_map check=%1 %2", _check, _detail];
+            } else {
+                diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_map_%1 %2",
+                    _check, _detail];
+            };
+        } forEach cti_probeMap;
     };
 
     diag_log "CTI|LEG name=human_commander_client status=ran";
