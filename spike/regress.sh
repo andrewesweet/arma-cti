@@ -66,6 +66,13 @@ RUN_SH="${CTI_RUN_SH:-$REPO/spike/run.sh}"
 # unit suite killing the live tier — on purpose. So the command is substitutable
 # and the response is what gets tested (#133). Nothing but the tests sets it.
 SLOT_RECLAIM="${CTI_SLOT_RECLAIM:-cti_slot_reclaim}"
+# Overridable for the same reason and by the same tier (#133's pattern, #147):
+# the real reading is /proc/meminfo on the live host, and the no-Arma tier
+# cannot make that fail mid-run to test the response to a reading that could
+# not be taken. Both the pre-flight and the between-probes re-check go through
+# this one name, so the two readings cannot drift apart. Nothing but the tests
+# sets it.
+SLOT_MEM_READER="${CTI_SLOT_MEM_READER:-cti_slot_mem_available_mb}"
 
 # The watchdog above `run.sh`, one per probe (#144). Nothing used to bound a
 # probe at all: `run.sh` has deadlines on the things it waits *for*, and a hang
@@ -442,7 +449,7 @@ fi
 memory_preflight() {
     local deadline=$((SECONDS + WAIT_SECS)) said=0
     while :; do
-        MEM_AVAILABLE_MB="$(cti_slot_mem_available_mb)" || return 2
+        MEM_AVAILABLE_MB="$("$SLOT_MEM_READER")" || return 2
         MEM_FIT="$(cti_slot_mem_fit "$WANT_SLOTS" "$MEM_AVAILABLE_MB")"
         ((MEM_FIT > 0)) && return 0
         ((SECONDS < deadline)) || return 1
@@ -1007,7 +1014,20 @@ worker() {
         # in flight, which is exactly what `infra_unavailable` already means to
         # this loop: interrupting a running world would manufacture the
         # non-result being avoided.
-        avail="$(cti_slot_mem_available_mb || echo 0)"
+        # Read, never fabricated (#147): `|| echo 0` here used to conflate
+        # "the reading failed" with "0 MiB available", so the stop was right
+        # and the recorded detail invented a measurement never taken. A
+        # reading that could not be taken stops the pool the same way — a
+        # check that could not run is not a check that passed (#41) — and the
+        # record says which of the two happened.
+        if ! avail="$("$SLOT_MEM_READER")"; then
+            log "[slot $slot] the memory reading could not be taken before $name — stopping new work rather than launching blind"
+            printf 'the memory reading could not be taken before %s in slot %s — a check that could not run is not a check that passed\n' \
+                "$name" "$slot" >"$STOP_FLAG"
+            printf 'unreadable\n' >"$POOL_OUT/mem-stop"
+            rmdir "$CLAIMS/$name" 2>/dev/null
+            break
+        fi
         if ((avail < CTI_SLOT_MEM_RUNNING_FLOOR_MB)); then
             log "[slot $slot] $avail MiB available, under the ${CTI_SLOT_MEM_RUNNING_FLOOR_MB} MiB running floor — not launching $name into a machine with no margin"
             printf 'only %s MiB available before %s in slot %s; the running floor is %s MiB\n' \
@@ -1056,6 +1076,7 @@ fi
 # overlaps — the client is only contended for the length of the tail — and
 # released as soon as the tail is done, before the merge.
 CLIENT_LOCK_BLOCKED=0
+CLIENT_LOCK_EVIDENCE=""
 if ((${#HOST_JOBS[@]} > 0)) && [[ ! -f "$STOP_FLAG" ]]; then
     if cti_client_lock_acquire "$WAIT_SECS" "$POOL_LABEL"; then
         log "windows-host tail holds the machine-wide client lock: $(cti_client_lock_path)"
@@ -1069,6 +1090,14 @@ if ((${#HOST_JOBS[@]} > 0)) && [[ ! -f "$STOP_FLAG" ]]; then
         CLIENT_LOCK_BLOCKED=1
         log "another run holds the Windows client — the host tail is not a result:"
         cti_client_lock_holder | sed 's/^/[regress]   /' >&2
+        # The holder's metadata, copied into this pool's own evidence: the
+        # `.info` beside the lock is deleted when the holder releases, so a
+        # pool.json that referenced it would durably name a path that stops
+        # existing minutes later (#147). What the blocked verdicts point at
+        # has to outlive the holder that caused them.
+        CLIENT_LOCK_EVIDENCE="$POOL_OUT/client-lock-holder.info"
+        cti_client_lock_holder >"$CLIENT_LOCK_EVIDENCE" 2>/dev/null ||
+            CLIENT_LOCK_EVIDENCE=""
     fi
 fi
 
@@ -1106,7 +1135,7 @@ merge_args=(
     --pool-out "$POOL_OUT"
     --corpus "${CORPUS[@]}"
     --client-lock-blocked "$CLIENT_LOCK_BLOCKED"
-    --client-lock-evidence "$(cti_client_lock_info_path)"
+    --client-lock-evidence "$CLIENT_LOCK_EVIDENCE"
     --started-at "$RUN_STARTED"
     --git-sha "$GIT_SHA"
     --host "$HOST"

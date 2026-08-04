@@ -24,6 +24,7 @@ Windows process list `tests/unit/test_bringup_guards.py` uses.
 
 from __future__ import annotations
 
+import json
 import os
 import re
 import shutil
@@ -512,6 +513,19 @@ def test_a_pool_whose_tail_is_locked_out_reports_it_rather_than_skipping(
     assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
     assert "another run holds the Windows client" in result.stderr
     assert "label=a sibling agent" in result.stderr
+    # #147 item 6: the lock's own `.info` is deleted when the holder releases,
+    # so a blocked verdict that referenced it would durably name a path that
+    # stops existing. The verdicts must point at evidence the pool owns.
+    pools = sorted((tmp_path / "state" / "runs").glob("*-pool"))
+    pool = json.loads((pools[-1] / "pool.json").read_text())
+    blocked = [v for v in pool["verdicts"] if v["slot"] == "-"]
+    assert sorted(v["probe"] for v in blocked) == sorted(HOST_PROBES)
+    for verdict in blocked:
+        evidence = Path(verdict["evidence"])
+        assert evidence.parent == pools[-1], (
+            f"the blocked verdict's evidence lives outside the pool: {evidence}"
+        )
+        assert "label=a sibling agent" in evidence.read_text()
 
 
 # ------------------------------------------------------- the guard, still blind

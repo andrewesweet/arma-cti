@@ -1023,6 +1023,35 @@ def test_the_pool_stops_taking_new_work_when_the_machine_runs_out_mid_run(
     assert pool["not_run"] == ALL_PROBES, pool["not_run"]
 
 
+def test_a_mid_run_reading_that_fails_stops_the_pool_without_fabricating_zero(
+    tmp_path: Path,
+) -> None:
+    """#147 item 5: `|| echo 0` conflated "the reading failed" with "0 MiB free".
+
+    The stop came out right and the recorded detail fabricated a measurement
+    never taken. The reader is substitutable the way the reclaim is (#133's
+    pattern), because the no-Arma tier cannot make `/proc/meminfo` fail
+    mid-run; the stub answers once for the pre-flight and then refuses.
+    """
+    counter = tmp_path / "mem-asks"
+    reader = executable(
+        tmp_path / "flaky-mem.sh",
+        "#!/usr/bin/env bash\n"
+        f'n="$(cat "{counter}" 2>/dev/null || echo 0)"\n'
+        f'echo "$((n + 1))" >"{counter}"\n'
+        "((n == 0)) && { echo 1000000; exit 0; }\n"
+        "exit 1\n",
+    )
+    result = pool_run(
+        tmp_path, "--slots", "1", "contacts", extra_env={"CTI_SLOT_MEM_READER": str(reader)}
+    )
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    pool = pool_json(tmp_path)
+    assert "could not be taken" in pool["stopped_early"], pool["stopped_early"]
+    assert "0 MiB" not in pool["stopped_early"], pool["stopped_early"]
+    assert pool["not_run"] == ["contacts"]
+
+
 def test_the_verdict_names_the_slot_and_the_host(tmp_path: Path) -> None:
     """The host field is ADR-0032's seam, carried from day one.
 
