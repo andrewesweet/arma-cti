@@ -132,9 +132,13 @@ declare -A CLASS_RANK=(
 )
 log() { printf '[regress] %s\n' "$*" >&2; }
 
+# A usage or setup refusal, before anything is measured: not a verdict, so its
+# exit code must not collide with a class's. `exit 2` here used to read as
+# `timeout` to any caller of the exit-code table above (#147); CTI_EXIT_USAGE
+# (spike/host-guard.sh, the exit codes' one bash home) is sysexits' EX_USAGE.
 die() {
     log "$*"
-    exit 2
+    exit "$CTI_EXIT_USAGE"
 }
 
 # ------------------------------------------------------------------ arguments

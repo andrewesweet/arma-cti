@@ -104,11 +104,12 @@ NO_CLIENT_WAIT=0
 HOLD_TIMEOUT="${CTI_HOLD_TIMEOUT:-900}"
 # One mode flag at most. A second argument used to be read by nobody and
 # silently dropped, which is how a mistyped invocation runs in a mode the
-# caller did not ask for. A usage error exits 2, like regress.sh's `die`:
-# nothing was brought up, so there is no verdict to type.
+# caller did not ask for. A usage error exits CTI_EXIT_USAGE, like regress.sh's
+# `die` — nothing was brought up, so there is no verdict to type, and the code
+# is one no class row claims (#147).
 if (($# > 1)); then
     printf '[spike] too many arguments: %s — one mode flag at most (--no-hc | --hold | --regress)\n' "$*" >&2
-    exit 2
+    exit "$CTI_EXIT_USAGE"
 fi
 case "${1:-}" in
 --no-hc) SKIP_HC=1 ;;

@@ -50,20 +50,22 @@ while (($# > 0)); do
         break
         ;;
     *)
+        # CTI_EXIT_USAGE, not 2: a usage refusal must not wear a class's exit
+        # code, and 2 is the timeout row's (#147).
         printf '[tier-lock] unknown argument: %s\n' "$1" >&2
-        exit 2
+        exit "$CTI_EXIT_USAGE"
         ;;
     esac
 done
 
 if (($# == 0)); then
     printf '[tier-lock] nothing to run; usage: tier-lock.sh [--wait secs] -- cmd...\n' >&2
-    exit 2
+    exit "$CTI_EXIT_USAGE"
 fi
 
 if [[ ! "$WAIT_SECS" =~ ^[0-9]+$ ]]; then
     printf '[tier-lock] --wait takes whole seconds, got: %s\n' "$WAIT_SECS" >&2
-    exit 2
+    exit "$CTI_EXIT_USAGE"
 fi
 
 # Taken through the slot library's own acquire rather than a hand-rolled flock

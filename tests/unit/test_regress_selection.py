@@ -29,8 +29,12 @@ from test_probe_headers import PROBE_DIR, PROBES, header_block
 REGRESS = Path(__file__).resolve().parents[2] / "spike" / "regress.sh"
 BASH = shutil.which("bash") or "/bin/bash"
 
-# `die` in the runner. Not a failure class — a refusal to run at all.
-EXIT_REFUSED = 2
+# `die` in the runner. Not a failure class — a refusal to run at all — and
+# therefore not a class's exit code either: 2 used to collide with `timeout`'s,
+# so a caller reading the exit could not tell a mistyped flag from a typed
+# timeout verdict (#147). 64 is sysexits(3)'s EX_USAGE, CTI_EXIT_USAGE in
+# spike/host-guard.sh — the exit codes' one bash home.
+EXIT_REFUSED = 64
 
 
 def issues_of(path: Path) -> set[str]:

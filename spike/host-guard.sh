@@ -59,8 +59,17 @@ CTI_EXIT_TIMED_OUT=124
 # above reads this name rather than minting its own 5. Two places must agree
 # with it and say so at their site: tools/host_guard_verdict.py's
 # EXIT_INFRA_UNAVAILABLE, and the infra_unavailable row of spike/regress.sh's
-# CLASS_RANK — the whole class→exit table, whose own consolidation is #92/#147.
+# CLASS_RANK — the exit half of the class table, whose further consolidation
+# is #92's.
 CTI_EXIT_INFRA_UNAVAILABLE=5
+
+# The usage-error exit code, beside its sibling: a refusal to run at all,
+# never a verdict — so it must not collide with any class's exit code.
+# regress.sh's `die` exited 2, which collided with CLASS_RANK's timeout row,
+# and a caller reading the exit could not tell a mistyped flag from a typed
+# timeout verdict (#147). sysexits(3)'s EX_USAGE, well clear of the class
+# table's rows and of timeout(1)'s own 124/125/126/127/137.
+CTI_EXIT_USAGE=64
 
 # Echoes one of:
 #   free <detail>          the list came back and the image is not in it
