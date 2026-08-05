@@ -26,6 +26,15 @@
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/deny-subagent-waits.py\" || exit 2"
           }
         ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/deny-oversized-reads.py\" || exit 2"
+          }
+        ]
       }
     ],
     "PostToolUse": [

@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A whole-file read of something enormous is refused, and told where the pieces are.**
+  A new PreToolUse hook, `.claude/hooks/deny-oversized-reads.py`, denies a `Read` whose
+  window would deliver more than 40,000 characters and names the size, the file and the
+  remedy — `offset`/`limit` with a line count that fits, `Grep`, or `mcp__semble__search`.
+  A tool result is not paid once: it joins the prefix and is re-read on every later turn,
+  and #203 measured 28 reads carrying 5.0% of every tool-result byte in this project's
+  history, all of them `Read`. The threshold is the 98th percentile of the 2,549 reads
+  behind that measurement — 6.4× the mean and 12.6× the median — so ordinary working reads
+  never see it. What the hook measures is the payload the call would deliver rather than
+  the file's size on disk, because `Read` stops at 2,000 lines: one vendored wiki page is
+  572,976 bytes and delivers 39,256 of them, and a gate that denied it would also have
+  named a number six times larger than the agent would have paid. Screenshots and PDFs are
+  exempt, having no `offset`/`limit` to be redirected to, and the vendored wiki gets no
+  exemption because it never needed one. Both directions are pinned in the no-Arma tier
+  along with the `|| exit 2` wiring itself, run verbatim with an empty PATH (#168, #183).
+  #207.
+
 - **A subagent can no longer hold its turn open on a long wait.** A new PreToolUse hook,
   `.claude/hooks/deny-subagent-waits.py`, denies a `sleep` of 240 s or more and any
   `while`/`until` poll loop with a `sleep` in it — but only inside a subagent, which the
