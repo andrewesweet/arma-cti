@@ -106,6 +106,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The slot pool's last four bulkhead leaks are walled.** A `kill` aimed at `just regress` —
+  unlike a Ctrl-C, which the terminal delivers to the whole tree — used to reach the worker
+  subshells and stop there, leaving up to N engines bound to the run's slot ports with nobody
+  owning them, and then to *resume* the interrupted wait and go on scheduling probes onto slots
+  it had just released; a signal now ends every flight through its watchdog, so each `run.sh`
+  tears its own world down, and the pass exits `infra_unavailable` with a durable refusal line,
+  because a run stopped from outside measured nothing. The reclaim's kills aim at a process
+  rather than at a pid: each swept number is bound to the process's start time and re-checked
+  immediately before every signal, so a number recycled between the sweep and the kill is left
+  alone instead of `kill -9`-ing whatever inherited it. The install farm no longer reads the
+  paths a hand run stages — it skips `mpmissions`, `@cti` and the shim at the copy instead of
+  breaking them back out afterwards, so an unrelated `just probe` rewriting slot 0's install can
+  no longer turn a pool's bring-up into `infra_unavailable`. And `--wait` queues in a loop: the
+  wait establishes only that the client lock was free when it looked, and a third agent taking
+  it in the gap used to turn a caller who had asked to queue into a refusal on the second
+  contender it met. #151, from #140.
 - **A starved machine can no longer forge a probe's class.** Twice, memory starvation arriving
   *after* admission — another agent's corpus, or the OS itself sickening — typed its verdicts
   `timeout` and `node_crashed`: false reds about the code under test, wearing classes whose table

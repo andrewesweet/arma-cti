@@ -430,21 +430,61 @@ cti_slot_install_pids() {
     return 0 # a finder, not a test — see cti_slot_lock_holders
 }
 
+# When a process started, in clock ticks since boot — field 22 of
+# `/proc/<pid>/stat`, fixed for the life of the process and never inherited by
+# the pid's next owner. Non-zero when the pid is not in the table at all.
+#
+# This is the identity everything below aims at, because a pid is not one
+# (#151). Linux recycles pid numbers, and between the sweep that finds a
+# squatter and the kill that clears it the squatter can exit and its number be
+# handed to something else — a browser, an editor, another agent's daemon. The
+# sweeps read the port space and the process table, so their answers are about
+# the whole machine; a stale number aimed at `kill -9` therefore has unbounded
+# blast radius and leaves no trace of what it hit.
+#
+# The fields are counted from the *last* `") "` rather than by splitting the
+# line, because a process's comm is bracketed and may itself contain spaces and
+# parentheses — the same reason `tests/unit/test_pool_slots.py`'s stub reads a
+# ppid that way. After it, field 20 is starttime.
+cti_slot_pid_starttime() {
+    local stat rest fields
+    stat="$(cti_host_exec "$CTI_TIER_HOST" cat "/proc/$1/stat" 2>/dev/null)" || return 1
+    rest="${stat##*') '}"
+    [[ "$rest" != "$stat" ]] || return 1
+    read -r -a fields <<<"$rest"
+    [[ "${fields[19]:-}" =~ ^[0-9]+$ ]] || return 1
+    printf '%s\n' "${fields[19]}"
+}
+
 # Is this pid still holding anything? Alive, and not a zombie: a zombie answers
 # `kill -0` but let go of its descriptors, its ports and its install at exit, and
 # all that is left of it is a table entry nobody has read yet. Waiting on one
 # would be waiting for a third party to call `wait`, which is not this slot's
 # business and not a thing the deadline below could ever be long enough for.
+#
+# `$2`, when given, is the start time the pid was swept with: a pid whose start
+# time has moved is a *different* process wearing a recycled number, and it is
+# holding nothing of this slot's. Answering "not holding" is what makes it both
+# safe to leave alone and correctly absent from the survivor list.
 cti_slot_pid_holds() {
-    cti_host_exec "$CTI_TIER_HOST" kill -0 "$1" 2>/dev/null || return 1
-    [[ "$(cti_host_exec "$CTI_TIER_HOST" ps -o stat= -p "$1" 2>/dev/null)" == *Z* ]] && return 1
+    local pid="$1" started="${2:-}"
+    cti_host_exec "$CTI_TIER_HOST" kill -0 "$pid" 2>/dev/null || return 1
+    [[ "$(cti_host_exec "$CTI_TIER_HOST" ps -o stat= -p "$pid" 2>/dev/null)" == *Z* ]] && return 1
+    [[ -z "$started" || "$(cti_slot_pid_starttime "$pid")" == "$started" ]] || return 1
     return 0
 }
 
-# Which of "$@" are still holding.
+# The two below take `pid:starttime` tokens rather than bare pids, so that every
+# question they answer is about the processes the sweep actually found. Consumer:
+# cti_slot_reclaim, which is the only caller and the only place the tokens are
+# minted.
+
+# Which of "$@" are still holding, as bare pids for the log and the caller.
 cti_slot_pids_alive() {
-    local pid alive=()
-    for pid in "$@"; do cti_slot_pid_holds "$pid" && alive+=("$pid"); done
+    local token alive=()
+    for token in "$@"; do
+        cti_slot_pid_holds "${token%%:*}" "${token#*:}" && alive+=("${token%%:*}")
+    done
     printf '%s' "${alive[*]-}"
     return 0 # a finder, not a test — see cti_slot_lock_holders
 }
@@ -463,11 +503,11 @@ cti_slot_pids_alive() {
 # Bounded and then reported, never extended: a SIGKILL that has not landed inside
 # the deadline is news about the machine, not something to keep waiting on.
 cti_slot_pids_gone() {
-    local deadline=$((SECONDS + $1)) pid alive
+    local deadline=$((SECONDS + $1)) token alive
     shift
     while :; do
         alive=0
-        for pid in "$@"; do cti_slot_pid_holds "$pid" && alive=1; done
+        for token in "$@"; do cti_slot_pid_holds "${token%%:*}" "${token#*:}" && alive=1; done
         ((alive == 0)) && return 0
         ((SECONDS < deadline)) || return 1
         sleep 0.5
@@ -484,7 +524,7 @@ cti_slot_pids_gone() {
 # `cti_slot_lock_holders`. On acquire it is neither wanted nor meaningful: a slot
 # we just took exclusively has no other holder.
 cti_slot_reclaim() {
-    local n="$1" pid pids=() marker last_run survivors
+    local n="$1" pid pids=() tokens=() token started marker last_run survivors
     mapfile -t pids < <(
         # Only the real tier sweeps the real machine. Both sweeps read facts
         # nothing virtualises — `ss` sees the one port space, `/proc` sees the one
@@ -510,6 +550,18 @@ cti_slot_reclaim() {
     # Deduplicate; the two sweeps overlap on a live server.
     mapfile -t pids < <(printf '%s\n' "${pids[@]+"${pids[@]}"}" | grep -E '^[0-9]+$' | sort -u)
 
+    # Bind each number to the process the sweep actually found, before anything
+    # is signalled (#151, see cti_slot_pid_starttime). A pid whose start time
+    # cannot be read has already left the table between the sweep and here: it
+    # is holding nothing of this slot's, and dropping it is what stops its
+    # number being aimed at whatever inherits it next.
+    for pid in ${pids[@]+"${pids[@]}"}; do
+        started="$(cti_slot_pid_starttime "$pid")" || continue
+        tokens+=("$pid:$started")
+    done
+    pids=()
+    for token in ${tokens[@]+"${tokens[@]}"}; do pids+=("${token%%:*}"); done
+
     # The interrupted-run marker, ADR-0022 per slot: the last evidence directory
     # this slot wrote, and whether it ever got a verdict. Read before killing, so
     # the reason is in the log beside the killing.
@@ -521,21 +573,30 @@ cti_slot_reclaim() {
         fi
     fi
 
-    ((${#pids[@]} > 0)) || return 0
+    ((${#tokens[@]} > 0)) || return 0
     cti_slot_log "slot $n: clearing a previous holder's leftovers: pids ${pids[*]}"
-    for pid in "${pids[@]}"; do cti_host_exec "$CTI_TIER_HOST" kill "$pid" 2>/dev/null; done
+    # Re-checked against the identity immediately before each signal, and again
+    # before the SIGKILL, because the whole of the window this closes is between
+    # the sweep and the signal (#151).
+    for token in "${tokens[@]}"; do
+        cti_slot_pid_holds "${token%%:*}" "${token#*:}" || continue
+        cti_host_exec "$CTI_TIER_HOST" kill "${token%%:*}" 2>/dev/null
+    done
     # Bounded, then hard, then confirmed. Not a synchronisation wait on a test —
     # a shutdown deadline on processes we have already decided are stale.
-    cti_slot_pids_gone 15 "${pids[@]}" && return 0
-    for pid in "${pids[@]}"; do cti_host_exec "$CTI_TIER_HOST" kill -9 "$pid" 2>/dev/null; done
+    cti_slot_pids_gone 15 "${tokens[@]}" && return 0
+    for token in "${tokens[@]}"; do
+        cti_slot_pid_holds "${token%%:*}" "${token#*:}" || continue
+        cti_host_exec "$CTI_TIER_HOST" kill -9 "${token%%:*}" 2>/dev/null
+    done
     # And SIGKILL is confirmed rather than assumed, for the reason in
     # `cti_slot_pids_gone`: what runs next binds this slot's ports and stages into
     # this slot's install, and a `kill -9` that has been *posted* leaves both
     # still taken. Returning here without looking is how a reclaim reports a slot
     # clear that is not, and the `infra_unavailable` that follows names a bind
     # failure rather than the dead holder that caused it.
-    cti_slot_pids_gone 10 "${pids[@]}" && return 0
-    survivors="$(cti_slot_pids_alive "${pids[@]}")"
+    cti_slot_pids_gone 10 "${tokens[@]}" && return 0
+    survivors="$(cti_slot_pids_alive "${tokens[@]}")"
     cti_slot_log "slot $n: SIGKILL sent and still in the process table 10s later: $survivors — this slot is not clear"
     # The survivors on stdout as well as in the log, because the return value says
     # only *that* a slot did not come back clear and the caller has to report
@@ -558,11 +619,26 @@ cti_slot_mark_run() {
 # `run.sh` stages the mission PBO, `@cti` and the shim *into* the install with
 # `rm -rf` and `install`, so two slots sharing one install race on the world
 # under test. A `cp -al` hard-link farm of the 5.1 GB master costs no disk and
-# about a fiftieth of a second (#44) — but the three staged paths must be broken
-# out of the farm afterwards, because `install -m 0755` truncates through a hard
-# link and would write one slot's shim into the master and every other clone.
+# about a fiftieth of a second (#44) — but the staged paths must stay out of the
+# farm, because `install -m 0755` truncates through a hard link and would write
+# one slot's shim into the master and every other clone.
+
+# Exactly what `run.sh` writes into an install: the mission PBOs
+# (`mpmissions/`), the addon (`@cti/`) and the shim under both names. Consumer:
+# cti_slot_install_ready, which skips them. One list, so a fourth staged path
+# arriving in run.sh has one place to be added rather than two.
+CTI_SLOT_STAGED_PATHS=(mpmissions "@cti" cti_shim_x64.so cti_shim.so)
+
+cti_slot_is_staged_path() {
+    local name="$1" staged
+    for staged in "${CTI_SLOT_STAGED_PATHS[@]}"; do
+        [[ "$name" == "$staged" ]] && return 0
+    done
+    return 1
+}
+
 cti_slot_install_ready() {
-    local n="$1" master dst
+    local n="$1" master dst entry name keep=()
     master="$(cti_slot_install 0)"
     dst="$(cti_slot_install "$n")"
     ((n == 0)) && return 0
@@ -582,18 +658,40 @@ cti_slot_install_ready() {
         return 0
     fi
 
+    # What the clone reads: the master's top level minus the staged paths. They
+    # used to be copied and then broken back out, which left the copy walking
+    # exactly the directories a hand run rewrites — slot 0's `run.sh` `rm -rf`s
+    # and repacks them under slot 0's lock, which a pool holding slots 1-2 does
+    # not hold, and a `cp -al` that walks into an `rm -rf` fails. So a hand run's
+    # staging could turn an unrelated pool's bring-up into `infra_unavailable`
+    # (#151, from #140).
+    #
+    # Skipping them rather than taking slot 0's lock, and that is the stronger
+    # of the two walls: the lock would only exclude writers that take it, while
+    # this excludes every writer of those paths — and it leaves a farm build
+    # free to run while slot 0 is busy instead of queueing a whole pool behind
+    # somebody else's probe. What is left is the part of the install nothing but
+    # Steam writes, and a Steam update is what the inode check above is for.
+    #
     # The staging itself, on the host that owns the install. Every one of these
     # is a command rather than a shell builtin, which is what makes the handle
     # the only thing between them and a second machine (ADR-0032).
     cti_slot_log "slot $n: building the install farm at $dst"
+    mapfile -d '' -t entry < <(
+        cti_host_exec "$CTI_TIER_HOST" find "$master" -mindepth 1 -maxdepth 1 -printf '%f\0'
+    )
+    for name in ${entry[@]+"${entry[@]}"}; do
+        cti_slot_is_staged_path "$name" || keep+=("$master/$name")
+    done
+    ((${#keep[@]} > 0)) || {
+        cti_slot_log "slot $n: nothing to clone at $master beyond the paths run.sh stages"
+        return 1
+    }
     cti_host_exec "$CTI_TIER_HOST" rm -rf "${dst:?}" || return 1
-    cti_host_exec "$CTI_TIER_HOST" cp -al "$master" "$dst" || {
+    cti_host_exec "$CTI_TIER_HOST" mkdir -p "$dst/mpmissions" || return 1
+    cti_host_exec "$CTI_TIER_HOST" cp -al "${keep[@]}" "$dst/" || {
         cti_slot_log "slot $n: cp -al of $master failed"
         return 1
     }
-    # Out of the farm: everything run.sh writes into the install.
-    cti_host_exec "$CTI_TIER_HOST" rm -rf "${dst:?}/mpmissions" "${dst:?}/@cti" || return 1
-    cti_host_exec "$CTI_TIER_HOST" rm -f "${dst:?}/cti_shim_x64.so" "${dst:?}/cti_shim.so" || return 1
-    cti_host_exec "$CTI_TIER_HOST" mkdir -p "$dst/mpmissions" || return 1
     return 0
 }

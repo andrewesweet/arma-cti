@@ -412,26 +412,45 @@ fi
 # pool was given, exactly as a busy slot is. With no wait asked for, or with the
 # lock free, the refusal stands unchanged: an unheld client in the list is the
 # human's, and the guard is still the only thing that decides that.
+#
+# And it queues in a loop rather than asking twice (#151). The wait establishes
+# only that the lock was free at the instant it was read; a third agent's tail
+# can take the client in the gap between that and the guard being re-asked, and
+# a single re-ask turned a caller who asked to queue for `--wait` seconds into a
+# refusal on the second contender it met. The loop re-enters with what is left of
+# the deadline, so the queue is still bounded by exactly the wait that was asked
+# for, and every pass re-derives the two facts that make queueing legitimate: a
+# client is in the list, and somebody else holds the lock.
 host_guard_or_queue() {
-    cti_host_guard "$HOST" && return 0
-    # Only a client *in* the list is a thing another run can own. A list that
-    # could not be read is not: queueing on it would be waiting out a broken
-    # check rather than a sibling's client leg, and the answer to a check that
-    # could not run is the same stop it has always been.
-    [[ "$(cti_host_client_state "$HOST")" == running* ]] || return 1
-    cti_client_lock_busy || return 1
-    if ((WAIT_SECS == 0)); then
-        log "another run holds the Windows client; --wait would queue behind it"
+    local deadline=$((SECONDS + WAIT_SECS)) said=0
+    while :; do
+        cti_host_guard "$HOST" && return 0
+        # Only a client *in* the list is a thing another run can own. A list that
+        # could not be read is not: queueing on it would be waiting out a broken
+        # check rather than a sibling's client leg, and the answer to a check that
+        # could not run is the same stop it has always been.
+        [[ "$(cti_host_client_state "$HOST")" == running* ]] || return 1
+        cti_client_lock_busy || return 1
+        if ((WAIT_SECS == 0)); then
+            log "another run holds the Windows client; --wait would queue behind it"
+            cti_client_lock_holder | sed 's/^/[regress]   /' >&2
+            return 1
+        fi
+        ((SECONDS < deadline)) || {
+            log "waited ${WAIT_SECS}s and the Windows client was still held"
+            return 1
+        }
+        # Said once, however many runs we queue behind: the holder named below
+        # is the one we are waiting on now, and a line per contender would bury
+        # the pool's own log under somebody else's schedule.
+        ((said)) || log "that client belongs to another run, not to a play session — queueing up to ${WAIT_SECS}s:"
+        said=1
         cti_client_lock_holder | sed 's/^/[regress]   /' >&2
-        return 1
-    fi
-    log "that client belongs to another run, not to a play session — queueing up to ${WAIT_SECS}s:"
-    cti_client_lock_holder | sed 's/^/[regress]   /' >&2
-    cti_client_lock_wait_free "$WAIT_SECS" || {
-        log "waited ${WAIT_SECS}s and the Windows client was still held"
-        return 1
-    }
-    cti_host_guard "$HOST"
+        cti_client_lock_wait_free $((deadline - SECONDS)) || {
+            log "waited ${WAIT_SECS}s and the Windows client was still held"
+            return 1
+        }
+    done
 }
 
 if ! host_guard_or_queue; then
@@ -571,10 +590,58 @@ log "slots: ${SLOTS[*]}"
 ram_sampler_pid=""
 starve_watch_pid=""
 WORKER_PIDS=()
+
+# TERM one launched probe through its watchdog. The pid a worker records is the
+# host-seam subshell — `cti_host_exec` is a function call, so `$!` is a bash
+# between us and the launch — and signalling it would kill the wrapper while the
+# probe ran on. The GNU `timeout` under it is the process that can end the
+# flight: it leads the probe's own process group and forwards a received TERM to
+# the whole group (run.sh, server, headless client, daemon), so run.sh's own trap
+# still tears its world down and releases what it holds, while the subshell
+# survives to reap the status the verdict typer reads. The walk is bounded:
+# anything deeper than the watchdog is run.sh's own business.
+#
+# Two consumers: the starvation watch, which stops one starved flight (#182),
+# and the teardown below, which stops all of them (#151).
+starve_signal() {
+    local generation="$1" next pid child comm depth
+    for depth in 1 2 3; do
+        next=""
+        for pid in $generation; do
+            for child in $(ps -o pid= --ppid "$pid" 2>/dev/null); do
+                comm="$(ps -o comm= -p "$child" 2>/dev/null)"
+                if [[ "$comm" == timeout ]]; then
+                    kill -TERM "$child" 2>/dev/null
+                    return 0
+                fi
+                next+=" $child"
+            done
+        done
+        generation="$next"
+        [[ -n "${generation// /}" ]] || return 1
+    done
+    return 1
+}
+
 pool_teardown() {
     local pid slot
     [[ -n "$ram_sampler_pid" ]] && kill "$ram_sampler_pid" 2>/dev/null
     [[ -n "$starve_watch_pid" ]] && kill "$starve_watch_pid" 2>/dev/null
+    # The flights first, and through the watchdog rather than at the worker
+    # (#151). Killing a worker subshell ends the `wait` that was holding its
+    # probe, not the probe: `run.sh`, its server, its headless client and its
+    # daemon are the worker's *descendants*, and a `kill` aimed at this script —
+    # unlike Ctrl-C, which the terminal delivers to the whole process group —
+    # reached none of them. What that left was up to N engines still bound to
+    # this run's slot ports with nobody owning them, recovered only whenever
+    # somebody next acquired those slots (ADR-0022) — an unowned-load window
+    # with no bound.
+    #
+    # Nothing is waited on afterwards, and that is not an omission: `run.sh`
+    # inherited its worker's slot descriptor, so the slot's lock stays held for
+    # as long as its teardown runs however promptly this script exits (#121).
+    # A concurrent run is refused the slot rather than handed one still binding.
+    for pid in ${WORKER_PIDS[@]+"${WORKER_PIDS[@]}"}; do starve_signal "$pid"; done
     for pid in ${WORKER_PIDS[@]+"${WORKER_PIDS[@]}"}; do kill "$pid" 2>/dev/null; done
     # The slots that failed to reclaim are released here too. They ran nothing,
     # but this run has held their locks all the way through on purpose (#133):
@@ -582,7 +649,24 @@ pool_teardown() {
     # are still here to say so, and the lock is the only way to say it.
     for slot in ${SLOTS[@]+"${SLOTS[@]}"} ${DIRTY_SLOTS[@]+"${DIRTY_SLOTS[@]}"}; do cti_slot_release "$slot"; done
 }
-trap pool_teardown EXIT INT TERM
+
+# A signal is not a result, and it has to end the run rather than merely be
+# noticed by it. `trap … INT TERM` resumes the interrupted `wait` when the
+# handler returns, so the pool used to tear itself down — locks released,
+# workers killed — and then carry on scheduling probes onto slots it no longer
+# held. Typed `infra_unavailable` because a pass stopped from outside measured
+# nothing, and recorded, so the refusal outlives the invoker's captured output
+# (#147 item 7).
+pool_signalled() {
+    trap - EXIT INT TERM
+    log "SIG$1 stopped this pass — tearing down; a run that was signalled measured nothing"
+    pool_teardown
+    record_refusal infra_unavailable "SIG$1 stopped the pool before it could report"
+    exit "${CLASS_RANK[infra_unavailable]}"
+}
+trap pool_teardown EXIT
+trap 'pool_signalled INT' INT
+trap 'pool_signalled TERM' TERM
 
 # Stale state, per slot, on acquire rather than on release (ADR-0022, #58, #70).
 # The lock frees itself when its holder dies; the holder's server, headless
@@ -804,35 +888,6 @@ start_ram_sampler() {
 }
 
 # ------------------------------------------------------------ the starvation watch
-# TERM one launched probe through its watchdog. The pid recorded beside the
-# claim is the host-seam subshell — `cti_host_exec` is a function call, so `$!`
-# is a bash between us and the launch — and signalling it would kill the
-# wrapper while the probe ran on. The GNU `timeout` under it is the process
-# that can end the flight: it leads the probe's own process group and forwards
-# a received TERM to the whole group (run.sh, server, headless client, daemon),
-# so run.sh's own trap still tears its world down and releases what it holds,
-# while the subshell survives to reap the status the verdict typer reads. The
-# walk is bounded: anything deeper than the watchdog is run.sh's own business.
-starve_signal() {
-    local generation="$1" next pid child comm depth
-    for depth in 1 2 3; do
-        next=""
-        for pid in $generation; do
-            for child in $(ps -o pid= --ppid "$pid" 2>/dev/null); do
-                comm="$(ps -o comm= -p "$child" 2>/dev/null)"
-                if [[ "$comm" == timeout ]]; then
-                    kill -TERM "$child" 2>/dev/null
-                    return 0
-                fi
-                next+=" $child"
-            done
-        done
-        generation="$next"
-        [[ -n "${generation// /}" ]] || return 1
-    done
-    return 1
-}
-
 # The floor under a granted run (#182, ADR-0055), watching for what neither the
 # admission reading nor the between-probes re-check can see: the machine
 # sickening while a world is in flight — another agent's pool arriving, or the

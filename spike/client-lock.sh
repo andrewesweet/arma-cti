@@ -3,13 +3,15 @@
 # never executed.
 #
 # There is one Windows host, one Arma install on it, and one headed client. The
-# pool already serialises its own two client probes into a tail with every other
-# slot drained (#47), but a tail is a schedule inside one run, and the thing that
-# collides is not two probes — it is two *runs*. Two agents in sibling worktrees
-# gating at the same time each drain their own pool and then both drive the same
-# client: at best each trips the other's host guard and reports
-# `infra_unavailable`, at worst two clients join two worlds through one profile.
-# Both were seen on 2026-08-02 while #125 was landing.
+# pool already serialises its own client probes into a tail with every other slot
+# drained (#47) — which probes those are is derived rather than listed, by
+# `spike/regress.sh`'s `host_probe` off each probe's `env:` header, because this
+# comment said "two" until #157 found six — but a tail is a schedule inside one
+# run, and the thing that collides is not two probes — it is two *runs*. Two
+# agents in sibling worktrees gating at the same time each drain their own pool
+# and then both drive the same client: at best each trips the other's host guard
+# and reports `infra_unavailable`, at worst two clients join two worlds through
+# one profile. Both were seen on 2026-08-02 while #125 was landing.
 #
 # So the client gets the same treatment the tier itself got in ADR-0016: one
 # flock(2) on one path outside every worktree, with the holder's metadata beside

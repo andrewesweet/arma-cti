@@ -496,8 +496,84 @@ def test_a_tier_that_is_not_the_machines_kills_nothing_on_it(tmp_path: Path) -> 
         victim.wait(timeout=10)
 
 
-def test_the_install_farm_breaks_the_staged_paths_out_of_the_links(tmp_path: Path) -> None:
-    """The three staged paths leave the hard-link farm, or staging writes through it.
+def test_a_recycled_pid_is_not_the_process_the_sweep_found() -> None:
+    """Issue #151: a pid is a number, and the reclaim's kills aim at a process.
+
+    Between the sweep that finds a squatter and the SIGKILL that clears it, the
+    squatter can exit and Linux hand its number to something else. The sweeps
+    read the whole machine's port space and process table, so a stale number
+    aimed at `kill -9` has unbounded blast radius and leaves no trace of what it
+    hit. The start time is the identity that closes it — fixed for a process's
+    life, never inherited by its pid's next owner.
+
+    Only this direction is testable: forcing a real recycle inside a test would
+    mean spawning until a pid came round, so what is asserted is that the
+    identity is read, is compared, and decides.
+    """
+    # S603: this machine's own `sleep`, by absolute path.
+    sleeper = subprocess.Popen([shutil.which("sleep") or "/bin/sleep", "60"])  # noqa: S603
+    try:
+        swept = bash_ok(f"cti_slot_pid_starttime {sleeper.pid}")
+        assert swept.isdigit(), swept
+        recycled = str(int(swept) + 1)
+
+        holds = f"cti_slot_pid_holds {sleeper.pid}"
+        assert bash_ok(f"{holds} {swept} && echo SWEPT || echo SOMEBODY_ELSE") == "SWEPT"
+        assert bash_ok(f"{holds} {recycled} && echo SWEPT || echo SOMEBODY_ELSE") == "SOMEBODY_ELSE"
+
+        # And the two answers a reclaim acts on: who is still holding (the list
+        # it reports and kills from) and whether the slot came back clear. A
+        # recycled pid must be absent from the first and must not keep the
+        # second waiting, or a clean slot reads as dirty on somebody else's
+        # process.
+        assert bash_ok(f"cti_slot_pids_alive {sleeper.pid}:{swept}") == str(sleeper.pid)
+        assert bash_ok(f"cti_slot_pids_alive {sleeper.pid}:{recycled}") == ""
+        gone = f"cti_slot_pids_gone 1 {sleeper.pid}:{recycled} && echo GONE || echo HOLDING"
+        assert bash_ok(gone) == "GONE"
+    finally:
+        sleeper.kill()
+        sleeper.wait(timeout=10)
+
+
+def test_the_farm_never_reads_what_a_hand_run_is_staging(tmp_path: Path) -> None:
+    """Issue #151: the clone reads the master while slot 0 may be rewriting it.
+
+    `run.sh` stages the mission PBOs, `@cti` and the shim into an install with
+    `rm -rf` and `install`, under slot 0's lock — which a pool holding slots 1-2
+    does not hold. The farm used to `cp -al` the whole master and break those
+    paths back out afterwards, so its copy walked exactly the directories a hand
+    run rewrites, and a walk into an `rm -rf` fails: an unrelated agent's `just
+    probe` could turn this pool's bring-up into `infra_unavailable`.
+
+    A directory the copy cannot enter stands in for one being rewritten under
+    it — same failure at the same step, and it is the only half of the race a
+    test can hold still. What must hold is that the clone never goes near it.
+    """
+    master = tmp_path / "arma3server"
+    executable(master / "arma3server_x64", "#!/usr/bin/env bash\n")
+    (master / "addons").mkdir()
+    (master / "addons" / "a3.pbo").write_bytes(b"shared, and never written")
+    (master / "@cti").mkdir()
+    (master / "cti_shim_x64.so").write_bytes(b"the master's shim")
+    staging = master / "mpmissions"
+    staging.mkdir()
+    (staging / "cti.Stratis.pbo").write_bytes(b"half a pack")
+    staging.chmod(0o000)
+
+    env = {"CTI_SLOT_INSTALL_MASTER": str(master), "CTI_TIER_STATE": str(tmp_path / "state")}
+    try:
+        bash_ok("cti_slot_install_ready 1", env=env)
+    finally:
+        staging.chmod(0o755)
+
+    clone = tmp_path / "arma3server-slot1"
+    assert (clone / "arma3server_x64").exists()
+    assert (clone / "addons" / "a3.pbo").exists()
+    assert list((clone / "mpmissions").iterdir()) == []
+
+
+def test_the_install_farm_keeps_the_staged_paths_out_of_the_links(tmp_path: Path) -> None:
+    """The staged paths stay out of the hard-link farm, or staging writes through it.
 
     `run.sh` writes the shim into the install with `install -m 0755`, which
     truncates *through* a hard link. A farm that kept `cti_shim_x64.so` linked
@@ -526,17 +602,15 @@ def test_the_install_farm_breaks_the_staged_paths_out_of_the_links(tmp_path: Pat
 # ---------------------------------------------------------------------- the pool
 
 
-def pool_run(
-    tmp_path: Path, *args: str, extra_env: dict[str, str] | None = None, timeout: int = 300
-) -> subprocess.CompletedProcess[str]:
-    state = tmp_path / "state"
+def pool_env(tmp_path: Path, extra_env: dict[str, str] | None = None) -> dict[str, str]:
+    """Everything `regress.sh` needs to run a stubbed pool without Arma."""
     master = tmp_path / "arma3server"
     executable(master / "arma3server_x64", "#!/usr/bin/env bash\n")
     (master / "mpmissions").mkdir(exist_ok=True)
 
-    env = {
+    return {
         **os.environ,
-        "CTI_TIER_STATE": str(state),
+        "CTI_TIER_STATE": str(tmp_path / "state"),
         "CTI_SLOT_INSTALL_MASTER": str(master),
         "CTI_RUN_SH": str(executable(tmp_path / "stub-run.sh", STUB_RUN)),
         "CTI_WINDOWS_TASKLIST": str(executable(tmp_path / "tasklist.sh", TASKLIST_FREE)),
@@ -551,13 +625,18 @@ def pool_run(
         "CTI_SLOT_MEM_AVAILABLE_MB": "1000000",
         **(extra_env or {}),
     }
+
+
+def pool_run(
+    tmp_path: Path, *args: str, extra_env: dict[str, str] | None = None, timeout: int = 300
+) -> subprocess.CompletedProcess[str]:
     # S603: this repo's own runner, against a stub this test wrote.
     return subprocess.run(  # noqa: S603
         [BASH, str(REGRESS), *args],
         capture_output=True,
         text=True,
         check=False,
-        env=env,
+        env=pool_env(tmp_path, extra_env),
         timeout=timeout,
     )
 
@@ -1375,3 +1454,57 @@ def test_every_probes_watchdog_sits_above_its_own_window(tmp_path: Path) -> None
     assert sorted(name for name, _, _ in bounds) == ALL_PROBES
     for name, window, watchdog in bounds:
         assert int(watchdog) >= int(window) + 420, f"{name}: {watchdog}s over a {window}s window"
+
+
+# ------------------------------------------------ a signalled pool (#151)
+# A `kill` aimed at `regress.sh` itself rather than at its process group: a
+# supervisor stopping a run, or an agent harness reclaiming a session. Ctrl-C
+# reaches the whole tree and needs none of this; a bare SIGTERM reaches this
+# script alone, and what it used to leave behind was the whole tree under it.
+STUB_RUN_FLYING = "#!/usr/bin/env bash\nwhile :; do touch {marker}; sleep 0.2; done\n"
+
+
+def test_a_signalled_pool_takes_its_flights_down_with_it(tmp_path: Path) -> None:
+    """The teardown reached the workers and stopped at them.
+
+    A worker is a subshell whose whole job is to `wait`; the probe is its
+    *descendants* — the watchdog, `run.sh`, and the server, headless client and
+    daemon under that. Killing the worker ended the waiting and not the world,
+    so a SIGTERM left up to N engines bound to this run's slot ports with nobody
+    owning them, recovered only whenever somebody next acquired those slots
+    (ADR-0022) — an unowned-load window with no bound.
+
+    The heartbeat is the assertion: a stub that keeps touching a file for as
+    long as it lives, read after the pool has exited.
+    """
+    marker = tmp_path / "flight-alive"
+    flying = executable(tmp_path / "flying-run.sh", STUB_RUN_FLYING.format(marker=marker))
+    # S603: this repo's own runner, against a stub this test wrote.
+    proc = subprocess.Popen(  # noqa: S603
+        [BASH, str(REGRESS), "--slots", "1", "contacts"],
+        env=pool_env(tmp_path, {"CTI_RUN_SH": str(flying)}),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    try:
+        deadline = time.monotonic() + 60
+        while not marker.exists() and time.monotonic() < deadline:
+            time.sleep(0.1)
+        assert marker.exists(), "the pool never launched the flight this test is about"
+        proc.send_signal(signal.SIGTERM)
+        _, stderr = proc.communicate(timeout=120)
+    finally:
+        proc.kill()
+
+    # Typed and recorded rather than merely noticed: a pass stopped from outside
+    # measured nothing, and the trap used to return into the `wait` it had
+    # interrupted and go on scheduling probes onto slots it had just released.
+    assert proc.returncode == EXIT_INFRA_UNAVAILABLE, stderr[-4000:]
+    assert "SIGTERM stopped this pass" in stderr, stderr[-4000:]
+    refusals = (tmp_path / "state" / "runs" / "refusals.log").read_text()
+    assert "infra_unavailable\tSIGTERM stopped the pool" in refusals, refusals
+
+    settled = marker.stat().st_mtime
+    time.sleep(3)
+    assert marker.stat().st_mtime == settled, "a process of the signalled run is still running"

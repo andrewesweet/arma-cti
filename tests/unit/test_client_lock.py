@@ -624,3 +624,92 @@ def test_a_process_list_we_cannot_read_is_never_queued_on(tmp_path: Path) -> Non
 @pytest.mark.parametrize("script", ["run.sh", "regress.sh"])
 def test_every_path_that_drives_the_client_knows_about_the_lock(script: str) -> None:
     assert "client-lock.sh" in (REPO / "spike" / script).read_text()
+
+
+# ---------------------------------------------- queueing behind more than one
+
+
+def test_a_third_run_that_takes_the_client_in_the_gap_is_queued_behind_too(
+    tmp_path: Path,
+) -> None:
+    """Issue #151: the wait establishes only that the lock was free when it looked.
+
+    Between `cti_client_lock_wait_free` returning and the guard being re-asked,
+    another agent's tail can take the client. The guard then refuses — correctly,
+    it is ownership-blind — and a caller who had asked to queue for `--wait`
+    seconds used to be turned away by the second contender it met, having waited
+    for the first. Three agents gating at once is the ordinary case this pool was
+    built for, so the queue has to survive meeting more than one of them.
+
+    The stub process list is what makes the gap deterministic rather than a race
+    to lose: the third run is launched *by* the ask that lands in the gap, and
+    the list does not answer until it holds the lock.
+    """
+    client_there = tmp_path / "client-in-the-list"
+    client_there.touch()
+    first_gone = tmp_path / "first-released"
+    third_started = tmp_path / "third-started"
+    third_holds = tmp_path / "third-holds"
+
+    third_run = executable(
+        tmp_path / "third-run.sh",
+        "#!/usr/bin/env bash\n"
+        f'source "{CLIENT_LOCK_SH}"\n'
+        'cti_client_lock_acquire 60 "a third agent" || exit 9\n'
+        f'touch "{third_holds}"\n'
+        "sleep 3\n"
+        # The client leaves the list before the lock is dropped, which is the
+        # ordering every real holder gets from `cti_windows_wait_gone`.
+        f'rm -f "{client_there}"\n'
+        "cti_client_lock_release\n",
+    )
+    listing = executable(
+        tmp_path / "tasklist-gap.sh",
+        "#!/usr/bin/env bash\n"
+        f'if [[ -e "{first_gone}" && ! -e "{third_started}" ]]; then\n'
+        f'    touch "{third_started}"\n'
+        # Detached from this stub's stdout: the guard reads the list through a
+        # command substitution, which does not return until every writer on the
+        # pipe has closed it — a third run that kept it open would be waited
+        # out rather than raced with, which is the opposite of the case here.
+        f'    "{third_run}" >/dev/null 2>&1 &\n'
+        f'    while [[ ! -e "{third_holds}" ]]; do sleep 0.1; done\n'
+        "fi\n"
+        f'if [[ -e "{client_there}" ]]; then printf "%s" {TASKLIST_PRESENT!r}; '
+        f'else printf "%s" {TASKLIST_FREE!r}; fi\n',
+    )
+
+    env = pool_env(tmp_path, "queued-twice", listing=listing)
+    holder = holding(
+        tmp_path / "state",
+        "a sibling agent",
+        then=f'sleep 3\ncti_client_lock_release\ntouch "{first_gone}"\nsleep 60\n',
+    )
+    try:
+        result = pool_run(env, "--slots", "1", "--wait", "120", "contact-decay")
+    finally:
+        holder.kill()
+
+    assert result.returncode == 0, result.stderr[-4000:]
+    assert third_holds.exists(), "the third run never took the client; the gap was not staged"
+    # Said once however many runs are queued behind, so the pool's own log is
+    # not buried under somebody else's schedule.
+    assert result.stderr.count("queueing up to 120s") == 1, result.stderr[-4000:]
+
+
+def test_the_queue_is_still_bounded_by_the_wait_that_was_asked_for(tmp_path: Path) -> None:
+    """A loop that re-enters has to re-enter with what is left of the deadline.
+
+    The holder never lets go, so every pass finds the client held and the wait
+    must expire rather than renew: `--wait 10` gives up in about ten seconds.
+    """
+    env = pool_env(tmp_path, "bounded", listing=TASKLIST_PRESENT)
+    holder = held_lock(tmp_path)
+    started = time.monotonic()
+    try:
+        result = pool_run(env, "--slots", "1", "--wait", "10", "contact-decay")
+    finally:
+        holder.kill()
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
+    assert "waited 10s and the Windows client was still held" in result.stderr
+    assert time.monotonic() - started < 90, "the queue outlived the wait it was given"
