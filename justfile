@@ -16,7 +16,7 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-check: check-commits check-generated check-adr check-markers check-sqf check-secrets check-python check-rust
+check: check-commits check-generated check-adr check-markers check-conflicts check-sqf check-secrets check-python check-rust
 
 # Export what SQF cannot read from an authored file. The map manifests are not
 # here: the addon ships and parses the authored JSON itself (ADR-0017), so
@@ -43,6 +43,13 @@ check-adr:
 # checker, under UNCOUNTABLE.
 check-markers:
     uv run python tools/check_validated_markers.py
+
+# No git conflict marker reaches a tracked file (#231, ADR-0062). One landed
+# twice and the second landing cut 1,669 changelog lines resolving against it,
+# so a marker in the base is a trap for the next agent rather than untidiness.
+# `tools/land.py` refuses on the same finding by name, before the gate runs.
+check-conflicts:
+    uv run python tools/check_conflict_markers.py
 
 # -p adds the pedantic lints; -e makes findings fatal (without it the gate is a no-op).
 # The second step is the scoping HEMTT's banned_commands lint cannot express:

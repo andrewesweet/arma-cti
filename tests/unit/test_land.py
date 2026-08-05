@@ -30,6 +30,7 @@ from conftest import load_tool
 # `land` imports `worktree` as a sibling script, so the sibling is loaded first
 # and registered under its own name for that import to find.
 worktree = load_tool("worktree")
+check_conflict_markers = load_tool("check_conflict_markers")
 land = load_tool("land")
 
 _CLEAN = worktree.Preflight((), ())
@@ -125,6 +126,31 @@ def test_a_failed_rebase_with_nothing_conflicted_is_git_failed_not_a_conflict() 
     refusal = land.classify_rebase(_HERE, 128, (), "fatal: invalid upstream")
     assert _kind(refusal) == "git_failed"
     assert "fatal: invalid upstream" in _text(refusal)
+
+
+# ------------------------------------------------------------- conflict markers
+
+
+def test_a_tree_with_no_conflict_markers_does_not_refuse() -> None:
+    assert land.classify_conflict_markers(_HERE, []) is None
+
+
+def test_conflict_markers_refuse_by_name_and_name_every_one() -> None:
+    findings = [
+        check_conflict_markers.Finding("CHANGELOG.md", 812, "<"),
+        check_conflict_markers.Finding("CHANGELOG.md", 815, "|"),
+    ]
+    refusal = land.classify_conflict_markers(_HERE, findings)
+    assert _kind(refusal) == "conflict_markers"
+    assert "CHANGELOG.md:812" in _text(refusal)
+    assert "CHANGELOG.md:815" in _text(refusal)
+    assert "2b4f99b" in _text(refusal)
+
+
+def test_a_long_list_of_markers_is_capped_and_says_how_many_it_did_not_show() -> None:
+    findings = [check_conflict_markers.Finding("CHANGELOG.md", n, "<") for n in range(1, 15)]
+    refusal = land.classify_conflict_markers(_HERE, findings)
+    assert f"and={14 - land.HOW_MANY_SHOWN} more" in _text(refusal)
 
 
 # ----------------------------------------------------------------- the gate
@@ -427,6 +453,56 @@ def test_a_conflicting_rebase_stops_before_the_gate_and_leaves_the_rebase_in_pro
     assert gate.calls == []
     assert _tip(origin) == before
     assert land.rebase_in_progress(here)
+
+
+def test_a_committed_conflict_marker_refuses_before_the_gate_and_pushes_nothing(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """#231's defect, at the rung that now stands in front of it.
+
+    The marker is committed rather than left in the working tree, because that
+    is what happened: 2b4f99b *landed* with one, and the landing after it
+    resolved against the corrupted file. The gate never runs and `origin/main`
+    never moves.
+    """
+    origin, main, here = repo
+    before = _tip(origin)
+    marker = "|" * 7
+    _commit(here, "CHANGELOG.md", f"### Added\n\n{marker} parent of 7bea7f6\n- an entry.\n")
+    gate = _Gate()
+
+    report = land.land(main, here, gate=gate)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=conflict_markers"
+    assert any("CHANGELOG.md:3" in line for line in report.lines)
+    assert gate.calls == []
+    assert _tip(origin) == before
+
+
+def test_a_marker_inherited_from_origin_refuses_this_landing_too(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """The base-poisoning half: a clean commit must not ride out on a poisoned base.
+
+    #231's mechanism is that the *next* resolution inherits the damage, so the
+    rung judges the rebased tree — the tree that would be pushed — and the only
+    landing it lets through is one that removes the marker.
+    """
+    origin, main, here = repo
+    marker = "<" * 7
+    _commit(main, "CHANGELOG.md", f"{marker} HEAD\n- theirs.\n")
+    _git("push", "origin", "main", cwd=main)
+    before = _tip(origin)
+    _commit(here, "feature.txt", "work\n")
+    gate = _Gate()
+
+    report = land.land(main, here, gate=gate)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=conflict_markers"
+    assert gate.calls == []
+    assert _tip(origin) == before
 
 
 def test_a_dry_run_runs_nothing_and_says_so(repo: tuple[Path, Path, Path]) -> None:

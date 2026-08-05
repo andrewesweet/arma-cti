@@ -44,6 +44,8 @@ exit code.
                             carries it: nothing was landed and nothing was owed
     rebase_conflict         stop and hand back. The rebase is left in progress —
                             nothing here resolves or aborts on your behalf
+    conflict_markers        the rebased tree carries git conflict markers, named
+                            by file and line (#231, ADR-0062)
     gate_red                `just fast` failed; its own output is above
     gate_blocked            the gate could not be run to completion. A check
                             that could not run is not a check that passed (#41)
@@ -77,10 +79,11 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 # enables, which is why the import below sits apart from the block above.
 sys.path.insert(0, str(Path(__file__).parent))
 
+from check_conflict_markers import Finding, find_in_tree
 from worktree import BASE, GitError, Preflight, Refusal, git, main_checkout, read_status
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Sequence
 
     # What `land` calls to run the gate. A parameter rather than an environment
     # variable or a flag on purpose: tests substitute it, and nothing on argv or
@@ -218,6 +221,34 @@ def classify_rebase(
         "Resolve them, `git rebase --continue`, then run `just land` again — or "
         "`git rebase --abort` to leave this tree as it was. CHANGELOG.md is the only "
         "conflict 264 landings have produced; take both entries, keep both.",
+    )
+
+
+def classify_conflict_markers(path: Path, findings: Sequence[Finding]) -> Refusal | None:
+    """Refuse a rebased tree carrying git conflict markers, naming each one (#231).
+
+    Judged on the tree *after* the rebase, which is the tree that would be
+    pushed — so a marker inherited from `origin/main` refuses this landing too,
+    and deliberately: #231's mechanism is that a marker in the base poisons the
+    next resolution, and the next resolution is what this rung is standing in
+    front of. The only landing it lets through is the one that removes it.
+
+    `just check` runs the same checker, so the coverage here is not new; what is
+    new is that it arrives **as a named refusal, before the gate's minute**,
+    rather than as a `gate_red` the reader has to scroll for.
+    """
+    if not findings:
+        return None
+    named = [f"marker={finding}" for finding in findings[:HOW_MANY_SHOWN]]
+    if len(findings) > HOW_MANY_SHOWN:
+        named.append(f"and={len(findings) - HOW_MANY_SHOWN} more")
+    return Refusal(
+        "conflict_markers",
+        (f"worktree={path}", *named),
+        "Delete every marker line and commit the resolution, then run `just land` again. "
+        "Nothing was pushed. A marker that reaches the base is not untidiness — the next "
+        "agent's rebase resolves against it, which is how 1,669 changelog lines were lost "
+        "between 2b4f99b and 5a966f3 (#231).",
     )
 
 
@@ -451,6 +482,10 @@ def _rebase_and_gate(here: Path, incoming: int, gate: Gate, lines: list[str]) ->
     lines.append(
         f"rebase=replayed onto {incoming} new commits" if incoming else "rebase=already_current"
     )
+
+    poisoned = classify_conflict_markers(here, find_in_tree(here))
+    if poisoned is not None:
+        return Report.refused(poisoned)
 
     red = classify_gate(here, gate(here))
     if red is not None:
