@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×13 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×14 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -47,7 +47,14 @@
 > through a usage-conservation window, resumed clean. Six for six, the permanence
 > sentence operating; the first of the pair adds the sharper edge — a stall sitting on
 > uncommitted work is what turns an orchestrator death from a prod into work at risk,
-> the commit-early line's price read from the stall's side.
+> the commit-early line's price read from the stall's side. Fourteenth use
+> (2026-08-04/05): the rest of the #149 marathon — the orchestrator's count reaching
+> nine stalls on the one issue across ~7 hours, every one a watcher catch, zero
+> self-recoveries; the churn behind them (in-world landings outpacing a 19-minute
+> gate, forcing repeated rebase+re-gate cycles) was fixed tactically by a dispatch
+> freeze and systemically by #197's gate shrink, and mid-marathon the watch loop
+> itself became a tool (`just watch`, #198), taking the noticing out of the
+> orchestrator's turn without changing which layer does it.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
