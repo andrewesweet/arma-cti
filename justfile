@@ -190,12 +190,15 @@ fast: check unit
 # Arm a detached watcher over a dispatched agent's run, and read what the
 # watchers found (#198, ADR-0053). No Arma, no lock, no turn held open.
 #
-# The cost this removes is measured (#195, docs/research/token-efficiency.md):
-# an agent turn that blocks past five minutes throws away its prompt cache and
-# pays ~179,000 tokens to rebuild it, so a turn spent waiting is about 110x a
-# turn spent working, and `sleep`/`until` polling is 4.24% of everything this
-# project has been billed. `just watch` returns at once, having forked a poll
-# loop nobody is billed for; `just watch-report` is the whole of the read.
+# This is a correctness mechanism, not a token fix (#195, #203,
+# docs/research/token-efficiency.md): it stops a dispatch being lost. `just
+# watch` returns at once, having forked a poll loop nobody is billed for —
+# that part is real and it is the good part. But the agent it eventually
+# prods still pays the measured ~161,000-token cache rebuild in full, because
+# the five-minute subagent TTL has already expired by the time the prod
+# lands; orchestrator prods measure 2.32% of everything this project has been
+# billed, across 54 events, and watching does not save that.
+# `just watch-report` is the whole of the read.
 #
 # `subject` is what finishing means: `pool` (the newest `pool.json` written
 # after arming), `probe:<name>`, `process` with `--pid`, or `path` with

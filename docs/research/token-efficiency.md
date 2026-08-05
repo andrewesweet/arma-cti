@@ -2,7 +2,7 @@
 
 **Researched**: 2026-08-05
 **Question** (#195): what can the process change to achieve the same quality with fewer tokens? The existing gates — corpus, `just fast`, criterion audits, retro cadence — hold; a saving that degrades a gate is out of scope.
-**Answer in one line**: the bill is not made of the things we write, it is made of the same context being re-read tens of thousands of times, and the largest recoverable waste is that **an agent turn which blocks for more than five minutes throws away the prompt cache and pays to rebuild it** — 13.6% of everything spent on this project so far.
+**Answer in one line**: the bill is not made of the things we write, it is made of the same context being re-read tens of thousands of times, and the largest recoverable waste is that **an agent turn which blocks past its cache's TTL throws away the prompt cache and pays to rebuild it** — five minutes for a subagent, an hour for a main session — **12.9% of everything spent on this project so far** (corrected below; #203).
 
 ---
 
@@ -10,16 +10,21 @@
 
 **Primary data.** Every Claude Code session transcript for this project: `~/.claude/projects/**/*.jsonl`, 194 files, 17,515 assistant turns, 187 sessions with more than two turns, from project start to 2026-08-05. Each turn's `usage` block carries the four token classes Anthropic bills separately. Records were de-duplicated by message id, so a turn appearing in both a session file and its resume file is counted once. This is measured billing telemetry from this project, not an estimate.
 
+**Correction (#206, from #203).** This document originally priced every cache write at a flat 1.25×. #203 found the transcripts carry a `cache_creation` block splitting each turn's writes into `ephemeral_5m_input_tokens` and `ephemeral_1h_input_tokens`, and re-ran the census 14 files and 1,197 turns further along (208 files, 18,712 turns, to the same 2026-08-05 cutoff, the project having kept running): the split is exact, not approximate — every main-session write in this project's history requested the one-hour TTL, every subagent write the five-minute one — and the one-hour TTL bills at 2× base input, not 1.25×. The total below and every percentage through §4 reflect that correction; where #203's comment does not republish a figure component-by-component for the extended census, this document notes so and states its method.
+
 **Cost model.** Raw token counts are misleading because the four classes bill at different rates. Everything below is expressed in **input-equivalents**, multiples of the base input rate:
 
 | Class | Rate | Source |
 |---|---|---|
 | Fresh input | 1× | base |
-| Cache write (5-minute TTL) | 1.25× | Anthropic prompt-caching pricing |
+| Cache write (5-minute TTL — subagents) | 1.25× | Anthropic prompt-caching pricing |
+| Cache write (1-hour TTL — main sessions) | 2.0× | Anthropic prompt-caching pricing, https://platform.claude.com/docs/en/build-with-claude/prompt-caching#pricing |
 | Cache read | 0.1× | Anthropic prompt-caching pricing |
 | Output | 5× | Opus input:output = $15:$75 per Mtok |
 
-Weighted total for the project to date: **408.8 M input-equivalents**. Weighted spend splits opus-5 77.9% / fable-5 22.1% / sonnet-5 ~0%. Fable's published rates were not in hand; the table applies the Opus ratio throughout. That assumption cannot disturb the ranking, because output is 4.6% of the bill under any plausible ratio.
+On a Claude subscription, Claude Code requests the one-hour TTL automatically for the main conversation; subagents use the five-minute TTL regardless (https://code.claude.com/docs/en/prompt-caching, *Cache lifetime* and *Subagents and the cache*) — the mechanism the split above measures.
+
+Weighted total for the project to date: **447.1 M input-equivalents** (#203, corrected census and model; this document's original flat-rate pull totalled 408.8 M — see §1 for the itemised, corrected breakdown). Weighted spend splits opus-5 77.9% / fable-5 22.1% / sonnet-5 ~0%. Fable's published rates were not in hand; the table applies the Opus ratio throughout. That assumption cannot disturb the ranking, because output is 4.5% of the bill under any plausible ratio.
 
 **Document token counts** use the `o200k_base` BPE via `tiktoken` as a proxy for Claude's tokeniser — stated as a proxy wherever used, and accurate to a few percent on English prose. **Tool-result sizes** are exact character counts from the transcripts; where converted to tokens, a chars/4 proxy is used and labelled.
 
@@ -34,21 +39,24 @@ Weighted total for the project to date: **408.8 M input-equivalents**. Weighted 
 
 | Class | Raw tokens | % of raw | Input-equivalents | **% of bill** |
 |---|---:|---:|---:|---:|
-| Fresh input | 226,068 | 0.0% | 226,068 | 0.06% |
-| Cache write | 80,930,895 | 2.7% | 101,163,619 | **24.74%** |
-| Cache read | 2,886,205,002 | 97.1% | 288,620,500 | **70.60%** |
-| Output | 3,764,964 | 0.1% | 18,824,820 | 4.60% |
-| **Total** | 2,971,126,929 | | 408,835,007 | |
+| Fresh input | ≈240,000 | 0.0% | ≈240,000 | 0.05% |
+| Cache write — 5-min TTL (subagents) | 68,803,090 | 2.2% | 86,003,863 | **19.24%** |
+| Cache write — 1-hour TTL (main sessions) | 17,359,919 | 0.6% | 34,719,838 | **7.77%** |
+| Cache read | ≈3.06 B | ≈97.1% | ≈306,167,000 | **≈68.48%** |
+| Output | ≈3,993,900 | ≈0.1% | ≈19,969,000 | ≈4.47% |
+| **Total** | ≈3.15 B | | **447,100,000** | |
+
+The cache-write rows and the total are #203's own figures, measured over the extended 208-file, 18,712-turn census. Fresh input, cache read and output are pro-rated from this document's original 194-file proportions to that same total — #203's comment republishes the corrected total and the cache-write class split exactly, but not a class-by-class breakdown of the other three for the extended census — and are marked `≈` accordingly; combined, cache writes are **27.00%** of the bill (up from 24.74% under the flat-rate model on the original, smaller census).
 
 Two consequences, and they govern the rest of this document.
 
-**Everything the model writes is 4.6% of the bill.** Terser prose, tighter summaries, shorter reports, lower verbosity — all of it competes for a twentieth of the spend. This is the ceiling on any output-side intervention, and it is worth knowing before optimising one.
+**Everything the model writes is 4.5% of the bill.** Terser prose, tighter summaries, shorter reports, lower verbosity — all of it competes for a twentieth of the spend. This is the ceiling on any output-side intervention, and it is worth knowing before optimising one.
 
-**A token that enters the context is re-read 35.7 times.** Cache reads divided by cache writes is 2,886,205,002 / 80,930,895 = 35.7. So the marginal cost of putting one token into context is not 1×, it is
+**A token that enters the context is re-read about 35.5 times.** Cache reads divided by cache writes is ≈3.06 B / 86,163,009 ≈ 35.5. So the marginal cost of putting one token into context is not 1×, it is a blend of the write rate — 1.25× for a token scoped to a subagent, 2.0× for one in the main conversation, 1.40× blended across this project's actual mix — plus repeated reads at 0.1× each:
 
-> 1.25 (write it once) + 35.7 × 0.1 (read it back on every later turn) = **4.82 input-equivalents**
+> 1.40 (write it once, blended) + 35.5 × 0.1 (read it back on every later turn) = **4.95 input-equivalents**
 
-and for a token that sits in the prefix from turn 0 of a mean-length 94-turn session, it is 1.25 + 9.4 = **10.65**. Context size is a *recurring* cost paid per turn, which is why sessions are expensive in proportion to how much they are carrying, not how much they are producing. Measured context per turn: mean 166,567 tokens, median 140,902, p90 319,815, max 667,423.
+and for a token that sits in the prefix from turn 0 of a mean-length 94-turn session, it is 1.40 + 9.4 = **10.80**. Context size is a *recurring* cost paid per turn, which is why sessions are expensive in proportion to how much they are carrying, not how much they are producing. Measured context per turn: mean 166,567 tokens, median 140,902, p90 319,815, max 667,423.
 
 This reproduces, independently and on this project's own telemetry, the headline of arXiv 2607.12161 (2,908 Claude Code runs): cache traffic dominates, output does not.
 
@@ -56,30 +64,46 @@ This reproduces, independently and on this project's own telemetry, the headline
 
 ## 2. The largest recoverable waste: turns that block past the cache TTL
 
-Grouping every turn by the wall-clock gap since the previous turn in the same session:
+**Correction (#206, from #203): this is two cliffs, in two populations, not one.** The table originally here averaged main-session and subagent turns together, which is why it showed a single cliff at five minutes. Grouped separately by the wall-clock gap since the previous turn — each population against its own documented TTL, over #203's extended 208-file, 18,712-turn census:
 
-| Gap since previous turn | Turns | Avg cache **write** per turn | Avg cache read per turn | Total cache writes | % of all writes |
+**Subagent turns (five-minute TTL)**
+
+| Gap since previous turn | Turns | Avg cache **write** per turn | Avg cache read per turn | Total cache writes | % of subagent writes |
 |---|---:|---:|---:|---:|---:|
-| < 30 s | 15,057 | **1,612** | 167,840 | 24,274,217 | 31.5% |
-| 30–60 s | 920 | 3,808 | 155,093 | 3,503,463 | 4.5% |
-| 1–2 min | 513 | 4,894 | 166,963 | 2,510,835 | 3.3% |
-| 2–5 min | 420 | 5,970 | 183,414 | 2,507,455 | 3.3% |
-| **5–10 min** | 195 | **97,237** | 126,399 | 18,961,242 | **24.6%** |
-| **10–30 min** | 158 | **80,520** | 163,521 | 12,722,307 | **16.5%** |
-| **30–60 min** | 23 | **91,154** | 145,070 | 2,096,551 | **2.7%** |
-| > 60 min | 58 | 182,058 | 4,299 | 10,559,379 | 13.7% |
+| < 30 s | 14,099 | 1,859 | 155,667 | 26,218,124 | 38.1% |
+| 30–60 s | 751 | 3,541 | 127,637 | 2,659,699 | 3.9% |
+| 1–2 min | 445 | 5,309 | 147,508 | 2,362,610 | 3.4% |
+| 2–5 min | 288 | 4,725 | 153,937 | 1,360,837 | 2.0% |
+| **5–10 min** | 104 | **165,623** | **27,701** | 17,224,814 | **25.0%** |
+| **10–30 min** | 74 | **172,887** | **3,441** | 12,793,676 | **18.6%** |
+| **30–60 min** | 9 | **171,275** | 5,437 | 1,541,480 | 2.2% |
+| > 60 min | 38 | 122,311 | 4,992 | 4,647,842 | 6.8% |
 
-There is a cliff between "2–5 min" and "5–10 min": average cache creation per turn jumps from 5,970 to 97,237, a factor of 16. That is the 5-minute cache TTL expiring. The prefix dies, and the next turn pays 1.25× to write the whole ~150,000-token conversation back into the cache.
+**Main-session turns (one-hour TTL)**
 
-**434 turns — 2.5% of all turns — account for 57.5% of every cache write this project has ever paid for.**
+| Gap since previous turn | Turns | Avg cache **write** per turn | Avg cache read per turn | Total cache writes | % of main writes |
+|---|---:|---:|---:|---:|---:|
+| < 30 s | 2,140 | 1,895 | 224,046 | 4,056,445 | 23.4% |
+| 30–60 s | 250 | 5,934 | 237,514 | 1,483,698 | 8.5% |
+| 1–2 min | 128 | 4,057 | 227,988 | 519,300 | 3.0% |
+| 2–5 min | 153 | 9,323 | 235,164 | 1,426,519 | 8.2% |
+| 5–10 min | 102 | 22,974 | 235,565 | 2,343,430 | 13.5% |
+| 10–30 min | 96 | **3,481** | **302,183** | 334,213 | 1.9% |
+| 30–60 min | 17 | 66,081 | 195,179 | 1,123,389 | 6.5% |
+| **> 60 min** | 21 | **289,186** | **2,840** | 6,072,925 | **35.0%** |
+
+Read the `avg cache read` column: it is the tell for whether the prefix survived. Subagents cliff at five minutes — average cache read collapses from 153,937 to 27,701 — and pay 1.25× to write the whole ~165,000-token prefix back. Main sessions do not: average cache read is *still 302,183 after a thirty-minute gap*, and collapses only past sixty minutes, where they pay 2.0× to rebuild. Two conversations, two documented TTLs, two cliffs, each exactly where the TTL is. The single blended cliff this section originally showed was an average over a population where four-fifths of the turns were subagents.
+
+Splitting the loss by population and TTL:
 
 | Effect | Cache writes | Input-equivalents | % of bill |
 |---|---:|---:|---:|
-| Mid-session TTL loss (gaps 5–60 min) | 33,780,100 | 42,225,125 | **10.33%** |
-| Parked-session resumption (gaps > 60 min) | 10,559,379 | 13,199,224 | **3.23%** |
-| **Total TTL loss** | 44,339,479 | 55,424,349 | **13.56%** |
+| Subagent TTL loss, gaps 5–60 min | 31,751,965 | 39,689,956 | **8.87%** |
+| Subagent loss, gaps > 60 min (crash / limit recovery) | 4,647,842 | 5,809,802 | 1.30% |
+| Main-session parking, gaps > 60 min | 6,072,925 | 12,145,850 | 2.72% |
+| **Total TTL loss** | 42,472,732 | 57,645,608 | **12.89%** |
 
-The > 60 min row is distinguishable: its cache *read* averages 4,299, meaning the prefix was entirely gone. Those are sessions that parked and came back. CLAUDE.md's working-style rule "do not park work and go quiet" already forbids this; §2 prices it at 3.2% of the bill.
+Both `> 60 min` rows are distinguishable the same way: subagent gaps average a cache read of 4,992, main-session gaps 2,840 — either way the prefix is entirely gone, but the two are different phenomena. The main-session row is what CLAUDE.md's working-style rule "do not park work and go quiet" already forbids; it prices that behaviour at 2.72% of the bill. The subagent row is crash and rate-limit recovery, not an agent going quiet by choice, and prices at 1.30%.
 
 ### What causes the blocking
 
@@ -87,18 +111,18 @@ Attributing each ≥ 5-minute tool call to the cache write on the turn that foll
 
 | Blocking call | Occurrences ≥ 5 min | Avg duration | Cache writes caused | % of bill |
 |---|---:|---:|---:|---:|
-| `sleep` | 44 | 564 s | 7,877,483 | **2.41%** |
-| `until` (poll loop) | 25 | 544 s | 5,995,690 | **1.83%** |
-| `just fast` | 35 | 407 s | 6,374,863 | **1.95%** |
-| `just regress` | 8 | 523 s | 1,297,612 | 0.40% |
-| `just unit` | 7 | 438 s | 1,005,924 | 0.31% |
-| `AskUserQuestion` | 12 | 2,635 s | 346,113 | 0.11% |
-| `uv run pytest` | 2 | 519 s | 334,009 | 0.10% |
-| `just probe` | 17 | 425 s | 228,602 | 0.07% |
-| **Polling subtotal** (`sleep` + `until`) | 69 | | 13,873,173 | **4.24%** |
-| **Recipe subtotal** (fast/unit/regress/pytest/probe) | 69 | | 9,241,010 | **2.83%** |
+| `sleep` | 44 | 564 s | 7,877,483 | **2.20%** |
+| `until` (poll loop) | 25 | 544 s | 5,995,690 | **1.68%** |
+| `just fast` | 35 | 407 s | 6,374,863 | **1.78%** |
+| `just regress` | 8 | 523 s | 1,297,612 | 0.36% |
+| `just unit` | 7 | 438 s | 1,005,924 | 0.28% |
+| `AskUserQuestion` | 12 | 2,635 s | 346,113 | 0.10% |
+| `uv run pytest` | 2 | 519 s | 334,009 | 0.09% |
+| `just probe` | 17 | 425 s | 228,602 | 0.06% |
+| **Polling subtotal** (`sleep` + `until`) | 69 | | 13,873,173 | **3.88%** |
+| **Recipe subtotal** (fast/unit/regress/pytest/probe) | 69 | | 9,241,010 | **2.58%** |
 
-Two clean halves. Roughly 4.2% of the bill is agents deliberately waiting, and 2.8% is test and build recipes running longer than the cache lives.
+These calls are almost all subagent turns (#203: 209 `sleep` and 150 `until` calls historically inside subagents, against 29 and 26 in main sessions), which stay at the unchanged 1.25× rate — only the bill they are a share of has changed, so the input-equivalents above are unchanged from this document's original attribution and only the percentages are restated. Two clean halves. Roughly 3.9% of the bill is agents deliberately waiting, and 2.6% is test and build recipes running longer than the cache lives.
 
 ### This is not a timeout extension in disguise
 
@@ -106,7 +130,7 @@ CLAUDE.md forbids extending a timeout to make a test pass. Nothing here asks for
 
 ### Measured fix for the recipe half
 
-`just unit` is now 6 min 24 s, so `just fast` is about 6 min 30 s. **Every invocation from here on lands past the cliff.** The suite crossed the five-minute line recently, which is why the historical average `just fast` is only 128 s while today's is 390 s — the 1.95% above is a trailing figure and the forward rate is worse.
+`just unit` is now 6 min 24 s, so `just fast` is about 6 min 30 s. **Every invocation from here on lands past the cliff.** The suite crossed the five-minute line recently, which is why the historical average `just fast` is only 128 s while today's is 390 s — the 1.78% above is a trailing figure and the forward rate is worse.
 
 The cost is not compute. Measured on this machine:
 
@@ -150,11 +174,11 @@ Wall clock is six times user CPU: the suite is overwhelmingly *waiting* — on r
 
 25.6%, not the 50–65% the register advertises, and the reason is visible in the diff: this document is already dense with load-bearing literal content — `gh` invocations, `#N` citations, the anchored grep, the regex the commit-msg hook enforces. None of that compresses. What compresses is the narrative that says *why* each rule exists.
 
-**Value.** Applying 25.6% to `CLAUDE.md` removes 1,781 tokens from the prefix. At 10.65 input-equivalents per prefix token per session, over 187 sessions: **3.55 M input-equivalents, 0.87% of the bill.** Compressing the on-demand docs to the same ratio adds 0.09%. Call it **~1.0%**.
+**Value.** Applying 25.6% to `CLAUDE.md` removes 1,781 tokens from the prefix. At 10.80 input-equivalents per prefix token per session, over 187 sessions: **3.60 M input-equivalents, 0.80% of the bill.** Compressing the on-demand docs to the same ratio adds 0.08%. Call it **~0.9%**.
 
 **Verdict: do not adopt as a compression pass.** It is real money but it is a twentieth of the TTL finding, and the thing it deletes is the thing this project has repeatedly found load-bearing. CLAUDE.md's own rule — an elimination or rationale holds only in the context it was tested, carrying four recorded validations — works *because* the rationale travels with the rule; #118 re-derived a surviving reason precisely because the expired one was written down. A register that drops "why" to save 1% would have made that impossible. The `validated ×N` markers are the same mechanism, and #186 built a gate to keep them honest.
 
-There is a better-shaped version of the same 1%, and it is already project policy: **delete what has expired rather than compress what is current.** CLAUDE.md is 6,957 tokens largely because every validated marker accretes another exemplar. A periodic prune — oldest exemplars dropped once a rule has five, the process-log keeping the full record — takes the same tokens off the prefix without taking any reasoning out of the live document. Worth a retro's attention, not an engineering issue.
+There is a better-shaped version of the same ~0.9%, and it is already project policy: **delete what has expired rather than compress what is current.** CLAUDE.md is 6,957 tokens largely because every validated marker accretes another exemplar. A periodic prune — oldest exemplars dropped once a rule has five, the process-log keeping the full record — takes the same tokens off the prefix without taking any reasoning out of the live document. Worth a retro's attention, not an engineering issue.
 
 ### Idea 2 — reduce test and build tool output
 
@@ -168,19 +192,21 @@ There is a better-shaped version of the same 1%, and it is already project polic
 | `just regress` | 161 | 96,155 | 597 | ~149 |
 | `just unit` | 142 | 75,408 | 531 | ~133 |
 
-Agents already pipe these through `tail`/`grep`, so the *observed* cost is ~150 tokens per invocation, not the 585 (`just check`) and 743 (`just unit`) a raw capture gives. The whole test-and-build tool-output surface is 190,328 tokens of arrival across the project's life. Cutting 85% of it and applying the 4.82× amplification yields **0.19% of the bill**.
+Agents already pipe these through `tail`/`grep`, so the *observed* cost is ~150 tokens per invocation, not the 585 (`just check`) and 743 (`just unit`) a raw capture gives. The whole test-and-build tool-output surface — `just check`/`fast`/`unit`/`regress`/`pytest` specifically — is 190,328 tokens of arrival across the project's life. Cutting 85% of it and applying the 4.95× amplification yields **0.18% of the bill**.
 
-**The right reframing is duration, not verbosity.** The same `just fast` costs 0.19%-scale tokens in output and **1.95%** in cache re-writes. The instruction "print one line on green" is worth a tenth of the instruction "finish in under five minutes". Adopt the second; the first is a nice-to-have that rides along free once someone is editing the recipes anyway.
+**Correction (#206, from #203): that 0.19%/0.18% is scoped to test and build recipes, not the whole surface, and reads as if it were.** The whole tool-result surface across all history is 21,179 results, 37,396,838 characters, ≈9.35 M tokens — roughly 10% of the bill once amplified, of which `Bash` is 18.7 M characters and `Read` 15.6 M. The conclusion below stands (median result is 352 characters; there is no fat to trim without semantic compression, which this document already recommends against), but the 0.18% figure describes only the test/build slice above, not the whole tool-output surface.
+
+**The right reframing is duration, not verbosity.** The same `just fast` costs 0.18%-scale tokens in output and **1.78%** in cache re-writes. The instruction "print one line on green" is worth a tenth of the instruction "finish in under five minutes". Adopt the second; the first is a nice-to-have that rides along free once someone is editing the recipes anyway.
 
 **On RTK specifically.** RTK is installed and mandated by the global `~/.claude/CLAUDE.md`, and reports 28.0 M tokens saved at 76.9% on this machine. Two independent studies say that figure does not survive contact with the bill — see §6, item 9. RTK's counter estimates tokens as chars/4 over *raw* output that Claude Code already truncates, and never observes session context at all, which is precisely the 95% of the bill §1 measures. I make no recommendation about removing RTK — that file is the human's and the tool may earn its place on latency or ergonomics — but `rtk gain` should stop being read as evidence of money saved.
 
 ### Idea 3 — replace agentic reasoning with traditional automation
 
-**This is the best-supported idea in the issue, and §2 gives it a number the seed did not have: 4.24% of the bill, from 69 tool calls.** Agents waiting — `sleep`, `until`-poll — is the single largest attributable cause of cache destruction, ahead of the test suite.
+**This is the best-supported idea in the issue, and §2 gives it a number the seed did not have: 3.88% of the bill, from 69 tool calls.** Agents waiting — `sleep`, `until`-poll — is the single largest attributable cause of cache destruction, ahead of the test suite.
 
 The mechanism is worth stating plainly, because it inverts the intuition. A polling loop looks cheap: `sleep 300` returns almost no text. Its measured cost is 179,033 tokens of cache re-write on the *following* turn, an average taken over 44 occurrences. A waiting agent is roughly **110× more expensive than a working one** per turn (179,033 vs the 1,612 baseline), and it is expensive precisely because it did nothing for five minutes.
 
-That reframes the ADR-0049 vehicle. Moving a rule-based decision out of the model saves the tokens the reasoning would have cost — real, but small, since output is 4.6% of the bill. Moving a *wait* out of the agent's turn saves the entire prefix. The prize is in the second, and the design rule that follows is:
+That reframes the ADR-0049 vehicle. Moving a rule-based decision out of the model saves the tokens the reasoning would have cost — real, but small, since output is 4.5% of the bill. Moving a *wait* out of the agent's turn saves the entire prefix. The prize is in the second, and the design rule that follows is:
 
 > Work that takes longer than the cache lives belongs outside an agent's turn. An orchestrator should be notified that something finished; it should not sit inside a turn watching for it.
 
@@ -204,7 +230,7 @@ That reframes the ADR-0049 vehicle. Moving a rule-based decision out of the mode
 | L14 | **CHANGELOG conflict resolution** | *every* rebase over a concurrent landing; 3 cycles record it as the **only** conflict class | **Yes** — `merge=union` | **nothing; no `.gitattributes` in the tree** |
 | L15 | Corpus re-run / flake triage | #164 took 5 corpus attempts | Dispatch yes (already built), response judgement | `tools/probe_verdict.py`, `pool_merge.py` ladder — **done, do not rebuild** |
 
-L1 is the one that matters. ADR-0053 ruled the underlying harness behaviour out of this repo's scope, which makes the watcher **permanent compensation** — a forever cost. It is also the loop whose shape exactly matches the `sleep`/`until` measurement: an orchestrator sitting inside a turn waiting for a run it could be notified about. The 4.24% is what six stalls' worth of watching cost, and it recurs for as long as the project runs.
+L1 is the one that matters. ADR-0053 ruled the underlying harness behaviour out of this repo's scope, which makes the watcher **permanent compensation** — a forever cost. It is also the loop whose shape exactly matches the `sleep`/`until` measurement: an orchestrator sitting inside a turn waiting for a run it could be notified about. The 3.88% is what six stalls' worth of watching cost, and it recurs for as long as the project runs.
 
 L14 is the cheapest item in this entire document: a two-line `.gitattributes` removing the only conflict class 264 landings have produced.
 
@@ -216,7 +242,7 @@ Full pass with evidence classes in §6. Three findings bear directly:
 
 - The dominance of cache traffic over output is independently replicated (arXiv 2607.12161, 2,908 runs) and now independently replicated *here* on this project's own telemetry. Both agree that per-task tool-output reduction barely predicts cost change.
 - Deferred tool loading — the biggest documented single win, ~85% off tool-schema overhead — **is already on** in this harness; the tool schemas in this very session arrived deferred. No action, but worth not disabling.
-- Output-phrasing compression (the caveman register) is independently measured at 8.5% of *output* tokens against an advertised 65%. Against a bill where output is 4.6%, that is under 0.4%. Consistent with the 1.0% measured for idea 1 here, by a different route.
+- Output-phrasing compression (the caveman register) is independently measured at 8.5% of *output* tokens against an advertised 65%. Against a bill where output is 4.5%, that is under 0.4%. Consistent with the ~0.9% measured for idea 1 here, by a different route.
 
 ---
 
@@ -226,25 +252,25 @@ Ranked by measured share of bill recovered, quality risk noted for each. The gat
 
 | # | Change | Measured prize | Confidence | Risk to gates |
 |---|---|---:|---|---|
-| 1 | Parallelise the pytest tier (`pytest-xdist`, `-n auto`) so `just fast` returns inside the cache TTL | **~2.8%** and rising | Measured here: 6 m 17 s → 1 m 44 s, green | None to assertions; needs port/lock isolation confirmed under parallelism |
-| 2 | Take agent waits out of the turn: no `sleep`/`until` poll loops inside an agent's turn; long work runs detached and notifies | **~4.2%** | Measured attribution; the mechanism is certain, the engineering is not yet designed | None — it changes when a result is read, not what it says |
-| 3 | Process rule: never hold a turn open ≥ 5 min, and never park a session and return | 10.3% + 3.2% ceiling, overlapping 1 and 2 | Measured | None. CLAUDE.md already forbids the parking half |
+| 1 | Parallelise the pytest tier (`pytest-xdist`, `-n auto`) so `just fast` returns inside the cache TTL | **~2.6%** and rising | Measured here: 6 m 17 s → 1 m 44 s, green | None to assertions; needs port/lock isolation confirmed under parallelism |
+| 2 | Take agent waits out of the turn: no `sleep`/`until` poll loops inside an agent's turn; long work runs detached and notifies | **~3.9%** | Measured attribution; the mechanism is certain, the engineering is not yet designed | None — it changes when a result is read, not what it says |
+| 3 | Process rule: never hold a turn open past its cache's TTL (5 min for a subagent, 60 for a main session), and never park a session and return | 10.2% (subagent) + 2.7% (main-session) ceiling, overlapping 1 and 2 | Measured | None. CLAUDE.md already forbids the parking half |
 | 4 | Prune expired exemplars from `CLAUDE.md` rather than compress it | ~0.9% | Measured compression ratio; prune ratio unmeasured | Real risk if it removes live rationale — hence prune, not compress |
-| 5 | Batch human questions to session boundaries rather than mid-session | 0.11% | Measured | None |
-| 6 | Single summary line on green from `just` recipes | 0.19% | Measured | None; do it while editing recipes for #1 |
+| 5 | Batch human questions to session boundaries rather than mid-session | 0.10% | Measured | None |
+| 6 | Single summary line on green from `just` recipes | 0.18% | Measured | None; do it while editing recipes for #1 |
 | 7 | Stop reading `rtk gain` as evidence of cost saved | n/a — corrects a measurement, not a cost | Two independent studies | None |
 
 **Secondary tier — rule-based, cheap, savings real but unmeasured.** These come out of the loop inventory rather than the telemetry, so none of them clears the measured-savings bar on its own. They are listed for a ruling, not filed as priced work: `.gitattributes` with `merge=union` on `CHANGELOG.md` (L14, two lines, removes the only conflict class 264 landings have produced); a `pool.json` → issue-comment renderer (L3, and it closes #134's quote-before-read hole); an ADR-number claim scanner (L6, and it would close for free the blind window the retro declined to widen *because of agent cost*); a worktree pre-flight/hygiene hook (L4, 85 live registrations, five destructive collisions).
 
 Not adopted, with reasons in §5: doc compression as a register change; token-optimised serialisation; anything that compresses code context.
 
-**What this does not claim.** Items 1–3 overlap: the 5-minute rule (3) is the general statement of which (1) and (2) are the two specific instances that the data attributes. The honest ceiling for the whole group is the 13.56% of §2, not the sum of the rows. And every figure is a share of the *historical* bill under this project's session shape; a different workload redistributes them.
+**What this does not claim.** Items 1–3 overlap: the TTL rule (3) is the general statement of which (1) and (2) are the two specific instances that the data attributes. The honest ceiling for the whole group is the 12.89% of §2, not the sum of the rows. And every figure is a share of the *historical* bill under this project's session shape; a different workload redistributes them.
 
 ---
 
 ## 5. Recommended against
 
-**Compressing agent docs as a register change (idea 1 as posed).** ~1.0% of the bill, paid for by deleting the rationale this project has four validated instances of needing. Prune expired content instead.
+**Compressing agent docs as a register change (idea 1 as posed).** ~0.9% of the bill, paid for by deleting the rationale this project has four validated instances of needing. Prune expired content instead.
 
 **Semantic compression of code or context in the tool path.** An independent study measured SWE-bench-Go patch application falling 27/40 → 15/40 when compression destroyed verbatim edit anchors; an API-boundary compression proxy measured **+48.4%** cost. This project's edits go through `Edit` with exact-match `old_string`, which is exactly the failure mode. Deterministic, whitelisted truncation of genuinely huge logs is fine; nothing cleverer.
 
@@ -258,9 +284,9 @@ Not adopted, with reasons in §5: doc compression as a register change; token-op
 
 Each claim is labelled **vendor** (Anthropic or the tool's author), **community-replicated** (several independent practitioners agreeing), **independent** (third-party benchmark or paper), or **anecdote** (single unreplicated report).
 
-1. **Cache traffic dominates cost, output does not.** 2,908 Claude Code runs, 103 tasks, 7 repos: cache writes 44.3% + cache reads 35.4% ≈ 87% of reconstructed cost; output 10.4%. Per-task tool-output reduction barely predicted cost change (r = 0.154, CI crosses zero). — *independent*, https://arxiv.org/abs/2607.12161. **Replicated here** in §1 (writes 24.7%, reads 70.6%, output 4.6% — same conclusion, different mix because this project's sessions carry more context).
+1. **Cache traffic dominates cost, output does not.** 2,908 Claude Code runs, 103 tasks, 7 repos: cache writes 44.3% + cache reads 35.4% ≈ 87% of reconstructed cost; output 10.4%. Per-task tool-output reduction barely predicted cost change (r = 0.154, CI crosses zero). — *independent*, https://arxiv.org/abs/2607.12161. **Replicated here** in §1 (writes 27.0%, reads 68.5%, output 4.5% — same conclusion, different mix because this project's sessions carry more context).
 
-2. **Prompt-cache mechanics and invalidators.** Cache read ≈ 0.1×, write ≈ 1.25×. Invalidated by: switching model, **changing effort mid-session**, `/compact`, upgrading Claude Code, resuming after upgrade. Not invalidated by: editing files, output style, permission mode, invoking skills, `/rewind`, spawning a subagent. TTL 5 min on API keys, 1 h on subscription; **subagents use the 5-min TTL regardless**. — *vendor*, https://code.claude.com/docs/en/prompt-caching, https://claude.com/blog/lessons-from-building-claude-code-prompt-caching-is-everything. The cliff measured in §2 sits exactly at 5 minutes, which is consistent with the 5-minute TTL being in force for this project's sessions.
+2. **Prompt-cache mechanics and invalidators.** Cache read ≈ 0.1×, write ≈ 1.25× at the five-minute TTL, ≈ 2.0× at the one-hour TTL. Invalidated by: switching model, **changing effort mid-session**, `/compact`, upgrading Claude Code, resuming after upgrade. Not invalidated by: editing files, output style, permission mode, invoking skills, `/rewind`, spawning a subagent. TTL 5 min on API keys, 1 h on subscription; **subagents use the 5-min TTL regardless**. — *vendor*, https://code.claude.com/docs/en/prompt-caching, https://claude.com/blog/lessons-from-building-claude-code-prompt-caching-is-everything. §2's two cliffs — subagents at 5 minutes, main sessions at 60 — are exactly this split, measured (#203).
 
 3. **Cache scope is per-directory — every worktree is its own cache.** `--exclude-dynamic-system-prompt-sections` moves cwd/git/platform out of the system prompt so identical configs share one entry across directories, at the stated cost of that context being "marginally less" authoritative. — *vendor*, https://code.claude.com/docs/en/prompt-caching#cache-scope. Magnitude for a worktree-per-agent setup: **no published number**; unmeasured here.
 
@@ -282,7 +308,7 @@ Each claim is labelled **vendor** (Anthropic or the tool's author), **community-
 
 12. **Code execution instead of tool round-trips**: 150,000 → 2,000 tokens (98.7%) on a data-filtering workflow, with sandboxing caveats — *vendor*, https://www.anthropic.com/engineering/code-execution-with-mcp. This project already has the shape (`just` recipes, evidence on disk under `~/.arma-cti/runs/`); little headroom left.
 
-13. **Compaction and resumption.** `/compact` while warm costs a fraction of the context size; after TTL it reprocesses the full history uncached — "`/compact` costs the most when you resume an old session". `/clear` is free; `/rewind` reuses a cached prefix. — *vendor*, https://code.claude.com/docs/en/costs. §2's > 60 min row (3.23% of bill) is this effect, measured.
+13. **Compaction and resumption.** `/compact` while warm costs a fraction of the context size; after TTL it reprocesses the full history uncached — "`/compact` costs the most when you resume an old session". `/clear` is free; `/rewind` reuses a cached prefix. — *vendor*, https://code.claude.com/docs/en/costs. §2's main-session `> 60 min` row (2.72% of bill) is this effect, measured; the subagent `> 60 min` row (1.30%) is a different phenomenon — crash and rate-limit recovery, not a resumed parked session.
 
 14. **Redundant file re-reads: claimed 42% of agent tokens** — *anecdote*, by a vendor selling the fix, partly paywalled: https://gotcontext.ai/news/researcher-finds-42-of-coding-agent-tokens-are-wasted-on-repeated-file-reads. **This did not replicate here.** Measured over all 2,418 `Read` results in this project's transcripts: 721 reads (29.8%) were of a file already read in the same session, but they carry only **9.2% of read bytes** (1,328,262 of 14,460,355 chars ≈ 332 K tokens ≈ **0.39% of the bill**), because repeat reads are mostly small re-checks of a region rather than whole files. Not worth an intervention here; worth recording that the community figure is four-and-a-half times this project's reality.
 
@@ -296,4 +322,4 @@ Each claim is labelled **vendor** (Anthropic or the tool's author), **community-
 
 - **The cost of a subagent's cold CLAUDE.md load** in a heavy-fan-out setup is vendor-documented as a mechanism and unmeasured in magnitude anywhere, including here. This project made 181 `Agent` calls. If the fan-out grows, this becomes worth measuring directly.
 - **Worktree cache fragmentation** (§6 item 3): mechanism certain, magnitude unknown, and this project runs one worktree per agent by design. `--exclude-dynamic-system-prompt-sections` is a one-flag experiment whenever someone wants the number.
-- **Whether raising the cache TTL to one hour would help.** Arithmetic says mostly not: 1-hour writes bill at 2× rather than 1.25×, so eliminating the 33.8 M tokens of re-write saves ~42 M input-equivalents while the premium on the remaining 47 M writes costs ~35 M — a net ~1.7%, against the ~10.3% available from simply not blocking. Fix the durations first; the TTL setting is a distant second and its exact billing on this subscription was not verified.
+- **Whether raising the cache TTL to one hour would help — answered (#206, from #203).** The main conversation is *already* on the one-hour TTL, and always has been, on this subscription, in this project's entire recorded history: 100% of main-session cache writes request the one-hour TTL (§2). There is nothing to raise. The question that remains is the reverse one — subagents are stuck on the five-minute TTL regardless of subscription — and it is #204's.
