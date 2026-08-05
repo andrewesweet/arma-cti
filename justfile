@@ -187,6 +187,33 @@ regress *args: build-shim build-addon
 # Everything that does not need Arma.
 fast: check unit
 
+# The worktree protocol as one call (#214, ADR-0049): fetch, create off
+# origin/main detached, and prove the tree is exclusively yours before you work
+# in it — CLAUDE.md's pre-flight, run the same way every time rather than
+# improvised from memory. #105 is why: worktree assignment handed two agents one
+# tree five times in one evening, and a routine reset is what turns that
+# collision into destroyed work.
+#
+#   just worktree add issue-214    fetch, create .claude/worktrees/issue-214,
+#                                  pre-flight it, print the path and base SHA
+#   just worktree check [name]     the pre-flight alone (default: this tree),
+#                                  non-destructive, safe to run mid-task. Only a
+#                                  clean tree proves exclusivity; a dirty one
+#                                  comes back `unverified` with the files listed,
+#                                  because your file and another agent's look
+#                                  identical in `git status`
+#   just worktree list             the hygiene sweep: every registration, its
+#                                  state, its unlanded count, which are stale
+#   just worktree done issue-214   verify clean and landed, then remove
+#
+# Refusals are named and each says what was found and what to do:
+# worktree_occupied (naming the other holder), dirty_tree, unverified,
+# stale_registration, unlanded_work, no_such_worktree, invalid_name, git_failed. Nothing here
+# resets, cleans, prunes or removes on a refusal path — foreign files mean stop
+# and report, and the judgement of what a refusal means stays the agent's.
+worktree action="check" name="":
+    uv run python tools/worktree.py {{ action }} "{{ name }}"
+
 # Arm a detached watcher over a dispatched agent's run, and read what the
 # watchers found (#198, ADR-0053). No Arma, no lock, no turn held open.
 #
