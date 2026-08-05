@@ -4,6 +4,10 @@ Date: 2026-08-05
 Decided-by: human, in the inaugural grilling session for the multi-provider dispatch initiative
 Claimed: after `git fetch origin` (`docs/adr/` on `origin/main` topping at 0060) and a search of
 every open issue finding no claim above 0060
+Amended: 2026-08-05, same session, before human review — Decision 6 replaced and the held section
+resolved, on the prior-art sweep this ADR itself commissioned. An ADR is amendable until the human
+has read it and immutable afterwards; this one reached `origin/main` by the worktree collision on
+#105 rather than by review, so nothing had relied on it
 
 The project is building infrastructure to dispatch logical subagents onto non-Anthropic coding
 subscriptions — OpenAI Codex and the z.ai GLM Coding Plan — so that work which does not need
@@ -92,25 +96,44 @@ The cost is stated plainly: no question of the form "is xhigh worth it in genera
 Only "is this profile better than that one for this seat" — which is the question the guidance
 needs.
 
-## Decision 6: the evidence is randomised assignment measured by the existing gates
+## Decision 6: admission is an absolute bar against the existing history, not a comparison
 
-No separate eval corpus and no model-as-judge. The lane is randomised within an eligible task
-class, and the quality signal is what the project already produces per issue: gate cycles to first
-green, red runs before green, corpus verdict class and count, review findings raised afterwards,
-rework commits in the following week, wall clock, and quota consumed on each pool.
+No separate eval corpus and no model-as-judge. The quality signal is what the project already
+produces per issue: gate cycles to first green, red runs before green, corpus verdict class and
+count, review findings raised afterwards, rework commits in the following week, wall clock, and
+quota consumed on each pool.
 
-Randomisation is the load-bearing part. Without it the data is confounded — route the easy issues
-to the cheap lane and the cheap lane looks brilliant. Randomising makes observational data causal
-and costs nothing.
+The question that gates a lane is **absolute, not comparative**. The WIP freeze is rationing rather
+than policy — it exists only while Claude tokens are the scarce currency, and lifts once foreign
+lanes are live and their result quality is trusted. So what must be established is whether a lane
+clears the bar, not whether it beats Claude. An absolute question needs no control arm and no
+randomisation.
+
+- **Admission, per seat.** A profile is admitted when its own gate record over N issues clears a
+  bar **pre-registered before that lane's numbers are seen**. The bar is derived from the Claude
+  history already in the repo — free, no new spend on the scarce pool, no discarded arm.
+- **Tuning.** Which cheap profile suits which seat is settled by paired dual-run with both arms on
+  cheap pools, where double-spend costs nothing scarce.
+- **Reserved.** A foreign lane against Claude head to head, only for a specific question judged
+  worth the scarce spend.
 
 This is chosen over a benchmark because a benchmark drifts from the live repo and a task whose
-answer sits in git history is a memorisation hazard; and over a judge because judge preferences are
-known to favour verbosity and the judge's own model family, which is precisely the comparison being
-made. Both would also be new verification passes, which CLAUDE.md forbids beyond the gates.
+answer sits in git history is a memorisation hazard — SWE-bench's contamination is measured at 76%
+buggy-file-path accuracy on Verified against 53% off-benchmark. It is chosen over a judge because
+judge preferences are known to favour verbosity and the judge's own model family, which is
+precisely the comparison being made. Both would also be new verification passes, which CLAUDE.md
+forbids beyond the gates.
 
-The weakness is stated: the signal is slow, and silent about a wrong landing that passed. A class
-the free signal cannot separate escalates to paired dispatch — the same issue on two lanes, in two
-worktrees, one output discarded.
+Two weaknesses, stated rather than glossed. The historical baseline is confounded by task mix and
+by process changes over the period, which is why pre-registration is load-bearing: seeing the new
+lane's numbers first would turn the confounding into a licence to move the bar. And the signal
+remains silent about a wrong landing that passed every gate.
+
+Recorded because it constrains everything downstream: arm count, not sample size, is the binding
+constraint on what is measurable here. No published router beats a static policy at *n* in the
+tens — RouteLLM needed 65,000 pairwise comparisons, RouterBench 405,000 outcomes — so the
+**marginal effects of lane and of effort are not estimable on this project, ever**. Published
+benchmark results have exactly one legitimate use: seeding the initial profile-to-seat table.
 
 ## Decision 7: `quota_exhausted` joins the failure-class table
 
@@ -140,30 +163,54 @@ differs from every other row — `infra_unavailable` escalates, `untyped_harness
 to the harness, `quota_exhausted` waits — and a refusal is *evidence for the routing rule*, because
 a model that refuses a class of work is unfit for it.
 
-## Held pending the prior-art sweep
+## Settled by the prior-art sweep, awaiting a first applied instance
 
-Five rulings were taken in the same session and are deliberately **not** recorded here, because
-prior art may already solve them and landing them now would be the doc-first mistake this project
-has made twice. Four research dispatches are reading the field; the rulings land with their first
-applied instance, in a second ADR.
+Five rulings were taken in the same session and deliberately not recorded as decisions here,
+because prior art might already have solved them and landing them unread would be the doc-first
+mistake this project has made twice. Four research dispatches then read the field; their documents
+are in `docs/research/`. The outcomes are below. They remain out of the numbered decisions until
+each has a first applied instance, per the rule that a convention living only in a design document
+is not yet a convention; a second ADR lands them with the code.
 
-- **Substrate** — native per-provider CLIs against `opencode`, decided by spike. One part is not
-  held and is absolute: the Anthropic subscription is reached only ever through Claude Code. The
-  mirror is permitted — the `claude` binary may drive a non-Anthropic endpoint, since that consumes
-  no Anthropic quota, credential or traffic — subject to one read of Anthropic's current terms
-  before landing.
-- **Portability** — adopting Microsoft's APM for the compile step, which would make `CLAUDE.md` a
-  generated file and move its sign-off gate to the source primitive.
-- **Telemetry and the ledger** — OTel as the single capture bus with a per-dispatch ledger as a
-  materialised view over it.
-- **Dispatch granularity** — a whole agent run assigned to one lane, against an in-session proxy
-  routing per request type.
-- **The lane circuit breaker** — availability and quality trips, state read before dispatch.
+- **Substrate** — **settled, not spiked.** Anthropic's Consumer Terms §3 bars accessing the
+  Services by automated or non-human means except via an API key, and §2 bars credential sharing.
+  Reaching the Anthropic subscription only through Claude Code is therefore the one compliant
+  configuration, not a preference. The mirror is permitted and documented — the `claude` binary may
+  drive a non-Anthropic endpoint, consuming no Anthropic quota, credential or traffic, and z.ai
+  publishes the variables for it. The remaining spike narrows to native CLIs against `opencode`,
+  for non-Anthropic lanes only. The owed terms read widens to OpenAI's, and the standing rule it
+  produced is that **no subscription credential goes into any third-party process, on any lane** —
+  three separate tools offered to do exactly that.
+- **Portability** — **APM failed; re-decided.** APM emits no hook target for Codex or opencode, and
+  its audit does not track root compiled files, so generating `CLAUDE.md` would have bought zero
+  drift enforcement. `rulesync` spans both lanes but its opencode output is inert. Neither removes
+  the opencode payload bridge, which is one hand-written file we own regardless. The decision is
+  `AGENTS.md` as sole source with `CLAUDE.md` reduced to an `@AGENTS.md` import and hook
+  configuration hand-written per target — conditional on one drift mechanism per surface, all in
+  `just check`: a form check that `CLAUDE.md` is exactly the import line; the behavioural
+  hook-parity suite Decision 4 already mandates; and a static equivalence check over the seat and
+  profile registry.
+- **Telemetry** — **stands**, with one correction: "all lanes" requires a traces pipeline, because
+  opencode emits no metrics at all and carries tokens only as spans.
+- **Durability** — **stands with less to build.** The collector's `group_by` file export writes one
+  record per dispatch, so filtering, splitting and durability are configuration rather than code,
+  and the compaction step disappears. One constraint discovered: a dispatch identity distinguishes
+  only separate processes, so an in-session subagent cannot be ledgered — which reinforces the
+  dispatch-as-separate-process model.
+- **Dispatch granularity** — **stands.** Per-request-type routing requires a session-global base
+  URL, which forfeits the subscription; the leading proxy reaches the subscription by replaying a
+  stored OAuth credential, which is the barred path. Corroborating: that proxy abandoned its own
+  category router in favour of Claude Code's native model-slot variables.
+- **Breaker** — **stands, halved.** The leading library was rejected as the breaker on measured
+  grounds: a five-second default cooldown, a failure *ratio* rather than consecutive-N, no quality
+  trip, no supported surface, and cooldown transitions that never reach OTel. But Codex publishes
+  quota state first-party, including a reset time, so Decision 7's "computed, never guessed" is
+  free and pre-dispatch on that lane. Only the quality half needs building. z.ai publishes no
+  machine-readable equivalent.
 
-Two candidates already look capable of replacing the last two outright: LiteLLM's Router
-implements per-deployment cooldowns, failure-threshold circuit breaking and rate-limit-aware
-routing today, and `claude-code-router` already routes Claude Code traffic per request type across
-providers.
+Both candidates this section originally named as likely to replace a ruling outright were rejected,
+each on a primary source read rather than a summary. The sweep's cost was four read-only dispatches;
+it prevented two builds on false premises and one on a tool that does not do what it claims.
 
 ## What would overturn this
 
@@ -181,9 +228,11 @@ providers.
   than the lane's real denial path is the specific failure to watch for.
 - **Decision 5** — evidence that a provider's effort levels *do* commensurate with Claude's well
   enough to route on a shared scale, which would make profiles needless ceremony.
-- **Decision 6** — a finding that this project's landing rate is too low for randomised assignment
-  to separate profiles in reasonable time. That is a live risk and is in the sweep's scope; if it
-  holds, the regime moves to paired dispatch or an existing eval framework.
+- **Decision 6** — a lane that clears the pre-registered admission bar and then produces work that
+  is wrong in ways the gates do not see. That would show the bar measures gate compliance rather
+  than quality, and admission would need a signal the gates do not supply. Also: any evidence that
+  the historical baseline's task mix differs from the new work enough to make the comparison
+  meaningless, which would force a live control arm despite its cost.
 - **Decisions 7 and 8** — either class failing to fire in practice, which would make it the #71
   shape after all; or a required response proving wrong — for instance a quota reset that is not
   computable from published window boundaries, which would collapse `quota_exhausted` back into
