@@ -165,7 +165,7 @@ probe file="" hold="150": build-shim build-addon
 # `just probe` and `just spike` take slot 0, which is what
 # makes a hand run and a pool run exclude each other where they would collide.
 #
-# The two probes that drive the headed Windows client run last and serially, with
+# The probes that drive the headed Windows client run last and serially, with
 # the rest of the pool drained: there is one Windows host, and the guard that
 # protects the human's play session cannot tell our client from theirs (#119).
 #
