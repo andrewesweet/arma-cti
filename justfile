@@ -15,8 +15,8 @@ shim := "--manifest-path extension/Cargo.toml"
 _default:
     @just --list
 
-# No-Arma static tier: commit hygiene, lints, types, formatting.
-check: check-commits check-generated check-adr check-markers check-sqf check-python check-rust
+# No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
+check: check-commits check-generated check-adr check-markers check-sqf check-secrets check-python check-rust
 
 # Export what SQF cannot read from an authored file. The map manifests are not
 # here: the addon ships and parses the authored JSON itself (ADR-0017), so
@@ -50,6 +50,24 @@ check-markers:
 check-sqf:
     hemtt check -p -e
     uv run python tools/check_sqf_bans.py
+
+# No credential reaches a committed file (#221's secrets ruling, #223).
+#
+# `dir` rather than `git`: the subject is the tree that is about to be
+# committed, and on a detached worktree `gitleaks git` reports "0 commits
+# scanned" — a gate that quietly scans nothing is the #41 shape, and a green
+# from it would mean less than no gate at all. History is scanned by the same
+# binary on demand when a leak is suspected, not on every edit.
+#
+# `--redact` because a finding is printed into whatever log the gate ran in,
+# and a secrets gate that prints the secret has moved it rather than caught it.
+#
+# The stated limit from #221 is unchanged: this protects against git, not
+# against the agent, which runs as the same user. Installed user-local by
+# `just prereqs tools` (#230); a missing binary is a loud non-zero here, never
+# a skip.
+check-secrets:
+    gitleaks dir . --no-banner --redact
 
 # Python lint, format check and type check.
 check-python:
@@ -213,6 +231,44 @@ fast: check unit
 # and report, and the judgement of what a refusal means stays the agent's.
 worktree action="check" name="":
     uv run python tools/worktree.py {{ action }} "{{ name }}"
+
+# Start a logical subagent as a separate process on a named lane, and return at
+# once with a dispatch id (#223, ADR-0061). No Arma, no lock, no turn held open.
+#
+#   just dispatch --lane claude-native --profile opus-high --seat implementer --issue 223
+#   just dispatch --list                        the registry: lanes, profiles, seats
+#   just dispatch --dry-run ...                 the plan and the child's environment,
+#                                               credential redacted, nothing launched
+#
+# `--lane` picks the runner and the environment that reaches a provider;
+# `--profile` is one opaque `(lane, model, effort)` token, because effort
+# vocabularies do not commensurate across providers (ADR-0061 Decision 5), so
+# there is deliberately no `--model` and no `--effort` here. `--seat` carries
+# Decision 2's eligibility: a foreign lane refuses the seats no mechanical gate
+# covers. `--issue` is both the assignment and a telemetry attribute.
+#
+# Options: `--worktree` (default `.claude/worktrees/issue-<N>`, which is what
+# `just worktree add` makes and which this recipe never creates for itself),
+# `--brief-file`, `--base-sha`, `--permission-mode` (default `acceptEdits`; a
+# seat that needs Bash passes something wider deliberately), `--dispatch-dir`,
+# `--credentials`.
+#
+# The environment is assembled per invocation and exported nowhere:
+# `ANTHROPIC_BASE_URL` in a profile or in `~/.claude/settings.json` would
+# redirect every Claude Code session on this box, the orchestrator included.
+# Credentials come from `~/.arma-cti/credentials.env` at mode 0600, by
+# environment only — never on argv, so never in `ps`, and never in the dispatch
+# record, which names the key it used and not its value.
+#
+# The dispatched process asserts `git rev-parse --show-toplevel` against its
+# assignment before the runner starts and refuses loudly on a mismatch (#105).
+# A lane that cannot be reached — no credentials file, no key, no worktree — is
+# `infra_unavailable` and is not a result.
+#
+# Evidence lands in `~/.arma-cti/dispatches/<id>/`: `dispatch.json`, the brief
+# as sent, `dispatch.log`, and `result.json` when the run ends.
+dispatch *args:
+    ./tools/dispatch.sh {{ args }}
 
 # Arm a detached watcher over a dispatched agent's run, and read what the
 # watchers found (#198, ADR-0053). No Arma, no lock, no turn held open.

@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A logical subagent is dispatched onto a named lane, and the lane's environment goes
+  nowhere else.** `just dispatch --lane claude-native --profile opus-high --seat
+  implementer --issue 223` starts a separate process and returns a dispatch id at once,
+  per CLAUDE.md's rule that a turn does not block for five minutes. Week one registers
+  two lanes, both on the `claude` binary: `claude-native`, which reaches the Anthropic
+  subscription the one compliant way ADR-0061 records, and `zai`, the permitted mirror
+  against z.ai's own published Anthropic-shaped endpoint. A **profile** is one opaque
+  `(lane, model, effort)` token in a registry — `opus-high`, `zai-glm52-max` — because
+  effort vocabularies do not commensurate across providers (ADR-0061 Decision 5), so
+  there is deliberately no `--model` and no `--effort` on the recipe. A **seat** carries
+  Decision 2: a foreign lane refuses the seats no mechanical gate covers, so
+  `--lane zai --seat fable` comes back `seat_not_eligible` rather than being trusted to
+  the caller's memory. The **environment is assembled per invocation and exported
+  nowhere** — `ANTHROPIC_BASE_URL` set globally would redirect every Claude Code session
+  on this box, the orchestrator included — and assembly strips every lane-owned variable
+  from the inherited environment before adding this lane's, so a parent that already
+  carries a foreign base URL produces exactly the same child as a clean one. Credentials
+  come from `~/.arma-cti/credentials.env` at mode 0600, by environment only: never on
+  argv, so never in `ps`, and the dispatch record names the key it used and not its
+  value. Identity rides on `OTEL_RESOURCE_ATTRIBUTES` as `cti.dispatch_id`, `cti.lane`,
+  `cti.profile`, `cti.seat`, `cti.issue` and `cti.base_sha`, which is what makes a
+  dispatch's telemetry self-identifying and Decision 1's per-pool metering a query. The
+  dispatched process asserts `git rev-parse --show-toplevel` against its assignment
+  before the runner starts and refuses loudly on a mismatch (#105's fourth instance),
+  and a lane that cannot be reached — no credentials file, no key, no worktree — is
+  `infra_unavailable` and not a result. Logic is Python under pytest with bash keeping
+  only the fork (ADR-0049); the end-to-end tests run the real seam against a real git
+  worktree and a fake `claude` on `PATH`, so the negative claims are made about an
+  actual child environment rather than a mock. #223.
+
+- **`just check` refuses a committed credential.** `check-secrets` runs `gitleaks` over
+  the working tree on every static-tier run — #221's secrets ruling, landed with the
+  first thing that has a credential to protect. `dir` rather than `git`, because on a
+  detached worktree `gitleaks git` reports "0 commits scanned" and a gate that quietly
+  scans nothing is the #41 shape; `--redact`, because a secrets gate that prints the
+  secret has moved it rather than caught it. The stated limit is unchanged: this
+  protects against git, not against the agent, which runs as the same user. #223.
+
 - **The worktree protocol is one call, and it refuses by name.** `just worktree add
   issue-214` fetches, creates `.claude/worktrees/issue-214` off `origin/main` detached,
   runs CLAUDE.md's pre-flight on the result and prints the absolute path and the base SHA
