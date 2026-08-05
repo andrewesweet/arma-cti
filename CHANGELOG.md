@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The cross-provider review seat now has a shape, and it is a shape a machine can count.**
+  `tools/dispatch.py` has carried `"review": True` since #223 without ever being dispatched.
+  `docs/review-dispatch.md` says what a review dispatch is handed (a landed SHA, its issue,
+  its close audit, a worktree at `origin/main`), what it must hand back (claims, each naming a
+  file, a line, the convention it is checked against, the failure scenario, and the cited lines
+  pasted rather than retyped), and where each claim goes — a defect to a new issue, an
+  observation to a comment on the reviewed issue, and a claim that does not survive checking
+  recorded as checked and not upheld rather than quietly dropped.
+
+  Two consequences worth naming. The permission mode is `plan`, which is the mechanical face
+  of the #228 ruling that a review lands nothing; the brief says so too, but the mode is the
+  part that cannot be talked out of. And a confirmed defect raised on the reviewed issue
+  inside the bar's seven-day window is `finding` in `tools/admission.py`'s `UNCLEAN_REASONS`
+  exactly as it already stands — no code change was owed — with four qualifications recorded
+  in the doc, of which the load-bearing one is that only a *confirmed* claim counts, since a
+  noisy reviewer must not be able to fail another lane's attempt without ever being right.
+  #240.
+
 - **The z.ai lane now dispatches only in off-peak hours, and says so when it will not.**
   The human ruled that on 2026-08-05 as a hard rule rather than as guidance, so it is a
   rung in `just dispatch`'s ladder beside the admission and breaker reads: inside z.ai's

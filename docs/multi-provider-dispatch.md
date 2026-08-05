@@ -9,6 +9,9 @@ and this document carries why it is the rule.
 
 Binding decision: ADR-0061. Implementation: `tools/dispatch.py`, `tools/breaker.py`. The
 ledger that records what a dispatch cost is a separate document, `docs/telemetry-ledger.md`.
+The **review** seat has a shape of its own — what it is handed, the claims-cite-code contract
+it hands back, where those claims route, and how a confirmed one reaches the admission bar —
+and that is `docs/review-dispatch.md`.
 
 ## Lanes and profiles
 
