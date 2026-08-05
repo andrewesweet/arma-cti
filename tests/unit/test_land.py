@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
+from typing import Any
 
 import pytest
 from conftest import load_tool
@@ -36,12 +37,14 @@ _HERE = Path("/home/a/repo/.claude/worktrees/issue-213")
 _MAIN = Path("/home/a/repo")
 
 
-def _kind(refusal: object) -> str:
-    return refusal.kind  # type: ignore[attr-defined]
+# ANN401: a `tools/` script is loaded by path, so its `Refusal` is not a type any
+# annotation here could name — `Any` is what the module object actually hands back.
+def _kind(refusal: Any) -> str:  # noqa: ANN401
+    return refusal.kind
 
 
-def _text(refusal: object) -> str:
-    return "\n".join(refusal.lines())  # type: ignore[attr-defined]
+def _text(refusal: Any) -> str:  # noqa: ANN401
+    return "\n".join(refusal.lines())
 
 
 # ------------------------------------------------------- the pre-flight rungs
