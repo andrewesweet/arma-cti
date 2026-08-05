@@ -129,6 +129,63 @@ clock-watching lied (ADR-0033).
   not this repo's to fix, so the watcher is the permanent compensation rather than a
   stopgap awaiting an in-repo fix. Further catches are it working, not new findings.
 
+### Arming it: `just watch`
+
+The clause above says to look when the work signals. This is the thing that looks, and
+since #198 it is a tool rather than an orchestrator's habit. At dispatch, for any agent
+with a run attached:
+
+```
+just watch <name> <worktree> [subject] --issue <N> [--grace <secs>]
+```
+
+It returns at once, having forked a poll loop into its own session, and the detachment is
+the whole point. #195 priced the hand version: an agent turn that blocks past five minutes
+throws away its prompt cache and pays about 179,000 tokens to rebuild it, which makes a
+waiting turn roughly 110× a working one and `sleep`/`until` polling 4.24% of everything
+this project has been billed. So the orchestrator should be *notified* that something
+finished and must not sit inside a turn watching for it. The agent-side half of the same
+rule — long work runs detached so the turn can end — is CLAUDE.md's watching-inside-turn
+sentence, and it is exactly what makes the watcher necessary.
+
+`subject` says what finishing means: `pool` (the default — the newest `pool.json` written
+after arming), `probe:<name>`, `process` with `--pid`, or `path` with `--await-path`.
+Write an issue as `--issue 198`, without the `#`: a recipe body is shell, where `#` opens
+a comment and silently eats the value.
+
+Then, at the top of any later turn:
+
+```
+just watch-report --ack
+```
+
+One line per finding, nothing at all while every watched agent is still working, and each
+finding printed once. The line carries who stalled, what evidence exists and the prod's
+draft wording; the pool's full verdict block — the runner's own `render_summary` output,
+byte for byte — sits beside it in `~/.arma-cti/watch/<name>.finding.json`, which is
+outside every worktree and therefore survives both the worktree and the orchestrator
+session that armed the watch.
+
+Three of its properties are deliberate, and each is a rule this document already holds.
+
+- **It never messages the agent.** Prodding is a judgement about someone's work; the
+  machine's half ends at noticing. ADR-0053's split, mechanised rather than widened.
+- **`infra_unavailable` is reported, never retried.** The drafted prod says STOP — not a
+  result, do not interpret, do not retry — which is the failure-class table's required
+  response, and re-dispatch stays a judgement.
+- **It fails closed.** A worktree whose HEAD it cannot read is `BLIND`, never "still
+  running": could-not-observe is not a pass, the shape caught three times above. Its own
+  assessor dying writes a `BROKEN` finding rather than nothing, because a silent watcher
+  and a healthy agent look identical from outside.
+
+The predicate is three conjuncts — the completion artefact exists, no activity under the
+worktree inside the grace window (default 600 s), and HEAD has not moved past the SHA
+recorded at arming — and it splits on what the stall is sitting on, because the thirteenth
+use in this document's header says the two cost different things. A clean tree is a lost dispatch, and the
+line says so. Uncommitted work is work at risk, and the line names the files and orders
+the commit before anything else. A false positive costs a briefing rather than work, so
+the tuning leans towards calling a stall rather than missing one.
+
 ## When the orchestrator itself dies
 
 Seen twice (both 2026-08-02), both recovered at zero cost, and the reason generalises: the

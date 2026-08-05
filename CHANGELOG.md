@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The orchestrator's stall watch is a tool now, and it waits outside the turn.** Six agent
+  stalls in one cycle were each caught by an orchestrator polling from inside a turn, and
+  ADR-0053 ruled the harness defect underneath out of this repo's scope, so that watching is a
+  standing cost — 4.24% of the whole token bill, because a turn that blocks past five minutes
+  throws away its prompt cache and a waiting turn is about 110× a working one (#195).
+  `just watch <name> <worktree> [subject]` now arms a detached watcher and returns at once;
+  `just watch-report [--ack]` prints one actionable line per finding and nothing while every
+  watched agent is still working. The stall predicate is mechanical — a completion artefact
+  exists, no activity inside a grace window, and the worktree's HEAD has not moved — and it
+  distinguishes the two escalations the record separates: a stall on a clean tree is a lost
+  dispatch, a stall on uncommitted work is work at risk, so that line names the files and orders
+  the commit first. The watcher never messages an agent (prodding stays a judgement), never
+  retries an `infra_unavailable` run, and reports "could not observe" as blindness rather than
+  health. Orchestrator-facing usage: `docs/agents/recovery.md`. #198.
+
 - **The development process's token bill has been measured, and it is mostly cache traffic.**
   `docs/research/token-efficiency.md` reads the four token classes off all 194 of this project's
   Claude Code session transcripts (17,515 turns) and prices #195's four seed ideas against them.
