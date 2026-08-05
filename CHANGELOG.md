@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The z.ai lane now dispatches only in off-peak hours, and says so when it will not.**
+  The human ruled that on 2026-08-05 as a hard rule rather than as guidance, so it is a
+  rung in `just dispatch`'s ladder beside the admission and breaker reads: inside z.ai's
+  published peak band every dispatch to the lane is refused, naming the window, the
+  published terms it came from, and the time it next opens. There is no override on this
+  surface — no flag, no environment variable, no per-dispatch exemption — because the
+  rule is the human's and only they amend it.
+
+  The refusal carries **no failure class**, for the same reason `admission_escalated`
+  carries none: the failure-class table types what a run found, and this one found
+  nothing. The provider is up, the credential is good, and the project simply declined to
+  spend on that lane now — `infra_unavailable` would assert an outage that is not
+  happening.
+
+  The window has one home. It is the lane's published schedule in `tools/breaker.py`, the
+  same object that prices a dispatch's `plan_charge` block, so what refuses a dispatch and
+  what a dispatch records cannot disagree; the dispatcher restates no part of it, and a
+  test holds it to that. `just breaker state` now shows each lane's window and which band
+  the clock is in, so a refused dispatcher sees why in the place it looks next, and
+  `just dispatch --list` shows which lanes carry the ruling. The window was re-read
+  against z.ai's published terms while landing this, and matches; the one reading those
+  terms do not settle — that the band is half-open, so 18:00 SGT exactly is already
+  off-peak — is recorded beside the constants and flagged on #221. #238.
+
 - **The admission bar for a foreign lane is now the thing that decides, rather than a
   number somebody has to remember.** `just admission` carries the human's ruling of
   2026-08-05T20:00Z on #224 — Part A's four process criteria on every one of ten issues

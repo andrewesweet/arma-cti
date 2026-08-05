@@ -301,6 +301,15 @@ land *args:
 # A lane that cannot be reached — no credentials file, no key, no worktree — is
 # `infra_unavailable` and is not a result.
 #
+# The `zai` lane dispatches only in off-peak hours, on the human's ruling of
+# 2026-08-05 (#238). Inside z.ai's published peak band every dispatch to it is
+# refused, with the window, the terms it came from, and when it next opens.
+# The refusal carries no failure class: nothing was found about any provider or
+# any code, this project simply declined to spend on that lane now. There is no
+# override — no flag, no environment variable — because the rule is the human's
+# and only they amend it; `just breaker state` shows the window, and
+# `just dispatch --list` shows which lanes carry the ruling.
+#
 # Evidence lands in `~/.arma-cti/dispatches/<id>/`: `dispatch.json`, the brief
 # as sent, `dispatch.log`, and `result.json` when the run ends.
 dispatch *args:
@@ -350,7 +359,7 @@ watch-report *args:
 # No Arma, no lock, no turn held open.
 #
 #   just breaker report      one line per lane that is not dispatchable; silent otherwise
-#   just breaker state       every lane, with its streaks, its feed and its feed's age
+#   just breaker state       every lane, with its streaks, its feed, and its window
 #   just breaker check --lane zai            the pre-dispatch read, as an exit code
 #   just breaker estimate --tier pro         z.ai's ledger estimate, advisory only
 #   just breaker reset --lane zai --force    clear a quality trip by hand
@@ -372,6 +381,12 @@ watch-report *args:
 # may trip a lane; z.ai publishes nothing machine-readable, so its estimate is
 # advisory only and that lane is 429-reactive. `just breaker state` says which
 # lanes are in that degraded mode.
+#
+# It also states each lane's published time-of-day window and which band the
+# clock is in (#238). The breaker does not enforce that window — it trips on
+# failures, and the off-peak rule is policy, refused by `just dispatch` — but a
+# dispatcher refused by that rule reads this print next, so `dispatch=allowed`
+# here means only that this breaker has nothing against the lane.
 #
 # Every transition goes to OTel and to `~/.arma-cti/breaker/transitions.jsonl`.
 breaker *args:

@@ -78,7 +78,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import otel_event
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping, Sequence
+    from collections.abc import Callable, Iterable, Mapping, Sequence
 
 # ---------------------------------------------------------------- the pure core (#72)
 
@@ -398,6 +398,27 @@ ZAI_PEAK_START_HOUR: Final = 14
 ZAI_PEAK_END_HOUR: Final = 18
 ZAI_OFF_PEAK_MULTIPLIER: Final = 0.5
 
+# The published window, in the form a human reads, and the page it was read from. Both
+# live beside the constants above because a schedule stated in two places is a schedule
+# that can say two things, and #238 makes this one load-bearing: it is no longer only a
+# price, it is a dispatch-time refusal.
+#
+# Verified against the primary source on 2026-08-05 (#238): "Peak hours: Monday to
+# Friday, 14:00-18:00 Singapore Standard Time (UTC+8)" and "During off-peak hours, model
+# usage is charged at 50% of the standard credit rate". The timezone is unambiguous, and
+# Singapore keeps UTC+8 year-round with no daylight saving, so a fixed offset is right
+# rather than convenient. Two readings the source does not settle, taken here and flagged
+# on #221 rather than guessed silently:
+#
+#   - **Boundaries are half-open**, [14:00, 18:00). 14:00:00 exactly is peak and 18:00:00
+#     exactly is off-peak. The source writes "14:00-18:00" and says nothing about its
+#     endpoints; a closed upper bound would make one second of every weekday belong to
+#     both bands, which is the only reading that cannot be implemented.
+#   - **The weekday is Singapore's**, not UTC's. "Monday to Friday" qualifies hours given
+#     in SGT, so the day is read in the same clock as the hours.
+ZAI_PEAK_WINDOW: Final = "Mon-Fri 14:00-18:00 SGT (UTC+8)"
+ZAI_TERMS_URL: Final = "https://docs.z.ai/devpack/overview"
+
 FIVE_HOURS_SECS: Final = 5 * 3600
 SEVEN_DAYS_SECS: Final = 7 * 24 * 3600
 
@@ -641,6 +662,57 @@ def zai_is_peak(at: float) -> bool:
     if local.weekday() >= weekday_max:
         return False
     return ZAI_PEAK_START_HOUR <= local.hour < ZAI_PEAK_END_HOUR
+
+
+def zai_off_peak_opens_at(at: float) -> float:
+    """When the off-peak band next begins, for a moment that is inside the peak band.
+
+    Peak is one contiguous run of hours that always ends at 18:00 SGT on the day it
+    started, so the answer is that day's own upper boundary — computed from the constants
+    `zai_is_peak` reads, never from a second copy of the schedule. A moment already
+    off-peak answers itself: the band is open now, and there is nothing to wait for.
+    """
+    if not zai_is_peak(at):
+        return at
+    # `local` carries SGT wall-clock time in a UTC-labelled datetime, which is what makes
+    # `.hour` the right hour; shifting back before reading the epoch is what makes the
+    # answer the right instant.
+    local = datetime.fromtimestamp(at, tz=UTC) + timedelta(hours=ZAI_PEAK_UTC_OFFSET_HOURS)
+    end = local.replace(hour=ZAI_PEAK_END_HOUR, minute=0, second=0, microsecond=0)
+    return (end - timedelta(hours=ZAI_PEAK_UTC_OFFSET_HOURS)).timestamp()
+
+
+class Schedule(NamedTuple):
+    """A provider's published time-of-day band: who is in it, when it lifts, what it costs.
+
+    One of these is the whole of what a lane's published plan says about the clock, so
+    that everything reading a window — the dispatcher's price record, the dispatcher's
+    off-peak refusal, and this module's own state print — reads the same one.
+    """
+
+    name: str
+    meter: str
+    is_peak: Callable[[float], bool]
+    opens_at: Callable[[float], float]
+    off_peak_multiplier: float
+    window: str
+    source: str
+
+
+# Which published schedule prices which lane. `tools/dispatch.py` reads this rather than
+# restating any of it: the lane registry there owns the lane's *wiring* and this repo's
+# own policy, and a provider's published plan terms are owned here.
+LANE_SCHEDULES: Final[dict[str, Schedule]] = {
+    "zai": Schedule(
+        name="zai-off-peak",
+        meter="prompts",
+        is_peak=zai_is_peak,
+        opens_at=zai_off_peak_opens_at,
+        off_peak_multiplier=ZAI_OFF_PEAK_MULTIPLIER,
+        window=ZAI_PEAK_WINDOW,
+        source=ZAI_TERMS_URL,
+    ),
+}
 
 
 def _estimate_window(
@@ -1133,6 +1205,27 @@ def _feed_parts(reading: QuotaReading | None, now: float) -> list[str]:
     ]
 
 
+def _window_parts(lane: str, now: float) -> list[str]:
+    """State a lane's published time-of-day band, and when it next opens if it is shut.
+
+    The breaker is the wrong home for #238's off-peak rule — this module trips on
+    failures, and an off-peak refusal is policy rather than a failure — but a dispatcher
+    refused by that rule reads this print next, so the window it was refused against is
+    stated here. `dispatch=allowed` above therefore never means "and z.ai will take it";
+    it means this breaker has nothing against the lane.
+    """
+    schedule = LANE_SCHEDULES.get(lane)
+    if schedule is None:
+        return []
+    peak = schedule.is_peak(now)
+    parts = [f"window={schedule.window}", f"band={'peak' if peak else 'off-peak'}"]
+    if peak:
+        opens = schedule.opens_at(now)
+        parts.append(f"opens={iso(opens)}")
+        parts.append(f"in={human_delta(opens - now)}")
+    return parts
+
+
 def state_lines(store: Store, now: float, lanes: Iterable[str] = KNOWN_LANES) -> tuple[str, ...]:
     """Render the full picture: the lanes that are fine, their streaks, and absent feeds.
 
@@ -1158,6 +1251,7 @@ def state_lines(store: Store, now: float, lanes: Iterable[str] = KNOWN_LANES) ->
             for rule in store.rules
         )
         parts.extend(_feed_parts(state.reading, now))
+        parts.extend(_window_parts(lane, now))
         lines.append(" ".join(parts))
     return tuple(lines)
 

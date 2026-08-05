@@ -437,6 +437,21 @@ def test_the_estimate_charges_peak_at_full_and_off_peak_at_half() -> None:
     assert at_off.windows[0].used_fraction == pytest.approx(0.5 / five_hour_cap)
 
 
+def test_the_band_lifts_at_its_own_upper_boundary_and_not_a_minute_later() -> None:
+    """What #238's refusal hands a dispatcher back: the published boundary, computed."""
+    # 2026-08-05 is a Wednesday; 15:00 SGT is 07:00 UTC and 18:00 SGT is 10:00 UTC.
+    at_15 = 1785913200.0
+    opens = breaker.zai_off_peak_opens_at(at_15)
+    assert opens == at_15 + 3 * HOUR
+    assert breaker.zai_is_peak(opens - 1) is True
+    assert breaker.zai_is_peak(opens) is False, "half-open: 18:00:00 exactly is off-peak"
+
+
+def test_a_moment_already_off_peak_answers_itself_rather_than_naming_a_wait() -> None:
+    off_peak = 1785913200.0 - 12 * HOUR
+    assert breaker.zai_off_peak_opens_at(off_peak) == off_peak
+
+
 def test_a_weekend_is_never_peak_however_it_falls_in_the_band() -> None:
     saturday_3pm_sgt = 1786172400.0
     assert breaker.zai_is_peak(saturday_3pm_sgt) is False
@@ -710,6 +725,31 @@ def test_the_state_view_names_a_lane_whose_feed_has_never_said_anything(tmp_path
         assert "feed=absent" in line
         assert "degraded=reacting-to-429s" in line
         assert "streak.quality=0/3" in line
+
+
+def test_the_state_view_shows_a_ruled_lanes_window_so_a_refused_dispatcher_sees_why(
+    tmp_path: Path,
+) -> None:
+    """#238: the breaker is the wrong home for the rule, and the right place to read it.
+
+    A dispatcher refused by the off-peak rung reads this print next, so the window it was
+    refused against is stated here. Only lanes with a published schedule carry it.
+    """
+    # 2026-08-05 is a Wednesday; 15:00 SGT is 07:00 UTC and inside z.ai's peak band.
+    peak = 1785913200.0
+    lines = {line.split(" ", 1)[0]: line for line in breaker.state_lines(store(tmp_path), peak)}
+    zai = lines["lane=zai"]
+    assert f"window={breaker.ZAI_PEAK_WINDOW}" in zai
+    assert "band=peak" in zai
+    assert f"opens={breaker.iso(breaker.zai_off_peak_opens_at(peak))}" in zai
+    assert "window=" not in lines["lane=claude-native"], "a lane with no schedule states none"
+
+    off_peak = peak - 12 * HOUR
+    at_off = next(
+        line for line in breaker.state_lines(store(tmp_path), off_peak) if "lane=zai" in line
+    )
+    assert "band=off-peak" in at_off
+    assert "opens=" not in at_off, "nothing to wait for, so nothing to say about waiting"
 
 
 def test_the_state_view_names_the_recipe_that_fixes_an_unknown_plan_tier(tmp_path: Path) -> None:

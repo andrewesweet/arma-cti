@@ -71,6 +71,15 @@ normally — the record the bar judges accrues only as the lane runs, so refusin
 would make the bar unclearable — and `claude-native` is exempt throughout, since nothing is
 leaving Claude there.
 
+**The `zai` lane dispatches only in off-peak hours** (#238). The human ruled that on
+2026-08-05 as a hard rule, so it is a rung here rather than guidance: outside z.ai's
+published peak band the lane dispatches normally, and inside it every dispatch is refused
+with the window, the terms it came from, and when it next opens. There is no override on
+this surface — no flag, no environment variable, no exemption — because the rule is the
+human's and only they amend it. The window itself is not restated here; it is the lane's
+published schedule in `tools/breaker.py`, the same object `plan_charge` prices a dispatch
+with, so what refuses a dispatch and what a dispatch records can never disagree.
+
 **The lane's breaker is read before anything is planned** (#226). That is the one place
 ADR-0061's other two classes reach this file: a lane out of quota refuses with
 `quota_exhausted` and the published reset time, and a lane whose quality trip has fired
@@ -145,14 +154,6 @@ LANE_OWNED: Final = (
     "ENABLE_PROMPT_CACHING_1H",
 )
 
-# z.ai's plan discount, as the schedule that prices a dispatch rather than as a rule that
-# moves one. `is_peak` and the multiplier stay in `tools/breaker.py`, which owns z.ai's
-# published plan constants; copying them here would make one published fact answerable
-# from two files. Only the human-readable statement of the window lives here, because a
-# record that named no window would not survive the schedule changing.
-ZAI_OFF_PEAK: Final = (breaker.zai_is_peak, breaker.ZAI_OFF_PEAK_MULTIPLIER)
-DISCOUNTS: Final = {"zai-off-peak": (ZAI_OFF_PEAK, "Mon-Fri 14:00-18:00 SGT (UTC+8)")}
-
 STOP_NOT_A_RESULT: Final = (
     "Stop. A lane that could not be reached is not a result about the code under test "
     "(CLAUDE.md's failure-class table, infra_unavailable)."
@@ -183,11 +184,12 @@ class Lane(NamedTuple):
     model_slots: tuple[tuple[str, str], ...]
     foreign: bool
     note: str
-    # What this lane's plan counts, where that is not tokens, and which published
-    # discount schedule prices it. Both empty means the pool's own view prices the
-    # dispatch and nothing time-of-day enters it.
-    plan_meter: str = ""
-    discount: str = ""
+    # Whether the human has ruled this lane off-peak-only. This is *policy*, which is why
+    # it lives in the registry beside the lane's wiring and not in `tools/breaker.py`
+    # beside the published schedule: the schedule states when the band is, and this states
+    # that we have chosen to dispatch only inside it. A lane with no ruling dispatches at
+    # any hour and is still priced by its schedule if it has one.
+    off_peak_only: bool = False
 
 
 class Profile(NamedTuple):
@@ -238,8 +240,9 @@ LANES: Final[dict[str, Lane]] = {
             "eight GLMs and only two of them are worth reaching from here, so the sonnet "
             "slot is the opus slot's synonym rather than a third arm nothing distinguishes."
         ),
-        plan_meter="prompts",
-        discount="zai-off-peak",
+        # The human's hard rule, 2026-08-05 (#238): this lane is used only off-peak, as a
+        # dispatch-time refusal rather than as guidance. Only the human amends it.
+        off_peak_only=True,
     ),
 }
 
@@ -281,9 +284,11 @@ SEATS: Final[dict[str, bool]] = {
 def plan_charge(lane: Lane, at: datetime) -> dict[str, object] | None:
     """Record what this dispatch is charged at, in the unit its provider's plan meters.
 
-    z.ai meters *prompt counts*, not tokens, and halves them outside Mon-Fri
-    14:00-18:00 SGT — which is the arbitrage ADR-0061 names and #226's estimator is
-    meant to exploit. Two things a later reader cannot recover are written down here:
+    z.ai meters *prompt counts*, not tokens, and halves them outside its published peak
+    band — the arbitrage ADR-0061 names and #226's estimator is meant to exploit. The
+    band is `tools/breaker.py`'s to state and is not restated here, because the schedule
+    that prices a dispatch and the one that refuses it (#238) must be one object. Two
+    things a later reader cannot recover are written down here:
     which band this dispatch fell in, and what multiplier that band carried. Both are
     functions of `planned_at` *today*, but they are functions of a published schedule
     that can move, and a record carrying only the timestamp would silently re-price its
@@ -297,18 +302,17 @@ def plan_charge(lane: Lane, at: datetime) -> dict[str, object] | None:
     time-of-day term must not carry a block asserting a multiplier of 1.0 — that would
     read as "measured, and it was peak" rather than "the question does not arise".
     """
-    schedule = DISCOUNTS.get(lane.discount)
+    schedule = breaker.LANE_SCHEDULES.get(lane.name)
     if schedule is None:
         return None
-    (is_peak, off_peak_multiplier), window = schedule
-    peak = is_peak(at.timestamp())
+    peak = schedule.is_peak(at.timestamp())
     return {
-        "meter": lane.plan_meter,
+        "meter": schedule.meter,
         "peak": peak,
-        "multiplier": 1.0 if peak else off_peak_multiplier,
-        "schedule": lane.discount,
-        "window": window,
-        "window_source": "tools/breaker.py, from z.ai's published plan terms",
+        "multiplier": 1.0 if peak else schedule.off_peak_multiplier,
+        "schedule": schedule.name,
+        "window": schedule.window,
+        "window_source": schedule.source,
     }
 
 
@@ -610,6 +614,68 @@ def breaker_refusal(lane_name: str, breaker_dir: Path, now: float) -> Refusal | 
     return Refusal("lane_breaker_open", tuple(found), action, failure_class=result.failure_class)
 
 
+def off_peak_refusal(lane: Lane, at: datetime) -> Refusal | None:
+    """Refuse a lane the human has ruled off-peak-only, outside its window (#238).
+
+    The human's ruling of 2026-08-05: the z.ai lane is used only in off-peak times, as a
+    hard rule — a dispatch-time refusal, not guidance. So this is a rung and not a
+    warning, and there is deliberately **no override on this surface**: no flag, no
+    environment variable, no per-dispatch exemption. `plan_dispatch` is handed the clock
+    by `main`, which reads it, and an agent that wants this lane in peak hours has one
+    move, which is to dispatch somewhere else. Amending the rule is the human's.
+
+    The window is not restated here. It comes from the lane's published schedule in
+    `tools/breaker.py` — the same object `plan_charge` prices the dispatch with — so the
+    band this refuses against and the band a dispatch records cannot disagree.
+
+    **No failure class**, and the reasoning is `admission_refusal`'s exactly. CLAUDE.md's
+    table types what a run *found*, and this refusal found nothing: the provider is up,
+    the credential is good, the lane is reachable, and this project chose not to spend on
+    it now. `infra_unavailable` would assert an outage that is not happening,
+    `quota_exhausted` a cap that has not been reached, and `provider_refused` a refusal
+    z.ai never made. A wrong class is a harness bug by that table's own rule, so this
+    carries none — which is also what makes it unmistakable in a verdict: the dispatch
+    did not happen and nothing about any code under test was learned or claimed.
+    """
+    if not lane.off_peak_only:
+        return None
+    schedule = breaker.LANE_SCHEDULES.get(lane.name)
+    if schedule is None:
+        # Fail closed. A lane ruled off-peak-only whose window nobody registered cannot be
+        # checked, and a rule that cannot be checked must not be assumed satisfied.
+        return Refusal(
+            "off_peak_window_unknown",
+            (f"lane={lane.name}", "rule=off-peak-only", "window=unregistered"),
+            (
+                "Harness bug: this lane is ruled off-peak-only and no published schedule "
+                "is registered for it in tools/breaker.py's LANE_SCHEDULES, so the rule "
+                "could not be evaluated. Nothing was dispatched. Fix the registry."
+            ),
+        )
+    now = at.timestamp()
+    if not schedule.is_peak(now):
+        return None
+    opens = schedule.opens_at(now)
+    return Refusal(
+        "lane_peak_hours",
+        (
+            f"lane={lane.name}",
+            "rule=off-peak-only",
+            f"band=peak window={schedule.window}",
+            f"window_source={schedule.source}",
+            f"opens={breaker.iso(opens)}",
+            f"in={breaker.human_delta(opens - now)}",
+        ),
+        (
+            "The human ruled this lane off-peak-only on 2026-08-05 (#238) and the clock "
+            "is inside the peak band above. Nothing was dispatched and nothing is known "
+            "about the code under test. Dispatch on claude-native, or re-arm after the "
+            "time above. There is no override here and asking for one is not the move: "
+            "the rule is the human's and only they amend it."
+        ),
+    )
+
+
 def assert_worktree(assigned: Path, observed: str) -> Refusal | None:
     """Refuse unless the assigned path is its own git top level (#105's fourth instance).
 
@@ -707,32 +773,44 @@ def build_argv(lane: Lane, profile: Profile, permission_mode: str) -> tuple[str,
     )
 
 
+def ladder_refusal(args: argparse.Namespace, now: datetime) -> Refusal | None:
+    """Climb the rungs a dispatch must clear before anything is planned, and stop at the first.
+
+    The order is one idea: **the refusal that lasts longest is the one worth hearing.**
+    The registry's own rungs come first because a typo is not a state of the world at all.
+    Then admission, which reopens only when a human decides it should; then the breaker,
+    which reopens on a published window boundary or on evidence; then the off-peak rule,
+    which reopens on a clock within four hours with nothing for anyone to do meanwhile.
+    Told about the clock first, a dispatcher would come back when the band lifted to meet
+    a trip it was never told about.
+    """
+    refusal = resolve_selection(args.lane, args.profile, args.seat)
+    if refusal is not None:
+        return refusal
+    refusal = admission_refusal(
+        args.lane, args.profile, args.seat, Path(args.admission_dir).expanduser()
+    )
+    if refusal is not None:
+        return refusal
+    refusal = breaker_refusal(args.lane, Path(args.breaker_dir).expanduser(), now.timestamp())
+    if refusal is not None:
+        return refusal
+    return off_peak_refusal(LANES[PROFILES[args.profile].lane], now)
+
+
 def plan_dispatch(
     args: argparse.Namespace,
     root: Path,
     now: datetime,
 ) -> tuple[Plan | None, str, Refusal | None]:
     """Validate the request and mint the plan and the brief, writing nothing."""
-    refusal = resolve_selection(args.lane, args.profile, args.seat)
-    if refusal is not None:
-        return None, "", refusal
-
-    # Admission before the breaker, because the two refusals mean different things about
-    # how long they last: a breaker reopens on a published window boundary or on evidence,
-    # and an exhausted admission record reopens only when a human decides it should.
-    refusal = admission_refusal(
-        args.lane, args.profile, args.seat, Path(args.admission_dir).expanduser()
-    )
-    if refusal is not None:
-        return None, "", refusal
-
-    breaker_dir = Path(args.breaker_dir).expanduser()
-    refusal = breaker_refusal(args.lane, breaker_dir, now.timestamp())
+    refusal = ladder_refusal(args, now)
     if refusal is not None:
         return None, "", refusal
 
     profile = PROFILES[args.profile]
     lane = LANES[profile.lane]
+    breaker_dir = Path(args.breaker_dir).expanduser()
 
     worktree = (
         Path(args.worktree).expanduser()
@@ -919,8 +997,12 @@ def registry_lines() -> tuple[str, ...]:
             lines.append(f"  base_url={lane.base_url}")
         if lane.credential:
             lines.append(f"  credential={lane.credential}")
-        if lane.plan_meter:
-            lines.append(f"  plan_meter={lane.plan_meter} discount={lane.discount or 'none'}")
+        schedule = breaker.LANE_SCHEDULES.get(lane.name)
+        if schedule is not None:
+            lines.append(f"  plan_meter={schedule.meter} discount={schedule.name}")
+            lines.append(f"  window={schedule.window}")
+        if lane.off_peak_only:
+            lines.append("  off_peak_only=true rule=human 2026-08-05 (#238), no override")
         lines.extend(
             f"  profile={profile.name} model={profile.model} effort={profile.effort}"
             for profile in sorted(PROFILES.values())

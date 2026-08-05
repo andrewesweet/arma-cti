@@ -56,6 +56,12 @@ JUSTFILE = REPO / "justfile"
 # this issue added. The vacuity test below builds a high-entropy one at run time instead.
 FAKE_TOKEN = "zai-" + "test-" * 6
 
+# z.ai's published peak band is Mon-Fri 14:00-18:00 SGT (UTC+8). 2026-08-05 is a
+# Wednesday, so 07:00 UTC is 15:00 SGT and inside the band, and 20:00 UTC the same day is
+# 04:00 SGT on Thursday and outside it.
+PEAK = datetime(2026, 8, 5, 7, 0, tzinfo=UTC)
+OFF_PEAK = datetime(2026, 8, 5, 20, 0, tzinfo=UTC)
+
 
 # --------------------------------------------------------------------------- helpers
 
@@ -166,7 +172,14 @@ def await_file(path: Path, seconds: float = 90.0) -> bool:
 
 
 def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
-    """Plan a dispatch over a real worktree without writing a record."""
+    """Plan a dispatch over a real worktree without writing a record.
+
+    `now` defaults to the clock, because the breaker rung reasons about reset times a
+    test writes in real time. A `zai` test that expects to get past #238's off-peak rung
+    passes an explicitly off-peak moment instead — there is no override that would let it
+    do anything else, which is the point of that rung.
+    """
+    now = overrides.pop("now", None) or datetime.now(tz=UTC)
     worktree = overrides.pop("worktree", None) or git_worktree(tmp_path)
     request = {
         "lane": "claude-native",
@@ -184,7 +197,7 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     }
     request.update(overrides)
     args = _namespace(**request)
-    return dispatch.plan_dispatch(args, REPO, datetime.now(tz=UTC))
+    return dispatch.plan_dispatch(args, REPO, now)
 
 
 def _namespace(**fields: object) -> object:
@@ -247,9 +260,18 @@ def test_every_zai_profile_selects_a_model_the_lane_actually_maps() -> None:
 
 
 def test_the_zai_lane_declares_what_its_plan_meters_and_which_schedule_discounts_it() -> None:
-    lane = dispatch.LANES["zai"]
-    assert lane.plan_meter == "prompts"
-    assert lane.discount in dispatch.DISCOUNTS
+    schedule = breaker.LANE_SCHEDULES["zai"]
+    assert schedule.meter == "prompts"
+    assert schedule.name == "zai-off-peak"
+
+
+def test_the_published_window_has_exactly_one_home_and_the_dispatcher_reads_it() -> None:
+    # #238's one-home constraint: the dispatcher restates no part of z.ai's schedule. If
+    # the window moves in `tools/breaker.py`, everything the dispatcher says about it
+    # moves with it — the refusal, the registry print and the priced record alike.
+    body = (REPO / "tools" / "dispatch.py").read_text(encoding="utf-8")
+    for restated in ("14:00", "18:00", "SGT", "UTC+8", "devpack/overview"):
+        assert restated not in body, restated
 
 
 def test_the_native_lane_supplies_no_credential_and_no_base_url() -> None:
@@ -617,7 +639,9 @@ def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path)
 
 def test_the_record_names_the_credential_key_and_never_its_value(tmp_path: Path) -> None:
     credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
-    plan, brief, refusal = plan_for(tmp_path, lane="zai", profile="zai-glm52-max", seat="review")
+    plan, brief, refusal = plan_for(
+        tmp_path, lane="zai", profile="zai-glm52-max", seat="review", now=OFF_PEAK
+    )
     assert refusal is None
     assert plan is not None
     dispatch.write_record(plan, brief)
@@ -634,7 +658,9 @@ def test_a_zai_record_carries_the_plan_charge_block_the_estimator_will_read(
     tmp_path: Path,
 ) -> None:
     credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
-    plan, brief, refusal = plan_for(tmp_path, lane="zai", profile="zai-glm52-max", seat="review")
+    plan, brief, refusal = plan_for(
+        tmp_path, lane="zai", profile="zai-glm52-max", seat="review", now=OFF_PEAK
+    )
     assert refusal is None
     assert plan is not None
     dispatch.write_record(plan, brief)
@@ -642,9 +668,11 @@ def test_a_zai_record_carries_the_plan_charge_block_the_estimator_will_read(
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
     charge = document["plan_charge"]
     assert charge["meter"] == "prompts"
-    assert charge["multiplier"] in (0.5, 1.0)
-    assert charge["multiplier"] == (1.0 if charge["peak"] else 0.5)
+    assert (charge["peak"], charge["multiplier"]) == (False, 0.5)
     assert charge["schedule"] == "zai-off-peak"
+    # The record cites the published terms rather than the module that copied them: a
+    # file path stops answering "priced against what?" the moment the file moves.
+    assert charge["window_source"] == "https://docs.z.ai/devpack/overview"
 
 
 def test_a_native_record_carries_no_plan_charge_block(tmp_path: Path) -> None:
@@ -681,6 +709,199 @@ def test_the_registry_listing_names_both_lanes_and_the_barred_seats(
     assert "lane=zai" in printed
     assert "profile=zai-glm52-max" in printed
     assert "seats_claude_native_only=fable orchestrator" in printed
+    assert "off_peak_only=true" in printed
+
+
+# ------------------------------------------------ the off-peak rule, both ways (#238)
+#
+# The human's hard rule of 2026-08-05: the z.ai lane dispatches only in off-peak hours.
+# Both directions are asserted, and so is the boundary, because a rule stated only in the
+# direction that refuses is a rule nobody has shown ever lets anything through.
+
+
+def zai_at(tmp_path: Path, now: datetime) -> tuple[Any, Any]:
+    """Plan a z.ai dispatch at a chosen moment, with everything else in order."""
+    credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
+    plan, _, refusal = plan_for(
+        tmp_path, lane="zai", profile="zai-glm52-max", seat="review", now=now
+    )
+    return plan, refusal
+
+
+def test_a_zai_dispatch_inside_the_off_peak_window_is_planned_normally(tmp_path: Path) -> None:
+    plan, refusal = zai_at(tmp_path, OFF_PEAK)
+    assert refusal is None
+    assert plan is not None
+
+
+def test_a_zai_dispatch_in_peak_hours_is_refused_at_the_recipe(tmp_path: Path) -> None:
+    plan, refusal = zai_at(tmp_path, PEAK)
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "lane_peak_hours"
+    found = " ".join(refusal.found)
+    assert "lane=zai" in found
+    assert "rule=off-peak-only" in found
+    assert "band=peak" in found
+    # The refusal names the window, where the window came from, and when it lifts, so a
+    # refused dispatcher needs to read nothing else to know what to do.
+    assert breaker.ZAI_PEAK_WINDOW in found
+    assert f"window_source={breaker.ZAI_TERMS_URL}" in found
+    assert f"opens={breaker.iso(breaker.zai_off_peak_opens_at(PEAK.timestamp()))}" in found
+    assert "in=3h" in found, "15:00 SGT is three hours short of the band's end"
+
+
+def test_the_peak_refusal_carries_no_failure_class(tmp_path: Path) -> None:
+    # CLAUDE.md's table types what a run found, and this one found nothing: the provider
+    # is up, the credential is good, and this project chose not to spend on the lane now.
+    # `infra_unavailable` would assert an outage that is not happening, and a wrong class
+    # is a harness bug by that table's own rule. `admission_escalated` carries none for
+    # the same reason.
+    _, refusal = zai_at(tmp_path, PEAK)
+    assert refusal is not None
+    assert refusal.failure_class == ""
+    assert "class=" not in " ".join(refusal.lines())
+
+
+@pytest.mark.parametrize(
+    ("hour", "minute", "second", "refused"),
+    [
+        (13, 59, 59, False),  # one second before the band opens
+        (14, 0, 0, True),  # the band is closed at its lower bound
+        (17, 59, 59, True),  # and stays closed to the last second
+        (18, 0, 0, False),  # and reopens exactly on its upper bound
+    ],
+)
+def test_the_band_is_half_open_at_both_of_its_boundaries(
+    tmp_path: Path, hour: int, minute: int, second: int, *, refused: bool
+) -> None:
+    """The reading taken on #238, stated rather than guessed: peak is [14:00, 18:00) SGT.
+
+    z.ai publishes "14:00-18:00" and says nothing about its endpoints. A closed upper
+    bound would put one second of every weekday in both bands, which is the only reading
+    that cannot be implemented, so the band is half-open — and that choice is flagged on
+    #221 rather than left to be rediscovered from this test.
+    """
+    # SGT is UTC+8 with no daylight saving, so the UTC hour is the SGT hour less eight.
+    at = datetime(2026, 8, 5, hour - 8, minute, second, tzinfo=UTC)
+    _, refusal = zai_at(tmp_path, at)
+    assert (refusal is not None) is refused
+
+
+def test_a_weekend_dispatches_at_any_hour_the_band_would_otherwise_cover(
+    tmp_path: Path,
+) -> None:
+    # 2026-08-08 is a Saturday. The band is Mon-Fri, so its hours mean nothing here.
+    plan, refusal = zai_at(tmp_path, datetime(2026, 8, 8, 7, 0, tzinfo=UTC))
+    assert refusal is None
+    assert plan is not None
+
+
+def test_the_rule_binds_the_lane_and_never_the_hour(tmp_path: Path) -> None:
+    # `claude-native` carries no ruling, so peak hours are nothing to it.
+    plan, _, refusal = plan_for(tmp_path, now=PEAK)
+    assert refusal is None
+    assert plan is not None
+
+
+def test_every_profile_on_a_ruled_lane_is_refused_and_not_merely_the_named_one(
+    tmp_path: Path,
+) -> None:
+    # The ruling is the human's on the lane; a second profile is not a second opinion.
+    credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
+    worktree = git_worktree(tmp_path)
+    for profile in ("zai-glm52-max", "zai-glm47-max"):
+        _, _, refusal = plan_for(
+            tmp_path,
+            lane="zai",
+            profile=profile,
+            seat="review",
+            worktree=str(worktree),
+            now=PEAK,
+        )
+        assert refusal is not None, profile
+        assert refusal.kind == "lane_peak_hours", profile
+
+
+def test_the_window_is_read_before_the_worktree_and_the_credentials_are(tmp_path: Path) -> None:
+    """A refused lane is the answer even when everything after it is also wrong."""
+    _, _, refusal = plan_for(
+        tmp_path,
+        lane="zai",
+        profile="zai-glm52-max",
+        seat="review",
+        worktree=str(tmp_path / "no-such-tree"),
+        credentials=str(tmp_path / "absent.env"),
+        now=PEAK,
+    )
+    assert refusal is not None
+    assert refusal.kind == "lane_peak_hours"
+
+
+def test_a_tripped_breaker_outranks_the_window_because_it_lasts_longer(tmp_path: Path) -> None:
+    """The ladder's stated ordering: the refusal that lasts longest is heard first.
+
+    A quality trip reopens only when a human runs the reset; peak hours reopen on a clock
+    within four hours and need nobody. Telling a dispatcher about the clock would send it
+    back at 18:00 SGT to meet the trip it was never told about.
+    """
+    trip(tmp_path, "zai", breaker.GATE_FAILED, 3)
+    _, refusal = zai_at(tmp_path, PEAK)
+    assert refusal is not None
+    assert refusal.kind == "lane_breaker_open"
+
+
+def test_a_lane_ruled_off_peak_only_with_no_registered_window_fails_closed() -> None:
+    # A rule that cannot be evaluated must not be assumed satisfied. `nowhere` is in no
+    # schedule table, so the only safe answer is to refuse and name the registry bug.
+    orphan = dispatch.LANES["zai"]._replace(name="nowhere")
+    refusal = dispatch.off_peak_refusal(orphan, OFF_PEAK)
+    assert refusal is not None
+    assert refusal.kind == "off_peak_window_unknown"
+    assert "tools/breaker.py" in refusal.action
+
+
+def test_no_option_on_this_surface_moves_the_clock_or_waives_the_rule() -> None:
+    """#238's no-override requirement, asserted where an override would have to appear.
+
+    The rule is the human's, so the dispatcher exposes nothing that could set it aside.
+    `--breaker-dir` and `--admission-dir` exist because a forked seam test needs its own
+    state; a clock does not have that problem, and a flag that moved it would be the
+    override this issue forbids under a duller name.
+    """
+    for flag in ("--now", "--at", "--peak", "--off-peak", "--force", "--override", "--any-hour"):
+        with pytest.raises(SystemExit):
+            dispatch.parse_args([flag, "1"])
+
+
+def test_the_clock_the_rule_is_judged_against_is_the_real_one(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """And the caller cannot supply it: `main` reads the clock and passes what it read."""
+    seen: list[datetime] = []
+
+    def capture(_args: object, _root: Path, now: datetime) -> tuple[None, str, Any]:
+        seen.append(now)
+        return None, "", dispatch.Refusal("stop", (), "")
+
+    monkeypatch.setattr(dispatch, "plan_dispatch", capture)
+    dispatch.main(
+        [
+            "--lane",
+            "zai",
+            "--profile",
+            "zai-glm52-max",
+            "--seat",
+            "review",
+            "--issue",
+            "238",
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+        ]
+    )
+    assert len(seen) == 1
+    assert seen[0].tzinfo is not None, "a naive clock would read the band in the box's timezone"
+    assert abs((seen[0] - datetime.now(tz=UTC)).total_seconds()) < 5
 
 
 # ------------------------------------------------------- the detached child, in python
@@ -716,6 +937,7 @@ def test_the_zai_lane_refuses_at_the_recipe_while_its_key_does_not_exist(
         profile="zai-glm52-max",
         seat="review",
         credentials=str(tmp_path / "absent.env"),
+        now=OFF_PEAK,
     )
     assert plan is None
     assert refusal is not None
@@ -726,7 +948,9 @@ def test_the_zai_lane_refuses_at_the_recipe_while_its_key_does_not_exist(
 def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: Path) -> None:
     """Defence in depth: the file can go between the plan and the launch."""
     credentials = credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
-    plan, brief, _ = plan_for(tmp_path, lane="zai", profile="zai-glm52-max", seat="review")
+    plan, brief, _ = plan_for(
+        tmp_path, lane="zai", profile="zai-glm52-max", seat="review", now=OFF_PEAK
+    )
     assert plan is not None
     dispatch.write_record(plan, brief)
     credentials.unlink()
@@ -814,10 +1038,22 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
         "--credentials",
         str(credentials),
     ]
+    before_band = breaker.zai_is_peak(time.time())
     foreign = run_seam(
         ["--lane", "zai", "--profile", "zai-glm52-max", *common],
         parent,
     )
+    if before_band != breaker.zai_is_peak(time.time()):
+        pytest.skip("the run straddled z.ai's band boundary; neither outcome is the claim")
+    if before_band:
+        # #238's rule is running and there is deliberately no clock override that would
+        # let a test dispatch through it, so the claim available in this band is the rule
+        # itself, asserted through the same real seam.
+        assert foreign.returncode == dispatch.EXIT_REFUSED
+        assert "refusal=lane_peak_hours" in foreign.stderr
+        assert not (tmp_path / "zai-ran.txt").exists(), "and the runner was never reached"
+        assert parent == before
+        return
     assert foreign.returncode == 0, foreign.stderr
     foreign_record = Path(read_lines(foreign.stdout)["record"])
     assert await_file(foreign_record / "result.json")
@@ -849,6 +1085,7 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
 def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
     worktree = git_worktree(tmp_path)
     capture = tmp_path / "must-not-run.txt"
+    before_band = breaker.zai_is_peak(time.time())
     done = run_seam(
         [
             "--dry-run",
@@ -869,12 +1106,23 @@ def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
         ],
         seam_env(tmp_path, capture),
     )
-    assert done.returncode == 0, done.stderr
+    if before_band != breaker.zai_is_peak(time.time()):
+        pytest.skip("the run straddled z.ai's band boundary; neither outcome is the claim")
+
+    # True in either band: nothing forked, nothing written, and no token in the output.
     assert "pid=" not in done.stdout
     assert not capture.exists()
     assert not (tmp_path / "dispatches").exists()
+    assert FAKE_TOKEN not in done.stdout + done.stderr
+
+    if before_band:
+        # A dry run is refused too. #238's rule takes no exemption for a rehearsal, and
+        # a printed plan for a dispatch that would be refused is a plan that misleads.
+        assert done.returncode == dispatch.EXIT_REFUSED
+        assert "refusal=lane_peak_hours" in done.stderr
+        return
+    assert done.returncode == 0, done.stderr
     assert "env_child.ANTHROPIC_AUTH_TOKEN=<redacted>" in done.stdout
-    assert FAKE_TOKEN not in done.stdout
     assert "env_stripped.ANTHROPIC_BASE_URL" not in done.stdout  # this lane sets its own
 
 

@@ -147,7 +147,7 @@ recomputing it (`tools/dispatch.py`'s `plan_charge`, written into every `dispatc
       "multiplier": 0.5,
       "schedule": "zai-off-peak",
       "window": "Mon-Fri 14:00-18:00 SGT (UTC+8)",
-      "window_source": "tools/breaker.py, from z.ai's published plan terms"
+      "window_source": "https://docs.z.ai/devpack/overview"
     }
 
 The band and the multiplier are both functions of `planned_at` today, and both are
@@ -157,6 +157,14 @@ time the schedule changed — the same reasoning that puts `calibration_id` on a
 
 No scheduler is built. Nothing delays, queues or reorders a dispatch to land off-peak;
 that is #226's, and #225 only makes the fact recordable.
+
+**Superseded in one direction by #238.** The human ruled on 2026-08-05 that this lane is
+used only in off-peak hours, as a hard dispatch-time refusal. That is still not a
+scheduler — nothing waits or queues — but the band is no longer only a price. The window
+above was re-read against the primary source on 2026-08-05 and matches it exactly; the
+one reading the source does not settle, that the band is half-open at both boundaries, is
+recorded beside the constants in `tools/breaker.py` and flagged on #221. `window_source`
+now cites those published terms rather than the module that copied them.
 
 **Still missing for an estimator, and #226 owns it**: the numerator. The caps are
 denominated in prompts and the ledger records dispatches, one of which is many prompts.
