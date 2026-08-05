@@ -385,6 +385,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A git conflict marker can no longer reach a tracked file, after one ate 1,669 lines of this
+  changelog.** A stray common-ancestor line landed in 2b4f99b, and the next landing resolved its
+  own rebase against the corrupted file and cut every release before this cycle; a885306 restored
+  it. A marker in the base is not untidiness — git's merge machinery reads the region as
+  structure, so the agent who springs the trap is never the agent who set it, and nothing in the
+  tier could see it because a marker is ordinary text to every lint the project runs. `just check`
+  now reds on any of the four marker forms in a tracked file, and `just land` carries the same
+  finding as a named `conflict_markers` refusal judged on the rebased tree — so it also refuses a
+  marker inherited from `origin/main`, which is the half that did the damage. The diff3
+  common-ancestor line is covered explicitly, being the form that slipped and the shape every
+  conflict on this box has. The separator is judged only in marker position, because six vendored
+  wiki pages carry a bare run of `=` today and an unconditional rule would red the tree the gate
+  protects. `merge=union` for the changelog was weighed and declined on a measurement rather than
+  a hunch: it resolves concurrent landings silently but files entries under the wrong heading and
+  duplicates the heading, trading a loud failure that is now caught for a silent one that is not.
+  ADR-0062, #231.
+
 - **A sibling agent's client no longer throws away a corpus that was already running.** The pool
   asks the play-session guard twice — once at the door, where it recognises another run's client
   and queues behind it, and once per probe on the bring-up, where it did not. The second one had
