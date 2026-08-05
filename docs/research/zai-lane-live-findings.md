@@ -165,6 +165,39 @@ far better proxy than one-dispatch-one-prompt, but "one billed prompt = one API 
 is an assumption z.ai's meter cannot be asked to confirm, so no estimator is asserted
 here on the strength of it.
 
+## 5. The lane, end to end, once
+
+Everything above is `curl` against the endpoint. The lane is the `claude` binary pointed
+at that endpoint, and that is a different claim, so it was made once:
+`just dispatch --lane zai --profile zai-glm52-max --seat recon --issue 225`, dispatch
+`d-20260805-191540-8c663f`, exit 0 in 9.8 s.
+
+The task was deliberately inert — reply with one line, touch nothing — and the worktree
+was a throwaway git repository outside this checkout, because **#224's admission bar is
+not signed and no z.ai-produced work may land here**. What the run proves is the lane's
+plumbing, and nothing about what the model is fit for.
+
+| Claim | Evidence |
+|---|---|
+| Auth reaches z.ai with our key, not Anthropic's login | exit 0, and the runner's own warning that "another auth source is set and takes precedence over your claude.ai login" |
+| The model slots resolve | the profile asks for `--model opus`; every one of the seven telemetry records carrying a model attribute says `glm-5.2` |
+| Identity survives to the collector | all six `cti.*` resource attributes on the export, `cti.lane=zai` among them |
+| A ledger row prices it against the right pool | `pool: "zai"`, `class: "ok"`, 32 records read from a non-degraded export |
+| Hook machinery runs on this lane | 3 `hook_registered`, 2 `hook_execution_start`/`complete` pairs |
+
+Two of those rows want their limits stated. The hook records are the *host's* global
+hooks, not this repository's `.claude/hooks/`, which the run never entered — so the lane
+demonstrably executes hooks, and #225's criterion that *our* hooks fire is still open and
+stays open until #224 lets a dispatch run inside the checkout. And the ledger row reports
+`cache_creation_tokens: 0` beside `cache_read_tokens: 20,928` on `input_tokens: 18,895`,
+which is §1's silence and §3's automatic caching showing up together in the first real
+row: more tokens were read from cache than were sent, and the provider reported no write.
+
+One number is worth carrying to #226: this dispatch produced exactly **one**
+`api_request` record. If a billed prompt is an API request, then the numerator that
+`tools/ledger.py` says it lacks is already on the bus, keyed by `cti.dispatch_id` — and
+one dispatch was one prompt here only because the task was one turn.
+
 ## What a reader should not take from this
 
 - Not that the models above are the ones the *plan* covers. The key reaches eight; which
