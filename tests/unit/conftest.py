@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from cti_daemon import campaign, economy, manifest
+from cti_daemon import campaign, economy, loadouts, manifest
 from cti_daemon.outbox import Outbox
 
 if TYPE_CHECKING:
@@ -35,6 +35,9 @@ ECONOMY = REPO / "config" / "economy.json"
 # The authored manifests live inside the addon, because the addon ships and
 # reads them verbatim (ADR-0017). There is no second copy to point at.
 MANIFESTS = REPO / "addons" / "main" / "manifests"
+# The curated loadout menu, inside the addon for the manifests' own reason: the
+# addon ships and reads this same file (ADR-0017, ADR-0056).
+LOADOUTS = REPO / "addons" / "main" / "catalogue" / "loadouts.json"
 HOOKS = REPO / ".claude" / "hooks"
 
 
@@ -104,6 +107,11 @@ def authored_stratis() -> manifest.MapManifest:
     return manifest.load(MANIFESTS / "stratis.json")
 
 
+def authored_loadouts() -> loadouts.Catalogue:
+    """Return the curated loadout menu this repository ships."""
+    return loadouts.load(LOADOUTS)
+
+
 def live() -> campaign.Campaign:
     """Return a Campaign on the authored Stratis map, everything Neutral."""
     table = authored_economy()
@@ -112,6 +120,10 @@ def live() -> campaign.Campaign:
         table=table,
         ledger=economy.Ledger(table.starting_funds),
         outbox=Outbox(),
+        # The authored menu, for the authored table's reason: this is the
+        # Campaign the daemon builds, and one wired without a menu would offer
+        # no kit at all (#172).
+        catalogue=authored_loadouts(),
     )
 
 

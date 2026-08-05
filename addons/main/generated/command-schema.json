@@ -23,7 +23,8 @@
       "squads",
       "contacts",
       "hq",
-      "casualties"
+      "casualties",
+      "loadouts"
     ],
     "squad": [
       "size",

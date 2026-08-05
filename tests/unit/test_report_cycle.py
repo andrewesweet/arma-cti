@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
+from conftest import rows
 
 from cti_daemon.report import HqSeen, Report, SideContacts
 from cti_daemon.report_cycle import ReportCycle, UnknownPlaceError
@@ -76,6 +77,7 @@ def _report(**named: Any) -> Report:  # noqa: ANN401 — a report is a document
         contacts=named.get("contacts"),
         hq=named.get("hq"),
         casualties=named.get("casualties"),
+        loadouts=named.get("loadouts"),
     )
 
 
@@ -120,3 +122,54 @@ def test_a_side_is_played_by_one_commander_at_a_time(tmp_path: Path) -> None:
     assert not cycle.commanded("WEST")
     with pytest.raises(ValueError, match="no side named"):
         cycle.commanded_by("SOUTH", cast("Any", object()))
+
+
+def test_a_kit_the_world_reports_is_recorded_against_the_players_uid(tmp_path: Path) -> None:
+    # The world does the choosing — a menu at his own Base, a body dressed
+    # server-side — and the daemon does the remembering, because the snapshot is
+    # what has to carry it (#172, ADR-0056, ADR-0008).
+    cycle, recording = _cycle(tmp_path)
+    cycle.fold(_report(loadouts={"uid-1": "medic"}))
+
+    assert recording.campaign.dressed() == {"uid-1": "medic"}
+
+
+def test_a_kit_is_written_down_when_it_changes_and_not_on_every_report(
+    tmp_path: Path,
+) -> None:
+    # Reports arrive every few seconds and mostly say the same thing; a row per
+    # report would bury the moment somebody actually changed kit.
+    log = tmp_path / "telemetry.jsonl"
+    cycle, _ = _cycle(tmp_path)
+    cycle.fold(_report(loadouts={"uid-1": "medic"}))
+    cycle.fold(_report(loadouts={"uid-1": "medic"}))
+    cycle.fold(_report(loadouts={"uid-1": "marksman"}))
+
+    assert [row["kit"] for row in rows(log, "loadout_chosen")] == ["medic", "marksman"]
+
+
+def test_a_kit_this_daemons_menu_does_not_offer_is_reported_and_recorded_nowhere(
+    tmp_path: Path,
+) -> None:
+    # A shipped PBO that has drifted from the checkout the daemon runs out of.
+    # Written down as a mismatch rather than refusing the report: stopping a
+    # Campaign over one player's kit would be the larger failure.
+    log = tmp_path / "telemetry.jsonl"
+    cycle, recording = _cycle(tmp_path)
+    cycle.fold(_report(loadouts={"uid-1": "jetpack"}))
+
+    assert recording.campaign.dressed() == {}
+    assert [row["kit"] for row in rows(log, "loadout_unknown")] == ["jetpack"]
+    assert rows(log, "loadout_chosen") == []
+
+
+def test_a_report_that_says_nothing_about_loadouts_leaves_the_record_alone(
+    tmp_path: Path,
+) -> None:
+    log = tmp_path / "telemetry.jsonl"
+    cycle, recording = _cycle(tmp_path)
+    cycle.fold(_report(loadouts={"uid-1": "medic"}))
+    cycle.fold(_report())
+
+    assert recording.campaign.dressed() == {"uid-1": "medic"}
+    assert len(rows(log, "loadout_chosen")) == 1

@@ -65,6 +65,10 @@ class ReportCycle:
         # unchanged one is not written again. Comparison only, never campaign
         # state — and never a place a side's view is read from.
         self._last_observation: dict[str, dict[str, Any]] = {}
+        # The last kit each player was reported wearing, so an unchanged one is
+        # not written down again (#172). Comparison only, like the observation
+        # above: the Campaign holds the record, this holds "said so once".
+        self._dressed: dict[str, str] = {}
         # Which sides are under an AI Commander, and the brain playing each
         # (#16, #17). Empty by default: a side belongs to a human until somebody
         # says otherwise, and a Campaign nobody has put under command must not
@@ -124,6 +128,7 @@ class ReportCycle:
         self._sight(told.contacts, told.at_time)
         self._decapitation(told.hq, told.at_time)
         self._casualties(told.casualties)
+        self._dress(told.loadouts)
         for payout in self.campaign.observe(told.at_time, told.presence):
             self._telemetry.record("income", at=told.at_time, paid=payout)
         for squad_id in lost:
@@ -208,6 +213,40 @@ class ReportCycle:
             self._telemetry.record("casualty", **death)
         if reported.dropped > 0:
             self._telemetry.record("casualties_dropped", count=reported.dropped)
+
+    def _dress(self, chosen: dict[str, str] | None, /) -> None:
+        """Take the world's account of which kit each player has chosen (#172).
+
+        The world owns the choosing — a menu at his own Base, a body dressed
+        server-side — and the daemon owns the record, because that record is
+        what the snapshot persists (ADR-0056, ADR-0008). Nothing goes back: the
+        world already has the man in the kit.
+
+        Absent entirely, the report said nothing about loadouts and the record
+        is left alone, which is the same distinction `squads` turns on.
+
+        Written down once per change rather than once per report, for
+        `_record_observation`'s reason: reports arrive every few seconds and say
+        the same thing, and a row per report would bury the moment somebody
+        actually changed kit. `_dressed` is a comparison only, never state a
+        Campaign is read from.
+
+        A kit this daemon's catalogue does not offer is written down as a
+        mismatch and recorded nowhere, rather than refusing the report: the
+        world and the daemon read one authored file, so this is a shipped PBO
+        that has drifted from the checkout, and stopping a Campaign over one
+        player's kit would be a larger failure than the one being reported.
+        """
+        if chosen is None:
+            return
+        for uid, kit in chosen.items():
+            if self._dressed.get(uid) == kit:
+                continue
+            self._dressed[uid] = kit
+            if self.campaign.dress(uid, kit):
+                self._telemetry.record("loadout_chosen", uid=uid, kit=kit)
+            else:
+                self._telemetry.record("loadout_unknown", uid=uid, kit=kit)
 
     def _record_observation(self, side: str) -> None:
         """Write one side's strategic picture out when it has actually changed.

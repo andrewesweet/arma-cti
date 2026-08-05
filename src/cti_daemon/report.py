@@ -183,6 +183,16 @@ SHAPES: Final[dict[str, Shape]] = {
                 "hq", OBJECT, "a map of Base ids to what the world sees of their HQ", absent=None
             ),
             Field("casualties", OBJECT, "the deaths since the last report", absent=None),
+            # Which kit each player has chosen, by player UID (#172, ADR-0056).
+            # It rides the report rather than the Command Port because it is
+            # not a Command: it is free, it moves no Funds and the rules judge
+            # nothing — it is a fact about the world the daemon writes down so
+            # the snapshot can carry it. Absent means the report said nothing,
+            # which leaves the record alone; present but empty means nobody has
+            # chosen anything, which is a real answer.
+            Field(
+                "loadouts", OBJECT, "a map of player UIDs to the kit each has chosen", absent=None
+            ),
         ),
     ),
     "squad": Shape(
@@ -279,6 +289,7 @@ class Report:
     contacts: dict[str, SideContacts] | None
     hq: dict[str, HqSeen] | None
     casualties: Casualties | None
+    loadouts: dict[str, str] | None
 
 
 class MalformedReportError(Exception):
@@ -413,6 +424,21 @@ def _casualties(reported: object) -> Casualties | None:
     )
 
 
+def _loadouts(reported: object) -> dict[str, str] | None:
+    """Read which kit each player says he has chosen (#172).
+
+    Ids only, checked as strings and no further: whether the menu offers a kit
+    by that name is a judgement against the authored catalogue, which is the
+    Campaign's to make (`report_cycle`), not the document's.
+    """
+    if reported is None:
+        return None
+    return {
+        uid: _checked(STRING, "a kit id", kit, f"loadouts.{uid}")
+        for uid, kit in cast("dict[str, Any]", reported).items()
+    }
+
+
 def parse(payload: dict[str, Any]) -> Report:
     """Read one observe report off the wire, or refuse it whole.
 
@@ -428,6 +454,7 @@ def parse(payload: dict[str, Any]) -> Report:
         contacts=_contacts(told["contacts"]),
         hq=_hq(told["hq"]),
         casualties=_casualties(told["casualties"]),
+        loadouts=_loadouts(told["loadouts"]),
     )
 
 

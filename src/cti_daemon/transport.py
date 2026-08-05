@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from cti_daemon import campaign as campaign_module
-from cti_daemon import commands, economy, manifest, planner, report_cycle
+from cti_daemon import commands, economy, loadouts, manifest, planner, report_cycle
 from cti_daemon.daemon import Daemon, Wiring
 from cti_daemon.outbox import Outbox
 from cti_daemon.port import CommandPort
@@ -48,6 +48,11 @@ DEFAULT_TELEMETRY: Final = Path(".cti-play/daemon-telemetry.jsonl")
 REPO: Final = Path(__file__).parents[2]
 DEFAULT_ECONOMY: Final = REPO / "config" / "economy.json"
 DEFAULT_MANIFESTS: Final = REPO / "addons" / "main" / "manifests"
+# The curated loadout menu (#172, ADR-0056). Under `addons/` rather than beside
+# the economy table because the addon ships and parses this same file (ADR-0017):
+# the world applies a kit and the daemon records which one, and two copies would
+# be two menus.
+DEFAULT_LOADOUTS: Final = REPO / "addons" / "main" / "catalogue" / "loadouts.json"
 DEFAULT_MAP: Final = "stratis"
 
 
@@ -110,7 +115,8 @@ class _Server(socketserver.ThreadingTCPServer):
     daemon_threads = True
 
 
-def wire(
+def wire(  # noqa: PLR0913 — see the comment below: every argument is one
+    # authored input, and a config object would be one indirection more.
     # Every argument is one authored input this wiring is built from, all
     # keyword-only: folding them into a config object would be one more
     # indirection between a caller and what it varies.
@@ -118,6 +124,7 @@ def wire(
     telemetry_path: Path,
     economy_path: Path | None = None,
     manifests_path: Path | None = None,
+    loadouts_path: Path | None = None,
     map_id: str = DEFAULT_MAP,
     archive_path: Path | None = None,
 ) -> Wiring:
@@ -137,6 +144,7 @@ def wire(
     """
     table = economy.load(economy_path or DEFAULT_ECONOMY)
     map_manifest = manifest.load_all(manifests_path or DEFAULT_MANIFESTS)[map_id]
+    catalogue = loadouts.load(loadouts_path or DEFAULT_LOADOUTS)
     telemetry = Telemetry(telemetry_path)
     # One campaign object holds ownership, Funds and Squads, and the port judges
     # against it: two of anything here would be two answers to how much a side
@@ -147,6 +155,7 @@ def wire(
         table=table,
         ledger=economy.Ledger(table.starting_funds),
         outbox=Outbox(),
+        catalogue=catalogue,
     )
     port = CommandPort(campaign=campaign)
     return Wiring(
@@ -176,6 +185,7 @@ def build_daemon(  # noqa: PLR0913 — see `wire`, whose arguments these are.
     telemetry_path: Path,
     economy_path: Path | None = None,
     manifests_path: Path | None = None,
+    loadouts_path: Path | None = None,
     map_id: str = DEFAULT_MAP,
     archive_path: Path | None = None,
     epoch: str | None = None,
@@ -191,6 +201,7 @@ def build_daemon(  # noqa: PLR0913 — see `wire`, whose arguments these are.
             telemetry_path=telemetry_path,
             economy_path=economy_path,
             manifests_path=manifests_path,
+            loadouts_path=loadouts_path,
             map_id=map_id,
             archive_path=archive_path,
         ),
@@ -198,12 +209,13 @@ def build_daemon(  # noqa: PLR0913 — see `wire`, whose arguments these are.
     )
 
 
-def build(
+def build(  # noqa: PLR0913 — `wire`'s arguments plus who is under AI command.
     telemetry_path: Path,
     ai: Iterable[tuple[str, int]] | None,
     *,
     economy_path: Path | None = None,
     manifests_path: Path | None = None,
+    loadouts_path: Path | None = None,
     map_id: str = DEFAULT_MAP,
 ) -> Daemon:
     """Build the daemon this process will serve, under command or not (#16, #17).
@@ -221,6 +233,7 @@ def build(
         telemetry_path=telemetry_path,
         economy_path=economy_path,
         manifests_path=manifests_path,
+        loadouts_path=loadouts_path,
         map_id=map_id,
     )
     for side, seed in ai or ():
@@ -279,6 +292,7 @@ def serve(  # noqa: PLR0913 — Main's knobs, one parameter apiece: where to lis
     ai: Iterable[tuple[str, int]] | None = None,
     economy_path: Path | None = None,
     manifests_path: Path | None = None,
+    loadouts_path: Path | None = None,
     map_id: str = DEFAULT_MAP,
 ) -> None:
     """Serve until interrupted. Calls `on_ready` with the bound port and epoch."""
@@ -288,6 +302,7 @@ def serve(  # noqa: PLR0913 — Main's knobs, one parameter apiece: where to lis
         ai,
         economy_path=economy_path,
         manifests_path=manifests_path,
+        loadouts_path=loadouts_path,
         map_id=map_id,
     )
     with _Server((host, port), _handler_for(daemon)) as server:
@@ -395,6 +410,7 @@ def main(argv: list[str] | None = None) -> int:
     # where the authored files live: `build_daemon`'s.
     parser.add_argument("--economy", type=Path, default=None, metavar="PATH")
     parser.add_argument("--manifests", type=Path, default=None, metavar="DIR")
+    parser.add_argument("--loadouts", type=Path, default=None, metavar="PATH")
     parser.add_argument("--map", dest="map_id", default=DEFAULT_MAP, metavar="MAP_ID")
     args = parser.parse_args(argv)
     # Before the telemetry directory is made, so a run that will not start
@@ -420,6 +436,7 @@ def main(argv: list[str] | None = None) -> int:
             ai=args.ai,
             economy_path=args.economy,
             manifests_path=args.manifests,
+            loadouts_path=args.loadouts,
             map_id=args.map_id,
         )
     except KeyboardInterrupt:

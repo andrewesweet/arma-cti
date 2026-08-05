@@ -82,7 +82,13 @@ if (isNil "cti_fnc_worldInit") then {
         // because the sweep's whole subject is those structures.
         [] call cti_fnc_baseAssault;
 
-        // Something watches the six loops above (#102). Started last, because a
+        // The curated loadout menu, the Base-only rule that grants a pick off
+        // it, and the kit a player keeps through a respawn (#172, ADR-0056).
+        // Started after the world is built, because "at his own Base" is a
+        // reading of the manifest cti_fnc_worldInit indexes.
+        [] call cti_fnc_loadoutWatch;
+
+        // Something watches the seven loops above (#102). Started last, because a
         // watchdog registered before the loops it watches would sweep a register
         // that is still filling; started at all, because a scripting error in
         // any one of them kills that loop alone and used to do it in silence.

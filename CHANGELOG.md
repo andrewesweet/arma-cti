@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Players choose a kit at their own Base, and keep it.** Under the human's ruling on #172
+  (2026-08-04, recorded in ADR-0056), a player standing in his own side's Base is offered a curated
+  menu of six kits — rifleman, grenadier, autorifleman, anti-tank, marksman, medic — and may take
+  any of them whatever his squad type. It is free, it is players only (AI units keep their default
+  loadouts), and it is refused anywhere but at Base. The kit survives death: a respawned player is
+  dressed again in what he chose, as is one who joins in progress. The menu is one authored
+  document, `addons/main/catalogue/loadouts.json`, read by the world that applies a kit and by the
+  daemon that records which one — and what the daemon records is the *choice*, not the engine's
+  loadout array, so a session save carries one word per player rather than a photograph of his
+  magazines. #172, ADR-0056.
+
 - **A `validated ×N` marker can no longer narrate a use its own count does not reach.** The count
   has lagged what its marker narrates twice: `docs/agents/recovery.md`'s ninth use landed with the
   count still ×8, and convention-lands' #131 exemplar with it still ×3 — that one rode three

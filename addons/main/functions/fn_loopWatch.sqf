@@ -2,8 +2,9 @@
  * Author: arma-cti
  * Watches the loops the world runs on, and says so when one stops. Server only.
  *
- * #102: the play surface is six spawned loops (effect pump, presence report,
- * commander assign, commander view, order enforce, base assault) and a scripting
+ * #102: the play surface is seven spawned loops (effect pump, presence report,
+ * commander assign, commander view, order enforce, base assault, loadout watch)
+ * and a scripting
  * error inside any of them — including inside anything they call — kills that one
  * script and nothing else. The world then keeps running, one organ short and
  * saying nothing: effects judged and paid for but never spawned, income and

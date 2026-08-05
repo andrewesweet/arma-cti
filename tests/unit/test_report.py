@@ -34,6 +34,7 @@ def test_a_report_of_nothing_but_the_clock_says_nothing_about_anything() -> None
     assert told.contacts is None
     assert told.hq is None
     assert told.casualties is None
+    assert told.loadouts is None
 
 
 def test_an_empty_squad_report_is_the_world_saying_it_holds_none() -> None:
@@ -160,9 +161,47 @@ def test_a_boolean_is_never_a_number_however_python_feels_about_it() -> None:
         report.parse(_payload(squads={"w-1": {"size": True}}))
 
 
+def test_an_empty_loadout_report_is_the_world_saying_nobody_has_chosen() -> None:
+    # Distinct from absent, like every other optional member: absent leaves the
+    # record alone, empty is a world with nobody in it saying so (#172).
+    assert report.parse(_payload(loadouts={})).loadouts == {}
+
+
+def test_a_players_chosen_kit_is_read_as_an_id_against_his_uid() -> None:
+    told = report.parse(_payload(loadouts={"76561198000000000": "medic"}))
+
+    assert told.loadouts == {"76561198000000000": "medic"}
+
+
+def test_a_kit_that_is_not_a_string_is_refused_and_the_uid_is_named() -> None:
+    with pytest.raises(report.MalformedReportError, match=r"loadouts\.7656") as refused:
+        report.parse(_payload(loadouts={"76561198000000000": 4}))
+
+    assert refused.value.path == "loadouts.76561198000000000"
+
+
+def test_a_loadout_report_that_is_not_an_object_is_refused() -> None:
+    with pytest.raises(report.MalformedReportError, match="loadouts"):
+        report.parse(_payload(loadouts=["medic"]))
+
+
+def test_whether_a_kit_is_on_the_menu_is_not_this_documents_question() -> None:
+    # The catalogue is the Campaign's, and `report_cycle` judges against it. A
+    # document module that knew the menu would be a second copy of it.
+    assert report.parse(_payload(loadouts={"uid-1": "jetpack"})).loadouts == {"uid-1": "jetpack"}
+
+
 def test_the_export_is_the_field_names_of_every_shape() -> None:
     exported = report.exported()
 
     assert set(exported) == set(report.SHAPES)
     assert exported["squad"] == ["size", "at"]
-    assert exported["payload"] == ["time", "presence", "squads", "contacts", "hq", "casualties"]
+    assert exported["payload"] == [
+        "time",
+        "presence",
+        "squads",
+        "contacts",
+        "hq",
+        "casualties",
+        "loadouts",
+    ]

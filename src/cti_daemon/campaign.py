@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Final
 
 from cti_daemon.commands import CONTESTED, NEUTRAL, SIDES, Effect
 from cti_daemon.contacts import Contacts
+from cti_daemon.loadouts import Catalogue, Chosen
 from cti_daemon.observation import DESTROYED, INTACT, PUBLIC, Observation, SquadView
 from cti_daemon.squads import Roster, Squad
 
@@ -96,6 +97,14 @@ class Campaign:
     # one playthrough's strategic state, and a Commander's picture of the enemy
     # has to be as private as its own roster.
     contacts: Contacts = field(default_factory=Contacts)
+    # The curated loadout menu this Campaign is played with (#172, ADR-0056),
+    # and which kit each player has picked off it. The menu is authored data
+    # like the price table; the picks are strategic state the snapshot carries,
+    # which is what puts them here rather than in the world. Empty by default,
+    # so a Campaign wired without an authored menu offers no kit rather than
+    # every kit.
+    catalogue: Catalogue = field(default_factory=Catalogue.empty)
+    loadouts: Chosen = field(init=False)
     elapsed: float = 0.0
     # How this Campaign ended, or None while it is still being played. Set once
     # and never revised: `docs/mvp-scope.md` resolves a mutual Decapitation by
@@ -128,6 +137,11 @@ class Campaign:
             objective.id: ObjectiveState() for objective in self.map_manifest.objectives
         }
         self._hq = {base.id: INTACT for base in self.map_manifest.bases}
+        # Built against this Campaign's own menu, which is what keeps the
+        # persisted vocabulary closed: nothing can be recorded here that the
+        # catalogue does not offer. A Phase-2 load replaces the whole record
+        # (`Chosen.restore`) rather than filling this one in (#4).
+        self.loadouts = Chosen(catalogue=self.catalogue)
 
     def owner(self, objective: str) -> str:
         """Who holds `objective` — a side, Neutral, or Contested."""
@@ -189,6 +203,26 @@ class Campaign:
         would be back to reading the roster through the root.
         """
         return len(self.roster.roll(side))
+
+    def dress(self, uid: str, kit_id: str) -> bool:
+        """Record which kit one player has chosen. False if the menu has no such kit.
+
+        Offered by the root for the reason `squad` is (#152): what the report
+        cycle may ask about a Campaign, it asks the Campaign, rather than
+        reaching through to the record it holds.
+
+        Not gated on the Campaign still being played, unlike every verb above
+        it. A kit moves no ground and no Funds, so there is nothing here for a
+        won Campaign to be protected from — and a won Campaign is archived as a
+        record rather than resumed (ADR-0023), so nothing reads this afterwards
+        either. Refusing it would only mean the world's last report before the
+        end screen typed a mismatch that was not one.
+        """
+        return self.loadouts.choose(uid, kit_id)
+
+    def dressed(self) -> dict[str, str]:
+        """Which kit every player has chosen — the set a snapshot writes (#4)."""
+        return self.loadouts.serialise()
 
     @property
     def complete(self) -> bool:

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kits": [
+    {
+      "id": "rifleman",
+      "display_name": "Rifleman",
+      "units": { "WEST": "B_Soldier_F", "EAST": "O_Soldier_F" }
+    },
+    {
+      "id": "grenadier",
+      "display_name": "Grenadier",
+      "units": { "WEST": "B_Soldier_GL_F", "EAST": "O_Soldier_GL_F" }
+    },
+    {
+      "id": "autorifleman",
+      "display_name": "Autorifleman",
+      "units": { "WEST": "B_soldier_AR_F", "EAST": "O_Soldier_AR_F" }
+    },
+    {
+      "id": "anti_tank",
+      "display_name": "Anti-Tank",
+      "units": { "WEST": "B_soldier_LAT_F", "EAST": "O_Soldier_LAT_F" }
+    },
+    {
+      "id": "marksman",
+      "display_name": "Marksman",
+      "units": { "WEST": "B_soldier_M_F", "EAST": "O_soldier_M_F" }
+    },
+    {
+      "id": "medic",
+      "display_name": "Medic",
+      "units": { "WEST": "B_medic_F", "EAST": "O_medic_F" }
+    }
+  ]
+}

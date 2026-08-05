@@ -18,7 +18,7 @@
 //   FAIL class=node_crashed loop_dead=order_enforce silent=41.2 cadence=10
 //       turns=7 script_done=true
 //
-// Why it exists. The world runs on six spawned loops and a scripting error in
+// Why it exists. The world runs on seven spawned loops and a scripting error in
 // any one of them kills that loop and nothing else, silently, for the rest of
 // the session (#102). The fault cannot be staged from Python and cannot be
 // staged from the daemon: it is an engine-level death of one scheduled script
@@ -54,7 +54,8 @@
     // here is one that registered nothing and is therefore unwatched, which is
     // the bug this probe would otherwise walk straight past.
     private _want = ["effect_pump", "presence_report", "commander_assign",
-        "commander_view", "order_enforce", "base_assault", "loop_watch"];
+        "commander_view", "order_enforce", "base_assault", "loadout_watch",
+        "loop_watch"];
     private _missing = _want select { !(_x in _loops) };
     if (_missing isNotEqualTo []) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loop_watch_probe_unregistered=%1", _missing];

@@ -71,6 +71,11 @@ class CfgFunctions
             class effectPump {};
             class reportObject {};
             class presenceSample {};
+            class loadoutCatalogue {};
+            class loadoutAtBase {};
+            class loadoutMenu {};
+            class loadoutWatch {};
+            class loadoutSample {};
             class placeOf {};
             class placePosition {};
             class placeRadius {};
