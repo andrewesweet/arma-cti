@@ -220,32 +220,41 @@
     ["menu"] call _ran;
 
     // --------------------------------------------------------------- he picks one
-    private _picker = {
-        params ["_actionId", "_kitId"];
-        private _how = "wish";
-        if (_actionId >= 0) then {
-            private _installed = player actionParams _actionId;
-            private _statement = _installed # 1;
-            if (_statement isEqualType {}) then {
-                _how = "action";
-                // The arguments the action was installed with, not a copy of
-                // them: this is the click's own path as far as it can be walked.
-                [player, player, _actionId, _installed # 2] call _statement;
+    // Installed on the client once; each pick is then a two-value call, sent as
+    // a compiled block with its values inside it. `client-port`, `reinforce` and
+    // `dead-principal` all drive their clients this way, and the vendored
+    // `commands/remoteExec.wiki` is why: an argument array handed to a bare
+    // `call` is the shape it tells you to avoid.
+    {
+        cti_loadoutProbePicker = {
+            params ["_actionId", "_kitId"];
+            private _how = "wish";
+            if (_actionId >= 0) then {
+                private _installed = player actionParams _actionId;
+                private _statement = _installed # 1;
+                if (_statement isEqualType {}) then {
+                    _how = "action";
+                    // The arguments the action was installed with rather than a
+                    // copy of them: this is the click's own path as far as it
+                    // can be walked without a mouse.
+                    [player, player, _actionId, _installed # 2] call _statement;
+                };
             };
+            if (_how isEqualTo "wish") then {
+                player setVariable ["cti_loadoutWish", _kitId, true];
+            };
+            cti_loadoutProbePicked = [_kitId, _how];
+            publicVariable "cti_loadoutProbePicked";
         };
-        if (_how isEqualTo "wish") then {
-            player setVariable ["cti_loadoutWish", _kitId, true];
-        };
-        cti_loadoutProbePicked = [_kitId, _how];
-        publicVariable "cti_loadoutProbePicked";
-    };
+    } remoteExec ["call", _target];
 
     private _drivePick = {
         params ["_kitId"];
         cti_loadoutProbePicked = nil;
         private _found = _entries select { ((_x # 2) param [0, ""]) isEqualTo _kitId };
         private _actionId = if (_found isEqualTo []) then { -1 } else { (_found # 0) # 0 };
-        [[_actionId, _kitId], _picker] remoteExec ["spawn", _target];
+        (compile format ["[%1, '%2'] call cti_loadoutProbePicker", _actionId, _kitId])
+            remoteExec ["call", _target];
         private _until = diag_tickTime + 30;
         waitUntil { !isNil "cti_loadoutProbePicked" || { diag_tickTime > _until } };
         if (isNil "cti_loadoutProbePicked") exitWith {
