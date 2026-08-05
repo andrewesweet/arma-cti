@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The z.ai lane is now a real lane rather than a registry entry, and four things
+  believed about it were put to the endpoint.** `docs/research/zai-lane-live-findings.md`
+  records the first live measurements: the key reaches eight GLM models, prefix caching
+  happens automatically and identically whether or not `cache_control` is sent, and
+  `thinking.budget_tokens` is ignored — a hard prompt at budget 1,024 and at budget
+  32,000 both thought past nine thousand tokens and both stopped on `max_tokens`. Two
+  consequences land in the dispatcher. Claude Code's five effort levels differ only in
+  the budget they send, so on this lane all five are one configuration: ADR-0061
+  predicted a partial collapse and the measurement makes it total, leaving one profile
+  per model — `zai-glm52-max` and the new, cheaper `zai-glm47-max`. And
+  `ENABLE_PROMPT_CACHING_1H` is not set here and cannot be inherited from a shell, since
+  it only rewrites a TTL that decides nothing measurable and a token saving would not be
+  a plan saving under a prompt meter.
+- **Every dispatch on a lane whose plan discounts by time of day now records which band
+  it was charged in.** `dispatch.json` carries a `plan_charge` block — the meter, the
+  band, the multiplier, and the published window that produced them. The band is a
+  function of the timestamp today, but of a schedule that can move, and a record carrying
+  only the timestamp would silently re-price its own history the first time it did. This
+  records the discount; nothing yet chases it.
+
 - **The project now knows which currency it is optimising, and it is not the one it was
   ranking in.** `docs/research/token-efficiency-plan-currency.md` reconciles the
   token-efficiency corpus with what this Max subscription's plan meter actually charges,

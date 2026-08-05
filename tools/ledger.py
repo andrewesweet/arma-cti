@@ -216,7 +216,10 @@ NO_ESTIMATOR: Final = {
     "zai": (
         "the z.ai pool meters prompt counts against a time-of-day multiplier rather than "
         "tokens, and publishes no machine-readable state (#221, #226), so no estimator is "
-        "derivable from this dispatch's own counters"
+        "derivable from this dispatch's own counters. The denominator and the multiplier "
+        "are both known — the held tier is recorded in ~/.arma-cti/plan-tier.json and the "
+        "band this dispatch fell in is recorded in its own dispatch.json `plan_charge` "
+        "block (#225) — and the numerator is not: a prompt count. #226 owns supplying it"
     )
 }
 

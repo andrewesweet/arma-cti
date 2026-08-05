@@ -213,6 +213,40 @@ def test_the_zai_lane_carries_z_ais_published_mirror_configuration() -> None:
     }
 
 
+def test_the_zai_lane_registers_one_arm_per_model_and_never_one_per_effort() -> None:
+    # #225's collapse, as a registry invariant rather than a comment. The endpoint
+    # ignores `thinking.budget_tokens` (measured: budget 1,024 and budget 32,000 both
+    # thought past 9,000 tokens and both stopped on `max_tokens` —
+    # docs/research/zai-lane-live-findings.md §2), and Claude Code's five effort levels
+    # differ only in the budget they send. So two profiles here must never resolve to
+    # one model under two effort names: that would be two names for one configuration,
+    # which is exactly what ADR-0061 Decision 5's opaque token exists to prevent.
+    slots = dict(dispatch.LANES["zai"].model_slots)
+    resolved = [
+        slots[f"ANTHROPIC_DEFAULT_{profile.model.upper()}_MODEL"]
+        for profile in dispatch.PROFILES.values()
+        if profile.lane == "zai"
+    ]
+    assert sorted(resolved) == ["glm-4.7", "glm-5.2"]
+    assert len(resolved) == len(set(resolved))
+
+
+def test_every_zai_profile_selects_a_model_the_lane_actually_maps() -> None:
+    # A profile whose `--model` had no slot would reach z.ai asking for `opus`, which is
+    # not a model it serves. The registry is the only place this can be caught.
+    slots = dict(dispatch.LANES["zai"].model_slots)
+    for profile in dispatch.PROFILES.values():
+        if profile.lane != "zai":
+            continue
+        assert f"ANTHROPIC_DEFAULT_{profile.model.upper()}_MODEL" in slots, profile.name
+
+
+def test_the_zai_lane_declares_what_its_plan_meters_and_which_schedule_discounts_it() -> None:
+    lane = dispatch.LANES["zai"]
+    assert lane.plan_meter == "prompts"
+    assert lane.discount in dispatch.DISCOUNTS
+
+
 def test_the_native_lane_supplies_no_credential_and_no_base_url() -> None:
     lane = dispatch.LANES["claude-native"]
     assert lane.base_url == ""
@@ -333,6 +367,51 @@ def test_the_zai_lane_reaches_z_ai_and_carries_its_token_in_the_environment() ->
     assert child["ANTHROPIC_BASE_URL"] == "https://api.z.ai/api/anthropic"
     assert child["ANTHROPIC_AUTH_TOKEN"] == FAKE_TOKEN
     assert child["ANTHROPIC_DEFAULT_OPUS_MODEL"] == "glm-5.2"
+
+
+def test_the_cheap_zai_profile_reaches_the_other_glm_through_the_haiku_slot() -> None:
+    child = assembled("zai", "zai-glm47-max", {"HOME": "/home/t"}, FAKE_TOKEN)
+    assert child["ANTHROPIC_DEFAULT_HAIKU_MODEL"] == "glm-4.7"
+    assert dispatch.PROFILES["zai-glm47-max"].model == "haiku"
+
+
+@pytest.mark.parametrize(
+    ("lane", "profile"), [("zai", "zai-glm52-max"), ("claude-native", "opus-high")]
+)
+def test_no_lane_inherits_a_cache_ttl_switch_from_the_shell(lane: str, profile: str) -> None:
+    # `ENABLE_PROMPT_CACHING_1H` changes what the child asks a provider for, so it is
+    # lane-owned like a base URL: a lane's behaviour must not be a property of whoever
+    # dispatched it. No lane sets it — on `claude-native` a `claude -p` main session
+    # already carries the one-hour TTL (#218), and on `zai` it is measured inert, since
+    # prefix caching there happens identically with and without `cache_control`
+    # (docs/research/zai-lane-live-findings.md §3).
+    parent = {"HOME": "/home/t", "ENABLE_PROMPT_CACHING_1H": "1"}
+    assert "ENABLE_PROMPT_CACHING_1H" not in assembled(lane, profile, parent, FAKE_TOKEN)
+
+
+def test_a_zai_dispatch_records_the_band_it_was_charged_in() -> None:
+    # Peak is Mon-Fri 14:00-18:00 SGT, so 07:00 UTC on a Wednesday is inside it and
+    # 20:00 UTC the same day is 04:00 SGT on Thursday, outside. The band and its
+    # multiplier are written down rather than left to be recomputed, because both are
+    # functions of a published schedule that can move (#226).
+    lane = dispatch.LANES["zai"]
+    peak = dispatch.plan_charge(lane, datetime(2026, 8, 5, 7, 0, tzinfo=UTC))
+    off_peak = dispatch.plan_charge(lane, datetime(2026, 8, 5, 20, 0, tzinfo=UTC))
+    weekend = dispatch.plan_charge(lane, datetime(2026, 8, 8, 7, 0, tzinfo=UTC))
+    assert peak is not None
+    assert off_peak is not None
+    assert weekend is not None
+    assert (peak["peak"], peak["multiplier"]) == (True, 1.0)
+    assert (off_peak["peak"], off_peak["multiplier"]) == (False, 0.5)
+    assert (weekend["peak"], weekend["multiplier"]) == (False, 0.5)
+    assert peak["meter"] == "prompts"
+    assert peak["window"] == "Mon-Fri 14:00-18:00 SGT (UTC+8)"
+
+
+def test_a_lane_with_no_time_of_day_term_records_no_multiplier_at_all() -> None:
+    # Not 1.0. A block asserting a multiplier would read as "measured, and it was peak"
+    # where the truth is that the question does not arise on this lane.
+    assert dispatch.plan_charge(dispatch.LANES["claude-native"], datetime.now(tz=UTC)) is None
 
 
 def test_a_foreign_lane_with_no_token_exports_no_empty_one() -> None:
@@ -543,6 +622,31 @@ def test_the_record_names_the_credential_key_and_never_its_value(tmp_path: Path)
         if path.is_file():
             assert FAKE_TOKEN not in path.read_text(encoding="utf-8"), path
     assert FAKE_TOKEN not in " ".join(plan.argv)
+
+
+def test_a_zai_record_carries_the_plan_charge_block_the_estimator_will_read(
+    tmp_path: Path,
+) -> None:
+    credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
+    plan, brief, refusal = plan_for(tmp_path, lane="zai", profile="zai-glm52-max", seat="review")
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+
+    document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
+    charge = document["plan_charge"]
+    assert charge["meter"] == "prompts"
+    assert charge["multiplier"] in (0.5, 1.0)
+    assert charge["multiplier"] == (1.0 if charge["peak"] else 0.5)
+    assert charge["schedule"] == "zai-off-peak"
+
+
+def test_a_native_record_carries_no_plan_charge_block(tmp_path: Path) -> None:
+    plan, brief, _ = plan_for(tmp_path)
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
+    assert document["plan_charge"] is None
 
 
 def test_a_written_record_reads_back_as_the_same_plan(tmp_path: Path) -> None:

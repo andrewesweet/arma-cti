@@ -52,6 +52,15 @@ dispatch never happened" carries a failure class from CLAUDE.md's table. The ref
 this module owns are all `infra_unavailable`: a lane that could not be reached says
 nothing about the code under test, which is exactly what that row means.
 
+**The `zai` lane's economics are the inverse of Claude's, and that changes two settings
+rather than the design.** Measured live against the endpoint (#225,
+`docs/research/zai-lane-live-findings.md`): the plan meters prompt counts, prefix caching
+is automatic and identical whether or not `cache_control` is sent, and
+`thinking.budget_tokens` is ignored. So `ENABLE_PROMPT_CACHING_1H` is **not set on this
+lane** — it only rewrites a `cache_control` TTL that measurably decides nothing here, and
+even a real token saving would not be a plan saving under a prompt meter — and the five
+Claude Code effort levels collapse to one profile per model rather than five.
+
 **The lane's breaker is read before anything is planned** (#226). That is the one place
 ADR-0061's other two classes reach this file: a lane out of quota refuses with
 `quota_exhausted` and the published reset time, and a lane whose quality trip has fired
@@ -117,7 +126,21 @@ LANE_OWNED: Final = (
     "ANTHROPIC_MODEL",
     "ANTHROPIC_SMALL_FAST_MODEL",
     "CLAUDE_CODE_OAUTH_TOKEN",
+    # Cache TTL is lane-owned for the same reason a base URL is: it changes what the
+    # child sends to a provider, so inheriting it would make a lane's behaviour a
+    # property of the shell. No lane sets it. On `claude-native` it is not needed — a
+    # dispatched `claude -p` is a main session and already carries the one-hour TTL
+    # (#218) — and on `zai` it is measured inert; see `zai_cache_ttl` below.
+    "ENABLE_PROMPT_CACHING_1H",
 )
+
+# z.ai's plan discount, as the schedule that prices a dispatch rather than as a rule that
+# moves one. `is_peak` and the multiplier stay in `tools/breaker.py`, which owns z.ai's
+# published plan constants; copying them here would make one published fact answerable
+# from two files. Only the human-readable statement of the window lives here, because a
+# record that named no window would not survive the schedule changing.
+ZAI_OFF_PEAK: Final = (breaker.zai_is_peak, breaker.ZAI_OFF_PEAK_MULTIPLIER)
+DISCOUNTS: Final = {"zai-off-peak": (ZAI_OFF_PEAK, "Mon-Fri 14:00-18:00 SGT (UTC+8)")}
 
 STOP_NOT_A_RESULT: Final = (
     "Stop. A lane that could not be reached is not a result about the code under test "
@@ -149,6 +172,11 @@ class Lane(NamedTuple):
     model_slots: tuple[tuple[str, str], ...]
     foreign: bool
     note: str
+    # What this lane's plan counts, where that is not tokens, and which published
+    # discount schedule prices it. Both empty means the pool's own view prices the
+    # dispatch and nothing time-of-day enters it.
+    plan_meter: str = ""
+    discount: str = ""
 
 
 class Profile(NamedTuple):
@@ -194,8 +222,13 @@ LANES: Final[dict[str, Lane]] = {
             "endpoint, which consumes no Anthropic quota, credential or traffic. The "
             "base URL and the three model-slot variables are z.ai's own published "
             "integration (docs.z.ai/devpack/tool/claude). Needs ZAI_API_KEY in "
-            "~/.arma-cti/credentials.env, which is #229's human item."
+            "~/.arma-cti/credentials.env, which is #229's human item. Both slots that "
+            "resolve to glm-5.2 are deliberate: the endpoint's live model list carries "
+            "eight GLMs and only two of them are worth reaching from here, so the sonnet "
+            "slot is the opus slot's synonym rather than a third arm nothing distinguishes."
         ),
+        plan_meter="prompts",
+        discount="zai-off-peak",
     ),
 }
 
@@ -204,10 +237,20 @@ PROFILES: Final[dict[str, Profile]] = {
     "opus-high": Profile("opus-high", "claude-native", "opus", "high"),
     "sonnet-high": Profile("sonnet-high", "claude-native", "sonnet", "high"),
     "haiku-medium": Profile("haiku-medium", "claude-native", "haiku", "medium"),
-    # The opus slot on this lane resolves to glm-5.2 through the lane's model slots, and
-    # `max` is where ADR-0061 records GLM's top thinking level landing. Both facts are
-    # the registry's business alone.
+    # Two profiles on this lane and not ten, because effort collapses to a single arm
+    # here — measured, not assumed (#225, docs/research/zai-lane-live-findings.md §2).
+    # z.ai's endpoint honours `thinking.type` and ignores `thinking.budget_tokens`: one
+    # hard prompt at budget 1,024 and at budget 32,000 both thought past 9,000 tokens and
+    # both stopped on `max_tokens`, not on the budget. Claude Code's five effort levels
+    # differ only in the budget they send, so on this lane all five are one configuration
+    # and registering `-high` or `-xhigh` beside `-max` would be four names for one arm.
+    # ADR-0061 predicted a partial collapse; the measurement makes it total.
+    #
+    # What remains genuinely distinct is the *model*, so the two profiles are the two
+    # models worth reaching, named for the model and selected through the lane's slots:
+    # `--model opus` resolves to glm-5.2 and `--model haiku` to glm-4.7.
     "zai-glm52-max": Profile("zai-glm52-max", "zai", "opus", "max"),
+    "zai-glm47-max": Profile("zai-glm47-max", "zai", "haiku", "max"),
 }
 
 # ADR-0061 Decision 2: eligibility is a property of the surface, not a per-task
@@ -222,6 +265,40 @@ SEATS: Final[dict[str, bool]] = {
     "fable": False,
     "orchestrator": False,
 }
+
+
+def plan_charge(lane: Lane, at: datetime) -> dict[str, object] | None:
+    """Record what this dispatch is charged at, in the unit its provider's plan meters.
+
+    z.ai meters *prompt counts*, not tokens, and halves them outside Mon-Fri
+    14:00-18:00 SGT — which is the arbitrage ADR-0061 names and #226's estimator is
+    meant to exploit. Two things a later reader cannot recover are written down here:
+    which band this dispatch fell in, and what multiplier that band carried. Both are
+    functions of `planned_at` *today*, but they are functions of a published schedule
+    that can move, and a record carrying only the timestamp would silently re-price its
+    own history the first time it did.
+
+    This records the discount. It does not chase it: nothing here delays, queues or
+    reorders a dispatch to land off-peak, which is #226's scheduler and deliberately
+    not #225's.
+
+    `None` on a lane whose plan is not metered this way, because a lane with no
+    time-of-day term must not carry a block asserting a multiplier of 1.0 — that would
+    read as "measured, and it was peak" rather than "the question does not arise".
+    """
+    schedule = DISCOUNTS.get(lane.discount)
+    if schedule is None:
+        return None
+    (is_peak, off_peak_multiplier), window = schedule
+    peak = is_peak(at.timestamp())
+    return {
+        "meter": lane.plan_meter,
+        "peak": peak,
+        "multiplier": 1.0 if peak else off_peak_multiplier,
+        "schedule": lane.discount,
+        "window": window,
+        "window_source": "tools/breaker.py, from z.ai's published plan terms",
+    }
 
 
 class Identity(NamedTuple):
@@ -260,6 +337,7 @@ class Plan(NamedTuple):
     def document(self) -> dict[str, object]:
         """Render the dispatch record, which names the credential key and never its value."""
         lane = LANES[self.identity.lane]
+        planned_at = datetime.now(tz=UTC)
         return {
             "dispatch_id": self.identity.dispatch_id,
             "lane": self.identity.lane,
@@ -274,7 +352,8 @@ class Plan(NamedTuple):
             "credentials_file": str(self.credentials),
             "breaker_dir": str(self.breaker_dir),
             "resource_attributes": dict(self.identity.attributes()),
-            "planned_at": datetime.now(tz=UTC).isoformat(),
+            "plan_charge": plan_charge(lane, planned_at),
+            "planned_at": planned_at.isoformat(),
         }
 
 
@@ -786,6 +865,8 @@ def registry_lines() -> tuple[str, ...]:
             lines.append(f"  base_url={lane.base_url}")
         if lane.credential:
             lines.append(f"  credential={lane.credential}")
+        if lane.plan_meter:
+            lines.append(f"  plan_meter={lane.plan_meter} discount={lane.discount or 'none'}")
         lines.extend(
             f"  profile={profile.name} model={profile.model} effort={profile.effort}"
             for profile in sorted(PROFILES.values())
