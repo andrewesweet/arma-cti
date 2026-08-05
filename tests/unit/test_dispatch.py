@@ -489,6 +489,22 @@ def test_a_plan_carries_the_profiles_flags_and_no_secret(tmp_path: Path) -> None
     assert f"#{plan.identity.issue}" in brief
 
 
+def test_the_default_root_is_the_main_checkout_even_from_inside_a_worktree(
+    tmp_path: Path,
+) -> None:
+    # A dispatch armed from a worktree defaults its assignment to a *sibling* under the
+    # main checkout. Read the naive way — `rev-parse --show-toplevel` — the default
+    # would be `<this worktree>/.claude/worktrees/issue-N`, which is nowhere. Asserted
+    # against a real linked worktree, the only arrangement where the two readings differ.
+    root = git_worktree(tmp_path, name="checkout")
+    linked = root / ".claude" / "worktrees" / "issue-1"
+    add = ("worktree", "add", "-q", "--detach", str(linked))
+    subprocess.run(["git", *add], cwd=root, check=True, capture_output=True)  # noqa: S603, S607
+    assert dispatch.git("rev-parse", "--show-toplevel", cwd=linked) == str(linked)
+    assert dispatch.main_checkout(linked) == root
+    assert dispatch.main_checkout(root) == root
+
+
 def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path) -> None:
     args = _namespace(
         lane="claude-native",

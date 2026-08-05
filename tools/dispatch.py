@@ -490,6 +490,20 @@ def git(*args: str, cwd: Path) -> str:
     return done.stdout.strip() if done.returncode == 0 else ""
 
 
+def main_checkout(cwd: Path) -> Path:
+    """Return the main checkout, which is where `.claude/worktrees` lives.
+
+    `git worktree list` puts the main worktree first from any of them, which is
+    `tools/worktree.py`'s reasoning and matters here for the same reason: a dispatch
+    armed *from inside* a worktree must default its assignment to a sibling under the
+    main checkout, not to `<this worktree>/.claude/worktrees/…`, which is nowhere.
+    """
+    for line in git("worktree", "list", "--porcelain", cwd=cwd).splitlines():
+        if line.startswith("worktree "):
+            return Path(line.removeprefix("worktree ").strip())
+    return cwd
+
+
 def build_argv(lane: Lane, profile: Profile, permission_mode: str) -> tuple[str, ...]:
     """Build the runner's argv, which carries no secret, because a secret on argv is in `ps`.
 
@@ -773,8 +787,7 @@ def main(argv: list[str] | None = None) -> int:
             EXIT_REFUSED,
         )
 
-    root = Path(git("rev-parse", "--show-toplevel", cwd=Path.cwd()) or Path.cwd())
-    plan, brief, refusal = plan_dispatch(args, root, datetime.now(tz=UTC))
+    plan, brief, refusal = plan_dispatch(args, main_checkout(Path.cwd()), datetime.now(tz=UTC))
     if refusal is not None or plan is None:
         return emit(refusal.lines() if refusal else (), EXIT_REFUSED)
     if args.dry_run:
