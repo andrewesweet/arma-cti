@@ -583,6 +583,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A wait that genuinely cannot be decomposed now has one sanctioned route, and the
+  rule around it stopped arguing from a price this plan does not charge.** An agent
+  facing such a wait may dispatch it as a session on `claude-native`, with `just watch`
+  armed at dispatch and the result read from the ledger — a detached session that nobody
+  is watching is explicitly not the sanctioned shape, because the monitoring burden moves
+  rather than vanishing. The interim that forbade any fallback is lifted. The rule's
+  stated reason changes with it: #218's A/B pushed 104.6 M cache-write tokens through 128
+  byte-identical sessions and moved the plan meter zero points, so the cache arithmetic
+  the rule used to rest on is worth about 0.0015 points of a five-hour window, and what
+  survives is that an agent which has ended cannot stall — 226 measured subagent stalls,
+  eleven caught only by an external watcher. The retired figures are kept as history in
+  `docs/research/token-efficiency.md` §2, where they are still correct on an API key.
+  Keepalive turns stay barred, now on the same correctness ground rather than on cost: a
+  keepalive is the stall shape wearing a timer. `.claude/hooks/deny-subagent-waits.py`
+  keeps its 240-second threshold and its measured corpus p90, and rewrites the remedy it
+  offers — four routes now, the fourth being the dispatched session with its condition
+  stated, because a denial is read at the moment of the decision and one arguing from a
+  retired cost model teaches the wrong model to every agent it denies.
+
 - **`just land` is now the only pre-approved way to push.** `.claude/settings.json`
   allowlists `just land` and `just land --dry-run`, and the raw `git push origin HEAD:main`
   entry is gone. The trap the old prose warned about — pushing the local `main` branch a

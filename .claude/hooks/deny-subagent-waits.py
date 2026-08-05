@@ -1,13 +1,24 @@
 #!/usr/bin/env python3
 """PreToolUse hook (Bash): deny a turn-blocking wait inside a subagent's turn.
 
-A subagent's prompt cache lives five minutes; the orchestrator's lives an hour.
-#203 measured both on this project's own transcripts — 100% of 15,805 subagent
-cache writes at the five-minute TTL against 100% of 2,907 main-session writes at
-the one-hour one — and priced the difference: a subagent turn held open past the
-TTL pays a mean 161,061 tokens to rebuild the prefix (201,326 input-equivalents)
-where ending the turn and letting a successor start cold costs 24,554. The same
-wait in the orchestrator is nearly free, so this hook must leave it alone.
+**An agent that has ended cannot stall.** That is this rule's basis, and it is
+what survived #218's A/B. The token arithmetic this file used to argue from — a
+subagent turn held past its five-minute TTL paying a mean 161,061 tokens to
+rebuild the prefix, 201,326 input-equivalents against 24,554 for a successor
+starting cold (#203) — is correct in API list dollars and worth about 0.0015
+points of a five-hour window in the currency this plan actually meters. The stall
+record is not superseded: 226 measured subagent stalls, eleven caught only by an
+external watcher (`docs/agents/recovery.md`), and the #168 agent stalling twice in
+one evening at the identical point. A denial that argues from a retired cost model
+teaches the wrong model to every agent it denies, and a denial is read at the
+moment of the decision, which is more often than any document is (#218's ruling,
+decision 4; #198/ADR-0053 made the same move for `just watch`'s justification).
+
+**The threshold does not move with the reason.** `THRESHOLD` stays at 240 s: it
+proxies the five-minute TTL, nothing here says the TTL moved, and it is doing
+correctness work besides — a turn held four minutes and a turn held forty differ
+in how long a stall goes unnoticed, which is what the watcher catches were
+catching. The orchestrator's turn is left alone as before.
 
 **The gate.** Hook input carries `agent_id` only inside a subagent
 (https://code.claude.com/docs/en/hooks.md, Common Input Fields). No `agent_id`
@@ -157,15 +168,22 @@ _REGRESS_FLAG_VALUES = {"--slots": 1, "--wait": 1, "--issues": 1}
 _REGRESS_SELECTORS = frozenset({"--list", "--issues"})
 
 ALTERNATIVES = (
-    "A subagent's prompt cache lives five minutes: a turn held open past it pays a"
-    " measured ~201,000 input-equivalents to rebuild, against ~24,000 for a fresh"
-    " agent to start cold (#203). Take one of these instead:\n"
+    "An agent that has ended cannot stall, and a turn held open is where this"
+    " project's 226 measured subagent stalls happened — eleven of them caught only"
+    " by an external watcher (#218, docs/agents/recovery.md). Take one of these"
+    " instead:\n"
     "  - end this turn now, reporting the SHA, the worktree and where the result"
     " will land, so a successor reads it cold and cheap;\n"
     "  - `just watch <name> <worktree>` to arm a detached watcher, then return;\n"
     "  - run the long thing with the Bash tool's run_in_background and let the"
-    " notification wake you.\n"
-    "The orchestrator is on the one-hour TTL and may wait; a subagent may not."
+    " notification wake you;\n"
+    "  - for a wait that genuinely cannot be decomposed, dispatch it as a session"
+    " — `just dispatch --lane claude-native` — with `just watch` armed at dispatch"
+    " and the result read from the ledger. A dispatched session is detached and"
+    " nothing wakes anyone when it ends, so one started and forgotten is not the"
+    " sanctioned shape: the monitoring burden moves, it does not vanish (#218).\n"
+    "The orchestrator may wait, and a session dispatched under #218 may hold a wait"
+    " it was dispatched to hold; a subagent's own turn may not."
 )
 
 UNREADABLE = (

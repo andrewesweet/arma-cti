@@ -107,6 +107,21 @@ Splitting the loss by population and TTL:
 
 Both `> 60 min` rows are distinguishable the same way: subagent gaps average a cache read of 4,992, main-session gaps 2,840 — either way the prefix is entirely gone, but the two are different phenomena. The main-session row is what CLAUDE.md's working-style rule "do not park work and go quiet" already forbids; it prices that behaviour at 2.72% of the bill. The subagent row is crash and rate-limit recovery, not an agent going quiet by choice, and prices at 1.30%.
 
+### The end-before-wait comparison, and where it now lives (#218)
+
+Two figures from this section were resident in `CLAUDE.md`'s working-style rule until the human's ruling on #218 (2026-08-05) moved them here. They are recorded rather than deleted, because they are correct measurements in the currency this document ranks in:
+
+| Quantity | Value | What it is |
+|---|---:|---|
+| A subagent turn held past its five-minute TTL | **161,061** cache-write tokens | mean prefix rebuild on the following turn, this project's transcripts (#203) |
+| the same, priced | **201,326** input-equivalents | at the 1.25× five-minute write rate |
+| A successor starting cold instead | **24,554** input-equivalents | the whole cost of the ending being paid by someone new |
+| An orchestrator turn after a thirty-minute gap | cache read still **302,183** | the one-hour TTL: the prefix simply survives |
+
+**Why they stopped being the rule's stated reason.** #218's A/B pushed 104,588,224 cache-write tokens through 128 byte-identical sessions in ABBA order and moved this account's five-hour plan meter by **zero** points, while a positive control on the same harness fifteen minutes later moved it six points on 181,253 output tokens. In plan currency the whole end-before-wait comparison is worth about **0.0015 points** of a five-hour window — three orders of magnitude below the meter's smallest division. The rule it justified did not change; its basis did, to the one thing the measurement left untouched: an agent that has ended cannot stall (226 measured subagent stalls, eleven watcher catches, `docs/agents/recovery.md`). The plan-currency reconciliation is `docs/research/token-efficiency-plan-currency.md`.
+
+On an API key these figures are live rather than historical, which is the regime split §0's currency paragraph states.
+
 ### What causes the blocking
 
 Attributing each ≥ 5-minute tool call to the cache write on the turn that followed it:

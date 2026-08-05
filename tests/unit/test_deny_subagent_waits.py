@@ -1,12 +1,13 @@
 """Tests for the subagent wait guard, `.claude/hooks/deny-subagent-waits.py`.
 
-The hook denies a turn-blocking wait inside a subagent's turn, where #203
-measured the five-minute prompt cache and the ~201,000 input-equivalents a turn
-held past it pays to rebuild. Three things need pinning, and #120's lesson —
-that an over-eager hook costs more than the rule it guards — is why the second
-and third get as many tests as the first:
+The hook denies a turn-blocking wait inside a subagent's turn, because an agent
+that has ended cannot stall — #218's A/B retired the token arithmetic the rule
+used to be argued from and left the stall record standing. Three things need
+pinning, and #120's lesson — that an over-eager hook costs more than the rule it
+guards — is why the second and third get as many tests as the first:
 
-* the wait shapes are denied, in every spelling;
+* the wait shapes are denied, in every spelling, and the denial names the four
+  sanctioned routes and argues from the stall record rather than a retired price;
 * the known-long gates are denied (#204's decision 6), and the selections that
   are not foreseeably long pass;
 * what is *not* the target passes: a bounded short sleep, a fast gate recipe, a
@@ -78,6 +79,47 @@ def test_the_denial_names_the_watcher_and_the_end_before_wait_pattern() -> None:
     assert "just watch" in reason
     assert "end this turn" in reason
     assert "run_in_background" in reason
+
+
+def test_the_denial_argues_from_the_stall_record_not_the_superseded_token_price() -> None:
+    """#218's decision 4: the A/B priced that argument at ~0.0015 plan points.
+
+    A denial that argues from a superseded cost model teaches the wrong model to every
+    agent it denies, and denials are read at the moment of the decision.
+    """
+    reason = hook.denial("sleep 600")
+    assert reason is not None
+    assert "stall" in reason
+    assert "201,000" not in reason
+    assert "input-equivalents" not in reason
+
+
+def test_the_denial_offers_the_dispatched_session_with_its_condition() -> None:
+    """#218 sanctioned the session fallback; a session nobody watches is not the shape."""
+    reason = hook.denial("sleep 600")
+    assert reason is not None
+    assert "just dispatch" in reason
+    assert "claude-native" in reason
+    assert "just watch" in reason
+
+
+def test_the_denial_says_who_may_wait_and_who_may_not() -> None:
+    """A dispatched session may hold a wait too, so the one-hour sentence gains a clause."""
+    reason = hook.denial("sleep 600")
+    assert reason is not None
+    assert "orchestrator" in reason
+    assert "session" in reason
+    assert "subagent" in reason
+
+
+def test_the_threshold_is_unchanged_at_the_ttl() -> None:
+    """#218 moved the stated reason and kept the number, explicitly and for two reasons."""
+    assert hook.THRESHOLD == 240
+
+
+def test_the_corpus_denial_keeps_its_measured_p90() -> None:
+    """That figure is a duration, and it is still true."""
+    assert "1,230" in hook.CORPUS_DENIAL
 
 
 def test_a_sleep_exactly_at_the_threshold_is_denied() -> None:
