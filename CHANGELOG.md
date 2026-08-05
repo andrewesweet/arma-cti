@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A corpus verdict is rendered from its own record now, not read off 25 lines by hand.**
+  `just verdict [pool-dir]` reads a finished pool run's `pool.json` and the per-probe
+  `verdict.json`s and prints the lines a close quotes into the issue the run gated: worst class,
+  counts, wall, SHA and whether the tree was dirty, the runner's own per-probe block verbatim,
+  and a detail line per non-pass probe with its evidence path. No argument reads the newest pool.
+  It closes a correctness hole as well as a token one — #134 once quoted a "full corpus 20/20"
+  banner before any tool result contained one, every figure matching by luck, and since the prune
+  deletes passes, pass evidence outlives its own directory only in the quote. A record it cannot
+  believe is refused rather than half-rendered: a pool directory with no `pool.json` is a run that
+  died before its merge and is not a result (ADR-0022), and a `worst_class` sitting below its own
+  worst verdict is quoted at the worse of the two with the disagreement named. `infra_unavailable`
+  renders as the stop it is, nothing is interpreted, and nothing is posted. #199.
+
 - **The orchestrator's stall watch is a tool now, and it waits outside the turn.** Six agent
   stalls in one cycle were each caught by an orchestrator polling from inside a turn, and
   ADR-0053 ruled the harness defect underneath out of this repo's scope, so that watching is a

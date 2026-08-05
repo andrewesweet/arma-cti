@@ -73,7 +73,10 @@ from typing import Final, NamedTuple
 # `push_path_report.py` uses to reach `telemetry_log.py`.
 sys.path.insert(0, str(Path(__file__).parent))
 
-from pool_merge import MergedPool, ProbeRow, render_summary
+# `merged_from_pool` reads the document `pool_merge` itself writes, and lives
+# there for that reason (#199): the block a prod quotes stays byte-for-byte the
+# block the runner printed (#198 criterion 2), and one schema keeps one reader.
+from pool_merge import MergedPool, ProbeRow, merged_from_pool, render_summary
 
 # Outside every worktree, beside the tier's own evidence, for the reason in the
 # module docstring: a finding must outlive the worktree it describes.
@@ -263,36 +266,6 @@ def _newest_artefact(runs_dir: Path, pattern: str, filename: str, not_before: in
             continue
         best, best_mtime = artefact, mtime
     return best
-
-
-def merged_from_pool(document: dict[str, object]) -> MergedPool:
-    """Rebuild the merge's own answer from a `pool.json` written earlier.
-
-    The rows go back through `pool_merge.render_summary` rather than through a
-    second renderer here, so the block a prod quotes is byte-for-byte the block
-    the runner printed (#198 criterion 2; the merge is #185's, not this
-    tool's, and re-implementing it is how two tables drift).
-    """
-    verdicts = document.get("verdicts")
-    rows = [
-        ProbeRow(
-            str(entry.get("probe", "")),
-            str(entry.get("class", "")),
-            str(entry.get("slot", "?")),
-            int(entry.get("elapsed_secs", 0) or 0),
-            str(entry.get("evidence", "")),
-        )
-        for entry in (verdicts if isinstance(verdicts, list) else [])
-        if isinstance(entry, dict)
-    ]
-    not_run = document.get("not_run")
-    return MergedPool(
-        rows,
-        [str(name) for name in not_run] if isinstance(not_run, list) else [],
-        [],
-        [],
-        str(document.get("worst_class", "")),
-    )
 
 
 def pool_completion(artefact: Path) -> Completion:

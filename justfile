@@ -216,3 +216,23 @@ watch name worktree subject="pool" *args:
 # stall never resurfaces as news; `--all` re-reads the acknowledged ones.
 watch-report *args:
     uv run python tools/stall_watch.py report {{ args }}
+
+# Read a finished corpus run's own record as the lines a close quotes (#199).
+# No Arma, no lock: it reads `pool.json` and the per-probe `verdict.json`s and
+# renders. `just verdict` takes the newest pool on this machine; name a pool
+# evidence directory (or its pool.json) to read an older one.
+#
+# What it prints is the whole of the read — worst class, counts, wall, sha and
+# tree state, the runner's own per-probe block verbatim, and a detail line per
+# non-pass probe — so reading a corpus result is one tool call on one file
+# rather than a directory crawl, and quoting it verbatim is safe by
+# construction. #134 once quoted a "full corpus 20/20" banner before any tool
+# result contained one, every figure matching by luck; a rendered quote cannot
+# be hallucinated. It matters because the prune deletes passes, so pass
+# evidence outlives its own directory only in the quote.
+#
+# It reads and it renders. Nothing is posted: what a red means, and what the
+# run gates, stay the agent's (the failure-class table's required-response
+# column). `infra_unavailable` is printed as the stop it is, never interpreted.
+verdict pool="":
+    uv run python tools/pool_comment.py {{ pool }}

@@ -1,0 +1,189 @@
+{
+  "started_at": "2026-08-05T01:42:00Z",
+  "git_sha": "bc620bb56b4620283014e6324953bc7ff8450b08",
+  "slots": [
+    0,
+    1,
+    2
+  ],
+  "host": "local",
+  "worst_class": "assertion_failed",
+  "wall_secs": 990,
+  "peak_mem_used_kb": 9503392,
+  "peak_tier_rss_kb": 7561424,
+  "peak_pool_rss_kb": 7492816,
+  "least_mem_available_kb": 2744880,
+  "stopped_early": "",
+  "dirty_slots": [],
+  "not_run": [],
+  "verdicts": [
+    {
+      "probe": "ai-commander",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 56,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T014931Z-ai-commander"
+    },
+    {
+      "probe": "ai-reinforce",
+      "class": "pass",
+      "slot": "1",
+      "elapsed_secs": 27,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T014909Z-ai-reinforce"
+    },
+    {
+      "probe": "bareworld",
+      "class": "pass",
+      "slot": "1",
+      "elapsed_secs": 22,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015125Z-bareworld"
+    },
+    {
+      "probe": "base-assault",
+      "class": "pass",
+      "slot": "2",
+      "elapsed_secs": 164,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T014533Z-base-assault"
+    },
+    {
+      "probe": "campaign-end",
+      "class": "pass",
+      "slot": "1",
+      "elapsed_secs": 428,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T014201Z-campaign-end"
+    },
+    {
+      "probe": "casualties",
+      "class": "pass",
+      "slot": "2",
+      "elapsed_secs": 25,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015119Z-casualties"
+    },
+    {
+      "probe": "client-port",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 66,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015147Z-client-port"
+    },
+    {
+      "probe": "contact-decay",
+      "class": "pass",
+      "slot": "2",
+      "elapsed_secs": 146,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T014817Z-contact-decay"
+    },
+    {
+      "probe": "contacts",
+      "class": "pass",
+      "slot": "1",
+      "elapsed_secs": 28,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T014936Z-contacts"
+    },
+    {
+      "probe": "daemon-restart",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 21,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015109Z-daemon-restart"
+    },
+    {
+      "probe": "dead-principal",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 156,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015254Z-dead-principal"
+    },
+    {
+      "probe": "effect-redelivery",
+      "class": "pass",
+      "slot": "1",
+      "elapsed_secs": 26,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015059Z-effect-redelivery"
+    },
+    {
+      "probe": "human-commander",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 48,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015530Z-human-commander"
+    },
+    {
+      "probe": "json-manifest",
+      "class": "pass",
+      "slot": "2",
+      "elapsed_secs": 21,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015058Z-json-manifest"
+    },
+    {
+      "probe": "locality-guard",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 21,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015048Z-locality-guard"
+    },
+    {
+      "probe": "loop-watch",
+      "class": "pass",
+      "slot": "1",
+      "elapsed_secs": 55,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015004Z-loop-watch"
+    },
+    {
+      "probe": "manifest-missing",
+      "class": "pass",
+      "slot": "2",
+      "elapsed_secs": 15,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015043Z-manifest-missing"
+    },
+    {
+      "probe": "massed-assault",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 244,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T014402Z-massed-assault"
+    },
+    {
+      "probe": "projection",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 85,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T014806Z-projection"
+    },
+    {
+      "probe": "recall",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 121,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T014201Z-recall"
+    },
+    {
+      "probe": "reinforce",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 57,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015618Z-reinforce"
+    },
+    {
+      "probe": "respawn-base",
+      "class": "assertion_failed",
+      "slot": "0",
+      "elapsed_secs": 75,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015715Z-respawn-base"
+    },
+    {
+      "probe": "schema-stale",
+      "class": "pass",
+      "slot": "0",
+      "elapsed_secs": 19,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T015028Z-schema-stale"
+    },
+    {
+      "probe": "two-commanders",
+      "class": "pass",
+      "slot": "2",
+      "elapsed_secs": 211,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T014201Z-two-commanders"
+    }
+  ]
+}

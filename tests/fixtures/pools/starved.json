@@ -1,0 +1,91 @@
+{
+  "started_at": "2026-08-05T01:08:49Z",
+  "git_sha": "654f89dde3d8df7cda74f954a9ccc8d1b3e7d2b6",
+  "slots": [
+    3
+  ],
+  "host": "local",
+  "worst_class": "infra_unavailable",
+  "wall_secs": 826,
+  "peak_mem_used_kb": 9572932,
+  "peak_tier_rss_kb": 7620036,
+  "peak_pool_rss_kb": 2574116,
+  "least_mem_available_kb": 2675340,
+  "stopped_early": "infra_unavailable in slot 3 on contacts",
+  "dirty_slots": [],
+  "not_run": [
+    "client-port",
+    "daemon-restart",
+    "dead-principal",
+    "effect-redelivery",
+    "human-commander",
+    "json-manifest",
+    "locality-guard",
+    "loop-watch",
+    "manifest-missing",
+    "massed-assault",
+    "projection",
+    "recall",
+    "reinforce",
+    "schema-stale",
+    "two-commanders"
+  ],
+  "verdicts": [
+    {
+      "probe": "ai-commander",
+      "class": "pass",
+      "slot": "3",
+      "elapsed_secs": 47,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T010849Z-ai-commander"
+    },
+    {
+      "probe": "ai-reinforce",
+      "class": "pass",
+      "slot": "3",
+      "elapsed_secs": 26,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T010936Z-ai-reinforce"
+    },
+    {
+      "probe": "bareworld",
+      "class": "pass",
+      "slot": "3",
+      "elapsed_secs": 22,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T011003Z-bareworld"
+    },
+    {
+      "probe": "base-assault",
+      "class": "pass",
+      "slot": "3",
+      "elapsed_secs": 160,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T011025Z-base-assault"
+    },
+    {
+      "probe": "campaign-end",
+      "class": "pass",
+      "slot": "3",
+      "elapsed_secs": 396,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T011306Z-campaign-end"
+    },
+    {
+      "probe": "casualties",
+      "class": "pass",
+      "slot": "3",
+      "elapsed_secs": 26,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T011942Z-casualties"
+    },
+    {
+      "probe": "contact-decay",
+      "class": "pass",
+      "slot": "3",
+      "elapsed_secs": 144,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T012008Z-contact-decay"
+    },
+    {
+      "probe": "contacts",
+      "class": "infra_unavailable",
+      "slot": "3",
+      "elapsed_secs": 3,
+      "evidence": "/home/andre/.arma-cti/runs/20260805T012232Z-contacts"
+    }
+  ]
+}

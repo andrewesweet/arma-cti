@@ -56,7 +56,10 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Final, NamedTuple
+from typing import TYPE_CHECKING, Final, NamedTuple
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 # The failure-class table, by how bad each row is. The summary sorts by this
 # and the pool's exit is the worst class present; the numbers are ranks, not
@@ -218,14 +221,56 @@ def merge_claims(  # noqa: PLR0913 — the pool facts the shell owns, one parame
             )
         )
 
-    worst_class = "pass"
-    for row in rows:
-        if severity(row.class_) > severity(worst_class):
-            worst_class = row.class_
+    worst_class = worst_of(rows)
     if mem_stopped and severity("infra_unavailable") > severity(worst_class):
         worst_class = "infra_unavailable"
 
     return MergedPool(rows, not_run, reclaim_slots, notices, worst_class)
+
+
+def merged_from_pool(document: dict[str, object]) -> MergedPool:
+    """Rebuild the merge's own answer from a `pool.json` written earlier.
+
+    The one reader of the document this module writes, so that everything
+    quoting a finished pool — the stall watcher's prod (#198), the issue
+    comment a close carries (#199) — goes back through `render_summary` here
+    rather than through a renderer of its own. Two readers of one schema is how
+    two tables drift, and this is the schema's own module.
+
+    The rows are believed as written. A record with no `worst_class` is left
+    empty rather than derived, because what an empty one *means* differs by
+    caller: a watcher refuses to guess, a renderer of an old record derives and
+    says it derived. `worst_of` is that derivation, for the callers that want it.
+    """
+    verdicts = document.get("verdicts")
+    rows = [
+        ProbeRow(
+            str(entry.get("probe", "")),
+            str(entry.get("class", "")),
+            str(entry.get("slot", "?")),
+            int(entry.get("elapsed_secs", 0) or 0),
+            str(entry.get("evidence", "")),
+        )
+        for entry in (verdicts if isinstance(verdicts, list) else [])
+        if isinstance(entry, dict)
+    ]
+    not_run = document.get("not_run")
+    return MergedPool(
+        rows,
+        [str(name) for name in not_run] if isinstance(not_run, list) else [],
+        [],
+        [],
+        str(document.get("worst_class", "")),
+    )
+
+
+def worst_of(rows: Iterable[ProbeRow]) -> str:
+    """Rank these rows by severity and answer the worst class present, `pass` over none."""
+    worst = "pass"
+    for row in rows:
+        if severity(row.class_) > severity(worst):
+            worst = row.class_
+    return worst
 
 
 def render_summary(
