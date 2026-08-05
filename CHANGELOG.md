@@ -30,9 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **A landing's new tests now have to notice the code changing, mechanically.** `just fast`
   grows a rung, `just mutation`: for every test module a landing adds or rewrites, a bounded
   sample of mutants is planted in the source those tests actually execute, and each is judged
-  by only the tests that reach its line. A module whose tests kill fewer than three in four is
-  red, and so is one none of whose tests executes a line of this repo's source at all — which
-  is what a suite of `assert True` earns.
+  by only the tests that reach its line. A module whose tests kill fewer than half of them is red,
+  and so is one none of whose tests executes a line of this repo's source at all — which is
+  what a suite of `assert True` earns. The floor comes from measuring all 68 of this repo's
+  test modules: the weakest scores 62%, the median 85%, and a purpose-built module that runs
+  every branch of its subject while asserting only `is not None` scores 30%.
 
   Until now nothing mechanical stopped a vacuous green test. The defences were red-first
   discipline in a dispatch briefing, a habit visible in closing comments, a vacuity rule that
