@@ -60,7 +60,12 @@ def turn(daemon: Daemon, step: int) -> dict[str, Any]:
         payload={
             "time": (step + 1) * 30,
             "presence": presence,
-            "squads": {squad.id: {"size": squad.size, "at": squad.order.place} for squad in roll},
+            # A position is required of the world (#175); this one goes nowhere
+            # near the planner, which reads Places and is documented as doing so.
+            "squads": {
+                squad.id: {"size": squad.size, "at": squad.order.place, "pos": [0, 0, 0]}
+                for squad in roll
+            },
         },
     )["result"]
 

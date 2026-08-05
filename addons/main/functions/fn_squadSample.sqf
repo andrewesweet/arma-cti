@@ -6,22 +6,29 @@
  * every path into it starts in `missions/cti.Stratis/initServer.sqf`, which the
  * engine runs on the server and nowhere else (#118, ADR-0041).
  *
- * Two facts only: how many of it are still standing, and where it is. Its side,
- * what it is and what it was told to do are the daemon's (ADR-0012), and
- * reporting them from here would be inventing a second answer to a question
- * that already has one.
+ * Three facts only: how many of it are still standing, which Place it is in,
+ * and where its leader is standing. Its side, what it is and what it was told
+ * to do are the daemon's (ADR-0012), and reporting them from here would be
+ * inventing a second answer to a question that already has one.
  *
- * Position is coarse on purpose (ADR-0008): the id of the Objective or Base the
- * Squad is standing on, and empty for the open ground between them. A Commander
- * reasons about places, not coordinates, and a strategic observation that
- * carried coordinates would be a tactical one.
+ * `at` is coarse on purpose (ADR-0008): the id of the Objective or Base the
+ * Squad is standing on, and empty for the open ground between them. That is the
+ * resolution a Commander *plans* at, and it is what the planner reads.
+ *
+ * `pos` is the same fact before it was rounded to a Place (#175, ADR-0058), and
+ * it is here because `at` alone left a marching Squad off the Commander's map
+ * for the whole march — indistinguishable from one wiped to the last man. It is
+ * reported as the world states any position, three axes; what a Commander is
+ * given is the two of them a map can draw, which the daemon decides. Both come
+ * off one reading of the leader's position, so the Place and the metres cannot
+ * disagree with each other.
  *
  * A Squad the world has lost is simply absent, which is how the daemon learns
  * it is gone.
  *
  * Arguments: none
  *
- * Return Value: <HASHMAP> Squad id -> HASHMAP of `size` and `at`
+ * Return Value: <HASHMAP> Squad id -> HASHMAP of `size`, `at` and `pos`
  */
 private _map = missionNamespace getVariable ["cti_map", createHashMap];
 private _objectives = _map getOrDefault ["objectives", []];
@@ -34,14 +41,17 @@ private _seen = createHashMap;
     if (!isNull _group) then {
         private _living = { alive _x } count units _group;
         if (_living > 0) then {
-            // Open ground between places is an honest answer here, so no
-            // nearest-place fallback: a Squad that is marching is marching.
-            private _at = [getPosATL leader _group, _objectives, _bases] call cti_fnc_placeOf;
+            // One reading, two answers: the Place it rounds to and the metres
+            // it was taken at. Open ground between places is an honest answer
+            // for the first, so no nearest-place fallback — a Squad that is
+            // marching is marching, and #175 is why the second exists.
+            private _pos = getPosATL leader _group;
+            private _at = [_pos, _objectives, _bases] call cti_fnc_placeOf;
 
             // Built through the exported schema (#74): the field names are the
             // daemon's own declaration rather than a copy of it kept in step by
             // hand.
-            _seen set [_squadId, ["squad", [["size", _living], ["at", _at]]] call cti_fnc_reportObject];
+            _seen set [_squadId, ["squad", [["size", _living], ["at", _at], ["pos", _pos]]] call cti_fnc_reportObject];
         };
     };
 } forEach (missionNamespace getVariable ["cti_squads", createHashMap]);

@@ -202,6 +202,14 @@ SHAPES: Final[dict[str, Shape]] = {
             # Open ground between places has no name, so an empty `at` is the
             # honest answer for a Squad that is marching rather than a gap.
             Field("at", STRING, "the place the Squad is standing in", absent=""),
+            # And where that is in metres (#175, ADR-0058). Required rather than
+            # optional for `size`'s reason: a Squad the world is holding has a
+            # leader standing somewhere, so there is no honest absence to
+            # encode — unlike `at`, whose emptiness is the open ground itself.
+            # The world states it the way it states a death's position, three
+            # axes, because that is the value the sampler already has in hand;
+            # what a Commander is given is the two of them a map can draw.
+            Field("pos", POSITION, "a position of three coordinates"),
         ),
     ),
     "contact": Shape(
@@ -354,6 +362,20 @@ def _object(shape: Shape, value: object, path: str) -> dict[str, Any]:
     }
 
 
+def _map_position(axes: list[float]) -> tuple[int, int]:
+    """Read a reported position as the map position a Commander is shown (#175).
+
+    Two axes and whole metres, decided here rather than in `serialise` for the
+    reason ADR-0030 truncated a Contact's age where it is computed: the document
+    stays a rendering of what the Commander holds rather than a lossy version of
+    it. Altitude goes because a map has none, and the fractions go because a
+    marker on a strategic map cannot show a metre — carrying either would be
+    precision nothing downstream can use, on every Squad, every five seconds.
+    """
+    east, north, _altitude = axes
+    return (round(east), round(north))
+
+
 def _squads(reported: object) -> dict[str, squads_module.Held] | None:
     """Read the world's account of its Squads."""
     if reported is None:
@@ -361,7 +383,9 @@ def _squads(reported: object) -> dict[str, squads_module.Held] | None:
     seen: dict[str, squads_module.Held] = {}
     for squad_id, said in cast("dict[str, Any]", reported).items():
         squad = _object(SHAPES["squad"], said, f"squads.{squad_id}")
-        seen[squad_id] = squads_module.Held(size=squad["size"], at=squad["at"])
+        seen[squad_id] = squads_module.Held(
+            size=squad["size"], at=squad["at"], pos=_map_position(squad["pos"])
+        )
     return seen
 
 

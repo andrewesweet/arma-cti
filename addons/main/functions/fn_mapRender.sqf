@@ -51,7 +51,9 @@ private _own = ([cti_uiSide] call cti_fnc_sideMarkerColour);
 // in one unreadable stack). Squads are pulled north of the label and Contacts
 // south, in world metres so the pair stays with its town at every zoom; a
 // second Squad at the same Place stacks a step further north, because two
-// Squads in Reserve at one Base is the opening state of every Campaign.
+// Squads in Reserve at one Base is the opening state of every Campaign. Since
+// #175 a Squad's clearance is measured from the Squad rather than from the
+// Place, so it is the same clearance wherever the Squad has got to.
 private _squadOffset = [0, 120];
 private _contactOffset = [0, -120];
 private _stackStep = 60;
@@ -78,14 +80,35 @@ private _squadLabel = {
         _x getOrDefault ["place", ""]]
 };
 
+// A Squad is drawn where it is, not only where it is standing still (#175:
+// playtest 0001 lost sight of two Squads for the whole march and read the
+// absence as death). `pos` is the Observation's own map position in metres,
+// which is empty only for a Squad the world has not reported standing yet —
+// bought this tick, not yet spawned — and that one falls back to the Place its
+// coarse `at` names, which is the picture as it was before this field existed.
+// A Squad with neither is not drawn, because there is nothing to draw it at.
 private _crowd = createHashMap;
 {
     private _id = _x getOrDefault ["id", ""];
     private _place = _x getOrDefault ["at", ""];
-    private _at = [_place] call cti_fnc_placePosition;
+    private _pos = _x getOrDefault ["pos", []];
+    private _at = if (_pos isNotEqualTo []) then {
+        _pos params ["_posEast", "_posNorth"];
+        [_posEast, _posNorth, 0]
+    } else {
+        [_place] call cti_fnc_placePosition
+    };
     if (_at isNotEqualTo []) then {
-        private _row = _crowd getOrDefault [_place, 0];
-        _crowd set [_place, _row + 1];
+        // Stacked by Place and not by position: two Squads in Reserve at one
+        // Base are metres apart in the world and one point apart at map zoom,
+        // which is the opening state of every Campaign. Squads in open ground
+        // are already spread out and have no Place to be crowded at, so they
+        // stack with nothing.
+        private _row = 0;
+        if (_place isNotEqualTo "") then {
+            _row = _crowd getOrDefault [_place, 0];
+            _crowd set [_place, _row + 1];
+        };
         _at params ["_east", "_north"];
         _squadOffset params ["_offEast", "_offNorth"];
         private _marker = createMarkerLocal [format ["cti_ui_squad_%1", _id],

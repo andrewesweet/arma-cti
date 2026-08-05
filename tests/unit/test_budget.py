@@ -83,13 +83,22 @@ def island(objectives: int) -> manifest.MapManifest:
 # The binding term is no longer Squad count but **place** count: #28's Contacts
 # are keyed by place, so an island pays for its own size before either side has
 # bought anything.
+#
+# Re-measured for #175 (ADR-0058), which put a map position on every own Squad.
+# The middle column did not move at all, which is the honest reading of what was
+# bought: a position rides on a Squad, so an island with no Squads on it pays
+# nothing for the field. What it cost is the right-hand column, uniformly —
+# 71→59 at Stratis's size, 11→9 at fifty Objectives — because a `pos` of two
+# five-digit axes is about a fifth again on top of a worst-case Squad record.
+# ADR-0030's trigger is unmoved by it: the row that fails is still the sixtieth
+# Objective, and it still fails before a Squad is bought.
 CEILINGS = (
-    (8, 1_611, 71),
-    (10, 1_919, 65),
-    (20, 3_425, 52),
-    (30, 4_941, 38),
-    (40, 6_451, 24),
-    (50, 7_969, 11),
+    (8, 1_611, 59),
+    (10, 1_919, 55),
+    (20, 3_425, 44),
+    (30, 4_941, 32),
+    (40, 6_451, 21),
+    (50, 7_969, 9),
     (60, 9_475, None),
     (90, 14_039, None),
 )
@@ -149,6 +158,19 @@ def test_the_world_reads_its_guard_out_of_the_exported_budget() -> None:
     assert 'getOrDefault ["reply_guard_bytes", 0]' in source
     # And the literal it replaced is gone rather than merely unused.
     assert str(budget.REPORT_GUARD_BYTES) not in source
+
+
+def test_the_worst_case_squad_stands_at_the_widest_position_a_terrain_admits() -> None:
+    # #175 put a map position on every own Squad, and a budget measured against
+    # a cheap one — the origin, a Stratis coordinate — would overstate every
+    # ceiling in the table above while still looking measured. The claim is
+    # about the digits rather than the value, because what the wire pays for is
+    # how long the number is said in: Altis's 30,720 and any other five-digit
+    # pair cost the same, and nothing the engine ships is wider.
+    table = economy.load(REPO / "config" / "economy.json")
+    (squad,) = budget.worst_case(stratis(), table, squads_per_side=1).squads
+
+    assert [len(str(axis)) for axis in squad.pos] == [5, 5]
 
 
 def test_the_guard_is_nine_tenths_of_the_cap() -> None:

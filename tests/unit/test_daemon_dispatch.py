@@ -452,7 +452,8 @@ def test_the_reply_to_an_observation_is_the_public_picture_and_no_more(tmp_path:
             "args": {"squad_type": "rifle"},
         },
     )
-    result = observe(daemon, "o-6", squads={"WEST-1": {"size": 7, "at": "nato_airbase"}})
+    reported = {"WEST-1": {"size": 7, "at": "nato_airbase", "pos": [0, 0, 0]}}
+    result = observe(daemon, "o-6", squads=reported)
 
     # The scoreboard both sides may read (#35) and nothing else: Objective
     # ownership, and each Base's HQ intact or destroyed.
@@ -494,7 +495,7 @@ def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: 
     )
     # Reported standing once first: a Squad the world has never held is one
     # still on its way there, not one it has lost (`squads.Roster.reconcile`).
-    observe(daemon, "o-10a", squads={"WEST-1": {"size": 8, "at": ""}})
+    observe(daemon, "o-10a", squads={"WEST-1": {"size": 8, "at": "", "pos": [0, 0, 0]}})
     observe(daemon, "o-10", squads={})
     assert daemon.campaign.observation("WEST").squads == ()
     # A Squad leaving the Campaign is reported to the operator's log rather than
@@ -741,7 +742,7 @@ def a_squad_at_base(daemon: Daemon, request: str, *, size: int) -> str:
         payload={
             "time": 30,
             "presence": {},
-            "squads": {"WEST-1": {"size": size, "at": WEST_BASE}},
+            "squads": {"WEST-1": {"size": size, "at": WEST_BASE, "pos": [0, 0, 0]}},
         },
     )
     return "WEST-1"

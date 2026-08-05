@@ -106,16 +106,43 @@ def test_an_observation_reports_each_squad_with_what_it_was_told_to_do() -> None
     )
 
 
-def test_an_observation_carries_nothing_tactical() -> None:
-    # ADR-0008 draws the line and #15 keeps to it: exact positions, health,
-    # ammo and AI knowledge are regenerated, never reported.
+def test_an_observation_carries_nothing_tactical_but_where_its_own_squads_are() -> None:
+    # ADR-0008 draws the line and #15 keeps to it: health, ammo, AI knowledge
+    # and everything a firefight is made of are regenerated, never reported.
+    # #175 moved the line by exactly one field and no further (ADR-0058): a
+    # Commander's own Squad carries the position its marker is drawn at, which
+    # is about seeing rather than about planning, and the enumeration here is
+    # what stops a second field arriving on the same argument.
     world = live()
     port.CommandPort(campaign=world).submit(
         Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
     )
     document = observation.serialise(world.observation("WEST"))
     (squad,) = document["squads"]
-    assert set(squad) == {"id", "type", "size", "order", "place", "at"}
+    assert set(squad) == {"id", "type", "size", "order", "place", "at", "pos"}
+    # And a Contact does not gain one with it: what a Commander may know of the
+    # enemy is Place-grained, which is what the fog rule is actually about.
+    assert "pos" not in observation.exported()["contact"]
+
+
+def test_a_squad_the_world_has_not_reported_has_no_position_rather_than_the_origin() -> None:
+    # A Squad is bought here and spawned there (`Roster.reconcile`), so a
+    # picture taken in between says nothing about where it is. An empty
+    # position is that silence; `[0, 0]` would be a claim, and the map would
+    # draw a marker in the sea for it.
+    world = live()
+    port.CommandPort(campaign=world).submit(
+        Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
+    )
+    (bought,) = world.observation("WEST").squads
+    assert bought.pos == ()
+
+    world.roster.reconcile({"WEST-1": Held(8, "", (1234, 5678))})
+    (fielded,) = world.observation("WEST").squads
+    assert fielded.pos == (1234, 5678)
+    # Beside `at`, not instead of it: the Place is still empty, because that is
+    # what a Squad in open ground is standing in.
+    assert fielded.at == ""
 
 
 def test_a_squad_the_world_no_longer_holds_leaves_the_observation() -> None:

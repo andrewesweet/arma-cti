@@ -25,6 +25,16 @@
  * the client that caused it through cti_fnc_portReply, in the port's own
  * rejection vocabulary — there is no human-only error channel.
  *
+ * This interval is also how stale the picture may be, and since #175 that is
+ * something a Commander can see rather than only reason about: a Squad's map
+ * position (`pos`, ADR-0058) is drawn from the last push, so a marker trails
+ * its Squad by up to one interval — five seconds, which at infantry pace is a
+ * few tens of metres on a strategic map. **Accepted, and stated here rather
+ * than discovered in a Play Session** (human ruling of 2026-08-04, #175 ruling
+ * 3). Shortening the interval is not the lever it looks like: every push is a
+ * `view` round trip per human Commander, and what the position is for — is that
+ * Squad alive, and roughly where — does not need a fresher answer than this.
+ *
  * Arguments:
  * 0: seconds between pushes <NUMBER> (optional, default 5)
  *

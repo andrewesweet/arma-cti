@@ -61,6 +61,13 @@ _WORST_AGE: Final = 9_999
 # Squad ids number from the first ever bought, not from the ones still alive, so
 # a long Campaign's live roster wears four-digit ordinals.
 _WORST_ORDINAL: Final = 1_000
+# The dearest map position a Squad can be standing at (#175). Not taken from the
+# manifest, because a Squad may march anywhere on the terrain and the manifest
+# only says where the Places are: this is the map's own extent, and Altis —
+# 30,720 m on a side — is the largest terrain the engine ships. Five digits an
+# axis, and every five-digit pair costs the wire the same, so a bigger world
+# than Altis would have to arrive before this understates anything.
+_WORST_POSITION: Final = (30_720, 30_720)
 # `cti_fnc_commanderView` correlates on `view-<side>-<time>`.
 _WORST_REQUEST_ID: Final = f"view-{_WORST_SIDE}-99999"
 
@@ -74,8 +81,9 @@ def worst_case(
     moment: every Objective owned, every Base's HQ destroyed, a Contact standing
     at every place at the heaviest echelon and posture with every asset named,
     and each Squad wearing the longest authored Squad type with the longest
-    authored place id both in its Order and under its feet. A real Campaign
-    cannot exceed this, so a map that fits it fits.
+    authored place id both in its Order and under its feet, standing at the
+    dearest position the widest terrain admits. A real Campaign cannot exceed
+    this, so a map that fits it fits.
     """
     places = tuple(objective.id for objective in map_manifest.objectives)
     places += tuple(base.id for base in map_manifest.bases)
@@ -94,6 +102,7 @@ def worst_case(
                 order=_WORST_ORDER,
                 place=widest,
                 at=widest,
+                pos=_WORST_POSITION,
             )
             for index in range(squads_per_side)
         ),

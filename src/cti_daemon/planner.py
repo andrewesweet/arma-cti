@@ -11,6 +11,20 @@ It plans under the same fog a human Commander does (ADR-0012). An Observation is
 the only input there is, and no unprojected one exists to reach for, so this
 cannot read the enemy's order of battle even by accident. What it knows of the
 enemy is Contacts: banded, aged, and only where somebody looked.
+
+**It does not read `SquadView.pos`, and that is decided rather than overlooked**
+(#175 ruling 2, human, 2026-08-04; ADR-0058). The field carries a Squad's map
+position in metres, so that a human Commander can see his own Squads while they
+are on the march; this keeps reasoning in Places, because every term it has —
+adjacency, Contacts, garrisons, the Assault mass table — is keyed on one.
+
+`_options` is where the shape of the omission is visible: a Squad in open ground
+has no Place, so its march is priced from the Base it was bought at rather than
+from where it has actually got to. That understates a Squad half way to a town
+and overstates one that has turned round, and correcting it is a real planner
+change with consequences to weigh rather than a line to add here quietly — it
+travels as post-MVP Commander work (#173, and the #177 prototype may pull it
+in). Until then this reads `at` and ignores `pos`, deliberately.
 """
 
 from __future__ import annotations

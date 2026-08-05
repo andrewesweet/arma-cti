@@ -464,6 +464,7 @@ class Campaign:
                     order=squad.order.kind,
                     place=squad.order.place,
                     at=squad.at,
+                    pos=squad.pos,
                 )
                 for squad in self.roster.roll(for_side)
             ),

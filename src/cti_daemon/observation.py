@@ -7,9 +7,20 @@ persists — strategic state, nothing tactical — so the Phase-2 snapshot schem
 this shape rather than a second one, and a planner tested against a closed schema
 is tested against the one that survives a resume.
 
-Excluded on purpose, not for want of a field: exact positions, health, ammo,
-vehicle damage and AI knowledge. A Squad's position is the Place it is standing
-on, because that is the resolution a Commander reasons at (ADR-0020).
+Excluded on purpose, not for want of a field: health, ammo, vehicle damage and
+AI knowledge. A Squad's position is the Place it is standing on, because that is
+the resolution a Commander *reasons* at (ADR-0020).
+
+With one exception, and it is about seeing rather than reasoning (#175,
+ADR-0058, human ruling of 2026-08-04). A `SquadView` carries `pos` beside `at`:
+the map position of the Commander's **own** Squad, in whole metres. `at` is
+Place-grained and stays so, and every reader of it — the planner, the port's
+rules, the Contacts the fog rule is actually about — is untouched. The reason is
+that a Place-grained `at` is empty for the whole march between two Places, so a
+marching Squad, a pinned Squad and a Squad wiped to the last man were the same
+picture on the Commander's map: absent. Knowing where his own Squads are is not
+enemy intelligence, and both Commanders receive the same field, so ADR-0012's
+symmetry is unmoved. There is deliberately no such field on a `Contact`.
 
 Excluded on purpose for a second reason (#27): the enemy. ADR-0012's Commander
 symmetry covers knowing as well as commanding, so there is no observation
@@ -74,6 +85,13 @@ class SquadView:
     # Where it is, to the nearest authored place: an Objective id, a Base id, or
     # empty for open ground between them.
     at: str
+    # And where it is on the map, as `[east, north]` in whole metres (#175,
+    # ADR-0058) — `()` for a Squad the world has not yet reported standing, so
+    # a Commander is shown nothing rather than a coordinate nobody has observed.
+    # It is up to one report — five seconds — behind, which at infantry pace is
+    # a marker trailing its Squad by tens of metres on a strategic map:
+    # `cti_fnc_commanderView` sets the rate and states the consequence.
+    pos: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -148,6 +166,10 @@ SQUAD_FIELDS: Final[tuple[tuple[str, str], ...]] = (
     ("order", "order"),
     ("place", "place"),
     ("at", "at"),
+    # Last because it arrived last, and because the map reads by name: the
+    # order here is the document's order and nothing depends on it but the
+    # export's own test.
+    ("pos", "pos"),
 )
 CONTACT_FIELDS: Final[tuple[tuple[str, str], ...]] = (
     ("at", "at"),

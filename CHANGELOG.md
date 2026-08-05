@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A Commander can see his own Squads on the march.** Playtest 0001 lost sight of two
+  Squads for the length of a march and read the absence as death — they were alive at
+  eight men apiece. The Observation's `SquadView` now carries `pos`, the Squad's map
+  position in whole metres, beside the Place-grained `at` it has always had, and
+  `cti_fnc_mapRender` draws an own-Squad marker wherever the Squad is rather than only
+  where it is standing still. A Squad the world has not yet reported has no position
+  rather than a false one, and falls back to its Place exactly as before. `at` is
+  untouched, so the fog rule, Contacts and every existing reader are untouched with it;
+  the AI Commander deliberately does not read the new field at MVP, which its module
+  docstring says out loud. The marker is up to one 5 s push behind its Squad, accepted
+  and stated where the rate is set. Human ruling of 2026-08-04 on #175; shape recorded
+  in ADR-0058. The wire cost is a fifth of a Squad record: Stratis's worst-case Squad
+  ceiling falls from 71 a side to 59, and ADR-0030's per-map trigger is unmoved.
+
 - **A corpus verdict is rendered from its own record now, not read off 25 lines by hand.**
   `just verdict [pool-dir]` reads a finished pool run's `pool.json` and the per-probe
   `verdict.json`s and prints the lines a close quotes into the issue the run gated: worst class,

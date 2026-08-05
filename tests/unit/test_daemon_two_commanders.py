@@ -64,7 +64,11 @@ def turn(daemon: Daemon, step: int) -> dict[str, Any]:
         for squad in daemon.campaign.roster.roll(side):
             if squad.order.place:
                 presence.setdefault(squad.order.place, []).append(side)
-            squads[squad.id] = {"size": squad.size, "at": squad.order.place}
+            # `pos` is required of the world (#175) and nothing in this test
+            # reads it: the world here teleports Squads to their Order's Place
+            # rather than marching them, so the one honest position it can give
+            # is the one the Place already stands for.
+            squads[squad.id] = {"size": squad.size, "at": squad.order.place, "pos": [0, 0, 0]}
     return reply_to(
         daemon,
         id=f"turn-{step}",

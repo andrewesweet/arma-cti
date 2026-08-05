@@ -43,16 +43,41 @@ def test_an_empty_squad_report_is_the_world_saying_it_holds_none() -> None:
     assert told.squads == {}
 
 
-def test_a_squad_is_read_as_its_strength_and_its_place() -> None:
-    told = report.parse(_payload(squads={"w-1": {"size": 6, "at": "girna"}}))
+def test_a_squad_is_read_as_its_strength_its_place_and_its_position() -> None:
+    told = report.parse(
+        _payload(squads={"w-1": {"size": 6, "at": "girna", "pos": [1234.5, 5678.4, 12.0]}})
+    )
 
-    assert told.squads == {"w-1": (6, "girna")}
+    assert told.squads == {"w-1": (6, "girna", (1234, 5678))}
 
 
 def test_a_marching_squad_is_in_no_place_rather_than_in_a_missing_one() -> None:
-    told = report.parse(_payload(squads={"w-1": {"size": 6}}))
+    # And is still somewhere: the Place is empty because open ground has no
+    # name, which is exactly the case #175 exists for.
+    told = report.parse(_payload(squads={"w-1": {"size": 6, "pos": [400.0, 900.0, 0.0]}}))
 
-    assert told.squads == {"w-1": (6, "")}
+    assert told.squads == {"w-1": (6, "", (400, 900))}
+
+
+def test_a_squad_the_world_cannot_place_in_metres_refuses_the_report() -> None:
+    # Unlike `at`, whose emptiness is an answer, there is no honest absence for
+    # a position: a Squad the world is holding has a leader standing somewhere.
+    # So the report is refused whole rather than read as far as it parses, which
+    # is what every required field here does.
+    with pytest.raises(report.MalformedReportError) as refusal:
+        report.parse(_payload(squads={"w-1": {"size": 6, "at": "girna"}}))
+
+    assert refusal.value.path == "squads.w-1.pos"
+
+
+def test_a_position_is_carried_as_the_two_axes_a_map_can_draw() -> None:
+    # The world states a position the way it states a death's, three axes and
+    # unrounded; a Commander is shown the two of them a map has, in whole
+    # metres (ADR-0058). Rounded rather than truncated, because a marker that
+    # is half a metre out is not wrong in a direction anybody can act on.
+    told = report.parse(_payload(squads={"w-1": {"size": 6, "pos": [10.6, -3.4, 55.9]}}))
+
+    assert told.squads == {"w-1": (6, "", (11, -3))}
 
 
 def test_a_sighting_carries_a_place_a_kind_and_an_age() -> None:
@@ -195,7 +220,7 @@ def test_the_export_is_the_field_names_of_every_shape() -> None:
     exported = report.exported()
 
     assert set(exported) == set(report.SHAPES)
-    assert exported["squad"] == ["size", "at"]
+    assert exported["squad"] == ["size", "at", "pos"]
     assert exported["payload"] == [
         "time",
         "presence",

@@ -28,14 +28,25 @@ NEEDS_PLACE: Final = ("capture", "defend", "assault")
 class Held(NamedTuple):
     """What the world can see of one Squad: how many men, and where.
 
-    Named rather than an anonymous `(int, str)` pair (#90) — the two facts a
-    report carries per Squad are the two the world alone can observe, and a
-    tuple whose members have to be remembered positionally is one transposition
-    away from a Squad standing at "8".
+    Named rather than an anonymous `(int, str)` pair (#90) — the facts a report
+    carries per Squad are the ones the world alone can observe, and a tuple
+    whose members have to be remembered positionally is one transposition away
+    from a Squad standing at "8".
+
+    `where` is now two answers rather than one (#175, ADR-0058): the Place it is
+    standing in, and the map position it is standing at. The Place is the
+    coarse one an Order names and can honestly be empty; the position is where
+    it actually is, in whole metres, and is empty only for a Squad no report has
+    ever held.
     """
 
     size: int
     at: str
+    # `()` for a Squad the world has not reported. Defaulted for the reason
+    # `Squad.at` is: a caller saying "the world holds eight men at Girna" is
+    # making a claim about the head count and the ground, and a coordinate it
+    # does not care about would be noise it had to invent.
+    pos: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -65,6 +76,12 @@ class Squad:
     # id, a Base id, or empty for the open ground between them. Coarse on
     # purpose — a Commander reasons about places, not coordinates (ADR-0008).
     at: str = ""
+    # And where that was on the map, in whole metres (#175, ADR-0058). Beside
+    # `at` rather than instead of it: `at` is what an Order names and what the
+    # planner reasons in, and this is only what a marker is drawn at. Empty
+    # until the world has reported this Squad standing at all, which is the same
+    # moment `fielded` turns true.
+    pos: tuple[int, ...] = ()
     # Whether the world has ever reported it standing. A Squad is bought here
     # and spawned there, so a report taken in between says nothing about it.
     fielded: bool = False
@@ -138,5 +155,6 @@ class Roster:
             if squad is not None:
                 squad.size = held.size
                 squad.at = held.at
+                squad.pos = held.pos
                 squad.fielded = True
         return lost

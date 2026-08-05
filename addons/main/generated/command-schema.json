@@ -28,7 +28,8 @@
     ],
     "squad": [
       "size",
-      "at"
+      "at",
+      "pos"
     ],
     "contact": [
       "seen",
@@ -78,7 +79,8 @@
       "size",
       "order",
       "place",
-      "at"
+      "at",
+      "pos"
     ],
     "contact": [
       "at",
