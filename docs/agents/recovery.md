@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×15 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×16 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -63,7 +63,14 @@
 > layer that works — a prod is measured at 2.32% of the bill across 54 events
 > (#206). #204's end-before-wait rule was ruled and landed the same day (human
 > decision session, 2026-08-05), which is what removes the prod rather than paying
-> it; these two stalls are the last ones recorded before it.
+> it; these two stalls are the last ones recorded before it. Sixteenth use
+> (2026-08-05): the noticing side's first BLIND findings at scale — four
+> could-not-observe reports over the removed prior-art research worktrees, resolved
+> by this document's by-hand look as finished-and-cleaned agents with their output
+> landed on main (`2449d2d`, `ff5e5b2`, `fb43cc9`, `b3953f6`), acked on the human's
+> instruction. The first time BLIND resolved to nothing-wrong: the watcher's honesty
+> about what it could not observe operating in the direction that clears rather
+> than catches.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
