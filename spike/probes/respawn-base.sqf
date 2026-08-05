@@ -83,34 +83,32 @@
 // flaky assertion pass — the one number that moved, 540 down to 480, moved down,
 // because the legs that asserted ruling 4 are gone.
 [] spawn {
+    // Every leg this probe owes an answer for (ADR-0037, #116), on the shared
+    // ledger (#193): struck off as each is measured, and whatever is still owed
+    // at an exit is reported `unverified` rather than left out of the evidence.
+    ["respawn", ["timer", "succession"]] call cti_probe_fnc_legsOwed;
+
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
         diag_log "CTI|FAIL class=infra_unavailable respawn_probe_no_shim";
-        diag_log "CTI|respawn_probe_done";
-    };
-
-    private _legs = ["respawn_timer", "respawn_succession"];
-    private _lost = {
-        params ["_why"];
-        { diag_log format ["CTI|LEG name=%1 status=unverified reason=%2", _x, _why] } forEach _legs;
-        diag_log "CTI|respawn_probe_done";
+        ["the_world_had_no_shim"] call cti_probe_fnc_done;
     };
 
     [20] call cti_probe_fnc_worldReady;
 
     // ---------------------------------------------------------------- the person
     private _waitFor = missionNamespace getVariable ["CTI_PROBE_CLIENT", 0];
-    if (_waitFor <= 0) exitWith { ["run_sent_no_headed_client"] call _lost };
+    if (_waitFor <= 0) exitWith { ["run_sent_no_headed_client"] call cti_probe_fnc_done };
 
     ([_waitFor] call cti_probe_fnc_commanderSlot) params ["_side", "_uid", "_unit"];
     if (_side isEqualTo "") exitWith {
         diag_log format ["CTI|FAIL class=timeout respawn_probe_no_client_assigned waited=%1 players=%2",
             _waitFor, count allPlayers];
-        ["no_person_in_a_commander_slot"] call _lost;
+        ["no_person_in_a_commander_slot"] call cti_probe_fnc_done;
     };
     if (isNull _unit) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed respawn_probe_assigned_uid_absent uid=%1", _uid];
-        ["assigned_uid_holds_no_unit"] call _lost;
+        ["assigned_uid_holds_no_unit"] call cti_probe_fnc_done;
     };
     // The machine his unit lives on, which is where a move of it has to happen.
     private _target = owner _unit;
@@ -119,14 +117,14 @@
     private _delay = getNumber (missionConfigFile >> "respawnDelay");
     if (_delay <= 0) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed respawn_probe_no_configured_delay read=%1", _delay];
-        ["the_mission_config_carries_no_respawn_delay"] call _lost;
+        ["the_mission_config_carries_no_respawn_delay"] call cti_probe_fnc_done;
     };
 
     private _base = (missionNamespace getVariable ["cti_basesBySide", createHashMap])
         getOrDefault [_side, createHashMap];
     if (count _base isEqualTo 0) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed respawn_probe_no_base side=%1", _side];
-        ["the_world_holds_no_base_for_that_side"] call _lost;
+        ["the_world_holds_no_base_for_that_side"] call cti_probe_fnc_done;
     };
     (_base get "position") params ["_baseEast", "_baseNorth"];
     private _baseAt = [_baseEast, _baseNorth, 0];
@@ -149,7 +147,7 @@
     } forEach ((missionNamespace getVariable ["cti_map", createHashMap]) getOrDefault ["objectives", []]);
     if (count _far isEqualTo 0) exitWith {
         diag_log "CTI|FAIL class=assertion_failed respawn_probe_no_objectives";
-        ["the_manifest_offered_no_ground_to_stand_on"] call _lost;
+        ["the_manifest_offered_no_ground_to_stand_on"] call cti_probe_fnc_done;
     };
     (_far get "position") params ["_farEast", "_farNorth"];
     diag_log format ["CTI|respawn_probe_ground place=%1 from_base=%2", _far get "id", round _farBy];
@@ -165,7 +163,7 @@
     };
     if (count _squads isEqualTo 0) exitWith {
         diag_log "CTI|FAIL class=timeout respawn_probe_squad_never_spawned";
-        ["the_world_never_spawned_a_squad"] call _lost;
+        ["the_world_never_spawned_a_squad"] call cti_probe_fnc_done;
     };
     private _squadId = (keys _squads) # 0;
     private _group = _squads get _squadId;
@@ -204,7 +202,7 @@
     if ((_group call _orderOf) # 0 isNotEqualTo "defend") exitWith {
         diag_log format ["CTI|FAIL class=timeout respawn_probe_order_never_landed standing=%1",
             _group getVariable ["cti_order", createHashMap]];
-        ["the_squad_never_took_a_standing_order"] call _lost;
+        ["the_squad_never_took_a_standing_order"] call cti_probe_fnc_done;
     };
 
     // Standing on the ground they are ordered to hold, so cti_fnc_orderEnforce
@@ -238,7 +236,7 @@
     if (_unit distance2D _baseAt <= 500) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed respawn_probe_never_left_base away=%1 wanted=%2 grid=%3",
             round (_unit distance2D _baseAt), 500, mapGridPosition _unit];
-        ["the_person_would_not_leave_his_base"] call _lost;
+        ["the_person_would_not_leave_his_base"] call cti_probe_fnc_done;
     };
 
     _group selectLeader _unit;
@@ -247,7 +245,7 @@
     waitUntil { leader _group isEqualTo _unit || { diag_tickTime > _by } };
     if (leader _group isNotEqualTo _unit) exitWith {
         diag_log format ["CTI|FAIL class=timeout respawn_probe_leadership_never_passed squad=%1", _squadId];
-        ["the_person_never_led_the_squad"] call _lost;
+        ["the_person_never_led_the_squad"] call cti_probe_fnc_done;
     };
 
     private _waypointsOf = {
@@ -268,7 +266,7 @@
     waitUntil { !alive _unit || { diag_tickTime > _by } };
     if (alive _unit) exitWith {
         diag_log "CTI|FAIL class=timeout respawn_probe_the_person_would_not_die";
-        ["the_staged_death_never_took_effect"] call _lost;
+        ["the_staged_death_never_took_effect"] call cti_probe_fnc_done;
     };
 
     // ------------------------------------------------------------- coming back
@@ -301,9 +299,7 @@
     if (isNull _new) exitWith {
         diag_log format ["CTI|FAIL class=timeout respawn_probe_never_came_back uid=%1 waited=%2 delay=%3",
             _uid, round (diag_tickTime - _diedAt), _delay];
-        diag_log "CTI|LEG name=respawn_timer status=unverified reason=the_person_never_respawned";
-        diag_log "CTI|LEG name=respawn_succession status=unverified reason=the_person_never_respawned";
-        diag_log "CTI|respawn_probe_done";
+        ["the_person_never_respawned"] call cti_probe_fnc_done;
     };
     private _took = diag_tickTime - _diedAt;
 
@@ -342,7 +338,7 @@
     diag_log format ["CTI|respawn_probe_timer took=%1 delay=%2 died_from_base=%3 base=%4 away=%5 radius=%6 grid=%7",
         round _took, _delay, round _diedFrom, _base get "id",
         round _cameBackAt, _baseRadius, mapGridPosition _new];
-    diag_log "CTI|LEG name=respawn_timer status=ran";
+    ["timer"] call cti_probe_fnc_legRan;
 
     // The standing Order is still the one he left, which ruling 4 promises and
     // which — unlike the succession it also promises — the world does deliver.
@@ -379,7 +375,7 @@
         _squadId, name _seat, _seat isEqualTo _new, isPlayer _seat,
         (group _new) isEqualTo _group, local _group, count units _group,
         _orderAfter # 0, count _waypointsAfter];
-    diag_log "CTI|LEG name=respawn_succession status=ran";
+    ["succession"] call cti_probe_fnc_legRan;
 
-    diag_log "CTI|respawn_probe_done";
+    [] call cti_probe_fnc_done;
 };

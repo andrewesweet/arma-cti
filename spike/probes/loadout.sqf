@@ -65,25 +65,12 @@
     // been measured; anything still standing at an early exit is reported
     // `unverified`, which the harness reads as infra_unavailable (ADR-0037,
     // #116).
-    private _owed = ["menu", "granted", "away", "respawn", "reported"];
-    private _ran = {
-        params ["_leg"];
-        private _at = _owed find _leg;
-        if (_at >= 0) then { _owed deleteAt _at };
-        diag_log format ["CTI|LEG name=loadout_%1 status=ran", _leg];
-    };
-    private _bail = {
-        params ["_why"];
-        {
-            diag_log format ["CTI|LEG name=loadout_%1 status=unverified reason=%2", _x, _why];
-        } forEach _owed;
-        diag_log "CTI|loadout_probe_done";
-    };
+    ["loadout", ["menu", "granted", "away", "respawn", "reported"]] call cti_probe_fnc_legsOwed;
 
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
         diag_log "CTI|FAIL class=infra_unavailable loadout_probe_no_shim";
-        ["the_world_had_no_shim"] call _bail;
+        ["the_world_had_no_shim"] call cti_probe_fnc_done;
     };
 
     [20] call cti_probe_fnc_worldReady;
@@ -91,7 +78,7 @@
     // --------------------------------------------------------------- the player
     private _waitFor = missionNamespace getVariable ["CTI_PROBE_CLIENT", 0];
     if (_waitFor <= 0) exitWith {
-        ["run_sent_no_headed_client"] call _bail;
+        ["run_sent_no_headed_client"] call cti_probe_fnc_done;
     };
 
     // The Commander slot is the only player slot this mission has today — the
@@ -101,11 +88,11 @@
     if (_side isEqualTo "") exitWith {
         diag_log format ["CTI|FAIL class=timeout loadout_probe_no_client_assigned waited=%1 players=%2",
             _waitFor, count allPlayers];
-        ["no_person_in_a_player_slot"] call _bail;
+        ["no_person_in_a_player_slot"] call cti_probe_fnc_done;
     };
     if (isNull _unit) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_assigned_uid_absent uid=%1", _uid];
-        ["assigned_uid_holds_no_unit"] call _bail;
+        ["assigned_uid_holds_no_unit"] call cti_probe_fnc_done;
     };
 
     private _target = owner _unit;
@@ -125,7 +112,7 @@
     private _kits = call cti_fnc_loadoutCatalogue;
     if (_kits isEqualTo []) exitWith {
         diag_log "CTI|FAIL class=assertion_failed loadout_probe_no_catalogue";
-        ["the_world_shipped_no_menu"] call _bail;
+        ["the_world_shipped_no_menu"] call cti_probe_fnc_done;
     };
     private _kitIds = _kits apply { _x getOrDefault ["id", ""] };
 
@@ -148,7 +135,7 @@
     if (_wantedArms isEqualTo [] || { _secondArms isEqualTo [] }) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_kit_has_no_arms first=%1 second=%2 side=%3 menu=%4",
             _wantedArms, _secondArms, _side, _kitIds];
-        ["a_menu_kit_named_no_weapon"] call _bail;
+        ["a_menu_kit_named_no_weapon"] call cti_probe_fnc_done;
     };
 
     // The vacuity checks the header promises. If he already carries the kit's
@@ -158,7 +145,7 @@
     if (_before in _wantedArms || { (_secondArms # 0) in _wantedArms }) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_kits_indistinguishable worn=%1 first=%2 second=%3",
             _before, _wantedArms, _secondArms];
-        ["the_probe_could_not_tell_the_kits_apart"] call _bail;
+        ["the_probe_could_not_tell_the_kits_apart"] call cti_probe_fnc_done;
     };
     diag_log format ["CTI|loadout_probe_before weapon=%1 first=%2 second=%3",
         _before, _wantedArms, _secondArms];
@@ -202,7 +189,7 @@
     if (count _entries < count _kits) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_menu_short have=%1 want=%2 actions=%3",
             count _entries, count _kits, _menu];
-        ["the_client_was_offered_no_menu"] call _bail;
+        ["the_client_was_offered_no_menu"] call cti_probe_fnc_done;
     };
 
     // One entry per authored kit, each gated on the rule the server grants
@@ -214,10 +201,10 @@
     if (_missing isNotEqualTo [] || { _ungated isNotEqualTo [] }) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_menu_wrong missing=%1 ungated=%2 offered=%3",
             _missing, count _ungated, _offeredIds];
-        ["the_menu_was_not_the_authored_one"] call _bail;
+        ["the_menu_was_not_the_authored_one"] call cti_probe_fnc_done;
     };
     diag_log format ["CTI|loadout_probe_menu entries=%1 ids=%2", count _entries, _offeredIds];
-    ["menu"] call _ran;
+    ["menu"] call cti_probe_fnc_legRan;
 
     // --------------------------------------------------------------- he picks one
     // Installed on the client once; each pick is then a two-value call, sent as
@@ -267,7 +254,7 @@
     };
 
     if !([_wanted] call _drivePick) exitWith {
-        ["the_client_never_published_a_pick"] call _bail;
+        ["the_client_never_published_a_pick"] call cti_probe_fnc_done;
     };
 
     // Granted and worn. The grant is the server's own record and the kit is what
@@ -285,10 +272,10 @@
     if (_granted isNotEqualTo _wanted || { !(_worn in _wantedArms) }) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_not_dressed granted=%1 want=%2 weapon=%3 arms=%4",
             _granted, _wanted, _worn, _wantedArms];
-        ["the_pick_at_base_was_never_worn"] call _bail;
+        ["the_pick_at_base_was_never_worn"] call cti_probe_fnc_done;
     };
     diag_log format ["CTI|loadout_probe_granted kit=%1 weapon=%2", _granted, _worn];
-    ["granted"] call _ran;
+    ["granted"] call cti_probe_fnc_legRan;
 
     // ------------------------------------------------ and cannot pick one away
     // Open ground: no Base, no Objective and not the sea, found by asking the
@@ -310,7 +297,7 @@
     } forEach [0, 45, 90, 135, 180, 225, 270, 315];
     if (_open isEqualTo []) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_no_open_ground base=%1", _from];
-        ["the_map_offered_no_ground_off_a_place"] call _bail;
+        ["the_map_offered_no_ground_off_a_place"] call cti_probe_fnc_done;
     };
 
     (call _bodyOf) setPosATL [_open # 0, _open # 1, 0];
@@ -319,12 +306,12 @@
     if ([call _bodyOf] call cti_fnc_loadoutAtBase) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_move_refused at=%1 want=%2",
             mapGridPosition (getPosATL (call _bodyOf)), mapGridPosition _open];
-        ["the_world_would_not_move_him_off_his_base"] call _bail;
+        ["the_world_would_not_move_him_off_his_base"] call cti_probe_fnc_done;
     };
     diag_log format ["CTI|loadout_probe_away at=%1", mapGridPosition (getPosATL (call _bodyOf))];
 
     if !([_second] call _drivePick) exitWith {
-        ["the_client_never_published_a_second_pick"] call _bail;
+        ["the_client_never_published_a_second_pick"] call cti_probe_fnc_done;
     };
 
     // An absence claim, so it is a length of time nothing happened for and has
@@ -343,10 +330,10 @@
     if (_moved isNotEqualTo _wanted || _took) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_granted_away_from_base granted=%1 want=%2 weapon=%3",
             _moved, _wanted, primaryWeapon (call _bodyOf)];
-        ["a_pick_away_from_base_was_granted"] call _bail;
+        ["a_pick_away_from_base_was_granted"] call cti_probe_fnc_done;
     };
     diag_log format ["CTI|loadout_probe_refused_away granted=%1 asked=%2 dwell=20", _moved, _second];
-    ["away"] call _ran;
+    ["away"] call cti_probe_fnc_legRan;
 
     // ------------------------------------------------------ he dies and returns
     // The wish is put back to what he is already wearing before the kill, so the
@@ -354,7 +341,7 @@
     // his own Base, where a standing wish for another kit would be honoured, and
     // that is correct behaviour rather than something to assert around.
     if !([_wanted] call _drivePick) exitWith {
-        ["the_client_never_restored_its_pick"] call _bail;
+        ["the_client_never_restored_its_pick"] call cti_probe_fnc_done;
     };
 
     private _corpse = call _bodyOf;
@@ -363,7 +350,7 @@
     waitUntil { !alive _corpse || { diag_tickTime > _deadline } };
     if (alive _corpse) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_kill_refused damage=%1", damage _corpse];
-        ["the_world_refused_the_kill"] call _bail;
+        ["the_world_refused_the_kill"] call cti_probe_fnc_done;
     };
     diag_log format ["CTI|loadout_probe_killed configured_delay=%1", _configured];
 
@@ -379,7 +366,7 @@
     if (_reborn isEqualTo _corpse || { !alive _reborn }) exitWith {
         diag_log format ["CTI|FAIL class=timeout loadout_probe_never_respawned new_body=%1 alive=%2 delay=%3",
             _reborn isNotEqualTo _corpse, alive _reborn, _configured];
-        ["the_player_never_came_back"] call _bail;
+        ["the_player_never_came_back"] call cti_probe_fnc_done;
     };
     diag_log format ["CTI|loadout_probe_respawned weapon=%1", primaryWeapon _reborn];
 
@@ -389,10 +376,10 @@
     if !(_after in _wantedArms) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_kit_lost_on_respawn weapon=%1 want=%2 kit=%3",
             _after, _wantedArms, _wanted];
-        ["the_kit_did_not_survive_the_respawn"] call _bail;
+        ["the_kit_did_not_survive_the_respawn"] call cti_probe_fnc_done;
     };
     diag_log format ["CTI|loadout_probe_redressed kit=%1 weapon=%2", _wanted, _after];
-    ["respawn"] call _ran;
+    ["respawn"] call cti_probe_fnc_legRan;
 
     // ------------------------------------------------- and the wire carries it
     // What the daemon does with the field is a Python test's subject; what only
@@ -406,17 +393,14 @@
     if ((_sampled getOrDefault [_uid, ""]) isNotEqualTo _wanted) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed loadout_probe_not_reported sampled=%1 want=%2",
             _sampled, _wanted];
-        ["the_report_did_not_carry_the_pick"] call _bail;
+        ["the_report_did_not_carry_the_pick"] call cti_probe_fnc_done;
     };
     if !("loadouts" in _declared) exitWith {
         diag_log format ["CTI|FAIL class=schema_stale loadout_probe_field_undeclared payload=%1", _declared];
-        ["the_exported_schema_declared_no_such_field"] call _bail;
+        ["the_exported_schema_declared_no_such_field"] call cti_probe_fnc_done;
     };
     diag_log format ["CTI|loadout_probe_reported sampled=%1 payload=%2", _sampled, _declared];
-    ["reported"] call _ran;
+    ["reported"] call cti_probe_fnc_legRan;
 
-    {
-        diag_log format ["CTI|LEG name=loadout_%1 status=unverified reason=fell_through", _x];
-    } forEach _owed;
-    diag_log "CTI|loadout_probe_done";
+    [] call cti_probe_fnc_done;
 };

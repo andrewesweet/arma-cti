@@ -56,13 +56,12 @@
 // and Squads, never on a firefight: what the code under test owns is which
 // refusal a caller earns, and nothing here asks the world to decide anything.
 //
-// The client-side judge-and-ack scaffold below is the third copy in the corpus
-// (`client-port.sqf` has the first, `reinforce.sqf` the second, and that one's
-// header says a third copy should lift it into `spike/probe-prelude.sqf`). It is
-// still a copy here, deliberately and not silently: reconciling it means editing
-// two green headed-client probes whose own corpus runs are this issue's landing
-// gate, which would put #188 behind a refactor it does not need. The debt is
-// filed rather than dropped — see the follow-up issue named on #188.
+// The client-side judge-and-ack scaffold this probe carried the third copy of is
+// now `spike/probe-prelude.sqf`'s, which is the move #193 was filed to make and
+// #188 deliberately did not. Its leg ledger went with it: the list of what a
+// probe owes, the strike-off, and the exit that reports whatever is left is one
+// helper the whole corpus's headed-client probes share, rather than a shape two
+// of them had and three of them wrote out by hand.
 //
 // `just regress dead-principal`, or by hand
 // `just probe spike/probes/dead-principal.sqf`.
@@ -72,25 +71,12 @@
     // `unverified`, which the harness reads as infra_unavailable (ADR-0037,
     // #116). Kept as a list rather than written out per exit so a leg cannot be
     // forgotten at one of them, which is the whole failure the rule is about.
-    private _owed = ["refused", "view", "revived", "leader"];
-    private _ran = {
-        params ["_leg"];
-        private _at = _owed find _leg;
-        if (_at >= 0) then { _owed deleteAt _at };
-        diag_log format ["CTI|LEG name=dead_principal_%1 status=ran", _leg];
-    };
-    private _bail = {
-        params ["_why"];
-        {
-            diag_log format ["CTI|LEG name=dead_principal_%1 status=unverified reason=%2", _x, _why];
-        } forEach _owed;
-        diag_log "CTI|dead_principal_probe_done";
-    };
+    ["dead_principal", ["refused", "view", "revived", "leader"]] call cti_probe_fnc_legsOwed;
 
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
         diag_log "CTI|FAIL class=infra_unavailable dead_principal_probe_no_shim";
-        ["the_world_had_no_shim"] call _bail;
+        ["the_world_had_no_shim"] call cti_probe_fnc_done;
     };
 
     [20] call cti_probe_fnc_worldReady;
@@ -98,7 +84,7 @@
     // ---------------------------------------------------------------- the caller
     private _waitFor = missionNamespace getVariable ["CTI_PROBE_CLIENT", 0];
     if (_waitFor <= 0) exitWith {
-        ["run_sent_no_headed_client"] call _bail;
+        ["run_sent_no_headed_client"] call cti_probe_fnc_done;
     };
 
     ([_waitFor] call cti_probe_fnc_commanderSlot) params ["_side", "_uid", "_unit"];
@@ -106,11 +92,11 @@
     if (_side isEqualTo "") exitWith {
         diag_log format ["CTI|FAIL class=timeout dead_principal_probe_no_client_assigned waited=%1 players=%2",
             _waitFor, count allPlayers];
-        ["no_person_in_a_commander_slot"] call _bail;
+        ["no_person_in_a_commander_slot"] call cti_probe_fnc_done;
     };
     if (isNull _unit) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed dead_principal_probe_assigned_uid_absent uid=%1", _uid];
-        ["assigned_uid_holds_no_unit"] call _bail;
+        ["assigned_uid_holds_no_unit"] call cti_probe_fnc_done;
     };
 
     private _target = owner _unit;
@@ -155,7 +141,7 @@
     };
     if (count _roster < 1) exitWith {
         diag_log format ["CTI|FAIL class=timeout dead_principal_probe_squad_never_spawned have=%1", count _roster];
-        ["the_world_never_spawned_a_squad"] call _bail;
+        ["the_world_never_spawned_a_squad"] call cti_probe_fnc_done;
     };
 
     private _squadId = (keys _roster) # 0;
@@ -165,46 +151,12 @@
 
     // --------------------------------------------------------- the client's side
     // The judgement arrives on the client through cti_fnc_portReply and can only
-    // be read there, so the client unpacks it and publishes an ack the server
-    // reads. Every ack carries the step it belongs to, so a late one from the
-    // step before is discarded rather than read as this step's answer.
-    {
-        cti_probeJudge = {
-            params ["_step", ["_note", ""]];
-            private _by = diag_tickTime + 60;
-            waitUntil { !isNil "cti_lastJudgement" || { diag_tickTime > _by } };
-            private _judgement = missionNamespace getVariable ["cti_lastJudgement", createHashMap];
-            private _reason = _judgement getOrDefault ["reason", createHashMap];
-            cti_probeAck = [
-                _step,
-                _judgement getOrDefault ["status", "nothing-arrived"],
-                _reason getOrDefault ["code", ""],
-                _reason getOrDefault ["detail", ""],
-                (_judgement getOrDefault ["result", createHashMap]) getOrDefault ["funds", -1],
-                _note
-            ];
-            publicVariable "cti_probeAck";
-        };
-    } remoteExec ["call", _target];
-
-    private _drive = {
-        params ["_step", "_code", ["_wait", 90]];
-        cti_probeAck = nil;
-        _code remoteExec ["call", _target];
-        private _by = diag_tickTime + _wait;
-        waitUntil {
-            (!isNil "cti_probeAck" && { (cti_probeAck # 0) isEqualTo _step })
-                || { diag_tickTime > _by }
-        };
-        if (isNil "cti_probeAck" || { (cti_probeAck # 0) isNotEqualTo _step }) exitWith {
-            diag_log format ["CTI|FAIL class=timeout dead_principal_probe_client_silent step=%1", _step];
-            []
-        };
-        private _ack = +cti_probeAck;
-        diag_log format ["CTI|dead_principal_probe_ack step=%1 status=%2 code=%3 funds=%4 note=%5",
-            _ack # 0, _ack # 1, _ack # 2, _ack # 4, _ack # 5];
-        _ack
-    };
+    // be read there, so the client is armed to unpack it and publish an ack the
+    // server reads, and every step below is driven through that
+    // (`cti_probe_fnc_armClient` and `cti_probe_fnc_drive`, prelude). Only the
+    // `revived` step names a result key: the other two expect a refusal, and a
+    // refusal carries no result to read.
+    [_target] call cti_probe_fnc_armClient;
 
     // Hold the next respawn open and kill him. The hold is a literal inside the
     // block rather than a value published ahead of it, so nothing here depends
@@ -245,7 +197,7 @@
 
     // ------------------------------------------------ a dead Commander Commands
     if !(["commander", _unit] call _kill) exitWith {
-        ["the_caller_could_not_be_killed"] call _bail;
+        ["the_caller_could_not_be_killed"] call cti_probe_fnc_done;
     };
     private _dead = ["dead-commander", _target] call _picture;
 
@@ -257,9 +209,9 @@
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
             ["refused", "purchase while dead"] call cti_probeJudge;
         };
-    }, 45] call _drive;
+    }, 45] call cti_probe_fnc_drive;
 
-    if (_refused isEqualTo []) exitWith { ["client_never_acked_the_step"] call _bail };
+    if (_refused isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_refused # 1) isNotEqualTo "rejected" || { (_refused # 2) isNotEqualTo "caller_dead" }) then {
         diag_log format ["CTI|FAIL class=assertion_failed dead_principal_probe_commander_not_refused status=%1 code=%2 detail=%3",
             _refused # 1, _refused # 2, _refused # 3];
@@ -283,7 +235,7 @@
     };
     diag_log format ["CTI|dead_principal_probe_commander code=%1 squads=%2->%3 corpse_matched=%4",
         _refused # 2, _rosterBefore, _rosterAfter, !isNull _dead];
-    ["refused"] call _ran;
+    ["refused"] call cti_probe_fnc_legRan;
 
     // -------------------------------------------- and still watches while dead
     // Ruling 3's other half, and the one that would fail silently: the view is
@@ -309,7 +261,7 @@
     waitUntil { !isNil "cti_deadProbeView" || { diag_tickTime > _by } };
     if (isNil "cti_deadProbeView") exitWith {
         diag_log "CTI|FAIL class=timeout dead_principal_probe_view_never_reported";
-        ["client_never_reported_its_view"] call _bail;
+        ["client_never_reported_its_view"] call cti_probe_fnc_done;
     };
     private _view = +cti_deadProbeView;
     if !(_view # 0) then {
@@ -325,7 +277,7 @@
     };
     diag_log format ["CTI|dead_principal_probe_view arrived=%1 side=%2 client_alive=%3",
         _view # 0, _view # 1, _view # 2];
-    ["view"] call _ran;
+    ["view"] call cti_probe_fnc_legRan;
 
     // ------------------------------------------------------ and then gets up
     private _by = diag_tickTime + 165;
@@ -334,7 +286,7 @@
     if (!alive _living) exitWith {
         diag_log format ["CTI|FAIL class=timeout dead_principal_probe_never_respawned held=120 matched=%1",
             !isNull _living];
-        ["the_caller_never_came_back"] call _bail;
+        ["the_caller_never_came_back"] call cti_probe_fnc_done;
     };
     ["respawned", _target] call _picture;
 
@@ -344,11 +296,11 @@
             cti_lastJudgement = nil;
             private _cmd = ["purchase", [["squad_type", "rifle"]]] call cti_fnc_command;
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
-            ["revived", "purchase after respawn"] call cti_probeJudge;
+            ["revived", "purchase after respawn", "funds"] call cti_probeJudge;
         };
-    }] call _drive;
+    }] call cti_probe_fnc_drive;
 
-    if (_revived isEqualTo []) exitWith { ["client_never_acked_the_step"] call _bail };
+    if (_revived isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_revived # 1) isNotEqualTo "ok") then {
         diag_log format ["CTI|FAIL class=assertion_failed dead_principal_probe_revived_refused status=%1 code=%2 detail=%3",
             _revived # 1, _revived # 2, _revived # 3];
@@ -364,7 +316,7 @@
     };
     diag_log format ["CTI|dead_principal_probe_revived status=%1 squads=%2->%3",
         _revived # 1, _rosterBefore, _rosterAfter];
-    ["revived"] call _ran;
+    ["revived"] call cti_probe_fnc_legRan;
 
     // ---------------------------------------------- the port's other principal
     // The same person, no longer commanding anything, leading the Squad bought
@@ -380,7 +332,7 @@
     waitUntil { leader _squad isEqualTo _living || { diag_tickTime > _by } };
     if (leader _squad isNotEqualTo _living) exitWith {
         diag_log format ["CTI|FAIL class=timeout dead_principal_probe_leadership_never_passed squad=%1", _squadId];
-        ["the_person_never_led_the_squad"] call _bail;
+        ["the_person_never_led_the_squad"] call cti_probe_fnc_done;
     };
 
     // The staging asserted before it is read through, again: while he is alive
@@ -391,7 +343,7 @@
     if (_ledSquad isNotEqualTo _squadId) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed dead_principal_probe_leader_not_resolved got=%1/%2 want=%3",
             _ledSide, _ledSquad, _squadId];
-        ["the_server_never_resolved_him_as_a_squad_leader"] call _bail;
+        ["the_server_never_resolved_him_as_a_squad_leader"] call cti_probe_fnc_done;
     };
     diag_log format ["CTI|dead_principal_probe_leader_staged squad=%1 side=%2 units=%3 local=%4",
         _ledSquad, _ledSide, count units _squad, local _squad];
@@ -400,7 +352,7 @@
     publicVariable "cti_deadProbeSquad";
 
     if !(["leader", _living] call _kill) exitWith {
-        ["the_squad_leader_could_not_be_killed"] call _bail;
+        ["the_squad_leader_could_not_be_killed"] call cti_probe_fnc_done;
     };
     // What ADR-0052 says a post-resolution check would have seen, on the record
     // rather than asserted: the engine passes `leader` to the successor, so the
@@ -417,9 +369,9 @@
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
             ["leader", format ["asked for %1", cti_deadProbeSquad]] call cti_probeJudge;
         };
-    }, 45] call _drive;
+    }, 45] call cti_probe_fnc_drive;
 
-    if (_leaderStep isEqualTo []) exitWith { ["client_never_acked_the_step"] call _bail };
+    if (_leaderStep isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_leaderStep # 1) isNotEqualTo "rejected" || { (_leaderStep # 2) isNotEqualTo "caller_dead" }) then {
         diag_log format ["CTI|FAIL class=assertion_failed dead_principal_probe_leader_not_refused status=%1 code=%2 detail=%3",
             _leaderStep # 1, _leaderStep # 2, _leaderStep # 3];
@@ -440,7 +392,7 @@
     };
     diag_log format ["CTI|dead_principal_probe_leader squad=%1 code=%2 units=%3->%4",
         _squadId, _leaderStep # 2, _standingBefore, _standingAfter];
-    ["leader"] call _ran;
+    ["leader"] call cti_probe_fnc_legRan;
 
-    diag_log "CTI|dead_principal_probe_done";
+    [] call cti_probe_fnc_done;
 };

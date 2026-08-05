@@ -43,17 +43,25 @@
 // be a clock race dressed up as a rule, while a man appearing in a group is the
 // effect this Command exists to cause.
 //
-// The client-side judge-and-ack scaffold below is the second copy in the corpus;
-// `client-port.sqf` has the first. Kept rather than lifted into
-// `spike/probe-prelude.sqf` because #86's rule for that file is that a helper
-// earns its place by having been copied, and reconciling two probes that both
-// drive a headed client is a change to a green probe made from a session that
-// cannot run the tier cheaply. A third copy should move it.
+// The client-side judge-and-ack scaffold this probe once carried a second copy
+// of has moved into `spike/probe-prelude.sqf`, which is what the note here asked
+// a third copy to do (#193, third copy on #188). This probe's fork of it was the
+// result key: it read `cost` where the first copy read `funds`, because an
+// accepted Reinforce answers with what the refill cost and an accepted Purchase
+// does not answer with a cost at all. The shared judge takes that key per step,
+// so `own` — the one step here that expects an accept — names `cost`, and the
+// two that expect a refusal name nothing.
 [] spawn {
+    // Every leg this probe owes an answer for (ADR-0037, #116). Struck off as
+    // each is measured; whatever is still owed at an exit is reported
+    // `unverified`, which the runner reads as infra_unavailable rather than as a
+    // pass.
+    ["reinforce", ["caller", "own", "other", "purchase"]] call cti_probe_fnc_legsOwed;
+
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
         diag_log "CTI|FAIL class=infra_unavailable reinforce_probe_no_shim";
-        diag_log "CTI|reinforce_probe_done";
+        ["the_world_had_no_shim"] call cti_probe_fnc_done;
     };
 
     // One side's board as the daemon holds it, through the same `view` verb the
@@ -78,8 +86,7 @@
     // ---------------------------------------------------------------- the caller
     private _waitFor = missionNamespace getVariable ["CTI_PROBE_CLIENT", 0];
     if (_waitFor <= 0) exitWith {
-        diag_log "CTI|LEG name=reinforce_caller status=unverified reason=run_sent_no_headed_client";
-        diag_log "CTI|reinforce_probe_done";
+        ["run_sent_no_headed_client"] call cti_probe_fnc_done;
     };
 
     ([_waitFor] call cti_probe_fnc_commanderSlot) params ["_side", "_uid", "_unit"];
@@ -87,13 +94,11 @@
     if (_side isEqualTo "") exitWith {
         diag_log format ["CTI|FAIL class=timeout reinforce_probe_no_client_assigned waited=%1 players=%2",
             _waitFor, count allPlayers];
-        diag_log "CTI|LEG name=reinforce_caller status=unverified reason=no_person_in_a_commander_slot";
-        diag_log "CTI|reinforce_probe_done";
+        ["no_person_in_a_commander_slot"] call cti_probe_fnc_done;
     };
     if (isNull _unit) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed reinforce_probe_assigned_uid_absent uid=%1", _uid];
-        diag_log "CTI|LEG name=reinforce_caller status=unverified reason=assigned_uid_holds_no_unit";
-        diag_log "CTI|reinforce_probe_done";
+        ["assigned_uid_holds_no_unit"] call cti_probe_fnc_done;
     };
 
     private _target = owner _unit;
@@ -112,8 +117,7 @@
     };
     if (count _squads < 2) exitWith {
         diag_log format ["CTI|FAIL class=timeout reinforce_probe_squads_never_spawned have=%1", count _squads];
-        diag_log "CTI|LEG name=reinforce_caller status=unverified reason=the_world_never_spawned_two_squads";
-        diag_log "CTI|reinforce_probe_done";
+        ["the_world_never_spawned_two_squads"] call cti_probe_fnc_done;
     };
 
     private _ids = keys _squads;
@@ -148,8 +152,7 @@
     waitUntil { leader _mine isEqualTo _unit || { diag_tickTime > _by } };
     if (leader _mine isNotEqualTo _unit) exitWith {
         diag_log format ["CTI|FAIL class=timeout reinforce_probe_leadership_never_passed squad=%1", _mineId];
-        diag_log "CTI|LEG name=reinforce_caller status=unverified reason=the_person_never_led_the_squad";
-        diag_log "CTI|reinforce_probe_done";
+        ["the_person_never_led_the_squad"] call cti_probe_fnc_done;
     };
 
     // And the assignment goes away, so the same person commands no side and is a
@@ -158,7 +161,7 @@
 
     diag_log format ["CTI|reinforce_probe_caller side=%1 owner=%2 leads=%3 other=%4 mine_units=%5 theirs_units=%6 mine_local=%7",
         _side, _target, _mineId, _theirsId, count units _mine, count units _theirs, local _mine];
-    diag_log "CTI|LEG name=reinforce_caller status=ran";
+    ["caller"] call cti_probe_fnc_legRan;
 
     // The daemon's own account of the two Squads, which is what its judgement
     // will be made against: it has to have taken the world's report of the
@@ -174,54 +177,11 @@
         _sizes getOrDefault [_mineId, -1], _sizes getOrDefault [_theirsId, -1]];
 
     // --------------------------------------------------------- the client's side
-    // The same scaffold `client-port` uses: the judgement arrives on the client
-    // through cti_fnc_portReply and can only be read there, so the client
-    // unpacks it and publishes an ack the server reads.
-    {
-        cti_probeJudge = {
-            params ["_step", ["_note", ""]];
-            private _by = diag_tickTime + 60;
-            waitUntil { !isNil "cti_lastJudgement" || { diag_tickTime > _by } };
-            private _judgement = missionNamespace getVariable ["cti_lastJudgement", createHashMap];
-            private _reason = _judgement getOrDefault ["reason", createHashMap];
-            cti_probeAck = [
-                _step,
-                _judgement getOrDefault ["status", "nothing-arrived"],
-                _reason getOrDefault ["code", ""],
-                _reason getOrDefault ["detail", ""],
-                (_judgement getOrDefault ["result", createHashMap]) getOrDefault ["cost", -1],
-                _note
-            ];
-            publicVariable "cti_probeAck";
-        };
-    } remoteExec ["call", _target];
-
-    private _drive = {
-        params ["_step", "_code", ["_wait", 90]];
-        cti_probeAck = nil;
-        _code remoteExec ["call", _target];
-        private _by = diag_tickTime + _wait;
-        waitUntil {
-            (!isNil "cti_probeAck" && { (cti_probeAck # 0) isEqualTo _step })
-                || { diag_tickTime > _by }
-        };
-        if (isNil "cti_probeAck" || { (cti_probeAck # 0) isNotEqualTo _step }) exitWith {
-            diag_log format ["CTI|FAIL class=timeout reinforce_probe_client_silent step=%1", _step];
-            []
-        };
-        private _ack = +cti_probeAck;
-        diag_log format ["CTI|reinforce_probe_ack step=%1 status=%2 code=%3 cost=%4 note=%5",
-            _ack # 0, _ack # 1, _ack # 2, _ack # 4, _ack # 5];
-        _ack
-    };
-
-    private _legLost = {
-        diag_log format ["CTI|LEG name=reinforce_%1 status=unverified reason=client_never_acked_the_step", _this];
-        diag_log "CTI|reinforce_probe_done";
-    };
-    private _legRan = {
-        diag_log format ["CTI|LEG name=reinforce_%1 status=ran", _this];
-    };
+    // The judgement arrives on the client through cti_fnc_portReply and can only
+    // be read there, so the client is armed to unpack it and publish an ack the
+    // server reads, and every step below is driven through that
+    // (`cti_probe_fnc_armClient` and `cti_probe_fnc_drive`, prelude).
+    [_target] call cti_probe_fnc_armClient;
 
     // Which Squad the client asks about is decided on the server and sent to it,
     // because the client has no map UI in this run and no business inventing an
@@ -238,11 +198,11 @@
             cti_lastJudgement = nil;
             private _cmd = ["reinforce", [["squad", cti_reinforceProbeMine]]] call cti_fnc_command;
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
-            ["own", format ["asked for %1", cti_reinforceProbeMine]] call cti_probeJudge;
+            ["own", format ["asked for %1", cti_reinforceProbeMine], "cost"] call cti_probeJudge;
         };
-    }] call _drive;
+    }] call cti_probe_fnc_drive;
 
-    if (_own isEqualTo []) exitWith { "own" call _legLost };
+    if (_own isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_own # 1) isNotEqualTo "ok") then {
         diag_log format ["CTI|FAIL class=assertion_failed reinforce_probe_own_refused status=%1 code=%2 detail=%3",
             _own # 1, _own # 2, _own # 3];
@@ -263,7 +223,7 @@
     };
     diag_log format ["CTI|reinforce_probe_own squad=%1 units=%2->%3 cost=%4 leader_is_the_person=%5",
         _mineId, _standingBefore, _standingAfter, _own # 4, leader _mine isEqualTo _unit];
-    "own" call _legRan;
+    ["own"] call cti_probe_fnc_legRan;
 
     // ---------------------------------------------------------- another Squad
     private _theirsBefore = count units _theirs;
@@ -274,9 +234,9 @@
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
             ["other", format ["asked for %1", cti_reinforceProbeTheirs]] call cti_probeJudge;
         };
-    }] call _drive;
+    }] call cti_probe_fnc_drive;
 
-    if (_other isEqualTo []) exitWith { "other" call _legLost };
+    if (_other isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_other # 1) isNotEqualTo "rejected" || { (_other # 2) isNotEqualTo "not_your_squad" }) then {
         diag_log format ["CTI|FAIL class=assertion_failed reinforce_probe_other_not_refused status=%1 code=%2 detail=%3",
             _other # 1, _other # 2, _other # 3];
@@ -288,7 +248,7 @@
     };
     diag_log format ["CTI|reinforce_probe_other squad=%1 units=%2->%3 code=%4",
         _theirsId, _theirsBefore, count units _theirs, _other # 2];
-    "other" call _legRan;
+    ["other"] call cti_probe_fnc_legRan;
 
     // ------------------------------------------------- a Command that stayed the Commander's
     private _rosterBefore = count ([_side] call cti_probe_fnc_squadsOf);
@@ -299,9 +259,9 @@
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
             ["purchase"] call cti_probeJudge;
         };
-    }] call _drive;
+    }] call cti_probe_fnc_drive;
 
-    if (_purchase isEqualTo []) exitWith { "purchase" call _legLost };
+    if (_purchase isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_purchase # 1) isNotEqualTo "rejected" || { (_purchase # 2) isNotEqualTo "wrong_side" }) then {
         diag_log format ["CTI|FAIL class=assertion_failed reinforce_probe_purchase_not_refused status=%1 code=%2 detail=%3",
             _purchase # 1, _purchase # 2, _purchase # 3];
@@ -318,11 +278,11 @@
     };
     diag_log format ["CTI|reinforce_probe_purchase code=%1 squads=%2->%3",
         _purchase # 2, _rosterBefore, _rosterAfter];
-    "purchase" call _legRan;
+    ["purchase"] call cti_probe_fnc_legRan;
 
     private _end = [_side] call _board;
     diag_log format ["CTI|reinforce_probe_board side=%1 mine=%2 theirs=%3",
         _side, _end getOrDefault [_mineId, -1], _end getOrDefault [_theirsId, -1]];
 
-    diag_log "CTI|reinforce_probe_done";
+    [] call cti_probe_fnc_done;
 };

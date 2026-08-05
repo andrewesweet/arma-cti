@@ -44,11 +44,28 @@
 // Neither can become a watcher either, because a watcher on `nothing arrived`
 // is the same dwell written differently. Both dwells are unchanged, so the
 // evidence behind the whitelist claim is the evidence #21 landed.
+//
+// The client-side judge-and-ack scaffold this probe wrote first now lives in
+// `spike/probe-prelude.sqf`, moved by its third copy (#193). What it took with
+// it is the per-step result key: this probe's `_readFunds` flag had already made
+// the read a per-step decision and only hardcoded which key, so the shared judge
+// takes the key itself. The five judged steps below name `funds` where they
+// expect an accepted Purchase to answer with one, and nothing where they expect
+// a refusal — a refusal's `result` is empty, so a key there would only have been
+// the -1 sentinel wearing a name.
 [] spawn {
+    // Every leg this probe owes an answer for (ADR-0037, #116). Struck off as
+    // each is measured; whatever is still owed at an exit is reported
+    // `unverified`, which the runner reads as infra_unavailable rather than as a
+    // pass. This replaces eight hand-written exits, one of which named the leg
+    // it was abandoning and said nothing about the legs after it.
+    ["client_port", ["caller", "accepted", "forged", "unassigned", "junk",
+        "invented", "breach", "unstamped"]] call cti_probe_fnc_legsOwed;
+
     private _extension = call cti_fnc_shimName;
     if (_extension isEqualTo "") exitWith {
         diag_log "CTI|FAIL class=infra_unavailable client_port_probe_no_shim";
-        diag_log "CTI|client_port_probe_done";
+        ["the_world_had_no_shim"] call cti_probe_fnc_done;
     };
 
     // One side's board as the daemon holds it: [funds, squads]. Read through
@@ -76,8 +93,7 @@
         // anyone can read. Said in the leg grammar the harness scores (#116);
         // run.sh turns an unverified leg into infra_unavailable, which is the
         // class this line used to declare for itself.
-        diag_log "CTI|LEG name=client_port_caller status=unverified reason=run_sent_no_headed_client";
-        diag_log "CTI|client_port_probe_done";
+        ["run_sent_no_headed_client"] call cti_probe_fnc_done;
     };
 
     // Which client the server swept into a slot, and the unit behind the UID it
@@ -91,100 +107,35 @@
     if (_side isEqualTo "") exitWith {
         diag_log format ["CTI|FAIL class=timeout client_port_probe_no_client_assigned waited=%1 players=%2",
             _waitFor, count allPlayers];
-        diag_log "CTI|LEG name=client_port_caller status=unverified reason=no_person_in_a_commander_slot";
-        diag_log "CTI|client_port_probe_done";
+        ["no_person_in_a_commander_slot"] call cti_probe_fnc_done;
     };
 
     if (isNull _unit) exitWith {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_assigned_uid_absent uid=%1", _uid];
-        diag_log "CTI|LEG name=client_port_caller status=unverified reason=assigned_uid_holds_no_unit";
-        diag_log "CTI|client_port_probe_done";
+        ["assigned_uid_holds_no_unit"] call cti_probe_fnc_done;
     };
 
     private _target = owner _unit;
     private _other = ["WEST", "EAST"] select (_side isEqualTo "WEST");
     diag_log format ["CTI|client_port_probe_commander side=%1 owner=%2 role=%3 other=%4",
         _side, _target, roleDescription _unit, _other];
-    diag_log "CTI|LEG name=client_port_caller status=ran";
+    ["caller"] call cti_probe_fnc_legRan;
 
-    // Drive one step on the client and wait for its own account of it. The
-    // Command is built and sent on the client, by the client's own path, across
-    // the mode=1 whitelist; the report comes back on a public variable rather
-    // than a second remoteExec, because the whitelist is the thing under test
-    // and a probe that widened it would be testing a mission that does not
-    // ship. Server-to-client remoteExec is unrestricted, which is what lets the
-    // probe press the key nobody is there to press.
+    // The client is armed to unpack judgements and ack them, and every step
+    // below is driven through that (`cti_probe_fnc_armClient` and
+    // `cti_probe_fnc_drive`, prelude). The Command is built and sent on the
+    // client, by the client's own path, across the mode=1 whitelist; the ack
+    // comes back on a public variable, because the whitelist is the thing under
+    // test and a probe that widened it would be testing a mission that does not
+    // ship.
     //
-    // Every ack carries the step name it belongs to, so a late one from the
-    // step before is discarded rather than read as this step's answer.
-    // Each step of the leg says what became of it (#116, ADR-0037). The six
-    // step exits below used to be bare `client_port_probe_done` lines: covered
-    // in practice, because `_drive` logs a FAIL before returning [], but a bare
+    // Each step of the leg says what became of it (#116, ADR-0037). The six step
+    // exits below used to be bare `client_port_probe_done` lines: covered in
+    // practice, because the drive logs a FAIL before returning [], but a bare
     // completion is a green verdict short-circuited and the cover was incidental
-    // rather than structural. Now an abandoned step names itself unverified, the
-    // steps that ran name themselves too, and the verdict carries the list —
-    // so a pass says which legs it is a pass about. The unstamped leg at the end
-    // uses the same grammar without a client step behind it (#128).
-    private _legRan = {
-        diag_log format ["CTI|LEG name=client_port_%1 status=ran", _this];
-    };
-    private _legLost = {
-        diag_log format ["CTI|LEG name=client_port_%1 status=unverified reason=client_never_acked_the_step", _this];
-        diag_log "CTI|client_port_probe_done";
-    };
-
-    // The scaffold four of the five judged steps repeated verbatim: wait for
-    // cti_fnc_portReply to land a judgement on this client, unpack it into the
-    // six-element ack, and publish. #86 moved it onto the client once rather
-    // than writing it out per step — it has to live *there* because that is
-    // where the judgement arrives, and a code block remoteExec'd from here
-    // cannot close over a step's own private variables. The step keeps what is
-    // genuinely its own: what it sends, and the note it sends about itself.
-    //
-    // `_readFunds` is false for the steps that were never asking about Funds and
-    // wrote -1 into the field by hand; the ack keeps saying -1 for those.
-    {
-        cti_probeJudge = {
-            params ["_step", ["_note", ""], ["_readFunds", true]];
-            private _by = diag_tickTime + 60;
-            waitUntil { !isNil "cti_lastJudgement" || { diag_tickTime > _by } };
-            private _judgement = missionNamespace getVariable ["cti_lastJudgement", createHashMap];
-            private _reason = _judgement getOrDefault ["reason", createHashMap];
-            private _funds = -1;
-            if (_readFunds) then {
-                _funds = (_judgement getOrDefault ["result", createHashMap])
-                    getOrDefault ["funds", -1];
-            };
-            cti_probeAck = [
-                _step,
-                _judgement getOrDefault ["status", "nothing-arrived"],
-                _reason getOrDefault ["code", ""],
-                _reason getOrDefault ["detail", ""],
-                _funds,
-                _note
-            ];
-            publicVariable "cti_probeAck";
-        };
-    } remoteExec ["call", _target];
-
-    private _drive = {
-        params ["_step", "_code", ["_wait", 90]];
-        cti_probeAck = nil;
-        _code remoteExec ["call", _target];
-        private _by = diag_tickTime + _wait;
-        waitUntil {
-            (!isNil "cti_probeAck" && { (cti_probeAck # 0) isEqualTo _step })
-                || { diag_tickTime > _by }
-        };
-        if (isNil "cti_probeAck" || { (cti_probeAck # 0) isNotEqualTo _step }) exitWith {
-            diag_log format ["CTI|FAIL class=timeout client_port_probe_client_silent step=%1", _step];
-            []
-        };
-        private _ack = +cti_probeAck;
-        diag_log format ["CTI|client_port_probe_ack step=%1 status=%2 code=%3 funds=%4 note=%5",
-            _ack # 0, _ack # 1, _ack # 2, _ack # 4, _ack # 5];
-        _ack
-    };
+    // rather than structural. The unstamped leg at the end uses the same grammar
+    // without a client step behind it (#128).
+    [_target] call cti_probe_fnc_armClient;
 
     // ------------------------------------------------------- an accepted Command
     // The whole leg in one exchange: built on the client, judged on the server,
@@ -198,12 +149,12 @@
             cti_lastJudgement = nil;
             private _cmd = ["purchase", [["squad_type", "rifle"]]] call cti_fnc_command;
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
-            ["accepted", format ["sent side=%1", _cmd getOrDefault ["side", "?"]]]
+            ["accepted", format ["sent side=%1", _cmd getOrDefault ["side", "?"]], "funds"]
                 call cti_probeJudge;
         };
-    }] call _drive;
+    }] call cti_probe_fnc_drive;
 
-    if (_accepted isEqualTo []) exitWith { "accepted" call _legLost };
+    if (_accepted isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_accepted # 1) isNotEqualTo "ok") then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_accepted_not_judged status=%1 code=%2",
             _accepted # 1, _accepted # 2];
@@ -220,7 +171,7 @@
     };
     diag_log format ["CTI|client_port_probe_accepted side=%1 funds=%2->%3 squads=%4->%5 judged_funds=%6",
         _side, _fundsBefore, _fundsAfter, _squadsBefore, _squadsAfter, _accepted # 4];
-    "accepted" call _legRan;
+    ["accepted"] call cti_probe_fnc_legRan;
 
     // ------------------------------------------------------------- a lying side
     // The client fills `side` in with the side it does not command. The gateway
@@ -238,11 +189,11 @@
             private _cmd = ["purchase", [["squad_type", "rifle"]]] call cti_fnc_command;
             _cmd set ["side", _lie];
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
-            ["forged", format ["%1 claimed %2", _mine, _lie]] call cti_probeJudge;
+            ["forged", format ["%1 claimed %2", _mine, _lie], "funds"] call cti_probeJudge;
         };
-    }] call _drive;
+    }] call cti_probe_fnc_drive;
 
-    if (_forged isEqualTo []) exitWith { "forged" call _legLost };
+    if (_forged isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_forged # 1) isNotEqualTo "ok") then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_forged_refused status=%1 code=%2 detail=%3",
             _forged # 1, _forged # 2, _forged # 3];
@@ -264,7 +215,7 @@
     };
     diag_log format ["CTI|client_port_probe_stamp claimed=%1 stamped=%2 squads_%2=%3->%4 squads_%1=%5->%6",
         _other, _side, _squadsAfter, _squadsForged, _otherSquadsBefore, _otherSquadsForged];
-    "forged" call _legRan;
+    ["forged"] call cti_probe_fnc_legRan;
 
     // ------------------------------------------------------ a caller nobody knows
     // The refusal a person meets when they reach the port from a machine the
@@ -288,12 +239,12 @@
             [_cmd] remoteExec ["cti_fnc_portGateway", 2];
             ["unassigned"] call cti_probeJudge;
         };
-    }] call _drive;
+    }] call cti_probe_fnc_drive;
 
     ([_side] call _board) params ["", "_squadsUnknown"];
     _assigned set [_side, _uid];
 
-    if (_unknown isEqualTo []) exitWith { "unassigned" call _legLost };
+    if (_unknown isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_unknown # 1) isNotEqualTo "rejected" || { (_unknown # 2) isNotEqualTo "wrong_side" }) then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_unassigned_not_refused status=%1 code=%2",
             _unknown # 1, _unknown # 2];
@@ -309,7 +260,7 @@
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_unassigned_bought before=%1 after=%2",
             _squadsForged, _squadsUnknown];
     };
-    "unassigned" call _legRan;
+    ["unassigned"] call cti_probe_fnc_legRan;
 
     // ------------------------------------------------------- payloads that are not Commands
     // Two shapes a client can send that cti_fnc_command would never build, sent
@@ -320,16 +271,16 @@
         [] spawn {
             cti_lastJudgement = nil;
             ["this is not a Command"] remoteExec ["cti_fnc_portGateway", 2];
-            ["junk", "", false] call cti_probeJudge;
+            ["junk"] call cti_probeJudge;
         };
-    }] call _drive;
+    }] call cti_probe_fnc_drive;
 
-    if (_junk isEqualTo []) exitWith { "junk" call _legLost };
+    if (_junk isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_junk # 1) isNotEqualTo "rejected" || { (_junk # 2) isNotEqualTo "malformed_command" }) then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_junk_not_refused status=%1 code=%2",
             _junk # 1, _junk # 2];
     };
-    "junk" call _legRan;
+    ["junk"] call cti_probe_fnc_legRan;
 
     private _invented = ["invented", {
         [] spawn {
@@ -339,16 +290,16 @@
                 ["side", ""],
                 ["args", createHashMap]
             ]] remoteExec ["cti_fnc_portGateway", 2];
-            ["invented", "", false] call cti_probeJudge;
+            ["invented"] call cti_probeJudge;
         };
-    }] call _drive;
+    }] call cti_probe_fnc_drive;
 
-    if (_invented isEqualTo []) exitWith { "invented" call _legLost };
+    if (_invented isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
     if ((_invented # 1) isNotEqualTo "rejected" || { (_invented # 2) isNotEqualTo "unknown_command" }) then {
         diag_log format ["CTI|FAIL class=assertion_failed client_port_probe_invented_not_refused status=%1 code=%2",
             _invented # 1, _invented # 2];
     };
-    "invented" call _legRan;
+    ["invented"] call cti_probe_fnc_legRan;
 
     ([_side] call _board) params ["", "_squadsJunk"];
     if (_squadsJunk isNotEqualTo _squadsForged) then {
@@ -387,9 +338,9 @@
             cti_probeAck = ["breach", "attempted", "", "", -1, "setVariable and cti_fnc_portReply on the server"];
             publicVariable "cti_probeAck";
         };
-    }] call _drive;
+    }] call cti_probe_fnc_drive;
 
-    if (_breach isEqualTo []) exitWith { "breach" call _legLost };
+    if (_breach isEqualTo []) exitWith { ["client_never_acked_the_step"] call cti_probe_fnc_done };
 
     // A grace beyond the client's own wait: the assertion is that nothing
     // arrives, and nothing arriving takes longer to establish than something
@@ -407,7 +358,7 @@
     };
     diag_log format ["CTI|client_port_probe_whitelist_bit setVariable_landed=%1 portReply_landed=%2",
         _commandLanded, _functionLanded];
-    "breach" call _legRan;
+    ["breach"] call cti_probe_fnc_legRan;
 
     // ------------------------------------------------- a line nobody stamped
     // The socket's own half of the same question, and it is asked from the
@@ -443,10 +394,10 @@
     };
     diag_log format ["CTI|client_port_probe_unstamped code=%1 squads=%2->%3",
         _unstampedCode, _squadsBeforeUnstamped, _squadsUnstamped];
-    "unstamped" call _legRan;
+    ["unstamped"] call cti_probe_fnc_legRan;
 
     ([_side] call _board) params ["_fundsEnd", "_squadsEnd"];
     diag_log format ["CTI|client_port_probe_board side=%1 funds=%2 squads=%3", _side, _fundsEnd, _squadsEnd];
 
-    diag_log "CTI|client_port_probe_done";
+    [] call cti_probe_fnc_done;
 };

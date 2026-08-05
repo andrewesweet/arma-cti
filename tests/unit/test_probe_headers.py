@@ -17,6 +17,10 @@ import pytest
 
 PROBE_DIR = Path(__file__).resolve().parents[2] / "spike" / "probes"
 PROBES = sorted(PROBE_DIR.glob("*.sqf"))
+# The scaffolding staged ahead of every probe. Not a probe — it asserts nothing
+# and corpus membership is by directory — but since #193 it writes two of the
+# lines the runner scores, so the tests about those lines have to read it too.
+PRELUDE = Path(__file__).resolve().parents[2] / "spike" / "probe-prelude.sqf"
 
 KNOWN_KEYS = {"probe", "issues", "window", "env", "expect", "quarantined"}
 
@@ -107,11 +111,42 @@ def test_quarantine_names_an_issue(path: Path) -> None:
         )
 
 
+# The line itself, from the quote the log call opens it with — not the closing
+# one, since several probes carry fields after the token. A probe that only
+# mentions `probe_done` in its prose has not logged one, and the loose substring
+# this replaces could not tell the two apart.
+DONE_LINE = re.compile(r'"CTI\|\w*probe_done')
+
+
 @pytest.mark.parametrize("path", PROBES, ids=lambda p: p.stem)
 def test_probe_ends_by_logging_its_completion(path: Path) -> None:
-    """The runner waits on `probe_done`; a probe that never logs it is a timeout."""
+    """The runner waits on `probe_done`; a probe that never logs it is a timeout.
+
+    Two ways to log it since #193. A probe writes the line itself, or it ends
+    through `cti_probe_fnc_done` — the prelude's shared ending, which reports
+    every leg the probe never reached and then writes the line under the prefix
+    the probe declared. The prefix is what makes the shared line this probe's, so
+    a probe that takes the shared ending has to have named itself.
+    """
     body = path.read_text(encoding="utf-8")
-    assert "probe_done" in body, f"{path.name} logs no probe_done line for the runner to wait on"
+    if "cti_probe_fnc_done" in body:
+        assert "cti_probe_fnc_legsOwed" in body, (
+            f"{path.name} ends through the shared ending without naming itself: "
+            "cti_probe_fnc_legsOwed is what sets the prefix its done line is written under"
+        )
+        return
+    assert DONE_LINE.search(body), f"{path.name} logs no probe_done line for the runner to wait on"
+
+
+def test_the_shared_ending_writes_the_line_the_runner_waits_on() -> None:
+    """The other half of the test above, where the line now lives (#193).
+
+    Six probes hand their completion to the prelude, so a typo in this one format
+    string is six probes the runner waits out to their windows.
+    """
+    assert re.search(r'"CTI\|%1_probe_done"', PRELUDE.read_text(encoding="utf-8")), (
+        "cti_probe_fnc_done no longer writes a line CTI_HARNESS_AWAIT=probe_done matches"
+    )
 
 
 @pytest.mark.parametrize("path", PROBES, ids=lambda p: p.stem)
@@ -141,9 +176,14 @@ def test_a_probe_with_a_client_leg_turns_it_on_in_the_corpus(path: Path) -> None
 LEG_LINE = re.compile(r"CTI\|LEG name=\S+ status=(ran|unverified)")
 
 
-@pytest.mark.parametrize("path", PROBES, ids=lambda p: p.stem)
+@pytest.mark.parametrize("path", [*PROBES, PRELUDE], ids=lambda p: p.stem)
 def test_leg_lines_use_the_grammar_the_runner_parses(path: Path) -> None:
-    """`spike/run.sh` scores these lines; a typo in one is a leg it cannot see."""
+    """`spike/run.sh` scores these lines; a typo in one is a leg it cannot see.
+
+    The prelude is read alongside the corpus because six probes' leg lines are
+    written there now (#193), and a test that only read `spike/probes/` would
+    have gone quietly green over the move.
+    """
     for line in path.read_text(encoding="utf-8").splitlines():
         if "CTI|LEG" not in line:
             continue
