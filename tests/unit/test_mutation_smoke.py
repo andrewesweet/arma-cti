@@ -233,16 +233,43 @@ def test_code_outside_this_repos_source_is_never_a_subject() -> None:
     assert reach.subject() is None
 
 
-def test_the_subject_is_the_file_the_tests_reach_most() -> None:
+def test_the_subject_is_the_file_the_tests_tell_apart() -> None:
+    # `tools/big.py` has more lines, but all three of them are reached by every
+    # test — that is arrangement, not subject.
     reach = smoke_tool.read_reach(
         _report(
             {
-                "src/small.py": {"1": ["t|run"]},
-                "tools/big.py": {"1": ["t|run"], "2": ["t|run"], "3": ["t|run"]},
+                "src/small.py": {"1": ["a"], "2": ["b"]},
+                "tools/big.py": {"1": ["a", "b"], "2": ["a", "b"], "3": ["a", "b"]},
             },
         ),
     )
-    assert reach.subject() == "tools/big.py"
+    assert reach.subject() == "src/small.py"
+
+
+def test_a_file_named_after_the_test_module_is_the_subject() -> None:
+    reach = smoke_tool.read_reach(
+        _report(
+            {
+                "src/cti_daemon/budget.py": {"1": ["a"]},
+                "src/cti_daemon/manifest.py": {"1": ["a"], "2": ["b"], "3": ["c"]},
+            },
+        ),
+    )
+    assert reach.subject("tests/unit/test_budget.py") == "src/cti_daemon/budget.py"
+
+
+def test_the_name_cannot_point_at_code_no_test_executed() -> None:
+    # The convention is a tie-break among files the tests reached, never a way to
+    # nominate a file nothing ran.
+    reach = smoke_tool.read_reach(_report({"src/cti_daemon/manifest.py": {"1": ["a"]}}))
+    assert reach.subject("tests/unit/test_budget.py") == "src/cti_daemon/manifest.py"
+
+
+def test_lines_every_test_reaches_are_worth_nothing() -> None:
+    reach = smoke_tool.read_reach(_report({"src/a.py": {"1": ["x", "y"], "2": ["x"]}}))
+    assert reach.tests() == frozenset({"x", "y"})
+    assert reach.discrimination("src/a.py") == 0.5
 
 
 def test_durations_are_summed_over_a_tests_three_phases() -> None:
@@ -451,7 +478,22 @@ def test_the_sidecar_carries_the_original_while_the_mutant_is_in_place(tmp_path:
 def test_a_stale_sidecar_stops_the_run_rather_than_guessing(tmp_path: Path, capsys) -> None:  # noqa: ANN001 — pytest's own fixture type adds nothing here
     (tmp_path / smoke_tool.RESTORE).write_text("{}")
     assert smoke_tool.main(["--root", str(tmp_path)]) == 2
-    assert "interrupted mid-mutation" in capsys.readouterr().err
+    assert "interrupted mid-mutant" in capsys.readouterr().err
+
+
+def test_restore_puts_back_the_file_the_sidecar_names(tmp_path: Path) -> None:
+    target = tmp_path / "subject.py"
+    target.write_text("mutated\n")
+    (tmp_path / smoke_tool.RESTORE).write_text(
+        json.dumps({"path": "subject.py", "text": "original\n"}),
+    )
+    assert smoke_tool.main(["--root", str(tmp_path), "--restore"]) == 0
+    assert target.read_text() == "original\n"
+    assert not (tmp_path / smoke_tool.RESTORE).exists()
+
+
+def test_restore_with_nothing_to_restore_is_not_an_error(tmp_path: Path) -> None:
+    assert smoke_tool.main(["--root", str(tmp_path), "--restore"]) == 0
 
 
 def test_nothing_in_scope_is_a_pass_not_a_refusal(tmp_path: Path) -> None:

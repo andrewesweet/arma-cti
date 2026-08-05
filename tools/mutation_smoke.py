@@ -41,16 +41,30 @@ which way a boolean joins, whether a `not` is there, what a function hands back.
 
 ## How a subject is chosen
 
-Not by the `test_x.py` → `x.py` naming convention, which `tests/unit/test_land.py`
-→ `tools/land.py` already only half obeys and which a data-driven test module
-does not obey at all. By evidence: the module is run once under `coverage.py`
-with `dynamic_context = test_function`, and the subject is the product file with
-the most lines executed *inside a test* — import-time lines do not count, so a
-module that imports the world and asserts nothing has no subject at all.
+The module is run once under `coverage.py` with `dynamic_context =
+test_function`, and only lines executed *inside a test* count — import-time lines
+carry an empty context, so a module that imports the world and asserts nothing
+has no subject at all. That is the second red this gate can give, and it is the
+one an `assert True` module earns: a test module executing none of this repo's
+source under any of its tests has, mechanically, tested nothing.
 
-That is the second red this gate can give, and it is the one an `assert True`
-module earns: a test module that executes none of this repo's source under any
-of its tests has, mechanically, tested nothing.
+Among the files that do qualify, two rules in order. **The name first**, when the
+tests reach it: `test_budget.py` → `budget.py` is a statement of intent by whoever
+wrote the file, and it beats any inference. **Then the evidence**, for the many
+modules the convention does not reach — `tests/unit/test_land.py` → `tools/land.py`,
+`tests/unit/test_daemon_casualties.py` → nothing of that name. The evidence is not
+a line count: a line *every* test in the module executes is arrangement, so each
+line is worth the share of the module's tests that did not reach it. Counting
+lines alone made `manifest.py` the subject of `test_budget.py` — 94 lines reached,
+88 of them by all four tests, because the shared arrangement loads a manifest
+first — and scored a sound module 50% for not asserting about a file it never
+meant to test.
+
+The obvious next step, restricting the *mutants* to those same discriminating
+lines, was tried and is **not** here: it moved `test_daemon_casualties.py` from
+40% to 25%, because the lines its tests share are the ones its assertions do
+reach. Measured, disproved, recorded in the research note rather than carried as
+an untested intuition.
 
 ## Safety
 
@@ -413,15 +427,53 @@ class Reach(NamedTuple):
     lines: dict[str, dict[int, tuple[str, ...]]]
     costs: dict[str, float] = {}  # noqa: RUF012 — a NamedTuple field default, not shared mutable state
 
-    def subject(self) -> str | None:
-        """Name the product file this test module exercises most, or None.
+    def tests(self) -> frozenset[str]:
+        """Every test of the module under smoke that reached any product line."""
+        return frozenset(
+            name for reached in self.lines.values() for names in reached.values() for name in names
+        )
 
-        None is a finding, not a shrug: a test module none of whose tests reach
-        a line of this repo's source has asserted nothing about it.
+    def discrimination(self, path: str) -> float:
+        """How much of `path` this module's tests tell apart rather than merely load.
+
+        A line every test in the module executes is arrangement: `test_budget.py`
+        reaches 94 lines of `manifest.py` and 88 of them from all four of its
+        tests, because the shared arrangement in `tests/unit/conftest.py` loads a
+        manifest before anything else happens. Counting lines alone made that the
+        subject, and the module then scored 50% for not asserting about a file it
+        never meant to test — a false red on a sound module, which is the one
+        thing #137/#186 say a gate must not do.
+
+        So each line is worth the share of the module's tests that did *not*
+        reach it. A line one test in four touches is worth 0.75; a line all four
+        touch is worth nothing at all.
+        """
+        total = len(self.tests())
+        if not total:
+            return 0.0
+        return sum(1.0 - len(set(names)) / total for names in self.lines.get(path, {}).values())
+
+    def subject(self, test_module: str = "") -> str | None:
+        """Name the product file this test module is testing, or None.
+
+        Two rules in order. First the name, because `test_budget.py` → `budget.py`
+        is a statement of intent by the person who wrote the file and it is worth
+        more than any inference — but only when the tests actually reach that
+        file, so the convention can never point at code nothing executed. Then the
+        evidence, scored as above, for the many modules whose subject the naming
+        convention does not reach: `tests/unit/test_land.py` → `tools/land.py`,
+        `tests/unit/test_daemon_casualties.py` → nothing of that name at all.
+
+        None is a finding, not a shrug: a test module none of whose tests reach a
+        line of this repo's source has asserted nothing about it.
         """
         if not self.lines:
             return None
-        return max(sorted(self.lines), key=lambda path: len(self.lines[path]))
+        stem = Path(test_module).stem.removeprefix("test_")
+        named = [path for path in sorted(self.lines) if Path(path).stem == stem]
+        if named:
+            return named[0]
+        return max(sorted(self.lines), key=self.discrimination)
 
     def cost(self, node: str) -> float:
         """Seconds one node id costs, rounded to `COST_GRAIN`, over all its cases.
@@ -771,7 +823,7 @@ def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visibl
     """Plant a bounded sample of mutants in what `test_module` exercises, and judge it."""
     started = time.monotonic()
     reach = measure(root, test_module, timeout=collect)
-    subject = reach.subject()
+    subject = reach.subject(test_module)
     if subject is None:
         return Verdict(test_module, None, 0, 0, 0, (), time.monotonic() - started, floor)
 

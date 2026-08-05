@@ -2,17 +2,17 @@
 
 **Researched**: 2026-08-05
 **Question** (#239): nothing mechanical stops a vacuous green test. Can mutation testing be made to run, scoped to every landing, cheap enough to sit in `just fast`, and lane-blind?
-**Answer in one line**: yes, but not with an off-the-shelf mutation engine — the cost is not the mutating, it is that a general engine mutates a whole file and runs a whole suite per mutant and hands back an equivalent-mutant rate too high to set a floor against, so what lands is a bespoke bounded mutator whose operator set is chosen for precision and whose subject is chosen by coverage evidence.
+**Answer in one line**: yes, but not with an off-the-shelf engine — a general mutation tool mutates a whole file, runs a whole suite per mutant, and reports an equivalent-mutant rate too high to set a floor against, so what lands is a bespoke bounded mutator whose operator set is chosen for precision and whose subject is chosen by coverage evidence.
 
 ---
 
 ## 0. Method and limits
 
-Everything below was measured on this machine on 2026-08-05, against the tree at `8e0c751`, not inherited from documentation. Where a number is a single observation it says so.
+Everything below was measured on this machine on 2026-08-05, against the tree at `8e0c751`. Where a number is a single observation it says so.
 
-The corpus sweep ran in a `--shared` clone of the repo under `/tmp`, not in an agent worktree, for one reason and it is a finding in its own right: the mutation smoke mutates the real tree in place and runs pytest against it, and this suite takes real `flock`s and binds real ports. The first sweep attempt ran beside an ordinary `uv run pytest` in another checkout and produced a spurious red in `tests/unit/test_client_lock.py` — the same collision #124 diagnosed, where a sibling `just unit` swept the tier's ports. The reading stood as a reading; the story built on it did not, and the test passes on its own.
+The corpus sweep ran in a `--shared` clone of the repo under `/tmp`, not in an agent worktree, and that is a finding rather than tidiness: the smoke mutates the real tree in place and runs pytest against it, and this suite takes real `flock`s and binds real ports. The first attempt ran beside an ordinary `uv run pytest` in another checkout and produced a spurious red in `tests/unit/test_client_lock.py` — #124's collision, where a sibling `just unit` swept the tier's ports. The reading stood; the story built on it did not, and the test passes on its own.
 
-**What this note does not establish.** Nothing here says the floor is right for a corpus this project does not yet have. It says every test module this project has today clears it, by the margin tabulated in §4.
+**What this note does not establish.** Nothing here says the floor is right for a corpus this project does not yet have. It says every test module this project has today clears it, by the margin tabulated in §5.
 
 ---
 
@@ -30,7 +30,7 @@ also_copy = ["tests/", "tools/", "config/", "addons/", "pyproject.toml", "uv.loc
 pytest_add_cli_args = ["-n0", "tests/unit/test_dedupe.py"]
 ```
 
-The failure that reads as an xdist incompatibility is not one. mutmut copies `source_paths` into a `mutants/` tree and runs pytest there; a `source_paths` naming a single **file** leaves `cti_daemon` as a directory with one module in it, so `from cti_daemon import campaign` fails with `ImportError: cannot import name 'campaign' from 'cti_daemon' (unknown location)` and mutmut reports it as `BadTestExecutionCommandsException`, naming the argv, which is where `-n auto` is visible and gets blamed. Pointed at the package, with the trees the tests read in `also_copy`, it completed: **8 mutants on `dedupe.py`, 5 killed, 3 survived, 80.76 mutations/second**.
+The failure that reads as an xdist incompatibility is not one. mutmut copies `source_paths` into a `mutants/` tree and runs pytest there; a `source_paths` naming a single **file** leaves `cti_daemon` a directory with one module in it, so `from cti_daemon import campaign` fails with `ImportError: cannot import name 'campaign' from 'cti_daemon' (unknown location)`, and mutmut reports that as `BadTestExecutionCommandsException` printing the whole argv — which is where `-n auto` is visible and gets the blame. Pointed at the package, with the trees the tests read in `also_copy`, it completed: **8 mutants on `dedupe.py`, 5 killed, 3 survived, 80.76 mutations/second**.
 
 **What it reports cannot carry a floor.** The three survivors, verbatim from `mutmut show`:
 
@@ -40,32 +40,33 @@ The failure that reads as an xdist incompatibility is not one. mutmut copies `so
 | `x__key__mutmut_7` | `blake2b(line.encode("utf-8"), …)` | `blake2b(line.encode("UTF-8"), …)` |
 | `x__key__mutmut_8` | `… digest_size=16)` | `… digest_size=17)` |
 
-All three are **equivalent mutants**. `RequestWindow` keys on an opaque digest and never compares one to a stored constant, so no assertion can distinguish a 16-byte digest from a 17-byte one, or `"utf-8"` from `"UTF-8"`, and no test ever will. `dedupe.py` is 75 lines with a test module its author wrote first; it is about as far from a vacuous suite as this repo gets, and mutmut scores it **62.5%**.
+All three are **equivalent mutants**. `Answered` keys on an opaque digest and never compares one to a stored constant, so no assertion can distinguish a 16-byte digest from a 17-byte one, or `"utf-8"` from `"UTF-8"`. `dedupe.py` is 75 lines with a test module its author wrote first; it is about as far from a vacuous suite as this repo gets, and mutmut scores it **62.5%**.
 
-A gate over that operator set would have to put its floor below 62.5% to keep the tree green. A vacuous suite that runs the code at all clears 62.5% comfortably — §3 shows one doing exactly that. So the floor and the threat cannot be separated, which is the whole of the objection: it is not that mutmut is wrong, it is that a mutation engine tuned for a survivor list a human reads is not tuned for a number a gate compares.
+A gate over that operator set would have to put its floor below 62.5% to keep the tree green. §5 measures a deliberately weak module at 30% and a vacuous one at no-subject, so the separation is not hopeless — but the margin would be eaten entirely by noise the tool generates and the project cannot fix. That is the objection: not that mutmut is wrong, but that an engine tuned for a survivor list a human reads is not tuned for a number a gate compares.
 
 Two further mismatches, recorded because they would have to be solved as well:
 
-- **Granularity.** mutmut's unit of work is a file and a suite. `pytest_add_cli_args` can narrow the suite by hand, but the pairing of *which mutant* with *which tests* is mutmut's own stats pass, and the gate needs it per mutant to stay inside a `just fast` budget.
-- **Sampling.** "A bounded mutant sample" has no first-class expression. `mutmut run <name>` selects, but the names only exist after a full generate-and-stat pass over the file.
+- **Granularity.** mutmut's unit of work is a file and a suite. `pytest_add_cli_args` narrows the suite by hand, but pairing *which mutant* with *which tests* is mutmut's own stats pass, and this gate needs it per mutant to stay inside a `just fast` budget.
+- **Sampling.** "A bounded mutant sample" has no first-class expression; `mutmut run <name>` selects, but the names exist only after a full generate-and-stat pass over the file.
 
 ## 2. cosmic-ray 8.4.6: the right generality, the wrong unit of work
 
-It installs cleanly (`uv run --with cosmic-ray`, 29 packages, SQLAlchemy among them, one observation). Its architecture is a session database, a distributed executor and resumable sweeps — built for "mutate this module overnight and let me browse the survivors". Adopting it would mean carrying a database and an executor to obtain a bounded sample this project would then have to define itself, and adding SQLAlchemy to a dependency set whose only runtime dependency today is `networkx`. Declined on that, not on any measured failure: it was not run to completion here, and this note does not claim it fails.
+It installs cleanly (`uv run --with cosmic-ray`, 29 packages, SQLAlchemy among them; one observation). Its architecture is a session database, a distributed executor and resumable sweeps — built for "mutate this module overnight and let me browse the survivors". Adopting it would mean carrying a database and an executor to obtain a bounded sample this project would still have to define, and adding SQLAlchemy to a project whose only runtime dependency is `networkx`. Declined on that, not on any measured failure: it was not run to completion here, and this note does not claim it fails.
 
-## 3. Why a bespoke mutator is cheap here
+## 3. What a bespoke mutator buys, and what it costs to own
 
-ADR-0049's spend-tokens-once principle asks whether the thing is small enough to own. It is: the mutator is an `ast` walk producing byte-span replacements, guarded by a `compile()` of the result, and the entire engine is under 200 lines of `tools/mutation_smoke.py`. What the project buys for that is the two things above — per-mutant test selection, and a sample it controls — plus the operator set.
+ADR-0049's spend-tokens-once principle asks whether the thing is small enough to own. It is: an `ast` walk producing byte-span replacements, guarded by a `compile()` of the result. What the project buys is per-mutant test selection, a sample it controls, and the operator set.
 
-**The operator set is chosen for precision, and each exclusion has a name.**
+**Operators are chosen for precision, and every exclusion has a name.**
 
 | Planted | Why it is high-signal |
 |---|---|
 | comparison negation (`==`↔`!=`, `<`↔`>=`, `is`↔`is not`, `in`↔`not in`) | negating a comparison that ran changes a decision that was taken |
-| `and`↔`or` | ditto, on the joining |
-| `not x` → `x` | ditto, on the sense |
+| comparison **boundary shift** (`>`→`>=`, `<=`→`<`, …) | the edge case, which is the one weak assertions miss — see below |
+| `and`↔`or` | the joining |
+| `not x` → `x` | the sense |
 | `True`↔`False` | a constant decision, inverted |
-| numeric literal `n` → `n+1` | thresholds, offsets, sizes: the arithmetic tests exist to pin |
+| numeric literal `n` → `n+1` | thresholds, offsets, sizes |
 | `return <expr>` → `return None` | what the function hands back |
 
 | Never planted | Why |
@@ -76,28 +77,50 @@ ADR-0049's spend-tokens-once principle asks whether the thing is small enough to
 | anything inside an f-string | a replacement in a format expression is a span this mutator has no business trusting |
 | one link of a chained comparison | a mutant whose meaning cannot be stated in a report |
 
-Each row of the second table is a regression test in `tests/unit/test_mutation_smoke.py`, named after the mutmut survivor that motivated it, because every equivalent mutant that reaches the real tree has to be paid for out of the floor.
+Every row of the second table is a regression test in `tests/unit/test_mutation_smoke.py`, named after the mutmut survivor that motivated it, because every equivalent mutant that reaches the real tree has to be paid for out of the floor.
 
-**How the subject is chosen.** Not by the `test_x.py` → `x.py` convention: `tests/unit/test_land.py` → `tools/land.py` already only half obeys it, and a data-driven module does not obey it at all. The module is run once under `coverage.py` with `dynamic_context = test_function`, and the subject is the product file with the most lines executed **inside a test**. Import-time lines carry an empty context and do not count — which is what makes an `assert True` module subject-less rather than the accidental owner of everything `conftest.py` imported.
+**The boundary shift is not decoration.** Negation alone was measured and found blunt: on `dedupe.py`, `while len(self._answers) > self.window` negated becomes `<=`, which pops from an empty `OrderedDict` and raises, so *any* suite that runs the line kills it. A deliberately weak module over that class scored 5/5. The shift to `>=` leaves the code running and moves the edge by one, which only a test that pinned the edge notices. With it, the same weak module's rate falls — and the throwaway subject in §5 separates 100% from 30%.
 
-The sweep shows the convention would have been wrong at least once anyway: `tests/unit/test_budget.py`'s evidence-chosen subject is `src/cti_daemon/manifest.py`, not `budget.py`, because that is where its tests spend their lines.
+**How the subject is chosen.** Not by the `test_x.py` → `x.py` convention: `tests/unit/test_land.py` → `tools/land.py` already only half obeys it, and the sweep found `tests/unit/test_budget.py` spending most of its lines in `manifest.py` rather than `budget.py`. The module is run once under `coverage.py` with `dynamic_context = test_function`, and the subject is the product file with the most lines executed **inside a test**. Import-time lines carry an empty context and do not count — which is what makes an `assert True` module subject-less rather than the accidental owner of everything `tests/unit/conftest.py` imported.
 
-**What the gate does and does not catch.** Stated plainly, because a gate whose limits are not written down gets trusted past them:
+## 4. Two bugs that made the gate score everything 100%, and how they were caught
 
-- An `assert True` module — the shape #239's acceptance names — is caught hard, as `no subject`.
-- A module that wraps every call in `try/except Exception: pass` is caught: nothing goes red, so nothing is killed.
-- A module that genuinely exercises its subject and asserts only `is not None` is caught **partially**. Measured: a purpose-built vacuous module over `economy.Ledger` — four tests, every assertion `is not None` or `in (True, False)` — scored **9/9**. Its mutants were killed by *crashes*, not by assertions: flipping `_account`'s `held is None` guard raises `UnknownSideError`, and flipping `can_afford`'s comparison makes `spend` refuse. Those are honest detections in the mutation-testing sense — the suite went red when the code changed — and this gate measures change-detection, so it counts them. It is not a vacuity oracle, and no bounded mutation smoke is.
+Both are worth writing down, because both are invisible from inside a green run and both would have shipped a gate that could not fail.
 
-## 4. The corpus sweep, and where the floor comes from
+**A coverage context is not a pytest node id.** `dynamic_context = test_function` names a test by its *importable* name — `test_dedupe.test_a_window_can_be_filled` — while pytest selects by path and `::`. Handed the coverage spelling, pytest exits **4**, "file or directory not found". The first draft read any non-zero exit as "the tests noticed", so every mutant was killed by a run that never happened, and the first corpus sweep came back 100% on 47 of 50 modules. The durable half of the fix is not the conversion but the reading: only exit 0 (survived), exit 1 (killed) and a timeout (killed) are verdicts, and every other code is a refusal — CLAUDE.md's #41 rule, that a check which could not run is not a check that passed.
+
+It was caught by asking a question the passing tests could not answer: *which tests does this mutant actually run?* The printed answer was `test_zz_weak_dedupe.test_a_window_can_be_filled`, which is not a node id. `tests/unit/test_mutation_smoke.py` now carries the end-to-end that would have caught it — a weak module that must be **red** — because a suite in which nothing can survive passes every "sound module is green" test ever written.
+
+**Two mutants of the same length in the same second share a bytecode cache.** After the first fix the gate flaked: 13/20, 13/20, 12/20 over an unchanged tree. CPython validates a cached `.pyc` against its source's mtime in **whole seconds** and its size in **bytes**, and the two mutants this gate plants on one comparison are the negation and the shift — `(missing < 0)` and `(missing > 0)`, identical length, same file, same second. The second run imported the first one's bytecode. The two survivors that moved between runs were exactly such a pair.
+
+Reproduction baseline, per CLAUDE.md's flake rule: **pre-fix, 5 runs of `--paths tests/unit/test_economy.py` gave 13/20, 13/20, 12/20, 13/20, 14/20; post-fix, 3 runs gave 14/20 three times, and 3 runs of `test_economy.py` + `test_campaign.py` together gave 14/20 and 14/20 every time.** A private `PYTHONPYCACHEPREFIX` per mutant also fixes it and was measured first: correct, and 10 s → 38 s per module in recompiles. Stepping the file's mtime two seconds forward on every write costs nothing.
+
+## 5. Separation: what a sound, a weak and a vacuous module score
+
+Against one throwaway subject with three decisions in it, built in `tmp_path` by `tests/unit/test_mutation_smoke.py` and run as part of `just unit`:
+
+| Test module | Kill rate | What it asserts |
+|---|---:|---|
+| sound | **100%** (10/10) | exact prices, including at and either side of the threshold |
+| weak | **30%** (3/10) | only `is not None` and `isinstance(..., int)` |
+| vacuous | **no subject** | `assert True` and `1 + 1 == 2` |
+
+The seven survivors of the weak module are the whole boundary and arithmetic of the subject: the threshold constant, the comparison, its boundary, the `and`, the `not`, and both return arithmetic constants. That is the gate working as intended.
+
+## 6. The corpus sweep, and where the floor comes from
 
 Every test module in `tests/unit/`, `--report`, defaults (`--cap 20`), in the isolated clone.
 
-<!-- SWEEP TABLE -->
+<!-- SWEEP -->
 
-## 5. Cost
+## 7. What the gate does not catch
 
-<!-- COST -->
+Stated plainly, because a gate whose limits are unwritten gets trusted past them.
 
-## 6. What this changes
+- **It measures change-detection, not assertion quality.** A mutant that makes the subject *crash* is killed by any test that runs the line. That is an honest detection in the mutation-testing sense — the suite went red when the code changed — and it is counted. It means a module that exercises a subject full of guards and asserts only `is not None` can score higher than its assertions deserve. Measured: a purpose-built weak module over `economy.Ledger` scored 9/9 under the negation-only operator set, because flipping `_account`'s `held is None` guard raises and flipping `can_afford`'s comparison makes `spend` refuse. The boundary shift narrows this; it does not close it.
+- **The subject is one file.** A test module spending most of its lines in shared arrangement gets that arrangement as its subject — `tests/unit/test_budget.py` → `manifest.py`. The verdict is still a real one about tests that really run those lines; it is just not the file the module's name suggests.
+- **It is a bounded sample.** Twenty mutants out of, in one case, 199. A landing can be unlucky; it cannot be unlucky *repeatably*, because the sample is seeded from the test module's path.
 
-Recorded as ADR-0064. In short: `tools/mutation_smoke.py` and `just mutation`, wired into `just fast` and therefore into `tools/land.py`'s gate, which is where lane-blindness comes from — a z.ai or Codex landing runs the same rung. `mutmut` leaves the dev dependency group, and the CLAUDE.md line naming it is proposed for the human's amendment rather than edited.
+## 8. What this changes
+
+Recorded as ADR-0064. `tools/mutation_smoke.py` and `just mutation`, wired into `just fast` and therefore into `tools/land.py`'s gate, which is where lane-blindness comes from — a z.ai or Codex landing runs the same rung. `mutmut` leaves the dev dependency group, and the CLAUDE.md line naming it is proposed for the human's amendment rather than edited.
