@@ -1176,7 +1176,15 @@ def emit_lines(lines: Iterable[str], code: int = 0) -> int:
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     """Eight verbs: read a lane, read them all, feed one, and the status-line tap."""
     parser = argparse.ArgumentParser(prog="breaker", description=__doc__)
-    parser.add_argument("--breaker-dir", type=Path, default=DEFAULT_BREAKER_DIR)
+    # `CTI_BREAKER_DIR` lets a caller that cannot pass a flag — `just watch-report`,
+    # which folds this in without forwarding its own arguments — point the read at a
+    # different set of lanes, and lets a test exercise the recipe without writing to the
+    # box's real breakers.
+    parser.add_argument(
+        "--breaker-dir",
+        type=Path,
+        default=Path(os.environ.get("CTI_BREAKER_DIR", str(DEFAULT_BREAKER_DIR))),
+    )
     parser.add_argument("--dispatch-dir", type=Path, default=DEFAULT_DISPATCH_ROOT)
     parser.add_argument("--otlp-endpoint", default="")
     parser.add_argument("--now", type=float, default=0.0)

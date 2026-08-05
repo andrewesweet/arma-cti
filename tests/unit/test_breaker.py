@@ -20,6 +20,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -826,6 +827,42 @@ def test_the_estimate_verb_refuses_without_a_plan_tier_and_names_the_recipe(
     assert done.returncode == 1
     assert "plan_tier_unknown" in done.stderr
     assert "just prereqs plan-tier" in done.stderr
+
+
+def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripped(
+    tmp_path: Path,
+) -> None:
+    """The recipe itself, run twice: once on healthy lanes and once on a tripped one."""
+    directory = tmp_path / "breaker"
+    environment = {**os.environ, "CTI_BREAKER_DIR": str(directory)}
+
+    def watch_report() -> str:
+        return subprocess.run(
+            # S607: `just` resolves off PATH on purpose, like every other tool this
+            # project shells out to — the recipe under test is the one a caller runs.
+            ["just", "watch-report"],  # noqa: S607
+            cwd=REPO,
+            capture_output=True,
+            text=True,
+            check=False,
+            env=environment,
+        ).stdout
+
+    assert watch_report().strip() == "", "every lane fine, and the read says nothing"
+
+    # The recipe reads the wall clock, so the staged window has to be a real future one:
+    # a reset already in the past would have settled to half-open and read as fine.
+    wall = time.time()
+    breaker.record_outcome(
+        breaker.Store(directory=directory, endpoint=DEAD_ENDPOINT),
+        "zai",
+        breaker.Outcome(breaker.QUOTA_EXHAUSTED, reset_at=wall + HOUR),
+        wall,
+    )
+    printed = [line for line in watch_report().splitlines() if line.startswith("lane=")]
+    assert len(printed) == 1, "one line for the one lane that needs one"
+    assert "lane=zai" in printed[0]
+    assert "class=quota_exhausted" in printed[0]
 
 
 def test_the_recipe_folds_the_breaker_into_the_read_at_the_top_of_a_turn() -> None:
