@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The landing protocol is one call that cannot forget a step.** `just land` runs the
+  whole of CLAUDE.md's Commits-section procedure — fetch, rebase onto `origin/main`,
+  re-gate, `git push origin HEAD:main`, fast-forward the main checkout — and refuses by
+  name rather than by shell error. #209 measured 220 hand calls doing exactly this
+  across 117 of 214 agents, and each of the procedure's documented traps exists because
+  agents kept falling into it. Three of them are now mechanisms rather than prose. The
+  refspec is a constant no argument reaches, so `git push origin main` — which pushes
+  the local `main` branch that a detached worktree is not on — cannot be typed through
+  this recipe. The gate is *inside* the protocol: `just fast` runs after the rebase on
+  every landing that pushes anything, with no flag to skip it and no heuristic deciding
+  it is unnecessary, and its output is never captured, so a red gate hands back the
+  gate's own words. And the fast-forward into the main checkout can no longer be skipped
+  in silence: when it does not run the exit is non-zero and one line, `merge_command=`,
+  names the exact command the orchestrator must run — CLAUDE.md's "never skip it
+  silently" with a mechanism behind it at last, against the stale-hook window ADR-0042
+  and #130 describe. Refusals are the recipe's own vocabulary rather than the harness
+  failure-class table (a landing is not a corpus verdict), and the exit code separates
+  "nothing landed" from "the work IS on origin/main and a step is outstanding". Logic is
+  Python under pytest with the justfile keeping only the seam (ADR-0049); the ladder is
+  asserted class by class and the end-to-end tests drive real `git` over a bare
+  repository, a main checkout and a linked worktree, never the real remote. #213.
 - **A logical subagent is dispatched onto a named lane, and the lane's environment goes
   nowhere else.** `just dispatch --lane claude-native --profile opus-high --seat
   implementer --issue 223` starts a separate process and returns a dispatch id at once,

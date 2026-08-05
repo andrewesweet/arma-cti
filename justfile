@@ -232,6 +232,35 @@ fast: check unit
 worktree action="check" name="":
     uv run python tools/worktree.py {{ action }} "{{ name }}"
 
+# The landing protocol as one call (#213, ADR-0049): fetch, rebase onto
+# origin/main, re-gate, `git push origin HEAD:main`, then fast-forward the main
+# checkout. The protocol CLAUDE.md's Commits section states in prose, run the
+# same way every time — #209 measured 220 hand calls doing it across 117 of 214
+# agents, and its documented traps exist because agents kept falling into them.
+#
+#   just land              the whole protocol, gate included
+#   just land --dry-run    the plan, having run nothing at all
+#
+# Three things it does that prose could not. The refspec is a constant no
+# argument reaches, so `git push origin main` — which pushes the local `main`
+# branch a detached worktree is not on — cannot be typed here. The gate is
+# *inside* the protocol: `just fast` runs after the rebase, on every landing
+# that pushes anything, and there is no `--no-gate`, which would be a gate
+# bypass wearing a convenience wrapper. And the ff-only merge into the main
+# checkout is no longer skippable in silence: when it does not run, the exit is
+# non-zero and one line names the exact command the orchestrator must run —
+# `grep '^merge_command='`. A stale main checkout is where ADR-0042's stale-hook
+# window comes from (#130).
+#
+# Refusals are named, each says what was found and what to do, and the exit code
+# separates the two kinds: 1 is nothing landed (dirty_tree, nothing_to_land,
+# rebase_conflict, gate_red, gate_blocked, not_fast_forward, git_failed), 2 is
+# the work IS on origin/main and a step is outstanding
+# (merge_blocked_by_sandbox, merge_not_fast_forward). Nothing here resolves,
+# aborts, resets or tidies on a refusal path.
+land *args:
+    uv run python tools/land.py {{ args }}
+
 # Start a logical subagent as a separate process on a named lane, and return at
 # once with a dispatch id (#223, ADR-0061). No Arma, no lock, no turn held open.
 #
