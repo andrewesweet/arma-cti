@@ -12,6 +12,8 @@
 
 **Correction (#206, from #203).** This document originally priced every cache write at a flat 1.25×. #203 found the transcripts carry a `cache_creation` block splitting each turn's writes into `ephemeral_5m_input_tokens` and `ephemeral_1h_input_tokens`, and re-ran the census 14 files and 1,197 turns further along (208 files, 18,712 turns, to the same 2026-08-05 cutoff, the project having kept running): the split is exact, not approximate — every main-session write in this project's history requested the one-hour TTL, every subagent write the five-minute one — and the one-hour TTL bills at 2× base input, not 1.25×. The total below and every percentage through §4 reflect that correction; where #203's comment does not republish a figure component-by-component for the extended census, this document notes so and states its method.
 
+**Currency (#220). This is a token-flow document, not a spending ranking.** Input-equivalents measure what work costs a model to process, and are the correct model on an API key and a sound proxy for latency and context pressure. They are *not* what this project's Max subscription meters: #218 measured the plan charging an output token at least 3,462× a cache-write token, where this model says 2.5×. The plan-currency reconciliation, the re-ranking that follows from it, and which of the recommendations below survive, invert or are unaffected, are in the sibling `docs/research/token-efficiency-plan-currency.md`. Every measurement here stands; §4's ranking is unchanged pending the human's adoption call on #220.
+
 **Cost model.** Raw token counts are misleading because the four classes bill at different rates. Everything below is expressed in **input-equivalents**, multiples of the base input rate:
 
 | Class | Rate | Source |

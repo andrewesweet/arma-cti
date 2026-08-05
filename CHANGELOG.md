@@ -9,6 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The project now knows which currency it is optimising, and it is not the one it was
+  ranking in.** `docs/research/token-efficiency-plan-currency.md` reconciles the
+  token-efficiency corpus with what this Max subscription's plan meter actually charges,
+  measured by #218: an output token weighs at least 3,462 times a cache-write token,
+  where the published price list says two and a half. Two cost models now sit side by
+  side, each labelled for what it measures — a **token-flow view** in input-equivalents,
+  correct on an API key and a sound proxy for latency and context pressure, and a
+  **plan-currency view** in percentage points of the binding plan window, which is the
+  only currency in which "we ran out" is a sentence. In plan currency the older
+  document's headline inverts: everything the model writes is not a twentieth of the
+  bill but something like a third of it, and the entire cache-cliff family it ranks
+  first, second and third is worth under 0.7% of the plan meter combined. Six days of
+  work generated 132 five-hour-windows' worth of points in output alone; the same six
+  days' 86 million cache-write tokens are bounded under one point in total. Three of
+  those top recommendations survive anyway, on wall clock and on correctness rather than
+  on tokens, and they are re-argued rather than re-priced. What the correction promotes
+  has never been ranked at all: reasoning effort as an output-volume multiplier, fan-out
+  and retry discipline, and CLAUDE.md's ban on verification passes, which turns out to
+  be a first-order cost rule that happens also to be a quality one. The document is
+  honest about the hole in the middle — cache reads were never measured, they are
+  somewhere between nothing and 62% of the meter, and one cheap unrun experiment decides
+  whether shrinking context is worth a third of the plan or nothing at all. It also
+  defines the metric the multi-provider dispatch ledger records for ADR-0061's first
+  decision: fraction-of-cap per pool, an estimator and an observed meter delta side by
+  side, with the Claude estimator's basis settled as output tokens on a named
+  calibration. #220.
+
 - **The landing protocol is one call that cannot forget a step.** `just land` runs the
   whole of CLAUDE.md's Commits-section procedure — fetch, rebase onto `origin/main`,
   re-gate, `git push origin HEAD:main`, fast-forward the main checkout — and refuses by
