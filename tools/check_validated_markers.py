@@ -39,15 +39,16 @@ from pathlib import Path
 from typing import Final, NamedTuple
 
 UNCOUNTABLE: Final = """\
-CLAUDE.md's exemplar lists have no machine delimiter, and every rule derivable \
-from the prose miscounts at least two of the five. Counting sentence-initial \
-issue references reads probe-window as 9 against its ×8 (the #104 entry carries \
-"#24 rode the same discipline the same day" as part of the same validation \
-event) and ADR-claiming as 5 against its ×6 (one entry opens "The \
-0039→0040→0041 renumber chains"). Requiring a colon after the reference reads \
-convention-lands as 1 against its ×4, since three of its four entries open \
-"#NN landed …" with no colon at all. The unit being counted is a validation \
-event as narrated, which is a prose judgement.\
+CLAUDE.md's exemplar lists are uncountable twice over. Since the twenty-third \
+retro's prune (#201), a list past five exemplars keeps only the newest five \
+while ×N keeps the full validation count, so a list's length is capped by \
+design and no counting rule can equal the count. And even where a list is \
+complete, it has no machine delimiter: one probe-window entry carries "#24 \
+rode the same discipline the same day" as part of the same validation event, \
+one ADR-claiming entry opens "The 0039→0040→0041 renumber chains" with no \
+leading issue reference, and requiring a colon after the reference read \
+convention-lands as 1 against its then-×4. The unit being counted is a \
+validation event as narrated, which is a prose judgement.\
 """
 
 MARKER: Final = re.compile(r"validated ×(\d+)")

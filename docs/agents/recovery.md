@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×14 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×15 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -54,7 +54,15 @@
 > gate, forcing repeated rebase+re-gate cycles) was fixed tactically by a dispatch
 > freeze and systemically by #197's gate shrink, and mid-marathon the watch loop
 > itself became a tool (`just watch`, #198), taking the noticing out of the
-> orchestrator's turn without changing which layer does it.
+> orchestrator's turn without changing which layer does it. Fifteenth use
+> (2026-08-05): the first stalls after the watch became a tool — the #153 agent
+> parked ~2 h on a green pool twice, the #170 agent ~2 h on reds, each caught by
+> the standing watcher and cleared by a prod (orchestrator-side observations).
+> Both sessions sat inside ADR-0042's stale-copy window: #205's wait-denying hook
+> had landed but governs only worktrees rebased past it, so the watcher stays the
+> layer that works while #204's end-before-wait rule awaits its ruling — a prod
+> is measured at 2.32% of the bill across 54 events (#206), which is what that
+> ruling would remove.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
