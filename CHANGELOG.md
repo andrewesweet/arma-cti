@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The development process's token bill has been measured, and it is mostly cache traffic.**
+  `docs/research/token-efficiency.md` reads the four token classes off all 194 of this project's
+  Claude Code session transcripts (17,515 turns) and prices #195's four seed ideas against them.
+  What the model writes is 4.6% of the bill; a token that enters the context is re-read 35.7 times,
+  so context size is a recurring per-turn cost. The largest recoverable waste is that a turn which
+  blocks for more than five minutes loses the prompt cache and pays to rebuild it — 13.6% of
+  everything spent so far, split between agents deliberately waiting (4.2%) and test recipes
+  outliving the cache (2.8%). `just fast` is now 6 min 30 s, past that line on every invocation;
+  the same suite runs in 1 min 44 s under `pytest-xdist`. Compressing agent documentation, the
+  seed idea with the most intuitive appeal, measures at 25.6% on a real sample and ~1% of the
+  bill, and it deletes the rationale this project has four validated instances of needing. #195.
+
 - **Players choose a kit at their own Base, and keep it.** Under the human's ruling on #172
   (2026-08-04, recorded in ADR-0056), a player standing in his own side's Base is offered a curated
   menu of six kits — rifleman, grenadier, autorifleman, anti-tank, marksman, medic — and may take
