@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Squads no longer yomp: every Squad standing at its own Base is issued a free ride.**
+  Human decision of 2026-08-03 on #170 — "I find yomping repeatedly to targets to be boring
+  gameplay... squad leaders (or AI commander on behalf of squad leaders) should be able to
+  access the weakest, most basic form of motorised transport sufficient for their squad size
+  for free at all times. A civilian open truck perhaps?" A new `transport_watch` sweeps the
+  Squad roster and issues one to any Squad at its own Base without a vehicle there: no Funds
+  move, nobody asks, and both of the ruling's principals are served by the same rule because
+  neither had to. The vehicle comes off an authored ladder,
+  `addons/main/catalogue/transport.json`, read first-match so "weakest sufficient for their
+  squad size" is data rather than a constant — today the Offroad at six seats and the Zamak
+  civilian open truck at seventeen, so the shipped eight-man Squads get the human's own
+  concrete. One per Squad: a Squad whose vehicle is stranded elsewhere is issued another and
+  the old one is deleted, or released and named when somebody is riding it. AI-led Squads
+  ride by the engine's own rule — the truck joins the group's vehicle pool and a distant Move
+  waypoint boards them — so no Order, no planner and no wire changed; a player squad leader
+  drives it himself. Free means it is not a Command and, unlike a kit, crosses no wire at all:
+  no port entry, no Effect, no Observation field, no snapshot field. Shape recorded in
+  ADR-0059; `docs/mvp-scope.md` now carries the ruling and distinguishes the free civilian
+  truck from the priced crewed `transport` Squad type. `engine_drift` gains its first emitter
+  on the way past: the world counts the seats the engine actually gave it against the authored
+  number (#71 stays open).
+
 - **The worktree protocol is one call, and it refuses by name.** `just worktree add
   issue-214` fetches, creates `.claude/worktrees/issue-214` off `origin/main` detached,
   runs CLAUDE.md's pre-flight on the result and prints the absolute path and the base SHA

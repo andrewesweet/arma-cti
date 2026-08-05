@@ -14,6 +14,16 @@ Decided 2026-07-30 (grilling session). Session-based persistent campaign ([ADR-0
   - Income accrues only during a Play Session.
   - Squad prices in one config table: rifle squad base, weapons ~1.5x, transport +flat premium. Reinforce = missing fraction x price x ~0.8 discount. Starting Funds ~3 squads. No upkeep, refunds, or selling.
   - Placeholders: income 10/obj/min, stipend 5/min, rifle 100, weapons 150, transport +50, start 300.
+  - **Basic motorised transport is free and always available**, and does not touch the table above.
+    Human decision, 2026-08-03 (#170): "I find yomping repeatedly to targets to be boring gameplay.
+    I think squad leaders (or AI commander on behalf of squad leaders) should be able to access the
+    weakest, most basic form of motorised transport sufficient for their squad size for free at all
+    times. A civilian open truck perhaps?" Every Squad standing at its own Base is issued one, sized
+    to the Squad, costing no Funds and asked for by nobody ([ADR-0059](adr/0059-a-free-ride-is-issued-not-asked-for-and-crosses-no-wire.md)).
+    The two do not collide: the free one is a bare unarmed **civilian** vehicle the Squad drives
+    itself, and the priced `transport` Squad type is a crewed military transport asset — what +50
+    buys is the crew and the asset, not the ability to travel. The priced type is unauthored in
+    `config/economy.json` today and is #6's to fill.
 - AI Commander for both sides: prioritise objectives, buy squads, order capture/defend.
 - Fog of war at the strategic layer (decided 2026-07-31, grilling session; issues #27 and the
   Contact-report issue it blocks). A Commander knows its own side in full — Squads, Orders, Funds.
