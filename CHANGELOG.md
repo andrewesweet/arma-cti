@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A subagent can no longer hold its turn open on a long wait.** A new PreToolUse hook,
+  `.claude/hooks/deny-subagent-waits.py`, denies a `sleep` of 240 s or more and any
+  `while`/`until` poll loop with a `sleep` in it — but only inside a subagent, which the
+  hook tells by the `agent_id` field the harness sends there and nowhere else. #203
+  measured why on this project's own transcripts: every subagent cache write is on the
+  five-minute TTL and every main-session one is on the hour, so a turn held past five
+  minutes pays ~201,000 input-equivalents to rebuild its prefix where ending the turn and
+  starting a successor cold costs ~24,000. The orchestrator, where waiting is nearly free
+  and is the recommended pattern, is left entirely alone. The denial names the alternatives
+  rather than only refusing: end the turn, arm `just watch`, or run the thing detached with
+  `run_in_background` — which the hook also permits, since a detached run holds nothing
+  open. A bounded short sleep, a `timeout`-wrapped gate command, a `for` loop and prose
+  about any of them all pass, and both directions are pinned in the no-Arma tier along with
+  the `|| exit 2` wiring itself, run verbatim with an empty PATH (#168, #183). #205.
+
 - **A Commander can see his own Squads on the march.** Playtest 0001 lost sight of two
   Squads for the length of a march and read the absence as death — they were alive at
   eight men apiece. The Observation's `SquadView` now carries `pos`, the Squad's map
