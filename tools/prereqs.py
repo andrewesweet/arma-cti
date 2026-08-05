@@ -939,9 +939,32 @@ def evaluate(facts: Facts) -> tuple[Item, ...]:
         ("codex_cli", facts.codex_cli, "codex-lane", CODEX_ACTION, True),
     )
     return tuple(
-        Item(name, _state(probe), blocks, probe.detail, action, deferred)
+        _codex_config_is_never_a_pass(
+            Item(name, _state(probe), blocks, probe.detail, action, deferred)
+        )
         for name, probe, blocks, action, deferred in rows
     )
+
+
+CODEX_UNVERIFIED_ACTION: Final = (
+    "Nothing has proven this key is the one Codex reads. Verify on the day the "
+    "lane is first exercised, with `ss`/`tcpdump` watching for ab.chatgpt.com"
+)
+
+
+def _codex_config_is_never_a_pass(item: Item) -> Item:
+    """Report a written Codex config as ``unverified``, never as ``ok``.
+
+    The `[otel]` table is absent from Codex's public documentation, so the key
+    spelling comes from reading the Rust crate rather than from a schema. A file
+    that says the right thing is not a file that was read the way it intends,
+    and reporting it green would be exactly the silent pass the rest of this
+    tool refuses. It is a deferred item, so this changes no exit code — only
+    what the line claims.
+    """
+    if item.name != "codex_config" or item.state != "ok":
+        return item
+    return item._replace(state="unverified", action=CODEX_UNVERIFIED_ACTION)
 
 
 def render_check(items: tuple[Item, ...]) -> Report:

@@ -656,6 +656,16 @@ def test_the_codex_lane_is_reported_but_does_not_gate_week_one() -> None:
     assert "2 deferred to the Codex lane" in body
 
 
+def test_a_written_codex_config_is_reported_unverified_and_never_ok() -> None:
+    # The `[otel]` key spelling comes from the crate, not from a schema. A file
+    # that says the right thing is not a file that was read the way it intends.
+    report = prereqs.render_check(prereqs.evaluate(facts()))
+    line = next(line for line in report.lines if line.startswith("item=codex_config"))
+    assert "state=unverified" in line
+    assert "ab.chatgpt.com" in line
+    assert report.code == 0  # deferred: it changes what the line claims, not the exit
+
+
 def test_every_item_says_what_to_do_about_it() -> None:
     missing = prereqs.Probe(present=False, detail="absent")
     for item in prereqs.evaluate(facts(**dict.fromkeys(prereqs.Facts._fields, missing))):
