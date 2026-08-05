@@ -75,6 +75,7 @@ STUB_RUN = r"""#!/usr/bin/env bash
 set -uo pipefail
 name="$(basename "${CTI_HARNESS_EXTRA:-unknown}" .sqf)"
 out="$CTI_SPIKE_OUT"
+printf 'client_lock_wait=%s\n' "${CTI_CLIENT_LOCK_WAIT:-unset}" >>"$out/results.env"
 if [[ ",${CTI_STUB_HOST_PROBES:-}," == *",$name,"* ]]; then
     # The pool's tail must have told us it is holding the lock; a client leg
     # running without it is the bug this file exists for.
@@ -97,6 +98,21 @@ def executable(path: Path, text: str) -> Path:
 
 def tasklist(path: Path, listing: str) -> Path:
     return executable(path, f"#!/usr/bin/env bash\nprintf '%s' {listing!r}\n")
+
+
+def flipping_tasklist(path: Path, flip: Path) -> Path:
+    """Show a client in the list until `flip` appears, and not after.
+
+    The sibling's client leaving the list and the sibling releasing the lock are
+    then one event, which is the ordering every real holder gets from
+    `cti_windows_wait_gone` — it does not let go until its own client is gone.
+    """
+    return executable(
+        path,
+        "#!/usr/bin/env bash\n"
+        f'if [[ -e "{flip}" ]]; then printf "%s" {TASKLIST_FREE!r}; '
+        f'else printf "%s" {TASKLIST_PRESENT!r}; fi\n',
+    )
 
 
 def lock_eval(script: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
@@ -455,16 +471,21 @@ def test_the_one_line_summary_carries_what_a_failure_detail_can_hold(tmp_path: P
 # --------------------------------------------------------------------- run.sh
 
 
-def run_sh(tmp_path: Path, listing: str, **extra: str) -> subprocess.CompletedProcess[str]:
+def run_sh(tmp_path: Path, listing: str | Path, **extra: str) -> subprocess.CompletedProcess[str]:
     """`spike/run.sh` as far as the missing server install, and no further.
 
     An empty `CTI_SERVER_DIR` means the first thing after the pre-flight is a
     refusal of its own, which is what makes "it got past the lock" observable
     without a server.
+
+    A `Path` for the listing is a process-list stub the caller wrote itself —
+    `pool_env`'s own union, for the tests below that need the list to change
+    its answer while the run is watching it.
     """
+    tool = listing if isinstance(listing, Path) else tasklist(tmp_path / "tasklist.sh", listing)
     env = dict(
         os.environ,
-        CTI_WINDOWS_TASKLIST=str(tasklist(tmp_path / "tasklist.sh", listing)),
+        CTI_WINDOWS_TASKLIST=str(tool),
         CTI_SPIKE_OUT=str(tmp_path / "out"),
         CTI_SERVER_DIR=str(tmp_path / "no-server"),
         CTI_TIER_STATE=str(tmp_path / "state"),
@@ -709,12 +730,7 @@ def test_a_held_client_lock_lets_the_pool_queue_rather_than_refuse(tmp_path: Pat
     # The holder releases at the same moment, which is the ordering the real
     # teardown gets from waiting on `cti_windows_wait_gone` before releasing.
     flip = tmp_path / "flip"
-    listing = executable(
-        tmp_path / "tasklist-flip.sh",
-        "#!/usr/bin/env bash\n"
-        f'if [[ -e "{flip}" ]]; then printf "%s" {TASKLIST_FREE!r}; '
-        f'else printf "%s" {TASKLIST_PRESENT!r}; fi\n',
-    )
+    listing = flipping_tasklist(tmp_path / "tasklist-flip.sh", flip)
     env = pool_env(tmp_path, "queued", listing=listing)
     holder = holding(
         tmp_path / "state",
@@ -872,3 +888,197 @@ def test_the_queue_is_still_bounded_by_the_wait_that_was_asked_for(tmp_path: Pat
     assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
     assert "waited 10s and the Windows client was still held" in result.stderr
     assert time.monotonic() - started < 90, "the queue outlived the wait it was given"
+
+
+# ------------------------------------------ the per-probe guard, queued too (#196)
+#
+# The entry-time guard above is asked once, before a lock is taken. `run.sh`
+# asks the same question again on every probe's bring-up, and that ask had no
+# queue — so a pool already running when a sibling agent's client probe started
+# met the ownership-blind guard, took the `infra_unavailable` stop, and the
+# pool's bulkhead rule turned one probe's non-result into an abandoned corpus.
+# Observed 2026-08-05 gating #172: four probes passed, `campaign-end` refused
+# nineteen seconds into another worktree's `client-port`, nineteen probes never
+# ran. #119 is the same shape one scope smaller and is fixed; this is the
+# cross-run case, and the fix is the entry guard's queue at the second site.
+#
+# Same verdict vocabulary, only patience: every refusal below is one `run.sh`
+# made before this change too, at the same class and with the same detail.
+
+
+def guard_wait(
+    tmp_path: Path, listing: str | Path, wait: str, **extra: str
+) -> subprocess.CompletedProcess[str]:
+    """Drive a probe's bring-up with `wait` seconds of patience for the machine."""
+    return run_sh(tmp_path, listing, CTI_CLIENT_LOCK_WAIT=wait, **extra)
+
+
+def test_a_probe_queues_behind_another_runs_client_rather_than_abandoning_the_pool(
+    tmp_path: Path,
+) -> None:
+    """The nineteen abandoned probes, as one probe that waits instead.
+
+    The green branch is asserted at the *next* refusal rather than at a pass:
+    getting past the guard means reaching the missing server install, which is
+    as far as any of these runs is meant to get.
+    """
+    flip = tmp_path / "flip"
+    listing = flipping_tasklist(tmp_path / "tasklist-flip.sh", flip)
+    holder = holding(
+        tmp_path / "state",
+        "a sibling agent",
+        then=f'sleep 3\ntouch "{flip}"\ncti_client_lock_release\nsleep 60\n',
+    )
+    try:
+        result = guard_wait(tmp_path, listing, "60")
+    finally:
+        holder.kill()
+    got = results(tmp_path)
+    assert result.returncode != 0
+    assert got["windows_host_free"] == "true", got
+    assert "server binary missing" in got["failure_detail"], got
+    assert "queueing up to 60s" in result.stderr, result.stderr[-4000:]
+    # And it named the run it was behind, so a wedged holder is diagnosable
+    # from the queuer's own log rather than from the machine.
+    assert "label=a sibling agent" in result.stderr
+
+
+def test_without_a_wait_a_probe_still_stops_at_a_client_in_the_list(tmp_path: Path) -> None:
+    """The refusal is the default, at this guard as at the entry one."""
+    holder = held_lock(tmp_path)
+    started = time.monotonic()
+    try:
+        result = run_sh(tmp_path, TASKLIST_PRESENT)
+    finally:
+        holder.kill()
+    assert result.returncode != 0
+    got = results(tmp_path)
+    assert got["failure_class"] == "infra_unavailable"
+    assert "that is a play session, not ours" in got["failure_detail"], got
+    assert "windows_host_free" not in got
+    assert time.monotonic() - started < 60, "a run given no wait waited anyway"
+    # Told what it could have had, and whose run it would have been behind.
+    assert "a wait would queue behind it" in result.stderr
+    assert "label=a sibling agent" in result.stderr
+
+
+def test_a_probe_never_queues_behind_a_play_session(tmp_path: Path) -> None:
+    """Nobody holds the lock, so the client in the list is not an agent's.
+
+    This is the guard's whole reason for existing, and no amount of patience
+    may soften it: waiting out a person is not what a queue is for.
+    """
+    started = time.monotonic()
+    result = guard_wait(tmp_path, TASKLIST_PRESENT, "600")
+    assert result.returncode != 0
+    got = results(tmp_path)
+    assert got["failure_class"] == "infra_unavailable"
+    assert "that is a play session, not ours" in got["failure_detail"], got
+    assert time.monotonic() - started < 60, "a probe queued behind a play session"
+
+
+def test_a_probe_never_queues_on_a_list_it_could_not_read(tmp_path: Path) -> None:
+    """A check that could not run is not a check that will pass in a minute."""
+    unreadable = tmp_path / "there-is-no-tasklist-here.exe"
+    holder = held_lock(tmp_path)
+    started = time.monotonic()
+    try:
+        result = guard_wait(tmp_path, unreadable, "600")
+    finally:
+        holder.kill()
+    assert result.returncode != 0
+    got = results(tmp_path)
+    assert got["failure_class"] == "infra_unavailable"
+    assert "refusing to take a machine I cannot check" in got["failure_detail"], got
+    assert time.monotonic() - started < 60, "a probe queued on a check it could not make"
+
+
+def test_a_probe_in_the_tail_does_not_queue_behind_its_own_pool(tmp_path: Path) -> None:
+    """`CTI_CLIENT_LOCK_HELD=1` is our own parent holding the client.
+
+    `flock` conflicts between a child's descriptor and its parent's exactly as
+    it does between strangers, so a naive busy check reads the pool's own tail
+    lock as a sibling agent's. A probe that queued on it would wait out the
+    whole of `--wait` for a lock that cannot free until the probe returns —
+    and would hold the machine-wide client for every second of it. What is in
+    the list while our own pool holds the lock is the human's client.
+    """
+    holder = held_lock(tmp_path)  # stands in for the pool parent's hold
+    started = time.monotonic()
+    try:
+        result = guard_wait(tmp_path, TASKLIST_PRESENT, "600", CTI_CLIENT_LOCK_HELD="1")
+    finally:
+        holder.kill()
+    assert result.returncode != 0
+    got = results(tmp_path)
+    assert got["failure_class"] == "infra_unavailable"
+    assert "that is a play session, not ours" in got["failure_detail"], got
+    assert time.monotonic() - started < 60, "a probe queued behind its own pool"
+
+
+def test_a_malformed_wait_is_refused_rather_than_read_as_a_busy_lock(tmp_path: Path) -> None:
+    """A budget that is not a number is not a budget.
+
+    Unchecked, it reaches `cti_client_lock_acquire`, which rejects it with the
+    status it gives a *busy* lock — and the run would report somebody holding a
+    client nobody holds.
+    """
+    result = guard_wait(tmp_path, TASKLIST_FREE, "a while", CTI_WINDOWS_CLIENT="1")
+    assert result.returncode != 0
+    got = results(tmp_path)
+    assert got["failure_class"] == "infra_unavailable"
+    assert "CTI_CLIENT_LOCK_WAIT must be a whole number of seconds" in got["failure_detail"], got
+
+
+def test_the_pool_hands_its_wait_to_every_probe(tmp_path: Path) -> None:
+    """The per-probe queue draws on the pool's `--wait`, not a budget of its own.
+
+    ADR-0028's rule, applied to a value that crosses the launch: a boundary is
+    only real where something reads it, so the assertion is on what the child
+    received rather than on what the parent meant to send.
+    """
+    result = pool_run(pool_env(tmp_path, "budget"), "--slots", "1", "--wait", "90", "contact-decay")
+    assert result.returncode == 0, result.stderr[-4000:]
+    seen = {
+        line.split("=", 1)[1]
+        for evidence in (tmp_path / "state" / "runs").glob("*/results.env")
+        for line in evidence.read_text().splitlines()
+        if line.startswith("client_lock_wait=")
+    }
+    assert seen == {"90"}, seen
+
+
+def test_the_guard_queue_has_one_home() -> None:
+    """#161's shape, applied before the second copy exists rather than after.
+
+    The entry-time loop and the per-probe one are the same decision about the
+    same lock; two of them drift, and the drift's failure mode is a corpus
+    thrown away. The bounded wait on the lock is the fingerprint — every
+    version of this loop ends in one.
+    """
+    queuers = [
+        script.name
+        for script in sorted((REPO / "spike").glob("*.sh"))
+        if "cti_client_lock_wait_free" in script.read_text()
+    ]
+    assert queuers == ["client-lock.sh"], queuers
+
+
+@pytest.mark.parametrize("script", ["run.sh", "regress.sh"])
+def test_every_host_guard_ask_in_a_runner_goes_through_the_queue(script: str) -> None:
+    """The tripwire for the next ask somebody adds.
+
+    `cti_host_guard` and `cti_guard_verdict` are still there and still correct —
+    they are what the queue asks *with*, and `spike/host-guard.sh` runs one as a
+    command. A runner reaching for either directly is a third site that stops a
+    pool for a sibling's client, which is how this issue was filed.
+    """
+    text = (REPO / "spike" / script).read_text()
+    asks = [
+        line
+        for line in text.splitlines()
+        if not line.lstrip().startswith("#")
+        if re.search(r"\bcti_guard_verdict\b|\bcti_host_guard\b(?!_or_queue)", line)
+    ]
+    assert asks == [], asks
+    assert "cti_host_guard_or_queue" in text

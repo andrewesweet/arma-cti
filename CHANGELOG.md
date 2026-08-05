@@ -186,6 +186,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A sibling agent's client no longer throws away a corpus that was already running.** The pool
+  asks the play-session guard twice — once at the door, where it recognises another run's client
+  and queues behind it, and once per probe on the bring-up, where it did not. The second one had
+  no queue and `infra_unavailable` stops the pool taking new work, so a pass four probes in was
+  abandoned nineteen seconds into another worktree's client probe, nineteen probes unrun and
+  twenty minutes of world bring-ups thrown away. The per-probe guard now queues on exactly what
+  the entry one queues on — a client in the process list while somebody else holds the
+  machine-wide client lock is that run's, not a person's — bounded by the same `--wait` the caller
+  gave the pool, which is handed to every probe rather than kept at the door. Nothing about the
+  guard's verdicts changed; only its patience, and at the default of no wait every refusal is the
+  one it gave before. #196.
+
 - **A harness run can no longer leave the human's Arma install carrying half a mod.** Staging
   `@cti` for the headed client writes into the real Steam install, and it used to do it by
   deleting the live folder and then copying into it — so the play install had no mod for the

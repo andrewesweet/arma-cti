@@ -421,39 +421,16 @@ fi
 # the deadline, so the queue is still bounded by exactly the wait that was asked
 # for, and every pass re-derives the two facts that make queueing legitimate: a
 # client is in the list, and somebody else holds the lock.
-host_guard_or_queue() {
-    local deadline=$((SECONDS + WAIT_SECS)) said=0
-    while :; do
-        cti_host_guard "$HOST" && return 0
-        # Only a client *in* the list is a thing another run can own. A list that
-        # could not be read is not: queueing on it would be waiting out a broken
-        # check rather than a sibling's client leg, and the answer to a check that
-        # could not run is the same stop it has always been.
-        [[ "$(cti_host_client_state "$HOST")" == running* ]] || return 1
-        cti_client_lock_busy || return 1
-        if ((WAIT_SECS == 0)); then
-            log "another run holds the Windows client; --wait would queue behind it"
-            cti_client_lock_holder | sed 's/^/[regress]   /' >&2
-            return 1
-        fi
-        ((SECONDS < deadline)) || {
-            log "waited ${WAIT_SECS}s and the Windows client was still held"
-            return 1
-        }
-        # Said once, however many runs we queue behind: the holder named below
-        # is the one we are waiting on now, and a line per contender would bury
-        # the pool's own log under somebody else's schedule.
-        ((said)) || log "that client belongs to another run, not to a play session — queueing up to ${WAIT_SECS}s:"
-        said=1
-        cti_client_lock_holder | sed 's/^/[regress]   /' >&2
-        cti_client_lock_wait_free $((deadline - SECONDS)) || {
-            log "waited ${WAIT_SECS}s and the Windows client was still held"
-            return 1
-        }
-    done
-}
-
-if ! host_guard_or_queue; then
+#
+# The loop itself lives in spike/client-lock.sh (#196), because this is not the
+# only place that asks: `run.sh` asks again per probe, on the bring-up, and did
+# not queue — which is how a pool four probes in abandoned the other nineteen
+# when a sibling agent's client probe started. Same question, same code; the
+# rendering and the log prefix are this caller's, the decision is not.
+#
+# `block` and stderr: the guard's lines are read by whoever is watching the pool,
+# and the durable line below is what the refusal log gets.
+if ! cti_host_guard_or_queue "$HOST" block "$WAIT_SECS" log >&2; then
     # The guard's own words went to stderr above; this is the durable line. Which
     # of the three it was, where the box can still tell us: a busy client lock
     # names its holder and its age here rather than only in output the invoker
@@ -1071,10 +1048,22 @@ run_probe() {
     # the host the probe runs on, or a second machine's hang would be bounded from
     # here and its process tree left alive over there (ADR-0032's seam, #53).
     #
+    # The pool's own `--wait`, handed to the probe rather than kept at the door
+    # (#196). `run.sh` asks the host guard again on its bring-up, and a queue it
+    # cannot reach is the same abandonment the entry guard was given a queue to
+    # avoid. The same number, not a share of it: `--wait` is what the caller is
+    # prepared to spend waiting for the machine, and the pool already applies it
+    # whole at each place it queues — entry, memory, slot, tail — rather than
+    # dividing it among them. What the probe does with it is draw down one
+    # deadline of its own making, shared between its client-lock acquire and its
+    # guard, so the per-probe queue adds no patience of its own to the pool's; at
+    # `--wait 0`, the default, it adds none at all and the guard refuses today's
+    # refusal.
     cti_host_exec "$HOST" \
         timeout --kill-after="$WATCHDOG_KILL_AFTER" "$watchdog" \
         env ${env_args[@]+"${env_args[@]}"} "${slot_args[@]}" \
         CTI_TIER_HOST="$HOST" \
+        CTI_CLIENT_LOCK_WAIT="$WAIT_SECS" \
         CTI_SPIKE_OUT="$out" \
         CTI_MISSION=cti.Stratis \
         CTI_SERVER_CONFIG="$REPO/spike/phase1.cfg" \

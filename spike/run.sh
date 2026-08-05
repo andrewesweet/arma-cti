@@ -88,10 +88,19 @@ WINDOWS_CLIENT_PROFILE="${CTI_WINDOWS_CLIENT_PROFILE:-ctitest}"
 # shutdown, not a window sized until something passes: the engine took under ten
 # seconds to go in every run observed, and a run that blows this reports it.
 WINDOWS_EXIT_TIMEOUT="${CTI_WINDOWS_EXIT_TIMEOUT:-90}"
-# How long this run will queue for the machine-wide client lock before calling it
-# infra_unavailable (#127). Zero — refuse immediately, naming the holder — is the
-# default, because a hand run's operator would rather be told than left waiting.
-# `just regress --wait` sets it for the pool's tail.
+# How long this run will queue behind another run's hold on the machine-wide
+# Windows client before calling it infra_unavailable (#127). Zero — refuse
+# immediately, naming the holder — is the default, because a hand run's operator
+# would rather be told than left waiting. `just regress --wait` sets it, for
+# every probe rather than only the tail (#196).
+#
+# It is the budget for both places this run can meet somebody else's client: the
+# lock acquire below, on the path that drives one, and the host guard after it,
+# on every path. One deadline covers both (CLIENT_DEADLINE), so the two cannot
+# spend it twice over. That is a guarantee rather than a saving — a run that
+# took the lock has nothing left to queue behind at the guard, so the two are
+# mutually exclusive by construction — and the point of writing it as one
+# deadline is that it stays true if that ever stops being so.
 CLIENT_LOCK_WAIT="${CTI_CLIENT_LOCK_WAIT:-0}"
 
 BOOT_TIMEOUT="${CTI_BOOT_TIMEOUT:-240}"
@@ -541,6 +550,12 @@ command -v timeout >/dev/null 2>&1 ||
     fail "infra_unavailable" "timeout(1) is missing, so every external call this run makes would be unbounded"
 [[ "$UV_TIMEOUT" =~ ^[1-9][0-9]*$ ]] ||
     fail "infra_unavailable" "CTI_UV_TIMEOUT must be a positive whole number of seconds, got: $UV_TIMEOUT"
+# A queue's budget, checked with the deadlines because it is one. Left unchecked,
+# a malformed wait is refused by `cti_client_lock_acquire` with the status it
+# gives a busy lock, and this run would report somebody else holding a client
+# nobody holds (#196).
+[[ "$CLIENT_LOCK_WAIT" =~ ^[0-9]+$ ]] ||
+    fail "infra_unavailable" "CTI_CLIENT_LOCK_WAIT must be a whole number of seconds, got: $CLIENT_LOCK_WAIT"
 
 HOST="$(cti_host_resolve)" ||
     fail "infra_unavailable" "CTI_TIER_HOST names a host the tier does not know: ${CTI_TIER_HOST:-local}"
@@ -570,8 +585,19 @@ record "tier_host" "$HOST"
 # CTI_CLIENT_LOCK_HELD is the pool's tail saying it already holds it: flock from
 # a child on a file its parent holds would wait for a lock that cannot be freed
 # until the child returns.
+#
+# The one deadline this run's patience is spent from, set before the first thing
+# that can spend it. Both queue points below read what is left of it rather than
+# the budget itself, so a caller who said `--wait 60` waits at most 60s for the
+# machine however many ways this run can meet it (#196).
+CLIENT_DEADLINE=$((SECONDS + CLIENT_LOCK_WAIT))
+client_wait_left() {
+    local left=$((CLIENT_DEADLINE - SECONDS))
+    ((left > 0)) || left=0
+    printf '%s\n' "$left"
+}
 if ((WINDOWS_CLIENT == 1)) && [[ "${CTI_CLIENT_LOCK_HELD:-0}" != 1 ]]; then
-    if cti_client_lock_acquire "$CLIENT_LOCK_WAIT" "run.sh ${CTI_HARNESS_EXTRA:-hold} on $HOST"; then
+    if cti_client_lock_acquire "$(client_wait_left)" "run.sh ${CTI_HARNESS_EXTRA:-hold} on $HOST"; then
         record "windows_client_lock" "held"
     else
         log "the machine-wide Windows client lock is held; holder:"
@@ -593,7 +619,17 @@ fi
 # ADR-0049), env rendering: on a stop, the mapped failure_detail is what `fail`
 # records. The wrapper fails closed, so a mapper that could not run stops this
 # run exactly as a process list that could not be read does.
-if ! guard_env="$(cti_guard_verdict env "$(cti_host_client_state "$HOST")" "$HOST")"; then
+#
+# And with the queue the entry-time guard has had since #127 (#196). This ask is
+# the one a pool meets twenty times, and a stop here is not one probe's — the
+# pool reads `infra_unavailable` as "stop taking new work", so the first probe to
+# meet a sibling agent's client threw away every probe the pool had left. What is
+# queueable here is exactly what is queueable there: a client in the list while
+# somebody else holds the machine-wide lock is that run's, not a person's. The
+# guard is told none of this and refuses as it always did; the patience is the
+# caller's, out of the deadline set above, and at the default of zero this line
+# behaves exactly as the single ask it replaces.
+if ! guard_env="$(cti_host_guard_or_queue "$HOST" env "$(client_wait_left)" log)"; then
     guard_detail="$(sed -n 's/^failure_detail=//p' <<<"$guard_env" | head -1)"
     fail "infra_unavailable" "${guard_detail:-the host guard refused and named no detail (harness bug)}"
 fi

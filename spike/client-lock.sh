@@ -25,6 +25,7 @@
 #   cti_client_lock_summary         the same, on one line, for a failure_detail
 #   cti_client_lock_busy            0 if somebody *else* holds it right now
 #   cti_client_lock_wait_free S     bounded wait for nobody to hold it
+#   cti_host_guard_or_queue H F W L the host guard, with a queue behind that lock
 #
 # What this lock does that the guard cannot
 # -----------------------------------------
@@ -51,6 +52,14 @@
 # The holder-metadata block every tier lock writes, in its one home (#161).
 # shellcheck source=spike/lock-info.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lock-info.sh"
+# The guard this file's queue is a queue *for*, and the host it is asked of. An
+# explicit source rather than a debt owed to whoever sources this file: the
+# queue below needs both halves — the lock, and the guard's answer — and a
+# function that reads a name its own file never pulled in works only for as long
+# as every caller happens to source both (spike/hosts.sh sources
+# spike/host-guard.sh, and neither sources this file, so there is no cycle).
+# shellcheck source=spike/hosts.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/hosts.sh"
 
 CTI_CLIENT_LOCK_STATE="${CTI_TIER_STATE:-$HOME/.arma-cti}"
 # The fd this shell holds it on, empty when we do not hold it. Inherited by
@@ -139,9 +148,19 @@ cti_client_lock_summary() { cti_lock_info_summary "$(cti_client_lock_info_path)"
 # conflicts between two open file descriptions of the same process exactly as it
 # does between two processes, so a naive probe would report our own lock as
 # somebody else's and queue us behind ourselves.
+#
+# Nor is one our *parent* holds. The pool's tail exports CTI_CLIENT_LOCK_HELD to
+# the `run.sh` it launches, and a child's flock probe on a file its parent holds
+# conflicts exactly as a stranger's does — so without this line a probe in the
+# tail would read its own pool's lock as a sibling agent's and queue behind
+# itself, holding the machine-wide client for the whole of `--wait` while it
+# waited for the thing it was inside of to let go (#196). The variable is the
+# same one that stops that child taking the lock twice, read here for the same
+# reason: "somebody else" is a property of the run, not of the file descriptor.
 cti_client_lock_busy() {
     local lock fd
     [[ -z "$CTI_CLIENT_LOCK_FD" ]] || return 1
+    [[ "${CTI_CLIENT_LOCK_HELD:-0}" != 1 ]] || return 1
     lock="$(cti_client_lock_path)"
     [[ -e "$lock" ]] || return 1
     exec {fd}<"$lock" || return 1
@@ -168,4 +187,90 @@ cti_client_lock_wait_free() {
         sleep 5
     done
     return 0
+}
+
+# ------------------------------------------------------ the guard, with a queue
+# Ask the host guard, and while the client it refuses for belongs to another
+# *run* rather than to a person, wait for that run's client leg to end and ask
+# again. 0 to proceed, the guard's own stop code otherwise.
+#
+#   $1  host handle             which machine's process list is being read
+#   $2  rendering               `block` for a guard's stderr lines, `env` for
+#                               the key=value lines a harness folds into a
+#                               `failure_detail`
+#   $3  patience, whole seconds 0 — the default everywhere — refuses exactly as
+#                               an unqueued guard always did
+#   $4  the caller's logger     `log`, so the queue's lines carry [regress] or
+#                               [spike] rather than a prefix of this file's own
+#
+# The mapper's chosen rendering is echoed on **stdout** for the caller to place:
+# to stderr in `block`, into a `failure_detail` in `env`. Only the final ask's,
+# because a queue that narrated every refusal it decided not to act on would
+# bury the one line the caller is going to act on under its own patience.
+#
+# One home for both askers (#196). `spike/regress.sh` grew this at entry (#127,
+# reshaped by #151) and `spike/run.sh`'s per-probe bring-up did not have it: a
+# pool already running when a sibling agent's client probe started met the
+# ownership-blind guard, took the `infra_unavailable` stop, and abandoned every
+# probe it had left — nineteen of them on 2026-08-05, nineteen seconds into
+# somebody else's client. Two asks of one question deserve one implementation
+# rather than a second near-verbatim copy of a decision (#161's shape); the
+# verdict vocabulary is unchanged by this, and only the patience is new.
+#
+# Every pass re-derives the two facts that make queueing legitimate rather than
+# establishing them once (#151): a client is in the list, and somebody else
+# holds the lock. A wait proves only that the lock was free at the instant it
+# was read, and a third agent's tail can take the client in the gap.
+cti_host_guard_or_queue() {
+    local host="${1:-local}" format="${2:-block}" wait_secs="${3:-0}" say="${4:-cti_client_lock_log}"
+    local deadline said=0 answer mapped status line
+    # A patience that is not a number is not a patience. Refusing to queue is
+    # the fail-closed half: the guard still runs and still decides, and the
+    # caller is told why it got no queue rather than left to read a malformed
+    # budget as an empty one.
+    [[ "$wait_secs" =~ ^[0-9]+$ ]] || {
+        "$say" "a queue takes whole seconds, got: $wait_secs — asking the guard once"
+        wait_secs=0
+    }
+    deadline=$((SECONDS + wait_secs))
+    while :; do
+        # One read of the process list per pass, and the same one the verdict is
+        # mapped from: asking twice would let the queue's precondition and the
+        # guard's refusal come from two different answers.
+        answer="$(cti_host_client_state "$host")"
+        mapped="$(cti_guard_verdict "$format" "$answer" "$host")"
+        status=$?
+        ((status == 0)) && break
+        # Only a client *in* the list is a thing another run can own. A list that
+        # could not be read is not: queueing on it would be waiting out a broken
+        # check rather than a sibling's client leg, and the answer to a check
+        # that could not run is the same stop it has always been.
+        [[ "$answer" == running* ]] || break
+        # And only while somebody else holds the machine-wide client. A lock this
+        # run already holds — this shell's, or its pool parent's — means no other
+        # run's client can be in the list, so what is in it is the human's and
+        # the guard's refusal is the right one.
+        cti_client_lock_busy || break
+        if ((wait_secs == 0)); then
+            "$say" "another run holds the Windows client; a wait would queue behind it (--wait, or CTI_CLIENT_LOCK_WAIT for a hand run)"
+            cti_client_lock_holder | while IFS= read -r line; do "$say" "  $line"; done
+            break
+        fi
+        ((SECONDS < deadline)) || {
+            "$say" "waited ${wait_secs}s and the Windows client was still held"
+            break
+        }
+        # Said once, however many runs we queue behind: the holder named below
+        # is the one we are waiting on now, and a line per contender would bury
+        # the caller's own log under somebody else's schedule.
+        ((said)) || "$say" "that client belongs to another run, not to a play session — queueing up to ${wait_secs}s:"
+        said=1
+        cti_client_lock_holder | while IFS= read -r line; do "$say" "  $line"; done
+        cti_client_lock_wait_free $((deadline - SECONDS)) || {
+            "$say" "waited ${wait_secs}s and the Windows client was still held"
+            break
+        }
+    done
+    printf '%s\n' "$mapped"
+    return "$status"
 }
