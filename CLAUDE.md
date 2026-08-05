@@ -95,6 +95,7 @@ Repo hooks (`.claude/hooks/`, wired in `.claude/settings.json`) enforce mechanic
 
 ## Working style
 
+- A turn does not block for five minutes. Work that takes longer than that runs detached and notifies; an agent waits by being woken, not by sitting inside a `sleep`. A waiting turn is measured at ~110× the cost of a working one, because the prompt cache dies while it waits and the next turn pays to rebuild it (human ruling 2026-08-05 on #200; measurement in `docs/research/token-efficiency.md` §2). This is not a licence to shorten a gate — the gate finishes sooner running exactly the same assertions.
 - Deliver what was asked, at the scope intended. Make routine judgement calls yourself; check in only when different readings of the request would lead to materially different work. If the request seems mistaken or a better approach exists, say so in a sentence and continue as asked.
 - The gates above are this project's verification. Do not add further verification passes, re-checks, or verifier subagents beyond them.
 - Delegate to subagents only for sizeable, genuinely independent tracks of work. Do not delegate what you can finish yourself in a handful of tool calls, and never to double-check your own work.
