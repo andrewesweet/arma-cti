@@ -843,7 +843,13 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--permission-mode", default="acceptEdits")
     parser.add_argument("--dispatch-dir", default=str(DISPATCH_ROOT))
     parser.add_argument("--credentials", default=str(CREDENTIALS))
-    parser.add_argument("--breaker-dir", default=str(breaker.DEFAULT_BREAKER_DIR))
+    # `CTI_BREAKER_DIR` exists so that a test can run the real seam — `tools/dispatch.sh`
+    # forks a fresh process, which no in-process patch reaches — against its own breaker
+    # rather than against whatever this box's lanes happen to be doing today.
+    parser.add_argument(
+        "--breaker-dir",
+        default=os.environ.get("CTI_BREAKER_DIR", str(breaker.DEFAULT_BREAKER_DIR)),
+    )
     parser.add_argument("--list", action="store_true", help="print the registry and exit")
     parser.add_argument("--dry-run", action="store_true", help="print the plan, launch nothing")
     parser.add_argument("--run", default="", help="internal: run the record at this path")

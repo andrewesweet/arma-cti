@@ -44,6 +44,7 @@ if TYPE_CHECKING:
     from types import ModuleType
 
 dispatch = load_tool("dispatch")
+breaker = load_tool("breaker")
 
 SEAM = REPO / "tools" / "dispatch.sh"
 JUSTFILE = REPO / "justfile"
@@ -115,6 +116,10 @@ def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
     # The accident this whole design exists to prevent: a parent that already carries a
     # foreign base URL. Every child must come out the same whether or not this is here.
     env["ANTHROPIC_BASE_URL"] = "https://poisoned.invalid"
+    # The seam forks a real process, so its breaker has to be pointed somewhere of this
+    # test's own: a run whose result depended on what this box's lanes were doing would
+    # be a test of the machine rather than of the dispatcher (#226).
+    env["CTI_BREAKER_DIR"] = str(tmp_path / "breaker")
     env.update(extra)
     return env
 
@@ -170,6 +175,7 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "permission_mode": "acceptEdits",
         "dispatch_dir": str(tmp_path / "dispatches"),
         "credentials": str(tmp_path / "credentials.env"),
+        "breaker_dir": str(tmp_path / "breaker"),
     }
     request.update(overrides)
     args = _namespace(**request)
@@ -517,6 +523,7 @@ def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path)
         permission_mode="acceptEdits",
         dispatch_dir=str(tmp_path / "d"),
         credentials=str(tmp_path / "c.env"),
+        breaker_dir=str(tmp_path / "breaker"),
     )
     _, _, refusal = dispatch.plan_dispatch(args, REPO, datetime.now(tz=UTC))
     assert refusal is not None
@@ -845,3 +852,139 @@ def test_the_dispatch_module_is_the_one_place_the_registry_lives() -> None:
     assert set(module.SEATS) >= {"implementer", "mechanical", "recon", "review", "fable"}
     assert module.SEATS["fable"] is False
     assert module.SEATS["review"] is True
+
+
+# ------------------------------------------------------- the lane breaker, read first (#226)
+
+
+def trip(
+    tmp_path: Path, lane: str, outcome: str, count: int, reset_at: float | None = None
+) -> None:
+    """Stage a lane's breaker into whatever state a test needs it in."""
+    store = breaker.Store(directory=tmp_path / "breaker", endpoint="http://127.0.0.1:2999/v1/logs")
+    for step in range(count):
+        breaker.record_outcome(
+            store, lane, breaker.Outcome(outcome, reset_at=reset_at), time.time() + step
+        )
+
+
+def test_a_dispatch_to_a_lane_that_conducts_is_planned_as_it_always_was(tmp_path: Path) -> None:
+    plan, _, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+
+
+def test_a_dispatch_to_a_quota_exhausted_lane_refuses_with_the_class_and_the_reset(
+    tmp_path: Path,
+) -> None:
+    """The issue's first criterion, and the whole of ADR-0061 Decision 7's response."""
+    reset = time.time() + 2 * 3600
+    trip(tmp_path, "claude-native", breaker.QUOTA_EXHAUSTED, 1, reset_at=reset)
+
+    plan, _, refusal = plan_for(tmp_path)
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "lane_breaker_open"
+    assert refusal.failure_class == "quota_exhausted"
+    found = " ".join(refusal.found)
+    assert "rule=quota" in found
+    assert breaker.iso(reset) in found, "the wait is a published boundary, printed as one"
+    assert "queue until the reset" in refusal.action
+    assert "backoff" in refusal.action, "and it says explicitly that it is not one"
+
+
+def test_a_dispatch_to_a_quality_tripped_lane_refuses_with_provider_refused_and_escalates(
+    tmp_path: Path,
+) -> None:
+    trip(tmp_path, "claude-native", breaker.GATE_FAILED, 3)
+    plan, _, refusal = plan_for(tmp_path)
+    assert plan is None
+    assert refusal is not None
+    assert refusal.failure_class == "provider_refused"
+    assert "just breaker reset --lane claude-native --force" in refusal.action
+    assert "until=unknown" in " ".join(refusal.found)
+
+
+def test_the_breaker_is_read_before_the_worktree_and_the_credentials_are(tmp_path: Path) -> None:
+    """Reading the breaker first means before anything else a dispatch would check."""
+    trip(tmp_path, "zai", breaker.GATE_FAILED, 3)
+    _, _, refusal = plan_for(
+        tmp_path,
+        lane="zai",
+        profile="zai-glm52-max",
+        worktree=str(tmp_path / "no-such-tree"),
+        credentials=str(tmp_path / "absent.env"),
+    )
+    assert refusal is not None
+    assert refusal.kind == "lane_breaker_open", (
+        "a tripped lane is the answer even when the worktree and the credential are also wrong"
+    )
+
+
+def test_a_lane_that_reset_while_nothing_ran_is_dispatchable_again(tmp_path: Path) -> None:
+    trip(tmp_path, "claude-native", breaker.QUOTA_EXHAUSTED, 1, reset_at=time.time() - 1)
+    plan, _, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None, "the reader settles the window; nothing had to be running"
+
+
+def test_one_lanes_trip_never_refuses_another_lanes_dispatch(tmp_path: Path) -> None:
+    trip(tmp_path, "zai", breaker.GATE_FAILED, 3)
+    plan, _, refusal = plan_for(tmp_path, lane="claude-native", profile="opus-high")
+    assert refusal is None
+    assert plan is not None
+
+
+def test_a_finished_runs_log_is_classified_and_fed_back_to_its_lane(tmp_path: Path) -> None:
+    """The degraded path: with no quota tap, the 429 the dispatch provoked is the feed."""
+    record = tmp_path / "record"
+    record.mkdir()
+    (record / "dispatch.log").write_text(
+        "reading CLAUDE.md\nAPI Error: 429 rate limit exceeded\n", encoding="utf-8"
+    )
+    outcome, reset_at = dispatch.classify_finished_run(record, 1)
+    assert outcome == breaker.QUOTA_EXHAUSTED
+    assert reset_at is None
+
+
+def test_a_run_whose_log_says_nothing_familiar_moves_no_streak(tmp_path: Path) -> None:
+    record = tmp_path / "record"
+    record.mkdir()
+    (record / "dispatch.log").write_text("the agent gave up on the issue\n", encoding="utf-8")
+    assert dispatch.classify_finished_run(record, 1)[0] == breaker.UNCLASSIFIED
+    assert dispatch.classify_finished_run(record, 0)[0] == breaker.OK
+
+
+def test_a_missing_log_is_unclassified_rather_than_an_exception(tmp_path: Path) -> None:
+    assert dispatch.classify_finished_run(tmp_path / "nothing", 1)[0] == breaker.UNCLASSIFIED
+
+
+def test_the_seam_refuses_a_tripped_lane_before_it_forks_anything(tmp_path: Path) -> None:
+    """End to end through the real `tools/dispatch.sh`: no record, no child, no id."""
+    trip(tmp_path, "claude-native", breaker.GATE_FAILED, 3)
+    capture = tmp_path / "capture.txt"
+    done = run_seam(
+        [
+            "--lane",
+            "claude-native",
+            "--profile",
+            "opus-high",
+            "--seat",
+            "implementer",
+            "--issue",
+            "226",
+            "--worktree",
+            str(git_worktree(tmp_path)),
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+            "--credentials",
+            str(tmp_path / "credentials.env"),
+        ],
+        seam_env(tmp_path, capture),
+    )
+    assert done.returncode == 1
+    assert "refusal=lane_breaker_open" in done.stderr
+    assert "class=provider_refused" in done.stderr
+    assert "dispatch=" not in done.stdout
+    assert not (tmp_path / "dispatches").exists(), "nothing was written for a run that never was"
+    assert not capture.exists(), "and the runner was never reached"
