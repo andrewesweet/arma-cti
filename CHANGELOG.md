@@ -37,6 +37,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   since the record the bar judges accrues only by running, and `claude-native` is exempt
   throughout because nothing leaves Claude there. #224, ADR-0061 Decision 6.
 
+  The recipe's command-table row and the two rules an agent would otherwise get wrong from
+  first principles — probation is dispatchable, and `reset --force` is the human's — now
+  sit in `CLAUDE.md` alongside it, which is where ADR-0057 says a landed recipe's gated row
+  belongs rather than lagging. The admission refusal stays deliberately classless, and the
+  file now says why.
+
 - **The multi-provider initiative's first week is now written down where an agent reads
   it.** `CLAUDE.md` gains the five recipes the week built — `just dispatch`, `just land`,
   `just breaker`, `just ledger-sync`, `just prereqs` — two failure classes for work that
