@@ -320,6 +320,138 @@ def test_no_unit_test_drives_these_scripts_against_the_real_lock() -> None:
     )
 
 
+# ------------------------------------------------- a staleness signal (#153)
+#
+# `flock` handles a holder that *dies*. A holder that is wedged — alive, holding,
+# and getting nowhere — blocks the one Windows client for as long as it likes,
+# and the block beside the lock said only when it started. So a queuer at 3 a.m.
+# could say that somebody held the client and nothing about whether that somebody
+# was working, and recovery meant a human going and finding the process.
+#
+# Two things answer it, both derived at the instant of asking rather than
+# refreshed on a timer: how long the holder has had it, and whether the pid in
+# the block still has the lock open. The reasoning against a heartbeat is in
+# `spike/lock-info.sh` and it is about this lock in particular — a background
+# refresher on a lock whose whole failure history is background processes
+# outliving their parent would keep the timestamp fresh for a holder that no
+# longer exists.
+
+
+def backdated(state: Path, seconds: int, **fields: str) -> Path:
+    """Write a holder block by hand, as old as we like."""
+    info = state / "windows-client.lock.info"
+    info.parent.mkdir(parents=True, exist_ok=True)
+    written = time.gmtime(time.time() - seconds)
+    block = {
+        "pid": str(os.getpid()),
+        "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", written),
+        "worktree": str(REPO),
+        "branch": "main",
+        "issue": "153",
+        "label": "a wedged corpus",
+        **fields,
+    }
+    info.write_text("".join(f"{k}={v}\n" for k, v in block.items()))
+    return info
+
+
+@pytest.mark.parametrize(
+    ("seconds", "expected"),
+    [(7, "7s"), (63, "1m 03s"), (3600, "1h 00m"), (15120, "4h 12m"), (183600, "2d 3h")],
+)
+def test_a_holders_age_reads_as_a_duration_not_a_count_of_seconds(
+    tmp_path: Path, seconds: int, expected: str
+) -> None:
+    """The question is "longer than the work it claims to be doing?" — 15120 is no answer."""
+    state = tmp_path / "state"
+    backdated(state, seconds)
+    got = lock_eval("cti_client_lock_holder", env={"CTI_TIER_STATE": str(state)}).stdout
+    assert f"age={expected}\n" in got, got
+    assert f"age_seconds={seconds}" in got
+
+
+def test_a_live_holder_is_reported_holding_with_its_age(tmp_path: Path) -> None:
+    state = tmp_path / "state"
+    holder = holding(state, "the first run", CTI_TIER_ISSUE="127")
+    try:
+        got = lock_eval("cti_client_lock_holder", env={"CTI_TIER_STATE": str(state)}).stdout
+    finally:
+        holder.kill()
+    assert f"holder=holding (pid {holder.pid})" in got, got
+    assert re.search(r"^age=\d+s$", got, re.MULTILINE), got
+    # The block it always wrote is still all there.
+    assert "label=the first run" in got
+    assert "issue=127" in got
+    # And nothing swept /proc for it: the metadata named a pid that has the lock.
+    assert "lock_held_by=" not in got
+
+
+def test_metadata_left_behind_by_a_dead_holder_says_so(tmp_path: Path) -> None:
+    """The block outliving its run is exactly what makes "held since" a lie.
+
+    A `.info` is deleted on release and survives a `kill -9`, so a stale one is
+    the normal residue of a killed run. Read literally it claims a holder that no
+    longer exists; read through `cti_client_lock_holder` it names the pid and
+    says it has gone.
+    """
+    state = tmp_path / "state"
+    backdated(state, 9000, pid="4194305")  # above /proc/sys/kernel/pid_max: never live
+    got = lock_eval("cti_client_lock_holder", env={"CTI_TIER_STATE": str(state)}).stdout
+    assert "holder=gone (pid 4194305" in got, got
+    assert "age=2h 30m" in got
+    assert "lock_held_by=nobody" in got, got
+
+
+def test_a_lock_held_by_an_orphan_with_no_metadata_names_the_pid_to_kill(tmp_path: Path) -> None:
+    """The worst case this lock has: a machine-wide stop with nobody to name.
+
+    A child that inherited the descriptor and outlived its parent holds the lock
+    against a `.info` the parent deleted on the way out. `cti_client_lock_disown`
+    is what stops the tier's own launches doing it, but anything can still be
+    killed at the wrong instant — and when it happens, the only recovery is a
+    human killing a process, so the refusal has to say which one.
+    """
+    state = tmp_path / "state"
+    leaked = tmp_path / "leaked.pid"
+    lock_eval(
+        'cti_client_lock_acquire 0 "the parent" || exit 9\n'
+        "(\n"
+        f'  printf "%s" "$BASHPID" > "{leaked}"\n'
+        "  exec sleep 120\n"
+        ") >/dev/null 2>&1 &\n"
+        f'while [[ ! -s "{leaked}" ]]; do sleep 0.05; done\n'
+        "cti_client_lock_release\n",
+        env={"CTI_TIER_STATE": str(state)},
+    )
+    orphan = int(leaked.read_text())
+    try:
+        got = lock_eval("cti_client_lock_holder", env={"CTI_TIER_STATE": str(state)}).stdout
+        assert "holder=unnamed" in got, got
+        assert f"lock_held_by={orphan}" in got, got
+        # And it really is held, so the pid named is the pid to kill.
+        assert (
+            "TOOK"
+            not in lock_eval(
+                'cti_client_lock_acquire 0 "next" && echo TOOK',
+                env={"CTI_TIER_STATE": str(state)},
+            ).stdout
+        )
+    finally:
+        with suppress(ProcessLookupError):
+            os.kill(orphan, signal.SIGKILL)
+
+
+def test_the_one_line_summary_carries_what_a_failure_detail_can_hold(tmp_path: Path) -> None:
+    """`failure_detail=` is one key=value record and cannot carry a paragraph."""
+    state = tmp_path / "state"
+    backdated(state, 15120, label="just regress --slots 3")
+    got = lock_eval("cti_client_lock_summary", env={"CTI_TIER_STATE": str(state)}).stdout
+    assert len(got.splitlines()) == 1, f"a failure_detail cannot hold this: {got!r}"
+    assert "age 4h 12m" in got
+    assert "label just regress --slots 3" in got
+    assert "issue 153" in got
+
+
 # --------------------------------------------------------------------- run.sh
 
 
@@ -366,6 +498,17 @@ def test_a_client_run_refuses_while_another_run_holds_the_client(tmp_path: Path)
     assert "another run holds the Windows client" in got["failure_detail"]
     # And whose run it is behind, so the caller can act on it.
     assert "label=a sibling agent" in result.stderr
+    # In the *durable* record too, and as the holder's own words rather than a
+    # path to them (#153): the `.info` file is deleted the instant the holder
+    # releases, so a `failure_detail` naming it names a path that will not exist
+    # by the time anyone reads this run's evidence (#147's finding, which was
+    # fixed in regress.sh and left standing here). With the age, which is what
+    # separates a run doing its work from one that is wedged.
+    detail = got["failure_detail"]
+    assert "label a sibling agent" in detail, detail
+    assert f"holder holding (pid {holder.pid})" in detail, detail
+    assert re.search(r"age \d+s", detail), detail
+    assert ".info" not in detail, detail
     # Nothing launched, and the guard never even asked: the refusal is cheaper
     # than the process list.
     assert "windows_host_free" not in got
@@ -542,7 +685,14 @@ def test_a_pool_whose_tail_is_locked_out_reports_it_rather_than_skipping(
         assert evidence.parent == pools[-1], (
             f"the blocked verdict's evidence lives outside the pool: {evidence}"
         )
-        assert "label=a sibling agent" in evidence.read_text()
+        # And it carries the holder's age (#153), because "somebody held the
+        # client" is not on its own a diagnosis: a corpus takes tens of minutes,
+        # and what a reader needs to know is whether the run in front of theirs
+        # was working or wedged.
+        text = evidence.read_text()
+        assert "label=a sibling agent" in text
+        assert f"holder=holding (pid {holder.pid})" in text, text
+        assert re.search(r"^age=\d+s$", text, re.MULTILINE), text
 
 
 # ------------------------------------------------------- the guard, still blind
@@ -589,6 +739,15 @@ def test_without_a_wait_a_client_in_the_list_still_stops_the_pool(tmp_path: Path
         holder.kill()
     assert result.returncode == EXIT_INFRA_UNAVAILABLE
     assert "play session may be live" in result.stderr
+    # The pre-flight refusal writes to stderr and to a durable line (#147 item 7),
+    # and the durable line now says which of the three reasons the box could
+    # still tell apart (#153): the lock was held, by whom, and for how long. A
+    # refusal that turns out to be somebody's wedged run is then diagnosable from
+    # the refusal log alone, without the invoker having kept its output.
+    refusals = (tmp_path / "state" / "runs" / "refusals.log").read_text()
+    assert "the client lock was held" in refusals, refusals
+    assert f"holder holding (pid {holder.pid})" in refusals, refusals
+    assert re.search(r"age \d+s", refusals), refusals
 
 
 def test_an_unheld_client_in_the_list_is_the_humans_however_long_we_wait(

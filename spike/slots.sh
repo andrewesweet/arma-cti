@@ -345,38 +345,16 @@ cti_slot_close() {
 # of it: a slot we hold exclusively has no other holder by definition, and the
 # case this exists for is the other one — a worker that died leaving `run.sh`,
 # a server or a headless client alive with the descriptor it inherited.
-cti_slot_lock_holders() {
-    local lock pid fd target
-    lock="$(cti_slot_lock_path "$1")"
-    for pid in /proc/[0-9]*; do
-        pid="${pid#/proc/}"
-        [[ "$pid" == "$$" ]] && continue
-        for fd in "/proc/$pid/fd/"*; do
-            target="$(readlink "$fd" 2>/dev/null)" || continue
-            [[ "$target" == "$lock" ]] && {
-                printf '%s\n' "$pid"
-                break
-            }
-        done
-    done
-    # Explicit, because without it this function's exit status is whatever the
-    # last `[[ ]]` in the last process's last descriptor happened to be — which
-    # is `1` on any machine whose highest-numbered pid is not a lock holder, i.e.
-    # nearly always. It printed the right answer and returned failure with it,
-    # and under load that was a red one full-suite run in three (#121). A finder
-    # reports what it found; not finding one more thing is not an error.
-    return 0
-}
+#
+# The sweep itself moved to spike/lock-info.sh on #153, when the machine-wide
+# client lock needed the same answer: this is the delegate, so there is still one
+# implementation of "who has this file open" on the box.
+cti_slot_lock_holders() { cti_lock_holder_pids "$(cti_slot_lock_path "$1")"; }
 
-cti_slot_holder() {
-    local info
-    info="$(cti_slot_lock_path "$1").info"
-    if [[ -r "$info" ]]; then
-        sed 's/^/    /' "$info"
-    else
-        printf '    no metadata beside the lock (holder died, or predates this file)\n'
-    fi
-}
+# What the holder wrote, plus how long ago it wrote it and whether it still has
+# the lock (#153). Read spike/lock-info.sh for what the derived lines mean and
+# why they are derived rather than refreshed.
+cti_slot_holder() { cti_lock_info_render "$(cti_slot_lock_path "$1").info" '    '; }
 
 # ------------------------------------------------------------------ reclamation
 # ADR-0022's rule scoped per slot rather than per run, and #58's "build this

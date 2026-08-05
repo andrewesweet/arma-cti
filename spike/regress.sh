@@ -454,8 +454,14 @@ host_guard_or_queue() {
 }
 
 if ! host_guard_or_queue; then
-    # The guard's own words went to stderr above; this is the durable line.
-    record_refusal infra_unavailable "the host guard refused $HOST — a play session may be live, another run held the Windows client, or the check could not run"
+    # The guard's own words went to stderr above; this is the durable line. Which
+    # of the three it was, where the box can still tell us: a busy client lock
+    # names its holder and its age here rather than only in output the invoker
+    # has to have kept, so a refusal that turns out to be somebody's wedged run
+    # is diagnosable from the refusal log alone (#153).
+    refusal="the host guard refused $HOST — a play session may be live, another run held the Windows client, or the check could not run"
+    cti_client_lock_busy && refusal="$refusal; the client lock was held — $(cti_client_lock_summary)"
+    record_refusal infra_unavailable "$refusal"
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 

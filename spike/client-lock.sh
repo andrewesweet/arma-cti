@@ -21,7 +21,8 @@
 #   cti_client_lock_path            where it lives
 #   cti_client_lock_acquire W L     bounded-wait acquire; 0 held, 1 busy
 #   cti_client_lock_release         drop it, and its metadata with it
-#   cti_client_lock_holder          what the holder wrote beside it
+#   cti_client_lock_holder          what the holder wrote beside it, plus its age
+#   cti_client_lock_summary         the same, on one line, for a failure_detail
 #   cti_client_lock_busy            0 if somebody *else* holds it right now
 #   cti_client_lock_wait_free S     bounded wait for nobody to hold it
 #
@@ -119,15 +120,20 @@ cti_client_lock_disown() {
     CTI_CLIENT_LOCK_FD=""
 }
 
-cti_client_lock_holder() {
-    local info
-    info="$(cti_client_lock_info_path)"
-    if [[ -r "$info" ]]; then
-        cat "$info"
-    else
-        printf 'no metadata beside the lock (holder died, or predates this file)\n'
-    fi
-}
+# What the holder wrote, plus how long ago and whether it still has the lock
+# (#153). A queuer that can only say "somebody holds the client" leaves a wedged
+# holder to be found by a human; the same block with `age=` and `holder=` beside
+# it is a one-line read — a corpus takes tens of minutes, so a holder four hours
+# in with the lock still in its hand is stuck, and one whose pid has gone has
+# left its metadata behind over a lock somebody else's orphan is keeping open.
+# Derived on the way out rather than refreshed on a timer; the reasoning is in
+# spike/lock-info.sh, and it is about this lock's own leaked-descriptor history.
+cti_client_lock_holder() { cti_lock_info_render "$(cti_client_lock_info_path)"; }
+
+# The same on one line, for a `failure_detail=` (#153). What a run records when
+# it is refused has to outlive the holder that refused it, and the `.info` file
+# does not: the holder deletes it on release.
+cti_client_lock_summary() { cti_lock_info_summary "$(cti_client_lock_info_path)"; }
 
 # 0 when somebody *else* holds it. A lock this shell holds is not busy: flock
 # conflicts between two open file descriptions of the same process exactly as it

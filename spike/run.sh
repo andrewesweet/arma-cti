@@ -578,8 +578,14 @@ if ((WINDOWS_CLIENT == 1)) && [[ "${CTI_CLIENT_LOCK_HELD:-0}" != 1 ]]; then
         cti_client_lock_holder | sed 's/^/[spike]   /' >&2
         waited=""
         ((CLIENT_LOCK_WAIT > 0)) && waited=" after waiting ${CLIENT_LOCK_WAIT}s"
+        # The holder's own words rather than a path to them (#153). The `.info`
+        # file is deleted the moment the holder releases, so a durable record
+        # pointing at it names a path that stops existing minutes later — #147's
+        # finding, which was fixed in regress.sh and left standing here. And it
+        # carries the holder's age, which is what separates a run doing its work
+        # from one that is wedged and needs a person.
         fail "infra_unavailable" \
-            "another run holds the Windows client${waited}; see $(cti_client_lock_path).info"
+            "another run holds the Windows client${waited}; holder: $(cti_client_lock_summary)"
     fi
 fi
 

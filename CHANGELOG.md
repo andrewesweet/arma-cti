@@ -164,6 +164,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   or a verified new one at every instant, with exactly one copy of the mod in it and nothing
   beside it. #153.
 
+- **A queuer blocked on the Windows client is told the holder's age, not just its name.** `flock`
+  handles a holder that dies; one that is *wedged* holds the one headed client indefinitely, and
+  the metadata beside the lock said only when it started — so a refusal at 3 a.m. named a run and
+  left "is it working or stuck?" to a human going and finding the process. Every refusal and every
+  queue notice now carries two lines derived at the instant of asking: `age=`, how long the holder
+  has had it, and `holder=`, whether the pid in the block still has the lock open. Where the block
+  cannot name a holder — its pid has gone, or a child inherited the descriptor and outlived the
+  parent that deleted the metadata — a `lock_held_by=` line sweeps `/proc` and names the pids that
+  actually have the file open, which is the process to kill. The durable records carry the same on
+  one line: `run.sh`'s `failure_detail` and the pool's `refusals.log` now quote the holder's own
+  words rather than a path to a file the holder deletes on release. Derived rather than refreshed
+  on a timer, deliberately — a heartbeat on this lock would be a background process writing about
+  the liveness of the thing that spawned it, and would keep the timestamp fresh for a holder that
+  no longer exists. The slot locks got the same lines from the same code. #153.
+
 - **The slot pool's last four bulkhead leaks are walled.** A `kill` aimed at `just regress` —
   unlike a Ctrl-C, which the terminal delivers to the whole tree — used to reach the worker
   subshells and stop there, leaving up to N engines bound to the run's slot ports with nobody
