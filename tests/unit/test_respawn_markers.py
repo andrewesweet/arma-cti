@@ -70,8 +70,8 @@ def _without_comments(text: str) -> str:
     return re.sub(r"//[^\n]*", lambda m: " " * len(m.group()), without_block)
 
 
-def _enclosing_body(text: str, index: int) -> str:
-    """Return the innermost brace-balanced block containing `index`."""
+def _enclosing_span(text: str, index: int) -> tuple[int, int]:
+    """Return the bounds of the innermost brace-balanced block body around `index`."""
     depth = 0
     start = -1
     for position in range(index, -1, -1):
@@ -95,9 +95,15 @@ def _enclosing_body(text: str, index: int) -> str:
         elif character == "}":
             depth -= 1
             if depth == 0:
-                return text[start + 1 : position]
+                return (start + 1, position)
     message = "unbalanced block"
     raise ValueError(message)
+
+
+def _enclosing_body(text: str, index: int) -> str:
+    """Return the innermost brace-balanced block containing `index`."""
+    start, end = _enclosing_span(text, index)
+    return text[start:end]
 
 
 def markers(sqm: str) -> dict[str, tuple[float, float]]:
@@ -236,14 +242,44 @@ def test_the_played_mission_carries_the_ruling_the_adr_took() -> None:
     assert number(played.read_text(encoding="utf-8"), "respawnDelay") == 30
 
 
+def moved(sqm: str, marker: str, position: tuple[float, float]) -> str:
+    """Return the same mission.sqm with one named marker standing somewhere else.
+
+    Rewrites the `position[]` inside that marker's own item block. A blunter
+    string swap will not do, and finding that out is what this helper is for: a
+    side's Commander slot stands on that side's Base, so
+    `position[]={1987.31,15,5625.9}` occurs twice in the authored file and
+    `str.replace` moves both. A fixture that moved the Commander as well would
+    still have gone red here — for a reason that was not the one under test.
+    """
+    anchor = re.search(rf'\bname\s*=\s*"{re.escape(marker)}"', sqm)
+    if anchor is None:
+        message = f"no marker named {marker}"
+        raise ValueError(message)
+    start, end = _enclosing_span(sqm, anchor.start())
+    body = sqm[start:end]
+    rewritten, count = re.subn(
+        r"\bposition\[\]\s*=\s*\{[^}]*\}",
+        f"position[]={{{position[0]},15,{position[1]}}}",
+        body,
+    )
+    if count != 1:
+        message = f"{marker}'s block holds {count} positions"
+        raise ValueError(message)
+    return sqm[:start] + rewritten + sqm[end:]
+
+
 def test_a_marker_moved_off_its_base_is_refused() -> None:
     """The check's own red, against the authored mission with one marker moved."""
     played = manifest.load(MANIFESTS / "stratis.json")
     sqm = (MISSIONS / "cti.Stratis" / "mission.sqm").read_text(encoding="utf-8")
-    moved = sqm.replace("position[]={1987.31,15,5625.9}", "position[]={1987.31,15,5225.9}")
-    assert moved != sqm, "the fixture edited nothing — the authored marker moved under it"
+    drifted = moved(sqm, "respawn_west", (1987.31, 5225.9))
+    assert drifted != sqm, "the fixture edited nothing — the authored marker moved under it"
+    assert markers(drifted)["respawn_east"] == markers(sqm)["respawn_east"], (
+        "the fixture moved a marker it was not asked to"
+    )
 
-    complaints = drift(moved, list(played.bases))
+    complaints = drift(drifted, list(played.bases))
 
     assert len(complaints) == 1
     assert "marker respawn_west is at (1987.31, 5225.9)" in complaints[0]
