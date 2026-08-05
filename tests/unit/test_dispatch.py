@@ -26,6 +26,7 @@ half the assertion; "and nothing else can see them" is the half this issue is fo
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -47,9 +48,11 @@ dispatch = load_tool("dispatch")
 SEAM = REPO / "tools" / "dispatch.sh"
 JUSTFILE = REPO / "justfile"
 
-# A token shaped like a real one and belonging to nothing: the tests assert on where it
-# does and does not appear, so it has to be a string that cannot occur by accident.
-FAKE_TOKEN = "zai-test-1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d"  # noqa: S105 — a fixture, not a key
+# A stand-in token: distinctive enough that the tests can assert on exactly where it
+# does and does not appear, and *low entropy on purpose*, because `just check` now runs
+# gitleaks over this file and a realistic-looking literal here would red the gate that
+# this issue added. The vacuity test below builds a high-entropy one at run time instead.
+FAKE_TOKEN = "zai-" + "test-" * 6
 
 
 # --------------------------------------------------------------------------- helpers
@@ -780,10 +783,17 @@ def test_gitleaks_is_a_dependency_of_just_check() -> None:
 
 @pytest.mark.skipif(shutil.which("gitleaks") is None, reason="gitleaks not installed (#230)")
 def test_the_secrets_gate_is_not_vacuous(tmp_path: Path) -> None:
-    """A planted credential is caught, so a green `check-secrets` means something."""
+    """A planted credential is caught, so a green `check-secrets` means something.
+
+    The plant is derived at run time rather than written here as a literal, because a
+    literal that trips gitleaks would trip it on this very file. It is deterministic —
+    a digest, not a random draw — so the test cannot pass or fail by luck of entropy;
+    measured at 3.79 against the rule's 3.5 threshold.
+    """
     planted = tmp_path / "leak.env"
     planted.write_text(
-        "ZAI_API_KEY=" + "b7Kq2xN4pR9tW1yU6mA3sD8fG5hJ0lZc.Q4wE7rT2yU9i\n", encoding="utf-8"
+        "ZAI_API_KEY=" + hashlib.sha256(b"cti-223-vacuity").hexdigest() + "\n",
+        encoding="utf-8",
     )
     done = subprocess.run(  # noqa: S603
         [str(shutil.which("gitleaks")), "dir", str(tmp_path), "--no-banner", "--redact"],
