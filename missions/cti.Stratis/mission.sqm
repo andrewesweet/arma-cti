@@ -46,7 +46,7 @@ class ScenarioData
 {
 	author="arma-cti";
 	respawn=3;
-	respawnDelay=5;
+	respawnDelay=30;
 	disabledAI=1;
 };
 class Mission

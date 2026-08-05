@@ -25,10 +25,17 @@ respawn = "BASE";
 // ---- playtest-tuned placeholder (ADR-0020) --------------------------------
 // The death window, 30 s (ADR-0052, ruling 6). Moving this number is tuning and
 // needs no decision reopened; only a second *kind* of respawn location — at the
-// Squad, at a captured Objective — would be a new decision to take. Read back
-// rather than copied by anything that checks it: `spike/probes/respawn-base.sqf`
-// asks `getMissionConfigValue "respawnDelay"` so there is no second copy of the
-// number to drift.
+// Squad, at a captured Objective — would be a new decision to take.
+//
+// It is set twice, which is the engine's doing rather than a choice: mission.sqm
+// carries `respawnDelay` under `class ScenarioData` as well, because that is the
+// face Eden gives the same attribute (topics/Mission_sqm.wiki:53), and the
+// vendored wiki nowhere says which of the two the engine reads when both exist.
+// Rather than guess a precedence, both say 30 and
+// `tests/unit/test_respawn_markers.py` fails if they ever stop agreeing — so the
+// question never has to be answered. Nothing that *checks* the value holds a
+// third copy: `spike/probes/respawn-base.sqf` reads it back with
+// `getMissionConfigValue "respawnDelay"`.
 respawnDelay = 30;
 respawnDialog = 0;
 disabledAI = 1;
