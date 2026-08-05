@@ -583,6 +583,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Two standing rules keep their behaviour and gain the reason the plan-currency
+  measurement gives them.** The ban on extra verification passes was a quality rule; it
+  is now also a first-order cost rule, because an extra pass is pure generation and
+  generation is the act this plan meters. And the implementer seat's effort default,
+  lowered from xhigh to high on 2026-08-05, gets its rationale recorded after the fact:
+  effort multiplies output volume, output weighs 33.10 points of a five-hour window per
+  Mtok against under 0.0096 for a cache write, so it is plausibly the largest single
+  spend intervention this project has made — and one that registers as approximately
+  nothing in the input-equivalent currency the older ranking used. No new rule was added
+  to `CLAUDE.md` from this ruling: the file is itself read as cache, and cache reads are
+  precisely the term the measurement leaves unresolved between nothing and most of the
+  meter.
+
 - **Reading a finished corpus verdict is no longer tied to a seat, and the thing that
   decides whether a reader is any good is now written down: paste, never retype.**
   #219's A/B put five seats from haiku/low to fable over eight replayed pools weighted
