@@ -91,6 +91,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   caller saw only the second error and lost what the cached socket actually died of. Both now
   arrive in the one error payload. #162.
 
+### Added
+
+- **A squad leader gets his Squad back when he walks back to it.** Nothing in the engine demotes a
+  live leader, so a player who died leading a Squad stayed a rifleman in it for the rest of the
+  session even after the AI that took over had nothing left to offer. He now takes command again
+  on rejoining — within 100 m of his men, a playtest-tuned placeholder documented where it is set
+  (ADR-0052, ruling 4). On rejoining and deliberately not on respawn: handed the Squad at his Base
+  he would pull it off its standing Order to march the length of the island and form on him, which
+  is the thing the same ruling refuses. A server-side sweep decides it, so no new call crosses the
+  wire and the remote-execution whitelist is still one function long. #189.
+
 ### Changed
 
 - **Dying costs 30 seconds, at your own Base.** The played mission's respawn timer moves from 5 s
