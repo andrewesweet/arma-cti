@@ -23,7 +23,7 @@
 //
 // What no unit test can stand in for, and what would otherwise be unprotected
 // in Phase 1. Three of these assertions live today only in `spike.Stratis`,
-// the Phase-0 measurement mission, which nothing runs per issue: the addon
+// the Phase-0 measurement mission, which only `just spike` boots: the addon
 // resolving by name on a dedicated server, the seeded PRNG against the real
 // engine, and the daemon echoing a request id back through `callExtension`.
 // The other three — the world the manifest describes actually getting built,

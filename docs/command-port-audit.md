@@ -131,9 +131,12 @@ down here rather than discovered later.
 
 1. **`missions/spike.Stratis` has no `CfgRemoteExec` at all** (`description.ext:23-34`, deliberate
    and commented), so it runs at the engine's open default, and its clients call the shim directly
-   (`init.sqf:33-54`). This is the Phase-0 measurement mission, which nothing runs per issue and
-   which ADR-0011 retires when `just accept` arrives. It is not the shipped mission and never
-   loads the shipped `description.ext`.
+   (`init.sqf:33-54`). This is the Phase-0 measurement mission, which ADR-0011 retires when
+   `just accept` arrives. It is not the shipped mission and never loads the shipped
+   `description.ext`. It is reached only by `just spike`, which runs `spike/run.sh` with nothing
+   overridden — the derivation is run.sh's own `MISSION` and `SERVER_CONFIG` defaults, not a list
+   kept here (#165; when this was first written it said "run by nothing", which the last bullet of
+   the exit criteria below already contradicted).
 2. **Probes purchase and order by building `verb: "command"` envelopes straight to the shim**
    (`spike/probe-prelude.sqf`, `base-assault.sqf`, `json-manifest.sqf`, `schema-stale.sqf:77`). A
    probe is appended to the harness on the **server**, so it is already inside the boundary the
@@ -185,9 +188,10 @@ All three were closed under #128 on 2026-08-02; what each said when found, and w
 - **The stub daemon and its test are dead** — deleted earlier in the phase; no `spike` stub remains
   under `src/` or `tests/`.
 - **The spike mission is superseded** by `missions/cti.Stratis`, the real thin mission (ADR-0007).
-  `missions/spike.Stratis` is still on disk and is run by nothing per issue.
+  `missions/spike.Stratis` is still on disk, and the next bullet is why: it is the world `just
+  spike` boots, through `spike/run.sh`'s defaults.
 - **The Phase-0 spike harness and `just spike` are still alive, deliberately.** They die when
-  `just accept` replaces them in Phase 3 (ADR-0011).
+  `just accept` replaces them in Phase 3 (ADR-0011), and `missions/spike.Stratis` dies with them.
 - **No Phase-1 code contradicts ADR-0011's acceptance-harness design.** The in-game regression tier
   built on #23 is explicitly the thin early slice of it, and its orchestration is disposable by
   design (`docs/regression-tier.md`, ADR-0016, ADR-0021).

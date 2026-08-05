@@ -1,4 +1,19 @@
-// Phase-0 spike mission: the smallest thing that boots on Stratis and exercises the shim.
+// Phase-0 spike mission: the smallest thing that boots on Stratis and exercises
+// the shim. Superseded as the mission that is played by missions/cti.Stratis
+// (ADR-0007), and kept — #165 decided this — because it still has consumers.
+// Anything that walks missions/ has one here: `just build` packs every directory
+// under it, and `just spike` boots this one, because it runs spike/run.sh with
+// nothing overridden and run.sh's defaults are this mission and spike/server.cfg,
+// whose Missions class names it in turn. Check there rather than trusting a list
+// kept here. ADR-0011 retires the recipe and this world together when
+// `just accept` arrives in Phase 3; deleting it before then breaks a live recipe,
+// and git history holds it if #8 ever wants it back after that.
+//
+// Not a convenience world: `just probe` brings up the Phase-1 one. This mission
+// is open by construction (the CfgRemoteExec note below), and the config that
+// boots it lists the human's LAN address in localClient[] — #8's candidate
+// cause 1, and the reason to reach for `just probe` unless the Phase-0
+// measurements are the point.
 briefingName = "arma-cti phase-0 spike";
 onLoadName = "arma-cti phase-0 spike";
 author = "arma-cti";

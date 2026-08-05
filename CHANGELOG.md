@@ -166,6 +166,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Two surfaces stopped introducing themselves as throwaway Phase-0 scaffolding, and the spike
+  world's stay of execution is written on the world itself.** `spike/run.sh` called itself
+  "throwaway measurement scaffolding" that "Phase 1 replaces", having since become the runner every
+  in-world gate goes through; its header now says so and points at where the callers can be read off
+  rather than listing them. `missions/spike.Stratis` was recorded in two places as "run by nothing",
+  which the command-port audit's own last exit-criteria bullet already contradicted — `just spike`
+  boots it through `spike/run.sh`'s defaults, so deleting it would have broken a live recipe. It
+  stays, its `description.ext` now carries why and when it goes (ADR-0011, Phase 3), and both stale
+  claims are corrected to point at the derivation. No behaviour changed anywhere. #165, #158 (F8).
+
 - **`just fast` returns in about a minute and a half instead of seven.** The Python tier runs
   under `pytest-xdist` at one worker per logical CPU, and the same 1,410 tests that took 6 min 22 s
   serially take 56 s. Nothing about what they assert changed: the tier's wall clock was six times

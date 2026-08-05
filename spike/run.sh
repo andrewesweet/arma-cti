@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
-# Phase-0 spike harness: bring up stub daemon -> dedicated server -> headless
-# client inside WSL2, run the in-mission measurements, tear everything down.
+# The Arma tier's harness: bring up daemon -> dedicated server -> headless client
+# inside WSL2, stage the world, run what the caller asked of it, tear it all down
+# and leave one typed verdict behind.
 #
-# Throwaway measurement scaffolding (issue #2). Phase 1 replaces it with the
-# real `just accept` harness.
+# Built as Phase-0 measurement scaffolding (issue #2) and never replaced. Every
+# way into the Arma tier ends here — the justfile's Arma-tier recipes and
+# `spike/regress.sh`'s per-probe launch all exec this file, which is the honest
+# way to read who runs it — so this is the runner every landing's in-world gate
+# goes through, not scaffolding standing beside one. Its own defaults are still
+# the Phase-0 world (see MISSION below); the Phase-1 callers override them.
+# ADR-0011 owns the acceptance harness that replaces it and ADR-0016 reserves the
+# `just accept` names for Phase 3. Until those exist, there is nothing else.
 #
 # `-e` is deliberately absent, and that is a decision rather than an omission
 # (#83): a harness whose product is a *typed* verdict cannot afford to die at the
