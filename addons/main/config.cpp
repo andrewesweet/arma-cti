@@ -79,6 +79,7 @@ class CfgFunctions
             class loadoutSample {};
             class transportCatalogue {};
             class transportIssue {};
+            class transportPool {};
             class transportWatch {};
             class placeOf {};
             class placePosition {};

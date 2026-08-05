@@ -87,6 +87,7 @@ diag_log format ["CTI|transport_watch_started interval=%1 rungs=%2", _interval, 
                         [_group, _squadId, _base, _fleet] call cti_fnc_transportIssue;
                     };
                 };
+                [_group, _squadId] call cti_fnc_transportPool;
             };
         };
     } forEach (missionNamespace getVariable ["cti_squads", createHashMap]);

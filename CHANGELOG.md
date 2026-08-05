@@ -24,7 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the old one is deleted, or released and named when somebody is riding it. AI-led Squads
   ride by the engine's own rule — the truck joins the group's vehicle pool and a distant Move
   waypoint boards them — so no Order, no planner and no wire changed; a player squad leader
-  drives it himself. Free means it is not a Command and, unlike a kit, crosses no wire at all:
+  drives it himself. A Squad owns only a vehicle it is standing within 150 m of: the first
+  corpus run caught an assaulting Squad staged 250 m from the enemy HQ marching 980 m the
+  *wrong* way to fetch a truck 4.4 km behind it, and the pool is now kept honest each sweep
+  in both directions, so a Squad that walks home gets its ride back. Free means it is not a Command and, unlike a kit, crosses no wire at all:
   no port entry, no Effect, no Observation field, no snapshot field. Shape recorded in
   ADR-0059; `docs/mvp-scope.md` now carries the ruling and distinguishes the free civilian
   truck from the priced crewed `transport` Squad type. `engine_drift` gains its first emitter

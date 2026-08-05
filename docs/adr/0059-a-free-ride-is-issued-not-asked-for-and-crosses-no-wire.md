@@ -172,6 +172,45 @@ the client, which is a widening of the audited surface ADR-0056 already named as
 needing its own decision. The ruling's word for him is *access*, and access is a
 truck standing at his Base with nobody's name on it.
 
+### Ruling 4a — and a Squad owns only a vehicle it is standing by
+
+Added after the first corpus run, which is why it reads as an amendment rather
+than as part of the ruling above: the pool was written as permanent, and it
+cannot be.
+
+`campaign-end` stages its assaulting Squad 250 m from the enemy HQ while the
+truck it was issued stands at its own Base, 4.4 km behind it. At `0b4fa85` the
+Squad marched about 980 m in the wrong direction and never came a metre closer
+to the HQ than the point it was put down on — `end_probe_campaign_never_ended
+damage=0 range=1227.91 closest=250 men=8`, evidence
+`~/.arma-cti/runs/20260805T071859Z-campaign-end`. `closest=` is the field #106
+added for exactly this discrimination, and 250 is the staging distance itself:
+the Squad never set off.
+
+The engine's documentation admits it. `topics/Waypoints.wiki` promises boarding
+for a distant waypoint; `topics/AI_Group_Vehicle_Management.wiki` adds, under a
+`{{Clarify}}` tag, that "the distance from the vehicle may also play a role".
+Neither says what a group does when the vehicle it owns is further away than
+where it was sent, and the answer turns out to be *fetch it*.
+
+So ownership is made local, in `cti_fnc_transportPool`: a Squad owns its vehicle
+while standing within 150 m of it and does not while it is not. Both halves are
+required — a Squad that walks home to a truck it was disowned from has to be
+given it back, or the second march is on foot for good. 150 m is
+`cti_fnc_placeRadius`'s Base radius, this project's one answer to "how close
+counts as being at one Place", and a metre count rather than a `cti_fnc_placeOf`
+comparison because "" is the answer for all open ground and a Squad riding in
+its own truck has to keep reading as beside it.
+
+A truck with anybody in it is never disowned: `commands/leaveVehicle.wiki`
+unassigns every crew member and its own note records that "AI crew however will
+also disembark", so the far branch is taken only for an empty one.
+
+This is a limit on Ruling 4 rather than a retreat from it. The ride still works
+for every march a Squad actually makes — it boards at the Base beside its truck,
+travels in it, and dismounts beside it — and what is removed is only the case no
+Commander asked for.
+
 ## Consequences
 
 - One authored document, `addons/main/catalogue/transport.json`, shipped in the
@@ -180,7 +219,9 @@ truck standing at his Base with nobody's name on it.
   *validator* here rather than a runtime reader, because nothing about the truck
   is a rule.
 - The world runs an eighth supervised loop, `transport_watch`, registered and
-  watched like the other seven.
+  watched like the other seven. It does two things per sweep: issue where a
+  Squad at its own Base has no vehicle there, and keep the pool honest
+  (`cti_fnc_transportPool`, Ruling 4a).
 - `cti_fnc_effectApply` records `cti_squadSize` on a group at spawn. One line,
   and the only change to an existing world-facing function.
 - **`engine_drift` gains an emitter.** #71 records that nothing in the project
@@ -226,6 +267,13 @@ truck standing at his Base with nobody's name on it.
   deleting the old one unconditionally with the crew moved out first
   (`moveOut` + `unassignVehicle`, which `commands/leaveVehicle.wiki` names as
   the reliable form).
+- **Ruling 4a's threshold.** A playtest showing Squads losing a truck they were
+  about to walk twenty metres to argues for a wider radius; Squads still
+  fetching one argues for a narrower one, or for the disowning to key on the
+  standing Order's destination rather than on the leader. The rule itself is
+  what a second `campaign-end` walking backwards would overturn, and
+  `spike/probes/transport.sqf`'s `disowned` and `repooled` legs are what would
+  show a regression in either direction.
 - **Ruling 4's hands-off AI.** An in-world run showing AI Squads not boarding —
   the wiki's own sentence is the evidence this rests on, and
   `topics/AI_Group_Vehicle_Management.wiki` flags parts of that machinery as
