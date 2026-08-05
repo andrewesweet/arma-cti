@@ -583,6 +583,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Reading a finished corpus verdict is no longer tied to a seat, and the thing that
+  decides whether a reader is any good is now written down: paste, never retype.**
+  #219's A/B put five seats from haiku/low to fable over eight replayed pools weighted
+  toward reds and not-a-result stops, and across 40 scored readings not one worst class
+  was misread, not one `infra_unavailable` was taken for a result, and no arm would have
+  landed on a red. Every failure was the same mechanical act — retyping `just verdict`'s
+  output instead of quoting it, twice producing an evidence path that looks right and
+  resolves to nothing. So no fifth seat was ratified, the rule lands instead, and it
+  lands in both places a reader meets it: `CLAUDE.md` and `just verdict`'s own recipe
+  comment. The orchestrator reading is not deprecated, and `cti-recon` stays out of the
+  landing branch by being read-only.
+
 - **A wait that genuinely cannot be decomposed now has one sanctioned route, and the
   rule around it stopped arguing from a price this plan does not charge.** An agent
   facing such a wait may dispatch it as a session on `claude-native`, with `just watch`

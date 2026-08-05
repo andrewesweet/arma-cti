@@ -532,6 +532,15 @@ prereqs action="check" *args:
 # be hallucinated. It matters because the prune deletes passes, so pass
 # evidence outlives its own directory only in the quote.
 #
+# **Quote the rendered body verbatim; never retype the SHA or the evidence
+# path.** #219's A/B is the reason it is written here rather than assumed: over
+# 40 scored readings across five seats, not one worst class was misread and not
+# one stop was taken for a result — and all four failures were retyping, twice
+# producing a plausible-looking evidence path that resolves to nothing. That is
+# worse than omitting one, and it is the record class #134 cost us. Pasting
+# cannot fail that way, because the body carries the SHA and the path by
+# construction.
+#
 # It reads and it renders. Nothing is posted: what a red means, and what the
 # run gates, stay the agent's (the failure-class table's required-response
 # column). `infra_unavailable` is printed as the stop it is, never interpreted.
