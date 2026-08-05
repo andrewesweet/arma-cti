@@ -275,10 +275,14 @@ def test_unlanded_commits_refuse_and_say_what_removal_would_cost() -> None:
 
 
 def test_a_dirty_tree_refuses_teardown_before_the_landed_check() -> None:
+    """And says the thing a teardown's caller needs, not the thing a fresh add's does."""
     refusal = worktree.classify_done(
         Path("/w"), holder(status=worktree.Preflight((), ("?? theirs.txt",)), unlanded=0)
     )
     assert refusal.kind == "dirty_tree"
+    assert refusal.action.startswith("Nothing was removed.")
+    assert "commit and land it first" in refusal.action
+    assert "never reset" in refusal.action
 
 
 def test_an_unreadable_check_fails_closed() -> None:

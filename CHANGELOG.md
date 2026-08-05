@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The worktree protocol is one call, and it refuses by name.** `just worktree add
+  issue-214` fetches, creates `.claude/worktrees/issue-214` off `origin/main` detached,
+  runs CLAUDE.md's pre-flight on the result and prints the absolute path and the base SHA
+  — the four steps every dispatch briefing used to narrate, and #209 measured as the
+  widest hand loop in the project (212 calls across 106 of 214 agents). `check` re-runs
+  the pre-flight alone mid-task, `list` sweeps all 86 registrations, and `done` verifies a
+  tree is clean and landed before removing it. The correctness case is #105's: worktree
+  assignment handed two agents one tree five times in one evening and a routine reset
+  destroyed one of them, so `worktree_occupied` names the other holder's HEAD, state,
+  uncommitted count and unlanded commits, and **nothing on a refusal path resets, cleans,
+  prunes or removes** — the tests assert the other holder's files survive, not merely that
+  the call refused. `done`'s `unlanded_work` is the refusal git does not give you: `git
+  worktree remove` allows a clean tree carrying commits `origin/main` has never seen.
+  `check` answers `unverified` rather than `dirty_tree` on a dirty tree, because a file
+  you wrote and a file another agent wrote are the same two lines of `git status`; the
+  list comes back and the judgement stays the agent's. The ladder is Python under pytest
+  (ADR-0049) with the recipe as the process seam. #214.
+
 - **A continuation fetches its predecessor's handoff without reading the thread.**
   `just handoff <issue>` prints the newest comment on that issue whose body opens a line
   with `Handoff-for:`, and nothing else — no thread, no metadata beyond what the handoff
@@ -25,7 +43,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`tools/handoff_fetch.py`, ADR-0049) rather than the `--jq` filter #210 sketched,
   because that filter answers an empty thread with an empty line and exit 0 — and a jq
   predicate is not something the no-Arma tier can assert at all (#83). #210.
-
 - **A whole-file read of something enormous is refused, and told where the pieces are.**
   A new PreToolUse hook, `.claude/hooks/deny-oversized-reads.py`, denies a `Read` whose
   window would deliver more than 40,000 characters and names the size, the file and the

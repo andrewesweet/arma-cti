@@ -96,6 +96,22 @@ touching it, commit early, and on finding foreign files stop and report — the 
 agent loses a dispatch, the reset would have lost another session's work. The pre-flight
 prevented exactly that on its first firing (instance 5, the fifteenth-retro dispatch).
 
+The procedure is now a recipe, so a briefing names it rather than narrating it:
+`just worktree add issue-214` fetches, creates `.claude/worktrees/issue-214` off
+`origin/main` detached, pre-flights the result and prints the path and base SHA;
+`just worktree check` re-runs the proof mid-run; `just worktree done <name>` verifies
+clean and landed before removing (#214). It refuses by name — `worktree_occupied` names
+the other holder's HEAD, state, uncommitted count and unlanded commits, because instance
+3's damage came from not knowing who was there — and it never resets, cleans, prunes or
+removes on a refusal path.
+
+**The recipe absorbed the procedure, not the judgement.** Everything above still holds
+and is still the agent's: whether the files in a tree are somebody else's, what a
+collision means for the dispatch, and the standing rule that foreign files mean stop and
+report, never reset. `check` says so in its own answer — a dirty tree comes back
+`unverified` rather than `dirty_tree`, because a file you wrote and a file another agent
+wrote are the same two lines of `git status` and no tool can tell them apart for you.
+
 ## Noticing in time: the orchestrator's side
 
 Recovery is cheap; not noticing is what costs. Three stalls on one agent in one cycle

@@ -44,6 +44,7 @@ Interact with the project through `just` only. The rule binds work that lands an
 | `just verdict [pool-dir]` | A finished pool's own record as the lines a close quotes: worst class, counts, wall, sha, the runner's per-probe block verbatim, a detail line per non-pass probe. Defaults to the newest pool. Reads; never interprets | No | Before quoting a corpus run into the issue it gated |
 | `just watch <name> <worktree> [subject]` | Arm a detached stall watcher over a dispatched agent's run; returns at once | No | At dispatch, for any agent with a run attached |
 | `just watch-report [--ack]` | One line per un-acknowledged watcher finding; silent while every watched agent works | No | Top of any orchestrator turn |
+| `just worktree add\|check\|list\|done [name]` | The worktree protocol as one call: `add` fetches, creates `.claude/worktrees/<name>` off `origin/main` detached, pre-flights it and prints the path and base SHA; `check` re-runs the pre-flight alone; `list` sweeps every registration; `done` verifies clean and landed before removing. Named refusals (`worktree_occupied` names the other holder); never resets, cleans, prunes or removes on a refusal path | No | `add` at the start of every dispatch; `check` whenever exclusivity is in doubt; `done` when the work has landed |
 
 Not yet built: `just accept <spec-id>` and `just accept-all`, the acceptance tiers. Phase 3, owned by #5 — the names stay reserved for it (ADR-0016).
 

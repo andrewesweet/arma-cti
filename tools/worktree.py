@@ -64,6 +64,10 @@ FOREIGN_FILES: Final = (
     "Stop and report the files. Foreign files mean another agent is in this tree; "
     "never reset or clean them away (#105)."
 )
+UNCOMMITTED_ON_TEARDOWN: Final = (
+    "Nothing was removed. If the work is yours, commit and land it first; if you did not "
+    "write these files, another agent is in this tree — stop and report, never reset (#105)."
+)
 HOW_MANY_SHOWN: Final = 10
 
 
@@ -250,17 +254,21 @@ def _holder_lines(path: Path, holder: Holder) -> tuple[str, ...]:
     return tuple(lines)
 
 
-def classify_preflight(path: Path, status: Preflight) -> Refusal | None:
+def classify_preflight(
+    path: Path, status: Preflight, action: str = FOREIGN_FILES
+) -> Refusal | None:
     """CLAUDE.md's pre-flight where dirt is provably wrong: a tree nobody has worked in yet.
 
     `add` runs it on the checkout git has just made, and `done` on a tree its
     owner says is finished with. Anything in either is somebody else's, or
     somebody's unsaved work — never the caller's work in progress, which is why
-    this rung is a flat refusal and `classify_exclusivity` is not.
+    this rung is a flat refusal and `classify_exclusivity` is not. The two
+    callers differ only in what the agent should do about it, which is why the
+    instruction is the argument.
     """
     if status.clean:
         return None
-    return Refusal("dirty_tree", _found(path, status), FOREIGN_FILES)
+    return Refusal("dirty_tree", _found(path, status), action)
 
 
 def classify_exclusivity(path: Path, status: Preflight) -> Refusal | None:
@@ -311,7 +319,7 @@ def classify_done(path: Path, holder: Holder) -> Refusal | None:
     status = holder.status
     if status is None:
         return _could_not_run(path, "status=unreadable")
-    dirty = classify_preflight(path, status)
+    dirty = classify_preflight(path, status, UNCOMMITTED_ON_TEARDOWN)
     if dirty is not None:
         return dirty
     return _classify_landed(path, holder.unlanded)
