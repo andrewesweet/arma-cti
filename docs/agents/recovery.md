@@ -59,10 +59,11 @@
 > parked ~2 h on a green pool twice, the #170 agent ~2 h on reds, each caught by
 > the standing watcher and cleared by a prod (orchestrator-side observations).
 > Both sessions sat inside ADR-0042's stale-copy window: #205's wait-denying hook
-> had landed but governs only worktrees rebased past it, so the watcher stays the
-> layer that works while #204's end-before-wait rule awaits its ruling — a prod
-> is measured at 2.32% of the bill across 54 events (#206), which is what that
-> ruling would remove.
+> had landed but governs only worktrees rebased past it, so the watcher stayed the
+> layer that works — a prod is measured at 2.32% of the bill across 54 events
+> (#206). #204's end-before-wait rule was ruled and landed the same day (human
+> decision session, 2026-08-05), which is what removes the prod rather than paying
+> it; these two stalls are the last ones recorded before it.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
@@ -170,14 +171,28 @@ with a run attached:
 just watch <name> <worktree> [subject] --issue <N> [--grace <secs>]
 ```
 
-It returns at once, having forked a poll loop into its own session, and the detachment is
-the whole point. #195 priced the hand version: an agent turn that blocks past five minutes
-throws away its prompt cache and pays about 179,000 tokens to rebuild it, which makes a
-waiting turn roughly 110× a working one and `sleep`/`until` polling 4.24% of everything
-this project has been billed. So the orchestrator should be *notified* that something
-finished and must not sit inside a turn watching for it. The agent-side half of the same
-rule — long work runs detached so the turn can end — is CLAUDE.md's watching-inside-turn
-sentence, and it is exactly what makes the watcher necessary.
+It returns at once, having forked a poll loop into its own session. The detachment is what
+lets the orchestrator be *notified* that something finished instead of sitting in a turn
+watching for it — but be exact about what that buys, because it is not tokens.
+
+**`just watch` is a correctness mechanism, not a token one.** What it produces is a finding,
+and a finding is acted on by prodding an agent whose own turn ended long ago — which is
+precisely a turn arriving on a dead prompt cache. The prod *is* the 161,061-token prefix
+rebuild, measured at 2.32% of the bill across 54 events (#206). Noticing a stall costs about
+what the stall cost; the watcher is worth it because the alternative is work sitting unread
+for eight hours, not because it is cheap.
+
+That is why #204's ruling changes this section's standing rather than its mechanism. Under
+CLAUDE.md's seat-split dispatch rule, a subagent facing a foreseeably long gate commits,
+dispatches it detached, arms this watcher, writes its handoff and *ends* — and a successor
+reads the result cold, for a measured 24,554 against the 201,326 a woken agent pays. There
+is then no live agent to stall and no prod to buy. **So the watcher is the backstop for an
+agent that failed to end, not the working layer**, which is what it had to be while every
+long wait happened inside a live turn. Keep arming it at dispatch: the rule is new, ADR-0042's
+stale-copy window means worktrees adopt it at different times, and the fifteenth use above is
+two agents parked ~2 h each *after* `just watch` had landed. Read a catch accordingly — still
+the watcher working, and now also a prompt to check whether the dispatch rule reached that
+agent's worktree at all.
 
 `subject` says what finishing means: `pool` (the default — the newest `pool.json` written
 after arming), `probe:<name>`, `process` with `--pid`, or `path` with `--await-path`.
