@@ -124,13 +124,49 @@ def test_a_pool_that_finished_before_the_watch_was_armed_is_another_run(tmp_path
     assert finding.state == stall_watch.WATCHING
 
 
-def test_a_moved_head_is_the_agent_reading_its_own_run(tmp_path: Path) -> None:
-    """The third conjunct: HEAD past the baseline means the agent acted."""
+def test_a_head_that_moves_after_the_edge_is_the_agent_reading_its_own_run(
+    tmp_path: Path,
+) -> None:
+    """The third conjunct: a commit after the run finished means the agent acted."""
     write_pool(tmp_path)
-    finding = stall_watch.assess(spec(tmp_path), seen(head=MOVED), {})
+    finding = stall_watch.assess(spec(tmp_path), seen(head=MOVED), {"head_at_edge": SHA})
     assert finding.state == stall_watch.AGENT_MOVED
     assert finding.terminal is True
     assert "the agent read it" in finding.prod
+
+
+def test_a_head_that_moved_before_the_edge_does_not_excuse_the_silence(tmp_path: Path) -> None:
+    """#168's shape: its fix was committed (`e24e25d`) *before* the run it parked on.
+
+    Measuring the conjunct from arming would have read that stall as an agent
+    who had read its own run, which is exactly the stall the watcher exists to
+    catch — twice in one evening, at the identical point.
+    """
+    write_pool(tmp_path, finished_at=NOW - 900)
+    finding = stall_watch.assess(spec(tmp_path), seen(head=MOVED), {"head_at_edge": MOVED})
+    assert finding.state == stall_watch.STALLED_CLEAN
+    assert finding.terminal is True
+    assert f"HEAD {MOVED[:12]} is committed" in finding.prod
+
+
+def test_the_first_pass_after_the_edge_settles_rather_than_guessing(tmp_path: Path) -> None:
+    """Nothing on that pass can say whether the move came before the edge or after."""
+    write_pool(tmp_path, finished_at=NOW - 900)
+    finding = stall_watch.assess(spec(tmp_path), seen(head=MOVED), {})
+    assert finding.state == stall_watch.SETTLING
+
+
+def test_the_head_at_the_edge_is_recorded_for_the_next_pass_to_measure_against(
+    tmp_path: Path,
+) -> None:
+    write_pool(tmp_path, finished_at=NOW - 900)
+    watched, observed = spec(tmp_path), seen(head=MOVED)
+    finding = stall_watch.assess(watched, observed, {})
+    document = stall_watch.finding_document(watched, observed, finding, {})
+    assert document["head_at_edge"] == MOVED
+    # And it is not invented before the edge lands.
+    bare = stall_watch.assess(spec(tmp_path, runs_dir=str(tmp_path / "empty")), observed, {})
+    assert stall_watch.finding_document(watched, observed, bare, {})["head_at_edge"] == ""
 
 
 def test_silence_inside_the_grace_window_is_not_yet_a_stall(tmp_path: Path) -> None:

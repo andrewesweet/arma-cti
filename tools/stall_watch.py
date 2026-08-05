@@ -31,7 +31,11 @@ The predicate, from #198's first criterion, is three conjuncts:
    bare `tasklist.exe`, #44's self-agreeing daemon default, the `pgrep -f` that
    matched the orchestrator's own command line). The cost of being wrong is one
    briefing, not work: recovery starts from commits.
-3. **The agent's worktree HEAD has not moved** past the SHA recorded at arming.
+3. **The agent's worktree HEAD has not moved since the completion edge.** Not
+   since arming: #168's agent had committed its fix (`e24e25d`) *before*
+   launching the run it then parked on, so a baseline taken at dispatch would
+   have read that stall — twice in one evening, at the identical point — as an
+   agent who had already read its own result.
 
 The escalation then splits on what the stall is sitting on, the sharper edge
 recovery.md's thirteenth use records: a stall on a **clean** tree risks a
@@ -424,7 +428,7 @@ def _prod_text(spec: Spec, observation: Observation, state: str, done: Completio
             f"minutes on five addon files). Commit first, then {next_step}"
         )
     return (
-        f"{finished}; {next_step}. HEAD {spec.baseline_head[:12]} is committed, "
+        f"{finished}; {next_step}. HEAD {observation.head[:12]} is committed, "
         f"so nothing of yours is at risk — this is a lost dispatch, not lost work"
     )
 
@@ -460,11 +464,26 @@ def assess(spec: Spec, observation: Observation, previous: dict[str, object]) ->
         )
 
     done = find_completion(spec, observation, previous)
+    # The third conjunct is measured from the completion edge, not from
+    # arming. #168's agent had *committed* its fix before launching the run it
+    # then parked on — `e24e25d`, sitting on no branch, unlanded and
+    # unannounced — so "HEAD has moved since dispatch" would have read that
+    # stall as an agent who had read its own run. An empty value means this is
+    # the first pass since the edge landed, where nothing can say whether the
+    # move came before it or after: that pass settles rather than guessing.
+    edge_head = str(previous.get("head_at_edge", "") or "")
     if done is None:
         state = WATCH_EXPIRED if observation.now - spec.armed_at >= spec.deadline_secs else WATCHING
         quiet = observation.now - max(spec.armed_at, observation.activity_epoch)
-    elif observation.head != spec.baseline_head:
+    elif edge_head and observation.head != edge_head:
         state, quiet = AGENT_MOVED, 0
+    elif not edge_head and observation.head != spec.baseline_head:
+        # A move this watch cannot place: HEAD is past the dispatch baseline
+        # and the edge only landed now, so the commit could be #168's (before
+        # the run) or the agent reading its own result (after it). One more
+        # window and the next pass can tell, at the cost of one interval.
+        state = SETTLING
+        quiet = observation.now - max(done.finished_at, observation.activity_epoch)
     else:
         # The quiet clock starts at the later of the completion edge and the
         # last thing the agent was seen to do: an agent still editing after its
@@ -503,6 +522,9 @@ def finding_document(
         "worktree": spec.worktree,
         "baseline_head": spec.baseline_head,
         "head": observation.head,
+        # The HEAD this watch first saw once its subject had finished, which is
+        # what the next pass's move is measured against.
+        "head_at_edge": observation.head if done else str(previous.get("head_at_edge", "") or ""),
         "dirty": list(observation.dirty),
         "quiet_secs": finding.quiet_secs,
         "assessed_at": observation.now,

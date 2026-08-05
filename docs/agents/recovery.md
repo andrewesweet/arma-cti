@@ -179,9 +179,12 @@ Three of its properties are deliberate, and each is a rule this document already
   and a healthy agent look identical from outside.
 
 The predicate is three conjuncts — the completion artefact exists, no activity under the
-worktree inside the grace window (default 600 s), and HEAD has not moved past the SHA
-recorded at arming — and it splits on what the stall is sitting on, because the thirteenth
-use in this document's header says the two cost different things. A clean tree is a lost dispatch, and the
+worktree inside the grace window (default 600 s), and HEAD has not moved since the
+completion edge. Since the edge, not since arming: #168's agent had committed its fix
+before launching the run it then parked on, and a baseline taken at dispatch would read
+that stall as an agent who had already read its own result. The finding then splits on
+what the stall is sitting on, because the thirteenth use in this document's header says
+the two cost different things. A clean tree is a lost dispatch, and the
 line says so. Uncommitted work is work at risk, and the line names the files and orders
 the commit before anything else. A false positive costs a briefing rather than work, so
 the tuning leans towards calling a stall rather than missing one.
