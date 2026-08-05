@@ -209,8 +209,30 @@ probe file="" hold="150": build-shim build-addon
 regress *args: build-shim build-addon
     ./spike/regress.sh {{ args }}
 
-# Everything that does not need Arma.
-fast: check unit
+# Every test module this landing adds or rewrites has to notice its subject
+# changing (#239, ADR-0064). A bounded sample of mutants is planted in the source
+# those tests actually execute — chosen by one `coverage.py` pass, not by the
+# `test_x.py` -> `x.py` naming convention — and each is judged by only the tests
+# that reach its line. A module whose tests kill fewer than the floor is red, and
+# so is one none of whose tests execute a line of this repo's source at all,
+# which is what an `assert True` module earns.
+#
+#   just mutation                          the diff against origin/main, as `fast` runs it
+#   just mutation --paths tests/unit/x.py  one module, while writing it
+#   just mutation --report                 survey: every verdict, never a red
+#
+# There is no flag that lowers the floor in `just fast`, and no marker a test
+# file can carry to excuse itself. The one escape is `NO_PYTHON_SUBJECT` in
+# `tools/mutation_smoke.py` — a named module with its reason beside it, visible
+# in the diff — for the modules whose subject is a shell script or an authored
+# document rather than Python.
+mutation *args:
+    uv run python tools/mutation_smoke.py {{ args }}
+
+# Everything that does not need Arma. `mutation` runs last: a red suite says
+# nothing about mutants, and the smoke refuses rather than guesses when the
+# module it is asked about is not green on its own.
+fast: check unit mutation
 
 # The worktree protocol as one call (#214, ADR-0049): fetch, create off
 # origin/main detached, and prove the tree is exclusively yours before you work
