@@ -47,6 +47,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   secret has moved it rather than caught it. The stated limit is unchanged: this
   protects against git, not against the agent, which runs as the same user. #223.
 
+||||||| parent of 7bea7f6 (feat: just prereqs, the setup that does not need a human)
+- **`just prereqs` performs the multi-provider setup that does not need a human.** #229
+  was written as a fifteen-item checklist; six items genuinely need a human and the rest
+  were mislabelled, so they became one recipe with six subcommands. `check` reports every
+  item's true state one line at a time and exits non-zero on a missing week-one
+  prerequisite — a check that could not run reports `unknown` and is never a pass (#41's
+  shape), and the Codex-lane items are reported but do not gate the week. `credentials`
+  creates `~/.arma-cti/credentials.env` at 0600 outside every worktree and takes one
+  pasted key off the terminal with echo off, so the value reaches no argv, no log, no
+  shell history and no committed file; it refuses to overwrite a recorded name without
+  `--force`. `sudo-script` **generates** the initiative's only root script and prints the
+  path — three root acts (the collector's `traces` pipeline and filtered per-dispatch
+  `group_by` export, the restart, the durable export directory) in one file written to be
+  read, which backs up before writing, validates before restarting, is idempotent, and
+  refuses outright unless `/etc/otelcol-contrib/config.yaml` is byte-identical to what the
+  generation was computed from. `statusline` chains a quota tap **ahead of** the existing
+  status line rather than replacing it, preserving the configured command verbatim and
+  never touching its stdout; the recipe states in its own output that the file is outside
+  this repository and nothing here can hold the tap in place. `tools` installs `gitleaks`
+  user-local against its published checksum — no sudo — and writes the Codex config
+  disabling the `metrics_exporter` that otherwise defaults to Statsig →
+  `https://ab.chatgpt.com/otlp/v1/metrics`, **before** first use, since afterwards means
+  telemetry has already left the box. `plan-tier` records the z.ai tier and its published
+  caps, and refuses by name rather than guessing one, because no machine-readable source
+  for it exists. Logic in Python under pytest (ADR-0049), bash only at the tap's stdin
+  seam. #230.
+
 - **The worktree protocol is one call, and it refuses by name.** `just worktree add
   issue-214` fetches, creates `.claude/worktrees/issue-214` off `origin/main` detached,
   runs CLAUDE.md's pre-flight on the result and prints the absolute path and the base SHA

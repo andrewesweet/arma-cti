@@ -328,6 +328,44 @@ watch-report *args:
 handoff issue:
     @uv run python tools/handoff_fetch.py {{ issue }}
 
+# The multi-provider setup that does not need a human (#230, for #221/#229).
+# No Arma, no lock: it reads this box, writes user-owned files, and generates —
+# never runs — the one root script the initiative needs.
+#
+#   just prereqs                    same as `check`
+#   just prereqs check              every item's true state, one line each, and a
+#                                   non-zero exit if a week-one prerequisite is
+#                                   absent. A check that could not run reports
+#                                   `unknown` and is never a pass (#41's shape)
+#   just prereqs credentials        create ~/.arma-cti/credentials.env at 0600,
+#                                   outside every worktree, and take one pasted
+#                                   key. The value is read off the terminal with
+#                                   echo off — never argv, never stdout, never a
+#                                   log. Refuses to overwrite a recorded name
+#                                   without --force
+#   just prereqs sudo-script        GENERATE the root script and print its path.
+#                                   It is never run from here: it is the only
+#                                   sudo in the initiative and it is generated to
+#                                   be read, refusing unless the collector config
+#                                   is byte-identical to what it was computed
+#                                   from
+#   just prereqs statusline         chain the quota tap ahead of the existing
+#                                   status line in ~/.claude/settings.json,
+#                                   passing its output through unchanged.
+#                                   --dry-run prints and writes nothing
+#   just prereqs tools              install gitleaks user-local (no sudo), and
+#                                   write the Codex config that disables its
+#                                   off-box metrics exporter BEFORE first use
+#   just prereqs plan-tier          read the z.ai plan tier, or say plainly that
+#                                   it could not be read. --set lite|pro|max
+#                                   records the human's answer
+#
+# The status line is the one surface this repository cannot govern: the file is
+# outside it, so no hook and no gate can hold the tap in place. The recipe says
+# so in its own output every time it runs.
+prereqs action="check" *args:
+    uv run python tools/prereqs.py {{ action }} {{ args }}
+
 # Read a finished corpus run's own record as the lines a close quotes (#199).
 # No Arma, no lock: it reads `pool.json` and the per-probe `verdict.json`s and
 # renders. `just verdict` takes the newest pool on this machine; name a pool

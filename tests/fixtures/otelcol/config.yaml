@@ -1,0 +1,36 @@
+# Claude Code telemetry sink (2026-08-03).
+# Purpose: local capture of Claude Code OTel metrics + log events to help
+# diagnose session terminations (WSL VM deaths/freezes). Everything stays on
+# this machine: receivers bind to loopback only, exporter writes rotating
+# JSONL under /var/log/claude-otel/.
+# Dist default config preserved at config.yaml.bak-dist.
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 127.0.0.1:4317
+      http:
+        endpoint: 127.0.0.1:4318
+
+processors:
+  batch:
+
+exporters:
+  file/claude:
+    path: /var/log/claude-otel/claude-telemetry.jsonl
+    format: json
+    rotation:
+      max_megabytes: 50
+      max_backups: 5
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [file/claude]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [file/claude]
