@@ -218,8 +218,16 @@ def marker_files(root: Path) -> list[Path]:
     narrate counts as history rather than carrying them, and the glob over
     `.claude/` is deliberately the skills only: a recursive walk would pick up
     the nested agent worktrees, which run this gate on their own trees.
+    `docs/research/process-interfaces.md` is a verbatim landing of an issue
+    comment (#209) that cites CLAUDE.md's own `validated ×9` and `validated
+    ×7` counts by digit as evidence in its analysis — a citation, not a
+    marker this file carries — so it is excluded by exact path rather than
+    edited to fit a shape this gate recognises.
     """
-    excluded = {root / "docs" / "process-log.md"}
+    excluded = {
+        root / "docs" / "process-log.md",
+        root / "docs" / "research" / "process-interfaces.md",
+    }
     files = [root / "CLAUDE.md", *sorted((root / ".claude" / "skills").glob("*/SKILL.md"))]
     files.extend(
         path
