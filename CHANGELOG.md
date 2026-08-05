@@ -9,6 +9,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The admission bar for a foreign lane is now the thing that decides, rather than a
+  number somebody has to remember.** `just admission` carries the human's ruling of
+  2026-08-05T20:00Z on #224 — Part A's four process criteria on every one of ten issues
+  with no allowance, Part B's at-most-one unclean in ten, one re-run and then a human,
+  and the recon substitute of ninety per cent of cited file-and-line references
+  resolving, pooled over ten dispatches. `just admission bar` prints all of it, including
+  the pre-registered operating characteristics, so what the bar does and does not
+  discriminate is quotable rather than recalled. Nothing in the tool derives a number:
+  the derivation was #230's read of 131 eligible closed issues, and a bar that moved once
+  a lane's own numbers arrived would not be pre-registered at all — a unit test guards
+  every constant against exactly that.
+
+  **Every foreign route starts at zero**, and `just admission status` says so until the
+  first record: the 131 issues behind the bar are Claude's history, Decision 6's question
+  is absolute rather than comparative, and nothing is back-filled. The counters accrue
+  only as foreign lanes run, one `just admission record` per issue, and that command
+  invents nothing — each Part A criterion is a required choice with no default, because a
+  criterion nobody passed is a criterion nobody checked. Two of them are cross-checked
+  against git in the refusing direction only: a landing that touched an in-world surface
+  cannot have its corpus criterion waived, and one that edited an acceptance spec or a
+  generated file cannot record the hooks as clean.
+
+  `just dispatch` reads the standing before it plans anything and refuses only the
+  ruling's far end — a profile that has spent both attempts, which is a human's to clear
+  and not a third attempt to improvise. A profile still on probation dispatches normally,
+  since the record the bar judges accrues only by running, and `claude-native` is exempt
+  throughout because nothing leaves Claude there. #224, ADR-0061 Decision 6.
+
 - **The z.ai lane is now a real lane rather than a registry entry, and four things
   believed about it were put to the endpoint.** `docs/research/zai-lane-live-findings.md`
   records the first live measurements: the key reaches eight GLM models, prefix caching

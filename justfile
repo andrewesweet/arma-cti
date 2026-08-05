@@ -377,6 +377,43 @@ watch-report *args:
 breaker *args:
     uv run python tools/breaker.py {{ args }}
 
+# The pre-registered admission bar, as the thing that decides rather than as prose
+# (#224, ADR-0061 Decision 6). No Arma, no lock, no turn held open.
+#
+#   just admission bar                       the bar as ruled, printed
+#   just admission status                    every foreign route, and what it has accrued
+#   just admission check --lane zai --profile zai-glm52-max --seat implementer
+#   just admission record --lane … --seat … --issue N …   one issue's assessment
+#   just admission reset --lane … --seat … --force        the human act after an escalation
+#
+# The bar is the human's ruling of 2026-08-05T20:00Z on #224, over #230's derivation
+# from the 131 eligible closed issues in this repo's own history. **Part A**: four
+# process criteria, every issue, ten out of ten, no allowance. **Part B**: at most one
+# unclean issue in ten, where unclean is a corrective rework commit within seven days,
+# a post-close finding, or a reopen. **N = 10**, and one re-run — attempts do not pool,
+# and a second failure is a human's call. Recon and review are judged instead on the
+# ruling's substitute: at least 90% of their findings' file-and-line citations resolve,
+# pooled over ten dispatches. `just admission bar` prints all of it; nothing here
+# derives a number, because a bar that moves once the numbers are in is not
+# pre-registered.
+#
+# **Every foreign route starts at zero.** The 131 issues behind the bar are Claude's
+# history, the question Decision 6 asks is absolute rather than comparative, and
+# nothing is back-filled — `just admission status` says so until the first record.
+#
+# `record` invents nothing. Every Part A criterion is a required choice with no
+# default, because a criterion nobody passed is a criterion nobody checked, and two of
+# them are cross-checked against git in the refusing direction only: a landing that
+# touched an in-world surface may not have its corpus criterion waived, and one that
+# edited an acceptance spec or a generated file may not record the hooks as clean.
+#
+# `just dispatch` reads the standing before it plans anything, and refuses only the
+# ruling's far end: a profile that has spent both attempts. Probation dispatches
+# normally, or the record could never accrue. Every state change goes to OTel and to
+# `~/.arma-cti/admission/transitions.jsonl`.
+admission *args:
+    uv run python tools/admission.py {{ args }}
+
 # Materialise the per-dispatch ledger from the OTel bus (#227, ADR-0061). No
 # Arma, no lock, no turn held open.
 #

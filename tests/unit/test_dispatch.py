@@ -45,6 +45,7 @@ if TYPE_CHECKING:
 
 dispatch = load_tool("dispatch")
 breaker = load_tool("breaker")
+admission = load_tool("admission")
 
 SEAM = REPO / "tools" / "dispatch.sh"
 JUSTFILE = REPO / "justfile"
@@ -120,6 +121,9 @@ def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
     # test's own: a run whose result depended on what this box's lanes were doing would
     # be a test of the machine rather than of the dispatcher (#226).
     env["CTI_BREAKER_DIR"] = str(tmp_path / "breaker")
+    # Same reason for the admission records (#224): a seam run must not read, and must
+    # not write, this box's real standing for a foreign profile.
+    env["CTI_ADMISSION_DIR"] = str(tmp_path / "admission")
     env.update(extra)
     return env
 
@@ -176,6 +180,7 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "dispatch_dir": str(tmp_path / "dispatches"),
         "credentials": str(tmp_path / "credentials.env"),
         "breaker_dir": str(tmp_path / "breaker"),
+        "admission_dir": str(tmp_path / "admission"),
     }
     request.update(overrides)
     args = _namespace(**request)
@@ -603,6 +608,7 @@ def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path)
         dispatch_dir=str(tmp_path / "d"),
         credentials=str(tmp_path / "c.env"),
         breaker_dir=str(tmp_path / "breaker"),
+        admission_dir=str(tmp_path / "admission"),
     )
     _, _, refusal = dispatch.plan_dispatch(args, REPO, datetime.now(tz=UTC))
     assert refusal is not None
@@ -1090,5 +1096,51 @@ def test_the_seam_refuses_a_tripped_lane_before_it_forks_anything(tmp_path: Path
     assert "refusal=lane_breaker_open" in done.stderr
     assert "class=provider_refused" in done.stderr
     assert "dispatch=" not in done.stdout
+    assert not (tmp_path / "dispatches").exists(), "nothing was written for a run that never was"
+    assert not capture.exists(), "and the runner was never reached"
+
+
+def test_the_seam_refuses_a_profile_that_has_spent_both_admission_attempts(
+    tmp_path: Path,
+) -> None:
+    """End to end through the real seam: #224's far end, and `CTI_ADMISSION_DIR` reaching it."""
+    state = admission.Store(directory=tmp_path / "admission")
+    for issue in (1, 2):
+        admission.append(
+            state,
+            "zai",
+            "zai-glm52-max",
+            "implementer",
+            admission.Assessment(
+                issue=issue,
+                dispatch_id=f"d-test-{issue}",
+                criteria=(("close_names_sha", "met"), ("fast_green", "not_met")),
+            ),
+        )
+    assert not admission.standing_for(state, "zai", "zai-glm52-max", "implementer").dispatchable
+
+    capture = tmp_path / "capture.txt"
+    done = run_seam(
+        [
+            "--lane",
+            "zai",
+            "--profile",
+            "zai-glm52-max",
+            "--seat",
+            "implementer",
+            "--issue",
+            "224",
+            "--worktree",
+            str(git_worktree(tmp_path)),
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+            "--credentials",
+            str(credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")),
+        ],
+        seam_env(tmp_path, capture),
+    )
+    assert done.returncode == 1
+    assert "refusal=admission_escalated" in done.stderr
+    assert "state=escalated" not in done.stdout
     assert not (tmp_path / "dispatches").exists(), "nothing was written for a run that never was"
     assert not capture.exists(), "and the runner was never reached"

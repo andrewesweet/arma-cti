@@ -61,6 +61,16 @@ lane** — it only rewrites a `cache_control` TTL that measurably decides nothin
 even a real token saving would not be a plan saving under a prompt meter — and the five
 Claude Code effort levels collapse to one profile per model rather than five.
 
+**The profile's admission standing is read before anything is planned** (#224). ADR-0061
+Decision 6 admits a profile to a seat on a bar pre-registered against the Claude history,
+and the human ruled that bar on 2026-08-05T20:00Z; `tools/admission.py` is the ruling. What
+reaches this file is its far end only: a profile whose second attempt at the bar has failed
+is refused here, because the ruling allows one re-run and no more and a third attempt is
+otherwise an improvisation nobody would notice. A profile still *on* probation dispatches
+normally — the record the bar judges accrues only as the lane runs, so refusing probation
+would make the bar unclearable — and `claude-native` is exempt throughout, since nothing is
+leaving Claude there.
+
 **The lane's breaker is read before anything is planned** (#226). That is the one place
 ADR-0061's other two classes reach this file: a lane out of quota refuses with
 `quota_exhausted` and the published reset time, and a lane whose quality trip has fired
@@ -90,7 +100,8 @@ from urllib.parse import quote
 # needs the script's own directory on the path — the device `stall_watch.py` uses.
 sys.path.insert(0, str(Path(__file__).parent))
 
-# The path insert above is what makes this importable.
+# The path insert above is what makes these importable.
+import admission
 import breaker
 
 if TYPE_CHECKING:
@@ -525,6 +536,40 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
     return None
 
 
+def admission_refusal(
+    lane_name: str, profile_name: str, seat: str, admission_dir: Path
+) -> Refusal | None:
+    """Read the profile's admission standing before anything is planned (#224, ADR-0061 D6).
+
+    Only the ruling's far end refuses here. A profile on probation is dispatchable, because
+    the ten-issue record the bar judges accrues only as the lane runs; a profile whose
+    second attempt failed is not, because the ruling allows exactly one re-run and the
+    whole point of pre-registering an operating characteristic is that unlimited retries
+    silently multiply it.
+
+    No failure class. A refusal here says nothing about a provider or about the code under
+    test — it is this project declining to spend a seat on a profile it has twice judged —
+    so borrowing `infra_unavailable` or `provider_refused` would put a wrong class in
+    CLAUDE.md's table, which that table makes a harness bug by definition.
+    """
+    found = admission.dispatch_refusal(
+        admission.Store(directory=admission_dir), lane_name, profile_name, seat
+    )
+    if found is None:
+        return None
+    return Refusal(
+        "admission_escalated",
+        found,
+        (
+            "The pre-registered admission bar (#224, human ruling 2026-08-05T20:00Z) allows "
+            f"{admission.MAX_ATTEMPTS} attempts and this profile has spent both on this "
+            "seat. Nothing was dispatched. Escalate to the human; `just admission reset "
+            f"--lane {lane_name} --profile {profile_name} --seat {seat} --force` is theirs "
+            "to run, not yours. Re-dispatch on claude-native meanwhile."
+        ),
+    )
+
+
 def breaker_refusal(lane_name: str, breaker_dir: Path, now: float) -> Refusal | None:
     """Read this lane's breaker before anything is planned, and refuse a tripped one (#226).
 
@@ -669,6 +714,15 @@ def plan_dispatch(
 ) -> tuple[Plan | None, str, Refusal | None]:
     """Validate the request and mint the plan and the brief, writing nothing."""
     refusal = resolve_selection(args.lane, args.profile, args.seat)
+    if refusal is not None:
+        return None, "", refusal
+
+    # Admission before the breaker, because the two refusals mean different things about
+    # how long they last: a breaker reopens on a published window boundary or on evidence,
+    # and an exhausted admission record reopens only when a human decides it should.
+    refusal = admission_refusal(
+        args.lane, args.profile, args.seat, Path(args.admission_dir).expanduser()
+    )
     if refusal is not None:
         return None, "", refusal
 
@@ -930,6 +984,13 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--breaker-dir",
         default=os.environ.get("CTI_BREAKER_DIR", str(breaker.DEFAULT_BREAKER_DIR)),
+    )
+    # `CTI_ADMISSION_DIR` is `CTI_BREAKER_DIR`'s twin and exists for the same reason: the
+    # real seam forks a fresh process, which no in-process patch reaches, so a test needs
+    # the recipe pointed at its own admission records rather than at this box's.
+    parser.add_argument(
+        "--admission-dir",
+        default=os.environ.get("CTI_ADMISSION_DIR", str(admission.DEFAULT_ADMISSION_DIR)),
     )
     parser.add_argument("--list", action="store_true", help="print the registry and exit")
     parser.add_argument("--dry-run", action="store_true", help="print the plan, launch nothing")
