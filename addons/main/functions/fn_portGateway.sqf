@@ -29,6 +29,55 @@ SERVER_ONLY(false);
 
 private _owner = remoteExecutedOwner;
 
+// A dead principal watches but cannot act (ADR-0052, rulings 3 and 5). The
+// question is asked here, about the calling *machine's* player unit, and asked
+// **before either principal is resolved below** — the ordering is the whole
+// design, not a preference:
+//
+// - A dead squad leader no longer resolves as a principal at all. The engine
+//   has already passed `leader` to his successor, so cti_fnc_leaderSquad
+//   answers nobody and a check placed after resolution would type him
+//   `wrong_side` — the exact asymmetry between the port's two principals that
+//   ruling 5 refuses. One check at the door refuses both with one code.
+// - The refusal is about aliveness, never identity, so it owes nothing to who
+//   the caller turns out to be.
+//
+// `allPlayers` carries dead players by the vendored wiki's own line
+// (commands/allPlayers.wiki: "Normal human players (including dead players)"),
+// which is what makes a corpse findable from the server at all. Matched on
+// `owner` alone, the same shape cti_fnc_commanderSide and cti_fnc_leaderSquad
+// use, so all three resolve the calling machine the same way.
+//
+// A machine with no player unit falls through unchanged: `_owner` is 0 for the
+// server calling itself and for a headless client (neither holds a player), and
+// nothing in `allPlayers` is owned by 0.
+private _caller = objNull;
+if (_owner > 0) then {
+    { if (owner _x isEqualTo _owner) exitWith { _caller = _x } } forEach allPlayers;
+};
+
+if (!isNull _caller && { !alive _caller }) exitWith {
+    // Identity is the gateway's business and so is this, for the same reason
+    // the `wrong_side` refusal below gives: the daemon cannot see the caller,
+    // and here it never sees the Command either. `CommandPort.submit` gains no
+    // aliveness check by the same ADR — the in-process planner has no unit to
+    // be dead.
+    private _judgement = createHashMapFromArray [
+        ["status", "rejected"],
+        ["reason", createHashMapFromArray [
+            ["code", "caller_dead"],
+            ["detail", "you are dead: a dead Commander or squad leader still "
+                + "watches, and your view keeps arriving, but he issues no "
+                + "Command until he is back on his feet"]
+        ]]
+    ];
+    // Unguarded, unlike the refusals below: a caller was only looked for when
+    // `_owner` was above zero, so a caller that was found came over the network.
+    [_judgement] remoteExec ["cti_fnc_portReply", _owner];
+    diag_log format ["CTI|port_rejected owner=%1 code=caller_dead", _owner];
+    false
+};
+
 // remoteExecutedOwner is 0 when the call did not arrive over the network — the
 // server calling itself, or the AI Commander, which reaches the port in-process
 // on the Python side and should never be here.

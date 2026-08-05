@@ -154,6 +154,10 @@ def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
                 # A caller nobody stamped (ADR-0044): the line carried no
                 # server-side `acting_side`, so who is acting is unknown.
                 "unknown_caller",
+                # Gateway-minted too (ADR-0052): the calling machine's player
+                # unit is dead, so the Command is refused at the door and the
+                # daemon never sees it. Both principals, one code.
+                "caller_dead",
             }
         )
         == port.REJECTION_CODES

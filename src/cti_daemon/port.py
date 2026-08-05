@@ -71,6 +71,17 @@ REJECTION_CODES: Final = frozenset(
         # reads it in the same place as every other refusal, and because the
         # exported schema is what tells the world which codes exist.
         "port_unavailable",
+        # Gateway-minted for the same reason `port_unavailable` is, and the
+        # daemon never sees the Command it refuses (ADR-0052, ruling 3): a dead
+        # principal watches but cannot act, so his Command is turned away at the
+        # door while his `view` keeps arriving. `submit` deliberately gains no
+        # aliveness check — the in-process planner has no unit to be dead, and a
+        # planner refused for being dead would be refused for existing
+        # (ADR-0025's reasoning, restated by ADR-0052). One code rather than
+        # one per principal (ruling 5): the check sits before the gateway
+        # resolves who is asking, so a Commander's Command and a squad leader's
+        # Reinforce are refused identically.
+        "caller_dead",
     }
 )
 

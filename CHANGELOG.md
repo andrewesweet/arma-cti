@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A dead Commander watches but cannot act.** Under the human's rulings on #169 (ADR-0052), a
+  Command issued from a machine whose player unit is dead is refused at the Command Port's door
+  with a new judgement, `caller_dead`: "you are dead ... but issues no Command until he is back on
+  his feet". The refusal covers both of the port's principals with one code and no asymmetry — a
+  Commander's Purchase and a squad leader's Reinforce are turned away alike — because the check is
+  asked of the calling machine before the gateway resolves which principal is asking. A dead
+  Commander's `view` keeps arriving: watching is not acting. #188, ADR-0052.
+
 - **The playtest observer's body leaves the world while he flies.** Under the human ruling on
   #190 (2026-08-04, the flag #178 left open), entering the Zeus-style observer camera in a
   playtest session now hides the human's own body and stops simulating it, and leaving the camera

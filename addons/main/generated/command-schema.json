@@ -167,6 +167,7 @@
   ],
   "rejection_codes": [
     "already_held",
+    "caller_dead",
     "campaign_over",
     "force_limit",
     "insufficient_funds",
