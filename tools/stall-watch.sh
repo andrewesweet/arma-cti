@@ -48,6 +48,12 @@ arm_watch() {
     local -a activity=()
 
     while (($# > 0)); do
+        # Every option takes a value, and a missing one says so: `set -u`
+        # would otherwise report it as "$2: unbound variable" from a line
+        # number, which is the shape of an error nobody can act on. The
+        # commonest way to get here is `--issue #198` inside a `just` recipe,
+        # where `#` opens a shell comment and eats the value — hence the hint.
+        [[ $# -ge 2 ]] || die "$1 takes a value (an issue is '--issue 198', no '#')"
         case "$1" in
         --name) name="$2" ;;
         --worktree) worktree="$2" ;;
@@ -152,6 +158,7 @@ loop_watch() {
     local name="" watch_dir="$DEFAULT_WATCH_DIR" interval="$DEFAULT_INTERVAL"
     local -a activity=()
     while (($# > 0)); do
+        [[ $# -ge 2 ]] || die "$1 takes a value"
         case "$1" in
         --name) name="$2" ;;
         --watch-dir) watch_dir="$2" ;;

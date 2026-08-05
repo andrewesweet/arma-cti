@@ -183,3 +183,33 @@ regress *args: build-shim build-addon
 
 # Everything that does not need Arma.
 fast: check unit
+
+# Arm a detached watcher over a dispatched agent's run, and read what the
+# watchers found (#198, ADR-0053). No Arma, no lock, no turn held open.
+#
+# The cost this removes is measured (#195, docs/research/token-efficiency.md):
+# an agent turn that blocks past five minutes throws away its prompt cache and
+# pays ~179,000 tokens to rebuild it, so a turn spent waiting is about 110x a
+# turn spent working, and `sleep`/`until` polling is 4.24% of everything this
+# project has been billed. `just watch` returns at once, having forked a poll
+# loop nobody is billed for; `just watch-report` is the whole of the read.
+#
+# `subject` is what finishing means: `pool` (the newest `pool.json` written
+# after arming), `probe:<name>`, `process` with `--pid`, or `path` with
+# `--await-path`. Options pass through to tools/stall-watch.sh: `--grace`
+# (silence before a stall is called, default 600s), `--deadline`, `--issue`,
+# `--interval`, `--runs-dir`, `--activity`. Write an issue as `--issue 198`,
+# without the `#`: a recipe body is shell, where `#` opens a comment.
+#
+# The watcher never messages the agent. It writes one line under
+# ~/.arma-cti/watch/ and stands down; prodding stays a judgement, and an
+# `infra_unavailable` run is reported as the stop it is, never retried.
+watch name worktree subject="pool" *args:
+    ./tools/stall-watch.sh arm --name "{{ name }}" --worktree "{{ worktree }}" \
+        --subject "{{ subject }}" {{ args }}
+
+# One line per un-acknowledged finding, and nothing at all while every watched
+# agent is still working. `--ack` marks what it prints as read so the same
+# stall never resurfaces as news; `--all` re-reads the acknowledged ones.
+watch-report *args:
+    uv run python tools/stall_watch.py report {{ args }}

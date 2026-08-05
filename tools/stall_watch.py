@@ -115,6 +115,17 @@ SECS_PER_HOUR: Final = 3600
 DIRTY_NAMES_SHOWN: Final = 5
 
 
+def issue_ref(issue: str) -> str:
+    """Normalise an issue to `#N`, accepting the bare number.
+
+    A `just` recipe body is shell, where `#` opens a comment and swallows the
+    rest of the line — so `--issue 198` has to be the spelling that works, and
+    the hash is put back here rather than at four call sites.
+    """
+    stripped = issue.strip().lstrip("#")
+    return f"#{stripped}" if stripped.isdigit() else issue.strip()
+
+
 def slug(name: str) -> str:
     """Reduce a watch's name to what a filename may hold."""
     cleaned = re.sub(r"[^A-Za-z0-9._-]+", "-", name).strip("-.")
@@ -192,7 +203,16 @@ class Completion(NamedTuple):
             parts.append(f"{self.wall_secs}s")
         if self.git_sha:
             parts.append(f"sha {self.git_sha[:12]}")
-        return ", ".join(parts) if parts else self.kind
+        return ", ".join(parts)
+
+    def descriptor(self) -> str:
+        """Name the edge on the one line: a verdict where there is one, a path otherwise.
+
+        A watched process's exit and a flag file's appearance carry no class,
+        no tally and no SHA — saying "worst=" of them would be a verdict this
+        watcher never read.
+        """
+        return f"{self.phrase()} evidence={self.path}" if self.class_ else self.path
 
 
 class Finding(NamedTuple):
@@ -383,7 +403,14 @@ def _prod_text(spec: Spec, observation: Observation, state: str, done: Completio
             f"STOP — {spec.subject} typed infra_unavailable ({done.path}): not a result, "
             f"do not interpret and do not retry. Re-dispatch is a judgement, not this watcher's"
         )
-    finished = f"your {spec.subject} finished {done.phrase()}"
+    finished = (
+        f"your {done.kind} finished {done.phrase()}"
+        if done.class_
+        else f"the {done.kind} you were waiting on finished ({done.path})"
+    )
+    # A run has verdicts to read before landing; a bare process or flag file
+    # has only the work the agent left off.
+    next_step = f"read {done.path} and land" if done.class_ else "pick the work back up"
     if state == STALLED_DIRTY:
         shown = ", ".join(observation.dirty[:DIRTY_NAMES_SHOWN])
         more = (
@@ -394,10 +421,10 @@ def _prod_text(spec: Spec, observation: Observation, state: str, done: Completio
         return (
             f"{finished}; {len(observation.dirty)} path(s) uncommitted in {spec.worktree} "
             f"— {shown}{more} — and uncommitted work dies with the worktree (#149 sat 90 "
-            f"minutes on five addon files). Commit first, then read {done.path} and land"
+            f"minutes on five addon files). Commit first, then {next_step}"
         )
     return (
-        f"{finished}; read {done.path} and land. HEAD {spec.baseline_head[:12]} is committed, "
+        f"{finished}; {next_step}. HEAD {spec.baseline_head[:12]} is committed, "
         f"so nothing of yours is at risk — this is a lost dispatch, not lost work"
     )
 
@@ -408,11 +435,7 @@ def _headline(
     """Compose #198's one line: who stalled, what evidence, what the prod says."""
     banner = BANNER.get(state, state.upper())
     tree = f"dirty({len(observation.dirty)})" if observation.dirty else "clean"
-    subject = (
-        f"{done.kind} {done.phrase()} evidence={done.path}"
-        if done
-        else f"{spec.subject} — no artefact"
-    )
+    subject = f"{done.kind} {done.descriptor()}" if done else f"{spec.subject} — no artefact"
     issue = f" {spec.issue}" if spec.issue else ""
     head = observation.head[:12] or "?"
     prod = _prod_text(spec, observation, state, done)
@@ -585,7 +608,7 @@ def run_arm(args: argparse.Namespace) -> int:
         deadline_secs=args.deadline,
         await_path=args.await_path,
         pid=args.pid,
-        issue=args.issue,
+        issue=issue_ref(args.issue),
     )
     write_json(spec_path(args.watch_dir, args.name), spec.as_document())
     stale = finding_path(args.watch_dir, args.name)

@@ -648,3 +648,29 @@ def test_the_seam_reads_the_worktree_and_types_the_stall_itself(tmp_path: Path) 
     assert document["dirty"] == ["addons/fn_muster.sqf"]
     assert document["head"] == head
     assert document["terminal"] is True
+
+
+def test_an_issue_reference_survives_a_recipe_body_that_cannot_carry_a_hash() -> None:
+    """`--issue 198`, because `#` opens a comment in a `just` recipe's shell."""
+    assert stall_watch.issue_ref("198") == "#198"
+    assert stall_watch.issue_ref("#198") == "#198"
+    assert stall_watch.issue_ref("") == ""
+
+
+def test_the_seam_names_the_option_whose_value_went_missing(tmp_path: Path) -> None:
+    """`set -u`'s "$2: unbound variable" is an error nobody can act on."""
+    worktree = tmp_path / "wt"
+    a_repo_with_one_commit(worktree)
+    result = seam("arm", "--name", "seam-argless", "--worktree", str(worktree), "--issue")
+    assert result.returncode == 2
+    assert "--issue takes a value" in result.stderr
+
+
+def test_a_completion_with_no_verdict_is_not_described_as_one(tmp_path: Path) -> None:
+    """A process exit carries no class, tally or SHA — so the line claims none."""
+    subject = spec(tmp_path, subject="process", pid=4242, grace_secs=300)
+    finding = stall_watch.assess(subject, seen(process_alive="false"), {"completed_at": NOW - 400})
+    assert "past process pid 4242 " in finding.headline
+    assert "worst=" not in finding.headline
+    assert "the process you were waiting on finished (pid 4242)" in finding.prod
+    assert "pick the work back up" in finding.prod
