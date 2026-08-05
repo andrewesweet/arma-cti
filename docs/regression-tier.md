@@ -397,7 +397,11 @@ That is the second time a new way of driving the harness has surfaced an assumpt
 
 ## Verdicts, and what an agent must do with each
 
-Per probe the runner emits the verdict `run.sh` already synthesises — `PASS`, or `FAIL` with a `class` from the CLAUDE.md table — plus the probe name, evidence path, git SHA and Arma version, in a `verdict.json` in the run's evidence directory and as the last lines on stderr. The required responses are the CLAUDE.md table's, unchanged; the tier adds nothing to them and this document does not restate them. Two get regression-tier-specific teeth:
+Per probe the runner emits the verdict `run.sh` already synthesises — `PASS`, or `FAIL` with a `class` from the CLAUDE.md table — plus the probe name, evidence path, git SHA and Arma version, in a `verdict.json` in the run's evidence directory and as the last lines on stderr. The required responses are the CLAUDE.md table's, unchanged; the tier adds nothing to them and this document does not restate them.
+
+Two of that table's rows are never emitted here, and saying so is what keeps the two documents in agreement. `quota_exhausted` and `provider_refused` are **lane** classes — a provider out of quota, or a lane this project's own breaker has refused after a quality trip (ADR-0061, #226) — and they belong to `just dispatch`. No corpus verdict carries either: this tier brings up a world on this box and a lane never enters it. A dispatch that never reached a provider is not a corpus run whose result was `infra_unavailable`; it is a dispatch, and it is not a result either way.
+
+Two of the in-world classes get regression-tier-specific teeth:
 
 **`timeout`.** The window came from the probe's own header, so a timeout is never answered by editing the header upward unless the *subject* grew — a schema change that doubles the decay being measured, say — and the header prose must say so in the same change. A probe that times out at its declared window and would pass at a larger one, subject unchanged, is a synchronisation bug in the probe, per the `probe` recipe's rule (validated on #28: both fixes were geometry and readiness, neither was a longer wait).
 

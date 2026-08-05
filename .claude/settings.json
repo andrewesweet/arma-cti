@@ -64,7 +64,8 @@
       "Edit(CHANGELOG.md)",
       "Bash(gh issue:*)",
       "Bash(gh label:*)",
-      "Bash(git push origin HEAD:main)"
+      "Bash(just land)",
+      "Bash(just land --dry-run)"
     ]
   }
 }

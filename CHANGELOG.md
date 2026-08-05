@@ -37,6 +37,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   since the record the bar judges accrues only by running, and `claude-native` is exempt
   throughout because nothing leaves Claude there. #224, ADR-0061 Decision 6.
 
+- **The multi-provider initiative's first week is now written down where an agent reads
+  it.** `CLAUDE.md` gains the five recipes the week built — `just dispatch`, `just land`,
+  `just breaker`, `just ledger-sync`, `just prereqs` — two failure classes for work that
+  never reached a provider (`quota_exhausted` and `provider_refused`, the second widened
+  to cover this project's own breaker refusing a dispatch as well as a provider refusing
+  a request), and the three rules that decide what may leave Claude at all: a dispatch
+  names an opaque `(lane, model, effort)` profile rather than a model and an effort chosen
+  separately, work leaves Claude only where a mechanical gate catches a wrong answer, and
+  a lane's authority is the enforcement it demonstrably runs rather than what its provider
+  claims. Two new prohibitions come with them: never export a lane variable into a shell
+  or a settings file, because `ANTHROPIC_BASE_URL` has no scope smaller than the process
+  tree and would silently redirect every session on the box; and never extend, invent or
+  guess a breaker's wait, which is the `timeout` row's discipline transposed onto a
+  five-hour quota window. The reasoning behind each — the lane and profile model,
+  per-invocation environment assembly, the worktree assertion, and why the breaker refuses
+  to invent a cooldown — is in the new `docs/multi-provider-dispatch.md`, one hop from the
+  rule rather than resident in every context window.
+
 - **The z.ai lane is now a real lane rather than a registry entry, and four things
   believed about it were put to the endpoint.** `docs/research/zai-lane-live-findings.md`
   records the first live measurements: the key reaches eight GLM models, prefix caching
@@ -564,6 +582,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   arrive in the one error payload. #162.
 
 ### Changed
+
+- **`just land` is now the only pre-approved way to push.** `.claude/settings.json`
+  allowlists `just land` and `just land --dry-run`, and the raw `git push origin HEAD:main`
+  entry is gone. The trap the old prose warned about — pushing the local `main` branch a
+  detached worktree is not on — is unreachable through the recipe, whose refspec is a
+  constant no argument reaches, so removing the raw entry makes that unreachability real
+  rather than advisory. `CLAUDE.md`'s landing bullet shrinks to a pointer; the reasoning
+  survives verbatim in `tools/land.py`'s module docstring and the justfile comment, which
+  is where someone asking why the recipe exists will be. When `just land` itself is broken
+  a raw push now needs a permission prompt, which is the right moment for a human to see
+  it.
 
 - **An agent that would wait more than five minutes now ends instead, and the machine stops it
   from doing otherwise.** The rule that a turn does not block for five minutes was seat-blind; it
