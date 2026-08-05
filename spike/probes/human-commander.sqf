@@ -1,5 +1,5 @@
 // probe: human-commander
-// issues: 18, 19, 46, 116, 174, 176
+// issues: 18, 19, 46, 116, 174, 175, 176
 // window: 420
 // env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240 CTI_AI_SIDE=EAST CTI_AI_SEED=1
 //
@@ -58,7 +58,12 @@
 // read in one unscheduled block, and their 30 s server-side wait overlaps the
 // 60 s Purchase poll that runs concurrently. The #176 notification checks ride
 // the same way — staged pushes through the real Observation door, read in one
-// unscheduled block — and their wait overlaps the same poll.
+// unscheduled block — and their wait overlaps the same poll. The #175 checks
+// are two halves and neither moves it either: the client half is a third staged
+// block on the same client behind the same overlapping wait, and the server
+// half's 30 s poll for a fielded position runs *before* the client leg begins,
+// inside the stretch already spent waiting for EAST's Commander to field its
+// first Squad — by which point WEST's has been reported some sixteen times.
 //
 // Run by hand without a client — `just probe spike/probes/human-commander.sqf` —
 // this probe reports its client leg `unverified` and the run is
@@ -253,6 +258,82 @@
             count (_view getOrDefault ["squads", []])];
     };
 
+    // ---------------------------------------------------------------- #175: the position
+    // The half of #175 no client can answer for: the served Observation carries
+    // where a Commander's own Squad actually is, and it is that Squad's own
+    // position rather than a plausible-looking pair of numbers. Judged against
+    // the world's own reading of the same group, which is the only witness
+    // there is — the sampler and this both ask the engine, and if they disagree
+    // the wire is carrying something else.
+    //
+    // Polled rather than read once: the Squad was bought moments ago and is
+    // spawned by the effect pump, so an empty `pos` can mean "not yet fielded"
+    // as honestly as it can mean "the field is broken", and only the wait tells
+    // them apart. This is waiting for the staging to take effect rather than
+    // for a flaky assertion to pass. 30 s is six report intervals and does not
+    // move the window: it runs inside the same stretch the client is being
+    // waited for, and in practice the Squad has been reported many times over
+    // by the time the ≤90 s wait for EAST's own first Squad above has returned.
+    private _posBy = diag_tickTime + 30;
+    private _wire = createHashMap;
+    waitUntil {
+        _wire = (((([createHashMapFromArray [
+            ["id", format ["human-commander-probe-pos-%1", round diag_tickTime]],
+            ["verb", "view"],
+            ["payload", createHashMapFromArray [["side", "WEST"]]]
+        ]] call cti_probe_fnc_rpc) getOrDefault ["result", createHashMap])
+            getOrDefault ["squads", []]) param [0, createHashMap]);
+        ((_wire getOrDefault ["pos", []]) isNotEqualTo []) || { diag_tickTime > _posBy }
+    };
+
+    private _wirePos = _wire getOrDefault ["pos", []];
+    private _wireId = _wire getOrDefault ["id", ""];
+    private _group = (["WEST"] call cti_probe_fnc_squadsOf) getOrDefault [_wireId, grpNull];
+
+    if (_wirePos isEqualTo []) then {
+        diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_view_no_position squad=%1 fielded=%2",
+            _wireId, !isNull _group];
+    } else {
+        if (count _wirePos isNotEqualTo 2) then {
+            // Two axes, which is the encoding ADR-0058 fixed: a strategic map
+            // has no altitude to draw one at. Judged before anything reads the
+            // pair, so a malformed position is named rather than crashing the
+            // read that would have named it.
+            diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_view_position_axes pos=%1",
+                _wirePos];
+        } else {
+            // And whole metres: a marker on a strategic map cannot show a
+            // fraction, so carrying one would be precision nothing can draw.
+            _wirePos params ["_wireEast", "_wireNorth"];
+            private _whole = _wireEast isEqualTo round _wireEast
+                && { _wireNorth isEqualTo round _wireNorth };
+            if !(_whole) then {
+                diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_view_position_encoding pos=%1",
+                    _wirePos];
+            };
+
+            if (isNull _group) then {
+                diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_view_position_unwitnessed squad=%1",
+                    _wireId];
+            } else {
+                // Agreement with the world, at the tolerance the ruling itself
+                // set: the picture rides the 5 s push, so the wire is up to one
+                // interval behind the men, which at infantry pace is tens of
+                // metres. A hundred is that with room, and it is still orders of
+                // magnitude tighter than the map origin or the wrong Place.
+                private _truth = getPosATL leader _group;
+                private _drift = [_wireEast, _wireNorth, 0] distance2D _truth;
+                if (_drift > 100) then {
+                    diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_view_position_disagrees squad=%1 wire=%2 world=%3 drift=%4",
+                        _wireId, _wirePos, _truth, _drift];
+                } else {
+                    diag_log format ["CTI|human_commander_probe_view_position squad=%1 wire=%2 world=%3 drift=%4",
+                        _wireId, _wirePos, _truth, round _drift];
+                };
+            };
+        };
+    };
+
     // ---------------------------------------------------------------- the client leg
     // The half only a person can answer for, and the half the corpus now runs.
     // The harness launches a headed client on the Windows host and stages
@@ -440,6 +521,108 @@
             cti_probeMap = _results;
             publicVariable "cti_probeMap";
 
+            // ---- #175: a Squad on the march is on the map -------------------
+            // Playtest 0001's other presentation defect, and the one it could
+            // not tell from a death: a Squad standing in no Place was drawn
+            // nowhere. Staged and read in one unscheduled block for the reason
+            // the block above is, and each Squad is put somewhere no Place is,
+            // so "drawn at the Squad" and "drawn at a Place" cannot be confused
+            // for one another by a marker landing near both.
+            private _march = [];
+            isNil {
+                private _real = missionNamespace getVariable ["cti_view", createHashMap];
+                private _town = ((missionNamespace getVariable ["cti_map", createHashMap])
+                    getOrDefault ["objectives", []]) param [0, createHashMap];
+                private _townId = _town getOrDefault ["id", ""];
+                (_town getOrDefault ["position", [0, 0]]) params ["_east", "_north"];
+                private _townAt = [_east, _north, 0];
+
+                // The field's name is the daemon's declaration rather than a
+                // literal this probe and the renderer happen to agree on: a
+                // rename that never reached the export would leave the map
+                // reading nothing, silently, which is #163's whole finding. The
+                // shipped PBO is what answers here.
+                private _declared = (((call cti_fnc_commandSchema)
+                    getOrDefault ["observation", createHashMap])
+                    getOrDefault ["squad", []]);
+                _march pushBack ["position_is_an_exported_field", "pos" in _declared,
+                    format ["declared=%1", _declared]];
+
+                // Far enough out that nothing can be mistaken for the town:
+                // a marching Squad 1,500 m east of it, and a second Squad
+                // standing *in* the town on the wire but 800 m away in fact.
+                private _marching = [_east + 1500, _north, 0];
+                private _misplaced = [_east + 800, _north, 0];
+                missionNamespace setVariable ["cti_view", createHashMapFromArray [
+                    ["side", missionNamespace getVariable ["cti_uiSide", ""]],
+                    ["funds", 0],
+                    ["owners", createHashMap],
+                    ["hq", createHashMap],
+                    ["contacts", []],
+                    ["squads", [
+                        // In no Place at all — the case that used to draw nothing.
+                        createHashMapFromArray [["id", "probe-march-a"], ["type", "rifle"],
+                            ["size", 8], ["order", "capture"], ["place", _townId], ["at", ""],
+                            ["pos", [_east + 1500, _north]]],
+                        // In a Place on the wire, and elsewhere in fact.
+                        createHashMapFromArray [["id", "probe-march-b"], ["type", "rifle"],
+                            ["size", 8], ["order", "defend"], ["place", _townId], ["at", _townId],
+                            ["pos", [_east + 800, _north]]],
+                        // Bought and not yet reported standing: no position at
+                        // all, which is the one case that still falls back to
+                        // the Place, exactly as the map drew before #175.
+                        createHashMapFromArray [["id", "probe-march-c"], ["type", "rifle"],
+                            ["size", 8], ["order", "defend"], ["place", _townId], ["at", _townId],
+                            ["pos", []]]
+                    ]]
+                ]];
+                [] call cti_fnc_mapRender;
+
+                // The staging took effect (#80's sibling): the three markers the
+                // claims below are about exist, or the claims are vacuous.
+                private _kinds = ["probe-march-a", "probe-march-b", "probe-march-c"]
+                    apply { markerType (format ["cti_ui_squad_%1", _x]) };
+                _march pushBack ["staged_markers_drawn", !("" in _kinds),
+                    format ["kinds=%1", _kinds]];
+
+                // 1. The defect itself: a Squad in no Place is on the map, and
+                // it is on the map where it actually is.
+                private _drawnA = getMarkerPos "cti_ui_squad_probe-march-a";
+                // 300 m of slack rather than nothing: the renderer pulls a
+                // Squad's marker clear of the engine's town label, and a Squad
+                // sharing a Place with another stacks a step further again
+                // (#174) — both are placeholder distances of about a hundred
+                // metres, and neither is what these checks are about. The gaps
+                // being discriminated are 800 m and 1,500 m.
+                _march pushBack ["marching_squad_is_drawn",
+                    _drawnA distance2D _marching < 300,
+                    format ["marker=%1 squad=%2", _drawnA, _marching]];
+                _march pushBack ["marching_squad_is_not_at_a_place",
+                    _drawnA distance2D _townAt > 1000,
+                    format ["marker=%1 town=%2", _drawnA, _townAt]];
+
+                // 2. Where the two answers disagree, the position wins: `at` is
+                // what an Order names, `pos` is what a marker is drawn at.
+                private _drawnB = getMarkerPos "cti_ui_squad_probe-march-b";
+                _march pushBack ["position_beats_the_place",
+                    _drawnB distance2D _misplaced < 300
+                        && { _drawnB distance2D _townAt > 500 },
+                    format ["marker=%1 squad=%2 town=%3", _drawnB, _misplaced, _townAt]];
+
+                // 3. And a Squad the world has not reported yet is drawn at its
+                // Place rather than at the map origin — an empty position is
+                // silence, never a coordinate.
+                private _drawnC = getMarkerPos "cti_ui_squad_probe-march-c";
+                _march pushBack ["unreported_squad_falls_back_to_its_place",
+                    _drawnC distance2D _townAt < 300,
+                    format ["marker=%1 town=%2", _drawnC, _townAt]];
+
+                missionNamespace setVariable ["cti_view", _real];
+                [] call cti_fnc_mapRender;
+            };
+            cti_probeMarch = _march;
+            publicVariable "cti_probeMarch";
+
             // ---- #176: the event channel ------------------------------------
             // Playtest 0001's summary judgement, asserted on the machine whose
             // silence it was about: ground changing hands and a Squad reaching
@@ -601,6 +784,24 @@
                     _check, _detail];
             };
         } forEach cti_probeMap;
+    };
+
+    // The #175 marching-Squad verdicts, made on the client that draws the
+    // picture and judged here for the same reason the map's are.
+    private _marchBy = diag_tickTime + 30;
+    waitUntil { !isNil "cti_probeMarch" || { diag_tickTime > _marchBy } };
+    if (isNil "cti_probeMarch") then {
+        diag_log "CTI|FAIL class=assertion_failed human_commander_probe_march_silent";
+    } else {
+        {
+            _x params ["_check", "_held", "_detail"];
+            if (_held) then {
+                diag_log format ["CTI|human_commander_probe_march check=%1 %2", _check, _detail];
+            } else {
+                diag_log format ["CTI|FAIL class=assertion_failed human_commander_probe_march_%1 %2",
+                    _check, _detail];
+            };
+        } forEach cti_probeMarch;
     };
 
     // The #176 notification verdicts, made on the client the notifications
