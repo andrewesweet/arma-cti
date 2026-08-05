@@ -113,15 +113,20 @@ BUDGET_S: Final = 90.0
 # are slowest, which is a bound on the harness masquerading as a verdict.
 COLLECT_S: Final = 600.0
 
-# Tests to run per mutant, cheapest first. A line reached by half the suite is a
-# line whose mutant the first few tests that reach it will kill, and `-x` stops
-# there; the caps bound the pathological case where none of them notice.
-TESTS_PER_MUTANT: Final = 12
+# Tests to run per mutant, cheapest first. Deliberately generous: `-x` stops at
+# the first red, so a line reached by half a suite of millisecond tests costs
+# about what one of them costs, and leaving the killing test out of the selection
+# is a false survivor the floor then has to be lowered to accommodate.
+TESTS_PER_MUTANT: Final = 200
 # ...and the wall clock those tests may cost between them, before the selection
 # stops adding. Cheapest-first ordering is what makes this bound cheap rather
 # than arbitrary: a 60 s soak is never chosen while a 0.01 s test reaches the
 # same line.
 TEST_SECONDS_PER_MUTANT: Final = 8.0
+# The grain durations are rounded to before anything is ordered or summed by
+# them. Coarser than the run-to-run jitter of a millisecond test, finer than the
+# difference between a test worth waiting for and one that is not.
+COST_GRAIN: Final = 0.1
 
 # How long one mutant's tests get before the run is abandoned. A mutant that
 # makes the subject loop forever is detected only this way, so a timeout counts
@@ -147,6 +152,8 @@ DURATION_FIELDS: Final = 3
 # lowering `FLOOR` is not an alternative to it.
 NO_PYTHON_SUBJECT: Final[dict[str, str]] = {}
 
+# Negating a comparison: the strongest single change to a decision that was
+# taken, and the one a suite which asserts nothing at all fails to notice.
 _FLIP: Final = {
     ast.Eq: "!=",
     ast.NotEq: "==",
@@ -158,6 +165,19 @@ _FLIP: Final = {
     ast.IsNot: "is",
     ast.In: "not in",
     ast.NotIn: "in",
+}
+
+# Shifting a comparison by one: `>` still points the same way, the boundary moves.
+# A negated `>` usually blows the code up somewhere and any red suite kills it,
+# so negation alone measures "does anything go red"; this measures whether the
+# tests pinned the *edge*, which is what a suite of `assert x is not None`
+# reaches over. Only the four ordering operators have such a neighbour — there is
+# nothing one step from `==` or from `is`.
+_SHIFT: Final = {
+    ast.Lt: "<=",
+    ast.LtE: "<",
+    ast.Gt: ">=",
+    ast.GtE: ">",
 }
 
 
@@ -276,11 +296,13 @@ class _Planter:
         # a chain is a mutant whose meaning is hard to state in a report.
         if len(node.ops) != 1:
             return
-        symbol = _FLIP.get(type(node.ops[0]))
         left, right = self._text(node.left), self._text(node.comparators[0])
-        if symbol is None or left is None or right is None:
+        if left is None or right is None:
             return
-        self._add(node, "compare", f"({left} {symbol} {right})")
+        for operator, table in (("compare", _FLIP), ("boundary", _SHIFT)):
+            symbol = table.get(type(node.ops[0]))
+            if symbol is not None:
+                self._add(node, operator, f"({left} {symbol} {right})")
 
     def _boolop(self, node: ast.BoolOp) -> None:
         symbol = "or" if isinstance(node.op, ast.And) else "and"
@@ -363,6 +385,28 @@ def sample(mutants: list[Mutant], *, seed: str, cap: int) -> list[Mutant]:
     return [mutants[index] for index in sorted(chosen)]
 
 
+def node_id(test_module: str, context: str) -> str:
+    """Turn one coverage context into the pytest node id that selects that test.
+
+    They are not the same string and assuming they were is how the first draft of
+    this gate scored every module 100%. `dynamic_context = test_function` names a
+    test by its *importable* name — `test_dedupe.test_a_window_can_be_filled`, or
+    `test_x.Suite.test_y` for a class — while pytest selects by path and `::`.
+    Handed the coverage spelling, pytest exits 4 with "file or directory not
+    found", and a runner that reads any non-zero exit as a kill reads that as the
+    tests noticing. They noticed nothing; they never ran.
+
+    Parametrised tests carry no case in the coverage name, so the node id here
+    selects every case of them, which is the safe direction: more tests get their
+    chance to kill the mutant, never fewer.
+    """
+    parts = [part for part in context.split(".") if part]
+    stem = Path(test_module).stem
+    if parts and parts[0] == stem:
+        parts = parts[1:]
+    return f"{test_module}::{'::'.join(parts)}" if parts else test_module
+
+
 class Reach(NamedTuple):
     """Which product lines a test module executes, which tests reach each, at what cost."""
 
@@ -379,26 +423,46 @@ class Reach(NamedTuple):
             return None
         return max(sorted(self.lines), key=lambda path: len(self.lines[path]))
 
+    def cost(self, node: str) -> float:
+        """Seconds one node id costs, rounded to `COST_GRAIN`, over all its cases.
+
+        Rounded, and that is the whole point of this method rather than a dict
+        lookup. Ordering the selection below by raw measured durations made this
+        gate **flake**: the same tree, the same mutants, 13/20 then 14/20, because
+        a suite whose tests all cost about a millisecond reorders on jitter and a
+        different set of them gets picked. A grain coarser than the jitter and a
+        tie-break on the name make the selection a function of the tree.
+        """
+        exact = self.costs.get(node)
+        if exact is None:
+            exact = sum(spent for name, spent in self.costs.items() if name.startswith(f"{node}["))
+        return round(exact / COST_GRAIN) * COST_GRAIN
+
     def cheapest(self, tests: tuple[str, ...]) -> list[str]:
         """Choose the tests to run against one mutant: cheapest first, twice bounded.
 
         A test whose duration was never recorded is assumed free rather than
         expensive, so an unmeasured test is still tried; the wall-clock bound
-        below stops the selection whatever the assumption was worth.
+        stops the selection whatever the assumption was worth.
+
+        A test that rounds to free costs nothing against that bound, so a module
+        of millisecond tests runs **all** of them against every mutant — which is
+        what keeps a mutant from surviving merely because the test that would have
+        killed it was left out of the selection.
         """
-        ordered = sorted(tests, key=lambda name: (self.costs.get(name, 0.0), name))
+        ordered = sorted(tests, key=lambda name: (self.cost(name), name))
         chosen: list[str] = []
         spent = 0.0
         for name in ordered[:TESTS_PER_MUTANT]:
-            if chosen and spent + self.costs.get(name, 0.0) > TEST_SECONDS_PER_MUTANT:
+            if chosen and spent + self.cost(name) > TEST_SECONDS_PER_MUTANT:
                 break
             chosen.append(name)
-            spent += self.costs.get(name, 0.0)
+            spent += self.cost(name)
         return chosen
 
     def timeout(self, tests: list[str]) -> float:
         """How long those tests get before the mutant is called killed by timeout."""
-        return max(TIMEOUT_FLOOR_S, TIMEOUT_FACTOR * sum(self.costs.get(n, 0.0) for n in tests))
+        return max(TIMEOUT_FLOOR_S, TIMEOUT_FACTOR * sum(self.cost(name) for name in tests))
 
 
 def _is_product(path: str) -> bool:
@@ -478,9 +542,26 @@ class Verdict(NamedTuple):
         return 1.0 if self.run == 0 else self.killed / self.run
 
     @property
+    def undecided(self) -> bool:
+        """Whether the subject offered nothing to plant on the lines the tests reach.
+
+        Not a pass by luck and not a failure either: `src/cti_daemon/telemetry.py`
+        has no comparison, no boolean and no bare number on any line its tests
+        execute, so there is no decision for a mutant to invert. A module cannot
+        reach this state by writing weaker assertions — it is a property of the
+        subject — so reding it would be a false red on a sound test module, which
+        is the corpus sweep's one finding this rule exists for (#239).
+        """
+        return self.subject is not None and self.planted == 0
+
+    @property
     def ok(self) -> bool:
         """Whether this module met the bar."""
-        return self.subject is not None and self.run > 0 and self.kill_rate >= self.floor
+        if self.subject is None:
+            return False
+        if self.undecided:
+            return True
+        return self.run > 0 and self.kill_rate >= self.floor
 
     @property
     def reason(self) -> str:
@@ -488,8 +569,11 @@ class Verdict(NamedTuple):
         if self.subject is None:
             return (
                 "no subject: none of this module's tests executed a line of this repo's source, "
-                "so there is nothing it can be said to have tested"
+                "so there is nothing it can be said to have tested. If its subject is a shell "
+                "script or an authored document, add it to NO_PYTHON_SUBJECT with the reason"
             )
+        if self.undecided:
+            return f"nothing to plant: no decision on the lines reached in {self.subject}"
         if self.run == 0:
             return f"no mutant reached a verdict in {self.seconds:.0f}s against {self.subject}"
         return (
@@ -500,6 +584,8 @@ class Verdict(NamedTuple):
     def __str__(self) -> str:
         """One line per module, the shape a gate's reader scans."""
         mark = "ok" if self.ok else "RED"
+        if self.undecided:
+            return f"ok {self.test_module} subject={self.subject} {self.reason} {self.seconds:.1f}s"
         where = self.subject or "-"
         return (
             f"{mark} {self.test_module} subject={where} "
@@ -510,6 +596,42 @@ class Verdict(NamedTuple):
 
 class Refusal(Exception):  # noqa: N818 — the repo names this shape `Refusal` (tools/worktree.py), and a refusal is not an error
     """The smoke could not run, which is not the same as a module failing it."""
+
+
+# Every write this gate makes to a subject gets its own modification time, and
+# this counter is what makes them distinct.
+#
+# Not tidiness. CPython validates a cached `.pyc` against its source's **mtime in
+# whole seconds and its size in bytes**, and the two mutants this gate plants on
+# one comparison — the negation and the boundary shift — differ by no bytes at
+# all: `(missing < 0)` and `(missing > 0)` are the same length, written to the
+# same file inside the same second. So the second run imported the first one's
+# bytecode and delivered a verdict on a mutant that never executed. That is this
+# gate flaking 13/20, 13/20, 12/20 over an unchanged tree, and the two survivors
+# that moved were exactly such a pair. Stepping the clock forward two seconds per
+# write makes a stale hit impossible rather than unlikely, and unlike a private
+# `PYTHONPYCACHEPREFIX` per mutant — which also fixes it — it does not make every
+# run recompile the whole import graph, measured at 10 s to 38 s per module.
+_written = 0
+
+
+def _stamp(target: Path) -> None:
+    """Give `target` a modification time no other write in this run shares."""
+    global _written  # noqa: PLW0603 — one counter for the process, and its scope is the point
+    _written += 1
+    when = time.time() + 2 * _written
+    os.utime(target, (when, when))
+
+
+# pytest's own exit codes, and the only two a mutant's fate may be read from.
+# Everything else — interrupted, internal error, usage error, nothing collected —
+# is a run that did not happen, and CLAUDE.md's rule for those is the #41 one: a
+# check that could not run is not a check that passed, and here it would be worse
+# than that, because "non-zero means the tests noticed" reads a usage error as a
+# kill. That is exactly what the first draft of this gate did, and it scored every
+# module in the repo 100%.
+PYTEST_PASSED: Final = 0
+PYTEST_FAILED: Final = 1
 
 
 @contextlib.contextmanager
@@ -536,9 +658,11 @@ def grafted(root: Path, path: str, text: str):  # noqa: ANN201 — a context man
             signal.signal(number, _restore)
     try:
         target.write_text(text, encoding="utf-8")
+        _stamp(target)
         yield
     finally:
         target.write_text(original, encoding="utf-8")
+        _stamp(target)
         sidecar.unlink(missing_ok=True)
         for number, handler in previous.items():
             with contextlib.suppress(ValueError, TypeError):
@@ -651,7 +775,10 @@ def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visibl
     if subject is None:
         return Verdict(test_module, None, 0, 0, 0, (), time.monotonic() - started, floor)
 
-    covered = reach.lines[subject]
+    covered = {
+        line: tuple(node_id(test_module, context) for context in contexts)
+        for line, contexts in reach.lines[subject].items()
+    }
     source = (root / subject).read_text(encoding="utf-8")
     planted = plant(source, path=subject, lines=frozenset(covered))
     chosen = sample(planted, seed=test_module, cap=cap)
@@ -677,8 +804,16 @@ def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visibl
             )
         run += 1
         # A timeout is a kill: the mutant changed what the code does so plainly
-        # that the tests could not finish saying so.
-        if code == 0:
+        # that the tests could not finish saying so. Every other non-zero code is
+        # a run that did not happen, and reading it as a kill is how a gate scores
+        # a vacuous suite full marks.
+        if code is not None and code not in (PYTEST_PASSED, PYTEST_FAILED):
+            message = (
+                f"pytest exited {code} on {mutant} — that is not a verdict on the mutant. "
+                f"The node ids it was given were: {tests}"
+            )
+            raise Refusal(message)
+        if code == PYTEST_PASSED:
             survivors.append(mutant)
         else:
             killed += 1
@@ -733,40 +868,36 @@ def in_scope(root: Path, base: str) -> list[str]:
     return sorted(name for name in found if is_test_module(name) and (root / name).exists())
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Smoke every test module in scope and print one line per module."""
-    parser = argparse.ArgumentParser(
-        description="Red a landing whose new tests do not notice the code changing.",
-    )
-    parser.add_argument("--root", default=".", type=Path)
-    parser.add_argument("--base", default="origin/main", help="ref the landing is measured against")
-    parser.add_argument("--paths", nargs="*", help="smoke these test modules instead of the diff")
-    parser.add_argument("--cap", type=int, default=CAP)
-    parser.add_argument("--floor", type=float, default=FLOOR)
-    parser.add_argument("--budget", type=float, default=BUDGET_S)
-    parser.add_argument("--collect", type=float, default=COLLECT_S)
-    parser.add_argument(
-        "--report",
-        action="store_true",
-        help="survey only: print every verdict and always exit 0",
-    )
-    args = parser.parse_args(argv)
+def restore(root: Path) -> int:
+    """Put back the file the sidecar names, and say what was done.
 
-    root = args.root.resolve()
+    The recovery half of the in-place mutation. An agent whose run was killed
+    mid-mutant — a harness timeout, a `pkill`, a machine going down — has a
+    modified tracked file it did not write, which is the one thing CLAUDE.md says
+    to stop and report rather than reset. This is the mechanism that makes the
+    difference: the sidecar names one file and carries its exact original bytes,
+    so putting it back is not a guess.
+    """
     sidecar = root / RESTORE
-    if sidecar.exists():
-        print(  # noqa: T201 — stdout text IS this gate's output
-            f"{RESTORE} is present: an earlier run was interrupted mid-mutation. "
-            f"Restore the file it names, delete the sidecar, and run again.",
-            file=sys.stderr,
-        )
-        return 2
-
-    targets = args.paths or in_scope(root, args.base)
-    if not targets:
-        print(f"mutation smoke: no test module added or changed against {args.base}")  # noqa: T201
+    if not sidecar.exists():
+        print(f"nothing to restore: no {RESTORE}")  # noqa: T201
         return 0
+    record = json.loads(sidecar.read_text(encoding="utf-8"))
+    path, text = record.get("path"), record.get("text")
+    if not isinstance(path, str) or not isinstance(text, str):
+        print(f"{RESTORE} is not a restore record; leaving it alone", file=sys.stderr)  # noqa: T201
+        return 2
+    target = root / path
+    already = target.exists() and target.read_text(encoding="utf-8") == text
+    target.write_text(text, encoding="utf-8")
+    _stamp(target)
+    sidecar.unlink()
+    print(f"restored {path}" + (" (it was already intact)" if already else " from a live mutant"))  # noqa: T201
+    return 0
 
+
+def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[int, int]:
+    """Smoke each target, print its verdict, and count the reds and the refusals."""
     red = 0
     refused = 0
     for target in targets:
@@ -794,6 +925,52 @@ def main(argv: list[str] | None = None) -> int:
             print(f"    {verdict.reason}", file=sys.stderr)  # noqa: T201
             for survivor in verdict.survivors:
                 print(f"    survived: {survivor}", file=sys.stderr)  # noqa: T201
+    return red, refused
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Smoke every test module in scope and print one line per module."""
+    parser = argparse.ArgumentParser(
+        description="Red a landing whose new tests do not notice the code changing.",
+    )
+    parser.add_argument("--root", default=".", type=Path)
+    parser.add_argument("--base", default="origin/main", help="ref the landing is measured against")
+    parser.add_argument("--paths", nargs="*", help="smoke these test modules instead of the diff")
+    parser.add_argument("--cap", type=int, default=CAP)
+    parser.add_argument("--floor", type=float, default=FLOOR)
+    parser.add_argument("--budget", type=float, default=BUDGET_S)
+    parser.add_argument("--collect", type=float, default=COLLECT_S)
+    parser.add_argument(
+        "--report",
+        action="store_true",
+        help="survey only: print every verdict and always exit 0",
+    )
+    parser.add_argument(
+        "--restore",
+        action="store_true",
+        help=f"put back the file {RESTORE} names, after an interrupted run",
+    )
+    args = parser.parse_args(argv)
+
+    root = args.root.resolve()
+    sidecar = root / RESTORE
+    if args.restore:
+        return restore(root)
+    if sidecar.exists():
+        print(  # noqa: T201 — stdout text IS this gate's output
+            f"{RESTORE} is present: another smoke is running in this tree, or one was "
+            f"interrupted mid-mutant and left a mutant in it. Wait, or run "
+            f"`just mutation --restore` to put the file it names back, then run again.",
+            file=sys.stderr,
+        )
+        return 2
+
+    targets = args.paths or in_scope(root, args.base)
+    if not targets:
+        print(f"mutation smoke: no test module added or changed against {args.base}")  # noqa: T201
+        return 0
+
+    red, refused = _judge(root, targets, args)
     if refused and not args.report:
         return 2
     if red and not args.report:

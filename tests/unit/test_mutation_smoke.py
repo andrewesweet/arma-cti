@@ -67,6 +67,26 @@ def test_every_comparison_is_flipped_to_its_negation(expression: str, flipped: s
     assert flipped in _afters(f"def f(a, b):\n    while {expression}:\n        pass\n")
 
 
+@pytest.mark.parametrize(
+    ("expression", "shifted"),
+    [
+        ("a < b", "(a <= b)"),
+        ("a <= b", "(a < b)"),
+        ("a > b", "(a >= b)"),
+        ("a >= b", "(a > b)"),
+    ],
+)
+def test_an_ordering_comparison_is_also_shifted_by_one(expression: str, shifted: str) -> None:
+    # The boundary mutant is the one a suite asserting `is not None` reaches
+    # over: a negated `>` usually blows the code up and any red suite kills it.
+    assert shifted in _afters(f"def f(a, b):\n    while {expression}:\n        pass\n")
+
+
+@pytest.mark.parametrize("expression", ["a == b", "a != b", "a is b", "a in b"])
+def test_an_equality_has_no_boundary_to_shift(expression: str) -> None:
+    assert _operators(f"def f(a, b):\n    while {expression}:\n        pass\n") == ["compare"]
+
+
 def test_a_chained_comparison_is_left_alone() -> None:
     # One link of a chain is a mutant whose meaning cannot be stated in a report.
     assert "compare" not in _operators("def f(a, b, c):\n    while a < b < c:\n        pass\n")
@@ -239,6 +259,38 @@ def test_durations_are_summed_over_a_tests_three_phases() -> None:
     )
 
 
+# --- coverage names are not pytest node ids ---------------------------------
+
+
+@pytest.mark.parametrize(
+    ("context", "node"),
+    [
+        ("test_dedupe.test_a_window_can_be_filled", "test_a_window_can_be_filled"),
+        ("test_dedupe.Suite.test_a_method", "Suite::test_a_method"),
+        ("test_a_window_can_be_filled", "test_a_window_can_be_filled"),
+    ],
+)
+def test_a_coverage_context_becomes_the_node_id_that_selects_that_test(
+    context: str,
+    node: str,
+) -> None:
+    # The bug this catches scored every module in the repo 100%: handed the
+    # coverage spelling, pytest exits 4 with "file or directory not found", and a
+    # runner reading any non-zero exit as a kill reads that as the tests noticing.
+    assert (
+        smoke_tool.node_id("tests/unit/test_dedupe.py", context)
+        == f"tests/unit/test_dedupe.py::{node}"
+    )
+
+
+def test_a_parametrised_tests_cases_are_summed_into_its_cost() -> None:
+    reach = smoke_tool.read_reach(
+        {},
+        {"tests/unit/t.py::test_a[one]": 1.0, "tests/unit/t.py::test_a[two]": 2.0},
+    )
+    assert reach.cost("tests/unit/t.py::test_a") == 3.0
+
+
 def test_the_cheapest_tests_reaching_a_line_are_the_ones_run() -> None:
     # #197's 60 s soak must never be chosen while a cheap test reaches the same line.
     reach = smoke_tool.read_reach({}, {"slow": 60.0, "quick": 0.01, "middling": 1.0})
@@ -296,6 +348,18 @@ def test_a_module_that_reached_no_verdict_is_red_rather_than_a_pass_by_default()
     verdict = _verdict(run=0, killed=0)
     assert not verdict.ok
     assert "no mutant reached a verdict" in verdict.reason
+
+
+def test_a_subject_with_no_decision_on_the_reached_lines_is_not_a_red() -> None:
+    # `src/cti_daemon/telemetry.py`: no comparison, no boolean, no bare number on
+    # any line its tests execute. A module cannot reach this by asserting less.
+    verdict = _verdict(planted=0, run=0, killed=0)
+    assert verdict.ok
+    assert "nothing to plant" in verdict.reason
+
+
+def test_a_module_with_no_subject_is_still_red_when_it_planted_nothing() -> None:
+    assert not _verdict(subject=None, planted=0, run=0, killed=0).ok
 
 
 def test_a_red_verdict_names_the_subject_and_the_arithmetic() -> None:
@@ -445,6 +509,31 @@ def test_arithmetic_still_holds():
     assert 1 + 1 == 2
 """
 
+WEAK_TESTS = """
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+import subject
+
+
+def test_a_heavy_haul_is_priced():
+    assert subject.toll(20, heavy=True) is not None
+
+
+def test_a_light_haul_is_priced():
+    assert subject.toll(20, heavy=False) is not None
+
+
+def test_a_short_haul_is_priced():
+    assert subject.toll(5, heavy=True) is not None
+
+
+def test_a_price_is_a_number():
+    assert isinstance(subject.toll(11, heavy=True), int)
+"""
+
 
 def _throwaway(root: Path, tests: str) -> str:
     (root / "src").mkdir()
@@ -471,3 +560,17 @@ def test_a_vacuous_test_module_is_red(tmp_path: Path) -> None:
     assert not verdict.ok
     assert verdict.subject is None
     assert "no subject" in verdict.reason
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_a_module_that_only_asserts_shapes_is_red(tmp_path: Path) -> None:
+    # The pair to the two above, and the one that keeps the whole gate honest:
+    # this module runs every branch of the subject and asserts only `is not None`,
+    # so mutants have to actually survive. Every draft in which the node ids
+    # handed to pytest were wrong passed this subject 100% — a run that never
+    # happened cannot produce a survivor.
+    name = _throwaway(tmp_path, WEAK_TESTS)
+    verdict = smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0)
+    assert verdict.subject == "src/subject.py"
+    assert not verdict.ok
+    assert verdict.survivors

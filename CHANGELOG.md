@@ -27,6 +27,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   noisy reviewer must not be able to fail another lane's attempt without ever being right.
   #240.
 
+- **A landing's new tests now have to notice the code changing, mechanically.** `just fast`
+  grows a rung, `just mutation`: for every test module a landing adds or rewrites, a bounded
+  sample of mutants is planted in the source those tests actually execute, and each is judged
+  by only the tests that reach its line. A module whose tests kill fewer than three in four is
+  red, and so is one none of whose tests executes a line of this repo's source at all — which
+  is what a suite of `assert True` earns.
+
+  Until now nothing mechanical stopped a vacuous green test. The defences were red-first
+  discipline in a dispatch briefing, a habit visible in closing comments, a vacuity rule that
+  governs probes only, and `mutmut` — scoped to modules that do not exist and, per #172's
+  close, not running. Because the new rung sits inside the recipe `tools/land.py` uses as its
+  landing gate, it is lane-blind: a z.ai or Codex landing meets the identical red without
+  knowing the gate is there.
+
+  The subject is chosen by evidence rather than by the `test_x.py` → `x.py` naming convention:
+  one `coverage.py` pass with per-test contexts, and the subject is the product file with the
+  most lines executed *inside* a test. Import-time lines do not count, which is what leaves an
+  `assert True` module with no subject at all rather than the accidental owner of everything
+  the shared arrangement imported.
+
+  There is one escape and it is a named list — `NO_PYTHON_SUBJECT` in
+  `tools/mutation_smoke.py`, a module and its reason, in the diff — for the test modules whose
+  subject is a shell script or an authored document. No flag lowers the floor, no marker in a
+  test file excuses it, and lowering the floor is not an alternative to strengthening an
+  assertion. ADR-0064 records the decision; `docs/research/mutation-testing.md` carries the
+  evaluation of mutmut and cosmic-ray, the corpus sweep the floor comes from, and a plain
+  statement of what the gate does not catch.
+
 - **The z.ai lane now dispatches only in off-peak hours, and says so when it will not.**
   The human ruled that on 2026-08-05 as a hard rule rather than as guidance, so it is a
   rung in `just dispatch`'s ladder beside the admission and breaker reads: inside z.ai's

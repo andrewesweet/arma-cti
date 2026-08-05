@@ -28,3 +28,7 @@ mutants/
 
 # Play-session evidence: the daemon's default telemetry and campaign archives
 .cti-play/
+
+# Left only by a mutation smoke that was interrupted mid-mutant; `just mutation
+# --restore` puts the file it names back and removes it (#239).
+.mutation-smoke-restore.json
