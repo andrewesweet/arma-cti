@@ -43,7 +43,10 @@
 // the Objective furthest from it, chosen off the manifest so the arrangement does
 // not care which Commander slot the client landed in. That distance is what makes
 // "he came back at his Base" worth asserting: a man who died at his Base and
-// respawned there would prove nothing.
+// respawned there would prove nothing — which is exactly what the first run of
+// this probe did, silently, until the distance it was logging was also asserted.
+// The move is executed on his own machine and the arrival is a hard assertion
+// now; both halves of that are load-bearing and the code says why.
 //
 // The Squad is teleported to that ground rather than marched to it, and is
 // ordered to defend the ground it is standing on. The order matters:
@@ -57,9 +60,11 @@
 // The delay is read from the mission config the engine itself is reading
 // (`missionConfigFile >> "respawnDelay"`, which is description.ext), so this
 // probe holds no second copy of 30 to drift from the one that is set. It is a
-// playtest-tuned placeholder and a playtest may move it; the assertion is "not
-// before the configured delay", which survives the move. The observed respawn on
-// 2026-08-05 landed on t=30 exactly.
+// playtest-tuned placeholder and a playtest may move it; the assertion is a band
+// around the configured delay, which survives the move. Why a band and not
+// `>= delay` is argued where it is asserted — the short form is that the probe's
+// clock and the engine's countdown are different clocks and 29.788 against a
+// configured 30 is their disagreement, not an early respawn.
 //
 // ## Window
 //
@@ -107,6 +112,8 @@
         diag_log format ["CTI|FAIL class=assertion_failed respawn_probe_assigned_uid_absent uid=%1", _uid];
         ["assigned_uid_holds_no_unit"] call _lost;
     };
+    // The machine his unit lives on, which is where a move of it has to happen.
+    private _target = owner _unit;
 
     // The engine's own copy of the setting, rather than a number written twice.
     private _delay = getNumber (missionConfigFile >> "respawnDelay");
@@ -211,7 +218,29 @@
     // group, and the Squad is the server's until this line, which is what makes
     // it legal here (topics/Multiplayer_Scripting.wiki:219).
     [_unit] joinSilent _group;
-    _unit setPosATL [_farEast - 6, _farNorth, 0];
+
+    // Moved from his own machine, not from here. `setPosATL` is documented
+    // `arg= global` and the server may call it on a remote unit, but a *player's*
+    // unit is simulated on the player's computer and it puts him back: the
+    // 2026-08-05 run staged this from the server, logged `from_base=0`, and
+    // killed him standing on the Base he was about to respawn at — which would
+    // have made ruling 1's assertion true for the wrong reason. Server-to-client
+    // `remoteExec` is unrestricted by description.ext's own comment (the rules
+    // bind clients only), so the move is executed where the unit lives.
+    [_unit, [_farEast - 6, _farNorth, 0]] remoteExec ["setPosATL", _target];
+
+    // And the staging is asserted to have taken effect before anything is built
+    // on it, because the world can refuse it silently (#80). 500 m is nothing
+    // like the 2.9 km this stages — it is the threshold below which "he came
+    // back at his Base" would stop being a claim about respawn at all.
+    private _by = diag_tickTime + 30;
+    waitUntil { _unit distance2D _baseAt > 500 || { diag_tickTime > _by } };
+    if (_unit distance2D _baseAt <= 500) exitWith {
+        diag_log format ["CTI|FAIL class=assertion_failed respawn_probe_never_left_base away=%1 wanted=%2 grid=%3",
+            round (_unit distance2D _baseAt), 500, mapGridPosition _unit];
+        ["the_person_would_not_leave_his_base"] call _lost;
+    };
+
     _group selectLeader _unit;
 
     private _by = diag_tickTime + 30;
@@ -278,13 +307,30 @@
     };
     private _took = diag_tickTime - _diedAt;
 
-    // Ruling 6: not before the configured delay. Polling can only make this
-    // reading longer than the truth, never shorter, so an early respawn is a
-    // real one — which is what a second copy of the number quietly winning
-    // would look like.
-    if (_took < _delay) then {
-        diag_log format ["CTI|FAIL class=assertion_failed respawn_probe_came_back_early took=%1 delay=%2",
-            _took, _delay];
+    // Ruling 6: the timer is the configured one, asserted as a band around it
+    // rather than as `>= delay` exactly.
+    //
+    // The strict form was tried and it fails honestly: the 2026-08-05 run
+    // measured 29.788 s against a configured 30. The two clocks are not the same
+    // clock. This one starts at `diag_tickTime` sampled just before `setDamage`,
+    // and the engine's is a whole-second countdown (`playerRespawnTime` returns
+    // seconds remaining) started when it processes the death, so they can
+    // disagree by up to a tick in either direction. A second of tolerance is the
+    // measurement's own resolution, not a timeout being widened until it passes:
+    // it cannot hide the fault this assertion exists to catch, because the other
+    // authored copy of this number is 5, twenty-five seconds away, and the
+    // engine default is further still.
+    //
+    // The upper edge is there so "not before" does not quietly become "at any
+    // time later" — a respawn that took a minute would be a different bug and
+    // this says so rather than passing.
+    if (_took < (_delay - 1)) then {
+        diag_log format ["CTI|FAIL class=assertion_failed respawn_probe_came_back_early took=%1 delay=%2 floor=%3",
+            _took, _delay, _delay - 1];
+    };
+    if (_took > (_delay + 20)) then {
+        diag_log format ["CTI|FAIL class=assertion_failed respawn_probe_came_back_late took=%1 delay=%2 ceiling=%3",
+            _took, _delay, _delay + 20];
     };
 
     // Ruling 1: at his own Base, which is what the respawn markers resolve to.
