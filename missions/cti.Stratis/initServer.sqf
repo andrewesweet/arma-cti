@@ -88,7 +88,14 @@ if (isNil "cti_fnc_worldInit") then {
         // reading of the manifest cti_fnc_worldInit indexes.
         [] call cti_fnc_loadoutWatch;
 
-        // Something watches the seven loops above (#102). Started last, because a
+        // The free ride every Squad standing at its own Base is issued, sized to
+        // the Squad and costing nothing (#170, ADR-0059). Started after the world
+        // is built for cti_fnc_loadoutWatch's reason — "at its own Base" is a
+        // reading of the manifest cti_fnc_worldInit indexes — and it sweeps an
+        // empty Squad roster harmlessly until the first Purchase lands.
+        [] call cti_fnc_transportWatch;
+
+        // Something watches the eight loops above (#102). Started last, because a
         // watchdog registered before the loops it watches would sweep a register
         // that is still filling; started at all, because a scripting error in
         // any one of them kills that loop alone and used to do it in silence.

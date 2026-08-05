@@ -77,6 +77,9 @@ class CfgFunctions
             class loadoutMenu {};
             class loadoutWatch {};
             class loadoutSample {};
+            class transportCatalogue {};
+            class transportIssue {};
+            class transportWatch {};
             class placeOf {};
             class placePosition {};
             class placeRadius {};

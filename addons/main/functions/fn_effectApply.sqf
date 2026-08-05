@@ -338,6 +338,12 @@ private _group = createGroup [_side, true];
 (missionNamespace getVariable ["cti_squads", createHashMap]) set [_squadId, _group];
 _group setVariable ["cti_squad", _squadId, true];
 _group setVariable ["cti_squadType", _squadType, true];
+// And the strength it was bought at, which is the roster already in hand. The
+// same gesture as the type and for the same kind of reason: cti_fnc_transportIssue
+// sizes a Squad's free vehicle to what a Reinforce will bring it back to (#170),
+// and deriving that from the schema a second time is a second answer to a
+// question this line already knows (#159's invented 8 is what a guess costs).
+_group setVariable ["cti_squadSize", count _roster, true];
 
 diag_log format ["CTI|effect_applied effect=%1 side=%2 squad=%3 squad_type=%4 units=%5 base=%6",
     _name, _sideName, _squadId, _squadType, count units _group, _base get "id"];

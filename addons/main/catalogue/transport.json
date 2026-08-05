@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "fleet": [
+    {
+      "id": "offroad",
+      "display_name": "Offroad",
+      "seats": 6,
+      "vehicle": "C_Offroad_01_F"
+    },
+    {
+      "id": "open_truck",
+      "display_name": "Civilian Truck",
+      "seats": 17,
+      "vehicle": "C_Truck_02_transport_F"
+    }
+  ]
+}
