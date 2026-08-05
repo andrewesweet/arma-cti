@@ -303,6 +303,54 @@ def test_teardown_waits_for_the_windows_client_it_launched_to_be_gone(tmp_path: 
     assert int(asks.read_text()) >= 3, "teardown took the first answer and did not wait"
 
 
+# ------------------------------- the daemon readiness poll counts once (#192)
+def test_the_daemon_readiness_poll_writes_no_bash_error_while_it_waits(tmp_path: Path) -> None:
+    r"""`$(grep -c … || echo 0)` handed bash's arithmetic two lines (#192).
+
+    `grep -c` prints its count *and* exits 1 when it matches nothing, so the
+    fallback fired on top of a substitution that had already produced a count,
+    and the arithmetic saw `0\n0`:
+
+        ./spike/run.sh: line 787: ((: 0
+        0 >= daemon_starts: syntax error in expression
+
+    One of those per turn of the poll, into the run's own stdout, until the
+    daemon's readiness line appeared — an untyped bash error inside the harness,
+    which is what the failure-class table calls a harness bug.
+
+    Reproduces on every run rather than only slow ones: the first turn reads the
+    log before the first sleep and before the daemon has written anything to it.
+    Asserted on a green run, so the assertion is about the wait rather than
+    about a failure, and on `((:` — bash's own prefix for an arithmetic
+    diagnostic — so it covers the next such expression as well as this one.
+    """
+    records = run_with_lines(tmp_path, ["measurement thing=1"])
+    assert records["verdict"] == "PASS", records["_stderr"][-2000:]
+    assert "((:" not in records["_stderr"], records["_stderr"][-2000:]
+    assert "syntax error in expression" not in records["_stderr"]
+
+
+def test_a_daemon_log_the_harness_cannot_read_is_typed_as_such(tmp_path: Path) -> None:
+    """The failure the discarded `|| echo 0` was masking (#192, and #41's rule).
+
+    A `grep -c` that could not read the file is not a count of zero. Folded into
+    one by the fallback, an unreadable log left the poll spinning to its 90 s
+    deadline and reported as a daemon that never said it was ready — the right
+    class for the wrong stated reason, with the 90 s spent finding it out.
+
+    Staged by putting a directory where the log goes rather than by chmod, so
+    the test does not depend on the uid it runs as. Both greps on this machine's
+    PATH refuse it, and they disagree about how: GNU grep exits 2 having printed
+    a count, ugrep exits 1 having printed nothing. The harness has to reject
+    either, which is why it checks the status and the shape of what came back.
+    """
+    (tmp_path / "out" / "daemon.log").mkdir(parents=True)
+    records = run_with_lines(tmp_path, ["measurement thing=1"])
+    assert records["verdict"] == "FAIL"
+    assert records["failure_class"] == "infra_unavailable"
+    assert "could not read its own daemon log" in records["failure_detail"]
+
+
 # ------------------------------ the harness's own deadlines fail closed (#144)
 # A server that boots and then says nothing more. Every deadline test below needs
 # a wait that will not be satisfied, which is exactly what a wedged world looks

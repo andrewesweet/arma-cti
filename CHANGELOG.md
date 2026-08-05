@@ -104,6 +104,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   standing-Order margin as ever. The Commander's trace says when the floor held the number up:
   "1 wanted, 2 committed". #181.
 
+- **The daemon readiness poll stops writing bash errors into the run it is timing.** `grep -c`
+  prints its count *and* exits 1 when it matches nothing, so `$(grep -c … || echo 0)` put a second
+  line after a substitution that already held one and handed the arithmetic `0\n0` — an untyped
+  `syntax error in expression` on stderr for every turn of the poll before the daemon came up, in
+  the harness whose own failure-class table calls an untyped red a harness bug. The count now
+  lands in a variable before anything reads it, and the fallback it replaces no longer folds "the
+  log could not be read" into "the count is zero": that case is `infra_unavailable` naming the log
+  it could not read, rather than 90 seconds of spinning reported as a daemon that never said it
+  was ready. The restart path's counting is unchanged — it is what tells the second daemon's
+  readiness line from the first's. #192.
+
 - **An empty probes directory is a refusal, not a phantom corpus.** Without `nullglob`,
   `spike/regress.sh` read an empty `spike/probes/` as one probe named `*` and the "no probes"
   refusal never fired; it fires now. #162.

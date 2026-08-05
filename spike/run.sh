@@ -765,8 +765,14 @@ fi
 # The epoch is read back off the readiness line so the run records which process
 # answered which half.
 daemon_starts=0
+# Why the wait ended, when the words the caller has ready would be the wrong
+# ones. Both callers type every failure infra_unavailable, but "the daemon never
+# said it was ready" and "the harness could not read its own log" send a reader
+# somewhere different, and only this function knows which happened (#192).
+daemon_wait_detail=""
 start_daemon() {
     daemon_starts=$((daemon_starts + 1))
+    daemon_wait_detail=""
     (
         cti_client_lock_disown
         cd "$REPO" && exec uv run --quiet cti-daemon \
@@ -779,13 +785,36 @@ start_daemon() {
     # ready before it had bound anything.
     # Ninety seconds, in integer milliseconds off the same clock `wait_for` uses.
     # Any failure to compute or hold the deadline returns non-zero, and every
-    # caller of this function types that infra_unavailable (#144).
-    local deadline start t
+    # caller of this function types that infra_unavailable (#144). The ladder: 1
+    # is the deadline or the clock, 2 is the daemon dying first, 3 is the log
+    # this loop reads being unreadable — all three the same class, and only the
+    # third needs words the caller does not already have.
+    local deadline start t seen status
     start="$(now)" || return 1
     deadline=$((start + 90000))
     while :; do
-        (($(grep -c CTI_DAEMON_READY "$DAEMON_LOG" 2>/dev/null || echo 0) >= daemon_starts)) &&
-            return 0
+        # The count lands in a variable before anything reads it. `grep -c`
+        # prints its count *and* exits 1 when it matches nothing, so the
+        # `$(grep -c … || echo 0)` this replaces put a second line after a
+        # substitution that already held one, and handed bash's arithmetic
+        # `0\n0` — an untyped syntax error on stderr for every turn of this loop
+        # before the daemon was up, which is the failure-class table's own
+        # definition of a harness bug (#192).
+        seen="$(grep -c CTI_DAEMON_READY "$DAEMON_LOG" 2>/dev/null)"
+        status=$?
+        # Status 1 is "matched nothing", which is a real count of zero. Above it
+        # is grep failing to read the file at all — and a count that came back
+        # non-numeric is the same thing said differently, since which of the two
+        # a given grep chooses for an unreadable path varies. Neither is a zero,
+        # and the discarded `|| echo 0` made both into one: #41's shape, a check
+        # that could not run reported as a check that passed. Left that way, an
+        # unreadable log spun this loop out to its 90 s deadline and was then
+        # reported as a daemon that never said it was ready.
+        if ((status > 1)) || [[ ! "$seen" =~ ^[0-9]+$ ]]; then
+            daemon_wait_detail="the harness could not read its own daemon log"
+            return 3
+        fi
+        ((seen >= daemon_starts)) && return 0
         kill -0 "$daemon_pid" 2>/dev/null || return 2
         t="$(now)" || return 1
         ((t > deadline)) && return 1
@@ -794,7 +823,7 @@ start_daemon() {
 }
 
 if ! start_daemon; then
-    fail "infra_unavailable" "daemon did not report ready; see $DAEMON_LOG"
+    fail "infra_unavailable" "${daemon_wait_detail:-daemon did not report ready}; see $DAEMON_LOG"
 fi
 record "daemon_ready_secs" "$(since "$t_daemon")"
 record "daemon_epoch" "$(sed -n 's/.*CTI_DAEMON_READY .* epoch=//p' "$DAEMON_LOG" | tail -1)"
@@ -996,7 +1025,8 @@ EOF
         kill "$daemon_pid" 2>/dev/null || true
         wait "$daemon_pid" 2>/dev/null || true
         if ! start_daemon; then
-            fail "infra_unavailable" "daemon did not come back up; see $DAEMON_LOG"
+            fail "infra_unavailable" \
+                "${daemon_wait_detail:-daemon did not come back up}; see $DAEMON_LOG"
         fi
         record "daemon_restart_secs" "$(since "$t_restart")"
         record "daemon_epoch_after_restart" \
