@@ -370,6 +370,40 @@ watch-report *args:
 breaker *args:
     uv run python tools/breaker.py {{ args }}
 
+# Materialise the per-dispatch ledger from the OTel bus (#227, ADR-0061). No
+# Arma, no lock, no turn held open.
+#
+#   just ledger-sync                        a row per dispatch, one line each
+#   just ledger-sync sync --dispatch <id>   one dispatch
+#   just ledger-sync show --dispatch <id>   that dispatch's row in full
+#   just ledger-sync prune                  what the retention policy would delete
+#   just ledger-sync prune --apply          delete it
+#
+# The ledger is a **view**. The collector is the only writer; this reads what it
+# wrote, normalises three lanes that report the same fact three ways, types the
+# dispatch's end state in ADR-0061's vocabulary, joins it to its issue and to the
+# commit that landed, and writes one `ledger.json` beside the plan in
+# `~/.arma-cti/dispatches/<id>/`. It never appends to a telemetry file, and a
+# dispatch that put nothing on the bus gets a row saying so rather than a row
+# filled in from its plan.
+#
+# Source, and this is the part to read before believing a number: the durable
+# per-dispatch export at /var/log/claude-otel/dispatches/ is preferred, and it
+# exists only once the human has run the root script `just prereqs sudo-script`
+# generates (#230). Until then the source is the rotating capture at
+# /var/log/claude-otel/claude-telemetry.jsonl, which carries the same records and
+# drops them at 50 MB × 5 — so every row names its source, a degraded sync warns
+# on its last line, and a dispatch with no records read from a rotating source is
+# typed `unknown` rather than `infra_unavailable`, because absence there is a
+# fact about the view. With neither source present the sync refuses
+# `infra_unavailable` and is not a result.
+#
+# Retention: rows are kept indefinitely; the raw export is pruned after 30 days
+# and only where a row was materialised from that same durable file. Full policy
+# and reasoning in docs/telemetry-ledger.md.
+ledger-sync action="sync" *args:
+    uv run python tools/ledger.py {{ action }} {{ args }}
+
 # Print an issue's newest handoff comment, and nothing else (#210,
 # docs/agents/handoff.md). A continuation's first read.
 #
