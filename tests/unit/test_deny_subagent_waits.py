@@ -7,8 +7,10 @@ that an over-eager hook costs more than the rule it guards — is why the second
 and third get as many tests as the first:
 
 * the wait shapes are denied, in every spelling;
-* what is *not* the target passes: a bounded short sleep, a `timeout`-wrapped
-  gate command, a `for` loop, and any of them written as prose;
+* the known-long gates are denied (#204's decision 6), and the selections that
+  are not foreseeably long pass;
+* what is *not* the target passes: a bounded short sleep, a fast gate recipe, a
+  `for` loop, and any of them written as prose;
 * the gate. The orchestrator is on the one-hour TTL and is left entirely alone,
   and everything the hook cannot read is denied (#41, #94).
 """
@@ -169,6 +171,92 @@ def test_a_backgrounded_long_sleep_is_denied() -> None:
     assert hook.denial("sleep 600 &") is not None
 
 
+# --- the known-long gates are denied (#204, decision 6) ----------------------
+
+
+def test_the_unfiltered_full_corpus_is_denied() -> None:
+    """#204's decision 6: a gate with a measured p90 over five minutes."""
+    assert hook.denial("just regress") is not None
+
+
+def test_the_full_corpus_denial_names_the_detached_path() -> None:
+    reason = hook.denial("just regress")
+    assert reason is not None
+    assert "run_in_background" in reason
+    assert "just watch" in reason
+
+
+def test_the_full_corpus_is_denied_however_many_slots() -> None:
+    assert hook.denial("just regress --slots 3") is not None
+    assert hook.denial("just regress --slots 1") is not None
+    assert hook.denial("just regress --slots=3") is not None
+
+
+def test_a_queued_full_corpus_is_denied() -> None:
+    """`--wait` bounds the queue for a slot; it does not shorten the run."""
+    assert hook.denial("just regress --wait 600 --slots 2") is not None
+
+
+def test_the_full_corpus_behind_a_chain_is_denied() -> None:
+    assert hook.denial("git rebase origin/main && just regress") is not None
+
+
+def test_the_full_corpus_under_a_timeout_wrapper_is_denied() -> None:
+    """The wrapper bounds the wait; it does not move it out of the turn."""
+    assert hook.denial("timeout 1800 just regress --slots 3") is not None
+    assert hook.denial("timeout -k 30 1800 just regress") is not None
+
+
+def test_the_full_corpus_behind_a_just_flag_is_denied() -> None:
+    """`just -f <path> regress` is the same run; the recipe name is not the first word."""
+    assert hook.denial("just -f /repo/justfile -d /repo regress") is not None
+
+
+def test_the_corpus_runner_called_directly_is_denied() -> None:
+    """The recipe is a one-line wrapper over this script, so both spellings are the gate."""
+    assert hook.denial("./spike/regress.sh --slots 3") is not None
+
+
+def test_listing_the_selection_is_allowed() -> None:
+    """`--list` runs nothing, takes no lock and needs no Arma — stated in #204's ruling."""
+    assert hook.denial("just regress --list") is None
+    assert hook.denial("just regress --list --issues 28") is None
+    assert hook.denial("./spike/regress.sh --list") is None
+
+
+def test_a_named_selection_is_allowed() -> None:
+    """A named probe can finish in 25 s (`ai-reinforce`, #150/#191)."""
+    assert hook.denial("just regress ai-reinforce") is None
+    assert hook.denial("just regress --slots 3 ai-reinforce massed-assault") is None
+
+
+def test_an_issue_filtered_selection_is_allowed() -> None:
+    assert hook.denial("just regress --issues 28") is None
+    assert hook.denial("just regress --issues=28,150") is None
+
+
+def test_a_fast_gate_recipe_is_allowed() -> None:
+    """#197 took `just fast` from 6:32 to 1:02, which is what keeps it off the list."""
+    assert hook.denial("just fast") is None
+    assert hook.denial("just unit") is None
+    assert hook.denial("just check") is None
+
+
+def test_a_timeout_wrapped_fast_gate_is_allowed() -> None:
+    """The wrapper is a bound, not a wait, and the thing it bounds is under the TTL."""
+    assert hook.denial("timeout 900 just fast") is None
+
+
+def test_the_orchestrator_may_run_the_full_corpus(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The one-hour TTL: a ~20-minute pool in the orchestrator's turn is nearly free."""
+    assert call(monkeypatch, event("just regress", agent=None)) == 0
+
+
+def test_the_full_corpus_is_allowed_detached(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The remedy the denial names must itself pass."""
+    assert call(monkeypatch, event("just regress --slots 3", background=True)) == 0
+
+
 # --- what is not the target passes ------------------------------------------
 
 
@@ -189,13 +277,10 @@ def test_summed_operands_under_the_threshold_are_allowed() -> None:
     assert hook.denial("sleep 1m 30") is None
 
 
-def test_a_timeout_wrapped_gate_command_is_allowed() -> None:
-    """The wrapper is a bound, not a wait; a recipe's runtime is #204's half, not this hook's."""
-    assert hook.denial("timeout 900 just regress --slots 3") is None
-
-
-def test_a_long_gate_recipe_is_allowed() -> None:
-    assert hook.denial("just regress") is None
+def test_an_unmeasured_recipe_is_allowed() -> None:
+    """The list is measured p90s, not "recipes that might be slow": nothing else is on it."""
+    assert hook.denial("just build") is None
+    assert hook.denial("just probe spike/probes/contact-decay.sqf 300") is None
 
 
 def test_arming_the_detached_watcher_is_allowed() -> None:
@@ -346,6 +431,14 @@ def test_the_wiring_denies_a_long_subagent_sleep() -> None:
         completed = run_wiring(command, stdin=event("sleep 600"), path=os.environ["PATH"])
         assert completed.returncode == 2
         assert "just watch" in completed.stderr
+
+
+def test_the_wiring_denies_the_unfiltered_corpus_in_a_subagent() -> None:
+    """End to end through the wiring: the shape #204's decision 6 exists to stop."""
+    for command in wired_commands():
+        completed = run_wiring(command, stdin=event("just regress"), path=os.environ["PATH"])
+        assert completed.returncode == 2
+        assert "run_in_background" in completed.stderr
 
 
 def run_wiring(command: str, *, stdin: str, path: str) -> subprocess.CompletedProcess[str]:

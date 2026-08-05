@@ -301,6 +301,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **An agent that would wait more than five minutes now ends instead, and the machine stops it
+  from doing otherwise.** The rule that a turn does not block for five minutes was seat-blind; it
+  now splits, because the two seats do not have the same cache. A subagent requests the
+  five-minute TTL on 100% of its writes and a main session the one-hour one, measured across
+  18,712 turns, so a subagent facing a foreseeably long gate commits, dispatches it detached, arms
+  the watcher, writes a handoff and *stops* — being woken later is the single most expensive
+  pattern in the measurement, 201,326 input-equivalents against 24,554 for a successor starting
+  cold — while the orchestrator, whose cache read is still 302,183 after half an hour, holds the
+  wait. "Foreseeably long" is not left to the agent, which cannot see its own cache economics: it
+  is a measured list in `.claude/hooks/deny-subagent-waits.py`, which now denies the unfiltered
+  regression corpus in a subagent's foreground alongside the sleeps and poll loops it already
+  denied. The corpus measured a p90 of about 1,230 s over the runs recorded on 2026-08-04/05, with
+  its fastest unfiltered pool at 793 s. `just regress --list` runs nothing and passes, a named or
+  `--issues` selection passes, and the same run dispatched detached passes — the denial names each
+  of those. The exception list ships empty and grows only at a retro. No gate moved, no window
+  widened, no assertion changed: this changes when a result is read, not what it says. Human
+  ruling 2026-08-05 on #204, on #203's measurement; #200, #205.
+
 - **Two surfaces stopped introducing themselves as throwaway Phase-0 scaffolding, and the spike
   world's stay of execution is written on the world itself.** `spike/run.sh` called itself
   "throwaway measurement scaffolding" that "Phase 1 replaces", having since become the runner every
