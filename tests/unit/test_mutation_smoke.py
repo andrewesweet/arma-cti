@@ -321,7 +321,6 @@ def test_durations_are_summed_over_a_tests_three_phases() -> None:
     [
         ("test_dedupe.test_a_window_can_be_filled", "test_a_window_can_be_filled"),
         ("test_dedupe.Suite.test_a_method", "Suite::test_a_method"),
-        ("test_a_window_can_be_filled", "test_a_window_can_be_filled"),
     ],
 )
 def test_a_coverage_context_becomes_the_node_id_that_selects_that_test(
@@ -335,6 +334,20 @@ def test_a_coverage_context_becomes_the_node_id_that_selects_that_test(
         smoke_tool.node_id("tests/unit/test_dedupe.py", context)
         == f"tests/unit/test_dedupe.py::{node}"
     )
+
+
+@pytest.mark.parametrize(
+    "context",
+    [
+        # coverage's `test_function` context names *any* function so called, and
+        # hypothesis has one; every module using hypothesis recorded this.
+        "hypothesis.internal.conjecture.engine.ConjectureRunner.test_function",
+        "conftest.reply_to",
+        "test_a_window_can_be_filled",
+    ],
+)
+def test_a_context_that_is_not_a_test_of_this_module_has_no_node_id(context: str) -> None:
+    assert smoke_tool.node_id("tests/unit/test_dedupe.py", context) is None
 
 
 def test_a_parametrised_tests_cases_are_summed_into_its_cost() -> None:

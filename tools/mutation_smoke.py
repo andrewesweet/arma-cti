@@ -423,7 +423,7 @@ def _stems(test_module: str) -> list[str]:
     return ["_".join(parts[: len(parts) - dropped]) for dropped in range(len(parts))]
 
 
-def node_id(test_module: str, context: str) -> str:
+def node_id(test_module: str, context: str) -> str | None:
     """Turn one coverage context into the pytest node id that selects that test.
 
     They are not the same string and assuming they were is how the first draft of
@@ -437,12 +437,20 @@ def node_id(test_module: str, context: str) -> str:
     Parametrised tests carry no case in the coverage name, so the node id here
     selects every case of them, which is the safe direction: more tests get their
     chance to kill the mutant, never fewer.
+
+    None when the context is not a test of this module at all. `coverage`'s
+    `test_function` context names *any* function called `test_function`, and
+    `hypothesis.internal.conjecture.engine.ConjectureRunner.test_function` is one
+    — so every module using `hypothesis` recorded a context that turns into a node
+    id pytest cannot select, exits 4 on, and this gate then refuses over. Requiring
+    the module's own name as the first part is exact: `dynamic_context` always
+    writes `module.qualname`.
     """
     parts = [part for part in context.split(".") if part]
     stem = Path(test_module).stem
-    if parts and parts[0] == stem:
-        parts = parts[1:]
-    return f"{test_module}::{'::'.join(parts)}" if parts else test_module
+    if len(parts) < 2 or parts[0] != stem:  # noqa: PLR2004 — a module and a name is two parts
+        return None
+    return f"{test_module}::{'::'.join(parts[1:])}"
 
 
 class Reach(NamedTuple):
@@ -851,10 +859,13 @@ def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visibl
     if subject is None:
         return Verdict(test_module, None, 0, 0, 0, (), time.monotonic() - started, floor)
 
-    covered = {
-        line: tuple(node_id(test_module, context) for context in contexts)
-        for line, contexts in reach.lines[subject].items()
-    }
+    covered: dict[int, tuple[str, ...]] = {}
+    for line, contexts in reach.lines[subject].items():
+        nodes = tuple(
+            node for node in (node_id(test_module, context) for context in contexts) if node
+        )
+        if nodes:
+            covered[line] = nodes
     source = (root / subject).read_text(encoding="utf-8")
     planted = plant(source, path=subject, lines=frozenset(covered))
     chosen = sample(planted, seed=test_module, cap=cap)

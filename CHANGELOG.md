@@ -41,11 +41,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   landing gate, it is lane-blind: a z.ai or Codex landing meets the identical red without
   knowing the gate is there.
 
-  The subject is chosen by evidence rather than by the `test_x.py` → `x.py` naming convention:
-  one `coverage.py` pass with per-test contexts, and the subject is the product file with the
-  most lines executed *inside* a test. Import-time lines do not count, which is what leaves an
-  `assert True` module with no subject at all rather than the accidental owner of everything
-  the shared arrangement imported.
+  The subject each module is judged against comes from one `coverage.py` pass with per-test
+  contexts: the name where the name fits — `test_budget.py` → `budget.py`, and
+  `test_daemon_casualties.py` → `daemon.py` — and otherwise the file whose lines this module's
+  tests tell *apart* rather than merely load. Import-time lines never count, which is what
+  leaves an `assert True` module with no subject at all rather than the accidental owner of
+  everything the shared arrangement imported.
 
   There is one escape and it is a named list — `NO_PYTHON_SUBJECT` in
   `tools/mutation_smoke.py`, a module and its reason, in the diff — for the test modules whose

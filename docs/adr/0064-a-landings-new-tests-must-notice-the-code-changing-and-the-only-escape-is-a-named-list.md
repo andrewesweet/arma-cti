@@ -109,10 +109,12 @@ it later.
 
 ## Decision 4: the only escape is `NO_PYTHON_SUBJECT`, a named list with reasons
 
-Some test modules in this repo have no Python subject and are not vacuous:
-`tests/unit/test_bringup_guards.py` asserts on `spike/run.sh`, `spike/tier-lock.sh` and the
-justfile. Mutating Python has nothing to say about them, and reding them would be #137/#186's
-false red on the tree the gate exists to protect.
+Some test modules in this repo have no Python subject and are not vacuous. Two, found by the
+corpus sweep rather than guessed at: `tests/unit/test_bringup_guards.py` asserts on
+`spike/run.sh`, `spike/tier-lock.sh` and the justfile — #68's guards, driven as shell — and
+`tests/unit/test_client_lock.py` does the same for #119's client lock. Mutating Python has
+nothing to say about either, and reding them would be #137/#186's false red on the tree the
+gate exists to protect.
 
 So there is an escape, and it is deliberately the *only* one. There is **no** flag that lowers
 the floor in `just fast`, **no** marker a test file can carry to excuse itself, and **no**
