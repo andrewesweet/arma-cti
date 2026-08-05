@@ -923,8 +923,8 @@ start_starvation_watch() {
 # tail: `campaign-end` is ~390 s of a ~1,550 s corpus, so a pool that starts it
 # late idles every other slot waiting for it. Its 750 s window puts it first.
 #
-# The Windows-host probes are not in that schedule. `client-port` and
-# `human-commander` each drive the headed client on the Windows host, of which
+# The Windows-host probes are not in that schedule. Every probe declaring
+# `CTI_WINDOWS_CLIENT=1` drives the headed client on the Windows host, of which
 # there is one, and the host guard that protects the human is ownership-blind on
 # purpose (#119) — so a second slot starting a probe while one slot's client is
 # up would read that client as a play session and stop the corpus. They run
