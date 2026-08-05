@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A `validated ×N` marker can no longer narrate a use its own count does not reach.** The count
+  has lagged what its marker narrates twice: `docs/agents/recovery.md`'s ninth use landed with the
+  count still ×8, and convention-lands' #131 exemplar with it still ×3 — that one rode three
+  retros' status lines before anyone read the file. The retro skill's same-edit clause pre-priced
+  the second violation as escalating to a mechanical check, and `just check` now runs
+  `tools/check_validated_markers.py`: it reads the numbered uses in the four `> Status:` headers
+  and reds when a header names a use its count does not reach. CLAUDE.md's five exemplar
+  parentheticals are out of scope with the reason at the checker — no rule derived from the prose
+  counts them, and every candidate miscounts at least two of the five in opposite directions. The
+  list-format convention that would make them countable is a proposal on #186, for the human. #186.
+
 - **A dead Commander watches but cannot act.** Under the human's rulings on #169 (ADR-0052), a
   Command issued from a machine whose player unit is dead is refused at the Command Port's door
   with a new judgement, `caller_dead`: "you are dead ... but issues no Command until he is back on

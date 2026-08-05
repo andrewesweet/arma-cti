@@ -34,6 +34,11 @@ extend-exclude = ["docs"]
 
 [tool.ruff.lint]
 select = ["ALL"]
+# `×` (U+00D7) is the character the process docs spell `validated ×N` with, so
+# the gate over those markers has to spell it too, in patterns and in the
+# findings it prints (#186). Confusable with `x` by design — that is why the
+# docs chose it — and RUF001-3 would otherwise fire thirty times in one file.
+allowed-confusables = ["×"]
 ignore = [
   "COM812", # trailing-comma rule fights the formatter
   "CPY001", # personal project, no copyright-header convention
