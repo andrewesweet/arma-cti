@@ -77,20 +77,12 @@ if (isNil "cti_fnc_worldInit") then {
         // was carrying it.
         [] call cti_fnc_orderEnforce;
 
-        // And when that leader walks back to his Squad, he gets it back
-        // (ADR-0052 ruling 4). Started beside the Order sweep because the two
-        // are the same event seen from either end: one keeps the Squad doing
-        // what it was told while the engine's AI leads it, the other ends that
-        // interregnum. Nothing starts it on a client — the whole point is that
-        // no new call crosses the wire.
-        [] call cti_fnc_leaderReclaim;
-
         // A Squad under an Assault Order brings the enemy HQ down, and an HQ
         // that falls is said so once (#33). Started after the HQ check above,
         // because the sweep's whole subject is those structures.
         [] call cti_fnc_baseAssault;
 
-        // Something watches the seven loops above (#102). Started last, because a
+        // Something watches the six loops above (#102). Started last, because a
         // watchdog registered before the loops it watches would sweep a register
         // that is still filling; started at all, because a scripting error in
         // any one of them kills that loop alone and used to do it in silence.

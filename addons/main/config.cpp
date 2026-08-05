@@ -83,7 +83,6 @@ class CfgFunctions
             class objectiveOwnerSet {};
             class orderApply {};
             class orderEnforce {};
-            class leaderReclaim {};
             class baseAssault {};
             class campaignEnd {};
         };
