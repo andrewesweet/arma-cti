@@ -14,8 +14,22 @@ class Header
 briefing = 0;
 debriefing = 0;
 
+// Death is a timer at your own Base (ADR-0052, ruling 1): no Funds cost and no
+// location choice, which is what `respawnDialog = 0` denies. The location can be
+// total because Decapitation means a live Campaign always has a Base to send him
+// to — losing it *is* losing. The per-side `respawn_west`/`respawn_east` markers
+// in mission.sqm are where "his own Base" resolves to, and they are held to the
+// manifest's Base positions by `tests/unit/test_respawn_markers.py` rather than
+// by anyone remembering to move both.
 respawn = "BASE";
-respawnDelay = 5;
+// ---- playtest-tuned placeholder (ADR-0020) --------------------------------
+// The death window, 30 s (ADR-0052, ruling 6). Moving this number is tuning and
+// needs no decision reopened; only a second *kind* of respawn location — at the
+// Squad, at a captured Objective — would be a new decision to take. Read back
+// rather than copied by anything that checks it: `spike/probes/respawn-base.sqf`
+// asks `getMissionConfigValue "respawnDelay"` so there is no second copy of the
+// number to drift.
+respawnDelay = 30;
 respawnDialog = 0;
 disabledAI = 1;
 joinUnassigned = 1;

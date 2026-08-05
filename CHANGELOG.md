@@ -93,6 +93,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Dying costs 30 seconds, at your own Base.** The played mission's respawn timer moves from 5 s
+  to 30 s (ADR-0052, ruling 6) — a playtest-tuned placeholder in ADR-0020's sense, documented at
+  the line that sets it, so play can move the number without reopening the decision. Where you
+  come back was already settled and unchanged: your own Base, no Funds cost, no location choice.
+  The phase-0 spike world keeps its 5 s; it is not the mission anyone plays. #189.
+
 - **The pool's merge is decided in Python, not bash.** The regression runner's merge — the
   dead-slot rule, client-lock-blocked typing, the mem-stop overlay, worst-class ranking — and the
   `pool.json` it writes were hand-rolled JSON on both sides: a `printf` writer, an
