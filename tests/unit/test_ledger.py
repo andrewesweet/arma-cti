@@ -1,6 +1,6 @@
 """The per-dispatch ledger: a materialised view over the OTel bus (#227, ADR-0061).
 
-Four claims, and the arrangement of every test is chosen to make one of them falsifiable.
+Five claims, and the arrangement of every test is chosen to make one of them falsifiable.
 
 **It is a view, not a writer.** The collector owns the records. So the tests assert on
 what the ledger does *not* touch as hard as on what it produces: the rotating capture's
@@ -22,6 +22,13 @@ gets a wrong number rather than an error.
 
 **Content logging is off, and the view is where it could come back on.** One test stages
 a record carrying prompt text and asserts no byte of it reaches `ledger.json`.
+
+**Its spend column is fraction-of-cap, and every way that column could lie is staged.**
+The list-price figure is anti-correlated with plan cost by three orders of magnitude
+(#218), so the tests assert on what the row must *not* say as much as on the arithmetic:
+a foreign lane is never booked a Claude cost of zero, an unknown lane is never defaulted
+onto Claude, the meter's absent half is `null` and never `0.0`, and no key called
+`cost_usd` survives anywhere in the row.
 """
 
 from __future__ import annotations
@@ -168,8 +175,12 @@ def stage_record(
     issue: int = 227,
     base_sha: str = "0" * 40,
     result: dict[str, Any] | None = None,
+    **plan: str,
 ) -> Path:
-    """Lay down a dispatch record the way `just dispatch` leaves one."""
+    """Lay down a dispatch record the way `just dispatch` leaves one.
+
+    Any further keyword overrides a field of the plan — `lane="zai"` for a foreign one.
+    """
     record = root / dispatch_id
     record.mkdir(parents=True, exist_ok=True)
     (record / "dispatch.json").write_text(
@@ -181,6 +192,7 @@ def stage_record(
                 "seat": "implementer",
                 "issue": issue,
                 "base_sha": base_sha,
+                **plan,
             }
         ),
         encoding="utf-8",
@@ -233,7 +245,7 @@ def test_claude_code_token_datapoints_total_by_their_type_attribute() -> None:
     usage = ledger.normalise_usage(items)
     assert (usage.input_tokens, usage.output_tokens) == (140, 7)
     assert (usage.cache_read_tokens, usage.cache_creation_tokens) == (20000, 3000)
-    assert (usage.cost_usd, usage.priced) == (0.25, True)
+    assert (usage.list_price_usd, usage.list_priced) == (0.25, True)
 
 
 def test_a_cumulative_counter_contributes_its_maximum_and_not_its_sum() -> None:
@@ -292,12 +304,12 @@ def test_an_ai_sdk_span_carrying_both_spellings_is_counted_once() -> None:
     assert (usage.input_tokens, usage.output_tokens, usage.cache_read_tokens) == (1200, 340, 900)
 
 
-def test_a_lane_that_reports_tokens_and_no_cost_is_unpriced_rather_than_free() -> None:
+def test_a_lane_that_reports_tokens_and_no_list_price_is_unpriced_rather_than_free() -> None:
     # opencode reports tokens and never money. A zero here would read as a free dispatch.
     items = items_from([span_batch("RunInteractive.turn", {"gen_ai.usage.input_tokens": 500})])
     usage = ledger.normalise_usage(items)
-    assert (usage.priced, usage.cost_usd) == (False, 0.0)
-    assert usage.document()["cost_usd"] is None
+    assert (usage.list_priced, usage.list_price_usd) == (False, 0.0)
+    assert usage.document()["list_price_usd"] is None
 
 
 def test_a_token_type_the_reader_does_not_know_is_reported_not_dropped() -> None:
@@ -314,6 +326,105 @@ def test_another_dispatch_s_records_in_the_same_file_are_not_read() -> None:
         metric_batch("claude_code.token.usage", [({"type": "input"}, 500)], dispatch_id=None),
     ]
     assert ledger.normalise_usage(items_from(batches)).input_tokens == 10
+
+
+# ------------------------------------------------------------- the spend column
+#
+# ADR-0061 Decision 1 optimises Claude spend, and #220 settles what that number is:
+# percentage points of the binding plan window, estimated from output tokens over a
+# measured constant. Every test below is arranged so that one way of getting that wrong —
+# ranking on list price, defaulting a foreign lane to zero, reporting an estimator nobody
+# can check, or reading a silent meter as free — produces a red rather than a plausible
+# number.
+
+
+def test_a_claude_dispatch_is_priced_in_points_of_both_windows_from_its_output_tokens() -> None:
+    # One five-hour point is 30,209 output tokens and one seven-day point is 181,253
+    # (#218's control arm: 6 and 1 points on the same 181,253 tokens).
+    windows = ledger.cap_fraction("claude-native", ledger.Usage(output_tokens=30209)).document()[
+        "windows"
+    ]
+    assert windows["five_hour"]["est"] == pytest.approx(1.0)
+    assert windows["seven_day"]["est"] == pytest.approx(30209 / 181253)
+    assert (windows["five_hour"]["tokens_per_point"], windows["seven_day"]["tokens_per_point"]) == (
+        30209,
+        181253,
+    )
+
+
+def test_the_estimator_reads_output_tokens_and_nothing_else() -> None:
+    # Cache reads are 97% of this project's raw tokens and measured at under 1/450th the
+    # per-token plan weight. A dispatch that read a hundred million of them and wrote
+    # nothing costs the plan nothing, and `excludes` is where that assumption is named.
+    priced = ledger.cap_fraction(
+        "claude-native",
+        ledger.Usage(input_tokens=4_000_000, cache_read_tokens=100_000_000, output_tokens=0),
+    ).document()
+    assert priced["windows"]["five_hour"]["est"] == 0.0
+    assert (priced["basis"], priced["excludes"]) == ("output_tokens", ["cache_read"])
+
+
+def test_both_halves_are_recorded_per_window_and_the_meter_half_is_absent_not_zero() -> None:
+    # Recording only `observed` gives a ledger of zeroes — a single dispatch is two to
+    # three orders of magnitude below the meter's integer resolution. Recording only
+    # `est` gives a ledger nobody can check. And a 0.0 here would assert that the meter
+    # said "free", which is #218's third confound: meter silence is not evidence of free.
+    document = ledger.cap_fraction("claude-native", ledger.Usage(output_tokens=90627)).document()
+    for window in ("five_hour", "seven_day"):
+        assert set(document["windows"][window]) >= {"est", "observed"}
+        assert document["windows"][window]["observed"] is None
+    assert "quota feed" in document["observed_reason"]
+
+
+def test_a_foreign_lane_is_priced_against_its_own_pool_and_never_claude_at_zero() -> None:
+    # The counters on a z.ai row are z.ai's tokens. Dividing them by a Claude calibration
+    # would charge the wrong pool; booking the row a Claude cost of zero would make
+    # routing work off Claude look free by construction. Neither happens: the pool is
+    # z.ai's, no Claude calibration is applied, and the estimator says why it is absent.
+    document = ledger.cap_fraction("zai", ledger.Usage(output_tokens=50_000)).document()
+    assert document["pool"] == "zai"
+    assert document["calibration_id"] is None
+    assert [window["est"] for window in document["windows"].values()] == [None, None]
+    assert "prompt counts" in document["est_reason"]
+    assert all(half is None for window in document["windows"].values() for half in window.values())
+
+
+def test_an_unrecognised_lane_is_unpriced_rather_than_defaulted_onto_claude() -> None:
+    for lane in (None, "", "codex"):
+        document = ledger.cap_fraction(lane, ledger.Usage(output_tokens=30209)).document()
+        assert (document["pool"], document["windows"], document["calibration_id"]) == (
+            None,
+            {},
+            None,
+        )
+
+
+def test_the_row_carries_every_input_the_estimator_ran_on() -> None:
+    # A recalibration must re-derive history rather than invalidate it: without the
+    # calibration id, the first plan change silently rewrites every past number.
+    document = ledger.cap_fraction("claude-native", ledger.Usage(output_tokens=1)).document()
+    assert document["calibration_id"] == "claude/218-2026-08-05"
+    assert (document["unit"], document["basis"]) == ("percentage_points", "output_tokens")
+    assert document["windows"]["five_hour"]["tokens_per_point"] == 30209
+
+
+def test_the_binding_window_is_the_meters_answer_and_is_never_guessed() -> None:
+    # Scarcity routing, when it replaces Decision 1's greedy rule, routes on the window
+    # nearest exhaustion. Which one that is depends on accumulated consumption, not on
+    # this dispatch's share, so a view with no meter names none.
+    document = ledger.cap_fraction("claude-native", ledger.Usage(output_tokens=30209)).document()
+    assert document["binding_window"] is None
+    assert "guessing" in document["binding_reason"]
+
+
+def test_the_orchestrators_own_turns_are_recorded_as_missing_rather_than_zero() -> None:
+    # An in-session subagent shares its parent's resource block, so the turns that
+    # composed a briefing and read its report reach no row. Under-attribution stated is
+    # the difference between an incomplete number and a wrong one.
+    for lane in ("claude-native", "zai"):
+        document = ledger.cap_fraction(lane, ledger.Usage(output_tokens=10)).document()
+        assert document["attribution"] == "dispatch_only"
+        assert "under-attribution" in document["attribution_note"]
 
 
 # --------------------------------------------------------------- source preference
@@ -618,10 +729,56 @@ def test_a_dispatched_run_produces_one_durable_record_keyed_by_its_dispatch_id(
         "degraded": False,
     }
     assert row["records"] == {"total": 4, "metrics": 3, "logs": 1, "spans": 0}
-    assert (row["usage"]["input_tokens"], row["usage"]["cost_usd"]) == (120, 0.5)
+    assert (row["usage"]["input_tokens"], row["usage"]["list_price_usd"]) == (120, 0.5)
+    assert row["cap_fraction"]["pool"] == "claude"
+    assert row["cap_fraction"]["windows"]["five_hour"]["est"] == pytest.approx(8 / 30209)
     assert row["end_state"]["class"] == "ok"
     assert (row["gate"]["outcome"], row["gate"]["landed"]["sha"]) == ("landed", landed_sha)
     assert any(line.startswith("ok=synced rows=1 degraded=0") for line in lines)
+
+
+def test_no_row_calls_anything_cost_usd_and_the_summary_line_carries_both_halves(
+    tmp_path: Path,
+) -> None:
+    # The one number ADR-0061 Decision 1 optimises must resolve to fraction-of-cap. A key
+    # called `cost_usd` is how it would resolve to list price instead — #218 modelled
+    # $849.76 for a run that moved the plan meter zero — so the name is gone from the row
+    # and the summary line prices in points, both halves, list price nowhere.
+    record = stage_record(tmp_path / "dispatches", result={"returncode": 0})
+    write_jsonl(
+        tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl",
+        [
+            metric_batch("claude_code.token.usage", [({"type": "output"}, 30209)]),
+            metric_batch("claude_code.cost.usage", [({"model": "opus"}, 849.76)]),
+        ],
+    )
+    lines, _ = ledger.sync(options(tmp_path), NOW)
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+
+    assert "cost_usd" not in json.dumps(row).replace("list_price_usd", "")
+    assert row["usage"]["list_price_usd"] == 849.76
+    summary = next(line for line in lines if line.startswith("dispatch="))
+    assert "cap5h_est=1.000000" in summary
+    assert "cap5h_obs=none" in summary
+    assert "849" not in summary
+
+
+def test_a_foreign_lanes_row_takes_its_pool_from_the_plan_and_not_from_the_counters(
+    tmp_path: Path,
+) -> None:
+    # The counters look identical whichever lane emitted them — the z.ai lane runs the
+    # same binary against a different endpoint — so the pool has to come from the plan.
+    # Reading it off the records would price z.ai's tokens against Claude's calibration.
+    record = stage_record(tmp_path / "dispatches", lane="zai", result={"returncode": 0})
+    write_jsonl(
+        tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl",
+        [metric_batch("claude_code.token.usage", [({"type": "output"}, 30209)])],
+    )
+    ledger.sync(options(tmp_path), NOW)
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert (row["lane"], row["cap_fraction"]["pool"]) == ("zai", "zai")
+    assert row["cap_fraction"]["windows"]["five_hour"]["est"] is None
+    assert row["usage"]["output_tokens"] == 30209
 
 
 def test_the_row_is_derived_and_never_synthesised_from_the_plan(tmp_path: Path) -> None:
@@ -633,7 +790,7 @@ def test_the_row_is_derived_and_never_synthesised_from_the_plan(tmp_path: Path) 
     row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
     assert row["records"]["total"] == 0
     assert row["usage"]["input_tokens"] == 0
-    assert row["usage"]["cost_usd"] is None
+    assert row["usage"]["list_price_usd"] is None
     assert row["end_state"]["class"] == "infra_unavailable"
 
 

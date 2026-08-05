@@ -58,7 +58,11 @@ schema, materialised_at, dispatch_id, lane, profile, seat, issue, base_sha
 source   { kind, path, degraded }
 records  { total, metrics, logs, spans }
 usage    { input_tokens, output_tokens, cache_read_tokens, cache_creation_tokens,
-           cost_usd, priced, unclassified }
+           list_price_usd, list_priced, list_price_note, unclassified }
+cap_fraction { pool, unit, basis, excludes, attribution, attribution_note,
+               calibration_id, est_reason, observed_reason,
+               binding_window, binding_reason,
+               windows { <window> { est, observed, tokens_per_point } } }
 end_state{ class, reason, evidence }
 gate     { outcome, landed { sha, commits, reason }, returncode, started_at, ended_at }
 ```
@@ -69,14 +73,15 @@ Three lanes report the same fact three ways, and each has a way to be read wrong
 without erroring:
 
 - **Claude Code** — `claude_code.token.usage` datapoints keyed by a `type` attribute
-  (`input`, `output`, `cacheRead`, `cacheCreation`), plus `claude_code.cost.usage` in USD.
+  (`input`, `output`, `cacheRead`, `cacheCreation`), plus `claude_code.cost.usage`, which
+  the row carries as `list_price_usd` and nothing ranks on (see below).
 - **opencode** — AI SDK spans carrying `gen_ai.usage.input_tokens` / `output_tokens`,
   *and its own `ai.usage.inputTokens` copy of the same number on the same span*. The
   reader takes the first key present per bucket; adding both would double every opencode
   dispatch. It is rename-tolerant across the `gen_ai` vintages (`prompt_tokens` /
   `completion_tokens`) because the lanes disagree about which one they emit. opencode
-  reports no cost, so those rows are `priced: false` and `cost_usd: null` — never a zero,
-  which would read as a free dispatch.
+  reports no list price, so those rows are `list_priced: false` and `list_price_usd:
+  null` — never a zero, which would read as a free dispatch.
 - **Codex** — `codex.turn.token_usage`. Its aggregation temporality is unverified, which
   is why the reader believes each metric's own `aggregationTemporality`: delta datapoints
   sum, a cumulative series contributes its maximum. Summing a cumulative counter would
@@ -84,6 +89,75 @@ without erroring:
 
 A metric or token type the reader does not recognise lands in `unclassified` with its
 name. Nothing is silently dropped.
+
+### What a dispatch cost: `cap_fraction`, not dollars
+
+ADR-0061 Decision 1 optimises Claude spend, and on a subscription with no bill the
+quantity that means "how close is this to the wall we hit" is **percentage points of a
+plan window's cap**, per dispatch. It is also the only unit that means the same thing on
+a pool metering input-equivalents, one metering credits and one metering prompt counts,
+which is why it is the row's spend column rather than tokens. The metric, its calibration
+and its prohibitions are #220's: `docs/research/token-efficiency-plan-currency.md` §6.
+
+**The Claude estimator is output tokens over a measured constant.** One five-hour point
+is 30,209 output tokens; one seven-day point is 181,253 (#218's control arm moved the two
+meters 6 and 1 on the same 181,253 tokens). Input volume, context size and cache
+behaviour do not enter it — they measure at under 1/450th the per-token weight, and the
+one residual that could change that is named in `excludes: ["cache_read"]` rather than
+assumed away.
+
+**Two halves per window, never one.** `est` is the estimator from the dispatch's own
+counters and is the per-dispatch number everything else here is for. `observed` is the
+meter delta, and it is what makes `est` falsifiable in aggregate — recording only `est`
+gives a ledger nobody can check, and recording only `observed` gives a ledger of zeroes,
+because one point is several median agent runs and a single dispatch sits two to three
+orders of magnitude under the instrument.
+
+**`observed` is `null` today, with the reason in the row.** The quota feed is a
+status-line spool read by #226's breaker, not an OTel record carrying `cti.dispatch_id`,
+so no meter delta reaches this view. Absent, not zero: #218's third confound was 28.6 M
+tokens moving the meter zero on a verified poll, so **meter silence is never evidence of
+a free dispatch**, and a `0.0` in that field would assert exactly that. Filling the half
+in would also mean this view inventing #226's record shape for it.
+
+**`binding_window` is `null` for the same reason.** The binding window is whichever is
+nearest exhaustion — a fact about accumulated consumption, which only the meter knows.
+Both windows are estimated and recorded; none is named as binding until something can say
+so. Scarcity routing, when it replaces Decision 1's greedy rule, will route on that one.
+
+**The pool comes from the plan's lane, never from the counters.** The z.ai lane runs the
+same binary against a different endpoint, so its records look identical; reading the pool
+off them would price z.ai's tokens against Claude's calibration. A lane with no known
+pool, and a pool with no measured estimator (z.ai meters prompt counts with a time-of-day
+multiplier and publishes no machine-readable state), both get a typed reason and no
+number. Neither is ever booked Claude at zero — that zero is precisely what would make
+routing work off Claude look free by construction.
+
+**`attribution: "dispatch_only"` is a stated under-attribution.** The orchestrator's own
+Claude turns — composing the briefing, reading the report, quoting the verdict — are
+Claude output, and they share their parent's resource block and carry no
+`cti.dispatch_id`, so no row can hold them. Every row is therefore incomplete by a known
+term rather than complete; on a foreign lane that missing term is the one that decides
+whether the routing saved anything.
+
+**`calibration_id`** (`claude/218-2026-08-05`) and the per-window `tokens_per_point` are
+carried so a re-measured rate re-prices history rather than invalidating it. Without it
+the first plan change silently rewrites every past number in the ledger.
+
+**`est` is stored unrounded.** Its accuracy is the calibration's — ±8% on the five-hour
+weight — not the ledger's; rounding to some shorter decimal would both assert a precision
+the view does not have and turn a small dispatch's cost into `0.0`.
+
+### What `list_price_usd` is, and what it must not be used for
+
+`claude_code.cost.usage` reproduces Anthropic's API list pricing exactly — #218 recovered
+the whole rate card from it — and it modelled **$849.76** for a run that moved the plan
+meter zero. It is a token-flow number wearing a currency symbol, anti-correlated with
+plan cost by roughly three orders of magnitude. It survives in the row under its own name
+with `list_price_note` beside it, because it is a useful independent check on the token
+counters, and it is **not a decision input**: nothing ranks a profile, a seat, a lane or a
+routing choice on it. The summary line does not print it at all. No key called `cost_usd`
+exists anywhere in the row, and a test asserts that.
 
 ### End-state typing
 
@@ -164,9 +238,15 @@ output blob, which the durability ruling keeps as a file — not the rows.
   split it and no row can describe it. The only discriminators for those are the
   record-level `agent.name` / `agent_type` attributes, which cannot drive the export.
 - **`ccusage` is not installed on this box** (`which ccusage` finds nothing). It reads all
-  three lanes' session files and would be an independent cross-check on the ledger's cost
-  arithmetic — the part most likely to be quietly wrong, since opencode reports tokens and
-  no money, so the ledger must price them itself. Until it is installed, that arithmetic
-  has no second opinion. This is a gap, not a plan; see `docs/research/agent-observability-and-cost-ledgers.md`.
-- **A dispatch's cost on a foreign lane is unpriced**, not zero. Fraction-of-cap per pool
-  (ADR-0061 Decision 1) is read from the breaker's quota feed (#226), not from here.
+  three lanes' session files and would be an independent cross-check on the token counters
+  the whole spend column stands on — every `cap_fraction` estimate is `output_tokens`
+  divided by a constant, so a wrong output count is a wrong cost with nothing to catch it.
+  Until it is installed, that arithmetic has no second opinion. This is a gap, not a plan;
+  see `docs/research/agent-observability-and-cost-ledgers.md`.
+- **The observed half of every `cap_fraction` is missing**, which leaves the estimator
+  unfalsified rather than wrong. Closing it needs a meter reading at each end of a
+  dispatch, keyed to it, on the bus — #226's quota feed and #230's collector config, not
+  this view's to write.
+- **A foreign lane's spend is unestimated**, not zero. z.ai meters prompt counts against a
+  time-of-day multiplier and publishes no machine-readable state, so its estimator waits
+  on #226. Codex is not yet a lane here at all.

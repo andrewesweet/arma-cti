@@ -98,8 +98,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   same span (first key per bucket wins; adding both would double every opencode
   dispatch), Codex's `codex.turn.token_usage` read at whichever temporality the metric
   declares, because summing a cumulative counter multiplies a dispatch's spend by how
-  often the collector scraped it. A lane that reports tokens and no money is `priced:
-  false`, not a free dispatch. **End-state typing** in ADR-0061's vocabulary from
+  often the collector scraped it. A lane that reports tokens and no list price is
+  `list_priced: false`, not a free dispatch. **End-state typing** in ADR-0061's
+  vocabulary from
   provider records only — `provider_refused` from a refusal event, `quota_exhausted` from
   a rate-limited error carrying whatever `reset_at` the record held *verbatim*, and
   `infra_unavailable` for a dispatch that reached no provider at all; what a closed lane
@@ -119,6 +120,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   kept indefinitely, the raw export pruned after 30 days and only where a row was
   materialised from that same durable file, `--apply` required to delete. Full policy in
   `docs/telemetry-ledger.md`. #227.
+
+- **The ledger prices a dispatch in the currency the plan charges, not in dollars it
+  never bills.** ADR-0061's first decision optimises Claude spend, and the row's only
+  spend-shaped number was Claude Code's client-side cost figure — which is API list
+  pricing, recovered rate card and all by #218, and modelled $849.76 for a run that moved
+  the plan meter zero. Every row now carries `cap_fraction`: percentage points of a
+  pool's window cap, per #220's definition. The Claude estimator is output tokens over a
+  measured constant — one five-hour point is 30,209 output tokens, one seven-day point
+  181,253 — with the calibration id, the per-window rate and `excludes: ["cache_read"]`
+  carried on the row, so a re-measured rate re-prices history rather than invalidating
+  it. Both windows are estimated and neither is named binding, because which one binds is
+  the meter's answer and no meter reaches this view. Every claim it cannot make is typed
+  rather than defaulted to a number: the observed half is `null` with its reason, since
+  the quota feed is a status-line spool and not a record on the bus, and a `0.0` there
+  would say the meter reported free — the exact inference #218's third confound
+  disproved. A lane's pool comes from the plan and never from the counters, so a z.ai
+  dispatch is priced against z.ai's pool, an unrecognised lane is priced against none,
+  and neither is ever booked Claude at zero, which is the entry that would make routing
+  work off Claude look free by construction. `attribution: "dispatch_only"` states the
+  remaining gap in the open: the orchestrator's own turns share their parent's resource
+  block and reach no row, so every row is short by a known term rather than complete.
+  The list-price figure survives only as `usage.list_price_usd`, labelled in the row,
+  absent from the summary line and ranked on by nothing. #232.
 
 - **A logical subagent is dispatched onto a named lane, and the lane's environment goes
   nowhere else.** `just dispatch --lane claude-native --profile opus-high --seat

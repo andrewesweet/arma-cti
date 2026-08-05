@@ -28,6 +28,14 @@ second writer. Everything here follows from those two sentences:
   built from an allowlist of non-free-text attribute keys. No record body, no attribute
   value outside that allowlist, ever reaches `ledger.json` — so a capture that one day
   carried prompt text would still not put it in the ledger.
+- **The row's spend column is fraction-of-cap, and the currency figure is not spend.**
+  ADR-0061 Decision 1 optimises Claude spend, and on a subscription with no bill the
+  quantity that means "how close is this to the wall we hit" is percentage points of a
+  plan window, never dollars. `claude_code.cost.usage` reproduces API list pricing
+  exactly — #218 recovered the whole rate card from it, and it modelled $849.76 for a run
+  that moved the plan meter zero — so it survives here only under the name
+  `usage.list_price_usd`, and nothing ranks decisions on it. `cap_fraction` is the
+  ledgerable number, per #220's §6: see the plan-currency section below.
 
 Three readings the view performs, none of which the bus can do for itself:
 
@@ -92,7 +100,7 @@ if TYPE_CHECKING:
 
 EXIT_REFUSED: Final = 1
 
-SCHEMA: Final = "cti.ledger/1"
+SCHEMA: Final = "cti.ledger/2"
 
 DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 LEDGER_EXPORT: Final = Path("/var/log/claude-otel/dispatches")
@@ -134,7 +142,10 @@ TOKEN_BUCKETS: Final = {
 }
 
 TOKEN_METRICS: Final = ("claude_code.token.usage", "codex.turn.token_usage")
-COST_METRICS: Final = ("claude_code.cost.usage",)
+
+# Claude Code's client-side currency figure. It is read, and it is named `list_price_usd`
+# everywhere it appears, because it is API list pricing and this account has no bill.
+LIST_PRICE_METRICS: Final = ("claude_code.cost.usage",)
 
 # Span attribute keys per bucket, in preference order. The AI SDK puts *both*
 # `gen_ai.usage.input_tokens` and `ai.usage.inputTokens` on one span with the same
@@ -161,6 +172,81 @@ ERROR_EVENTS: Final = ("claude_code.api_error", "api_error")
 # its error-type attribute, never against free text.
 RATE_LIMIT_STATUS: Final = ("429", "529")
 RATE_LIMIT_TYPES: Final = ("rate_limit_error", "rate_limit", "quota_exceeded", "insufficient_quota")
+
+# ------------------------------------------------------------------- plan currency
+#
+# What a dispatch costs, in the only currency in which "we ran out" is a sentence:
+# percentage points of a pool's window cap (#220, docs/research/token-efficiency-plan-
+# currency.md §6). Two numbers per pool and never one — the estimator is the per-dispatch
+# number and the meter is what makes it falsifiable — and every input the estimator ran on
+# is carried so a recalibration re-derives history rather than invalidating it.
+
+# Output tokens per one percentage point of each Claude window's cap, measured in #218:
+# six five-hour points and one seven-day point on 181,253 output tokens. A Claude
+# dispatch's plan cost is its output token count over one of these. Input volume, context
+# size and cache behaviour do not enter it — not because they are free in principle, but
+# because they measure at under 1/450th the weight, and the one residual that could change
+# that is named in `CAP_FRACTION_EXCLUDES` rather than silently assumed away.
+CLAUDE_TOKENS_PER_POINT: Final = {"five_hour": 30209, "seven_day": 181253}
+
+# Which conversion produced a number. Without it the first plan change silently rewrites
+# every past row; with it, a re-measured rate re-prices history.
+CALIBRATION_ID: Final = "claude/218-2026-08-05"
+
+CAP_FRACTION_UNIT: Final = "percentage_points"
+CAP_FRACTION_BASIS: Final = "output_tokens"
+CAP_FRACTION_EXCLUDES: Final = ("cache_read",)
+CAP_FRACTION_ATTRIBUTION: Final = "dispatch_only"
+
+# Which pool a lane's dispatch spends against. A lane absent from this map gets no pool
+# and no estimate: booking an unrecognised lane against Claude at zero is exactly the
+# under-count that would make routing work off Claude look free.
+LANE_POOLS: Final = {"claude-native": "claude", "zai": "zai"}
+
+# Every pool has at least two windows and the row records all of them, because scarcity
+# routing — when ADR-0061 Decision 1's greedy rule is replaced — routes on whichever one
+# binds and not on an average.
+POOL_WINDOWS: Final = {"claude": ("five_hour", "seven_day"), "zai": ("five_hour", "seven_day")}
+
+EST_FROM_COUNTERS: Final = (
+    "output_tokens / the window's measured tokens-per-point (#218's control arm)"
+)
+
+NO_ESTIMATOR: Final = {
+    "zai": (
+        "the z.ai pool meters prompt counts against a time-of-day multiplier rather than "
+        "tokens, and publishes no machine-readable state (#221, #226), so no estimator is "
+        "derivable from this dispatch's own counters"
+    )
+}
+
+UNKNOWN_POOL: Final = (
+    "lane {lane!r} maps to no pool this view knows, so no pool is charged for this "
+    "dispatch — an unrecognised lane is unpriced, never Claude at zero"
+)
+
+# The observed half, today. It is absent rather than zero, and the difference is #218's
+# third confound: 28.6 M tokens moved the meter zero on a verified four-minute poll, so
+# meter silence is never evidence of a free dispatch.
+OBSERVED_ABSENT: Final = (
+    "no meter record reaches this view for this dispatch: the quota feed is a status-line "
+    "spool read by #226's breaker, not an OTel record carrying cti.dispatch_id. Absent, "
+    "not zero — and at the meter's integer-point resolution (one five-hour point is "
+    "30,209 output tokens) a single dispatch would read 0 even where one existed"
+)
+
+BINDING_UNKNOWN: Final = (
+    "the binding window is whichever is nearest exhaustion, which only the meter knows; "
+    "with no observed half this row names none rather than guessing one"
+)
+
+ATTRIBUTION_NOTE: Final = (
+    "dispatch_only: the orchestrator's own Claude turns — composing the briefing, reading "
+    "the report, quoting the verdict — share their parent's resource block, carry no "
+    "cti.dispatch_id and so reach no row (#227). Every row is therefore a known "
+    "under-attribution and never a complete one; on a foreign lane that missing term is "
+    "precisely the one that decides whether routing off Claude saved anything"
+)
 
 
 class Refusal(NamedTuple):
@@ -215,20 +301,71 @@ class Usage(NamedTuple):
     output_tokens: int = 0
     cache_read_tokens: int = 0
     cache_creation_tokens: int = 0
-    cost_usd: float = 0.0
-    priced: bool = False
+    list_price_usd: float = 0.0
+    list_priced: bool = False
     unclassified: tuple[str, ...] = ()
 
     def document(self) -> dict[str, Any]:
-        """Render the row's usage block, with the unpriced case visible rather than a zero."""
+        """Render the row's usage block: raw counters, and list price under its own name.
+
+        `list_price_usd` is what Claude Code's client-side cost figure says the same
+        traffic would have cost at API list prices. It is **not** this dispatch's spend
+        and nothing may rank on it (#220 §6.5): the plan charges generation against a
+        window cap, and `cap_fraction` is where that lands. It is kept because it is the
+        one independent arithmetic check on the token counters, and it is `None` rather
+        than 0.0 on a lane that reports no money, since a zero would read as free.
+        """
         return {
             "input_tokens": self.input_tokens,
             "output_tokens": self.output_tokens,
             "cache_read_tokens": self.cache_read_tokens,
             "cache_creation_tokens": self.cache_creation_tokens,
-            "cost_usd": round(self.cost_usd, 6) if self.priced else None,
-            "priced": self.priced,
+            "list_price_usd": round(self.list_price_usd, 6) if self.list_priced else None,
+            "list_priced": self.list_priced,
+            "list_price_note": "API list price, not plan spend. Never a decision input.",
             "unclassified": list(self.unclassified),
+        }
+
+
+class CapFraction(NamedTuple):
+    """A dispatch's share of its pool's window caps: the estimator and the meter, together.
+
+    Recording only `observed` gives a ledger of zeroes, because one Claude point is
+    several median agent runs and a single dispatch reads below the instrument. Recording
+    only `est` gives a ledger nobody can check. So the row carries both per window, and
+    where a half cannot exist it says which half and why rather than defaulting it to a
+    number — a view that filled either one in would be synthesising a record (#227).
+    """
+
+    pool: str | None
+    est: Mapping[str, float]
+    observed: Mapping[str, float]
+    est_reason: str
+
+    def document(self) -> dict[str, Any]:
+        """Render the row's spend block, both halves per window and every calibration input."""
+        return {
+            "pool": self.pool,
+            "unit": CAP_FRACTION_UNIT,
+            "basis": CAP_FRACTION_BASIS,
+            "excludes": list(CAP_FRACTION_EXCLUDES),
+            "attribution": CAP_FRACTION_ATTRIBUTION,
+            "attribution_note": ATTRIBUTION_NOTE,
+            "calibration_id": CALIBRATION_ID if self.pool == "claude" else None,
+            "windows": {
+                window: {
+                    "est": self.est.get(window),
+                    "observed": self.observed.get(window),
+                    "tokens_per_point": CLAUDE_TOKENS_PER_POINT.get(window)
+                    if self.pool == "claude"
+                    else None,
+                }
+                for window in POOL_WINDOWS.get(self.pool or "", ())
+            },
+            "est_reason": self.est_reason,
+            "observed_reason": OBSERVED_ABSENT,
+            "binding_window": None,
+            "binding_reason": BINDING_UNKNOWN,
         }
 
 
@@ -405,7 +542,7 @@ def _metric_totals(items: Iterable[Item]) -> tuple[dict[str, float], list[str]]:
             continue
         bucket = _metric_bucket(item)
         if bucket is None:
-            if item.name in (*TOKEN_METRICS, *COST_METRICS):
+            if item.name in (*TOKEN_METRICS, *LIST_PRICE_METRICS):
                 unclassified.append(f"{item.name}:type={item.attrs.get('type')!r}")
             continue
         if item.temporality == TEMPORALITY_CUMULATIVE:
@@ -419,8 +556,8 @@ def _metric_totals(items: Iterable[Item]) -> tuple[dict[str, float], list[str]]:
 
 
 def _metric_bucket(item: Item) -> str | None:
-    if item.name in COST_METRICS:
-        return "cost_usd"
+    if item.name in LIST_PRICE_METRICS:
+        return "list_price_usd"
     if item.name in TOKEN_METRICS:
         return TOKEN_BUCKETS.get(str(item.attrs.get("type", "")))
     return None
@@ -447,16 +584,47 @@ def normalise_usage(items: Iterable[Item]) -> Usage:
     totals, unclassified = _metric_totals(collected)
     for bucket, value in _span_totals(collected).items():
         totals[bucket] = totals.get(bucket, 0.0) + value
-    cost = totals.get("cost_usd")
+    list_price = totals.get("list_price_usd")
     return Usage(
         input_tokens=int(totals.get("input_tokens", 0.0)),
         output_tokens=int(totals.get("output_tokens", 0.0)),
         cache_read_tokens=int(totals.get("cache_read_tokens", 0.0)),
         cache_creation_tokens=int(totals.get("cache_creation_tokens", 0.0)),
-        cost_usd=cost or 0.0,
-        priced=cost is not None,
+        list_price_usd=list_price or 0.0,
+        list_priced=list_price is not None,
         unclassified=tuple(sorted(set(unclassified))),
     )
+
+
+def cap_fraction(lane: str | None, usage: Usage) -> CapFraction:
+    """Price one dispatch in its pool's currency: percentage points of a window cap.
+
+    The pool comes from the lane, never from what the records happen to contain, because
+    the counters on a foreign lane's row are that provider's tokens and dividing them by
+    a Claude calibration would charge the wrong pool. A lane with no pool, and a pool with
+    no measured estimator, are both typed rather than defaulted — the third of #220's
+    prohibitions is that a foreign-lane dispatch must not be booked a Claude cost of zero
+    by construction, and a zero is exactly what a defaulted estimator would produce.
+
+    The observed half is empty and stays empty here. The meter is a status-line spool
+    read by #226's breaker; no record on this bus carries a meter delta keyed to a
+    dispatch, and inventing one would be this view writing #226's schema for it.
+
+    The estimate is stored as the exact quotient, unrounded. Its accuracy is the
+    calibration's — ±8% on the five-hour weight, #218's integer-resolution readings — and
+    rounding it to some shorter decimal would assert a resolution of the ledger's own
+    that it does not have, while making a small dispatch's number 0.0.
+    """
+    pool = LANE_POOLS.get(str(lane or ""))
+    if pool is None:
+        return CapFraction(None, {}, {}, UNKNOWN_POOL.format(lane=lane))
+    if pool != "claude":
+        return CapFraction(pool, {}, {}, NO_ESTIMATOR.get(pool, "no estimator for this pool"))
+    est = {
+        window: usage.output_tokens / per_point
+        for window, per_point in CLAUDE_TOKENS_PER_POINT.items()
+    }
+    return CapFraction(pool, est, {}, EST_FROM_COUNTERS)
 
 
 # ------------------------------------------------------------------ end-state typing
@@ -650,18 +818,21 @@ def materialise(
         landed(repo, issue, base_sha) if issue else Landing(None, 0, "the dispatch names no issue")
     )
     end_state = type_end_state(items, result, source)
+    usage = normalise_usage(items)
+    lane = plan.get("lane")
     return {
         "schema": SCHEMA,
         "materialised_at": now.isoformat(),
         "dispatch_id": dispatch_id,
-        "lane": plan.get("lane"),
+        "lane": lane,
         "profile": plan.get("profile"),
         "seat": plan.get("seat"),
         "issue": issue or None,
         "base_sha": base_sha or None,
         "source": source.document(),
         "records": count_kinds(items),
-        "usage": normalise_usage(items).document(),
+        "usage": usage.document(),
+        "cap_fraction": cap_fraction(lane if isinstance(lane, str) else None, usage).document(),
         "end_state": end_state.document(),
         "gate": {
             "outcome": gate_outcome(landing, result, end_state),
@@ -673,10 +844,22 @@ def materialise(
     }
 
 
+def _points(value: object) -> str:
+    """Render one cap-fraction half: the number, or `none` where that half does not exist."""
+    return f"{value:.6f}" if isinstance(value, (int, float)) else "none"
+
+
 def row_line(row: Mapping[str, Any]) -> str:
-    """One dispatch, in the tier's `key=value` form."""
+    """One dispatch, in the tier's `key=value` form.
+
+    The spend fields are the five-hour window's two halves. Five-hour because it is the
+    tighter window per dispatch and the one #218 measured to ±8%; both halves because a
+    line showing only the estimator would put back the unfalsifiable number the schema
+    exists to prevent. List price is deliberately absent from the summary line and lives
+    in the row under its own name — it is a token-flow figure, not this dispatch's spend.
+    """
     usage = row["usage"]
-    cost = usage["cost_usd"]
+    five_hour = row["cap_fraction"]["windows"].get("five_hour", {})
     return " ".join(
         (
             f"dispatch={row['dispatch_id']}",
@@ -687,7 +870,9 @@ def row_line(row: Mapping[str, Any]) -> str:
             f"records={row['records']['total']}",
             f"in={usage['input_tokens']}",
             f"out={usage['output_tokens']}",
-            f"cost={'unpriced' if cost is None else f'{cost:.4f}'}",
+            f"pool={row['cap_fraction']['pool'] or 'none'}",
+            f"cap5h_est={_points(five_hour.get('est'))}",
+            f"cap5h_obs={_points(five_hour.get('observed'))}",
             f"class={row['end_state']['class']}",
             f"gate={row['gate']['outcome']}",
             f"landed={row['gate']['landed']['sha'] or 'none'}",

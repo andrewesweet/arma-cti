@@ -387,6 +387,13 @@ breaker *args:
 # dispatch that put nothing on the bus gets a row saying so rather than a row
 # filled in from its plan.
 #
+# What a row says a dispatch cost is `cap_fraction`: percentage points of its
+# pool's window cap (#220, #232), estimated as output tokens over a measured
+# constant and carrying the calibration it ran on. Both halves are recorded per
+# window — the estimator and the meter — and where a half cannot exist the row
+# says which and why rather than writing a zero. `usage.list_price_usd` is API
+# list pricing, is not this account's spend, and is a decision input for nothing.
+#
 # Source, and this is the part to read before believing a number: the durable
 # per-dispatch export at /var/log/claude-otel/dispatches/ is preferred, and it
 # exists only once the human has run the root script `just prereqs sudo-script`
