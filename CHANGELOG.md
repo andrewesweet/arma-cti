@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A continuation fetches its predecessor's handoff without reading the thread.**
+  `just handoff <issue>` prints the newest comment on that issue whose body opens a line
+  with `Handoff-for:`, and nothing else — no thread, no metadata beyond what the handoff
+  carries. #208 measured why: 85.6% of a successor's first-ten-turn state reconstruction
+  is issue-thread reading, and everything read on turn 1 is billed about 12.55× over a
+  median 114-turn agent's life, so reaching a 1,500-character handoff through a
+  40,000-character thread defeats the point of having written one. Against #208's own
+  thread it prints 1,475 characters where the thread is 16,411. A thread carrying no
+  handoff is a non-zero exit with a message rather than a silent empty print, which would
+  read as "no state to carry" when it may mean "wrong issue number" (#168/#183), and the
+  two failures are told apart by exit code the way the failure-class table tells a result
+  from a stop: 1 is "this issue carries no handoff", 3 is "I could not look". The
+  selection, the newest-wins rule and both refusals are Python under pytest
+  (`tools/handoff_fetch.py`, ADR-0049) rather than the `--jq` filter #210 sketched,
+  because that filter answers an empty thread with an empty line and exit 0 — and a jq
+  predicate is not something the no-Arma tier can assert at all (#83). #210.
+
 - **A whole-file read of something enormous is refused, and told where the pieces are.**
   A new PreToolUse hook, `.claude/hooks/deny-oversized-reads.py`, denies a `Read` whose
   window would deliver more than 40,000 characters and names the size, the file and the

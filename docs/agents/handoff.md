@@ -71,6 +71,13 @@ elimination that does not travel gets re-run at full price.
 
 ## Reading one
 
+`just handoff <issue>` prints the newest `Handoff-for:` comment on that issue and nothing
+else — no thread, no metadata beyond what the handoff carries. Use it rather than
+`gh issue view --comments`, which returns the whole thread and so pays 12.55× on 40,000
+characters to reach 1,500 of them. No handoff on the issue is a non-zero exit with a
+message, never a silent empty result: exit 1 is "this issue carries no handoff", exit 3 is
+"I could not look" (#210).
+
 A continuation reads the handoff **before** the issue body and before any `git log`. If
 the handoff and the repo disagree, the repo wins and you say so in your own handoff:
 the predecessor may have died between writing and pushing. Verify `SHA` with

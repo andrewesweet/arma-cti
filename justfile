@@ -220,6 +220,31 @@ watch name worktree subject="pool" *args:
 watch-report *args:
     uv run python tools/stall_watch.py report {{ args }}
 
+# Print an issue's newest handoff comment, and nothing else (#210,
+# docs/agents/handoff.md). A continuation's first read.
+#
+# `gh issue view --comments` returns the whole thread, and everything a
+# successor reads on turn 1 is billed about 12.55× over a median agent's life
+# (#208, docs/research/continuation-economics.md): fetching a 1,500-character
+# handoff by reading a 40,000-character thread defeats the point of having
+# written one. This prints the matched comment body alone — no thread, no
+# metadata beyond what the handoff itself carries.
+#
+# A thread with no handoff is a non-zero exit with a message, never a silent
+# empty print, which would read as "no state to carry" when it may mean "wrong
+# issue number" (#168/#183). Exit 1 is "this issue carries no handoff"; exit 3
+# is "I could not look", which is not a result.
+#
+# It reads. There is no `just handoff-write`: authoring is prose against the
+# template in docs/agents/handoff.md, and the fields worth having — what was
+# ruled out, what is unverified — are the ones no form can fill in.
+#
+# `@`, alone among the recipes here: the echoed command line is one more thing
+# the reader did not ask for, in the one recipe whose whole purpose is that
+# nothing but the handoff reaches a context window.
+handoff issue:
+    @uv run python tools/handoff_fetch.py {{ issue }}
+
 # Read a finished corpus run's own record as the lines a close quotes (#199).
 # No Arma, no lock: it reads `pool.json` and the per-probe `verdict.json`s and
 # renders. `just verdict` takes the newest pool on this machine; name a pool
