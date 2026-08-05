@@ -152,6 +152,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A harness run can no longer leave the human's Arma install carrying half a mod.** Staging
+  `@cti` for the headed client writes into the real Steam install, and it used to do it by
+  deleting the live folder and then copying into it — so the play install had no mod for the
+  length of the delete and half a mod for the length of the copy, and a run killed inside that
+  window left the damage there for whoever launched Arma next to find. The new copy is now built
+  beside the live one, checked file for file against its source, and moved into place by rename;
+  the old copy is moved aside first and deleted only once the new one is in. That leaves one
+  interruptible instant, between two renames rather than inside a copy, and a run repairs it
+  automatically on the way out and again on the way in — so the folder is the previous good copy
+  or a verified new one at every instant, with exactly one copy of the mod in it and nothing
+  beside it. #153.
+
 - **The slot pool's last four bulkhead leaks are walled.** A `kill` aimed at `just regress` —
   unlike a Ctrl-C, which the terminal delivers to the whole tree — used to reach the worker
   subshells and stop there, leaving up to N engines bound to the run's slot ports with nobody

@@ -32,6 +32,10 @@ source "$REPO/spike/hosts.sh"
 # several agents wanting it (#127). Sourced always, taken only on the client path.
 # shellcheck source=spike/client-lock.sh
 source "$REPO/spike/client-lock.sh"
+# The addon this run stages goes into the human's own Arma install, and a run
+# that dies mid-copy used to leave it broken for the next play session (#153).
+# shellcheck source=spike/play-install.sh
+source "$REPO/spike/play-install.sh"
 SERVER_DIR="${CTI_SERVER_DIR:-$HOME/arma3server}"
 SERVER_BIN="$SERVER_DIR/arma3server_x64"
 OUT="${CTI_SPIKE_OUT:-$REPO/.spike-out}"
@@ -148,6 +152,12 @@ server_pid=""
 hc_pid=""
 win_hc_pid=""
 win_client_pid=""
+# Set once this run has begun writing into the human's Arma install, which only
+# happens under the machine-wide client lock. Teardown reads it to decide whether
+# the swap window is this run's to close (#153); a run that never staged must not
+# touch those paths, because a concurrent client run's rename is exactly what it
+# would be racing.
+play_install_staged=""
 
 log() { printf '[spike] %s\n' "$*" >&2; }
 # results.env is read a line at a time — `sed -n 's/^verdict=//p'` in regress.sh
@@ -279,6 +289,16 @@ cleanup() {
             log "teardown: arma3_x64.exe may still be running on the Windows host"
         cti_windows_wait_gone arma3_x64.exe "$WINDOWS_EXIT_TIMEOUT" ||
             log "teardown: arma3_x64.exe had not left the Windows process list"
+    fi
+    # The one instant in which the human's Arma install has no `@cti` is between
+    # the two renames of the swap, and this is what closes it for a run that was
+    # interrupted inside it (#153). Under the client lock, before it is dropped,
+    # and only for a run that staged: the paths this touches are ones a
+    # concurrent client run renames, and the lock is what makes "the previous
+    # copy is mine to put back" true.
+    if [[ -n "$play_install_staged" ]]; then
+        cti_play_install_repair "$WINDOWS_ARMA_DIR" "$MOD_NAME" ||
+            log "teardown: the play install at $WINDOWS_ARMA_DIR may have no $MOD_NAME — restage before playing"
     fi
     # Last, and after that wait rather than before it (#127). The whole value of
     # the client lock is the ordering it guarantees: while a run holds it, no
@@ -923,11 +943,17 @@ if ((WINDOWS_CLIENT == 1)); then
     [[ -f "$WIN_GAME" ]] || fail "infra_unavailable" "Windows Arma 3 not found at $WIN_GAME"
     # The client needs the addon too: client-side SQF is the only lever we have
     # inside the engine, and CfgFunctions compiles per machine.
-    rm -rf "${WINDOWS_ARMA_DIR:?}/$MOD_NAME"
-    mkdir -p "$WINDOWS_ARMA_DIR/$MOD_NAME" ||
-        fail "infra_unavailable" "could not create $WINDOWS_ARMA_DIR/$MOD_NAME"
-    cp -r "$BUILT_MOD/addons" "$WINDOWS_ARMA_DIR/$MOD_NAME/" ||
-        fail "infra_unavailable" "could not stage the addon onto the Windows host at $WINDOWS_ARMA_DIR/$MOD_NAME"
+    #
+    # And it goes into the *human's* Steam install, which is why this is not a
+    # bare `rm -rf` and `cp` any more (#153). Staged beside the live folder,
+    # checked against its source, swapped in by rename: a run killed anywhere in
+    # here leaves the play install either previous-good or verified-new, never
+    # the half-staged mod somebody finds at the start of an evening.
+    play_install_staged=1
+    if ! stage_detail="$(cti_play_install_stage "$WINDOWS_ARMA_DIR" "$MOD_NAME" "$BUILT_MOD/addons")"; then
+        fail "infra_unavailable" \
+            "${stage_detail:-could not stage the addon onto the Windows host at $WINDOWS_ARMA_DIR/$MOD_NAME}"
+    fi
     WIN_CLIENT_LOG="$OUT/windows-client.log"
     : >"$WIN_CLIENT_LOG"
     t_wc=$(now)
