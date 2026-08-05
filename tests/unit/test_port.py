@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
-from conftest import REPO, authored_economy, live
+from conftest import REPO, authored_economy, funds_after_buying, live, starting_funds
 from hypothesis import given
 from hypothesis import strategies as st
 
@@ -58,7 +58,7 @@ def test_a_purchase_is_accepted_and_costs_its_price(open_port: port.CommandPort)
         Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
     )
     assert judgement.accepted
-    assert open_port.campaign.ledger.balance("WEST") == 200
+    assert open_port.campaign.ledger.balance("WEST") == funds_after_buying("rifle")
 
 
 def test_an_accepted_purchase_reports_the_remaining_funds_and_what_it_bought(
@@ -70,7 +70,7 @@ def test_an_accepted_purchase_reports_the_remaining_funds_and_what_it_bought(
     judgement = open_port.submit(
         Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
     )
-    assert judgement.result == {"squad": "WEST-1", "funds": 200}
+    assert judgement.result == {"squad": "WEST-1", "funds": funds_after_buying("rifle")}
 
 
 def test_an_accepted_purchase_queues_its_effect_rather_than_returning_it(
@@ -123,7 +123,7 @@ def test_commanding_a_side_that_is_not_yours_is_rejected(open_port: port.Command
         Command("purchase", "EAST", {"squad_type": "rifle"}), acting_side="WEST"
     )
     assert judgement.code == "wrong_side"
-    assert open_port.campaign.ledger.balance("EAST") == 300
+    assert open_port.campaign.ledger.balance("EAST") == starting_funds()
     assert open_port.campaign.outbox.pending() == []
 
 

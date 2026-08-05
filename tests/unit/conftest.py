@@ -91,15 +91,45 @@ def observe(daemon: Daemon, request_id: str, **payload: object) -> dict[str, Any
     return reply_to(daemon, id=request_id, verb="observe", payload={"time": 1, **payload})["result"]
 
 
+def all_rows(log: Path) -> list[dict[str, Any]]:
+    """Every telemetry row, in the order they were written.
+
+    The whole log, for the tests whose subject is the sequence rather than one
+    kind of event — how many rows a request wrote, or what order two daemons'
+    records came out in. Eight copies of this comprehension before #157.
+    """
+    return [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+
+
 def rows(log: Path, event: str) -> list[dict[str, Any]]:
     """Every telemetry row of one kind, in the order they were written."""
-    written = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    return [row for row in written if row["event"] == event]
+    return [row for row in all_rows(log) if row["event"] == event]
 
 
 def authored_economy() -> economy.EconomyTable:
     """Return the economy table this repository ships."""
     return economy.load(ECONOMY)
+
+
+def starting_funds() -> int:
+    """Return the Funds a side opens with, off the authored table."""
+    return authored_economy().starting_funds
+
+
+def funds_after_buying(squad_type: str) -> int:
+    """Return the opening balance less what the authored table charges for that Squad.
+
+    Derived rather than pinned, which `test_daemon_dispatch` had already written
+    out by hand once — "an authored price change should move this test's
+    arithmetic, not break it" — while three sibling assertions still carried a
+    bare 200 or 300 and a fourth a bare 100 (#157).
+    """
+    table = authored_economy()
+    price = table.price(squad_type)
+    # A narrowing on the arrangement, not a claim about the code under test: a
+    # Squad type the authored menu does not sell means this call is misspelt.
+    assert price is not None, f"the authored economy sells no {squad_type!r} Squad"
+    return table.starting_funds - price
 
 
 def authored_stratis() -> manifest.MapManifest:

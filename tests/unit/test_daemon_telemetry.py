@@ -10,6 +10,8 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
+from conftest import all_rows
+
 from cti_daemon.telemetry import Telemetry
 
 if TYPE_CHECKING:
@@ -35,7 +37,7 @@ def test_events_are_appended_in_order_and_timestamped(tmp_path: Path) -> None:
     telemetry.record("request", n=1)
     telemetry.record("request", n=2)
 
-    records = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+    records = all_rows(log)
     assert [record["n"] for record in records] == [1, 2]
     assert records[0]["at_ns"] <= records[1]["at_ns"]
 

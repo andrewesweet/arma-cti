@@ -5,7 +5,15 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any
 
-from conftest import authored_economy, authored_stratis, reply_to, rows
+from conftest import (
+    all_rows,
+    authored_stratis,
+    funds_after_buying,
+    observe,
+    reply_to,
+    rows,
+    starting_funds,
+)
 
 from cti_daemon import planner
 from cti_daemon.commands import Effect
@@ -133,8 +141,7 @@ def test_an_acknowledgement_records_the_effects_the_world_refused_for_good(
     )
 
     assert reply["status"] == "ok"
-    rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    dead = [row for row in rows if row["event"] == "effect_dead_letter"]
+    dead = rows(log, "effect_dead_letter")
     assert [(row["sequence"], row["effect"], row["reason"]) for row in dead] == [
         (1, "arsenal_opened", "unknown_effect")
     ]
@@ -155,8 +162,7 @@ def test_an_acknowledgement_carrying_no_dead_letters_writes_no_row(tmp_path: Pat
 
     reply_to(daemon, id="r-13", verb="ack", payload={"through": 1, "dead": []})
 
-    rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    assert [row for row in rows if row["event"] == "effect_dead_letter"] == []
+    assert rows(log, "effect_dead_letter") == []
 
 
 def test_a_failure_inside_the_daemon_is_answered_as_an_internal_error(tmp_path: Path) -> None:
@@ -185,7 +191,7 @@ def test_every_request_is_recorded_in_telemetry(tmp_path: Path) -> None:
     daemon.handle_line(json.dumps({"id": "r-12", "verb": "ping"}))
     daemon.handle_line("{not json")
 
-    records = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+    records = all_rows(log)
     assert [(record["id"], record["verb"], record["status"]) for record in records] == [
         ("r-12", "ping", "ok"),
         (None, None, "error"),
@@ -208,7 +214,7 @@ def test_a_command_is_carried_inside_the_envelope_not_beside_it(tmp_path: Path) 
         },
     )
     assert reply["status"] == "ok"
-    assert reply["result"] == {"squad": "WEST-1", "funds": 200}
+    assert reply["result"] == {"squad": "WEST-1", "funds": funds_after_buying("rifle")}
 
 
 def test_an_order_reaches_the_port_through_the_same_envelope_as_a_purchase(
@@ -319,7 +325,7 @@ def test_a_command_nobody_stamped_is_refused_rather_than_taken_at_its_word(
     assert reply["status"] == "rejected"
     assert reply["reason"]["code"] == "unknown_caller"
     # And nothing was spent on the way to that answer.
-    assert daemon.campaign.ledger.balance("WEST") == 300
+    assert daemon.campaign.ledger.balance("WEST") == starting_funds()
     assert daemon.outbox.pending() == []
 
 
@@ -354,14 +360,14 @@ def test_telemetry_records_why_a_request_was_refused(tmp_path: Path) -> None:
     reply_to(daemon, id="r-2", verb="bombard")
     reply_to(daemon, id="r-3", verb="ping")
 
-    rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    assert [(row["status"], row["reason_code"]) for row in rows] == [
+    written = all_rows(log)
+    assert [(row["status"], row["reason_code"]) for row in written] == [
         ("rejected", "malformed_command"),
         ("error", "unknown_verb"),
         ("ok", None),
     ]
-    assert "side" in rows[0]["reason_detail"]
-    assert rows[2]["reason_detail"] is None
+    assert "side" in written[0]["reason_detail"]
+    assert written[2]["reason_detail"] is None
 
 
 def test_telemetry_says_whether_the_side_column_is_a_stamp_or_a_claim(tmp_path: Path) -> None:
@@ -426,11 +432,6 @@ def test_an_observation_without_a_time_is_refused(tmp_path: Path) -> None:
     reply = reply_to(daemon, id="o-4", verb="observe", payload={"presence": {}})
     assert reply["status"] == "error"
     assert reply["error"]["class"] == "malformed_request"
-
-
-def observe(daemon: Daemon, request_id: str, **payload: object) -> dict[str, Any]:
-    """Report what the world can see, and take back the strategic picture."""
-    return reply_to(daemon, id=request_id, verb="observe", payload={"time": 1, **payload})["result"]
 
 
 def test_the_reply_to_an_observation_is_the_public_picture_and_no_more(tmp_path: Path) -> None:
@@ -498,12 +499,7 @@ def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: 
     assert daemon.campaign.observation("WEST").squads == ()
     # A Squad leaving the Campaign is reported to the operator's log rather than
     # to the world, which already knows: it is what said so.
-    rows = tmp_path / "telemetry.jsonl"
-    lost = [
-        json.loads(line)
-        for line in rows.read_text(encoding="utf-8").splitlines()
-        if json.loads(line)["event"] == "squad_lost"
-    ]
+    lost = rows(tmp_path / "telemetry.jsonl", "squad_lost")
     assert [row["squad"] for row in lost] == ["WEST-1"]
 
 
@@ -605,8 +601,7 @@ def test_a_contact_growing_older_is_not_the_picture_moving(tmp_path: Path) -> No
         observe(daemon, request_id, time=at_time, presence={})
     assert daemon.campaign.observation("WEST").contacts[0].age == 15
 
-    rows = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    written = [row for row in rows if row["event"] == "observation"]
+    written = rows(log, "observation")
     assert [row["side"] for row in written] == ["WEST", "EAST"]
 
 
@@ -644,10 +639,7 @@ def test_the_strategic_picture_is_written_out_when_it_moves_and_not_otherwise(
     # The starting balance less what the rifle Squad cost, derived rather than
     # pinned: an authored price change should move this test's arithmetic, not
     # break it.
-    rifle = authored_economy()
-    sold = rifle.sold("rifle")
-    assert sold is not None
-    assert written()[-1]["funds"] == rifle.starting_funds - sold.price
+    assert written()[-1]["funds"] == funds_after_buying("rifle")
 
 
 def hq_rows(log: Path) -> list[dict[str, Any]]:
@@ -717,8 +709,7 @@ def test_every_reply_records_how_close_it_ran_to_the_return_cap(tmp_path: Path) 
     log = tmp_path / "telemetry.jsonl"
     daemon = build_daemon(telemetry_path=log)
     observe(daemon, "o-12", presence={})
-    row = json.loads(log.read_text(encoding="utf-8").splitlines()[-1])
-    assert 0 < row["reply_bytes"] < 10_240
+    assert 0 < all_rows(log)[-1]["reply_bytes"] < 10_240
 
 
 # ------------------------------- the second principal, through the wire (ADR-0040)

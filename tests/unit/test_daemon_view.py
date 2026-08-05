@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
-from conftest import reply_to
+from conftest import all_rows, funds_after_buying, reply_to
 
 from cti_daemon import planner
 from cti_daemon.transport import build_daemon
@@ -57,7 +57,7 @@ def test_a_view_carries_that_side_and_what_only_it_may_know(tmp_path: Path) -> N
     assert reply["status"] == "ok"
     result = reply["result"]
     assert result["side"] == "WEST"
-    assert result["funds"] == daemon.campaign.table.starting_funds - 100
+    assert result["funds"] == funds_after_buying("rifle")
     assert [squad["type"] for squad in result["squads"]] == ["rifle"]
     assert result["contacts"] == []
     # The public half is in every view, nobody's included: the two win conditions
@@ -164,6 +164,5 @@ def test_a_view_is_attributed_to_the_side_that_asked(tmp_path: Path) -> None:
 
     reply_to(daemon, id="r-1", verb="view", payload={"side": "WEST"})
 
-    rows = [json.loads(line) for line in telemetry.read_text(encoding="utf-8").splitlines()]
-    asked = next(row for row in rows if row.get("verb") == "view")
+    asked = next(row for row in all_rows(telemetry) if row.get("verb") == "view")
     assert asked["side"] == "WEST"

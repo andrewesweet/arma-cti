@@ -14,7 +14,7 @@ import socket
 from typing import IO, TYPE_CHECKING
 
 import pytest
-from conftest import reply_to
+from conftest import all_rows, reply_to
 
 from cti_daemon import protocol, transport
 from cti_daemon.commands import Effect
@@ -103,8 +103,7 @@ def test_the_epoch_is_recorded_against_every_request(tmp_path: Path) -> None:
     log = tmp_path / "telemetry.jsonl"
     daemon = build_daemon(telemetry_path=log)
     daemon.handle_line(json.dumps({"id": "r-1", "verb": "ping"}))
-    records = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
-    assert [record["epoch"] for record in records] == [daemon.epoch]
+    assert [record["epoch"] for record in all_rows(log)] == [daemon.epoch]
 
 
 def test_a_daemon_may_be_told_its_epoch_so_a_test_can_name_it(tmp_path: Path) -> None:
