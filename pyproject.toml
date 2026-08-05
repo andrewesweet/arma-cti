@@ -20,6 +20,7 @@ dev = [
   "mutmut>=3.6",
   "ruff>=0.16",
   "ty==0.0.65", # pre-1.0 and moving fast: pin exactly, bump deliberately
+  "pytest-xdist>=3.8",
 ]
 
 [tool.uv.build-backend]
@@ -69,7 +70,14 @@ ignore = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q --strict-markers --strict-config"
+# `-n auto` is one worker per logical CPU (#197, from #195's measurement). The
+# tier's wall clock is six times its user CPU — it waits on `flock`, on bash
+# subprocesses and on stub bring-ups rather than computing — so the workers
+# oversubscribe nothing, and every test is function-scoped over its own
+# `tmp_path` with no shared fixture between them. Serial for a debugging session
+# is `-n0` on the command line, which overrides this; a `mutmut` sweep, which
+# runs the suite once per mutant, wants `PYTEST_ADDOPTS=-n0` for the same reason.
+addopts = "-q --strict-markers --strict-config -n auto"
 xfail_strict = true
 
 [tool.coverage.run]

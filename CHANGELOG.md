@@ -153,6 +153,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`just fast` returns in about a minute and a half instead of seven.** The Python tier runs
+  under `pytest-xdist` at one worker per logical CPU, and the same 1,410 tests that took 6 min 22 s
+  serially take 56 s. Nothing about what they assert changed: the tier's wall clock was six times
+  its user CPU, so it was waiting on locks and bash subprocesses rather than computing, and the
+  workers take up that slack. The one test that could not be shared out — a background child that
+  had to outlive its run — turned out to be waiting sixty seconds on a descriptor its claim was
+  never about, and now settles in a third of a second while still catching the bug it was written
+  for. This is the change #195 measured as the largest recoverable waste on the recipe side: a gate
+  that outlives the five-minute prompt-cache TTL makes the next agent turn pay to rebuild its whole
+  context, and `just fast` had crossed that line on every invocation. #197, #195.
+
 - **Dying costs 30 seconds, at your own Base.** The played mission's respawn timer moves from 5 s
   to 30 s (ADR-0052, ruling 6) — a playtest-tuned placeholder in ADR-0020's sense, documented at
   the line that sets it, so play can move the number without reopening the decision. Where you

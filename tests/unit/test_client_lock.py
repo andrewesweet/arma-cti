@@ -217,6 +217,13 @@ def test_a_child_that_outlives_the_run_does_not_keep_the_lock(tmp_path: Path) ->
     this lock landed went red: a stub server that outlived its `run.sh` was still
     holding `~/.arma-cti/windows-client.lock`, against a `.info` its dead parent
     had already deleted — a machine-wide stop with nobody to name.
+
+    The child's stdio goes to `/dev/null` (#197). It used to inherit the pipes
+    `capture_output` hands the parent, so this test did not end when its claim
+    was settled — it ended sixty seconds later, when the child's `sleep` let go
+    of a descriptor the claim is not about. The lock descriptor, which the claim
+    *is* about, is still inherited and still disowned: the child outlives the
+    run exactly as before, and the parent still releases and asks while it does.
     """
     state = tmp_path / "state"
     env = {"CTI_TIER_STATE": str(state)}
@@ -227,7 +234,7 @@ def test_a_child_that_outlives_the_run_does_not_keep_the_lock(tmp_path: Path) ->
         "  cti_client_lock_disown\n"
         f'  printf "%s" "$BASHPID" > "{leaked}"\n'
         "  exec sleep 60\n"
-        ") &\n"
+        ") >/dev/null 2>&1 &\n"
         f'while [[ ! -s "{leaked}" ]]; do sleep 0.05; done\n'
         "cti_client_lock_release\n"
         "cti_client_lock_busy && echo STILL-HELD || echo FREE\n",

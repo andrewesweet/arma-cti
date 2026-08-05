@@ -65,7 +65,10 @@ check-rust:
 # No-Arma unit tier.
 unit: unit-python unit-rust
 
-# pytest over the daemon and tooling.
+# pytest over the daemon and tooling. Parallel by default: `-n auto` lives in
+# pyproject's addopts (#197), because the number belongs to the suite rather than
+# to this recipe — a bare `uv run pytest` gets it too. Nothing here changed but
+# the wall clock; the assertions and their count are the same.
 unit-python:
     uv run pytest
 
