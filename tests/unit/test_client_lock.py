@@ -1,9 +1,9 @@
 """The headed Windows client as a machine-wide resource (issue #127).
 
-The pool schedules its two client probes into a serial tail with every other
-slot drained (#47), which orders them against each other and against nothing
-else. Two agents gating from sibling worktrees each drained their own pool and
-then both drove the one client on the one Windows host: while #125 was landing,
+The pool schedules its client probes into a serial tail with every other slot
+drained (#47), which orders them against each other and against nothing else.
+Two agents gating from sibling worktrees each drained their own pool and then
+both drove the one client on the one Windows host: while #125 was landing,
 two corpus attempts were stopped `infra_unavailable` by a sibling's client
 tripping the ownership-blind host guard.
 
@@ -39,6 +39,11 @@ from pathlib import Path
 import pytest
 from conftest import REPO
 
+# Same directory, pytest's prepend import mode. The probes whose `env:` header
+# drives the headed client are derived from those headers in one place; this
+# file used to name two of them by hand, and by #157 there were six.
+from test_probe_headers import HOST_PROBES
+
 CLIENT_LOCK_SH = REPO / "spike" / "client-lock.sh"
 REGRESS = REPO / "spike" / "regress.sh"
 RUN = REPO / "spike" / "run.sh"
@@ -46,10 +51,14 @@ BASH = shutil.which("bash") or "/bin/bash"
 
 EXIT_INFRA_UNAVAILABLE = 5
 
-# The two probes whose `env:` header drives the headed client. Read rather than
-# hard-coded would be nicer; named here because the point of these tests is that
-# *these two* are the corpus's contended leg, and a rename should land here.
-HOST_PROBES = ["client-port", "human-commander"]
+# How long the stub holds the whole contended leg open, and each probe's share
+# of it. A slice rather than a fixed time each, so the window
+# `test_two_concurrent_pools_never_hold_the_client_at_once` watches keeps its
+# width as the corpus grows: the lock is taken around the tail rather than
+# around a probe, so what makes an overlap visible is the tail's width against
+# the fraction of a second the two pools start apart.
+CLIENT_TAIL_SECONDS = 2.0
+CLIENT_LEG_SECONDS = round(CLIENT_TAIL_SECONDS / len(HOST_PROBES), 3)
 
 TASKLIST_FREE = "INFO: No tasks are running which match the specified criteria.\n"
 TASKLIST_PRESENT = (
@@ -71,7 +80,7 @@ if [[ ",${CTI_STUB_HOST_PROBES:-}," == *",$name,"* ]]; then
     # running without it is the bug this file exists for.
     printf '%s\t%s\t%s\t%s\n' "$CTI_STUB_TAG" "$name" open "$(date +%s%N)" >>"$CTI_STUB_TRACE"
     printf 'client_lock_held=%s\n' "${CTI_CLIENT_LOCK_HELD:-0}" >>"$out/results.env"
-    sleep 1
+    sleep "$CTI_STUB_CLIENT_LEG_SECS"
     printf '%s\t%s\t%s\t%s\n' "$CTI_STUB_TAG" "$name" close "$(date +%s%N)" >>"$CTI_STUB_TRACE"
 fi
 printf 'server_version=stub\n' >>"$out/results.env"
@@ -421,6 +430,7 @@ def pool_env(tmp_path: Path, tag: str, *, listing: str | Path = TASKLIST_FREE) -
         "CTI_WINDOWS_TASKLIST": str(tool),
         "CTI_STUB_TRACE": str(tmp_path / "trace.tsv"),
         "CTI_STUB_HOST_PROBES": ",".join(HOST_PROBES),
+        "CTI_STUB_CLIENT_LEG_SECS": str(CLIENT_LEG_SECONDS),
         "CTI_STUB_TAG": tag,
     }
 

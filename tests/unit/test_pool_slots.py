@@ -28,14 +28,20 @@ import stat
 import subprocess
 import time
 from pathlib import Path
+from typing import Any
 
 import pytest
 from conftest import REPO
 
+# Same directory, pytest's prepend import mode. The corpus, its header parser and
+# the set of probes that drive the headed Windows client have one definition
+# (`test_probe_headers`); this module reuses it rather than reading the same
+# headers a second way.
+from test_probe_headers import HOST_PROBES, PROBES
+
 REGRESS = REPO / "spike" / "regress.sh"
 SLOTS_SH = REPO / "spike" / "slots.sh"
 TIER_LOCK = REPO / "spike" / "tier-lock.sh"
-PROBE_DIR = REPO / "spike" / "probes"
 BASH = shutil.which("bash") or "/bin/bash"
 
 # CLAUDE.md's Contract, as the tests read it.
@@ -129,11 +135,14 @@ TASKLIST_FREE = (
 )
 
 
-def bash_eval(script: str, env: dict[str, str] | None = None, *, want_stderr: bool = False) -> str:
-    """Run a snippet with `spike/slots.sh` sourced, and give back its stdout.
+def bash_ok(script: str, env: dict[str, str] | None = None, *, want_stderr: bool = False) -> str:
+    """Run a snippet with `spike/slots.sh` sourced and give back its stdout, red if it failed.
 
-    `want_stderr` gives back stderr instead: the library logs its reasoning there,
-    and a caller asserting on why a slot did something has to read it.
+    Named for the check it makes rather than for the evaluation: it was
+    `bash_eval`, and half its callers spell the whole of their arrangement with
+    it, so an exit code nobody looked at would have been a silent green (#157).
+    `want_stderr` gives back stderr instead: the library logs its reasoning
+    there, and a caller asserting on why a slot did something has to read it.
     """
     full = f'source "{SLOTS_SH}"\n{script}'
     # S603: this repo's own library, with a script this test wrote.
@@ -159,7 +168,7 @@ def executable(path: Path, text: str) -> Path:
 
 
 def slot_env(slot: int) -> dict[str, str]:
-    lines = bash_eval(f"cti_slot_env {slot}").splitlines()
+    lines = bash_ok(f"cti_slot_env {slot}").splitlines()
     return dict(line.split("=", 1) for line in lines)
 
 
@@ -349,7 +358,7 @@ def wait_until_no_descriptor_is_left(tmp_path: Path, slot: int) -> None:
         # The pool's own finder, so the test and the runner agree on what "still
         # held" means — it is the answer `regress.sh` prints to a human staring
         # at a busy slot.
-        holders = bash_eval(f"cti_slot_lock_holders {slot}", env=env).split()
+        holders = bash_ok(f"cti_slot_lock_holders {slot}", env=env).split()
         if not holders:
             return
         assert time.monotonic() < deadline, (
@@ -396,7 +405,7 @@ def test_an_orphan_that_inherited_the_lock_is_named_and_reclaimed(tmp_path: Path
     proc = start_holder(tmp_path, 2)
     proc.kill()  # the parent only: the `sleep` child inherits the descriptor
     proc.wait(timeout=10)
-    orphans = [int(pid) for pid in bash_eval("cti_slot_lock_holders 2", env=env).split()]
+    orphans = [int(pid) for pid in bash_ok("cti_slot_lock_holders 2", env=env).split()]
     try:
         assert acquire_from_a_fresh_shell(tmp_path, 2).returncode == 1
         assert orphans, "nothing was named as holding a lock that is demonstrably held"
@@ -412,7 +421,7 @@ def test_an_orphan_that_inherited_the_lock_is_named_and_reclaimed(tmp_path: Path
         # SIGKILL was posted. It used to return on the posting, which put the
         # line below on the same losing side of the same race as #130 — and put
         # `run.sh` binding this slot's ports there too, which is worse.
-        bash_eval("cti_slot_reclaim 2 holders", env=env, want_stderr=True)
+        bash_ok("cti_slot_reclaim 2 holders", env=env, want_stderr=True)
         assert acquire_from_a_fresh_shell(tmp_path, 2).returncode == 0
     finally:
         for pid in orphans:
@@ -472,7 +481,7 @@ def test_a_tier_that_is_not_the_machines_kills_nothing_on_it(tmp_path: Path) -> 
     # S603: this test's own copy of `sleep`, by absolute path.
     victim = subprocess.Popen([str(victim_bin), "60"])  # noqa: S603
     try:
-        result = bash_eval(
+        result = bash_ok(
             "cti_slot_reclaim 0",
             env={
                 "CTI_TIER_STATE": str(tmp_path / "state"),
@@ -502,7 +511,7 @@ def test_the_install_farm_breaks_the_staged_paths_out_of_the_links(tmp_path: Pat
     (master / "cti_shim_x64.so").write_bytes(b"the master's shim")
 
     env = {"CTI_SLOT_INSTALL_MASTER": str(master), "CTI_TIER_STATE": str(tmp_path / "state")}
-    bash_eval("cti_slot_install_ready 1", env=env)
+    bash_ok("cti_slot_install_ready 1", env=env)
     clone = tmp_path / "arma3server-slot1"
 
     assert (clone / "arma3server_x64").exists()
@@ -553,30 +562,17 @@ def pool_run(
     )
 
 
-def pool_json(tmp_path: Path) -> dict:
+def pool_json(tmp_path: Path) -> dict[str, Any]:
     pools = sorted((tmp_path / "state" / "runs").glob("*-pool"))
     assert pools, "the pool wrote no evidence directory"
     return json.loads((pools[-1] / "pool.json").read_text())
 
 
-def verdicts_by_probe(tmp_path: Path) -> dict[str, dict]:
+def verdicts_by_probe(tmp_path: Path) -> dict[str, dict[str, Any]]:
     return {v["probe"]: v for v in pool_json(tmp_path)["verdicts"]}
 
 
-ALL_PROBES = sorted(p.stem for p in PROBE_DIR.glob("*.sqf"))
-
-# The probes that drive the one headed client on the one Windows host, read the
-# way `spike/regress.sh` reads them — off the `env:` header — rather than listed
-# by name here. A third such probe arrived with #123, and a list would have been
-# a second declaration of which probes those are (ADR-0028's tail, #119).
-HOST_PROBES = sorted(
-    path.stem
-    for path in PROBE_DIR.glob("*.sqf")
-    if any(
-        line.startswith("// env:") and "CTI_WINDOWS_CLIENT=1" in line
-        for line in path.read_text(encoding="utf-8").splitlines()
-    )
-)
+ALL_PROBES = sorted(path.stem for path in PROBES)
 
 
 def test_the_whole_corpus_gets_a_verdict_across_three_slots(tmp_path: Path) -> None:
@@ -940,8 +936,8 @@ def test_the_pool_pattern_attributes_only_its_own_slots_processes() -> None:
         "36000 python3 /y/bin/python /y/bin/cti-daemon --host 127.0.0.1 --port 9100 -t b.jsonl\n"
         "500000 firefox /usr/lib/firefox/firefox"
     )
-    pattern = bash_eval("cti_slot_pool_ps_pattern 0 2")
-    out = bash_eval(f"cti_slot_rss_kb '{pattern}' <<'EOF'\n{listing}\nEOF")
+    pattern = bash_ok("cti_slot_pool_ps_pattern 0 2")
+    out = bash_ok(f"cti_slot_rss_kb '{pattern}' <<'EOF'\n{listing}\nEOF")
     tier, own = (int(v) for v in out.split("\t"))
     assert tier == 1200000 + 1100000 + 35000 + 1150000 + 1300000 + 1250000 + 36000
     assert own == 1200000 + 1100000 + 35000 + 1150000
@@ -950,7 +946,7 @@ def test_the_pool_pattern_attributes_only_its_own_slots_processes() -> None:
 def test_an_empty_pattern_attributes_nothing_and_still_counts_the_tier() -> None:
     """A row that cannot be attributed must never default to being ours."""
     listing = "990000 arma3server_x64 ./arma3server_x64 -port=2402 -name=ctispike"
-    out = bash_eval(f"cti_slot_rss_kb '' <<'EOF'\n{listing}\nEOF")
+    out = bash_ok(f"cti_slot_rss_kb '' <<'EOF'\n{listing}\nEOF")
     assert out == "990000\t0"
 
 
@@ -963,7 +959,7 @@ def test_an_empty_pattern_attributes_nothing_and_still_counts_the_tier() -> None
 
 
 def mem_floor(slots: int) -> int:
-    return int(bash_eval(f"cti_slot_mem_floor_mb {slots}"))
+    return int(bash_ok(f"cti_slot_mem_floor_mb {slots}"))
 
 
 def test_the_memory_floor_is_the_measured_per_slot_footprint_with_headroom() -> None:
@@ -985,7 +981,7 @@ def test_the_memory_floor_is_the_measured_per_slot_footprint_with_headroom() -> 
 
 def test_the_fit_is_the_largest_slot_count_the_reading_carries() -> None:
     def fit(want: int, avail: int) -> int:
-        return int(bash_eval(f"cti_slot_mem_fit {want} {avail}"))
+        return int(bash_ok(f"cti_slot_mem_fit {want} {avail}"))
 
     assert fit(3, mem_floor(3)) == 3
     assert fit(3, mem_floor(3) - 1) == 2
@@ -1233,7 +1229,7 @@ def test_each_probe_ran_against_its_own_slots_daemon(tmp_path: Path) -> None:
             continue
         expected = dict(
             line.split("=", 1)
-            for line in bash_eval(f"cti_slot_env {recorded['tier_slot']}", env=env).splitlines()
+            for line in bash_ok(f"cti_slot_env {recorded['tier_slot']}", env=env).splitlines()
         )
         for key, field in fields.items():
             assert recorded[field] == expected[key], (

@@ -50,6 +50,19 @@ def header_block(path: Path) -> dict[str, str]:
     return found
 
 
+# The probes that drive the one headed client on the one Windows host, read off
+# the `env:` header the way `spike/regress.sh` reads it (`host_probe`). Here
+# because this module is where the corpus's headers are parsed, and its two
+# consumers — the pool's serial tail and the machine-wide client lock — then
+# have one derived home rather than a list each. `test_pool_slots` already
+# derived it and `test_client_lock` named two probes by hand; by the time #157
+# looked there were six, which is the drift a second declaration produces (#123,
+# #172, #188, #189 each added one).
+HOST_PROBES = sorted(
+    path.stem for path in PROBES if "CTI_WINDOWS_CLIENT=1" in header_block(path).get("env", "")
+)
+
+
 def test_corpus_is_not_empty() -> None:
     assert PROBES, f"no probes found under {PROBE_DIR}"
 
