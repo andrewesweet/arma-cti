@@ -329,8 +329,46 @@ watch name worktree subject="pool" *args:
 # One line per un-acknowledged finding, and nothing at all while every watched
 # agent is still working. `--ack` marks what it prints as read so the same
 # stall never resurfaces as news; `--all` re-reads the acknowledged ones.
+#
+# The lane breakers report here too (#226), ahead of the watchers, because this
+# is the read CLAUDE.md already puts at the top of an orchestrator's turn. One
+# verdict line per lane that is not dispatchable, and silence for every lane
+# that is — a verdict, never three percentages (#209). `{{ args }}` is the
+# watchers' alone; the breaker read takes none.
 watch-report *args:
+    uv run python tools/breaker.py report
     uv run python tools/stall_watch.py report {{ args }}
+
+# Read and feed the lane circuit breakers (#226, ADR-0061 Decisions 7 and 8).
+# No Arma, no lock, no turn held open.
+#
+#   just breaker report      one line per lane that is not dispatchable; silent otherwise
+#   just breaker state       every lane, with its streaks, its feed and its feed's age
+#   just breaker check --lane zai            the pre-dispatch read, as an exit code
+#   just breaker estimate --tier pro         z.ai's ledger estimate, advisory only
+#   just breaker reset --lane zai --force    clear a quality trip by hand
+#
+# Two trip families, and they behave differently on purpose. **Availability**
+# trips when a provider says it is out of quota, and reopens at that provider's
+# own published window boundary — computed, never guessed, which is why
+# `quota_exhausted` is its own failure class rather than `infra_unavailable`.
+# **Quality** trips on three consecutive gate failures or refusals on a lane,
+# refuses with `provider_refused`, and does not reset on a timer at all: time
+# does not fix a provider that swapped the model behind a name, so it escalates
+# and a human clears it. A third case — three consecutive provider errors with
+# no published reset — opens the lane and *holds* it, because inventing a
+# cooldown there is the defect that disqualified LiteLLM as this breaker.
+#
+# `just dispatch` reads the state before it plans anything, so a tripped lane
+# costs nothing to discover. Feeds: the Claude status-line tap (`just prereqs
+# statusline`, #230) and Codex's `account/rateLimits/read` are first-party and
+# may trip a lane; z.ai publishes nothing machine-readable, so its estimate is
+# advisory only and that lane is 429-reactive. `just breaker state` says which
+# lanes are in that degraded mode.
+#
+# Every transition goes to OTel and to `~/.arma-cti/breaker/transitions.jsonl`.
+breaker *args:
+    uv run python tools/breaker.py {{ args }}
 
 # Print an issue's newest handoff comment, and nothing else (#210,
 # docs/agents/handoff.md). A continuation's first read.

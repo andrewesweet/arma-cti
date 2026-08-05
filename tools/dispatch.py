@@ -48,12 +48,18 @@ that merely believes its assignment discovers the collision by destroying work. 
 a mismatch refuses loudly rather than working somewhere else.
 
 Refusals are named, in the tier's `key=value` form, and a refusal that means "this
-dispatch never happened" carries a failure class from CLAUDE.md's table. Every one of
-them is `infra_unavailable`: a lane that could not be reached says nothing about the
-code under test, which is exactly what that row means. ADR-0061's two new classes are
-deliberately *not* emitted here — `quota_exhausted` and `provider_refused` are outcomes
-of a run that reached a provider, and belong to the breaker and the ledger (#226, #227),
-not to a launch that never got that far.
+dispatch never happened" carries a failure class from CLAUDE.md's table. The refusals
+this module owns are all `infra_unavailable`: a lane that could not be reached says
+nothing about the code under test, which is exactly what that row means.
+
+**The lane's breaker is read before anything is planned** (#226). That is the one place
+ADR-0061's other two classes reach this file: a lane out of quota refuses with
+`quota_exhausted` and the published reset time, and a lane whose quality trip has fired
+refuses with `provider_refused` and escalates. Neither is invented here — both come from
+`tools/breaker.py`'s verdict, which is a state file this module reads and never writes
+by itself. What it does write is the other direction: when a dispatched run ends, its
+own log is classified and fed back to the breaker, which is how a 429 trips a lane on a
+provider that publishes no quota state.
 """
 
 from __future__ import annotations
@@ -71,6 +77,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 from urllib.parse import quote
 
+# tools/ holds standalone scripts rather than an importable package, so a sibling import
+# needs the script's own directory on the path — the device `stall_watch.py` uses.
+sys.path.insert(0, str(Path(__file__).parent))
+
+# The path insert above is what makes this importable.
+import breaker
+
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping
 
@@ -78,6 +91,11 @@ EXIT_REFUSED: Final = 1
 
 DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 CREDENTIALS: Final = Path.home() / ".arma-cti" / "credentials.env"
+
+# How much of a finished run's log the breaker's classifier reads. A provider's own
+# refusal or limit message is the last thing a run says, and a whole log of an agent's
+# work would be a haystack full of the words this looks for.
+LOG_TAIL_BYTES: Final = 8192
 
 # Claude Code documents `OTEL_RESOURCE_ATTRIBUTES` as strict: US-ASCII, no spaces,
 # percent-encode anything exotic. The collector's `group_by` file export also turns a
@@ -237,6 +255,7 @@ class Plan(NamedTuple):
     argv: tuple[str, ...]
     credentials: Path
     permission_mode: str
+    breaker_dir: Path = breaker.DEFAULT_BREAKER_DIR
 
     def document(self) -> dict[str, object]:
         """Render the dispatch record, which names the credential key and never its value."""
@@ -253,6 +272,7 @@ class Plan(NamedTuple):
             "permission_mode": self.permission_mode,
             "credential": lane.credential,
             "credentials_file": str(self.credentials),
+            "breaker_dir": str(self.breaker_dir),
             "resource_attributes": dict(self.identity.attributes()),
             "planned_at": datetime.now(tz=UTC).isoformat(),
         }
@@ -426,6 +446,46 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
     return None
 
 
+def breaker_refusal(lane_name: str, breaker_dir: Path, now: float) -> Refusal | None:
+    """Read this lane's breaker before anything is planned, and refuse a tripped one (#226).
+
+    This is the integration point ADR-0061 Decision 7 asks for: the state is read
+    *before* dispatch, so a lane whose quota is gone costs nothing to discover, and the
+    wait it hands back is a published window boundary rather than a guess. A quality
+    trip refuses with `provider_refused` instead — waiting does not fix a lane that is
+    serving the wrong thing, and that row's response is exactly the right one: not a
+    result, re-dispatch elsewhere, and escalate.
+    """
+    result = breaker.lane_verdict(breaker.Store(directory=breaker_dir), lane_name, now)
+    if result.conducting:
+        return None
+    found = [f"lane={lane_name}", f"rule={result.rule}", f"why={result.reason}"]
+    if result.reset_at is not None:
+        found.append(f"until={breaker.iso(result.reset_at)}")
+        found.append(f"in={breaker.human_delta(result.reset_at - now)}")
+    else:
+        found.append("until=unknown")
+    if result.escalates:
+        action = (
+            "The lane's breaker is tripped and escalates rather than resetting on a "
+            "timer. Re-dispatch to another lane; this one reopens only when a human "
+            f"runs `just breaker reset --lane {lane_name} --force`."
+        )
+    elif result.reset_at is None:
+        action = (
+            "The lane is out of quota and no reset time was published to us, because no "
+            "quota feed is wired — the breaker is reacting to 429s. Re-dispatch to "
+            "another lane, or wire the feed with `just prereqs statusline` (#230)."
+        )
+    else:
+        action = (
+            "Not a result: nothing was dispatched and nothing is known about the code "
+            "under test. Re-dispatch to another lane, or queue until the reset above. "
+            "The wait is the provider's own window boundary, not a backoff."
+        )
+    return Refusal("lane_breaker_open", tuple(found), action, failure_class=result.failure_class)
+
+
 def assert_worktree(assigned: Path, observed: str) -> Refusal | None:
     """Refuse unless the assigned path is its own git top level (#105's fourth instance).
 
@@ -533,6 +593,11 @@ def plan_dispatch(
     if refusal is not None:
         return None, "", refusal
 
+    breaker_dir = Path(args.breaker_dir).expanduser()
+    refusal = breaker_refusal(args.lane, breaker_dir, now.timestamp())
+    if refusal is not None:
+        return None, "", refusal
+
     profile = PROFILES[args.profile]
     lane = LANES[profile.lane]
 
@@ -592,6 +657,7 @@ def plan_dispatch(
         argv=build_argv(lane, profile, args.permission_mode),
         credentials=credentials,
         permission_mode=args.permission_mode,
+        breaker_dir=breaker_dir,
     )
     return plan, brief, None
 
@@ -623,6 +689,7 @@ def load_record(record: Path) -> Plan:
         argv=tuple(str(part) for part in document["argv"]),
         credentials=Path(str(document["credentials_file"])),
         permission_mode=str(document["permission_mode"]),
+        breaker_dir=Path(str(document.get("breaker_dir", breaker.DEFAULT_BREAKER_DIR))),
     )
 
 
@@ -668,14 +735,46 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         text=True,
         check=False,
     )
+    outcome, reset_at = classify_finished_run(record, done.returncode)
+    breaker.record_outcome(
+        breaker.Store(directory=plan.breaker_dir),
+        plan.identity.lane,
+        breaker.Outcome(
+            outcome,
+            reset_at=reset_at,
+            detail=f"dispatch {plan.identity.dispatch_id} exited {done.returncode}",
+        ),
+        datetime.now(tz=UTC).timestamp(),
+    )
     write_result(
         record,
         dispatch_id=plan.identity.dispatch_id,
         returncode=done.returncode,
+        outcome=outcome,
         started_at=started.isoformat(),
         ended_at=datetime.now(tz=UTC).isoformat(),
     )
     return done.returncode, (f"dispatch={plan.identity.dispatch_id}", f"exit={done.returncode}")
+
+
+def classify_finished_run(record: Path, returncode: int) -> tuple[str, float | None]:
+    """Read what the run's own log says happened, and feed the breaker that (#226).
+
+    This is the degraded fallback the issue names: with no quota tap wired, a lane's
+    exhaustion is learned from the 429 the dispatch itself provoked. Late, because it
+    cost a dispatch to find out, but not blind.
+
+    The log is read rather than the child's pipes captured, because the seam already
+    redirects everything the run says into `dispatch.log` and putting a second copy in
+    memory would change what a live `tail -f` on that file shows. An unreadable log is
+    the same as an unfamiliar one: `unclassified`, which moves no streak.
+    """
+    log = record / "dispatch.log"
+    try:
+        text = log.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        text = ""
+    return breaker.classify_run(returncode, text[-LOG_TAIL_BYTES:])
 
 
 def registry_lines() -> tuple[str, ...]:
@@ -744,6 +843,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--permission-mode", default="acceptEdits")
     parser.add_argument("--dispatch-dir", default=str(DISPATCH_ROOT))
     parser.add_argument("--credentials", default=str(CREDENTIALS))
+    parser.add_argument("--breaker-dir", default=str(breaker.DEFAULT_BREAKER_DIR))
     parser.add_argument("--list", action="store_true", help="print the registry and exit")
     parser.add_argument("--dry-run", action="store_true", help="print the plan, launch nothing")
     parser.add_argument("--run", default="", help="internal: run the record at this path")

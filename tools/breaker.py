@@ -1,0 +1,1374 @@
+"""`just breaker`: one verdict per lane, read before a dispatch is planned (#226, ADR-0061).
+
+A lane can stop being worth dispatching to for two unrelated reasons, and conflating
+them is how a breaker becomes noise. So there are two trip *families*, and the whole
+design falls out of the difference between them.
+
+- **Availability.** The lane cannot serve right now. Quota exhaustion is the common
+  case, it is foreseeable, and its wait is *computed from a published window boundary,
+  never guessed* — ADR-0061 Decision 7's requirement, and the reason `quota_exhausted`
+  earned a failure-class row of its own instead of routing to `infra_unavailable`. A
+  quota trip auto-resets: at the reset time the circuit goes half-open, one dispatch
+  probes it, and an ordinary outcome closes it. Nygard's caveat holds — this is expected
+  output, not an incident.
+- **Quality.** The lane is serving, and what it serves is wrong: N consecutive gate
+  failures, or N consecutive refusals, on one profile. This is the only thing that
+  catches a provider swapping the model behind a name with no announcement. It does
+  **not** auto-reset, because time does not fix it; it escalates, and clearing it is a
+  human act (`just breaker reset --lane L --force`).
+
+There is a third case that looks like the first and must not behave like it: **N
+consecutive provider errors** with no published reset. That opens the lane and *holds*
+it. Inventing a cooldown there is exactly the defect that disqualified LiteLLM as the
+breaker — a five-second reactive damper against five-hour windows — so this module
+never invents one. A held lane reopens on evidence rather than on a timer: a fresh
+first-party quota reading showing the lane answering, or an explicit reset.
+
+## What is shared with #72
+
+The pure core — `TripRule`, `Circuit`, `advance`, `settle`, `verdict` — knows nothing
+about lanes, providers, quota or files. It is a consecutive-N trip policy over a stream
+of typed outcome names, which is precisely what #72's first consumer needs: the corpus
+loop wants `TripRule("systemic_crash", on={"node_crashed"}, consecutive=2)` and to
+abandon the remaining probes when it opens. N lives on the rule, so that consumer picks
+its own number without touching this one. #72's *second* consumer, the in-world effect
+pump, cannot use it: the pump is SQF running inside the engine, `compileFinal`-ed by the
+Functions Library, with no way to reach a Python module — its latch has to be written
+again in SQF against the same rule shape.
+
+## Feeds, and what each lane can actually know
+
+| Lane | Source | May trip a lane? |
+|---|---|---|
+| Claude | status-line stdin: `rate_limits.{five_hour,seven_day}` | yes, first-party |
+| Codex | `account/rateLimits/read`: `usedPercent`, `resetsAt` | yes, first-party |
+| z.ai | nothing exists; estimated from our own ledger | **no** — advisory only |
+
+The z.ai estimator deliberately cannot trip anything. z.ai meters *prompt counts* and
+the ledger records *dispatches*; one dispatch is many prompts, so the estimate is a
+lower bound in a unit the cap is not denominated in. Tripping a lane on that would refuse
+real work on a number we know to be wrong. It annotates the report instead, and z.ai's
+breaker is driven by observed exhaustion — which is the degraded mode this issue names,
+stated where it costs something: a quota trip with no reset time says so in its refusal.
+
+The Claude feed has a governance weakness that cannot be fixed here and is therefore
+carried: the status line lives in the human's global `~/.claude/settings.json`, which
+this repository cannot govern, enforce or test, and status lines run only in interactive
+sessions. With the tap unwired the Claude lane is 429-reactive — late, but not blind.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+import time
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
+from typing import TYPE_CHECKING, Final, NamedTuple
+
+# tools/ holds standalone scripts rather than an importable package, so a sibling import
+# needs the script's own directory on the path — the device `stall_watch.py` uses to
+# reach `pool_merge.py`.
+sys.path.insert(0, str(Path(__file__).parent))
+
+# The path insert above is what makes this importable.
+import otel_event
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable, Mapping, Sequence
+
+# ---------------------------------------------------------------- the pure core (#72)
+
+CLOSED: Final = "closed"
+OPEN: Final = "open"
+HALF_OPEN: Final = "half_open"
+
+# The two trip families. Availability is "the lane cannot serve"; quality is "the lane
+# serves, and what it serves is wrong". They differ in what may close them, which is why
+# this is a field on the rule rather than a name a reader has to recognise.
+AVAILABILITY: Final = "availability"
+QUALITY: Final = "quality"
+
+# Outcome names. `OK` and `UNCLASSIFIED` are the two the rules never name: an ordinary
+# outcome clears every streak, and an outcome nobody could classify moves nothing at
+# all. A class we could not read is not evidence in either direction — the #41 shape,
+# where a check that could not run was silently treated as a check that passed.
+OK: Final = "ok"
+UNCLASSIFIED: Final = "unclassified"
+QUOTA_EXHAUSTED: Final = "quota_exhausted"
+PROVIDER_ERROR: Final = "provider_error"
+PROVIDER_REFUSED: Final = "provider_refused"
+GATE_FAILED: Final = "gate_failed"
+
+TRANSITION_EVENT: Final = "cti.breaker.transition"
+
+
+class TripRule(NamedTuple):
+    """One consecutive-N trip policy over a set of outcome names.
+
+    `family` is the distinction the whole design turns on — whether this rule is about
+    the lane being *able* to serve or about what it serves being *right* — and it is a
+    field rather than a name comparison because the two families have different answers
+    to "what evidence may close this". `auto_reset` says whether the open state ends at
+    a reset time somebody published; nothing here ever invents a cooldown.
+    """
+
+    name: str
+    on: frozenset[str]
+    consecutive: int
+    family: str
+    auto_reset: bool
+    escalates: bool
+    failure_class: str
+
+
+class Circuit(NamedTuple):
+    """What one lane's breaker knows: its state, why, and how far each streak has run."""
+
+    state: str = CLOSED
+    rule: str = ""
+    reason: str = ""
+    opened_at: float = 0.0
+    reset_at: float | None = None
+    escalated: bool = False
+    streaks: tuple[tuple[str, int], ...] = ()
+
+    def streak(self, rule: str) -> int:
+        """How many consecutive counting outcomes this rule has seen."""
+        return dict(self.streaks).get(rule, 0)
+
+    def with_streak(self, rule: str, value: int) -> Circuit:
+        """Return this circuit with one rule's streak replaced."""
+        counts = dict(self.streaks)
+        if value:
+            counts[rule] = value
+        else:
+            counts.pop(rule, None)
+        return self._replace(streaks=tuple(sorted(counts.items())))
+
+
+class Outcome(NamedTuple):
+    """One typed thing that happened on a lane, and what came with it.
+
+    `reset_at` is only ever a boundary a provider published — the type carries it beside
+    the outcome precisely so that there is nowhere for a *computed* backoff to enter.
+    """
+
+    name: str
+    reset_at: float | None = None
+    detail: str = ""
+
+
+class Transition(NamedTuple):
+    """One state change, which is the thing OTel is required to carry."""
+
+    at: float
+    from_state: str
+    to_state: str
+    rule: str
+    reason: str
+    reset_at: float | None
+    escalates: bool
+    streak: int
+
+
+class Verdict(NamedTuple):
+    """The pre-dispatch read: may this lane be dispatched to, and if not, what to say."""
+
+    lane: str
+    conducting: bool
+    state: str
+    rule: str
+    reason: str
+    failure_class: str
+    reset_at: float | None
+    escalates: bool
+
+
+# The lane rules. N is 3 for both consecutive-N families: two is inside the range one
+# bad afternoon produces on a healthy provider, and anything above three spends more of
+# a scarce pool learning what the third failure already showed.
+CONSECUTIVE_N: Final = 3
+
+QUOTA_RULE: Final = TripRule(
+    name="quota",
+    on=frozenset({QUOTA_EXHAUSTED}),
+    consecutive=1,
+    family=AVAILABILITY,
+    auto_reset=True,
+    escalates=False,
+    failure_class=QUOTA_EXHAUSTED,
+)
+PROVIDER_ERROR_RULE: Final = TripRule(
+    name="provider_errors",
+    on=frozenset({PROVIDER_ERROR}),
+    consecutive=CONSECUTIVE_N,
+    family=AVAILABILITY,
+    auto_reset=False,
+    escalates=True,
+    failure_class="infra_unavailable",
+)
+QUALITY_RULE: Final = TripRule(
+    name="quality",
+    on=frozenset({GATE_FAILED, PROVIDER_REFUSED}),
+    consecutive=CONSECUTIVE_N,
+    family=QUALITY,
+    auto_reset=False,
+    escalates=True,
+    failure_class=PROVIDER_REFUSED,
+)
+
+# Order matters only for which rule names an outcome that two could claim; today no
+# outcome appears in two rules, and the assertion below keeps it that way.
+LANE_RULES: Final[tuple[TripRule, ...]] = (QUOTA_RULE, PROVIDER_ERROR_RULE, QUALITY_RULE)
+
+
+def rule_named(rules: Sequence[TripRule], name: str) -> TripRule | None:
+    """Find a rule by name, which is how a stored circuit rejoins its policy."""
+    for rule in rules:
+        if rule.name == name:
+            return rule
+    return None
+
+
+def _closed_by_probe(circuit: Circuit, outcome: Outcome, now: float) -> tuple[Circuit, Transition]:
+    """Close a half-open circuit whose probe came back ordinary."""
+    return Circuit(), Transition(
+        at=now,
+        from_state=HALF_OPEN,
+        to_state=CLOSED,
+        rule=circuit.rule,
+        reason=outcome.detail or "the half-open probe came back ordinary",
+        reset_at=None,
+        escalates=False,
+        streak=0,
+    )
+
+
+def _tripped(
+    circuit: Circuit,
+    moved: Circuit,
+    rule: TripRule,
+    outcome: Outcome,
+    now: float,
+) -> tuple[Circuit, Transition | None]:
+    """Open a circuit on one rule reaching its N, or say why this trip changes nothing."""
+    if circuit.state == OPEN and circuit.escalated and not rule.escalates:
+        # An escalated lane is waiting on a human. A trip that auto-resets must not
+        # overwrite that record and quietly turn an escalation into a timed wait — the
+        # streak still counts, and the escalation still stands.
+        return moved, None
+    streak = moved.streak(rule.name)
+    opened = Circuit(
+        state=OPEN,
+        rule=rule.name,
+        reason=outcome.detail or f"{streak} consecutive {outcome.name}",
+        opened_at=now,
+        reset_at=outcome.reset_at if rule.auto_reset else None,
+        escalated=rule.escalates,
+        streaks=moved.streaks,
+    )
+    already = (
+        circuit.state == OPEN and circuit.rule == rule.name and circuit.reset_at == opened.reset_at
+    )
+    if already:
+        return opened, None
+    return opened, Transition(
+        at=now,
+        from_state=circuit.state,
+        to_state=OPEN,
+        rule=rule.name,
+        reason=opened.reason,
+        reset_at=opened.reset_at,
+        escalates=rule.escalates,
+        streak=streak,
+    )
+
+
+def advance(
+    circuit: Circuit,
+    rules: Sequence[TripRule],
+    outcome: Outcome,
+    now: float,
+) -> tuple[Circuit, Transition | None]:
+    """Feed one typed outcome to a circuit. Pure: no clock, no files, no lanes.
+
+    This is the function #72's corpus loop wants. Three behaviours and nothing else:
+
+    - `UNCLASSIFIED` changes nothing at all, streaks included.
+    - `OK` clears every streak, and closes a half-open circuit — the probe worked.
+    - anything else advances the streak of every rule that counts it, resets the streak
+      of every rule that does not, and trips the first rule to reach its N.
+    """
+    if outcome.name == UNCLASSIFIED:
+        return circuit, None
+    if outcome.name == OK:
+        if circuit.state == HALF_OPEN:
+            return _closed_by_probe(circuit, outcome, now)
+        return circuit._replace(streaks=()), None
+
+    moved = circuit
+    for rule in rules:
+        counts = outcome.name in rule.on
+        moved = moved.with_streak(rule.name, moved.streak(rule.name) + 1 if counts else 0)
+
+    for rule in rules:
+        if outcome.name in rule.on and moved.streak(rule.name) >= rule.consecutive:
+            return _tripped(circuit, moved, rule, outcome, now)
+    return moved, None
+
+
+def settle(
+    circuit: Circuit,
+    rules: Sequence[TripRule],
+    now: float,
+) -> tuple[Circuit, Transition | None]:
+    """Move a circuit whose reset time has arrived to half-open. Pure.
+
+    Only an auto-resetting rule has a reset time, and only a published one is ever
+    stored, so this is the "computed, never guessed" wait actually elapsing.
+    """
+    if circuit.state != OPEN or circuit.reset_at is None or now < circuit.reset_at:
+        return circuit, None
+    rule = rule_named(rules, circuit.rule)
+    if rule is None or not rule.auto_reset:  # pragma: no cover — only auto rules store one
+        return circuit, None
+    half = circuit._replace(state=HALF_OPEN, reason="the published window reset arrived")
+    return half, Transition(
+        at=now,
+        from_state=OPEN,
+        to_state=HALF_OPEN,
+        rule=circuit.rule,
+        reason=half.reason,
+        reset_at=circuit.reset_at,
+        escalates=False,
+        streak=circuit.streak(circuit.rule),
+    )
+
+
+def verdict(lane: str, circuit: Circuit, rules: Sequence[TripRule]) -> Verdict:
+    """Say whether this lane may be dispatched to. Pure, and taken on a settled circuit.
+
+    Half-open conducts on purpose: that single dispatch is the probe, and a breaker that
+    never let one through would need a human to tell it the window had reset — which is
+    the thing the published reset time exists to avoid.
+    """
+    if circuit.state != OPEN:
+        return Verdict(
+            lane=lane,
+            conducting=True,
+            state=circuit.state,
+            rule="",
+            reason="",
+            failure_class="",
+            reset_at=None,
+            escalates=False,
+        )
+    rule = rule_named(rules, circuit.rule)
+    failure_class = rule.failure_class if rule else "infra_unavailable"
+    return Verdict(
+        lane=lane,
+        conducting=False,
+        state=OPEN,
+        rule=circuit.rule,
+        reason=circuit.reason,
+        failure_class=failure_class,
+        reset_at=circuit.reset_at,
+        escalates=circuit.escalated,
+    )
+
+
+# ------------------------------------------------------------------------ quota feeds
+
+# z.ai's GLM Coding Plan, from the plan documentation: prompt credits on a five-hour
+# window and a seven-day window, per tier. Peak is Mon-Fri 14:00-18:00 SGT (UTC+8) and
+# off-peak consumption is charged at half. Recorded here because the estimator has no
+# machine-readable source to read them from — that absence is the whole reason the
+# estimator exists, and #230's `prereqs plan-tier` supplies which row applies.
+ZAI_TIERS: Final[dict[str, tuple[int, int]]] = {
+    "lite": (2_000, 10_000),
+    "pro": (12_000, 60_000),
+    "max": (28_000, 140_000),
+}
+ZAI_PEAK_UTC_OFFSET_HOURS: Final = 8
+ZAI_PEAK_START_HOUR: Final = 14
+ZAI_PEAK_END_HOUR: Final = 18
+ZAI_OFF_PEAK_MULTIPLIER: Final = 0.5
+
+FIVE_HOURS_SECS: Final = 5 * 3600
+SEVEN_DAYS_SECS: Final = 7 * 24 * 3600
+
+FIVE_HOUR: Final = "five_hour"
+SEVEN_DAY: Final = "seven_day"
+
+# Where the report starts saying something about an estimate. Below this a lane with an
+# advisory-only feed is a lane that is fine, and the report is required to be silent
+# about those.
+ESTIMATE_ADVISORY_FRACTION: Final = 0.8
+
+
+class QuotaWindow(NamedTuple):
+    """One metering window's state: how much of it is gone, and when it comes back."""
+
+    name: str
+    used_fraction: float
+    resets_at: float | None
+
+    @property
+    def exhausted(self) -> bool:
+        """Whether this window has nothing left. Strictly at the cap, never near it."""
+        return self.used_fraction >= 1.0
+
+
+class QuotaReading(NamedTuple):
+    """What one feed said about one lane, including its saying that it could not say."""
+
+    lane: str
+    source: str
+    estimated: bool
+    windows: tuple[QuotaWindow, ...]
+    unavailable: str
+    observed_at: float
+    unit: str = "prompts"
+
+    @property
+    def available(self) -> bool:
+        """Whether this reading carries state at all."""
+        return not self.unavailable
+
+    def exhausted_window(self) -> QuotaWindow | None:
+        """Name the window that is out, preferring the one that comes back soonest."""
+        out = [window for window in self.windows if window.exhausted]
+        if not out:
+            return None
+        return min(out, key=lambda window: (window.resets_at is None, window.resets_at or 0.0))
+
+    def document(self) -> dict[str, object]:
+        """Render the reading for the store."""
+        return {
+            "lane": self.lane,
+            "source": self.source,
+            "estimated": self.estimated,
+            "unavailable": self.unavailable,
+            "observed_at": self.observed_at,
+            "unit": self.unit,
+            "windows": [
+                {"name": w.name, "used_fraction": w.used_fraction, "resets_at": w.resets_at}
+                for w in self.windows
+            ],
+        }
+
+
+def reading_from_document(document: Mapping[str, object]) -> QuotaReading:
+    """Read a stored reading back."""
+    windows = tuple(
+        QuotaWindow(
+            name=str(entry.get("name", "")),
+            used_fraction=float(entry.get("used_fraction", 0.0) or 0.0),
+            resets_at=None if entry.get("resets_at") is None else float(entry["resets_at"]),
+        )
+        for entry in document.get("windows", [])  # type: ignore[union-attr]
+        if isinstance(entry, dict)
+    )
+    return QuotaReading(
+        lane=str(document.get("lane", "")),
+        source=str(document.get("source", "")),
+        estimated=bool(document.get("estimated", False)),
+        windows=windows,
+        unavailable=str(document.get("unavailable", "")),
+        observed_at=float(document.get("observed_at", 0.0) or 0.0),
+        unit=str(document.get("unit", "prompts")),
+    )
+
+
+def as_epoch(value: object) -> float | None:
+    """Read a reset time that a provider may spell as an epoch or as ISO-8601.
+
+    Tolerant on purpose. The Codex field is documented as a Unix timestamp; the status
+    line's is not documented as either, and a feed whose timestamp we misread would
+    produce a *guessed* wait wearing a computed one's clothes. Anything unreadable
+    becomes "no reset time", which the refusal then says out loud.
+    """
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if not isinstance(value, str) or not value.strip():
+        return None
+    text = value.strip()
+    try:
+        return float(text)
+    except ValueError:
+        pass
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed.timestamp()
+
+
+def _window_from_status_line(name: str, block: object) -> QuotaWindow | None:
+    """Read one `rate_limits.<window>` block, which is independently optional."""
+    if not isinstance(block, dict):
+        return None
+    used = block.get("used_percentage")
+    if not isinstance(used, (int, float)) or isinstance(used, bool):
+        return None
+    return QuotaWindow(
+        name=name, used_fraction=float(used) / 100.0, resets_at=as_epoch(block.get("resets_at"))
+    )
+
+
+def reading_from_status_line(payload: Mapping[str, object], lane: str, now: float) -> QuotaReading:
+    """Read Claude Code's status-line stdin document.
+
+    `rate_limits` appears on Pro/Max only and only after the first API response of a
+    session, and each of the two windows is independently optional. Every one of those
+    absences is the same typed state — the feed said nothing — never a zero.
+    """
+    limits = payload.get("rate_limits")
+    if not isinstance(limits, dict):
+        return QuotaReading(
+            lane=lane,
+            source="status_line",
+            estimated=False,
+            windows=(),
+            unavailable="rate_limits_absent",
+            observed_at=now,
+        )
+    windows = tuple(
+        window
+        for window in (
+            _window_from_status_line(FIVE_HOUR, limits.get("five_hour")),
+            _window_from_status_line(SEVEN_DAY, limits.get("seven_day")),
+        )
+        if window is not None
+    )
+    if not windows:
+        return QuotaReading(
+            lane=lane,
+            source="status_line",
+            estimated=False,
+            windows=(),
+            unavailable="rate_limits_empty",
+            observed_at=now,
+        )
+    return QuotaReading(
+        lane=lane,
+        source="status_line",
+        estimated=False,
+        windows=windows,
+        unavailable="",
+        observed_at=now,
+    )
+
+
+def reading_from_codex_rate_limits(
+    payload: Mapping[str, object],
+    lane: str,
+    now: float,
+) -> QuotaReading:
+    """Read `account/rateLimits/read`, accepting either the bare result or a JSON-RPC envelope.
+
+    `rateLimitReachedType` is the provider's own statement that a limit has been reached,
+    and it outranks the percentages: a backend that says it is out is out, whatever
+    `usedPercent` last read.
+    """
+    body = payload.get("result") if isinstance(payload.get("result"), dict) else payload
+    limits = body.get("rateLimits") if isinstance(body, dict) else None
+    if not isinstance(limits, dict):
+        return QuotaReading(
+            lane=lane,
+            source="codex_rate_limits",
+            estimated=False,
+            windows=(),
+            unavailable="rate_limits_absent",
+            observed_at=now,
+        )
+    reached = limits.get("rateLimitReachedType")
+    windows: list[QuotaWindow] = []
+    for name in ("primary", "secondary"):
+        block = limits.get(name)
+        if not isinstance(block, dict):
+            continue
+        used = block.get("usedPercent")
+        if not isinstance(used, (int, float)) or isinstance(used, bool):
+            continue
+        fraction = float(used) / 100.0
+        if isinstance(reached, str) and reached.strip() and reached == name:
+            fraction = max(fraction, 1.0)
+        windows.append(
+            QuotaWindow(
+                name=name, used_fraction=fraction, resets_at=as_epoch(block.get("resetsAt"))
+            )
+        )
+    if not windows:
+        return QuotaReading(
+            lane=lane,
+            source="codex_rate_limits",
+            estimated=False,
+            windows=(),
+            unavailable="rate_limits_empty",
+            observed_at=now,
+        )
+    if isinstance(reached, str) and reached.strip() and reached not in ("primary", "secondary"):
+        # The backend named a limit state we do not map to a window. Treat the soonest
+        # window as reached rather than dropping the provider's own word for it.
+        soonest = min(windows, key=lambda w: (w.resets_at is None, w.resets_at or 0.0))
+        windows = [
+            w._replace(used_fraction=max(w.used_fraction, 1.0)) if w is soonest else w
+            for w in windows
+        ]
+    return QuotaReading(
+        lane=lane,
+        source="codex_rate_limits",
+        estimated=False,
+        windows=tuple(windows),
+        unavailable="",
+        observed_at=now,
+    )
+
+
+def zai_is_peak(at: float) -> bool:
+    """Whether a moment falls in z.ai's peak band: Mon-Fri 14:00-18:00 SGT."""
+    local = datetime.fromtimestamp(at, tz=UTC) + timedelta(hours=ZAI_PEAK_UTC_OFFSET_HOURS)
+    weekday_max = 5  # Monday is 0; Saturday is 5
+    if local.weekday() >= weekday_max:
+        return False
+    return ZAI_PEAK_START_HOUR <= local.hour < ZAI_PEAK_END_HOUR
+
+
+def _estimate_window(
+    name: str, events: Sequence[float], now: float, span: float, cap: int
+) -> QuotaWindow:
+    """Charge the events inside one rolling window and say when the window turns over."""
+    inside = [at for at in events if now - span <= at <= now]
+    charged = sum(1.0 if zai_is_peak(at) else ZAI_OFF_PEAK_MULTIPLIER for at in inside)
+    resets_at = min(inside) + span if inside else None
+    return QuotaWindow(name=name, used_fraction=charged / cap if cap else 0.0, resets_at=resets_at)
+
+
+def estimate_zai(events: Sequence[float], tier: str, now: float, lane: str = "zai") -> QuotaReading:
+    """Estimate z.ai consumption from our own dispatch ledger. Advisory, never a trip.
+
+    Two honest weaknesses, both carried in the reading itself rather than smoothed over:
+    the caps are denominated in *prompt counts* and the ledger records *dispatches*, one
+    of which is many prompts, so this is a lower bound in the wrong unit; and the tier
+    has no machine-readable source, so an unknown tier is a typed state — the estimate
+    is unavailable and says which recipe supplies the missing fact — never a guess at
+    which plan the human bought.
+    """
+    caps = ZAI_TIERS.get(tier.strip().lower())
+    if caps is None:
+        return QuotaReading(
+            lane=lane,
+            source="ledger_estimate",
+            estimated=True,
+            windows=(),
+            unavailable="plan_tier_unknown",
+            observed_at=now,
+            unit="dispatches",
+        )
+    five_hour_cap, seven_day_cap = caps
+    windows = (
+        _estimate_window(FIVE_HOUR, events, now, FIVE_HOURS_SECS, five_hour_cap),
+        _estimate_window(SEVEN_DAY, events, now, SEVEN_DAYS_SECS, seven_day_cap),
+    )
+    return QuotaReading(
+        lane=lane,
+        source="ledger_estimate",
+        estimated=True,
+        windows=windows,
+        unavailable="",
+        observed_at=now,
+        unit="dispatches",
+    )
+
+
+def apply_reading(
+    circuit: Circuit,
+    rules: Sequence[TripRule],
+    reading: QuotaReading,
+    now: float,
+) -> tuple[Circuit, Transition | None]:
+    """Let a first-party quota reading move the breaker. Pure.
+
+    An estimate moves nothing, for the reason in the module docstring. A first-party
+    reading does two things. An exhausted window is a `quota_exhausted` outcome carrying
+    the published reset. A healthy one is evidence the lane both answers and has quota,
+    which closes an availability trip — including the held one, whose rule has no timer
+    and for which this is the only evidence short of a human it will ever get.
+
+    A **quality** trip is deliberately immune to this. The provider having quota says
+    nothing about whether what it returns is right, and letting a quota document clear a
+    quality trip would make the one trip that catches a silent model swap self-healing.
+    """
+    if reading.estimated or not reading.available:
+        return circuit, None
+    out = reading.exhausted_window()
+    if out is not None:
+        exhausted = Outcome(
+            QUOTA_EXHAUSTED,
+            reset_at=out.resets_at,
+            detail=f"{reading.source} reports the {out.name} window at or over its cap",
+        )
+        return advance(circuit, rules, exhausted, now)
+    rule = rule_named(rules, circuit.rule)
+    if circuit.state != OPEN or rule is None or rule.family == QUALITY:
+        return circuit, None
+    return Circuit(), Transition(
+        at=now,
+        from_state=OPEN,
+        to_state=CLOSED,
+        rule=circuit.rule,
+        reason=f"{reading.source} answered with quota to spare, so the lane is serving",
+        reset_at=None,
+        escalates=False,
+        streak=0,
+    )
+
+
+# ------------------------------------------------------------- classifying a lane's run
+
+# What a dispatched runner's own output says happened. Deliberately narrow: an output
+# this cannot place becomes `UNCLASSIFIED`, which moves nothing. Guessing a class from
+# unfamiliar text would put a wrong class in the failure-class table, and CLAUDE.md
+# makes a wrong class a harness bug by definition.
+QUOTA_MARKERS: Final = (
+    "usage limit reached",
+    "rate limit exceeded",
+    "429",
+    "quota exceeded",
+    "insufficient quota",
+    "out of credits",
+)
+PROVIDER_ERROR_MARKERS: Final = (
+    "connection refused",
+    "connection reset",
+    "could not connect",
+    "internal server error",
+    "500 ",
+    "502 ",
+    "503 ",
+    "504 ",
+    "bad gateway",
+    "service unavailable",
+    "network error",
+    "timed out",
+)
+# Claude Code prints its subscription limit as `Claude AI usage limit reached|<epoch>`,
+# which is a published reset boundary arriving on the only channel a headless run has.
+LIMIT_EPOCH_SEPARATOR: Final = "usage limit reached|"
+
+
+def classify_run(returncode: int, output: str) -> tuple[str, float | None]:
+    """Read a finished dispatch's exit code and output into an outcome and a reset time.
+
+    Returns `(outcome, reset_at)`. This is the 429-reactive path the issue names as the
+    degraded fallback: with no quota tap wired, this is how a lane's exhaustion is
+    learned at all — late, because it costs a dispatch to find out, but not blind.
+    """
+    if returncode == 0:
+        return OK, None
+    text = output.lower()
+    if any(marker in text for marker in QUOTA_MARKERS):
+        return QUOTA_EXHAUSTED, _limit_epoch(text)
+    if any(marker in text for marker in PROVIDER_ERROR_MARKERS):
+        return PROVIDER_ERROR, None
+    return UNCLASSIFIED, None
+
+
+def _limit_epoch(text: str) -> float | None:
+    """Pull the reset epoch out of a `usage limit reached|<epoch>` line, if there is one."""
+    index = text.find(LIMIT_EPOCH_SEPARATOR)
+    if index < 0:
+        return None
+    tail = text[index + len(LIMIT_EPOCH_SEPARATOR) :]
+    digits = ""
+    for character in tail:
+        if not character.isdigit():
+            break
+        digits += character
+    return float(digits) if digits else None
+
+
+# ------------------------------------------------------------------------- the store
+
+# Outside every worktree, beside the tier's own evidence, for `stall_watch.py`'s reason:
+# a lane's breaker state must outlive the worktree and the session that tripped it.
+DEFAULT_BREAKER_DIR: Final = Path.home() / ".arma-cti" / "breaker"
+DEFAULT_DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
+
+TRANSITION_JOURNAL: Final = "transitions.jsonl"
+
+# The lanes this reports on. Kept here rather than imported from `tools/dispatch.py`
+# because the breaker is read *by* the dispatcher, and a cycle between the two would
+# make either one unloadable on its own.
+KNOWN_LANES: Final[tuple[str, ...]] = ("claude-native", "zai")
+
+
+class LaneState(NamedTuple):
+    """One lane's persisted state: its circuit, and the last thing a feed said."""
+
+    lane: str
+    circuit: Circuit
+    reading: QuotaReading | None
+    updated_at: float
+
+    def document(self) -> dict[str, object]:
+        """Render the whole lane state for its file."""
+        return {
+            "lane": self.lane,
+            "updated_at": self.updated_at,
+            "circuit": {
+                "state": self.circuit.state,
+                "rule": self.circuit.rule,
+                "reason": self.circuit.reason,
+                "opened_at": self.circuit.opened_at,
+                "reset_at": self.circuit.reset_at,
+                "escalated": self.circuit.escalated,
+                "streaks": dict(self.circuit.streaks),
+            },
+            "quota": None if self.reading is None else self.reading.document(),
+        }
+
+
+def state_path(breaker_dir: Path, lane: str) -> Path:
+    """Where one lane keeps its breaker state."""
+    return breaker_dir / f"{lane}.json"
+
+
+def read_state(breaker_dir: Path, lane: str) -> LaneState:
+    """Read a lane's state, treating absent and unreadable alike as a fresh closed lane.
+
+    A breaker with no file has never tripped, which is a closed circuit; a breaker whose
+    file will not parse has lost its history, and the safe reading of lost history is
+    not "refuse every dispatch forever" — the trip that mattered will happen again on
+    the next N outcomes.
+    """
+    path = state_path(breaker_dir, lane)
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return LaneState(lane, Circuit(), None, 0.0)
+    if not isinstance(document, dict):
+        return LaneState(lane, Circuit(), None, 0.0)
+    block = document.get("circuit")
+    circuit = Circuit()
+    if isinstance(block, dict):
+        streaks = block.get("streaks")
+        circuit = Circuit(
+            state=str(block.get("state", CLOSED)),
+            rule=str(block.get("rule", "")),
+            reason=str(block.get("reason", "")),
+            opened_at=float(block.get("opened_at", 0.0) or 0.0),
+            reset_at=None if block.get("reset_at") is None else float(block["reset_at"]),
+            escalated=bool(block.get("escalated", False)),
+            streaks=tuple(sorted((str(k), int(v)) for k, v in streaks.items()))
+            if isinstance(streaks, dict)
+            else (),
+        )
+    quota = document.get("quota")
+    reading = reading_from_document(quota) if isinstance(quota, dict) else None
+    return LaneState(lane, circuit, reading, float(document.get("updated_at", 0.0) or 0.0))
+
+
+def write_state(breaker_dir: Path, state: LaneState) -> None:
+    """Write a lane's state, replacing the file rather than editing it in place."""
+    breaker_dir.mkdir(parents=True, exist_ok=True)
+    path = state_path(breaker_dir, state.lane)
+    scratch = path.with_suffix(".json.tmp")
+    scratch.write_text(json.dumps(state.document(), indent=2) + "\n", encoding="utf-8")
+    scratch.replace(path)
+
+
+class Store(NamedTuple):
+    """Where the breakers live, which policy they run, and where transitions are sent.
+
+    Bundled rather than passed as three parameters everywhere because they only ever
+    vary together: a test points all three somewhere temporary, and the recipe points
+    all three at the box's real ones.
+    """
+
+    directory: Path = DEFAULT_BREAKER_DIR
+    rules: Sequence[TripRule] = LANE_RULES
+    endpoint: str = ""
+
+    @property
+    def journal(self) -> Path:
+        """Where every transition is written, whether or not the collector took it."""
+        return self.directory / TRANSITION_JOURNAL
+
+
+def emit_transition(store: Store, lane: str, transition: Transition) -> bool:
+    """Put one transition in OTel and in the journal beside the lane's state."""
+    return otel_event.emit(
+        otel_event.Event(
+            name=TRANSITION_EVENT,
+            at=transition.at,
+            attributes={
+                "cti.lane": lane,
+                "cti.breaker.from": transition.from_state,
+                "cti.breaker.to": transition.to_state,
+                "cti.breaker.rule": transition.rule,
+                "cti.breaker.reason": transition.reason,
+                "cti.breaker.streak": transition.streak,
+                "cti.breaker.escalates": transition.escalates,
+                "cti.breaker.reset_at": "" if transition.reset_at is None else transition.reset_at,
+            },
+            resource={"service.name": "arma-cti-breaker", "cti.lane": lane},
+        ),
+        journal=store.journal,
+        endpoint=store.endpoint,
+    )
+
+
+def lane_verdict(store: Store, lane: str, now: float) -> Verdict:
+    """Take the pre-dispatch read: settle any elapsed reset, persist it, and answer.
+
+    Settling here rather than at the moment of trip is what makes "state read before
+    dispatch" sufficient — nothing has to be running for a window reset to take effect,
+    because the next reader is the one that notices it.
+    """
+    state = read_state(store.directory, lane)
+    settled, transition = settle(state.circuit, store.rules, now)
+    if transition is not None:
+        write_state(store.directory, state._replace(circuit=settled, updated_at=now))
+        emit_transition(store, lane, transition)
+    return verdict(lane, settled, store.rules)
+
+
+def record_outcome(
+    store: Store,
+    lane: str,
+    outcome: Outcome,
+    now: float,
+) -> tuple[Circuit, Transition | None]:
+    """Feed one outcome to a lane's breaker, persist it, and emit any transition."""
+    state = read_state(store.directory, lane)
+    settled, elapsed = settle(state.circuit, store.rules, now)
+    if elapsed is not None:
+        emit_transition(store, lane, elapsed)
+    moved, transition = advance(settled, store.rules, outcome, now)
+    if moved != state.circuit or elapsed is not None:
+        write_state(store.directory, state._replace(circuit=moved, updated_at=now))
+    if transition is not None:
+        emit_transition(store, lane, transition)
+    return moved, transition
+
+
+def record_reading(
+    store: Store,
+    lane: str,
+    reading: QuotaReading,
+    now: float,
+) -> tuple[Circuit, Transition | None]:
+    """Store what a feed said and let it move the breaker if it is first-party."""
+    state = read_state(store.directory, lane)
+    settled, elapsed = settle(state.circuit, store.rules, now)
+    if elapsed is not None:
+        emit_transition(store, lane, elapsed)
+    moved, transition = apply_reading(settled, store.rules, reading, now)
+    write_state(store.directory, LaneState(lane, moved, reading, now))
+    if transition is not None:
+        emit_transition(store, lane, transition)
+    return moved, transition
+
+
+def clear_lane(store: Store, lane: str, now: float) -> Transition | None:
+    """Close a lane by hand. This is what a quality trip's escalation is resolved by."""
+    state = read_state(store.directory, lane)
+    if state.circuit.state == CLOSED:
+        return None
+    transition = Transition(
+        at=now,
+        from_state=state.circuit.state,
+        to_state=CLOSED,
+        rule=state.circuit.rule,
+        reason="cleared by hand",
+        reset_at=None,
+        escalates=False,
+        streak=0,
+    )
+    write_state(store.directory, state._replace(circuit=Circuit(), updated_at=now))
+    emit_transition(store, lane, transition)
+    return transition
+
+
+# ------------------------------------------------------------------------ the ledger
+
+
+def zai_dispatch_events(dispatch_root: Path, lane: str = "zai") -> tuple[float, ...]:
+    """Read the dispatch ledger for one lane's timestamps, newest last.
+
+    `dispatch.json`'s `planned_at` is the moment the dispatch was armed, which is the
+    closest thing the ledger has to when the provider was billed.
+    """
+    events: list[float] = []
+    if not dispatch_root.is_dir():
+        return ()
+    for record in sorted(dispatch_root.glob("*/dispatch.json")):
+        try:
+            document = json.loads(record.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(document, dict) or document.get("lane") != lane:
+            continue
+        at = as_epoch(document.get("planned_at"))
+        if at is not None:
+            events.append(at)
+    return tuple(sorted(events))
+
+
+# ------------------------------------------------------------------- rendering a line
+
+
+def human_delta(seconds: float) -> str:
+    """Render a wait the way an orchestrator reads it: `48m`, `3h 10m`, `now`."""
+    remaining = int(seconds)
+    if remaining <= 0:
+        return "now"
+    hours, minutes = divmod(remaining // 60, 60)
+    if hours and minutes:
+        return f"{hours}h {minutes:02d}m"
+    if hours:
+        return f"{hours}h"
+    return f"{max(minutes, 1)}m"
+
+
+def iso(at: float) -> str:
+    """Render an epoch as the timestamp this project writes everywhere else."""
+    return datetime.fromtimestamp(at, tz=UTC).isoformat()
+
+
+def verdict_line(result: Verdict, now: float) -> str:
+    """One line, for a lane that is not conducting. Never printed for a lane that is.
+
+    A verdict, not three percentages: #209's rule is that where a rule-table already
+    decides, an agent is not handed numbers to reason about. The words `open` and
+    `closed` are deliberately absent from this line — they mean opposite things to an
+    electrician and to a shopkeeper, and the orchestrator only needs the imperative.
+    """
+    parts = [
+        f"lane={result.lane}",
+        "dispatch=refused",
+        f"class={result.failure_class}",
+        f"rule={result.rule}",
+    ]
+    if result.reset_at is not None:
+        parts.append(f"until={iso(result.reset_at)}")
+        parts.append(f"in={human_delta(result.reset_at - now)}")
+    else:
+        parts.append("until=unknown")
+    if result.escalates:
+        parts.append("escalate=true")
+        parts.append(f"clear=`just breaker reset --lane {result.lane} --force`")
+    elif result.reset_at is None:
+        parts.append("reason=no_quota_feed")
+        parts.append("degraded=reacting-to-429s")
+        parts.append("wire=`just prereqs statusline`")
+    parts.append(f"why={result.reason}")
+    return " ".join(parts)
+
+
+def advisory_line(reading: QuotaReading, now: float) -> str:
+    """One line for an estimate worth knowing about, always labelled as an estimate."""
+    window = max(reading.windows, key=lambda w: w.used_fraction)
+    parts = [
+        f"lane={reading.lane}",
+        "dispatch=allowed",
+        "quota=estimated",
+        f"window={window.name}",
+        f"used~={window.used_fraction * 100:.0f}%",
+        f"unit={reading.unit}",
+        f"source={reading.source}",
+    ]
+    if window.resets_at is not None:
+        parts.append(f"window_reset={human_delta(window.resets_at - now)}")
+    parts.append("note=a-dispatch-is-many-prompts-so-this-under-counts")
+    return " ".join(parts)
+
+
+def report_lines(
+    store: Store,
+    now: float,
+    lanes: Iterable[str] = KNOWN_LANES,
+) -> tuple[str, ...]:
+    """Render one verdict line per lane that needs one, and nothing for a lane that is fine."""
+    lines: list[str] = []
+    for lane in lanes:
+        result = lane_verdict(store, lane, now)
+        if not result.conducting:
+            lines.append(verdict_line(result, now))
+            continue
+        reading = read_state(store.directory, lane).reading
+        if reading is None or not reading.available or not reading.estimated:
+            continue
+        if any(w.used_fraction >= ESTIMATE_ADVISORY_FRACTION for w in reading.windows):
+            lines.append(advisory_line(reading, now))
+    return tuple(lines)
+
+
+def _feed_parts(reading: QuotaReading | None, now: float) -> list[str]:
+    """Say what this lane's feed is, including its being absent or unable to answer."""
+    if reading is None:
+        return ["feed=absent", "degraded=reacting-to-429s"]
+    if not reading.available:
+        fix = (
+            "fix=`just prereqs plan-tier`"
+            if reading.unavailable == "plan_tier_unknown"
+            else "degraded=reacting-to-429s"
+        )
+        return [f"feed={reading.source}:{reading.unavailable}", fix]
+    return [
+        f"feed={reading.source}",
+        f"estimated={str(reading.estimated).lower()}",
+        f"age={human_delta(now - reading.observed_at)}",
+        *(f"{window.name}={window.used_fraction * 100:.0f}%" for window in reading.windows),
+    ]
+
+
+def state_lines(store: Store, now: float, lanes: Iterable[str] = KNOWN_LANES) -> tuple[str, ...]:
+    """Render the full picture: the lanes that are fine, their streaks, and absent feeds.
+
+    This is where the degradation is always stated. `just breaker report` is required to
+    be silent about a healthy lane, so a lane whose feed has never delivered anything is
+    named here instead, where somebody asked.
+    """
+    lines: list[str] = []
+    for lane in lanes:
+        state = read_state(store.directory, lane)
+        settled, _ = settle(state.circuit, store.rules, now)
+        result = verdict(lane, settled, store.rules)
+        parts = [
+            f"lane={lane}",
+            f"state={settled.state}",
+            "dispatch=allowed" if result.conducting else "dispatch=refused",
+        ]
+        if not result.conducting:
+            parts.append(f"class={result.failure_class}")
+            parts.append(f"until={iso(result.reset_at)}" if result.reset_at else "until=unknown")
+        parts.extend(
+            f"streak.{rule.name}={settled.streak(rule.name)}/{rule.consecutive}"
+            for rule in store.rules
+        )
+        parts.extend(_feed_parts(state.reading, now))
+        lines.append(" ".join(parts))
+    return tuple(lines)
+
+
+# ------------------------------------------------------------------------------- CLI
+
+
+def emit_lines(lines: Iterable[str], code: int = 0) -> int:
+    """Print to the stream the exit code implies, and return it."""
+    stream = sys.stdout if code == 0 else sys.stderr
+    for line in lines:
+        print(line, file=stream)
+    return code
+
+
+def parse_args(argv: list[str] | None) -> argparse.Namespace:
+    """Eight verbs: read a lane, read them all, feed one, and the status-line tap."""
+    parser = argparse.ArgumentParser(prog="breaker", description=__doc__)
+    parser.add_argument("--breaker-dir", type=Path, default=DEFAULT_BREAKER_DIR)
+    parser.add_argument("--dispatch-dir", type=Path, default=DEFAULT_DISPATCH_ROOT)
+    parser.add_argument("--otlp-endpoint", default="")
+    parser.add_argument("--now", type=float, default=0.0)
+    verbs = parser.add_subparsers(dest="verb", required=True)
+
+    verbs.add_parser("report", help="one verdict line per lane that needs one")
+    verbs.add_parser("state", help="every lane, including the ones that are fine")
+
+    check = verbs.add_parser("check", help="the pre-dispatch read for one lane")
+    check.add_argument("--lane", required=True)
+
+    record = verbs.add_parser("record", help="feed one typed outcome to a lane")
+    record.add_argument("--lane", required=True)
+    record.add_argument(
+        "--outcome",
+        required=True,
+        choices=(OK, QUOTA_EXHAUSTED, PROVIDER_ERROR, PROVIDER_REFUSED, GATE_FAILED, UNCLASSIFIED),
+    )
+    record.add_argument("--reset-at", default="", help="a published reset; never a guess")
+    record.add_argument("--detail", default="")
+
+    quota = verbs.add_parser("quota", help="ingest a provider's own quota document")
+    quota.add_argument("--lane", required=True)
+    quota.add_argument("--format", required=True, choices=("status-line", "codex-rate-limits"))
+    quota.add_argument("--from-file", default="", help="default: stdin")
+
+    estimate = verbs.add_parser("estimate", help="z.ai's ledger estimate, advisory only")
+    estimate.add_argument("--lane", default="zai")
+    estimate.add_argument("--tier", default=os.environ.get("CTI_ZAI_PLAN_TIER", ""))
+
+    tap = verbs.add_parser("tap", help="status-line filter: read the quota, pass the line through")
+    tap.add_argument("--lane", default="claude-native")
+    tap.add_argument("--chain", default="", help="the status line this one sits in front of")
+
+    reset = verbs.add_parser("reset", help="close a lane by hand")
+    reset.add_argument("--lane", required=True)
+    reset.add_argument("--force", action="store_true", required=True)
+    return parser.parse_args(argv)
+
+
+def _now(args: argparse.Namespace) -> float:
+    """Read the moment to reason about: the caller's, or the clock's."""
+    return args.now or time.time()
+
+
+def _store(args: argparse.Namespace) -> Store:
+    """Bind the verb to the breakers it reads and the collector it reports to."""
+    return Store(directory=args.breaker_dir, rules=LANE_RULES, endpoint=args.otlp_endpoint)
+
+
+def run_report(args: argparse.Namespace) -> int:
+    """Print the verdicts, and nothing when every lane is fine."""
+    now = _now(args)
+    return emit_lines(report_lines(_store(args), now))
+
+
+def run_state(args: argparse.Namespace) -> int:
+    """Print every lane's state, feeds and streaks included."""
+    return emit_lines(state_lines(_store(args), _now(args)))
+
+
+def run_check(args: argparse.Namespace) -> int:
+    """Take the pre-dispatch read, as an exit code plus the line a caller quotes."""
+    now = _now(args)
+    result = lane_verdict(_store(args), args.lane, now)
+    if result.conducting:
+        return emit_lines((f"lane={result.lane}", "dispatch=allowed", f"state={result.state}"))
+    return emit_lines((verdict_line(result, now),), 1)
+
+
+def run_record(args: argparse.Namespace) -> int:
+    """Feed one outcome and say what it did."""
+    now = _now(args)
+    outcome = Outcome(
+        args.outcome,
+        reset_at=as_epoch(args.reset_at) if args.reset_at else None,
+        detail=args.detail,
+    )
+    circuit, transition = record_outcome(_store(args), args.lane, outcome, now)
+    lines = [f"lane={args.lane}", f"outcome={args.outcome}", f"state={circuit.state}"]
+    if transition is not None:
+        lines.append(f"transition={transition.from_state}->{transition.to_state}")
+        lines.append(f"rule={transition.rule}")
+    return emit_lines(lines)
+
+
+def _read_payload(path: str) -> Mapping[str, object]:
+    text = Path(path).expanduser().read_text(encoding="utf-8") if path else sys.stdin.read()
+    document = json.loads(text)
+    return document if isinstance(document, dict) else {}
+
+
+def run_quota(args: argparse.Namespace) -> int:
+    """Ingest one provider quota document, from a file or from stdin."""
+    now = _now(args)
+    try:
+        payload = _read_payload(args.from_file)
+    except (OSError, json.JSONDecodeError) as error:
+        return emit_lines((f"lane={args.lane}", f"quota=unreadable ({error})"), 1)
+    parse = (
+        reading_from_status_line if args.format == "status-line" else reading_from_codex_rate_limits
+    )
+    reading = parse(payload, args.lane, now)
+    circuit, transition = record_reading(_store(args), args.lane, reading, now)
+    lines = [f"lane={args.lane}", f"source={reading.source}", f"state={circuit.state}"]
+    if not reading.available:
+        lines.append(f"quota=unavailable:{reading.unavailable}")
+    else:
+        lines.extend(f"{w.name}={w.used_fraction * 100:.0f}%" for w in reading.windows)
+    if transition is not None:
+        lines.append(f"transition={transition.from_state}->{transition.to_state}")
+    return emit_lines(lines)
+
+
+def run_estimate(args: argparse.Namespace) -> int:
+    """Compute and store the z.ai estimate. Advisory: it never moves the breaker."""
+    now = _now(args)
+    events = zai_dispatch_events(args.dispatch_dir, args.lane)
+    reading = estimate_zai(events, args.tier, now, args.lane)
+    record_reading(_store(args), args.lane, reading, now)
+    lines = [f"lane={args.lane}", f"dispatches={len(events)}", "estimated=true"]
+    if not reading.available:
+        lines.append(f"quota=unavailable:{reading.unavailable}")
+        if reading.unavailable == "plan_tier_unknown":
+            lines.append("fix=`just prereqs plan-tier`")
+        return emit_lines(lines, 1)
+    lines.append(f"tier={args.tier.strip().lower()}")
+    lines.extend(f"{w.name}~={w.used_fraction * 100:.0f}%" for w in reading.windows)
+    lines.append(f"unit={reading.unit}")
+    return emit_lines(lines)
+
+
+def run_tap(args: argparse.Namespace) -> int:
+    """Sit in front of the human's status line: read the quota out, pass the line through.
+
+    Two rules, both absolute. It never alters the chained command's output, because the
+    status line belongs to the human and this is a tap rather than a replacement. And it
+    never fails: an exception here would break a status line on every render, which is a
+    far worse outcome than a breaker that missed one reading — so the whole ingest is
+    wrapped and the pass-through happens regardless.
+    """
+    payload = sys.stdin.read()
+    try:
+        document = json.loads(payload)
+        if isinstance(document, dict):
+            now = _now(args)
+            reading = reading_from_status_line(document, args.lane, now)
+            record_reading(_store(args), args.lane, reading, now)
+    except Exception:  # noqa: BLE001, S110 — a tap must never break the human's status line
+        pass
+    if not args.chain:
+        return 0
+    # S602: the chained command is the human's own status line as they configured it in
+    # their settings, which is a shell command line by Claude Code's contract.
+    done = subprocess.run(  # noqa: S602
+        args.chain,
+        shell=True,
+        input=payload,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    sys.stdout.write(done.stdout)
+    sys.stderr.write(done.stderr)
+    return done.returncode
+
+
+def run_reset(args: argparse.Namespace) -> int:
+    """Clear a lane by hand, which is how a quality trip's escalation ends."""
+    transition = clear_lane(_store(args), args.lane, _now(args))
+    if transition is None:
+        return emit_lines((f"lane={args.lane}", "state=closed", "cleared=nothing"))
+    return emit_lines(
+        (f"lane={args.lane}", "state=closed", f"cleared={transition.from_state}:{transition.rule}")
+    )
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Dispatch the verb; every one is a read, a small file write, or the tap."""
+    args = parse_args(argv)
+    verbs = {
+        "report": run_report,
+        "state": run_state,
+        "check": run_check,
+        "record": run_record,
+        "quota": run_quota,
+        "estimate": run_estimate,
+        "tap": run_tap,
+        "reset": run_reset,
+    }
+    return verbs[args.verb](args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
