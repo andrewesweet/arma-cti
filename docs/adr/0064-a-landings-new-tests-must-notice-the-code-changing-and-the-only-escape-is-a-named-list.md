@@ -60,24 +60,35 @@ them from a vacuous suite exists. Or the mutator here growing past the point whe
 is cheaper than configuring one — the honest tripwire is when its own test module stops fitting
 in one sitting's reading.
 
-## Decision 2: the subject is chosen by coverage evidence, and having none is a red
+## Decision 2: the subject is the name where the name fits and the evidence where it does not, and having none is a red
 
 The module under smoke is run once under `coverage.py` with `dynamic_context = test_function`,
-and the subject is the product file with the most lines executed **inside a test**. Not the
-`test_x.py` → `x.py` convention: `tests/unit/test_land.py` → `tools/land.py` already only half
-obeys it, and the sweep found `tests/unit/test_budget.py` spending most of its lines in
-`manifest.py` rather than `budget.py`.
+and only lines executed **inside a test** count. Among the files that qualify, two rules in
+order: **the name** — `test_budget.py` → `budget.py`, a statement of intent by whoever wrote
+the file, but never able to nominate a file no test executed — and then **the evidence**, for
+the many modules the convention does not reach (`tests/unit/test_land.py` → `tools/land.py`,
+`tests/unit/test_daemon_casualties.py` → nothing of that name).
 
-Import-time lines carry an empty context and do not count. That is the load-bearing half: it
-is what makes an `assert True` module subject-less rather than the accidental owner of
-everything `tests/unit/conftest.py` imported, and "no subject" is therefore a red in its own
-right — a test module none of whose tests executes a line of this repo's source has,
-mechanically, tested nothing.
+The evidence is not a line count. A line *every* test in the module executes is arrangement,
+so each line is worth the share of the module's tests that did **not** reach it. Counting lines
+alone made `manifest.py` the subject of `test_budget.py` — 94 lines reached, 88 of them by all
+four tests, because `tests/unit/conftest.py` loads a manifest before anything else happens —
+and scored a sound module 50% for not asserting about a file it never meant to test.
 
-**What would overturn this.** A sound test module in this repo whose subject the rule picks so
-badly that its mutants are unkillable by design — the fix would then be per-module subject
-declaration, not a lower floor. Or a coverage release in which `dynamic_context` stops
-distinguishing import time from test time, which would remove the distinction the rule rests on.
+Import-time lines carry an empty context and do not count at all. That is the load-bearing
+half: it is what makes an `assert True` module subject-less rather than the accidental owner of
+everything the arrangement imported, and "no subject" is therefore a red in its own right — a
+test module none of whose tests executes a line of this repo's source has, mechanically, tested
+nothing.
+
+**What would overturn this.** A sound test module whose subject the rule picks so badly that
+its mutants are unkillable by design — the fix would then be per-module subject declaration,
+not a lower floor. Or a coverage release in which `dynamic_context` stops distinguishing
+import time from test time, which would remove the distinction the rule rests on. One
+plausible-sounding refinement is already **disproved** and should not be re-proposed without
+new evidence: restricting the *mutants* to the same discriminating lines moved
+`tests/unit/test_daemon_casualties.py` from 40% to 25%, because the lines its tests share are
+the ones its assertions do reach.
 
 ## Decision 3: the gate is a rung in `just fast`, scoped to the diff, and that is where lane-blindness comes from
 

@@ -259,6 +259,33 @@ def test_a_file_named_after_the_test_module_is_the_subject() -> None:
     assert reach.subject("tests/unit/test_budget.py") == "src/cti_daemon/budget.py"
 
 
+def test_a_qualified_test_module_falls_back_to_the_module_it_qualifies() -> None:
+    # `test_daemon_casualties.py` is about `daemon.py`; this repo writes that
+    # shape a dozen times. Reading the name that way rather than by discrimination
+    # moved the module from 40% to 67% and from 30.8 s to 8.9 s.
+    reach = smoke_tool.read_reach(
+        _report(
+            {
+                "src/cti_daemon/daemon.py": {"1": ["a"]},
+                "src/cti_daemon/campaign.py": {"1": ["a"], "2": ["b"], "3": ["c"]},
+            },
+        ),
+    )
+    assert reach.subject("tests/unit/test_daemon_casualties.py") == "src/cti_daemon/daemon.py"
+
+
+def test_the_longest_name_that_matches_wins() -> None:
+    reach = smoke_tool.read_reach(
+        _report(
+            {
+                "src/cti_daemon/daemon.py": {"1": ["a"]},
+                "src/cti_daemon/report_cycle.py": {"1": ["a"]},
+            },
+        ),
+    )
+    assert reach.subject("tests/unit/test_report_cycle.py") == "src/cti_daemon/report_cycle.py"
+
+
 def test_the_name_cannot_point_at_code_no_test_executed() -> None:
     # The convention is a tie-break among files the tests reached, never a way to
     # nominate a file nothing ran.

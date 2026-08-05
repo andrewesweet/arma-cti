@@ -50,15 +50,15 @@ source under any of its tests has, mechanically, tested nothing.
 
 Among the files that do qualify, two rules in order. **The name first**, when the
 tests reach it: `test_budget.py` → `budget.py` is a statement of intent by whoever
-wrote the file, and it beats any inference. **Then the evidence**, for the many
-modules the convention does not reach — `tests/unit/test_land.py` → `tools/land.py`,
-`tests/unit/test_daemon_casualties.py` → nothing of that name. The evidence is not
-a line count: a line *every* test in the module executes is arrangement, so each
-line is worth the share of the module's tests that did not reach it. Counting
-lines alone made `manifest.py` the subject of `test_budget.py` — 94 lines reached,
-88 of them by all four tests, because the shared arrangement loads a manifest
-first — and scored a sound module 50% for not asserting about a file it never
-meant to test.
+wrote the file, and it beats any inference. A qualified name falls back to what it
+qualifies, longest match first — `test_daemon_casualties.py` → `daemon.py`, a shape
+this repo writes a dozen times. **Then the evidence**, for the modules no name
+reaches, such as `tests/unit/test_composition_root.py`. The evidence is not a line
+count: a line *every* test in the module executes is arrangement, so each line is
+worth the share of the module's tests that did not reach it. Counting lines alone
+made `manifest.py` the subject of `test_budget.py` — 94 lines reached, 88 of them
+by all four tests, because the shared arrangement loads a manifest first — and
+scored a sound module 50% for not asserting about a file it never meant to test.
 
 The obvious next step, restricting the *mutants* to those same discriminating
 lines, was tried and is **not** here: it moved `test_daemon_casualties.py` from
@@ -164,7 +164,16 @@ DURATION_FIELDS: Final = 3
 # next to it. `grep -n '"tests/' tools/mutation_smoke.py` answers "which modules
 # claim to have no Python subject" completely. Adding a row is a reviewable act;
 # lowering `FLOOR` is not an alternative to it.
-NO_PYTHON_SUBJECT: Final[dict[str, str]] = {}
+NO_PYTHON_SUBJECT: Final[dict[str, str]] = {
+    "tests/unit/test_bringup_guards.py": (
+        "its subject is spike/run.sh, spike/tier-lock.sh and the justfile — #68's guards, "
+        "asserted by driving the scripts and reading the recipe, with no Python between"
+    ),
+    "tests/unit/test_client_lock.py": (
+        "its subject is spike/run.sh and spike/regress.sh's use of the client lock (#119), "
+        "driven as shell; the Python it touches is the harness it drives them with"
+    ),
+}
 
 # Negating a comparison: the strongest single change to a decision that was
 # taken, and the one a suite which asserts nothing at all fails to notice.
@@ -399,6 +408,21 @@ def sample(mutants: list[Mutant], *, seed: str, cap: int) -> list[Mutant]:
     return [mutants[index] for index in sorted(chosen)]
 
 
+def _stems(test_module: str) -> list[str]:
+    """List the module names `test_module` might be named after, longest first.
+
+    `test_budget.py` names one thing and `test_daemon_casualties.py` names two —
+    the module and the part of it under test — and this repo writes the second
+    shape a dozen times: `test_daemon_dispatch`, `test_daemon_epoch`,
+    `test_daemon_victory`, all about `src/cti_daemon/daemon.py`. Dropping one
+    trailing `_word` at a time finds the file the author meant, and the caller
+    takes the first that the tests actually reached, so a shortened stem can
+    never name code nothing ran.
+    """
+    parts = Path(test_module).stem.removeprefix("test_").split("_")
+    return ["_".join(parts[: len(parts) - dropped]) for dropped in range(len(parts))]
+
+
 def node_id(test_module: str, context: str) -> str:
     """Turn one coverage context into the pytest node id that selects that test.
 
@@ -469,10 +493,10 @@ class Reach(NamedTuple):
         """
         if not self.lines:
             return None
-        stem = Path(test_module).stem.removeprefix("test_")
-        named = [path for path in sorted(self.lines) if Path(path).stem == stem]
-        if named:
-            return named[0]
+        for stem in _stems(test_module):
+            named = [path for path in sorted(self.lines) if Path(path).stem == stem]
+            if named:
+                return named[0]
         return max(sorted(self.lines), key=self.discrimination)
 
     def cost(self, node: str) -> float:
