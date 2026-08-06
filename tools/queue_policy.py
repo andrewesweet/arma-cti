@@ -1167,10 +1167,12 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     ):
         verb = verbs.add_parser(name, help=help_text)
         verb.add_argument("--ruling", default="")
+        verb.add_argument("--since", default="")
 
     wip = verbs.add_parser("wip", help="record the ruled WIP limit")
     wip.add_argument("--limit", type=int, required=True)
     wip.add_argument("--ruling", default="")
+    wip.add_argument("--since", default="")
 
     package = verbs.add_parser("package", help="record or drop a carve-out package")
     actions = package.add_subparsers(dest="action", required=True)
@@ -1181,9 +1183,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     adding.add_argument("--reserve", type=int, default=0)
     adding.add_argument("--note", default="")
     adding.add_argument("--ruling", default="")
+    adding.add_argument("--since", default="")
     dropping = actions.add_parser("drop", help="remove a carve-out package")
     dropping.add_argument("--name", required=True)
     dropping.add_argument("--ruling", default="")
+    dropping.add_argument("--since", default="")
 
     return parser.parse_args(argv)
 
@@ -1285,7 +1289,12 @@ def _run_write(args: argparse.Namespace, store: Store) -> int:
     refusal = missing_ruling(args)
     if refusal is not None:
         return emit(refusal.lines(), EXIT_REFUSED)
-    lines, refusal = _write_verb(args, store, datetime.now(tz=UTC).isoformat())
+    # `--since` is when the *ruling* was made, which is not always when it is transcribed:
+    # a freeze in force since yesterday must not read as having begun this morning. It
+    # decides nothing — every rung reads the state, never the date — so it is a record of
+    # fact rather than a lever, which is why it is not an override.
+    when = args.since or datetime.now(tz=UTC).isoformat()
+    lines, refusal = _write_verb(args, store, when)
     return emit(refusal.lines(), EXIT_REFUSED) if refusal else emit(lines, 0)
 
 

@@ -1136,8 +1136,42 @@ def test_the_dispatcher_carries_the_queues_refusal_across_without_restating_it()
 def test_the_recipe_runs_the_module_under_its_longer_name() -> None:
     """`queue` would shadow the standard library's, which pytest-xdist itself imports."""
     justfile = (REPO / "justfile").read_text(encoding="utf-8")
-    assert "uv run python tools/queue_policy.py {{ args }}" in justfile
+    assert 'uv run python tools/queue_policy.py "$@"' in justfile
     assert not (REPO / "tools" / "queue.py").exists()
+
+
+def test_the_recipe_carries_a_ruling_across_whole_rather_than_word_by_word() -> None:
+    """A ruling is a sentence, and `{{ args }}` would splice it in as bare shell words."""
+    justfile = (REPO / "justfile").read_text(encoding="utf-8")
+    recipe = justfile[justfile.index("[positional-arguments]\nqueue *args:") :]
+    assert recipe.startswith("[positional-arguments]\nqueue *args:\n    uv run python")
+    assert "{{ args }}" not in recipe.split("\n\n")[0]
+
+
+def test_a_ruling_made_earlier_is_recorded_at_its_own_moment_not_the_transcriptions(
+    tmp_path: Path,
+) -> None:
+    """A freeze in force since yesterday must not read as having begun this morning."""
+    directory = str(tmp_path / "queue")
+    queue.main(["--queue-dir", directory, "freeze", "--ruling", RULING, "--since", WHEN])
+    queue.main(
+        [
+            "--queue-dir",
+            directory,
+            "wip",
+            "--limit",
+            "3",
+            "--ruling",
+            WIP_RULING,
+            "--since",
+            WHEN,
+        ]
+    )
+    policy, refusal = queue.read_policy(store_at(tmp_path))
+    assert refusal is None
+    assert policy is not None
+    assert policy.freeze.since == WHEN
+    assert policy.wip_limit.since == WHEN
 
 
 def test_the_clock_the_writers_stamp_is_the_one_a_reader_can_order_by(tmp_path: Path) -> None:

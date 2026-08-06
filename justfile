@@ -480,8 +480,15 @@ breaker *args:
 #
 # Refusals: dispatch_frozen, wip_reached, surface_conflict, no_ready_issue,
 # policy_invalid, policy_absent, ruling_required.
+#
+# `[positional-arguments]` rather than `{{ args }}`: a ruling is a sentence with
+# spaces in it, and `{{ args }}` splices arguments into the shell line as bare
+# text, so `--ruling "human, 2026-08-05"` would arrive as three arguments. `"$@"`
+# carries each one across whole, which is the difference between a policy that
+# quotes its ruling and one that quotes the first word of it.
+[positional-arguments]
 queue *args:
-    uv run python tools/queue_policy.py {{ args }}
+    uv run python tools/queue_policy.py "$@"
 
 # The pre-registered admission bar, as the thing that decides rather than as prose
 # (#224, ADR-0061 Decision 6). No Arma, no lock, no turn held open.
