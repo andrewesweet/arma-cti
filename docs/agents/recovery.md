@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×16 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×17 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -70,7 +70,20 @@
 > landed on main (`2449d2d`, `ff5e5b2`, `fb43cc9`, `b3953f6`), acked on the human's
 > instruction. The first time BLIND resolved to nothing-wrong: the watcher's honesty
 > about what it could not observe operating in the direction that clears rather
-> than catches.
+> than catches. Seventeenth use (2026-08-05/06): crash cluster two — multiple
+> harness deaths in one evening (root cause found and fixed by the human, out of
+> scope here), every in-flight track resumed from disk records rather than memory:
+> `origin/main` untouched, commit-early held, #243's and #170's trees intact. The
+> notable resumption is #237's — the read-arm runner died mid-block (its run.log
+> ends at "R3 start"), and the death exposed a design fault the survivor could not
+> have reported: 300 s idle controls against 877 s read blocks could not price a
+> noisy shared account, so two identical 35 Mtok blocks measured +2 and then +0
+> with the +2 unattributable. The resumed agent judged the surviving data
+> inconclusive rather than rounding it, and the completion run's script header
+> states the fault and the correction — wall-clock-matched idle controls in ABBA
+> order (`R Q Q R R Q`). A death as an accidental reviewer, and honesty under sunk
+> cost; evidence under `~/.arma-cti/runs/20260805T2302Z-readarm-237/` and its
+> completion sibling.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:
