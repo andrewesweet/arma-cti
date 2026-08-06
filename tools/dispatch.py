@@ -378,9 +378,10 @@ def retro_fable_allowance_is_live(
 ) -> bool:
     """Whether #217's one ruled triple is still before its expiry instant."""
     return (
-        (seat, lane_name, profile_name) == RETRO_FABLE_ALLOWANCE
-        and now < RETRO_FABLE_ALLOWANCE_EXPIRES_AT
-    )
+        seat,
+        lane_name,
+        profile_name,
+    ) == RETRO_FABLE_ALLOWANCE and now < RETRO_FABLE_ALLOWANCE_EXPIRES_AT
 
 
 def plan_charge(lane: Lane, at: datetime) -> dict[str, object] | None:
