@@ -80,6 +80,18 @@ human's and only they amend it. The window itself is not restated here; it is th
 published schedule in `tools/breaker.py`, the same object `plan_charge` prices a dispatch
 with, so what refuses a dispatch and what a dispatch records can never disagree.
 
+**The issue is read before anything is planned, and an unready one is refused** (#241).
+Definition of ready, mechanically: `tools/readiness.py` judges the body for criteria that
+exist, that can be counted off, and that name the evidence which would settle them. Two of
+those three sub-checks refuse, because measured against the last twenty dispatched issues
+they refused none of them; enumerability does not, because it refuses 15% of that corpus
+and 67% of its ruling executions — whose criteria *are* the ruling, arriving as prose that
+must be transcribed rather than paraphrased into a checklist. So it reports on every issue
+and blocks none, and the report is kept on the dispatch record so the rate can be counted
+again later. The remedy on a refusal is always an edit to the issue by a human or triage,
+never a rewrite by this tool, and the rung is lane-blind: nothing about the lane, the
+profile or the seat reaches it.
+
 **The lane's breaker is read before anything is planned** (#226). That is the one place
 ADR-0061's other two classes reach this file: a lane out of quota refuses with
 `quota_exhausted` and the published reset time, and a lane whose quality trip has fired
@@ -113,6 +125,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import admission
 import breaker
 import hook_parity
+import readiness
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping
@@ -404,6 +417,11 @@ class Plan(NamedTuple):
     credentials: Path
     permission_mode: str
     breaker_dir: Path = breaker.DEFAULT_BREAKER_DIR
+    # What the readiness rung said about the issue without refusing it (#241). On the
+    # record rather than only on stdout, because an advisory nobody kept is an advisory
+    # nobody can count later — and counting them is how this project will know whether
+    # the enumerability sub-check ever earns a hard refusal.
+    advisories: tuple[str, ...] = ()
 
     def document(self) -> dict[str, object]:
         """Render the dispatch record, which names the credential key and never its value."""
@@ -422,6 +440,7 @@ class Plan(NamedTuple):
             "credential": lane.credential,
             "credentials_file": str(self.credentials),
             "breaker_dir": str(self.breaker_dir),
+            "readiness_advisories": list(self.advisories),
             "resource_attributes": dict(self.identity.attributes()),
             "plan_charge": plan_charge(lane, planned_at),
             "planned_at": planned_at.isoformat(),
@@ -594,6 +613,101 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
             ),
         )
     return None
+
+
+class Readiness(NamedTuple):
+    """What the readiness rung learned: an assessment of the issue, or why there is none."""
+
+    assessment: readiness.Assessment | None
+    unreadable: str = ""
+
+
+REMEDY_IS_AN_EDIT: Final = (
+    "The remedy is an edit to the issue, by a human or by triage — add the criteria, or "
+    "make the existing ones countable and name what would settle each. Nothing here will "
+    "rewrite the issue for you and nothing should: a tool that repaired the body it was "
+    "judging would be marking its own homework, and the value of this rung is that "
+    "somebody decided what done means before a lane was spent. There is no override flag."
+)
+
+
+def read_issue(issue: int, body_file: str) -> Readiness:
+    """Read the issue's body — from a named file if given, otherwise from `gh` — and judge it.
+
+    `--issue-body` is not a test seam. It is how triage checks a *draft* before filing one,
+    and how a dispatch is armed on a box where `gh` cannot reach GitHub; the tier uses it
+    for the same reason it points `--breaker-dir` at a scratch path, which is that the real
+    seam forks a fresh process no in-process patch reaches.
+    """
+    if body_file:
+        path = Path(body_file).expanduser()
+        try:
+            body = path.read_text(encoding="utf-8")
+        except OSError as error:
+            return Readiness(None, f"{path}: {error.strerror or error}")
+        if not body.strip():
+            return Readiness(None, f"{path} is empty")
+        return Readiness(readiness.assess(body))
+    body, why = readiness.fetch_body(issue)
+    if why:
+        return Readiness(None, why)
+    return Readiness(readiness.assess(body))
+
+
+def readiness_refusal(issue: int, found: Readiness) -> Refusal | None:
+    """Refuse an issue that is not ready to be dispatched against (#241).
+
+    Definition of ready, mechanically. `tools/readiness.py` carries the sub-checks, the
+    definitions they were pre-registered with, and the corpus measurement that decided
+    which of them refuse: two that refused none of the last twenty dispatched issues do,
+    and enumerability — 15% overall, 67% of ruling executions — does not, because a ruling
+    execution's criteria *are* the ruling and enumerating them would mean paraphrasing it.
+
+    **No failure class**, for `admission_refusal`'s and `off_peak_refusal`'s reason exactly:
+    CLAUDE.md's table types what a run *found*, and this found nothing about any code. The
+    provider is up, the lane is reachable, and the issue is not ready to be worked. An
+    unreadable body is different and does carry one — `infra_unavailable` — because a check
+    that could not run is not a check that passed (#41), and a dispatched agent whose first
+    act is `gh issue view` would meet the same outage three seconds later somewhere nobody
+    is looking.
+
+    **Lane-blind.** Nothing about the lane, the profile or the seat reaches this function,
+    so a foreign lane meets exactly the refusal `claude-native` meets.
+    """
+    if found.assessment is None:
+        return Refusal(
+            "issue_unreadable",
+            (f"issue={issue}", f"why={found.unreadable}"),
+            (
+                "The issue body could not be read, so its readiness could not be checked, "
+                "and a check that could not run is not a check that passed (#41). Nothing "
+                "was dispatched. Fix the reason above, or pass the body with "
+                "`--issue-body <path>` if GitHub is unreachable from here."
+            ),
+            failure_class="infra_unavailable",
+        )
+    blocking = found.assessment.blocking
+    if not blocking:
+        return None
+    return Refusal(
+        "issue_not_ready",
+        (
+            f"issue={issue}",
+            *(f"{finding.kind}: {finding.detail}" for finding in blocking),
+            *found.assessment.lines(),
+        ),
+        REMEDY_IS_AN_EDIT,
+    )
+
+
+def readiness_advisories(issue: int, found: Readiness) -> tuple[str, ...]:
+    """Render the readiness findings that report and never refuse."""
+    if found.assessment is None:
+        return ()
+    return tuple(
+        f"advisory={finding.kind} issue={issue} {finding.detail}"
+        for finding in found.assessment.advisory
+    )
 
 
 def admission_refusal(
@@ -926,18 +1040,28 @@ def _codex_hook_argv(project_dir: Path) -> tuple[str, ...]:
     return tuple(part for override in overrides for part in ("--config", override))
 
 
-def ladder_refusal(args: argparse.Namespace, now: datetime) -> Refusal | None:
+def ladder_refusal(args: argparse.Namespace, now: datetime, found: Readiness) -> Refusal | None:
     """Climb the rungs a dispatch must clear before anything is planned, and stop at the first.
 
     The order is one idea: **the refusal that lasts longest is the one worth hearing.**
     The registry's own rungs come first because a typo is not a state of the world at all.
+    Readiness comes next, on both halves of that reasoning: an unready issue is a property
+    of the request rather than of the world, and it is the only rung here that no clock and
+    no provider will ever clear — it reopens when a person edits the issue, and not before.
     Then admission, which reopens only when a human decides it should; then the breaker,
     which reopens on a published window boundary or on evidence; then the off-peak rule,
     which reopens on a clock within four hours with nothing for anyone to do meanwhile.
     Told about the clock first, a dispatcher would come back when the band lifted to meet
     a trip it was never told about.
+
+    Readiness is also the one rung that costs a network call, and it is deliberately not
+    demoted for it: the whole point of hearing it first is that its remedy can start now,
+    while every rung below it either fixes itself or waits on the same human anyway.
     """
     refusal = resolve_selection(args.lane, args.profile, args.seat)
+    if refusal is not None:
+        return refusal
+    refusal = readiness_refusal(args.issue, found)
     if refusal is not None:
         return refusal
     refusal = admission_refusal(
@@ -957,7 +1081,8 @@ def plan_dispatch(
     now: datetime,
 ) -> tuple[Plan | None, str, Refusal | None]:
     """Validate the request and mint the plan and the brief, writing nothing."""
-    refusal = ladder_refusal(args, now)
+    found = read_issue(args.issue, args.issue_body)
+    refusal = ladder_refusal(args, now, found)
     if refusal is not None:
         return None, "", refusal
 
@@ -1022,6 +1147,7 @@ def plan_dispatch(
         credentials=credentials,
         permission_mode=args.permission_mode,
         breaker_dir=breaker_dir,
+        advisories=readiness_advisories(args.issue, found),
     )
     return plan, brief, None
 
@@ -1054,6 +1180,7 @@ def load_record(record: Path) -> Plan:
         credentials=Path(str(document["credentials_file"])),
         permission_mode=str(document["permission_mode"]),
         breaker_dir=Path(str(document.get("breaker_dir", breaker.DEFAULT_BREAKER_DIR))),
+        advisories=tuple(str(line) for line in document.get("readiness_advisories", ())),
     )
 
 
@@ -1189,6 +1316,7 @@ def dry_run_lines(plan: Plan, brief: str, parent: Mapping[str, str]) -> tuple[st
         f"base_sha={plan.identity.base_sha}",
         f"argv={' '.join(plan.argv)}",
         f"brief_bytes={len(brief.encode('utf-8'))}",
+        *plan.advisories,
     ]
     lines += [f"env_child.{key}={child[key]}" for key in sorted(child) if key not in parent]
     lines += [
@@ -1227,7 +1355,21 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         "--admission-dir",
         default=os.environ.get("CTI_ADMISSION_DIR", str(admission.DEFAULT_ADMISSION_DIR)),
     )
+    # Where the readiness rung reads the issue from when GitHub is not the answer: a draft
+    # body triage wants checked before filing, or a box `gh` cannot reach. `CTI_READINESS_
+    # BODY` is its environment twin for the same reason `CTI_BREAKER_DIR` has one — the
+    # seam forks a fresh process, which no in-process patch reaches.
+    parser.add_argument(
+        "--issue-body",
+        default=os.environ.get("CTI_READINESS_BODY", ""),
+        help="read the issue body from this file instead of asking gh",
+    )
     parser.add_argument("--list", action="store_true", help="print the registry and exit")
+    parser.add_argument(
+        "--readiness",
+        action="store_true",
+        help="audit an issue's readiness and exit, dispatching nothing",
+    )
     parser.add_argument("--dry-run", action="store_true", help="print the plan, launch nothing")
     parser.add_argument("--run", default="", help="internal: run the record at this path")
     return parser.parse_args(argv)
@@ -1242,6 +1384,42 @@ def missing_required(args: argparse.Namespace) -> tuple[str, ...]:
     return tuple(absent)
 
 
+def readiness_audit(args: argparse.Namespace) -> int:
+    """Judge one issue's readiness and print it, dispatching nothing (#241).
+
+    This is the rung's other face, and the one the remedy loop needs: triage and the human
+    are the only parties who can fix an unready issue, so they need to see the same verdict
+    the dispatcher would, before a dispatch is armed rather than after one is refused. It
+    takes no lane, no profile and no seat — there is nothing lane-shaped to pass — and it
+    exits non-zero on exactly what would refuse a dispatch, so it is usable as a gate.
+    """
+    if args.issue <= 0 and not args.issue_body:
+        return emit(
+            Refusal(
+                "incomplete_request",
+                ("missing=--issue or --issue-body",),
+                "A readiness audit needs an issue number or a body file. Nothing was read.",
+            ).lines(),
+            EXIT_REFUSED,
+        )
+    found = read_issue(args.issue, args.issue_body)
+    refusal = readiness_refusal(args.issue, found)
+    if refusal is not None:
+        return emit((*refusal.lines(), *readiness_advisories(args.issue, found)), EXIT_REFUSED)
+    assessment = found.assessment
+    if assessment is None:  # pragma: no cover - readiness_refusal already refused this
+        message = "an unreadable body reached the audit's clear path"
+        raise ValueError(message)
+    return emit(
+        (
+            f"readiness=ready issue={args.issue}",
+            *assessment.lines(),
+            *readiness_advisories(args.issue, found),
+        ),
+        0,
+    )
+
+
 def emit(lines: Iterable[str], code: int) -> int:
     """Print to the stream the exit code implies, and return it."""
     stream = sys.stdout if code == 0 else sys.stderr
@@ -1250,14 +1428,29 @@ def emit(lines: Iterable[str], code: int) -> int:
     return code
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Plan a dispatch, or run one the seam already planned."""
-    args = parse_args(argv)
+def answer_directly(args: argparse.Namespace) -> int | None:
+    """Serve the modes that dispatch nothing, or return `None` to plan a dispatch.
+
+    Three requests are questions rather than dispatches — the registry, a readiness audit,
+    and the detached child asking to run a record the seam already wrote — and each is
+    answered here so that `main` stays one path: plan, refuse, or launch.
+    """
     if args.list:
         return emit(registry_lines(), 0)
+    if args.readiness:
+        return readiness_audit(args)
     if args.run:
         code, lines = run_dispatch(Path(args.run), os.environ)
         return emit(lines, code)
+    return None
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Plan a dispatch, or run one the seam already planned."""
+    args = parse_args(argv)
+    answered = answer_directly(args)
+    if answered is not None:
+        return answered
 
     absent = missing_required(args)
     if absent:
@@ -1282,6 +1475,7 @@ def main(argv: list[str] | None = None) -> int:
             f"dispatch={plan.identity.dispatch_id}",
             f"record={plan.record}",
             f"worktree={plan.worktree}",
+            *plan.advisories,
         ),
         0,
     )
