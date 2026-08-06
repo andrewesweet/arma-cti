@@ -562,6 +562,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The ledger could lose a whole dispatch's token usage and report nothing wrong.** Its
+  docstring promises that a metric whose shape it does not recognise is reported in
+  `unclassified`, never silently dropped. That held for an unrecognised *attribute* and not
+  for an unrecognised *body*: a body shape the reader did not know yielded no datapoints at
+  all, so the metric never reached the net meant to catch it. The first Codex dispatch read
+  `in=0 out=0` beside 49 records with `unclassified` empty. Found because Codex reports token
+  usage as a histogram keyed by `token_type`, where every earlier lane used a sum keyed by
+  `type` — but the silent-drop half was never specific to Codex, and would have hidden any
+  future lane's usage the same way. A token metric in a body the reader cannot parse is now
+  reported by name and body shape. #243.
+
 - **A git conflict marker can no longer reach a tracked file, after one ate 1,669 lines of this
   changelog.** A stray common-ancestor line landed in 2b4f99b, and the next landing resolved its
   own rebase against the corrupted file and cut every release before this cycle; a885306 restored

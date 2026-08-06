@@ -218,10 +218,17 @@ INHERITS_FROM: Final[dict[str, str]] = {"mechanical": "implementer"}
 # a cycle between the two would make either one unloadable on its own. The duplication is
 # guarded — `tests/unit/test_admission.py` asserts these agree with the dispatch registry,
 # so a lane or profile registered there without appearing here is a red unit tier.
-FOREIGN_LANES: Final[tuple[str, ...]] = ("zai",)
+FOREIGN_LANES: Final[tuple[str, ...]] = ("codex", "zai")
 FOREIGN_PROFILES: Final[tuple[tuple[str, str], ...]] = (
     ("zai", "zai-glm52-max"),
     ("zai", "zai-glm47-max"),
+    # #243. Four arms rather than z.ai's two, because effort is a real dimension on this
+    # lane and a collapsed one there — each is a route the bar judges separately, since
+    # Decision 6 admits a *profile* to a seat and not a lane to a seat.
+    ("codex", "codex-sol-xhigh"),
+    ("codex", "codex-sol-high"),
+    ("codex", "codex-terra-medium"),
+    ("codex", "codex-terra-low"),
 )
 
 EXEMPT: Final = "exempt"
