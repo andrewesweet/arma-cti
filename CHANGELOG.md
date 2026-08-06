@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **A unit gate no longer reds on what the box happens to be carrying.** The test of
+  `just watch-report` injected a temporary directory for the recipe's breaker half but not for its
+  watcher half, so the read went to the machine's live `~/.arma-cti/watch/` and any unacknowledged
+  watcher finding turned `just fast` red for every landing, whatever the diff. A docs-only landing
+  hit exactly that, on two findings left by a crash cluster that had nothing to do with it, and the
+  only way past was to acknowledge them — state mutation a unit gate should never require.
+
+  The watch tooling now takes its directory from `CTI_WATCH_DIR` when no flag names one, the twin
+  of `CTI_BREAKER_DIR` and for the same reason: the recipe folds two reads into one line and
+  forwards its arguments to one of them, so the other half has no flag a caller could pass. Both
+  halves of the tooling honour it — the reporting half and the arming shell — because a read moved
+  out of the machine's tree while the write stays in it has relocated the coupling rather than
+  removed it. A tripwire beside the one guarding the tier's locks now fails the suite if a future
+  test drives the watch tooling without pointing it somewhere it owns.
+
 ### Added
 
 - **A design for taking rule-based coordination out of the orchestrator's head and into files.**

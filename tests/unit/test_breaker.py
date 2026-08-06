@@ -872,9 +872,19 @@ def test_the_estimate_verb_refuses_without_a_plan_tier_and_names_the_recipe(
 def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripped(
     tmp_path: Path,
 ) -> None:
-    """The recipe itself, run twice: once on healthy lanes and once on a tripped one."""
+    """The recipe itself, run twice: once on healthy lanes and once on a tripped one.
+
+    Both of the recipe's halves get a `tmp_path`. Injecting the breaker alone left the
+    watch read on the box's live `~/.arma-cti/watch/`, so any unacknowledged watcher
+    finding — two `watch_broken` ones from a crash cluster, in the case that found this
+    — reddened this assertion for a diff that had touched neither (#249).
+    """
     directory = tmp_path / "breaker"
-    environment = {**os.environ, "CTI_BREAKER_DIR": str(directory)}
+    environment = {
+        **os.environ,
+        "CTI_BREAKER_DIR": str(directory),
+        "CTI_WATCH_DIR": str(tmp_path / "watch"),
+    }
 
     def watch_report() -> str:
         return subprocess.run(

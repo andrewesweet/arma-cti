@@ -31,7 +31,10 @@ UV_TIMEOUT="${CTI_WATCH_UV_TIMEOUT:-60}"
 # The poll cadence. Sixty seconds against a ten-minute grace is ample
 # resolution, and it keeps a four-hour watch to ~240 sub-second invocations.
 DEFAULT_INTERVAL=60
-DEFAULT_WATCH_DIR="$HOME/.arma-cti/watch"
+# `CTI_WATCH_DIR` is the same seam `tools/stall_watch.py` reads (#249). Both halves
+# honour it or neither does: a caller that points the read at another tree and still
+# has the arming half write to the real one has moved the leak, not closed it.
+DEFAULT_WATCH_DIR="${CTI_WATCH_DIR:-$HOME/.arma-cti/watch}"
 
 die() {
     printf 'stall-watch: %s\n' "$1" >&2

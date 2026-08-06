@@ -386,7 +386,10 @@ watch name worktree subject="pool" *args:
 # is the read CLAUDE.md already puts at the top of an orchestrator's turn. One
 # verdict line per lane that is not dispatchable, and silence for every lane
 # that is — a verdict, never three percentages (#209). `{{ args }}` is the
-# watchers' alone; the breaker read takes none.
+# watchers' alone; the breaker read takes none. Since neither half can be pointed
+# by a flag the other would swallow, both take a directory from the environment
+# instead — `CTI_BREAKER_DIR` and `CTI_WATCH_DIR` (#249), which is how a unit test
+# exercises this recipe without its verdict depending on what the box is carrying.
 watch-report *args:
     uv run python tools/breaker.py report
     uv run python tools/stall_watch.py report {{ args }}

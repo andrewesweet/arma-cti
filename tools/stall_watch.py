@@ -61,6 +61,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 import time
@@ -526,7 +527,18 @@ def emit(pairs: tuple[tuple[str, object], ...]) -> None:
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     """Five verbs: arm a watch, read its spec, assess it, report, acknowledge."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--watch-dir", type=Path, default=DEFAULT_WATCH_DIR)
+    # `CTI_WATCH_DIR` is `CTI_BREAKER_DIR`'s twin, and exists for the same reason
+    # (#249, the seam principle of ADR-0049). `just watch-report` folds two reads into
+    # one recipe and forwards its arguments to the watchers' half only, so a caller
+    # that wants the breaker half pointed elsewhere has no flag to pass — and the
+    # unit test of that recipe injected the breaker directory alone, leaving the
+    # watch read on the box's live `~/.arma-cti/watch/`. Any unacknowledged finding
+    # there then reddened every landing's gate, whatever the diff under test.
+    parser.add_argument(
+        "--watch-dir",
+        type=Path,
+        default=Path(os.environ.get("CTI_WATCH_DIR", str(DEFAULT_WATCH_DIR))),
+    )
     parser.add_argument("--now", type=int, default=0)
     verbs = parser.add_subparsers(dest="verb", required=True)
 

@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import time
@@ -595,10 +596,15 @@ def a_repo_with_one_commit(path: Path) -> str:
     return git(path, "rev-parse", "HEAD")
 
 
-def seam(*argv: str) -> subprocess.CompletedProcess[str]:
+def seam(*argv: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     """Run one invocation of the real script, bounded so a hang is a red."""
     return subprocess.run(  # noqa: S603
-        [str(SEAM), *argv], capture_output=True, text=True, timeout=180, check=False
+        [str(SEAM), *argv],
+        capture_output=True,
+        text=True,
+        timeout=180,
+        check=False,
+        env=None if env is None else {**os.environ, **env},
     )
 
 
@@ -700,6 +706,124 @@ def test_the_seam_names_the_option_whose_value_went_missing(tmp_path: Path) -> N
     result = seam("arm", "--name", "seam-argless", "--worktree", str(worktree), "--issue")
     assert result.returncode == 2
     assert "--issue takes a value" in result.stderr
+
+
+# --- the injectable watch tree (#249) ---------------------------------------
+#
+# `just watch-report` folds two reads into one recipe and forwards its arguments
+# to the watchers' half only, so a caller who wants the *other* half pointed
+# somewhere else has no flag to reach for. `CTI_BREAKER_DIR` is why the breaker
+# half already had a seam; `CTI_WATCH_DIR` is this half's twin of it. Without
+# one, the unit test of that recipe read the box's live `~/.arma-cti/watch/` and
+# went red on two `watch_broken` findings a docs-only diff had not caused.
+
+
+def test_the_watch_directory_is_injectable_by_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The seam the recipe's caller has, since the recipe forwards it no flag."""
+    injected = tmp_path / "watch"
+    monkeypatch.setenv("CTI_WATCH_DIR", str(injected))
+    assert stall_watch.parse_args(["report"]).watch_dir == injected
+
+    # An explicit flag still wins: the environment is the fallback, not an override.
+    elsewhere = tmp_path / "elsewhere"
+    parsed = stall_watch.parse_args(["--watch-dir", str(elsewhere), "report"])
+    assert parsed.watch_dir == elsewhere
+
+    monkeypatch.delenv("CTI_WATCH_DIR")
+    assert stall_watch.parse_args(["report"]).watch_dir == stall_watch.DEFAULT_WATCH_DIR
+
+
+def test_the_environment_alone_steers_the_read_the_recipe_makes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """No flag anywhere, exactly as `just watch-report` invokes it — and it still lands."""
+    watch_dir, runs, worktree = tmp_path / "watch", tmp_path / "runs", tmp_path / "wt"
+    worktree.mkdir()
+    arm(watch_dir, runs, worktree)
+    write_pool(runs, finished_at=NOW - 900)
+    stall_watch.main(
+        [
+            "--watch-dir",
+            str(watch_dir),
+            "--now",
+            str(NOW),
+            "assess",
+            "--name",
+            "issue-198",
+            "--head",
+            SHA,
+        ]
+    )
+    capsys.readouterr()
+
+    monkeypatch.setenv("CTI_WATCH_DIR", str(watch_dir))
+    assert stall_watch.main(["--now", str(NOW), "report"]) == 0
+    assert capsys.readouterr().out.startswith("STALL issue-198 #198")
+
+    # And an injected tree with nothing in it reports nothing — the assertion the
+    # leaking test was making, now about a tree the test owns.
+    monkeypatch.setenv("CTI_WATCH_DIR", str(tmp_path / "empty"))
+    assert stall_watch.main(["--now", str(NOW), "report"]) == 0
+    assert capsys.readouterr().out == ""
+
+
+def test_the_shell_half_honours_the_same_environment_seam(tmp_path: Path) -> None:
+    """Both halves or neither: a read moved without the write is the leak relocated."""
+    worktree, watch_dir = tmp_path / "wt", tmp_path / "watch"
+    a_repo_with_one_commit(worktree)
+    result = seam(
+        "arm",
+        "--name",
+        "seam-injected",
+        "--worktree",
+        str(worktree),
+        "--subject",
+        "path",
+        "--await-path",
+        str(tmp_path / "never"),
+        "--deadline",
+        "1",
+        "--interval",
+        "1",
+        "--runs-dir",
+        str(tmp_path / "runs"),
+        env={"CTI_WATCH_DIR": str(watch_dir)},
+    )
+    assert result.returncode == 0, result.stderr
+    assert stall_watch.spec_path(watch_dir, "seam-injected").exists()
+    emitted = dict(line.split("=", 1) for line in result.stdout.splitlines() if "=" in line)
+    assert Path(emitted["spec"]).parent == watch_dir
+
+
+def test_no_unit_test_reads_the_boxs_own_watch_tree() -> None:
+    """The tripwire beside #132's, one tree over: the no-Arma tier owns no host state.
+
+    #132's version guards the machine-wide locks; this one guards the watchers'
+    findings, and the failure it catches is the same shape — a unit gate whose
+    verdict depends on what the box happens to be carrying rather than on the diff
+    under test. `--watch-dir` or `CTI_WATCH_DIR` is what moves the read into a
+    `tmp_path`; a driver with neither reads `~/.arma-cti/watch/` for real, so every
+    landing on this box reds until somebody acknowledges an unrelated finding, which
+    is state mutation a unit gate must never require (#249).
+
+    An assignment or an argv token, never a bare mention: #132's first draft was
+    satisfied by a comment naming the variable and stayed green with its own fix
+    deleted.
+    """
+    drivers = ('"watch-report"', "stall_watch.main(", "stall-watch.sh")
+    injected = re.compile(r"""(CTI_WATCH_DIR["'\]]*\s*[=:])|(["']--watch-dir["'])""")
+    offenders = [
+        path.name
+        for path in sorted(Path(__file__).parent.glob("test_*.py"))
+        for text in [path.read_text(encoding="utf-8")]
+        if any(driver in text for driver in drivers) and not injected.search(text)
+    ]
+    assert not offenders, (
+        f"{offenders} drive the watch tooling without injecting a watch directory, so they "
+        "read ~/.arma-cti/watch/ for real and red on findings no diff of theirs caused"
+    )
 
 
 def test_a_completion_with_no_verdict_is_not_described_as_one(tmp_path: Path) -> None:
