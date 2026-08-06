@@ -983,16 +983,30 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
     `workspace-write` makes writable. Every commit was therefore out of reach, and with it
     the gate and the landing that follow it.
 
-    Two overrides, and each is the narrowest thing that reaches a step of the ruling:
+    Three roots and one flag, each measured necessary and none inferred:
 
-    - **`writable_roots` gains the main checkout.** Not the `.git` directory alone: `just
-      land`'s final step is `git -C <main checkout> merge --ff-only origin/main`, which
-      writes the main checkout's working tree, and a grant that stopped at `.git` would push
-      and then refuse `merge_blocked_by_sandbox` — a Claude-side finisher again, smaller but
-      still there. One root covers both, and it is the workspace in the ordinary sense: this
-      repository, worktrees and all. It is derived per invocation rather than written down,
-      so a dispatch from a second checkout widens to that checkout and not to this one.
-    - **`network_access` is enabled.** It defaults off, and `just land` fetches and pushes.
+    - **The main checkout**, because `just land`'s final step is `git -C <main checkout>
+      merge --ff-only origin/main`, which writes that checkout's working tree. A grant that
+      stopped short of it would push and then refuse `merge_blocked_by_sandbox` — the
+      Claude-side finisher again, smaller but still there. Derived per invocation rather
+      than written down, so a dispatch from a second checkout widens to that one.
+    - **The main checkout's `.git`, named separately**, which is the finding worth carrying
+      forward: *Codex holds `.git` read-only even when its parent directory is a writable
+      root, and honours it when it is named as a root itself.* Naming the repository alone
+      left `git add` failing exactly as it had before the widening. Both halves were
+      measured directly rather than argued — probe `d-20260806-164858-905eb2` wrote a file
+      beside `.git` (`MAINROOT_OK`) while `.git/p2` refused, and a follow-up probe naming
+      `.git` explicitly wrote it.
+    - **`~/.cache/uv`**, because `uv` acquires a lock there before any test runs: without it
+      `just check`, `just unit` and `just fast` all died at `check-generated` on
+      ``Could not create temporary file … Read-only file system``. `~/.cargo` was measured
+      *not* necessary — the gate ran green without it — though that was against a warm cargo
+      registry, and a cold one may want writing.
+    - **`network_access`**, which defaults off while `just land` fetches and pushes. Proven
+      reachable at `NET_HTTP_200` under the same probe.
+
+    Both readings come from the same box on 2026-08-06, and the gate was run end to end
+    under exactly this set before it was written down.
 
     **This is not parity with the `zai` lane and must not be described as one.** That lane's
     grant is a list of named commands; this one is a filesystem and network policy that every
@@ -1008,14 +1022,33 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
     flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
     if flags != CODEX_SANDBOX["acceptEdits"]:
         return flags
-    root = hook_parity.toml_string(str(main_checkout(project_dir)))
+    roots = ", ".join(
+        hook_parity.toml_string(str(path)) for path in _codex_writable_roots(project_dir)
+    )
     return (
         "--config",
-        f"sandbox_workspace_write.writable_roots=[{root}]",
+        f"sandbox_workspace_write.writable_roots=[{roots}]",
         "--config",
         "sandbox_workspace_write.network_access=true",
         *flags,
     )
+
+
+def _codex_writable_roots(project_dir: Path) -> tuple[Path, ...]:
+    """Return the directories a Codex session must write to commit, gate and land.
+
+    The session's own worktree is already writable and so is not repeated here — Codex's
+    `workspace-write` grants cwd, and `writable_roots` is documented as "additional folders
+    (beyond cwd and possibly TMPDIR)".
+
+    `uv`'s cache is read from the environment the same way `uv` reads it, so a box that
+    relocates it does not silently lose the gate. A root that does not exist is not an
+    error: Codex logs it and carries on, which is the right shape for a path derived from a
+    convention rather than from a fact.
+    """
+    main = main_checkout(project_dir)
+    cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
+    return (main, main / ".git", Path(os.environ.get("UV_CACHE_DIR") or cache / "uv"))
 
 
 def build_argv(

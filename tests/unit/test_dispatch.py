@@ -670,7 +670,7 @@ def test_the_default_root_is_the_main_checkout_even_from_inside_a_worktree(
 
 
 def _codex_argv_from_a_linked_worktree(
-    tmp_path: Path, permission_mode: str
+    tmp_path: Path, permission_mode: str, name: str = "checkout"
 ) -> tuple[tuple[str, ...], Path, Path]:
     """Build a Codex argv from inside a linked worktree, the arrangement dispatch uses.
 
@@ -679,7 +679,7 @@ def _codex_argv_from_a_linked_worktree(
     it. Any assertion made against a plain repository would pass while the real
     arrangement failed, which is what dispatch `d-20260806-163129-479a57` measured.
     """
-    root = git_worktree(tmp_path, name="checkout")
+    root = git_worktree(tmp_path, name=name)
     linked = root / ".claude" / "worktrees" / "issue-259"
     add = ("worktree", "add", "-q", "--detach", str(linked))
     subprocess.run(["git", *add], cwd=root, check=True, capture_output=True)  # noqa: S603, S607
@@ -692,19 +692,59 @@ def _codex_argv_from_a_linked_worktree(
     return argv, root, linked
 
 
+def _writable_roots(argv: tuple[str, ...]) -> str:
+    found = [part for part in argv if part.startswith("sandbox_workspace_write.writable_roots=")]
+    assert len(found) == 1, argv
+    return found[0]
+
+
 def test_a_codex_workspace_write_session_can_write_the_repositorys_git_metadata(
     tmp_path: Path,
 ) -> None:
     # #259: under plain `--sandbox workspace-write` the first `git add` died on
     # "Unable to create '<main>/.git/worktrees/issue-259-codex/index.lock': Read-only
-    # file system", so the commit half of the human's ruling was unreachable. The
-    # writable root is the main checkout — which also covers `just land`'s ff-only merge
-    # into it — and it is derived per invocation rather than written down.
+    # file system", so the commit half of the human's ruling was unreachable. The main
+    # checkout is a root because `just land`'s ff-only merge writes it — and `.git` is a
+    # root **of its own**, because Codex holds `.git` read-only even when its parent is
+    # writable: probe `d-20260806-164858-905eb2` wrote a file beside `.git` and was
+    # refused inside it, in one command. Naming the repository alone is not enough, and
+    # this test is what stops that regressing back to the version that measured red.
     argv, root, linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
-    assert f'sandbox_workspace_write.writable_roots=["{root}"]' in argv
-    assert f'sandbox_workspace_write.writable_roots=["{linked}"]' not in argv
-    assert "--sandbox" in argv
+    roots = _writable_roots(argv)
+    assert f'"{root}"' in roots
+    assert f'"{root / ".git"}"' in roots
+    # The session's own worktree is cwd, which `workspace-write` already grants; a root
+    # naming it would be noise claiming to be a grant.
+    assert f'"{linked}"' not in roots
     assert argv[argv.index("--sandbox") + 1] == "workspace-write"
+
+
+def test_a_codex_workspace_write_session_can_write_the_cache_the_gate_locks(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Measured: without this root, `just check`, `just unit` and `just fast` all died at
+    # `check-generated` on "Could not create temporary file … Read-only file system" in
+    # `~/.cache/uv`, before a single test ran. Read from the environment the way `uv`
+    # reads it, so a box that relocates its cache does not silently lose the gate.
+    monkeypatch.setenv("UV_CACHE_DIR", "/somewhere/else/uv")
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
+    assert '"/somewhere/else/uv"' in _writable_roots(argv)
+
+    monkeypatch.delenv("UV_CACHE_DIR")
+    monkeypatch.setenv("XDG_CACHE_HOME", "/xdg/cache")
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits", "second")
+    assert '"/xdg/cache/uv"' in _writable_roots(argv)
+
+
+def test_the_codex_grant_stops_at_what_was_measured_necessary(tmp_path: Path) -> None:
+    # `~/.cargo` is deliberately absent: the gate ran green without it, so it goes
+    # ungranted however plausible it looked. `$HOME` and `/` are the two roots that would
+    # turn a widening into the bypass the human declined, and neither is here.
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
+    roots = _writable_roots(argv)
+    assert ".cargo" not in roots
+    assert f'"{Path.home()}"' not in roots
+    assert '"/"' not in roots
 
 
 def test_a_codex_workspace_write_session_can_reach_the_network_just_land_needs(
@@ -1333,6 +1373,10 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
     credentials = credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
     parent = seam_env(tmp_path, tmp_path / "zai-ran.txt")
     before = dict(parent)
+    # Snapshotted rather than asserted absent, because this suite now runs *inside* zai
+    # dispatches. See the assertion below for why that is a stronger claim and not a
+    # weaker one.
+    own_environment_before = dict(os.environ)
 
     common = [
         "--seat",
@@ -1373,7 +1417,19 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
     # The parent mapping this test handed the seam is untouched, and so is this
     # process's own environment: nothing was exported anywhere.
     assert parent == before
-    assert os.environ.get("ANTHROPIC_AUTH_TOKEN") is None
+    # This used to read `os.environ.get("ANTHROPIC_AUTH_TOKEN") is None`, which asserted a
+    # *precondition of the box* rather than anything the seam did. #259 made that
+    # unrunnable and found it: once a dispatched session can run the gate, `just fast`
+    # executes inside a `zai` dispatch, whose own credential the dispatcher legitimately
+    # put in the environment before pytest started — so the suite red on the ambient value
+    # `4ec07bbe…` while the seam had exported nothing at all (dispatch
+    # `d-20260806-163123-e8bed7`). Equality is the claim that was always wanted, it holds
+    # in both arrangements, and it is strictly stronger: on a clean box "unchanged from
+    # clean" implies "absent", and it also catches an export of any *other* variable that
+    # the old single-key check would have missed.
+    assert os.environ == own_environment_before
+    # And the lane's credential specifically never reaches this process under any name.
+    assert FAKE_TOKEN not in "".join(os.environ.values())
 
     parent["CTI_FAKE_CLAUDE_OUT"] = str(tmp_path / "native-ran.txt")
     native = run_seam(

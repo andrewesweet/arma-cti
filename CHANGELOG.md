@@ -29,11 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Read-only file system`. This project dispatches into linked worktrees, so a session's git metadata
   lives above the one directory `workspace-write` makes writable, and every commit was out of reach.
 
-  `codex exec` now carries two `-c` overrides on `acceptEdits` only: `writable_roots` gains the main
-  checkout — which `just land`'s ff-only merge writes too, so stopping at `.git` would only have
-  moved the finisher — and `network_access`, which defaults off while `just land` fetches and pushes.
-  Read-only seats are untouched. `--dangerously-bypass-approvals-and-sandbox` was put to the human
-  and declined, and remains unused.
+  `codex exec` now carries two `-c` overrides on `acceptEdits` only: three `writable_roots` and
+  `network_access`. The roots are the main checkout (`just land`'s ff-only merge writes it), the main
+  checkout's `.git` **named separately**, and `~/.cache/uv`. The middle one is the finding worth
+  keeping: Codex holds `.git` read-only even when its parent directory is a writable root, and
+  honours it when named as a root itself — one probe wrote a file beside `.git` and was refused
+  inside it in the same command. Without `~/.cache/uv` every gate recipe died at `check-generated`
+  before a test ran. `~/.cargo` was measured *not* necessary and is not granted. Read-only seats are
+  untouched, and `--dangerously-bypass-approvals-and-sandbox` was put to the human, declined, and
+  remains unused.
 
   This is not parity with the `zai` lane and is not described as one: that lane's grant is a list of
   named commands, this one a filesystem and network policy every command inherits. Network access in
@@ -79,6 +83,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   without re-deriving the window. The ledger's own row is unchanged.
 
 ### Fixed
+
+- **A `zai` dispatch's own credential no longer reds the gate it was just granted.**
+  `test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane` asserted
+  `os.environ.get("ANTHROPIC_AUTH_TOKEN") is None` — a precondition of the box rather than anything
+  the dispatcher had done. Widening the allowlist made the suite runnable inside a `zai` dispatch for
+  the first time, and there the dispatcher has legitimately put that variable in the environment
+  before pytest starts, so the assertion red on an ambient value while the seam had exported nothing
+  at all. It now snapshots the environment and asserts it unchanged across the seam, plus that the
+  lane's credential never appears in this process under any name: true in both arrangements, and
+  strictly stronger, since "unchanged from clean" implies "absent" and also catches an export of any
+  other variable the single-key check would have missed.
 
 - **A denial that could not read a command no longer accuses it of bypassing a hook.** The commit
   bypass guard fails closed on any Bash command it cannot parse, which is right, but it said so in
