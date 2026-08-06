@@ -58,15 +58,22 @@ are #226's ground and are deliberately not computed here — the view reports a 
 only where a record carried one, verbatim.
 
 **The join** to issue, gate outcome and landed SHA. The issue comes from the dispatch
-record. The landed SHA is git's answer: the newest commit on `origin/main` after the
-dispatch's base SHA whose message references the issue. Gate outcome is derived from
-that landing rather than from the child's exit code, and the reason is that the exit code
-of a coding agent is not a gate result — the gates run *inside* the dispatched process,
-and `result.json` is deliberately facts-only (#223). What is mechanical is that a commit
-on `origin/main` cleared `cog verify` and the repo hooks, and that CLAUDE.md's contract
-binds landing to a green `just fast`. So `landed` is the gate evidence and the SHA is
-where to look; a green gate run that never landed is invisible here, which is stated
-rather than papered over.
+record. The landed SHA is git's answer, bounded so that the answer is about *this*
+dispatch: the newest commit on `origin/main` that references the issue, descends from the
+dispatch's base SHA, and was committed after the dispatch's own start. Both bounds are
+load-bearing and neither was there at first — a review dispatch armed at 22:17Z was
+credited with a commit made at 21:01Z, because the range was `base_sha..origin/main` and
+nothing else, and on a review dispatch `base_sha` is the *reviewed* commit and so reaches
+arbitrarily far back (#245). Seats that land nothing by construction — `review`, `recon`
+— are not asked the question at all; their rows say the seat lands nothing, which is a
+fact about ADR-0061 Decision 3 rather than a weak reading of git. Gate outcome is derived
+from that landing rather than from the child's exit code, and the reason is that the exit
+code of a coding agent is not a gate result — the gates run *inside* the dispatched
+process, and `result.json` is deliberately facts-only (#223). What is mechanical is that a
+commit on `origin/main` cleared `cog verify` and the repo hooks, and that CLAUDE.md's
+contract binds landing to a green `just fast`. So `landed` is the gate evidence and the
+SHA is where to look; a green gate run that never landed is invisible here, which is
+stated rather than papered over.
 
 **Retention.** The materialised rows are kept indefinitely — they are the evidence quoted
 into an issue months later, and they are a few kilobytes each. The raw per-dispatch export
@@ -819,32 +826,129 @@ def git(*args: str, cwd: Path) -> str:
     return done.stdout if done.returncode == 0 else ""
 
 
-def landed(repo: Path, issue: int, base_sha: str, ref: str = "origin/main") -> Landing:
-    """Find the commits on `ref` after `base_sha` whose message references the issue.
+def dispatch_start(plan: Mapping[str, Any], result: Mapping[str, Any] | None) -> datetime | None:
+    """When this dispatch began, read from the record and never computed.
 
-    The newest is reported as the landed SHA, because an issue may land in several
-    commits and the tip is what a reader wants to `git show`. The count is carried so
-    that "several" is visible rather than lost behind one SHA.
+    `result.json`'s `started_at` is the tightest answer and exists once the run has
+    ended; until then the plan's `planned_at`, written before the child exists, is the
+    only one there is. A record carrying neither yields `None`, and the caller's job is
+    then to say it cannot bound the window rather than to leave it unbounded (#245).
     """
+    for candidate in ((result or {}).get("started_at"), plan.get("planned_at")):
+        if not isinstance(candidate, str):
+            continue
+        try:
+            when = datetime.fromisoformat(candidate)
+        except ValueError:
+            continue
+        return when if when.tzinfo else when.replace(tzinfo=UTC)
+    return None
+
+
+# The landing query asks git for three fields per commit — the SHA, the committer date in
+# strict ISO 8601, and the whole message — separated by the two record characters no
+# commit message can carry.
+LANDING_FORMAT: Final = "%H%x1f%cI%x1f%B%x1e"
+LANDING_FIELDS: Final = 3
+
+
+def _landing_preflight(repo: Path, base_sha: str, ref: str) -> Landing | None:
+    """Refuse, naming the reason, where the query cannot be asked at all."""
     if not base_sha:
         return Landing(None, 0, "the dispatch record carries no base SHA")
     if not git("rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}", cwd=repo).strip():
         return Landing(None, 0, f"{ref} is not in this checkout")
-    log = git("log", "--format=%H%x1f%B%x1e", f"{base_sha}..{ref}", cwd=repo)
+    return None
+
+
+def landed(
+    repo: Path, issue: int, base_sha: str, since: datetime | None, ref: str = "origin/main"
+) -> Landing:
+    """Find the commits on `ref` that this dispatch could have landed.
+
+    Three tests, and a commit must clear all of them. Its message must reference the
+    issue. It must **descend from the dispatch's base**, since a commit on another line
+    of the history is not this dispatch's tree plus a change — `base..ref` alone lists
+    everything reachable from the tip, which on a review dispatch reaches back to
+    whatever SHA was under review, because `docs/review-dispatch.md` prescribes passing
+    the *reviewed* commit as `--base-sha`. And it must **postdate the dispatch's own
+    start**, since a commit that existed before the dispatch was armed cannot be its
+    work: the row that provoked this credited a review dispatch with a commit made
+    seventy-six minutes earlier (#245).
+
+    The floor is the start truncated to the second, because git records committer dates
+    at second resolution and a start carrying microseconds must not exclude the very
+    second it began in.
+
+    The newest survivor is reported as the landed SHA, because an issue may land in
+    several commits and the tip is what a reader wants to `git show`. The count is
+    carried so that "several" is visible rather than lost behind one SHA, and every
+    refusal names which of the three tests answered.
+    """
+    refusal = _landing_preflight(repo, base_sha, ref)
+    if refusal is not None:
+        return refusal
+    if since is None:
+        return Landing(None, 0, "the dispatch record carries no start time")
+    log = git(
+        "log", "--ancestry-path", f"--format={LANDING_FORMAT}", f"{base_sha}..{ref}", cwd=repo
+    )
     if not log.strip():
-        return Landing(None, 0, f"nothing on {ref} after {base_sha[:8]}")
+        return Landing(None, 0, f"nothing on {ref} descends from {base_sha[:8]}")
     pattern = re.compile(rf"(?<![\w#])#{issue}(?![0-9])")
-    matched = [
-        entry.split("\x1f", 1)[0].strip()
+    referencing = [
+        (fields[0].strip(), fields[1].strip())
         for entry in log.split("\x1e")
-        if "\x1f" in entry and pattern.search(entry.split("\x1f", 1)[1])
+        if len(fields := entry.split("\x1f", LANDING_FIELDS - 1)) == LANDING_FIELDS
+        and pattern.search(fields[2])
     ]
+    if not referencing:
+        return Landing(
+            None, 0, f"no commit on {ref} descending from {base_sha[:8]} references #{issue}"
+        )
+    floor = since.replace(microsecond=0)
+    matched = [sha for sha, when in referencing if datetime.fromisoformat(when) >= floor]
     if not matched:
-        return Landing(None, 0, f"no commit on {ref} references #{issue}")
-    return Landing(matched[0], len(matched), f"referenced by {len(matched)} commit(s) on {ref}")
+        return Landing(
+            None,
+            0,
+            f"{len(referencing)} commit(s) on {ref} reference #{issue} but predate "
+            f"this dispatch's start ({floor.isoformat()})",
+        )
+    return Landing(
+        matched[0],
+        len(matched),
+        f"referenced by {len(matched)} commit(s) on {ref} after {floor.isoformat()}",
+    )
 
 
-def gate_outcome(landing: Landing, result: Mapping[str, Any] | None, end_state: EndState) -> str:
+# ADR-0061 Decision 3 admits `review` to a foreign lane precisely because its output is
+# claims, which land nothing on their own, and `recon` is read-only by construction. For
+# those two seats `landed` is not a weak answer but a category error, so the row says the
+# seat lands nothing and names no commit at all (#245). A seat this table does not know
+# is assumed to land: the view reads what the record carries and does not invent a claim
+# about a seat it has never met. `tools/dispatch.py`'s `SEATS` is the roster, and a unit
+# test holds the two in step so a new seat cannot arrive here unclassified.
+SEAT_LANDS: Final[dict[str, bool]] = {
+    "implementer": True,
+    "mechanical": True,
+    "recon": False,
+    "review": False,
+    "fable": True,
+    "orchestrator": True,
+}
+
+
+def seat_lands(seat: object) -> bool:
+    """Say whether this seat can land a commit at all."""
+    if not isinstance(seat, str):
+        return True
+    return SEAT_LANDS.get(seat, True)
+
+
+def gate_outcome(
+    landing: Landing, result: Mapping[str, Any] | None, end_state: EndState, seat: object
+) -> str:
     """Name what the gates say about this dispatch, from the evidence that exists.
 
     `landed` is the strong answer and the only mechanical one: a commit on `origin/main`
@@ -852,13 +956,22 @@ def gate_outcome(landing: Landing, result: Mapping[str, Any] | None, end_state: 
     `just fast`. The child's exit code is deliberately not read as a gate result — the
     gates run inside the dispatched process and a coding agent exits zero for reasons of
     its own.
+
+    A seat that lands nothing by construction gets `lands_nothing` where an implementer
+    would get `not_landed`, because `not_landed` reads as a gate this dispatch was
+    running for and did not clear. The typings that say the run was never a result, or is
+    not over, still win — they are facts about this dispatch, and the seat rule is a fact
+    about the seat.
     """
-    if landing.sha:
+    lands = seat_lands(seat)
+    if landing.sha and lands:
         return "landed"
     if result is None:
         return "running"
     if end_state.class_ in ("provider_refused", "quota_exhausted", "infra_unavailable"):
         return "not_a_result"
+    if not lands:
+        return "lands_nothing"
     return "not_landed"
 
 
@@ -902,9 +1015,13 @@ def materialise(
     items = read_items(source, dispatch_id)
     issue = int(plan.get("issue") or 0)
     base_sha = str(plan.get("base_sha") or "")
-    landing = (
-        landed(repo, issue, base_sha) if issue else Landing(None, 0, "the dispatch names no issue")
-    )
+    seat = plan.get("seat")
+    if not seat_lands(seat):
+        landing = Landing(None, 0, f"the {seat} seat lands nothing")
+    elif not issue:
+        landing = Landing(None, 0, "the dispatch names no issue")
+    else:
+        landing = landed(repo, issue, base_sha, dispatch_start(plan, result))
     end_state = type_end_state(items, result, source)
     usage = normalise_usage(items)
     lane = plan.get("lane")
@@ -914,7 +1031,7 @@ def materialise(
         "dispatch_id": dispatch_id,
         "lane": lane,
         "profile": plan.get("profile"),
-        "seat": plan.get("seat"),
+        "seat": seat,
         "issue": issue or None,
         "base_sha": base_sha or None,
         "source": source.document(),
@@ -923,7 +1040,7 @@ def materialise(
         "cap_fraction": cap_fraction(lane if isinstance(lane, str) else None, usage).document(),
         "end_state": end_state.document(),
         "gate": {
-            "outcome": gate_outcome(landing, result, end_state),
+            "outcome": gate_outcome(landing, result, end_state, seat),
             "landed": landing.document(),
             "returncode": result.get("returncode") if result else None,
             "started_at": result.get("started_at") if result else None,

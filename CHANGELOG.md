@@ -573,6 +573,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   future lane's usage the same way. A token metric in a body the reader cannot parse is now
   reported by name and body shape. #243.
 
+- **The ledger no longer credits a dispatch with a landing that predates it.** The review
+  dispatch `d-20260805-221743-8957c3`, armed at 22:17:43Z, had a row naming `e066b3c` as its
+  landed SHA — committed at 21:01:17Z, seventy-six minutes before the dispatch existed, by
+  somebody else. The window `tools/ledger.py` computed was `base_sha..origin/main` and nothing
+  more, and on a review dispatch `base_sha` is the *reviewed* commit, so the range reached back
+  to whatever was under review. A landing now has to clear two further tests before it is
+  credited: descend from the dispatch's base, and postdate the dispatch's own start — the
+  `started_at` in `result.json` once the run has ended, the plan's `planned_at` until then. A
+  record carrying neither timestamp is credited with nothing, because a window the view cannot
+  bound is not a window that admits everything. Where nothing survives, the row's `reason` names
+  which test answered, as every other field in it already did.
+
+  The seat's part is now said rather than left to arithmetic. `review` and `recon` land nothing
+  by construction — ADR-0061 Decision 3 admits review to a foreign lane *because* its output is
+  claims — so their rows carry the new gate outcome `lands_nothing` and name no commit at all,
+  where `not_landed` would have read as a gate they were running for and failed. `running` and
+  `not_a_result` still take precedence, being facts about the dispatch rather than about the
+  seat. A unit test holds the ledger's seat table in step with `tools/dispatch.py`'s roster, so
+  a seat added there cannot arrive here unclassified and inherit the same defect. Found by the
+  #240 review exercise, which is the first thing it caught. #245.
+
 - **A git conflict marker can no longer reach a tracked file, after one ate 1,669 lines of this
   changelog.** A stray common-ancestor line landed in 2b4f99b, and the next landing resolved its
   own rebase against the corrupted file and cut every release before this cycle; a885306 restored

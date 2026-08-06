@@ -183,10 +183,33 @@ dispatch's file and no row reads them.
 ### The join
 
 - **Issue** — from the dispatch record.
-- **Landed SHA** — git's answer: commits on `origin/main` after the dispatch's `base_sha`
-  whose message references `#<issue>`. The newest is reported, with the count, since an
-  issue may land in several commits and the tip is what a reader wants to `git show`.
-- **Gate outcome** — `landed`, `not_landed`, `running`, or `not_a_result`.
+- **Landed SHA** — git's answer, bounded so that it is an answer about *this* dispatch. A
+  commit counts only if it clears three tests: its message references `#<issue>`, it
+  **descends from the dispatch's `base_sha`**, and it was **committed after the dispatch
+  started**. The newest survivor is reported, with the count, since an issue may land in
+  several commits and the tip is what a reader wants to `git show`. Where nothing
+  survives, the row's `reason` names which test answered.
+- **Gate outcome** — `landed`, `not_landed`, `lands_nothing`, `running`, or
+  `not_a_result`.
+
+The two bounds are what make the row's claim narrower than "a commit exists". Neither was
+there at first, and #245 is what they cost: the review dispatch `d-20260805-221743-8957c3`,
+armed at 22:17:43Z, was credited with `e066b3c`, committed at 21:01:17Z — seventy-six
+minutes earlier, by somebody else. The window was `base_sha..origin/main` and nothing
+else, and on a review dispatch `base_sha` is the *reviewed* commit
+(`docs/review-dispatch.md` prescribes passing it), so the range reached back to whatever
+was under review. The dispatch's start comes from `result.json`'s `started_at` once the
+run has ended and from the plan's `planned_at` until then; a record carrying neither is
+credited with no landing at all, because a window the view cannot bound is not a window
+that admits everything.
+
+`lands_nothing` is the outcome for a seat that lands nothing by construction. ADR-0061
+Decision 3 admits `review` to a foreign lane precisely because its output is claims, and
+`recon` is read-only; for both, `not_landed` would read as a gate the dispatch was running
+for and did not clear. Those rows name no commit and say the seat lands nothing.
+`running` and `not_a_result` still win over it — they are facts about the dispatch, where
+the seat rule is a fact about the seat. `tools/dispatch.py`'s `SEATS` is the roster, and a
+unit test holds the two tables in step so a new seat cannot arrive unclassified.
 
 `landed` is the gate evidence, and it is the only mechanical one available. The gates run
 *inside* the dispatched process, and `result.json` is deliberately facts-only (#223) — a

@@ -51,6 +51,18 @@ prereqs = load_tool("prereqs")
 NOW = datetime(2026, 8, 5, 12, 0, tzinfo=UTC)
 DISPATCH = "d-20260805-120000-abc123"
 
+# #245's concrete case, kept as the arrangement rather than as prose: the review
+# dispatch `d-20260805-221743-8957c3` was armed at 22:17:43.676672Z and its row named
+# `e066b3c`, committed at 21:01:17Z — seventy-six minutes before the dispatch existed.
+ARMED = datetime(2026, 8, 5, 22, 17, 43, 676672, tzinfo=UTC)
+BEFORE_ARMED = "2026-08-05T21:01:17+00:00"
+AFTER_ARMED = "2026-08-05T23:30:00+00:00"
+
+# Every real dispatch record carries `planned_at`, written before the child exists, so a
+# staged record carries one too. It sits before every commit the fixtures make at the
+# wall clock, which is what leaves those commits inside the dispatch's window.
+PLANNED = "2026-08-05T12:00:00+00:00"
+
 
 # --------------------------------------------------------------------------- staging
 
@@ -192,6 +204,7 @@ def stage_record(
                 "seat": "implementer",
                 "issue": issue,
                 "base_sha": base_sha,
+                "planned_at": PLANNED,
                 **plan,
             }
         ),
@@ -587,14 +600,19 @@ def test_no_attribute_outside_the_allowlist_reaches_the_row(tmp_path: Path) -> N
 # ---------------------------------------------------------------------------- the join
 
 
-def run_git(*args: str, cwd: Path) -> None:
-    """Run one git command in the staged repo, failing the test if it refuses."""
+def run_git(*args: str, cwd: Path, at: str = "") -> None:
+    """Run one git command in the staged repo, failing the test if it refuses.
+
+    `at` pins the author and committer dates, so a test can put a commit on either side
+    of a dispatch's start rather than hoping the wall clock does it for free (#245).
+    """
     # S603/S607: fixed literals and a tmp_path, and `git` resolves off PATH as everywhere.
     subprocess.run(  # noqa: S603
         ["git", *args],  # noqa: S607
         cwd=cwd,
         check=True,
         capture_output=True,
+        env={**os.environ, "GIT_AUTHOR_DATE": at, "GIT_COMMITTER_DATE": at} if at else None,
     )
 
 
@@ -624,11 +642,11 @@ def head(repo_path: Path) -> str:
     ).stdout.strip()
 
 
-def land(repo_path: Path, message: str) -> str:
+def land(repo_path: Path, message: str, at: str = "") -> str:
     """Commit on `main` and move `origin/main` to it, as a push then a fetch would."""
     (repo_path / f"{time.time_ns()}.txt").write_text("x", encoding="utf-8")
     run_git("add", ".", cwd=repo_path)
-    run_git("commit", "-qm", message, cwd=repo_path)
+    run_git("commit", "-qm", message, cwd=repo_path, at=at)
     run_git("update-ref", "refs/remotes/origin/main", "HEAD", cwd=repo_path)
     return head(repo_path)
 
@@ -636,7 +654,7 @@ def land(repo_path: Path, message: str) -> str:
 def test_the_landed_sha_is_the_commit_on_origin_main_that_references_the_issue(repo: Path) -> None:
     base = head(repo)
     landed_sha = land(repo, "feat: the telemetry spine\n\nrefs #227")
-    landing = ledger.landed(repo, 227, base)
+    landing = ledger.landed(repo, 227, base, ARMED)
     assert (landing.sha, landing.commits) == (landed_sha, 1)
 
 
@@ -644,39 +662,141 @@ def test_several_commits_on_one_issue_report_the_newest_and_the_count(repo: Path
     base = head(repo)
     land(repo, "feat: the first half\n\nrefs #227")
     newest = land(repo, "test: the second half\n\nrefs #227")
-    landing = ledger.landed(repo, 227, base)
+    landing = ledger.landed(repo, 227, base, ARMED)
     assert (landing.sha, landing.commits) == (newest, 2)
 
 
 def test_a_longer_issue_number_is_not_a_match_for_a_shorter_one(repo: Path) -> None:
     base = head(repo)
     land(repo, "feat: something else\n\nrefs #2270")
-    assert ledger.landed(repo, 227, base).sha is None
+    assert ledger.landed(repo, 227, base, ARMED).sha is None
 
 
 def test_a_commit_before_the_dispatch_s_base_sha_is_not_this_dispatch_s_landing(repo: Path) -> None:
     land(repo, "feat: landed before the dispatch was armed\n\nrefs #227")
     base = head(repo)
-    assert ledger.landed(repo, 227, base).sha is None
+    assert ledger.landed(repo, 227, base, ARMED).sha is None
 
 
 def test_a_checkout_without_the_ref_says_so_rather_than_claiming_nothing_landed(
     repo: Path,
 ) -> None:
     run_git("update-ref", "-d", "refs/remotes/origin/main", cwd=repo)
-    landing = ledger.landed(repo, 227, head(repo))
+    landing = ledger.landed(repo, 227, head(repo), ARMED)
     assert (landing.sha, landing.reason) == (None, "origin/main is not in this checkout")
+
+
+# ------------------------------------------- the window a landing has to be inside (#245)
+
+
+def test_a_commit_made_before_the_dispatch_started_is_not_that_dispatch_s_landing(
+    repo: Path,
+) -> None:
+    # #245's concrete case, reproduced: the commit is on `origin/main`, it descends from
+    # the dispatch's base, and its message names the issue — every test the old window
+    # applied. It was also committed seventy-six minutes before the dispatch was armed,
+    # which is the one thing that makes it somebody else's work.
+    base = head(repo)
+    land(repo, "feat: the telemetry spine\n\nrefs #227", at=BEFORE_ARMED)
+    landing = ledger.landed(repo, 227, base, ARMED)
+    assert landing.sha is None
+    assert landing.reason == (
+        "1 commit(s) on origin/main reference #227 but predate this dispatch's start "
+        "(2026-08-05T22:17:43+00:00)"
+    )
+
+
+def test_a_commit_made_after_the_dispatch_started_is_still_that_dispatch_s_landing(
+    repo: Path,
+) -> None:
+    base = head(repo)
+    landed_sha = land(repo, "feat: the telemetry spine\n\nrefs #227", at=AFTER_ARMED)
+    landing = ledger.landed(repo, 227, base, ARMED)
+    assert (landing.sha, landing.commits) == (landed_sha, 1)
+
+
+def test_only_the_commits_inside_the_window_are_counted(repo: Path) -> None:
+    base = head(repo)
+    land(repo, "feat: somebody else's half\n\nrefs #227", at=BEFORE_ARMED)
+    newest = land(repo, "test: this dispatch's half\n\nrefs #227", at=AFTER_ARMED)
+    landing = ledger.landed(repo, 227, base, ARMED)
+    assert (landing.sha, landing.commits) == (newest, 1)
+
+
+def test_a_commit_in_the_same_second_as_the_start_is_inside_the_window(repo: Path) -> None:
+    # git records committer dates at second resolution, so a start time carrying
+    # microseconds must not exclude the very second the dispatch began in.
+    base = head(repo)
+    landed_sha = land(
+        repo, "feat: inside the starting second\n\nrefs #227", at="2026-08-05T22:17:43+00:00"
+    )
+    assert ledger.landed(repo, 227, base, ARMED).sha == landed_sha
+
+
+def test_a_commit_one_second_before_the_start_is_outside_the_window(repo: Path) -> None:
+    base = head(repo)
+    land(repo, "feat: one second early\n\nrefs #227", at="2026-08-05T22:17:42+00:00")
+    assert ledger.landed(repo, 227, base, ARMED).sha is None
+
+
+def test_a_commit_that_does_not_descend_from_the_base_is_not_this_dispatch_s_landing(
+    repo: Path,
+) -> None:
+    # A dispatch armed on a base that `origin/main` never descended from. `base..ref`
+    # still lists the trunk's commits — they are reachable from the tip and not from the
+    # base — but none of them is this dispatch's tree plus a change.
+    (repo / "side.txt").write_text("s", encoding="utf-8")
+    run_git("checkout", "-q", "-b", "side", cwd=repo)
+    run_git("add", ".", cwd=repo)
+    run_git("commit", "-qm", "chore: a base off the trunk", cwd=repo)
+    off_trunk = head(repo)
+    run_git("checkout", "-q", "main", cwd=repo)
+    land(repo, "feat: landed on the trunk\n\nrefs #227", at=AFTER_ARMED)
+    landing = ledger.landed(repo, 227, off_trunk, ARMED)
+    assert landing.sha is None
+    assert landing.reason == f"nothing on origin/main descends from {off_trunk[:8]}"
+
+
+def test_a_record_with_no_start_time_credits_no_landing(repo: Path) -> None:
+    # The view reads; it does not invent a start for a record that carries none, and a
+    # window it cannot bound is not a window that admits everything.
+    base = head(repo)
+    land(repo, "feat: the telemetry spine\n\nrefs #227")
+    landing = ledger.landed(repo, 227, base, None)
+    assert (landing.sha, landing.reason) == (None, "the dispatch record carries no start time")
+
+
+def test_the_start_is_the_run_s_own_started_at_where_the_run_has_ended() -> None:
+    start = ledger.dispatch_start(
+        {"planned_at": "2026-08-05T22:17:43.676672+00:00"},
+        {"started_at": "2026-08-05T22:17:43.750396+00:00"},
+    )
+    assert start == datetime(2026, 8, 5, 22, 17, 43, 750396, tzinfo=UTC)
+
+
+def test_a_run_still_going_is_bounded_by_the_plan_s_planned_at() -> None:
+    start = ledger.dispatch_start({"planned_at": "2026-08-05T22:17:43.676672+00:00"}, None)
+    assert start == ARMED
+
+
+def test_a_record_carrying_no_usable_timestamp_yields_no_start() -> None:
+    assert ledger.dispatch_start({"planned_at": "not a timestamp"}, {"started_at": 7}) is None
+
+
+# ---------------------------------------------------- what each seat's gate can even say
 
 
 def test_the_gate_outcome_is_landed_when_a_commit_carries_the_issue() -> None:
     landing = ledger.Landing("abc", 1, "referenced")
-    outcome = ledger.gate_outcome(landing, {"returncode": 0}, ledger.EndState("ok", ""))
+    outcome = ledger.gate_outcome(
+        landing, {"returncode": 0}, ledger.EndState("ok", ""), "implementer"
+    )
     assert outcome == "landed"
 
 
 def test_a_run_still_going_is_running_rather_than_not_landed() -> None:
     outcome = ledger.gate_outcome(
-        ledger.Landing(None, 0, "x"), None, ledger.EndState("unknown", "")
+        ledger.Landing(None, 0, "x"), None, ledger.EndState("unknown", ""), "implementer"
     )
     assert outcome == "running"
 
@@ -685,19 +805,142 @@ def test_a_dispatch_that_was_never_a_result_is_not_reported_as_a_failed_gate() -
     # `quota_exhausted` says nothing about the code under test, so calling it a gate
     # failure would put a routing fact into the quality record ADR-0061 Decision 6 reads.
     outcome = ledger.gate_outcome(
-        ledger.Landing(None, 0, "x"), {"returncode": 1}, ledger.EndState("quota_exhausted", "")
+        ledger.Landing(None, 0, "x"),
+        {"returncode": 1},
+        ledger.EndState("quota_exhausted", ""),
+        "implementer",
     )
     assert outcome == "not_a_result"
 
 
 def test_a_completed_run_that_landed_nothing_is_not_landed() -> None:
     outcome = ledger.gate_outcome(
-        ledger.Landing(None, 0, "x"), {"returncode": 0}, ledger.EndState("ok", "")
+        ledger.Landing(None, 0, "x"), {"returncode": 0}, ledger.EndState("ok", ""), "implementer"
     )
     assert outcome == "not_landed"
 
 
+@pytest.mark.parametrize("seat", ["review", "recon"])
+def test_a_seat_that_lands_nothing_says_so_instead_of_reporting_a_failed_gate(seat: str) -> None:
+    # `not_landed` reads as a gate this dispatch was running for and did not clear. A
+    # review lands claims and a recon lands nothing at all, so for them the implementer
+    # vocabulary is a category error rather than a weak answer (#245).
+    outcome = ledger.gate_outcome(
+        ledger.Landing(None, 0, "x"), {"returncode": 0}, ledger.EndState("ok", ""), seat
+    )
+    assert outcome == "lands_nothing"
+
+
+def test_a_landing_handed_to_a_non_landing_seat_is_still_not_read_as_a_landing() -> None:
+    outcome = ledger.gate_outcome(
+        ledger.Landing("abc", 1, "referenced"),
+        {"returncode": 0},
+        ledger.EndState("ok", ""),
+        "review",
+    )
+    assert outcome == "lands_nothing"
+
+
+def test_a_review_dispatch_still_going_is_running_rather_than_lands_nothing() -> None:
+    outcome = ledger.gate_outcome(
+        ledger.Landing(None, 0, "x"), None, ledger.EndState("unknown", ""), "review"
+    )
+    assert outcome == "running"
+
+
+def test_a_review_dispatch_that_was_never_a_result_keeps_that_typing() -> None:
+    outcome = ledger.gate_outcome(
+        ledger.Landing(None, 0, "x"),
+        {"returncode": 1},
+        ledger.EndState("quota_exhausted", ""),
+        "review",
+    )
+    assert outcome == "not_a_result"
+
+
+def test_a_seat_the_view_has_never_met_is_not_assumed_to_land_nothing() -> None:
+    # The view reads what the record carries. A seat it does not recognise gets the
+    # answer the evidence supports, not a claim invented about a seat it never met.
+    outcome = ledger.gate_outcome(
+        ledger.Landing("abc", 1, "referenced"),
+        {"returncode": 0},
+        ledger.EndState("ok", ""),
+        "a-seat-from-the-future",
+    )
+    assert outcome == "landed"
+
+
+def test_every_seat_the_dispatcher_knows_is_classified_by_whether_it_lands() -> None:
+    # A seat added to the dispatcher and not classified here would inherit the exact
+    # defect #245 records: `landed` borrowed by a seat that cannot land.
+    dispatch = load_tool("dispatch")
+    assert set(ledger.SEAT_LANDS) == set(dispatch.SEATS)
+
+
 # ------------------------------------------------------------- the durable row itself
+
+
+def test_a_review_dispatch_s_row_says_the_seat_lands_nothing_rather_than_naming_a_commit(
+    tmp_path: Path, repo: Path
+) -> None:
+    # The whole of #245 through the action that produced it: a `review` dispatch over an
+    # issue whose work really did land, with the reviewed SHA passed as `--base-sha` as
+    # `docs/review-dispatch.md` prescribes. The row must name no commit at all, and must
+    # say which rule answered rather than leaving the absence to be inferred.
+    base = head(repo)
+    land(repo, "feat: the spine\n\nrefs #227")
+    record = stage_record(
+        tmp_path / "dispatches",
+        base_sha=base,
+        lane="zai",
+        profile="zai-glm52-max",
+        seat="review",
+        result={
+            "returncode": 0,
+            "started_at": "2026-08-05T22:17:43.750396+00:00",
+            "ended_at": "2026-08-05T22:24:54.480704+00:00",
+        },
+    )
+    write_jsonl(
+        tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl",
+        [log_batch("claude_code.api_request", {"model": "opus"})],
+    )
+    _, code = ledger.sync(options(tmp_path, repo=repo), NOW)
+
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert code == 0
+    assert row["seat"] == "review"
+    assert row["gate"]["outcome"] == "lands_nothing"
+    assert row["gate"]["landed"] == {
+        "sha": None,
+        "commits": 0,
+        "reason": "the review seat lands nothing",
+    }
+
+
+def test_a_row_never_names_a_commit_that_predates_its_own_dispatch(
+    tmp_path: Path, repo: Path
+) -> None:
+    # An implementer seat, so the seat rule cannot be what answers: the commit references
+    # the issue and descends from the base, and is excluded solely because it was
+    # committed before this dispatch was armed.
+    base = head(repo)
+    land(repo, "feat: somebody else's landing\n\nrefs #227", at=BEFORE_ARMED)
+    record = stage_record(
+        tmp_path / "dispatches",
+        base_sha=base,
+        result={"returncode": 0, "started_at": "2026-08-05T22:17:43.750396+00:00"},
+    )
+    write_jsonl(
+        tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl",
+        [log_batch("claude_code.api_request", {"model": "opus"})],
+    )
+    _, code = ledger.sync(options(tmp_path, repo=repo), NOW)
+
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert code == 0
+    assert (row["gate"]["outcome"], row["gate"]["landed"]["sha"]) == ("not_landed", None)
+    assert "predate this dispatch's start" in row["gate"]["landed"]["reason"]
 
 
 def test_a_dispatched_run_produces_one_durable_record_keyed_by_its_dispatch_id(
