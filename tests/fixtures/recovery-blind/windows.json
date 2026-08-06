@@ -1,0 +1,174 @@
+{
+  "research-evals": {
+    "armed_at": 1785939036,
+    "until": 1785940359,
+    "commits": [
+      [
+        "ff5e5b2",
+        "docs: check whether the dispatch ledger is already a solved problem"
+      ],
+      [
+        "b3953f6",
+        "docs: research whether one compiler can carry our hooks to Codex and opencode"
+      ],
+      [
+        "2449d2d",
+        "docs: sweep the prior art for multi-provider routing, and keep all five held rulings"
+      ],
+      [
+        "fb43cc9",
+        "docs: weigh Inspect and the routing literature against rulings 9 and 17"
+      ],
+      [
+        "8e4e375",
+        "docs: record the provider-independent rulings for multi-provider dispatch"
+      ]
+    ]
+  },
+  "research-observability": {
+    "armed_at": 1785939035,
+    "until": 1785940358,
+    "commits": [
+      [
+        "ff5e5b2",
+        "docs: check whether the dispatch ledger is already a solved problem"
+      ],
+      [
+        "b3953f6",
+        "docs: research whether one compiler can carry our hooks to Codex and opencode"
+      ],
+      [
+        "2449d2d",
+        "docs: sweep the prior art for multi-provider routing, and keep all five held rulings"
+      ],
+      [
+        "fb43cc9",
+        "docs: weigh Inspect and the routing literature against rulings 9 and 17"
+      ],
+      [
+        "8e4e375",
+        "docs: record the provider-independent rulings for multi-provider dispatch"
+      ]
+    ]
+  },
+  "research-portability": {
+    "armed_at": 1785939037,
+    "until": 1785940360,
+    "commits": [
+      [
+        "ff5e5b2",
+        "docs: check whether the dispatch ledger is already a solved problem"
+      ],
+      [
+        "b3953f6",
+        "docs: research whether one compiler can carry our hooks to Codex and opencode"
+      ],
+      [
+        "2449d2d",
+        "docs: sweep the prior art for multi-provider routing, and keep all five held rulings"
+      ],
+      [
+        "fb43cc9",
+        "docs: weigh Inspect and the routing literature against rulings 9 and 17"
+      ],
+      [
+        "8e4e375",
+        "docs: record the provider-independent rulings for multi-provider dispatch"
+      ]
+    ]
+  },
+  "research-routing": {
+    "armed_at": 1785939035,
+    "until": 1785940357,
+    "commits": [
+      [
+        "ff5e5b2",
+        "docs: check whether the dispatch ledger is already a solved problem"
+      ],
+      [
+        "b3953f6",
+        "docs: research whether one compiler can carry our hooks to Codex and opencode"
+      ],
+      [
+        "2449d2d",
+        "docs: sweep the prior art for multi-provider routing, and keep all five held rulings"
+      ],
+      [
+        "fb43cc9",
+        "docs: weigh Inspect and the routing literature against rulings 9 and 17"
+      ],
+      [
+        "8e4e375",
+        "docs: record the provider-independent rulings for multi-provider dispatch"
+      ]
+    ]
+  },
+  "review-227-zai": {
+    "armed_at": 1785968282,
+    "until": 1785987483,
+    "commits": [
+      [
+        "f586883",
+        "docs: point the mutation floors ratchet note at the issue that carries it"
+      ],
+      [
+        "c669250",
+        "docs: set the mutation floor from the corpus and name the eleven shell-subject modules"
+      ],
+      [
+        "468f2e2",
+        "fix: ignore a coverage context that is not a test of the module under smoke"
+      ],
+      [
+        "b472c16",
+        "fix: read a qualified test module's name as the module it qualifies"
+      ],
+      [
+        "63dbb24",
+        "fix: choose a subject by what a module's tests tell apart, not by what they load"
+      ],
+      [
+        "6f14714",
+        "fix: read a mutant's fate from pytest's exit code, and give every write its own mtime"
+      ],
+      [
+        "5acd7a7",
+        "feat: plant mutants in what a landing's new tests execute, and red on the survivors"
+      ]
+    ]
+  },
+  "review-92-claude": {
+    "armed_at": 1785968282,
+    "until": 1785987483,
+    "commits": [
+      [
+        "f586883",
+        "docs: point the mutation floors ratchet note at the issue that carries it"
+      ],
+      [
+        "c669250",
+        "docs: set the mutation floor from the corpus and name the eleven shell-subject modules"
+      ],
+      [
+        "468f2e2",
+        "fix: ignore a coverage context that is not a test of the module under smoke"
+      ],
+      [
+        "b472c16",
+        "fix: read a qualified test module's name as the module it qualifies"
+      ],
+      [
+        "63dbb24",
+        "fix: choose a subject by what a module's tests tell apart, not by what they load"
+      ],
+      [
+        "6f14714",
+        "fix: read a mutant's fate from pytest's exit code, and give every write its own mtime"
+      ],
+      [
+        "5acd7a7",
+        "feat: plant mutants in what a landing's new tests execute, and red on the survivors"
+      ]
+    ]
+  }
+}

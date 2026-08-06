@@ -1,0 +1,13 @@
+{
+  "name": "research-portability",
+  "worktree": "/home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/research-portability",
+  "baseline_head": "7fea7104879fa1f1deddb1084d4ef8b6885f56d1",
+  "armed_at": 1785939037,
+  "subject": "research",
+  "runs_dir": "/home/andre/.arma-cti/runs",
+  "grace_secs": 600,
+  "deadline_secs": 14400,
+  "await_path": "",
+  "pid": 0,
+  "issue": ""
+}

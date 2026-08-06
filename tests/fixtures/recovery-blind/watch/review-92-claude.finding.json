@@ -1,0 +1,8 @@
+{
+  "name": "review-92-claude",
+  "state": "watch_broken",
+  "terminal": true,
+  "headline": "BROKEN review-92-claude \u2014 the stall watcher's own assessor failed, so this agent is unwatched; look by hand: ",
+  "prod": "none \u2014 the watcher broke, not the agent. Assess by hand before prodding.",
+  "acknowledged_at": 1785987483
+}

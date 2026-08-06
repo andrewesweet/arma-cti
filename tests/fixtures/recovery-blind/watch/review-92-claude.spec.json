@@ -1,0 +1,13 @@
+{
+  "name": "review-92-claude",
+  "worktree": "/home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/issue-92",
+  "baseline_head": "32b5c97cb09997ee2b621ac27c948b6e4e100c5e",
+  "armed_at": 1785968282,
+  "subject": "Claude review of #92 @ ff7e3a3, dispatch d-20260805-221747-a5056c",
+  "runs_dir": "/home/andre/.arma-cti/runs",
+  "grace_secs": 600,
+  "deadline_secs": 14400,
+  "await_path": "",
+  "pid": 0,
+  "issue": ""
+}

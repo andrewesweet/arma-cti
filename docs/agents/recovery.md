@@ -255,6 +255,33 @@ line says so. Uncommitted work is work at risk, and the line names the files and
 the commit before anything else. A false positive costs a briefing rather than work, so
 the tuning leans towards calling a stall rather than missing one.
 
+### Resolving a BLIND finding: `just recover check`
+
+A BLIND finding is the watcher saying it could not read a worktree's HEAD, and the
+line it writes ends "Look by hand". That look is now a recipe:
+
+```
+just recover check <name>
+```
+
+It reads the watch spec and finding, whether the worktree is on disk, whether git
+still holds a registration for it, HEAD from whichever of those three still has
+one, whether that HEAD is on `origin/main`, the dispatch record over the same
+worktree, and what reached `origin/main` while the watch was live. It answers
+`lost_work` (naming the commits and their files), `still_live`,
+`finished_and_cleaned`, or `unproven` — and prints every reading the answer was
+drawn from, so the answer can be disagreed with rather than merely believed.
+
+**The recipe absorbed the look, not the judgement**, the same split
+`just worktree add` made above. Three things stay here. It **never acks**:
+`just watch-report --ack` is a judgement about someone's work and the machine's
+half ends at noticing (ADR-0053). `finished_and_cleaned` off a vanished tree
+prints what it cannot exclude — a tree deleted while carrying unlanded commits
+reads identically from outside — and weighing that is the reader's. And
+`unproven` is a real answer rather than a failure: it means this box holds
+nothing that resolves the look, which is when the by-hand instincts in this
+document are all there is.
+
 ## When the orchestrator itself dies
 
 Seen twice (both 2026-08-02), both recovered at zero cost, and the reason generalises: the
@@ -291,6 +318,21 @@ silently corrupts the resumed work into defects that look ordinary:
    (and per ADR-0022, not a result), locks it held that are now free.
 3. **Which of its assumptions no longer hold** — ADR-number claims that collided, files or
    surfaces another agent now owns, eliminations whose tested context changed.
+
+Reconstructions 1 and 2 are computable, and `just recover brief <issue|worktree>` computes
+them: what moved on `origin/main` since the dead agent's last commit — commits, ADR files
+added, issues opened and closed in that window — and what of its own environment died,
+which is the worktree's state, the evidence directories carrying no `verdict.json`, and
+what the slot locks' holders recorded about themselves. It prints `just handoff <issue>`'s
+output beside them, including that tool's "no handoff" message, so the predecessor's own
+account and the computed delta arrive together.
+
+**Reconstruction 3 is not computed, and the tool prints its heading empty.** Which of the
+resumed agent's assumptions no longer hold — ADR numbers that collided, surfaces another
+agent now owns, eliminations whose tested context changed — is the briefer's judgement, and
+a tool that filled that section would be guessing in the one place this document says
+guessing is most expensive. Everything below still binds; what the recipe removes is the
+transcription, not the thinking.
 
 The briefing states what the evidence shows, not what it implies. "Clean, zero ahead" is
 proof of committed-and-pushed, yet one briefing asserted from it that announced work had

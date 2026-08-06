@@ -1,0 +1,9 @@
+{
+  "dispatch_id": "d-20260805-221747-a5056c",
+  "lane": "claude-native",
+  "profile": "opus-high",
+  "seat": "review",
+  "issue": 92,
+  "base_sha": "ff7e3a30aecb7a1d8f26a0b86e13195e38119af7",
+  "worktree": "/home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/issue-92"
+}

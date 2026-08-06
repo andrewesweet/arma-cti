@@ -1,0 +1,20 @@
+{
+  "name": "research-portability",
+  "issue": "",
+  "state": "watch_blind",
+  "terminal": true,
+  "headline": "BLIND research-portability quiet 22m past research \u2014 no artefact tree=clean@? prod: none \u2014 the watcher could not read HEAD in /home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/research-portability; \"could not observe\" is not \"still running\" (recovery.md). Look by hand",
+  "prod": "none \u2014 the watcher could not read HEAD in /home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/research-portability; \"could not observe\" is not \"still running\" (recovery.md). Look by hand",
+  "worktree": "/home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/research-portability",
+  "baseline_head": "7fea7104879fa1f1deddb1084d4ef8b6885f56d1",
+  "head": "",
+  "head_at_edge": "",
+  "dirty": [],
+  "quiet_secs": 1323,
+  "assessed_at": 1785940360,
+  "completed_at": 0,
+  "run_class": "",
+  "evidence": "",
+  "summary": [],
+  "acknowledged_at": 1785949899
+}

@@ -1,0 +1,9 @@
+{
+  "dispatch_id": "d-20260805-221743-8957c3",
+  "lane": "zai",
+  "profile": "zai-glm52-max",
+  "seat": "review",
+  "issue": 227,
+  "base_sha": "a885306b3ca63c76cc032bacd43fb8ebd3757f73",
+  "worktree": "/home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/issue-227"
+}

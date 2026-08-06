@@ -394,6 +394,39 @@ watch-report *args:
     uv run python tools/breaker.py report
     uv run python tools/stall_watch.py report {{ args }}
 
+# The recovery runbook's two computable procedures (#253, orchestration-design §4).
+# No Arma, no lock, no turn held open; both verbs are reads and neither writes
+# anything anywhere.
+#
+#   just recover check <name>        resolve one BLIND watcher finding
+#   just recover brief <issue|name>  the resumption briefing's computable halves
+#
+# `check` mechanises the by-hand look `docs/agents/recovery.md` describes, which
+# the twenty-fourth and twenty-fifth retros both ran by hand — the two identical
+# saves that document sets as its own codification threshold. Verdicts:
+# `lost_work` (naming the commits and their files), `still_live`,
+# `finished_and_cleaned`, and `unproven` when the look did not resolve. Every one
+# carries the reading that forced it, and `finished_and_cleaned` off an absent
+# tree also prints what that evidence cannot exclude — a tree deleted while
+# carrying unlanded commits reads identically from outside.
+#
+# **It acks nothing.** `just watch-report --ack` stays the judgement (ADR-0053:
+# the machine's half ends at noticing), and nothing here resets, prunes or
+# removes. It reads the watch findings through `CTI_WATCH_DIR`, the seam #249
+# landed, so a unit test exercises it without touching what the box is carrying.
+#
+# `brief` computes reconstructions 1 and 2 of the three
+# `docs/agents/recovery.md` requires — what moved on origin/main since the dead
+# agent's last commit, and what of its own environment died — and prints
+# reconstruction 3's heading with nothing under it, because which assumptions no
+# longer hold is judgement. `just handoff <issue>`'s own output is printed
+# beside them, including its "no handoff" message, which is an answer rather
+# than silence. The words *landed* and *lost* appear nowhere in it: a commit is
+# on origin/main or it is not, and which of those the work **is** is the resumed
+# agent's to verify on wake.
+recover *args:
+    uv run python tools/recovery.py {{ args }}
+
 # Read and feed the lane circuit breakers (#226, ADR-0061 Decisions 7 and 8).
 # No Arma, no lock, no turn held open.
 #

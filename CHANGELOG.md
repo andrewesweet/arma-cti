@@ -84,6 +84,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just recover`: the recovery runbook's by-hand look and its resumption briefing, as a tool that
+  prints only what it read.** Two procedures in `docs/agents/recovery.md` had each been run by hand
+  twice, which is the codification threshold that document sets for itself.
+
+  `just recover check <name>` resolves a BLIND watcher finding — the watcher saying it could not
+  read a worktree's HEAD, which is deliberately not "still running". It reads worktree presence,
+  git's registration, HEAD from whichever of three sources still holds one, whether that HEAD is on
+  `origin/main`, the dispatch record over the same worktree, and what reached `origin/main` while
+  the watch was live, and answers `lost_work` (naming the commits and the files they touch),
+  `still_live`, `finished_and_cleaned`, or `unproven`. It replays the twenty-fourth retro's four
+  BLIND findings and the twenty-fifth's two dead assessors to the verdicts those retros reached by
+  hand, off their records vendored as fixtures. `unproven` exists because an absent worktree with
+  nothing attributable to it has no unlanded commits *because it has no commits anything can see*,
+  and calling that clean would be the vacuity `just prereqs` was corrected for; the cleared verdict
+  needs positive evidence and prints, in the same breath, that a tree deleted while carrying
+  unlanded commits reads identically from outside. It acknowledges nothing: `just watch-report
+  --ack` stays a judgement.
+
+  `just recover brief <issue|worktree>` computes the two reconstructions a resumption briefing owes
+  that are computable — what moved on `origin/main` since the dead agent's last commit, and what of
+  its own environment died — and prints the third, which is judgement, as an empty labelled
+  heading that no input fills. `just handoff`'s own output goes beside them, including its "no
+  handoff" message, which is an answer rather than a blank space. Two words appear nowhere in what
+  it writes: a commit is on `origin/main` or is not, and which of those the *work* is stays the
+  resumed agent's to verify on wake — the 2026-08-02 briefing that read "clean, zero ahead" as lost
+  work is the error the omission is built against.
+
 - **`just brief`: a dispatch briefing's invariant half, composed from data, with the gate line
   derived rather than chosen.** The seat and the Model roles line behind it, the worktree protocol
   as the two calls it now is, the landing protocol, the verdict paste rule where the gate produces
