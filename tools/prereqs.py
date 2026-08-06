@@ -687,15 +687,24 @@ CODEX_CONFIG: Final = """\
 # defaults therefore exports its metrics off-box and nothing to our loopback
 # collector. `exporter` and `trace_exporter` do default to none.
 #
-# UNVERIFIED, and stated rather than hidden: the `[otel]` table is absent from
-# Codex's public `docs/config.md`, so these key spellings come from reading the
-# Rust struct and not from a documented schema, and the serde renames on
-# `OtelConfigToml` were not resolvable
-# (docs/research/agent-observability-and-cost-ledgers.md, "What I could not
-# verify"). `just prereqs check` therefore reports this file as written but
-# unverified while Codex is not installed, and never as a pass. Verify on the
-# day Codex lands by running the lane once with `ss`/`tcpdump` watching for
-# ab.chatgpt.com, or by whatever config dump the CLI offers by then.
+# VERIFIED 2026-08-06 (#243), where this block previously read UNVERIFIED. The
+# `[otel]` table is still absent from Codex's public `docs/config.md`, so the
+# spellings did come from reading the Rust struct — but the CLI supplies its own
+# oracle for them. `codex exec --strict-config` errors with "unknown
+# configuration field `X`" on a key it does not know, and passes through to the
+# auth failure on one it does. Both `metrics_exporter` and `log_user_prompt` are
+# recognised fields under `[otel]`; so are `exporter`, `trace_exporter`,
+# `environment` and `span_attributes`. This file says what it was meant to say.
+#
+# The off-box exporter was then verified silent with the network watched, which
+# is what this comment used to ask for. The `ss` half of that is worthless on its
+# own and the reason is recorded rather than buried: `ab.chatgpt.com` and
+# `chatgpt.com` resolve to the same Cloudflare addresses here, so no IP-level
+# watch can tell the metrics endpoint from the API. TLS SNI can, and is
+# cleartext: across a full `strace -f -e trace=network` of a Codex turn, the only
+# SNI observed was `chatgpt.com` (16 ClientHellos) and `ab.chatgpt.com` appeared
+# zero times, as did the string `statsig`.
+# Full arrangement and figures: docs/research/codex-lane-live-findings.md §2, §6.
 
 [otel]
 # The whole point of the file.

@@ -137,9 +137,26 @@ TOKEN_BUCKETS: Final = {
     "output": "output_tokens",
     "cacheRead": "cache_read_tokens",
     "cache_read": "cache_read_tokens",
+    # Codex's spellings for the same two cache halves (#243). Note it reports the write
+    # half, which z.ai does not — a zero here from the Codex lane is a measurement, where
+    # the same zero from the z.ai lane is a silence (#225).
+    "cached_input": "cache_read_tokens",
     "cacheCreation": "cache_creation_tokens",
     "cache_creation": "cache_creation_tokens",
+    "cache_write_input": "cache_creation_tokens",
 }
+
+# Token types that are real, reported, and must not be added to any column, because they
+# are not disjoint from the ones that are. Codex emits six `token_type` values per turn and
+# only four of them partition the turn: `total` is input plus output, and
+# `reasoning_output` is a *subset* of `output` (a turn reporting 27 output and 20 reasoning
+# spent 27, not 47). Bucketing either would have inflated every Codex row — `total` alone
+# would have doubled it — and nothing downstream would have noticed, because there is no
+# independent figure to disagree with. Listed rather than merely absent from
+# `TOKEN_BUCKETS` so that this is a decision a reader can find, not an omission they must
+# infer; `_metric_bucket` checks it before the lookup, and the unclassified net is
+# therefore not tripped by a type we deliberately drop.
+NON_DISJOINT_TOKEN_TYPES: Final = frozenset({"total", "reasoning_output"})
 
 TOKEN_METRICS: Final = ("claude_code.token.usage", "codex.turn.token_usage")
 
@@ -447,9 +464,20 @@ def attributes(carrier: Mapping[str, Any]) -> dict[str, Any]:
     return found
 
 
+# The OTLP metric bodies this view can total. `histogram` is here because Codex reports
+# token usage as one — `codex.turn.token_usage` is a histogram whose `sum` over a single
+# turn is the count (#243). Reading only `sum` and `gauge` did not merely miss it, it
+# missed it *silently*: a body shape the reader did not know yielded no datapoints at all,
+# so the metric never reached the unclassified net that exists to catch exactly this. That
+# is why `_metric_items` now reports an unreadable body rather than skipping it.
+METRIC_BODIES: Final = ("sum", "gauge", "histogram")
+
+UNREADABLE_SHAPE: Final = "__unreadable_body__"
+
+
 def _datapoints(metric: Mapping[str, Any]) -> tuple[list[Mapping[str, Any]], int]:
-    """Return the datapoints of a sum or gauge, and the temporality they carry."""
-    for shape in ("sum", "gauge"):
+    """Return a metric's datapoints and the temporality they carry, whatever its body shape."""
+    for shape in METRIC_BODIES:
         body = metric.get(shape)
         if isinstance(body, dict):
             points = [point for point in body.get("dataPoints", []) if isinstance(point, dict)]
@@ -458,10 +486,18 @@ def _datapoints(metric: Mapping[str, Any]) -> tuple[list[Mapping[str, Any]], int
 
 
 def _point_value(point: Mapping[str, Any]) -> float | None:
+    """Read a datapoint's scalar value, for a counter point or a histogram point.
+
+    A histogram datapoint carries no `asInt`/`asDouble`; what stands in for "how much" is
+    its `sum`, which over a single turn's single observation is the count itself. Buckets
+    and bounds are deliberately ignored — this view wants the total, not the distribution.
+    """
     if "asDouble" in point:
         return float(point["asDouble"])
     if "asInt" in point:
         return float(point["asInt"])
+    if "sum" in point:
+        return float(point["sum"])
     return None
 
 
@@ -473,6 +509,15 @@ def _metric_items(resource_block: Mapping[str, Any]) -> list[Item]:
                 continue
             name = str(metric.get("name", ""))
             points, temporality = _datapoints(metric)
+            if not points and name in (*TOKEN_METRICS, *LIST_PRICE_METRICS):
+                # A metric this view is supposed to read, in a body it cannot. Reported
+                # rather than skipped, because a token metric contributing nothing is
+                # indistinguishable from a dispatch that spent nothing (#243).
+                shape = next(
+                    (key for key in metric if key not in ("name", "unit", "description")), ""
+                )
+                found.append(Item("metric", name, {UNREADABLE_SHAPE: shape}, None, 0, name))
+                continue
             for point in points:
                 value = _point_value(point)
                 if value is None:
@@ -571,8 +616,12 @@ def _metric_totals(items: Iterable[Item]) -> tuple[dict[str, float], list[str]]:
             continue
         bucket = _metric_bucket(item)
         if bucket is None:
-            if item.name in (*TOKEN_METRICS, *LIST_PRICE_METRICS):
-                unclassified.append(f"{item.name}:type={item.attrs.get('type')!r}")
+            if UNREADABLE_SHAPE in item.attrs:
+                unclassified.append(f"{item.name}:body={item.attrs[UNREADABLE_SHAPE]!r}")
+            elif item.name in (*TOKEN_METRICS, *LIST_PRICE_METRICS):
+                kind = item.attrs.get("type", item.attrs.get("token_type"))
+                if kind not in NON_DISJOINT_TOKEN_TYPES:
+                    unclassified.append(f"{item.name}:type={kind!r}")
             continue
         if item.temporality == TEMPORALITY_CUMULATIVE:
             series = cumulative.setdefault(bucket, {})
@@ -585,10 +634,20 @@ def _metric_totals(items: Iterable[Item]) -> tuple[dict[str, float], list[str]]:
 
 
 def _metric_bucket(item: Item) -> str | None:
+    """Which usage column a token datapoint belongs in, or `None` if it belongs in none.
+
+    Two lanes spell the discriminating attribute differently — Claude Code says `type`,
+    Codex says `token_type` — so both are read. `TOKEN_BUCKETS` then decides, and the
+    entries that map to nothing are as load-bearing as the ones that map to something:
+    see `NON_DISJOINT_TOKEN_TYPES`.
+    """
     if item.name in LIST_PRICE_METRICS:
         return "list_price_usd"
     if item.name in TOKEN_METRICS:
-        return TOKEN_BUCKETS.get(str(item.attrs.get("type", "")))
+        kind = str(item.attrs.get("type", item.attrs.get("token_type", "")))
+        if kind in NON_DISJOINT_TOKEN_TYPES:
+            return None
+        return TOKEN_BUCKETS.get(kind)
     return None
 
 

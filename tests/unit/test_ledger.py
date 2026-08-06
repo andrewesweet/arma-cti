@@ -390,7 +390,10 @@ def test_a_foreign_lane_is_priced_against_its_own_pool_and_never_claude_at_zero(
 
 
 def test_an_unrecognised_lane_is_unpriced_rather_than_defaulted_onto_claude() -> None:
-    for lane in (None, "", "codex"):
+    # `codex` used to stand here as the example of a lane this view did not know. It is a
+    # registered lane as of #243, so the example moved rather than the claim: what is
+    # under test is that an *unknown* lane is unpriced, and the name has to be one.
+    for lane in (None, "", "no-such-lane"):
         document = ledger.cap_fraction(lane, ledger.Usage(output_tokens=30209)).document()
         assert (document["pool"], document["windows"], document["calibration_id"]) == (
             None,
@@ -1025,3 +1028,157 @@ def test_show_without_a_dispatch_refuses_rather_than_printing_everything(
     # into something must not receive a refusal as if it were a row.
     assert ledger.main(["show"]) == ledger.EXIT_REFUSED
     assert "refused=no_dispatch" in capsys.readouterr().err
+
+
+# ------------------------------------------------------ the Codex lane's metric shape (#243)
+#
+# Codex reports token usage in a shape no other lane uses: a **histogram** rather than a
+# sum, keyed by `token_type` rather than `type`, and carrying six types of which only four
+# partition the turn. Every test here was written against a real export from the first
+# Codex dispatch (`d-20260806-033344-18a832`), whose figures are quoted where they are used.
+
+
+def codex_token_batch(
+    points: list[tuple[str, float]],
+    *,
+    dispatch_id: str | None = DISPATCH,
+    temporality: int = 1,
+) -> dict[str, Any]:
+    """One `codex.turn.token_usage` batch, in the histogram shape Codex actually sends."""
+    return {
+        "resourceMetrics": [
+            {
+                "resource": resource(dispatch_id),
+                "scopeMetrics": [
+                    {
+                        "metrics": [
+                            {
+                                "name": "codex.turn.token_usage",
+                                "histogram": {
+                                    "aggregationTemporality": temporality,
+                                    "dataPoints": [
+                                        {
+                                            "attributes": attrs(
+                                                {"token_type": kind, "model": "gpt-5.6-terra"}
+                                            ),
+                                            "count": "1",
+                                            "sum": value,
+                                            "min": value,
+                                            "max": value,
+                                        }
+                                        for kind, value in points
+                                    ],
+                                },
+                            }
+                        ]
+                    }
+                ],
+            }
+        ]
+    }
+
+
+def unreadable_token_batch(body: str, name: str = "codex.turn.token_usage") -> dict[str, Any]:
+    """Build a metric in a body shape the reader knows nothing about."""
+    return {
+        "resourceMetrics": [
+            {
+                "resource": resource(DISPATCH),
+                "scopeMetrics": [{"metrics": [{"name": name, body: {"dataPoints": []}}]}],
+            }
+        ]
+    }
+
+
+def test_a_codex_histogram_datapoint_is_read_as_its_sum() -> None:
+    """A histogram body must total, where before it yielded no datapoints at all."""
+    usage = ledger.normalise_usage(items_from([codex_token_batch([("input", 16089.0)])]))
+    assert usage.input_tokens == 16089
+
+
+def test_codex_token_types_land_in_the_right_columns() -> None:
+    """`token_type` is Codex's spelling of the discriminator Claude Code calls `type`."""
+    usage = ledger.normalise_usage(
+        items_from(
+            [
+                codex_token_batch(
+                    [
+                        ("input", 16089.0),
+                        ("output", 27.0),
+                        ("cached_input", 11008.0),
+                        ("cache_write_input", 0.0),
+                    ]
+                )
+            ]
+        )
+    )
+    assert (usage.input_tokens, usage.output_tokens) == (16089, 27)
+    assert (usage.cache_read_tokens, usage.cache_creation_tokens) == (11008, 0)
+    assert usage.unclassified == ()
+
+
+def test_the_total_token_type_is_not_added_to_any_column() -> None:
+    """`total` is input plus output; bucketing it anywhere would double every Codex row."""
+    usage = ledger.normalise_usage(
+        items_from([codex_token_batch([("input", 16089.0), ("output", 27.0), ("total", 16116.0)])])
+    )
+    assert (usage.input_tokens, usage.output_tokens) == (16089, 27)
+    assert usage.cache_read_tokens == 0
+    assert usage.cache_creation_tokens == 0
+
+
+def test_reasoning_output_is_not_added_to_output() -> None:
+    """Reasoning tokens are a subset of output: 27 output with 20 reasoning is 27 spent."""
+    usage = ledger.normalise_usage(
+        items_from([codex_token_batch([("output", 27.0), ("reasoning_output", 20.0)])])
+    )
+    assert usage.output_tokens == 27
+
+
+def test_a_deliberately_dropped_token_type_is_not_reported_as_unclassified() -> None:
+    """Dropping `total` is a decision, so it must not read as a shape we failed to parse."""
+    usage = ledger.normalise_usage(items_from([codex_token_batch([("total", 16116.0)])]))
+    assert usage.unclassified == ()
+
+
+def test_an_unknown_token_type_is_reported_as_unclassified() -> None:
+    """A type we have never seen must be named, never silently contribute nothing."""
+    usage = ledger.normalise_usage(items_from([codex_token_batch([("some_new_bucket", 5.0)])]))
+    assert usage.unclassified == ("codex.turn.token_usage:type='some_new_bucket'",)
+    assert usage.output_tokens == 0
+
+
+def test_a_token_metric_in_an_unreadable_body_is_reported_rather_than_skipped() -> None:
+    """The defect this fixes: an unknown body shape bypassed the unclassified net entirely."""
+    usage = ledger.normalise_usage(items_from([unreadable_token_batch("exponentialHistogram")]))
+    assert usage.unclassified == ("codex.turn.token_usage:body='exponentialHistogram'",)
+
+
+def test_an_unreadable_body_on_a_metric_we_do_not_read_is_ignored() -> None:
+    """Only metrics this view is supposed to total are worth reporting as unreadable."""
+    usage = ledger.normalise_usage(
+        items_from([unreadable_token_batch("exponentialHistogram", name="codex.startup_phase")])
+    )
+    assert usage.unclassified == ()
+
+
+def test_a_cumulative_codex_histogram_contributes_its_maximum() -> None:
+    """Temporality is read from the histogram body, not assumed to be delta."""
+    usage = ledger.normalise_usage(
+        items_from(
+            [
+                codex_token_batch([("output", 100.0)], temporality=2),
+                codex_token_batch([("output", 300.0)], temporality=2),
+            ]
+        )
+    )
+    assert usage.output_tokens == 300
+
+
+def test_the_codex_lane_charges_the_codex_pool_with_no_estimator() -> None:
+    """The pool is priced from the lane, and typed `no-estimator` until a calibration runs."""
+    priced = ledger.cap_fraction("codex", ledger.Usage(output_tokens=27))
+    assert priced.pool == "codex"
+    rendered = priced.document()
+    assert rendered["windows"]["five_hour"]["est"] is None
+    assert "numerator is present" in rendered["est_reason"]

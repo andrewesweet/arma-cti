@@ -213,10 +213,13 @@ def test_every_profile_belongs_to_a_registered_lane() -> None:
         assert profile.lane in dispatch.LANES, profile.name
 
 
-def test_week_one_registers_both_lanes_and_the_two_named_profiles() -> None:
-    assert set(dispatch.LANES) == {"claude-native", "zai"}
+def test_the_registry_carries_every_landed_lane_and_a_named_profile_from_each() -> None:
+    # Named exhaustively rather than counted, so that adding a lane is a deliberate edit
+    # here and never an accident somewhere else. `codex` joined in #243.
+    assert set(dispatch.LANES) == {"claude-native", "zai", "codex"}
     assert "opus-high" in dispatch.PROFILES
     assert "zai-glm52-max" in dispatch.PROFILES
+    assert "codex-sol-xhigh" in dispatch.PROFILES
 
 
 def test_the_zai_lane_carries_z_ais_published_mirror_configuration() -> None:
@@ -282,10 +285,12 @@ def test_the_native_lane_supplies_no_credential_and_no_base_url() -> None:
 
 
 def test_an_unknown_lane_is_refused_by_name() -> None:
-    refusal = dispatch.resolve_selection("codex", "opus-high", "implementer")
+    # `codex` stood here as the unknown lane until #243 registered it; the claim is about
+    # an unknown name, so the name moved.
+    refusal = dispatch.resolve_selection("gemini", "opus-high", "implementer")
     assert refusal is not None
     assert refusal.kind == "unknown_lane"
-    assert "known=claude-native zai" in refusal.found
+    assert "known=claude-native codex zai" in refusal.found
 
 
 def test_an_unknown_profile_is_refused_by_name() -> None:
