@@ -300,6 +300,37 @@ probe rather than this dispatch. And as with #225, what this proves is the lane'
 nothing about what the model is fit for — that is the admission bar's question, and no
 Codex-produced work has landed in this repository.
 
+## 10. What a dispatched session can do under `workspace-write`
+
+Four readings established this boundary. They separate what the base sandbox supplies from
+what each additional root or flag actually bought; none uses an approvals or sandbox bypass.
+
+| reading | policy under test | observed result |
+|---|---|---|
+| **`d-20260806-163129-479a57`** | plain `--sandbox workspace-write` | Reads and edits in the dispatched worktree succeeded, but `git add` exited 128: Codex could not create `<main>/.git/worktrees/issue-259-codex/index.lock` because the filesystem was read-only. The required stop left commit, gate, cache and network behaviour unverified. |
+| **`d-20260806-164224-c3591c`** | `workspace-write`, the main checkout added to `writable_roots`, and `network_access=true` | `git add` produced the identical `index.lock` refusal. `just check`, `just unit` and `just fast` each stopped before tests when `uv` could not create a temporary lock file under `~/.cache/uv`. Thus the checkout root did not make its `.git` metadata writable, and the gate needed a second path outside the checkout. This run did not reach the network. |
+| **`d-20260806-164858-905eb2` and its two follow-ups** | first the same checkout root and network flag, then explicit `.git` and UV-cache roots | The one-command probe wrote beside `.git` (`MAINROOT_OK`), was refused at `.git/p2`, and reached the network (`NET_HTTP_200`). Naming `.git` as its own root was then honoured. With the main checkout, its `.git`, and `~/.cache/uv` named separately, the whole gate ran green. It ran green again after `~/.cargo` was removed from the roots, so this warm box did not need a cargo-cache grant. |
+| **this finishing dispatch, from policy commit `82a0d16`** | exactly those three roots plus `network_access=true` | The session started in the requested worktree and found only this predecessor-authored research draft modified. Its first `git add` nevertheless exited 128 with the original `index.lock` “Read-only file system” refusal. An explicitly approved retry outside the workspace sandbox staged the file, but that retry does not validate the policy under test. |
+
+The split is now concrete. Plain `workspace-write` gives the dispatched session its working
+directory, so repository files can be read and edited. It withholds linked-worktree Git
+metadata outside that directory, and additional writable roots do not implicitly pierce
+Codex's read-only treatment of `.git`. The **main-checkout root** bought writes beside
+`.git` and is also the working-tree destination of the landing protocol. The **separate
+`.git` root** bought Git metadata writes. The **UV-cache root** bought the lock creation
+needed to start and complete the gate. The **network flag** bought the outbound HTTP access
+measured by `NET_HTTP_200`; the finishing run is the first reading here asked to exercise
+the repository's actual fetch and push path.
+
+The filesystem-and-network policy intent is therefore **not delivered end to end in this
+finishing dispatch**. The earlier follow-up proved that the three-root configuration can be
+honoured and can run the gate on this box, but this session's first required Git metadata
+write shows that the `.git` grant did not reach the integrated run. Commit and landing under
+the inherited workspace sandbox remain unverified; an approved run outside it is a different
+capability, not evidence that this policy worked. A cold Rust toolchain or registry also
+remains unverified: removing `~/.cargo` proved only that the warm-box gate did not write
+there. No broader home-directory grant follows from either unknown.
+
 ## 9. What a reader should not take from this
 
 - Not that the four registered profiles are the right four. They are a seed set; which
