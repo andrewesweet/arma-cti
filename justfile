@@ -593,6 +593,45 @@ ledger-sync action="sync" *args:
 handoff issue:
     @uv run python tools/handoff_fetch.py {{ issue }}
 
+# Compose the invariant half of a dispatch briefing from data (#251,
+# docs/orchestration-design.md §5). No Arma, no lock: it reads the tracker and
+# this checkout, and writes markdown.
+#
+#   just brief 251                       the brief on stdout
+#   just brief 251 --seat review         a seat other than `implementer`
+#   just brief 251 --out /tmp/b.md       a file for `just dispatch --brief-file`
+#
+# What it composes: the seat and the Model roles line behind it, the worktree
+# protocol as the two calls it now is, the landing protocol, the live flake
+# lines read from open issues, the verdict paste rule where the gate produces a
+# verdict — and **the gate line, derived rather than chosen**. An issue whose
+# named surfaces reach `addons/`, `missions/`, `extension/` or the daemon's
+# world-facing half is owed the full corpus; one that names paths and none of
+# them in-world, in a body speaking no domain language, gets `just fast`;
+# anything else is **undetermined** and says so. Undetermined never resolves to
+# the cheaper gate, because a briefing naming `just fast` for an in-world change
+# is the defect the table exists to prevent. The in-world list is
+# `tools/admission.py`'s, so this prediction and the landing-time audit cannot
+# disagree about what in-world means. Measured on two vendored populations —
+# 14 issues that landed in-world, 20 that did not — at zero under-gates and zero
+# over-gates, with the whole error budget spent on saying "I cannot tell".
+#
+# What it does NOT compose, and emits as a visible placeholder instead: the task
+# statement, the scope boundary, the ground truth to read, and the reason for a
+# non-default seat. That is the orchestrator's work and the real work of the
+# turn; an unedited brief is obviously unfinished by construction.
+#
+# **Its token effect is unmeasured** — #212 owns that, and #208 measured that
+# briefings carrying a SHA correlate with *more* state reconstruction rather
+# than less. What is claimed is correctness: a derived gate line, a flake list
+# that cannot go stale, and a protocol that reaches every dispatch whether or
+# not the composing session's memory is current.
+#
+# An issue that does not exist, or a `gh` that cannot be reached, is exit 3 with
+# a message and nothing written — never a silent empty brief (#168/#183).
+brief issue *args:
+    @uv run python tools/brief.py {{ issue }} {{ args }}
+
 # The multi-provider setup that does not need a human (#230, for #221/#229).
 # No Arma, no lock: it reads this box, writes user-owned files, and generates —
 # never runs — the one root script the initiative needs.

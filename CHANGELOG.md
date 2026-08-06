@@ -44,6 +44,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just brief`: a dispatch briefing's invariant half, composed from data, with the gate line
+  derived rather than chosen.** The seat and the Model roles line behind it, the worktree protocol
+  as the two calls it now is, the landing protocol, the verdict paste rule where the gate produces
+  a verdict, and the open flake lines read from the tracker at composition time so a fixed flake
+  leaves the next briefing without anybody remembering to remove it. The gate is derived from two
+  signals in the issue body — the file paths it names, and whether it speaks `CONTEXT.md`'s domain
+  language — against the same in-world list `just admission audit` cross-checks a landing with, so
+  a composition-time prediction and a landing-time audit cannot disagree about what in-world means.
+  An issue whose surface cannot be read comes back **undetermined** and says so; it never resolves
+  to the cheaper gate, because a briefing naming `just fast` for an in-world change is the defect
+  the table exists to prevent. Measured on two vendored populations — the fourteen issues in the
+  last four hundred commits whose landings touched an in-world path, and the twenty that did not —
+  at zero under-gates and zero over-gates, with the whole error budget spent on saying "I cannot
+  tell". What the tool refuses to write is the actual work of the turn: the task statement, the
+  scope boundary, the ground truth to read and the reason for a non-default seat are emitted as
+  visible placeholders, so an unedited brief is obviously unfinished rather than plausibly
+  complete. Its token effect is deliberately **unclaimed** and unmeasured.
+
 - **`just queue`: the dispatch queue as data, and the freeze as a rung a running session reads.**
   The human's freeze, the ruled WIP limit, the carve-out packages and their reservations now live
   in `~/.arma-cti/queue/policy.json` with a `transitions.jsonl` beside it, outside every worktree,
