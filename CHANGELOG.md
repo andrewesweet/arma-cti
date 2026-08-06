@@ -24,6 +24,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The study is a design and builds nothing. Its rulings list is on #242 and on the human's pile
   (#217); the four tool halves are filed as their own issues.
 
+- **A dispatch is refused against an issue that states no criteria.** Definition of ready,
+  mechanically: `just dispatch` now reads the issue body before it plans anything, and refuses
+  when nothing there says what to do, or when nothing names the gate, test, verdict or artefact
+  that would settle it. The refusal carries no failure class — the provider is up and the lane
+  is fine, this project simply will not spend a lane on an issue nobody has finished writing —
+  and the remedy is always an edit to the issue by a human or by triage. The tool never rewrites
+  the body it is judging, and there is no override flag. Like every rung, it is lane-blind.
+
+  How strict it is was measured rather than chosen. The check's definitions were written down
+  first, then run against the twenty most recently dispatched issues, vendored verbatim under
+  `tests/fixtures/readiness-corpus/`. Every one of those twenty was dispatched and landed, so
+  every refusal on that corpus is a false positive by construction. Two of the three sub-checks
+  refused none of them and now refuse a dispatch. The third — can the criteria be counted off? —
+  refused three, and all three are the same shape: a ruling execution or a defect repair, whose
+  criteria *are* the ruling and arrive as prose to be transcribed rather than paraphrased into a
+  checklist. Feature issues and experiments: 0 of 16. Ruling executions: 2 of 3. So that
+  sub-check reports on every issue and blocks none, and its verdict is kept on the dispatch
+  record so the rate can be counted again once the corpus has grown.
+
+  `just dispatch --readiness --issue N` is the same verdict without a dispatch, which is the
+  surface triage and the human need, since they are the only parties who can fix an unready
+  issue. `--issue-body <path>` reads a body from a file instead of from `gh`, for a draft that
+  has not been filed yet.
+
 - **The Codex lane is registered, and its substrate was chosen on evidence rather than on the
   expectation ADR-0061 recorded.** `just dispatch --lane codex` reaches the ChatGPT Plus
   subscription through OpenAI's own Codex CLI, with four profiles over the two agentic coding

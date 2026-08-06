@@ -62,6 +62,14 @@ FAKE_TOKEN = "zai-" + "test-" * 6
 PEAK = datetime(2026, 8, 5, 7, 0, tzinfo=UTC)
 OFF_PEAK = datetime(2026, 8, 5, 20, 0, tzinfo=UTC)
 
+# The readiness rung (#241) reads the issue, so every test below has to say which issue
+# body it is reading. #223's own body serves: it is the issue these seam tests dispatch
+# against, it is vendored verbatim in the corpus the rung was measured on, and it clears
+# every sub-check — so a test about environments stays a test about environments rather
+# than becoming a test about GitHub being reachable from this box.
+READY_BODY = REPO / "tests" / "fixtures" / "readiness-corpus" / "223.md"
+UNREADY_BODY = "The dispatcher feels slow lately and somebody should have a look.\n"
+
 
 # --------------------------------------------------------------------------- helpers
 
@@ -130,6 +138,11 @@ def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
     # Same reason for the admission records (#224): a seam run must not read, and must
     # not write, this box's real standing for a foreign profile.
     env["CTI_ADMISSION_DIR"] = str(tmp_path / "admission")
+    # And the same reason again for the issue body (#241): a forked seam must not reach
+    # GitHub to find out whether #223 is ready, or the whole suite would be a test of this
+    # box's network. `--issue-body` is the surface triage uses on a draft; here it is the
+    # surface that keeps the tier offline.
+    env["CTI_READINESS_BODY"] = str(READY_BODY)
     env.update(extra)
     return env
 
@@ -194,6 +207,7 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "credentials": str(tmp_path / "credentials.env"),
         "breaker_dir": str(tmp_path / "breaker"),
         "admission_dir": str(tmp_path / "admission"),
+        "issue_body": str(READY_BODY),
     }
     request.update(overrides)
     args = _namespace(**request)
@@ -636,6 +650,7 @@ def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path)
         credentials=str(tmp_path / "c.env"),
         breaker_dir=str(tmp_path / "breaker"),
         admission_dir=str(tmp_path / "admission"),
+        issue_body=str(READY_BODY),
     )
     _, _, refusal = dispatch.plan_dispatch(args, REPO, datetime.now(tz=UTC))
     assert refusal is not None
@@ -854,6 +869,189 @@ def test_a_tripped_breaker_outranks_the_window_because_it_lasts_longer(tmp_path:
     _, refusal = zai_at(tmp_path, PEAK)
     assert refusal is not None
     assert refusal.kind == "lane_breaker_open"
+
+
+# ------------------------------------------------------------------ readiness (#241)
+
+
+def unready(tmp_path: Path, text: str = UNREADY_BODY) -> str:
+    """Write an issue body that states no criteria, and return its path."""
+    path = tmp_path / "unready.md"
+    path.write_text(text, encoding="utf-8")
+    return str(path)
+
+
+def test_an_issue_that_states_no_criteria_refuses_the_dispatch(tmp_path: Path) -> None:
+    _, _, refusal = plan_for(tmp_path, issue_body=unready(tmp_path))
+    assert refusal is not None
+    assert refusal.kind == "issue_not_ready"
+    assert any("criteria_absent" in line for line in refusal.found)
+
+
+def test_the_readiness_refusal_carries_no_failure_class(tmp_path: Path) -> None:
+    """A readiness refusal is not a verdict about any code.
+
+    The provider is up, the lane is reachable, and the table types what a run found. This
+    found nothing about any code under test — `admission_refusal`'s reasoning exactly.
+    """
+    _, _, refusal = plan_for(tmp_path, issue_body=unready(tmp_path))
+    assert refusal is not None
+    assert refusal.failure_class == ""
+
+
+def test_the_remedy_is_an_issue_edit_by_a_person_and_never_a_rewrite(tmp_path: Path) -> None:
+    """#241's third requirement, asserted on the only surface an agent reads."""
+    _, _, refusal = plan_for(tmp_path, issue_body=unready(tmp_path))
+    assert refusal is not None
+    assert "edit to the issue" in refusal.action
+    assert "human or by triage" in refusal.action
+    assert "rewrite the issue for you" in refusal.action
+
+
+def test_the_rung_is_lane_blind(tmp_path: Path) -> None:
+    """Every lane and profile meets the same refusal on the same body — ADR-0061's rule."""
+    worktree = git_worktree(tmp_path)
+    body = unready(tmp_path)
+    for profile in dispatch.PROFILES.values():
+        _, _, refusal = plan_for(
+            tmp_path,
+            lane=profile.lane,
+            profile=profile.name,
+            seat="implementer",
+            worktree=str(worktree),
+            issue_body=body,
+            now=OFF_PEAK,
+        )
+        assert refusal is not None, profile.name
+        assert refusal.kind == "issue_not_ready", profile.name
+
+
+def test_no_option_on_this_surface_waives_the_readiness_rung() -> None:
+    """The remedy is an edit, so a flag that skipped the check would be the remedy's rival."""
+    for flag in ("--skip-readiness", "--no-readiness", "--ready", "--force-ready"):
+        with pytest.raises(SystemExit):
+            dispatch.parse_args([flag])
+
+
+def test_an_unreadable_issue_refuses_rather_than_passing(tmp_path: Path) -> None:
+    """#41: a check that could not run is not a check that passed."""
+    _, _, refusal = plan_for(tmp_path, issue_body=str(tmp_path / "no-such-body.md"))
+    assert refusal is not None
+    assert refusal.kind == "issue_unreadable"
+    assert refusal.failure_class == "infra_unavailable"
+
+
+def test_an_empty_body_file_is_unreadable_rather_than_unready(tmp_path: Path) -> None:
+    blank = tmp_path / "blank.md"
+    blank.write_text("\n", encoding="utf-8")
+    _, _, refusal = plan_for(tmp_path, issue_body=str(blank))
+    assert refusal is not None
+    assert refusal.kind == "issue_unreadable"
+
+
+def test_readiness_outranks_admission_the_breaker_and_the_window(tmp_path: Path) -> None:
+    """The ladder's ordering: no clock and no provider will ever clear an unready issue.
+
+    Every rung below this one is arranged to refuse as well — the profile has spent both
+    admission attempts, the lane's breaker is tripped, and the clock is inside the peak
+    band — and the answer is still the one whose remedy a person can start on now.
+    """
+    state = admission.Store(directory=tmp_path / "admission")
+    for issue in (1, 2):
+        admission.append(
+            state,
+            "zai",
+            "zai-glm52-max",
+            "review",
+            admission.Assessment(
+                issue=issue,
+                dispatch_id=f"d-test-{issue}",
+                criteria=(("close_names_sha", "met"), ("fast_green", "not_met")),
+            ),
+        )
+    trip(tmp_path, "zai", breaker.GATE_FAILED, 3)
+    _, _, refusal = plan_for(
+        tmp_path,
+        lane="zai",
+        profile="zai-glm52-max",
+        seat="review",
+        issue_body=unready(tmp_path),
+        now=PEAK,
+    )
+    assert refusal is not None
+    assert refusal.kind == "issue_not_ready"
+
+
+def test_a_typo_in_the_request_still_outranks_readiness(tmp_path: Path) -> None:
+    """The registry keeps its place: a typo is not a state of the world at all."""
+    _, _, refusal = plan_for(tmp_path, lane="nosuchlane", issue_body=unready(tmp_path))
+    assert refusal is not None
+    assert refusal.kind == "unknown_lane"
+
+
+def test_an_unenumerable_issue_dispatches_and_says_so(tmp_path: Path) -> None:
+    """The measured half of the split: 15% of the corpus, so it advises and never refuses."""
+    ruling = tmp_path / "ruling.md"
+    ruling.write_text(
+        "Human ruling, 2026-08-05: the lane dispatches only off-peak.\n\n"
+        "Build: a rung that refuses outside the window. Tests both directions.\n",
+        encoding="utf-8",
+    )
+    plan, _, refusal = plan_for(tmp_path, issue_body=str(ruling))
+    assert refusal is None
+    assert plan is not None
+    assert plan.advisories == (
+        "advisory=criteria_not_enumerable issue=223 units=0 needed=2 leads=build",
+    )
+
+
+def test_an_advisory_is_kept_on_the_dispatch_record(tmp_path: Path) -> None:
+    """An advisory is kept, not only printed.
+
+    One nobody kept cannot be counted, and counting them is how the enumerability sub-check
+    would ever earn a hard refusal.
+    """
+    ruling = tmp_path / "ruling.md"
+    ruling.write_text("Fix per the close: record cap_fraction in tools/ledger.py.\n", "utf-8")
+    plan, brief, refusal = plan_for(tmp_path, issue_body=str(ruling))
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
+    assert document["readiness_advisories"] == list(plan.advisories)
+    assert dispatch.load_record(plan.record).advisories == plan.advisories
+
+
+def test_a_ready_issue_leaves_no_advisory_behind(tmp_path: Path) -> None:
+    plan, _, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+    assert plan.advisories == ()
+
+
+def test_the_audit_mode_answers_without_dispatching(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Triage's surface: the same verdict a dispatch would meet, before one is armed.
+
+    It names no lane, no profile and no seat — there is nothing lane-shaped to name — and
+    a request that would be `incomplete_request` on the dispatch path is a complete
+    question here.
+    """
+    code = dispatch.main(["--readiness", "--issue", "241", "--issue-body", unready(tmp_path)])
+    assert code == dispatch.EXIT_REFUSED
+    printed = capsys.readouterr()
+    assert "refusal=issue_not_ready" in printed.err
+    assert "dispatch=" not in printed.out
+
+
+def test_the_audit_mode_clears_a_ready_issue(capsys: pytest.CaptureFixture[str]) -> None:
+    assert dispatch.main(["--readiness", "--issue", "223", "--issue-body", str(READY_BODY)]) == 0
+    assert "readiness=ready issue=223" in capsys.readouterr().out
+
+
+def test_the_audit_mode_needs_an_issue_or_a_body() -> None:
+    assert dispatch.main(["--readiness"]) == dispatch.EXIT_REFUSED
 
 
 def test_a_lane_ruled_off_peak_only_with_no_registered_window_fails_closed() -> None:

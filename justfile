@@ -297,6 +297,8 @@ land *args:
 #   just dispatch --list                        the registry: lanes, profiles, seats
 #   just dispatch --dry-run ...                 the plan and the child's environment,
 #                                               credential redacted, nothing launched
+#   just dispatch --readiness --issue 241       is this issue ready to be worked on?
+#                                               nothing is dispatched either way
 #
 # `--lane` picks the runner and the environment that reaches a provider;
 # `--profile` is one opaque `(lane, model, effort)` token, because effort
@@ -309,7 +311,19 @@ land *args:
 # `just worktree add` makes and which this recipe never creates for itself),
 # `--brief-file`, `--base-sha`, `--permission-mode` (default `acceptEdits`; a
 # seat that needs Bash passes something wider deliberately), `--dispatch-dir`,
-# `--credentials`.
+# `--credentials`, `--issue-body` (read the body from a file rather than from
+# `gh` — how triage checks a draft before filing one).
+#
+# The issue is read before anything is planned, and one that states no criteria
+# is refused (#241). Definition of ready, mechanically: criteria must exist, and
+# something in the body must name the gate, test, verdict or artefact that would
+# settle them. Measured against the last twenty dispatched issues, both of those
+# refused none of them. A third sub-check — can the criteria be counted off? —
+# refused three, all ruling executions and defect repairs whose criteria are a
+# ruling transcribed rather than a checklist, so it reports and never blocks.
+# The remedy on a refusal is an edit to the issue by a human or by triage; the
+# tool will not rewrite an issue it is judging, and there is no override flag.
+# The rung is lane-blind: a foreign lane meets exactly what `claude-native` does.
 #
 # The environment is assembled per invocation and exported nowhere:
 # `ANTHROPIC_BASE_URL` in a profile or in `~/.claude/settings.json` would
