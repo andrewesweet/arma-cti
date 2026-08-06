@@ -508,14 +508,28 @@ def test_the_pool_reading_is_pool_merge_s(tmp_path: Path, monkeypatch: Any) -> N
 # ------------------------------------------------------------------ which close was audited
 
 
-def test_the_close_is_the_last_comment_written_before_the_close() -> None:
-    """#92's thread carries a review posted the day after its close; the close is the close."""
+def test_a_review_posted_the_day_after_is_not_the_close() -> None:
+    """#92's real thread: an audit three days before, the close, a review the next day."""
     comments = [
         {"id": 1, "created_at": "2026-08-02T23:16:20Z", "body": "an audit"},
         {"id": 2, "created_at": "2026-08-05T21:47:46Z", "body": "Closed."},
         {"id": 3, "created_at": "2026-08-06T03:17:17Z", "body": "a review, afterwards"},
     ]
-    assert admission.select_close(comments, "2026-08-05T21:47:46Z")["id"] == 2
+    comment, offset = admission.select_close(comments, "2026-08-05T21:47:46Z")
+    assert comment["id"] == 2
+    assert offset == 0
+
+
+def test_a_close_written_moments_after_the_close_event_is_still_the_close() -> None:
+    """#118's real thread: GitHub recorded the close 2m47s before the comment saying so.
+
+    This repo writes the close both ways round, so the rule is distance rather than a
+    side. Taking only the earlier side refused #118 outright.
+    """
+    comments = [{"id": 1, "created_at": "2026-08-02T13:26:11Z", "body": "Landed."}]
+    comment, offset = admission.select_close(comments, "2026-08-02T13:23:24Z")
+    assert comment["id"] == 1
+    assert offset == 167
 
 
 def test_an_open_issue_has_no_close_to_audit() -> None:
@@ -523,9 +537,19 @@ def test_an_open_issue_has_no_close_to_audit() -> None:
     assert admission.select_close(comments, "") is None
 
 
-def test_an_issue_closed_with_no_comment_before_it_has_no_close() -> None:
-    comments = [{"id": 1, "created_at": "2026-08-06T03:17:17Z", "body": "afterwards"}]
+def test_an_issue_whose_comments_carry_no_date_has_no_close() -> None:
+    comments = [{"id": 1, "body": "undated"}, {"id": 2, "created_at": "not a time", "body": "x"}]
     assert admission.select_close(comments, "2026-08-05T21:47:46Z") is None
+
+
+def test_the_nearer_of_two_candidates_wins_whichever_side_it_is_on() -> None:
+    comments = [
+        {"id": 1, "created_at": "2026-08-05T21:47:00Z", "body": "46s before"},
+        {"id": 2, "created_at": "2026-08-05T21:47:56Z", "body": "10s after"},
+    ]
+    comment, offset = admission.select_close(comments, "2026-08-05T21:47:46Z")
+    assert comment["id"] == 2
+    assert offset == 10
 
 
 # --------------------------------------------------------------------- record --from-audit

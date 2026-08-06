@@ -130,6 +130,7 @@ import re
 import subprocess
 import sys
 import time
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
@@ -1458,24 +1459,43 @@ def _gh(*args: str) -> str:
     return done.stdout
 
 
-def select_close(comments: Iterable[dict], closed_at: str) -> dict | None:
-    """Return the comment that closed the issue: the newest written at or before the close.
+def _timestamp(value: object) -> datetime | None:
+    """Read one GitHub timestamp, or `None` for anything this reader cannot parse."""
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        when = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    return when if when.tzinfo else when.replace(tzinfo=UTC)
 
-    Mechanical on purpose. An issue accumulates comments after its close — #92's own
-    thread carries a cross-provider review posted the next day — and "the close" is a
-    fact GitHub records rather than a comment a reader recognises. An issue still open
-    carries no `closed_at` and so has no close to audit.
+
+def select_close(comments: Iterable[dict], closed_at: str) -> tuple[dict, float] | None:
+    """Return the comment nearest the close event, and how many seconds from it it sits.
+
+    Nearest, symmetrically, rather than "the newest one before". This repo writes the
+    close both ways round and both are the close: #92's comment landed on the close event
+    to the second, #118's 2m47s after it. Taking only the earlier side refuses #118
+    outright; taking only the later side would take #92's cross-provider review, posted
+    the next day. So the rule is distance, and the distance is *printed*, because the case
+    this cannot decide — a thread whose nearest comment is nowhere near its close — is one
+    a reader must see rather than one the tool should guess at. `--close-file` is the
+    answer there.
+
+    An issue still open carries no `closed_at` and has no close to audit at all.
     """
-    if not closed_at:
+    closed = _timestamp(closed_at)
+    if closed is None:
         return None
-    written = [
-        comment
+    dated = [
+        (comment, written)
         for comment in comments
-        if isinstance(comment, dict) and str(comment.get("created_at", "")) <= closed_at
+        if isinstance(comment, dict) and (written := _timestamp(comment.get("created_at")))
     ]
-    if not written:
+    if not dated:
         return None
-    return max(written, key=lambda comment: str(comment.get("created_at", "")))
+    comment, written = min(dated, key=lambda pair: (abs(pair[1] - closed), pair[1]))
+    return comment, (written - closed).total_seconds()
 
 
 def fetch_close(issue: int) -> tuple[str, str]:
@@ -1488,10 +1508,12 @@ def fetch_close(issue: int) -> tuple[str, str]:
     comments = json.loads(_gh(f"{close_endpoint(issue)}/comments", "--paginate"))
     chosen = select_close(comments if isinstance(comments, list) else [], closed_at)
     if chosen is None:
-        message = f"#{issue} closed at {closed_at} with no comment written at or before that."
+        message = f"#{issue} closed at {closed_at} and carries no dated comment."
         raise CloseUnreadableError(message)
-    return str(chosen.get("body") or ""), (
-        f"github comment={chosen.get('id')} at={chosen.get('created_at')}"
+    comment, offset = chosen
+    return str(comment.get("body") or ""), (
+        f"github comment={comment.get('id')} at={comment.get('created_at')} "
+        f"offset={offset:+.0f}s from closed_at={closed_at}"
     )
 
 

@@ -35,6 +35,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   leaves every other one a required choice with no default, so the bar's no-default discipline
   survives the automation. A `--close-file` seam reads a close from disk instead of from `gh`.
 
+  Which comment is "the close" is decided by distance from GitHub's own close event rather than by
+  reading the prose, and symmetrically: this repo writes the close on both sides of it — #92's
+  comment landed on the event to the second, #118's 2m47s after — so a rule taking only the earlier
+  side refused #118 outright, and one taking only the later side would have taken #92's
+  cross-provider review, posted the next day. The offset is printed beside the comment id, because
+  a thread whose nearest comment is nowhere near its close is a case a reader must see rather than
+  one the tool should guess at.
+
 - The ledger's landing answer now carries every commit in a dispatch's window alongside the tip it
   already named, so a caller asking whether one quoted SHA belongs to a dispatch can be answered
   without re-deriving the window. The ledger's own row is unchanged.
