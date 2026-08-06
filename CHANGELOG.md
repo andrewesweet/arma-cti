@@ -44,7 +44,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   This is not parity with the `zai` lane and is not described as one: that lane's grant is a list of
   named commands, this one a filesystem and network policy every command inherits. Network access in
   particular is strictly more than the `zai` half has, where only `just land` and `gh` reach the
-  network at all.
+  network at all. `docs/multi-provider-dispatch.md` now states the two lanes' capabilities separately,
+  with what was measured on each — including that the Codex lane can commit **or** gate and not yet
+  both: granting the per-worktree git directory as a writable root is exactly what stops libgit2, and
+  so `cog check`, opening it. The `zai` lane reaches a landing today; the Codex lane's remaining step
+  is carried as its own issue.
 
 - **`just admission audit --issue N` computes the close audit the bar today asks an agent to
   assert.** `just admission record` demands a choice on every Part A criterion and cross-checks two

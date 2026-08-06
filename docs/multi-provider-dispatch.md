@@ -116,3 +116,91 @@ explained is a verdict line that gets misread.
 
 Ratified as implemented by the human's ruling on #228 (Decision 6), and recorded here so
 it is not re-litigated at the next breaker change.
+
+## What a dispatched session may do, stated per lane
+
+The human ruled on 2026-08-06 (#221 decision 1 and 2, implemented as #259) that a
+dispatched session gets the gate and the commit, so that a foreign lane stops needing a
+Claude-side finisher to turn its work into a landing. The ruling was taken with an explicit
+caution attached, and this section exists to honour it: **the two lanes are widened by
+different mechanisms of different granularity, and nothing here claims they are equivalent.**
+ADR-0061 decision 5 makes the same point about effort levels; it applies to permission just
+as well.
+
+### `zai` — a list of named commands
+
+The lane rides the `claude` binary, so it inherits `.claude/settings.json`'s allowlist.
+`--permission-mode` is unchanged at `acceptEdits`. The grant is eight entries and it is
+exhaustive: `just check`, `just unit`, `just fast`, `git add`, `git commit`, and read-only
+`git status`, `git diff` and `git log`. `just land` and `just land --dry-run` were already
+there and remain the only push path — `tools/land.py`'s refspec is a constant no argument
+reaches. Bare `git push` and `git commit --no-verify` are deliberately absent.
+
+Measured live by dispatches `d-20260806-163123-e8bed7` and `d-20260806-165934-de5015`, which
+between them ran every one of those commands, committed their own work at `73a0d5c`, gated
+it and landed it at `a609127` with no Claude-side involvement. Two readings from the same
+runs are worth keeping:
+
+- `git commit --no-verify` was **refused**, by the hook rather than by the allowlist. That
+  is the whole safety argument for widening: `PreToolUse` fires before any permission-mode
+  check, in every permission mode (vendor, `code.claude.com/docs/en/hooks-guide.md`), so
+  enforcement sits upstream of permission and a wider allowlist cannot reach it.
+- `git push --dry-run origin HEAD:main` was **permitted**, although this repository grants
+  no `git push` in any form. The grant came from a user-level `Bash(git push *)` entry on
+  this box. So the project allowlist describes what this repository asks for; it does not by
+  itself bound what a session on this machine can do.
+
+### `codex` — a filesystem and network policy
+
+The lane does not read `.claude/settings.json`'s allowlist at all. `tools/dispatch.py` maps
+the permission mode to a sandbox policy, and `acceptEdits` is `--sandbox workspace-write`
+plus, on that mode only, three writable roots and network access. Every command the session
+runs inherits all of it; there is no per-command list to consult.
+
+What that buys, measured rather than inferred, over four dispatches and three probes:
+
+- Plain `workspace-write` grants the session's own worktree and nothing above it. `git
+  status`, `git log` and `git diff` worked; `git add` did not, because a linked worktree's
+  index lives under the main checkout's `.git`.
+- Codex refuses a write under a `.git` directory unless **that exact directory** is a
+  writable root. Naming an ancestor does not lift it for a nested one — with `<main>/.git`
+  granted, `<main>/.git/topA` was created and
+  `<main>/.git/worktrees/<name>/subB` was refused in the same command. Both directories are
+  therefore derived from git and granted.
+- The gate additionally needs `~/.cache/uv`, where `uv` takes a lock before any test runs.
+  `~/.cargo` looked as likely and was measured unnecessary, so it is not granted.
+- `network_access` defaults off and `just land` fetches and pushes, so it is enabled.
+
+Read-only seats keep the sandbox they always had, and
+`--dangerously-bypass-approvals-and-sandbox` was put to the human, declined, and is unused.
+
+**The lane does not yet reach a landing, and the reason is worth stating precisely.** The
+two capabilities the ruling asked for are currently exclusive on this lane, isolated by
+running `cog check` under each root set in the same worktree at the same commit:
+
+| writable roots | `git add` / `git commit` | `cog check`, the gate's first step |
+|---|---|---|
+| main checkout, `<main>/.git`, `~/.cache/uv` | refused, `index.lock` read-only | `No errored commits` |
+| the same plus `<main>/.git/worktrees/<name>` | exit 0, no escalation | `failed to open repository … could not find repository at '<main>/.git/worktrees/<name>/'` |
+
+`cog` reads the repository through libgit2, and granting the per-worktree git directory as
+a *writable* root is what stops libgit2 opening it — the same directory it opens without
+complaint outside the sandbox, and under the three-root set. So the widened lane can commit
+or it can gate, and not both. Dispatch `d-20260806-172045-9a0a0e` is the end-to-end attempt:
+it committed its own work at `fb093fe` under the sandbox with no escalation, stopped on that
+red as it was told to, and did not land. Carried as its own issue rather than stretched into
+#259, whose ruling this section otherwise implements.
+
+### Where they are not comparable
+
+Network access is the clearest case. On `codex` it is a property of the sandbox, so every
+command the session runs can reach the network. On `zai` nothing grants network capability
+as such; only the commands on the list run at all, and of those only `just land` and `gh`
+talk to anything remote. The same intent, delivered by mechanisms whose blast radius does
+not match — which is why this section states them separately rather than as one table.
+
+One more asymmetry, and it is a property of this box rather than of either ruling: Codex's
+`approvals_reviewer = "auto_review"` can approve a command's escalation *out* of the
+sandbox, and dispatch `d-20260806-165944-1b31e5` reached a green landing that way while the
+sandbox was still refusing its `git add`. A sandbox that a reviewer model can be asked to
+step outside is not a containment boundary in the way an allowlist is.
