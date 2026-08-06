@@ -12,6 +12,16 @@ history and the deliberate limits) and only a segment whose command word is
 One limit of its own, on top of the reader's: no option-value tracking.
 `git commit -m -n` is denied even though `-n` is there the commit message.
 Over-blocking is the safe direction.
+
+Two denials, because there are two findings and for a week one was read as the
+other. A *bypass* is a `git commit` that was going to run with the flag. An
+*unreadable* command is one the reader could not classify at all; it is denied
+just as hard — a command that cannot be read cannot be cleared — but it is not
+an accusation, and its remedy is to move the text out of argv rather than to
+edit a commit message. #254 was filed because the unreadable denial wore the
+bypass wording: three commands denied by a stale worktree copy of the pre-#167
+reader (ADR-0042) were reported as false positives of the flag pattern, which
+had matched nothing in any of them.
 """
 
 from __future__ import annotations
@@ -23,13 +33,31 @@ from pathlib import PurePosixPath
 
 from shell_reading import read_command, without_assignments
 
-# `-n` is git commit's short spelling of --no-verify, and it clusters: `-an` is
-# --all --no-verify.
-_SHORT_BYPASS = re.compile(r"-[A-Za-z]*n[A-Za-z]*\Z")
+# The short options `git commit` takes, as letters. `-n` is its spelling of
+# --no-verify and it clusters, so `-an` is --all --no-verify — but a cluster is
+# one only when every letter in it is an option git commit has. Over any letter
+# (`-[A-Za-z]*n[A-Za-z]*`) the pattern also matched `-anchored` and `-agent`,
+# ordinary English words that begin with a hyphen (#254). Nothing real is lost
+# by narrowing it: a cluster carrying a letter git commit does not take is a
+# command git itself rejects, so it was never a bypass that could run.
+_SHORT_OPTIONS = "aCcFeimnopqSstuv"
+_SHORT_BYPASS = re.compile(rf"-[{_SHORT_OPTIONS}]*n[{_SHORT_OPTIONS}]*\Z")
 
-DENIAL = (
+BYPASS_DENIAL = (
     "Bypassing the commit-msg hook is blocked: it defeats the Conventional"
     " Commits gate (ADR-0010). Fix the commit message instead."
+)
+
+# Says what happened, and what to do about it. No accusation: the reader found
+# nothing, which is exactly why it is denying (#254).
+UNREADABLE_DENIAL = (
+    "This command could not be read, so it could not be checked, and an"
+    " unchecked command is not a cleared one. The reader could not tell its"
+    " command positions from its text — unbalanced quoting, or a heredoc with no"
+    " end marker, both easy to write inside a long body. No commit-hook bypass"
+    " was found in it; nothing here is an accusation of one. Take the body out"
+    " of the command line and pass it as a file instead: write the file, then"
+    " `gh ... --body-file <path>` or `git commit -F <path>`."
 )
 
 
@@ -50,12 +78,19 @@ def _runs_a_bypass(tokens: list[str]) -> bool:
     return "commit" in arguments and any(_is_bypass_flag(token) for token in arguments)
 
 
-def blocks(command: str) -> bool:
-    """Report whether this Bash command must be denied. Anything unreadable is."""
+def denial(command: str) -> str | None:
+    """Return the message to deny this Bash command with, or `None` to let it run."""
     segments = read_command(command)
     if segments is None:
-        return True
-    return any(_runs_a_bypass(tokens) for tokens in segments)
+        return UNREADABLE_DENIAL
+    if any(_runs_a_bypass(tokens) for tokens in segments):
+        return BYPASS_DENIAL
+    return None
+
+
+def blocks(command: str) -> bool:
+    """Report whether this Bash command must be denied. Anything unreadable is."""
+    return denial(command) is not None
 
 
 def main() -> int:
@@ -71,8 +106,9 @@ def main() -> int:
             file=sys.stderr,
         )
         return 2
-    if blocks(command):
-        print(DENIAL, file=sys.stderr)
+    message = denial(command)
+    if message is not None:
+        print(message, file=sys.stderr)
         return 2
     return 0
 

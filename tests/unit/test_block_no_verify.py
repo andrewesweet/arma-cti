@@ -5,6 +5,13 @@ a command position from prose, so that is what these tests pin: the three
 reproductions from #120 that were wrongly denied, and every spelling of the real
 bypass that must still be denied. Anything the hook cannot read is denied — the
 fail-safe direction is the one the hook was already right about.
+
+What the hook *says* when it denies is pinned here too, because #254 is what a
+denial that named the wrong finding cost. Three commands were reported as
+false positives of the bypass pattern; all three were the unreadable branch of
+a stale worktree copy of the pre-#167 hook (ADR-0042), wearing the ADR-0010
+bypass accusation. The accusation is what made the diagnosis wrong, so the two
+findings now carry two messages and each is asserted on.
 """
 
 from __future__ import annotations
@@ -13,7 +20,7 @@ import io
 import json
 from typing import TYPE_CHECKING
 
-from conftest import load_hook
+from conftest import REPO, load_hook
 
 if TYPE_CHECKING:
     import pytest
@@ -22,6 +29,20 @@ hook = load_hook("block-no-verify")
 
 FLAG = "--no-verify"
 BYPASS = f"git commit {FLAG}"
+
+# The three commands #254 reported, vendored verbatim from the transcripts that
+# were denied. They are the shapes agents really write long bodies in, and the
+# class has now been reintroduced twice (#120, #167) and misdiagnosed once.
+SIGHTINGS = REPO / "tests" / "fixtures" / "block-no-verify"
+
+
+def sighting(name: str) -> str:
+    """One vendored command, as the Bash tool received it.
+
+    The file carries a trailing newline the tool call did not; nothing else
+    about it is edited.
+    """
+    return (SIGHTINGS / name).read_text(encoding="utf-8").rstrip("\n")
 
 
 def call(monkeypatch: pytest.MonkeyPatch, stdin: str) -> int:
@@ -136,6 +157,43 @@ def test_a_commit_message_may_mention_the_flag() -> None:
     assert not hook.blocks(f'git commit -m "fix: stop denying prose that says {FLAG}"')
 
 
+# --- #254: the three sightings, verbatim ------------------------------------
+
+
+def test_the_241_commit_body_is_not_a_bypass() -> None:
+    """Sighting 1: a `git commit -m "$(cat <<'EOF' … )"` whose body is English.
+
+    Reported as the short-flag pattern matching `line-anchored` and
+    `ready-for-agent`. It was not: the reader that denied it was a stale copy
+    predating #167, which could not see a heredoc opened inside a quoted
+    substitution and so failed to read the command at all.
+    """
+    assert not hook.blocks(sighting("241-commit-with-a-heredoc-body.txt"))
+
+
+def test_the_245_comment_body_is_not_a_bypass() -> None:
+    """Sighting 2: `gh issue comment --body "$(cat <<'EOF' … )"`, 4.7 kB of prose."""
+    assert not hook.blocks(sighting("245-issue-comment-with-a-heredoc-body.txt"))
+
+
+def test_the_249_close_comment_is_not_a_bypass() -> None:
+    """Sighting 3: `gh issue close --comment "$(cat <<'EOF' … )"` — not a git command."""
+    assert not hook.blocks(sighting("249-issue-close-with-a-heredoc-comment.txt"))
+
+
+def test_a_hyphenated_word_is_not_a_short_flag_cluster() -> None:
+    """The pattern #254 named: `-anchored` and `-agent` matched `-[A-Za-z]*n[A-Za-z]*`.
+
+    A cluster is a cluster only when every letter in it is one git commit takes.
+    Post-#167 the reader keeps prose out of argument position, so this is the
+    pattern's own contract rather than a live reproduction — and the pattern is
+    what the reader falls back on each time that guarantee has broken.
+    """
+    assert not hook.blocks("git commit -m wip -anchored")
+    assert not hook.blocks("git commit -m wip -agent")
+    assert not hook.blocks("git commit -m wip -brand")
+
+
 # --- the real bypass, in every spelling -------------------------------------
 
 
@@ -149,6 +207,15 @@ def test_the_short_flag_is_denied() -> None:
 
 def test_a_short_flag_cluster_is_denied() -> None:
     assert hook.blocks('git commit -an -m "wip"')
+
+
+def test_every_cluster_of_git_commits_own_short_options_is_denied() -> None:
+    """The under-blocking edge of #254's tightening, in both orders and at length."""
+    assert hook.blocks("git commit -anv")
+    assert hook.blocks("git commit -vna")
+    assert hook.blocks("git commit -nqse")
+    assert hook.blocks("git commit -ion")
+    assert hook.blocks("git commit -nF /tmp/msg.txt")
 
 
 def test_the_flag_after_the_message_is_denied() -> None:
@@ -223,6 +290,46 @@ def test_a_denied_command_exits_two_and_says_why(
 ) -> None:
     assert call(monkeypatch, json.dumps({"tool_input": {"command": BYPASS}})) == 2
     assert "ADR-0010" in capsys.readouterr().err
+
+
+def test_an_unreadable_command_is_not_accused_of_a_bypass(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """#254 sighting 3: a parse failure on a non-git command cited ADR-0010.
+
+    The command is the one that was denied — a `git commit -F -` whose heredoc
+    body never arrived — but the shape is the general one, and what it is not
+    allowed to say is the point: nothing in it bypasses anything.
+    """
+    truncated = "git add -A && git commit -q -F - <<'EOF' && git log --oneline -3"
+    assert call(monkeypatch, json.dumps({"tool_input": {"command": truncated}})) == 2
+    said = capsys.readouterr().err
+    assert "ADR-0010" not in said
+    assert "Bypassing" not in said
+
+
+def test_an_unreadable_command_is_told_what_happened_and_what_to_do(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The denial names the reading failure and the two file-shaped remedies (#254)."""
+    assert call(monkeypatch, json.dumps({"tool_input": {"command": "gh issue view 'x"}})) == 2
+    said = capsys.readouterr().err
+    assert "could not be read" in said
+    assert "--body-file" in said
+    assert "git commit -F" in said
+
+
+def test_a_real_bypass_still_names_the_gate_it_defeats(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The two findings stay two messages: the accusation belongs to this one only."""
+    assert call(monkeypatch, json.dumps({"tool_input": {"command": BYPASS}})) == 2
+    said = capsys.readouterr().err
+    assert "ADR-0010" in said
+    assert "--body-file" not in said
 
 
 def test_an_allowed_command_exits_zero(monkeypatch: pytest.MonkeyPatch) -> None:

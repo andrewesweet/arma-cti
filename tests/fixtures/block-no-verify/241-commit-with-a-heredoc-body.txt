@@ -1,0 +1,22 @@
+cd /home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/issue-241 && git add -A && git commit -q -m "$(cat <<'EOF'
+fix: read a directive lead that opens a sentence rather than a line
+
+The open ready-for-agent queue was audited as a validation set, distinct from
+the twenty issues the strictness split was derived on. It found one false
+positive: #183 states its criteria in the third sentence of a paragraph — "…
+outside #168's authorised diff. Scope: apply the same treatment …" — and the
+line-anchored lead extractor called that body criteria-free.
+
+A bug in where the extractor looked, not in what it looked for. Widening it to
+sentence position clears #183 and leaves the derivation corpus's three rates
+exactly where they were, which the corpus test re-runs to prove.
+
+Both remaining refusals on the queue stand and are correct. #217 is a standing
+comment anchor carrying no criteria because it is not implementation work — a
+triage finding about its label rather than its body. #202 asks for a
+human-gated semantics decision, lists three options, and names no criterion
+for choosing between them.
+
+refs #241
+EOF
+)" && git log --oneline -3

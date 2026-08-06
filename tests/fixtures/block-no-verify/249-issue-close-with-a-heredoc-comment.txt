@@ -1,0 +1,31 @@
+cd /home/andre/code/github.com/andrewesweet/arma-cti && gh issue close 249 --comment "$(cat <<'EOF'
+Landed as `ace9467`, `origin/main` fast-forwarded. Gate: `just fast` green.
+
+## Criterion audit
+
+**"Give the watch tree the same seam the breaker already has (an injectable directory the test points at `tmp_path`)."** Met. `tools/stall_watch.py`'s `--watch-dir` now defaults to `Path(os.environ.get("CTI_WATCH_DIR", str(DEFAULT_WATCH_DIR)))`, the exact shape `CTI_BREAKER_DIR` and `CTI_ADMISSION_DIR` already carry, with the reason recorded beside it: the recipe folds two reads into one line and forwards its arguments to the watchers' half only, so the other half has no flag a caller could reach for.
+
+Extended past the issue's wording in one place, deliberately. `tools/stall-watch.sh` — the arming half — honours `CTI_WATCH_DIR` too. A read moved out of the machine's tree while the write stays in it relocates the coupling rather than removing it, and a test that pointed the report somewhere and armed into `~/.arma-cti/watch/` would have been a worse leak than the one being fixed.
+
+**"The test that leaked needs to inject it."** Met. `test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripped` now passes both `CTI_BREAKER_DIR` and `CTI_WATCH_DIR` into its `tmp_path`. The assertion the retro's landing tripped on — `watch_report().strip() == ""` — is now a claim about a tree the test owns.
+
+**"Check whether a tripwire test belongs beside #132's, and add it if the sweep says the leak class has more instances."** Sweep done, and it says **one instance** — the one fixed here. Reporting that plainly because it did not meet the condition as written, and the tripwire went in anyway.
+
+The sweep was run rather than reasoned. The whole unit suite was run under a `HOME` whose `.arma-cti/watch/` carried an unacknowledged `stalled_clean` finding: 2,256 tests green, and nothing written into that tree afterwards. The method is sensitive rather than merely quiet — reverting the one-line injection above and re-running reproduces this issue's red exactly (`assert 'POISON' == ''`). Static confirmation agrees: every other host-state directory under `~/.arma-cti` (`admission`, `breaker`, `dispatches`, `runs`) reaches its tool through a flag, and `test_breaker.py` is the only unit test in the tree that shells out to `just` at all.
+
+`test_no_unit_test_reads_the_boxs_own_watch_tree` is kept on #132's own precedent rather than on an instance count: that tripwire was also written against a single instance, for a failure that is silent, depends on the machine rather than the diff, and reds every landing until somebody mutates state to clear it. The next test to drive this tooling is where it recurs.
+
+**Mutation rung.** `just fast`'s third rung, on the two test modules this touches: `test_breaker.py` → `tools/breaker.py` 16/20 killed (80%), `test_stall_watch.py` → `tools/stall_watch.py` 15/20 killed (75%), against a 50% floor.
+
+Each new test was checked against its own fix rather than only against the floor, which is the check #132's tripwire comment says is the only way vacuity shows up:
+
+- delete `CTI_WATCH_DIR` from `test_breaker.py` → the tripwire fails naming `['test_breaker.py']`;
+- revert the `os.environ.get` default and the shell's → all three new seam tests fail, including the shell half's spec landing in the wrong directory.
+
+The tripwire matches an assignment or an argv token, never a bare mention, for the reason recorded on #132: its first draft was satisfied by a comment naming the variable and stayed green with its own fix deleted.
+
+## Note for the record
+
+The first `just fast` after committing was red on `test_client_lock.py::test_a_holders_age_reads_as_a_duration_not_a_count_of_seconds[15120-4h 12m]` — `assert 'age_seconds=15120' in ...`, a second-boundary race under full-suite load. That is #222 exactly, open, on a file this diff does not touch. Re-run once per the briefing: green, 2,256 passed.
+EOF
+)"

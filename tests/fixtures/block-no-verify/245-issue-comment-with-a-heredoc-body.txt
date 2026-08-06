@@ -1,0 +1,44 @@
+cd /home/andre/code/github.com/andrewesweet/arma-cti && gh issue comment 245 --body "$(cat <<'EOF'
+Fixed in 7bc3f72, on `origin/main`.
+
+## Criterion audit
+
+**"Bound the window by time as well as by SHA: a commit that predates the dispatch's own `started_at` is not this dispatch's landing."** Done, and the SHA half was bounded too. `landed()` now takes the dispatch's start and applies three tests rather than one: the message references the issue, the commit **descends from the base** (`git log --ancestry-path`, since `base..ref` alone lists everything reachable from the tip and says nothing about descent), and the commit **postdates the start**. The start is read, never computed — `result.json`'s `started_at` once the run has ended, the plan's `planned_at` until then, both already on every record the dispatcher writes. A record carrying neither is credited with nothing, because a window the view cannot bound is not a window that admits everything.
+
+One boundary worth stating: the floor is the start truncated to the second, because git records committer dates at second resolution and a start carrying microseconds must not exclude the very second it began in. There is a test on each side of that second.
+
+**"Make `gate_outcome` seat-aware, so a `review` or `recon` dispatch reports an outcome meaning 'this seat lands nothing'."** Done. New outcome `lands_nothing`, and those rows carry no SHA at all — `materialise` does not ask git the question for a seat that cannot land, so the absence is stated rather than accidental. `running` and `not_a_result` still take precedence, being facts about the dispatch where the seat rule is a fact about the seat. `SEAT_LANDS` sits beside a unit test that holds it in step with `tools/dispatch.py`'s `SEATS` roster, so a seat added there cannot arrive here unclassified and inherit this defect. A seat the table does not know is assumed to land — the view reads what the record carries and does not invent a claim about a seat it has never met.
+
+**"Whichever is taken, the row should keep saying which rule answered."** Every refusal names its test. The concrete case's `reason` was `referenced by 2 commit(s) on origin/main`; where a commit is excluded on time it now reads `N commit(s) on origin/main reference #X but predate this dispatch's start (<floor>)`, on descent `nothing on origin/main descends from <base>`, and on the seat `the review seat lands nothing`.
+
+**"#227's view discipline — the ledger reads, never synthesises."** Held. Nothing new is written to the bus, no new attribute value enters the row, and both timestamps and the seat come from the record the dispatcher already left. The only new derived fields are the outcome word and the reason string, which is what the row already was.
+
+## The concrete case, re-materialised
+
+```
+$ just ledger-sync
+dispatch=d-20260805-221743-8957c3 lane=zai issue=227 ... class=ok gate=lands_nothing landed=none
+```
+
+and the block in full:
+
+```json
+"gate": {
+  "outcome": "lands_nothing",
+  "landed": {"sha": null, "commits": 0, "reason": "the review seat lands nothing"}
+}
+```
+
+The other five real rows moved with it: `d-20260805-191540-8c663f` (recon, #225) and `d-20260806-033344-18a832` (recon, #243) also read `lands_nothing`; `d-20260805-221747-a5056c` (review, #92) likewise, where it had been borrowing #92's implementer landing. The one implementer row that still reports `landed` reports it with `reason: referenced by 2 commit(s) on origin/main after 2026-08-05T21:11:09+00:00`.
+
+## Gate
+
+`just fast` green on the rebased tree, quoted by `just land`: 2,201 pytest passed, 17 cargo, and the mutation rung `ok tests/unit/test_ledger.py subject=tools/ledger.py killed=19/20 planted=215 rate=95% floor=50%`.
+
+One red on the first post-rebase run — `test_a_holders_age_reads_as_a_duration_not_a_count_of_seconds[63-1m 03s]`, which is #222 exactly ("flakes under full-suite load, on a different parameter each run"), open, and passes in isolation. Re-run once per the dispatch briefing; green, and green again inside `just land`.
+
+## Observation, not a defect here
+
+`d-20260805-211109-5b17eb` (implementer, #92) is now credited with `d5f778e`, the twenty-fifth retro's commit, because the tip of the matching set is what the row reports and that commit's message mentions #92. That is the documented "the newest is reported, since an issue may land in several commits" rule doing what it says, and it is orthogonal to this issue — the credit is at least genuinely inside the dispatch's window now. Worth a separate look only if the tip rule turns out to mislead in practice.
+EOF
+)" && gh issue close 245 --reason completed && gh issue view 245 --json state --jq .state

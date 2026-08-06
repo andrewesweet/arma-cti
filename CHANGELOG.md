@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A denial that could not read a command no longer accuses it of bypassing a hook.** The commit
+  bypass guard fails closed on any Bash command it cannot parse, which is right, but it said so in
+  the words it reserves for a real bypass: an ADR-0010 accusation, with no hint of what had actually
+  happened or what to do instead. That cost a diagnosis. Three denials of long `gh` and `git`
+  bodies were reported as false positives of the guard's short-flag pattern; the pattern had matched
+  nothing in any of them, and all three were parse failures in a stale worktree copy of the guard
+  predating the fix that taught it to read a heredoc inside a quoted substitution.
+
+  The two findings now carry two messages. A command that could not be read is told that, told why
+  it is still denied, and pointed at the shapes that work — a file passed as `gh ... --body-file` or
+  `git commit -F` — with no accusation attached. A real bypass keeps the wording it always had.
+
+  The short-flag pattern is narrowed at the same time. It read any hyphen-led run of letters
+  containing an `n` as a cluster of `--no-verify`, which is true of `-an` and equally true of
+  `-anchored` and `-agent`; it now matches only clusters built from the short options `git commit`
+  actually takes. No real spelling is lost, since a cluster carrying a letter git does not take is a
+  command git itself refuses. The three reported commands are vendored verbatim as test fixtures.
+
 - **A unit gate no longer reds on what the box happens to be carrying.** The test of
   `just watch-report` injected a temporary directory for the recipe's breaker half but not for its
   watcher half, so the read went to the machine's live `~/.arma-cti/watch/` and any unacknowledged
