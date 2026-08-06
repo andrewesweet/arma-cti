@@ -20,6 +20,8 @@ Four ideas, and each is a ruling made mechanical:
   mechanical gate catches a wrong answer, so a foreign lane refuses the seats the ADR
   excludes — the fable seat and orchestration — rather than trusting the caller to
   remember. On `claude-native` nothing is leaving Claude and every seat is dispatchable.
+  One human ruling suspends the fable bar for `codex`/`codex-sol-xhigh` until its stated
+  instant; the clock reapplies the standing bar without a later revocation (#217, #270).
 - **Identity** is `OTEL_RESOURCE_ATTRIBUTES`, which is what makes a dispatch's telemetry
   self-identifying downstream: `cti.dispatch_id`, `cti.lane`, `cti.profile`, `cti.seat`,
   `cti.issue`, `cti.base_sha`. Decision 1 wants fraction-of-cap for all three pools from
@@ -360,6 +362,27 @@ SEATS: Final[dict[str, bool]] = {
 }
 
 
+# The human's ruling of 2026-08-06T21:15Z (#217, #issuecomment-5209125413), verbatim:
+# "Allow retros to be conducted by GPT 5.6 Sol xhigh until 1400 on Monday 10th Aug 2026."
+# Retros are a fable act. The ruling routes that one act to exactly this triple until
+# exactly this instant. These singular values deliberately are not a temporary-allowance
+# registry: every other fable-on-foreign combination, and orchestrator everywhere, remain
+# governed by `SEATS` throughout.
+RETRO_FABLE_ALLOWANCE: Final = ("fable", "codex", "codex-sol-xhigh")
+RETRO_FABLE_ALLOWANCE_EXPIRES_AT: Final = datetime(2026, 8, 10, 14, 0, tzinfo=UTC)
+RETRO_FABLE_ALLOWANCE_SOURCE: Final = "#217 #issuecomment-5209125413"
+
+
+def retro_fable_allowance_is_live(
+    seat: str, lane_name: str, profile_name: str, now: datetime
+) -> bool:
+    """Whether #217's one ruled triple is still before its expiry instant."""
+    return (
+        (seat, lane_name, profile_name) == RETRO_FABLE_ALLOWANCE
+        and now < RETRO_FABLE_ALLOWANCE_EXPIRES_AT
+    )
+
+
 def plan_charge(lane: Lane, at: datetime) -> dict[str, object] | None:
     """Record what this dispatch is charged at, in the unit its provider's plan meters.
 
@@ -582,8 +605,15 @@ def lane_credential(lane: Lane, path: Path) -> tuple[str, Refusal | None]:
     return token, None
 
 
-def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal | None:
-    """Check lane, profile and seat against the registry and against Decision 2."""
+def resolve_selection(
+    lane_name: str, profile_name: str, seat: str, now: datetime | None = None
+) -> Refusal | None:
+    """Check lane, profile and seat against the registry and against Decision 2.
+
+    Decision 2's standing bar remains in `SEATS`. The only exception is #217's exact
+    retro triple before its expiry instant; `now` alone decides whether it holds. The
+    planning ladder passes the same clock it threads to the breaker and off-peak rungs.
+    """
     if lane_name not in LANES:
         return Refusal(
             "unknown_lane",
@@ -612,7 +642,12 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
             (f"seat={seat}", f"known={' '.join(sorted(SEATS))}"),
             "Name a known seat: the seat is a telemetry attribute and a typo mis-attributes.",
         )
-    if LANES[lane_name].foreign and not SEATS[seat]:
+    at = now or datetime.now(tz=UTC)
+    if (
+        LANES[lane_name].foreign
+        and not SEATS[seat]
+        and not retro_fable_allowance_is_live(seat, lane_name, profile_name, at)
+    ):
         return Refusal(
             "seat_not_eligible",
             (f"seat={seat}", f"lane={lane_name}"),
@@ -1230,7 +1265,7 @@ def ladder_refusal(
     demoted for it: the whole point of hearing it first is that its remedy can start now,
     while every rung below it either fixes itself or waits on the same human anyway.
     """
-    refusal = resolve_selection(args.lane, args.profile, args.seat)
+    refusal = resolve_selection(args.lane, args.profile, args.seat, now)
     if refusal is not None:
         return refusal
     refusal = readiness_refusal(args.issue, found)
@@ -1443,8 +1478,9 @@ def classify_finished_run(record: Path, returncode: int) -> tuple[str, float | N
     return breaker.classify_run(returncode, text[-LOG_TAIL_BYTES:])
 
 
-def registry_lines() -> tuple[str, ...]:
+def registry_lines(now: datetime | None = None) -> tuple[str, ...]:
     """Render every lane and profile: the answer to "what can I dispatch?"."""
+    at = now or datetime.now(tz=UTC)
     lines: list[str] = []
     for lane in sorted(LANES.values()):
         lines.append(f"lane={lane.name} runner={lane.runner} foreign={str(lane.foreign).lower()}")
@@ -1467,6 +1503,20 @@ def registry_lines() -> tuple[str, ...]:
     barred = " ".join(sorted(seat for seat, ok in SEATS.items() if not ok))
     lines.append(f"seats_eligible_on_foreign_lanes={eligible}")
     lines.append(f"seats_claude_native_only={barred}")
+    # A suspended rule is visible while it holds and disappears when the clock reapplies
+    # the standing bar. This is the one ruled exception, not a general allowance list.
+    if at < RETRO_FABLE_ALLOWANCE_EXPIRES_AT:
+        seat, lane_name, profile_name = RETRO_FABLE_ALLOWANCE
+        remaining = (RETRO_FABLE_ALLOWANCE_EXPIRES_AT - at).total_seconds()
+        lines.append(
+            "seat_allowance=live"
+            f" seat={seat}"
+            f" lane={lane_name}"
+            f" profile={profile_name}"
+            f" expires_at={RETRO_FABLE_ALLOWANCE_EXPIRES_AT.isoformat()}"
+            f" in={breaker.human_delta(remaining)}"
+            f" source={RETRO_FABLE_ALLOWANCE_SOURCE}"
+        )
     return tuple(lines)
 
 
