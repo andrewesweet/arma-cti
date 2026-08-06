@@ -64,8 +64,16 @@
       "Edit(CHANGELOG.md)",
       "Bash(gh issue:*)",
       "Bash(gh label:*)",
+      "Bash(just check)",
+      "Bash(just unit)",
+      "Bash(just fast)",
       "Bash(just land)",
-      "Bash(just land --dry-run)"
+      "Bash(just land --dry-run)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

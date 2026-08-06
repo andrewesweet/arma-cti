@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A dispatched session may now run the gate and make its own commit.** `.claude/settings.json`'s
+  allowlist gains eight entries — `just check`, `just unit`, `just fast`, `git add`, `git commit`,
+  and read-only `git status`, `git diff` and `git log` — on the human's ruling of 2026-08-06 on
+  #221. The permission mode is unchanged (`acceptEdits`), and the push path is unchanged: `just
+  land` was already allowlisted and remains the only way anything reaches `origin/main`. Bare `git
+  push` and `git commit --no-verify` are deliberately absent.
+
+  The first live foreign dispatch could do the work but not commit it or gate it, so every foreign
+  dispatch needed a Claude-side finisher — spending exactly the tokens the foreign lane exists to
+  save. Widening is safe because the hooks are not permissions: `PreToolUse` fires before any
+  permission-mode check, in every permission mode, so what the allowlist grants the hooks can still
+  deny, and the hook-parity suite proves the denials on Codex payloads unchanged.
+
 - **`just admission audit --issue N` computes the close audit the bar today asks an agent to
   assert.** `just admission record` demands a choice on every Part A criterion and cross-checks two
   of them against git in the refusing direction only; everything else is asserted by whoever runs
