@@ -247,13 +247,16 @@ Verbatim:
 
 Probe 7 is the allow the ruling did not expect: `git push --dry-run origin HEAD:main` ran
 and printed `Everything up-to-date`. It was harmless on a dry run, but
-`.claude/settings.json` has **no** `git push` entry — `873a0c8` deliberately left bare push
-out — so the grant did not come from this file. RTK is active in this session (its
-compressed `git status` output and its `ok (...)` suffix on the push show it), and the
-host's user-level config sits outside this project's allowlist, so the containment a
-project allowlist implies does not hold on its own: a dispatched session on this box can do
-more than this file grants. The project's push route remains `just land`'s constant
-refspec, and nothing here changes that.
+`.claude/settings.json` grants **no** `git push` — the file was read back, and its allowlist
+runs to `git add` and `git commit` and stops there, as `873a0c8` intended — so the grant did
+not come from this file. It came from a **user-level `Bash(git push *)` allowlist entry on
+this box**, which sits outside this project's allowlist entirely. RTK is active in this
+session too (its compressed `git status` output and its `ok (...)` suffix on the push show
+it), but the point does not rest on RTK: the containment a project allowlist implies does
+not hold on its own, because a user-level entry on the same machine grants what the project
+withheld. A dispatched session on this box can do more than this file grants, and
+`.claude/settings.json` does not by itself bound a session here. The project's push route
+remains `just land`'s constant refspec, and nothing here changes that.
 
 **The gate is red from inside the session, for a reason the ruling did not anticipate.**
 Probes 5, 6 and 9 failed the same test, `test_a_zai_dispatch_leaks_into_neither_the_
@@ -277,13 +280,26 @@ A second failure surfaced in probe 9 only —
 unrelated to this doc-only change and to the token environment, and is named for
 completeness, not as part of the claim.
 
-**Consequence for landing.** `just fast` is the pre-landing gate and it is red from inside
-this session for the reason above. `just land` re-runs that gate and would refuse
-`gate_red`, so it was not run — `just fast` was red, which is the stop condition. The
-widening let this session make its own commit; it did not let it land its own work, because
-the session can run the gate and the session's own credential reds it. That is the
-measurement: the capability #221 granted is real for git and for the gate's entry points,
-and it stops one step short of landing, at a test the dispatch's own environment trips.
+**The red was a defect in the test's assumption, not in the widening.** What probes 5, 6 and
+9 tripped was the suite asserting a *precondition of the box* — `ANTHROPIC_AUTH_TOKEN` absent
+from the ambient environment — rather than anything the seam did. The widening is sound: the
+seam exported nothing into the parent, and the leak the test was built to catch did not
+happen; the test simply could not run inside the very session the widening lets run it. That
+is fixed at `82a0d16`. The assertion now snapshots `os.environ` before the seam runs and
+checks it is unchanged after, plus that the lane's own credential never reaches the process
+under any name — strictly stronger than the old single-key absence check (on a clean box
+"unchanged from clean" implies "absent", and it also catches an export of any other variable
+the old check would have missed), and runnable inside a `zai` dispatch because it makes no
+claim about what the box started with. The second failure the predecessor named — the
+duration-format flake — is unchanged: it is a pre-existing time-based flake, unrelated to
+this doc-only change, and it did not reproduce on this dispatch's `just fast`.
+
+**The loop closed.** This dispatch rebased `82a0d16` into the worktree, ran `just fast` green
+(2,606 passed, the leak test among them, mutation smoke clean), made its own commit, and
+landed the section through `just land`. The capability #221 granted now runs the whole loop
+on the `zai` lane with no Claude-side finisher: a dispatched session can run git, run the
+gate, make its own commit, and land its own work — once the test the dispatch's own
+environment used to trip is itself fixed.
 
 ## What a reader should not take from this
 
