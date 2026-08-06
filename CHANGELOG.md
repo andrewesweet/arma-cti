@@ -95,8 +95,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   but never auto-reverts the seat and carries no failure class — it is a finding for the human, who
   rules on whether the seat reverts, so the verdict names no provider, lane or code under test.
 
-  The clock starts at an explicit `trial-start` act naming the date, not at the tool's existence, so
-  `not_started` is a state distinct from `0/10`. Three of the five criteria are computed against
+  The clock starts at an explicit `trial-start --date YYYY-MM-DD` act, not at the tool's existence,
+  so `not_started` is a state distinct from `0/10`. Three of the five criteria are computed against
   artefacts that exist — a freeze the queue policy recorded, a landing inside its dispatch's window,
   a gated sign-off surface edited without approval or an ADR-0013 record — and two are the human's
   alone, never filled from an audit. The bar is immutable once the first assessment lands: amending

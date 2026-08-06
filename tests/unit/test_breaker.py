@@ -882,6 +882,7 @@ def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripp
     directory = tmp_path / "breaker"
     environment = {
         **os.environ,
+        "CTI_ADMISSION_DIR": str(tmp_path / "admission"),
         "CTI_BREAKER_DIR": str(directory),
         "CTI_WATCH_DIR": str(tmp_path / "watch"),
     }
@@ -921,5 +922,7 @@ def test_the_recipe_folds_the_breaker_into_the_read_at_the_top_of_a_turn() -> No
     body = justfile.split("watch-report *args:", 1)[1].split("\n\n", 1)[0]
     assert "tools/breaker.py report" in body
     assert "tools/stall_watch.py report" in body
+    assert "tools/admission.py trial-report" in body
     assert body.index("breaker.py") < body.index("stall_watch.py"), "the verdicts read first"
+    assert body.index("stall_watch.py") < body.index("admission.py")
     assert "\nbreaker *args:\n" in justfile
