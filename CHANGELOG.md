@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A design for taking rule-based coordination out of the orchestrator's head and into files.**
+  `docs/orchestration-design.md` factors dispatch routing, claim verification, stall handling and
+  crash recovery into four tool halves — a queue the scheduler reads, a composed dispatch briefing,
+  a computed close audit, and the recovery runbook's two computable procedures — then sizes what is
+  left and proposes a seat for it.
+
+  The smallest piece is the one that closes a hole. A freeze recorded in an issue comment and in
+  session memory does not reach an orchestrator session already running; a freeze in a policy file
+  that `just dispatch` reads per dispatch does. That is the same conversion the off-peak rule
+  already made — a human's standing rule enforced by refusal, with no override — and the refusal
+  carries no failure class for the same reason: nothing was found about any provider or any code.
+
+  The study is a design and builds nothing. Its rulings list is on #242 and on the human's pile
+  (#217); the four tool halves are filed as their own issues.
+
 - **The Codex lane is registered, and its substrate was chosen on evidence rather than on the
   expectation ADR-0061 recorded.** `just dispatch --lane codex` reaches the ChatGPT Plus
   subscription through OpenAI's own Codex CLI, with four profiles over the two agentic coding
