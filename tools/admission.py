@@ -93,6 +93,31 @@ Two of them are cross-checked against git, and the cross-check can only ever *re
 The cross-check never grants — it cannot see whether a corpus run was really quoted, only
 whether waiving it was honest — and a cross-check that could not run refuses the record
 rather than passing it.
+
+## The audit (#252)
+
+Everything `record` does not cross-check is *asserted* by whoever runs it, which for a
+Claude-lane issue is the orchestrator reading a close against a landing by hand. Most of
+that is computable, so `just admission audit --issue N` computes it: six checks over the
+close, each with its own verdict vocabulary, printed for a human to read and to quote.
+
+It lives here rather than in a tool of its own because the criteria live here, and a
+second tool would hold a second copy of them. It reimplements nothing it can call: the
+window tests — descends from the dispatch's base, postdates the dispatch's own start —
+are `tools/ledger.py`'s from 7bc3f72 and are called, and `pool.json`'s green reading is
+`tools/pool_merge.py`'s.
+
+Two of its properties are refusals to overclaim, and they matter more than the list:
+
+- a quoted gate block is reported `quoted` and never as proof the gate ran green. The
+  paste **is** the evidence, and a tool cannot re-run history;
+- the changelog check reports `undecidable` and has no input that makes it report `ok`,
+  because whether a commit had user-visible effect is not decidable from its diff. #41's
+  shape again, and the same reason `just prereqs` reports `unknown`.
+
+`record --from-audit` fills the criteria the audit computed — two, both narrowly — and
+leaves every other one required with no default, so the no-default discipline above
+survives the automation.
 """
 
 from __future__ import annotations
@@ -101,6 +126,7 @@ import argparse
 import fnmatch
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -111,8 +137,14 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 # needs the script's own directory on the path — the device `breaker.py` uses.
 sys.path.insert(0, str(Path(__file__).parent))
 
-# The path insert above is what makes this importable.
+# The path insert above is what makes these importable. `ledger` carries the window tests
+# the audit holds a quoted SHA against and `pool_merge` carries `pool.json`'s green
+# reading; both are called rather than copied, and `tests/unit/test_admission_audit.py`
+# fails if a second implementation of either appears here (#252). Neither imports this
+# module, so there is no cycle to break.
+import ledger
 import otel_event
+import pool_merge
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -694,6 +726,449 @@ def crosscheck(assessment: Assessment, paths: tuple[str, ...] | None) -> tuple[s
     return tuple(found)
 
 
+# --------------------------------------------------------------------------- the audit
+
+# What one check answers. Every vocabulary below is its own check's, and no verdict is
+# shared between two checks that mean different things by it — `absent` on `sha_on_main`
+# is "the close names no commit", `absent` on `evidence` is "the close quotes no run
+# directory", and reading either as the other would be the overclaim this exists to stop.
+AUDIT_OK: Final = "ok"
+AUDIT_ABSENT: Final = "absent"
+AUDIT_NOT_ON_MAIN: Final = "not_on_main"
+AUDIT_OUTSIDE_WINDOW: Final = "outside_window"
+AUDIT_UNBOUNDED: Final = "unbounded"
+AUDIT_OWED: Final = "owed"
+AUDIT_NOT_OWED: Final = "not_owed"
+AUDIT_PATH_MISSING: Final = "path_missing"
+AUDIT_RED: Final = "red"
+AUDIT_QUOTED: Final = "quoted"
+
+# The one verdict every check may reach: this check could not run. It is never a pass and
+# nothing in `criteria_from_audit` reads it as one (#41).
+AUDIT_UNDECIDABLE: Final = "undecidable"
+
+AUDIT_REF: Final = "origin/main"
+
+AUDIT_CHECKS: Final = (
+    "sha_on_main",
+    "dispatch_window",
+    "corpus_owed",
+    "evidence",
+    "gate_quoted",
+    "changelog",
+)
+
+# A commit as a close writes one: abbreviated to seven or spelt in full, and never inside
+# a longer word. Whether a token *is* a commit is then asked of git rather than of the
+# sentence around it — an md5 is 32 hex characters and matches here, and #92's close
+# quotes one.
+SHA_TOKEN: Final = re.compile(r"(?<![0-9A-Za-z])[0-9a-f]{7,40}(?![0-9A-Za-z])")
+
+# The evidence-directory convention `docs/regression-tier.md` fixes: every run writes
+# `~/.arma-cti/runs/<stamp>-<probe>/` and a pool run `~/.arma-cti/runs/<stamp>-pool/`.
+# Matched wherever the close spells the prefix — `~`, an absolute home, or bare.
+RUNS_PATH: Final = re.compile(r"(?:~|/[^\s`'\"()\[\],]*?)?/?\.arma-cti/runs/[A-Za-z0-9._-]+")
+
+# What a quoted gate block looks like, taken from `tools/land.py`'s own output vocabulary
+# and from the name CLAUDE.md gives the gate, rather than from a guess at how a close
+# phrases it. Presence is all this proves, which is exactly what the verdict says.
+GATE_QUOTE_MARKERS: Final = (
+    "just fast",
+    "gate=green",
+    "pushed=",
+    "rebase=",
+    "merge=fast-forwarded",
+)
+
+CHANGELOG_UNDECIDABLE: Final = (
+    "whether a commit had user-visible effect is not decidable from its diff, so this "
+    "check never runs and never passes; judge it against CHANGELOG.md by hand"
+)
+
+GATE_QUOTED_CAVEAT: Final = (
+    "quoted is not green: the paste is the evidence and this tool cannot re-run history"
+)
+
+
+class Check(NamedTuple):
+    """One audit check: what it asked, what it answered, and what it read to answer."""
+
+    name: str
+    verdict: str
+    detail: str = ""
+
+    def line(self) -> str:
+        """Render the check as the line a close quotes."""
+        head = f"check={self.name} verdict={self.verdict}"
+        return f"{head} detail={self.detail}" if self.detail else head
+
+
+class Audit(NamedTuple):
+    """One close, audited: the six checks, and the SHA and dispatch they were run against."""
+
+    issue: int
+    sha: str
+    dispatch_id: str
+    source: str
+    checks: tuple[Check, ...]
+
+    def verdict_of(self, name: str) -> str:
+        """Return what this audit answered on one check, `undecidable` if it did not run it."""
+        return {check.name: check.verdict for check in self.checks}.get(name, AUDIT_UNDECIDABLE)
+
+    def lines(self) -> tuple[str, ...]:
+        """Render the whole audit as the block a close quotes verbatim."""
+        computed = criteria_from_audit(self)
+        named = {key for key, _ in computed}
+        return (
+            f"issue={self.issue}",
+            f"source={self.source}",
+            f"sha={self.sha or 'none'}",
+            f"dispatch={self.dispatch_id or 'none'}",
+            *(check.line() for check in self.checks),
+            *(f"computed={key}={state}" for key, state in computed),
+            "explicit=" + " ".join(key for key in PART_A_KEYS if key not in named),
+        )
+
+
+def git_succeeds(*args: str, cwd: Path) -> bool:
+    """Run one git command for its exit code alone, which is `--is-ancestor`'s whole answer.
+
+    `git` above returns stdout, and `merge-base --is-ancestor` writes none either way, so
+    reading it through that would make "yes" and "no" the same empty string.
+    """
+    # S603/S607: fixed literals plus paths this tool computed, for `git`'s reason above.
+    done = subprocess.run(  # noqa: S603
+        ["git", *args],  # noqa: S607
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return done.returncode == 0
+
+
+def candidate_shas(close: str) -> tuple[str, ...]:
+    """Every token in a close that could be a commit, in the order it was written."""
+    seen: list[str] = []
+    for match in SHA_TOKEN.finditer(close):
+        if match.group() not in seen:
+            seen.append(match.group())
+    return tuple(seen)
+
+
+def resolved_commits(repo: Path, close: str) -> tuple[str, ...]:
+    """Return the full SHAs of every token in the close this checkout knows as a commit.
+
+    Deduplicated on the resolved SHA, because a close that names a landing abbreviated in
+    one sentence and in full in another names one commit, not two.
+    """
+    found: list[str] = []
+    for token in candidate_shas(close):
+        full = git("rev-parse", "--verify", "--quiet", f"{token}^{{commit}}", cwd=repo).strip()
+        if full and full not in found:
+            found.append(full)
+    return tuple(found)
+
+
+def sha_on_main_check(
+    repo: Path, close: str, ref: str = AUDIT_REF
+) -> tuple[Check, tuple[str, ...]]:
+    """Ask whether the close names a commit on `ref`, and hand back the ones that are.
+
+    Every on-`ref` commit is carried forward rather than one guessed at, so the window
+    check below decides *which* SHA the close meant by asking the dispatch record instead
+    of by parsing the prose around it.
+    """
+    resolved = resolved_commits(repo, close)
+    if not resolved:
+        return (
+            Check("sha_on_main", AUDIT_ABSENT, "no token in the close resolves to a commit here"),
+            (),
+        )
+    on_main = tuple(
+        sha for sha in resolved if git_succeeds("merge-base", "--is-ancestor", sha, ref, cwd=repo)
+    )
+    if not on_main:
+        return (
+            Check(
+                "sha_on_main",
+                AUDIT_NOT_ON_MAIN,
+                f"resolved={' '.join(sha[:8] for sha in resolved)} none is an ancestor of {ref}",
+            ),
+            (),
+        )
+    return (
+        Check(
+            "sha_on_main",
+            AUDIT_OK,
+            f"on_{ref.replace('/', '_')}={' '.join(s[:8] for s in on_main)}",
+        ),
+        on_main,
+    )
+
+
+def dispatch_records_for(root: Path, issue: int) -> tuple[tuple[str, dict, dict | None], ...]:
+    """Every dispatch record naming this issue on a seat that can land, oldest first.
+
+    Seats that land nothing are dropped rather than reported: ADR-0061 Decision 3 admits
+    `review` because its output is claims and `recon` is read-only, so bounding a landing
+    by one of their windows is a category error rather than a weak answer (#245). #92 has
+    one of each, and only the implementer's window can hold its landing.
+
+    Ordered by dispatch id, which `tools/dispatch.py` mints as `d-<UTC stamp>-<entropy>`
+    and so sorts chronologically by construction. Reading the record's own start would
+    put a second reader of the dispatch's clock here, next to the one this module calls
+    `ledger.dispatch_start` for, and the whole point is that there is one.
+    """
+    if not root.is_dir():
+        return ()
+    found: list[tuple[str, dict, dict | None]] = []
+    for directory in sorted(root.iterdir()):
+        plan = ledger.read_json(directory / "dispatch.json")
+        if plan is None or int(plan.get("issue") or 0) != issue:
+            continue
+        if not ledger.seat_lands(plan.get("seat")):
+            continue
+        found.append(
+            (
+                str(plan.get("dispatch_id") or directory.name),
+                plan,
+                ledger.read_json(directory / "result.json"),
+            )
+        )
+    found.sort(key=lambda entry: entry[0])
+    return tuple(found)
+
+
+def window_check(
+    repo: Path,
+    issue: int,
+    on_main: tuple[str, ...],
+    records: tuple[tuple[str, dict, dict | None], ...],
+    ref: str = AUDIT_REF,
+) -> tuple[Check, str, str]:
+    """Hold the close's on-`ref` SHAs against the dispatch's window, and say which one fits.
+
+    The three tests are `tools/ledger.py`'s and are called, never copied — a commit
+    belongs to a dispatch only if its message references the issue, it descends from the
+    dispatch's base, and it postdates the dispatch's own start (7bc3f72, #245). Returns
+    the check, the SHA the audit will cite, and the dispatch it was held against.
+    """
+    if not on_main:
+        return (
+            Check(
+                "dispatch_window",
+                AUDIT_UNDECIDABLE,
+                f"the close names no commit on {ref} to hold against a window",
+            ),
+            "",
+            "",
+        )
+    if not records:
+        return (
+            Check(
+                "dispatch_window",
+                AUDIT_UNBOUNDED,
+                f"no dispatch record names issue #{issue} on a seat that lands",
+            ),
+            "",
+            "",
+        )
+    dispatch_id, plan, result = records[-1]
+    base = str(plan.get("base_sha") or "")
+    start = ledger.dispatch_start(plan, result)
+    landing = ledger.landed(repo, issue, base, start, ref)
+    if start is None or not base:
+        return (
+            Check("dispatch_window", AUDIT_UNBOUNDED, f"{dispatch_id}: {landing.reason}"),
+            "",
+            dispatch_id,
+        )
+    inside = tuple(sha for sha in on_main if sha in landing.shas)
+    if not inside:
+        return (
+            Check("dispatch_window", AUDIT_OUTSIDE_WINDOW, f"{dispatch_id}: {landing.reason}"),
+            "",
+            dispatch_id,
+        )
+    return (
+        Check("dispatch_window", AUDIT_OK, f"{dispatch_id}: {landing.reason}"),
+        inside[0],
+        dispatch_id,
+    )
+
+
+def corpus_check(repo: Path, sha: str) -> Check:
+    """Ask whether the landing touched an in-world surface, so a pool verdict is owed.
+
+    `not_owed` says only that no path is on the `just regress` row's surface list. It is
+    never read as a waiver — `IN_WORLD_PREFIXES`' own header says why, and
+    `criteria_from_audit` accordingly fills nothing from it.
+    """
+    if not sha:
+        return Check(
+            "corpus_owed", AUDIT_UNDECIDABLE, "no SHA on the close's landing to diff paths from"
+        )
+    paths = landing_paths(repo, sha)
+    if paths is None:
+        return Check("corpus_owed", AUDIT_UNDECIDABLE, f"git could not name {sha[:8]}'s paths")
+    in_world = touches_in_world(paths)
+    if in_world:
+        return Check("corpus_owed", AUDIT_OWED, "in_world=" + " ".join(in_world[:5]))
+    return Check(
+        "corpus_owed",
+        AUDIT_NOT_OWED,
+        f"none of {len(paths)} path(s) is on the `just regress` row's surface list",
+    )
+
+
+def evidence_paths(close: str) -> tuple[Path, ...]:
+    """Every `~/.arma-cti/runs/` path the close quotes, in the order it was written."""
+    seen: list[str] = []
+    for match in RUNS_PATH.finditer(close):
+        raw = match.group().rstrip(".")
+        if raw not in seen:
+            seen.append(raw)
+    return tuple(_expand_runs_path(raw) for raw in seen)
+
+
+def _expand_runs_path(raw: str) -> Path:
+    """Read one quoted run path as the directory it names, home-relative where it is bare."""
+    path = Path(raw).expanduser()
+    return path if path.is_absolute() else Path.home() / raw
+
+
+def _pool_verdict(path: Path) -> tuple[str, str]:
+    """Read one quoted evidence path's `pool.json`, rendering nothing the path lacks.
+
+    The #219 failure mode is a plausible path that resolves to nothing, so "the directory
+    is there but carries no `pool.json`" is `path_missing` rather than a pass: the check
+    is that the path exists *and* its pool reads green, and half of that is not most of it.
+    """
+    document = path if path.name == "pool.json" else path / "pool.json"
+    if not path.exists():
+        return AUDIT_PATH_MISSING, f"{path} does not exist"
+    if not document.is_file():
+        return AUDIT_PATH_MISSING, f"{path} exists and carries no pool.json"
+    read = ledger.read_json(document)
+    if read is None:
+        return AUDIT_PATH_MISSING, f"{document} is not a readable JSON document"
+    worst = read.get("worst_class")
+    named = f"{document} worst_class={worst if isinstance(worst, str) and worst else 'absent'}"
+    return (AUDIT_OK if pool_merge.pool_reads_green(read) else AUDIT_RED), named
+
+
+# Worst first: a close quoting one green pool and one red one has quoted a red one, and a
+# quoted path that resolves to nothing outranks a quoted path that resolves to a pass.
+EVIDENCE_RANK: Final = (AUDIT_RED, AUDIT_PATH_MISSING, AUDIT_OK)
+
+
+def evidence_check(close: str) -> Check:
+    """Ask whether every evidence path the close quotes exists and reads green."""
+    paths = evidence_paths(close)
+    if not paths:
+        return Check("evidence", AUDIT_ABSENT, "the close quotes no ~/.arma-cti/runs/ path")
+    read = [_pool_verdict(path) for path in paths]
+    worst = min(read, key=lambda pair: EVIDENCE_RANK.index(pair[0]))[0]
+    return Check("evidence", worst, "; ".join(detail for _, detail in read))
+
+
+def gate_check(close: str) -> Check:
+    """Ask whether a gate block is quoted at all — and say that presence is all it proves."""
+    found = tuple(marker for marker in GATE_QUOTE_MARKERS if marker in close)
+    if not found:
+        return Check(
+            "gate_quoted",
+            AUDIT_ABSENT,
+            "no `just fast` or `just land` output in the close: " + " ".join(GATE_QUOTE_MARKERS),
+        )
+    return Check("gate_quoted", AUDIT_QUOTED, f"found={' '.join(found)}; {GATE_QUOTED_CAVEAT}")
+
+
+def changelog_check() -> Check:
+    """Report `undecidable`, always, on purpose.
+
+    It takes no input because there is no input that would let it decide: a diff shows
+    that `CHANGELOG.md` moved, never that the commit beside it had user-visible effect,
+    and CLAUDE.md binds the entry to the effect rather than to the file. Written nullary
+    so that "no input makes this emit `ok`" is a property of the signature rather than a
+    claim a test has to chase (#252 criterion 4, #41's shape).
+    """
+    return Check("changelog", AUDIT_UNDECIDABLE, CHANGELOG_UNDECIDABLE)
+
+
+def audit(  # noqa: PLR0913 — the close, the checkout, the records, and where each came from
+    repo: Path,
+    issue: int,
+    close: str,
+    *,
+    dispatch_root: Path,
+    source: str,
+    ref: str = AUDIT_REF,
+) -> Audit:
+    """Audit one close against one landing: six checks, computed and printed, nothing written."""
+    sha_check, on_main = sha_on_main_check(repo, close, ref)
+    records = dispatch_records_for(dispatch_root, issue)
+    window, matched, dispatch_id = window_check(repo, issue, on_main, records, ref)
+    # The SHA the rest of the audit reads is the one the window admitted; where the window
+    # admitted none, the first on-`ref` commit the close names, so that a landing outside
+    # its window still gets its paths diffed rather than going unread.
+    cited = matched or (on_main[0] if on_main else "")
+    return Audit(
+        issue=issue,
+        sha=cited,
+        dispatch_id=dispatch_id,
+        source=source,
+        checks=(
+            sha_check,
+            window,
+            corpus_check(repo, cited),
+            evidence_check(close),
+            gate_check(close),
+            changelog_check(),
+        ),
+    )
+
+
+def criteria_from_audit(result: Audit) -> tuple[tuple[str, str], ...]:
+    """Which Part A criteria this audit computed, and to what.
+
+    Two, and both narrowly.
+
+    `close_names_sha` is exactly what checks 1 and 2 decide between them: a commit the
+    close names, on `main`, inside the dispatch's window. A window that could not be
+    bounded fills nothing, because `unbounded` is not `not_met`.
+
+    `corpus_verdict` is filled in the refusing direction only. A landing that owes a pool
+    verdict and whose quoted evidence is red, missing or absent has not met the criterion,
+    and that is computable. The other direction is not: `pool.json` records no filter, so
+    a green pool cannot be shown to have been the *full* corpus, and `not_owed` is not a
+    waiver — `IN_WORLD_PREFIXES` says in its own header that a list of paths cannot know
+    what a change means.
+
+    `fast_green` is never here at all, whatever the gate check found. Quoted is not green.
+
+    `hooks_clean` is never here either: `crosscheck` already refuses a record that claims
+    it over a gated-path edit, and computing it a second time here would be the second
+    copy this module exists to avoid.
+    """
+    computed: list[tuple[str, str]] = []
+    sha_verdict = result.verdict_of("sha_on_main")
+    window = result.verdict_of("dispatch_window")
+    if sha_verdict == AUDIT_OK and window == AUDIT_OK:
+        computed.append(("close_names_sha", MET))
+    elif sha_verdict in (AUDIT_ABSENT, AUDIT_NOT_ON_MAIN) or window == AUDIT_OUTSIDE_WINDOW:
+        computed.append(("close_names_sha", NOT_MET))
+    if result.verdict_of("corpus_owed") == AUDIT_OWED and result.verdict_of("evidence") in (
+        AUDIT_RED,
+        AUDIT_PATH_MISSING,
+        AUDIT_ABSENT,
+    ):
+        computed.append(("corpus_verdict", NOT_MET))
+    return tuple(computed)
+
+
 # ------------------------------------------------------------------------------ the store
 
 # Outside every worktree, beside the breaker's own state and for its reason: a profile's
@@ -937,6 +1412,102 @@ def dispatch_refusal(store: Store, lane: str, profile: str, seat: str) -> tuple[
     )
 
 
+# ---------------------------------------------------------------- reading a close in
+
+# `gh` fills `{owner}` and `{repo}` from the checkout's remote, the device
+# `tools/handoff_fetch.py` already uses, so the endpoint carries no hard-coded slug.
+CLOSE_ENDPOINT: Final = "repos/{owner}/{repo}/issues/"
+
+CLOSE_TIMEOUT_S: Final = 30
+
+
+def close_endpoint(issue: int) -> str:
+    """One issue's endpoint, with gh's own placeholders left for gh to fill.
+
+    Concatenated rather than formatted, because `str.format` would consume `{owner}` and
+    `{repo}` as fields of its own and fail on the first of them.
+    """
+    return f"{CLOSE_ENDPOINT}{issue}"
+
+
+class CloseUnreadableError(Exception):
+    """`gh` could not be run, refused the request, or answered unreadably."""
+
+
+def _gh(*args: str) -> str:
+    """Run one `gh api` call and return its stdout, raising where it could not be read."""
+    try:
+        # S603/S607: fixed literals plus this tool's own integers, and `gh` resolves off
+        # PATH on purpose — the checkout's own authenticated CLI is the caller's.
+        done = subprocess.run(  # noqa: S603
+            ["gh", "api", *args],  # noqa: S607
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=CLOSE_TIMEOUT_S,
+        )
+    except FileNotFoundError as missing:
+        message = "`gh` is not on PATH, so no close could be read."
+        raise CloseUnreadableError(message) from missing
+    except subprocess.TimeoutExpired as slow:
+        message = f"`gh` did not answer within {CLOSE_TIMEOUT_S}s, so no close could be read."
+        raise CloseUnreadableError(message) from slow
+    if done.returncode != 0:
+        message = f"`gh` refused: {done.stderr.strip() or done.stdout.strip()}"
+        raise CloseUnreadableError(message)
+    return done.stdout
+
+
+def select_close(comments: Iterable[dict], closed_at: str) -> dict | None:
+    """Return the comment that closed the issue: the newest written at or before the close.
+
+    Mechanical on purpose. An issue accumulates comments after its close — #92's own
+    thread carries a cross-provider review posted the next day — and "the close" is a
+    fact GitHub records rather than a comment a reader recognises. An issue still open
+    carries no `closed_at` and so has no close to audit.
+    """
+    if not closed_at:
+        return None
+    written = [
+        comment
+        for comment in comments
+        if isinstance(comment, dict) and str(comment.get("created_at", "")) <= closed_at
+    ]
+    if not written:
+        return None
+    return max(written, key=lambda comment: str(comment.get("created_at", "")))
+
+
+def fetch_close(issue: int) -> tuple[str, str]:
+    """Read one issue's closing comment off GitHub, and say which comment it was."""
+    issue_document = json.loads(_gh(close_endpoint(issue)))
+    closed_at = str(issue_document.get("closed_at") or "")
+    if not closed_at:
+        message = f"#{issue} is not closed, so it has no close to audit."
+        raise CloseUnreadableError(message)
+    comments = json.loads(_gh(f"{close_endpoint(issue)}/comments", "--paginate"))
+    chosen = select_close(comments if isinstance(comments, list) else [], closed_at)
+    if chosen is None:
+        message = f"#{issue} closed at {closed_at} with no comment written at or before that."
+        raise CloseUnreadableError(message)
+    return str(chosen.get("body") or ""), (
+        f"github comment={chosen.get('id')} at={chosen.get('created_at')}"
+    )
+
+
+def read_close(args: argparse.Namespace) -> tuple[str, str]:
+    """Read the close this audit is over: a file where one is named, else GitHub.
+
+    The file is the offline seam. It is what the unit tier drives, what replays a recorded
+    case as a fixture, and what lets an audit be run against a close a human is still
+    drafting.
+    """
+    if args.close_file:
+        path = Path(args.close_file).expanduser()
+        return path.read_text(encoding="utf-8"), f"file={path}"
+    return fetch_close(args.issue)
+
+
 # ------------------------------------------------------------------------------------ CLI
 
 
@@ -998,8 +1569,24 @@ def status_lines(store: Store) -> tuple[str, ...]:
     return tuple(lines)
 
 
+def add_audit_arguments(verb: argparse.ArgumentParser) -> None:
+    """Add the seams an audit reads through, shared by `audit` and `record --from-audit`.
+
+    One definition rather than two, because `record --from-audit` runs the same audit and
+    must be pointable at the same close, the same checkout and the same dispatch records.
+    A drift between the two would make the record fill from an audit nobody printed.
+    """
+    verb.add_argument("--close-file", default="", help="the close to audit; else read from gh")
+    verb.add_argument(
+        "--dispatch-dir",
+        type=Path,
+        default=Path(os.environ.get("CTI_DISPATCH_DIR", str(ledger.DISPATCH_ROOT))),
+    )
+    verb.add_argument("--ref", default=AUDIT_REF, help="the branch a landing must be on")
+
+
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """Five verbs: print the bar, read every route, read one, add an assessment, clear one."""
+    """Six verbs: the bar, every route, one route, an audit, an assessment, a reset."""
     parser = argparse.ArgumentParser(prog="admission", description=__doc__)
     # `CTI_ADMISSION_DIR` lets a test exercise the recipe, and `just dispatch`'s own seam,
     # without writing to this box's real admission records.
@@ -1014,6 +1601,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 
     verbs.add_parser("bar", help="the bar as ruled, printed")
     verbs.add_parser("status", help="every foreign route and its standing")
+
+    audit_verb = verbs.add_parser("audit", help="compute what a close's Part A claims can be")
+    audit_verb.add_argument("--issue", type=int, required=True)
+    audit_verb.add_argument("--repo", type=Path, default=Path.cwd())
+    add_audit_arguments(audit_verb)
 
     for name, help_text in (
         ("check", "the pre-dispatch read for one route, as an exit code"),
@@ -1048,6 +1640,12 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         )
         verb.add_argument("--citations-resolved", type=int, default=0)
         verb.add_argument("--citations-total", type=int, default=0)
+        verb.add_argument(
+            "--from-audit",
+            action="store_true",
+            help="run the audit and fill the criteria it computes; the rest stay required",
+        )
+        add_audit_arguments(verb)
     return parser.parse_args(argv)
 
 
@@ -1203,6 +1801,69 @@ def _crosscheck_refusal(args: argparse.Namespace, assessment: Assessment) -> Ref
     )
 
 
+def run_audit_for(args: argparse.Namespace) -> tuple[Audit | None, Refusal | None]:
+    """Run one audit over the close `args` points at, refusing where the close cannot be read."""
+    try:
+        close, source = read_close(args)
+    except (CloseUnreadableError, OSError) as unreadable:
+        return None, Refusal(
+            "close_unreadable",
+            (f"issue={args.issue}", f"detail={unreadable}"),
+            (
+                "Pass --close-file with the close to audit, or make `gh` able to read it. "
+                "An audit over a close nobody read is not an audit."
+            ),
+        )
+    return audit(
+        Path(args.repo).expanduser(),
+        args.issue,
+        close,
+        dispatch_root=Path(args.dispatch_dir).expanduser(),
+        source=source,
+        ref=args.ref,
+    ), None
+
+
+def run_audit(args: argparse.Namespace) -> int:
+    """Compute the close audit and print it. Nothing is written and nothing is recorded.
+
+    Its output is evidence *for* a `just admission record` invocation; the record stays a
+    deliberate act by whoever is willing to assert the criteria this audit could not
+    compute. Exit zero whatever the verdicts are — an audit that found `outside_window` ran
+    correctly, and an exit code would turn its findings into a gate nobody asked for.
+    """
+    result, refusal = run_audit_for(args)
+    if refusal is not None or result is None:
+        return emit_lines(refusal.lines() if refusal else (), EXIT_REFUSED)
+    return emit_lines(result.lines())
+
+
+def _fill_from_audit(args: argparse.Namespace) -> tuple[tuple[str, ...], Refusal | None]:
+    """Fill the criteria the audit computes onto `args`, and say which it filled.
+
+    An explicit flag on the command line always wins: `--from-audit` is a convenience over
+    the reading a human would otherwise do by hand, never an override of one they did. The
+    SHA is filled the same way, so the cross-check runs against the commit the audit
+    actually held against the window.
+    """
+    result, refusal = run_audit_for(args)
+    if refusal is not None or result is None:
+        return (), refusal
+    filled: list[str] = []
+    for key, state in criteria_from_audit(result):
+        if getattr(args, key, ""):
+            continue
+        setattr(args, key, state)
+        filled.append(f"{key}={state}")
+    if result.sha and not args.sha:
+        args.sha = result.sha
+        filled.append(f"sha={result.sha}")
+    if result.dispatch_id and not args.dispatch:
+        args.dispatch = result.dispatch_id
+        filled.append(f"dispatch={result.dispatch_id}")
+    return (f"audit={result.source}", *(f"from_audit={item}" for item in filled)), None
+
+
 def run_record(args: argparse.Namespace) -> int:
     """Add one assessment, refusing every part of it this bar will not invent."""
     bar = SEAT_BARS.get(args.seat, "")
@@ -1215,9 +1876,14 @@ def run_record(args: argparse.Namespace) -> int:
             ).lines(),
             EXIT_REFUSED,
         )
+    filled: tuple[str, ...] = ()
+    if args.from_audit:
+        filled, refusal = _fill_from_audit(args)
+        if refusal is not None:
+            return emit_lines(refusal.lines(), EXIT_REFUSED)
     assessment, refusal = build_assessment(args, bar, _now(args))
     if refusal is not None or assessment is None:
-        return emit_lines(refusal.lines() if refusal else (), EXIT_REFUSED)
+        return emit_lines((*filled, *(refusal.lines() if refusal else ())), EXIT_REFUSED)
     if bar == GATE_BAR:
         refusal = _crosscheck_refusal(args, assessment)
         if refusal is not None:
@@ -1226,7 +1892,7 @@ def run_record(args: argparse.Namespace) -> int:
     before, after, refusal = append(_store(args), args.lane, args.profile, args.seat, assessment)
     if refusal is not None:
         return emit_lines(refusal.lines(), EXIT_REFUSED)
-    lines = [f"issue={args.issue}", after.line()]
+    lines = [*filled, f"issue={args.issue}", after.line()]
     if after.state != before.state:
         lines.append(f"transition={before.state}->{after.state}")
     lines.extend(after.detail)
@@ -1246,6 +1912,7 @@ def main(argv: list[str] | None = None) -> int:
         "bar": run_bar,
         "status": run_status,
         "check": run_check,
+        "audit": run_audit,
         "record": run_record,
         "reset": run_reset,
     }

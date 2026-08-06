@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`just admission audit --issue N` computes the close audit the bar today asks an agent to
+  assert.** `just admission record` demands a choice on every Part A criterion and cross-checks two
+  of them against git in the refusing direction only; everything else is asserted by whoever runs
+  it, which for a Claude-lane issue means the orchestrator reading a close against a landing by
+  hand. Most of that is now computed: six checks over the issue's closing comment, printed as
+  evidence for a `record` invocation that stays a deliberate act.
+
+  The checks are whether the close names a commit on `origin/main`; whether that commit falls inside
+  its dispatch's window; whether the landing touched an in-world surface and so owes a pool verdict;
+  whether every evidence path quoted exists and its `pool.json` reads green; whether a gate block is
+  quoted at all; and the changelog. The window tests are `tools/ledger.py`'s — descends from the
+  dispatch's base, postdates the dispatch's own start — and are called rather than copied, with a
+  unit test that reds if a second implementation appears. `pool.json`'s green reading is
+  `tools/pool_merge.py`'s for the same reason.
+
+  Two answers are deliberately weak, and both are refusals to overclaim. A quoted gate block is
+  reported `quoted` and never as proof the gate ran green: the paste is the evidence and no tool can
+  re-run history. The changelog check reports `undecidable` and has no input that makes it report
+  `ok`, because whether a commit had user-visible effect is not decidable from its diff — a check
+  that could not run is not a check that passed.
+
+  The audit records nothing and exits zero whatever it found, since a verdict here is a finding to
+  read rather than a gate. `record --from-audit` fills the two criteria the audit computes and
+  leaves every other one a required choice with no default, so the bar's no-default discipline
+  survives the automation. A `--close-file` seam reads a close from disk instead of from `gh`.
+
+- The ledger's landing answer now carries every commit in a dispatch's window alongside the tip it
+  already named, so a caller asking whether one quoted SHA belongs to a dispatch can be answered
+  without re-deriving the window. The ledger's own row is unchanged.
+
 ### Fixed
 
 - **A denial that could not read a command no longer accuses it of bypassing a hook.** The commit

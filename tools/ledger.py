@@ -435,11 +435,22 @@ class EndState(NamedTuple):
 
 
 class Landing(NamedTuple):
-    """What git says about the dispatch's issue landing on `origin/main`."""
+    """What git says about the dispatch's issue landing on `origin/main`.
+
+    `shas` is every commit that cleared all three tests, newest first, where `sha` is
+    only the newest of them. The row names the tip because that is what a reader wants
+    to `git show`; the list exists for a caller asking *membership* rather than "which
+    one" — `just admission audit` holds a SHA quoted in a close against this window, and
+    a caller that had only the tip would have to re-derive the window to answer it
+    (#252). Deliberately absent from `document()`: the row's schema names the tip and
+    the count, and widening it here would change the ledger's shape for a question the
+    row does not ask.
+    """
 
     sha: str | None
     commits: int
     reason: str
+    shas: tuple[str, ...] = ()
 
     def document(self) -> dict[str, Any]:
         """Render the row's landing block."""
@@ -919,6 +930,7 @@ def landed(
         matched[0],
         len(matched),
         f"referenced by {len(matched)} commit(s) on {ref} after {floor.isoformat()}",
+        tuple(matched),
     )
 
 

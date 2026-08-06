@@ -496,6 +496,7 @@ queue *args:
 #   just admission bar                       the bar as ruled, printed
 #   just admission status                    every foreign route, and what it has accrued
 #   just admission check --lane zai --profile zai-glm52-max --seat implementer
+#   just admission audit --issue N           compute what a close's Part A claims can be
 #   just admission record --lane … --seat … --issue N …   one issue's assessment
 #   just admission reset --lane … --seat … --force        the human act after an escalation
 #
@@ -519,6 +520,23 @@ queue *args:
 # them are cross-checked against git in the refusing direction only: a landing that
 # touched an in-world surface may not have its corpus criterion waived, and one that
 # edited an acceptance spec or a generated file may not record the hooks as clean.
+#
+# `audit` computes what the rest of that assertion can be (#252). Six checks over the
+# issue's closing comment — that it names a commit on `origin/main`; that the commit
+# falls inside its dispatch's window, by `tools/ledger.py`'s own tests rather than a
+# second copy of them; whether the landing touched an in-world surface and so owes a
+# pool verdict; whether every evidence path it quotes exists and reads green; whether a
+# gate block is quoted at all; and the changelog, which it refuses to decide. It reads
+# the close off `gh`, or off `--close-file`. It computes, prints and cites; it records
+# nothing, and it exits zero whatever it found, because a verdict here is a finding to
+# read rather than a gate. Two of its answers are deliberately weak: a quoted gate block
+# is `quoted` and never proof the gate ran green, since the paste is the evidence and no
+# tool can re-run history; and the changelog is `undecidable` and has no input that makes
+# it `ok`, because a check that could not run is not a check that passed.
+#
+# `record --from-audit` runs that audit and fills the two criteria it computes, leaving
+# every other one a required choice with no default — so the discipline above survives
+# the automation rather than being replaced by it.
 #
 # `just dispatch` reads the standing before it plans anything, and refuses only the
 # ruling's far end: a profile that has spent both attempts. Probation dispatches
