@@ -143,8 +143,36 @@ def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
     # box's network. `--issue-body` is the surface triage uses on a draft; here it is the
     # surface that keeps the tier offline.
     env["CTI_READINESS_BODY"] = str(READY_BODY)
+    # And once more for the dispatch policy (#250). A seam run must read a policy this test
+    # wrote, never this box's real freeze — and it must read *a* policy, because an absent one
+    # refuses rather than reading as open. `CTI_QUEUE_ROOT` points the in-flight derivation at
+    # an empty tree, so the count is this test's and not whatever is in flight on the box.
+    env["CTI_QUEUE_DIR"] = str(open_policy(tmp_path))
+    env["CTI_QUEUE_ROOT"] = str(tmp_path / "queue-root")
     env.update(extra)
     return env
+
+
+def open_policy(tmp_path: Path, limit: int = 9, packages: list[dict] | None = None) -> Path:
+    """Write a policy of this test's own: dispatch open, and a limit nothing here reaches."""
+    directory = tmp_path / "queue"
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "policy.json").write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "freeze": {"state": "open", "since": "2026-08-06T00:00:00Z", "ruling": "a test"},
+                "wip_limit": {
+                    "value": limit,
+                    "since": "2026-08-06T00:00:00Z",
+                    "ruling": "a test",
+                },
+                "packages": packages or [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return directory
 
 
 def run_seam(args: list[str], env: dict[str, str]) -> subprocess.CompletedProcess[str]:
@@ -208,6 +236,8 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "breaker_dir": str(tmp_path / "breaker"),
         "admission_dir": str(tmp_path / "admission"),
         "issue_body": str(READY_BODY),
+        "queue_dir": str(open_policy(tmp_path)),
+        "queue_root": str(tmp_path / "queue-root"),
     }
     request.update(overrides)
     args = _namespace(**request)
@@ -651,6 +681,8 @@ def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path)
         breaker_dir=str(tmp_path / "breaker"),
         admission_dir=str(tmp_path / "admission"),
         issue_body=str(READY_BODY),
+        queue_dir=str(open_policy(tmp_path)),
+        queue_root=str(tmp_path / "queue-root"),
     )
     _, _, refusal = dispatch.plan_dispatch(args, REPO, datetime.now(tz=UTC))
     assert refusal is not None

@@ -431,6 +431,58 @@ watch-report *args:
 breaker *args:
     uv run python tools/breaker.py {{ args }}
 
+# The dispatch queue as data: the human's freeze, WIP limit and carve-outs in a
+# file a running session reads (#250, ADR-0049). No Arma, no lock, no turn held
+# open. Design: docs/orchestration-design.md §2.
+#
+#   just queue state                     every entry with its ruling, the in-flight list, the count
+#   just queue next [--count N]          the next dispatchable issue(s) with the derivation
+#   just queue check --issue N           one issue, as an exit code — the pre-dispatch read
+#   just queue freeze --ruling "..."     record a freeze
+#   just queue open   --ruling "..."     record it lifting
+#   just queue wip --limit 3 --ruling "..."
+#   just queue package add --name "..." --issues 221-230 --exempt-freeze --reserve 2 --ruling "..."
+#   just queue package drop --name "..." --ruling "..."
+#
+# The queue is a **derived view**, not a copy of the tracker: candidates come from
+# `gh issue list --label ready-for-agent` live, in-flight is derived from the box,
+# and the file carries only what GitHub cannot — the freeze, the carve-out
+# packages, the WIP limit and the reservations, which are the human's rulings and
+# live nowhere machine-readable today.
+#
+# **Every entry quotes the ruling it came from and a write without `--ruling` is
+# refused**, which is `just admission record`'s no-default discipline applied to the
+# one surface whose scheduling rules have no provenance. The file is never
+# hand-edited: an unknown key, a missing ruling or a malformed entry refuses
+# `policy_invalid`, and an absent file refuses `policy_absent` rather than reading
+# as open — a policy nobody can read is not a policy that permits.
+#
+# `just dispatch` reads `check` before it plans anything, below the readiness
+# rung and above the admission bar, the breaker and the off-peak rule — readiness
+# first because an unready issue can be made ready this minute, and a freeze is
+# the one refusal whose remedy only the human can start. That is the point of the
+# whole file: a
+# freeze read **per dispatch** reaches an orchestrator session already running,
+# which a freeze recorded on an issue and in memory does not (ADR-0042's stale-copy
+# window, one level up; the human's caveat on #217, 2026-08-05T17:12Z). There is no
+# flag and no environment variable that dispatches through it, because the freeze is
+# the human's and only they amend it, and the refusal **carries no failure class** —
+# nothing was found about any provider, any lane or any code.
+#
+# The in-flight count is a **floor** and the tool says so by printing the list it
+# derived: `issue-<N>` worktrees plus dispatch records with no `result.json`, union
+# by issue, minus what GitHub reports closed (reported separately as `just worktree
+# done` owed). `agent-<hex>` trees are excluded by name — 93 registrations against 6
+# dispatch records, measured for #242 — so neither source alone is a WIP signal.
+#
+# **It selects and prints; it never dispatches** (ADR-0053), the same reason
+# `just watch` never messages the agent it watched.
+#
+# Refusals: dispatch_frozen, wip_reached, surface_conflict, no_ready_issue,
+# policy_invalid, policy_absent, ruling_required.
+queue *args:
+    uv run python tools/queue_policy.py {{ args }}
+
 # The pre-registered admission bar, as the thing that decides rather than as prose
 # (#224, ADR-0061 Decision 6). No Arma, no lock, no turn held open.
 #

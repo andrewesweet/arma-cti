@@ -26,6 +26,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just queue`: the dispatch queue as data, and the freeze as a rung a running session reads.**
+  The human's freeze, the ruled WIP limit, the carve-out packages and their reservations now live
+  in `~/.arma-cti/queue/policy.json` with a `transitions.jsonl` beside it, outside every worktree,
+  on the same state-document-plus-journal pattern the breaker and the admission bar already use.
+  `just dispatch` reads it **per dispatch**, below the readiness rung and above the admission bar,
+  the breaker and the off-peak rule.
+
+  That per-dispatch read is the whole point. A freeze recorded in an issue comment and in session
+  memory does not reach an orchestrator session already running; a freeze in a file read at
+  dispatch time does. The refusal follows the off-peak rule's precedent exactly, including the part
+  that is easy to get wrong: **it carries no failure class**, because nothing was found about any
+  provider, any lane or any code. There is no flag and no environment variable that dispatches
+  through it, because the freeze is the human's and only they amend it.
+
+  The file carries only what GitHub cannot, and **every entry quotes the ruling it came from** — a
+  write without `--ruling` is refused, and a read that finds an entry without one refuses
+  `policy_invalid` rather than reading as permission. An absent policy refuses too: a box where
+  nobody has recorded a freeze state is not a box where dispatch is open.
+
+  Reading it: `just queue state` prints every entry with its ruling and the in-flight list;
+  `just queue next` prints the next candidate with its whole derivation or a named refusal;
+  `just queue check --issue N` is the pre-dispatch read as an exit code. The in-flight set is
+  derived from the box — `issue-<N>` worktrees plus dispatch records with no result — never
+  counted by hand, and because an agent can start work without touching either, the count is a
+  **floor** and the tool says so by printing the list it derived. The harness's own `agent-<hex>`
+  trees are excluded by name: 93 registrations against 6 dispatch records, measured on this box.
+
+  It selects and prints; it never dispatches.
+
 - **A design for taking rule-based coordination out of the orchestrator's head and into files.**
   `docs/orchestration-design.md` factors dispatch routing, claim verification, stall handling and
   crash recovery into four tool halves — a queue the scheduler reads, a composed dispatch briefing,

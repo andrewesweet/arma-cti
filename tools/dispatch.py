@@ -100,6 +100,15 @@ refuses with `provider_refused` and escalates. Neither is invented here — both
 by itself. What it does write is the other direction: when a dispatched run ends, its
 own log is classified and fed back to the breaker, which is how a 429 trips a lane on a
 provider that publishes no quota state.
+
+**The dispatch policy is read before anything is planned** (#250). The human's freeze, the
+carve-out packages, the ruled WIP limit and its reservations live in
+`~/.arma-cti/queue/policy.json` and are read *per dispatch* by `tools/queue.py`, which is
+what makes a freeze reach a session already running rather than only a session that starts
+after it — ADR-0042's stale-copy window, closed one level up. The refusal follows the
+off-peak rung's precedent exactly, override and failure class included: there is no flag and
+no environment variable that dispatches through a freeze, and the refusal **carries no
+failure class**, because nothing was found about any provider, any lane or any code.
 """
 
 from __future__ import annotations
@@ -125,6 +134,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import admission
 import breaker
 import hook_parity
+import queue_policy
 import readiness
 
 if TYPE_CHECKING:
@@ -1040,7 +1050,47 @@ def _codex_hook_argv(project_dir: Path) -> tuple[str, ...]:
     return tuple(part for override in overrides for part in ("--config", override))
 
 
-def ladder_refusal(args: argparse.Namespace, now: datetime, found: Readiness) -> Refusal | None:
+def queue_refusal(args: argparse.Namespace, root: Path) -> Refusal | None:
+    """Read the human's dispatch policy before anything is planned (#250).
+
+    The freeze, the ruled WIP limit and the carve-out reservations live in a file outside
+    every worktree and are read **per dispatch**, which is what makes a freeze reach a session
+    already running — ADR-0042's stale-copy window, closed one level up (`docs/orchestration-
+    design.md` §2). An absent or unparseable policy refuses too: a policy nobody can read is
+    not a policy that permits, on #41's shape.
+
+    **No override of any kind**, exactly as `off_peak_refusal` has none: no flag, no
+    environment variable, no per-dispatch exemption. The two directory options this reads are
+    test seams for *where the state lives*, the same seams `CTI_BREAKER_DIR` and
+    `CTI_ADMISSION_DIR` already are, and neither can turn a recorded freeze into a dispatch.
+
+    **No failure class**, and the reasoning is the off-peak rung's: CLAUDE.md's table types
+    what a run *found*, and this found nothing about any provider, any lane or any code. This
+    project declined to start work now.
+    """
+    store = queue_policy.Store(directory=Path(args.queue_dir).expanduser())
+    policy, refusal = queue_policy.read_policy(store)
+    if refusal is not None or policy is None:
+        return _as_refusal(refusal)
+    scan_root = Path(args.queue_root).expanduser() if args.queue_root else root
+    in_flight = queue_policy.gather(scan_root, Path(args.dispatch_dir).expanduser())
+    return _as_refusal(
+        queue_policy.check_refusal(
+            policy, args.issue, in_flight, queue_policy.surfaces_of(in_flight)
+        )
+    )
+
+
+def _as_refusal(found: queue_policy.Refusal | None) -> Refusal | None:
+    """Carry the queue's refusal across, class and all, without restating any of its words."""
+    if found is None:
+        return None
+    return Refusal(found.kind, found.found, found.action, failure_class=found.failure_class)
+
+
+def ladder_refusal(
+    args: argparse.Namespace, now: datetime, found: Readiness, root: Path
+) -> Refusal | None:
     """Climb the rungs a dispatch must clear before anything is planned, and stop at the first.
 
     The order is one idea: **the refusal that lasts longest is the one worth hearing.**
@@ -1048,7 +1098,12 @@ def ladder_refusal(args: argparse.Namespace, now: datetime, found: Readiness) ->
     Readiness comes next, on both halves of that reasoning: an unready issue is a property
     of the request rather than of the world, and it is the only rung here that no clock and
     no provider will ever clear — it reopens when a person edits the issue, and not before.
-    Then admission, which reopens only when a human decides it should; then the breaker,
+    Then the queue policy, whose refusals are the only others no change of lane, profile or
+    seat can clear — a dispatcher told to pick another lane and then met by a freeze has been
+    sent on an errand that could not have worked. It sits *below* readiness on readiness's
+    own criterion rather than above it: an unready issue can be made ready this minute, and a
+    freeze is the one refusal here whose remedy nobody but the human can start. Then
+    admission, which reopens only when a human decides it should; then the breaker,
     which reopens on a published window boundary or on evidence; then the off-peak rule,
     which reopens on a clock within four hours with nothing for anyone to do meanwhile.
     Told about the clock first, a dispatcher would come back when the band lifted to meet
@@ -1062,6 +1117,9 @@ def ladder_refusal(args: argparse.Namespace, now: datetime, found: Readiness) ->
     if refusal is not None:
         return refusal
     refusal = readiness_refusal(args.issue, found)
+    if refusal is not None:
+        return refusal
+    refusal = queue_refusal(args, root)
     if refusal is not None:
         return refusal
     refusal = admission_refusal(
@@ -1082,7 +1140,7 @@ def plan_dispatch(
 ) -> tuple[Plan | None, str, Refusal | None]:
     """Validate the request and mint the plan and the brief, writing nothing."""
     found = read_issue(args.issue, args.issue_body)
-    refusal = ladder_refusal(args, now, found)
+    refusal = ladder_refusal(args, now, found, root)
     if refusal is not None:
         return None, "", refusal
 
@@ -1364,6 +1422,15 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         default=os.environ.get("CTI_READINESS_BODY", ""),
         help="read the issue body from this file instead of asking gh",
     )
+    # `CTI_QUEUE_DIR` and `CTI_QUEUE_ROOT` are the same seam again (#250): the recorded policy
+    # and the tree scan the in-flight count is derived from. They move *where the state is
+    # read*, which is what a forked seam test needs; neither is an override, and there is no
+    # option anywhere here that dispatches through a recorded freeze.
+    parser.add_argument(
+        "--queue-dir",
+        default=os.environ.get("CTI_QUEUE_DIR", str(queue_policy.DEFAULT_QUEUE_DIR)),
+    )
+    parser.add_argument("--queue-root", default=os.environ.get("CTI_QUEUE_ROOT", ""))
     parser.add_argument("--list", action="store_true", help="print the registry and exit")
     parser.add_argument(
         "--readiness",
