@@ -84,6 +84,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a thread whose nearest comment is nowhere near its close is a case a reader must see rather than
   one the tool should guess at.
 
+- **`just admission trial` records the orchestration seat's pre-registered trial (#242 ruling 1, on
+  #260).** The opus/high orchestration loop was adopted on the gate argument, not the budget one, and
+  adopted as a pre-registered trial in #219's and #224's shape — a bar settled in advance so the
+  numbers cannot move once they are in. Ten consecutive dispatch cycles, failing on any one of five
+  criteria the human pre-registered; the first miss ends it, with no allowance.
+
+  It rides the admission machinery's shape but is **not the route bar and not a dispatch gate**.
+  `just dispatch` does not consult it and does not refuse on it. A failed trial records and reports
+  but never auto-reverts the seat and carries no failure class — it is a finding for the human, who
+  rules on whether the seat reverts, so the verdict names no provider, lane or code under test.
+
+  The clock starts at an explicit `trial-start` act naming the date, not at the tool's existence, so
+  `not_started` is a state distinct from `0/10`. Three of the five criteria are computed against
+  artefacts that exist — a freeze the queue policy recorded, a landing inside its dispatch's window,
+  a gated sign-off surface edited without approval or an ADR-0013 record — and two are the human's
+  alone, never filled from an audit. The bar is immutable once the first assessment lands: amending
+  the criteria means minting a new bar id, clearing the trial and starting fresh.
+
+  `just watch-report` carries the trial's one line when it has failed and is silent while it is
+  clean, the same tradition as the lane breakers. `trial-audit` computes the mechanical three a
+  recorder reads before asserting the two hand ones; `trial-record --from-audit` fills those three
+  where the artefacts decide and leaves the rest a required choice with no default.
+
 - The ledger's landing answer now carries every commit in a dispatch's window alongside the tip it
   already named, so a caller asking whether one quoted SHA belongs to a dispatch can be answered
   without re-deriving the window. The ledger's own row is unchanged.

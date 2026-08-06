@@ -393,6 +393,9 @@ watch name worktree subject="pool" *args:
 watch-report *args:
     uv run python tools/breaker.py report
     uv run python tools/stall_watch.py report {{ args }}
+    # The orchestration-seat trial (#260): one line when it has failed, silent while clean.
+    # Not a gate — it reports — and it reads `CTI_ADMISSION_DIR`, the same seam the records use.
+    uv run python tools/admission.py trial-report
 
 # The recovery runbook's two computable procedures (#253, orchestration-design §4).
 # No Arma, no lock, no turn held open; both verbs are reads and neither writes
