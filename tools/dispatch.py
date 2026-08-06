@@ -112,6 +112,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 # The path insert above is what makes these importable.
 import admission
 import breaker
+import hook_parity
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping
@@ -190,6 +191,12 @@ class Lane(NamedTuple):
     # that we have chosen to dispatch only inside it. A lane with no ruling dispatches at
     # any hour and is still priced by its schedule if it has one.
     off_peak_only: bool = False
+    # Which command line the runner speaks. Two lanes can share a binary (`claude-native`
+    # and `zai` both drive `claude`) and two binaries do not share a flag vocabulary, so
+    # the family — not the binary name — is what `build_argv` dispatches on. Adding a
+    # third Claude-shaped lane changes nothing here; adding a differently-shaped runner
+    # adds one builder and one family name, which is the only place the difference lives.
+    runner_family: str = "claude"
 
 
 class Profile(NamedTuple):
@@ -244,6 +251,28 @@ LANES: Final[dict[str, Lane]] = {
         # dispatch-time refusal rather than as guidance. Only the human amends it.
         off_peak_only=True,
     ),
+    "codex": Lane(
+        name="codex",
+        runner="codex",
+        base_url="",
+        credential="",
+        model_slots=(),
+        foreign=True,
+        runner_family="codex",
+        note=(
+            "OpenAI's Codex CLI against the ChatGPT Plus subscription, permitted by the "
+            "human's 2026-08-06 ruling on #229. **No credential of ours and none on the "
+            "environment**: the CLI reads its own `~/.codex/auth.json` at mode 0600, so "
+            "this lane's credential column is empty for a different reason than "
+            "`claude-native`'s — there it is the box's Claude login, here it is the box's "
+            "ChatGPT login, and in neither case does `just dispatch` handle a secret. "
+            "The models are the two the authenticated catalogue lists as agentic coding "
+            "arms, verified from the CLI's own model cache rather than assumed (#243). "
+            "Not off-peak-ruled: OpenAI publishes no time-of-day discount, so there is no "
+            "band to price against and `plan_charge` is `None` here — an absence of terms, "
+            "never a multiplier of 1.0."
+        ),
+    ),
 }
 
 PROFILES: Final[dict[str, Profile]] = {
@@ -265,6 +294,33 @@ PROFILES: Final[dict[str, Profile]] = {
     # `--model opus` resolves to glm-5.2 and `--model haiku` to glm-4.7.
     "zai-glm52-max": Profile("zai-glm52-max", "zai", "opus", "max"),
     "zai-glm47-max": Profile("zai-glm47-max", "zai", "haiku", "max"),
+    # Four profiles on this lane, and the reason they are not one is the exact inverse of
+    # z.ai's. There, effort collapsed: two thinking budgets a factor of thirty apart were
+    # indistinguishable, so five names would have been five names for one arm. Here effort
+    # is a real dimension, measured the same way (#243,
+    # docs/research/codex-lane-live-findings.md §3): one non-memorised counting problem at
+    # `low` produced 484 reasoning tokens and at `xhigh` produced 2,393, a factor of 4.9 on
+    # identical input. So the registry carries levels, because levels decide something.
+    #
+    # The model slugs are the authenticated catalogue's own, read from the CLI's model
+    # cache rather than assumed from the human's shorthand: `gpt-5.6-sol` is the frontier
+    # agentic arm (catalogue default effort `low`), `gpt-5.6-terra` the balanced one
+    # (default `medium`). The catalogue publishes six levels for both — `low`, `medium`,
+    # `high`, `xhigh`, `max`, `ultra`.
+    #
+    # Two of the six are deliberately unregistered rather than forgotten. `ultra` is
+    # described by the provider as "maximum reasoning with automatic task delegation",
+    # which is a different execution model and not merely a deeper one — an arm that may
+    # spawn its own work is not something to hand a seat before it is understood. `max` is
+    # simply unmeasured here. Both remain one registry line away.
+    #
+    # Stated limit: the factor of 4.9 was measured on `terra`. `sol` inherits the same six
+    # published levels, and its profiles rest on that publication rather than on a second
+    # measurement.
+    "codex-sol-xhigh": Profile("codex-sol-xhigh", "codex", "gpt-5.6-sol", "xhigh"),
+    "codex-sol-high": Profile("codex-sol-high", "codex", "gpt-5.6-sol", "high"),
+    "codex-terra-medium": Profile("codex-terra-medium", "codex", "gpt-5.6-terra", "medium"),
+    "codex-terra-low": Profile("codex-terra-low", "codex", "gpt-5.6-terra", "low"),
 }
 
 # ADR-0061 Decision 2: eligibility is a property of the surface, not a per-task
@@ -754,13 +810,46 @@ def main_checkout(cwd: Path) -> Path:
     return cwd
 
 
-def build_argv(lane: Lane, profile: Profile, permission_mode: str) -> tuple[str, ...]:
+# Where a `codex` dispatch sends its telemetry. This is on **argv, per invocation**, and
+# not in `~/.codex/config.toml`, for the same reason `ANTHROPIC_BASE_URL` is not in a shell
+# profile: a box-wide setting makes a lane's behaviour a property of the machine. The
+# landed config file keeps `metrics_exporter = "none"` (#230), so a Codex run the human
+# starts by hand exports nothing anywhere — off-box or on — and only a dispatched one
+# exports, to loopback. Verified live (#243): all seven OTLP batches of the first Codex
+# turn arrived at a loopback sink and none reached the Statsig endpoint's host.
+#
+# The signal path is spelled out because Codex POSTs to the endpoint **verbatim** rather
+# than appending `/v1/metrics` to a base — measured by watching a sink receive every batch
+# on `/`, which the collector's OTLP receiver would have refused.
+CODEX_OTLP_METRICS: Final = "http://127.0.0.1:4318/v1/metrics"
+
+# How a Claude permission mode reads in Codex's vocabulary. `codex exec` has no
+# `--ask-for-approval` at all — it is non-interactive by construction — so the whole of the
+# mapping is the sandbox policy. `bypassPermissions` is the one mode that must name the
+# dangerous flag, because nothing milder in Codex's vocabulary means it.
+CODEX_SANDBOX: Final = {
+    "acceptEdits": ("--sandbox", "workspace-write"),
+    "plan": ("--sandbox", "read-only"),
+    "default": ("--sandbox", "read-only"),
+    "bypassPermissions": ("--dangerously-bypass-approvals-and-sandbox",),
+}
+
+
+def build_argv(
+    lane: Lane, profile: Profile, permission_mode: str, project_dir: Path
+) -> tuple[str, ...]:
     """Build the runner's argv, which carries no secret, because a secret on argv is in `ps`.
 
     The brief goes in on stdin for the same reason it is not a positional prompt: argv
     is world-readable on this box, and a brief quoting an issue is not something to
-    publish to every process table reader either.
+    publish to every process table reader either. Both families read it there: `claude
+    --print` and `codex exec` with no positional prompt both take the task on stdin.
+
+    Dispatching on `lane.runner_family` rather than on `lane.runner` is what keeps two
+    lanes that share the `claude` binary sharing one builder.
     """
+    if lane.runner_family == "codex":
+        return _codex_argv(lane, profile, permission_mode, project_dir)
     return (
         lane.runner,
         "--print",
@@ -771,6 +860,70 @@ def build_argv(lane: Lane, profile: Profile, permission_mode: str) -> tuple[str,
         "--permission-mode",
         permission_mode,
     )
+
+
+def _codex_argv(
+    lane: Lane, profile: Profile, permission_mode: str, project_dir: Path
+) -> tuple[str, ...]:
+    """Build `codex exec`'s argv: model, reasoning effort, sandbox, and loopback telemetry.
+
+    Three things differ from the Claude family beyond flag spelling, and each is a
+    measured property of the CLI rather than a preference:
+
+    - Effort is a **config override**, not a flag. There is no `--effort` on `codex exec`;
+      the level is `model_reasoning_effort`, set through `-c`.
+    - The metrics exporter is overridden here rather than configured on the box, so the
+      lane's telemetry travels with the dispatch. See `CODEX_OTLP_METRICS`.
+    - Hook trust is bypassed **for this invocation only**. Codex gates a newly seen or
+      edited hook behind an interactive "review required" prompt keyed on a stored hash,
+      which is the right default for a human at a terminal and a hang for a detached
+      child. The flag does not disable hooks — it declines to re-prompt for them — and the
+      hooks it then runs are this repository's own committed `.claude/hooks/`, already
+      governed by the gate that no session may edit them. Running *without* it would mean
+      a dispatch whose enforcement silently did not load, which is the failure ADR-0061
+      Decision 4 exists to prevent.
+
+    The hooks themselves ride on `-c` too, translated from `.claude/settings.json` by
+    `tools/hook_parity.py` — so a hook landed on `main` reaches this lane by being landed,
+    with no second copy to drift. A worktree whose settings carry no hooks contributes no
+    overrides, and `--dry-run` is where a caller sees what would be sent.
+    """
+    return (
+        lane.runner,
+        "exec",
+        "--skip-git-repo-check",
+        "--dangerously-bypass-hook-trust",
+        "--model",
+        profile.model,
+        "--config",
+        f'model_reasoning_effort="{profile.effort}"',
+        "--config",
+        _codex_metrics_override(),
+        *_codex_hook_argv(project_dir),
+        *CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"]),
+    )
+
+
+def _codex_metrics_override() -> str:
+    """Render the `-c` value that sends this dispatch's metrics to the loopback collector."""
+    exporter = f'{{ endpoint = "{CODEX_OTLP_METRICS}", protocol = "binary" }}'
+    return f"otel.metrics_exporter={{ otlp-http = {exporter} }}"
+
+
+def _codex_hook_argv(project_dir: Path) -> tuple[str, ...]:
+    """Translate this worktree's hook settings into `-c` overrides, or nothing if absent.
+
+    Absent settings are not an error here: `just dispatch --dry-run` is run against
+    scratch trees in the unit tier, and a tree with no `.claude/settings.json` has no
+    enforcement to carry rather than a broken one. What *would* be an error — a hook
+    configured but pointing at a script that is not there — is `Translation`'s to name,
+    and `prereqs` is where it is asked.
+    """
+    settings_path = project_dir / ".claude" / "settings.json"
+    if not settings_path.exists():
+        return ()
+    overrides = hook_parity.config_overrides(hook_parity.read_settings(settings_path), project_dir)
+    return tuple(part for override in overrides for part in ("--config", override))
 
 
 def ladder_refusal(args: argparse.Namespace, now: datetime) -> Refusal | None:
@@ -865,7 +1018,7 @@ def plan_dispatch(
         identity=identity,
         worktree=worktree,
         record=Path(args.dispatch_dir).expanduser() / dispatch_id,
-        argv=build_argv(lane, profile, args.permission_mode),
+        argv=build_argv(lane, profile, args.permission_mode, worktree),
         credentials=credentials,
         permission_mode=args.permission_mode,
         breaker_dir=breaker_dir,

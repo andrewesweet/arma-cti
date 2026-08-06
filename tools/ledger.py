@@ -201,12 +201,22 @@ CAP_FRACTION_ATTRIBUTION: Final = "dispatch_only"
 # Which pool a lane's dispatch spends against. A lane absent from this map gets no pool
 # and no estimate: booking an unrecognised lane against Claude at zero is exactly the
 # under-count that would make routing work off Claude look free.
-LANE_POOLS: Final = {"claude-native": "claude", "zai": "zai"}
+LANE_POOLS: Final = {"claude-native": "claude", "zai": "zai", "codex": "codex"}
 
 # Every pool has at least two windows and the row records all of them, because scarcity
 # routing — when ADR-0061 Decision 1's greedy rule is replaced — routes on whichever one
 # binds and not on an average.
-POOL_WINDOWS: Final = {"claude": ("five_hour", "seven_day"), "zai": ("five_hour", "seven_day")}
+POOL_WINDOWS: Final = {
+    "claude": ("five_hour", "seven_day"),
+    "zai": ("five_hour", "seven_day"),
+    # Codex's own vocabulary for its two windows is `primary` and `secondary`
+    # (`tools/breaker.py`'s `reading_from_codex_rate_limits`), and it is deliberately not
+    # used here. The names in this table are the *view's* names for "the short window" and
+    # "the long one", shared across pools so scarcity routing can compare them; the
+    # provider's names for the same two windows are its own. ChatGPT Plus meters a
+    # five-hour and a weekly window, so the shapes line up.
+    "codex": ("five_hour", "seven_day"),
+}
 
 EST_FROM_COUNTERS: Final = (
     "output_tokens / the window's measured tokens-per-point (#218's control arm)"
@@ -220,7 +230,23 @@ NO_ESTIMATOR: Final = {
         "are both known — the held tier is recorded in ~/.arma-cti/plan-tier.json and the "
         "band this dispatch fell in is recorded in its own dispatch.json `plan_charge` "
         "block (#225) — and the numerator is not: a prompt count. #226 owns supplying it"
-    )
+    ),
+    "codex": (
+        "no calibration experiment has been run for the Codex pool. #218's method — move a "
+        "known token volume and read the meter's displacement — is the precedent and it "
+        "applies unchanged here, but #243 deliberately did not spend one: a lane's first "
+        "day is the worst time to calibrate it, because the arm mix that will actually run "
+        "on it is not yet known. What is already available and what is still missing are "
+        "different from z.ai's case and worth stating separately. The **numerator is "
+        "present**: Codex reports `codex.turn.token_usage` with an `output_tokens` bucket "
+        "per turn, on the same OTel bus every other lane uses, so this dispatch's own "
+        "counters would feed an estimator the moment one existed. The **denominator is "
+        "missing**: how many output tokens make one percentage point of a ChatGPT Plus "
+        "five-hour or weekly window is unpublished and unmeasured. Until it is measured, "
+        "an estimate here would be a number with no unit. Note the asymmetry with the z.ai "
+        "pool, which has the denominator and lacks the numerator — the two pools are "
+        "unpriced for opposite reasons, and a single 'no estimator' would hide that"
+    ),
 }
 
 UNKNOWN_POOL: Final = (

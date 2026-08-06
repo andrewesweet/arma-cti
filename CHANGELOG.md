@@ -9,6 +9,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The Codex lane is registered, and its substrate was chosen on evidence rather than on the
+  expectation ADR-0061 recorded.** `just dispatch --lane codex` reaches the ChatGPT Plus
+  subscription through OpenAI's own Codex CLI, with four profiles over the two agentic coding
+  models the authenticated catalogue actually lists — `gpt-5.6-sol` and `gpt-5.6-terra`, read
+  from the CLI's own model cache rather than assumed from the shorthand the models are usually
+  called by.
+
+  The spike that chose it is in `docs/research/codex-lane-live-findings.md`. Three findings
+  decided it, and two of them invert what was expected. Effort is a **real dimension** on this
+  lane — one non-memorised counting problem produced 484 reasoning tokens at `low` and 2,393 at
+  `xhigh`, a factor of 4.9 — which is the exact opposite of z.ai, where two budgets a factor of
+  thirty apart were indistinguishable and five effort levels collapsed to one profile. Telemetry
+  parity turned out to need **no engineering at all**: Codex's OTel resource block honours
+  `OTEL_RESOURCE_ATTRIBUTES`, the same mechanism every other lane already uses, so a dispatch's
+  six `cti.*` attributes reach the collector's `cti.dispatch_id` filter unchanged. And hook
+  parity is **proven rather than reachable**: Codex sends Claude Code's own payload shape, down
+  to reporting `tool_name: "Bash"` rather than its internal `shell`, so not one of the eight
+  committed hooks in `.claude/hooks/` needed editing.
+
+  `tools/hook_parity.py` carries `.claude/settings.json`'s hook table onto the lane per
+  invocation, and `tests/unit/test_hook_parity.py` is ADR-0061 Decision 4's parity suite —
+  which runs the real committed hook scripts against the payload a live Codex turn was observed
+  to send, because the ADR names "asserting on its own mock" as the way such a suite lies.
+
+  Two settings are deliberately per-invocation rather than written to the box. The metrics
+  exporter is overridden on argv, so `~/.codex/config.toml` keeps `metrics_exporter = "none"`
+  and a Codex session the human starts by hand still exports nothing anywhere. The hook table
+  travels the same way, so a hook landed on `main` reaches this lane by being landed, with no
+  second copy to drift. The ledger prices the pool `no-estimator`, typed like z.ai's — but for
+  the opposite reason, recorded as such: Codex supplies the numerator and withholds the
+  denominator, z.ai the reverse. #243, refs #221, #229, #234, #225, ADR-0061.
+
 - **The cross-provider review seat now has a shape, and it is a shape a machine can count.**
   `tools/dispatch.py` has carried `"review": True` since #223 without ever being dispatched.
   `docs/review-dispatch.md` says what a review dispatch is handed (a landed SHA, its issue,
