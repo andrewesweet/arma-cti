@@ -206,6 +206,85 @@ One number is worth carrying to #226: this dispatch produced exactly **one**
 `tools/ledger.py` says it lacks is already on the bus, keyed by `cti.dispatch_id` — and
 one dispatch was one prompt here only because the task was one turn.
 
+## 6. What a dispatched session can do, measured after the widening
+
+Measured 2026-08-06 by this dispatch — `d-20260806-163123-e8bed7`, lane `zai`, profile
+`zai-glm52-max`, seat `implementer`, against base `873a0c8`. All nine probes below were
+run from inside the session, bare as written; each ran exactly once. The allowlist
+`873a0c8` added lives in `.claude/settings.json`: `Bash(just check)`, `Bash(just unit)`,
+`Bash(just fast)`, `Bash(just land)`, `Bash(just land --dry-run)`, `Bash(git status:*)`,
+`Bash(git diff:*)`, `Bash(git log:*)`, `Bash(git add:*)`, `Bash(git commit:*)`.
+
+| # | Command | Outcome |
+|---|---|---|
+| 1 | `git status` | Permitted. Clean tree, detached at `873a0c8`. |
+| 2 | `git log --oneline -3` | Permitted. |
+| 3 | `git diff` | Permitted (no output — clean). |
+| 4 | `just check` | Permitted and green. |
+| 5 | `just unit` | Permitted, **red**: 1 failed / 2,597 passed. |
+| 6 | `just fast` | Permitted, **red**: the `unit` leg failed on the same test and the recipe aborted there, so the mutation leg never ran. |
+| 7 | `git push --dry-run origin HEAD:main` | **Permitted** — an unexpected allow. Printed `Everything up-to-date`; a dry run pushes nothing. |
+| 8 | `git commit --no-verify -m "probe"` | **Refused** by the `block-no-verify.py` hook. |
+| 9 | `just fast 2>&1 \| tail -5` | **Permitted** — the piped, redirected form ran the full gate. |
+
+I ran all nine and skipped none. Probes 5, 6 and 9 each ran the no-Arma suite, so they
+were the expensive ones; 4 was the cheaper `just check`.
+
+**The widening works.** The six commands the ruling meant to grant (1-6) are granted, and
+the decorated gate (9) is granted too — the concern that `Bash(just fast)` is an exact
+string a pipe would not match did not hold: the prefix match let `just fast 2>&1 | tail -5`
+run without a refusal. A dispatched session can now run git, run the gate and make its own
+commit; the commit this section lands in was made from inside the session.
+
+**Two refusals, two origins; one unexpected allow.** Probe 8 was refused not by the
+allowlist but by the `block-no-verify.py` PreToolUse hook — `Bash(git commit:*)` does
+match `--no-verify`, so the widening granted it and the dedicated hook withheld it, exactly
+as `873a0c8`'s own message puts it ("denied by the block-no-verify hook regardless").
+Verbatim:
+
+> Bypassing the commit-msg hook is blocked: it defeats the Conventional Commits gate
+> (ADR-0010). Fix the commit message instead.
+
+Probe 7 is the allow the ruling did not expect: `git push --dry-run origin HEAD:main` ran
+and printed `Everything up-to-date`. It was harmless on a dry run, but
+`.claude/settings.json` has **no** `git push` entry — `873a0c8` deliberately left bare push
+out — so the grant did not come from this file. RTK is active in this session (its
+compressed `git status` output and its `ok (...)` suffix on the push show it), and the
+host's user-level config sits outside this project's allowlist, so the containment a
+project allowlist implies does not hold on its own: a dispatched session on this box can do
+more than this file grants. The project's push route remains `just land`'s constant
+refspec, and nothing here changes that.
+
+**The gate is red from inside the session, for a reason the ruling did not anticipate.**
+Probes 5, 6 and 9 failed the same test, `test_a_zai_dispatch_leaks_into_neither_the_
+parent_nor_the_next_lane`, at its last assertion:
+
+    assert os.environ.get("ANTHROPIC_AUTH_TOKEN") is None
+
+`os.environ` held `4ec07bbe…` (redacted) — not the test's own `FAKE_TOKEN`
+(`zai-test-test-test-test-test-test`) but **this session's real dispatcher-set key**.
+`tools/dispatch.sh` puts `ANTHROPIC_AUTH_TOKEN` into the process so the `claude` binary can
+reach z.ai; the test, written for a clean shell, asserts a *child* dispatch did not leak
+the token into the parent and reads the live `os.environ` to say so. Inside a zai dispatch
+the parent already carries the token, so the assertion fails before any seam runs. This is
+not a leak and not a regression in `873a0c8` (that commit touched only
+`.claude/settings.json`); it is the no-leak test becoming unrunnable inside the very
+session the widening lets run the gate. The session's own credential reds the gate.
+
+A second failure surfaced in probe 9 only —
+`test_a_holders_age_reads_as_a_duration_not_a_count_of_seconds[15120-4h 12m]`
+(15,120 s = 4 h 12 m). It was absent from probes 5 and 6. It is a time-based flake,
+unrelated to this doc-only change and to the token environment, and is named for
+completeness, not as part of the claim.
+
+**Consequence for landing.** `just fast` is the pre-landing gate and it is red from inside
+this session for the reason above. `just land` re-runs that gate and would refuse
+`gate_red`, so it was not run — `just fast` was red, which is the stop condition. The
+widening let this session make its own commit; it did not let it land its own work, because
+the session can run the gate and the session's own credential reds it. That is the
+measurement: the capability #221 granted is real for git and for the gate's entry points,
+and it stops one step short of landing, at a test the dispatch's own environment trips.
+
 ## What a reader should not take from this
 
 - Not that the models above are the ones the *plan* covers. The key reaches eight; which
