@@ -713,10 +713,26 @@ def test_a_codex_workspace_write_session_can_write_the_repositorys_git_metadata(
     roots = _writable_roots(argv)
     assert f'"{root}"' in roots
     assert f'"{root / ".git"}"' in roots
+    # And the linked worktree's *own* git directory, which is the one that actually
+    # carries its index, HEAD and FETCH_HEAD. Naming the common directory alone was
+    # measured insufficient: `.git/topA` was created while
+    # `.git/worktrees/issue-259-codex/subB` was refused in the same command.
+    assert f'"{root / ".git" / "worktrees" / linked.name}"' in roots
     # The session's own worktree is cwd, which `workspace-write` already grants; a root
     # naming it would be noise claiming to be a grant.
     assert f'"{linked}"' not in roots
     assert argv[argv.index("--sandbox") + 1] == "workspace-write"
+
+
+def test_a_plain_checkout_names_its_one_git_directory_once(tmp_path: Path) -> None:
+    # `--absolute-git-dir` and `--git-common-dir` coincide outside a linked worktree, and a
+    # root repeated is a reader wondering which of the two is doing the work.
+    root = git_worktree(tmp_path, name="plain")
+    argv = dispatch.build_argv(
+        dispatch.LANES["codex"], dispatch.PROFILES["codex-sol-high"], "acceptEdits", root
+    )
+    roots = _writable_roots(argv)
+    assert roots.count(f'"{root / ".git"}"') == 1
 
 
 def test_a_codex_workspace_write_session_can_write_the_cache_the_gate_locks(

@@ -990,13 +990,16 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
       stopped short of it would push and then refuse `merge_blocked_by_sandbox` — the
       Claude-side finisher again, smaller but still there. Derived per invocation rather
       than written down, so a dispatch from a second checkout widens to that one.
-    - **The main checkout's `.git`, named separately**, which is the finding worth carrying
-      forward: *Codex holds `.git` read-only even when its parent directory is a writable
-      root, and honours it when it is named as a root itself.* Naming the repository alone
-      left `git add` failing exactly as it had before the widening. Both halves were
-      measured directly rather than argued — probe `d-20260806-164858-905eb2` wrote a file
-      beside `.git` (`MAINROOT_OK`) while `.git/p2` refused, and a follow-up probe naming
-      `.git` explicitly wrote it.
+    - **Both git directories, each named in its own right**, which is the finding worth
+      carrying forward: *Codex refuses a write under a `.git` directory unless that exact
+      directory is a writable root, and naming an ancestor does not lift the refusal for a
+      nested one.* Measured in two steps rather than argued. Probe
+      `d-20260806-164858-905eb2` wrote a file beside `.git` (`MAINROOT_OK`) while `.git/p2`
+      refused, so the repository root had applied and `.git` was carved out of it. Naming
+      `.git` then made `.git/topA` succeed while
+      `.git/worktrees/issue-259-codex/subB` — the linked worktree's own directory, where its
+      index, `HEAD` and `FETCH_HEAD` live — refused in the same command; naming that
+      directory too made both succeed. `_codex_writable_roots` asks git for both.
     - **`~/.cache/uv`**, because `uv` acquires a lock there before any test runs: without it
       `just check`, `just unit` and `just fast` all died at `check-generated` on
       ``Could not create temporary file … Read-only file system``. `~/.cargo` was measured
@@ -1037,18 +1040,38 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
 def _codex_writable_roots(project_dir: Path) -> tuple[Path, ...]:
     """Return the directories a Codex session must write to commit, gate and land.
 
-    The session's own worktree is already writable and so is not repeated here — Codex's
+    The session's own worktree is already writable and so is not listed — Codex's
     `workspace-write` grants cwd, and `writable_roots` is documented as "additional folders
     (beyond cwd and possibly TMPDIR)".
 
-    `uv`'s cache is read from the environment the same way `uv` reads it, so a box that
-    relocates it does not silently lose the gate. A root that does not exist is not an
-    error: Codex logs it and carries on, which is the right shape for a path derived from a
-    convention rather than from a fact.
+    **Both git directories are named, and that is not belt and braces.** Measured on
+    2026-08-06: Codex refuses a write under a `.git` directory unless *that exact directory*
+    is a writable root, and naming an ancestor does not lift the refusal for a nested one.
+    With `<main>/.git` granted, `<main>/.git/topA` was created and
+    `<main>/.git/worktrees/issue-259-codex/subB` was still "Read-only file system"; adding
+    the per-worktree directory made both succeed. This project dispatches into linked
+    worktrees, where the index, `HEAD` and `FETCH_HEAD` all live in the second one — so
+    granting only the common directory buys a session `git log` and nothing it needs.
+
+    Asked of git rather than assembled from strings, because git is the authority on where
+    its own metadata is: in a plain checkout the two answers coincide and the duplicate is
+    dropped, and a `--git-common-dir` that comes back relative is resolved against the tree
+    it was asked about. A tree git cannot read yields neither, and the caller is left with
+    the roots it can still name — a dispatch into a non-repository has no commit to make.
+
+    `uv`'s cache is read from the environment the way `uv` reads it, so a box that relocates
+    it does not silently lose the gate. A root that does not exist is not an error: Codex
+    logs it and carries on, which is the right shape for a path that follows a convention
+    rather than a fact.
     """
-    main = main_checkout(project_dir)
+    roots = [main_checkout(project_dir)]
+    for spelling in ("--absolute-git-dir", "--git-common-dir"):
+        answer = git("rev-parse", spelling, cwd=project_dir)
+        if answer:
+            roots.append(Path(answer) if Path(answer).is_absolute() else project_dir / answer)
     cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
-    return (main, main / ".git", Path(os.environ.get("UV_CACHE_DIR") or cache / "uv"))
+    roots.append(Path(os.environ.get("UV_CACHE_DIR") or cache / "uv"))
+    return tuple(dict.fromkeys(roots))
 
 
 def build_argv(

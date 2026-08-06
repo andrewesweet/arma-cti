@@ -30,12 +30,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   lives above the one directory `workspace-write` makes writable, and every commit was out of reach.
 
   `codex exec` now carries two `-c` overrides on `acceptEdits` only: three `writable_roots` and
-  `network_access`. The roots are the main checkout (`just land`'s ff-only merge writes it), the main
-  checkout's `.git` **named separately**, and `~/.cache/uv`. The middle one is the finding worth
-  keeping: Codex holds `.git` read-only even when its parent directory is a writable root, and
-  honours it when named as a root itself — one probe wrote a file beside `.git` and was refused
-  inside it in the same command. Without `~/.cache/uv` every gate recipe died at `check-generated`
-  before a test ran. `~/.cargo` was measured *not* necessary and is not granted. Read-only seats are
+  `network_access`. The roots are the main checkout (`just land`'s ff-only merge writes it), **both**
+  git directories as git itself names them, and `~/.cache/uv`. The git pair is the finding worth
+  keeping: Codex refuses a write under a `.git` directory unless that exact directory is a writable
+  root, and naming an ancestor does not lift the refusal for a nested one. Granting the repository
+  left `.git/p2` refused; granting `.git` left the linked worktree's own
+  `.git/worktrees/<name>/` refused — which is where its index, `HEAD` and `FETCH_HEAD` live, so a
+  session had `git log` and nothing else. Granting both made `git add`, `git commit` and `just land`
+  work. Without `~/.cache/uv` every gate recipe died at `check-generated` before a test ran. `~/.cargo` was measured *not* necessary and is not granted. Read-only seats are
   untouched, and `--dangerously-bypass-approvals-and-sandbox` was put to the human, declined, and
   remains unused.
 
