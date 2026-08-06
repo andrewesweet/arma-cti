@@ -1001,7 +1001,7 @@ def test_an_unenumerable_issue_dispatches_and_says_so(tmp_path: Path) -> None:
     assert refusal is None
     assert plan is not None
     assert plan.advisories == (
-        "advisory=criteria_not_enumerable issue=223 units=0 needed=2 leads=build",
+        "advisory=criteria_not_enumerable issue=223 units=0 needed=2 leads=build,test",
     )
 
 

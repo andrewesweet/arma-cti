@@ -87,6 +87,26 @@ a different shape, and #137's lesson is the opposite: fit the gate to what the c
 actually contains. So the check still *says* an issue is unenumerable, on every issue and
 every lane, and never refuses on it alone.
 
+## What the open queue then said
+
+The thirty open `ready-for-agent` issues were audited as a validation set, distinct from
+the twenty the split was derived on. It found one false positive and two true ones.
+
+The false positive was #183, whose criteria open the third *sentence* of a paragraph
+rather than a line, and it was a bug in where `_LEAD` looked rather than in what it looked
+for. Widening it to sentence position cleared #183, left the derivation corpus's three
+rates exactly where they were — the test above re-runs them to prove it — and left both
+true positives refused.
+
+The two that stay refused are refused correctly and neither should be dispatched as it
+stands. #217 is a standing anchor that exists to hold a comment and says so; it carries no
+criteria because it is not implementation work, and the finding is a triage one — the
+label, not the body. #202 asks for a semantics decision about the ledger's side vocabulary,
+lists three options, and states no criterion for choosing between them; its own last
+sentence is "the ledger's readers decide which is right — find them first", which is the
+check's point made by the issue itself. An agent dispatched onto it would have to invent
+the acceptance criteria for a human-gated schema decision.
+
 ## What this check does not cover, stated rather than hidden
 
 - **Evidence is searched over the whole body, not over the criteria.** Locating "the
@@ -166,8 +186,15 @@ DIRECTIVE_LEADS: Final = (
     "test",
     "what",
 )
+# A lead opens a *sentence*, not only a line. #183 carries "Scope: apply the same `|| exit
+# 2` treatment…" as the third sentence of a paragraph, and a line-anchored reading called
+# that body criteria-free — the one false positive the open queue turned up against this
+# check when it was audited, and a bug in where the extractor looked rather than in what it
+# was looking for. Widening it costs nothing on the derivation corpus, which is re-run in
+# `tests/unit/test_readiness.py` to say so, and #217 and #202 stay refused: neither of them
+# opens any sentence with a directive at all.
 _LEAD = re.compile(
-    r"^\s{0,3}(?:#{1,6}\s+)?[*_]{0,2}\s*(" + "|".join(DIRECTIVE_LEADS) + r")",
+    r"(?:^|(?<=[.!?] ))\s{0,3}(?:#{1,6}\s+)?[*_]{0,2}\s*(" + "|".join(DIRECTIVE_LEADS) + r")",
     re.IGNORECASE | re.MULTILINE,
 )
 

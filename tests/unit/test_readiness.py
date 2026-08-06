@@ -115,6 +115,22 @@ def test_a_heading_a_bold_label_and_a_colon_led_clause_all_lead() -> None:
     assert readiness.find_leads("Build: a rung in the dispatch ladder.\n") == ("build",)
 
 
+def test_a_lead_opens_a_sentence_and_not_only_a_line() -> None:
+    """#183's shape, and the one false positive the open queue turned up against this check.
+
+    Its criteria are the third sentence of a paragraph — "… outside #168's authorised diff.
+    Scope: apply the same treatment …" — and a line-anchored reading called that body
+    criteria-free. The fix is where the extractor looks, not what it looks for, and the
+    derivation corpus re-runs unchanged above.
+    """
+    body_text = (
+        "The other entries were left outside the authorised diff. Scope: apply the same "
+        "`|| exit 2` treatment, and extend the empty-PATH wiring test to every entry.\n"
+    )
+    assert readiness.find_leads(body_text) == ("scope",)
+    assert readiness.assess(body_text).blocking == ()
+
+
 def test_a_lead_word_in_the_middle_of_a_sentence_does_not_lead() -> None:
     assert readiness.find_leads("The agent should fix the ledger's spend column.\n") == ()
 
