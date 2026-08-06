@@ -666,6 +666,79 @@ def test_the_default_root_is_the_main_checkout_even_from_inside_a_worktree(
     assert dispatch.main_checkout(root) == root
 
 
+# --------------------------------------------------------- the Codex lane's sandbox
+
+
+def _codex_argv_from_a_linked_worktree(
+    tmp_path: Path, permission_mode: str
+) -> tuple[tuple[str, ...], Path, Path]:
+    """Build a Codex argv from inside a linked worktree, the arrangement dispatch uses.
+
+    The linked worktree is the whole point: its git metadata lives under the *main*
+    checkout's `.git/worktrees/`, so a sandbox rooted at the session's cwd cannot write
+    it. Any assertion made against a plain repository would pass while the real
+    arrangement failed, which is what dispatch `d-20260806-163129-479a57` measured.
+    """
+    root = git_worktree(tmp_path, name="checkout")
+    linked = root / ".claude" / "worktrees" / "issue-259"
+    add = ("worktree", "add", "-q", "--detach", str(linked))
+    subprocess.run(["git", *add], cwd=root, check=True, capture_output=True)  # noqa: S603, S607
+    argv = dispatch.build_argv(
+        dispatch.LANES["codex"],
+        dispatch.PROFILES["codex-sol-high"],
+        permission_mode,
+        linked,
+    )
+    return argv, root, linked
+
+
+def test_a_codex_workspace_write_session_can_write_the_repositorys_git_metadata(
+    tmp_path: Path,
+) -> None:
+    # #259: under plain `--sandbox workspace-write` the first `git add` died on
+    # "Unable to create '<main>/.git/worktrees/issue-259-codex/index.lock': Read-only
+    # file system", so the commit half of the human's ruling was unreachable. The
+    # writable root is the main checkout — which also covers `just land`'s ff-only merge
+    # into it — and it is derived per invocation rather than written down.
+    argv, root, linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
+    assert f'sandbox_workspace_write.writable_roots=["{root}"]' in argv
+    assert f'sandbox_workspace_write.writable_roots=["{linked}"]' not in argv
+    assert "--sandbox" in argv
+    assert argv[argv.index("--sandbox") + 1] == "workspace-write"
+
+
+def test_a_codex_workspace_write_session_can_reach_the_network_just_land_needs(
+    tmp_path: Path,
+) -> None:
+    # `sandbox_workspace_write.network_access` defaults to disabled and `just land`
+    # fetches and pushes. This is the override with no counterpart on the `zai` lane,
+    # where only the allowlisted `just land` and `gh` reach the network at all.
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
+    assert "sandbox_workspace_write.network_access=true" in argv
+
+
+@pytest.mark.parametrize("mode", ["plan", "default", "somethingUnmapped"])
+def test_a_read_only_codex_seat_is_widened_by_neither_override(tmp_path: Path, mode: str) -> None:
+    # A review seat has nothing to commit and nothing to land, so neither override buys
+    # it anything, and a mode-by-mode mapping that widened every mode would be no mapping.
+    # The unmapped mode is here because it falls through to `default`, and a fall-through
+    # that landed on the wide branch would be the quietest possible way to widen every seat.
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, mode)
+    assert argv[argv.index("--sandbox") + 1] == "read-only"
+    assert not [part for part in argv if part.startswith("sandbox_workspace_write.")]
+
+
+def test_the_declined_bypass_flag_gains_nothing_from_the_widening(tmp_path: Path) -> None:
+    # `--dangerously-bypass-approvals-and-sandbox` was put to the human on #221 and
+    # declined: it disables the sandbox rather than widening it. It keeps its own
+    # mapping, and the two overrides — which only mean anything to a live sandbox — stay
+    # off it, so nothing here quietly makes the declined option the wider one.
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "bypassPermissions")
+    assert "--dangerously-bypass-approvals-and-sandbox" in argv
+    assert "--sandbox" not in argv
+    assert not [part for part in argv if part.startswith("sandbox_workspace_write.")]
+
+
 def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path) -> None:
     args = _namespace(
         lane="claude-native",

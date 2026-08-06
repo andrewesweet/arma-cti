@@ -959,6 +959,65 @@ CODEX_SANDBOX: Final = {
 }
 
 
+def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, ...]:
+    """Return the sandbox flags, widened where `workspace-write` alone withheld the intent.
+
+    The human ruled on 2026-08-06 (#221 decision 2, #259) that a dispatched Codex session
+    gets the same *intent* as the widened `zai` allowlist — run the gate, make its own
+    commit, land it — and left the mechanism to be worked out, with one option ruled out by
+    name: `--dangerously-bypass-approvals-and-sandbox`, which disables the sandbox rather
+    than widening it. The ruling also said to **measure before changing**, because
+    `workspace-write` might already have delivered it.
+
+    It did not, and the measurement is why this function exists. Dispatch
+    `d-20260806-163129-479a57`, base `873a0c8`, ran under plain `--sandbox workspace-write`
+    and got as far as `git add`::
+
+        fatal: Unable to create '/home/andre/code/github.com/andrewesweet/arma-cti/.git/
+        worktrees/issue-259-codex/index.lock': Read-only file system
+
+    `git status`, `git log` and `git diff` had all succeeded — reads. The refusal is
+    structural rather than incidental: this project dispatches into **linked worktrees**, so
+    the session's cwd is `<main checkout>/.claude/worktrees/issue-<N>` while its git metadata
+    lives in `<main checkout>/.git/worktrees/issue-<N>`, above the one root
+    `workspace-write` makes writable. Every commit was therefore out of reach, and with it
+    the gate and the landing that follow it.
+
+    Two overrides, and each is the narrowest thing that reaches a step of the ruling:
+
+    - **`writable_roots` gains the main checkout.** Not the `.git` directory alone: `just
+      land`'s final step is `git -C <main checkout> merge --ff-only origin/main`, which
+      writes the main checkout's working tree, and a grant that stopped at `.git` would push
+      and then refuse `merge_blocked_by_sandbox` — a Claude-side finisher again, smaller but
+      still there. One root covers both, and it is the workspace in the ordinary sense: this
+      repository, worktrees and all. It is derived per invocation rather than written down,
+      so a dispatch from a second checkout widens to that checkout and not to this one.
+    - **`network_access` is enabled.** It defaults off, and `just land` fetches and pushes.
+
+    **This is not parity with the `zai` lane and must not be described as one.** That lane's
+    grant is a list of named commands; this one is a filesystem and network policy that every
+    command the session runs inherits. Network access in particular is strictly more than the
+    `zai` half has: there, only the allowlisted `just land` and `gh` reach the network at all.
+    ADR-0061 decision 5's non-commensurability point is the reason the two are stated
+    separately in `docs/multi-provider-dispatch.md` rather than claimed equal.
+
+    Read-only modes are left exactly as they were. A review seat has nothing to commit and
+    nothing to land, so neither override has anything to buy there, and a sandbox that stays
+    narrow when nothing needs it wider is the point of mapping per mode at all.
+    """
+    flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
+    if flags != CODEX_SANDBOX["acceptEdits"]:
+        return flags
+    root = hook_parity.toml_string(str(main_checkout(project_dir)))
+    return (
+        "--config",
+        f"sandbox_workspace_write.writable_roots=[{root}]",
+        "--config",
+        "sandbox_workspace_write.network_access=true",
+        *flags,
+    )
+
+
 def build_argv(
     lane: Lane, profile: Profile, permission_mode: str, project_dir: Path
 ) -> tuple[str, ...]:
@@ -991,8 +1050,10 @@ def _codex_argv(
 ) -> tuple[str, ...]:
     """Build `codex exec`'s argv: model, reasoning effort, sandbox, and loopback telemetry.
 
-    Three things differ from the Claude family beyond flag spelling, and each is a
-    measured property of the CLI rather than a preference:
+    Four things differ from the Claude family beyond flag spelling, and each is a
+    measured property of the CLI rather than a preference. The fourth — what the sandbox
+    has to be widened to before a session can commit and land its own work — is
+    `_codex_sandbox_argv`'s, where the measurement that forced it is recorded:
 
     - Effort is a **config override**, not a flag. There is no `--effort` on `codex exec`;
       the level is `model_reasoning_effort`, set through `-c`.
@@ -1024,7 +1085,7 @@ def _codex_argv(
         "--config",
         _codex_metrics_override(),
         *_codex_hook_argv(project_dir),
-        *CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"]),
+        *_codex_sandbox_argv(permission_mode, project_dir),
     )
 
 

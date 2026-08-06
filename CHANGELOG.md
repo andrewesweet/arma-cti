@@ -22,6 +22,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   permission-mode check, in every permission mode, so what the allowlist grants the hooks can still
   deny, and the hook-parity suite proves the denials on Codex payloads unchanged.
 
+- **A dispatched Codex session's sandbox reaches the git metadata and the network its commit and
+  landing need.** Measured before changed, as the ruling asked: dispatch
+  `d-20260806-163129-479a57` ran under plain `--sandbox workspace-write` and got as far as `git
+  add`, which died on `Unable to create '<main checkout>/.git/worktrees/issue-259-codex/index.lock':
+  Read-only file system`. This project dispatches into linked worktrees, so a session's git metadata
+  lives above the one directory `workspace-write` makes writable, and every commit was out of reach.
+
+  `codex exec` now carries two `-c` overrides on `acceptEdits` only: `writable_roots` gains the main
+  checkout — which `just land`'s ff-only merge writes too, so stopping at `.git` would only have
+  moved the finisher — and `network_access`, which defaults off while `just land` fetches and pushes.
+  Read-only seats are untouched. `--dangerously-bypass-approvals-and-sandbox` was put to the human
+  and declined, and remains unused.
+
+  This is not parity with the `zai` lane and is not described as one: that lane's grant is a list of
+  named commands, this one a filesystem and network policy every command inherits. Network access in
+  particular is strictly more than the `zai` half has, where only `just land` and `gh` reach the
+  network at all.
+
 - **`just admission audit --issue N` computes the close audit the bar today asks an agent to
   assert.** `just admission record` demands a choice on every Part A criterion and cross-checks two
   of them against git in the refusing direction only; everything else is asserted by whoever runs
