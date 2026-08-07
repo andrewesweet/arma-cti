@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just verdict --post <issue>` posts a pool's rendered record to an issue, so no reader retypes a
+  SHA or an evidence path.** The bytes posted are the bytes `just verdict` renders — one rendering,
+  not two — and the refusals are named and atomic: no pool, an unreadable pool, a missing or
+  non-existent issue, a `gh` failure, none of which may leave a partial comment behind. `--post`
+  requires the pool directory explicitly rather than defaulting to the newest pool on the box, since
+  a plausible record posted against the wrong run is worse than no record.
+
+  #219's A/B scored 40 verdict readings across five arms: no arm at any price misread a class,
+  treated `infra_unavailable` as a result, or would have landed on a red — and all four failures
+  were the same act of retyping the tool's output, twice producing an evidence path that resolves to
+  nothing. A reader that never types the path cannot corrupt it (#235).
+
 - **A dispatched session may now run the gate and make its own commit.** `.claude/settings.json`'s
   allowlist gains eight entries — `just check`, `just unit`, `just fast`, `git add`, `git commit`,
   and read-only `git status`, `git diff` and `git log` — on the human's ruling of 2026-08-06 on
