@@ -305,6 +305,19 @@ PROFILES: Final[dict[str, Profile]] = {
     "opus-high": Profile("opus-high", "claude-native", "opus", "high"),
     "sonnet-high": Profile("sonnet-high", "claude-native", "sonnet", "high"),
     "haiku-medium": Profile("haiku-medium", "claude-native", "haiku", "medium"),
+    # The fable seat's route to a fable session (#269). #242 ruling 1 keeps fable for named
+    # acts — retros; ADR, CONTEXT.md and schema semantics; retro evidence banking; the
+    # #181-shaped diagnosis call — and says they are *dispatched* rather than resident. While
+    # the orchestration seat was itself fable a subagent inherited it from its dispatcher,
+    # which is how the twenty-fifth retro ran unattended; the seat drop to opus/high removed
+    # that inheritance, and the ruling's "dispatched" had no `(model, effort)` token to
+    # dispatch through. The seat was always expressible (`SEATS` has `fable`, barred on a
+    # foreign lane only); only the profile was missing. Effort is `high` per the Model roles
+    # mapping, the effort fable acts run at; the model is `fable`, the alias the `claude`
+    # runner documents for `--model` alongside `opus` and `sonnet` (verified against the
+    # binary's own `--help`, not assumed from its siblings — `build_argv` passes `model`
+    # straight through, so nothing else needed changing).
+    "fable-high": Profile("fable-high", "claude-native", "fable", "high"),
     # Two profiles on this lane and not ten, because effort collapses to a single arm
     # here — measured, not assumed (#225, docs/research/zai-lane-live-findings.md §2).
     # z.ai's endpoint honours `thinking.type` and ignores `thinking.budget_tokens`: one

@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just dispatch` can now run a fable act on `claude-native`.** A `fable-high` profile joins the
+  registry, giving the fable seat the `(model, effort)` token #242 ruling 1 kept it for — retros;
+  ADR, `CONTEXT.md` and schema semantics; retro evidence banking; the #181-shaped diagnosis call.
+  The ruling said these acts are *dispatched* rather than resident, but the seat drop that moved the
+  orchestration seat to opus/high removed the subagent inheritance that had been silently supplying
+  fable, and the "dispatched" it relied on had no profile to dispatch through. The seat was always
+  expressible (`SEATS` bars it on a foreign lane only); only the profile was missing, and `build_argv`
+  passes `model` straight through, so the runner's own `--model fable` alias needed no new plumbing.
+  A unit test now fails if the fable seat is ever left without a claude-native profile that runs the
+  fable model (#269).
+
 - **`just verdict --post <issue>` posts a pool's rendered record to an issue, so no reader retypes a
   SHA or an evidence path.** The bytes posted are the bytes `just verdict` renders — one rendering,
   not two — and the refusals are named and atomic: no pool, an unreadable pool, a missing or

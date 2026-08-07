@@ -371,6 +371,32 @@ def test_the_same_seats_dispatch_freely_on_claude_native() -> None:
     assert dispatch.resolve_selection("claude-native", "opus-xhigh", "fable") is None
 
 
+def test_the_fable_seat_has_a_dispatchable_profile_on_claude_native() -> None:
+    # #269: the seat drop removed the inheritance that used to supply the fable seat a
+    # session. Fable acts are *dispatched* (#242 ruling 1), so the seat needs a
+    # claude-native profile that runs the fable model — without one `--seat fable`
+    # dispatches at whatever model some other profile names, which is the hole. Assert the
+    # property, not a profile name: a rename that kept the model would still serve the seat,
+    # and a removal that took it would reopen this silently. The seat has always been
+    # dispatchable on claude-native (the test above); what it lacked was a profile that
+    # delivers the fable model, so this is the invariant the hole broke.
+    fable_profiles = [
+        profile
+        for profile in dispatch.PROFILES.values()
+        if profile.lane == "claude-native" and profile.model == "fable"
+    ]
+    assert fable_profiles, (
+        "the fable seat has no claude-native profile running the fable model, so a fable "
+        "act cannot be dispatched at fable (#269)"
+    )
+    for profile in fable_profiles:
+        # Registered for the model is not enough; it must clear the selection ladder for the
+        # fable seat too, so a profile that exists but is refused leaves the hole open.
+        assert dispatch.resolve_selection("claude-native", profile.name, "fable") is None, (
+            profile.name
+        )
+
+
 def test_an_unknown_seat_is_refused_rather_than_mis_attributed() -> None:
     refusal = dispatch.resolve_selection("claude-native", "opus-high", "implemeter")
     assert refusal is not None
