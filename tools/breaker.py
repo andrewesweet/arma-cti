@@ -42,14 +42,18 @@ again in SQF against the same rule shape.
 |---|---|---|
 | Claude | status-line stdin: `rate_limits.{five_hour,seven_day}` | yes, first-party |
 | Codex | `account/rateLimits/read`: `usedPercent`, `resetsAt` | yes, first-party |
-| z.ai | nothing exists; estimated from our own ledger | **no** — advisory only |
+| z.ai | `GET /api/monitor/usage/quota/limit`: `percentage`, `nextResetTime` | yes, first-party |
 
-The z.ai estimator deliberately cannot trip anything. z.ai meters *prompt counts* and
-the ledger records *dispatches*; one dispatch is many prompts, so the estimate is a
-lower bound in a unit the cap is not denominated in. Tripping a lane on that would refuse
-real work on a number we know to be wrong. It annotates the report instead, and z.ai's
-breaker is driven by observed exhaustion — which is the degraded mode this issue names,
-stated where it costs something: a quota trip with no reset time says so in its refusal.
+The z.ai endpoint appeared after the original substrate sweep and is re-derived in #275.
+Its official usage plugin is the published integration contract; the endpoint is absent
+from z.ai's OpenAPI inventory and its response shape has already changed once, so any
+unfamiliar or failed response is no evidence and leaves a held lane held. A held z.ai
+lane reads it once on the next breaker read. Quota to spare closes an availability trip;
+exhaustion may add only the endpoint's own `nextResetTime` boundary.
+
+The z.ai ledger estimator remains deliberately barred from tripping or closing anything.
+z.ai meters *prompt counts* and the ledger records *dispatches*; one dispatch is many
+prompts, so the estimate is a lower bound in a unit the cap is not denominated in.
 
 The Claude feed has a governance weakness that cannot be fixed here and is therefore
 carried: the status line lives in the human's global `~/.claude/settings.json`, which
@@ -62,9 +66,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import stat
 import subprocess
 import sys
 import time
+import urllib.error
+import urllib.request
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
@@ -385,9 +392,9 @@ def verdict(lane: str, circuit: Circuit, rules: Sequence[TripRule]) -> Verdict:
 
 # z.ai's GLM Coding Plan, from the plan documentation: prompt credits on a five-hour
 # window and a seven-day window, per tier. Peak is Mon-Fri 14:00-18:00 SGT (UTC+8) and
-# off-peak consumption is charged at half. Recorded here because the estimator has no
-# machine-readable source to read them from — that absence is the whole reason the
-# estimator exists, and #230's `prereqs plan-tier` supplies which row applies.
+# off-peak consumption is charged at half. The first-party usage endpoint now supplies
+# the live numerator, but not the tier table this estimator needs; #230's
+# `prereqs plan-tier` still supplies which row applies.
 ZAI_TIERS: Final[dict[str, tuple[int, int]]] = {
     "lite": (2_000, 10_000),
     "pro": (12_000, 60_000),
@@ -418,6 +425,11 @@ ZAI_OFF_PEAK_MULTIPLIER: Final = 0.5
 #     in SGT, so the day is read in the same clock as the hours.
 ZAI_PEAK_WINDOW: Final = "Mon-Fri 14:00-18:00 SGT (UTC+8)"
 ZAI_TERMS_URL: Final = "https://docs.z.ai/devpack/overview"
+ZAI_USAGE_URL: Final = "https://api.z.ai/api/monitor/usage/quota/limit"
+ZAI_USAGE_SOURCE: Final = "zai_usage"
+ZAI_KEY_NAME: Final = "ZAI_API_KEY"
+ZAI_USAGE_TIMEOUT_SECS: Final = 10
+DEFAULT_CREDENTIALS: Final = Path.home() / ".arma-cti" / "credentials.env"
 
 FIVE_HOURS_SECS: Final = 5 * 3600
 SEVEN_DAYS_SECS: Final = 7 * 24 * 3600
@@ -653,6 +665,125 @@ def reading_from_codex_rate_limits(
         unavailable="",
         observed_at=now,
     )
+
+
+def _unavailable_zai_reading(lane: str, now: float, reason: str) -> QuotaReading:
+    """Return a typed absence; an unreadable feed is never evidence either way."""
+    return QuotaReading(
+        lane=lane,
+        source=ZAI_USAGE_SOURCE,
+        estimated=False,
+        windows=(),
+        unavailable=reason,
+        observed_at=now,
+    )
+
+
+def _future_epoch_milliseconds(value: object, now: float) -> float | None:
+    """Read z.ai's observed epoch-millisecond boundary, refusing any other unit."""
+    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+        return None
+    try:
+        milliseconds = float(value)
+    except ValueError:
+        return None
+    epoch = milliseconds / 1000.0
+    return epoch if milliseconds >= 1_000_000_000_000 and epoch > now else None
+
+
+def reading_from_zai_usage(payload: Mapping[str, object], lane: str, now: float) -> QuotaReading:
+    """Read z.ai's first-party Coding Plan usage response.
+
+    The official plugin is the integration contract, but its parser knows an older
+    `TOKENS_LIMIT` shape while the live endpoint returned `CREDIT_LIMIT` on 2026-08-07.
+    Both are accepted narrowly. Unknown limit types and fields remain unknown rather
+    than being mapped to a window this project invented.
+    """
+    data = payload.get("data")
+    limits = data.get("limits") if isinstance(data, dict) else None
+    if not isinstance(limits, list):
+        return _unavailable_zai_reading(lane, now, "limits_absent")
+
+    windows: list[QuotaWindow] = []
+    for item in limits:
+        if not isinstance(item, dict) or item.get("type") not in {"CREDIT_LIMIT", "TOKENS_LIMIT"}:
+            continue
+        percentage = item.get("percentage")
+        if not isinstance(percentage, (int, float)) or isinstance(percentage, bool):
+            continue
+        fraction = float(percentage) / 100.0
+        if not 0.0 <= fraction <= 1.0:
+            continue
+        limit_type = str(item["type"]).lower()
+        number = str(item.get("number", "unknown"))
+        unit = str(item.get("unit", "unknown"))
+        windows.append(
+            QuotaWindow(
+                name=f"{limit_type}_{number}_{unit}",
+                used_fraction=fraction,
+                resets_at=_future_epoch_milliseconds(item.get("nextResetTime"), now),
+            )
+        )
+    if not windows:
+        return _unavailable_zai_reading(lane, now, "limits_empty")
+    return QuotaReading(
+        lane=lane,
+        source=ZAI_USAGE_SOURCE,
+        estimated=False,
+        windows=tuple(windows),
+        unavailable="",
+        observed_at=now,
+    )
+
+
+def _credential(path: Path, name: str) -> tuple[str, str]:
+    """Read one named secret as data, only from the repository's required 0600 file."""
+    try:
+        if stat.S_IMODE(path.stat().st_mode) != 0o600:
+            return "", "credentials_mode"
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return "", "credentials_unreadable"
+    for raw in lines:
+        line = raw.strip().removeprefix("export ").strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        if key.strip() == name:
+            token = value.strip().strip("'\"")
+            return (token, "") if token else ("", "credential_absent")
+    return "", "credential_absent"
+
+
+def query_first_party_quota(lane: str, credentials: Path, now: float) -> QuotaReading:
+    """Query the first-party quota source once, with no retry and no model prompt."""
+    if lane != "zai":
+        return _unavailable_zai_reading(lane, now, "feed_absent")
+    token, unavailable = _credential(credentials, ZAI_KEY_NAME)
+    if unavailable:
+        return _unavailable_zai_reading(lane, now, unavailable)
+    request = urllib.request.Request(  # noqa: S310 — this is the fixed HTTPS URL above
+        ZAI_USAGE_URL,
+        headers={
+            "Authorization": token,
+            "Accept-Language": "en-US,en",
+            "Content-Type": "application/json",
+        },
+    )
+    try:
+        with urllib.request.urlopen(  # noqa: S310 — the request URL is not caller-controlled
+            request, timeout=ZAI_USAGE_TIMEOUT_SECS
+        ) as response:
+            if response.status != 200:
+                return _unavailable_zai_reading(lane, now, f"http_{response.status}")
+            payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as error:
+        return _unavailable_zai_reading(lane, now, f"http_{error.code}")
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return _unavailable_zai_reading(lane, now, "request_failed")
+    if not isinstance(payload, dict):
+        return _unavailable_zai_reading(lane, now, "document_not_object")
+    return reading_from_zai_usage(payload, lane, now)
 
 
 def zai_is_peak(at: float) -> bool:
@@ -970,6 +1101,8 @@ class Store(NamedTuple):
     directory: Path = DEFAULT_BREAKER_DIR
     rules: Sequence[TripRule] = LANE_RULES
     endpoint: str = ""
+    quota_reader: Callable[[str, Path, float], QuotaReading] = query_first_party_quota
+    credentials: Path = DEFAULT_CREDENTIALS
 
     @property
     def journal(self) -> Path:
@@ -1000,19 +1133,45 @@ def emit_transition(store: Store, lane: str, transition: Transition) -> bool:
     )
 
 
-def lane_verdict(store: Store, lane: str, now: float) -> Verdict:
-    """Take the pre-dispatch read: settle any elapsed reset, persist it, and answer.
+def _read_lane(store: Store, lane: str, now: float) -> tuple[Verdict, Transition | None]:
+    """Settle time and refresh a held z.ai lane from first-party evidence once.
 
     Settling here rather than at the moment of trip is what makes "state read before
     dispatch" sufficient — nothing has to be running for a window reset to take effect,
     because the next reader is the one that notices it.
+
+    A z.ai availability trip with no boundary is the other self-healing case. The read
+    asks the provider's quota endpoint once. The clock decides only when this observation
+    is made; only the response may move the circuit.
     """
     state = read_state(store.directory, lane)
     settled, transition = settle(state.circuit, store.rules, now)
     if transition is not None:
         write_state(store.directory, state._replace(circuit=settled, updated_at=now))
         emit_transition(store, lane, transition)
-    return verdict(lane, settled, store.rules)
+    rule = rule_named(store.rules, settled.rule)
+    held_availability = (
+        lane == "zai"
+        and settled.state == OPEN
+        and settled.reset_at is None
+        and rule is not None
+        and rule.family == AVAILABILITY
+    )
+    if not held_availability:
+        return verdict(lane, settled, store.rules), transition
+
+    reading = store.quota_reader(lane, store.credentials, now)
+    moved, evidence = apply_reading(settled, store.rules, reading, now)
+    write_state(store.directory, LaneState(lane, moved, reading, now))
+    if evidence is not None:
+        emit_transition(store, lane, evidence)
+    return verdict(lane, moved, store.rules), evidence
+
+
+def lane_verdict(store: Store, lane: str, now: float) -> Verdict:
+    """Take the pre-dispatch read, including any first-party recovery evidence."""
+    result, _ = _read_lane(store, lane, now)
+    return result
 
 
 def record_outcome(
@@ -1141,9 +1300,13 @@ def verdict_line(result: Verdict, now: float) -> str:
         parts.append("escalate=true")
         parts.append(f"clear=`just breaker reset --lane {result.lane} --force`")
     elif result.reset_at is None:
-        parts.append("reason=no_quota_feed")
-        parts.append("degraded=reacting-to-429s")
-        parts.append("wire=`just prereqs statusline`")
+        if result.lane == "zai":
+            parts.append("reason=quota_feed_unavailable")
+            parts.append(f"evidence=`GET {ZAI_USAGE_URL}`")
+        else:
+            parts.append("reason=no_quota_feed")
+            parts.append("degraded=reacting-to-429s")
+            parts.append("wire=`just prereqs statusline`")
     parts.append(f"why={result.reason}")
     return " ".join(parts)
 
@@ -1166,6 +1329,19 @@ def advisory_line(reading: QuotaReading, now: float) -> str:
     return " ".join(parts)
 
 
+def reopened_line(lane: str, transition: Transition, reading: QuotaReading) -> str:
+    """Make an evidence-driven reopen visible in the same one-line verdict form."""
+    return " ".join(
+        (
+            f"lane={lane}",
+            "dispatch=allowed",
+            "reopened=evidence",
+            f"source={reading.source}",
+            f"why={transition.reason}",
+        )
+    )
+
+
 def report_lines(
     store: Store,
     now: float,
@@ -1174,11 +1350,20 @@ def report_lines(
     """Render one verdict line per lane that needs one, and nothing for a lane that is fine."""
     lines: list[str] = []
     for lane in lanes:
-        result = lane_verdict(store, lane, now)
+        result, transition = _read_lane(store, lane, now)
+        state = read_state(store.directory, lane)
+        if (
+            transition is not None
+            and transition.from_state == OPEN
+            and transition.to_state == CLOSED
+            and state.reading is not None
+        ):
+            lines.append(reopened_line(lane, transition, state.reading))
+            continue
         if not result.conducting:
             lines.append(verdict_line(result, now))
             continue
-        reading = read_state(store.directory, lane).reading
+        reading = state.reading
         if reading is None or not reading.available or not reading.estimated:
             continue
         if any(w.used_fraction >= ESTIMATE_ADVISORY_FRACTION for w in reading.windows):
@@ -1235,14 +1420,21 @@ def state_lines(store: Store, now: float, lanes: Iterable[str] = KNOWN_LANES) ->
     """
     lines: list[str] = []
     for lane in lanes:
+        result, transition = _read_lane(store, lane, now)
         state = read_state(store.directory, lane)
-        settled, _ = settle(state.circuit, store.rules, now)
-        result = verdict(lane, settled, store.rules)
+        settled = state.circuit
         parts = [
             f"lane={lane}",
             f"state={settled.state}",
             "dispatch=allowed" if result.conducting else "dispatch=refused",
         ]
+        if (
+            transition is not None
+            and transition.from_state == OPEN
+            and transition.to_state == CLOSED
+            and state.reading is not None
+        ):
+            parts.extend(("reopened=evidence", f"source={state.reading.source}"))
         if not result.conducting:
             parts.append(f"class={result.failure_class}")
             parts.append(f"until={iso(result.reset_at)}" if result.reset_at else "until=unknown")
@@ -1302,7 +1494,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 
     quota = verbs.add_parser("quota", help="ingest a provider's own quota document")
     quota.add_argument("--lane", required=True)
-    quota.add_argument("--format", required=True, choices=("status-line", "codex-rate-limits"))
+    quota.add_argument(
+        "--format",
+        required=True,
+        choices=("status-line", "codex-rate-limits", "zai-usage"),
+    )
     quota.add_argument("--from-file", default="", help="default: stdin")
 
     estimate = verbs.add_parser("estimate", help="z.ai's ledger estimate, advisory only")
@@ -1378,9 +1574,12 @@ def run_quota(args: argparse.Namespace) -> int:
         payload = _read_payload(args.from_file)
     except (OSError, json.JSONDecodeError) as error:
         return emit_lines((f"lane={args.lane}", f"quota=unreadable ({error})"), 1)
-    parse = (
-        reading_from_status_line if args.format == "status-line" else reading_from_codex_rate_limits
-    )
+    parsers = {
+        "status-line": reading_from_status_line,
+        "codex-rate-limits": reading_from_codex_rate_limits,
+        "zai-usage": reading_from_zai_usage,
+    }
+    parse = parsers[args.format]
     reading = parse(payload, args.lane, now)
     circuit, transition = record_reading(_store(args), args.lane, reading, now)
     lines = [f"lane={args.lane}", f"source={reading.source}", f"state={circuit.state}"]

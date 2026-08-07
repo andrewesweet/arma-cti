@@ -44,7 +44,18 @@ HOUR = 3600.0
 
 def store(tmp_path: Path) -> Any:  # noqa: ANN401 — a tools/ module loads dynamically, so its types are Unknown here
     """Build a breaker store whose collector is deliberately not there."""
-    return breaker.Store(directory=tmp_path / "breaker", endpoint=DEAD_ENDPOINT)
+    return breaker.Store(
+        directory=tmp_path / "breaker",
+        endpoint=DEAD_ENDPOINT,
+        quota_reader=lambda lane, credentials, now: breaker.QuotaReading(
+            lane=lane,
+            source="zai_usage",
+            estimated=False,
+            windows=(),
+            unavailable="not_staged",
+            observed_at=now,
+        ),
+    )
 
 
 def feed(state: Any, lane: str, outcomes: list[str], now: float = NOW) -> Any:  # noqa: ANN401 — same
@@ -337,6 +348,106 @@ def test_the_codex_feed_accepts_the_json_rpc_envelope_as_well_as_the_bare_result
     ) == breaker.reading_from_codex_rate_limits(inner, "codex", NOW)
 
 
+def test_the_zai_feed_reads_the_live_first_party_quota_shape() -> None:
+    """The response observed once from z.ai's own usage plugin endpoint on 2026-08-07."""
+    reading = breaker.reading_from_zai_usage(
+        {
+            "code": 200,
+            "data": {
+                "limits": [
+                    {
+                        "type": "CREDIT_LIMIT",
+                        "unit": 3,
+                        "number": 5,
+                        "usage": 2000,
+                        "currentValue": 122,
+                        "remaining": 1877,
+                        "percentage": 6,
+                        "nextResetTime": 1786153957450,
+                    },
+                    {
+                        "type": "CREDIT_LIMIT",
+                        "unit": 6,
+                        "number": 1,
+                        "usage": 10000,
+                        "currentValue": 3303,
+                        "remaining": 6696,
+                        "percentage": 33,
+                        "nextResetTime": 1786559497998,
+                    },
+                ],
+                "level": "lite",
+            },
+            "success": True,
+        },
+        "zai",
+        NOW,
+    )
+
+    assert reading.source == "zai_usage"
+    assert reading.estimated is False
+    assert [window.used_fraction for window in reading.windows] == pytest.approx([0.06, 0.33])
+    assert [window.resets_at for window in reading.windows] == pytest.approx(
+        [1786153957.45, 1786559497.998]
+    )
+
+
+def test_the_zai_feed_treats_a_success_with_no_quota_limits_as_no_evidence() -> None:
+    reading = breaker.reading_from_zai_usage(
+        {"code": 200, "data": {"limits": []}, "success": True}, "zai", NOW
+    )
+    assert reading.available is False
+    assert reading.unavailable == "limits_empty"
+
+
+def test_the_zai_reader_uses_the_private_credential_and_queries_once(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("ZAI_API_KEY=test-secret\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    payload = {
+        "data": {
+            "limits": [
+                {
+                    "type": "CREDIT_LIMIT",
+                    "unit": 3,
+                    "number": 5,
+                    "percentage": 6,
+                    "nextResetTime": (NOW + HOUR) * 1000,
+                }
+            ]
+        }
+    }
+    calls: list[tuple[str, str | None, float]] = []
+
+    class Response:
+        """The fixed HTTP 200 response from the first-party endpoint."""
+
+        status = 200
+
+        def __enter__(self) -> Response:
+            return self
+
+        def __exit__(self, *unused: object) -> None:
+            return None
+
+        def read(self) -> bytes:
+            return json.dumps(payload).encode("utf-8")
+
+    def urlopen(request: Any, timeout: float) -> Response:  # noqa: ANN401
+        calls.append((request.full_url, request.get_header("Authorization"), timeout))
+        return Response()
+
+    monkeypatch.setattr(breaker.urllib.request, "urlopen", urlopen)
+
+    reading = breaker.query_first_party_quota("zai", credentials, NOW)
+
+    assert calls == [(breaker.ZAI_USAGE_URL, "test-secret", breaker.ZAI_USAGE_TIMEOUT_SECS)]
+    assert reading.available is True
+    assert reading.windows[0].used_fraction == pytest.approx(0.06)
+
+
 @pytest.mark.parametrize(
     ("value", "expected"),
     [
@@ -409,6 +520,111 @@ def test_a_healthy_first_party_reading_releases_a_held_lane_but_never_a_quality_
     unmoved, none_taken = breaker.apply_reading(quality, breaker.LANE_RULES, healthy, NOW)
     assert unmoved == quality, "having quota says nothing about serving the right thing"
     assert none_taken is None
+
+
+def test_a_healthy_zai_reading_reopens_a_held_lane_and_names_the_evidence(
+    tmp_path: Path,
+) -> None:
+    healthy = breaker.reading_from_zai_usage(
+        {
+            "data": {
+                "limits": [
+                    {
+                        "type": "CREDIT_LIMIT",
+                        "unit": 3,
+                        "number": 5,
+                        "percentage": 6,
+                        "nextResetTime": (NOW + HOUR) * 1000,
+                    }
+                ]
+            }
+        },
+        "zai",
+        NOW + 10,
+    )
+    reads: list[float] = []
+
+    def quota_reader(lane: str, credentials: Path, now: float) -> Any:  # noqa: ANN401
+        reads.append(now)
+        return healthy._replace(lane=lane, observed_at=now)
+
+    state = breaker.Store(
+        directory=tmp_path / "breaker",
+        endpoint=DEAD_ENDPOINT,
+        quota_reader=quota_reader,
+    )
+    breaker.record_outcome(state, "zai", breaker.Outcome(breaker.QUOTA_EXHAUSTED), NOW)
+
+    lines = breaker.report_lines(state, NOW + 10, lanes=("zai",))
+
+    assert reads == [NOW + 10], "the held lane asks the first-party feed exactly once"
+    assert lines == (
+        "lane=zai dispatch=allowed reopened=evidence source=zai_usage "
+        "why=zai_usage answered with quota to spare, so the lane is serving",
+    )
+    assert breaker.read_state(tmp_path / "breaker", "zai").circuit.state == breaker.CLOSED
+
+
+def test_an_exhausted_zai_reading_does_not_reopen_without_serving_evidence(
+    tmp_path: Path,
+) -> None:
+    reset = NOW + HOUR
+    exhausted = breaker.reading_from_zai_usage(
+        {
+            "data": {
+                "limits": [
+                    {
+                        "type": "CREDIT_LIMIT",
+                        "unit": 3,
+                        "number": 5,
+                        "percentage": 100,
+                        "nextResetTime": reset * 1000,
+                    }
+                ]
+            }
+        },
+        "zai",
+        NOW + 10,
+    )
+    state = breaker.Store(
+        directory=tmp_path / "breaker",
+        endpoint=DEAD_ENDPOINT,
+        quota_reader=lambda lane, credentials, now: exhausted,
+    )
+    breaker.record_outcome(state, "zai", breaker.Outcome(breaker.QUOTA_EXHAUSTED), NOW)
+
+    result = breaker.lane_verdict(state, "zai", NOW + 10)
+
+    assert result.conducting is False
+    assert result.reset_at == reset, "the only wait admitted is the endpoint's own boundary"
+
+
+def test_a_held_zai_lane_stays_held_when_the_automatic_read_has_no_evidence(
+    tmp_path: Path,
+) -> None:
+    absent = breaker.QuotaReading(
+        lane="zai",
+        source="zai_usage",
+        estimated=False,
+        windows=(),
+        unavailable="request_failed",
+        observed_at=NOW + 10,
+    )
+    state = breaker.Store(
+        directory=tmp_path / "breaker",
+        endpoint=DEAD_ENDPOINT,
+        quota_reader=lambda lane, credentials, now: absent,
+    )
+    breaker.record_outcome(state, "zai", breaker.Outcome(breaker.QUOTA_EXHAUSTED), NOW)
+
+    result = breaker.lane_verdict(state, "zai", NOW + 10)
+
+    assert result.conducting is False
+    assert result.reset_at is None
+    saved = breaker.read_state(tmp_path / "breaker", "zai")
+    assert saved.circuit.state == breaker.OPEN
+    assert saved.reading is not None
+    assert saved.reading.unavailable == "request_failed"
 
 
 # --------------------------------------------------------------------- the z.ai estimate
@@ -690,15 +906,15 @@ def test_a_verdict_line_never_says_open_or_closed_at_a_reader(tmp_path: Path) ->
     assert "dispatch=refused" in line
 
 
-def test_a_quota_trip_with_no_published_reset_states_the_degradation_in_its_own_line(
+def test_a_quota_trip_with_an_unavailable_feed_states_the_evidence_source_in_its_line(
     tmp_path: Path,
 ) -> None:
     state = store(tmp_path)
     breaker.record_outcome(state, "zai", breaker.Outcome(breaker.QUOTA_EXHAUSTED), NOW)
     line = breaker.report_lines(state, NOW + 10)[0]
     assert "until=unknown" in line
-    assert "degraded=reacting-to-429s" in line
-    assert "just prereqs statusline" in line
+    assert "reason=quota_feed_unavailable" in line
+    assert breaker.ZAI_USAGE_URL in line
 
 
 def test_an_estimate_appears_in_the_report_only_once_it_is_worth_knowing(tmp_path: Path) -> None:
