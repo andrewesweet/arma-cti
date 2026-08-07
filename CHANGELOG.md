@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just worktree` gains an explicit preservation path: `archive` and `restore`.** A worktree
+  whose work is parked but cannot land was removable only by overriding `done`'s refusal,
+  because `done` treats "not on `origin/main`" as "not durable". `archive <name> --ref
+  <remote-ref>` now verifies the tree is clean and the named remote ref resolves to its exact
+  HEAD — `git ls-remote`, the check the #170 incident used — then removes the worktree; it
+  never creates or moves the ref. `restore <name> --ref <remote-ref>` recreates a detached
+  worktree from that exact ref and runs the same exclusivity pre-flight as `add`, so recovery
+  stays in the protocol. `done` is unchanged: an archive is not a landing, and durability stays
+  explicit through the archive call (#272).
+
 - **`just dispatch` can now run a fable act on `claude-native`.** A `fable-high` profile joins the
   registry, giving the fable seat the `(model, effort)` token #242 ruling 1 kept it for — retros;
   ADR, `CONTEXT.md` and schema semantics; retro evidence banking; the #181-shaped diagnosis call.

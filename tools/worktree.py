@@ -12,7 +12,7 @@ not the same as one that always runs the same checks. This is that pre-flight,
 decided here where pytest can reach it (`tests/unit/test_worktree.py`), with the
 justfile keeping only the process seam.
 
-Four actions, one refusal vocabulary:
+Six actions, one refusal vocabulary:
 
 - ``add <name>``   fetch, create off ``origin/main`` detached, pre-flight the
   result, print the absolute path and the base SHA — the two things a dispatch
@@ -24,6 +24,17 @@ Four actions, one refusal vocabulary:
 - ``list``         the hygiene sweep: every registration, its state, whether its
   HEAD is landed, and which registrations are stale.
 - ``done <name>``  verify clean and landed, then remove. Never ``--force``.
+  Remains landed-on-``origin/main`` only: durability is explicit through the
+  archive call, never inferred from arbitrary refs (#272).
+- ``archive <name> --ref <remote-ref>``  verify the tree is clean and the named
+  remote ref resolves to its exact HEAD, then remove the worktree. The ref is
+  read, never created or moved — it is the preservation act a handoff pushed,
+  and removal proceeds only on the evidence that the exact HEAD SHA is on the
+  remote (``git ls-remote``, the check the #170 incident used). Not a landing:
+  it never prints ``done`` or ``landed``.
+- ``restore <name> --ref <remote-ref>``  recreate a detached worktree from that
+  exact remote ref and run the same exclusivity pre-flight as ``add``, so
+  recovery stays in the protocol rather than a remembered bare-git recipe.
 
 **Nothing here resets, cleans, prunes or removes on a refusal path.** CLAUDE.md
 is explicit that foreign files mean stop and report, and a recipe that tidies is
@@ -34,9 +45,9 @@ files it found are evidence, and something wrote them.
 Refusals are named, and each says what was found and what to do:
 ``worktree_occupied`` (naming the other holder — #105's damage came from not
 knowing), ``dirty_tree``, ``unverified``, ``stale_registration``,
-``unlanded_work``, ``no_such_worktree``, ``invalid_name``, ``git_failed``. Exit
-0 is proceed, 1 is a refusal; the class is the first line, in the tier's
-``key=value`` form.
+``unlanded_work``, ``no_such_worktree``, ``invalid_name``, ``invalid_ref``,
+``not_on_remote``, ``ref_mismatch``, ``git_failed``. Exit 0 is proceed, 1 is a
+refusal; the class is the first line, in the tier's ``key=value`` form.
 """
 
 from __future__ import annotations
@@ -67,6 +78,14 @@ FOREIGN_FILES: Final = (
 UNCOMMITTED_ON_TEARDOWN: Final = (
     "Nothing was removed. If the work is yours, commit and land it first; if you did not "
     "write these files, another agent is in this tree — stop and report, never reset (#105)."
+)
+NOT_ON_REMOTE: Final = (
+    "Push the ref to the remote first (`git push origin HEAD:<ref>`), or point --ref at the one "
+    "already holding this HEAD. archive never creates or moves a ref, and removed nothing (#272)."
+)
+REF_MISMATCH: Final = (
+    "The remote ref is not at this tree's HEAD. archive never moves a ref; push it yourself or "
+    "point --ref at the one holding this exact HEAD. Nothing was removed (#272)."
 )
 HOW_MANY_SHOWN: Final = 10
 
@@ -366,6 +385,44 @@ def _could_not_run(path: Path, detail: str) -> Refusal:
     )
 
 
+def classify_archive(
+    path: Path, holder: Holder, ref: str, remote_sha: str | None
+) -> Refusal | None:
+    """Decide whether a worktree may be removed against a preservation ref.
+
+    `done`'s ladder equates "not on `origin/main`" with "not durable", which is
+    right for a local-only commit and wrong for a tree a handoff has pushed to a
+    preservation ref (#170, #272). This ladder is the explicit durability call:
+    the tree must still be registered, present, clean, and — the whole point —
+    its exact HEAD must be verifiably on the remote at `ref`. Not "a ref exists",
+    not "the branch name looks right": the SHA, confirmed against the remote.
+    The ref is read, never created or moved, so a refusal leaves both untouched.
+    """
+    present = _classify_present(path, holder)
+    if present is not None:
+        return present
+    status = holder.status
+    if status is None:
+        return _could_not_run(path, "status=unreadable")
+    dirty = classify_preflight(path, status, UNCOMMITTED_ON_TEARDOWN)
+    if dirty is not None:
+        return dirty
+    head = holder.registration.head
+    if remote_sha is None:
+        return Refusal(
+            "not_on_remote",
+            (f"worktree={path}", f"ref={ref}", "resolved=no (local-only or absent on origin)"),
+            NOT_ON_REMOTE,
+        )
+    if remote_sha != head:
+        return Refusal(
+            "ref_mismatch",
+            (f"worktree={path}", f"head={head}", f"ref={ref}", f"resolved={remote_sha}"),
+            REF_MISMATCH,
+        )
+    return None
+
+
 # ------------------------------------------------------------------ git access
 
 
@@ -430,6 +487,22 @@ def count_unlanded(path: Path) -> int | None:
     """How many commits this worktree's HEAD carries that `origin/main` does not."""
     counted = git("rev-list", "--count", f"{BASE}..HEAD", cwd=path, check=False).strip()
     return int(counted) if counted.isdigit() else None
+
+
+def remote_ref_sha(root: Path, ref: str) -> str | None:
+    """Return the exact SHA a remote ref resolves to on `origin`, else None.
+
+    `git ls-remote` reads the remote's own ref table, so a ref that lives only
+    locally (never pushed) answers None — the #170 incident's check, used
+    verbatim. A reachable remote with no such ref exits zero and empty, so None
+    is distinct from a network failure, which raises `GitError` (and lands as
+    ``git_failed`` at the caller). That separation is what makes "local-only
+    ref refuses" and "unreadable remote refuses" two different classes.
+    """
+    out = git("ls-remote", "origin", ref, cwd=root).strip()
+    if not out:
+        return None
+    return out.splitlines()[0].split(maxsplit=1)[0]
 
 
 # --------------------------------------------------------------------- actions
@@ -591,14 +664,97 @@ def done(root: Path, name: str) -> Report:
     return Report(("ok=worktree_removed", f"worktree={path}", "unlanded=0"), 0)
 
 
+def archive(root: Path, name: str, ref: str) -> Report:
+    """Verify clean and preserved on a remote ref, then remove. Never on a refusal."""
+    bad_name = classify_name(name)
+    if bad_name is not None:
+        return Report.refused(bad_name)
+    if not ref:
+        return Report.refused(
+            Refusal(
+                "invalid_ref",
+                (f"worktree={root / WORKTREES / name}", "ref=<empty>"),
+                "archive needs the remote ref preserving this HEAD, "
+                "e.g. `--ref refs/heads/issue-170-parked`.",
+            )
+        )
+    path = root / WORKTREES / name
+    registrations = parse_registrations(git("worktree", "list", "--porcelain", cwd=root))
+    holder = gather(root, path, registrations)
+    remote_sha = remote_ref_sha(root, ref)
+    refusal = classify_archive(path, holder, ref, remote_sha)
+    if refusal is not None:
+        return Report.refused(refusal)
+    git("worktree", "remove", str(path), cwd=root)
+    head = holder.registration.head
+    return Report(
+        (
+            "ok=worktree_archived",
+            f"worktree={path}",
+            f"head={head}",
+            f"ref={ref} resolved={remote_sha}",
+            "preserved=yes (remote ref, not origin/main)",
+        ),
+        0,
+    )
+
+
+def restore(root: Path, name: str, ref: str) -> Report:
+    """Recreate a detached worktree from a remote ref, then pre-flight it like ``add``."""
+    bad_name = classify_name(name)
+    if bad_name is not None:
+        return Report.refused(bad_name)
+    if not ref:
+        return Report.refused(
+            Refusal(
+                "invalid_ref",
+                (f"worktree={root / WORKTREES / name}", "ref=<empty>"),
+                "restore needs the remote ref to recreate from, "
+                "e.g. `--ref refs/heads/issue-170-parked`.",
+            )
+        )
+    path = root / WORKTREES / name
+    registrations = parse_registrations(git("worktree", "list", "--porcelain", cwd=root))
+    occupied = classify_target(path, gather(root, path, registrations))
+    if occupied is not None:
+        return Report.refused(occupied)
+    sha = remote_ref_sha(root, ref)
+    if sha is None:
+        return Report.refused(
+            Refusal(
+                "not_on_remote",
+                (f"worktree={path}", f"ref={ref}", "resolved=no (local-only or absent on origin)"),
+                "Nothing to restore from: the ref is not on the remote. "
+                "Push it first, or point --ref at one that is.",
+            )
+        )
+    git("fetch", "origin", ref, cwd=root)
+    git("worktree", "add", str(path), sha, "--detach", cwd=root)
+    dirty = classify_preflight(path, read_status(git("status", "--porcelain", cwd=path)))
+    if dirty is not None:
+        return Report.refused(dirty)
+    subject = git("log", "-1", "--format=%s", sha, cwd=root, check=False).strip()
+    return Report(
+        (
+            "ok=worktree_restored",
+            f"worktree={path}",
+            f"base={sha[:7]} {ref} {subject}".rstrip(),
+            "preflight=clean",
+            "Restored off a preservation ref, not origin/main. An archive is not a landing.",
+        ),
+        0,
+    )
+
+
 # ------------------------------------------------------------------ invocation
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
     """One action, and the name it acts on where the action takes one."""
     parser = argparse.ArgumentParser(prog="just worktree", description=__doc__)
-    parser.add_argument("action", choices=("add", "check", "list", "done"))
+    parser.add_argument("action", choices=("add", "check", "list", "done", "archive", "restore"))
     parser.add_argument("name", nargs="?", default="")
+    parser.add_argument("--ref", default="")
     return parser.parse_args(argv)
 
 
@@ -613,6 +769,10 @@ def main(argv: list[str] | None = None) -> int:
             report = check(root, args.name)
         elif args.action == "list":
             report = sweep(root)
+        elif args.action == "archive":
+            report = archive(root, args.name, args.ref)
+        elif args.action == "restore":
+            report = restore(root, args.name, args.ref)
         else:
             report = done(root, args.name)
     except GitError as failure:

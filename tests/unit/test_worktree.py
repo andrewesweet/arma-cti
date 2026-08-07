@@ -541,3 +541,233 @@ def test_outside_a_repository_the_tool_fails_closed(
     assert code == 1
     assert printed[0] == "refusal=git_failed"
     assert any(line.startswith("stderr=") for line in printed)
+
+
+# ----------------------------------------------------------- archive/restore (#272)
+#
+# `done` equates "not on origin/main" with "not durable"; archive is the explicit
+# durability call for a tree a handoff has preserved on a remote ref. The ladder
+# is tested pure, then the recipe over a real repo — and the heaviest claims are
+# again the negative ones: every refusing shape leaves both the worktree and the
+# ref exactly where they were.
+
+
+def test_classify_archive_accepts_a_remote_ref_at_the_exact_head() -> None:
+    assert (
+        worktree.classify_archive(
+            Path("/w"), holder(unlanded=0), "refs/heads/issue-170-parked", "2222222"
+        )
+        is None
+    )
+
+
+def test_classify_archive_refuses_a_local_only_ref() -> None:
+    refusal = worktree.classify_archive(Path("/w"), holder(unlanded=0), "refs/heads/x", None)
+    assert refusal.kind == "not_on_remote"
+    assert any("resolved=no" in line for line in refusal.found)
+    assert "never creates or moves a ref" in refusal.action
+
+
+def test_classify_archive_refuses_a_ref_head_mismatch() -> None:
+    refusal = worktree.classify_archive(Path("/w"), holder(unlanded=0), "refs/heads/x", "9999999")
+    assert refusal.kind == "ref_mismatch"
+    assert "head=2222222" in refusal.found
+    assert "resolved=9999999" in refusal.found
+    assert "never moves a ref" in refusal.action
+
+
+def test_classify_archive_refuses_dirty_before_the_ref_check() -> None:
+    """Uncommitted work costs more than a ref check, so it is heard first."""
+    refusal = worktree.classify_archive(
+        Path("/w"),
+        holder(status=worktree.Preflight((), ("?? theirs.txt",)), unlanded=0),
+        "refs/heads/x",
+        None,
+    )
+    assert refusal.kind == "dirty_tree"
+
+
+def test_classify_archive_refuses_a_missing_tree_like_done() -> None:
+    assert (
+        worktree.classify_archive(
+            Path("/w"), holder(registered=False), "refs/heads/x", "2222222"
+        ).kind
+        == "no_such_worktree"
+    )
+
+
+def _parked_tree(
+    repo: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    name: str = "issue-1",
+) -> Path:
+    """Return a worktree carrying one unlanded commit, with its path."""
+    run(monkeypatch, repo, "add", name)
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / name
+    (created / "work.md").write_text("parked\n", encoding="utf-8")
+    git("add", "work.md", cwd=created)
+    git("commit", "-q", "-m", "feat: parked work", cwd=created)
+    return created
+
+
+def test_archive_removes_a_tree_whose_head_is_preserved_on_a_remote_ref(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """AC1: #170's exact shape — clean HEAD already the tip of a pushed preservation ref."""
+    repo = a_repo(tmp_path)
+    created = _parked_tree(repo, monkeypatch, capsys)
+    head = git("rev-parse", "HEAD", cwd=created).strip()
+    # The preservation act a handoff performs: push this HEAD to a remote ref.
+    git("push", "-q", "origin", "HEAD:refs/heads/issue-1-parked", cwd=created)
+
+    code = run(monkeypatch, repo, "archive", "issue-1", "--ref", "refs/heads/issue-1-parked")
+    printed = lines_of(capsys)
+    assert code == 0
+    assert printed[0] == "ok=worktree_archived"
+    assert f"worktree={created}" in printed
+    assert f"head={head}" in printed
+    assert any("refs/heads/issue-1-parked" in line and "resolved=" in line for line in printed)
+    assert "done" not in " ".join(printed)
+    assert "landed" not in " ".join(printed)
+    assert not created.exists()
+    # The ref is read, never moved: it still resolves to the same HEAD.
+    assert git("ls-remote", "origin", "refs/heads/issue-1-parked", cwd=repo).split()[0] == head
+
+
+def test_archive_refuses_a_local_only_ref_and_removes_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """AC2: a ref that was never pushed is local-only, and archive removes nothing."""
+    repo = a_repo(tmp_path)
+    created = _parked_tree(repo, monkeypatch, capsys)
+
+    code = run(monkeypatch, repo, "archive", "issue-1", "--ref", "refs/heads/issue-1-parked")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=not_on_remote"
+    assert (created / "work.md").exists()
+    assert git("ls-remote", "origin", "refs/heads/issue-1-parked", cwd=repo).strip() == ""
+
+
+def test_archive_refuses_a_ref_head_mismatch_and_moves_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """AC2: a ref at a different SHA is not moved to meet the tree's HEAD."""
+    repo = a_repo(tmp_path)
+    created = _parked_tree(repo, monkeypatch, capsys)
+    main_sha = git("rev-parse", "origin/main", cwd=repo).strip()
+    git("push", "-q", "origin", f"{main_sha}:refs/heads/issue-1-parked", cwd=repo)
+
+    code = run(monkeypatch, repo, "archive", "issue-1", "--ref", "refs/heads/issue-1-parked")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=ref_mismatch"
+    assert (created / "work.md").exists()
+    assert git("ls-remote", "origin", "refs/heads/issue-1-parked", cwd=repo).split()[0] == main_sha
+
+
+def test_archive_refuses_uncommitted_files_and_keeps_them(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """AC2: uncommitted files refuse before the ref check and are kept."""
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+    theirs = created / "theirs.txt"
+    theirs.write_text("uncommitted\n", encoding="utf-8")
+    main_sha = git("rev-parse", "origin/main", cwd=repo).strip()
+    git("push", "-q", "origin", f"{main_sha}:refs/heads/issue-1-parked", cwd=repo)
+
+    code = run(monkeypatch, repo, "archive", "issue-1", "--ref", "refs/heads/issue-1-parked")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=dirty_tree"
+    assert theirs.exists()
+
+
+def test_archive_without_a_ref_refuses_with_the_example(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo = a_repo(tmp_path)
+    code = run(monkeypatch, repo, "archive", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=invalid_ref"
+    assert "refs/heads/" in printed[-1]
+
+
+def test_restore_recreates_the_archived_head_and_runs_the_preflight(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """AC3: restore recreates the exact archived HEAD off the remote ref."""
+    repo = a_repo(tmp_path)
+    created = _parked_tree(repo, monkeypatch, capsys)
+    head = git("rev-parse", "HEAD", cwd=created).strip()
+    git("push", "-q", "origin", "HEAD:refs/heads/issue-1-parked", cwd=created)
+    run(monkeypatch, repo, "archive", "issue-1", "--ref", "refs/heads/issue-1-parked")
+    capsys.readouterr()
+
+    code = run(monkeypatch, repo, "restore", "issue-1", "--ref", "refs/heads/issue-1-parked")
+    printed = lines_of(capsys)
+    assert code == 0
+    assert printed[0] == "ok=worktree_restored"
+    assert f"worktree={created}" in printed
+    assert "preflight=clean" in printed
+    assert git("rev-parse", "HEAD", cwd=created).strip() == head
+    assert (created / "work.md").exists()
+
+
+def test_restore_over_an_occupied_tree_refuses_like_add(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """AC3: restore runs the same exclusivity check as add."""
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")  # occupies the name
+    main_sha = git("rev-parse", "origin/main", cwd=repo).strip()
+    git("push", "-q", "origin", f"{main_sha}:refs/heads/issue-1-parked", cwd=repo)
+    capsys.readouterr()
+
+    code = run(monkeypatch, repo, "restore", "issue-1", "--ref", "refs/heads/issue-1-parked")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=worktree_occupied"
+
+
+def test_restore_refuses_a_ref_not_on_the_remote(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo = a_repo(tmp_path)
+    code = run(monkeypatch, repo, "restore", "issue-9", "--ref", "refs/heads/missing")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=not_on_remote"
+
+
+def test_restore_without_a_ref_refuses_with_the_example(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo = a_repo(tmp_path)
+    code = run(monkeypatch, repo, "restore", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=invalid_ref"
+    assert "refs/heads/" in printed[-1]
+
+
+def test_done_refuses_unlanded_work_even_when_a_local_ref_names_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """AC4: a local ref naming the HEAD does not make done infer durability."""
+    repo = a_repo(tmp_path)
+    created = _parked_tree(repo, monkeypatch, capsys)
+    head = git("rev-parse", "HEAD", cwd=created).strip()
+    git("update-ref", "refs/heads/issue-1-parked", head, cwd=repo)
+
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=unlanded_work"
+    assert (created / "work.md").exists()

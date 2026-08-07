@@ -252,14 +252,23 @@ fast: check unit mutation
 #   just worktree list             the hygiene sweep: every registration, its
 #                                  state, its unlanded count, which are stale
 #   just worktree done issue-214   verify clean and landed, then remove
+#   just worktree archive issue-214 --ref refs/heads/issue-214-parked
+#                                  verify the tree is clean and the named
+#                                  remote ref resolves to its exact HEAD, then
+#                                  remove. The ref is read, never created or
+#                                  moved — an archive is not a landing (#272)
+#   just worktree restore issue-214 --ref refs/heads/issue-214-parked
+#                                  recreate a detached worktree from that exact
+#                                  remote ref and run the same pre-flight as add
 #
 # Refusals are named and each says what was found and what to do:
 # worktree_occupied (naming the other holder), dirty_tree, unverified,
-# stale_registration, unlanded_work, no_such_worktree, invalid_name, git_failed. Nothing here
-# resets, cleans, prunes or removes on a refusal path — foreign files mean stop
-# and report, and the judgement of what a refusal means stays the agent's.
-worktree action="check" name="":
-    uv run python tools/worktree.py {{ action }} "{{ name }}"
+# stale_registration, unlanded_work, no_such_worktree, invalid_name, invalid_ref,
+# not_on_remote, ref_mismatch, git_failed. Nothing here resets, cleans, prunes or
+# removes on a refusal path — foreign files mean stop and report, and the
+# judgement of what a refusal means stays the agent's.
+worktree action="check" name="" ref="":
+    uv run python tools/worktree.py {{ action }} "{{ name }}" --ref "{{ ref }}"
 
 # The landing protocol as one call (#213, ADR-0049): fetch, rebase onto
 # origin/main, re-gate, `git push origin HEAD:main`, then fast-forward the main
