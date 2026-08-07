@@ -311,7 +311,7 @@ what each additional root or flag actually bought; none uses an approvals or san
 | **`d-20260806-164224-c3591c`** | `workspace-write`, the main checkout added to `writable_roots`, and `network_access=true` | `git add` produced the identical `index.lock` refusal. `just check`, `just unit` and `just fast` each stopped before tests when `uv` could not create a temporary lock file under `~/.cache/uv`. Thus the checkout root did not make its `.git` metadata writable, and the gate needed a second path outside the checkout. This run did not reach the network. |
 | **`d-20260806-164858-905eb2` and its two follow-ups** | first the same checkout root and network flag, then explicit `.git` and UV-cache roots | The one-command probe wrote beside `.git` (`MAINROOT_OK`), was refused at `.git/p2`, and reached the network (`NET_HTTP_200`). Naming `.git` as its own root was then honoured. With the main checkout, its `.git`, and `~/.cache/uv` named separately, the whole gate ran green. It ran green again after `~/.cargo` was removed from the roots, so this warm box did not need a cargo-cache grant. |
 | **`d-20260806-165944-1b31e5`, from policy commit `82a0d16`** | the main checkout, its common `.git`, and the UV cache as roots, plus `network_access=true` | The session started in the requested linked worktree, but `git add` exited 128 when it tried to create `<main>/.git/worktrees/issue-259-codex/index.lock`: the common `.git` grant did not include that nested Git directory. The dispatch then retried outside the sandbox with explicit approval and completed its landing there. Its green therefore proved Guardian's approval path, not the `workspace-write` policy under test. |
-| **this corrective dispatch, under policy commit `a7a7e41`** | the main checkout, the linked worktree Git directory, the common Git directory, and the UV cache as roots, plus `network_access=true` | This is the end-to-end measurement the preceding dispatch could not supply: revise this paragraph, then run `git add`, `git commit`, `just fast`, and `just land` without an escalation or bypass. Any sandbox refusal is the result and stops the run; the per-command outcomes and full landing transcript accompany this dispatch. |
+| **`d-20260806-172045-9a0a0e`, under policy commit `a7a7e41`** | the main checkout, the linked worktree Git directory, the common Git directory, and the UV cache as roots, plus `network_access=true` | `git add` and `git commit` exited 0 under the sandbox with **no escalation** (commit `fb093fe`), which is what the widened set was meant to buy. `just fast` then went red on `cog check` — the gate's first step — with `failed to open repository … could not find repository at '<main>/.git/worktrees/issue-259-codex/'`. The run correctly treated that red as the result and did not run `just land`. The four-root set therefore buys the commit and not the gate: the lane's ceiling under it is commit-without-landing, carried as #265. |
 
 The split is now concrete. Plain `workspace-write` gives the dispatched session its working
 directory, so repository files can be read and edited. A root naming the main checkout does
@@ -337,14 +337,33 @@ run the gate. The **network flag** permits the fetch and push path. A cold Rust 
 registry remains unverified: removing `~/.cargo` proved only that the warm-box gate did not
 write there, and no broader home-directory grant follows.
 
+The corrected set commits and does not gate, and the reason is worth stating against #265's
+first suspect. That issue named Landlock rule composition as the likely cause, but the
+recorded refusals are not Landlock-shaped. Every write refusal across these dispatches reads
+`Read-only file system` (EROFS), which a read-only *mount* produces; a Landlock denial reads
+`EACCES` (`Permission denied`), and never EROFS. The gate's own failure is not
+permission-shaped either — `cog` reports `could not find repository` (`NotFound`), not a
+denied open. The Codex package bundles `bwrap`, and the evidence is consistent with a
+bubblewrap mount-namespace sandbox: a read-only bind of the host with read-write binds for
+the working directory and each `writable_root`. What this settles is narrow but decisive: the
+mechanism is mount-based, not Landlock, and no read right is being stripped — the writes that
+succeed do so because their roots are read-write binds, and the gate fails because libgit2
+opens the repository differently than git does. Why granting the per-worktree Git directory
+as a writable root then defeats libgit2's discovery — while git, addressing the same files by
+absolute path, is unaffected — is the open question #265 carries. The confirming experiment,
+a live dispatch reading `/proc/self/mountinfo` and the failing `openat` under each root set,
+has not been run; this paragraph states what the recorded error strings already prove and
+marks the rest as open.
+
 There is a separate containment fact, and it must not be mistaken for a sandbox-policy
 finding. This box has `approvals_reviewer = "auto_review"`; it approved the predecessor's
 request to run outside the sandbox, and that is how the predecessor completed its green
 landing after the in-sandbox `git add` refusal. Thus `workspace-write` did refuse the write,
 but the box is not configured to make that sandbox a hard boundary against an approved
 escalation. The corrected policy does not require that authority. The corrective dispatch
-deliberately neither requests nor approves escalation, so only its un-escalated command
-sequence can prove the loop under the sandbox alone.
+(`d-20260806-172045-9a0a0e`) deliberately neither requested nor approved an escalation, and
+its un-escalated sequence did commit; it did not prove the loop, because `cog check` went red
+before `just land` could run (#265).
 
 ## 9. What a reader should not take from this
 

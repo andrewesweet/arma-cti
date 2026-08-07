@@ -185,7 +185,11 @@ running `cog check` under each root set in the same worktree at the same commit:
 
 `cog` reads the repository through libgit2, and granting the per-worktree git directory as
 a *writable* root is what stops libgit2 opening it — the same directory it opens without
-complaint outside the sandbox, and under the three-root set. So the widened lane can commit
+complaint outside the sandbox, and under the three-root set. The refusals read
+`Read-only file system` (EROFS), not the `EACCES` a Landlock denial produces, so the sandbox
+is mount-based (Codex bundles `bwrap`) rather than Landlock-based; #265's "Landlock
+composition" first-suspect is refuted by its own recorded evidence, and the precise mount
+interaction that defeats libgit2 is its open question. So the widened lane can commit
 or it can gate, and not both. Dispatch `d-20260806-172045-9a0a0e` is the end-to-end attempt:
 it committed its own work at `fb093fe` under the sandbox with no escalation, stopped on that
 red as it was told to, and did not land. Carried as its own issue rather than stretched into
