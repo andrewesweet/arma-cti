@@ -21,7 +21,7 @@ import os
 import subprocess
 import sys
 import time
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import pytest
 from conftest import REPO, load_tool
@@ -47,7 +47,7 @@ def store(tmp_path: Path) -> Any:  # noqa: ANN401 — a tools/ module loads dyna
     return breaker.Store(
         directory=tmp_path / "breaker",
         endpoint=DEAD_ENDPOINT,
-        quota_reader=lambda lane, credentials, now: breaker.QuotaReading(
+        quota_reader=lambda lane, _credentials, now: breaker.QuotaReading(
             lane=lane,
             source="zai_usage",
             estimated=False,
@@ -426,7 +426,7 @@ def test_the_zai_reader_uses_the_private_credential_and_queries_once(
 
         status = 200
 
-        def __enter__(self) -> Response:
+        def __enter__(self) -> Self:
             return self
 
         def __exit__(self, *unused: object) -> None:
@@ -544,7 +544,7 @@ def test_a_healthy_zai_reading_reopens_a_held_lane_and_names_the_evidence(
     )
     reads: list[float] = []
 
-    def quota_reader(lane: str, credentials: Path, now: float) -> Any:  # noqa: ANN401
+    def quota_reader(lane: str, _credentials: Path, now: float) -> Any:  # noqa: ANN401
         reads.append(now)
         return healthy._replace(lane=lane, observed_at=now)
 
@@ -559,8 +559,10 @@ def test_a_healthy_zai_reading_reopens_a_held_lane_and_names_the_evidence(
 
     assert reads == [NOW + 10], "the held lane asks the first-party feed exactly once"
     assert lines == (
-        "lane=zai dispatch=allowed reopened=evidence source=zai_usage "
-        "why=zai_usage answered with quota to spare, so the lane is serving",
+        (
+            "lane=zai dispatch=allowed reopened=evidence source=zai_usage "
+            "why=zai_usage answered with quota to spare, so the lane is serving"
+        ),
     )
     assert breaker.read_state(tmp_path / "breaker", "zai").circuit.state == breaker.CLOSED
 
@@ -589,7 +591,7 @@ def test_an_exhausted_zai_reading_does_not_reopen_without_serving_evidence(
     state = breaker.Store(
         directory=tmp_path / "breaker",
         endpoint=DEAD_ENDPOINT,
-        quota_reader=lambda lane, credentials, now: exhausted,
+        quota_reader=lambda _lane, _credentials, _now: exhausted,
     )
     breaker.record_outcome(state, "zai", breaker.Outcome(breaker.QUOTA_EXHAUSTED), NOW)
 
@@ -613,7 +615,7 @@ def test_a_held_zai_lane_stays_held_when_the_automatic_read_has_no_evidence(
     state = breaker.Store(
         directory=tmp_path / "breaker",
         endpoint=DEAD_ENDPOINT,
-        quota_reader=lambda lane, credentials, now: absent,
+        quota_reader=lambda _lane, _credentials, _now: absent,
     )
     breaker.record_outcome(state, "zai", breaker.Outcome(breaker.QUOTA_EXHAUSTED), NOW)
 

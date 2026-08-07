@@ -429,6 +429,9 @@ ZAI_USAGE_URL: Final = "https://api.z.ai/api/monitor/usage/quota/limit"
 ZAI_USAGE_SOURCE: Final = "zai_usage"
 ZAI_KEY_NAME: Final = "ZAI_API_KEY"
 ZAI_USAGE_TIMEOUT_SECS: Final = 10
+HTTP_OK: Final = 200
+CREDENTIALS_FILE_MODE: Final = 0o600
+MINIMUM_MILLISECOND_EPOCH: Final = 1_000_000_000_000
 DEFAULT_CREDENTIALS: Final = Path.home() / ".arma-cti" / "credentials.env"
 
 FIVE_HOURS_SECS: Final = 5 * 3600
@@ -688,7 +691,7 @@ def _future_epoch_milliseconds(value: object, now: float) -> float | None:
     except ValueError:
         return None
     epoch = milliseconds / 1000.0
-    return epoch if milliseconds >= 1_000_000_000_000 and epoch > now else None
+    return epoch if milliseconds >= MINIMUM_MILLISECOND_EPOCH and epoch > now else None
 
 
 def reading_from_zai_usage(payload: Mapping[str, object], lane: str, now: float) -> QuotaReading:
@@ -739,7 +742,7 @@ def reading_from_zai_usage(payload: Mapping[str, object], lane: str, now: float)
 def _credential(path: Path, name: str) -> tuple[str, str]:
     """Read one named secret as data, only from the repository's required 0600 file."""
     try:
-        if stat.S_IMODE(path.stat().st_mode) != 0o600:
+        if stat.S_IMODE(path.stat().st_mode) != CREDENTIALS_FILE_MODE:
             return "", "credentials_mode"
         lines = path.read_text(encoding="utf-8").splitlines()
     except OSError:
@@ -755,26 +758,15 @@ def _credential(path: Path, name: str) -> tuple[str, str]:
     return "", "credential_absent"
 
 
-def query_first_party_quota(lane: str, credentials: Path, now: float) -> QuotaReading:
-    """Query the first-party quota source once, with no retry and no model prompt."""
-    if lane != "zai":
-        return _unavailable_zai_reading(lane, now, "feed_absent")
-    token, unavailable = _credential(credentials, ZAI_KEY_NAME)
-    if unavailable:
-        return _unavailable_zai_reading(lane, now, unavailable)
-    request = urllib.request.Request(  # noqa: S310 — this is the fixed HTTPS URL above
-        ZAI_USAGE_URL,
-        headers={
-            "Authorization": token,
-            "Accept-Language": "en-US,en",
-            "Content-Type": "application/json",
-        },
-    )
+def _read_zai_quota_response(
+    request: urllib.request.Request, lane: str, now: float
+) -> QuotaReading:
+    """Translate the first-party response or its absence into one typed reading."""
     try:
         with urllib.request.urlopen(  # noqa: S310 — the request URL is not caller-controlled
             request, timeout=ZAI_USAGE_TIMEOUT_SECS
         ) as response:
-            if response.status != 200:
+            if response.status != HTTP_OK:
                 return _unavailable_zai_reading(lane, now, f"http_{response.status}")
             payload = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as error:
@@ -784,6 +776,24 @@ def query_first_party_quota(lane: str, credentials: Path, now: float) -> QuotaRe
     if not isinstance(payload, dict):
         return _unavailable_zai_reading(lane, now, "document_not_object")
     return reading_from_zai_usage(payload, lane, now)
+
+
+def query_first_party_quota(lane: str, credentials: Path, now: float) -> QuotaReading:
+    """Query the first-party quota source once, with no retry and no model prompt."""
+    if lane != "zai":
+        return _unavailable_zai_reading(lane, now, "feed_absent")
+    token, unavailable = _credential(credentials, ZAI_KEY_NAME)
+    if unavailable:
+        return _unavailable_zai_reading(lane, now, unavailable)
+    request = urllib.request.Request(
+        ZAI_USAGE_URL,
+        headers={
+            "Authorization": token,
+            "Accept-Language": "en-US,en",
+            "Content-Type": "application/json",
+        },
+    )
+    return _read_zai_quota_response(request, lane, now)
 
 
 def zai_is_peak(at: float) -> bool:
