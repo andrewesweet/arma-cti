@@ -47,6 +47,12 @@ diagnosis whose plausible wrong fix would also have gone green.
 CLAUDE.md already draws this line between fable and opus, on exactly this reasoning. Reusing it
 means no new safety argument is needed, only a new provider.
 
+Time-boxed exception (human ruling on #217, 2026-08-06): until `2026-08-10T14:00Z`, retros may run
+as the `fable` seat on the `codex` lane at profile `codex-sol-xhigh`. This suspends Decision 2 for
+that triple only; the clock reapplies the standing bar at the expiry instant without a revocation.
+Every other fable-on-foreign route remains ineligible throughout, and the orchestrator seat remains
+ineligible on every foreign lane.
+
 ## Decision 3: review is eligible, and provider diversity is the point
 
 A review's output is claims, not commits. Each claim names a file, a line and a failure scenario,

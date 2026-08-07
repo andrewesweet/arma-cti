@@ -1,6 +1,6 @@
 # Recovering an interrupted agent
 
-> Status: validated ×17 — first two uses as a written procedure, both 2026-08-01: #21's
+> Status: validated ×18 — first two uses as a written procedure, both 2026-08-01: #21's
 > agent dead mid-Arma-run, and one silent stall mid-turn with the run still live. Three
 > more on #46 in one cycle (mid-pass, post-pass, post-commit), every briefing written to
 > this document's three-part contract, every resumption clean. What failed in that cycle
@@ -83,7 +83,10 @@
 > states the fault and the correction — wall-clock-matched idle controls in ABBA
 > order (`R Q Q R R Q`). A death as an accidental reviewer, and honesty under sunk
 > cost; evidence under `~/.arma-cti/runs/20260805T2302Z-readarm-237/` and its
-> completion sibling.
+> completion sibling. Eighteenth use (2026-08-06): #260's and #270's first z.ai
+> dispatches each ended on one provider 429, then resumed on Codex from an explicit
+> resumption briefing and completed — the contract's first use across a lane change
+> rather than a restarted session on one provider, no amendment needed.
 
 Improvised identically three times across 2026-08-01 (docs/process-log.md), then codified
 (ADR-0024). The governing instruction, from which everything below follows:

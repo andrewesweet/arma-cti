@@ -123,6 +123,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   already named, so a caller asking whether one quoted SHA belongs to a dispatch can be answered
   without re-deriving the window. The ledger's own row is unchanged.
 
+### Changed
+
+- **Retro 26's amendments are on the process surfaces the human approved them for.** CLAUDE.md's
+  Model roles no longer call fable the orchestration seat and say that the opus/high tier carries
+  the orchestration standing loop for #242's ten-cycle trial; the command table gains rows for `just
+  queue`, `just brief` and `just recover`, and its `just admission` row is replaced by one covering
+  the `audit` and `trial-*` surfaces rather than joined by a second home. The process banner reads
+  twenty-six retros.
+
+  The temporary route is stated in three places and expires by clock rather than by revocation:
+  until `2026-08-10T14:00Z`, retros may run as the `fable` seat on the `codex` lane at profile
+  `codex-sol-xhigh`. CLAUDE.md's foreign-lane paragraph, the `just dispatch` row's *Run when* column
+  and ADR-0061 Decision 2 all name that instant, and `tools/dispatch.py` is what reapplies the
+  standing bar at it.
+
+  Four validated markers move on the exemplars retro 26 named: failure classes ×10 → ×11 on
+  #260/#270's two typed `quota_exhausted` reroutes, elimination-context ×12 → ×13 on #254's
+  re-derived diagnosis, and the recovery runbook ×17 → ×18 on the same two lane-changing resumption
+  briefings. Both CLAUDE.md lists stay at five exemplars, with the dropped #83 and #147 entries
+  archived verbatim in `docs/process-log.md` per #201/ADR-0060. The retro skill's approved ×25 → ×26
+  is not in this landing and remains outstanding; every other count is unchanged.
+
 ### Fixed
 
 - **A `zai` dispatch's own credential no longer reds the gate it was just granted.**
