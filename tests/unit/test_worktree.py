@@ -596,6 +596,13 @@ def test_classify_archive_refuses_a_missing_tree_like_done() -> None:
     )
 
 
+def test_classify_archive_refuses_an_unreadable_status() -> None:
+    """AC2: an unreadable status fails closed before any removal or ref check."""
+    refusal = worktree.classify_archive(Path("/w"), holder(status=None), "refs/heads/x", "2222222")
+    assert refusal.kind == "git_failed"
+    assert "Nothing was removed" in refusal.action
+
+
 def _parked_tree(
     repo: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -686,6 +693,32 @@ def test_archive_refuses_uncommitted_files_and_keeps_them(
     assert code == 1
     assert printed[0] == "refusal=dirty_tree"
     assert theirs.exists()
+
+
+def test_archive_fails_closed_when_the_remote_is_unreadable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """AC2: an unreadable remote is `git_failed`, and the tree and ref are left alone."""
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+    main_sha = git("rev-parse", "origin/main", cwd=repo).strip()
+    git("push", "-q", "origin", f"{main_sha}:refs/heads/issue-1-parked", cwd=repo)
+    real_git = worktree.git
+
+    def fake_git(*args: str, cwd: Path, check: bool = True) -> str:
+        if args[:1] == ("ls-remote",):
+            raise worktree.GitError(args, "could not reach origin")
+        return real_git(*args, cwd=cwd, check=check)
+
+    monkeypatch.setattr(worktree, "git", fake_git)
+    code = run(monkeypatch, repo, "archive", "issue-1", "--ref", "refs/heads/issue-1-parked")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=git_failed"
+    assert created.exists()
+    assert git("ls-remote", "origin", "refs/heads/issue-1-parked", cwd=repo).split()[0] == main_sha
 
 
 def test_archive_without_a_ref_refuses_with_the_example(
