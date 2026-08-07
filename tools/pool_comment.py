@@ -10,12 +10,13 @@ figure matching by luck. A rendered quote cannot be hallucinated. It matters
 more than it looks, because the pool prune deletes passes and keeps failures,
 so pass evidence outlives its own directory only in the quote.
 
-So this reads, and it renders. It does not decide, and it does not post. The
-failure-class table's required-response column is the agent's work;
-`infra_unavailable` is printed as the stop it is rather than interpreted; and
-the body goes to stdout for an agent to read, judge and paste (criterion 7).
-Nor does it say "full corpus": a record cannot tell a whole corpus from an
-`--issues` selection, and claiming the wrong one is exactly the unearned
+So this reads, and it renders. It does not decide. With `--post`, it validates
+the named issue and gives these same rendered bytes to `gh` in one comment
+call; without it, the body goes to stdout for an agent to read and judge. The
+failure-class table's required-response column is still the agent's work, and
+`infra_unavailable` is printed as the stop it is rather than interpreted. Nor
+does the renderer say "full corpus": a record cannot tell a whole corpus from
+an `--issues` selection, and claiming the wrong one is exactly the unearned
 figure this exists to stop.
 
 Three rules keep the rendered body honest:
@@ -39,9 +40,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from pathlib import Path
-from typing import Final
+from typing import Final, Protocol
 
 # tools/ holds standalone scripts rather than an importable package, so a
 # sibling import needs the script's own directory on the path — the device
@@ -52,6 +54,14 @@ from pool_merge import ProbeRow, merged_from_pool, render_summary, severity, wor
 
 DEFAULT_RUNS_DIR: Final = Path.home() / ".arma-cti" / "runs"
 POOL_GLOB: Final = "*-pool"
+GH_TIMEOUT_SECS: Final = 30
+ISSUE_NOT_FOUND: Final = "Could not resolve to an issue or pull request"
+NO_POOL: Final = "no_pool"
+POOL_UNREADABLE: Final = "pool_unreadable"
+POOL_REQUIRED_FOR_POST: Final = "pool_required_for_post"
+MISSING_ISSUE_NUMBER: Final = "missing_issue_number"
+ISSUE_NOT_FOUND_REFUSAL: Final = "issue_not_found"
+GH_FAILURE: Final = "gh_failure"
 
 # What the failure-class table requires of a reader who meets this class, said
 # in the banner rather than left to the reader's memory: it is not a result, so
@@ -61,6 +71,38 @@ STOP_CLASS: Final = "infra_unavailable"
 
 class RefusalError(Exception):
     """A record this tool will not render, and the reason a reader needs."""
+
+    def __init__(self, kind: str, detail: str) -> None:
+        """Store the stable refusal name alongside its human-readable detail."""
+        super().__init__(detail)
+        self.kind = kind
+
+
+class Runner(Protocol):
+    """The one process seam posting needs, replaceable without a live `gh`."""
+
+    def __call__(
+        self, argv: list[str], body: str | None = None
+    ) -> subprocess.CompletedProcess[str]:
+        """Run one command, optionally supplying a comment body on stdin."""
+        ...
+
+
+def run_command(argv: list[str], body: str | None = None) -> subprocess.CompletedProcess[str]:
+    """Run one bounded `gh` command without letting its own output enter the body."""
+    return subprocess.run(  # noqa: S603 -- fixed gh argv, issue is a validated integer
+        argv,
+        input=body,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=GH_TIMEOUT_SECS,
+    )
+
+
+def refuse(kind: str, detail: str) -> RefusalError:
+    """Build one typed refusal at the point that knows its name."""
+    return RefusalError(kind, detail)
 
 
 def _text(document: dict[str, object], key: str) -> str:
@@ -105,25 +147,25 @@ def resolve(target: Path) -> Path:
         return artefact
     if not target.exists():
         message = f"no such path: {target}"
-        raise RefusalError(message)
+        raise refuse(POOL_UNREADABLE, message)
     if (target / "verdict.json").is_file():
         message = (
             f"{target} is one probe's evidence, not a pool's: it carries a verdict.json "
             f"and no pool.json. Point at the {POOL_GLOB} directory the run wrote beside it."
         )
-        raise RefusalError(message)
+        raise refuse(POOL_UNREADABLE, message)
     if not target.name.endswith("-pool"):
         message = (
             f"{target} is not a pool evidence directory: no pool.json, and the name is not "
             f"the {POOL_GLOB} a run writes."
         )
-        raise RefusalError(message)
+        raise refuse(POOL_UNREADABLE, message)
     message = (
         f"no pool.json in {target} — the run died before its merge, so no verdict set was "
         f"ever written. An evidence directory with no verdict is not a result (ADR-0022), "
         f"and nothing has been rendered."
     )
-    raise RefusalError(message)
+    raise refuse(POOL_UNREADABLE, message)
 
 
 def read_pool(artefact: Path) -> dict[str, object]:
@@ -135,16 +177,16 @@ def read_pool(artefact: Path) -> dict[str, object]:
             f"{artefact} is not a readable JSON document ({failure}) — a half-written "
             f"record is not a result, and nothing has been rendered."
         )
-        raise RefusalError(message) from failure
+        raise refuse(POOL_UNREADABLE, message) from failure
     if not isinstance(document, dict):
         message = f"{artefact} is not a readable JSON object, so there is nothing to quote."
-        raise RefusalError(message)
+        raise refuse(POOL_UNREADABLE, message)
     if not (document.get("verdicts") or document.get("not_run") or document.get("stopped_early")):
         message = (
             f"{artefact} records no verdict, no unrun probe and no stop: nothing was "
             f"measured, so there is nothing to quote."
         )
-        raise RefusalError(message)
+        raise refuse(POOL_UNREADABLE, message)
     return document
 
 
@@ -307,36 +349,110 @@ def comment_for(artefact: Path) -> list[str]:
     ]
 
 
+def rendered_body(artefact: Path) -> str:
+    """Return the exact bytes printed or posted, assembled and terminated once."""
+    return "\n".join(comment_for(artefact)) + "\n"
+
+
+def issue_number(value: str) -> int:
+    """Read a positive issue number without letting an arbitrary gh argument through."""
+    if not value.isascii() or not value.isdecimal() or int(value) < 1:
+        message = "--post requires a positive issue number"
+        raise refuse(MISSING_ISSUE_NUMBER, message)
+    return int(value)
+
+
+def call_gh(
+    run: Runner, argv: list[str], body: str | None = None
+) -> subprocess.CompletedProcess[str]:
+    """Turn an unavailable or timed-out process seam into the same named gh refusal."""
+    try:
+        return run(argv, body)
+    except (OSError, subprocess.TimeoutExpired) as failure:
+        message = f"{' '.join(argv)} could not run: {failure}"
+        raise refuse(GH_FAILURE, message) from failure
+
+
+def post(issue: int, body: str, run: Runner = run_command) -> None:
+    """Validate the issue, then make one mutation with the already-rendered body.
+
+    Everything that can be checked locally or through a read happens before the
+    comment call. `--body-file -` keeps the body off argv and gives gh the same
+    string stdout receives; there is no summary, re-render, or temporary copy.
+    """
+    check = call_gh(
+        run,
+        ["gh", "issue", "view", str(issue), "--json", "number", "--jq", ".number"],
+    )
+    if check.returncode != 0:
+        detail = check.stderr.strip() or check.stdout.strip() or "gh returned no detail"
+        if ISSUE_NOT_FOUND in detail:
+            message = f"issue #{issue} does not exist: {detail}"
+            raise refuse(ISSUE_NOT_FOUND_REFUSAL, message)
+        message = f"could not validate issue #{issue}: {detail}"
+        raise refuse(GH_FAILURE, message)
+    if check.stdout.strip() != str(issue):
+        detail = check.stdout.strip() or "empty response"
+        message = f"issue #{issue} validation returned {detail!r}"
+        raise refuse(GH_FAILURE, message)
+
+    posted = call_gh(
+        run,
+        ["gh", "issue", "comment", str(issue), "--body-file", "-"],
+        body,
+    )
+    if posted.returncode != 0:
+        detail = posted.stderr.strip() or posted.stdout.strip() or "gh returned no detail"
+        message = f"could not post to issue #{issue}: {detail}"
+        raise refuse(GH_FAILURE, message)
+
+
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """One door: a pool to read, defaulting to the newest one on this machine."""
+    """One door: reads may default to newest; durable posts may not."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "pool",
         nargs="?",
         default="",
-        help="a pool evidence directory or its pool.json; default is the newest pool",
+        help="a pool evidence directory or its pool.json; reads default to the newest pool",
+    )
+    parser.add_argument(
+        "--post",
+        nargs="?",
+        const="",
+        default=None,
+        metavar="ISSUE",
+        help="post to ISSUE; requires an explicit pool path",
     )
     parser.add_argument("--runs-dir", type=Path, default=DEFAULT_RUNS_DIR)
     return parser.parse_args(argv)
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Print the body an agent reads, judges and pastes. Never post it."""
+def main(argv: list[str] | None = None, *, run: Runner = run_command) -> int:
+    """Render once, then print it or post it as one terminal operation."""
     args = parse_args(argv)
     try:
+        issue = issue_number(args.post) if args.post is not None else None
+        if issue is not None and not args.pool:
+            message = "--post requires an explicit pool directory or pool.json"
+            raise refuse(POOL_REQUIRED_FOR_POST, message)
         if args.pool:
             artefact = resolve(Path(args.pool))
         else:
             artefact = newest_pool(args.runs_dir)
             if artefact is None:
                 message = f"no pool evidence under {args.runs_dir}, so there is nothing to quote."
-                raise RefusalError(message)  # noqa: TRY301 — one refusal path, one handler
-        body = comment_for(artefact)
+                raise refuse(NO_POOL, message)
+        body = rendered_body(artefact)
+        if issue is not None:
+            post(issue, body, run)
+            return 0
     except RefusalError as refusal:
-        print(f"[verdict] {refusal}", file=sys.stderr)  # noqa: T201 — a CLI's refusal channel
+        print(  # noqa: T201 -- a CLI's refusal channel
+            f"[verdict] refusal={refusal.kind} detail={refusal}", file=sys.stderr
+        )
         return 2
-    for line in body:
-        print(line)  # noqa: T201 — the body IS this script's output
+    sys.stdout.write(body)
     return 0
 
 

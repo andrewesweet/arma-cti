@@ -9,15 +9,16 @@ tool's job is reading records it did not write. Their evidence paths are
 relocated into each test's own directory on the way in, so no test reads — or
 depends on the survival of — the evidence the fixture was captured from.
 
-Two of the criteria are structural rather than textual and are asserted as
-such: the per-probe block is `pool_merge.render_summary`'s output compared line
-for line (criterion 2), and the renderer cannot post because it has no way to
-(criterion 7).
+The runner-owned per-probe block is asserted against
+`pool_merge.render_summary` line for line. Posting is driven through a fake
+process seam: the tests prove the comment body is the renderer's exact string,
+and that every refusal before the one mutation makes no comment call.
 """
 
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -68,6 +69,13 @@ def probe_evidence(runs: Path, probe: str, **fields: object) -> Path:
 def rendered(target: Path) -> str:
     """Render the body the tool would hand an agent to paste."""
     return "\n".join(pool_comment.comment_for(pool_comment.resolve(target)))
+
+
+def completed(
+    argv: list[str], returncode: int = 0, stdout: str = "", stderr: str = ""
+) -> subprocess.CompletedProcess[str]:
+    """One staged process result for the posting seam."""
+    return subprocess.CompletedProcess(argv, returncode, stdout, stderr)
 
 
 def test_a_green_pool_states_its_worst_class_count_wall_sha_and_evidence(tmp_path: Path) -> None:
@@ -230,6 +238,7 @@ def test_a_pool_directory_with_no_pool_json_is_refused_as_a_run_that_died(
     captured = capsys.readouterr()
     assert exit_code == 2
     assert captured.out == ""
+    assert "refusal=pool_unreadable" in captured.err
     assert "ADR-0022" in captured.err
 
 
@@ -269,6 +278,7 @@ def test_a_half_written_record_is_refused_rather_than_partly_rendered(
     captured = capsys.readouterr()
     assert exit_code == 2
     assert captured.out == ""
+    assert "refusal=pool_unreadable" in captured.err
     assert "not a readable" in captured.err
 
 
@@ -293,6 +303,7 @@ def test_no_pool_at_all_under_the_runs_directory_is_refused(
     captured = capsys.readouterr()
     assert exit_code == 2
     assert captured.out == ""
+    assert "refusal=no_pool" in captured.err
     assert "no pool evidence" in captured.err
 
 
@@ -309,9 +320,148 @@ def test_the_body_goes_to_stdout_and_the_run_reports_success(
     assert captured.err == ""
 
 
-def test_the_renderer_has_no_way_to_post_what_it_renders(tmp_path: Path) -> None:
-    source = (REPO / "tools" / "pool_comment.py").read_text(encoding="utf-8")
+def test_post_sends_the_rendered_body_verbatim_in_one_comment_call(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    pool = staged(tmp_path)
+    calls: list[tuple[list[str], str | None]] = []
 
-    assert "subprocess" not in source
-    assert "gh issue comment" not in source
-    assert rendered(staged(tmp_path))
+    def gh(argv: list[str], body: str | None = None) -> subprocess.CompletedProcess[str]:
+        calls.append((argv, body))
+        if argv[2] == "view":
+            return completed(argv, stdout="235\n")
+        return completed(argv, stdout="https://github.test/comment/1\n")
+
+    exit_code = pool_comment.main(["--post", "235", str(pool)], run=gh)
+
+    captured = capsys.readouterr()
+    expected = pool_comment.rendered_body(pool / "pool.json")
+    assert exit_code == 0
+    assert captured.out == ""
+    assert captured.err == ""
+    assert calls == [
+        (["gh", "issue", "view", "235", "--json", "number", "--jq", ".number"], None),
+        (["gh", "issue", "comment", "235", "--body-file", "-"], expected),
+    ]
+
+
+def test_post_refuses_to_guess_the_newest_pool_before_calling_gh(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    staged(tmp_path)
+    calls: list[list[str]] = []
+
+    def gh(argv: list[str], _body: str | None = None) -> subprocess.CompletedProcess[str]:
+        calls.append(argv)
+        return completed(argv)
+
+    exit_code = pool_comment.main(["--post", "235", "--runs-dir", str(tmp_path)], run=gh)
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert captured.out == ""
+    assert "refusal=pool_required_for_post" in captured.err
+    assert calls == []
+
+
+def test_post_without_an_issue_number_is_named_and_calls_nothing(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    pool = staged(tmp_path)
+    calls: list[list[str]] = []
+
+    def gh(argv: list[str], _body: str | None = None) -> subprocess.CompletedProcess[str]:
+        calls.append(argv)
+        return completed(argv)
+
+    exit_code = pool_comment.main([str(pool), "--post"], run=gh)
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert captured.out == ""
+    assert "refusal=missing_issue_number" in captured.err
+    assert calls == []
+
+
+def test_an_unreadable_post_pool_refuses_before_calling_gh(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    calls: list[list[str]] = []
+
+    def gh(argv: list[str], _body: str | None = None) -> subprocess.CompletedProcess[str]:
+        calls.append(argv)
+        return completed(argv)
+
+    exit_code = pool_comment.main(["--post", "235", str(tmp_path / "absent-pool")], run=gh)
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert captured.out == ""
+    assert "refusal=pool_unreadable" in captured.err
+    assert calls == []
+
+
+def test_a_nonexistent_issue_refuses_without_a_comment_call(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    pool = staged(tmp_path)
+    calls: list[list[str]] = []
+
+    def gh(argv: list[str], _body: str | None = None) -> subprocess.CompletedProcess[str]:
+        calls.append(argv)
+        return completed(
+            argv,
+            returncode=1,
+            stderr=(
+                "GraphQL: Could not resolve to an issue or pull request with the number of "
+                "235. (repository.issue)"
+            ),
+        )
+
+    exit_code = pool_comment.main(["--post", "235", str(pool)], run=gh)
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert captured.out == ""
+    assert "refusal=issue_not_found" in captured.err
+    assert [call[2] for call in calls] == ["view"]
+
+
+def test_a_gh_read_failure_refuses_without_a_comment_call(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    pool = staged(tmp_path)
+    calls: list[list[str]] = []
+
+    def gh(argv: list[str], _body: str | None = None) -> subprocess.CompletedProcess[str]:
+        calls.append(argv)
+        return completed(argv, returncode=1, stderr="network unavailable")
+
+    exit_code = pool_comment.main(["--post", "235", str(pool)], run=gh)
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert captured.out == ""
+    assert "refusal=gh_failure" in captured.err
+    assert [call[2] for call in calls] == ["view"]
+
+
+def test_a_gh_post_failure_is_named_and_prints_no_partial_body(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    pool = staged(tmp_path)
+    calls: list[list[str]] = []
+
+    def gh(argv: list[str], _body: str | None = None) -> subprocess.CompletedProcess[str]:
+        calls.append(argv)
+        if argv[2] == "view":
+            return completed(argv, stdout="235\n")
+        return completed(argv, returncode=1, stderr="comment rejected")
+
+    exit_code = pool_comment.main(["--post", "235", str(pool)], run=gh)
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert captured.out == ""
+    assert "refusal=gh_failure" in captured.err
+    assert [call[2] for call in calls] == ["view", "comment"]

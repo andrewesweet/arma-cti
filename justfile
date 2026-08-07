@@ -724,10 +724,14 @@ brief issue *args:
 prereqs action="check" *args:
     uv run python tools/prereqs.py {{ action }} {{ args }}
 
-# Read a finished corpus run's own record as the lines a close quotes (#199).
+# Read or post a finished corpus run's own record as the lines a close quotes
+# (#199, #235).
 # No Arma, no lock: it reads `pool.json` and the per-probe `verdict.json`s and
 # renders. `just verdict` takes the newest pool on this machine; name a pool
-# evidence directory (or its pool.json) to read an older one.
+# evidence directory (or its pool.json) to read an older one. Posting refuses
+# that default: `just verdict --post <issue> <pool>` requires the pool that
+# actually gated the issue, because a newer run on this box may belong to
+# different work.
 #
 # What it prints is the whole of the read — worst class, counts, wall, sha and
 # tree state, the runner's own per-probe block verbatim, and a detail line per
@@ -747,8 +751,9 @@ prereqs action="check" *args:
 # cannot fail that way, because the body carries the SHA and the path by
 # construction.
 #
-# It reads and it renders. Nothing is posted: what a red means, and what the
-# run gates, stay the agent's (the failure-class table's required-response
-# column). `infra_unavailable` is printed as the stop it is, never interpreted.
-verdict pool="":
-    uv run python tools/pool_comment.py {{ pool }}
+# It reads, renders, and optionally posts those exact bytes. What a red means,
+# and what the run gates, stay the agent's (the failure-class table's
+# required-response column). `infra_unavailable` is printed as the stop it is,
+# never interpreted.
+verdict *args:
+    uv run python tools/pool_comment.py {{ args }}
