@@ -19,6 +19,7 @@ import os
 import stat
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -424,7 +425,14 @@ def test_the_recipe_will_not_rewrite_settings_it_cannot_parse(tmp_path: Path) ->
 # ------------------------------------------------------ the tap, run for real
 
 
-def run_tap(payload: str, downstream: str, spool: Path) -> subprocess.CompletedProcess[str]:
+def run_tap(
+    payload: str,
+    downstream: str,
+    spool: Path,
+    *,
+    oauth: bool = False,
+    extra_env: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
     """Drive the real tap script the way Claude Code drives a status line."""
     return subprocess.run(  # noqa: S603
         ["bash", str(REPO / "tools" / "quota_tap.sh"), downstream],  # noqa: S607
@@ -432,7 +440,12 @@ def run_tap(payload: str, downstream: str, spool: Path) -> subprocess.CompletedP
         capture_output=True,
         text=True,
         check=False,
-        env={**os.environ, "CTI_QUOTA_SPOOL": str(spool)},
+        env={
+            **os.environ,
+            "CTI_QUOTA_SPOOL": str(spool),
+            "CTI_QUOTA_OAUTH": "1" if oauth else "0",
+            **(extra_env or {}),
+        },
     )
 
 
@@ -474,7 +487,7 @@ def test_the_tap_with_no_downstream_prints_nothing_and_still_spools(tmp_path: Pa
         capture_output=True,
         text=True,
         check=False,
-        env={**os.environ, "CTI_QUOTA_SPOOL": str(spool)},
+        env={**os.environ, "CTI_QUOTA_SPOOL": str(spool), "CTI_QUOTA_OAUTH": "0"},
     )
     assert result.returncode == 0
     assert result.stdout == ""
@@ -490,11 +503,48 @@ def test_the_tap_rolls_over_rather_than_growing_without_bound(tmp_path: Path) ->
         capture_output=True,
         text=True,
         check=False,
-        env={**os.environ, "CTI_QUOTA_SPOOL": str(spool), "CTI_QUOTA_MAX": "100"},
+        env={
+            **os.environ,
+            "CTI_QUOTA_SPOOL": str(spool),
+            "CTI_QUOTA_MAX": "100",
+            "CTI_QUOTA_OAUTH": "0",
+        },
     )
     assert result.returncode == 0
     assert spool.read_text() == '{"a":1}\n'
     assert (tmp_path / "spool.jsonl.1").read_text() == "x" * 200
+
+
+def test_the_tap_refreshes_oauth_usage_off_the_status_line_path(tmp_path: Path) -> None:
+    marker = tmp_path / "oauth-call"
+    fake = tmp_path / "fake-breaker.sh"
+    fake.write_text(
+        '#!/usr/bin/env bash\npayload="$(cat)"\n'
+        'printf \'%s\\n%s\\n\' "$*" "${payload}" >"${CTI_QUOTA_MARKER}"\n'
+    )
+    payload = '{"model":{"display_name":"Opus"}}'
+
+    done = run_tap(
+        payload,
+        "cat",
+        tmp_path / "spool.jsonl",
+        oauth=True,
+        extra_env={
+            "CTI_QUOTA_BREAKER": str(fake),
+            "CTI_QUOTA_PYTHON": "bash",
+            "CTI_QUOTA_MARKER": str(marker),
+            "CTI_QUOTA_LOCK": str(tmp_path / "oauth.lock"),
+            "CTI_BREAKER_DIR": str(tmp_path / "breaker"),
+        },
+    )
+    deadline = time.monotonic() + 2
+    while not marker.exists() and time.monotonic() < deadline:
+        time.sleep(0.01)
+
+    assert done.stdout == f"{payload}\n"
+    called = marker.read_text(encoding="utf-8")
+    assert "tap --lane claude-native --oauth-usage" in called
+    assert called.endswith(f"{payload}\n")
 
 
 # ------------------------------------------------------------------ codex config

@@ -168,6 +168,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The Claude breaker now sees the limit that actually binds the account.** The quota tap polls
+  `/api/oauth/usage` without delaying the human's status line, selects the `limits[]` entry the
+  provider marks active, and persists its kind and scope so `just breaker state` distinguishes
+  `weekly_scoped` from `weekly_all`. A 429 suppresses another poll until the endpoint's exact
+  `retry-after` boundary; an absent or unreadable header creates no project-chosen wait. The old
+  five-hour and seven-day status-line aggregates remain a fallback when endpoint evidence is
+  unavailable (#261).
+
 - **A `zai` dispatch's own credential no longer reds the gate it was just granted.**
   `test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane` asserted
   `os.environ.get("ANTHROPIC_AUTH_TOKEN") is None` — a precondition of the box rather than anything

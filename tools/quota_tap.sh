@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# The quota tap: spool Claude Code's status-line payload, then hand it on
-# unchanged (#230, for #226's quota feed).
+# The quota tap: refresh Claude's binding limit, spool the status-line payload,
+# then hand it on unchanged (#261, #230, for #226's quota feed).
 #
 # Claude Code renders the status line by piping a JSON payload — which carries
 # the session's token and cost totals — into one command. That payload is the
-# only place this box publishes Claude quota state without asking the API, so
-# #226's breaker reads it. This script sits *ahead* of whatever command was
-# already configured, appends the payload to a spool file, and runs the original
-# command with the same payload on its stdin.
+# fallback quota state. This script also asks `/api/oauth/usage` for its active
+# `limits[]` entry in a detached, single-flight refresh. The endpoint can rate
+# limit its reader; tools/breaker.py persists `retry-after` as the next boundary
+# and will not ask again before it. This script sits *ahead* of whatever command
+# was already configured, appends the payload to a spool file, and runs the
+# original command with the same payload on its stdin.
 #
 # Two properties are load-bearing, and both are why this is bash rather than
 # Python (ADR-0049: the shell is the actual subject here — stdin, a pipe, and an
@@ -33,12 +35,14 @@
 # Environment:
 #   CTI_QUOTA_SPOOL   spool file (default ~/.arma-cti/quota/statusline.jsonl)
 #   CTI_QUOTA_MAX     roll the spool over at this size in bytes (default 8388608)
+#   CTI_QUOTA_OAUTH   set to 0 to disable the endpoint refresh (default 1)
 
 set -uo pipefail
 
 spool="${CTI_QUOTA_SPOOL:-${HOME}/.arma-cti/quota/statusline.jsonl}"
 max_bytes="${CTI_QUOTA_MAX:-8388608}"
 downstream="${1-}"
+oauth="${CTI_QUOTA_OAUTH:-1}"
 
 # Read the payload once. Claude Code sends one JSON object; `$(cat)` strips the
 # trailing newline, and the spool line and the downstream copy each get one back.
@@ -58,6 +62,23 @@ payload="$(cat)"
         printf '%s\n' "${payload}" >>"${spool}" 2>/dev/null || true
     fi
 } || true
+
+# Refresh in the background so a slow endpoint can never delay the human's
+# status line. `flock -n` makes renders single-flight; the Python reader owns
+# every decision, including the provider-published retry boundary.
+if [[ "${oauth}" != "0" ]]; then
+    breaker="${CTI_QUOTA_BREAKER:-$(dirname -- "$0")/breaker.py}"
+    python="${CTI_QUOTA_PYTHON:-python3}"
+    breaker_dir="${CTI_BREAKER_DIR:-${HOME}/.arma-cti/breaker}"
+    lock="${CTI_QUOTA_LOCK:-${HOME}/.arma-cti/quota/oauth.lock}"
+    if mkdir -p -- "$(dirname -- "${lock}")" 2>/dev/null; then
+        (
+            printf '%s\n' "${payload}" | flock -n -- "${lock}" \
+                "${python}" "${breaker}" --breaker-dir "${breaker_dir}" \
+                tap --lane claude-native --oauth-usage
+        ) >/dev/null 2>&1 &
+    fi
+fi
 
 if [[ -z "${downstream}" ]]; then
     exit 0

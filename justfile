@@ -461,10 +461,10 @@ recover *args:
 #
 # `just dispatch` reads the state before it plans anything, so a tripped lane
 # costs nothing to discover. Feeds: the Claude status-line tap (`just prereqs
-# statusline`, #230) and Codex's `account/rateLimits/read` are first-party and
-# may trip a lane; z.ai publishes nothing machine-readable, so its estimate is
-# advisory only and that lane is 429-reactive. `just breaker state` says which
-# lanes are in that degraded mode.
+# statusline`, #230) polls `/api/oauth/usage`, prefers its active `limits[]`
+# entry and honours its `retry-after`; Codex's `account/rateLimits/read` is also
+# first-party. Both may trip a lane. `just breaker state` names the binding
+# limit and scope, and says which lanes are in a degraded mode.
 #
 # It also states each lane's published time-of-day window and which band the
 # clock is in (#238). The breaker does not enforce that window — it trips on

@@ -40,7 +40,7 @@ again in SQF against the same rule shape.
 
 | Lane | Source | May trip a lane? |
 |---|---|---|
-| Claude | status-line stdin: `rate_limits.{five_hour,seven_day}` | yes, first-party |
+| Claude | `/api/oauth/usage`: active `limits[]` | yes, first-party |
 | Codex | `account/rateLimits/read`: `usedPercent`, `resetsAt` | yes, first-party |
 | z.ai | `GET /api/monitor/usage/quota/limit`: `percentage`, `nextResetTime` | yes, first-party |
 
@@ -55,10 +55,14 @@ The z.ai ledger estimator remains deliberately barred from tripping or closing a
 z.ai meters *prompt counts* and the ledger records *dispatches*; one dispatch is many
 prompts, so the estimate is a lower bound in a unit the cap is not denominated in.
 
-The Claude feed has a governance weakness that cannot be fixed here and is therefore
-carried: the status line lives in the human's global `~/.claude/settings.json`, which
-this repository cannot govern, enforce or test, and status lines run only in interactive
-sessions. With the tap unwired the Claude lane is 429-reactive — late, but not blind.
+The Claude tap asks the first-party endpoint in a detached, single-flight refresh and
+prefers the entry the provider marks `is_active`; `just breaker state` preserves its kind
+and scope. A 429 schedules the next read at the endpoint's own `retry-after` boundary and
+never at a duration invented here. The aggregate status-line pair remains a fallback
+when the endpoint cannot answer. The governance weakness remains: the status line lives
+in the human's global `~/.claude/settings.json`, which this repository cannot govern,
+enforce or test, and status lines run only in interactive sessions. With the tap unwired
+the Claude lane is 429-reactive — late, but not blind.
 """
 
 from __future__ import annotations
@@ -429,7 +433,12 @@ ZAI_USAGE_URL: Final = "https://api.z.ai/api/monitor/usage/quota/limit"
 ZAI_USAGE_SOURCE: Final = "zai_usage"
 ZAI_KEY_NAME: Final = "ZAI_API_KEY"
 ZAI_USAGE_TIMEOUT_SECS: Final = 10
+CLAUDE_USAGE_SOURCE: Final = "claude_usage"
+CLAUDE_USAGE_URL: Final = "https://api.anthropic.com/api/oauth/usage"
+CLAUDE_USAGE_TIMEOUT_SECS: Final = 10
+DEFAULT_CLAUDE_CREDENTIALS: Final = Path.home() / ".claude" / ".credentials.json"
 HTTP_OK: Final = 200
+HTTP_TOO_MANY_REQUESTS: Final = 429
 CREDENTIALS_FILE_MODE: Final = 0o600
 MINIMUM_MILLISECOND_EPOCH: Final = 1_000_000_000_000
 DEFAULT_CREDENTIALS: Final = Path.home() / ".arma-cti" / "credentials.env"
@@ -469,6 +478,9 @@ class QuotaReading(NamedTuple):
     unavailable: str
     observed_at: float
     unit: str = "prompts"
+    binding: str = ""
+    scope: str = ""
+    retry_at: float | None = None
 
     @property
     def available(self) -> bool:
@@ -491,6 +503,9 @@ class QuotaReading(NamedTuple):
             "unavailable": self.unavailable,
             "observed_at": self.observed_at,
             "unit": self.unit,
+            "binding": self.binding,
+            "scope": self.scope,
+            "retry_at": self.retry_at,
             "windows": [
                 {"name": w.name, "used_fraction": w.used_fraction, "resets_at": w.resets_at}
                 for w in self.windows
@@ -517,6 +532,9 @@ def reading_from_document(document: Mapping[str, object]) -> QuotaReading:
         unavailable=str(document.get("unavailable", "")),
         observed_at=float(document.get("observed_at", 0.0) or 0.0),
         unit=str(document.get("unit", "prompts")),
+        binding=str(document.get("binding", "")),
+        scope=str(document.get("scope", "")),
+        retry_at=None if document.get("retry_at") is None else float(document["retry_at"]),
     )
 
 
@@ -560,6 +578,156 @@ def _window_from_status_line(name: str, block: object) -> QuotaWindow | None:
     )
 
 
+def _scope_name(value: object) -> str:
+    """Render the provider's binding scope without discarding what kind of scope it is."""
+    if not isinstance(value, dict):
+        return "all"
+    parts: list[str] = []
+    model = value.get("model")
+    if isinstance(model, dict):
+        name = model.get("display_name") or model.get("id")
+        if isinstance(name, str) and name:
+            parts.append(f"model:{name}")
+    surface = value.get("surface")
+    if isinstance(surface, str) and surface:
+        parts.append(f"surface:{surface}")
+    return ",".join(parts) or "all"
+
+
+def _active_claude_limit(payload: Mapping[str, object]) -> tuple[QuotaWindow, str] | None:
+    """Read the one entry the provider marks active, preserving its published scope."""
+    limits = payload.get("limits")
+    if not isinstance(limits, list):
+        return None
+    for item in limits:
+        if not isinstance(item, dict) or item.get("is_active") is not True:
+            continue
+        kind = item.get("kind")
+        percent = item.get("percent")
+        if (
+            not isinstance(kind, str)
+            or not kind
+            or not isinstance(percent, (int, float))
+            or isinstance(percent, bool)
+        ):
+            return None
+        return (
+            QuotaWindow(
+                name=kind,
+                used_fraction=float(percent) / 100.0,
+                resets_at=as_epoch(item.get("resets_at")),
+            ),
+            _scope_name(item.get("scope")),
+        )
+    return None
+
+
+def reading_from_claude_usage(payload: Mapping[str, object], lane: str, now: float) -> QuotaReading:
+    """Read `/api/oauth/usage`, selecting the limit the provider marks as binding."""
+    active = _active_claude_limit(payload)
+    if active is None:
+        return QuotaReading(
+            lane=lane,
+            source=CLAUDE_USAGE_SOURCE,
+            estimated=False,
+            windows=(),
+            unavailable="active_limit_absent",
+            observed_at=now,
+        )
+    window, scope = active
+    return QuotaReading(
+        lane=lane,
+        source=CLAUDE_USAGE_SOURCE,
+        estimated=False,
+        windows=(window,),
+        unavailable="",
+        observed_at=now,
+        binding=window.name,
+        scope=scope,
+    )
+
+
+def _unavailable_claude_reading(
+    lane: str, now: float, reason: str, retry_at: float | None = None
+) -> QuotaReading:
+    """Return a typed endpoint absence, including only a provider-published retry boundary."""
+    return QuotaReading(
+        lane=lane,
+        source=CLAUDE_USAGE_SOURCE,
+        estimated=False,
+        windows=(),
+        unavailable=reason,
+        observed_at=now,
+        retry_at=retry_at,
+    )
+
+
+def _claude_oauth_token(path: Path) -> tuple[str, str]:
+    """Read Claude Code's OAuth token without ever putting it in output or on argv."""
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return "", "credentials_unreadable"
+    oauth = document.get("claudeAiOauth") if isinstance(document, dict) else None
+    token = oauth.get("accessToken") if isinstance(oauth, dict) else None
+    if not isinstance(token, str) or not token:
+        return "", "credential_absent"
+    return token, ""
+
+
+def _retry_after_epoch(value: object, now: float) -> float | None:
+    """Turn the observed delta-seconds form into its boundary, never a fallback delay."""
+    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+        return None
+    try:
+        seconds = float(value)
+    except ValueError:
+        return None
+    return now + seconds if seconds > 0 else None
+
+
+def query_claude_usage(
+    credentials: Path,
+    now: float,
+    lane: str = "claude-native",
+) -> QuotaReading:
+    """Query Claude's first-party usage endpoint once; Retry-After schedules the next read."""
+    token, unavailable = _claude_oauth_token(credentials)
+    if unavailable:
+        return _unavailable_claude_reading(lane, now, unavailable)
+    request = urllib.request.Request(
+        CLAUDE_USAGE_URL,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "anthropic-beta": "oauth-2025-04-20",
+        },
+    )
+    try:
+        with urllib.request.urlopen(  # noqa: S310 — the request URL is not caller-controlled
+            request, timeout=CLAUDE_USAGE_TIMEOUT_SECS
+        ) as response:
+            if response.status != HTTP_OK:
+                return _unavailable_claude_reading(lane, now, f"http_{response.status}")
+            payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as error:
+        retry_at = (
+            _retry_after_epoch(error.headers.get("retry-after"), now)
+            if error.code == HTTP_TOO_MANY_REQUESTS and error.headers is not None
+            else None
+        )
+        reason = (
+            "http_429_retry_after_unreadable"
+            if error.code == HTTP_TOO_MANY_REQUESTS and retry_at is None
+            else f"http_{error.code}"
+        )
+        return _unavailable_claude_reading(lane, now, reason, retry_at)
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return _unavailable_claude_reading(lane, now, "request_failed")
+    if not isinstance(payload, dict):
+        return _unavailable_claude_reading(lane, now, "document_not_object")
+    return reading_from_claude_usage(payload, lane, now)
+
+
 def reading_from_status_line(payload: Mapping[str, object], lane: str, now: float) -> QuotaReading:
     """Read Claude Code's status-line stdin document.
 
@@ -567,6 +735,20 @@ def reading_from_status_line(payload: Mapping[str, object], lane: str, now: floa
     session, and each of the two windows is independently optional. Every one of those
     absences is the same typed state — the feed said nothing — never a zero.
     """
+    active = _active_claude_limit(payload)
+    if active is not None:
+        window, scope = active
+        return QuotaReading(
+            lane=lane,
+            source="status_line",
+            estimated=False,
+            windows=(window,),
+            unavailable="",
+            observed_at=now,
+            binding=window.name,
+            scope=scope,
+        )
+
     limits = payload.get("rate_limits")
     if not isinstance(limits, dict):
         return QuotaReading(
@@ -1113,6 +1295,8 @@ class Store(NamedTuple):
     endpoint: str = ""
     quota_reader: Callable[[str, Path, float], QuotaReading] = query_first_party_quota
     credentials: Path = DEFAULT_CREDENTIALS
+    claude_reader: Callable[[Path, float, str], QuotaReading] = query_claude_usage
+    claude_credentials: Path = DEFAULT_CLAUDE_CREDENTIALS
 
     @property
     def journal(self) -> Path:
@@ -1219,6 +1403,32 @@ def record_reading(
     if transition is not None:
         emit_transition(store, lane, transition)
     return moved, transition
+
+
+def refresh_claude_usage(
+    store: Store,
+    lane: str,
+    now: float,
+    fallback: Mapping[str, object] | None = None,
+) -> QuotaReading:
+    """Refresh the endpoint feed unless its last 429 says the boundary has not arrived."""
+    previous = read_state(store.directory, lane).reading
+    if previous is not None and previous.retry_at is not None and now < previous.retry_at:
+        return previous
+
+    reading = store.claude_reader(store.claude_credentials, now, lane)
+    if reading.retry_at is not None and previous is not None and previous.windows:
+        reading = reading._replace(
+            windows=previous.windows,
+            binding=previous.binding,
+            scope=previous.scope,
+        )
+    elif not reading.available and fallback is not None:
+        aggregate = reading_from_status_line(fallback, lane, now)
+        if aggregate.available:
+            reading = aggregate._replace(retry_at=reading.retry_at)
+    record_reading(store, lane, reading, now)
+    return reading
 
 
 def clear_lane(store: Store, lane: str, now: float) -> Transition | None:
@@ -1391,11 +1601,20 @@ def _feed_parts(reading: QuotaReading | None, now: float) -> list[str]:
             if reading.unavailable == "plan_tier_unknown"
             else "degraded=reacting-to-429s"
         )
-        return [f"feed={reading.source}:{reading.unavailable}", fix]
+        return [
+            f"feed={reading.source}:{reading.unavailable}",
+            fix,
+            *([f"binding={reading.binding}"] if reading.binding else []),
+            *([f"scope={reading.scope}"] if reading.scope else []),
+            *([f"next_poll={iso(reading.retry_at)}"] if reading.retry_at is not None else []),
+        ]
     return [
         f"feed={reading.source}",
         f"estimated={str(reading.estimated).lower()}",
         f"age={human_delta(now - reading.observed_at)}",
+        *([f"binding={reading.binding}"] if reading.binding else []),
+        *([f"scope={reading.scope}"] if reading.scope else []),
+        *([f"next_poll={iso(reading.retry_at)}"] if reading.retry_at is not None else []),
         *(f"{window.name}={window.used_fraction * 100:.0f}%" for window in reading.windows),
     ]
 
@@ -1518,6 +1737,16 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     tap = verbs.add_parser("tap", help="status-line filter: read the quota, pass the line through")
     tap.add_argument("--lane", default="claude-native")
     tap.add_argument("--chain", default="", help="the status line this one sits in front of")
+    tap.add_argument(
+        "--oauth-usage",
+        action="store_true",
+        help="refresh /api/oauth/usage instead of reading the aggregate status-line pair",
+    )
+    tap.add_argument(
+        "--oauth-credentials",
+        type=Path,
+        default=DEFAULT_CLAUDE_CREDENTIALS,
+    )
 
     reset = verbs.add_parser("reset", help="close a lane by hand")
     reset.add_argument("--lane", required=True)
@@ -1631,10 +1860,19 @@ def run_tap(args: argparse.Namespace) -> int:
     """
     payload = sys.stdin.read()
     try:
+        now = _now(args)
         document = json.loads(payload)
-        if isinstance(document, dict):
-            now = _now(args)
-            reading = reading_from_status_line(document, args.lane, now)
+        fallback = document if isinstance(document, dict) else None
+        if args.oauth_usage:
+            store = _store(args)._replace(claude_credentials=args.oauth_credentials)
+            refresh_claude_usage(
+                store,
+                args.lane,
+                now,
+                fallback=fallback,
+            )
+        elif fallback is not None:
+            reading = reading_from_status_line(fallback, args.lane, now)
             record_reading(_store(args), args.lane, reading, now)
     except Exception:  # noqa: BLE001, S110 — a tap must never break the human's status line
         pass

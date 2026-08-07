@@ -16,6 +16,7 @@ complete whether or not the collector took the record.
 
 from __future__ import annotations
 
+import io
 import json
 import os
 import subprocess
@@ -37,6 +38,7 @@ otel_event: ModuleType = load_tool("otel_event")
 # the tier's own allocation [2400, 3000) and away from the slot stride, so a test can
 # never collide with a running world.
 DEAD_ENDPOINT = "http://127.0.0.1:2999/v1/logs"
+CLAUDE_USAGE_POLL = REPO / "tests" / "fixtures" / "claude-usage-poll.json"
 
 NOW = 1_785_000_000.0
 HOUR = 3600.0
@@ -292,6 +294,32 @@ def test_the_status_line_feed_reads_both_windows_and_their_reset_times() -> None
     assert reading.exhausted_window() is None
 
 
+def test_the_claude_feed_prefers_the_active_binding_limit_from_the_completion_run() -> None:
+    """The exact #237 poll, copied from its durable run evidence rather than prose."""
+    payload = json.loads(CLAUDE_USAGE_POLL.read_text(encoding="utf-8"))
+
+    reading = breaker.reading_from_claude_usage(payload, "claude-native", NOW)
+
+    assert [window.name for window in reading.windows] == ["weekly_scoped"]
+    assert reading.windows[0].used_fraction == pytest.approx(0.89)
+    assert reading.windows[0].resets_at == pytest.approx(1786366799.886896)
+    assert reading.binding == "weekly_scoped"
+    assert reading.scope == "model:Fable"
+
+
+def test_breaker_state_names_the_binding_limit_and_its_scope(tmp_path: Path) -> None:
+    payload = json.loads(CLAUDE_USAGE_POLL.read_text(encoding="utf-8"))
+    state = store(tmp_path)
+    reading = breaker.reading_from_claude_usage(payload, "claude-native", NOW)
+    breaker.record_reading(state, "claude-native", reading, NOW)
+
+    line = breaker.state_lines(state, NOW, lanes=("claude-native",))[0]
+
+    assert "binding=weekly_scoped" in line
+    assert "scope=model:Fable" in line
+    assert "weekly_all" not in line
+
+
 @pytest.mark.parametrize(
     ("payload", "expected"),
     [
@@ -446,6 +474,140 @@ def test_the_zai_reader_uses_the_private_credential_and_queries_once(
     assert calls == [(breaker.ZAI_USAGE_URL, "test-secret", breaker.ZAI_USAGE_TIMEOUT_SECS)]
     assert reading.available is True
     assert reading.windows[0].used_fraction == pytest.approx(0.06)
+
+
+def test_the_claude_reader_keeps_retry_after_as_the_next_poll_boundary(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    credentials = tmp_path / ".credentials.json"
+    credentials.write_text(
+        json.dumps({"claudeAiOauth": {"accessToken": "test-secret"}}), encoding="utf-8"
+    )
+    calls: list[tuple[str, str | None]] = []
+
+    def urlopen(request: Any, timeout: float) -> None:  # noqa: ANN401
+        assert timeout == breaker.CLAUDE_USAGE_TIMEOUT_SECS
+        calls.append((request.full_url, request.get_header("Authorization")))
+        raise breaker.urllib.error.HTTPError(
+            request.full_url,
+            429,
+            "Too Many Requests",
+            {"retry-after": "142"},
+            None,
+        )
+
+    monkeypatch.setattr(breaker.urllib.request, "urlopen", urlopen)
+
+    reading = breaker.query_claude_usage(credentials, NOW)
+
+    assert calls == [(breaker.CLAUDE_USAGE_URL, "Bearer test-secret")]
+    assert reading.available is False
+    assert reading.unavailable == "http_429"
+    assert reading.retry_at == NOW + 142
+
+
+def test_a_429_without_a_readable_retry_after_never_acquires_an_invented_wait(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    credentials = tmp_path / ".credentials.json"
+    credentials.write_text(
+        json.dumps({"claudeAiOauth": {"accessToken": "test-secret"}}), encoding="utf-8"
+    )
+
+    def urlopen(request: Any, timeout: float) -> None:  # noqa: ANN401
+        assert timeout == breaker.CLAUDE_USAGE_TIMEOUT_SECS
+        raise breaker.urllib.error.HTTPError(
+            request.full_url,
+            429,
+            "Too Many Requests",
+            {"retry-after": "later"},
+            None,
+        )
+
+    monkeypatch.setattr(breaker.urllib.request, "urlopen", urlopen)
+
+    reading = breaker.query_claude_usage(credentials, NOW)
+
+    assert reading.unavailable == "http_429_retry_after_unreadable"
+    assert reading.retry_at is None
+
+
+def test_the_quota_tap_does_not_poll_again_before_retry_after(tmp_path: Path) -> None:
+    state = store(tmp_path)
+    waiting = breaker.QuotaReading(
+        lane="claude-native",
+        source=breaker.CLAUDE_USAGE_SOURCE,
+        estimated=False,
+        windows=(),
+        unavailable="http_429",
+        observed_at=NOW,
+        retry_at=NOW + 142,
+    )
+    breaker.record_reading(state, "claude-native", waiting, NOW)
+    calls: list[float] = []
+    payload = json.loads(CLAUDE_USAGE_POLL.read_text(encoding="utf-8"))
+
+    def reader(_credentials: Path, now: float, lane: str) -> Any:  # noqa: ANN401
+        calls.append(now)
+        return breaker.reading_from_claude_usage(payload, lane, now)
+
+    state = state._replace(claude_reader=reader, claude_credentials=tmp_path / "unused")
+    before = breaker.refresh_claude_usage(state, "claude-native", NOW + 141)
+    at_boundary = breaker.refresh_claude_usage(state, "claude-native", NOW + 142)
+
+    assert before.retry_at == NOW + 142
+    assert calls == [NOW + 142]
+    assert at_boundary.binding == "weekly_scoped"
+
+
+def test_retry_after_keeps_the_last_binding_visible_in_breaker_state(tmp_path: Path) -> None:
+    state = store(tmp_path)
+    payload = json.loads(CLAUDE_USAGE_POLL.read_text(encoding="utf-8"))
+    healthy = breaker.reading_from_claude_usage(payload, "claude-native", NOW)
+    breaker.record_reading(state, "claude-native", healthy, NOW)
+
+    def rate_limited(_credentials: Path, now: float, lane: str) -> Any:  # noqa: ANN401
+        return breaker.QuotaReading(
+            lane=lane,
+            source=breaker.CLAUDE_USAGE_SOURCE,
+            estimated=False,
+            windows=(),
+            unavailable="http_429",
+            observed_at=now,
+            retry_at=now + 142,
+        )
+
+    state = state._replace(claude_reader=rate_limited, claude_credentials=tmp_path / "unused")
+    breaker.refresh_claude_usage(state, "claude-native", NOW + 1)
+    line = breaker.state_lines(state, NOW + 1, lanes=("claude-native",))[0]
+
+    assert "feed=claude_usage:http_429" in line
+    assert "binding=weekly_scoped" in line
+    assert "scope=model:Fable" in line
+    assert f"next_poll={breaker.iso(NOW + 143)}" in line
+
+
+def test_an_unavailable_endpoint_keeps_the_status_line_pair_as_fallback(tmp_path: Path) -> None:
+    state = store(tmp_path)
+    payload = {"rate_limits": {"seven_day": {"used_percentage": 82}}}
+
+    def unavailable(_credentials: Path, now: float, lane: str) -> Any:  # noqa: ANN401
+        return breaker.QuotaReading(
+            lane=lane,
+            source=breaker.CLAUDE_USAGE_SOURCE,
+            estimated=False,
+            windows=(),
+            unavailable="credentials_unreadable",
+            observed_at=now,
+        )
+
+    state = state._replace(claude_reader=unavailable, claude_credentials=tmp_path / "unused")
+    reading = breaker.refresh_claude_usage(state, "claude-native", NOW, fallback=payload)
+
+    assert reading.source == "status_line"
+    assert reading.available is True
+    assert [window.name for window in reading.windows] == ["seven_day"]
+    assert reading.windows[0].used_fraction == pytest.approx(0.82)
 
 
 @pytest.mark.parametrize(
@@ -1044,6 +1206,39 @@ def test_the_status_line_tap_passes_the_chained_line_through_byte_for_byte(
     assert reading is not None
     assert reading.source == "status_line"
     assert reading.windows[0].used_fraction == pytest.approx(0.44)
+
+
+def test_the_status_line_tap_refreshes_the_oauth_usage_feed_when_asked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    credentials = tmp_path / ".credentials.json"
+    called: list[tuple[str, float, dict[str, object] | None]] = []
+
+    def refresh(
+        _store: object,
+        lane: str,
+        now: float,
+        fallback: dict[str, object] | None = None,
+    ) -> None:
+        called.append((lane, now, fallback))
+
+    monkeypatch.setattr(breaker, "refresh_claude_usage", refresh)
+    monkeypatch.setattr(sys, "stdin", io.StringIO("{}"))
+    args = breaker.parse_args(
+        [
+            "--breaker-dir",
+            str(tmp_path / "breaker"),
+            "--now",
+            str(NOW),
+            "tap",
+            "--oauth-usage",
+            "--oauth-credentials",
+            str(credentials),
+        ]
+    )
+
+    assert breaker.run_tap(args) == 0
+    assert called == [("claude-native", NOW, {})]
 
 
 def test_the_tap_passes_a_status_line_through_even_when_the_payload_is_not_json(
