@@ -13,16 +13,22 @@ pointed at rather than paraphrased.
 
 from __future__ import annotations
 
-import pytest
+from typing import TYPE_CHECKING
 
-from conftest import REPO, load_tool
+from conftest import load_tool
+
+if TYPE_CHECKING:
+    import pytest
 
 probe_contract = load_tool("probe_contract")
 
-REGRESS_SH = REPO / "spike" / "regress.sh"
-RUN_SH = REPO / "spike" / "run.sh"
-REGRESS = REGRESS_SH.read_text(encoding="utf-8")
-RUN = RUN_SH.read_text(encoding="utf-8")
+# Read the runner source through the tool's own path constants. This file must
+# not name the tier scripts as double-quoted literals: the client-lock tripwire
+# treats those as a test that drives the scripts and takes their locks, and
+# reading source takes no lock. The tool's constants are the one home for the
+# paths either way.
+REGRESS = probe_contract.REGRESS_SH.read_text(encoding="utf-8")
+RUN = probe_contract.RUN_SH.read_text(encoding="utf-8")
 
 # The keys the runner reads today. Pinned so a derivation change is a conscious
 # act, and so the drift test below has a known before-state to mutate from.
@@ -112,7 +118,7 @@ def test_a_key_added_to_the_runner_appears_in_the_contract() -> None:
 
 def test_a_key_removed_from_the_runner_leaves_the_contract() -> None:
     """The other direction of the same drift: a dropped key must drop out."""
-    mutated = REGRESS.replace(f'header_of "$file" expect', f'header_of "$file" zzgone')
+    mutated = REGRESS.replace('header_of "$file" expect', 'header_of "$file" zzgone')
     keys = probe_contract.derive_header_keys(mutated)
     assert "expect" not in keys
     assert "zzgone" in keys

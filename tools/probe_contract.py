@@ -102,7 +102,7 @@ def derive_doc_block(regress: str) -> dict[str, tuple[str, str]]:
 
 
 def _validation_block(regress: str) -> str:
-    """The `for name in CORPUS` loop that dies on a malformed header.
+    """Extract the `for name in CORPUS` loop that dies on a malformed header.
 
     Anchored on its comment rather than the loop header, because a second
     `for name in "${CORPUS[@]}"` loop (the `--list` print) would otherwise be a
@@ -134,12 +134,10 @@ def derive_required_keys(regress: str) -> set[str]:
         return set()
     # `var="$(header_of "$file" key)"` — map the variable a check might use back
     # to the key it was read from.
-    var_to_key = {
-        var: key for var, key in re.findall(r'(\w+)="\$\(\s*header_of "\$file" ([a-z]+)', block)
-    }
+    var_to_key = dict(re.findall(r'(\w+)="\$\(\s*header_of "\$file" ([a-z]+)', block))
     # Drop the if-present guards wholesale; whatever enforcement remains is
     # unconditional, and an unconditional enforcement is what "required" means.
-    unguarded = re.sub(r"if \[\[ -n[^\n]*\]\];\s*then\b.*?\bfi", "", block, flags=re.S)
+    unguarded = re.sub(r"if \[\[ -n[^\n]*\]\];\s*then\b.*?\bfi", "", block, flags=re.DOTALL)
     required: set[str] = set()
     # Inline: the header read is the test's own operand.
     required.update(re.findall(r'\[\[ -n "\$\(\s*header_of "\$file" ([a-z]+)', unguarded))
@@ -151,13 +149,13 @@ def derive_required_keys(regress: str) -> set[str]:
 
 
 def derive_completion_sentinel(regress: str) -> str | None:
-    """The log token the run waits on (`probe_done`), or None if unreadable."""
+    """Find the log token the run waits on (`probe_done`), or None if unreadable."""
     match = _AWAIT_SENTINEL.search(regress)
     return match.group(1).strip('"') if match else None
 
 
 def derive_window_source(regress: str) -> str | None:
-    """The header field the probe timeout is bound to (`window`), or None."""
+    """Find the header field the probe timeout is bound to (`window`), or None."""
     match = _PROBE_TIMEOUT_SOURCE.search(regress)
     return match.group(1) if match else None
 
@@ -168,7 +166,7 @@ def derive_fail_short_circuits(run: str) -> bool:
 
 
 def derive_runner_classes(regress: str, run: str) -> list[str]:
-    """The classes the runner emits directly, de-duplicated, in first-seen order.
+    """List the classes the runner emits directly, de-duplicated, in first-seen order.
 
     Drawn from the runner's own `fail "<class>"` and `failure_class=<class>`
     sites — its vocabulary, not the table's — so a class that appears here but
@@ -187,7 +185,7 @@ def derive_runner_classes(regress: str, run: str) -> list[str]:
 
 
 def header_keys(regress: str) -> list[HeaderKey]:
-    """The contract's header fields, in the runner's documented order.
+    """Build the contract's header fields, in the runner's documented order.
 
     Documented keys come first in the order the `// key:` block writes them; any
     key the runner reads but nobody documented follows, so an undocumented key is
@@ -243,8 +241,10 @@ def render_contract(regress: str, run: str) -> str:
     if sentinel and window_src:
         lines.extend(
             [
-                f"The run waits on a log line containing `{sentinel}` "
-                f"(regress.sh sets CTI_HARNESS_AWAIT={sentinel}), within the probe's own",
+                (
+                    f"The run waits on a log line containing `{sentinel}` "
+                    f"(regress.sh sets CTI_HARNESS_AWAIT={sentinel}), within the probe's own"
+                ),
                 f"`{window_src}:` header (regress.sh binds CTI_PROBE_TIMEOUT to it). A probe",
                 "still working when the window closes is a `timeout`, never a pass.",
             ]
