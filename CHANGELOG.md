@@ -23,6 +23,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Bash payload carries no `run_in_background` field and `codex exec` is single-shot by construction
   — and the inert direction is asserted in test rather than in prose (#279).
 
+- **`docs/agents/orchestration.md` is the orchestrator seat's runbook.** It records
+  the seat's operating rules as they now stand — opus/high with fable dispatched for
+  the named acts, the duty cycle and its arithmetic, the top-of-turn read sequence,
+  what the seat holds versus dispatches, the claim-only review function, when each
+  tool is reached for, and what the seat must not do. Every rule carries a landed
+  instance or a cited ruling; the document cites `docs/orchestration-design.md`
+  rather than restating it. Ruled into existence on #217, sequenced to now because
+  #250–#253 landed the first applied instances the convention requires (#267).
+
 - **`just dispatch-follow <id>` restores a within-session completion edge for detached
   dispatches.** The follower remains attached to the tool harness until the dispatch's recorded
   runner exits, then prints the dispatch id and authoritative result path from `dispatch.json`.

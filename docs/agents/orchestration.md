@@ -1,0 +1,266 @@
+# Running the orchestration seat
+
+> Status: written 2026-08-08 under #267. Ruled into existence by the human on #217
+> (decision 5, 2026-08-05T21:50Z), sequenced to now by the human on #217 (2026-08-06)
+> because the condition #242 attached — a convention lands with its first applied
+> instance, not in a design document — was met when #250–#253 landed 05:02–05:51Z
+> that day. This is the *operating* half: the rules a dispatching seat must not get
+> wrong in the moment. It is not the design study; the study is its input.
+
+## What this is, and what it is not
+
+This runbook says **how the orchestrator seat is actually run**, after a week of
+rulings scattered across issue threads. Its input is
+`docs/orchestration-design.md` (`84cb8bd`, the study commissioned for #242), which
+asked what the orchestrator does and what of it could be factored into tools. The
+two are deliberately separate: the study reasons about the mechanism; this document
+states the operating rules. **Cite the study; do not restate it.** Deleting the study
+would not leave this runbook incoherent.
+
+The always-loaded surface — `CLAUDE.md` — already carries the rules every agent on
+every lane must hold (the working-style, model-roles, failure-class and command-table
+sections). This document carries the rules only the dispatching seat can act on, and
+it is read on demand, not resident. Where a rule here and a rule in `CLAUDE.md` say
+the same thing, `CLAUDE.md` is authoritative; this document points at it rather than
+quoting it.
+
+## The seat and its model
+
+The standing loop runs at **opus/high** per #242 ruling 1, which the human executed
+directly in `CLAUDE.md`'s Model-roles section: the line reading "the orchestration
+standing loop also runs here and dispatches fable for retros; ADR, `CONTEXT.md` and
+schema semantics; retro evidence banking; and the #181-shaped diagnosis call." Check
+that section as landed rather than this document — the human executed the seat change
+there, not here.
+
+The inversion this represents — run the loop at opus/high and **dispatch fable for the
+named episodic acts**, rather than holding the scarcest seat all day and delegating
+the loop out of it — is under a **pre-registered trial** whose criterion lives in the
+design study §6 and whose urgency was measured on #258: ten consecutive dispatch
+cycles from an opus/high orchestration seat, failing on any one of five clauses
+(a dispatch into a freeze or reservation the policy recorded; an `infra_unavailable`,
+`quota_exhausted`, `provider_refused` or `untyped_harness_failure` treated as a result;
+a landing recorded against an issue its dispatch could not have made; a gated surface
+edited without approval or an ADR-0013 record; a ruling with drafting slack transcribed
+onto a gated semantic surface from the seat rather than dispatched). The trial's
+recording surface is `just admission trial-report`, folded into `just watch-report`
+(#260).
+
+The orchestrator seat is **ineligible on every foreign lane** (ADR-0061 Decision 2).
+The time-boxed widening on #217 covers only retros on the `codex` lane until
+`2026-08-10T14:00Z`; it does not reach this seat.
+
+## The duty cycle, and its arithmetic
+
+Ruled on #258: the standing loop is **duty-cycled**, not run continuously, and the
+target is **two-thirds of the remaining seven-day headroom** — about **40 hours of
+continuous-equivalent orchestration** — to quota renewal at **14:00 Monday
+2026-08-10**.
+
+The figure is a target the seat checks itself against, not a feeling. State the
+arithmetic so a later reader re-derives it against a different quota rather than
+inheriting a number whose context has moved (calibration `claude/218-2026-08-05`,
+measured on the orchestrator's own transcript, from #258's answer):
+
+- **30,209 output tokens per five-hour point; 181,253 per seven-day point.**
+- **904 output tokens per minute** of orchestration.
+- At filing, **18 seven-day points** remained. Continuous orchestration across the
+  **92.6 hours** to renewal is 5.02 M output tokens — **27.7 points, 1.5× the
+  remaining quota** — so a loop left to run itself flat spends the whole window and
+  leaves nothing for anything else.
+- Two-thirds of 18 points is **12 points**; 12 × 181,253 = 2.18 M tokens; ÷ 904 per
+  minute ≈ **2,406 minutes ≈ 40 hours**.
+
+Re-derive against the live meter (`just watch-report` carries the breaker read; the
+ledger carries per-dispatch `cap_fraction`). Confounds stated on #258: the meter
+includes the human's non-project use; the 83-minute sample that produced 904 was an
+unusually busy stretch with three dispatches launching.
+
+**The honest thing this document must record.** The seat ran the queue one-deep for
+long stretches on 2026-08-07/08 while 54 issues were eligible, and the human had to
+correct it twice. `#278` is the mechanism that now surfaces this at the top of the
+turn (see below); `#276` and retro 27's bank carry the evidence. A runbook that
+described the seat as it *should* run, rather than as it *did*, would be the wrong
+document.
+
+## The top-of-turn sequence
+
+1. **`just watch-report`** — leads, because CLAUDE.md already puts this read at the
+   top of an orchestrator's turn. It runs four reads in order: the **lane breakers**
+   first (#226) — one line per lane that is not dispatchable, silent otherwise; then
+   the **queue's underfill verdict** (#278) — `queue=underfilled …
+   action=refill-before-landing` when eligible work can fill ruled capacity, silent
+   when capacity is full or no candidate survives; then the **watcher findings**
+   (#198); then the **orchestration-seat trial** report (#260), one line when it has
+   failed, silent while clean. Silence is the clean read; a verdict, never a
+   dashboard of numbers (#209).
+2. **`just queue state`** then **`just queue next`** — the candidate with its
+   derivation (the freeze, the WIP limit, the packages, the in-flight list), or a
+   named refusal. The queue selects and prints; **it never dispatches** (ADR-0053).
+   `next=` names a **selection, not a routing decision**: it may point at an issue
+   that is corpus-bound and so undispatchable to any foreign lane — `#18` was named
+   while in that state. The queue's job ends at pointing; routing onto a lane is the
+   seat's, behind the breaker and the admission bar.
+3. **Judgement** — is that candidate the right next thing, given the human's live
+   intent this session. This, and not the queue, is the step that decides.
+4. **`just brief N`**, then write the variable half — the task, the scope, the ground
+   truth, and the reason for a non-default seat. This is the real work of the turn;
+   an unedited brief is obviously unfinished by construction.
+5. **Dispatch.**
+6. On completion: paste `just verdict`, run `just admission audit`, **judge the close**.
+7. Episodically: the retro, the rulings intake, the evidence banking.
+
+## What the seat holds, and what it dispatches
+
+The orchestrator holds the wait — that is what the seat is for. A subagent, by
+contrast, **ends rather than waiting**: foreseeably long work is dispatched detached,
+the agent arms `just watch`, writes a handoff per `docs/agents/handoff.md`, and stops
+there, because a background completion nobody is billed to wake is the stall shape
+(CLAUDE.md working style; #218's measurement retired the cache arithmetic that rule
+once rested on).
+
+A wait that genuinely cannot be decomposed has **one sanctioned fallback**: a
+dispatched session — `just dispatch --lane claude-native` — with `just watch` armed at
+dispatch and the result read from the ledger (#218 ruling, decision 1). The seat
+itself holds waits in the foreground; a dispatched session is the escape hatch for the
+waits a subagent cannot satisfy by ending.
+
+**The single-shot contract (#279).** A dispatched session has no second turn for a
+background completion or a question. Run awaited work in the foreground; decide
+routine ambiguities, act, and record the reasoning; if a choice is genuinely the
+human's, finish the unambiguous part and state exactly what remains. The guard refuses
+**backgrounding, never waiting** — holding a long foreground wait is what a dispatched
+session is *for* (#218). Two dispatches on 2026-08-08 ended the wrong way before this
+was made explicit: one left its gate uncommitted with "awaiting completion
+notification" (`just land` refused `dirty_tree`), one asked whether to run
+`git checkout --` with no caller listening.
+
+**`just dispatch-follow <id>` (#280).** Restores the completion edge *inside a live
+orchestrator session*: a harness-attached follower that exits when the dispatch writes
+its result, printing the dispatch id and result path from the record, and whose exit
+re-invokes the seat. It has no timeout and classifies nothing — a runner that
+disappears without a result is `finding=runner_disappeared`, and stall judgement stays
+with `just watch`. **It cannot survive the session ending.** Cross-session autonomy
+requires the scheduled-agent mechanism that is with the human and is explicitly out of
+scope; do not imply autonomy the mechanism does not provide.
+
+## The review function
+
+Confirmed on #217 (2026-08-06) and stated in the design study §7: **the gates
+review**; the foreign lane is the **second lens** of one pass, not a second pass
+(ADR-0061 Decision 3); the orchestrator keeps **claim spot-checks only**. Three
+constraints:
+
+- **Sampled, never standing.** A spot-check on every close is a standing second pass
+  wearing another name. CLAUDE.md bars added verification passes, and #220 re-based
+  that from a quality rule to a first-order cost rule — an extra pass is pure
+  generation, and generation is what this plan meters.
+- **Opus/high** — a judgement behind gates.
+- **It reviews claims, not code.** Architecture and design taste are the per-issue
+  review lens (#240) and the periodic deep pass (#139). The mechanical half of a
+  close — SHA on main, SHA inside the dispatch's window, corpus owed and quoted,
+  evidence path resolvable — is computed by `just admission audit`, not re-read by
+  hand.
+
+## The tools, and when the seat reaches for each
+
+Half of what this runbook used to hold in prose was factored into tools by #242. This
+section says when the seat reaches for each; the recipes' own headers say what they
+do.
+
+| When | Tool | What it gives the seat |
+|---|---|---|
+| Turn-top | `just watch-report` | Breakers, queue underfill, watcher findings, trial — one read |
+| Choosing work | `just queue state` / `next` / `check --issue N` | The next dispatchable issue with its derivation, or a named refusal |
+| Recording a ruling | `just queue freeze/open/wip/package … --ruling "…"` | The freeze, WIP limit and carve-outs written to a file `just dispatch` reads per dispatch — never memory |
+| Before dispatch | `just brief N` | The invariant half composed from data; the seat writes the variable half |
+| Dispatching | `just dispatch --lane … --profile … --seat … --issue N` | Hand work to a lane, return at once with a dispatch id |
+| Following a dispatch | `just dispatch-follow <id>` | The within-session completion edge (#280) |
+| At dispatch | `just watch <name> <worktree> [subject]` | Arm the detached stall watcher |
+| On a finished pool | `just verdict [pool-dir]` | The record a close quotes — **paste verbatim, never retype the SHA or evidence path** (#219) |
+| Judging a close | `just admission audit --issue N` | The checkable Part A claims, computed and cited |
+| Recording an assessment | `just admission record …` | One issue's assessment; `--from-audit` fills what the audit computed, every other criterion still a required choice |
+| Quoting spend | `just ledger-sync show --dispatch <id>` | The per-dispatch row, in `cap_fraction`, before quoting a dispatch's cost |
+| Recovering | `just recover check <name>` / `just recover brief <issue\|worktree>` | The runbook's two computable procedures (#253) |
+| Landing | `just land` | The landing protocol — **paste its output verbatim, never retype it** |
+
+## The landing half
+
+Landing is most of the seat's real work, and the lane decides how much of it the seat
+does by hand.
+
+- **Codex, under #265's confirmed ceiling, commits but cannot gate.** The orchestrator
+  gates and lands its work by hand and states that in the close; twelve closes now say
+  so. ADR-0061 Decision 4 is the rule: a lane that has not proven its hooks gets
+  worktree and commit only; landing is done by another seat.
+- **z.ai commits, gates and lands unaided**, and stands at `assessed=4/10 unclean=0/1`
+  on the admission bar.
+- **The corpus is a permanent Claude-seat obligation.** `just regress` appears in no
+  allowlist entry, and a foreign lane cannot run the gate its own change owes. Anything
+  touching `addons/`, `missions/`, `extension/`, the daemon's world-facing half or a
+  manifest needs a full-corpus run before landing — on this seat, not delegated (#258,
+  finding 2).
+
+## What the seat must not do
+
+- **Draft gated-surface work in its own tree while subagents are live.** ADR-0061
+  reached `origin/main` unreviewed through the #105 worktree collision — the shape of
+  an unreviewed ADR draft sitting in a worktree that landed. Gated-surface drafting
+  (ADRs, `CLAUDE.md`, `CONTEXT.md`, schema semantics) dispatches to fable; the seat
+  does not hold it.
+- **Dispatch off a table the human has not agreed.** The class rule is the policy; any
+  routing table is its first applied instance, never the policy itself (#258 ruling 1).
+- **Interpret a `quota_exhausted` or `provider_refused` stop.** Neither is a result;
+  the verdict says nothing about the code under test. Re-dispatch to another lane, or
+  queue until the window resets; record a refusal against its profile; escalate when N
+  consecutive refusals trip the quality breaker (ADR-0061 Decisions 7 and 8; the
+  failure-class table).
+- **Re-run a flake past the one sanctioned retry.** The `flake_quarantine` row: if an
+  exact quarantined test is the only red, quote its issue and re-run once; a second
+  red, or any other red, is yours.
+- **Transcribe a ruling with drafting slack onto a gated semantic surface from the
+  seat itself.** Route to `cti-implementer` or above (#217 decision 4).
+- **Claim a criterion an agent reserved for the seat.** The close's criterion-by-
+  criterion audit records what was done; a criterion an agent left for the orchestrator
+  is claimed only when the orchestrator has actually done it.
+- **`export ANTHROPIC_BASE_URL`** into a shell, a profile, or `~/.claude/settings.json`.
+  Lane environments are assembled per invocation by `just dispatch` and nowhere else —
+  a global redirect captures every Claude Code session on this box, this one included.
+- **Run a generated sudo script.** `just prereqs sudo-script` *generates* the one root
+  script the initiative needs, to be read; it is never run from here.
+- **Extend, invent or guess a breaker's wait.** A lane reopens at a boundary its
+  provider published, on evidence it is serving again, or by a human's hand — never on
+  a timer this project chose.
+- **Treat `infra_unavailable` as a result.** Stop; do not interpret.
+
+## Context hygiene
+
+The one-line rule the design study §8 yields, carried here as the operating form: an
+orchestrator's turn opens with `just watch-report` and `just queue next`, and holds
+nothing between turns that either would re-derive — the queue ordering, the freeze and
+carve-outs, the WIP limit, the in-flight set, briefing boilerplate, pool details and
+evidence paths are all rendered and read, not carried. What the seat holds, and no tool
+should try to: the human's live intent this session, the cycle's shape, the open
+rulings, and which issues are *about* the same thing where no `Blocked-by:` line has
+been written.
+
+## Consistency with CLAUDE.md (acceptance criterion 2)
+
+Checked against `CLAUDE.md`'s Working-style and Model-roles sections as landed at the
+time of writing (`04d6d55`): the seat (opus/high, fable dispatched for named acts), the
+hold-the-wait / end-don't-wait split, the single-shot shape, the no-added-pass review
+function, the breaker-wait and `infra_unavailable` rules, and the
+`ANTHROPIC_BASE_URL` prohibition all restate `CLAUDE.md` rules and point at them rather
+than overriding them. No conflict found.
+
+One item is a **proposal for the sign-off gate, not a landed rule** (acceptance
+criterion 5): the pointer from `CLAUDE.md` to this document. `CLAUDE.md` is an
+always-loaded gated surface; the pointer goes through human approval or an ADR-0013
+record (ADR-0057's reconciliation clause), not in unilaterally with this file.
+Proposed sentence, verbatim, for the gate:
+
+> The orchestration seat's operating rules live in `docs/agents/orchestration.md`;
+> read it before dispatching.
+
+Refs #105, #198, #209, #217, #218, #219, #220, #240, #242, #250, #251, #252, #253,
+#258, #260, #265, #276, #278, #279, #280, ADR-0042, ADR-0053, ADR-0057, ADR-0061.
