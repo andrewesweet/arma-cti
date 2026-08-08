@@ -313,6 +313,42 @@ worktree action="check" name="" ref="":
 land *args:
     uv run python tools/land.py {{ args }}
 
+# Discard one named file's unstaged working-tree change, and nothing else
+# (#287, the human's ruling of 2026-08-08 on #248). No Arma, no lock.
+#
+#   just discard tools/x.py "#287 (human ruling 2026-08-08 on #248)"
+#
+# Two dispatches on 2026-08-08 each ended their turn asking permission to run
+# `git checkout -- <path>` on residue an orchestrator-run probe had left, and
+# both produced nothing while main stayed regressed. The ruling declined the
+# blanket `Bash(git checkout -- :*)` grant that would have unblocked them —
+# discarding a working-tree change is exactly what CLAUDE.md forbids, foreign
+# files mean stop and report, never reset (#105) — and asked instead for a
+# command constrained until it can do nothing except the case it was
+# authorised for. Only this command is allowlisted; no `git checkout` entry
+# exists in any form.
+#
+# It takes exactly one normalised repository-relative tracked file plus a
+# required ruling reference naming the decision that authorises the discard,
+# and it prints both in its result, so the record says what was discarded and
+# on whose authority. A run with no ruling reference is a refusal.
+#
+# Refusals are named: no_ruling, unnamed_ruling, not_one_path, glob,
+# outside_worktree, directory, untracked, conflicted, staged,
+# other_dirty_path, nothing_to_discard, git_failed. `other_dirty_path` is the
+# rung that does the work — a run is allowed only when the named file's
+# unstaged change is the *whole* of this worktree's dirt, which makes the
+# command useless as a general cleaner and so keeps it from decaying into a
+# habitual `git reset`. Nothing is discarded on any refusal path, and each
+# refusal is proven in `tests/unit/test_discard.py` with the working tree
+# asserted unchanged afterwards.
+#
+# The orchestrator-clears-residue path remains the fallback whenever the guard
+# refuses. That is what happened on 2026-08-08 and it worked; the ruling keeps
+# it rather than replacing it.
+discard path="" ruling="":
+    uv run python tools/discard.py "{{ path }}" --ruling "{{ ruling }}"
+
 # Start a logical subagent as a separate process on a named lane, and return at
 # once with a dispatch id (#223, ADR-0061). No Arma, no lock, no turn held open.
 #

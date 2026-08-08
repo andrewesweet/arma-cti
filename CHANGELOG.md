@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just discard` — a guarded single-file discard, in place of a `git checkout` grant.**
+  Two dispatches on 2026-08-08 each ended their turn asking permission to run
+  `git checkout -- <path>` on residue an orchestrator-run probe had left, and both produced
+  nothing while `main` stayed regressed: there was no allowlisted way for a dispatched session
+  to discard a working-tree change at all. The blanket grant was declined — discarding a
+  working-tree change is exactly what the standing foreign-files rule forbids (#105) — so the
+  command is constrained until it can do nothing but the case it was authorised for. It takes
+  exactly one normalised repository-relative tracked file plus a required ruling reference
+  naming the decision that authorises the discard, prints both in its result, and restores only
+  that file's unstaged working-tree change from the index. It refuses globs, directories,
+  untracked files, conflicted files, staged changes, paths outside the worktree it was run in
+  (including a nested worktree belonging to another agent) — and any run where another dirty
+  path exists, which is the rung that makes it useless as a general cleaner and so keeps it from
+  decaying into a habitual `git reset`. Nothing is discarded on any refusal path, and every
+  refusal is proven with the working tree asserted unchanged afterwards. The
+  orchestrator-clears-residue path remains the fallback whenever the guard refuses (#287).
+
 - **Foreign dispatches now obey a repository-owned keep-on-Claude class policy.**
   `just dispatch` reads the seven-row policy from the main checkout for every dispatch and
   refuses a declared keep-class by name, with its remedy and no failure class. There is no
