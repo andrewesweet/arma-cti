@@ -24,6 +24,10 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/deny-subagent-waits.py\" || exit 2"
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/deny-dispatched-background.py\" || exit 2"
           }
         ]
       },

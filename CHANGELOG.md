@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A dispatched session is refused when it tries to background work.** `CTI_DISPATCH_ID` is in
+  every dispatched child's environment, and a new `PreToolUse` hook uses it to tell a dispatched
+  top-level session from the orchestrator: inside one, a Bash call carrying `run_in_background` is
+  denied with the instruction to run the work in the foreground. It refuses **backgrounding, never
+  waiting** — holding a long foreground wait is exactly what a sanctioned dispatched session is for
+  (#218), and the ordinary subagent long-wait denial is deliberately not applied. The orchestrator,
+  which has no marker, keeps backgrounding freely; that is what drives the dispatch completion edge.
+
+  Two dispatches were lost to this shape on 2026-08-08: one ended "Awaiting completion notification
+  to continue" with its work uncommitted, and a detached `claude -p` has no second turn in which to
+  receive that notification. On Codex the guard is inert rather than parity-claimed — that runner's
+  Bash payload carries no `run_in_background` field and `codex exec` is single-shot by construction
+  — and the inert direction is asserted in test rather than in prose (#279).
+
 - **`just dispatch-follow <id>` restores a within-session completion edge for detached
   dispatches.** The follower remains attached to the tool harness until the dispatch's recorded
   runner exits, then prints the dispatch id and authoritative result path from `dispatch.json`.
