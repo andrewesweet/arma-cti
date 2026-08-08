@@ -18,6 +18,7 @@ summary's stderr and reads `pool.json` back, and the shell acts on the
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
@@ -546,6 +547,29 @@ def test_prune_never_lists_a_failure_or_another_probes_pass(tmp_path: Path) -> N
     assert pool_merge.prune_candidates(tmp_path, "contacts", keep=3) == []
 
 
+def test_prune_does_not_mistake_a_probe_name_suffix_for_the_probe(tmp_path: Path) -> None:
+    """`*-assault` also matched `base-assault`; the evidence's probe is the anchor."""
+    for stamp in (
+        "20260801T000000Z",
+        "20260802T000000Z",
+        "20260803T000000Z",
+        "20260804T000000Z",
+    ):
+        pass_dir(tmp_path, stamp, "base-assault")
+    assert pool_merge.prune_candidates(tmp_path, "assault", keep=3) == []
+
+
+def test_prune_only_reads_runs_with_an_anchored_timestamp_prefix(tmp_path: Path) -> None:
+    for stamp in (
+        "archive-20260801T000000Z",
+        "archive-20260802T000000Z",
+        "archive-20260803T000000Z",
+        "archive-20260804T000000Z",
+    ):
+        pass_dir(tmp_path, stamp, "contacts")
+    assert pool_merge.prune_candidates(tmp_path, "contacts", keep=3) == []
+
+
 def test_prune_leaves_a_short_history_alone(tmp_path: Path) -> None:
     pass_dir(tmp_path, "20260801T000000Z", "contacts")
     pass_dir(tmp_path, "20260802T000000Z", "contacts")
@@ -575,6 +599,36 @@ def test_prune_main_prints_one_doomed_directory_per_line(
     )
     assert status == 0
     assert capsys.readouterr().out.splitlines() == [str(oldest)]
+
+
+# -------------------------------------------------------- prune-interrupted
+
+
+def test_interrupted_evidence_is_prunable_only_after_its_horizon(tmp_path: Path) -> None:
+    old = tmp_path / "20260701T000000Z-contacts"
+    recent = tmp_path / "20260807T000000Z-contacts"
+    completed = tmp_path / "20260701T000001Z-bareworld"
+    unrelated = tmp_path / "scratch-contacts"
+    for directory in (old, recent, completed, unrelated):
+        directory.mkdir()
+    (completed / "verdict.json").write_text("{}\n", encoding="utf-8")
+
+    now = datetime(2026, 8, 8, tzinfo=UTC)
+    assert pool_merge.prune_interrupted_candidates(
+        tmp_path, older_than=timedelta(days=7), now=now
+    ) == [old]
+
+
+def test_prune_interrupted_main_prints_one_doomed_directory_per_line(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    old = tmp_path / "20000101T000000Z-contacts"
+    old.mkdir()
+    status = pool_merge.main(
+        ["prune-interrupted", "--runs-dir", str(tmp_path), "--older-than-days", "7"]
+    )
+    assert status == 0
+    assert capsys.readouterr().out.splitlines() == [str(old)]
 
 
 # -------------------------------------------------------------- prune-pools

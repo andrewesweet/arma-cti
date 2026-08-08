@@ -29,11 +29,12 @@ classes added since #83 took the next free numbers. The mem-stop overlay
 (#125) raises `infra_unavailable` at the pool level, because the whole point
 of that stop is that no probe launched to carry the class.
 
-Four riders travel with the merge because they read and write the same files
+Five riders travel with the merge because they read and write the same files
 or the same table: `prune-passes` decides which old green evidence has
 outlived the retention convention (the shell does the deleting),
 `prune-pools` decides the same for pool directories off the `worst_class`
 the merge itself records — verdict-aware because the count-only prune kept
+`prune-interrupted` names verdict-less evidence beyond its recovery horizon,
 no failed pools and the starvation episodes' RAM traces went with it (#182),
 `fallback-verdict` writes the minimal `verdict.json` for a probe whose typer
 failed (#171's call site) — the least the merge reads, so a slot that is fine
@@ -55,6 +56,7 @@ import argparse
 import json
 import re
 import sys
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
@@ -373,17 +375,51 @@ def prune_candidates(runs_dir: Path, probe: str, keep: int) -> list[Path]:
     The shell does the deleting — this only decides.
     """
     passes: list[Path] = []
+    evidence_name = re.compile(rf"^\d{{8}}T\d{{6}}Z-{re.escape(probe)}$")
     for verdict_json in sorted(runs_dir.glob(f"*-{probe}/verdict.json")):
+        if evidence_name.fullmatch(verdict_json.parent.name) is None:
+            continue
         try:
             document = json.loads(verdict_json.read_text(encoding="utf-8"))
         except (OSError, UnicodeDecodeError, json.JSONDecodeError):
             continue
-        if isinstance(document, dict) and document.get("verdict") == "PASS":
+        if (
+            isinstance(document, dict)
+            and document.get("probe") == probe
+            and document.get("verdict") == "PASS"
+        ):
             passes.append(verdict_json.parent)
     room = keep - 1
     if len(passes) <= room:
         return []
     return passes[: len(passes) - room]
+
+
+def prune_interrupted_candidates(
+    runs_dir: Path, *, older_than: timedelta, now: datetime
+) -> list[Path]:
+    """Name interrupted run directories older than a recovery horizon.
+
+    ADR-0022 gives a directory without a verdict no result semantics. The
+    timestamped directory name proves its age without trusting mutable file
+    metadata; recent holders and unrelated directories are never candidates.
+    """
+    interrupted: list[Path] = []
+    run_name = re.compile(r"^(?P<stamp>\d{8}T\d{6}Z)-.+$")
+    deadline = now - older_than
+    for directory in sorted(runs_dir.iterdir()):
+        match = run_name.fullmatch(directory.name)
+        if (
+            not directory.is_dir()
+            or match is None
+            or (directory / "verdict.json").exists()
+            or (directory / "pool.json").exists()
+        ):
+            continue
+        started = datetime.strptime(match.group("stamp"), "%Y%m%dT%H%M%SZ").replace(tzinfo=UTC)
+        if started <= deadline:
+            interrupted.append(directory)
+    return interrupted
 
 
 def pool_reads_green(document: object) -> bool:
@@ -459,7 +495,7 @@ def fallback_document(
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """Five doors: the merge, and the riders that share its files or its table."""
+    """Six doors: the merge, and the riders that share its files or its table."""
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
 
@@ -490,6 +526,12 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     )
     prune_pools.add_argument("--runs-dir", required=True, type=Path)
     prune_pools.add_argument("--keep", required=True, type=int)
+
+    prune_interrupted = commands.add_parser(
+        "prune-interrupted", help="name interrupted evidence past its recovery horizon"
+    )
+    prune_interrupted.add_argument("--runs-dir", required=True, type=Path)
+    prune_interrupted.add_argument("--older-than-days", required=True, type=int)
 
     fallback = commands.add_parser(
         "fallback-verdict", help="write the minimal verdict.json for a failed typer"
@@ -583,6 +625,17 @@ def run_prune(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_prune_interrupted(args: argparse.Namespace) -> int:
+    """Print interrupted directories old enough that no holder can still own them."""
+    for directory in prune_interrupted_candidates(
+        args.runs_dir,
+        older_than=timedelta(days=args.older_than_days),
+        now=datetime.now(UTC),
+    ):
+        print(directory)  # noqa: T201 — the shell reads these lines
+    return 0
+
+
 def run_prune_pools(args: argparse.Namespace) -> int:
     """Print one doomed pool directory per line; the shell logs and deletes."""
     for directory in prune_pool_candidates(args.runs_dir, args.keep):
@@ -611,6 +664,7 @@ def main(argv: list[str] | None = None) -> int:
     handlers = {
         "merge": run_merge,
         "prune-passes": run_prune,
+        "prune-interrupted": run_prune_interrupted,
         "prune-pools": run_prune_pools,
         "fallback-verdict": run_fallback,
         "class-of": run_class_of,

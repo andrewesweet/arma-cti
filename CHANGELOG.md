@@ -197,6 +197,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `infra_unavailable`. The pin documents the deliberate update path beside its current value
   (#71).
 
+- **The Arma tier no longer loses small-fry evidence failures in steady state.** Pass pruning
+  validates both the timestamped directory shape and `verdict.json`'s exact probe, so a future
+  `assault` probe cannot delete `base-assault` evidence; interrupted evidence is retained for a
+  seven-day recovery horizon and then pruned. Timeline-rendering failures are recorded in
+  `results.env`, and headed-client RPT collection chooses the freshest log across Windows user
+  profiles instead of the lexically last profile. Each Python decision runs under a bounded `uv`
+  call whose shell caller deletes or records nothing when that decision cannot run (#73).
+
 - **The Claude breaker now sees the limit that actually binds the account.** The quota tap polls
   `/api/oauth/usage` without delaying the human's status line, selects the `limits[]` entry the
   provider marks active, and persists its kind and scope so `just breaker state` distinguishes

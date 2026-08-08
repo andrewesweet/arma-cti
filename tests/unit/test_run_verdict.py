@@ -68,6 +68,7 @@ def run_with_lines(
     lines: list[str],
     extra_env: dict[str, str] | None = None,
     server_stub: str | None = None,
+    mode: str | None = None,
 ) -> dict[str, str]:
     """One pass of `spike/run.sh` over a server that logs exactly `lines`."""
     server_dir = tmp_path / "server"
@@ -123,8 +124,9 @@ def run_with_lines(
     # as well as add to them.
     env.update(extra_env or {})
     # S603: this repo's own script, with paths this test just wrote.
+    command = [BASH, str(RUN), *([mode] if mode is not None else [])]
     result = subprocess.run(  # noqa: S603
-        [BASH, str(RUN)], env=env, capture_output=True, text=True, check=False, timeout=300
+        command, env=env, capture_output=True, text=True, check=False, timeout=300
     )
     records = dict(
         line.split("=", 1) for line in (out / "results.env").read_text().splitlines() if "=" in line
@@ -178,6 +180,34 @@ def test_a_run_with_no_fail_line_passes(tmp_path: Path) -> None:
     records = run_with_lines(tmp_path, ["measurement thing=1"])
     assert records["verdict"] == "PASS"
     assert records["_returncode"] == "0"
+
+
+def test_a_timeline_that_cannot_be_rendered_records_its_absence(tmp_path: Path) -> None:
+    real_uv = shutil.which("uv")
+    assert real_uv is not None
+    shim_dir = tmp_path / "timeline-fails"
+    shim_dir.mkdir()
+    uv = shim_dir / "uv"
+    uv.write_text(
+        "#!/usr/bin/env bash\n"
+        'if [[ " $* " == *" tools/timeline.py "* ]]; then\n'
+        '  echo "timeline exploded" >&2\n'
+        "  exit 17\n"
+        "fi\n"
+        f'exec "{real_uv}" "$@"\n'
+    )
+    uv.chmod(uv.stat().st_mode | stat.S_IXUSR)
+    path = os.environ["PATH"]
+
+    records = run_with_lines(
+        tmp_path,
+        ["measurement thing=1"],
+        extra_env={"PATH": f"{shim_dir}:{path}"},
+        mode="--regress",
+    )
+
+    assert records["verdict"] == "PASS"
+    assert records["timeline"] == "unavailable: timeline.py failed: timeline exploded"
 
 
 def test_the_first_fail_is_the_one_reported(tmp_path: Path) -> None:

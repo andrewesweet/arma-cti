@@ -471,37 +471,36 @@ assert_clean_run() {
 # The newest .rpt in the client's log directory is this run's: the engine opens
 # a fresh one per launch, and this is called while that client is still alive.
 collect_client_rpt() {
-    local dir newest candidate
-    dir="${CTI_WINDOWS_CLIENT_RPT_DIR:-}"
-    if [[ -z "$dir" ]]; then
-        # The glob sorts, so on a machine with more than one Windows user
-        # profile the alphabetically last one wins — arbitrary but stable, and
-        # CTI_WINDOWS_CLIENT_RPT_DIR is the lever where it picks the wrong one.
-        for candidate in /mnt/c/Users/*/AppData/Local/"Arma 3"; do
-            [[ -d "$candidate" ]] && dir="$candidate"
-        done
+    local report status line
+    local -a configured_dir=()
+    if [[ -n "${CTI_WINDOWS_CLIENT_RPT_DIR:-}" ]]; then
+        configured_dir=(--configured-dir "$CTI_WINDOWS_CLIENT_RPT_DIR")
     fi
-    if [[ -z "$dir" || ! -d "$dir" ]]; then
-        record "windows_client_rpt" "unavailable: no client log directory"
+    report="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/client_rpt.py \
+        --users-dir "${CTI_WINDOWS_USERS_DIR:-/mnt/c/Users}" \
+        "${configured_dir[@]}" --out "$OUT/windows-client.rpt")" 2>"$OUT/client-rpt-error.txt"
+    status=$?
+    if ((status != 0)); then
+        if ((status == 124)); then
+            record "windows_client_rpt" \
+                "unavailable: client_rpt.py did not finish within ${UV_TIMEOUT}s"
+        else
+            record "windows_client_rpt" \
+                "unavailable: client_rpt.py failed: $(tail -3 "$OUT/client-rpt-error.txt" | tr '\n' ' ')"
+        fi
         return 0
     fi
-    newest="$(ls -t "$dir"/*.rpt 2>/dev/null | head -1)"
-    if [[ -z "$newest" ]]; then
-        record "windows_client_rpt" "unavailable: no .rpt under $dir"
+    if [[ -z "$report" ]]; then
+        record "windows_client_rpt" "unavailable: client_rpt.py returned no result"
         return 0
     fi
-    if cp "$newest" "$OUT/windows-client.rpt"; then
-        record "windows_client_rpt" "$OUT/windows-client.rpt"
-        record "windows_client_rpt_source" "$newest"
-        # The whitelist biting, counted where the engine writes it. Recorded and
-        # never gated on: most runs make no blocked call and zero is the normal
-        # reading. It is here so a run that made one leaves the count in its own
-        # evidence rather than in somebody's shell history (#21).
-        record "windows_client_remoteexec_denied" \
-            "$(grep -aci "is not allowed to be remotely executed" "$OUT/windows-client.rpt")"
-    else
-        record "windows_client_rpt" "unavailable: could not copy $newest"
-    fi
+    while IFS= read -r line; do
+        if [[ "$line" != *=* ]]; then
+            record "windows_client_rpt" "unavailable: client_rpt.py returned an invalid result"
+            return 0
+        fi
+        record "${line%%=*}" "${line#*=}"
+    done <<<"$report"
 }
 
 # The dedicated server's own `.rpt`, which is where the engine writes scripting
@@ -1213,7 +1212,16 @@ EOF
     # artefact #35's timeout went without — a Squad at three of eight and no
     # account of the other five (#39).
     (cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/timeline.py \
-        "$DAEMON_TELEMETRY") >"$OUT/timeline.txt" 2>/dev/null || true
+        "$DAEMON_TELEMETRY") >"$OUT/timeline.txt" 2>"$OUT/timeline-error.txt"
+    timeline_status=$?
+    if ((timeline_status == 0)); then
+        record "timeline" "$OUT/timeline.txt"
+    elif ((timeline_status == 124)); then
+        record "timeline" "unavailable: timeline.py did not finish within ${UV_TIMEOUT}s"
+    else
+        timeline_detail="$(tail -3 "$OUT/timeline-error.txt" | tr '\n' ' ')"
+        record "timeline" "unavailable: timeline.py failed: ${timeline_detail% }"
+    fi
 
     assert_clean_run "$OUT/spike-lines.txt"
 

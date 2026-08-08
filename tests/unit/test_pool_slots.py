@@ -27,6 +27,7 @@ import signal
 import stat
 import subprocess
 import time
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -946,7 +947,7 @@ def test_pool_pruning_is_verdict_aware_and_keeps_what_an_issue_may_need(tmp_path
     pruned while the issues that needed them were still open; only the numbers
     quoted into the issues survived. The runner now prunes only pools whose own
     record reads green, to the last KEEP_POOLS, with room for the run's own;
-    a failed pool and a dead run's directory are kept.
+    a failed pool is kept, as is a dead run inside its recovery horizon.
     """
     runs = tmp_path / "state" / "runs"
     starved = runs / "20260701T000001Z-1-pool"
@@ -954,7 +955,8 @@ def test_pool_pruning_is_verdict_aware_and_keeps_what_an_issue_may_need(tmp_path
     (starved / "pool.json").write_text(
         json.dumps({"worst_class": "node_crashed"}) + "\n", encoding="utf-8"
     )
-    dead = runs / "20260701T000002Z-1-pool"
+    recent_stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    dead = runs / f"{recent_stamp}-1-pool"
     dead.mkdir(parents=True)
     greens = [runs / f"2026070{n}T000003Z-1-pool" for n in range(1, 7)]
     for green in greens:
@@ -965,10 +967,26 @@ def test_pool_pruning_is_verdict_aware_and_keeps_what_an_issue_may_need(tmp_path
     result = pool_run(tmp_path, "--slots", "1", "contacts")
     assert result.returncode == EXIT_PASS, result.stderr[-4000:]
     assert starved.is_dir(), "a failed pool's evidence was pruned while its issue may be open"
-    assert dead.is_dir(), "a dead run's directory is not the pruner's call"
+    assert dead.is_dir(), "a recent dead run is still recoverable"
     # Six staged greens, room left for this run's own: the two oldest go, and
     # with the new pool.json written the directory holds KEEP_POOLS greens.
     assert [green for green in greens if green.is_dir()] == greens[2:]
+
+
+def test_pool_pruning_removes_interrupted_evidence_past_recovery_horizon(
+    tmp_path: Path,
+) -> None:
+    runs = tmp_path / "state" / "runs"
+    old = runs / "20000101T000000Z-contacts"
+    recent = runs / "29990101T000000Z-contacts"
+    old.mkdir(parents=True)
+    recent.mkdir()
+
+    result = pool_run(tmp_path, "--slots", "1", "contacts")
+
+    assert result.returncode == EXIT_PASS, result.stderr[-4000:]
+    assert not old.exists()
+    assert recent.is_dir(), "a holder inside the recovery horizon may still be live"
 
 
 def test_the_run_records_the_memory_it_actually_used(tmp_path: Path) -> None:

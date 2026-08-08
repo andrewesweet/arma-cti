@@ -50,6 +50,7 @@ source "$REPO/spike/client-lock.sh"
 RUNS_DIR="$(cti_host_runs)"
 KEEP_PASSES=3
 KEEP_POOLS=5
+INTERRUPTED_RETENTION_DAYS=7
 # ADR-0028 recommends three, and #47 measured that three fit. Changing this
 # number is a measurement, not a preference: the RAM figure is in
 # docs/regression-tier.md and the pool records its own peak in every run.
@@ -728,7 +729,28 @@ fi
 SLOTS=("${READY_SLOTS[@]}")
 
 # ------------------------------------------------------------------ evidence
+# ADR-0022: a timestamped directory with no verdict is an interrupted holder,
+# not a result. Keep it through a generous recovery window, then bound the
+# accumulation. Python decides; this process-owning shell deletes, and a
+# decision that cannot run deletes nothing (ADR-0049).
+prune_interrupted() {
+    local doomed status dir
+    doomed="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python tools/pool_merge.py prune-interrupted \
+        --runs-dir "$RUNS_DIR" --older-than-days "$INTERRUPTED_RETENTION_DAYS")"
+    status=$?
+    if ((status != 0)); then
+        log "prune-interrupted could not run (exit $status) — deleting nothing"
+        return 0
+    fi
+    while IFS= read -r dir; do
+        [[ -n "$dir" && "$dir" == "$RUNS_DIR"/* ]] || continue
+        log "pruning old interrupted evidence: $dir"
+        rm -rf "$dir"
+    done <<<"$doomed"
+}
+
 mkdir -p "$RUNS_DIR"
+prune_interrupted
 RUN_STARTED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 # The pid is in the name because two pools are a thing that happens (#127) and
 # `date` has one-second resolution: two agents starting inside the same second
