@@ -209,6 +209,14 @@ probe file="" hold="150": build-shim build-addon
 regress *args: build-shim build-addon
     ./spike/regress.sh {{ args }}
 
+# Print the probe↔harness contract — the header keys the runner parses and
+# validates, the completion line it waits on, and what the window closing means —
+# derived from spike/regress.sh and spike/run.sh rather than restated beside them,
+# so it cannot drift (#209's interface study, #215). No Arma, no lock, no port,
+# no world: like `just regress --list`.
+probe-contract:
+    uv run python tools/probe_contract.py
+
 # Every test module this landing adds or rewrites has to notice its subject
 # changing (#239, ADR-0064). A bounded sample of mutants is planted in the source
 # those tests actually execute — chosen by one `coverage.py` pass, not by the

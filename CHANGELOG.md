@@ -19,6 +19,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stays in the protocol. `done` is unchanged: an archive is not a landing, and durability stays
   explicit through the archive call (#272).
 
+- **`just probe-contract` prints the probe↔harness contract by reading it off the runner.** What a
+  probe owes the harness — the header keys, the completion line, the window — was written down nowhere
+  outside ~1,000 lines of bash, and a contract misread out of bash is a probe that tests the wrong
+  thing (#150/#191 timed out in its own scaffold while the decision under test had already fired). The
+  command derives the contract from `spike/regress.sh` and `spike/run.sh` rather than restating a
+  second copy beside them, so it cannot drift: header keys come from the `header_of` call sites, the
+  required set from the validation block, the completion sentinel and the window binding from the
+  runner's own assignments, and the emitted classes from its `fail`/`failure_class=` sites. A drift
+  test plants a new header key in `regress.sh` and asserts it surfaces in the output, which a
+  hand-maintained restatement could not. Verdict semantics are pointed at CLAUDE.md's failure-class
+  table and restated nowhere here (#209, #215; ADR-0049 for the Python home under pytest).
+
 - **`just dispatch` can now run a fable act on `claude-native`.** A `fable-high` profile joins the
   registry, giving the fable seat the `(model, effort)` token #242 ruling 1 kept it for — retros;
   ADR, `CONTEXT.md` and schema semantics; retro evidence banking; the #181-shaped diagnosis call.
