@@ -8,6 +8,7 @@ import pytest
 from conftest import load_tool
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from types import ModuleType
 
 wip_trial: ModuleType = load_tool("wip_trial")
@@ -357,6 +358,14 @@ def test_a_started_manifest_is_immutable() -> None:
     assert refusal.kind == "manifest_changed"
 
 
+def test_an_absent_store_refuses_instead_of_becoming_an_empty_trial(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    code = wip_trial.main(["--trial-dir", str(tmp_path), "status"])
+    assert code == 1
+    assert "refusal=manifest_unreadable" in capsys.readouterr().err
+
+
 def test_observation_before_the_bar_is_not_historical_control() -> None:
     trial = manifest()
     row, refusal = wip_trial.append_event(
@@ -486,6 +495,50 @@ def test_a_cohort_must_be_the_first_ten_queue_issues() -> None:
     assert row is None
     assert refusal is not None
     assert refusal.kind == "cohort_hand_picked"
+
+
+def test_a_candidate_block_must_restore_safe_policy_before_the_next_block() -> None:
+    trial = manifest()
+    order = trial["block_order"]
+    assert order == ["safe", "candidate", "candidate", "safe"]
+    rows: list[object] = []
+    for number in (1, 2):
+        issues = list(range(number * 100, number * 100 + 10))
+        add(
+            trial,
+            rows,
+            {
+                "kind": "block_start",
+                "at": CREATED + number,
+                "source": f"queue-{number}",
+                "block": number,
+                "arm": order[number - 1],
+                "limit": trial[f"{order[number - 1]}_limit"],
+                "issues": issues,
+                "eligible": issues,
+                "orchestration_trial": "cleared",
+            },
+        )
+        drain(trial, rows, number, issues, CREATED + number + 0.1)
+    issues = list(range(300, 310))
+    row, refusal = wip_trial.append_event(
+        trial,
+        rows,
+        {
+            "kind": "block_start",
+            "at": CREATED + 3,
+            "source": "queue-3",
+            "block": 3,
+            "arm": order[2],
+            "limit": trial["candidate_limit"],
+            "issues": issues,
+            "eligible": issues,
+            "orchestration_trial": "cleared",
+        },
+    )
+    assert row is None
+    assert refusal is not None
+    assert refusal.kind == "safe_limit_not_restored"
 
 
 def test_the_event_chain_refuses_edits_and_reordering() -> None:
@@ -631,6 +684,47 @@ def test_under_exercised_candidate_is_inconclusive() -> None:
     assert result.verdict == "inconclusive"
     assert any(reason.startswith("candidate_fidelity_failed=") for reason in result.reasons)
     assert "retain 3" in result.recommendation
+
+
+def test_an_open_block_times_out_without_replacement_or_censoring() -> None:
+    trial = manifest()
+    order = trial["block_order"]
+    assert isinstance(order, list)
+    issues = list(range(100, 110))
+    rows: list[object] = []
+    add(
+        trial,
+        rows,
+        {
+            "kind": "block_start",
+            "at": CREATED + 1,
+            "source": "queue",
+            "block": 1,
+            "arm": order[0],
+            "limit": trial[f"{order[0]}_limit"],
+            "issues": issues,
+            "eligible": issues,
+            "orchestration_trial": "running",
+        },
+    )
+    add(
+        trial,
+        rows,
+        {
+            "kind": "observation",
+            "at": CREATED + 2,
+            "source": "dispatch-100",
+            "block": 1,
+            "issue": issues[0],
+            "event": "dispatch",
+            "occupancy": 1,
+        },
+    )
+    events, refusal = wip_trial.validate_events(trial, rows)
+    assert refusal is None
+    result = wip_trial.analyse(trial, events, CREATED + 2 + wip_trial.BLOCK_TIMEOUT_SECONDS + 1)
+    assert result.verdict == "fail"
+    assert "blocks_timed_out=1" in result.reasons
 
 
 def test_a_concurrent_process_change_requires_a_new_bar() -> None:

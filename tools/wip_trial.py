@@ -207,6 +207,11 @@ def thresholds() -> dict[str, object]:
         "candidate_rework_not_above_safe": True,
         "candidate_conflicts_not_above_safe": True,
         "candidate_faster_in_each_adjacent_pair": True,
+        "admission_bar_id": admission.BAR_ID,
+        "admission_part_a": list(admission.PART_A_KEYS),
+        "unclean_reasons": list(admission.UNCLEAN_REASONS),
+        "orchestration_trial_bar_id": admission.TRIAL_BAR_ID,
+        "orchestration_trial_criteria": list(admission.TRIAL_CRITERION_KEYS),
     }
 
 
@@ -537,6 +542,17 @@ def _validate_block_start(  # noqa: PLR0911 -- immutable cohort guards fail sepa
             "block_treatment_mismatch",
             (f"block={number}", f"expected_arm={arm}", f"expected_limit={expected_limit}"),
             "Restore the pre-registered order and limit before the first dispatch.",
+        )
+    if event.get("orchestration_trial") not in {
+        "not_started",
+        "running",
+        "cleared",
+        "failed",
+    }:
+        return Refusal(
+            "orchestration_trial_unreadable",
+            (f"block={number}",),
+            "Record #242's observed trial standing; there is no default.",
         )
     if arm == "candidate" and event.get("orchestration_trial") != "cleared":
         return Refusal(
@@ -1277,6 +1293,7 @@ def bar_lines() -> tuple[str, ...]:
         f"candidate_high_exposure={MIN_HIGH_EXPOSURE:.0%} of unfinished-cohort time",
         f"maturity={MATURITY_SECONDS // 86400} days",
         "quality=10/10 clean, zero critical failures, at most 1/10 unclean per block",
+        f"quality_sources={admission.BAR_ID} {admission.TRIAL_BAR_ID}",
         "rework=candidate issue and conflict counts cannot exceed the safe control",
         "selection=lowest passing limit; a higher stage follows only a matured pass",
         "authority=reports only; never dispatches and never edits queue policy",
@@ -1401,8 +1418,8 @@ def _event_from_args(  # noqa: C901 -- construction mirrors the finite event voc
         details = {"conflict": args.conflict}
     elif args.kind == "maturity":
         details = {
-            "clean_close": args.clean_close == "yes",
-            "unclean": args.unclean == "yes",
+            "clean_close": None if not args.clean_close else args.clean_close == "yes",
+            "unclean": None if not args.unclean else args.unclean == "yes",
             "unclean_reasons": [item for item in args.unclean_reasons.split(",") if item],
             "gate_reds": args.gate_reds,
             "flake_reruns": args.flake_reruns,
@@ -1539,32 +1556,28 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     record.add_argument("--issue", type=int, default=0)
     record.add_argument("--issues", default="")
     record.add_argument("--eligible", default="")
-    record.add_argument("--arm", choices=("safe", "candidate"), default="safe")
+    record.add_argument("--arm", choices=("safe", "candidate"), default="")
     record.add_argument("--limit", type=int, default=0)
     record.add_argument(
         "--orchestration-trial",
         choices=("not_started", "running", "cleared", "failed"),
-        default="running",
+        default="",
     )
-    record.add_argument("--event", choices=tuple(sorted(OBSERVATION_KINDS)), default="dispatch")
+    record.add_argument("--event", choices=tuple(sorted(OBSERVATION_KINDS)), default="")
     record.add_argument("--occupancy", type=int, default=-1)
     record.add_argument("--lane", default="")
     record.add_argument("--profile", default="")
     record.add_argument("--seat", default="")
     record.add_argument("--gate", choices=("fast", "corpus", ""), default="")
     record.add_argument("--change-size", type=int, default=0)
-    record.add_argument(
-        "--conflict", choices=tuple(sorted(CONFLICT_KINDS)), default="rebase_conflict"
-    )
+    record.add_argument("--conflict", choices=tuple(sorted(CONFLICT_KINDS)), default="")
     record.add_argument("--clean-close", choices=("yes", "no"), default="")
     record.add_argument("--unclean", choices=("yes", "no"), default="")
     record.add_argument("--unclean-reasons", default="")
     record.add_argument("--gate-reds", type=int, default=-1)
     record.add_argument("--flake-reruns", type=int, default=-1)
-    record.add_argument("--failure", choices=tuple(sorted(CRITICAL_KINDS)), default="red_landing")
-    record.add_argument(
-        "--failure-class", choices=tuple(sorted(NON_RESULTS)), default="infra_unavailable"
-    )
+    record.add_argument("--failure", choices=tuple(sorted(CRITICAL_KINDS)), default="")
+    record.add_argument("--failure-class", choices=tuple(sorted(NON_RESULTS)), default="")
     record.add_argument("--description", default="")
     return parser.parse_args(argv)
 
