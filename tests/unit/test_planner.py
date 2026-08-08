@@ -783,36 +783,63 @@ def assault_row(world: campaign.Campaign, seed: int = 0) -> planner.Decision:
     )
 
 
+@pytest.fixture(scope="module")
+def undefended_enemy_base() -> campaign.Campaign:
+    """Return a held island with one Squad free to Assault the open enemy Base."""
+    return island_held("nato_airbase")
+
+
+@pytest.fixture(scope="module")
+def company_at_enemy_base() -> campaign.Campaign:
+    """Return a held island with a fresh company Contact at the enemy Base."""
+    world = island_held()
+    sighted(world, "WEST", "csat_kamino", men=25)
+    return world
+
+
+@pytest.fixture(scope="module")
+def force_that_cannot_mass() -> campaign.Campaign:
+    """Return a held island with only three Squads facing a company at the enemy Base."""
+    world = island_held_by("camp_rogain", "lz_baldy", "air_station")
+    sighted(world, "WEST", "csat_kamino", men=25)
+    return world
+
+
 @pytest.mark.parametrize("seed", range(SEEDS))
-def test_an_undefended_enemy_base_is_still_raided_by_one_squad_on_every_seed(seed: int) -> None:
+def test_an_undefended_enemy_base_is_still_raided_by_one_squad_on_every_seed(
+    seed: int,
+    undefended_enemy_base: campaign.Campaign,
+) -> None:
     # The half of #38 that is a promise not to change anything: an unreported
     # Base is the fog floor, the fog floor is a team, and a team is one Squad's
     # worth — so #34's late position plans exactly as #34 measured it. Swept
     # rather than sampled because the mass is new machinery and a seed that
     # quietly detailed a second Squad would be a regression nobody saw.
-    assert len(raiders(island_held("nato_airbase"), seed)) == 1
+    assert len(raiders(undefended_enemy_base, seed)) == 1
 
 
 @pytest.mark.parametrize("seed", range(SEEDS))
-def test_a_company_at_the_enemy_base_is_massed_against_on_every_seed(seed: int) -> None:
+def test_a_company_at_the_enemy_base_is_massed_against_on_every_seed(
+    seed: int,
+    company_at_enemy_base: campaign.Campaign,
+) -> None:
     # The other half, and the ticket: #35's Assault arrived as eight men against
     # three Squads and lost five of them in twenty-five seconds. The Contact
     # says company, doctrine says four Squads, and four is what goes — every
     # seed, out of a force of eight with an island to garrison.
-    world = island_held()
-    sighted(world, "WEST", "csat_kamino", men=25)
-    assert len(raiders(world, seed)) == planner.ASSAULT_MASS["company"]
+    assert len(raiders(company_at_enemy_base, seed)) == planner.ASSAULT_MASS["company"]
 
 
 @pytest.mark.parametrize("seed", range(SEEDS))
-def test_a_commander_that_cannot_mass_declines_the_assault_on_every_seed(seed: int) -> None:
+def test_a_commander_that_cannot_mass_declines_the_assault_on_every_seed(
+    seed: int,
+    force_that_cannot_mass: campaign.Campaign,
+) -> None:
     # All-or-nothing, which is the point: three Squads is not a company's worth
     # under any doctrine, so what a Commander with three does about a defended
     # Base is nothing. The island is still held — declining costs the Campaign
     # nothing, and going would cost it three Squads.
-    world = island_held_by("camp_rogain", "lz_baldy", "air_station")
-    sighted(world, "WEST", "csat_kamino", men=25)
-    assert raiders(world, seed) == []
+    assert raiders(force_that_cannot_mass, seed) == []
 
 
 def test_the_force_an_assault_brings_is_read_off_the_band_and_off_nothing_else() -> None:
