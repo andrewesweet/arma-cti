@@ -232,6 +232,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   archived verbatim in `docs/process-log.md` per #201/ADR-0060. The retro skill's approved ×25 → ×26
   is not in this landing and remains outstanding; every other count is unchanged.
 
+- **Retro 27's amendments are on the process surfaces the human approved them for.** The process
+  banner reads twenty-seven retros. The `just verdict` row now documents `--post <issue>`, posting
+  a finished pool's rendered bytes straight to the issue (#235). The `just worktree` row gains
+  `archive` and `restore`, the named refusals `invalid_ref`, `not_on_remote` and `ref_mismatch`, and
+  the explicit rule that an archive is not a landing (#272). A new `just probe-contract` row sits
+  beside the regression/probe rows (#215). The working-style bullet sanctioning a dispatched session
+  as the irreducible-wait fallback gains its single-shot sentence: no second turn for a background
+  completion or a question, decide routine ambiguities and record the reasoning, and state exactly
+  what remains when a choice is genuinely the human's (#279).
+
+  Elimination-context moves ×13 → ×14 on one combined exemplar — #90's caller set bounded before a
+  rename batch, #73's filed daemon read-timeout found already fixed, and #215's contract found
+  scattered rather than absent — the three applications earning one marker move, not three; #275
+  remains corroboration only. #189 is pruned from the inline newest-five list, its verbatim archive
+  already standing in `docs/process-log.md`. Failure classes stays ×11, recovery stays ×18,
+  probe-window stays ×8, convention-lands stays ×5, ADR-claiming stays ×7. The retro skill's approved
+  ×26 → ×27 is not in this landing and remains outstanding.
+
 - **Reverted: routing the Codex per-worktree git directory through its parent regressed the
   lane from commit-only to neither.** The prior entry's candidate fix was live-tested at
   `d-20260808-075346-f27564` and refuted: `git add` itself was refused, `index.lock`
