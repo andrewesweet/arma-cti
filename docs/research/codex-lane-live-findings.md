@@ -350,22 +350,10 @@ mechanism is mount-based, not Landlock, and no read right is being stripped — 
 succeed do so because their roots are read-write binds, and the gate fails because libgit2
 opens the repository differently than git does. Why granting the per-worktree Git directory
 as a writable root then defeats libgit2's discovery — while git, addressing the same files by
-absolute path, is unaffected — was the open question #265 carried, and the confirming
-experiment has now run it down. Read-only probe `d-20260807-222221-1a2c7e` (`codex-terra-low`)
-ran `strace -f -e trace=openat,stat,statx,newfstatat` over `cog check` inside the sandbox and
-found the sandbox had created an empty directory at `<main>/.git/worktrees/<name>/.git` (mode
-0555, size 40) — a mount point injected for that writable root, where no real git layout puts
-a `.git`. libgit2 stats it during discovery, concludes it has found a repository, probes for
-`commondir` and `HEAD`, gets `ENOENT` for both, and reports `could not find repository`: it
-found too many repositories, not none. Outside the sandbox that directory does not exist and
-`cog check` is green at the same commit. The probe collected no `git` trace, so why git
-itself is unaffected remains the plausible reading rather than a measured one — it resolves
-the gitfile and addresses the directory by absolute path, never probing for a nested `.git`.
-The candidate fix lands in `_codex_writable_roots`: name the parent `<main>/.git/worktrees`
-instead of the per-worktree directory, so the path libgit2 stats is never a named root.
-Whether that parent grant also satisfies Codex's `.git` carve for the worktree's index writes
-is the one question a deterministic test cannot answer; the confirming dispatch is #265
-criterion 3, owed by the orchestrator.
+absolute path, is unaffected — is the open question #265 carries. The confirming experiment,
+a live dispatch reading `/proc/self/mountinfo` and the failing `openat` under each root set,
+has not been run; this paragraph states what the recorded error strings already prove and
+marks the rest as open.
 
 There is a separate containment fact, and it must not be mistaken for a sandbox-policy
 finding. This box has `approvals_reviewer = "auto_review"`; it approved the predecessor's
