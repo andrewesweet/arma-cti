@@ -152,6 +152,54 @@ def test_a_path_inside_the_worktree_it_was_run_in_passes_the_location_rung() -> 
     )
 
 
+def test_a_path_is_owned_by_the_most_specific_registration_containing_it() -> None:
+    """Nested registrations contain the same file; the deeper one owns it."""
+    nested = (Path("/w"), Path("/w/.claude/worktrees/issue-1"))
+    assert discard.owner_of(nested, Path("/w/.claude/worktrees/issue-1/x.py")) == Path(
+        "/w/.claude/worktrees/issue-1"
+    )
+    assert discard.owner_of(nested, Path("/w/tools/x.py")) == Path("/w")
+    assert discard.owner_of(nested, Path("/elsewhere/x.py")) is None
+
+
+def test_this_projects_own_nesting_passes_the_location_rung() -> None:
+    """`<main>/.claude/worktrees/N` is inside the main checkout, and its own files are its own.
+
+    The defect this pins: an any-container rule read the main checkout as a
+    second owner and refused every file in every agent worktree, which is the
+    only place the command exists to be used.
+    """
+    mine = Path("/w/.claude/worktrees/issue-287")
+    assert (
+        discard.classify_location(mine, (Path("/w"), mine), mine / "docs/note.md", "docs/note.md")
+        is None
+    )
+
+
+def test_the_location_rung_still_refuses_a_sibling_agent_worktree() -> None:
+    """Longest prefix must not weaken the rung that #105 is about."""
+    mine = Path("/w/.claude/worktrees/issue-287")
+    theirs = Path("/w/.claude/worktrees/issue-other")
+    refusal = discard.classify_location(
+        mine,
+        (Path("/w"), mine, theirs),
+        theirs / "x.py",
+        "../issue-other/x.py",
+    )
+    assert refusal.kind == "outside_worktree"
+    assert f"belongs_to={theirs}" in refusal.found
+
+
+def test_the_main_checkout_is_a_foreign_tree_from_inside_a_nested_worktree() -> None:
+    """Upwards is refused too: the enclosing checkout is not this agent's to reset."""
+    mine = Path("/w/.claude/worktrees/issue-287")
+    refusal = discard.classify_location(
+        mine, (Path("/w"), mine), Path("/w/README.md"), "../../../README.md"
+    )
+    assert refusal.kind == "outside_worktree"
+    assert "belongs_to=/w" in refusal.found
+
+
 def test_a_conflicted_path_refuses_before_anything_else_is_considered() -> None:
     refusal = discard.classify_change("a.py", discard.read_status("UU a.py\0"))
     assert refusal.kind == "conflicted"
@@ -475,6 +523,76 @@ def test_a_path_in_another_agents_worktree_refuses_and_their_work_survives(
     assert (theirs / "README.md").read_text(
         encoding="utf-8"
     ) == "another agent's uncommitted work\n"
+
+
+def an_agent_worktree(repo: Path, name: str) -> Path:
+    """Add a worktree where this project actually puts them: *inside* the main checkout.
+
+    `a_repo`'s registrations are flat, so nothing built on it can tell an
+    any-container ownership rule from a longest-prefix one. `<main>/.claude/
+    worktrees/<name>` is the arrangement the recipe is run in, and it is the one
+    that caught the defect.
+    """
+    tree = repo / ".claude" / "worktrees" / name
+    git("worktree", "add", "-q", "--detach", str(tree), cwd=repo)
+    return tree
+
+
+def test_the_permitted_case_works_inside_a_worktree_nested_in_the_main_checkout(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The only arrangement a dispatched session ever runs in, and it used to refuse.
+
+    Every file under `<main>/.claude/worktrees/N` is contained by the main
+    checkout as well as by its own tree, so reading ownership as "any containing
+    registration" made the command refuse itself everywhere it exists to be used.
+    """
+    repo = a_repo(tmp_path)
+    mine = an_agent_worktree(repo, "issue-287")
+    (mine / "README.md").write_text("residue an orchestrator-run probe left\n", encoding="utf-8")
+
+    code = run(monkeypatch, mine, "README.md", "--ruling", RULING)
+    printed = lines_of(capsys)
+    assert code == 0, printed
+    assert printed[0] == "ok=discarded"
+    assert f"worktree={mine}" in printed
+    assert (mine / "README.md").read_text(encoding="utf-8") == "base\n"
+    assert git("status", "--porcelain", cwd=mine) == ""
+
+
+def test_a_sibling_agent_worktree_still_refuses_from_inside_a_nested_worktree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The protection longest-prefix must not have cost: another holder's tree (#105)."""
+    repo = a_repo(tmp_path)
+    mine = an_agent_worktree(repo, "issue-287")
+    theirs = an_agent_worktree(repo, "issue-other")
+    (theirs / "README.md").write_text("another agent's uncommitted work\n", encoding="utf-8")
+    before = state(theirs)
+
+    code = run(monkeypatch, mine, "../issue-other/README.md", "--ruling", RULING)
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=outside_worktree"
+    assert f"belongs_to={theirs}" in printed
+    assert state(theirs) == before
+
+
+def test_the_enclosing_main_checkout_still_refuses_from_inside_a_nested_worktree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Upwards is foreign too — the main checkout is not the dispatched agent's to reset."""
+    repo = a_repo(tmp_path)
+    mine = an_agent_worktree(repo, "issue-287")
+    (repo / "README.md").write_text("the orchestrator's own uncommitted work\n", encoding="utf-8")
+    before = (repo / "README.md").read_text(encoding="utf-8")
+
+    code = run(monkeypatch, mine, "../../../README.md", "--ruling", RULING)
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=outside_worktree"
+    assert f"belongs_to={repo}" in printed
+    assert (repo / "README.md").read_text(encoding="utf-8") == before
 
 
 def test_a_clean_named_path_refuses_rather_than_reporting_a_discard_that_did_nothing(

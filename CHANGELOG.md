@@ -31,8 +31,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (including a nested worktree belonging to another agent) — and any run where another dirty
   path exists, which is the rung that makes it useless as a general cleaner and so keeps it from
   decaying into a habitual `git reset`. Nothing is discarded on any refusal path, and every
-  refusal is proven with the working tree asserted unchanged afterwards. The
-  orchestrator-clears-residue path remains the fallback whenever the guard refuses (#287).
+  refusal is proven with the working tree asserted unchanged afterwards. A file belongs to the
+  **most specific** registered worktree containing it, which is what makes the command usable at
+  all: this project's agent worktrees live at `<main>/.claude/worktrees/<name>`, so every file in
+  every one of them is contained by the main checkout too, and reading ownership as "any
+  containing registration" refused the whole permitted case everywhere the command exists to be
+  used. A genuine sibling tree is deeper than the worktree in hand rather than an ancestor of it,
+  so it still refuses. The orchestrator-clears-residue path remains the fallback whenever the
+  guard refuses (#287).
 
 - **Foreign dispatches now obey a repository-owned keep-on-Claude class policy.**
   `just dispatch` reads the seven-row policy from the main checkout for every dispatch and

@@ -266,36 +266,58 @@ def classify_paths(raw: tuple[str, ...]) -> Refusal | None:
     return None
 
 
+def owner_of(registrations: tuple[Path, ...], candidate: Path) -> Path | None:
+    """Return the registered worktree a path belongs to: the *most specific* one.
+
+    Containment alone does not decide ownership, because this project's agent
+    worktrees are nested inside the main checkout — `<main>/.claude/worktrees/N`
+    is contained by two registrations at once, and the one that owns the file is
+    the deeper of them. Longest matching prefix is what "most specific" means
+    here, and `len(parts)` is that length: every registration containing a given
+    path is a prefix of it, so they are totally ordered by depth and there is no
+    tie to break.
+
+    Returns `None` when no registration contains the path at all — a path out in
+    the wider filesystem, which belongs to no worktree rather than to a wrong one.
+    """
+    containing = [one for one in registrations if candidate.is_relative_to(one)]
+    return max(containing, key=lambda one: len(one.parts)) if containing else None
+
+
 def classify_location(
     root: Path, registrations: tuple[Path, ...], candidate: Path, raw: str
 ) -> Refusal | None:
-    """Refuse a path that resolves outside the worktree this command was run in.
+    """Refuse a path that belongs to any worktree other than the one we run in.
 
-    Two ways out, and both refuse: resolving above the worktree root at all, and
-    resolving into a *different* registered worktree nested under it. The second
-    is the one that matters — `.claude/worktrees/issue-N` sits inside the main
-    checkout's directory tree while belonging to another agent, which is exactly
-    the collision #105 records.
+    One rule, not two: the path's owner — its most specific containing
+    registration — has to be this worktree. That refuses a path resolving out of
+    the tree entirely, and it refuses a *different* registered worktree nested
+    under it, which is the case that matters: a sibling `.claude/worktrees/issue-N`
+    is another agent's tree and resetting it is exactly the collision #105 records.
+
+    Ownership has to be the *deepest* container rather than any container,
+    because this project's own worktrees live under `<main>/.claude/worktrees/`.
+    Every file in every agent worktree is contained by the main checkout too, so
+    an any-container rule refuses the whole permitted case — it did, and the
+    command could not succeed anywhere it exists to be used.
 
     Resolution is what makes this true rather than hopeful: a symlink pointing
     out of the tree resolves out of the tree and is refused here, and a `..` that
     stays inside normalises to a path that is.
     """
-    outside = Refusal(
+    owner = owner_of(registrations, candidate)
+    if owner == root:
+        return None
+    found = (f"path={raw}", f"resolved={candidate}", f"worktree={root}")
+    if owner is not None:
+        found = (*found, f"belongs_to={owner}")
+    return Refusal(
         "outside_worktree",
-        (f"path={raw}", f"resolved={candidate}", f"worktree={root}"),
+        found,
         "This command only ever touches the worktree it was run in. If the file belongs to "
         "another agent's tree, stop and report it — never reset another holder's tree (#105). "
         + FALLBACK,
     )
-    if not candidate.is_relative_to(root):
-        return outside
-    for other in registrations:
-        if other != root and candidate.is_relative_to(other):
-            return Refusal(
-                "outside_worktree", (*outside.found, f"belongs_to={other}"), outside.action
-            )
-    return None
 
 
 def classify_target(rel: str, *, is_dir: bool, tracked: bool) -> Refusal | None:
