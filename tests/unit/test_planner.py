@@ -108,7 +108,7 @@ def held(world: campaign.Campaign, objective: str, side: str) -> None:
 
 
 def test_a_squad_on_quiet_ground_its_side_holds_moves_on_to_take_more() -> None:
-    # `Campaign._advance` keeps ground taken once taken, so standing on it buys
+    # `Campaign._advance_capture` keeps ground taken once taken, so standing on it buys
     # nothing the Campaign was not already paying. A garrison is for ground
     # somebody is coming for, and nobody is.
     world = live()
@@ -765,7 +765,7 @@ def raiders(world: campaign.Campaign, seed: int = 0) -> list[str]:
 def island_held_by(*places: str) -> campaign.Campaign:
     """Return a WEST-held island garrisoned only at `places`.
 
-    `_advance` keeps ground once taken, so an island can be held by a force too
+    `_advance_capture` keeps ground once taken, so an island can be held by a force too
     small to stand on all of it — which is what a Commander that has been ground
     down looks like, and the position where declining is the live answer.
     """

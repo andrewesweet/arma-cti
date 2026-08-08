@@ -33,6 +33,7 @@ import xml.etree.ElementTree as ET
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
+from string import Template
 
 WIKI_BASE = "https://community.bistudio.com/wiki/"
 
@@ -345,6 +346,88 @@ BUCKET_DESCRIPTIONS = {
     "meta": "Wiki policy, help and extension pages",
 }
 
+SNAPSHOT_INDEX_TEMPLATE = Template(
+    """# Arma 3 wiki snapshot
+
+Vendored from the Bohemia Interactive Community wiki (BIKI), which is
+unreachable from this project's environment: Cloudflare returns 403 to plain
+fetches, to the MediaWiki API and to browser-like requests alike. Arma 3 has
+been static at 2.20 since June 2025, so these pages change rarely.
+
+Content belongs to Bohemia Interactive and its wiki contributors. This is a
+verbatim snapshot for offline reference, not project documentation — cite the
+source URL in each file's header, never this directory.
+
+## What is here
+
+$total pages, $payload_mb MB of wikitext$snapshot_suffix
+
+| Directory | Pages | Contents |
+|---|---|---|
+$bucket_rows
+
+## Finding a page
+
+Paths are predictable: a scripting command lives at `commands/<name>.wiki`,
+so `setDamage` is `commands/setDamage.wiki`. Titles carrying punctuation are
+slugged — `:` and `/` become `_`, and operator pages spell their symbols out,
+so `a != b` is `commands/a_ne_b.wiki`. Each directory has its own INDEX.md
+listing every page it holds.
+
+`MANIFEST.json` is the authoritative lookup. It maps every title to its path,
+revision, timestamp and sha1, and carries the redirect alias map
+($redirect_count aliases): redirect stubs are not written as files, so an
+alternate spelling such as `AGLtoASL` resolves to the `AGLToASL` page through
+the manifest rather than through a one-line file. Aliases whose target this
+snapshot excludes are dropped, so every alias resolves to a file that exists.
+
+## Scope
+
+The snapshot covers the main, template, category, help, project and extension
+namespaces. Within the main namespace it keeps two tiers:
+
+| Tier | Rule | Pages |
+|---|---|---|
+| A | Carries an `Arma 3` or `Introduced with Arma 3` category | $tier_a |
+| B | Carries no game-specific category: engine-generic or shared | $tier_b |
+
+Pages categorised only for earlier titles (Operation Flashpoint, ArmA, Arma 2,
+Take On) or for other engines (Reforger, Arma 4, DayZ, Enfusion) are excluded,
+as are File-namespace content, talk pages and edit history.
+
+## Important: categories are not in the wikitext
+
+BIKI generates category assignment from templates, so page source contains no
+`[[Category:...]]` links and you cannot tell from the wikitext which games a
+page applies to. Applicability is encoded as `{{RV}}` parameters (`game6=
+arma3`). Each vendored file therefore carries a `// categories:` header line,
+pulled from the API's `prop=categories` at snapshot time and stamped in at
+import — so `grep -l 'Arma 3: Scripting Commands' commands/*.wiki` works,
+where grepping the wikitext itself would find nothing.
+
+## Refreshing
+
+Cloudflare challenges plain HTTP clients, so the export is produced by driving
+the MediaWiki API from a logged-in browser session, which inherits the
+browser's TLS fingerprint and clearance cookie:
+
+```
+/wikidata/api.php?action=query&generator=allpages&export=1&gaplimit=500
+```
+
+Then re-derive this directory from the resulting chunks:
+
+```sh
+uv run python tools/import_wiki_export.py <export-dir> docs/reference/arma-wiki \\
+    --categories <export-dir>/categories.json \\
+    --manifest <export-dir>/arma3-manifest.json
+```
+
+The tool is idempotent: it rewrites every page, index and manifest from the
+export, so a refresh reads as a clean diff rather than a merge.
+"""
+)
+
 
 def build_index(
     buckets: dict[str, list[Page]],
@@ -361,97 +444,55 @@ def build_index(
     total = sum(len(pages) for pages in buckets.values())
     payload = sum(len(page.text.encode()) for pages in buckets.values() for page in pages)
     tier_a, tier_b = tier_counts.get("A", 0), tier_counts.get("B", 0)
-    lines = [
-        "# Arma 3 wiki snapshot",
-        "",
-        "Vendored from the Bohemia Interactive Community wiki (BIKI), which is",
-        "unreachable from this project's environment: Cloudflare returns 403 to plain",
-        "fetches, to the MediaWiki API and to browser-like requests alike. Arma 3 has",
-        "been static at 2.20 since June 2025, so these pages change rarely.",
-        "",
-        "Content belongs to Bohemia Interactive and its wiki contributors. This is a",
-        "verbatim snapshot for offline reference, not project documentation — cite the",
-        "source URL in each file's header, never this directory.",
-        "",
-        "## What is here",
-        "",
-        f"{total} pages, {payload / 1e6:.1f} MB of wikitext"
-        + (f", taken {snapshot}." if snapshot else "."),
-        "",
-        "| Directory | Pages | Contents |",
-        "|---|---|---|",
-    ]
-    lines.extend(
+    bucket_rows = "\n".join(
         f"| [`{bucket}/`]({bucket}/INDEX.md) | {len(buckets[bucket])} "
         f"| {BUCKET_DESCRIPTIONS[bucket]} |"
         for bucket in sorted(buckets)
     )
-    lines.extend(
-        [
-            "",
-            "## Finding a page",
-            "",
-            "Paths are predictable: a scripting command lives at `commands/<name>.wiki`,",
-            "so `setDamage` is `commands/setDamage.wiki`. Titles carrying punctuation are",
-            "slugged — `:` and `/` become `_`, and operator pages spell their symbols out,",
-            "so `a != b` is `commands/a_ne_b.wiki`. Each directory has its own INDEX.md",
-            "listing every page it holds.",
-            "",
-            "`MANIFEST.json` is the authoritative lookup. It maps every title to its path,",
-            "revision, timestamp and sha1, and carries the redirect alias map",
-            f"({len(redirects)} aliases): redirect stubs are not written as files, so an",
-            "alternate spelling such as `AGLtoASL` resolves to the `AGLToASL` page through",
-            "the manifest rather than through a one-line file. Aliases whose target this",
-            "snapshot excludes are dropped, so every alias resolves to a file that exists.",
-            "",
-            "## Scope",
-            "",
-            "The snapshot covers the main, template, category, help, project and extension",
-            "namespaces. Within the main namespace it keeps two tiers:",
-            "",
-            "| Tier | Rule | Pages |",
-            "|---|---|---|",
-            f"| A | Carries an `Arma 3` or `Introduced with Arma 3` category | {tier_a} |",
-            f"| B | Carries no game-specific category: engine-generic or shared | {tier_b} |",
-            "",
-            "Pages categorised only for earlier titles (Operation Flashpoint, ArmA, Arma 2,",
-            "Take On) or for other engines (Reforger, Arma 4, DayZ, Enfusion) are excluded,",
-            "as are File-namespace content, talk pages and edit history.",
-            "",
-            "## Important: categories are not in the wikitext",
-            "",
-            "BIKI generates category assignment from templates, so page source contains no",
-            "`[[Category:...]]` links and you cannot tell from the wikitext which games a",
-            "page applies to. Applicability is encoded as `{{RV}}` parameters (`game6=",
-            "arma3`). Each vendored file therefore carries a `// categories:` header line,",
-            "pulled from the API's `prop=categories` at snapshot time and stamped in at",
-            "import — so `grep -l 'Arma 3: Scripting Commands' commands/*.wiki` works,",
-            "where grepping the wikitext itself would find nothing.",
-            "",
-            "## Refreshing",
-            "",
-            "Cloudflare challenges plain HTTP clients, so the export is produced by driving",
-            "the MediaWiki API from a logged-in browser session, which inherits the",
-            "browser's TLS fingerprint and clearance cookie:",
-            "",
-            "```",
-            "/wikidata/api.php?action=query&generator=allpages&export=1&gaplimit=500",
-            "```",
-            "",
-            "Then re-derive this directory from the resulting chunks:",
-            "",
-            "```sh",
-            "uv run python tools/import_wiki_export.py <export-dir> docs/reference/arma-wiki \\",
-            "    --categories <export-dir>/categories.json \\",
-            "    --manifest <export-dir>/arma3-manifest.json",
-            "```",
-            "",
-            "The tool is idempotent: it rewrites every page, index and manifest from the",
-            "export, so a refresh reads as a clean diff rather than a merge.",
-            "",
-        ]
+    return SNAPSHOT_INDEX_TEMPLATE.substitute(
+        total=total,
+        payload_mb=f"{payload / 1e6:.1f}",
+        snapshot_suffix=f", taken {snapshot}." if snapshot else ".",
+        bucket_rows=bucket_rows,
+        redirect_count=len(redirects),
+        tier_a=tier_a,
+        tier_b=tier_b,
     )
-    return "\n".join(lines)
+
+
+@dataclass(frozen=True)
+class WikiSnapshot:
+    """The generated documents that are written together as one snapshot."""
+
+    content: list[Page]
+    redirects: list[Page]
+    paths: dict[str, str]
+    buckets: dict[str, list[Page]]
+    tier_counts: dict[str, int]
+    provenance: dict[str, object]
+    taken_at: str
+
+
+def _write_snapshot(output: Path, snapshot: WikiSnapshot) -> None:
+    """Write the pages and generated indexes that make one wiki snapshot."""
+    output.mkdir(parents=True, exist_ok=True)
+    for page in snapshot.content:
+        target = output / snapshot.paths[page.title]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(page.render(), encoding="utf-8")
+    for bucket, bucket_pages in snapshot.buckets.items():
+        (output / bucket / "INDEX.md").write_text(
+            build_bucket_index(bucket, bucket_pages, snapshot.paths), encoding="utf-8"
+        )
+
+    (output / "MANIFEST.json").write_text(
+        build_manifest(snapshot.content, snapshot.redirects, snapshot.paths, snapshot.provenance),
+        encoding="utf-8",
+    )
+    (output / "INDEX.md").write_text(
+        build_index(snapshot.buckets, snapshot.redirects, snapshot.tier_counts, snapshot.taken_at),
+        encoding="utf-8",
+    )
 
 
 def _parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -514,16 +555,6 @@ def main(argv: list[str] | None = None) -> int:
         if page.namespace == 0:
             tier_counts[tiers.get(page.title, "?")] += 1
 
-    args.output.mkdir(parents=True, exist_ok=True)
-    for page in content:
-        target = args.output / paths[page.title]
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(page.render(), encoding="utf-8")
-    for bucket, bucket_pages in buckets.items():
-        (args.output / bucket / "INDEX.md").write_text(
-            build_bucket_index(bucket, bucket_pages, paths), encoding="utf-8"
-        )
-
     provenance = {
         "source": WIKI_BASE,
         "snapshot": args.snapshot,
@@ -531,12 +562,16 @@ def main(argv: list[str] | None = None) -> int:
         "redirects": len(redirects),
         "chunks": [source.name for source in sources],
     }
-    (args.output / "MANIFEST.json").write_text(
-        build_manifest(content, redirects, paths, provenance), encoding="utf-8"
+    snapshot = WikiSnapshot(
+        content,
+        redirects,
+        paths,
+        dict(buckets),
+        dict(tier_counts),
+        provenance,
+        args.snapshot,
     )
-    (args.output / "INDEX.md").write_text(
-        build_index(dict(buckets), redirects, dict(tier_counts), args.snapshot), encoding="utf-8"
-    )
+    _write_snapshot(args.output, snapshot)
 
     print(f"{len(content)} pages, {len(redirects)} redirect aliases -> {args.output}")  # noqa: T201
     return 0

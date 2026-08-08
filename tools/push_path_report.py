@@ -23,7 +23,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 # tools/ holds standalone scripts rather than an importable package, so a
 # sibling import needs the script's own directory on the path — the same device
@@ -55,13 +55,11 @@ def _percentile(values: list[int], fraction: float) -> int:
     return ordered[rank - 1]
 
 
-def report(path: Path) -> list[str]:
-    """Return the run's push-path numbers as `key=value` lines."""
-    records = rows(path)
-
+def _drain_metrics(records: list[dict[str, Any]]) -> list[str]:
+    """Return outbox drain counts and headroom."""
     handed = [int(row["handed"]) for row in records if row.get("event") == "outbox_handed"]
     biggest = max(handed, default=0)
-    lines = [
+    return [
         f"outbox_drains={len(handed)}",
         f"outbox_handed_total={sum(handed)}",
         f"outbox_max_handed={biggest}",
@@ -71,12 +69,15 @@ def report(path: Path) -> list[str]:
         f"push_path_drain_cap={DRAIN_CAP}",
     ]
 
+
+def _stall_metrics(records: list[dict[str, Any]]) -> list[str]:
+    """Return observe-call latency against the engine's stall cap."""
     observes = [
         int(row["duration_us"])
         for row in records
         if row.get("event") == "request" and row.get("verb") == "observe"
     ]
-    lines += [
+    return [
         f"observe_calls={len(observes)}",
         f"observe_p50_us={_percentile(observes, 0.5)}",
         f"observe_p95_us={_percentile(observes, 0.95)}",
@@ -84,6 +85,10 @@ def report(path: Path) -> list[str]:
         f"observe_stall_budget_pct={round(100 * max(observes, default=0) / STALL_CAP_US, 2)}",
     ]
 
+
+def _planner_metrics(records: list[dict[str, Any]]) -> list[str]:
+    """Return per-side planner activity and refusal counts."""
+    lines: list[str] = []
     for side in SIDES:
         for event, name in (("decision", "decisions"), ("command_issued", "commands")):
             counted = sum(
@@ -92,6 +97,12 @@ def report(path: Path) -> list[str]:
             lines.append(f"{name}_{side}={counted}")
     lines.append(f"plan_refused={sum(1 for row in records if row.get('event') == 'plan_refused')}")
     return lines
+
+
+def report(path: Path) -> list[str]:
+    """Return the run's push-path numbers as `key=value` lines."""
+    records = rows(path)
+    return [*_drain_metrics(records), *_stall_metrics(records), *_planner_metrics(records)]
 
 
 def main(argv: list[str] | None = None) -> int:

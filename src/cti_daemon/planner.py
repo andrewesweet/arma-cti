@@ -787,7 +787,7 @@ class UtilityPlanner:
         Squad ranked the Base first, nothing is sought and the Campaign goes on.
         Stage two takes that Squad and tops it up to the mass its Contact
         demands, cheapest trip first, from Squads that would rather be elsewhere.
-        Ground already taken stays taken (`Campaign._advance`), so what
+        Ground already taken stays taken (`Campaign._advance_capture`), so what
         concentration costs is the advance and not the island.
 
         All-or-nothing: a Base that cannot be given its mass is one no Squad
