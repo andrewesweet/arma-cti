@@ -183,11 +183,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `d-20260808-075346-f27564` and refuted: `git add` itself was refused, `index.lock`
   read-only, under the parent-grant root set — worse than the four-root set it replaced,
   which at least commits. `tools/dispatch.py`'s `_codex_writable_roots` is restored to
-  naming both git directories directly, the set proven to commit and gate
-  (`d-20260806-172045-9a0a0e`: commit exit 0, `cog check` red). The gate half of #265
-  remains open; the next candidate — granting `<main>/.git/worktrees` as an ancestor grant
-  rather than reached via a resolved `--absolute-git-dir` parent — is untested and belongs
-  to a future dispatch, not this one.
+  naming both git directories directly, the set proven to commit and not to gate
+  (`d-20260806-172045-9a0a0e`: commit exit 0, `cog check` red). The "next candidate" this
+  entry first held — granting `<main>/.git/worktrees` as an ancestor grant — is the same
+  path `d12a27f` already named (`--absolute-git-dir` for a linked worktree is
+  `<main>/.git/worktrees/<name>`, whose `.parent` is `<main>/.git/worktrees`), so it is the
+  set `f27564` refuted, not an untested one. A read-only strace over `cog check` in the
+  sandbox (`d-20260807-222221-1a2c7e`) found why: naming the per-worktree directory makes
+  the sandbox inject an empty `<dir>/.git` mount point that libgit2 trips over, while naming
+  its ancestor leaves `index.lock` read-only. The commit needs the directory named; the gate
+  needs it not named; no `writable_roots` set satisfies both. The gate half of #265 is
+  therefore a recorded ceiling — the lane commits and lands by a hand finish, not unaided —
+  rather than an open question. Stated once in `docs/multi-provider-dispatch.md` and §10 of
+  `docs/research/codex-lane-live-findings.md`.
 
 ### Fixed
 

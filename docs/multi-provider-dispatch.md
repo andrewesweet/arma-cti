@@ -174,26 +174,41 @@ What that buys, measured rather than inferred, over four dispatches and three pr
 Read-only seats keep the sandbox they always had, and
 `--dangerously-bypass-approvals-and-sandbox` was put to the human, declined, and is unused.
 
-**The lane does not yet reach a landing, and the reason is worth stating precisely.** The
-two capabilities the ruling asked for are currently exclusive on this lane, isolated by
-running `cog check` under each root set in the same worktree at the same commit:
+**The lane does not reach a landing, and the reason is a recorded ceiling rather than a fix
+still owed.** The two capabilities the ruling asked for are exclusive on this lane, isolated
+by running `cog check` under each root set in the same worktree at the same commit:
 
 | writable roots | `git add` / `git commit` | `cog check`, the gate's first step |
 |---|---|---|
 | main checkout, `<main>/.git`, `~/.cache/uv` | refused, `index.lock` read-only | `No errored commits` |
 | the same plus `<main>/.git/worktrees/<name>` | exit 0, no escalation | `failed to open repository … could not find repository at '<main>/.git/worktrees/<name>/'` |
+| the four-root set with `<name>` replaced by its parent `<main>/.git/worktrees` | refused, `index.lock` read-only (`d-20260808-075346-f27564`) | not reached |
 
 `cog` reads the repository through libgit2, and granting the per-worktree git directory as
 a *writable* root is what stops libgit2 opening it — the same directory it opens without
-complaint outside the sandbox, and under the three-root set. The refusals read
-`Read-only file system` (EROFS), not the `EACCES` a Landlock denial produces, so the sandbox
-is mount-based (Codex bundles `bwrap`) rather than Landlock-based; #265's "Landlock
-composition" first-suspect is refuted by its own recorded evidence, and the precise mount
-interaction that defeats libgit2 is its open question. So the widened lane can commit
-or it can gate, and not both. Dispatch `d-20260806-172045-9a0a0e` is the end-to-end attempt:
-it committed its own work at `fb093fe` under the sandbox with no escalation, stopped on that
-red as it was told to, and did not land. Carried as its own issue rather than stretched into
-#259, whose ruling this section otherwise implements.
+complaint outside the sandbox, and under the three-root set. The mechanism is measured: a
+read-only strace over `cog check` in the sandbox (`d-20260807-222221-1a2c7e`) found the
+sandbox creates an empty `<main>/.git/worktrees/<name>/.git` directory (mode 0555) — a mount
+point injected for that writable root, where no real git layout puts a `.git` — which libgit2
+stats during discovery, mistakes for a repository, and reports missing when its `commondir`
+and `HEAD` are absent. The refusals read `Read-only file system` (EROFS), not the `EACCES` a
+Landlock denial produces, so the sandbox is mount-based (Codex bundles `bwrap`) rather than
+Landlock-based; #265's "Landlock composition" first-suspect is refuted by its own recorded
+evidence. The parent-grant alternative — the third row — is refuted too: it is the set
+`d12a27f` shipped, and the carve-out that holds `.git` read-only does not confer write on a
+nested directory merely by naming an ancestor.
+
+So the dichotomy is structural: a commit needs the exact per-worktree directory named, else
+its `index.lock` is read-only; the gate needs that same directory not named, else the injected
+`.git` defeats libgit2. No `writable_roots` set satisfies both, and
+`--dangerously-bypass-approvals-and-sandbox` was declined on #221. The four-root set stands as
+the known-good commit baseline, the gate is a recorded ceiling, and a Codex dispatch that
+finishes its work lands by a hand finish rather than unaided. Dispatch `d-20260806-172045-9a0a0e`
+is the end-to-end attempt under the four-root set: it committed its own work at `fb093fe` under
+the sandbox with no escalation, stopped on that red as it was told to, and did not land. The
+full finding and the consequence for the admission bar are in §10 of
+`docs/research/codex-lane-live-findings.md`; this section implements #259's ruling and carries
+#265 as its recorded ceiling rather than stretching #259 to cover it.
 
 ### Where they are not comparable
 

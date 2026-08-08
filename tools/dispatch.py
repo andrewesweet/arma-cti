@@ -1059,11 +1059,31 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
 
     Both readings come from the same box on 2026-08-06. This set buys the commit, not the
     gate: `cog check` went red under it (`d-20260806-172045-9a0a0e`, `could not find
-    repository`), which is #265. A candidate fix — reaching the per-worktree directory
-    through its parent rather than naming it directly — was tried and refuted: probe
-    `d-20260808-075346-f27564` found `git add` itself refused under that set, worse than
-    this one. This four-root set, both git directories named directly, is restored as the
-    known-good baseline for the commit half; the gate half remains open on #265.
+    repository`), which is #265. The mechanism is now measured, not open: read-only probe
+    `d-20260807-222221-1a2c7e` (`codex-terra-low`) ran `strace -f -e
+    trace=openat,stat,statx,newfstatat` over `cog check` inside the sandbox and found the
+    sandbox had created an empty directory at `<main>/.git/worktrees/<name>/.git` (mode
+    0555, size 40) — a mount point injected for that writable root, where no real git
+    layout puts a `.git`. libgit2 stats it during repository discovery, mistakes it for a
+    repository, probes for its `commondir` and `HEAD`, gets `ENOENT` for both, and reports
+    `could not find repository`: it found too many repositories, not none. Outside the
+    sandbox that directory does not exist and `cog check` is green at the same commit.
+
+    The one alternative a `writable_roots` list admits — naming the parent
+    `<main>/.git/worktrees` instead of the per-worktree directory itself — is the set
+    `d12a27f` ran (`--absolute-git-dir`'s `.parent` resolves to exactly that path), and it
+    is refuted: probe `d-20260808-075346-f27564` found `git add` itself refused under it,
+    `index.lock` read-only, because Codex's `.git` carve-out does not confer write on a
+    nested directory merely by naming an ancestor. The dichotomy is structural, not a pair
+    of unlucky tries: a commit needs the exact per-worktree directory named, else the
+    carve-out holds its `index.lock` read-only (#259); the gate needs that same directory
+    *not* named, else the injected `.git` defeats libgit2 (#265). No `writable_roots` set
+    satisfies both, and `--dangerously-bypass-approvals-and-sandbox` was declined on #221.
+    So this four-root set, both git directories named directly, stands as the known-good
+    commit baseline, and the gate half of #265 is a recorded ceiling rather than an open
+    question. The consequence — a hand-finished landing and no admission assessment for any
+    Codex route — is stated once in `docs/multi-provider-dispatch.md` and §10 of
+    `docs/research/codex-lane-live-findings.md`.
 
     **This is not parity with the `zai` lane and must not be described as one.** That lane's
     grant is a list of named commands; this one is a filesystem and network policy that every
@@ -1106,6 +1126,15 @@ def _codex_writable_roots(project_dir: Path) -> tuple[Path, ...]:
     the per-worktree directory made both succeed. This project dispatches into linked
     worktrees, where the index, `HEAD` and `FETCH_HEAD` all live in the second one — so
     granting only the common directory buys a session `git log` and nothing it needs.
+
+    That exact-name requirement is also the gate's undoing, which is #265 and is a
+    recorded ceiling, not a fix to chase here. Naming the per-worktree directory directly
+    makes Codex's sandbox inject an empty `<dir>/.git` mount point that libgit2 — and so
+    `cog check` — trips over during discovery; the alternative of naming its parent
+    `<main>/.git/worktrees` instead is refuted (the carve-out keeps `index.lock` read-only).
+    So "name both exactly" buys the commit and loses the gate, and no `writable_roots` set
+    buys both. The measurement and the consequence are carried in `_codex_sandbox_argv`'s
+    docstring; this function keeps assembling the set that commits.
 
     Asked of git rather than assembled from strings, because git is the authority on where
     its own metadata is: in a plain checkout the two answers coincide and the duplicate is

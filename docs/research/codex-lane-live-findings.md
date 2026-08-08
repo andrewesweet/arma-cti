@@ -348,12 +348,19 @@ bubblewrap mount-namespace sandbox: a read-only bind of the host with read-write
 the working directory and each `writable_root`. What this settles is narrow but decisive: the
 mechanism is mount-based, not Landlock, and no read right is being stripped — the writes that
 succeed do so because their roots are read-write binds, and the gate fails because libgit2
-opens the repository differently than git does. Why granting the per-worktree Git directory
-as a writable root then defeats libgit2's discovery — while git, addressing the same files by
-absolute path, is unaffected — is the open question #265 carries. The confirming experiment,
-a live dispatch reading `/proc/self/mountinfo` and the failing `openat` under each root set,
-has not been run; this paragraph states what the recorded error strings already prove and
-marks the rest as open.
+opens the repository differently than git does. The confirming experiment has now run it
+down. Read-only probe `d-20260807-222221-1a2c7e` (`codex-terra-low`) ran `strace -f -e
+trace=openat,stat,statx,newfstatat` over `cog check` inside the sandbox and found the sandbox
+had created an empty directory at `<main>/.git/worktrees/<name>/.git` (mode 0555, size 40) —
+a mount point injected for that writable root, where no real git layout puts a `.git`. libgit2
+stats it during discovery, mistakes it for a repository, probes for its `commondir` and
+`HEAD`, gets `ENOENT` for both, and reports `could not find repository`: it found too many
+repositories, not none. Outside the sandbox that directory does not exist and `cog check` is
+green at the same commit. The probe collected no `git` trace, so why git itself is unaffected
+is the reading the strace is consistent with — it resolves the gitfile and addresses the
+directory by absolute path, never probing for a nested `.git` — rather than a measured one.
+The consequence this leaves — no `writable_roots` set buys both the commit and the gate — is
+§10 below.
 
 There is a separate containment fact, and it must not be mistaken for a sandbox-policy
 finding. This box has `approvals_reviewer = "auto_review"`; it approved the predecessor's
@@ -381,3 +388,48 @@ before `just land` could run (#265).
   `xhigh` on this lane is not `xhigh` on Claude.
 - Not that the six published reasoning levels are six distinct arms. Two adjacent levels
   were shown distinct; the other four pairs were not tested.
+
+## 10. The #265 ceiling: the lane commits, and cannot gate
+
+The widening in §8 buys the commit and not the gate, and both root-set families a
+`writable_roots` list admits have now been live-probed to ground that "not" in a
+structural reason rather than a pair of unlucky tries.
+
+- **Naming the per-worktree git directory directly** (the four-root set §8 lands) lets the
+  session `git add` and `git commit` — the carve-out in §8 is satisfied — and breaks the
+  gate. The mechanism is §8's strace finding: the sandbox injects an empty `<dir>/.git`
+  mount point inside that named root, and libgit2, which `cog check` reads through, stats
+  it during discovery, mistakes it for a repository, and reports `could not find
+  repository` when its `commondir` and `HEAD` are absent. Dispatch
+  `d-20260806-172045-9a0a0e` is the end-to-end attempt under this set: it committed at
+  `fb093fe` with no escalation, stopped on that red as it was told to, and did not land.
+- **Naming the parent `<main>/.git/worktrees` instead** — reaching the per-worktree
+  directory through its ancestor rather than directly — was the candidate fix, and it is
+  refuted. It is the set `d12a27f` shipped (`git rev-parse --absolute-git-dir` for a linked
+  worktree returns `<main>/.git/worktrees/<name>`, and `.parent` of that is exactly
+  `<main>/.git/worktrees`). Dispatch `d-20260808-075346-f27564` ran against it: `git add`
+  was refused, `index.lock` read-only, because the carve-out does not confer write on a
+  nested directory merely by naming an ancestor. The lane regressed from commit-only to
+  neither; `03a3721` reverted to the four-root set. (This is recorded against a phantom
+  that appeared in flight: the candidate was twice described as "untested" — in the
+  `03a3721` CHANGELOG entry and in a later dispatch brief — on the belief that `d12a27f`
+  had named something other than `<main>/.git/worktrees`. It had not; the path is the same,
+  and the probe that refuted it is `f27564`.)
+
+The dichotomy is structural. A commit needs the exact per-worktree directory named, else
+the carve-out holds its `index.lock` read-only (§8). The gate needs that same directory
+*not* named, else the injected `.git` defeats libgit2 (§8's strace). No `writable_roots`
+set satisfies both, and the one escape from the sandbox —
+`--dangerously-bypass-approvals-and-sandbox` — was put to the human on #221 and declined.
+The four-root set therefore stands as the known-good commit baseline, and the gate is a
+recorded ceiling on this lane.
+
+The consequence is stated once here rather than repeated as a footnote. The Codex lane
+reaches its own commit under the sandbox but cannot run `just fast` through `cog check`, so
+a Codex dispatch that finishes its work lands by a hand finish — a `zai` or Claude-side
+agent re-gating and landing it — rather than unaided. The admission bar judges a foreign
+route on ten issues it landed unaided, and a route that cannot gate cannot land unaided, so
+no Codex route carries an admission assessment until the ceiling moves. The ceiling moves
+only by a change outside `writable_roots`: a sandbox mechanism dispatch.py does not expose
+today, or a worktree layout whose git metadata does not live under `.git/`. Both are larger
+than #265 and belong to their own issue when one is opened.
