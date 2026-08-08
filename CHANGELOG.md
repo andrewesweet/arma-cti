@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just discard <path> <ruling>` is allowlisted for dispatched sessions**, in place of the broad
+  `git checkout --` grant that was proposed and declined (human ruling, 2026-08-08, on #248). The
+  command restores one named tracked file's unstaged working-tree change from the index and refuses
+  everything else by name — globs, directories, untracked, conflicted or staged paths, a path
+  outside the worktree it was run in, and any run where another dirty path exists, which is what
+  stops it decaying into a habitual reset. It requires a ruling reference and prints it, so the
+  record says what was discarded and on whose authority (#287).
+
 - **`just discard` — a guarded single-file discard, in place of a `git checkout` grant.**
   Two dispatches on 2026-08-08 each ended their turn asking permission to run
   `git checkout -- <path>` on residue an orchestrator-run probe had left, and both produced

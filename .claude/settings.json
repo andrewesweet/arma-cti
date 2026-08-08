@@ -73,6 +73,7 @@
       "Bash(just fast)",
       "Bash(just land)",
       "Bash(just land --dry-run)",
+      "Bash(just discard:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
