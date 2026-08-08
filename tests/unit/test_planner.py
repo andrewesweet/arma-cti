@@ -511,6 +511,15 @@ def test_an_undefended_enemy_base_with_a_squad_to_spare_is_assaulted() -> None:
     assert [one.code for one in judgements if not one.accepted] == []
 
 
+def assault_score_and_terms(men: int) -> tuple[float, dict[str, float]]:
+    """Return the Assault's score and terms with `men` reported at the enemy Base."""
+    world = island_held("nato_airbase")
+    if men:
+        sighted(world, "WEST", "csat_kamino", men=men)
+    squad = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-8")
+    return scores(squad)["assault csat_kamino"], terms(squad, "assault csat_kamino")
+
+
 def test_a_defended_enemy_base_is_worth_less_to_assault_than_an_open_one() -> None:
     # Threat reads on a Base the way it reads on anything else: a company seen
     # at Kamino costs the Assault the same four it would cost a Capture, so a
@@ -519,15 +528,15 @@ def test_a_defended_enemy_base_is_worth_less_to_assault_than_an_open_one() -> No
     # island held there is nothing left for the Assault to lose to — a Commander
     # with no ground to take and a garrison to fight through still goes, which
     # is the right answer and not the one that would demonstrate the term.
-    def assault(men: int) -> tuple[float, dict[str, float]]:
-        world = island_held("nato_airbase")
-        if men:
-            sighted(world, "WEST", "csat_kamino", men=men)
-        squad = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-8")
-        return scores(squad)["assault csat_kamino"], terms(squad, "assault csat_kamino")
+    open_score, _ = assault_score_and_terms(0)
+    held_score, _ = assault_score_and_terms(25)
 
-    open_score, open_terms = assault(0)
-    held_score, held_terms = assault(25)
+    assert held_score < open_score
+
+
+def test_a_contact_at_the_enemy_base_changes_only_the_assaults_danger() -> None:
+    _, open_terms = assault_score_and_terms(0)
+    _, held_terms = assault_score_and_terms(25)
 
     # Against the fog floor rather than against zero: an unreported Base is
     # already assumed to hold a team, so what the sighting costs is the distance
@@ -535,14 +544,24 @@ def test_a_defended_enemy_base_is_worth_less_to_assault_than_an_open_one() -> No
     # is the *whole* of what the Contact does to the option — every other
     # consideration is untouched, which is a stronger claim than the summed
     # scorer's and the one a product lets us make.
-    assert held_score < open_score
     assert {name: value for name, value in held_terms.items() if name != "danger"} == pytest.approx(
         {name: value for name, value in open_terms.items() if name != "danger"}
     )
+
+
+def test_a_company_at_the_enemy_base_sets_the_assaults_danger() -> None:
+    _, held_terms = assault_score_and_terms(25)
     mind = brain(live())
+
     assert held_terms["danger"] == pytest.approx(
         mind._danger(planner.ECHELON_THREAT["company"])  # noqa: SLF001 — the curve is the claim
     )
+
+
+def test_an_unreported_enemy_base_uses_the_fog_floor_for_the_assaults_danger() -> None:
+    _, open_terms = assault_score_and_terms(0)
+    mind = brain(live())
+
     assert open_terms["danger"] == pytest.approx(mind._danger(planner.UNKNOWN_THREAT))  # noqa: SLF001
 
 
@@ -593,48 +612,78 @@ def test_a_base_nobody_is_standing_on_is_not_scored_as_safe_ground() -> None:
     assert brain(world)._hold(planner.UNKNOWN_THREAT) > brain(world)._hold(0.0)  # noqa: SLF001
 
 
-def test_the_trace_carries_both_bases_and_says_what_a_base_was_worth() -> None:
+def traced_base_decision() -> tuple[campaign.Campaign, planner.Decision]:
+    """Return the late-Campaign position and one Squad's trace over both Bases."""
+    world = island_held()
+    decision = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-1")
+    return world, decision
+
+
+def test_the_trace_counts_the_legal_options_at_both_bases() -> None:
     # #16's bargain: every candidate the scorer weighed is counted and the top
     # few are carried with the terms that made them, so an argument about a
     # Base is an argument about numbers. `scored` counts the Places on the map
     # — both Bases included — rather than the Objectives, because a silent
     # omission there reads as "the Base was never considered".
-    world = island_held()
-    decision = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-1")
+    world, decision = traced_base_decision()
 
+    assert decision.scored == len(world.map_manifest.objectives) + len(world.map_manifest.bases)
+
+
+def test_the_trace_counts_the_vetoed_options_at_both_bases() -> None:
+    _, decision = traced_base_decision()
+
+    # And the half of the space that never got that far: one kind per Place is
+    # the one the port would refuse, so exactly as many options are vetoed as
+    # are scored (ADR-0031).
+    assert decision.vetoed == decision.scored
+
+
+def base_worth(choice: str) -> tuple[float, float]:
+    """Return a traced Base option's worth and the authored value it should carry."""
+    world, decision = traced_base_decision()
     shape = planner.Considerations()
     ceiling = max(
         [objective.income for objective in world.map_manifest.objectives]
         + [shape.decapitation, shape.homeland]
     )
-    assert decision.scored == len(world.map_manifest.objectives) + len(world.map_manifest.bases)
-    # And the half of the space that never got that far: one kind per Place is
-    # the one the port would refuse, so exactly as many options are vetoed as
-    # are scored (ADR-0031).
-    assert decision.vetoed == decision.scored
-    assert terms(decision, "assault csat_kamino")["worth"] == pytest.approx(
-        shape.decapitation / ceiling
-    )
-    assert terms(decision, "defend nato_airbase")["worth"] == pytest.approx(
-        shape.homeland / ceiling
-    )
+    authored = {
+        "assault csat_kamino": shape.decapitation,
+        "defend nato_airbase": shape.homeland,
+    }
+    return terms(decision, choice)["worth"], authored[choice] / ceiling
 
 
-def test_a_vetoed_option_reads_as_vetoed_rather_than_as_a_low_score() -> None:
-    # The mandatory class doing its job (ADR-0031). An option the port would
-    # refuse is not scored badly, it is scored zero and abandoned before any
-    # other consideration is computed — so the trace carries `legal: 0.0` and
-    # nothing else, which is a sentence rather than an arithmetic accident.
+def test_the_trace_says_what_assaulting_the_enemy_base_was_worth() -> None:
+    traced, expected = base_worth("assault csat_kamino")
+
+    assert traced == pytest.approx(expected)
+
+
+def test_the_trace_says_what_defending_the_home_base_was_worth() -> None:
+    traced, expected = base_worth("defend nato_airbase")
+
+    assert traced == pytest.approx(expected)
+
+
+def vetoed_options() -> list[tuple[str, dict[str, float]]]:
+    """Return each option the port refuses, with the terms the trace carries."""
     world = island_held()
     mind = brain(world)
     squad = world.observation("WEST").squads[0]
-    refused = [
-        option
+    return [
+        (option.choice, option.terms)
         for option in mind._options(world.observation("WEST"), squad)  # noqa: SLF001
         if option.score <= 0.0
     ]
 
-    assert {option.choice for option in refused} == {
+
+def test_the_trace_names_every_vetoed_option() -> None:
+    # The mandatory class doing its job (ADR-0031). An option the port would
+    # refuse is not scored badly, it is scored zero and abandoned before any
+    # other consideration is computed — so the trace carries `legal: 0.0` and
+    # nothing else, which is a sentence rather than an arithmetic accident.
+    assert {choice for choice, _ in vetoed_options()} == {
         "capture agia_marina",
         "capture camp_tempest",
         "capture girna",
@@ -646,37 +695,39 @@ def test_a_vetoed_option_reads_as_vetoed_rather_than_as_a_low_score() -> None:
         "defend csat_kamino",
         "assault nato_airbase",
     }
-    assert all(option.terms == {"legal": 0.0} for option in refused)
 
 
-def test_adr_0014s_calls_survive_the_curves_that_replaced_its_weights() -> None:
-    # ADR-0031 supersedes ADR-0014's *mechanism* and keeps its *calls*, and this
-    # is that promise as arithmetic rather than as a sentence in a commit
-    # message. The scalars are gone — there is nothing left to assert field by
-    # field — so what is asserted is the three relations the ADR said were
-    # load-bearing rather than tuning, in the units the curves are authored in.
+def test_a_vetoed_option_carries_only_its_failed_legality_term() -> None:
+    assert all(option_terms == {"legal": 0.0} for _, option_terms in vetoed_options())
+
+
+def test_a_seed_can_break_ties_only_within_three_hundred_metres() -> None:
     shape = planner.Considerations()
 
-    # First call, `jitter < travel`: the seed may only break ties geography has
+    # ADR-0031 keeps ADR-0014's `jitter < travel` call: the seed may only break ties geography has
     # left within three hundred metres. `flavour` is the whole span of the
     # preference and `reach_km` is what a kilometre costs, so their product is
     # the seed's reach in kilometres of march — and it is 0.3, exactly what
     # ADR-0014 measured `jitter = 0.3` against `travel = 1.0` to be.
     assert shape.flavour * shape.reach_km == pytest.approx(0.3)
 
-    # Second call, `garrison < income`: holding is worth a fraction of taking,
-    # so quiet ground does not keep a Squad standing on it. The fraction is the
-    # `hold` curve's floor, and it is the same tenth.
+
+def test_holding_quiet_ground_is_worth_one_tenth_of_taking_it() -> None:
+    shape = planner.Considerations()
+
     assert 0.0 < shape.hold_floor < 1.0
     assert shape.hold_floor == pytest.approx(0.1)
 
-    # The anti-thrash margin still covers what the seed can move — the relation
-    # that keeps `commitment` doing its job rather than `jitter` undoing it.
+
+def test_the_anti_thrash_margin_covers_everything_the_seed_can_move() -> None:
+    shape = planner.Considerations()
+
     assert shape.momentum > shape.flavour
 
-    # And `threat` never makes ground impossible, only expensive: a Commander
-    # told to press attacks a Contact of every echelon up to a company, so the
-    # danger curve is bounded away from zero.
+
+def test_threat_makes_ground_expensive_but_never_impossible() -> None:
+    shape = planner.Considerations()
+
     assert 0.0 < shape.danger_bite < 1.0
 
 
@@ -732,36 +783,36 @@ def assault_row(world: campaign.Campaign, seed: int = 0) -> planner.Decision:
     )
 
 
-def test_an_undefended_enemy_base_is_still_raided_by_one_squad_on_every_seed() -> None:
+@pytest.mark.parametrize("seed", range(SEEDS))
+def test_an_undefended_enemy_base_is_still_raided_by_one_squad_on_every_seed(seed: int) -> None:
     # The half of #38 that is a promise not to change anything: an unreported
     # Base is the fog floor, the fog floor is a team, and a team is one Squad's
     # worth — so #34's late position plans exactly as #34 measured it. Swept
     # rather than sampled because the mass is new machinery and a seed that
     # quietly detailed a second Squad would be a regression nobody saw.
-    for seed in range(SEEDS):
-        assert len(raiders(island_held("nato_airbase"), seed)) == 1
+    assert len(raiders(island_held("nato_airbase"), seed)) == 1
 
 
-def test_a_company_at_the_enemy_base_is_massed_against_on_every_seed() -> None:
+@pytest.mark.parametrize("seed", range(SEEDS))
+def test_a_company_at_the_enemy_base_is_massed_against_on_every_seed(seed: int) -> None:
     # The other half, and the ticket: #35's Assault arrived as eight men against
     # three Squads and lost five of them in twenty-five seconds. The Contact
     # says company, doctrine says four Squads, and four is what goes — every
     # seed, out of a force of eight with an island to garrison.
-    for seed in range(SEEDS):
-        world = island_held()
-        sighted(world, "WEST", "csat_kamino", men=25)
-        assert len(raiders(world, seed)) == planner.ASSAULT_MASS["company"]
+    world = island_held()
+    sighted(world, "WEST", "csat_kamino", men=25)
+    assert len(raiders(world, seed)) == planner.ASSAULT_MASS["company"]
 
 
-def test_a_commander_that_cannot_mass_declines_the_assault_on_every_seed() -> None:
+@pytest.mark.parametrize("seed", range(SEEDS))
+def test_a_commander_that_cannot_mass_declines_the_assault_on_every_seed(seed: int) -> None:
     # All-or-nothing, which is the point: three Squads is not a company's worth
     # under any doctrine, so what a Commander with three does about a defended
     # Base is nothing. The island is still held — declining costs the Campaign
     # nothing, and going would cost it three Squads.
-    for seed in range(SEEDS):
-        world = island_held_by("camp_rogain", "lz_baldy", "air_station")
-        sighted(world, "WEST", "csat_kamino", men=25)
-        assert raiders(world, seed) == []
+    world = island_held_by("camp_rogain", "lz_baldy", "air_station")
+    sighted(world, "WEST", "csat_kamino", men=25)
+    assert raiders(world, seed) == []
 
 
 def test_the_force_an_assault_brings_is_read_off_the_band_and_off_nothing_else() -> None:
@@ -785,7 +836,14 @@ def test_every_band_the_register_can_report_has_a_mass_to_go_with_it() -> None:
     assert set(planner.ASSAULT_MASS) == {band for _, band in contacts.ECHELONS}
 
 
-def test_age_discounts_what_a_base_costs_and_never_what_taking_it_needs() -> None:
+def stale_company_at_the_enemy_base() -> campaign.Campaign:
+    """Return a held island with a ten-minute-old company Contact at the enemy Base."""
+    world = island_held()
+    sighted(world, "WEST", "csat_kamino", men=25, age=600.0)
+    return world
+
+
+def test_age_discounts_what_an_enemy_base_costs_to_the_fog_floor() -> None:
     # #28's honesty signal, read the one way round that is safe. A ten-minute-old
     # company may well have marched off, so it stops *deterring* the Assault —
     # the price falls back to the fog floor, exactly as it does for any stale
@@ -793,13 +851,17 @@ def test_age_discounts_what_a_base_costs_and_never_what_taking_it_needs() -> Non
     # two mistakes are not the same size: four Squads at an empty Base is a
     # wasted march, and one Squad at a company that never left is #35 again.
     # Only somebody looking lowers this, and looking clears the Contact outright.
-    world = island_held()
-    sighted(world, "WEST", "csat_kamino", men=25, age=600.0)
+    world = stale_company_at_the_enemy_base()
 
     decision = only(brain(world).plan(world.observation("WEST")).decisions, "WEST-1")
     assert terms(decision, "assault csat_kamino")["danger"] == pytest.approx(
         brain(world)._danger(planner.UNKNOWN_THREAT)  # noqa: SLF001 — the curve is the claim
     )
+
+
+def test_age_never_discounts_the_force_taking_an_enemy_base_needs() -> None:
+    world = stale_company_at_the_enemy_base()
+
     assert len(raiders(world)) == planner.ASSAULT_MASS["company"]
 
 

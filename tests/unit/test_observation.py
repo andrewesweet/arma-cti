@@ -355,26 +355,45 @@ def crowded() -> campaign.Campaign:
     return world
 
 
-def test_a_crowded_stratis_observation_fits_inside_one_callextension_return() -> None:
+@pytest.fixture(scope="module")
+def crowded_observation() -> tuple[observation.Observation, str]:
+    """Return the largest strategic picture Stratis can sensibly carry, encoded."""
+    picture = crowded().observation("WEST")
+    encoded = protocol.encode(protocol.accepted("obs-1", observation.serialise(picture)))
+    return picture, encoded
+
+
+def test_a_crowded_stratis_observation_carries_the_expected_squads_and_contacts(
+    crowded_observation: tuple[observation.Observation, str],
+) -> None:
+    picture, _ = crowded_observation
+
+    # Every place on the map carrying a Contact is the ceiling: Contacts are
+    # keyed by place, so they are bounded by the island rather than by how much
+    # the enemy bought. That is why #26's Altis worry eased.
+    assert (len(picture.squads), len(picture.contacts)) == (16, 10)
+
+
+def test_a_crowded_stratis_observation_fits_inside_one_callextension_return(
+    crowded_observation: tuple[observation.Observation, str],
+) -> None:
     # The engine caps the return at 10,240 bytes and truncates in silence
     # (ADR-0004). Measured on the whole reply envelope, because that is what
     # actually crosses. Measured on a Commander's view rather than the server's
     # public one: the public picture is a dozen Objectives and stays small, so
     # the view that grows with the Campaign is the one worth watching, and #18
     # is what will put it on a wire.
-    world = crowded()
-    encoded = protocol.encode(
-        protocol.accepted("obs-1", observation.serialise(world.observation("WEST")))
-    )
-
-    assert len(world.observation("WEST").squads) == 16
-    # Every place on the map carrying a Contact, which is the ceiling: they are
-    # keyed by place, so they are bounded by the island rather than by how much
-    # the enemy bought. That is why #26's Altis worry eased.
-    assert len(world.observation("WEST").contacts) == 10
+    _, encoded = crowded_observation
     assert len(encoded) < budget.RETURN_CAP_BYTES, (
         f"{len(encoded)} bytes leaves no headroom under {budget.RETURN_CAP_BYTES}"
     )
+
+
+def test_a_crowded_stratis_observation_leaves_two_thousand_bytes_of_headroom(
+    crowded_observation: tuple[observation.Observation, str],
+) -> None:
+    _, encoded = crowded_observation
+
     # Recorded rather than merely asserted: the number is the headroom later
     # fields get to spend, and a bare "it fits" would hide it shrinking. #28's
     # Contacts have spent theirs; #18's map UI is what reads them.

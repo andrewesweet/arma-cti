@@ -127,12 +127,26 @@ def test_pages_are_bucketed_by_subject(categories_file: Path) -> None:
 
 
 def test_bulk_class_name_tables_are_segregated() -> None:
-    page = wiki.Page("Arma 3: CfgVehicles WEST", 0, "", "1", "", "")
+    page = wiki.Page(
+        title="Arma 3: CfgVehicles WEST",
+        namespace=0,
+        text="",
+        revision_id="1",
+        timestamp="",
+        sha1="",
+    )
     assert page.bucket == "classnames"
 
 
 def test_namespace_pages_drop_their_prefix() -> None:
-    page = wiki.Page("Template:RV", 10, "", "1", "", "")
+    page = wiki.Page(
+        title="Template:RV",
+        namespace=10,
+        text="",
+        revision_id="1",
+        timestamp="",
+        sha1="",
+    )
     assert (page.bucket, page.slug) == ("templates", "RV")
 
 
@@ -152,7 +166,17 @@ def test_categories_are_stamped_into_the_header(categories_file: Path) -> None:
 
 
 def test_clashing_filenames_are_disambiguated() -> None:
-    pages = [wiki.Page(t, 10, "", "1", "", "") for t in ("Template:Warning", "Template:warning")]
+    pages = [
+        wiki.Page(
+            title=title,
+            namespace=10,
+            text="",
+            revision_id="1",
+            timestamp="",
+            sha1="",
+        )
+        for title in ("Template:Warning", "Template:warning")
+    ]
     assert wiki.assign_paths(pages) == {
         "Template:Warning": "templates/Warning.wiki",
         "Template:warning": "templates/warning~2.wiki",

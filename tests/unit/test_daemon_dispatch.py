@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Any
 
+import pytest
 from conftest import (
     all_rows,
     authored_stratis,
@@ -329,26 +330,31 @@ def test_a_command_nobody_stamped_is_refused_rather_than_taken_at_its_word(
     assert daemon.outbox.pending() == []
 
 
-def test_a_stamp_that_is_not_a_side_is_no_stamp_at_all(tmp_path: Path) -> None:
-    # The three shapes an unstamped caller arrives in — absent, empty, and a
-    # side nobody plays — get one answer, because "who is acting" is not a
-    # question the payload gets to answer badly.
+@pytest.mark.parametrize(
+    "stamp",
+    [
+        pytest.param("", id="empty"),
+        pytest.param("GUER", id="unknown-side"),
+        pytest.param(7, id="not-a-string"),
+        pytest.param(None, id="absent"),
+    ],
+)
+def test_a_stamp_that_is_not_a_side_is_no_stamp_at_all(tmp_path: Path, stamp: object) -> None:
+    # Absent, empty, not a string, or a side nobody plays all get one answer,
+    # because "who is acting" is not a question the payload gets to answer badly.
     daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
-    codes = []
-    for index, stamp in enumerate(["", "GUER", 7, None]):
-        reply = reply_to(
-            daemon,
-            id=f"u-{index}",
-            verb="command",
-            payload={
-                "command": "purchase",
-                "side": "WEST",
-                "acting_side": stamp,
-                "args": {"squad_type": "rifle"},
-            },
-        )
-        codes.append(reply["reason"]["code"])
-    assert codes == ["unknown_caller"] * 4
+    reply = reply_to(
+        daemon,
+        id="u-2",
+        verb="command",
+        payload={
+            "command": "purchase",
+            "side": "WEST",
+            "acting_side": stamp,
+            "args": {"squad_type": "rifle"},
+        },
+    )
+    assert reply["reason"]["code"] == "unknown_caller"
 
 
 def test_telemetry_records_why_a_request_was_refused(tmp_path: Path) -> None:
@@ -480,8 +486,11 @@ def test_a_report_that_says_nothing_about_squads_leaves_the_roster_alone(tmp_pat
     assert len(daemon.campaign.observation("WEST").squads) == 1
 
 
-def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: Path) -> None:
-    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+@pytest.fixture
+def daemon_after_world_reports_no_squads(tmp_path: Path) -> tuple[Daemon, Path]:
+    """Return a daemon after its once-present Squad has left the Campaign."""
+    log = tmp_path / "telemetry.jsonl"
+    daemon = build_daemon(telemetry_path=log)
     reply_to(
         daemon,
         id="o-9",
@@ -497,10 +506,25 @@ def test_a_report_that_holds_no_squads_says_so_and_the_roster_empties(tmp_path: 
     # still on its way there, not one it has lost (`squads.Roster.reconcile`).
     observe(daemon, "o-10a", squads={"WEST-1": {"size": 8, "at": "", "pos": [0, 0, 0]}})
     observe(daemon, "o-10", squads={})
+    return daemon, log
+
+
+def test_a_report_that_holds_no_squads_empties_the_roster(
+    daemon_after_world_reports_no_squads: tuple[Daemon, Path],
+) -> None:
+    daemon, _ = daemon_after_world_reports_no_squads
+
     assert daemon.campaign.observation("WEST").squads == ()
+
+
+def test_a_squad_leaving_the_campaign_is_recorded_in_the_operator_log(
+    daemon_after_world_reports_no_squads: tuple[Daemon, Path],
+) -> None:
+    _, log = daemon_after_world_reports_no_squads
+
     # A Squad leaving the Campaign is reported to the operator's log rather than
     # to the world, which already knows: it is what said so.
-    lost = rows(tmp_path / "telemetry.jsonl", "squad_lost")
+    lost = rows(log, "squad_lost")
     assert [row["squad"] for row in lost] == ["WEST-1"]
 
 

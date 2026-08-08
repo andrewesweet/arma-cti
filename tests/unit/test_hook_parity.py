@@ -20,14 +20,16 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
-from conftest import load_tool
+from conftest import REPO, load_tool
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 hook_parity = load_tool("hook_parity")
 
-REPO = Path(__file__).resolve().parents[2]
 HOOKS = REPO / ".claude" / "hooks"
 SETTINGS = REPO / ".claude" / "settings.json"
 
