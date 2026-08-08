@@ -18,6 +18,10 @@
 #   cti_lock_info_summary <info-path>                  the same, on one line
 #   cti_lock_holder_pids  <lock-path>                  who actually has it open
 #
+# `CTI_LOCK_NOW` states the instant an age is measured against, for a caller that
+# has to state both ends of that subtraction; unset — everywhere but a test — it
+# is the wall clock, as it always was. `cti_lock_info_now` carries the reasoning.
+#
 # Reading it back is not `cat`, and that is #153's half of this file. A holder
 # that is *wedged* rather than dead blocks the machine-wide client lock for as
 # long as it likes, and the block as written says only when it started — so a
@@ -56,13 +60,42 @@ cti_lock_info_write() {
 
 # ------------------------------------------------------------ reading it back
 
-# Whole seconds since an ISO-8601 instant, or non-zero if that is not one.
+# The instant an age is measured against: the wall clock, unless the caller has
+# stated its own in `CTI_LOCK_NOW` as whole seconds since the epoch.
+#
+# An age is a subtraction with a clock at each end, and a caller that can state
+# only the older end cannot assert the answer. `started_at` is written to a whole
+# second, so *any* delay between writing it and reading the clock carries the age
+# to `seconds + 1` — and a subprocess spawn is delay enough. That is #222: about
+# one red per full `just unit` under `-n auto`, on whichever of the five
+# parametrised durations happened to be written just before a second boundary,
+# which is why it looked like a formatter bug and was not. Measured on this box
+# at 20/20 red when the block is written 0.99 of a second in and 0/20 at 0.90.
+# `tools/breaker.py`'s `--now` is the same seam for the same reason.
+#
+# A value that is not a whole number is refused rather than quietly taken from
+# the clock: falling back would put a caller that meant to state an instant back
+# on the wall clock it was escaping, and it would read a wrong age as a right one.
+cti_lock_info_now() {
+    local now="${CTI_LOCK_NOW:-}"
+    [[ -n "$now" ]] || {
+        date -u +%s
+        return 0
+    }
+    [[ "$now" =~ ^-?[0-9]+$ ]] || return 1
+    printf '%s\n' "$now"
+}
+
+# Whole seconds since an ISO-8601 instant, or non-zero if that is not one. The
+# newer end of the subtraction is passed in where the caller has already read it,
+# so one block never asks for `now` twice and cannot straddle a second itself.
 cti_lock_info_age_seconds() {
-    local started="$1" then
+    local started="$1" now="${2:-}" then
     [[ -n "$started" ]] || return 1
+    [[ -n "$now" ]] || now="$(cti_lock_info_now)" || return 1
     then="$(date -u -d "$started" +%s 2>/dev/null)" || return 1
     [[ "$then" =~ ^-?[0-9]+$ ]] || return 1
-    printf '%s' "$(($(date -u +%s) - then))"
+    printf '%s' "$((now - then))"
 }
 
 # Seconds as something a human reads at a glance, which is the whole point: the
@@ -128,13 +161,18 @@ cti_lock_pid_holds() {
 # The holder block as it stands right now: what was written, plus how long ago it
 # was written and whether the process that wrote it still has the lock.
 cti_lock_info_block() {
-    local info="$1" lock pid started secs holders
+    local info="$1" lock pid started secs now holders
     lock="${info%.info}"
     if [[ -r "$info" ]]; then
         cat "$info"
         pid="$(sed -n 's/^pid=//p' "$info" | head -1)"
         started="$(sed -n 's/^started_at=//p' "$info" | head -1)"
-        if secs="$(cti_lock_info_age_seconds "$started")"; then
+        # Both ends named separately, so an age that cannot be computed says
+        # which end it could not read rather than blaming the block's own.
+        if ! now="$(cti_lock_info_now)"; then
+            printf 'age=unknown (CTI_LOCK_NOW=%s is not whole seconds since the epoch)\n' \
+                "${CTI_LOCK_NOW:-}"
+        elif secs="$(cti_lock_info_age_seconds "$started" "$now")"; then
             printf 'age=%s\n' "$(cti_lock_info_duration "$secs")"
             printf 'age_seconds=%s\n' "$secs"
         else

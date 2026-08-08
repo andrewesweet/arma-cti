@@ -353,11 +353,39 @@ def test_no_unit_test_drives_these_scripts_against_the_real_lock() -> None:
 # longer exists.
 
 
+# The instant a hand-written block is dated against, and the instant `reading()`
+# tells the reader to measure from — 2026-01-01T00:00:00Z, and nothing here
+# depends on which instant it is. What matters is that the test states *both*
+# ends of the subtraction (#222).
+#
+# It used to state only the older one: `backdated` wrote `started_at` as the wall
+# clock less `seconds`, truncated to a whole second, and the reader took its own
+# clock afterwards. So an age was right only while no second boundary fell
+# between the write and the read, and a subprocess spawn is wide enough to cross
+# one — about one red per full `just unit` under `-n auto`, on whichever
+# parameter was unlucky, which is why eight recorded arrangements never named the
+# same duration twice. Measured on this box before the fix: 20/20 red with the
+# block written 0.99 of a second in, 14/20 at 0.97, 0/20 at 0.90 and below.
+#
+# Not a widened tolerance: the assertions below are exactly as strict as they
+# were, and `age_seconds` is still asserted to the second. What moved is that
+# there is no longer a clock running between the two ends of the subtraction.
+# The wall-clock path is not left untested by this — the live-holder tests below
+# and `run.sh`'s `failure_detail` still read the real clock, and assert on the
+# shape of an age they cannot predict.
+FROZEN_NOW = 1_767_225_600
+
+
+def reading(state: Path, **extra: str) -> dict[str, str]:
+    """Name both ends for a hand-written block's reader: whose state, and when now is."""
+    return {"CTI_TIER_STATE": str(state), "CTI_LOCK_NOW": str(FROZEN_NOW), **extra}
+
+
 def backdated(state: Path, seconds: int, **fields: str) -> Path:
-    """Write a holder block by hand, as old as we like."""
+    """Write a holder block by hand, as old as we like, against `FROZEN_NOW`."""
     info = state / "windows-client.lock.info"
     info.parent.mkdir(parents=True, exist_ok=True)
-    written = time.gmtime(time.time() - seconds)
+    written = time.gmtime(FROZEN_NOW - seconds)
     block = {
         "pid": str(os.getpid()),
         "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", written),
@@ -381,9 +409,44 @@ def test_a_holders_age_reads_as_a_duration_not_a_count_of_seconds(
     """The question is "longer than the work it claims to be doing?" — 15120 is no answer."""
     state = tmp_path / "state"
     backdated(state, seconds)
-    got = lock_eval("cti_client_lock_holder", env={"CTI_TIER_STATE": str(state)}).stdout
+    got = lock_eval("cti_client_lock_holder", env=reading(state)).stdout
     assert f"age={expected}\n" in got, got
     assert f"age_seconds={seconds}" in got
+
+
+def test_an_age_is_measured_against_the_now_its_reader_was_given(tmp_path: Path) -> None:
+    """The stated `now` is what the subtraction uses, not a clock beside it (#222).
+
+    Read an hour later than the block was dated against and the age is an hour
+    longer, to the second — which no wall clock could have been asked for.
+    """
+    state = tmp_path / "state"
+    backdated(state, 7)
+    got = lock_eval(
+        "cti_client_lock_holder", env=reading(state, CTI_LOCK_NOW=str(FROZEN_NOW + 3600))
+    ).stdout
+    assert "age=1h 00m\n" in got, got
+    assert "age_seconds=3607" in got, got
+
+
+def test_a_now_that_is_not_an_instant_is_refused_rather_than_taken_from_the_clock(
+    tmp_path: Path,
+) -> None:
+    """The fail-closed half, and the reason the seam is not a fallback.
+
+    A caller that states a `now` and gets the machine's would read a wrong age as
+    a right one — the very thing #222 was. So an unreadable one produces no age at
+    all, and says which end of the subtraction it could not read.
+    """
+    state = tmp_path / "state"
+    backdated(state, 7)
+    got = lock_eval("cti_client_lock_holder", env=reading(state, CTI_LOCK_NOW="in a bit")).stdout
+    assert "age=unknown (CTI_LOCK_NOW=in a bit" in got, got
+    assert "age_seconds=" not in got, got
+    # And the rest of the block is undamaged: an age it cannot compute is not a
+    # reason to stop naming the holder, which is what a queuer came for.
+    assert "label=a wedged corpus" in got, got
+    assert "holder=" in got, got
 
 
 def test_a_live_holder_is_reported_holding_with_its_age(tmp_path: Path) -> None:
@@ -412,7 +475,7 @@ def test_metadata_left_behind_by_a_dead_holder_says_so(tmp_path: Path) -> None:
     """
     state = tmp_path / "state"
     backdated(state, 9000, pid="4194305")  # above /proc/sys/kernel/pid_max: never live
-    got = lock_eval("cti_client_lock_holder", env={"CTI_TIER_STATE": str(state)}).stdout
+    got = lock_eval("cti_client_lock_holder", env=reading(state)).stdout
     assert "holder=gone (pid 4194305" in got, got
     assert "age=2h 30m" in got
     assert "lock_held_by=nobody" in got, got
@@ -461,7 +524,7 @@ def test_the_one_line_summary_carries_what_a_failure_detail_can_hold(tmp_path: P
     """`failure_detail=` is one key=value record and cannot carry a paragraph."""
     state = tmp_path / "state"
     backdated(state, 15120, label="just regress --slots 3")
-    got = lock_eval("cti_client_lock_summary", env={"CTI_TIER_STATE": str(state)}).stdout
+    got = lock_eval("cti_client_lock_summary", env=reading(state)).stdout
     assert len(got.splitlines()) == 1, f"a failure_detail cannot hold this: {got!r}"
     assert "age 4h 12m" in got
     assert "label just regress --slots 3" in got

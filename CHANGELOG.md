@@ -191,6 +191,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The client lock's age no longer flakes about one gate in every full `just unit`.** A holder
+  block's `started_at` is written to a whole second and the reader took its own clock afterwards,
+  so an age was right only while no second boundary fell between the two — and a subprocess spawn
+  under `-n auto` is wide enough to cross one, which is why eight recorded arrangements never named
+  the same duration twice and none reproduced on a quiet re-run. `CTI_LOCK_NOW` now lets a caller
+  state the instant an age is measured against, so a test states both ends of the subtraction and no
+  clock runs between them; unset — everywhere but a test — it is the wall clock, as before. A value
+  that is not whole seconds is refused rather than quietly taken from the clock, and an age that
+  cannot be computed now says which end it could not read. No assertion was weakened: the age is
+  still asserted to the second (#222).
+
 - **Engine updates now stop the regression tier as `engine_drift`.** Each probe verdict compares
   the server version recorded by the runner with a checked-in pin before trusting any result. A
   readable mismatch records both versions; a missing or malformed observation fails closed as
