@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just dispatch-follow <id>` restores a within-session completion edge for detached
+  dispatches.** The follower remains attached to the tool harness until the dispatch's recorded
+  runner exits, then prints the dispatch id and authoritative result path from `dispatch.json`.
+  A runner that disappears without writing its result is reported as
+  `finding=runner_disappeared`, never as a completion or an inferred failure class. The wait has
+  no timeout or polling interval, and leaves stall classification with `just watch` (#280).
+
 - **`just worktree` gains an explicit preservation path: `archive` and `restore`.** A worktree
   whose work is parked but cannot land was removable only by overriding `done`'s refusal,
   because `done` treats "not on `origin/main`" as "not durable". `archive <name> --ref

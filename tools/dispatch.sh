@@ -53,9 +53,17 @@ printf '%s\n' "$planned"
 
 log="$record/dispatch.log"
 cd "$REPO"
+completion_pipe="$record/runner.pipe"
+mkfifo "$completion_pipe"
+exec {completion_fd}<>"$completion_pipe"
 setsid nohup uv run --quiet python "$TOOL" --run "$record" >>"$log" 2>&1 </dev/null &
 child=$!
+exec {completion_fd}>&-
 disown "$child" 2>/dev/null || true
+
+# Record the exact runner identity and paths before returning. The helper
+# owns the JSON decision under pytest; this shell retains only the process seam.
+timeout "$UV_TIMEOUT" uv run --quiet python tools/dispatch_follow.py --arm-record "$record" --runner-pid "$child" --runner-pipe "$completion_pipe"
 
 printf 'pid=%s\n' "$child"
 printf 'log=%s\n' "$log"

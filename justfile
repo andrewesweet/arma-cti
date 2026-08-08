@@ -368,6 +368,13 @@ land *args:
 dispatch *args:
     ./tools/dispatch.sh {{ args }}
 
+# Remain attached to the tool harness until a named dispatch writes the result
+# path in its own record. This invocation has no timeout and does not classify
+# stalls: a vanished runner is a named finding, while `just watch` keeps the
+# BLIND/stall judgement (#280, ADR-0022, ADR-0049).
+dispatch-follow dispatch_id *args:
+    uv run python tools/dispatch_follow.py "{{ dispatch_id }}" {{ args }}
+
 # Arm a detached watcher over a dispatched agent's run, and read what the
 # watchers found (#198, ADR-0053). No Arma, no lock, no turn held open.
 #
