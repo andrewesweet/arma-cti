@@ -28,9 +28,10 @@ goes and reads the thing, and pays for the read. So the split is by *kind*, not 
 
 - **Inlined** — the imperative, in the words that make it obeyable without a read: the two
   worktree calls, the gate command, the commit trailer, `just land` and its paste
-  instruction, the flake test names, the `flake_quarantine` required response, and the one
-  sentence of the verdict paste rule. An agent must be able to comply having read only the
-  brief.
+  instruction, the flake test names, the `flake_quarantine` required response, the one
+  sentence of the verdict paste rule, and the single-shot contract (#279 — a detached
+  session has no second turn, and learning that by ending is exactly what it exists to
+  prevent). An agent must be able to comply having read only the brief.
 - **Cited** — the evidence and the reasoning behind each imperative: CLAUDE.md's Contract
   and failure-class table, #219's A/B, #105, the ADRs. That read is optional, and it is
   only wanted by an agent that means to argue with the rule rather than follow it.
@@ -569,6 +570,15 @@ def compose(briefing: Briefing) -> str:
     ]
     if seat.owes_reason:
         lines.append(_placeholder(SEAT_PLACEHOLDER))
+    # The single-shot contract, verbatim from `dispatch.SINGLE_SHOT_CONTRACT` — one home,
+    # shared with `default_brief`, so the composed brief and the default brief cannot
+    # disagree. A detached session has no second turn, which is the one fact a briefing
+    # cannot let an agent learn the hard way (#279).
+    lines += [
+        "",
+        "## Single-shot",
+        dispatch.SINGLE_SHOT_CONTRACT,
+    ]
     lines += [
         "",
         "## Worktree",

@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `finding=runner_disappeared`, never as a completion or an inferred failure class. The wait has
   no timeout or polling interval, and leaves stall classification with `just watch` (#280).
 
+- **Every dispatch brief now states the single-shot contract.** A detached session has no
+  second turn for a background completion or a question — two dispatches on 2026-08-08 ended
+  that way, one leaving its gate uncommitted (`just land` refused `dirty_tree`), one asking
+  whether to run `git checkout --` with no caller listening and main broken another cycle.
+  `just brief`'s composed invariant half and `just dispatch`'s default brief both carry the
+  verbatim instruction, from one constant (`dispatch.SINGLE_SHOT_CONTRACT`) so the two briefs
+  cannot drift (#279).
+
 - **`just worktree` gains an explicit preservation path: `archive` and `restore`.** A worktree
   whose work is parked but cannot land was removable only by overriding `done`'s refusal,
   because `done` treats "not on `origin/main`" as "not durable". `archive <name> --ref

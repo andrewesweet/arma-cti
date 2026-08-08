@@ -936,16 +936,33 @@ def assert_worktree(assigned: Path, observed: str) -> Refusal | None:
     return None
 
 
+# The single-shot contract every dispatch carries (#279). A detached session gets no
+# second turn: a background completion's notification wakes nobody (the #279 dispatch that
+# armed its gate in the background ended uncommitted, and `just land` refused `dirty_tree`),
+# and a question ends the run with no caller listening (the revert dispatch that asked
+# whether to run `git checkout --` left main broken another cycle). `default_brief` below
+# carries this verbatim, and `tools/brief.py` imports the same constant so the composed
+# brief and the default brief are one rule in one home and cannot drift apart.
+SINGLE_SHOT_CONTRACT: Final = (
+    "A dispatched session is single-shot: it has no second turn for a background completion"
+    " or a question. Run awaited work in the foreground; decide routine ambiguities, act,"
+    " and record the reasoning. If a choice is genuinely the human's, finish the unambiguous"
+    " part and state exactly what remains and why."
+)
+
+
 def default_brief(identity: Identity, worktree: Path) -> str:
     """Compose the brief a dispatch sends when the caller named no file.
 
     Deliberately thin: it states the assignment and points at the issue, because a
     default that invented instructions would be a second, untracked copy of the seat's
-    contract.
+    contract. The single-shot contract is the one operational rule a thin brief cannot
+    omit, because a dispatched session has no second turn to recover from missing it.
     """
     return (
         f"You are the {identity.seat} seat, dispatched as {identity.dispatch_id} on the "
         f"{identity.lane} lane under profile {identity.profile}.\n\n"
+        f"{SINGLE_SHOT_CONTRACT}\n\n"
         f"Worktree: {worktree}\n"
         f"Base SHA: {identity.base_sha}\n"
         f"Issue: #{identity.issue}\n\n"

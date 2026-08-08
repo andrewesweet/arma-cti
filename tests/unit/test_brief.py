@@ -484,6 +484,49 @@ def test_the_composed_half_stays_within_the_designs_size() -> None:
     assert len(composed().splitlines()) <= 40
 
 
+# ----------------------------------------------------------- the single-shot contract (#279)
+
+
+# The verbatim instruction #279 proposed, pinned word-for-word so a later edit cannot soften
+# it silently. The contract lives once, in dispatch.SINGLE_SHOT_CONTRACT, and both briefs
+# render that constant — so this string and the constant are asserted equal in both roles.
+SINGLE_SHOT_VERBATIM = (
+    "A dispatched session is single-shot: it has no second turn for a background completion"
+    " or a question. Run awaited work in the foreground; decide routine ambiguities, act,"
+    " and record the reasoning. If a choice is genuinely the human's, finish the unambiguous"
+    " part and state exactly what remains and why."
+)
+
+
+def test_the_contract_constant_is_the_issues_verbatim_wording() -> None:
+    """#279 proposed this instruction verbatim; the constant must match it word for word."""
+    assert dispatch.SINGLE_SHOT_CONTRACT == SINGLE_SHOT_VERBATIM
+
+
+def test_the_composed_brief_carries_the_single_shot_contract_under_its_heading() -> None:
+    rendered = composed()
+    assert "## Single-shot" in rendered
+    assert dispatch.SINGLE_SHOT_CONTRACT in rendered
+
+
+def test_the_default_brief_carries_the_same_single_shot_contract() -> None:
+    """Criterion 1's other half: the unnamed-file brief carries the same contract.
+
+    One home — both briefs render `dispatch.SINGLE_SHOT_CONTRACT` — so the composed brief
+    and the default brief cannot drift apart, and this asserts they read the same constant.
+    """
+    identity = dispatch.Identity(
+        dispatch_id="d-test",
+        lane="claude-native",
+        profile="opus-high",
+        seat="implementer",
+        issue=279,
+        base_sha="deadbee",
+    )
+    rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-279")
+    assert dispatch.SINGLE_SHOT_CONTRACT in rendered
+
+
 # ------------------------------------------------------------------- the CLI's refusals
 
 
