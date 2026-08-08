@@ -1287,16 +1287,32 @@ def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripp
 ) -> None:
     """The recipe itself, run twice: once on healthy lanes and once on a tripped one.
 
-    Both of the recipe's halves get a `tmp_path`. Injecting the breaker alone left the
+    Every stateful read gets a `tmp_path`. Injecting the breaker alone left the
     watch read on the box's live `~/.arma-cti/watch/`, so any unacknowledged watcher
     finding — two `watch_broken` ones from a crash cluster, in the case that found this
     — reddened this assertion for a diff that had touched neither (#249).
     """
     directory = tmp_path / "breaker"
+    queue_dir = tmp_path / "queue"
+    queue_dir.mkdir()
+    (queue_dir / "policy.json").write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "freeze": {"state": "open", "since": "now", "ruling": "test"},
+                "wip_limit": {"value": 0, "since": "now", "ruling": "test"},
+                "packages": [],
+            }
+        ),
+        encoding="utf-8",
+    )
     environment = {
         **os.environ,
         "CTI_ADMISSION_DIR": str(tmp_path / "admission"),
         "CTI_BREAKER_DIR": str(directory),
+        "CTI_DISPATCH_DIR": str(tmp_path / "dispatches"),
+        "CTI_QUEUE_DIR": str(queue_dir),
+        "CTI_QUEUE_ROOT": str(tmp_path / "queue-root"),
         "CTI_WATCH_DIR": str(tmp_path / "watch"),
     }
 
@@ -1334,8 +1350,11 @@ def test_the_recipe_folds_the_breaker_into_the_read_at_the_top_of_a_turn() -> No
     justfile = (REPO / "justfile").read_text(encoding="utf-8")
     body = justfile.split("watch-report *args:", 1)[1].split("\n\n", 1)[0]
     assert "tools/breaker.py report" in body
+    assert "tools/queue_policy.py report" in body
     assert "tools/stall_watch.py report" in body
     assert "tools/admission.py trial-report" in body
     assert body.index("breaker.py") < body.index("stall_watch.py"), "the verdicts read first"
+    assert body.index("breaker.py") < body.index("queue_policy.py")
+    assert body.index("queue_policy.py") < body.index("stall_watch.py")
     assert body.index("stall_watch.py") < body.index("admission.py")
     assert "\nbreaker *args:\n" in justfile

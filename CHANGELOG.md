@@ -24,6 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   verbatim instruction, from one constant (`dispatch.SINGLE_SHOT_CONTRACT`) so the two briefs
   cannot drift (#279).
 
+- **`just watch-report` now calls out underfilled WIP before the orchestrator starts a landing.**
+  The one-line verdict reads the queue's ruled limit, derived in-flight list, freeze and package
+  policy, and live eligible candidates, then reports occupancy, room, eligible count, the next
+  candidate, and `action=refill-before-landing`. It stays silent when capacity is full or no
+  candidate survives, fails closed when GitHub cannot be read, and only reports and selects — it
+  never dispatches or rewrites the human's limit (#278).
+
 - **`just worktree` gains an explicit preservation path: `archive` and `restore`.** A worktree
   whose work is parked but cannot land was removable only by overriding `done`'s refusal,
   because `done` treats "not on `origin/main`" as "not durable". `archive <name> --ref

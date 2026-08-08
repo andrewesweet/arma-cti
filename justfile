@@ -406,16 +406,18 @@ watch name worktree subject="pool" *args:
 # agent is still working. `--ack` marks what it prints as read so the same
 # stall never resurfaces as news; `--all` re-reads the acknowledged ones.
 #
-# The lane breakers report here too (#226), ahead of the watchers, because this
-# is the read CLAUDE.md already puts at the top of an orchestrator's turn. One
-# verdict line per lane that is not dispatchable, and silence for every lane
-# that is — a verdict, never three percentages (#209). `{{ args }}` is the
-# watchers' alone; the breaker read takes none. Since neither half can be pointed
-# by a flag the other would swallow, both take a directory from the environment
-# instead — `CTI_BREAKER_DIR` and `CTI_WATCH_DIR` (#249), which is how a unit test
-# exercises this recipe without its verdict depending on what the box is carrying.
+# The lane breakers report here too (#226), ahead of the queue and watchers,
+# because this is the read CLAUDE.md already puts at the top of an orchestrator's
+# turn. The queue adds one underfill verdict when eligible work can fill ruled
+# capacity (#278); it selects and reports, and never dispatches. Every clean read
+# stays silent — a verdict, never a dashboard of numbers (#209). `{{ args }}` is
+# the watchers' alone; the other reads take none. Their state-directory seams are
+# environment variables (`CTI_BREAKER_DIR`, `CTI_QUEUE_DIR`, `CTI_QUEUE_ROOT`,
+# `CTI_DISPATCH_DIR`, and `CTI_WATCH_DIR`), so a unit test never depends on what
+# the box is carrying (#249).
 watch-report *args:
     uv run python tools/breaker.py report
+    uv run python tools/queue_policy.py report
     uv run python tools/stall_watch.py report {{ args }}
     # The orchestration-seat trial (#260): one line when it has failed, silent while clean.
     # Not a gate — it reports — and it reads `CTI_ADMISSION_DIR`, the same seam the records use.

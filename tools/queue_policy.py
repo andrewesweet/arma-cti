@@ -110,6 +110,10 @@ ISSUE_TREE: Final = re.compile(r"^issue-(\d+)$")
 BLOCKED_BY: Final = re.compile(r"^\s*Blocked-by:\s*#(\d+)\s*$", re.MULTILINE)
 
 READY_LABEL: Final = "ready-for-agent"
+GITHUB_UNREADABLE_REPORT: Final = (
+    "queue=unreadable refill=unknown class=infra_unavailable reason=github_unreadable "
+    "action=restore-tracker-read-before-refill"
+)
 
 # The verbs that amend the policy. Each one demands a `--ruling`; the rest only read.
 WRITE_VERBS: Final = frozenset({"freeze", "open", "wip", "package"})
@@ -699,9 +703,10 @@ class Candidate(NamedTuple):
 
 
 class Selection(NamedTuple):
-    """What `next` decided, and the whole derivation it decided it from."""
+    """What `next` decided, every eligible survivor, and their whole derivation."""
 
     chosen: tuple[Candidate, ...]
+    eligible: tuple[Candidate, ...]
     considered: tuple[str, ...]
     refusal: Refusal | None = None
 
@@ -728,6 +733,7 @@ def select(
     if not candidates:
         return Selection(
             (),
+            (),
             tuple(considered),
             Refusal(
                 "no_ready_issue",
@@ -738,8 +744,9 @@ def select(
     if not survivors:
         frozen_out = all(policy.freeze.frozen and not policy.exempting(c.issue) for c in candidates)
         if frozen_out:
-            return Selection((), tuple(considered), freeze_refusal(policy, candidates[0].issue))
+            return Selection((), (), tuple(considered), freeze_refusal(policy, candidates[0].issue))
         return Selection(
+            (),
             (),
             tuple(considered),
             Refusal(
@@ -754,8 +761,26 @@ def select(
 
     room = policy.wip_limit.value - len(in_flight.issues)
     if room <= 0:
-        return Selection((), tuple(considered), wip_refusal(policy, survivors[0].issue, in_flight))
-    return Selection(tuple(survivors[: min(count, room)]), tuple(considered))
+        return Selection(
+            (),
+            tuple(survivors),
+            tuple(considered),
+            wip_refusal(policy, survivors[0].issue, in_flight),
+        )
+    eligible: list[Candidate] = []
+    reservation_refusal: Refusal | None = None
+    for candidate in survivors:
+        refusal = wip_refusal(policy, candidate.issue, in_flight)
+        if refusal is None:
+            eligible.append(candidate)
+            continue
+        reservation_refusal = reservation_refusal or refusal
+        considered[considered.index(f"considered.{candidate.issue}=eligible")] = (
+            f"considered.{candidate.issue}=reserved-for-package"
+        )
+    if not eligible:
+        return Selection((), (), tuple(considered), reservation_refusal)
+    return Selection(tuple(eligible[: min(count, room)]), tuple(eligible), tuple(considered))
 
 
 def _drops(policy: Policy, candidate: Candidate, in_flight: InFlight) -> str | None:
@@ -1134,6 +1159,25 @@ def next_lines(selection: Selection, in_flight: InFlight) -> tuple[str, ...]:
     return tuple(lines)
 
 
+def underfill_line(policy: Policy, selection: Selection, in_flight: InFlight) -> str | None:
+    """One turn-leading verdict when ruled capacity has eligible work to fill it."""
+    if selection.refusal is not None or not selection.chosen:
+        return None
+    limit = policy.wip_limit.value
+    occupied = len(in_flight.issues)
+    return " ".join(
+        (
+            "queue=underfilled",
+            f"in_flight={occupied}/{limit}",
+            "floor=yes",
+            f"room={limit - occupied}",
+            f"eligible={len(selection.eligible)}",
+            f"next={selection.chosen[0].issue}",
+            "action=refill-before-landing",
+        )
+    )
+
+
 # ----------------------------------------------------------------------------------- CLI
 
 
@@ -1156,6 +1200,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     verbs = parser.add_subparsers(dest="verb", required=True)
 
     verbs.add_parser("state", help="every entry with its ruling, the in-flight list, the count")
+    verbs.add_parser("report", help="one underfill verdict; silent when no refill is due")
     following = verbs.add_parser("next", help="the next dispatchable issues, with the derivation")
     following.add_argument("--count", type=int, default=1)
     checking = verbs.add_parser("check", help="one issue, as an exit code: the pre-dispatch read")
@@ -1267,7 +1312,7 @@ def _write_verb(
 def _read_verb(
     args: argparse.Namespace, store: Store, policy: Policy, in_flight: InFlight
 ) -> tuple[tuple[str, ...], int]:
-    """Answer a read verb: the whole state, one issue's verdict, or the next candidates."""
+    """Answer the state and one-issue reads, then route candidate reads together."""
     if args.verb == "state":
         return state_lines(store, policy, in_flight), 0
     if args.verb == "check":
@@ -1275,13 +1320,39 @@ def _read_verb(
         if found is not None:
             return found.lines(), EXIT_REFUSED
         return (f"issue={args.issue}", "queue=clear", *in_flight.lines()), 0
+    return _candidate_read(args, policy, in_flight)
+
+
+def _candidate_read(
+    args: argparse.Namespace, policy: Policy, in_flight: InFlight
+) -> tuple[tuple[str, ...], int]:
+    """Answer `next` and `report` from one candidate read and one selection."""
+    before_candidates = (
+        _report_before_candidates(policy, in_flight) if args.verb == "report" else None
+    )
+    if before_candidates is not None:
+        return before_candidates, 0
     candidates, refusal = ready_candidates()
     if refusal is not None:
+        if args.verb == "report":
+            return (GITHUB_UNREADABLE_REPORT,), 0
         return refusal.lines(), EXIT_REFUSED
-    selection = select(policy, candidates, in_flight, max(1, args.count))
+    selection = select(policy, candidates, in_flight, max(1, getattr(args, "count", 1)))
+    if args.verb == "report":
+        line = underfill_line(policy, selection, in_flight)
+        return ((line,) if line else ()), 0
     if selection.refusal is not None:
         return (*selection.considered, *selection.refusal.lines()), EXIT_REFUSED
     return next_lines(selection, in_flight), 0
+
+
+def _report_before_candidates(policy: Policy, in_flight: InFlight) -> tuple[str, ...] | None:
+    """Fail closed on uncertain occupancy and skip candidate I/O when capacity is full."""
+    if in_flight.github.startswith("unreadable"):
+        return (GITHUB_UNREADABLE_REPORT,)
+    if len(in_flight.issues) >= policy.wip_limit.value:
+        return ()
+    return None
 
 
 def _run_write(args: argparse.Namespace, store: Store) -> int:

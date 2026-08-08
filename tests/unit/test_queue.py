@@ -15,6 +15,8 @@ carry no failure class, and be reachable by no flag, argument or environment var
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -106,6 +108,36 @@ def seeded(tmp_path: Path, document: dict | None = None) -> Any:  # noqa: ANN401
 def nothing_closed(numbers: Sequence[int]) -> tuple[frozenset[int], str]:
     """Stand in for a tracker that reports every issue open."""
     return frozenset(), "read" if numbers else "not-needed"
+
+
+def fake_github(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    candidates: Sequence[dict[str, object]],
+) -> None:
+    """Put a deterministic `gh` tracker boundary on PATH for a CLI-level queue read."""
+    executable = tmp_path / "bin" / "gh"
+    executable.parent.mkdir(parents=True)
+    executable.write_text(
+        "#!/bin/sh\n"
+        'if [ "${CTI_TEST_GH_FAIL:-}" = "1" ]; then exit 1; fi\n'
+        'if [ "${CTI_TEST_GH_VIEW_FAIL:-}" = "1" ] && [ "$1 $2" = "issue view" ]; '
+        "then exit 1; fi\n"
+        'if [ "$1 $2" = "issue list" ]; then printf \'%s\\n\' "$CTI_TEST_CANDIDATES"; '
+        "else printf 'OPEN\\n'; fi\n",
+        encoding="utf-8",
+    )
+    executable.chmod(0o755)
+    monkeypatch.setenv("PATH", f"{executable.parent}:{os.environ['PATH']}")
+    monkeypatch.setenv("CTI_TEST_CANDIDATES", json.dumps(candidates))
+
+
+def unfinished_dispatches(directory: Path, *issues: int) -> None:
+    """Write unfinished records in the public on-disk shape `just dispatch` produces."""
+    for issue in issues:
+        record = directory / f"d-{issue}"
+        record.mkdir(parents=True)
+        (record / "dispatch.json").write_text(json.dumps({"issue": issue}), encoding="utf-8")
 
 
 # ------------------------------------------------------------------ the document, read strictly
@@ -814,6 +846,227 @@ def test_a_negative_wip_limit_is_refused_and_points_at_freeze(
 
 
 # -------------------------------------------------------------------------------- reading
+
+
+def test_report_emits_one_underfill_verdict_from_the_live_queue_derivation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    store = seeded(tmp_path, policy_document(state="open", limit=3))
+    dispatches = tmp_path / "dispatches"
+    unfinished_dispatches(dispatches, 170, 241)
+    fake_github(
+        tmp_path,
+        monkeypatch,
+        [
+            {"number": 170, "title": "already held", "body": ""},
+            {"number": 249, "title": "waits", "body": "Blocked-by: #241"},
+            {"number": 301, "title": "first", "body": ""},
+            {"number": 302, "title": "second", "body": ""},
+        ],
+    )
+
+    code = queue.main(
+        [
+            "--queue-dir",
+            str(store.directory),
+            "--root",
+            str(tmp_path / "empty-root"),
+            "--dispatch-dir",
+            str(dispatches),
+            "report",
+        ]
+    )
+
+    assert code == 0
+    assert capsys.readouterr().out == (
+        "queue=underfilled in_flight=2/3 floor=yes room=1 eligible=2 next=301 "
+        "action=refill-before-landing\n"
+    )
+
+
+@pytest.mark.parametrize(
+    ("held", "candidates"),
+    [
+        ((170, 241, 278), [{"number": 301, "title": "ready", "body": ""}]),
+        ((170,), [{"number": 301, "title": "waits", "body": "Blocked-by: #241"}]),
+    ],
+)
+def test_report_is_silent_when_full_or_when_no_eligible_candidate_exists(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    held: tuple[int, ...],
+    candidates: list[dict[str, object]],
+) -> None:
+    store = seeded(tmp_path, policy_document(state="open", limit=3))
+    dispatches = tmp_path / "dispatches"
+    unfinished_dispatches(dispatches, *held)
+    fake_github(tmp_path, monkeypatch, candidates)
+
+    code = queue.main(
+        [
+            "--queue-dir",
+            str(store.directory),
+            "--root",
+            str(tmp_path / "empty-root"),
+            "--dispatch-dir",
+            str(dispatches),
+            "report",
+        ]
+    )
+
+    assert code == 0
+    assert capsys.readouterr().out == ""
+
+
+def test_report_uses_the_same_package_reservation_as_candidate_selection(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    store = seeded(
+        tmp_path,
+        policy_document(
+            state="frozen",
+            limit=3,
+            packages=[package_document(issues=[301], wip_reserved=2)],
+        ),
+    )
+    dispatches = tmp_path / "dispatches"
+    unfinished_dispatches(dispatches, 170)
+    fake_github(
+        tmp_path,
+        monkeypatch,
+        [
+            {"number": 300, "title": "outside reservation", "body": ""},
+            {"number": 301, "title": "inside reservation", "body": ""},
+        ],
+    )
+
+    code = queue.main(
+        [
+            "--queue-dir",
+            str(store.directory),
+            "--root",
+            str(tmp_path / "empty-root"),
+            "--dispatch-dir",
+            str(dispatches),
+            "report",
+        ]
+    )
+
+    assert code == 0
+    assert capsys.readouterr().out == (
+        "queue=underfilled in_flight=1/3 floor=yes room=2 eligible=1 next=301 "
+        "action=refill-before-landing\n"
+    )
+
+
+def test_report_fails_closed_in_one_line_when_the_tracker_is_unreadable(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    store = seeded(tmp_path, policy_document(state="open", limit=3))
+    fake_github(tmp_path, monkeypatch, [])
+    monkeypatch.setenv("CTI_TEST_GH_FAIL", "1")
+
+    code = queue.main(
+        [
+            "--queue-dir",
+            str(store.directory),
+            "--root",
+            str(tmp_path / "empty-root"),
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+            "report",
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert code == 0
+    assert captured.err == ""
+    assert captured.out == (
+        "queue=unreadable refill=unknown class=infra_unavailable reason=github_unreadable "
+        "action=restore-tracker-read-before-refill\n"
+    )
+
+
+def test_report_never_claims_spare_capacity_when_in_flight_tracker_reads_fail(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    store = seeded(tmp_path, policy_document(state="open", limit=3))
+    dispatches = tmp_path / "dispatches"
+    unfinished_dispatches(dispatches, 170)
+    fake_github(
+        tmp_path,
+        monkeypatch,
+        [{"number": 301, "title": "would otherwise be next", "body": ""}],
+    )
+    monkeypatch.setenv("CTI_TEST_GH_VIEW_FAIL", "1")
+
+    code = queue.main(
+        [
+            "--queue-dir",
+            str(store.directory),
+            "--root",
+            str(tmp_path / "empty-root"),
+            "--dispatch-dir",
+            str(dispatches),
+            "report",
+        ]
+    )
+
+    assert code == 0
+    assert capsys.readouterr().out == (
+        "queue=unreadable refill=unknown class=infra_unavailable reason=github_unreadable "
+        "action=restore-tracker-read-before-refill\n"
+    )
+
+
+def test_watch_report_folds_in_the_queue_verdict_without_dispatching(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = seeded(tmp_path, policy_document(state="open", limit=3))
+    policy_before = store.policy_path.read_bytes()
+    fake_github(
+        tmp_path,
+        monkeypatch,
+        [{"number": 301, "title": "next", "body": ""}],
+    )
+    environment = {
+        **os.environ,
+        "CTI_ADMISSION_DIR": str(tmp_path / "admission"),
+        "CTI_BREAKER_DIR": str(tmp_path / "breaker"),
+        "CTI_DISPATCH_DIR": str(tmp_path / "dispatches"),
+        "CTI_QUEUE_DIR": str(store.directory),
+        "CTI_QUEUE_ROOT": str(tmp_path / "empty-root"),
+        "CTI_WATCH_DIR": str(tmp_path / "watch"),
+    }
+
+    done = subprocess.run(
+        ["just", "watch-report"],  # noqa: S607 — `just` intentionally resolves off PATH
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=environment,
+    )
+
+    assert done.returncode == 0
+    assert [line for line in done.stdout.splitlines() if line.startswith("queue=")] == [
+        (
+            "queue=underfilled in_flight=0/3 floor=yes room=3 eligible=1 next=301 "
+            "action=refill-before-landing"
+        )
+    ]
+    assert not (tmp_path / "dispatches").exists(), "the report writes and dispatches nothing"
+    assert store.policy_path.read_bytes() == policy_before, "the report does not amend the ruling"
 
 
 def test_state_prints_every_entry_with_its_ruling_then_the_list_then_the_count(
