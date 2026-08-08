@@ -602,6 +602,13 @@ breaker *args:
 queue *args:
     uv run python tools/queue_policy.py "$@"
 
+# The prospective WIP experiment (#284). It pre-registers immutable stage data,
+# appends sourced observations, and renders reproducible JSON/Markdown verdicts.
+# It never dispatches work and never writes queue policy; adoption remains a human act.
+[positional-arguments]
+wip-trial *args:
+    uv run python tools/wip_trial.py "$@"
+
 # The pre-registered admission bar, as the thing that decides rather than as prose
 # (#224, ADR-0061 Decision 6). No Arma, no lock, no turn held open.
 #

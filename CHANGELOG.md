@@ -40,6 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   so it still refuses. The orchestrator-clears-residue path remains the fallback whenever the
   guard refuses (#287).
 
+- **`just wip-trial` pre-registers and instruments the stepwise WIP experiment.** It fixes the
+  3→5→7→10 treatment ladder, SHA-derived balanced block order, 15% material-throughput bar,
+  occupancy fidelity, quality/rework guardrails, 72-hour stop and seven-day maturation before
+  observations arrive. Immutable manifests and hash-chained sourced events feed reproducible JSON
+  and paste-ready Markdown verdicts. The command cannot dispatch or edit queue policy: it reports
+  the lowest passing limit and the exact ruling command, leaving adoption to the human (#284).
+
 - **Foreign dispatches now obey a repository-owned keep-on-Claude class policy.**
   `just dispatch` reads the seven-row policy from the main checkout for every dispatch and
   refuses a declared keep-class by name, with its remedy and no failure class. There is no
