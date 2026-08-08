@@ -84,7 +84,7 @@ if [[ ",${CTI_STUB_HOST_PROBES:-}," == *",$name,"* ]]; then
     sleep "$CTI_STUB_CLIENT_LEG_SECS"
     printf '%s\t%s\t%s\t%s\n' "$CTI_STUB_TAG" "$name" close "$(date +%s%N)" >>"$CTI_STUB_TRACE"
 fi
-printf 'server_version=stub\n' >>"$out/results.env"
+printf 'server_version=2.20.152984\n' >>"$out/results.env"
 printf 'verdict=PASS\n' >>"$out/results.env"
 """
 

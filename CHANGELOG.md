@@ -191,6 +191,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Engine updates now stop the regression tier as `engine_drift`.** Each probe verdict compares
+  the server version recorded by the runner with a checked-in pin before trusting any result. A
+  readable mismatch records both versions; a missing or malformed observation fails closed as
+  `infra_unavailable`. The pin documents the deliberate update path beside its current value
+  (#71).
+
 - **The Claude breaker now sees the limit that actually binds the account.** The quota tap polls
   `/api/oauth/usage` without delaying the human's status line, selects the `limits[]` entry the
   provider marks active, and persists its kind and scope so `just breaker state` distinguishes

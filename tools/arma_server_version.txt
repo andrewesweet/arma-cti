@@ -1,0 +1,4 @@
+# Expected Arma 3 dedicated-server version.
+# To accept an intentional engine update, replace the version below with the
+# server_version recorded by a fresh run, then commit that deliberate pin move.
+2.20.152984

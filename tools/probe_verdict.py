@@ -4,32 +4,37 @@
 files; what happened is then a decision rather than a process, so it is decided
 here, where pytest can reach it — #83's precedent, that a wrong class is a
 harness bug and the no-Arma tier is where a harness bug should turn red. The
-ladder, in the order the shell applied it:
+ladder now starts with the engine pin:
 
-0. The starvation watch stopped this probe's flight (#182, ADR-0055): the
+0. The recorded Arma server version is absent or malformed: `infra_unavailable`,
+   because the engine identity could not be checked. A readable version that
+   differs from the deliberately updated pin is `engine_drift`, before the
+   run's claims or any expected-red/quarantine treatment can make that engine's
+   behaviour look trustworthy (#71).
+1. The starvation watch stopped this probe's flight (#182, ADR-0055): the
    machine went under the running floor while its world was up, and nothing a
    starved world reports is a result — the two episodes past the memory
    pre-flight wore `timeout` and `node_crashed`, both about the machine and
    neither wearing its class. Above every other rung, whatever the run managed
    to record: `infra_unavailable`, stop, not a result.
-1. The watchdog killed `run.sh` — a `timeout` status of 124, or the follow-up
+2. The watchdog killed `run.sh` — a `timeout` status of 124, or the follow-up
    SIGKILL's 137 with the deadline actually reached. Its process tree died
    mid-measurement, so whatever half-written `results.env` it left behind is
    not evidence of anything: `infra_unavailable` — stop, not a result (#144).
-2. Something *else* killed `run.sh`: any 128+SIG exit, including a SIGKILL
+3. Something *else* killed `run.sh`: any 128+SIG exit, including a SIGKILL
    landing before the watchdog's deadline, which cannot be the watchdog's and
    is the OOM killer's shape (#125). The machine's doing, not the harness's,
    so it is `infra_unavailable` rather than the untyped-red rule below — a
    reader sent to "fix the harness" for a machine event fixes nothing (#147).
-3. `run.sh` said PASS: the raw class is `pass`.
-4. `run.sh` failed without typing itself. An untyped red is a harness bug, and
+4. `run.sh` said PASS: the raw class is `pass`.
+5. `run.sh` failed without typing itself. An untyped red is a harness bug, and
    the failure-class table says fix the harness first — so it is reported as
    one (`untyped_harness_failure`) rather than folded into the nearest
    plausible class (#83).
-5. `expect:` inverts the verdict for a probe that is red by design, and only
+6. `expect:` inverts the verdict for a probe that is red by design, and only
    for the declared class: a negative probe failing for the wrong reason is
    still a failure, and a green run of it is the bug (#80, #96, #102).
-6. `quarantined:` is applied last, over whatever the run said: the corpus keeps
+7. `quarantined:` is applied last, over whatever the run said: the corpus keeps
    gathering evidence about a flake without the flake gating anyone, and the
    tier never retries — one run, one verdict (#130).
 
@@ -42,6 +47,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import signal
 import sys
 from dataclasses import dataclass, field
@@ -58,6 +64,8 @@ EXIT_KILLED: Final = 137
 # signal range (255 above all) are a process's own exits, not signal deaths.
 SIGNAL_EXIT_BASE: Final = 128
 MAX_SIGNAL: Final = 64
+EXPECTED_SERVER_VERSION_PATH: Final = Path(__file__).with_name("arma_server_version.txt")
+SERVER_VERSION_PATTERN: Final = re.compile(r"[0-9]+(?:\.[0-9]+)+")
 
 
 def signal_name(number: int) -> str:
@@ -86,6 +94,20 @@ def read_results(path: Path) -> dict[str, str]:
     return results
 
 
+def read_expected_server_version(path: Path | None = None) -> str:
+    """Read the one uncommented version from the checked-in engine pin."""
+    source = path or EXPECTED_SERVER_VERSION_PATH
+    versions = [
+        line.strip()
+        for line in source.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
+    if len(versions) != 1:
+        message = f"expected exactly one Arma server version in {source}"
+        raise ValueError(message)
+    return versions[0]
+
+
 @dataclass(frozen=True)
 class Outcome:
     """Everything the ladder needs to know about one finished probe run."""
@@ -102,6 +124,7 @@ class Outcome:
     # The starvation watch's marker for this probe, empty when it never fired:
     # the reading and the floor, in the watch's own words (#182, ADR-0055).
     starved: str = ""
+    expected_server_version: str = ""
 
 
 class TypedVerdict(NamedTuple):
@@ -111,6 +134,58 @@ class TypedVerdict(NamedTuple):
     class_: str
     raw_class: str
     detail: str
+
+
+def engine_version_verdict(outcome: Outcome) -> TypedVerdict | None:
+    """Fail closed on an unknown engine; name drift only when both sides are known."""
+    if not outcome.expected_server_version:
+        return None
+    observed_version = outcome.results.get("server_version", "")
+    if not observed_version:
+        return TypedVerdict(
+            verdict="FAIL",
+            class_="infra_unavailable",
+            raw_class="infra_unavailable",
+            detail=(
+                "Arma server version was not recorded; "
+                f"expected {outcome.expected_server_version}, observed <missing>; "
+                "the engine identity could not be checked"
+            ),
+        )
+    if not SERVER_VERSION_PATTERN.fullmatch(observed_version):
+        return TypedVerdict(
+            verdict="FAIL",
+            class_="infra_unavailable",
+            raw_class="infra_unavailable",
+            detail=(
+                "Arma server version is unreadable; "
+                f"expected {outcome.expected_server_version}, observed {observed_version}; "
+                "the engine identity could not be checked"
+            ),
+        )
+    if observed_version != outcome.expected_server_version:
+        expected_version = outcome.expected_server_version
+        return TypedVerdict(
+            verdict="FAIL",
+            class_="engine_drift",
+            raw_class="engine_drift",
+            detail=(
+                f"Arma server version drift: expected {expected_version}, "
+                f"observed {observed_version}; update tools/arma_server_version.txt "
+                "only after accepting the engine update"
+            ),
+        )
+    return None
+
+
+def apply_engine_version(outcome: Outcome, typed: TypedVerdict) -> TypedVerdict:
+    """Overlay the engine guard without erasing a stronger infrastructure story."""
+    version_verdict = engine_version_verdict(outcome)
+    if version_verdict is None:
+        return typed
+    if version_verdict.class_ == "infra_unavailable" and typed.raw_class == "infra_unavailable":
+        return typed
+    return version_verdict
 
 
 def type_verdict(outcome: Outcome) -> TypedVerdict:
@@ -228,20 +303,21 @@ def main(argv: list[str] | None = None) -> int:
     """Type the verdict, write `verdict.json`, print the lines the shell acts on."""
     args = parse_args(argv)
     results = read_results(args.results)
-    typed = type_verdict(
-        Outcome(
-            run_status=args.run_status,
-            results=results,
-            expect=args.expect,
-            quarantined=args.quarantined,
-            window_secs=args.window,
-            watchdog_secs=args.watchdog,
-            margin_secs=args.margin,
-            elapsed_secs=args.elapsed,
-            evidence=args.evidence,
-            starved=args.starved,
-        )
+    expected_server_version = read_expected_server_version()
+    outcome = Outcome(
+        run_status=args.run_status,
+        results=results,
+        expect=args.expect,
+        quarantined=args.quarantined,
+        window_secs=args.window,
+        watchdog_secs=args.watchdog,
+        margin_secs=args.margin,
+        elapsed_secs=args.elapsed,
+        evidence=args.evidence,
+        starved=args.starved,
+        expected_server_version=expected_server_version,
     )
+    typed = apply_engine_version(outcome, type_verdict(outcome))
     document = {
         "probe": args.probe,
         "verdict": typed.verdict,

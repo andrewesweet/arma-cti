@@ -297,7 +297,10 @@ def run_main(
     """Drive the CLI once; give back verdict.json and the stdout lines."""
     results = tmp_path / "results.env"
     if not results.exists():
-        results.write_text("verdict=PASS\nserver_version=2.20\nlegs=client:ran\n", encoding="utf-8")
+        results.write_text(
+            "verdict=PASS\nserver_version=2.20.152984\nlegs=client:ran\n",
+            encoding="utf-8",
+        )
     verdict_json = tmp_path / "verdict.json"
     argv_pairs = {
         "--probe": "contacts",
@@ -341,7 +344,7 @@ def test_main_writes_the_document_the_merge_reads(
     assert document["elapsed_secs"] == 97
     assert document["slot"] == 1
     assert document["git_dirty"] is False
-    assert document["arma_version"] == "2.20"
+    assert document["arma_version"] == "2.20.152984"
     assert lines["class"] == "pass"
     assert lines["verdict"] == "PASS"
     assert lines["legs"] == "client:ran"
@@ -353,12 +356,86 @@ def test_main_writes_the_document_the_merge_reads(
     assert '\n  "class": "pass",' in text
 
 
+def test_main_rejects_an_engine_version_other_than_the_pin(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    results = tmp_path / "results.env"
+    results.write_text("verdict=PASS\nserver_version=2.22.999999\n", encoding="utf-8")
+
+    document, lines = run_main(tmp_path, capsys)
+
+    assert document["verdict"] == "FAIL"
+    assert document["class"] == "engine_drift"
+    assert document["raw_class"] == "engine_drift"
+    assert document["detail"] == (
+        "Arma server version drift: expected 2.20.152984, observed 2.22.999999; "
+        "update tools/arma_server_version.txt only after accepting the engine update"
+    )
+    assert lines["class"] == "engine_drift"
+
+
+def test_engine_drift_outranks_the_probe_result_and_its_treatments(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    results = tmp_path / "results.env"
+    results.write_text(
+        "verdict=FAIL\nfailure_class=timeout\nserver_version=2.22.999999\n",
+        encoding="utf-8",
+    )
+
+    document, _lines = run_main(
+        tmp_path,
+        capsys,
+        **{"--run-status": "2", "--expect": "timeout", "--quarantined": "#233"},
+    )
+
+    assert document["class"] == "engine_drift"
+    assert document["detail"].startswith(
+        "Arma server version drift: expected 2.20.152984, observed 2.22.999999"
+    )
+
+
+def test_main_fails_closed_when_the_engine_version_was_not_recorded(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    results = tmp_path / "results.env"
+    results.write_text("verdict=PASS\n", encoding="utf-8")
+
+    document, lines = run_main(tmp_path, capsys)
+
+    assert document["verdict"] == "FAIL"
+    assert document["class"] == "infra_unavailable"
+    assert document["raw_class"] == "infra_unavailable"
+    assert document["detail"] == (
+        "Arma server version was not recorded; expected 2.20.152984, observed <missing>; "
+        "the engine identity could not be checked"
+    )
+    assert lines["class"] == "infra_unavailable"
+
+
+def test_main_fails_closed_when_the_engine_version_is_unreadable(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    results = tmp_path / "results.env"
+    results.write_text("verdict=PASS\nserver_version=not-a-version\n", encoding="utf-8")
+
+    document, lines = run_main(tmp_path, capsys)
+
+    assert document["class"] == "infra_unavailable"
+    assert document["detail"] == (
+        "Arma server version is unreadable; expected 2.20.152984, "
+        "observed not-a-version; the engine identity could not be checked"
+    )
+    assert lines["class"] == "infra_unavailable"
+
+
 def test_main_survives_a_detail_full_of_json_poison(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """The escaping `json_string` existed for, without the hand-rolled escaping."""
     results = tmp_path / "results.env"
     results.write_text(
+        "server_version=2.20.152984\n"
         'verdict=FAIL\nfailure_class=timeout\nfailure_detail=saw "x\\y"\tand stalled\n',
         encoding="utf-8",
     )

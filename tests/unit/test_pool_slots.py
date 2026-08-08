@@ -72,7 +72,7 @@ printf 'daemon_port=%s\n' "${CTI_DAEMON_PORT:-}" >>"$out/results.env"
 printf 'daemon_addr=%s\n' "${CTI_DAEMON_ADDR:-}" >>"$out/results.env"
 printf 'server_dir=%s\n' "${CTI_SERVER_DIR:-}" >>"$out/results.env"
 printf 'server_profile=%s\n' "${CTI_SERVER_NAME:-}" >>"$out/results.env"
-printf 'server_version=stub\n' >>"$out/results.env"
+printf 'server_version=2.20.152984\n' >>"$out/results.env"
 printf '%s\t%s\t%s\n' "$name" "${CTI_TIER_SLOT:-}" "$(date +%s%N)" >>"$CTI_STUB_TRACE"
 
 # A worker that dies mid-probe, on purpose: the claim is made, no verdict is
@@ -1232,6 +1232,7 @@ def test_a_granted_run_is_floored_when_the_machine_starves_mid_flight(tmp_path: 
         f"    touch {starved_now}\n"
         "    sleep 300\n"
         "fi\n"
+        "printf 'server_version=2.20.152984\\n' >>\"$CTI_SPIKE_OUT/results.env\"\n"
         "printf 'verdict=PASS\\n' >>\"$CTI_SPIKE_OUT/results.env\"\n",
     )
     reader = executable(

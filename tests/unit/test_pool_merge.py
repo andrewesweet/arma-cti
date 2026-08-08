@@ -285,7 +285,10 @@ def test_mem_stop_does_not_soften_a_worse_class(tmp_path: Path) -> None:
 def test_the_merge_reads_what_the_typer_writes(tmp_path: Path) -> None:
     """The two tools share `verdict.json`; a drift between them is pinned here."""
     results = tmp_path / "results.env"
-    results.write_text("verdict=FAIL\nfailure_class=oracle_disagreement\n", encoding="utf-8")
+    results.write_text(
+        "server_version=2.20.152984\nverdict=FAIL\nfailure_class=oracle_disagreement\n",
+        encoding="utf-8",
+    )
     out = claim(tmp_path, "contacts")
     assert (
         probe_verdict.main(
