@@ -68,9 +68,13 @@ exactly as it does for any stale Contact, and the price falls. It does not stop 
 
 The asymmetry is deliberate because the two mistakes are not the same size. Four Squads at a Base
 that emptied is a wasted march. One Squad at a company that never left is #35 again, and #35 is
-where the men die. The only thing that lowers the demand is somebody looking — and looking clears
-the Contact outright, because observed absence is #28's whole removal rule. That is the honest way
-to find out, and it is the only one.
+where the men die. Only somebody looking lowers the Contact-band-derived demand — and looking
+clears the Contact outright, because observed absence is the whole removal rule from #28. That is
+the honest way to learn that the reported force is absent. It does not lower total demand below
+force already committed: #181 floors demand at the Squads already standing under the Assault until
+one of its defined release conditions ends that commitment. The picture may therefore raise what
+an Assault brings, or lower its band-derived target, but it never sheds force the Commander has
+committed.
 
 ## The numbers, measured, and flagged for sign-off
 
