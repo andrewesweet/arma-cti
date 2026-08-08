@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Foreign dispatches now obey a repository-owned keep-on-Claude class policy.**
+  `just dispatch` reads the seven-row policy from the main checkout for every dispatch and
+  refuses a declared keep-class by name, with its remedy and no failure class. There is no
+  override. The issue-body read is explicitly advisory because planned surfaces can be
+  understated; `just land` is the enforcing half and refuses a foreign lane when the real
+  rebased diff touches a class path, failing closed when the trusted policy or diff cannot be
+  read. The routing policy stays separate from queue policy because class eligibility and
+  freeze/WIP/package state carry different human rulings and amendment lifecycles (#266).
+
 - **A dispatched session is refused when it tries to background work.** `CTI_DISPATCH_ID` is in
   every dispatched child's environment, and a new `PreToolUse` hook uses it to tell a dispatched
   top-level session from the orchestrator: inside one, a Bash call carrying `run_in_background` is

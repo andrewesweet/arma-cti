@@ -298,6 +298,12 @@ worktree action="check" name="" ref="":
 # `grep '^merge_command='`. A stale main checkout is where ADR-0042's stale-hook
 # window comes from (#130).
 #
+# A foreign dispatched session also meets the routing-policy gate here, after
+# the rebase and before `just fast`: the trusted policy comes from fetched
+# origin/main and the match comes from the real diff. `routing_policy_gate` is
+# therefore distinct from dispatch's issue-declaration advisory; an unreadable
+# policy or diff refuses closed and nothing is pushed (#266).
+#
 # Refusals are named, each says what was found and what to do, and the exit code
 # separates the two kinds: 1 is nothing landed (dirty_tree, nothing_to_land,
 # rebase_conflict, gate_red, gate_blocked, not_fast_forward, git_failed), 2 is
@@ -341,6 +347,14 @@ land *args:
 # The remedy on a refusal is an edit to the issue by a human or by triage; the
 # tool will not rewrite an issue it is judging, and there is no override flag.
 # The rung is lane-blind: a foreign lane meets exactly what `claude-native` does.
+#
+# The repository's keep-on-Claude class policy is a separate rung from queue
+# state. It is read from the main checkout per dispatch, never at process
+# startup, and a foreign issue declaring one of its seven classes is refused by
+# class name with the remedy. This read is advisory because the body predicts
+# the surface; `just land` checks the real diff. There is no override and the
+# refusal has no failure class, because no provider or code verdict exists
+# (#266, #258).
 #
 # The environment is assembled per invocation and exported nowhere:
 # `ANTHROPIC_BASE_URL` in a profile or in `~/.claude/settings.json` would

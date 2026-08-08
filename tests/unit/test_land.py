@@ -25,13 +25,16 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from conftest import load_tool
+from conftest import REPO, load_tool
 
 # `land` imports `worktree` as a sibling script, so the sibling is loaded first
 # and registered under its own name for that import to find.
 worktree = load_tool("worktree")
 check_conflict_markers = load_tool("check_conflict_markers")
 land = load_tool("land")
+routing_policy = load_tool("routing_policy")
+
+POLICY = REPO / routing_policy.POLICY_RELATIVE
 
 _CLEAN = worktree.Preflight((), ())
 _HERE = Path("/home/a/repo/.claude/worktrees/issue-213")
@@ -174,6 +177,67 @@ def test_a_gate_that_never_finished_is_gate_blocked_not_gate_red() -> None:
     assert "#41" in _text(refusal)
 
 
+# ------------------------------------------------------ routing policy gate
+
+
+def _policy_read() -> Any:  # noqa: ANN401 — load_tool returns a runtime module type
+    return routing_policy.read_policy(POLICY)
+
+
+def _seed(prefix: str) -> str:
+    return f"{prefix}seed.txt" if prefix.endswith("/") else prefix
+
+
+def test_every_path_backed_class_is_exercised_beyond_the_first_row() -> None:
+    read = _policy_read()
+    assert read.policy is not None
+    path_backed = [rule for rule in read.policy.rules if rule.landing_path_prefixes]
+    assert [rule.id for rule in path_backed] == [1, 2, 3, 5, 6, 7]
+    for rule in path_backed:
+        match = routing_policy.landing_match(rule, (_seed(rule.landing_path_prefixes[0]),))
+        assert match is not None, rule.name
+        assert match.rule.id == rule.id
+
+
+def test_the_181_shape_stays_declaration_only_because_no_diff_path_can_prove_it() -> None:
+    read = _policy_read()
+    assert read.policy is not None
+    diagnosis = read.policy.rules[3]
+    assert diagnosis.id == 4
+    assert diagnosis.landing_path_prefixes == ()
+    assert routing_policy.landing_match(diagnosis, ("tools/anything.py",)) is None
+
+
+def test_a_foreign_keep_class_diff_is_an_enforcing_named_refusal() -> None:
+    refusal = land.classify_routing(_policy_read(), ("addons/main/ui.sqf",), "zai")
+    assert _kind(refusal) == "routing_policy_gate"
+    assert "check=enforcing actual diff" in _text(refusal)
+    assert "routing_class=5:in_world_landings" in _text(refusal)
+    assert "full `just regress` corpus" in _text(refusal)
+
+
+def test_a_non_class_diff_clears_the_routing_gate() -> None:
+    assert land.classify_routing(_policy_read(), ("tools/worker.py",), "zai") is None
+
+
+def test_an_unreadable_diff_refuses_instead_of_passing() -> None:
+    refusal = land.classify_routing(_policy_read(), None, "zai", "fatal: bad revision")
+    assert _kind(refusal) == "routing_policy_diff_unreadable"
+    assert "check=enforcing actual diff" in _text(refusal)
+    assert "#41" in _text(refusal)
+
+
+def test_an_unreadable_policy_refuses_a_foreign_landing() -> None:
+    read = routing_policy.ReadResult(None, "policy is absent")
+    refusal = land.classify_routing(read, ("tools/worker.py",), "zai")
+    assert _kind(refusal) == "routing_policy_gate_unreadable"
+
+
+def test_native_landings_do_not_need_the_foreign_routing_gate() -> None:
+    read = routing_policy.ReadResult(None, "policy is absent")
+    assert land.classify_routing(read, None, "claude-native") is None
+
+
 # ------------------------------------------------------------------- the push
 
 
@@ -278,7 +342,9 @@ def _git(*args: str, cwd: Path) -> str:
 
 
 def _commit(path: Path, name: str, body: str) -> None:
-    (path / name).write_text(body, encoding="utf-8")
+    target = path / name
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(body, encoding="utf-8")
     _git("add", name, cwd=path)
     _git("commit", "-m", f"feat: {name}", cwd=path)
 
@@ -297,6 +363,11 @@ def repo(tmp_path: Path) -> tuple[Path, Path, Path]:
     _git("config", "user.email", "t@example.com", cwd=main)
     _git("config", "user.name", "T", cwd=main)
     _commit(main, "README.md", "one\n")
+    _commit(
+        main,
+        routing_policy.POLICY_RELATIVE.as_posix(),
+        POLICY.read_text(encoding="utf-8"),
+    )
     _git("push", "origin", "main", cwd=main)
 
     here = main / ".claude" / "worktrees" / "issue-213"
@@ -368,6 +439,37 @@ def test_a_red_gate_leaves_origin_exactly_where_it_was(
     assert report.code == 1
     assert report.lines[0] == "refusal=gate_red"
     assert _tip(origin) == before
+
+
+def test_a_foreign_keep_class_diff_refuses_before_the_normal_gate_or_push(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    origin, _main, here = repo
+    before = _tip(origin)
+    _commit(here, "addons/main/ui.sqf", "in-world work\n")
+    gate = _Gate()
+
+    report = land.land(_main, here, gate=gate, lane="zai")
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=routing_policy_gate"
+    assert "routing_class=5:in_world_landings" in report.lines
+    assert gate.calls == []
+    assert _tip(origin) == before
+
+
+def test_a_foreign_diff_outside_every_class_lands_unimpeded(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    origin, main, here = repo
+    _commit(here, "tools/worker.py", "eligible work\n")
+    gate = _Gate()
+
+    report = land.land(main, here, gate=gate, lane="zai")
+
+    assert report.code == 0
+    assert gate.calls == ["feat: tools/worker.py"]
+    assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
 
 
 def test_a_dirty_tree_refuses_before_the_gate_or_the_remote_is_touched(

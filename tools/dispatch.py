@@ -111,6 +111,14 @@ after it — ADR-0042's stale-copy window, closed one level up. The refusal foll
 off-peak rung's precedent exactly, override and failure class included: there is no flag and
 no environment variable that dispatches through a freeze, and the refusal **carries no
 failure class**, because nothing was found about any provider, any lane or any code.
+
+**The keep-on-Claude class policy is a separate, per-dispatch read** (#266). Queue policy
+answers whether work may start now; `config/dispatch-routing-policy.json` answers whether
+the declared class may leave Claude. The main checkout is read on every dispatch, never at
+startup, so a policy edit landed after an orchestrator session began reaches its next call.
+A match refuses by class name and remedy with no override and no failure class. This first
+read is explicitly advisory because an issue can understate its eventual surface; `just
+land` is the enforcing half and checks the actual rebased diff against the trusted policy.
 """
 
 from __future__ import annotations
@@ -138,6 +146,7 @@ import breaker
 import hook_parity
 import queue_policy
 import readiness
+import routing_policy
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping
@@ -679,6 +688,7 @@ class Readiness(NamedTuple):
 
     assessment: readiness.Assessment | None
     unreadable: str = ""
+    body: str = ""
 
 
 REMEDY_IS_AN_EDIT: Final = (
@@ -706,11 +716,11 @@ def read_issue(issue: int, body_file: str) -> Readiness:
             return Readiness(None, f"{path}: {error.strerror or error}")
         if not body.strip():
             return Readiness(None, f"{path} is empty")
-        return Readiness(readiness.assess(body))
+        return Readiness(readiness.assess(body), body=body)
     body, why = readiness.fetch_body(issue)
     if why:
         return Readiness(None, why)
-    return Readiness(readiness.assess(body))
+    return Readiness(readiness.assess(body), body=body)
 
 
 def readiness_refusal(issue: int, found: Readiness) -> Refusal | None:
@@ -1305,6 +1315,59 @@ def _as_refusal(found: queue_policy.Refusal | None) -> Refusal | None:
     return Refusal(found.kind, found.found, found.action, failure_class=found.failure_class)
 
 
+def routing_refusal(
+    args: argparse.Namespace, found: Readiness, root: Path, now: datetime
+) -> Refusal | None:
+    """Refuse a foreign route from the issue declaration — the advisory enforcement point.
+
+    The policy is read from the main checkout on every call, never at import or process
+    startup. That is how a rule landed after an orchestrator session started reaches its
+    next dispatch. A declaration is still only a prediction; `just land` independently
+    checks the real diff and is the enforcing gate.
+
+    There is no failure class. Refusing to produce a dispatch found nothing about a
+    provider and nothing about code under test, exactly like the spent-attempt refusal.
+    """
+    policy_path = root / routing_policy.POLICY_RELATIVE
+    if not policy_path.exists():
+        # Bootstrap only: while #266 itself is being tested, origin/main cannot contain
+        # the file that this commit introduces. Once landed, the main-checkout path above
+        # always wins, including when a running session's older worktree carries another
+        # copy. Without this narrow fallback the real process-seam test could not exercise
+        # the first landing of the mechanism at all.
+        candidate = Path(__file__).resolve().parents[1] / routing_policy.POLICY_RELATIVE
+        if candidate.exists() and main_checkout(candidate.parent) == root:
+            policy_path = candidate
+    read = routing_policy.read_policy(policy_path)
+    if read.policy is None:
+        if args.lane == "claude-native":
+            return None
+        return Refusal(
+            "routing_policy_unreadable",
+            (f"policy={read.error}", "check=advisory issue declaration"),
+            "Keep this dispatch on claude-native until the routing policy can be read. A "
+            "policy check that did not run is not a policy clearance (#41).",
+        )
+    match = routing_policy.advisory_match(
+        read.policy,
+        found.body,
+        routing_policy.Route(args.lane, args.profile, args.seat, now),
+    )
+    if match is None:
+        return None
+    return Refusal(
+        "routing_policy_advisory",
+        (
+            "check=advisory issue declaration",
+            f"routing_class={match.rule.id}:{match.rule.name}",
+            f"class_label={match.rule.label}",
+            *match.evidence,
+            f"source={read.policy.source}",
+        ),
+        match.rule.remedy,
+    )
+
+
 def ladder_refusal(
     args: argparse.Namespace, now: datetime, found: Readiness, root: Path
 ) -> Refusal | None:
@@ -1332,11 +1395,25 @@ def ladder_refusal(
     """
     refusal = resolve_selection(args.lane, args.profile, args.seat, now)
     if refusal is not None:
+        if refusal.kind == "seat_not_eligible":
+            policy_refusal = routing_refusal(args, found, root, now)
+            if policy_refusal is not None:
+                return policy_refusal
         return refusal
+    return _state_refusal(args, now, found, root)
+
+
+def _state_refusal(
+    args: argparse.Namespace, now: datetime, found: Readiness, root: Path
+) -> Refusal | None:
+    """Climb the request and mutable-state rungs after registry validation."""
     refusal = readiness_refusal(args.issue, found)
     if refusal is not None:
         return refusal
     refusal = queue_refusal(args, root)
+    if refusal is not None:
+        return refusal
+    refusal = routing_refusal(args, found, root, now)
     if refusal is not None:
         return refusal
     refusal = admission_refusal(

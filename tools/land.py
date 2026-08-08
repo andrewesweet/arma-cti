@@ -46,6 +46,10 @@ exit code.
                             nothing here resolves or aborts on your behalf
     conflict_markers        the rebased tree carries git conflict markers, named
                             by file and line (#231, ADR-0062)
+    routing_policy_gate     a foreign lane's real rebased diff touches a class
+                            the trusted policy keeps on Claude (#266)
+    routing_policy_gate_unreadable / routing_policy_diff_unreadable
+                            the enforcing routing check could not run; fail closed
     gate_red                `just fast` failed; its own output is above
     gate_blocked            the gate could not be run to completion. A check
                             that could not run is not a check that passed (#41)
@@ -68,6 +72,7 @@ refusal means stays the agent's.
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -79,6 +84,7 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 # enables, which is why the import below sits apart from the block above.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import routing_policy
 from check_conflict_markers import Finding, find_in_tree
 from worktree import BASE, GitError, Preflight, Refusal, git, main_checkout, read_status
 
@@ -252,6 +258,50 @@ def classify_conflict_markers(path: Path, findings: Sequence[Finding]) -> Refusa
     )
 
 
+def classify_routing(
+    read: routing_policy.ReadResult,
+    paths: tuple[str, ...] | None,
+    lane: str,
+    detail: str = "",
+) -> Refusal | None:
+    """Enforce the keep-on-Claude policy against the real foreign-lane diff.
+
+    This is the gate. Unlike dispatch's advisory issue-declaration read, an empty match
+    here says something about the paths that will actually be pushed. An unreadable
+    policy or diff refuses: a check that did not run is not a clearance (#41).
+    """
+    if lane == "claude-native":
+        return None
+    if read.policy is None:
+        return Refusal(
+            "routing_policy_gate_unreadable",
+            ("check=enforcing actual diff", f"policy={read.error}"),
+            "The trusted routing policy could not be read, so this foreign landing was not "
+            "pushed. Repair the policy on Claude and run `just land` again.",
+        )
+    if paths is None:
+        return Refusal(
+            "routing_policy_diff_unreadable",
+            ("check=enforcing actual diff", f"detail={detail}"),
+            "Git could not name the real diff, so the routing gate did not run and nothing "
+            "was pushed (#41). Repair the repository state and run `just land` again.",
+        )
+    match = routing_policy.enforcing_match(read.policy, paths, lane)
+    if match is None:
+        return None
+    return Refusal(
+        "routing_policy_gate",
+        (
+            "check=enforcing actual diff",
+            f"routing_class={match.rule.id}:{match.rule.name}",
+            f"class_label={match.rule.label}",
+            *match.evidence,
+            f"source={read.policy.source}",
+        ),
+        f"{match.rule.remedy} Nothing was pushed.",
+    )
+
+
 def classify_gate(path: Path, result: GateResult) -> Refusal | None:
     """Refuse on a red gate, and separately on a gate that never reached a verdict.
 
@@ -404,6 +454,31 @@ def _run(argv: list[str], cwd: Path) -> tuple[int | None, str]:
     return done.returncode, done.stderr
 
 
+def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, ...] | None, str]:
+    """Read the trusted policy from fetched origin/main and the paths above that base.
+
+    Reading the worktree's copy would let a foreign diff weaken the policy that judges
+    itself. `land` has already fetched at this point, so `origin/main` is both current and
+    outside the candidate diff.
+    """
+    try:
+        policy_text = git("show", f"{BASE}:{routing_policy.POLICY_RELATIVE.as_posix()}", cwd=path)
+    except GitError as error:
+        read = routing_policy.ReadResult(None, error.stderr)
+    else:
+        try:
+            read = routing_policy.ReadResult(routing_policy.parse_policy(policy_text))
+        except (ValueError, KeyError, TypeError) as error:
+            read = routing_policy.ReadResult(None, str(error))
+
+    try:
+        listed = git("diff", "--name-only", f"{BASE}..HEAD", cwd=path)
+    except GitError as error:
+        return read, None, error.stderr
+    paths = tuple(line.strip() for line in listed.splitlines() if line.strip())
+    return read, paths, ""
+
+
 # ---------------------------------------------------------------------- the run
 
 
@@ -425,7 +500,14 @@ def _merge_needed(here: Path, main: Path) -> bool:
     return branch != "main"
 
 
-def land(root: Path, here: Path, *, gate: Gate = run_gate, dry_run: bool = False) -> Report:
+def land(
+    root: Path,
+    here: Path,
+    *,
+    gate: Gate = run_gate,
+    dry_run: bool = False,
+    lane: str = "claude-native",
+) -> Report:
     """Run the whole protocol, or refuse by name at the first rung that says no."""
     status = read_status(git("status", "--porcelain", cwd=here))
     blocked = classify_tree(here, status, rebasing=rebase_in_progress(here))
@@ -450,7 +532,7 @@ def land(root: Path, here: Path, *, gate: Gate = run_gate, dry_run: bool = False
 
     lines = [f"worktree={here}", f"commits={ahead}"]
     if ahead:
-        moved = _rebase_and_gate(here, incoming, gate, lines)
+        moved = _rebase_and_gate(here, incoming, gate, lines, lane)
         if moved is not None:
             return moved
     else:
@@ -465,7 +547,9 @@ def land(root: Path, here: Path, *, gate: Gate = run_gate, dry_run: bool = False
     return _merge(root, here, pushed, lines)
 
 
-def _rebase_and_gate(here: Path, incoming: int, gate: Gate, lines: list[str]) -> Report | None:
+def _rebase_and_gate(
+    here: Path, incoming: int, gate: Gate, lines: list[str], lane: str
+) -> Report | None:
     """Rebase onto `origin/main`, then gate the result. Either may refuse."""
     code, stderr = _run(["git", "rebase", BASE], cwd=here)
     if code is None:
@@ -486,6 +570,13 @@ def _rebase_and_gate(here: Path, incoming: int, gate: Gate, lines: list[str]) ->
     poisoned = classify_conflict_markers(here, find_in_tree(here))
     if poisoned is not None:
         return Report.refused(poisoned)
+
+    # Dispatch's body match is advisory because planned surfaces can be understated.
+    # This independently reads the actual rebased diff and is the enforcing gate.
+    policy, paths, detail = _routing_inputs(here)
+    misrouted = classify_routing(policy, paths, lane, detail)
+    if misrouted is not None:
+        return Report.refused(misrouted)
 
     red = classify_gate(here, gate(here))
     if red is not None:
@@ -578,7 +669,12 @@ def main(argv: list[str] | None = None) -> int:
     try:
         here = Path(git("rev-parse", "--show-toplevel", cwd=Path.cwd()).strip()).resolve()
         root = main_checkout(here).resolve()
-        report = land(root, here, dry_run=args.dry_run)
+        report = land(
+            root,
+            here,
+            dry_run=args.dry_run,
+            lane=os.environ.get("CTI_DISPATCH_LANE", "claude-native"),
+        )
     except GitError as failure:
         report = Report.refused(
             Refusal(

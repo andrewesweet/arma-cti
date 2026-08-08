@@ -68,6 +68,7 @@ OFF_PEAK = datetime(2026, 8, 5, 20, 0, tzinfo=UTC)
 # every sub-check — so a test about environments stays a test about environments rather
 # than becoming a test about GitHub being reachable from this box.
 READY_BODY = REPO / "tests" / "fixtures" / "readiness-corpus" / "223.md"
+ROUTING_ELIGIBLE_BODY = REPO / "tests" / "fixtures" / "routing-eligible.md"
 UNREADY_BODY = "The dispatcher feels slow lately and somebody should have a look.\n"
 
 
@@ -142,7 +143,7 @@ def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
     # GitHub to find out whether #223 is ready, or the whole suite would be a test of this
     # box's network. `--issue-body` is the surface triage uses on a draft; here it is the
     # surface that keeps the tier offline.
-    env["CTI_READINESS_BODY"] = str(READY_BODY)
+    env["CTI_READINESS_BODY"] = str(ROUTING_ELIGIBLE_BODY)
     # And once more for the dispatch policy (#250). A seam run must read a policy this test
     # wrote, never this box's real freeze — and it must read *a* policy, because an absent one
     # refuses rather than reading as open. `CTI_QUEUE_ROOT` points the in-flight derivation at
@@ -235,7 +236,7 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "credentials": str(tmp_path / "credentials.env"),
         "breaker_dir": str(tmp_path / "breaker"),
         "admission_dir": str(tmp_path / "admission"),
-        "issue_body": str(READY_BODY),
+        "issue_body": str(ROUTING_ELIGIBLE_BODY),
         "queue_dir": str(open_policy(tmp_path)),
         "queue_root": str(tmp_path / "queue-root"),
     }
@@ -450,7 +451,8 @@ def test_the_real_planning_path_obeys_the_injected_allowance_clock(tmp_path: Pat
     )
     assert expired_plan is None
     assert expired_refusal is not None
-    assert expired_refusal.kind == "seat_not_eligible"
+    assert expired_refusal.kind == "routing_policy_advisory"
+    assert "routing_class=3:retros_and_adr_authorship" in expired_refusal.found
     assert expired_refusal.failure_class == ""
 
 
@@ -936,7 +938,7 @@ def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path)
         credentials=str(tmp_path / "c.env"),
         breaker_dir=str(tmp_path / "breaker"),
         admission_dir=str(tmp_path / "admission"),
-        issue_body=str(READY_BODY),
+        issue_body=str(ROUTING_ELIGIBLE_BODY),
         queue_dir=str(open_policy(tmp_path)),
         queue_root=str(tmp_path / "queue-root"),
     )
@@ -1650,7 +1652,8 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
         seam_env(tmp_path, tmp_path / "must-not-run.txt"),
     )
     assert done.returncode == dispatch.EXIT_REFUSED
-    assert "refusal=seat_not_eligible" in done.stderr
+    assert "refusal=routing_policy_advisory" in done.stderr
+    assert "routing_class=3:retros_and_adr_authorship" in done.stderr
     assert not (tmp_path / "dispatches").exists()
 
 
