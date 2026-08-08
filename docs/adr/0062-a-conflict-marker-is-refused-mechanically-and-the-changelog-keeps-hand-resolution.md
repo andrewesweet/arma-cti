@@ -5,7 +5,7 @@ Date: 2026-08-05
 Stood-in-for: human sign-off on a new ADR, and on #195's secondary-list `merge=union`
 mitigation for `CHANGELOG.md` — priced there but never adopted, and #231 asks for it to be
 taken or declined with the reason stated
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-08
 Claimed: comment on #231, 2026-08-05, after `git fetch origin` (`docs/adr/` on `origin/main`
 topping at 0061) and a scan of every open issue's comments, whose highest claim was 0061
 

@@ -4,7 +4,7 @@ Delegated-decision: yes
 Date: 2026-08-06
 Stood-in-for: human sign-off on CLAUDE.md, process-doc and skill marker changes — the
 twenty-fifth retro's amendment batch (session unattended)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-08
 Claimed: comment on #217, 2026-08-06, after `git fetch origin` (`docs/adr/` on
 `origin/main` topping at 0064) and a scan of open-issue comments finding no claim
 above it

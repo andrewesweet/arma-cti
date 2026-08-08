@@ -5,7 +5,7 @@ Date: 2026-08-04
 Stood-in-for: human sign-off on CLAUDE.md, process-doc and skill marker changes — the
 nineteenth retro's amendment batch (session unattended; the second guided review
 session had cleared the queue to zero hours earlier)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-08
 Claimed: comment on #186, 2026-08-04, after `git fetch origin` (`docs/adr/` on
 `origin/main` topping at 0050, all of 0046–0050 flipped to reviewed the same morning)
 and a scan of open-issue comments finding no claim above 0050

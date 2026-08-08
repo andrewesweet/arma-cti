@@ -6,7 +6,7 @@ Stood-in-for: human sign-off on CLAUDE.md, process-doc and skill marker changes 
 twenty-first retro's amendment batch (session unattended for these; the cycle's three
 larger process changes were human-instructed in session and are recorded below as not
 delegated)
-Reviewed-by-human: pending
+Reviewed-by-human: 2026-08-08
 Claimed: comment on #186, 2026-08-04, after `git fetch origin` (`docs/adr/` on
 `origin/main` topping at 0053) and a scan of every open issue's comments finding no
 claim above 0053
