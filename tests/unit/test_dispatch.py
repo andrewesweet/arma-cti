@@ -825,26 +825,29 @@ def _writable_roots(argv: tuple[str, ...]) -> str:
     return found[0]
 
 
-def test_a_codex_workspace_write_session_can_write_the_repositorys_git_metadata(
+def test_a_codex_workspace_write_session_reaches_the_worktree_git_dir_through_its_parent(
     tmp_path: Path,
 ) -> None:
-    # #259: under plain `--sandbox workspace-write` the first `git add` died on
-    # "Unable to create '<main>/.git/worktrees/issue-259-codex/index.lock': Read-only
-    # file system", so the commit half of the human's ruling was unreachable. The main
-    # checkout is a root because `just land`'s ff-only merge writes it — and `.git` is a
-    # root **of its own**, because Codex holds `.git` read-only even when its parent is
-    # writable: probe `d-20260806-164858-905eb2` wrote a file beside `.git` and was
-    # refused inside it, in one command. Naming the repository alone is not enough, and
-    # this test is what stops that regressing back to the version that measured red.
+    # #259 measured that a linked worktree's index, `HEAD` and `FETCH_HEAD` live under the
+    # main checkout's `.git/worktrees/<name>/`, that Codex holds `.git` read-only unless the
+    # exact directory is a writable root, and that naming an ancestor does not lift that for
+    # a nested one — so the per-worktree directory has to be reachable for a commit. #265
+    # measured the cost of naming it *directly*: read-only probe `d-20260807-222221-1a2c7e`
+    # straced `cog check` in the sandbox and found an empty `<main>/.git/worktrees/<name>/.git`
+    # injected there (mode 0555, size 40), which libgit2 stats during discovery and misreads
+    # as a repository, failing with `could not find repository` — it found too many, not
+    # none. So the directory is reached through its parent `<main>/.git/worktrees` instead,
+    # and naming the directory itself is the regression this guards: a root that re-adds it
+    # reintroduces the break.
     argv, root, linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
     roots = _writable_roots(argv)
+    # The main checkout (`just land`'s ff-only merge writes it) and the common `.git` (Codex
+    # carves `.git` out of any ancestor grant) are each named directly.
     assert f'"{root}"' in roots
     assert f'"{root / ".git"}"' in roots
-    # And the linked worktree's *own* git directory, which is the one that actually
-    # carries its index, HEAD and FETCH_HEAD. Naming the common directory alone was
-    # measured insufficient: `.git/topA` was created while
-    # `.git/worktrees/issue-259-codex/subB` was refused in the same command.
-    assert f'"{root / ".git" / "worktrees" / linked.name}"' in roots
+    # The per-worktree git directory is reached through its parent, never named directly.
+    assert f'"{root / ".git" / "worktrees"}"' in roots
+    assert f'"{root / ".git" / "worktrees" / linked.name}"' not in roots
     # The session's own worktree is cwd, which `workspace-write` already grants; a root
     # naming it would be noise claiming to be a grant.
     assert f'"{linked}"' not in roots

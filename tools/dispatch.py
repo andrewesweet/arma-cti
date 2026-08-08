@@ -1032,23 +1032,24 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
     `workspace-write` makes writable. Every commit was therefore out of reach, and with it
     the gate and the landing that follow it.
 
-    Three roots and one flag, each measured necessary and none inferred:
+    Four roots and one flag, each measured necessary and none inferred:
 
     - **The main checkout**, because `just land`'s final step is `git -C <main checkout>
       merge --ff-only origin/main`, which writes that checkout's working tree. A grant that
       stopped short of it would push and then refuse `merge_blocked_by_sandbox` — the
       Claude-side finisher again, smaller but still there. Derived per invocation rather
       than written down, so a dispatch from a second checkout widens to that one.
-    - **Both git directories, each named in its own right**, which is the finding worth
-      carrying forward: *Codex refuses a write under a `.git` directory unless that exact
-      directory is a writable root, and naming an ancestor does not lift the refusal for a
-      nested one.* Measured in two steps rather than argued. Probe
-      `d-20260806-164858-905eb2` wrote a file beside `.git` (`MAINROOT_OK`) while `.git/p2`
-      refused, so the repository root had applied and `.git` was carved out of it. Naming
-      `.git` then made `.git/topA` succeed while
-      `.git/worktrees/issue-259-codex/subB` — the linked worktree's own directory, where its
-      index, `HEAD` and `FETCH_HEAD` live — refused in the same command; naming that
-      directory too made both succeed. `_codex_writable_roots` asks git for both.
+    - **The common git directory named directly, and the per-worktree git directory named
+      through its parent.** #259's measurement — *Codex refuses a write under a `.git`
+      directory unless that exact directory is a writable root, and naming an ancestor does
+      not lift the refusal for a nested one* (probe `d-20260806-164858-905eb2`:
+      `.git/topA` created while `.git/worktrees/issue-259-codex/subB` refused in one
+      command) — is what makes the per-worktree directory reachable at all. #265's
+      measurement is why it is reached through its parent and never named itself: naming it
+      directly injects an empty `<dir>/.git` mount point that stops libgit2 opening the
+      repository, so `cog check` dies. The full finding and the question this leaves open
+      live in `_codex_writable_roots`'s docstring; this function only assembles what it
+      returns.
     - **`~/.cache/uv`**, because `uv` acquires a lock there before any test runs: without it
       `just check`, `just unit` and `just fast` all died at `check-generated` on
       ``Could not create temporary file … Read-only file system``. `~/.cargo` was measured
@@ -1057,8 +1058,10 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
     - **`network_access`**, which defaults off while `just land` fetches and pushes. Proven
       reachable at `NET_HTTP_200` under the same probe.
 
-    Both readings come from the same box on 2026-08-06, and the gate was run end to end
-    under exactly this set before it was written down.
+    The #259 readings come from the same box on 2026-08-06. The four-root set that resulted
+    bought the commit and not the gate — `cog check` went red on it
+    (`d-20260806-172045-9a0a0e`), which is #265 — and the parent grant above is its
+    candidate fix, live-unconfirmed as of this write.
 
     **This is not parity with the `zai` lane and must not be described as one.** That lane's
     grant is a list of named commands; this one is a filesystem and network policy that every
@@ -1093,20 +1096,50 @@ def _codex_writable_roots(project_dir: Path) -> tuple[Path, ...]:
     `workspace-write` grants cwd, and `writable_roots` is documented as "additional folders
     (beyond cwd and possibly TMPDIR)".
 
-    **Both git directories are named, and that is not belt and braces.** Measured on
-    2026-08-06: Codex refuses a write under a `.git` directory unless *that exact directory*
-    is a writable root, and naming an ancestor does not lift the refusal for a nested one.
-    With `<main>/.git` granted, `<main>/.git/topA` was created and
-    `<main>/.git/worktrees/issue-259-codex/subB` was still "Read-only file system"; adding
-    the per-worktree directory made both succeed. This project dispatches into linked
-    worktrees, where the index, `HEAD` and `FETCH_HEAD` all live in the second one — so
-    granting only the common directory buys a session `git log` and nothing it needs.
+    **The common git directory is named directly; the per-worktree git directory is reached
+    only through its parent.** That asymmetry is #265's finding, and it overrides #259's
+    "name both, exactly." #259 measured that a linked worktree's index, `HEAD` and
+    `FETCH_HEAD` live in `<main>/.git/worktrees/<name>/`, that Codex holds `.git` read-only
+    unless the exact directory is a writable root, and that naming an ancestor does not lift
+    that for a nested one — so the per-worktree directory had to be reachable for a commit.
+    Naming it *directly*, though, is what stops the gate. Read-only probe
+    `d-20260807-222221-1a2c7e` (`codex-terra-low`) ran `strace -f -e
+    trace=openat,stat,statx,newfstatat` over `cog check` inside the sandbox and found the
+    sandbox had created an **empty directory at `<main>/.git/worktrees/<name>/.git`** (mode
+    0555, size 40) — a mount point injected for that writable root. Nothing in a real git
+    layout puts a `.git` there. libgit2 stats it during repository discovery, concludes it
+    has found a repository, probes for its `commondir` and `HEAD`, gets `ENOENT` for both,
+    and reports `could not find repository`: it found *too many* repositories, not none.
+    Outside the sandbox that directory does not exist and `cog check` is green at the same
+    commit, confirmed from the host the same night.
+
+    So the per-worktree directory is reached through its parent `<main>/.git/worktrees`
+    instead. Naming the parent does not name `<main>/.git/worktrees/<name>/.git` — the path
+    libgit2's discovery stats — so an injected mount for the parent, if the sandbox makes
+    one at `<main>/.git/worktrees/.git`, lands where discovery never looks. The common
+    directory stays named directly: `just land`'s ff-only merge writes the main checkout,
+    and Codex carves `.git` out of any ancestor grant, so the common directory needs its own
+    line. Why `git` itself is unaffected — it resolves the gitfile and addresses the
+    directory by absolute path, never probing for a nested `.git` — is the reading the
+    strace is consistent with; the probe collected no `git` trace, so it is not yet
+    measured.
+
+    **One question this leaves to the live probe.** #259 measured that naming `<main>/.git`
+    did not make `<main>/.git/worktrees/<name>/` writable; whether naming
+    `<main>/.git/worktrees` does — whether Codex's `.git` carve bites only directories named
+    `.git` or every level beneath one — was not measured and cannot be without a dispatch.
+    If the parent does not lift the carve the session regains `git log` and loses `git add`,
+    and the lane's ceiling is commit-without-landing stated plainly. The resolved list is
+    deterministic and pinned by the unit tier either way; the confirming dispatch is the
+    orchestrator's (#265 criterion 3, unmet here).
 
     Asked of git rather than assembled from strings, because git is the authority on where
-    its own metadata is: in a plain checkout the two answers coincide and the duplicate is
-    dropped, and a `--git-common-dir` that comes back relative is resolved against the tree
-    it was asked about. A tree git cannot read yields neither, and the caller is left with
-    the roots it can still name — a dispatch into a non-repository has no commit to make.
+    its own metadata is: a `--git-common-dir` that comes back relative is resolved against
+    the tree it was asked about, and `--absolute-git-dir`'s parent is taken after that
+    resolution. A plain checkout's two answers coincide, so the parent reduces to the main
+    checkout already listed, the duplicate is dropped, and one `.git` remains. A tree git
+    cannot read yields neither git directory, and the caller is left with the roots it can
+    still name — a dispatch into a non-repository has no commit to make.
 
     `uv`'s cache is read from the environment the way `uv` reads it, so a box that relocates
     it does not silently lose the gate. A root that does not exist is not an error: Codex
@@ -1116,8 +1149,16 @@ def _codex_writable_roots(project_dir: Path) -> tuple[Path, ...]:
     roots = [main_checkout(project_dir)]
     for spelling in ("--absolute-git-dir", "--git-common-dir"):
         answer = git("rev-parse", spelling, cwd=project_dir)
-        if answer:
-            roots.append(Path(answer) if Path(answer).is_absolute() else project_dir / answer)
+        if not answer:
+            continue
+        resolved = Path(answer) if Path(answer).is_absolute() else project_dir / answer
+        # #265: the per-worktree git directory is reached through its parent, not named
+        # directly. Naming it directly is what injects the `<dir>/.git` mount point that
+        # stops libgit2 opening the repository; the parent does not. The measurement and
+        # the open question it leaves are the docstring above.
+        if spelling == "--absolute-git-dir":
+            resolved = resolved.parent
+        roots.append(resolved)
     cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
     roots.append(Path(os.environ.get("UV_CACHE_DIR") or cache / "uv"))
     return tuple(dict.fromkeys(roots))

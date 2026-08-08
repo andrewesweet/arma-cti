@@ -154,7 +154,7 @@ runs are worth keeping:
 
 The lane does not read `.claude/settings.json`'s allowlist at all. `tools/dispatch.py` maps
 the permission mode to a sandbox policy, and `acceptEdits` is `--sandbox workspace-write`
-plus, on that mode only, three writable roots and network access. Every command the session
+plus, on that mode only, four writable roots and network access. Every command the session
 runs inherits all of it; there is no per-command list to consult.
 
 What that buys, measured rather than inferred, over four dispatches and three probes:
@@ -165,8 +165,9 @@ What that buys, measured rather than inferred, over four dispatches and three pr
 - Codex refuses a write under a `.git` directory unless **that exact directory** is a
   writable root. Naming an ancestor does not lift it for a nested one — with `<main>/.git`
   granted, `<main>/.git/topA` was created and
-  `<main>/.git/worktrees/<name>/subB` was refused in the same command. Both directories are
-  therefore derived from git and granted.
+  `<main>/.git/worktrees/<name>/subB` was refused in the same command. The common directory
+  is therefore granted directly; the per-worktree directory is granted through its parent
+  rather than in its own right, for the reason the landing paragraph gives.
 - The gate additionally needs `~/.cache/uv`, where `uv` takes a lock before any test runs.
   `~/.cargo` looked as likely and was measured unnecessary, so it is not granted.
 - `network_access` defaults off and `just land` fetches and pushes, so it is enabled.
@@ -175,25 +176,38 @@ Read-only seats keep the sandbox they always had, and
 `--dangerously-bypass-approvals-and-sandbox` was put to the human, declined, and is unused.
 
 **The lane does not yet reach a landing, and the reason is worth stating precisely.** The
-two capabilities the ruling asked for are currently exclusive on this lane, isolated by
-running `cog check` under each root set in the same worktree at the same commit:
+two capabilities the ruling asked for were exclusive on this lane, isolated by running
+`cog check` under each root set in the same worktree at the same commit:
 
 | writable roots | `git add` / `git commit` | `cog check`, the gate's first step |
 |---|---|---|
 | main checkout, `<main>/.git`, `~/.cache/uv` | refused, `index.lock` read-only | `No errored commits` |
 | the same plus `<main>/.git/worktrees/<name>` | exit 0, no escalation | `failed to open repository … could not find repository at '<main>/.git/worktrees/<name>/'` |
+| the same, but `<main>/.git/worktrees` (the parent) instead of `<name>` | *candidate fix, live-unconfirmed* | *candidate fix, live-unconfirmed* |
 
 `cog` reads the repository through libgit2, and granting the per-worktree git directory as
-a *writable* root is what stops libgit2 opening it — the same directory it opens without
-complaint outside the sandbox, and under the three-root set. The refusals read
-`Read-only file system` (EROFS), not the `EACCES` a Landlock denial produces, so the sandbox
-is mount-based (Codex bundles `bwrap`) rather than Landlock-based; #265's "Landlock
-composition" first-suspect is refuted by its own recorded evidence, and the precise mount
-interaction that defeats libgit2 is its open question. So the widened lane can commit
-or it can gate, and not both. Dispatch `d-20260806-172045-9a0a0e` is the end-to-end attempt:
-it committed its own work at `fb093fe` under the sandbox with no escalation, stopped on that
-red as it was told to, and did not land. Carried as its own issue rather than stretched into
-#259, whose ruling this section otherwise implements.
+a *writable* root was what stopped libgit2 opening it — the same directory it opens without
+complaint outside the sandbox, and under the three-root set. #265 diagnosed the mechanism
+rather than guessing it: read-only probe `d-20260807-222221-1a2c7e` (`codex-terra-low`)
+straced `cog check` in the sandbox and found the sandbox had created an empty directory at
+`<main>/.git/worktrees/<name>/.git` (mode 0555, size 40) — a mount point injected for that
+writable root, where no real git layout puts a `.git`. libgit2 stats it during discovery,
+concludes it has found a repository, probes for `commondir` and `HEAD`, gets `ENOENT` for
+both, and reports `could not find repository`: too many repositories, not none. The
+refusals read `Read-only file system` (EROFS), not the `EACCES` a Landlock denial produces,
+so #265's "Landlock composition" first-suspect was refuted by its own recorded evidence;
+the sandbox is mount-based (Codex bundles `bwrap`).
+
+The candidate fix — grant the parent `<main>/.git/worktrees` instead of the per-worktree
+directory — is in `tools/dispatch.py`'s `_codex_writable_roots`, but **live-unconfirmed**:
+whether the parent grant also lifts Codex's `.git` carve for the worktree's index writes
+(whether naming an ancestor of `<name>` that is not itself a `.git` directory suffices) was
+not measured and cannot be without a dispatch. The confirming dispatch is #265 criterion 3,
+owed by the orchestrator; until it runs the lane's ceiling stands as commit-without-landing.
+Dispatch `d-20260806-172045-9a0a0e` is the four-root attempt: it committed its own work at
+`fb093fe` under the sandbox with no escalation, stopped on the `cog check` red as it was
+told to, and did not land. Carried as its own issue rather than stretched into #259, whose
+ruling this section otherwise implements.
 
 ### Where they are not comparable
 

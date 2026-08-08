@@ -166,6 +166,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   archived verbatim in `docs/process-log.md` per #201/ADR-0060. The retro skill's approved ×25 → ×26
   is not in this landing and remains outstanding; every other count is unchanged.
 
+- **A dispatched Codex session's per-worktree git directory is now reached through its
+  parent, not named as a writable root in its own right.** #265 diagnosed why the four-root
+  set #259 landed bought the commit and not the gate: read-only probe `d-20260807-222221-1a2c7e`
+  straced `cog check` in the sandbox and found an empty `<main>/.git/worktrees/<name>/.git`
+  (mode 0555, size 40) — a mount point injected for that writable root, which libgit2 stats
+  during discovery and misreads as a repository, failing `cog check` with
+  `could not find repository`. `tools/dispatch.py`'s `_codex_writable_roots` now names the
+  parent `<main>/.git/worktrees` instead, so the path libgit2 stats is never a named root.
+  **Live-unconfirmed**: whether the parent grant also satisfies Codex's `.git` carve for the
+  worktree's index writes is the one question a deterministic test cannot answer, and the
+  confirming dispatch is owed. Until it runs the lane's ceiling stands as
+  commit-without-landing.
+
 ### Fixed
 
 - **The Claude breaker now sees the limit that actually binds the account.** The quota tap polls
