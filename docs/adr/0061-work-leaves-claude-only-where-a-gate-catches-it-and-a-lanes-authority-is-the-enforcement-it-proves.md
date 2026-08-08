@@ -8,6 +8,16 @@ Amended: 2026-08-05, same session, before human review — Decision 6 replaced a
 resolved, on the prior-art sweep this ADR itself commissioned. An ADR is amendable until the human
 has read it and immutable afterwards; this one reached `origin/main` by the worktree collision on
 #105 rather than by review, so nothing had relied on it
+Amended: 2026-08-06, before human review, on the human's ruled corrections of fact (#268; sign-off
+on #221). Seven amendments, each a correction of fact with no decision reversed — A1 Decision 1
+meters generation, not input-equivalents (#218, #220, #237), conclusion unaffected; A2 the WIP
+limit is three in flight, any lane, not zero (#217); A3 review added to Decision 2's eligible
+seats (Decision 3 admits it); A4 the bar falls on authorship, not the path (#258); A5 a #258
+drafting widening to `2026-08-10T14:00Z` is referenced, not embedded; A6 portability re-decided as
+a symlink, not an import (#221; implementation #264); A7 the admission bar is built and live
+(`just admission`). Reasoning lives at #263, so no fact carries its full argument twice and only
+one document can go stale; each passage is marked inline
+Reviewed-by-human: 2026-08-06
 
 The project is building infrastructure to dispatch logical subagents onto non-Anthropic coding
 subscriptions — OpenAI Codex and the z.ai GLM Coding Plan — so that work which does not need
@@ -20,14 +30,22 @@ prior-art sweep could overturn are named as held at the end, and are not taken h
 
 ## Decision 1: Claude spend is the only number optimised, and all three pools are metered
 
-The three subscriptions do not share a currency. Claude meters input-equivalents against a weekly
-plan limit; Codex meters credits scaling with tokens against a five-hour window and a weekly cap;
-z.ai meters *prompt counts* — not tokens — against its own five-hour and weekly caps, with a
-time-of-day multiplier. There is no honest single number.
+The three subscriptions do not share a currency. Claude meters **generation** against a five-hour
+window and a weekly plan limit; Codex meters credits scaling with tokens against a five-hour
+window and a weekly cap; z.ai meters *prompt counts* — not tokens — against its own five-hour and
+weekly caps, with a time-of-day multiplier. There is no honest single number. *(Amendment A1,
+2026-08-06: the original read "Claude meters input-equivalents", which measured the wrong quantity.
+An output token weighs 33.10 points per Mtok of the five-hour window against <0.0096 for a cache
+write and ≤0.0095 for a cache read — ≥3,477× a cache-read token (#218, #220, #237) — so this plan
+meters generation, not context. Decision 1's conclusion is unaffected: greedy routing with Claude
+spend as the only optimised number stands; only its stated reason was wrong.)*
 
 So the operating rule is greedy: anything clearing its quality floor goes off Claude, and Claude
-spend is the only quantity optimised. Only Claude is scarce today — the WIP limit stands at zero
-on token budget — and the other two pools are bought and idle.
+spend is the only quantity optimised. Only Claude is scarce today — the WIP limit stands at three
+in flight, any lane (#217, 2026-08-06) — and the other two pools are bought and idle. *(Amendment
+A2, 2026-08-06: the original read "the WIP limit stands at zero on token budget", superseded by
+the three-in-flight ruling on #217; the sentence's role — establishing that only Claude is scarce
+today — survives, the WIP figure does not.)*
 
 Telemetry nonetheless records fraction-of-cap for all three from the first dispatch. That costs
 nothing now and is what allows this rule to be *replaced* by scarcity routing once a second pool
@@ -40,18 +58,33 @@ Eligibility is not a judgement made per task. It is a property of the surface: a
 eligible when wrongness is caught mechanically — `just fast`, the regression corpus, the repo
 hooks, `cog verify`, the human sign-off gate.
 
-Eligible: the implementer, mechanical and recon seats. Not eligible: orchestration, retros, ADRs,
-`CONTEXT.md`, schema semantics and process docs — the fable seat — and the #181 shape, a
-diagnosis whose plausible wrong fix would also have gone green.
+Eligible: the implementer, mechanical, recon and review seats. Not eligible: orchestration,
+retros, ADRs, `CONTEXT.md`, schema semantics and process docs — the fable seat — and the #181
+shape, a diagnosis whose plausible wrong fix would also have gone green. *(Amendment A3,
+2026-08-06: `review` was absent from the eligible list, contradicting Decision 3 below; it is
+Decision 3 that admits review — its output is claims, which land nothing — and `SEATS` in
+`tools/dispatch.py` carries all four.)*
 
 CLAUDE.md already draws this line between fable and opus, on exactly this reasoning. Reusing it
 means no new safety argument is needed, only a new provider.
+
+The bar falls on **authorship, not on the path**: gate coverage is a property of the change rather
+than of the file it lands in, so pure transcription onto a gated semantic surface is eligible and
+invented wording is not (#258, 2026-08-06). *(Amendment A4, 2026-08-06: this authorship reading of
+Decision 2 was ruled on #258 the day after this ADR landed and is recorded here so the bar's scope
+is unambiguous; no decision moved.)*
 
 Time-boxed exception (human ruling on #217, 2026-08-06): until `2026-08-10T14:00Z`, retros may run
 as the `fable` seat on the `codex` lane at profile `codex-sol-xhigh`. This suspends Decision 2 for
 that triple only; the clock reapplies the standing bar at the expiry instant without a revocation.
 Every other fable-on-foreign route remains ineligible throughout, and the orchestrator seat remains
 ineligible on every foreign lane.
+
+*(Amendment A5, 2026-08-06: a second, narrower widening exists — human review as a gate for
+drafting only, ruled on #258 and expiring the same instant, `2026-08-10T14:00Z`. It is referenced
+here, not embedded as a live rule: this document is about to become immutable, and a lapsed rule
+carried as current is the inherited-measurement failure CLAUDE.md records; #258 is its home, and
+embedding it in full is a change for the human.)*
 
 ## Decision 3: review is eligible, and provider diversity is the point
 
@@ -135,6 +168,13 @@ by process changes over the period, which is why pre-registration is load-bearin
 lane's numbers first would turn the confounding into a licence to move the bar. And the signal
 remains silent about a wrong landing that passed every gate.
 
+The mechanism this decision specifies is built and live: `just admission` judges 24 foreign-lane
+routes — each foreign profile against each eligible seat — all on probation, none yet admitted;
+assessments accrue as the lanes run. *(Amendment A7, 2026-08-06: recorded so the decision's "build
+the bar" is verifiably done; the decision itself is unchanged. The issue's "23 at assessed=0/10"
+was already stale on the tree — the implementer and review seats on `zai-glm52-max` have since
+accrued assessments — so the durable fact is recorded rather than a count that moves daily.)*
+
 Recorded because it constrains everything downstream: arm count, not sample size, is the binding
 constraint on what is measurable here. No published router beats a static policy at *n* in the
 tens — RouteLLM needed 65,000 pairwise comparisons, RouterBench 405,000 outcomes — so the
@@ -191,11 +231,15 @@ is not yet a convention; a second ADR lands them with the code.
   its audit does not track root compiled files, so generating `CLAUDE.md` would have bought zero
   drift enforcement. `rulesync` spans both lanes but its opencode output is inert. Neither removes
   the opencode payload bridge, which is one hand-written file we own regardless. The decision is
-  `AGENTS.md` as sole source with `CLAUDE.md` reduced to an `@AGENTS.md` import and hook
-  configuration hand-written per target — conditional on one drift mechanism per surface, all in
-  `just check`: a form check that `CLAUDE.md` is exactly the import line; the behavioural
-  hook-parity suite Decision 4 already mandates; and a static equivalence check over the seat and
-  profile registry.
+  `AGENTS.md` as sole source with `CLAUDE.md` a **symlink** to it, `ln -s AGENTS.md CLAUDE.md`, and
+  hook configuration hand-written per target — conditional on one drift mechanism per surface, all
+  in `just check`: an assertion that `CLAUDE.md` is still a symlink; the behavioural hook-parity
+  suite Decision 4 already mandates; and a static equivalence check over the seat and profile
+  registry. *(Amendment A6, 2026-08-06: the original specified an `@AGENTS.md` import with "a form
+  check that `CLAUDE.md` is exactly the import line"; #221's Decision 2 of 2026-08-05T21:14Z
+  superseded it with the symlink, decided on an undocumented compaction risk the import carries —
+  the docs re-read a project-root `CLAUDE.md` after `/compact` and say nothing about re-expanding
+  imports — and a symlink has no import to re-expand. Implementation is #264, open.)*
 - **Telemetry** — **stands**, with one correction: "all lanes" requires a traces pipeline, because
   opencode emits no metrics at all and carries tokens only as spans.
 - **Durability** — **stands with less to build.** The collector's `group_by` file export writes one
