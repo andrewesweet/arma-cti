@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **`AGENTS.md` is the source; `CLAUDE.md` is a committed symlink to it** (`ln -s AGENTS.md
+  CLAUDE.md`, mode `120000` in the index). Human ruling on #221, 2026-08-05, Decision 2. Hook
+  configuration stays hand-written per target and no compiler is introduced. The symlink was chosen
+  over an `@AGENTS.md` import on a documented gap rather than a preference: a project-root
+  `CLAUDE.md` is re-read from disk after `/compact`, and nothing documents whether that re-read
+  re-expands imports — the symlink has no such question (#264).
+
 ### Added
 
 - **`just discard <path> <ruling>` is allowlisted for dispatched sessions**, in place of the broad
