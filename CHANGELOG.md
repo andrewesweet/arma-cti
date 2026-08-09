@@ -69,6 +69,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (ADR-0023) cannot be parsed as one. Contacts and map positions are excluded — both regenerated at
   boot — and player role/Squad is deferred to #25.
 
+- **Ordered reconstruction of a resumed Campaign behind a fail-closed barrier**
+  (#292; ADR-0008, ADR-0018, ADR-0023). A restored snapshot projects into a factory-fresh world
+  through the same ordered Effect outbox every other world change rides: `resume.reconstruct` emits
+  the Effects in domain order — the scoreboard (Objective ownership), then the Squads spawned onto
+  it, then the standing Orders issued to those Squads — never dictionary iteration, because a
+  snapshot is a set of facts whose application order changes the result. `resume.Barrier` holds that
+  world closed until every reconstruction Effect is acknowledged, opening only on a complete,
+  unfailed acknowledgement and staying shut, with a typed reason, on a rejected or oversized Effect.
+  Projection is atomic: a snapshot that cannot be projected whole is refused with nothing emitted,
+  tested at several points in the order. A full reconstruction drains across bounded polls at both
+  the planner's eight-Squads-a-side cap and the seventy-one-Squads-a-side wire ceiling without loss.
+  Three things ADR-0008 regenerates are absent by refusal rather than gap: a destroyed HQ (a
+  completed Campaign, archived not resumed), a Contested Objective (whose prior owner the snapshot
+  does not carry — a question named for the save side), and all tactical state. Funds, the clock and
+  loadouts are daemon state projected by no Effect here; player role/Squad stays deferred to #25.
+  This is the mechanism only: #288 fixes the barrier's exact refusal set, and #291 wires it into the
+  live daemon and its epoch. No in-world surface is touched, so the regression corpus is owed and
+  unrun.
+
 ### Fixed
 
 - **`just dispatch-follow` takes several ids and wakes on the first of them, not the last** (#295).
