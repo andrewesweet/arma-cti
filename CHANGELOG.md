@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **A human interlocutor seat at opus/xhigh, reached as `/interlocutor`** (#255, ADR-0068).
+  The human's ruling of 2026-08-06 on #242 separated the human interface — rulings intake,
+  status, observations, raising issues — from the orchestration standing loop and put it at
+  opus/xhigh. It lands as a slash command rather than a dispatch: Claude Code's skill
+  frontmatter carries `model` and `effort`, so invoking `/interlocutor` sets the human's own
+  session to the seat's tier without spawning an agent that would end and could not then be
+  talked to. Reachability from Remote Control on iOS is inherited rather than built — a
+  Remote Control session is an ordinary session in a worktree of this repository, so a project
+  skill on `main` is the same `/interlocutor` from the phone. One invocation buys one turn;
+  for a conversation the human sets `/model opus` and `/effort xhigh`, both of which take an
+  argument from mobile. The two `.claude/` files are published on #255 rather than committed
+  here: a dispatched session cannot write under `.claude/` (#294), and this landing confirmed
+  `.claude/agents/` refuses with the same ordinary permission ask already recorded for
+  `.claude/skills/`.
+
+- **`just check-seats`: a declared seat's `(model, effort)` pair is asserted, not trusted**
+  (#255, ADR-0068 decision 3). Both places the pair can be declared fail open — a level that
+  does not exist, or a key that has drifted below the top level of the frontmatter, leaves the
+  seat running at the session's tier with nothing refused and nothing warned. That is the same
+  invisible failure that put every implementation agent of 2026-08-04 on fable. Every
+  `.claude/agents/` definition must now declare a model and an effort from the ratified sets,
+  and a skill must declare neither or both; `inherit` is accepted as a skill's model and refused
+  as an agent's, where inheriting is the defect rather than the intent.
+
 ### Fixed
 
 - **`just dispatch-follow` takes several ids and wakes on the first of them, not the last** (#295).
