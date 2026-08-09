@@ -114,6 +114,21 @@ worktree, so a copied tree is a different subject. In-place means a crash could
 leave a mutant behind, so every mutation writes `RESTORE` first, restores in a
 `finally` and on SIGINT/SIGTERM, and refuses to start while a stale `RESTORE`
 exists — it prints how to undo it instead of guessing.
+
+## The shell arm
+
+A module whose tests execute no Python of this repository's own may still be
+driving `spike/*.sh` as subprocesses and asserting on what those scripts do, and
+eight of them were (#246). Those go to `tools/mutation_shell.py`, which reads
+which line of which script each test executed out of a bash xtrace, plants the
+same shape of bounded sample there, and judges it the same way. The routing is
+mechanical rather than declared: the Python subject is tried first and wins where
+it exists, the shell subject is only reached when there is no Python one, and
+having neither is still the red it always was.
+
+Two things differ, and both are in that module's own docstring: a shell mutant is
+written into a hardlinked stage rather than in place, because `spike/*.sh` is read
+by a live Arma tier; and `bash -n` stands in for `compile()`.
 """
 
 from __future__ import annotations
@@ -132,7 +147,13 @@ import tempfile
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Final, NamedTuple
+from typing import TYPE_CHECKING, Final, NamedTuple
+
+import mutation_rust
+import mutation_shell
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 # Where this repo's own source lives. A file outside these is somebody else's
 # code and is never mutated, however much of it a test happens to execute.
@@ -182,6 +203,61 @@ FLOOR: Final = 0.50
 # lets a neutral rename through; two lost kills is a weakening the ratchet names.
 SLACK: Final = 1
 
+# The kill rate a module on the **shell** arm must reach, and its own number
+# rather than `FLOOR` because it is a different mutator over a different corpus
+# (#246). Set the way `FLOOR` was: every measurable shell-subject module was
+# swept before anything was enforced, and this sits below the weakest of them.
+#
+# Measured, 2026-08-09, in `docs/research/mutation-shell-arm.md` §3:
+# `test_host_seam` 100%, `test_host_guard` / `test_play_install` /
+# `test_regress_selection` 80%, and `test_bringup_guards` and `test_run_verdict`
+# 30% each — both of those on `spike/run.sh`, whose 1,278 lines mean any module
+# testing one of its behaviours walks a great deal it never claims anything
+# about. The weakest is therefore 3/10.
+#
+# The other end is what it must still catch. The throwaway module in
+# `tests/unit/test_mutation_shell.py` that runs every branch of its subject and
+# asserts only that something came back measures **0%**, and one that asserts
+# nothing at all has no subject and is red whatever this number is. So 20% sits
+# twenty points above the shape it exists to stop and one kill below the weakest
+# thing it must not stop — the same one-kill margin `SLACK` gives the ratchet,
+# and the same shape `FLOOR` has (50%, against a 30% weak fixture and a 62%
+# weakest module).
+SHELL_FLOOR: Final = 0.20
+
+# Mutants planted per shell-subject module. Lower than `CAP` on purpose: a shell
+# test costs a subprocess and a script bring-up rather than a function call, so
+# the same twenty mutants buy the same claim at several times the wall clock.
+SHELL_CAP: Final = 10
+
+# What one shell-subject module's mutants may cost between them. Larger than
+# `BUDGET_S` because the unit is larger: the cheapest test that reaches a line of
+# `spike/run.sh` still boots a script, where the cheapest test reaching a line of
+# `src/cti_daemon/daemon.py` is a function call. It is deliberately above what
+# the measured worst module spends, so the **cap** decides how many mutants run
+# and the clock does not: a denominator that moved with machine load would
+# release the per-module ratchet at random (#244 keys a row on `run`).
+SHELL_BUDGET_S: Final = 150.0
+
+# ...and what one shell mutant's test selection may cost. Tighter than
+# `TEST_SECONDS_PER_MUTANT` because a shell test is seconds rather than
+# milliseconds: at 8 s the selection took five tests of
+# `tests/unit/test_run_verdict.py` per mutant and the module cost 257 s, which is
+# ADR-0064 decision 3's ceiling on its own. `-x` means only *survivors* pay this
+# in full, so it bounds the bad case rather than the common one.
+SHELL_TEST_SECONDS_PER_MUTANT: Final = 5.0
+
+# Whether a shell mutant may be planted on a line every one of the module's
+# tests walked. **False**, measured both ways over the whole shell corpus before
+# it was set: narrowing raised three modules a little and destroyed two, taking
+# `tests/unit/test_bringup_guards.py` from twelve mutants to four — a weaker
+# claim at the same rate — and `tests/unit/test_host_seam.py` from 42% to 8%.
+# ADR-0064 records the identical refinement measured and disproved for the Python
+# arm; this is that finding re-derived rather than inherited, and it lands the
+# same way. The switch stays so the next person can re-measure rather than
+# re-argue (`--shell-all-lines` inverts it).
+SHELL_DISCRIMINATING: Final = False
+
 # A module's smoke gives up after this long and judges what it managed to run.
 # A smoke that ran fewer mutants is a weaker claim, never a pass by default: a
 # module that reached no verdict at all is a red.
@@ -220,58 +296,112 @@ TIMEOUT_FACTOR: Final = 4.0
 # other shape is not one of pytest's duration rows.
 DURATION_FIELDS: Final = 3
 
-# The test modules whose subject is not Python, each with the reason. Mutating
-# Python has nothing to say about a module that asserts on `spike/*.sh`, on the
-# justfile, or on an authored JSON document, and a gate that red them anyway
-# would be #137/#186's false red on the tree it exists to protect.
+# The test modules no arm of this gate can measure, each with the reason.
 #
 # This list is the escape, and it is deliberately the *only* one: there is no
 # flag, no marker in a test file and no environment variable, so a module that
 # tests nothing can be excused only by a line here, in the diff, with its reason
 # next to it. `grep -n '"tests/' tools/mutation_smoke.py` answers "which modules
-# claim to have no Python subject" completely. Adding a row is a reviewable act;
-# lowering `FLOOR` is not an alternative to it.
-NO_PYTHON_SUBJECT: Final[dict[str, str]] = {
-    "tests/unit/test_bringup_guards.py": (
-        "its subject is spike/run.sh, spike/tier-lock.sh and the justfile — #68's guards, "
-        "asserted by driving the scripts and reading the recipe, with no Python between"
-    ),
-    "tests/unit/test_client_lock.py": (
-        "its subject is spike/run.sh and spike/regress.sh's use of the client lock (#119), "
-        "driven as shell; the Python it touches is the harness it drives them with"
-    ),
-    "tests/unit/test_host_guard.py": (
-        "its subject is spike/host-guard.sh (#41), run as a script with a substituted "
-        "Windows tool and judged by its exit code"
-    ),
+# claim to have no measurable subject" completely. Adding a row is a reviewable
+# act; lowering `FLOOR` is not an alternative to it.
+#
+# It was eleven rows and is four (#246). The eight that named a `spike/*.sh`
+# subject now have one: `tools/mutation_shell.py` mutates the scripts a module
+# drives, so "its subject is shell" stopped being a reason not to measure it. The
+# rows that remain are of three kinds, and only the third is a judgement.
+#
+# ## Why there is no SQF arm, and what stands in its place
+#
+# Written here rather than left to be rediscovered, because the question comes
+# back every time somebody reads this list (#246). It is not that SQF is hard to
+# mutate — the mutator would be about as difficult as the bash one above it. It
+# is that there is nowhere to run a mutant.
+#
+# * **No in-process runner.** SQF executes inside the Arma engine and nowhere
+#   else. There is no SQF-VM in this project's gates (docs/research/
+#   arma-toolchain.md ruled it optional), so a mutant's only verdict comes from
+#   a world: `just regress`, which is a pool of slots, a server install and an
+#   engine profile per probe.
+# * **The arithmetic that closes it.** The corpus is about 20 minutes end to end
+#   on three slots, and a mutant is a fresh world per probe rather than a
+#   process. A twenty-mutant sample against one addon function is therefore
+#   measured in hours per module, on a machine the human also plays on and which
+#   the tier already holds single-occupancy. Nothing about the sample size
+#   rescues that: even one mutant per landing is the whole corpus again.
+# * **`compileFinal` closes the cheaper route.** The Functions Library
+#   `compileFinal`s every `cti_fnc_`, so a probe cannot stub one and a mutant
+#   cannot be swapped in at runtime — it would have to be planted in the addon
+#   source and the PBO rebuilt, which puts a `hemtt build` inside the per-mutant
+#   loop as well (#80 records the same constraint from the other side).
+#
+# So the non-goal is economic, and it is deliberate rather than deferred. What
+# stands in its place is not nothing:
+#
+# * **The red-by-design probes** (#80, #96, #102): `schema-stale`, `daemon-restart`
+#   and `loop-watch` each *demand* the failure class they expect, which is a probe
+#   asserting that the harness still notices a break rather than hoping it would.
+# * **The expected-class machinery** in the failure-class table: a probe that
+#   names its class fails when the class it receives is a different one, so a
+#   silently-changed decision surfaces as the wrong class rather than as a pass.
+# * **The probe vacuity rule** (#116, ADR-0016): a probe asserts that its staging
+#   took effect, because the world can refuse it silently — which is the same
+#   property mutation testing buys, obtained by construction instead of by
+#   sampling.
+#
+# **What would overturn this.** An in-process SQF runner this project is willing
+# to gate on — SQF-VM reaching the point where a `cti_fnc_` runs under it with the
+# addon's own arrangement — would make a mutant cost milliseconds instead of a
+# world, and the arithmetic above would simply stop applying. That is the
+# evidence to bring; "we should mutate SQF too" is not.
+# The shell script a module drives, where neither its name nor the evidence
+# reaches it. ADR-0064 decision 2's own escape hatch, taken for the first time:
+# "a sound test module whose subject the rule picks so badly that its mutants are
+# unkillable by design — the fix would then be per-module subject declaration,
+# not a lower floor."
+#
+# It is a tie-break and not a nomination. The declared script must be one the
+# module's tests actually executed, exactly as the naming convention "can never
+# point at code nothing ran"; a row naming a script the tests never touched is a
+# refusal, not a subject. So this cannot be used to point the gate at something
+# inert, and like every other list here it is one line in the diff with its
+# reason beside it.
+SHELL_SUBJECT: Final[dict[str, str]] = {
     "tests/unit/test_host_seam.py": (
-        "its subject is the host handle every host-touching line in spike/*.sh goes "
-        "through (#51, ADR-0032) — shell, and by design not yet Python"
+        # spike/hosts.sh, and the name misses it by a plural: the module is
+        # `test_host_seam` and the script is `hosts.sh`. The evidence rule then
+        # picked spike/regress.sh — reached because the seam's callers live
+        # there — and scored the module 42% against a script it is not about.
+        "spike/hosts.sh"
     ),
-    "tests/unit/test_play_install.py": (
-        "its subject is spike/run.sh staging @cti into the human's Steam install (#153)"
-    ),
+}
+
+NO_MUTABLE_SUBJECT: Final[dict[str, str]] = {
+    # --- reads a document rather than executing anything ---
     "tests/unit/test_playtest_observer_staging.py": (
-        "its subject is when spike/run.sh stages the playtest observer (#178), read out "
-        "of the script and its probe headers"
-    ),
-    "tests/unit/test_pool_slots.py": (
-        "its subject is the slot pool in spike/regress.sh (#47, ADR-0028) — geometry, "
-        "allocation and bulkheads, all of it shell over flock"
+        "it reads spike/run.sh and the probe headers as documents (#178) rather than "
+        "running either, so no arm of this gate has a line of it to plant on"
     ),
     "tests/unit/test_probe_headers.py": (
-        "its subject is the probe corpus's headers in spike/probes/*.sqf (#23, ADR-0016)"
-    ),
-    "tests/unit/test_regress_selection.py": (
-        "its subject is probe selection in spike/regress.sh (#36, ADR-0016)"
+        "its subject is the probe corpus's headers in spike/probes/*.sqf (#23, ADR-0016), "
+        "read as documents; SQF has no mutation arm and the reasoning is above"
     ),
     "tests/unit/test_report_schema.py": (
         "its subject is the agreement between cti_daemon.report.SHAPES and the SQF "
         "samplers (#74): it reads both as documents rather than executing either"
     ),
-    "tests/unit/test_run_verdict.py": (
-        "its subject is the verdict spike/run.sh records and the class it types it "
-        "with (#23, #83, #116, #119)"
+    # --- measurable, but not inside the budget `just fast` can carry ---
+    "tests/unit/test_client_lock.py": (
+        "cost, not shape: the shell arm measures it at 80% against spike/client-lock.sh "
+        "(8/10) and takes 216.6 s doing it, of which 112.8 s is one serial run of the "
+        "module — #197's 60 s soak is in there. Past ADR-0064 decision 3's ceiling on "
+        "top of `just fast`, so it is measured and recorded rather than enforced"
+    ),
+    "tests/unit/test_pool_slots.py": (
+        "cost, not shape: its subject is the slot pool in spike/regress.sh (#47, ADR-0028) "
+        "and the shell arm can measure it, but one serial run of the module is 190.8 s "
+        "measured on this box, which is ADR-0064 decision 3's five-minute ceiling spent "
+        "before a single mutant is planted. Re-measure and remove this row if the module "
+        "ever gets cheaper, or gate it somewhere other than `just fast`"
     ),
 }
 
@@ -476,6 +606,12 @@ def plant(source: str, *, path: str, lines: frozenset[int]) -> list[Mutant]:
     return planter.found
 
 
+def apply_edit(source: str, mutant: Mutant) -> str:
+    """`source` with `mutant`'s byte span replaced, unchecked."""
+    raw = source.encode("utf-8")
+    return (raw[: mutant.start] + mutant.after.encode("utf-8") + raw[mutant.end :]).decode("utf-8")
+
+
 def graft(source: str, mutant: Mutant) -> str | None:
     """`source` with `mutant` applied, or None when the result will not compile.
 
@@ -483,15 +619,18 @@ def graft(source: str, mutant: Mutant) -> str | None:
     span this mutator misreads produces a `SyntaxError` here and the mutant is
     dropped, rather than reaching the tests as a red that means nothing.
     """
-    raw = source.encode("utf-8")
-    grafted = (raw[: mutant.start] + mutant.after.encode("utf-8") + raw[mutant.end :]).decode(
-        "utf-8",
-    )
+    grafted = apply_edit(source, mutant)
     try:
         compile(grafted, mutant.path, "exec")
     except SyntaxError:
         return None
     return grafted
+
+
+def graft_shell(source: str, mutant: Mutant) -> str | None:
+    """Do the same for a shell subject, with `bash -n` standing in for `compile`."""
+    grafted = apply_edit(source, mutant)
+    return grafted if mutation_shell.parses(grafted) else None
 
 
 def sample(mutants: list[Mutant], *, seed: str, cap: int) -> list[Mutant]:
@@ -521,6 +660,17 @@ def _stems(test_module: str) -> list[str]:
     """
     parts = Path(test_module).stem.removeprefix("test_").split("_")
     return ["_".join(parts[: len(parts) - dropped]) for dropped in range(len(parts))]
+
+
+def _stem_key(path: str) -> str:
+    """Spell a file's stem the way a test module's name would have to spell it.
+
+    `spike/host-guard.sh` is what `tests/unit/test_host_guard.py` is named after,
+    and no Python module name can carry that hyphen. Nothing under `src/` or
+    `tools/` spells a `.py` stem with one, so this only ever changes the shell
+    arm's answer — the Python arm sees the same stems it always did.
+    """
+    return Path(path).stem.replace("-", "_")
 
 
 def node_id(test_module: str, context: str) -> str | None:
@@ -585,7 +735,28 @@ class Reach(NamedTuple):
             return 0.0
         return sum(1.0 - len(set(names)) / total for names in self.lines.get(path, {}).values())
 
-    def subject(self, test_module: str = "") -> str | None:
+    def share(self, path: str) -> float:
+        """How much of this module's tests reached `path` at all.
+
+        The shell arm's correction, and it exists because of a structure the
+        Python corpus does not have: `spike/run.sh` sources `hosts.sh`,
+        `client-lock.sh` and `play-install.sh`, and `tier-lock.sh` sources
+        `slots.sh`, so one test that takes a lock executes a whole helper nobody
+        was testing. Discrimination alone then *rewards* that helper for being
+        incidental — measured, on `tests/unit/test_bringup_guards.py`:
+        `spike/slots.sh` scored 33 against `spike/run.sh`'s 14 on one test out of
+        seven, was chosen, and killed 0 of 12 mutants. Weighting by the share of
+        the module's tests that reached the file at all puts `run.sh` back in
+        front, and it is the file the module's name and its docstring both say it
+        is about.
+        """
+        total = len(self.tests())
+        if not total:
+            return 0.0
+        reached = {name for names in self.lines.get(path, {}).values() for name in names}
+        return len(reached) / total
+
+    def subject(self, test_module: str = "", *, weighted: bool = False) -> str | None:
         """Name the product file this test module is testing, or None.
 
         Two rules in order. First the name, because `test_budget.py` → `budget.py`
@@ -598,13 +769,23 @@ class Reach(NamedTuple):
 
         None is a finding, not a shrug: a test module none of whose tests reach a
         line of this repo's source has asserted nothing about it.
+
+        `weighted` is the shell arm's evidence rule and only its own: see
+        `share`. The Python arm is left exactly as #239 measured it, because the
+        corpus sweep that set `FLOOR` was taken under the unweighted rule and
+        changing the rule under sixty modules would move rates a landing did not
+        touch.
         """
         if not self.lines:
             return None
         for stem in _stems(test_module):
-            named = [path for path in sorted(self.lines) if Path(path).stem == stem]
+            named = [path for path in sorted(self.lines) if _stem_key(path) == stem]
             if named:
                 return named[0]
+        if weighted:
+            return max(
+                sorted(self.lines), key=lambda path: self.discrimination(path) * self.share(path)
+            )
         return max(sorted(self.lines), key=self.discrimination)
 
     def cost(self, node: str) -> float:
@@ -622,7 +803,7 @@ class Reach(NamedTuple):
             exact = sum(spent for name, spent in self.costs.items() if name.startswith(f"{node}["))
         return round(exact / COST_GRAIN) * COST_GRAIN
 
-    def cheapest(self, tests: tuple[str, ...]) -> list[str]:
+    def cheapest(self, tests: tuple[str, ...], bound: float = TEST_SECONDS_PER_MUTANT) -> list[str]:
         """Choose the tests to run against one mutant: cheapest first, twice bounded.
 
         A test whose duration was never recorded is assumed free rather than
@@ -638,7 +819,7 @@ class Reach(NamedTuple):
         chosen: list[str] = []
         spent = 0.0
         for name in ordered[:TESTS_PER_MUTANT]:
-            if chosen and spent + self.cost(name) > TEST_SECONDS_PER_MUTANT:
+            if chosen and spent + self.cost(name) > bound:
                 break
             chosen.append(name)
             spent += self.cost(name)
@@ -720,6 +901,10 @@ class Verdict(NamedTuple):
     seconds: float
     floor: float
     ratcheted: bool = False
+    # Which mutator measured it. A reader scanning the gate's output needs to
+    # know that `killed=8/10` on a `spike/*.sh` subject is a different mutator
+    # over a different corpus with a floor of its own (#246).
+    arm: str = "python"
 
     @property
     def kill_rate(self) -> float:
@@ -753,9 +938,10 @@ class Verdict(NamedTuple):
         """Why it failed, in the terms the remedy is written in."""
         if self.subject is None:
             return (
-                "no subject: none of this module's tests executed a line of this repo's source, "
-                "so there is nothing it can be said to have tested. If its subject is a shell "
-                "script or an authored document, add it to NO_PYTHON_SUBJECT with the reason"
+                "no subject: none of this module's tests executed a line of this repo's Python "
+                "or of its shell, so there is nothing it can be said to have tested. If it reads "
+                "an authored document rather than running anything, add it to NO_MUTABLE_SUBJECT "
+                "with the reason"
             )
         if self.undecided:
             return f"nothing to plant: no decision on the lines reached in {self.subject}"
@@ -774,7 +960,7 @@ class Verdict(NamedTuple):
         where = self.subject or "-"
         floor = f"{self.floor:.0%}" + (" (ratchet)" if self.ratcheted else "")
         return (
-            f"{mark} {self.test_module} subject={where} "
+            f"{mark} {self.test_module} subject={where} arm={self.arm} "
             f"killed={self.killed}/{self.run} planted={self.planted} "
             f"rate={self.kill_rate:.0%} floor={floor} {self.seconds:.1f}s"
         )
@@ -871,8 +1057,22 @@ def _pytest(root: Path, argv: list[str], *, timeout: float) -> int | None:
     return done.returncode
 
 
-def measure(root: Path, test_module: str, *, timeout: float) -> Reach:
-    """Run one test module under coverage and report which product lines its tests reached."""
+class Collected(NamedTuple):
+    """What one collect pass found, one `Reach` per arm.
+
+    Both come out of the same run. The bash tracing costs nothing measurable —
+    14.88 s against 14.75 s on `tests/unit/test_bringup_guards.py`, 190.80 s
+    against 190.64 s on the slowest module in the corpus — so it is switched on
+    for every module rather than only for the ones expected to need it, and a
+    module that turns out to drive shell is already measured when it gets here.
+    """
+
+    python: Reach
+    shell: Reach
+
+
+def measure(root: Path, test_module: str, *, timeout: float) -> Collected:
+    """Run one test module once, and report what its tests reached in Python and in bash."""
     with tempfile.TemporaryDirectory() as workspace:
         rcfile = Path(workspace) / "coveragerc"
         rcfile.write_text(
@@ -882,7 +1082,8 @@ def measure(root: Path, test_module: str, *, timeout: float) -> Reach:
         )
         data = Path(workspace) / "cov.db"
         report = Path(workspace) / "cov.json"
-        environment = {**os.environ, "COVERAGE_RCFILE": str(rcfile)}
+        tracing = mutation_shell.trace_environment(Path(workspace))
+        environment = {**os.environ, "COVERAGE_RCFILE": str(rcfile), **tracing}
         argv = [
             sys.executable,
             "-m",
@@ -895,6 +1096,8 @@ def measure(root: Path, test_module: str, *, timeout: float) -> Reach:
             "-q",
             "-p",
             "no:cacheprovider",
+            "-p",
+            "cti_shell_trace",
             "--durations=0",
             "--durations-min=0",
             test_module,
@@ -939,60 +1142,52 @@ def measure(root: Path, test_module: str, *, timeout: float) -> Reach:
         if exported.returncode != 0 or not report.exists():
             message = f"coverage json failed for {test_module}: {exported.stderr.strip()}"
             raise Refusal(message)
-        return read_reach(
-            json.loads(report.read_text(encoding="utf-8")),
-            read_durations(done.stdout),
+        costs = read_durations(done.stdout)
+        return Collected(
+            read_reach(json.loads(report.read_text(encoding="utf-8")), costs),
+            Reach(mutation_shell.read_traces(Path(workspace), root), costs),
         )
 
 
-def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visible knob
-    root: Path,
-    test_module: str,
+# A mutant the graft check dropped: no verdict, and not a run either. Distinct
+# from `None`, which is a timeout and therefore a kill.
+_DROPPED: Final = object()
+
+
+class _Tally(NamedTuple):
+    """What the mutants that reached a verdict came to."""
+
+    run: int
+    killed: int
+    survivors: tuple[Mutant, ...]
+
+
+def _tally(  # noqa: PLR0913 — the loop's inputs, and every one of them is a bound
+    chosen: list[Mutant],
+    reach: Reach,
+    covered: dict[int, tuple[str, ...]],
+    deadline: float,
+    run_one: Callable[[Mutant, list[str]], object],
     *,
-    cap: int = CAP,
-    floor: float = FLOOR,
-    budget: float = BUDGET_S,
-    collect: float = COLLECT_S,
-    rows: dict[str, Row],
-) -> Verdict:
-    """Plant a bounded sample of mutants in what `test_module` exercises, and judge it."""
-    started = time.monotonic()
-    reach = measure(root, test_module, timeout=collect)
-    subject = reach.subject(test_module)
-    if subject is None:
-        return Verdict(test_module, None, 0, 0, 0, (), time.monotonic() - started, floor)
-    sha = subject_sha(root, subject)
+    bound: float = TEST_SECONDS_PER_MUTANT,
+) -> _Tally:
+    """Run each mutant against the tests that reach it, and count what the tests noticed.
 
-    covered: dict[int, tuple[str, ...]] = {}
-    for line, contexts in reach.lines[subject].items():
-        nodes = tuple(
-            node for node in (node_id(test_module, context) for context in contexts) if node
-        )
-        if nodes:
-            covered[line] = nodes
-    source = (root / subject).read_text(encoding="utf-8")
-    planted = plant(source, path=subject, lines=frozenset(covered))
-    chosen = sample(planted, seed=test_module, cap=cap)
-
-    deadline = time.monotonic() + budget
+    Shared by both arms, because the arithmetic of a kill is not what differs
+    between them: only where the mutant is written and what checks its syntax.
+    """
     killed = 0
     run = 0
     survivors: list[Mutant] = []
     for mutant in chosen:
         if time.monotonic() > deadline and run:
             break
-        text = graft(source, mutant)
-        if text is None:
-            continue
-        tests = reach.cheapest(covered[mutant.line])
+        tests = reach.cheapest(covered[mutant.line], bound)
         if not tests:
             continue
-        with grafted(root, subject, text):
-            code = _pytest(
-                root,
-                ["-n0", "-q", "-x", "-p", "no:cacheprovider", "--no-header", *tests],
-                timeout=reach.timeout(tests),
-            )
+        code = run_one(mutant, tests)
+        if code is _DROPPED:
+            continue
         run += 1
         # A timeout is a kill: the mutant changed what the code does so plainly
         # that the tests could not finish saying so. Every other non-zero code is
@@ -1008,21 +1203,276 @@ def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visibl
             survivors.append(mutant)
         else:
             killed += 1
+    return _Tally(run, killed, tuple(survivors))
+
+
+def _selected(reach: Reach, subject: str, test_module: str) -> dict[int, tuple[str, ...]]:
+    """Which pytest node ids reached each line of the Python subject.
+
+    A coverage context is not a node id, and the shell arm needs no equivalent of
+    this at all — its plugin recorded the node id itself.
+    """
+    covered: dict[int, tuple[str, ...]] = {}
+    for line, contexts in reach.lines[subject].items():
+        nodes = tuple(
+            node for node in (node_id(test_module, context) for context in contexts) if node
+        )
+        if nodes:
+            covered[line] = nodes
+    return covered
+
+
+def _python_smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visible knob
+    root: Path,
+    test_module: str,
+    reach: Reach,
+    subject: str,
+    *,
+    cap: int,
+    floor: float,
+    budget: float,
+    rows: dict[str, Row],
+    started: float,
+) -> Verdict:
+    """Run the original arm: mutants in the real tree, under the restore sidecar."""
+    covered = _selected(reach, subject, test_module)
+    source = (root / subject).read_text(encoding="utf-8")
+    planted = plant(source, path=subject, lines=frozenset(covered))
+    chosen = sample(planted, seed=test_module, cap=cap)
+
+    def run_one(mutant: Mutant, tests: list[str]) -> object:
+        text = graft(source, mutant)
+        if text is None:
+            return _DROPPED
+        with grafted(root, subject, text):
+            return _pytest(
+                root,
+                ["-n0", "-q", "-x", "-p", "no:cacheprovider", "--no-header", *tests],
+                timeout=reach.timeout(tests),
+            )
+
+    tally = _tally(chosen, reach, covered, time.monotonic() + budget, run_one)
+    return _verdict_for(
+        root,
+        test_module,
+        subject,
+        len(planted),
+        tally,
+        floor=floor,
+        rows=rows,
+        started=started,
+        arm="python",
+    )
+
+
+def _declared_shell_subject(reach: Reach, test_module: str) -> str | None:
+    """Choose a module's shell subject: the declaration where there is one, else the evidence.
+
+    A declaration naming a script the module's tests never executed is a refusal
+    rather than a subject, which is what keeps `SHELL_SUBJECT` a tie-break and
+    stops it being a way to point the gate at something inert.
+    """
+    declared = SHELL_SUBJECT.get(test_module)
+    if declared is None:
+        return reach.subject(test_module, weighted=True)
+    if declared not in reach.lines:
+        message = (
+            f"SHELL_SUBJECT names {declared} for {test_module}, but none of its tests executed "
+            f"a line of it. The declaration is a tie-break among the scripts the tests ran, "
+            f"never a way to nominate one they did not"
+        )
+        raise Refusal(message)
+    return declared
+
+
+def _shell_lines(
+    reach: Reach,
+    subject: str,
+    *,
+    discriminating: bool,
+) -> dict[int, tuple[str, ...]]:
+    """Which lines of the shell subject a mutant may be planted on.
+
+    `discriminating` drops the lines every test that reached the script executed:
+    on a 1,278-line `spike/run.sh` those are the linear path each test walks on
+    its way to the branch it is about — argument defaults, the cleanup trap, the
+    client-lock arithmetic — and a module is not weak for failing to assert about
+    ground it merely crossed.
+
+    ADR-0064 records the same refinement measured and **disproved** for the Python
+    arm, so it is re-derived here rather than inherited either way; the numbers
+    for both settings are in `docs/research/mutation-shell-arm.md` §4.
+    """
+    lines = reach.lines[subject]
+    if not discriminating:
+        return dict(lines)
+    reached = len({name for names in lines.values() for name in names})
+    narrowed = {line: names for line, names in lines.items() if len(set(names)) < reached}
+    # Never narrow to nothing: a script every one of its tests walks identically
+    # still has decisions in it, and an empty plant would read as "nothing to
+    # plant" — a pass — which is a strictly worse answer than the wide one.
+    return narrowed or dict(lines)
+
+
+def _shell_smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visible knob
+    root: Path,
+    test_module: str,
+    reach: Reach,
+    subject: str,
+    *,
+    cap: int,
+    floor: float,
+    budget: float,
+    rows: dict[str, Row],
+    started: float,
+    discriminating: bool,
+    bound: float = SHELL_TEST_SECONDS_PER_MUTANT,
+) -> Verdict:
+    """Run the shell arm: mutants in a hardlinked stage, never in `spike/` itself.
+
+    The unmutated run inside the stage is not tidiness. Every mutant is judged by
+    whether its tests went red, so a stage that broke them would score the module
+    100% — a false green, and the exact defect #239 records as having scored every
+    module in this repository full marks. It is bounded to the tests a mutant can
+    select, which is the honest claim: every test this arm will run is green here
+    before any of them is asked about a mutant.
+    """
+    covered = _shell_lines(reach, subject, discriminating=discriminating)
+    source = (root / subject).read_text(encoding="utf-8")
+    planted = [
+        Mutant(subject, *edit) for edit in mutation_shell.plant(source, lines=frozenset(covered))
+    ]
+    chosen = sample(planted, seed=test_module, cap=cap)
+    # Exactly the tests the mutant runs below will select, and nothing wider. The
+    # union of every test that merely *reached* the script is most of the module
+    # — 50 s of `tests/unit/test_run_verdict.py` — and running it would be paying
+    # for a claim this arm does not make.
+    arrangement = sorted(
+        {test for mutant in chosen for test in reach.cheapest(covered[mutant.line], bound)},
+    )
+
+    with mutation_shell.staged(root) as stage:
+        code = _pytest(
+            stage,
+            ["-n0", "-q", "-p", "no:cacheprovider", "--no-header", *arrangement],
+            timeout=reach.timeout(arrangement),
+        )
+        if code != PYTEST_PASSED:
+            message = (
+                f"{test_module} is not green in the staged tree (pytest exit {code}), so no "
+                f"mutant planted there would mean anything. The stage is a hardlinked copy of "
+                f"every tracked and unignored file; a module that only passes in the real tree "
+                f"is reading something git does not know about"
+            )
+            raise Refusal(message)
+
+        def run_one(mutant: Mutant, tests: list[str]) -> object:
+            text = graft_shell(source, mutant)
+            if text is None:
+                return _DROPPED
+            with mutation_shell.graft(stage, subject, text):
+                return _pytest(
+                    stage,
+                    ["-n0", "-q", "-x", "-p", "no:cacheprovider", "--no-header", *tests],
+                    timeout=reach.timeout(tests),
+                )
+
+        tally = _tally(chosen, reach, covered, time.monotonic() + budget, run_one, bound=bound)
+    return _verdict_for(
+        root,
+        test_module,
+        subject,
+        len(planted),
+        tally,
+        floor=floor,
+        rows=rows,
+        started=started,
+        arm="shell",
+    )
+
+
+def _verdict_for(  # noqa: PLR0913 — a verdict is made of exactly these
+    root: Path,
+    test_module: str,
+    subject: str,
+    planted: int,
+    tally: _Tally,
+    *,
+    floor: float,
+    rows: dict[str, Row],
+    started: float,
+    arm: str,
+) -> Verdict:
+    """Apply the per-module ratchet to what an arm measured and render the verdict."""
     effective, ratcheted = _clamped_floor(
-        ratchet_floor(rows, test_module, subject, sha, run),
+        ratchet_floor(rows, test_module, subject, subject_sha(root, subject), tally.run),
         floor,
     )
     return Verdict(
         test_module,
         subject,
-        len(planted),
-        run,
-        killed,
-        tuple(survivors),
+        planted,
+        tally.run,
+        tally.killed,
+        tally.survivors,
         time.monotonic() - started,
         effective,
         ratcheted=ratcheted,
+        arm=arm,
     )
+
+
+def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visible knob
+    root: Path,
+    test_module: str,
+    *,
+    cap: int = CAP,
+    floor: float = FLOOR,
+    budget: float = BUDGET_S,
+    collect: float = COLLECT_S,
+    shell_cap: int = SHELL_CAP,
+    shell_floor: float = SHELL_FLOOR,
+    shell_budget: float = SHELL_BUDGET_S,
+    shell_discriminating: bool = SHELL_DISCRIMINATING,
+    rows: dict[str, Row],
+) -> Verdict:
+    """Plant a bounded sample of mutants in what `test_module` exercises, and judge it.
+
+    One collect pass, then whichever arm has a subject. Python first and always
+    where it exists, so nothing about the sixty modules already under this gate
+    changes; the shell arm is reached only where the Python one found nothing,
+    which used to be the end of it (#246).
+    """
+    started = time.monotonic()
+    collected = measure(root, test_module, timeout=collect)
+    subject = collected.python.subject(test_module)
+    if subject is not None:
+        return _python_smoke(
+            root,
+            test_module,
+            collected.python,
+            subject,
+            cap=cap,
+            floor=floor,
+            budget=budget,
+            rows=rows,
+            started=started,
+        )
+    shell_subject = _declared_shell_subject(collected.shell, test_module)
+    if shell_subject is not None:
+        return _shell_smoke(
+            root,
+            test_module,
+            collected.shell,
+            shell_subject,
+            cap=shell_cap,
+            floor=shell_floor,
+            budget=shell_budget,
+            rows=rows,
+            started=started,
+            discriminating=shell_discriminating,
+        )
+    return Verdict(test_module, None, 0, 0, 0, (), time.monotonic() - started, floor)
 
 
 def _git(root: Path, argv: list[str]) -> str:
@@ -1046,8 +1496,8 @@ def is_test_module(path: str) -> bool:
     )
 
 
-def in_scope(root: Path, base: str) -> list[str]:
-    """List the test modules this landing adds or rewrites, committed and uncommitted.
+def changed(root: Path, base: str) -> list[str]:
+    """List every path this landing adds or rewrites, committed and uncommitted.
 
     Both halves matter. The committed half is what `tools/land.py` will push; the
     uncommitted half is what an agent has in the tree while running `just fast`
@@ -1061,7 +1511,12 @@ def in_scope(root: Path, base: str) -> list[str]:
         entry = line[3:].strip()
         # A rename's porcelain line is `old -> new`; the new name is the subject.
         found.add(entry.split(" -> ")[-1] if " -> " in entry else entry)
-    return sorted(name for name in found if is_test_module(name) and (root / name).exists())
+    return sorted(found)
+
+
+def in_scope(root: Path, base: str) -> list[str]:
+    """List the test modules this landing adds or rewrites."""
+    return [name for name in changed(root, base) if is_test_module(name) and (root / name).exists()]
 
 
 def restore(root: Path) -> int:
@@ -1225,8 +1680,8 @@ def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[in
     red = 0
     refused = 0
     for target in targets:
-        if target in NO_PYTHON_SUBJECT:
-            print(f"-- {target} exempt: {NO_PYTHON_SUBJECT[target]}", flush=True)  # noqa: T201
+        if target in NO_MUTABLE_SUBJECT:
+            print(f"-- {target} exempt: {NO_MUTABLE_SUBJECT[target]}", flush=True)  # noqa: T201
             continue
         try:
             verdict = smoke(
@@ -1236,6 +1691,10 @@ def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[in
                 floor=args.floor,
                 budget=args.budget,
                 collect=args.collect,
+                shell_cap=args.shell_cap,
+                shell_floor=args.shell_floor,
+                shell_budget=args.shell_budget,
+                shell_discriminating=args.shell_discriminating_lines,
                 rows=rows,
             )
         except Refusal as refusal:
@@ -1275,7 +1734,7 @@ def _record(root: Path, targets: list[str], args: argparse.Namespace) -> int:
     rows = read_baseline(root)
     updated = dict(rows)
     for target in targets:
-        if target in NO_PYTHON_SUBJECT:
+        if target in NO_MUTABLE_SUBJECT:
             continue
         try:
             verdict = smoke(
@@ -1285,6 +1744,10 @@ def _record(root: Path, targets: list[str], args: argparse.Namespace) -> int:
                 floor=args.floor,
                 budget=args.budget,
                 collect=args.collect,
+                shell_cap=args.shell_cap,
+                shell_floor=args.shell_floor,
+                shell_budget=args.shell_budget,
+                shell_discriminating=args.shell_discriminating_lines,
                 rows=rows,
             )
         except Refusal as refusal:
@@ -1325,6 +1788,25 @@ def _record(root: Path, targets: list[str], args: argparse.Namespace) -> int:
     return 0
 
 
+def _judge_rust(root: Path) -> tuple[int, int]:
+    """Run the Rust rung and print its verdict, counting the red and the refusal.
+
+    A rung rather than a per-module smoke, because the shim is one crate of 53
+    mutants: there is nothing to sample and no rate to compare, only whether any
+    viable mutant survived (`tools/mutation_rust.py`).
+    """
+    try:
+        outcome = mutation_rust.run(root)
+    except mutation_rust.Refusal as refusal:
+        print(f"?? {mutation_rust.MANIFEST} could not run: {refusal}", file=sys.stderr)  # noqa: T201
+        return 0, 1
+    print(outcome, flush=True)  # noqa: T201 — stdout text IS this gate's output
+    if outcome.ok:
+        return 0, 0
+    print(mutation_rust.report(outcome), file=sys.stderr)  # noqa: T201
+    return 1, 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """Smoke every test module in scope and print one line per module."""
     parser = argparse.ArgumentParser(
@@ -1337,6 +1819,25 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--floor", type=float, default=FLOOR)
     parser.add_argument("--budget", type=float, default=BUDGET_S)
     parser.add_argument("--collect", type=float, default=COLLECT_S)
+    parser.add_argument("--shell-cap", type=int, default=SHELL_CAP)
+    parser.add_argument("--shell-floor", type=float, default=SHELL_FLOOR)
+    parser.add_argument("--shell-budget", type=float, default=SHELL_BUDGET_S)
+    parser.add_argument(
+        "--rust",
+        action="store_true",
+        help="run the Rust rung whatever the diff says (default: only when extension/ changed)",
+    )
+    parser.add_argument(
+        "--no-rust",
+        action="store_true",
+        help="skip the Rust rung even when the shim changed",
+    )
+    parser.add_argument(
+        "--shell-discriminating-lines",
+        action="store_true",
+        default=SHELL_DISCRIMINATING,
+        help="plant only on the shell lines the module's tests tell apart (measured worse)",
+    )
     parser.add_argument(
         "--report",
         action="store_true",
@@ -1370,20 +1871,28 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 2
 
-    targets = args.paths or in_scope(root, args.base)
-    if not targets:
-        print(f"mutation smoke: no test module added or changed against {args.base}")  # noqa: T201
+    touched = [] if args.paths else changed(root, args.base)
+    targets = args.paths or [
+        name for name in touched if is_test_module(name) and (root / name).exists()
+    ]
+    rust = args.rust or (mutation_rust.in_scope(touched) and not args.no_rust)
+    if not targets and not rust:
+        print(f"mutation smoke: nothing added or changed against {args.base}")  # noqa: T201
         return 0
 
     if args.record:
         return _record(root, targets, args)
 
     red, refused = _judge(root, targets, args)
+    if rust:
+        rust_red, rust_refused = _judge_rust(root)
+        red += rust_red
+        refused += rust_refused
     if refused and not args.report:
         return 2
     if red and not args.report:
         print(  # noqa: T201
-            f"{red} test module(s) did not notice the code changing. Strengthen the "
+            f"{red} subject(s) did not notice the code changing. Strengthen the "
             f"assertions that let the survivors above through — never weaken the floor.",
             file=sys.stderr,
         )

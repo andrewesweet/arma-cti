@@ -42,6 +42,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The mutation gate reaches shell and Rust, and SQF's non-goal is written down** (#246,
+  ADR-0067). `just mutation` gained two arms. The **shell arm** (`tools/mutation_shell.py`)
+  reads which line of which `spike/*.sh` each test executed out of a bash xtrace — `$BASH_ENV`
+  plus `BASH_XTRACEFD`, measured free at 14.75 s against 14.88 s — plants a bounded sample
+  there, and judges it against `SHELL_FLOOR = 20%`, set from a corpus sweep (100%, 80% ×4,
+  30% ×2) against a 0% weak fixture. Mutants go into a hardlinked stage and never into
+  `spike/` itself, because a live Arma tier reads those scripts. The **Rust rung**
+  (`tools/mutation_rust.py`) runs `cargo-mutants` over the shim when and only when
+  `extension/` changes — 52.7 s at four jobs, on 1.4% of landings — and reds on any viable
+  survivor. The escape list is renamed `NO_MUTABLE_SUBJECT` and falls from eleven rows to
+  four, two of which are now cost exemptions quoting their measured seconds. There is no SQF
+  arm and the reason is recorded beside the list: a per-mutant verdict is a fresh Arma world.
+  Measurements in `docs/research/mutation-shell-arm.md`.
+
 - **ADR-0066**, the multi-provider dispatch initiative's second decision record (#263, human ruling on
   #221 of 2026-08-05T21:14Z, Decision 1). Eight rulings that already govern landed code — substrate,
   dispatch granularity, the lane breaker, telemetry, durability, secrets, sequencing and quota

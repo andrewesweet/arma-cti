@@ -28,6 +28,12 @@ if TYPE_CHECKING:
     from pathlib import Path
     from types import ModuleType
 
+# The two arms first: `tools/` holds scripts rather than a package, so
+# `mutation_smoke`'s sibling imports resolve only once `load_tool` has registered
+# them in `sys.modules` (the `timeline` / `telemetry_log` pattern `load_tool`
+# documents).
+load_tool("mutation_shell")
+load_tool("mutation_rust")
 smoke_tool: ModuleType = load_tool("mutation_smoke")
 
 
