@@ -172,6 +172,13 @@
       "classes": [
         1
       ]
+    },
+    {
+      "name": "proposal_only",
+      "marker": "Routing-exception: proposal-only",
+      "classes": [
+        6
+      ]
     }
   ],
   "route_exceptions": [

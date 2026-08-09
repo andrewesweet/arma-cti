@@ -143,3 +143,23 @@ def test_no_gated_landing_is_a_class_1_exception_that_must_be_declared() -> None
     # It excepts class 1 only: an in-world landing still refuses with it declared.
     in_world = declared + "\nA probe issues `remoteExec` orders from a map UI."
     assert routing_policy.advisory_match(read.policy, in_world, route()) is not None
+
+
+def test_proposal_only_excepts_class_6_and_must_be_declared() -> None:
+    """A lane may study the gate that judges it when it can only propose.
+
+    Human ruling 2026-08-09 on #296: the conflict `gates_themselves` names is a
+    foreign lane *authoring* the mechanism that judges it. An issue that may only
+    propose — the human ruling on whatever it recommends — does not author, so it
+    may declare the exception and run on a foreign lane. Declared per issue and
+    visible in the body; there is still no flag that skips the class rule.
+    """
+    read = routing_policy.read_policy(POLICY)
+    assert read.policy is not None
+    studies_the_gate = "Design experiments over `config/dispatch-routing-policy.json`."
+    assert routing_policy.advisory_match(read.policy, studies_the_gate, route()) is not None
+    declared = studies_the_gate + "\n\nRouting-exception: proposal-only"
+    assert routing_policy.advisory_match(read.policy, declared, route()) is None
+    # It excepts class 6 only: a gated-surface landing still refuses with it declared.
+    also_gated = declared + "\nRecord the outcome in `CLAUDE.md`."
+    assert routing_policy.advisory_match(read.policy, also_gated, route()) is not None

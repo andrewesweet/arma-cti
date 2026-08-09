@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`Routing-exception: proposal-only`**, a declared exception to the routing policy's
+  `gates_themselves` class. That class keeps a foreign lane from **authoring** the mechanism that
+  judges it. An issue that may only *propose* — with the human ruling on whatever it recommends,
+  and landing nothing in the policy itself — does not author, so it may declare the exception and
+  run on a foreign lane.
+
+  Ruled by the human on 2026-08-09 against #296, which asks a foreign lane to study why most of the
+  backlog cannot leave Claude. Like the other two exceptions it is **declared per issue and visible
+  in the body**; it excepts that one class only, and `just dispatch` still has no flag that skips
+  the class rule (#296, #266).
+
 - **A human interlocutor seat at opus/xhigh, reached as `/interlocutor`** (#255, ADR-0068).
   The human's ruling of 2026-08-06 on #242 separated the human interface — rulings intake,
   status, observations, raising issues — from the orchestration standing loop and put it at
