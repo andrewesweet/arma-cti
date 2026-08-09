@@ -154,10 +154,121 @@ def test_arming_adds_the_runner_identity_and_authoritative_paths(tmp_path: Path)
 
 
 def test_the_recipe_is_an_attached_foreground_invocation() -> None:
-    recipe = JUSTFILE.read_text(encoding="utf-8").split("dispatch-follow dispatch_id", maxsplit=1)[
-        1
-    ]
+    recipe = JUSTFILE.read_text(encoding="utf-8").split("\ndispatch-follow *args:", maxsplit=1)[1]
     body = recipe.split("\n\n", maxsplit=1)[0]
     assert "uv run python tools/dispatch_follow.py" in body
     assert "nohup" not in body
     assert "&" not in body
+
+
+def test_the_first_finished_dispatch_is_reported_and_the_rest_are_named_pending(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    finished = tmp_path / "finished.json"
+    finished.write_text("{}\n", encoding="utf-8")
+    slow_pipe = tmp_path / "slow.pipe"
+    os.mkfifo(slow_pipe)
+    write_record(
+        tmp_path, "d-20260809-120000-aaaaaa", tmp_path / "slow.json", runner_pipe=slow_pipe
+    )
+    write_record(tmp_path, "d-20260809-120001-bbbbbb", finished)
+
+    code = dispatch_follow.main(
+        [
+            "d-20260809-120000-aaaaaa",
+            "d-20260809-120001-bbbbbb",
+            "--dispatch-dir",
+            str(tmp_path),
+        ]
+    )
+
+    assert code == 0
+    assert capsys.readouterr().out.splitlines() == [
+        "completion=dispatch_result_written",
+        "dispatch=d-20260809-120001-bbbbbb",
+        f"result={finished}",
+        "pending=d-20260809-120000-aaaaaa",
+    ]
+
+
+def test_following_one_dispatch_prints_no_pending_line(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    result_path = tmp_path / "only.json"
+    result_path.write_text("{}\n", encoding="utf-8")
+    write_record(tmp_path, "d-20260809-120002-cccccc", result_path)
+
+    dispatch_follow.main(["d-20260809-120002-cccccc", "--dispatch-dir", str(tmp_path)])
+
+    assert not any("pending=" in line for line in capsys.readouterr().out.splitlines())
+
+
+def test_a_pipe_that_is_already_closed_ends_the_wait_on_that_target(tmp_path: Path) -> None:
+    open_pipe = tmp_path / "open.pipe"
+    closed_pipe = tmp_path / "closed.pipe"
+    os.mkfifo(open_pipe)
+    os.mkfifo(closed_pipe)
+    holder = os.open(open_pipe, os.O_RDWR)
+    slow = dispatch_follow.FollowTarget("d-slow", tmp_path / "slow.json", open_pipe)
+    quick = dispatch_follow.FollowTarget("d-quick", tmp_path / "quick.json", closed_pipe)
+
+    try:
+        assert dispatch_follow.wait_for_first((slow, quick)) is quick
+    finally:
+        os.close(holder)
+
+
+def test_a_disappeared_first_runner_is_a_finding_that_still_names_the_pending_rest(
+    tmp_path: Path,
+) -> None:
+    gone_pipe = tmp_path / "gone.pipe"
+    os.mkfifo(gone_pipe)
+    gone = dispatch_follow.FollowTarget("d-gone", tmp_path / "gone.json", gone_pipe)
+    other = dispatch_follow.FollowTarget("d-other", tmp_path / "other.json", tmp_path / "o.pipe")
+
+    code, lines = dispatch_follow.follow_first((gone, other))
+
+    assert code == dispatch_follow.EXIT_FINDING
+    assert lines[0] == "finding=runner_disappeared"
+    assert "dispatch=d-gone" in lines
+    assert "pending=d-other" in lines
+
+
+def test_a_repeated_id_is_followed_once_so_a_cohort_loop_cannot_double_count() -> None:
+    assert dispatch_follow.unique_ids(["d-a", "d-b", "d-a"]) == ("d-a", "d-b")
+
+
+def test_no_id_at_all_is_refused_by_name(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    code = dispatch_follow.main(["--dispatch-dir", str(tmp_path)])
+
+    assert code == dispatch_follow.EXIT_REFUSED
+    assert capsys.readouterr().err.splitlines() == ["refusal=dispatch_id_missing"]
+
+
+def test_one_unreadable_record_refuses_by_that_id_rather_than_following_the_others(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    result_path = tmp_path / "fine.json"
+    result_path.write_text("{}\n", encoding="utf-8")
+    write_record(tmp_path, "d-20260809-120003-dddddd", result_path)
+
+    code = dispatch_follow.main(
+        [
+            "d-20260809-120003-dddddd",
+            "d-20260809-120004-eeeeee",
+            "--dispatch-dir",
+            str(tmp_path),
+        ]
+    )
+
+    captured = capsys.readouterr()
+    assert code == dispatch_follow.EXIT_REFUSED
+    assert "refusal=dispatch_follow_unavailable" in captured.err
+    assert "dispatch=d-20260809-120004-eeeeee" in captured.err
+    assert captured.out == ""

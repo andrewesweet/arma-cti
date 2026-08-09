@@ -1,4 +1,4 @@
-"""Follow one dispatch to its recorded result without detaching (#280).
+"""Follow dispatches to the first recorded result without detaching (#280, #295).
 
 `just dispatch` deliberately launches its runner outside the tool harness. This
 program is the complementary process seam: the caller starts it as a harness-
@@ -11,6 +11,15 @@ runner, and then distinguishes the two honest endings: the recorded result was
 written, or the runner disappeared without one. There is no timeout, polling
 interval, failure-class inference, or stall judgement here; `just watch` retains
 the latter responsibility.
+
+Several ids may be followed at once, and the wait then ends on the **first** of
+them, naming the rest as still pending. That is the whole of #295's mechanism.
+Following a cohort to its *last* completion is a barrier: the seat sleeps until
+the slowest member finishes, so slots freed by the faster ones stay empty with
+nobody awake to refill them. Measured over four days of real dispatches, that
+barrier delayed the seat's wake by 296 agent-minutes, once by 115 minutes on a
+single cohort; `docs/research/dispatch-cost-and-occupancy.md` carries the
+derivation.
 """
 
 from __future__ import annotations
@@ -22,7 +31,10 @@ import select
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 DEFAULT_DISPATCH_DIR = Path.home() / ".arma-cti" / "dispatches"
 EXIT_FINDING = 1
@@ -70,53 +82,88 @@ def read_target(dispatch_dir: Path, dispatch_id: str) -> FollowTarget:
     )
 
 
-def wait_for_runner(target: FollowTarget) -> None:
-    """Stay attached until the recorded runner closes its pipe, with no time bound."""
-    pipe_fd = os.open(target.runner_pipe, os.O_RDONLY | os.O_NONBLOCK)
+def wait_for_first(targets: Sequence[FollowTarget]) -> FollowTarget:
+    """Stay attached until the first recorded runner closes its pipe, with no time bound."""
+    opened: list[tuple[int, FollowTarget]] = []
     try:
-        try:
-            already_closed = os.read(pipe_fd, 1) == b""
-        except BlockingIOError:
-            already_closed = False
-        if not already_closed:
-            select.select((pipe_fd,), (), ())
+        for target in targets:
+            pipe_fd = os.open(target.runner_pipe, os.O_RDONLY | os.O_NONBLOCK)
+            opened.append((pipe_fd, target))
+            try:
+                already_closed = os.read(pipe_fd, 1) == b""
+            except BlockingIOError:
+                already_closed = False
+            if already_closed:
+                return target
+        readable, _, _ = select.select(tuple(fd for fd, _ in opened), (), ())
+        first = readable[0]
+        return next(target for fd, target in opened if fd == first)
     finally:
-        os.close(pipe_fd)
+        for pipe_fd, _ in opened:
+            os.close(pipe_fd)
 
 
-def completion_lines(target: FollowTarget) -> tuple[str, ...]:
+def wait_for_runner(target: FollowTarget) -> None:
+    """Stay attached until this one recorded runner closes its pipe."""
+    wait_for_first((target,))
+
+
+def pending_ids(targets: Sequence[FollowTarget], reported: FollowTarget) -> tuple[str, ...]:
+    """Name the followed dispatches that are neither reported nor finished."""
+    return tuple(
+        target.dispatch_id
+        for target in targets
+        if target.dispatch_id != reported.dispatch_id and not target.result_path.is_file()
+    )
+
+
+def _pending_line(pending: Sequence[str]) -> tuple[str, ...]:
+    """Render the pending remainder only when there is one, so one id reads as before."""
+    return (f"pending={','.join(pending)}",) if pending else ()
+
+
+def completion_lines(target: FollowTarget, pending: Sequence[str] = ()) -> tuple[str, ...]:
     """Render a completion using only values read from the dispatch record."""
     return (
         "completion=dispatch_result_written",
         f"dispatch={target.dispatch_id}",
         f"result={target.result_path}",
+        *_pending_line(pending),
     )
 
 
-def finding_lines(target: FollowTarget) -> tuple[str, ...]:
+def finding_lines(target: FollowTarget, pending: Sequence[str] = ()) -> tuple[str, ...]:
     """Render the ADR-0022 ending without inventing a result or failure class."""
     return (
         "finding=runner_disappeared",
         f"dispatch={target.dispatch_id}",
         f"result={target.result_path}",
         "action=inspect the dispatch log and use just watch for stall classification",
+        *_pending_line(pending),
     )
+
+
+def follow_first(targets: Sequence[FollowTarget]) -> tuple[int, tuple[str, ...]]:
+    """Follow every target to whichever ends first, naming the rest as pending."""
+    for target in targets:
+        if target.result_path.is_file():
+            return 0, completion_lines(target, pending_ids(targets, target))
+    first = wait_for_first(targets)
+    pending = pending_ids(targets, first)
+    if first.result_path.is_file():
+        return 0, completion_lines(first, pending)
+    return EXIT_FINDING, finding_lines(first, pending)
 
 
 def follow(target: FollowTarget) -> tuple[int, tuple[str, ...]]:
     """Follow one target to a recorded completion or a disappeared-runner finding."""
-    if target.result_path.is_file():
-        return 0, completion_lines(target)
-    wait_for_runner(target)
-    if target.result_path.is_file():
-        return 0, completion_lines(target)
-    return EXIT_FINDING, finding_lines(target)
+    return follow_first((target,))
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse the public follow form and the dispatcher's internal arm form."""
     parser = argparse.ArgumentParser(prog="dispatch-follow", description=__doc__)
-    parser.add_argument("dispatch_id", nargs="?", default="")
+    parser.add_argument("dispatch_ids", nargs="*", default=[])
     parser.add_argument(
         "--dispatch-dir",
         type=Path,
@@ -150,28 +197,39 @@ def arm_from_args(args: argparse.Namespace) -> int:
     return 0
 
 
+def unique_ids(requested: Sequence[str]) -> tuple[str, ...]:
+    """Keep the caller's order and follow each named dispatch once."""
+    seen: dict[str, None] = {}
+    for dispatch_id in requested:
+        seen.setdefault(dispatch_id, None)
+    return tuple(seen)
+
+
 def follow_from_args(args: argparse.Namespace) -> int:
-    """Read and follow one public dispatch request."""
-    if not args.dispatch_id:
+    """Read every named dispatch and follow them all to whichever ends first."""
+    requested = unique_ids(args.dispatch_ids)
+    if not requested:
         return emit(("refusal=dispatch_id_missing",), EXIT_REFUSED)
+    targets: list[FollowTarget] = []
+    for dispatch_id in requested:
+        try:
+            targets.append(read_target(args.dispatch_dir, dispatch_id))
+        except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as error:
+            return emit(
+                (
+                    "refusal=dispatch_follow_unavailable",
+                    f"dispatch={dispatch_id}",
+                    f"detail={error}",
+                ),
+                EXIT_REFUSED,
+            )
     try:
-        target = read_target(args.dispatch_dir, args.dispatch_id)
-    except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as error:
-        return emit(
-            (
-                "refusal=dispatch_follow_unavailable",
-                f"dispatch={args.dispatch_id}",
-                f"detail={error}",
-            ),
-            EXIT_REFUSED,
-        )
-    try:
-        code, lines = follow(target)
+        code, lines = follow_first(targets)
     except OSError as error:
         return emit(
             (
                 "refusal=runner_unobservable",
-                f"dispatch={target.dispatch_id}",
+                f"dispatch={','.join(requested)}",
                 f"detail={error}",
             ),
             EXIT_REFUSED,

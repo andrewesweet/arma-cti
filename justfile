@@ -435,8 +435,15 @@ dispatch *args:
 # path in its own record. This invocation has no timeout and does not classify
 # stalls: a vanished runner is a named finding, while `just watch` keeps the
 # BLIND/stall judgement (#280, ADR-0022, ADR-0049).
-dispatch-follow dispatch_id *args:
-    uv run python tools/dispatch_follow.py "{{ dispatch_id }}" {{ args }}
+#
+# Several ids may be named, and the wait then ends on the **first** of them,
+# printing `pending=` for the rest. Follow a cohort this way rather than looping
+# one follower per id inside a single background task: that loop is a barrier,
+# and the seat sleeps through every slot the faster members free. Measured at 296
+# agent-minutes of delayed wake over four days, once 115 minutes on one cohort
+# (#295, docs/research/dispatch-cost-and-occupancy.md).
+dispatch-follow *args:
+    uv run python tools/dispatch_follow.py {{ args }}
 
 # Arm a detached watcher over a dispatched agent's run, and read what the
 # watchers found (#198, ADR-0053). No Arma, no lock, no turn held open.
@@ -781,6 +788,20 @@ handoff issue:
 # a message and nothing written — never a silent empty brief (#168/#183).
 brief issue *args:
     @uv run python tools/brief.py {{ issue }} {{ args }}
+
+# Report one window's seat occupancy in agent-minutes, from the dispatch records
+# alone (#295, docs/research/dispatch-cost-and-occupancy.md). No Arma, no lock:
+# it reads `~/.arma-cti/dispatches/` and writes nothing.
+#
+#   just occupancy --since 2026-08-09T07:00Z --until 2026-08-09T10:24Z --limit 5
+#
+# `lost=` is capacity the seat was entitled to under the human's WIP ruling and
+# did not use — the outcome measure an occupancy intervention has to move, and
+# the one `just queue state` cannot produce because a count of what is in flight
+# now cannot show a sawtooth. It carries no verdict: this program cannot see the
+# queue, so a block may honestly have been short of eligible work.
+occupancy *args:
+    uv run python tools/occupancy.py {{ args }}
 
 # The multi-provider setup that does not need a human (#230, for #221/#229).
 # No Arma, no lock: it reads this box, writes user-owned files, and generates —

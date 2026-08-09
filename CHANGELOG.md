@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`just dispatch-follow` takes several ids and wakes on the first of them, not the last** (#295).
+  The seat had been following a refill cohort by looping one follower per id inside a single
+  background task, which is a barrier: the wake fires when the *slowest* member finishes, so slots
+  freed by the faster ones sit empty with nobody awake to refill them. Measured over four days of
+  real dispatches, that barrier delayed the seat's wake by 296 agent-minutes, once by 115 minutes on
+  one cohort — and over the 204-minute block of 2026-08-09, 620 of the 722 lost agent-minutes (86%)
+  fell while the seat was asleep behind it, against at most 5 attributable to writing briefs. One
+  invocation now follows the whole cohort, prints `pending=` for the members still running, and
+  keeps every existing single-id ending unchanged.
+
 - **The gated-path guard and the format/lint hooks now read a Codex edit.** Claude Code's editing
   tools name their target in `file_path`; Codex's carries a V4A patch envelope whose written paths
   are inside the patch text, so the guard could not see them and failed closed — correctly, but it
@@ -41,6 +51,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   re-expands imports — the symlink has no such question (#264).
 
 ### Added
+
+- **`tools/occupancy.py`, the seat's occupancy instrument** (#295). `just queue state` answers how
+  many dispatches are in flight *now*, which cannot show a sawtooth. This reads the dispatch records
+  and reports one window in agent-minutes — capacity under the ruled WIP limit, used, lost, and the
+  per-minute series — so an intervention aimed at occupancy has a before and an after over real
+  dispatches rather than a simulation. It reads and never writes, carries no verdict (it cannot see
+  the queue, so a short block may simply have been short of eligible work), and names the
+  still-running dispatches it counted rather than leaving them to be inferred. Recipe proposed for
+  the CLAUDE.md command table; the row follows through the sign-off gate.
 
 - **The mutation gate reaches shell and Rust, and SQF's non-goal is written down** (#246,
   ADR-0067). `just mutation` gained two arms. The **shell arm** (`tools/mutation_shell.py`)
