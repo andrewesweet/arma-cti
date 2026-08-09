@@ -72,6 +72,7 @@
       "Bash(just check)",
       "Bash(just unit)",
       "Bash(just fast)",
+      "Bash(just mutation-compare:*)",
       "Bash(just land)",
       "Bash(just land --dry-run)",
       "Bash(just discard:*)",
