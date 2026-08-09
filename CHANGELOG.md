@@ -13,8 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The seat had been following a refill cohort by looping one follower per id inside a single
   background task, which is a barrier: the wake fires when the *slowest* member finishes, so slots
   freed by the faster ones sit empty with nobody awake to refill them. Measured over four days of
-  real dispatches, that barrier delayed the seat's wake by 296 agent-minutes, once by 115 minutes on
-  one cohort — and over the 204-minute block of 2026-08-09, 620 of the 722 lost agent-minutes (86%)
+  real dispatches, that barrier delayed the seat's wake by 292 agent-minutes, once by 115 minutes on
+  one cohort — and over the 191-minute block of 2026-08-09, 596 of the 669 lost agent-minutes (89%)
   fell while the seat was asleep behind it, against at most 5 attributable to writing briefs. One
   invocation now follows the whole cohort, prints `pending=` for the members still running, and
   keeps every existing single-id ending unchanged.

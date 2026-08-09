@@ -439,7 +439,7 @@ dispatch *args:
 # Several ids may be named, and the wait then ends on the **first** of them,
 # printing `pending=` for the rest. Follow a cohort this way rather than looping
 # one follower per id inside a single background task: that loop is a barrier,
-# and the seat sleeps through every slot the faster members free. Measured at 296
+# and the seat sleeps through every slot the faster members free. Measured at 292
 # agent-minutes of delayed wake over four days, once 115 minutes on one cohort
 # (#295, docs/research/dispatch-cost-and-occupancy.md).
 dispatch-follow *args:

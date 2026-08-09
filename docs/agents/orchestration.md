@@ -83,6 +83,14 @@ turn (see below); `#276` and retro 27's bank carry the evidence. A runbook that
 described the seat as it *should* run, rather than as it *did*, would be the wrong
 document.
 
+It happened again on 2026-08-09 and the human corrected it a third time, so #295
+measured it rather than exhorting against it: the seat used **286 of 955** ruled
+agent-minutes over a 191-minute block, mean occupancy **1.50 of 5**, and **89% of the
+loss fell while the seat was not running at all**. The cause was mechanical — a cohort
+followed to its last completion instead of its first — and it is fixed in
+`just dispatch-follow` below. What that leaves the seat responsible for is small and
+worth naming: the loss while *awake* was 73 agent-minutes over 19 minutes of turns.
+
 ## The top-of-turn sequence
 
 1. **`just watch-report`** — leads, because CLAUDE.md already puts this read at the
@@ -105,7 +113,12 @@ document.
    intent this session. This, and not the queue, is the step that decides.
 4. **`just brief N`**, then write the variable half — the task, the scope, the ground
    truth, and the reason for a non-default seat. This is the real work of the turn;
-   an unedited brief is obviously unfinished by construction.
+   an unedited brief is obviously unfinished by construction. Measured at **837 output
+   tokens and about 30 seconds**, 57% of a dispatch turn's generation and 0.028 pp₅ₕ
+   (#295). Do not spend that as a reason to write less of it: over the block where the
+   seat's occupancy collapsed, all the brief-writing in it was worth under 1% of the
+   loss, and the same four days' briefs are what stopped #256 flipping ADR-0064's
+   approval and licensed #246 to conclude "not worth it".
 5. **Dispatch.**
 6. On completion: paste `just verdict`, run `just admission audit`, **judge the close**.
 7. Episodically: the retro, the rulings intake, the evidence banking.
@@ -135,14 +148,31 @@ was made explicit: one left its gate uncommitted with "awaiting completion
 notification" (`just land` refused `dirty_tree`), one asked whether to run
 `git checkout --` with no caller listening.
 
-**`just dispatch-follow <id>` (#280).** Restores the completion edge *inside a live
-orchestrator session*: a harness-attached follower that exits when the dispatch writes
-its result, printing the dispatch id and result path from the record, and whose exit
-re-invokes the seat. It has no timeout and classifies nothing — a runner that
-disappears without a result is `finding=runner_disappeared`, and stall judgement stays
-with `just watch`. **It cannot survive the session ending.** Cross-session autonomy
-requires the scheduled-agent mechanism that is with the human and is explicitly out of
-scope; do not imply autonomy the mechanism does not provide.
+**`just dispatch-follow <id> [<id> …]` (#280, #295).** Restores the completion edge
+*inside a live orchestrator session*: a harness-attached follower that exits when a
+dispatch writes its result, printing the dispatch id and result path from the record,
+and whose exit re-invokes the seat. It has no timeout and classifies nothing — a runner
+that disappears without a result is `finding=runner_disappeared`, and stall judgement
+stays with `just watch`. **It cannot survive the session ending.** Cross-session
+autonomy requires the scheduled-agent mechanism that is with the human and is explicitly
+out of scope; do not imply autonomy the mechanism does not provide.
+
+**Follow a cohort in one invocation; never loop one follower per id inside one
+background task.** The loop is a barrier: it returns when the *slowest* member finishes,
+so it produces one wake, and every slot the faster members freed stays empty until then.
+`just dispatch-follow a b c` returns on the **first** of them and prints `pending=` for
+the rest, which is the wake the seat actually needs — something freed a slot, come and
+refill it. Re-follow the remainder in the same turn.
+
+The rule is measured, not tidy-minded (#295, `docs/research/dispatch-cost-and-occupancy.md`).
+Over 2026-08-06/09 the loop delayed the seat's wake by **292 agent-minutes**, once by
+**115 minutes** on a single cohort: at 07:46:59Z on 2026-08-09 the seat followed three
+dispatches that ended at 07:53, 08:03 and 09:48, was woken at 09:48, and slept through
+two freed slots with 48 issues eligible. Over that block the seat used **286 of 955**
+ruled agent-minutes, and **89% of the 669 lost fell while it was asleep** — against at
+most 5 attributable to writing briefs. #278's `action=refill-before-landing` was printed
+correctly throughout and could not help: it prints at the top of a turn, and there was no
+turn.
 
 ## The review function
 
@@ -175,7 +205,8 @@ do.
 | Recording a ruling | `just queue freeze/open/wip/package … --ruling "…"` | The freeze, WIP limit and carve-outs written to a file `just dispatch` reads per dispatch — never memory |
 | Before dispatch | `just brief N` | The invariant half composed from data; the seat writes the variable half |
 | Dispatching | `just dispatch --lane … --profile … --seat … --issue N` | Hand work to a lane, return at once with a dispatch id |
-| Following a dispatch | `just dispatch-follow <id>` | The within-session completion edge (#280) |
+| Following a dispatch | `just dispatch-follow <id> [<id> …]` | The within-session completion edge — **the first** of the ids, never a loop over a cohort (#280, #295) |
+| Asking whether occupancy held | `just occupancy --since … --until … --limit N` | One window's agent-minutes: capacity, used, lost. `just queue state` counts what is in flight now and so cannot show a sawtooth (#295) |
 | At dispatch | `just watch <name> <worktree> [subject]` | Arm the detached stall watcher |
 | On a finished pool | `just verdict [pool-dir]` | The record a close quotes — **paste verbatim, never retype the SHA or evidence path** (#219) |
 | Judging a close | `just admission audit --issue N` | The checkable Part A claims, computed and cited |
@@ -262,5 +293,15 @@ Proposed sentence, verbatim, for the gate:
 > The orchestration seat's operating rules live in `docs/agents/orchestration.md`;
 > read it before dispatching.
 
+A second item joins it from #295, on the same gate and for the same reason — a row for
+`CLAUDE.md`'s command table, landing with its recipe as the convention requires, but on
+a human-gated file:
+
+> | `just occupancy --since T --until T --limit N` | One window's seat occupancy in
+> agent-minutes from the dispatch records: capacity under the ruled WIP limit, used,
+> lost, and the per-minute series. Reads; carries no verdict, because it cannot see the
+> queue | No | Judging whether an occupancy intervention held, before and after |
+
 Refs #105, #198, #209, #217, #218, #219, #220, #240, #242, #250, #251, #252, #253,
-#258, #260, #265, #276, #278, #279, #280, ADR-0042, ADR-0053, ADR-0057, ADR-0061.
+#258, #260, #265, #276, #278, #279, #280, #294, #295, ADR-0042, ADR-0053, ADR-0057,
+ADR-0061.

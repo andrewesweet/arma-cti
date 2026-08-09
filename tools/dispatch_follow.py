@@ -17,7 +17,7 @@ them, naming the rest as still pending. That is the whole of #295's mechanism.
 Following a cohort to its *last* completion is a barrier: the seat sleeps until
 the slowest member finishes, so slots freed by the faster ones stay empty with
 nobody awake to refill them. Measured over four days of real dispatches, that
-barrier delayed the seat's wake by 296 agent-minutes, once by 115 minutes on a
+barrier delayed the seat's wake by 292 agent-minutes, once by 115 minutes on a
 single cohort; `docs/research/dispatch-cost-and-occupancy.md` carries the
 derivation.
 """
