@@ -33,6 +33,7 @@ if TYPE_CHECKING:
 
     from cti_daemon import campaign as campaign_module
     from cti_daemon import planner
+    from cti_daemon import snapshot as snapshot_module
     from cti_daemon.port import CommandPort
     from cti_daemon.telemetry import Telemetry
 
@@ -107,6 +108,40 @@ class ReportCycle:
             message = f"{side} is already under a Commander"
             raise ValueError(message)
         self._commanders[side] = brain
+
+    def snapshot(self) -> snapshot_module.Snapshot:
+        """Return a consistent copy of the Campaign's strategic state, for a save (#291).
+
+        The seam `save` reaches for rather than the Campaign: this object is the
+        one that holds what a Campaign in play is made of (the docstring's reason
+        for existing), so the save path asks the cycle and not the aggregate. A
+        frozen value, so a caller may serialise and write it off the request
+        lock — the snapshot cannot move under a concurrent report, because it is
+        already a photograph rather than the live object it came from.
+        """
+        return self.campaign.to_snapshot()
+
+    def apply(self, snapshot: snapshot_module.Snapshot) -> tuple[str, ...]:
+        """Load a snapshot into the live Campaign, and re-seat the cycle on it (#291).
+
+        The Campaign's `apply_snapshot` validates before it mutates and raises on
+        a fault, so reaching past this line means the load succeeded — and what
+        this adds is the cycle's own caches. A loaded Campaign's picture differs
+        from the one this cycle last wrote down, so the observation and loadout
+        dedup caches are cleared to force the next report to record them rather
+        than read as no-change, and a resumed Campaign has announced no end.
+
+        The AI Commanders a session wired survive a load: they are session
+        wiring, not Campaign state (ADR-0008 defers player role to #25), so the
+        session that loads is the session that decides who is playing. Returns
+        the UIDs whose saved kit the menu no longer offers, passed through from
+        the Campaign so a caller surfaces them.
+        """
+        dropped = self.campaign.apply_snapshot(snapshot)
+        self._last_observation = {}
+        self._dressed = {}
+        self._concluded = False
+        return dropped
 
     def fold(self, told: report.Report) -> observation.Observation:
         """Take one report of the world into the Campaign, and play on it.

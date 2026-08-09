@@ -26,6 +26,8 @@ from cti_daemon.telemetry import Telemetry
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
 
+    from cti_daemon.store import Store
+
 DEFAULT_HOST: Final = "127.0.0.1"
 DEFAULT_PORT: Final = 9099
 # Where a *play* session's evidence lands when nobody says otherwise. Not
@@ -115,6 +117,49 @@ class _Server(socketserver.ThreadingTCPServer):
     daemon_threads = True
 
 
+def _control_handler_for(daemon: Daemon) -> type[socketserver.StreamRequestHandler]:
+    """Bind one daemon to a control connection handler, one instance per connection.
+
+    The same shape as `_handler_for`, reached through `handle_control_line`
+    rather than `handle_line`: save and load are the control lane (#291), and a
+    connection to this port is the one place the snapshot's slow durability work
+    is asked for. The lane is served serially (see `_ControlServer`), so this
+    handler never runs two connections at once.
+    """
+
+    class Handler(socketserver.StreamRequestHandler):
+        timeout = IDLE_SECONDS
+
+        def handle(self) -> None:
+            try:
+                for raw in self.rfile:
+                    line = raw.decode("utf-8", errors="replace").strip()
+                    if not line:
+                        continue
+                    self.wfile.write(daemon.handle_control_line(line).encode("utf-8") + b"\n")
+                    self.wfile.flush()
+            except TimeoutError:
+                return
+
+    return Handler
+
+
+class _ControlServer(socketserver.TCPServer):
+    """One control connection at a time: the control lane's own serialisation.
+
+    The command lane serialises through the daemon's one lock, and its replay
+    window (`Daemon.answered`) is safe under that because every access is inside
+    it. The control lane's replay window (`Daemon._control_answered`) is the same
+    data structure without an internal lock, and the control lane does its slow
+    work *off* the command lock — so its serialisation is structural: a plain
+    `TCPServer` serves one connection at a time, and `handle_control_line` never
+    runs twice concurrently. A wedged save blocks the next control connection,
+    never a Command judgement on the command lane.
+    """
+
+    allow_reuse_address = True
+
+
 def wire(  # noqa: PLR0913 — see the comment below: every argument is one
     # authored input, and a config object would be one indirection more.
     # Every argument is one authored input this wiring is built from, all
@@ -189,12 +234,19 @@ def build_daemon(  # noqa: PLR0913 — see `wire`, whose arguments these are.
     map_id: str = DEFAULT_MAP,
     archive_path: Path | None = None,
     epoch: str | None = None,
+    store: Store | None = None,
 ) -> Daemon:
     """Build a stock daemon on this checkout's authored files (#76, #164).
 
     A caller that has its own files says so here rather than reaching past a
     default. The epoch is this daemon's identity rather than one of the wiring's
     parts, which is why it stops here instead of going into `wire`.
+
+    `store` wires Phase-2 save/load (#291): None on the daemon the game talks to
+    (it has nothing to persist to and refuses save/load by name), and a `Store`
+    on one brought up with a control lane. The concrete store is #290's; this
+    root takes one in rather than building it, so the seam moves when that lands
+    without a second composition root.
     """
     return Daemon(
         wiring=wire(
@@ -206,6 +258,7 @@ def build_daemon(  # noqa: PLR0913 — see `wire`, whose arguments these are.
             archive_path=archive_path,
         ),
         epoch=epoch,
+        store=store,
     )
 
 
@@ -217,6 +270,7 @@ def build(  # noqa: PLR0913 — `wire`'s arguments plus who is under AI command.
     manifests_path: Path | None = None,
     loadouts_path: Path | None = None,
     map_id: str = DEFAULT_MAP,
+    store: Store | None = None,
 ) -> Daemon:
     """Build the daemon this process will serve, under command or not (#16, #17).
 
@@ -235,6 +289,7 @@ def build(  # noqa: PLR0913 — `wire`'s arguments plus who is under AI command.
         manifests_path=manifests_path,
         loadouts_path=loadouts_path,
         map_id=map_id,
+        store=store,
     )
     for side, seed in ai or ():
         daemon.commanded_by(
@@ -294,8 +349,20 @@ def serve(  # noqa: PLR0913 — Main's knobs, one parameter apiece: where to lis
     manifests_path: Path | None = None,
     loadouts_path: Path | None = None,
     map_id: str = DEFAULT_MAP,
+    store: Store | None = None,
+    control_port: int = 0,
+    on_control_ready: Callable[[int], None] | None = None,
 ) -> None:
-    """Serve until interrupted. Calls `on_ready` with the bound port and epoch."""
+    """Serve until interrupted. Calls `on_ready` with the bound port and epoch.
+
+    `store` brings up the control lane (#291): a second listener, on its own
+    `control_port`, that answers save and load. The lane is served serially so
+    its replay window needs no lock of its own (`_ControlServer`). Brought up
+    before the command listener so a caller that waits on `on_ready` finds the
+    control port already bound when `on_control_ready` fires. None leaves the
+    daemon the game has always had — no store, no control lane, save/load
+    refused — so nothing changes for a session that does not ask to persist.
+    """
     check_loopback(host)
     daemon = build(
         telemetry_path,
@@ -304,11 +371,27 @@ def serve(  # noqa: PLR0913 — Main's knobs, one parameter apiece: where to lis
         manifests_path=manifests_path,
         loadouts_path=loadouts_path,
         map_id=map_id,
+        store=store,
     )
-    with _Server((host, port), _handler_for(daemon)) as server:
-        if on_ready is not None:
-            on_ready(int(server.server_address[1]), daemon.epoch)
-        server.serve_forever()
+    control_server = None
+    if store is not None:
+        control_server = _ControlServer((host, control_port), _control_handler_for(daemon))
+        if on_control_ready is not None:
+            on_control_ready(int(control_server.server_address[1]))
+        # A thread of its own: the command listener's `serve_forever` blocks the
+        # foreground, and the control lane must answer alongside it.
+        threading.Thread(target=control_server.serve_forever, daemon=True).start()
+    try:
+        with _Server((host, port), _handler_for(daemon)) as server:
+            if on_ready is not None:
+                on_ready(int(server.server_address[1]), daemon.epoch)
+            server.serve_forever()
+    finally:
+        if control_server is not None:
+            # Called from this thread, the one `serve_forever` above ran on, to
+            # stop the control thread's `serve_forever` — `shutdown` must not be
+            # called from the thread it stops.
+            control_server.shutdown()
 
 
 class DaemonNeverCameUpError(Exception):
@@ -322,13 +405,21 @@ class DaemonNeverCameUpError(Exception):
 BRING_UP_SECONDS: Final = 5.0
 
 
-def serve_in_thread(
-    host: str = DEFAULT_HOST, port: int = 0, *, telemetry_path: Path = DEFAULT_TELEMETRY
-) -> int:
-    """Start the daemon on a background thread and return the bound port.
+def _bring_up(
+    host: str,
+    port: int,
+    *,
+    telemetry_path: Path,
+    store: Store | None,
+    control_port: int,
+) -> tuple[int, int | None]:
+    """Start `serve` on a background thread; return (command_port, control_port|None).
 
-    Raises rather than indexing an empty list: a bind failure used to surface as
-    a bare `IndexError` out of `bound[0]`, which says nothing about a daemon.
+    The shared bring-up for both public wrappers. `serve` binds the control
+    listener and fires `on_control_ready` before it binds the command listener
+    and fires `on_ready`, so the control port is recorded before `ready` is set
+    and is in hand the moment the command port is. The control port is None when
+    no store was handed in — no control lane.
     """
     # Asked here as well as inside `serve`, because a refusal raised on the
     # background thread would reach the caller as "nothing bound in five
@@ -336,15 +427,25 @@ def serve_in_thread(
     check_loopback(host)
     ready = threading.Event()
     bound: list[int] = []
+    control_bound: list[int] = []
 
     def _record(bound_port: int, _epoch: str) -> None:
         bound.append(bound_port)
         ready.set()
 
+    def _record_control(bound_port: int) -> None:
+        control_bound.append(bound_port)
+
     thread = threading.Thread(
         target=serve,
         args=(host, port),
-        kwargs={"telemetry_path": telemetry_path, "on_ready": _record},
+        kwargs={
+            "telemetry_path": telemetry_path,
+            "on_ready": _record,
+            "store": store,
+            "control_port": control_port,
+            "on_control_ready": _record_control,
+        },
         daemon=True,
     )
     thread.start()
@@ -354,7 +455,59 @@ def serve_in_thread(
             f"within {BRING_UP_SECONDS} seconds"
         )
         raise DaemonNeverCameUpError(message)
-    return bound[0]
+    command_port = bound[0]
+    if store is None:
+        return command_port, None
+    if not control_bound:
+        # Unreachable barring a reorder in `serve`: `on_control_ready` fires
+        # before `on_ready`. Named rather than indexed, for the reason `bound` is.
+        message = (
+            f"daemon's control lane never came up alongside {host}:{command_port} "
+            f"within {BRING_UP_SECONDS} seconds"
+        )
+        raise DaemonNeverCameUpError(message)
+    return command_port, control_bound[0]
+
+
+def serve_in_thread(
+    host: str = DEFAULT_HOST, port: int = 0, *, telemetry_path: Path = DEFAULT_TELEMETRY
+) -> int:
+    """Start the daemon on a background thread and return the bound port.
+
+    Raises rather than indexing an empty list: a bind failure used to surface as
+    a bare `IndexError` out of `bound[0]`, which says nothing about a daemon.
+    """
+    command_port, _control_port = _bring_up(
+        host, port, telemetry_path=telemetry_path, store=None, control_port=0
+    )
+    return command_port
+
+
+def serve_control_in_thread(
+    host: str = DEFAULT_HOST,
+    *,
+    telemetry_path: Path = DEFAULT_TELEMETRY,
+    store: Store,
+    control_port: int = 0,
+) -> tuple[int, int]:
+    """Start a daemon WITH its control lane; return (command_port, control_port).
+
+    The control-aware counterpart to `serve_in_thread`: that one returns the
+    command port for a daemon with no store; this brings up the control lane too
+    and returns both ports. Kept apart so `serve_in_thread` keeps its `int`
+    return and the callers that never persist stay untyped against a union they
+    do not use.
+    """
+    command_port, control_port_bound = _bring_up(
+        host, 0, telemetry_path=telemetry_path, store=store, control_port=control_port
+    )
+    if control_port_bound is None:
+        # Unreachable: `_bring_up` returns None for the control port only when
+        # no store was handed in, and this wrapper requires one. Named rather
+        # than asserted so the invariant survives `-O`.
+        message = "control lane never bound despite a store"
+        raise DaemonNeverCameUpError(message)
+    return command_port, control_port_bound
 
 
 # What a seed may read as. Matched whole rather than stripped of its sign

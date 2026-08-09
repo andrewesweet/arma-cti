@@ -128,6 +128,50 @@ class Roster:
         """
         return tuple(squad for squad in self._squads.values() if squad.side == side)
 
+    def all(self) -> tuple[Squad, ...]:
+        """Every Squad both sides hold, in the order they were bought.
+
+        The snapshot's view of the roster (ADR-0008, #291): both sides in one
+        document, in buy order, which is what makes a round trip put a Squad back
+        where the save found it. Named apart from `roll` because a snapshot is the
+        one caller entitled to both sides' order of battle at once — a view never
+        is (#27), and a planner reaches the roster only through its own side.
+        """
+        return tuple(self._squads.values())
+
+    def restore(self, squads: tuple[Squad, ...]) -> None:
+        """Rebuild the roster from a saved record, ids and mint counter intact.
+
+        A resumed Campaign has to mint the same ids in the same order (ADR-0003):
+        the ids the snapshot carried are put back exactly, and `_minted` is set so
+        the next Purchase continues the count rather than colliding with a Squad
+        the save already holds. The mint counter is read off the id suffix a
+        `Roster.add` writes, so a save from this codebase round-trips; an id that
+        does not carry one leaves that side's counter at the number of Squads it
+        holds, which is the safe lower bound for the next mint.
+        """
+        rebuilt: dict[str, Squad] = {}
+        counts: dict[str, int] = {}
+        for squad in squads:
+            rebuilt[squad.id] = squad
+            counts[squad.side] = counts.get(squad.side, 0) + 1
+        self._squads = rebuilt
+        # The highest id suffix per side, so the next mint does not reuse a live
+        # id. Falls back to the count for an id `add` did not shape.
+        minted: dict[str, int] = {}
+        for side, count in counts.items():
+            highest = 0
+            for squad in rebuilt.values():
+                if squad.side != side:
+                    continue
+                prefix = f"{side}-"
+                if squad.id.startswith(prefix):
+                    rest = squad.id.removeprefix(prefix)
+                    if rest.isdigit():
+                        highest = max(highest, int(rest))
+            minted[side] = highest or count
+        self._minted = minted
+
     def reconcile(self, seen: dict[str, Held]) -> tuple[str, ...]:
         """Take the world's account of which Squads exist, and where.
 

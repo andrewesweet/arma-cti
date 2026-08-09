@@ -21,6 +21,8 @@ from cti_daemon import (
     protocol,
     report,
     report_cycle,
+    snapshot,
+    store,
 )
 from cti_daemon.dedupe import Answered
 from cti_daemon.outbox import UnknownSequenceError
@@ -32,6 +34,7 @@ if TYPE_CHECKING:
     from cti_daemon import planner
     from cti_daemon.outbox import Entry, Outbox
     from cti_daemon.port import CommandPort
+    from cti_daemon.store import Store
     from cti_daemon.telemetry import Telemetry
 
 # How long a request waits for the daemon's one lock before it is refused (#142).
@@ -90,7 +93,9 @@ class Wiring:
 class Daemon:
     """Dispatches requests and drains the outbox the game reads from."""
 
-    def __init__(self, *, wiring: Wiring, epoch: str | None = None) -> None:
+    def __init__(
+        self, *, wiring: Wiring, epoch: str | None = None, store: Store | None = None
+    ) -> None:
         """Take the collaborators Main built, and mint this daemon's identity.
 
         Handed its object graph rather than building one (#164). #76 moved the
@@ -158,6 +163,19 @@ class Daemon:
         # one plays a Campaign, and Phase 2's `save` lands there because what it
         # persists is what that object holds (ADR-0008).
         self.cycle = wiring.cycle
+        # Where save/load persist, wired only when the control lane is brought
+        # up (Phase 2, #291). None on a daemon built without one, and the control
+        # handlers refuse rather than guess a store that was never handed in.
+        self.store = store
+        # The save/load lane's own replay window (ADR-0034): a resent save or
+        # load gets the answer it got, not a second write or a second load. Apart
+        # from the command lane's because the two lanes share a daemon, not a
+        # connection, and a replay on one must not be answered from a record only
+        # the other fills.
+        self._control_answered = Answered()
+        # The last generation this daemon saved, so a load of an older save can
+        # warn that it rolls back the saves between. None until the first save.
+        self._last_saved_generation: int | None = None
 
     @property
     def outbox(self) -> Outbox:
@@ -638,6 +656,208 @@ class Daemon:
             return protocol.rejected(request.id, "unknown_sequence", str(exc))
         return protocol.accepted(request.id, {"cleared": cleared})
 
+    # --- Phase 2: acknowledgement-only save/load on a control lane of its own --
+    #
+    # Save and load are not Commands and not transport verbs either: they are the
+    # control lane (#291, criterion 3), served on a connection of its own so a
+    # slow durability write cannot head-of-line block a synchronous Command
+    # judgement. They live in `CONTROL_HANDLERS`, not `HANDLERS`, which is what
+    # keeps the snapshot out of the transport's verb table (#289's guard) while
+    # still putting save/load where a handler belongs — behind the daemon's lock
+    # and its replay window, decoded and replied like every other line.
+    #
+    # Acknowledgement-only is the hard rule (#288): a reply says whether the
+    # daemon accepted the instruction, never what it did with the world. The
+    # operational facts an ack carries — version, checksum, generation, a
+    # rollback warning, the loadouts a load had to drop — are facts about the
+    # save, not the Campaign, and a digest of the snapshot is not the snapshot.
+
+    def handle_control_line(self, line: str) -> str:
+        """Answer one control-lane request (save or load), the slow work off the lock.
+
+        Replay is idempotent on this lane as on the command lane (ADR-0034): a
+        resent control request gets the answer it got, not a second save or a
+        second load — which is also what keeps a replayed load from minting a
+        second epoch. A `busy` refusal is not remembered, for the command lane's
+        own reason: nothing was carried out, so the resend must be.
+        """
+        started = time.perf_counter_ns()
+        remembered = self._control_answered.recall(line)
+        if remembered is not None:
+            self._telemetry.record(
+                "control_replayed",
+                id=remembered.id,
+                epoch=self.epoch,
+                verb=remembered.verb,
+                duration_us=(time.perf_counter_ns() - started) // 1_000,
+                reply_bytes=len(remembered.reply),
+            )
+            return remembered.reply
+        request_id: str | None = None
+        verb: str | None = None
+        try:
+            request = protocol.decode(line)
+            request_id, verb = request.id, request.verb
+            reply = self._dispatch_control(request)
+        except protocol.MalformedRequestError as exc:
+            request_id = exc.request_id
+            reply = protocol.failed(request_id, "malformed_request", exc.detail)
+        except Exception as exc:  # noqa: BLE001 — a bug must answer, not hang the caller
+            reply = protocol.failed(request_id, "internal", f"{type(exc).__name__}: {exc}")
+        encoded = protocol.encode(protocol.stamped(reply, self.epoch))
+        # `reason` for a domain rejection, `error` for a failure — one column
+        # either way, the same shape the command lane's `_answer` records in.
+        refusal = reply.envelope.get("reason") or reply.envelope.get("error") or {}
+        self._telemetry.record(
+            "control_request",
+            id=request_id,
+            epoch=self.epoch,
+            verb=verb,
+            status=reply.envelope["status"],
+            reason_code=refusal.get("code") or refusal.get("class"),
+            reason_detail=refusal.get("detail"),
+            duration_us=(time.perf_counter_ns() - started) // 1_000,
+            reply_bytes=len(encoded),
+        )
+        # A busy refusal is not remembered: nothing was carried out, so a resend
+        # must be carried out rather than answered from the refusal — the rule
+        # the command lane's shed follows (#69, ADR-0034).
+        if (refusal.get("code") or refusal.get("class")) != "busy":
+            self._control_answered.remember(line, request_id=request_id, verb=verb, reply=encoded)
+        return encoded
+
+    def _dispatch_control(self, request: protocol.Request) -> protocol.Reply:
+        handler = CONTROL_HANDLERS.get(request.verb)
+        if handler is None:
+            return protocol.failed(
+                request.id, "unknown_verb", f"no control handler for {request.verb!r}"
+            )
+        return handler(self, request)
+
+    def _save(self, request: protocol.Request) -> protocol.Reply:
+        """Persist a consistent copy of the Campaign, the slow write off the lock.
+
+        Acknowledgement-only: the reply says the save landed and carries the
+        version, checksum and generation — never the snapshot. The lock is held
+        only long enough to photograph the Campaign into an immutable snapshot
+        (`_photograph`), and the serialise and the store's durability write
+        happen after it is released, so a save cannot head-of-line block a
+        Command judgement (#291, criterion 3).
+        """
+        if self.store is None:
+            return protocol.failed(
+                request.id, "no_store", "this daemon was not wired with a store to save to"
+            )
+        photograph = self._photograph()
+        if photograph is None:
+            return protocol.failed(
+                request.id,
+                "busy",
+                f"the daemon was carrying out a request and did not take the save within "
+                f"{LOCK_WAIT_SECONDS * 1000:.0f} ms; nothing was written. Ask again",
+            )
+        document = snapshot.serialise(photograph)
+        outcome = self.store.save(document)
+        self._last_saved_generation = outcome.generation
+        return protocol.accepted(
+            request.id,
+            {
+                "saved": True,
+                "version": outcome.version,
+                "checksum": outcome.checksum,
+                "generation": outcome.generation,
+            },
+        )
+
+    def _photograph(self) -> snapshot.Snapshot | None:
+        """Brief-lock-copy: the Campaign photographed under the lock, or None if busy.
+
+        The command lane's lock, held only for the read that builds an immutable
+        snapshot — every strategic field read at one instant, so the photograph
+        is not torn by a concurrent Command. None means the lock could not be
+        acquired in time: a Command was in flight and the save was shed rather
+        than parked behind it.
+        """
+        if not self._lock.acquire(timeout=LOCK_WAIT_SECONDS):
+            return None
+        try:
+            return self.cycle.snapshot()
+        finally:
+            self._lock.release()
+
+    def _load(self, request: protocol.Request) -> protocol.Reply:
+        """Validate and apply a stored snapshot, the slow read off the lock.
+
+        The store's read and the snapshot's validate/migrate happen off the lock
+        — neither mutates the live Campaign — so a slow read cannot head-of-line
+        block a Command. Only the apply is under the lock, and it is fast.
+
+        A refused load leaves the live Campaign untouched, and the three failure
+        modes are typed apart (criterion 5): `no_valid_generation` is the store
+        holding nothing, `unsupported_schema` a version with no migration, and
+        `corrupt` a document the schema cannot read. Each is returned before the
+        apply that would mutate.
+        """
+        if self.store is None:
+            return protocol.failed(
+                request.id, "no_store", "this daemon was not wired with a store to load from"
+            )
+        try:
+            loaded = self.store.load()
+        except store.NoValidGenerationError as exc:
+            return protocol.failed(request.id, "no_valid_generation", str(exc))
+        try:
+            photograph = snapshot.restore(loaded.document)
+        except snapshot.UnsupportedSnapshotVersionError as exc:
+            return protocol.failed(request.id, "unsupported_schema", str(exc))
+        except snapshot.SnapshotError as exc:
+            return protocol.failed(request.id, "corrupt", str(exc))
+        applied = self._apply_loaded(photograph, loaded.generation)
+        if applied is None:
+            return protocol.failed(
+                request.id,
+                "busy",
+                f"the daemon was carrying out a request and did not apply the load within "
+                f"{LOCK_WAIT_SECONDS * 1000:.0f} ms; the live Campaign is untouched. Ask again",
+            )
+        dropped, rolled_back = applied
+        return protocol.accepted(
+            request.id,
+            {
+                "loaded": True,
+                "version": snapshot.CURRENT_VERSION,
+                "checksum": loaded.checksum,
+                "generation": loaded.generation,
+                "rollback_warning": rolled_back,
+                "dropped_loadouts": list(dropped),
+            },
+        )
+
+    def _apply_loaded(
+        self, photograph: snapshot.Snapshot, generation: int
+    ) -> tuple[tuple[str, ...], bool] | None:
+        """Apply a validated snapshot under the lock, minting a new epoch. None if busy.
+
+        Under the lock because the apply mutates the live Campaign. The epoch
+        moves with it: a load is a state replacement, and the world attached to
+        this daemon must not resume against the replaced state silently — so the
+        next reply the world sees carries a new identity, the same invariant a
+        restart enforces (criterion 6, ADR-0036). The rollback warning fires when
+        the loaded generation is older than the last one this daemon saved,
+        because loading an earlier save discards the saves in between.
+        """
+        if not self._lock.acquire(timeout=LOCK_WAIT_SECONDS):
+            return None
+        try:
+            dropped = self.cycle.apply(photograph)
+            rolled_back = (
+                self._last_saved_generation is not None and generation < self._last_saved_generation
+            )
+            self.epoch = protocol.mint_epoch()
+            return dropped, rolled_back
+        finally:
+            self._lock.release()
+
 
 # One table rather than a dictionary rebuilt on every request (#156) — the fix
 # #90 already applied to the port's Command dispatch, one module along. Below
@@ -651,4 +871,16 @@ HANDLERS: Final[dict[str, Callable[[Daemon, protocol.Request], protocol.Reply]]]
     "command": Daemon._command,  # noqa: SLF001 — ditto
     "observe": Daemon._observe,  # noqa: SLF001 — ditto
     "view": Daemon._view,  # noqa: SLF001 — ditto
+}
+
+# Save and load are not in `HANDLERS` on purpose (#289's guard):
+# `test_no_daemon_handler_exposes_the_snapshot` asserts the snapshot never
+# reaches the transport's verb table, so save and load live in their own table
+# on the control lane, decoded and replied the same way but behind a dispatch
+# the transport verbs do not touch (#291, criterion 3). A control handler takes
+# the same `(Daemon, Request) -> Reply` shape as a transport verb, so the table
+# is the same shape too — only the lane it is reached from differs.
+CONTROL_HANDLERS: Final[dict[str, Callable[[Daemon, protocol.Request], protocol.Reply]]] = {
+    "save": Daemon._save,  # noqa: SLF001 — the class's own control dispatch table
+    "load": Daemon._load,  # noqa: SLF001 — ditto
 }

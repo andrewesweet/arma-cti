@@ -143,6 +143,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   live daemon and its epoch. No in-world surface is touched, so the regression corpus is owed and
   unrun.
 
+- **Phase 2 save/load control: an acknowledgement-only lane on its own connection**
+  (#291; ADR-0005, ADR-0018, ADR-0022, ADR-0034, #289's schema, #290's store). Save and load are
+  daemon handlers, but behind their own dispatch (`CONTROL_HANDLERS`) rather than the transport verb
+  table (`HANDLERS`) — so the snapshot #289 closed stays off every wire path: no view, observe, debug,
+  telemetry or oracle reply returns it, and the command port has no `save`/`load` verb. What a save or
+  load returns is acknowledgement alone — accepted, the schema version, a checksum, the selected
+  generation, a rollback warning, and the loadouts a load dropped — never the document. The lane runs
+  on a second listener of its own so the slow durability work (serialise, store read/write) cannot
+  head-of-line block a synchronous Command Judgement: the command lock is held only long enough to
+  photograph or apply a consistent Campaign, and released before the bytes move. A load validates and
+  migrates against #289 before it touches live state, and a failed load leaves the running Campaign
+  untouched with one of three typed refusals — `no_valid_generation`, `unsupported_schema`, `corrupt`
+  — each raised before the apply, so a refused save is distinguishable from a lost one. A successful
+  load mints a new epoch, so a world attached to one daemon Campaign cannot resume against the replaced
+  state silently; the reply carries it. Replay is idempotent (ADR-0034) on a window of its own, and a
+  `busy` refusal — the lock held past its bound — is not remembered, so a resend is carried out rather
+  than answered from the record. The durability layer is the `Store` protocol seam (a `FakeStore` until
+  #290 lands its atomic store), so the control lane is exercised against a stand-in and #290 supplies
+  the concrete implementation. No in-world corpus: save/load are daemon-internal, the world speaks
+  neither, and the issue's criterion 9 defers the corpus to the world-facing ticket.
+
 ### Fixed
 
 - **`just dispatch-follow` takes several ids and wakes on the first of them, not the last** (#295).

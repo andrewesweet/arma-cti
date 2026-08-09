@@ -18,6 +18,7 @@ from cti_daemon.commands import CONTESTED, NEUTRAL, SIDES, Effect
 from cti_daemon.contacts import Contacts
 from cti_daemon.loadouts import Catalogue, Chosen
 from cti_daemon.observation import DESTROYED, INTACT, PUBLIC, Observation, SquadView
+from cti_daemon.snapshot import Snapshot, SquadRecord
 from cti_daemon.squads import Roster, Squad
 
 if TYPE_CHECKING:
@@ -223,6 +224,99 @@ class Campaign:
     def dressed(self) -> dict[str, str]:
         """Which kit every player has chosen — the set a snapshot writes (#4)."""
         return self.loadouts.serialise()
+
+    def to_snapshot(self) -> Snapshot:
+        """Photograph the whole Campaign's strategic state, for both sides (#291).
+
+        The inverse of `apply_snapshot`: every field ADR-0008 carries, read off
+        the live object. A fresh `Snapshot` rather than the document a durable
+        write would store, so the serialise boundary — not this aggregate — owns
+        the on-disk shape, and a save path that goes `to_snapshot` then
+        `serialise` is two steps a round-trip test can hold apart.
+        """
+        return Snapshot(
+            clock=self.elapsed,
+            owners=self.owners(),
+            hq=self.headquarters(),
+            funds=self.ledger.holdings(),
+            squads=tuple(
+                SquadRecord(
+                    id=squad.id,
+                    side=squad.side,
+                    squad_type=squad.squad_type,
+                    size=squad.size,
+                    order=squad.order,
+                    at=squad.at,
+                )
+                for squad in self.roster.all()
+            ),
+            loadouts=self.dressed(),
+        )
+
+    def apply_snapshot(self, snapshot: Snapshot) -> tuple[str, ...]:
+        """Replace the live Campaign's state with a snapshot's (ADR-0003, #291).
+
+        Validate-then-mutate: every fault raises before any field moves, so a
+        refused load leaves the live Campaign exactly as it was — the
+        load-bearing property ADR-0003 states and the issue's fifth criterion
+        pins. A snapshot whose owner or HQ keys name ground this map has not
+        authored, or whose Funds name a side this Campaign is not played by, is
+        refused as a map mismatch rather than half-applied.
+
+        Tactical state is regenerated, not restored (ADR-0008): every Squad's
+        position and `fielded` flag come back blank for the first report after a
+        resume to set, contacts are dropped, the Domination clock resets to
+        boot, and a resumed Campaign is undecided again. Returns the UIDs whose
+        saved kit the menu no longer offers — operational, surfaced so a resume
+        names them rather than silently dressing a player back into a default.
+        """
+        # Map membership first, before anything moves: a snapshot written against
+        # a different manifest names ground this one has not authored, and
+        # applying half of it before noticing is the half-load durability
+        # exists to prevent.
+        unknown_owners = sorted(set(snapshot.owners) - set(self._states))
+        if unknown_owners:
+            message = f"a snapshot names objectives {unknown_owners} that this map has not authored"
+            raise ValueError(message)
+        unknown_hq = sorted(set(snapshot.hq) - set(self._hq))
+        if unknown_hq:
+            message = f"a snapshot names bases {unknown_hq} that this map has not authored"
+            raise ValueError(message)
+
+        # Raises on a side this Ledger does not play or a negative balance, and
+        # is itself validate-before-mutate — so Funds move only once the whole
+        # record passed, and nothing above this line has mutated, so this raise
+        # leaves the live Campaign untouched too.
+        self.ledger.restore(snapshot.funds)
+
+        for name, state in self._states.items():
+            state.owner = snapshot.owners.get(name, NEUTRAL)
+            state.reset_hold()
+        self._hq = {base: snapshot.hq.get(base, INTACT) for base in self._hq}
+        self.roster.restore(
+            tuple(
+                Squad(
+                    id=record.id,
+                    side=record.side,
+                    squad_type=record.squad_type,
+                    size=record.size,
+                    order=record.order,
+                    at=record.at,
+                )
+                for record in snapshot.squads
+            )
+        )
+        self.loadouts, dropped = Chosen.restore(self.catalogue, snapshot.loadouts)
+        self.elapsed = snapshot.clock
+        # Tactical, in-memory, regenerated at boot (ADR-0008, docs/mvp-scope.md):
+        # a resumed Campaign has held no Objective long enough yet to have won,
+        # has no Contacts until the first reports rebuild them, and is undecided.
+        self._dominant = ""
+        self._dominated_seconds = 0.0
+        self._since_payout = 0.0
+        self.contacts = Contacts()
+        self.outcome = None
+        return dropped
 
     @property
     def complete(self) -> bool:

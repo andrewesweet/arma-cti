@@ -336,3 +336,29 @@ class Ledger:
             raise InsufficientFundsError(message)
         self._balances[side] = held - cost
         return self._balances[side]
+
+    def restore(self, balances: dict[str, int]) -> None:
+        """Replace every side's balance from a saved record (ADR-0003, #291).
+
+        The snapshot-authoritative path: a loaded Campaign's Funds are the save's,
+        not whatever the Ledger opened at. Whole rather than merged, because a
+        side missing from the record is a save this map did not write and a side
+        the record names that is not playing is the same — both are refused
+        through `_account`, which keeps the "only playing sides hold Funds"
+        invariant intact on the way back in. Negative Funds are refused for the
+        same reason `spend` refuses an overdraft: a balance below zero is a gift
+        spent already, not a state to resume from.
+        """
+        for side, funds in balances.items():
+            if not isinstance(funds, int) or isinstance(funds, bool) or funds < 0:
+                message = f"{side}: a saved balance must be a whole number of Funds, got {funds!r}"
+                raise ValueError(message)
+            # Raises `UnknownSideError` for a side this Ledger does not play, so
+            # a save naming a side this Campaign is not played by is refused
+            # rather than opening an account for it.
+            self._account(side)
+        # Validated in full before any balance moves, so a refusal leaves the
+        # live Campaign's Funds exactly as they were.
+        self._balances = dict.fromkeys(self.sides, 0)
+        for side, funds in balances.items():
+            self._balances[side] = funds
