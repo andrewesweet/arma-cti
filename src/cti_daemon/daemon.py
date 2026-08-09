@@ -32,6 +32,7 @@ if TYPE_CHECKING:
 
     from cti_daemon import campaign as campaign_module
     from cti_daemon import planner
+    from cti_daemon.coordinator import CheckpointCoordinator
     from cti_daemon.outbox import Entry, Outbox
     from cti_daemon.port import CommandPort
     from cti_daemon.store import Store
@@ -176,6 +177,12 @@ class Daemon:
         # The last generation this daemon saved, so a load of an older save can
         # warn that it rolls back the saves between. None until the first save.
         self._last_saved_generation: int | None = None
+        # The checkpoint coordinator that durably snapshots this Campaign, or
+        # None when a daemon is run without persistence (#290). Attached after
+        # construction — the coordinator snapshots through this daemon's lock, so
+        # it is wired once the daemon exists rather than passed into it. None
+        # leaves every request path exactly as Phase 1 had it.
+        self._coordinator: CheckpointCoordinator | None = None
 
     @property
     def outbox(self) -> Outbox:
@@ -205,6 +212,40 @@ class Daemon:
         to hand a brain to.
         """
         self.cycle.commanded_by(side, brain)
+
+    def attach_checkpoint(self, coordinator: CheckpointCoordinator) -> None:
+        """Wire the coordinator that durably snapshots this Campaign (#290).
+
+        Attached after construction because the coordinator snapshots through this
+        daemon's request lock, so it is wired once the daemon exists rather than
+        built inside it. One to a daemon: a second would be two writers racing the
+        same store. After it is attached, every persistent mutation path marks the
+        Campaign dirty, and `shutdown` runs its clean-teardown checkpoint.
+        """
+        if self._coordinator is not None:
+            message = "this daemon already has a checkpoint coordinator"
+            raise RuntimeError(message)
+        self._coordinator = coordinator
+
+    def checkpoint_snapshot(self) -> snapshot.Snapshot:
+        """Return a consistent whole-Campaign copy under the request lock (#290).
+
+        The narrow lock the criteria name, held for the in-memory copy alone. The
+        coordinator calls this on its background thread and then encodes, validates
+        and writes with the lock released — which is what keeps a stalled `fsync`
+        on a worker thread rather than behind `handle_line`.
+        """
+        with self._lock:
+            return self.cycle.snapshot()
+
+    def shutdown(self) -> None:
+        """Run the coordinator's clean-teardown checkpoint, if one is attached.
+
+        The graceful-end path (#288): a session that ends leaves nothing unsaved.
+        A daemon without a coordinator has nothing to shut down.
+        """
+        if self._coordinator is not None:
+            self._coordinator.shutdown()
 
     def handle_line(self, line: str) -> str:
         """Answer one request line, and only one at a time (#98).
@@ -467,6 +508,12 @@ class Daemon:
             # answer — the daemon cannot read this report — and neither module
             # has to know what a request id is to say so.
             raise protocol.MalformedRequestError(str(exc), request.id) from exc
+        # The report cycle is one of two persistent-mutation chokepoints: every
+        # ownership change, Funds tick, HQ fall, loadout choice and AI-issued
+        # Command runs through `fold`, so a successful one marks the Campaign
+        # dirty for the next checkpoint (#290).
+        if self._coordinator is not None:
+            self._coordinator.mark_dirty()
         return protocol.accepted(request.id, observation.serialise(picture))
 
     def _command(self, request: protocol.Request) -> protocol.Reply:
@@ -524,6 +571,12 @@ class Daemon:
             )
         judgement = self.port.submit(command, acting_side=acting_side, acting_squad=acting_squad)
         if judgement.accepted:
+            # The other persistent-mutation chokepoint: a human Command that the
+            # port accepted changed Funds, the roster or an Order, so the
+            # Campaign is dirty for the next checkpoint (#290). A rejected
+            # Command changed nothing and does not mark it.
+            if self._coordinator is not None:
+                self._coordinator.mark_dirty()
             return protocol.accepted(request.id, judgement.result)
         return protocol.rejected(request.id, judgement.code, judgement.detail)
 
@@ -756,8 +809,7 @@ class Daemon:
                 f"the daemon was carrying out a request and did not take the save within "
                 f"{LOCK_WAIT_SECONDS * 1000:.0f} ms; nothing was written. Ask again",
             )
-        document = snapshot.serialise(photograph)
-        outcome = self.store.save(document)
+        outcome = self.store.save(photograph)
         self._last_saved_generation = outcome.generation
         return protocol.accepted(
             request.id,
@@ -788,15 +840,18 @@ class Daemon:
     def _load(self, request: protocol.Request) -> protocol.Reply:
         """Validate and apply a stored snapshot, the slow read off the lock.
 
-        The store's read and the snapshot's validate/migrate happen off the lock
-        — neither mutates the live Campaign — so a slow read cannot head-of-line
-        block a Command. Only the apply is under the lock, and it is fast.
+        The store's read and its checksum-and-`restore` validation gate happen
+        off the lock — neither mutates the live Campaign — so a slow read cannot
+        head-of-line block a Command. The store owns that gate because deciding a
+        cross-generation fallback turns on running each generation through
+        `restore`, which only the layer that holds the generations can
+        (ADR-0069 Ruling 1). Only the apply is under the lock, and it is fast.
 
         A refused load leaves the live Campaign untouched, and the three failure
         modes are typed apart (criterion 5): `no_valid_generation` is the store
-        holding nothing, `unsupported_schema` a version with no migration, and
-        `corrupt` a document the schema cannot read. Each is returned before the
-        apply that would mutate.
+        holding nothing, `unsupported_schema` a version no migration reaches, and
+        `corrupt` a document the schema cannot read. Each is read off the store's
+        typed refusals and returned before the apply that would mutate.
         """
         if self.store is None:
             return protocol.failed(
@@ -804,15 +859,25 @@ class Daemon:
             )
         try:
             loaded = self.store.load()
-        except store.NoValidGenerationError as exc:
+        except store.NothingToLoadError as exc:
+            # Nothing was ever saved: the ordinary first-boot state, surfaced as
+            # a class of its own so the caller starts a fresh Campaign knowing
+            # the store is empty rather than corrupted.
             return protocol.failed(request.id, "no_valid_generation", str(exc))
-        try:
-            photograph = snapshot.restore(loaded.document)
-        except snapshot.UnsupportedSnapshotVersionError as exc:
-            return protocol.failed(request.id, "unsupported_schema", str(exc))
-        except snapshot.SnapshotError as exc:
-            return protocol.failed(request.id, "corrupt", str(exc))
-        applied = self._apply_loaded(photograph, loaded.generation)
+        except store.NoValidSnapshotError as exc:
+            # Every generation exists and none validated. The store owns the
+            # checksum-and-`restore` gate, so its typed refusal reasons are what
+            # tell the three-way class apart here: every refusal at an
+            # unsupported version is a schema this build is too old for;
+            # anything else (torn, truncated, byte-rotted, malformed) is corrupt.
+            reason = (
+                "unsupported_schema"
+                if exc.refusals
+                and all(r.reason == store.REASON_UNSUPPORTED_VERSION for r in exc.refusals)
+                else "corrupt"
+            )
+            return protocol.failed(request.id, reason, str(exc))
+        applied = self._apply_loaded(loaded.snapshot, loaded.generation)
         if applied is None:
             return protocol.failed(
                 request.id,
@@ -825,7 +890,7 @@ class Daemon:
             request.id,
             {
                 "loaded": True,
-                "version": snapshot.CURRENT_VERSION,
+                "version": loaded.version,
                 "checksum": loaded.checksum,
                 "generation": loaded.generation,
                 "rollback_warning": rolled_back,

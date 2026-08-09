@@ -25,9 +25,9 @@ from cti_daemon import transport
 from cti_daemon.store import FakeStore
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
     from pathlib import Path
 
+    from cti_daemon.snapshot import Snapshot
     from cti_daemon.store import SaveOutcome
 
 
@@ -66,10 +66,10 @@ class _SlowStore(FakeStore):
         self.in_save = threading.Event()
         self.release = threading.Event()
 
-    def save(self, document: Mapping[str, object]) -> SaveOutcome:
+    def save(self, snapshot: Snapshot) -> SaveOutcome:
         self.in_save.set()
         self.release.wait(timeout=30)
-        return super().save(document)
+        return super().save(snapshot)
 
 
 # --- the control lane round-trips over its own socket ---------------------

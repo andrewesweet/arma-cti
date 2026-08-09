@@ -34,11 +34,13 @@ from cti_daemon.daemon import (
     LOCK_WAIT_SECONDS,
     Daemon,
 )
-from cti_daemon.store import FakeStore, Loaded, SaveOutcome, checksum
+from cti_daemon.store import FakeStore, LoadOutcome, SaveOutcome, checksum
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
     from pathlib import Path
+
+    from cti_daemon.snapshot import Snapshot
 
 # The snapshot's content keys that must never reach an ack. `version` is shared
 # with the document but is an operational fact (which schema was saved), not a
@@ -111,11 +113,11 @@ class _CountingStore(FakeStore):
         self.saves = 0
         self.loads = 0
 
-    def save(self, document: Mapping[str, object]) -> SaveOutcome:
+    def save(self, snapshot: Snapshot) -> SaveOutcome:
         self.saves += 1
-        return super().save(document)
+        return super().save(snapshot)
 
-    def load(self) -> Loaded:
+    def load(self) -> LoadOutcome:
         self.loads += 1
         return super().load()
 
@@ -128,12 +130,12 @@ class _SlowStore(FakeStore):
         self.in_save = threading.Event()
         self.release = threading.Event()
 
-    def save(self, document: Mapping[str, object]) -> SaveOutcome:
+    def save(self, snapshot: Snapshot) -> SaveOutcome:
         # Reached only after the daemon has photographed the Campaign and released
         # the lock, so the caller that sets `in_save` knows the lock is free.
         self.in_save.set()
         self.release.wait(timeout=30)
-        return super().save(document)
+        return super().save(snapshot)
 
 
 # --- the snapshot is reachable only through the control lane --------------
