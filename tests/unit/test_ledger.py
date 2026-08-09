@@ -366,15 +366,17 @@ def test_a_claude_dispatch_is_priced_in_points_of_both_windows_from_its_output_t
 
 
 def test_the_estimator_reads_output_tokens_and_nothing_else() -> None:
-    # Cache reads are 97% of this project's raw tokens and measured at under 1/450th the
-    # per-token plan weight. A dispatch that read a hundred million of them and wrote
-    # nothing costs the plan nothing, and `excludes` is where that assumption is named.
+    # Cache reads are 97% of this project's raw tokens and #237 measured them at
+    # ≤ 0.0095 pp₅ₕ/Mtok — under 1/450th the per-token plan weight of output. A dispatch
+    # that read a hundred million of them and wrote nothing costs the plan nothing on the
+    # estimator, and `excludes` is empty now that the term it once held is measured-and-
+    # negligible rather than an unmeasured assumption.
     priced = ledger.cap_fraction(
         "claude-native",
         ledger.Usage(input_tokens=4_000_000, cache_read_tokens=100_000_000, output_tokens=0),
     ).document()
     assert priced["windows"]["five_hour"]["est"] == 0.0
-    assert (priced["basis"], priced["excludes"]) == ("output_tokens", ["cache_read"])
+    assert (priced["basis"], priced["excludes"]) == ("output_tokens", [])
 
 
 def test_both_halves_are_recorded_per_window_and_the_meter_half_is_absent_not_zero() -> None:
@@ -417,9 +419,11 @@ def test_an_unrecognised_lane_is_unpriced_rather_than_defaulted_onto_claude() ->
 
 def test_the_row_carries_every_input_the_estimator_ran_on() -> None:
     # A recalibration must re-derive history rather than invalidate it: without the
-    # calibration id, the first plan change silently rewrites every past number.
+    # calibration id, the first plan change silently rewrites every past number. The id
+    # advanced to `claude/237-2026-08-06` when #237 measured cache reads and discharged
+    # the exclusion; it carries #218's output weight unchanged plus #237's read bound.
     document = ledger.cap_fraction("claude-native", ledger.Usage(output_tokens=1)).document()
-    assert document["calibration_id"] == "claude/218-2026-08-05"
+    assert document["calibration_id"] == "claude/237-2026-08-06"
     assert (document["unit"], document["basis"]) == ("percentage_points", "output_tokens")
     assert document["windows"]["five_hour"]["tokens_per_point"] == 30209
 

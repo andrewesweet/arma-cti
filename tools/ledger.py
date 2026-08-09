@@ -209,17 +209,26 @@ RATE_LIMIT_TYPES: Final = ("rate_limit_error", "rate_limit", "quota_exceeded", "
 # six five-hour points and one seven-day point on 181,253 output tokens. A Claude
 # dispatch's plan cost is its output token count over one of these. Input volume, context
 # size and cache behaviour do not enter it — not because they are free in principle, but
-# because they measure at under 1/450th the weight, and the one residual that could change
-# that is named in `CAP_FRACTION_EXCLUDES` rather than silently assumed away.
+# because they are measured at under 1/450th the weight. Cache reads were the one residual
+# that could have changed that; #237 measured them at ≤ 0.0095 pp₅ₕ/Mtok (≥ 3,477× lighter
+# than output, +1.0 point net of wall-clock-matched controls over 105,080,000 tokens), so
+# the term `CAP_FRACTION_EXCLUDES` once held as unmeasured is now measured-and-negligible
+# and the list is empty.
 CLAUDE_TOKENS_PER_POINT: Final = {"five_hour": 30209, "seven_day": 181253}
 
 # Which conversion produced a number. Without it the first plan change silently rewrites
-# every past row; with it, a re-measured rate re-prices history.
-CALIBRATION_ID: Final = "claude/218-2026-08-05"
+# every past row; with it, a re-measured rate re-prices history. `claude/237-2026-08-06`
+# carries #218's measured output weight unchanged (30,209 / 181,253 tokens per point) and
+# adds #237's cache-read bound; a row dated before #237 keeps `claude/218-2026-08-05` and
+# its `cache_read` exclusion, so the two regimes stay distinguishable under re-pricing.
+CALIBRATION_ID: Final = "claude/237-2026-08-06"
 
 CAP_FRACTION_UNIT: Final = "percentage_points"
 CAP_FRACTION_BASIS: Final = "output_tokens"
-CAP_FRACTION_EXCLUDES: Final = ("cache_read",)
+# Empty since #237: cache reads are measured at ≤ 0.0095 pp₅ₕ/Mtok and no longer an
+# unmeasured exclusion. Kept as a field so the row still says "nothing is excluded" rather
+# than dropping the question.
+CAP_FRACTION_EXCLUDES: Final = ()
 CAP_FRACTION_ATTRIBUTION: Final = "dispatch_only"
 
 # Which pool a lane's dispatch spends against. A lane absent from this map gets no pool

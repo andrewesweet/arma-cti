@@ -15,6 +15,11 @@ first, second and third rounds to under 0.7% of the plan meter combined.**
 This document is the reconciliation #220 asked for. It does not re-base the sibling; that is the
 human's adoption call, and §5 states exactly what is being asked for.
 
+> **Amended 2026-08-06 (#237, ratified in full).** The cache-read row this document left
+> `[unmeasured]` is now **≤ 0.0095 pp₅ₕ/Mtok** — measured net of wall-clock-matched controls — so the
+> §3 band collapses 0–62% → 0–~10% and every §4.3 suspended item resolves as non-spend. §2.1, §3, §4.3,
+> §6 and §7 carry the result.
+
 ---
 
 ## 0. Method, evidence classes, limits
@@ -49,11 +54,15 @@ estimator, not a reading. §6 builds the ledger metric around that fact rather t
 
 **Limits worth stating before any of the numbers are used.**
 
-1. **Cache reads were never measured.** #218's arms were single-turn, so `cache_read = 0` in both.
-   Reads are 97.1% of this project's raw tokens and 68.5% of its token-flow bill. §3 shows the
-   residual analysis bounds their weight *per token* but leaves their **aggregate share of the plan
-   meter unresolved between roughly zero and roughly 60%**. This is the single largest open quantity
-   in the project's cost model and §7 is the experiment that closes it.
+1. **Cache reads are measured.** #218's arms were single-turn, so `cache_read = 0` in both, and until
+   #237 cache reads were the single largest open quantity in the project's cost model. #237 ran a
+   multi-turn read arm — 105.08 Mtok of reads against wall-clock-matched idle controls (ABBA,
+   `R Q Q R R Q`) — and it moved the five-hour meter **+1.0 point net of background**, i.e.
+   **≤ 0.0095 pp₅ₕ/Mtok**, ≥ 3,477× lighter than output and indistinguishable from zero at the
+   instrument's integer resolution. Reads are 97.1% of this project's raw tokens and 68.5% of its
+   token-flow bill, but their **aggregate share of the plan meter collapses from 0–62% to 0–~10%**
+   (point estimate ≈ 4.9 weekly points, ~8% of the observed meter). §3 carries the tightened band,
+   §7 the experiment.
 2. **The plan meter is the account's, the transcripts are the project's.** The human uses this
    Claude account for work outside arma-cti. Any share-of-meter figure here therefore has a
    denominator larger than its numerator's scope. Stated per figure where it bites.
@@ -115,15 +124,24 @@ Percentage points of the **five-hour** window, per million tokens:
 | Output | **33.10** | [measured] | 6 points on 181,253 tokens (#218 control) |
 | Cache write, 1-hour TTL | **< 0.0096** | [bounded] | 0 points on 52,290,112 tokens |
 | Cache write, 5-minute TTL | **< 0.0096** | [bounded] | 0 points on 52,298,112 tokens |
-| Cache read | **unresolved** — see §3 | [unmeasured] | never isolated; both arms single-turn |
+| Cache read | **≤ 0.0095** | [measured/bounded] | +1.0 point net of matched controls over 105,080,000 tokens (#237) |
 | Fresh input | **unresolved** | [unmeasured] | never isolated |
 | Per request / per session | **0** | [measured] | 128 sessions → 0 points; 16 sessions → 6 points |
+
+> The cache-read bound's uncertainty: with three blocks per arm the per-block read-minus-idle
+> difference is 0.33 ± 0.67 points, so a one-standard-deviation conservative reading permits up to
+> 0.0285 pp₅ₕ/Mtok. The point estimate is indistinguishable from zero; what is robust is the
+> exclusion of the residual hypothesis (§7).
 
 Ratios that follow directly:
 
 - **An output token weighs at least 3,462× a cache-write token on this plan** [measured/bounded].
   Under the token-flow view it should weigh 2.5× a one-hour write. Plan accounting departs from list
   pricing by **≥ 1,400×**.
+- **An output token weighs ≥ 3,477× a cache-read token on this plan** [measured/bounded]. Under the
+  token-flow view a read is billed at 0.1× base input; here it is measured at ≤ 0.0095 pp₅ₕ/Mtok
+  against output's 33.10. Cache reads join cache writes in the near-free class — the whole 68.5% of
+  the token-flow bill they carry is, in plan currency, under a tenth of the meter.
 - **The meter is not counting requests or sessions.** The arms made eight times the control's
   sessions and moved the meter zero while the control moved it six. This rules out the most obvious
   alternative to token metering, and it is worth stating because it was not stated in #218: the null
@@ -138,6 +156,7 @@ Weekly-window weights, for the aggregate arithmetic in §3:
 |---|---:|---|
 | Output | **5.52** | 1 weekly point on 181,253 tokens (60 → 61 on the control) |
 | Cache write, either TTL | **< 0.0096** | 0 weekly points on 104,588,224 tokens |
+| Cache read | **≤ 0.0016** | #237's ≤ 0.0095 pp₅ₕ/Mtok at the 6:1 control ratio (≈ 4.9 weekly points on 3.06 B tokens) |
 
 Five-hour to weekly conversion, for reference: the control gives 6 five-hour points per weekly
 point, the whole experiment gives 9 per 2, i.e. 4.5. Both are integer-resolution readings of small
@@ -159,6 +178,11 @@ The corresponding figure for the whole of cache writes — the class the sibling
 and third — is **< 0.83 five-hour-window points across the same six days** [bounded]. Not 0.83 per
 window: 0.83 in total, for 86,163,009 tokens.
 
+The corresponding figure for cache reads — 68.5% of the token-flow bill — is **≈ 4.9 weekly-window
+points, about 8% of the observed 60-point meter** [measured/bounded], for 3.06 B tokens (#237). The
+class that dominates the token-flow bill is a near-free class on this plan; what the meter charges is
+the generation, priced in the line above.
+
 ---
 
 ## 3. The bill, both ways — and the hole in the middle
@@ -171,18 +195,20 @@ against a weekly meter observed at 59–61% throughout that span.
 | Fresh input | ≈240,000 | 0.05% | ≤ 1.3 [unmeasured] | ≤ ~2% |
 | Cache write — 5-min TTL | 68,803,090 | 19.24% | < 0.66 [bounded] | **< 1.1%** |
 | Cache write — 1-hour TTL | 17,359,919 | 7.77% | < 0.17 [bounded] | **< 0.3%** |
-| Cache read | ≈3.06 B | **68.48%** | **unresolved** | **0 – 62%** [unmeasured] |
+| Cache read | ≈3.06 B | **68.48%** | **≈ 4.9** [measured/bounded] | **0 – ~10%** |
 | Output | ≈3,993,900 | 4.47% | **22.0** [measured] | **≈ 37%** [inferred] |
 | **Observed meter** | | | **≈ 60** | |
 
 The `fresh input` row is priced at the worst assumption available — that it weighs like output — and
 is still small. Every other row is derived above.
 
-**The residual.** 60 − 22.0 − 0.8 = **37 weekly points unattributed**. Over 3,060 Mtok of cache
-reads that is 0.0122 pp₇d/Mtok, i.e. an output token would weigh **452× a read token**. But the
-residual also absorbs the human's Claude usage outside this project, any non-token component of
-metering, and the six-day-versus-seven-day window mismatch. **It is a ceiling on reads, not a
-measurement of them.**
+**The residual, re-read after #237.** 60 − 22.0 − 0.8 = **37 weekly points unattributed** — a
+residual this section once read as a ceiling on reads (0.0122 pp₇d/Mtok, an output token 452× a read
+token). #237 has since measured reads directly at ≤ 0.0095 pp₅ₕ/Mtok, **≥ 3,477× lighter than
+output**, so the 37 points are **not reads**. They are the human's Claude usage outside this project,
+any non-token component of metering, and the six-day-versus-seven-day window mismatch: exactly the
+confounds a residual absorbs, now confirmed rather than suspected. The reads themselves cost ≈ 4.9 of
+the 60 weekly points (~8%), not 37.
 
 **A second, independent route to output's share**, with a different error profile: 132 five-hour
 points over 28.8 five-hour windows is 4.6 points per window if work were uniform, against meter
@@ -196,18 +222,19 @@ not in doubt, because the per-token weight is measured to ±8% and the token cou
 also that the more of the account meter belongs to the human's other work, the *larger* output's
 share of this project's own plan bill — the confound pushes the figure up, not down.
 
-### The hole, stated plainly
+### The hole, closed by #237
 
-Cache reads are 68.5% of the token-flow bill and somewhere between nothing and 62% of the plan
-bill. Every recommendation whose prize is "put fewer tokens in context" — prefix size, tool-output
-volume, deferred loading, redundant re-reads, worktree cache scope — is a claim on that unresolved
-term. **They cannot be ranked until it is measured**, and §7 gives the experiment. Two of them can
-be resolved anyway, because even the ceiling makes them small; §4 marks which.
+Cache reads are 68.5% of the token-flow bill and — after #237 — between nothing and ~10% of the plan
+bill, point estimate ≈ 8%. Every recommendation whose prize is "put fewer tokens in context" —
+prefix size, tool-output volume, deferred loading, redundant re-reads, worktree cache scope — was a
+claim on that term, and the term is now measured at ≤ 0.0095 pp₅ₕ/Mtok. §4 resolves them against it;
+none survives as a spend item, though several survive on other grounds.
 
-The upper end matters. If reads do carry the residual, then halving mean context per turn (166,567
-→ 83,284 tokens) would be worth up to **31% of the plan meter** — larger than every intervention in
-either document put together. If they do not, it is worth nothing. That is the whole spread, on one
-unrun experiment.
+The upper end is settled. Halving mean context per turn (166,567 → 83,284 tokens) is worth **≤ ~4%
+of the plan meter**, not the "up to 31%" the unrun experiment once permitted — and #216 is argued on
+context-window headroom, prefix hygiene, latency and quality, never on cost. The residual's 37 weekly
+points are not reads; reads are a near-free class, and output is essentially the whole of what this
+plan charges.
 
 ---
 
@@ -259,23 +286,23 @@ The general rule this bucket collapses to, and the one sentence worth carrying:
 > Every process rule that shrinks context is buying latency and headroom, and may be buying nothing
 > else.
 
-### 4.3 Suspended — awaiting the read arm
+### 4.3 Resolved — the read arm ran (#237)
 
-These sit entirely on the unresolved read term. Two of them resolve anyway, because even the
-residual ceiling makes them small; those are marked **resolved-small** and can be treated as
-settled.
+These sat on the unresolved read term; #237 measured it at ≤ 0.0095 pp₅ₕ/Mtok, so all of them
+resolve, and none survives as a spend item. Three were already **resolved-small** or **superseded**
+under the residual ceiling and stay that way; the four the ceiling left open resolve now.
 
-| Sibling item | Token-flow prize | Worst-case plan prize (reads carry the whole residual) | Status |
+| Sibling item | Token-flow prize | Plan prize (reads measured ≤ 0.0095 pp₅ₕ/Mtok) | Status |
 |---|---:|---:|---|
 | §4 #4 Prune expired exemplars from `CLAUDE.md` | 0.9% | **≤ 0.46%** | **resolved-small.** Do it for prefix hygiene and readability; it is not a spend item either way |
 | §4 #6 Single summary line on green from `just` recipes | 0.18% | **≤ 0.12%** | **resolved-small.** Free to do while editing recipes; never worth an issue |
-| §1's amplification model (4.95 input-equivalents per context token; 10.80 for a turn-0 prefix token) | the document's second headline | undefined in plan currency | **suspended.** It is a token-flow quantity by construction and has no plan-currency analogue until reads are weighed |
 | §6 #14 Redundant file re-reads (measured here at 0.39% of the token-flow bill) | 0.39% | ≤ ~0.25% | **resolved-small**, by the same arithmetic |
-| The whole tool-result surface (#206's correction: 9.35 Mtok of arrival, ≈10% of the token-flow bill) | ~10% | **≤ 6.7%** | **suspended**, and blocked regardless: §5 rejects semantic compression on accuracy, and the median result is 352 characters, so there is no mechanical trim available |
-| §6 #8 Deferred tool loading | ~85% off tool schemas | ≤ small | **suspended**, no action. Already on; keep it on. Costs nothing to keep |
+| §1's amplification model (4.95 input-equivalents per context token; 10.80 for a turn-0 prefix token) | the document's second headline | undefined in plan currency | **token-flow-only, permanently.** It has no plan-currency analogue because the term it would price is measured at ≤ 1/3,477th of output. Never quote it as a spending argument on this plan |
+| The whole tool-result surface (#206's correction: 9.35 Mtok of arrival, ≈10% of the token-flow bill) | ~10% | **≈ 0.03%** | **resolved-small.** Already blocked on accuracy grounds (§5) and on there being no mechanical trim available (the median result is 352 characters); now also worth ~nothing in plan currency |
+| §6 #8 Deferred tool loading | ~85% off tool schemas | ≤ small | **resolved-small.** Keep it on because it costs nothing to keep and buys context headroom. Never file it as spend work |
 | §7 The cost of a subagent's cold `CLAUDE.md` load | unmeasured | ≤ small, and now dominated by that subagent's *output* | **superseded.** §4.2's fan-out row is the same question asked in the right currency |
-| **#216** — move three situational `CLAUDE.md` blocks out of the always-loaded prefix | prefix reduction | on the read term | **suspended.** Its case is context-window headroom and prefix hygiene, not spend, and it should be argued that way |
-| **Context size in general** (mean 166,567 tokens/turn) | the bulk of the bill | **up to 31% of the plan meter** for a halving | **suspended, and this is the one that matters.** §7 |
+| **#216** — move three situational `CLAUDE.md` blocks out of the always-loaded prefix | prefix reduction | **≤ ~4%** for the halving it sits inside | **resolved: not a spend item.** Its case is context-window headroom and prefix hygiene, latency and quality; argue it that way, never on cost |
+| **Context size in general** (mean 166,567 tokens/turn) | the bulk of the bill | **≤ ~4% of the plan meter** for a halving | **resolved: not a spend item.** The "up to 31%" the unrun experiment permitted is gone; reads are near-free |
 
 ### 4.4 Unaffected — correctness-grounded, currency-independent
 
@@ -309,8 +336,8 @@ Nothing in this bucket moves, and nothing in it should be re-argued.
 |---|---:|---|
 | **Inverts** (measured) | 7 | §4 #1, #2, #3; §2's cliff analysis as spend; §6 #4; §6 #3 / §7 fragmentation; #204's token arithmetic |
 | **Promoted** (measured weight, inferred application) | 7 | effort as a lever; the seat-default change; fan-out discipline; retry discipline; the verification-pass ban as a cost rule; terse output; `rtk gain` strengthened to net-negative |
-| **Suspended** (needs the read arm) | 4 | the amplification model; the whole tool-result surface; deferred loading; context size in general — plus #216 |
-| **Resolved-small** (bounded below 0.5% regardless) | 3 | §4 #4 prune; §4 #6 one-line-on-green; §6 #14 re-reads |
+| **Resolved** (the read arm ran, #237) | 3 + #216 | the amplification model (token-flow-only); deferred loading (keep, never spend); context size in general — plus #216 — all non-spend |
+| **Resolved-small** (bounded below 0.5% regardless) | 4 | §4 #4 prune; §4 #6 one-line-on-green; §6 #14 re-reads; the tool-result surface (now ≈ 0.03%) |
 | **Unaffected** (correctness-grounded) | 6 groups | §5 ×3; §4 #5; the gates; the hygiene half of L1–L15 |
 
 ---
@@ -330,9 +357,10 @@ The reconciliation above is a measurement, and needs no ruling. Three things do.
    These touch `CLAUDE.md`, which is a sign-off gate. Note that the strongest of them — the effort
    default — has already been taken by the human's own seat mapping on 2026-08-05, so this would be
    recording a rationale for a decision already made rather than proposing a new one.
-3. **Does the read arm (§7) run?** It is the largest unresolved quantity in the project's cost model
-   and the cheapest remaining experiment. It also decides whether #216 and the whole context-size
-   family are worth engineering.
+3. **The read arm ran (#237, ratified 2026-08-06).** It measured cache reads at ≤ 0.0095 pp₅ₕ/Mtok,
+   collapsed the §3 band from 0–62% to 0–~10%, and resolved #216 and the whole context-size family as
+   non-spend (≤ ~4% of the meter for a halving). The amendment this item asked for is adopted in full;
+   §2.1, §3, §4.3 and §7 carry the result.
 
 #218 is sitting `ready-for-human` on the adoption call for the same measurement. These are one
 decision, not two.
@@ -372,15 +400,16 @@ the only validation available at this resolution.
 
 | Pool | Estimator | Basis | Confidence |
 |---|---|---|---|
-| **Claude** | `output_tokens / 30,209` points of the five-hour window; `output_tokens / 181,253` of the seven-day | `output_tokens` — **not** input, **not** cache | `measured`, with `excludes = ["cache_read"]` until §7 runs |
+| **Claude** | `output_tokens / 30,209` points of the five-hour window; `output_tokens / 181,253` of the seven-day | `output_tokens` — **not** input, **not** cache | `measured`; cache reads bounded at ≤ 0.0095 pp₅ₕ/Mtok by #237, so `excludes` is empty |
 | **Codex** | `credits_consumed / window_credit_cap` | provider publishes `usedPercent` first-party, so `observed` and `est` converge; `est` from `codex.turn.token_usage` × the credit conversion | `measured` once the conversion is read off a real run |
 | **z.ai** | `prompt_count × tod_multiplier / window_prompt_cap` | prompt counts, token-independent by construction | `estimated`, always — #226 already rules this, and no machine-readable state exists |
 
 The Claude row is this document's contribution to the ledger and the thing #220 exists to settle:
 **a Claude dispatch's plan cost is its output token count, divided by a measured constant.** Input
 volume, context size and cache behaviour do not enter it — not because they are free in principle,
-but because they are measured at under 1/450th the weight and the residual that could change that is
-named in `excludes` rather than silently assumed away.
+but because they are measured at under 1/450th the weight. The one residual that could have changed
+that — cache reads — was measured by #237 at ≤ 0.0095 pp₅ₕ/Mtok and discharged from `excludes`; it is
+named in the calibration record as measured-and-negligible rather than silently assumed away.
 
 If the z.ai lane does meter purely by prompt count regardless of context size — #221 carries this as
 an open unknown — then that lane's economics are the exact opposite of Claude's: a fat context is
@@ -399,7 +428,9 @@ output:
 - `cti.profile` — the opaque `(lane, model, effort)` token of ADR-0061 D5. Effort belongs here for a
   reason this document supplies: it is an output-volume multiplier, so it is a **cost** dimension on
   this plan and not only a quality one
-- `cti.cap_fraction.calibration_id` — which conversion was applied, e.g. `claude/218-2026-08-05`
+- `cti.cap_fraction.calibration_id` — which conversion was applied, e.g. `claude/237-2026-08-06`
+  (carries #218's measured output weight plus #237's cache-read bound; a row dated before #237 keeps
+  `claude/218-2026-08-05` and its `cache_read` exclusion, so the two regimes stay distinguishable)
 - wall clock, and the window boundaries in force
 
 A recalibration then **re-derives history rather than invalidating it.** Without
@@ -430,44 +461,74 @@ A recalibration then **re-derives history rather than invalidating it.** Without
 
 The attribute names and the ledger schema are #227's surface, not this document's. This section is
 handed there by comment. The one thing that is *not* #227's to decide, and is settled here, is the
-Claude estimator's basis: **output tokens, on a measured constant, with cache reads named as an
-exclusion.**
+Claude estimator's basis: **output tokens, on a measured constant, with cache reads measured at
+≤ 0.0095 pp₅ₕ/Mtok (#237) and no longer excluded.**
 
 ---
 
-## 7. The one experiment that closes this
+## 7. The experiment that closed this — run, and the result
 
-**A multi-turn cache-read arm on #218's harness.** #220's body already names it; this document
-prices the design.
+**A multi-turn cache-read arm on #218's harness, run as #237 (2026-08-06).** #220's body named it;
+this section recorded the design and now carries the answer.
 
-**Design.** One main Claude Code session (one-hour TTL, so the prefix survives the run), a prefix of
-roughly 165,000 tokens matching this project's mean context, then ~1,000 turns each appending a
-trivial delta and replying with one word. Cache reads ≈ **165 Mtok**. Output ≈ 2,000 tokens, which
-is 0.07 five-hour points — negligible against the signal. Poll `/api/oauth/usage` at block
-boundaries only; it rate-limits at roughly one read per minute (#218's fourth confound).
+**Design as run.** One main Claude Code session on the one-hour TTL (so the prefix survived the run),
+a prefix of 164,417 tokens (md5 `8368bdcb20e2a891f6c443152b55b36f`, within 1.3% of this project's
+166,567-token mean), then 608 turns each appending a trivial delta and replying one word. Sequence
+`R Q Q R R Q` — ABBA-balanced, read blocks at positions 1/4/5 against idle blocks at 2/3/6 matched to
+the read blocks' own 877 s wall clock, so linear background drift cancels between the arms. Ten polls
+at block boundaries only (the endpoint rate-limits at roughly one read per minute and answers 429
+with a `retry-after` header of 111–142 s; the poller honours it). TTL verified per turn, not assumed:
+1,090 turns across both runs, `ephemeral_5m = 0` on every one; the documented over-limit-and-on-
+credits condition that silently flips a session onto the short TTL did not fire
+(`extra_usage.disabled_reason = out_of_credits` throughout).
 
-**Discrimination.**
+**Result.** 105.08 Mtok of cache reads moved the five-hour meter **+6.0 gross**; the matched idle arm
+moved **+5.0** over the same wall clock. **Net of background: +1.0 point**, i.e.
+**≤ 0.0095 pp₅ₕ/Mtok**. The positive control in the same run — 53,430 output tokens across five
+sessions — moved it **+3.0**.
 
-| Hypothesis | Predicted five-hour movement over 165 Mtok of reads |
-|---|---:|
-| Reads carry the §3 residual (0.061 pp₅ₕ/Mtok) | **≈ 10 points** |
-| Reads weigh like cache writes (< 0.0096 pp₅ₕ/Mtok) | **≤ 1.6 points** |
+**Discrimination, as the two hypotheses predicted it.**
 
-A movement of ≥ 5 points says reads are a first-order term and the whole context-size family comes
-straight back to the top of the ranking. A movement of ≤ 2 points says the residual is elsewhere —
-the human's other work, or a non-token component — and **output is essentially the whole of what
-this plan charges**, which would make §4.2 the entire ranking.
+| Hypothesis | Predicted read-arm movement (background 5.0 + signal) | Observed |
+|---|---:|---:|
+| H1 — reads carry the §3 residual (0.061 pp₅ₕ/Mtok) | **+11.4** | |
+| H2 — reads weigh like cache writes (< 0.0096 pp₅ₕ/Mtok) | **≤ +6.0** | |
+| **Observed** | | **+6.0** |
 
-Either result is decisive, the arm costs about ten points of one five-hour window, and the harness
-already exists.
+H1 misses by 5.4 points, about three times the aggregate standard error on the block sums; H2
+predicts the observation exactly. **Reads are a near-free class, output is essentially the whole of
+what this plan charges, and §4.2 is the entire ranking.**
 
-**A second, cheaper arm worth naming while the harness is warm**: fresh (uncached) input was never
-isolated either, and §3 prices it at the worst available assumption. Same shape, uncached prefix,
-one turn each.
+**Why the matched controls are the whole result.** Pooled uncorrected, the figure reads +7.5 points
+per 165 Mtok — "first-order," and wrong: five of the six read-arm points were the account's
+background traffic, visible only because the idle blocks were the same length as the read blocks. The
+run's interrupted first pass (300 s idle controls against 877 s reads) scored +4.7 and is reported as
+inconclusive, not salvaged; pooled across both runs at the completion run's measured background rate,
+175.08 Mtok of reads is **−0.3 points** — indistinguishable from zero, and slightly negative, which
+is what a null looks like at integer resolution.
 
-**A third, if the effort promotion in §4.2 is to be more than an inference**: two otherwise identical
-sessions at two effort levels, comparing output token volume and meter movement. That measures the
-lever the seat mapping already pulled.
+**Honesty about the tail.** With three blocks per arm the per-block read-minus-idle difference is
+0.33 ± 0.67 points, so the signal is not statistically distinguishable from zero, and a
+one-standard-deviation conservative bound permits up to 0.0285 pp₅ₕ/Mtok (~24% of the meter). What is
+robust is not the point estimate but the exclusion of H1. The §2.1 row is written as a bound with
+that uncertainty attached, not as a zero.
+
+**Cost.** ≈ 2.5 five-hour points attributable to the experiment across both runs, against the ~10 the
+ruling budgeted — and the reason is the result: the arm was cheap precisely because reads are free,
+so the only real cost was the positive control that made the null readable.
+
+Raw data: `~/.arma-cti/runs/20260805T2302Z-readarm-237/` and `20260806T0402Z-readarm-237-completion/`,
+each carrying `polls.jsonl`, `turns.jsonl`, `run.log` and the runner as executed.
+
+**A second arm that did not run: fresh (uncached) input**, never isolated either. It is close to
+unrealisable through Claude Code, which caches any large input, so the same physical tokens arrive as
+`cache_creation` (bounded at < 0.0096 pp₅ₕ/Mtok over 104.6 Mtok by #218). The `fresh input` row
+therefore stays `[unmeasured]` by a mechanism argument, not a measurement.
+
+**A third arm that did not run: the effort A/B** (two otherwise identical sessions at two effort
+levels). It burns output by design, and output is the class metered at 33.10 pp₅ₕ/Mtok — the ruling
+explicitly left it unrun and instead ratified the effort promotion on #218's measured output weight
+plus #237's finding that stating it costs negligible prefix.
 
 ---
 
@@ -497,13 +558,17 @@ Three conditions would move it:
 
 - It does not claim the sibling is wrong. Every measurement in it stands; only its use as a
   spending ranking changes.
-- It does not claim to have measured cache reads. §3 gives a ceiling from a residual, and a ceiling
-  derived from a residual absorbs every confound in the system.
+- It measured cache reads (#237) at ≤ 0.0095 pp₅ₕ/Mtok, net of wall-clock-matched controls. The point
+  estimate is not distinguishable from zero at the instrument's integer resolution; what is robust is
+  the exclusion of the hypothesis that reads carry the §3 residual, which is why the §2.1 row is a
+  bound with its uncertainty attached rather than a zero.
 - It does not claim the plan meters output tokens *as such*. It claims generation is the metered
   act, that request count and cache traffic are excluded at the instrument's resolution, and that
   output tokens are the best available proxy for whatever the underlying quantity is.
 - It does not claim the promotions in §4.2 are measured. Their **weight** is measured; their
   **application** — that a lower effort setting or a shorter report reduces output volume by an
-  amount worth having — is inference, and §7's third arm is how it stops being one.
+  amount worth having — is inference. The effort promotion was ratified on #218's measured output
+  weight plus #237's finding that stating it costs negligible prefix, not by a dedicated effort A/B,
+  which the ruling left unrun because it burns the metered class by design.
 - It does not forecast. Every share here is a share of six days of one project's history under one
   workload mix.

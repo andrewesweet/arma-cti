@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Cache reads measured at ≤ 0.0095 pp₅ₕ/Mtok on this plan** (#237, ratified 2026-08-06): a
+  multi-turn read arm moved the five-hour meter +1.0 point net of wall-clock-matched idle controls
+  over 105.08 Mtok of reads — ≥ 3,477× lighter than output and indistinguishable from zero at the
+  instrument's integer resolution. `docs/research/token-efficiency-plan-currency.md`'s cache-read row
+  moves from `unresolved`/`[unmeasured]` to **≤ 0.0095 pp₅ₕ/Mtok [measured/bounded]**; the §3 band
+  collapses 0–62% → 0–~10%; and all four §4.3 suspended items resolve as non-spend (context size in
+  general, and #216, are worth ≤ ~4% of the meter, not "up to 31%"). The ledger's
+  `cap_fraction.excludes` is discharged — `excludes` becomes empty — and the calibration advances to
+  `claude/237-2026-08-06`, carrying #218's output weight plus #237's cache-read bound; a pre-#237 row
+  keeps `claude/218-2026-08-05` and its exclusion so the two regimes stay distinguishable. Output is
+  essentially the whole of what this plan charges; reads join writes in the near-free class.
+
 - **`AGENTS.md` is the source; `CLAUDE.md` is a committed symlink to it** (`ln -s AGENTS.md
   CLAUDE.md`, mode `120000` in the index). Human ruling on #221, 2026-08-05, Decision 2. Hook
   configuration stays hand-written per target and no compiler is introduced. The symlink was chosen

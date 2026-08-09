@@ -102,9 +102,10 @@ and its prohibitions are #220's: `docs/research/token-efficiency-plan-currency.m
 **The Claude estimator is output tokens over a measured constant.** One five-hour point
 is 30,209 output tokens; one seven-day point is 181,253 (#218's control arm moved the two
 meters 6 and 1 on the same 181,253 tokens). Input volume, context size and cache
-behaviour do not enter it — they measure at under 1/450th the per-token weight, and the
-one residual that could change that is named in `excludes: ["cache_read"]` rather than
-assumed away.
+behaviour do not enter it — they measure at under 1/450th the per-token weight. The one
+residual that could have changed that — cache reads — was measured by #237 at
+≤ 0.0095 pp₅ₕ/Mtok (≥ 3,477× lighter than output) and discharged: `excludes` is empty, and
+the calibration record carries the bound rather than assuming it away.
 
 **Two halves per window, never one.** `est` is the estimator from the dispatch's own
 counters and is the per-dispatch number everything else here is for. `observed` is the
@@ -140,9 +141,12 @@ Claude output, and they share their parent's resource block and carry no
 term rather than complete; on a foreign lane that missing term is the one that decides
 whether the routing saved anything.
 
-**`calibration_id`** (`claude/218-2026-08-05`) and the per-window `tokens_per_point` are
-carried so a re-measured rate re-prices history rather than invalidating it. Without it
-the first plan change silently rewrites every past number in the ledger.
+**`calibration_id`** is `claude/237-2026-08-06` — carrying #218's measured output weight
+(30,209 / 181,253 tokens per point) plus #237's cache-read bound — and the per-window
+`tokens_per_point` are carried so a re-measured rate re-prices history rather than
+invalidating it. A row dated before #237 keeps `claude/218-2026-08-05` and its
+`cache_read` exclusion, so the two regimes stay distinguishable. Without the id the first
+plan change silently rewrites every past number in the ledger.
 
 **`est` is stored unrounded.** Its accuracy is the calibration's — ±8% on the five-hour
 weight — not the ledger's; rounding to some shorter decimal would both assert a precision
