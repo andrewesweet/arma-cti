@@ -18,6 +18,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **ADR-0066**, the multi-provider dispatch initiative's second decision record (#263, human ruling on
+  #221 of 2026-08-05T21:14Z, Decision 1). Eight rulings that already govern landed code — substrate,
+  dispatch granularity, the lane breaker, telemetry, durability, secrets, sequencing and quota
+  feedback — existed only as comments on #221; each is now recorded with the date it was ruled and
+  the instance that landed it. Portability joins them as the one ruling that changed shape:
+  `AGENTS.md` as the source with `CLAUDE.md` a symlink, not an import. Two post-ratification
+  corrections to ADR-0061, which is immutable, get their own entries — substrate was settled by
+  Anthropic's Consumer Terms rather than by a spike, and the breaker halved because Codex publishes
+  quota first-party. The ADR also carries the full reasoning behind two of ADR-0061's 2026-08-06
+  amendments, so no fact argues itself twice. `Reviewed-by-human: pending`: a new ADR is a sign-off
+  gate and only the human flips that field.
+
 - **`docs/research/mutation-engine-comparison.md`**, the build-on-top comparison the human asked for
   before ratifying ADR-0064 (#281). Cosmic Ray 8.4.6 and mutmut 3.6.0 were each given the smallest
   adapter that attempts `tools/mutation_smoke.py`'s behaviour, and measured against it on the same
