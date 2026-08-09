@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`docs/research/mutation-engine-comparison.md`**, the build-on-top comparison the human asked for
+  before ratifying ADR-0064 (#281). Cosmic Ray 8.4.6 and mutmut 3.6.0 were each given the smallest
+  adapter that attempts `tools/mutation_smoke.py`'s behaviour, and measured against it on the same
+  modules. **No arm qualifies** against the issue's decision rule, so the decision returns to the
+  human and this is not automatic ratification. Cosmic Ray needs no private API and no fork, but
+  scores a sound module 17% where the gate scores it 67% — a false red at the current floor — and
+  its adapter is *larger* than the tool it would replace (1,029 lines against 1,116). mutmut is the
+  fastest arm and never touches the real tree, but its operator set is a module-level list with no
+  configuration surface at all, which is the issue's stop condition. Runtime disqualifies neither.
+  The throwaway prototype is attached to #281 rather than landed.
+
 - **`Routing-exception: no-gated-landing`**, a second declared exception to the routing policy's
   gated-semantic class. An issue whose body merely *mentions* a gated path — an ADR under
   discussion, a settings file being reasoned about — while landing nothing there may declare it and
