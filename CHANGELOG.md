@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Retros run every five completed issues again, and may be conducted on `codex-sol-xhigh`.**
+  Human ruling, 2026-08-09. The cadence returns to the interval that stood before 2026-08-04; the
+  ten-close interval ran from the twenty-second retro to the twenty-seventh. The retro seat
+  allowance — `fable` on `codex`/`codex-sol-xhigh` — was time-boxed on 2026-08-06 and would have
+  lapsed on 2026-08-10; it is now standing, so `tools/dispatch.py` no longer consults a clock for
+  it and `just dispatch --list` prints `seat_allowance=standing` rather than a countdown.
+
+  "Or above" is deliberately not a comparison the code makes: profiles are opaque
+  `(lane, model, effort)` tokens and no cross-provider effort scale exists (ADR-0061 decision 5), so
+  a higher profile joins by the human naming it. Every other fable-on-foreign route, and
+  `orchestrator` everywhere, stay barred (#299, superseding #217 and #270).
+
+- **A routing route-exception now carries exactly one of `expires_at` or `standing: true`.** They
+  were built time-boxed on purpose; the retro allowance is the first the human has made standing, so
+  the schema admits an undated widening **only when the document says so**, never by omission. A
+  document with neither, or with both, is refused and the policy fails closed (#299).
+
 ### Added
 
 - **`docs/research/removing-backlog-routing-restrictions.md`**, the proposal-only audit of why 18

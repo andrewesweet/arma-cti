@@ -183,13 +183,13 @@
   ],
   "route_exceptions": [
     {
-      "name": "temporary_retro_allowance_270",
+      "name": "standing_retro_allowance",
       "class": 3,
       "lane": "codex",
       "profile": "codex-sol-xhigh",
       "seat": "fable",
-      "expires_at": "2026-08-10T14:00:00+00:00",
-      "source": "#217 #issuecomment-5209125413 and #270"
+      "source": "human ruling 2026-08-09 (#299), superseding #217 and #270",
+      "standing": true
     }
   ]
 }

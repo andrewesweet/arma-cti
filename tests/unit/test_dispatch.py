@@ -404,56 +404,31 @@ def test_an_unknown_seat_is_refused_rather_than_mis_attributed() -> None:
     assert refusal.kind == "unknown_seat"
 
 
-# ----------------------------------------------------- the #270 self-expiring allowance
-# The human's ruling of 2026-08-06T21:15Z (#217, #issuecomment-5209125413) suspends
-# Decision 2 for one triple until one instant. The instant is data on the allowance, so
-# these tests inject the clock either side of it rather than waiting — the whole point of
-# the design is that the expiry is mechanical and nobody revokes it.
-ALLOWANCE_LIVE = datetime(2026, 8, 10, 13, 59, tzinfo=UTC)  # one minute before it lapses
-ALLOWANCE_LAPSED = datetime(2026, 8, 10, 14, 0, tzinfo=UTC)  # the instant itself: `now <` is False
+# -------------------------------------------------------- the standing retro allowance
+# The human's ruling of 2026-08-09 (#299) supersedes the time-boxed allowance of
+# 2026-08-06 (#217, #270) that would have lapsed at 2026-08-10T14:00Z: retros may run as
+# the `fable` seat on `codex`/`codex-sol-xhigh` with no expiry. So these tests no longer
+# inject a clock — there is nothing time-dependent left to prove — and they assert
+# instead that the allowance is exactly one triple and widens to nothing else.
+#
+# "Or above" in the ruling is deliberately not a comparison this module makes: profiles
+# are opaque `(lane, model, effort)` tokens and no cross-provider effort scale exists
+# (ADR-0061 decision 5), so a higher profile joins by being named, by the human.
 
 
-def test_a_live_seat_allowance_lets_fable_dispatch_on_the_one_ruled_foreign_profile() -> None:
-    # Before the instant, the ruling suspends Decision 2 for exactly this triple.
-    assert (
-        dispatch.resolve_selection("codex", "codex-sol-xhigh", "fable", now=ALLOWANCE_LIVE) is None
-    )
+def test_the_standing_allowance_lets_fable_dispatch_on_the_one_ruled_foreign_profile() -> None:
+    assert dispatch.resolve_selection("codex", "codex-sol-xhigh", "fable") is None
 
 
-def test_the_seat_allowance_lapses_mechanically_at_the_ruling_instant() -> None:
-    # `now` is the whole decision: at the instant, the bar re-applies with no human act.
-    refusal = dispatch.resolve_selection("codex", "codex-sol-xhigh", "fable", now=ALLOWANCE_LAPSED)
-    assert refusal is not None
-    assert refusal.kind == "seat_not_eligible"
-    # A refusal, not a failure class — nothing was found about a provider or about code.
-    assert refusal.failure_class == ""
-    assert not any(line.startswith("class=") for line in refusal.lines())
-
-
-def test_the_real_planning_path_obeys_the_injected_allowance_clock(tmp_path: Path) -> None:
-    live_plan, _, live_refusal = plan_for(
+def test_the_real_planning_path_admits_the_standing_allowance(tmp_path: Path) -> None:
+    plan, _, refusal = plan_for(
         tmp_path,
         lane="codex",
         profile="codex-sol-xhigh",
         seat="fable",
-        now=ALLOWANCE_LIVE,
     )
-    assert live_refusal is None
-    assert live_plan is not None
-
-    expired_plan, _, expired_refusal = plan_for(
-        tmp_path,
-        lane="codex",
-        profile="codex-sol-xhigh",
-        seat="fable",
-        now=ALLOWANCE_LAPSED,
-        worktree=live_plan.worktree,
-    )
-    assert expired_plan is None
-    assert expired_refusal is not None
-    assert expired_refusal.kind == "routing_policy_advisory"
-    assert "routing_class=3:retros_and_adr_authorship" in expired_refusal.found
-    assert expired_refusal.failure_class == ""
+    assert refusal is None
+    assert plan is not None
 
 
 @pytest.mark.parametrize(
@@ -466,44 +441,37 @@ def test_the_real_planning_path_obeys_the_injected_allowance_clock(tmp_path: Pat
         ("zai", "zai-glm47-max"),
     ],
 )
-@pytest.mark.parametrize("now", [ALLOWANCE_LIVE, ALLOWANCE_LAPSED])
 def test_the_seat_allowance_does_not_widen_beyond_the_one_ruled_triple(
-    lane: str, profile: str, now: datetime
+    lane: str, profile: str
 ) -> None:
-    # One triple only. Every other fable-on-foreign combination stays barred throughout.
-    refusal = dispatch.resolve_selection(lane, profile, "fable", now=now)
+    # One triple only. Every other fable-on-foreign combination stays barred.
+    refusal = dispatch.resolve_selection(lane, profile, "fable")
     assert refusal is not None
     assert refusal.kind == "seat_not_eligible"
+    # A refusal, not a failure class — nothing was found about a provider or about code.
+    assert refusal.failure_class == ""
+    assert not any(line.startswith("class=") for line in refusal.lines())
 
 
 @pytest.mark.parametrize("lane", ["codex", "zai"])
-@pytest.mark.parametrize("now", [ALLOWANCE_LIVE, ALLOWANCE_LAPSED])
-def test_the_orchestrator_seat_stays_barred_on_every_foreign_lane_throughout(
-    lane: str, now: datetime
-) -> None:
+def test_the_orchestrator_seat_stays_barred_on_every_foreign_lane(lane: str) -> None:
     # The ruling touches fable alone; the orchestrator seat never leaves Claude.
     profile = "codex-sol-xhigh" if lane == "codex" else "zai-glm52-max"
-    refusal = dispatch.resolve_selection(lane, profile, "orchestrator", now=now)
+    refusal = dispatch.resolve_selection(lane, profile, "orchestrator")
     assert refusal is not None
     assert refusal.kind == "seat_not_eligible"
 
 
-def test_a_live_seat_allowance_is_visible_in_the_dispatch_registry() -> None:
-    # A suspended rule is shown while it holds — silence would read as "nothing unusual".
-    lines = dispatch.registry_lines(now=ALLOWANCE_LIVE)
+def test_the_standing_allowance_is_visible_in_the_dispatch_registry() -> None:
+    # A standing exception is stated wherever the registry is read: silence would let a
+    # reader believe `SEATS` governs without exception, which is the thing that is false.
+    lines = dispatch.registry_lines()
     visible = [line for line in lines if line.startswith("seat_allowance=")]
     assert len(visible) == 1
     line = visible[0]
-    assert line.startswith("seat_allowance=live seat=fable lane=codex profile=codex-sol-xhigh")
-    assert f"expires_at={dispatch.RETRO_FABLE_ALLOWANCE_EXPIRES_AT.isoformat()}" in line
-    assert "in=" in line
-    assert "#217" in line
-
-
-def test_an_expired_seat_allowance_vanishes_from_the_dispatch_registry() -> None:
-    # It lapses with nobody doing anything, and the registry reflects that: nothing to list.
-    lines = dispatch.registry_lines(now=ALLOWANCE_LAPSED)
-    assert not [line for line in lines if line.startswith("seat_allowance=")]
+    assert line.startswith("seat_allowance=standing seat=fable lane=codex profile=codex-sol-xhigh")
+    assert "2026-08-09" in line
+    assert "expires_at" not in line
 
 
 # ---------------------------------------------------------------------- identity/OTel

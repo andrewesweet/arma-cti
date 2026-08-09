@@ -163,3 +163,28 @@ def test_proposal_only_excepts_class_6_and_must_be_declared() -> None:
     # It excepts class 6 only: a gated-surface landing still refuses with it declared.
     also_gated = declared + "\nRecord the outcome in `CLAUDE.md`."
     assert routing_policy.advisory_match(read.policy, also_gated, route()) is not None
+
+
+def test_a_route_exception_carries_exactly_one_of_expiry_or_standing() -> None:
+    """An undated widening must say so deliberately; a dated one cannot also be standing.
+
+    Route exceptions were built time-boxed on purpose (#270). The human's ruling of
+    2026-08-09 (#299) created the first standing one, so the schema admits it — but only
+    when the document says `standing: true`, never by leaving the expiry out.
+    """
+    base = json.loads(POLICY.read_text(encoding="utf-8"))
+    entry = {"class": 3, "lane": "codex", "profile": "codex-sol-xhigh", "seat": "fable"}
+
+    standing = dict(base, route_exceptions=[dict(entry, standing=True)])
+    parsed = routing_policy.parse_policy(json.dumps(standing))
+    assert parsed.route_exceptions[0].expires_at is None
+
+    dated = dict(base, route_exceptions=[dict(entry, expires_at="2026-08-10T14:00:00+00:00")])
+    assert routing_policy.parse_policy(json.dumps(dated)).route_exceptions[0].expires_at
+
+    for wrong in (
+        dict(entry),  # neither: an undated widening that never said so
+        dict(entry, standing=True, expires_at="2026-08-10T14:00:00+00:00"),  # both
+    ):
+        with pytest.raises(routing_policy.PolicyError):
+            routing_policy.parse_policy(json.dumps(dict(base, route_exceptions=[wrong])))

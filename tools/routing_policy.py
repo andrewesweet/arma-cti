@@ -52,7 +52,12 @@ class RouteException(NamedTuple):
     lane: str
     profile: str
     seat: str
-    expires_at: datetime
+    # `None` is a **standing** widening, and it is deliberately not the default: a route
+    # exception carries an expiry unless the human has ruled otherwise, so the absent
+    # field must be accompanied by `"standing": true` and is refused on its own. The
+    # first standing entry is the retro allowance (human ruling 2026-08-09, #299),
+    # which superseded its own dated predecessor.
+    expires_at: datetime | None
 
 
 class Policy(NamedTuple):
@@ -85,6 +90,10 @@ class PolicyError(ValueError):
 
 CLASS_OBJECT_ERROR: Final = "each class must be an object"
 TIMEZONE_ERROR: Final = "expires_at must carry a timezone"
+STANDING_ERROR: Final = (
+    "a route exception carries exactly one of `expires_at` or `standing: true` —"
+    " an undated widening must say so deliberately, and a dated one cannot also be standing"
+)
 CLASSES_LIST_ERROR: Final = "classes must be a list"
 CLASS_IDS_ERROR: Final = "classes must be the ordered table 1..7"
 CLASS_NAMES_ERROR: Final = "class names must be unique"
@@ -159,13 +168,16 @@ def _route_exceptions(document: dict[object, object]) -> tuple[RouteException, .
     for raw in document.get("route_exceptions", []):
         if not isinstance(raw, dict):
             raise PolicyError(ROUTE_EXCEPTION_ERROR)
+        standing = raw.get("standing") is True
+        if standing == ("expires_at" in raw):
+            raise PolicyError(STANDING_ERROR)
         found.append(
             RouteException(
                 int(raw["class"]),
                 str(raw["lane"]),
                 str(raw["profile"]),
                 str(raw["seat"]),
-                _timestamp(raw["expires_at"]),
+                None if standing else _timestamp(raw["expires_at"]),
             )
         )
     return tuple(found)
@@ -229,7 +241,7 @@ def _excepted(policy: Policy, match: Match, body: str, route: Route) -> bool:
         exception.class_id == match.rule.id
         and (exception.lane, exception.profile, exception.seat)
         == (route.lane, route.profile, route.seat)
-        and route.now < exception.expires_at
+        and (exception.expires_at is None or route.now < exception.expires_at)
         for exception in policy.route_exceptions
     )
     return declared or routed
