@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The gated-path guard and the format/lint hooks now read a Codex edit.** Claude Code's editing
+  tools name their target in `file_path`; Codex's carries a V4A patch envelope whose written paths
+  are inside the patch text, so the guard could not see them and failed closed — correctly, but it
+  meant a Codex session was refused on edits it should have been allowed, and the formatter never
+  fired at all. `tools/edit_payload.py` reads both shapes, returning `None` for a call it cannot
+  read and an empty tuple only for one that writes nothing; the guard's fail-closed direction
+  depends on that distinction. Verified in vivo in both directions: a spec write through a patch
+  envelope is denied, an ordinary path through the same envelope passes, and an unreadable envelope
+  still fails closed (#273).
+
 ### Changed
 
 - **Cache reads measured at ≤ 0.0095 pp₅ₕ/Mtok on this plan** (#237, ratified 2026-08-06): a

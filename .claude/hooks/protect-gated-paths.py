@@ -26,9 +26,14 @@ from __future__ import annotations
 import fnmatch
 import json
 import sys
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 
 from shell_reading import read_command, without_assignments
+
+# `edit_payload` is shared with `tools/`, which is not on a hook's script path.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+
+from edit_payload import edited_paths
 
 GATED = [
     ("*/generated/*", "Generated file. Edit the schema source and regenerate; never hand-edit."),
@@ -40,6 +45,11 @@ GATED = [
         ),
     ),
 ]
+
+UNREADABLE_EDIT = (
+    "Could not read this file-editing tool call to check it for writes to gated"
+    " paths (generated files, acceptance specs)."
+)
 
 UNREADABLE = (
     "Could not read this Bash command to check it for writes to gated paths"
@@ -138,7 +148,7 @@ def main() -> int:
         data = json.load(sys.stdin)
         tool_name = data.get("tool_name", "")
         tool_input = data["tool_input"]
-        target = tool_input["command"] if tool_name == "Bash" else tool_input["file_path"]
+        command = tool_input["command"] if tool_name == "Bash" else None
     except (json.JSONDecodeError, TypeError, KeyError):
         # #94: fail closed — a call we cannot read is not an approval.
         print(
@@ -146,7 +156,17 @@ def main() -> int:
             file=sys.stderr,
         )
         return 2
-    reason = bash_denial(target) if tool_name == "Bash" else _gated(target)
+    if command is not None:
+        reason = bash_denial(command)
+    else:
+        # #273: a Codex edit carries a patch envelope, not a `file_path`. `None`
+        # is unreadable and denies; `()` would mean "writes nothing", and
+        # conflating the two is the #94 fail-open shape one layer in.
+        paths = edited_paths(tool_input)
+        if paths is None:
+            print(UNREADABLE_EDIT, file=sys.stderr)
+            return 2
+        reason = next((gated for gated in map(_gated, paths) if gated is not None), None)
     if reason is not None:
         print(reason, file=sys.stderr)
         return 2
