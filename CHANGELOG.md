@@ -77,6 +77,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   keeps `claude/218-2026-08-05` and its exclusion so the two regimes stay distinguishable. Output is
   essentially the whole of what this plan charges; reads join writes in the near-free class.
 
+- **`AGENTS.md`'s `just dispatch` row now states the `zai` off-peak refusal, and the pointer
+  paragraph now names `docs/review-dispatch.md`** (#248). Two verbatim prose amendments ruled
+  2026-08-06: the `zai` lane dispatches only outside z.ai's published peak band, refusing with
+  no failure class inside it since nothing was found about a provider or the code under test;
+  and the three-document pointer paragraph now also credits `docs/review-dispatch.md` with the
+  review seat's dispatch shape, claims-cite-code contract, and routing. The failure-class table
+  is unchanged by design.
+
 - **`AGENTS.md` is the source; `CLAUDE.md` is a committed symlink to it** (`ln -s AGENTS.md
   CLAUDE.md`, mode `120000` in the index). Human ruling on #221, 2026-08-05, Decision 2. Hook
   configuration stays hand-written per target and no compiler is introduced. The symlink was chosen
