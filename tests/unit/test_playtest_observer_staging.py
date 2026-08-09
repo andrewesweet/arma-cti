@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from conftest import REPO
-from test_run_verdict import run_with_lines
+from test_run_verdict import run_with_lines, why
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -52,9 +52,7 @@ def test_a_playtest_fixture_brings_the_observer_with_it(tmp_path: Path) -> None:
         ["measurement thing=1"],
         extra_env={"CTI_HARNESS_EXTRA": str(REPO / "spike" / "playtest" / "session-hold.sqf")},
     )
-    assert records["verdict"] == "PASS", (
-        f"{records.get('failure_class')}: {records.get('failure_detail')}"
-    )
+    assert records["verdict"] == "PASS", why(records)
     assert records["playtest_observer"] == "staged"
     harness = staged_harness(tmp_path)
     assert OBSERVER_MARK in harness
@@ -76,9 +74,7 @@ def test_the_flight_fixture_brings_the_observer_with_it(tmp_path: Path) -> None:
             "CTI_HARNESS_EXTRA": str(REPO / "spike" / "playtest" / "observer-flight.sqf"),
         },
     )
-    assert records["verdict"] == "PASS", (
-        f"{records.get('failure_class')}: {records.get('failure_detail')}"
-    )
+    assert records["verdict"] == "PASS", why(records)
     assert records["playtest_observer"] == "staged"
     harness = staged_harness(tmp_path)
     assert OBSERVER_MARK in harness
@@ -97,9 +93,7 @@ def test_a_probe_stages_no_observer(tmp_path: Path) -> None:
         ["measurement thing=1"],
         extra_env={"CTI_HARNESS_EXTRA": str(REPO / "spike" / "probes" / "bareworld.sqf")},
     )
-    assert records["verdict"] == "PASS", (
-        f"{records.get('failure_class')}: {records.get('failure_detail')}"
-    )
+    assert records["verdict"] == "PASS", why(records)
     assert "playtest_observer" not in records
     harness = staged_harness(tmp_path)
     assert OBSERVER_MARK not in harness
@@ -109,7 +103,7 @@ def test_a_probe_stages_no_observer(tmp_path: Path) -> None:
 def test_a_run_with_no_extra_stages_no_observer(tmp_path: Path) -> None:
     """A bare world is a join test, not a human session; it gets no curator."""
     records = run_with_lines(tmp_path, ["measurement thing=1"])
-    assert records["verdict"] == "PASS"
+    assert records["verdict"] == "PASS", why(records)
     assert "playtest_observer" not in records
     harness = staged_harness(tmp_path)
     assert OBSERVER_MARK not in harness
@@ -130,7 +124,7 @@ def test_a_probe_world_ends_at_the_probe(tmp_path: Path) -> None:
     records = run_with_lines(
         tmp_path, ["measurement thing=1"], extra_env={"CTI_HARNESS_EXTRA": str(probe)}
     )
-    assert records["verdict"] == "PASS"
+    assert records["verdict"] == "PASS", why(records)
 
     prelude = (REPO / "spike" / "probe-prelude.sqf").read_text(encoding="utf-8")
     generated, separator, after_prelude = staged_harness(tmp_path).partition(prelude)
@@ -152,7 +146,11 @@ def test_the_observer_guards_against_being_staged_twice(tmp_path: Path) -> None:
         ["measurement thing=1"],
         extra_env={"CTI_HARNESS_EXTRA": str(OBSERVER)},
     )
-    assert records["verdict"] == "PASS"
+    # #233's flake fired on this line and left nothing behind but `'FAIL' ==
+    # 'PASS'`. The staging assertions below it are arithmetic over a file this
+    # run wrote, so a red here is the *run* having stopped, and its class is the
+    # whole of what a reader needs.
+    assert records["verdict"] == "PASS", why(records)
     assert records["playtest_observer"] == "staged"
     harness = staged_harness(tmp_path)
     assert harness.count(OBSERVER_MARK) == 2, "expected the extra copy and the staged copy"

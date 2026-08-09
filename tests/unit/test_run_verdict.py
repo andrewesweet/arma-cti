@@ -136,6 +136,19 @@ def run_with_lines(
     return records
 
 
+def why(records: dict[str, str]) -> str:
+    """Say what a run recorded, for the assertion that expected it to pass (#233).
+
+    `assert records["verdict"] == "PASS"` on its own prints `'FAIL' == 'PASS'`
+    and nothing else, which is what #233's one sighting left behind: a red under
+    full-suite load whose class was never captured, so an ordering interaction
+    and a genuine race in the code under test read identically afterwards. Every
+    caller that expects a pass names this, so the next occurrence carries the
+    class the failure-class table sends its reader on.
+    """
+    return f"{records.get('failure_class')}: {records.get('failure_detail')}"
+
+
 @pytest.mark.parametrize(
     ("line", "expected"),
     [
@@ -379,6 +392,40 @@ def test_a_daemon_log_the_harness_cannot_read_is_typed_as_such(tmp_path: Path) -
     assert records["verdict"] == "FAIL"
     assert records["failure_class"] == "infra_unavailable"
     assert "could not read its own daemon log" in records["failure_detail"]
+
+
+def test_a_daemon_port_somebody_else_holds_is_not_a_result(tmp_path: Path) -> None:
+    """A daemon that could not bind is `infra_unavailable`, never an untyped red (#233).
+
+    `free_port` above hands out a port and closes the socket, so the port is
+    nobody's for the two-odd seconds of staging that run between the draw and
+    the daemon's own bind; this machine's ephemeral range is 4,096 ports wide
+    (`/proc/sys/net/ipv4/ip_local_port_range`, 44620-48715) and the suite binds
+    inside it — every `transport.serve_in_thread` listener stays bound for the
+    rest of its worker's life. So a draw this suite makes can be taken by a
+    concurrent one before it is used, and that is the shape #233's one sighting
+    fits: a red on `verdict == "PASS"` in one test, under full-suite load, gone
+    on every isolated re-run.
+
+    Not a reproduction of #233 — the collision has never been observed here, and
+    the arithmetic above puts it at a few percent of a full run. What this pins
+    is the half that can be pinned: when it does happen, the run says
+    `infra_unavailable` and the class table's reader is told to stop rather than
+    to go looking at the code under test. `allow_reuse_address` on the daemon's
+    server means a port merely in TIME_WAIT is *not* this failure, so the holder
+    here listens.
+    """
+    with socket.socket() as holder:
+        holder.bind(("127.0.0.1", 0))
+        holder.listen()
+        records = run_with_lines(
+            tmp_path,
+            ["measurement thing=1"],
+            extra_env={"CTI_DAEMON_PORT": str(holder.getsockname()[1])},
+        )
+    assert records["verdict"] == "FAIL"
+    assert records["failure_class"] == "infra_unavailable", why(records)
+    assert "daemon" in records["failure_detail"]
 
 
 # ------------------------------ the harness's own deadlines fail closed (#144)
