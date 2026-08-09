@@ -16,7 +16,7 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-check: check-commits check-generated check-adr check-markers check-conflicts check-sqf check-secrets check-python check-rust
+check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-sqf check-secrets check-python check-rust
 
 # Export what SQF cannot read from an authored file. The map manifests are not
 # here: the addon ships and parses the authored JSON itself (ADR-0017), so
@@ -37,6 +37,11 @@ check-commits:
 # would overturn it, and it carries the human's review-state line (#137).
 check-adr:
     uv run python tools/check_adr_form.py
+
+# AGENTS.md is the sole source and CLAUDE.md a committed symlink to it (#264,
+# #221 decision 2). A copy would diverge invisibly, since both names still read.
+check-source-link:
+    uv run python tools/check_source_symlink.py
 
 # A `validated ×N` marker must not narrate a use its own count does not reach
 # (#186). CLAUDE.md's exemplar lists are out of scope — the reason is at the

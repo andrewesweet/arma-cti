@@ -1596,6 +1596,10 @@ TRIAL_RUNNING: Final = "running"
 # semantics, perceptual-checklist growth and gameplay-balance feel are semantic rather than
 # path-derivable, so a path scan never claims to have checked those judgements.
 TRIAL_GATED_PREFIXES: Final = (
+    # `AGENTS.md` holds the content and `CLAUDE.md` is a symlink to it (#264). Both
+    # names are listed: a diff can name either, and the audit must see an edit to the
+    # process file however it was spelled.
+    "AGENTS.md",
     "CLAUDE.md",
     "CONTEXT.md",
     "docs/adr/",

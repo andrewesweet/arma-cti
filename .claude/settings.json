@@ -63,6 +63,7 @@
       "Write(.claude/skills/**)",
       "Edit(docs/**)",
       "Write(docs/**)",
+      "Edit(AGENTS.md)",
       "Edit(CLAUDE.md)",
       "Edit(CONTEXT.md)",
       "Edit(CHANGELOG.md)",
