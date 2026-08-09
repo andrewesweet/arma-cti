@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`docs/research/removing-backlog-routing-restrictions.md`**, the proposal-only audit of why 18
+  of #296's top 30 ready issues cannot currently leave Claude. The 12/18 measurement reproduces,
+  but its fourteen-item `gated_semantic_surfaces` pile mixes semantic authorship, gate authorship,
+  executor permission and incidental path citations. The report keeps gate and oracle authorship
+  closed, proposes a declaration-only/all-matches classifier, separates required executor
+  capabilities from keep-on-Claude classes, and pre-registers experiments for reference-only
+  routing, narrow `.claude/` promotion, SHA-bound detached corpus runs and lexical-only in-world
+  edits. It also records this Codex lane's conflict and preserves its commit-without-gate ceiling.
+  Every proposed routing-policy byte is quoted for the human's gate; no policy code or data changes
+  here (#296).
+
 - **`Routing-exception: proposal-only`**, a declared exception to the routing policy's
   `gates_themselves` class. That class keeps a foreign lane from **authoring** the mechanism that
   judges it. An issue that may only *propose* — with the human ruling on whatever it recommends,
