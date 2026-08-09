@@ -240,6 +240,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (ADR-0023) cannot be parsed as one. Contacts and map positions are excluded — both regenerated at
   boot — and player role/Squad is deferred to #25.
 
+- **The durable snapshot store and the checkpoint coordinator: atomic save,
+  last-known-good load, and a 30-second checkpoint bound** (#290; ADR-0003, #288).
+  The pure snapshot document #289 landed is now bytes on disk. A save writes a
+  temp file, fsyncs its bytes, atomically renames it into a staging slot, fsyncs
+  the directory, independently revalidates the candidate through the same
+  checksum-and-`restore` gate boot uses, and only then rotates it into the trusted
+  slot — with the prior trusted generation kept as the fallback, so a failed save
+  destroys neither generation. Two generations are kept on purpose: boot reads
+  newest-first, falls back to the previous verified snapshot when the newest is
+  corrupt, torn or at an unsupported version, preserves the invalid one for
+  diagnosis, and refuses — creating nothing — when none validates, so a fresh
+  Campaign is the caller's explicit act, never an error fallback. Integrity is a
+  SHA-256 over the canonical payload, recomputed on read, so a torn write or a
+  byte-rotted field refuses before `restore` sees it. The coordinator decides
+  *when*: a persistent mutations marks the Campaign dirty and a checkpoint becomes
+  durable within 30 seconds of the **first** unsaved mutation — measured from the
+  first, not the last — clean teardown forces a final checkpoint, the snapshot
+  copy is taken under the daemon's narrow request lock with encoding and disk I/O
+  off it, and concurrent save requests coalesce on a generation counter. Refusals
+  are typed (`empty`, `corrupt`, `unsupported_version`, `malformed`) and observable
+  through the outcome records and telemetry without the snapshot's contents
+  leaving the file. No daemon handler exposes save/load yet — that is the next
+  layer; what lands is the store, the coordinator, and the wiring that runs a
+  checkpoint on clean teardown.
+
 - **Ordered reconstruction of a resumed Campaign behind a fail-closed barrier**
   (#292; ADR-0008, ADR-0018, ADR-0023). A restored snapshot projects into a factory-fresh world
   through the same ordered Effect outbox every other world change rides: `resume.reconstruct` emits

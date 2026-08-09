@@ -17,10 +17,19 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from cti_daemon import campaign as campaign_module
-from cti_daemon import commands, economy, loadouts, manifest, planner, report_cycle
+from cti_daemon import (
+    commands,
+    coordinator,
+    economy,
+    loadouts,
+    manifest,
+    planner,
+    report_cycle,
+)
 from cti_daemon.daemon import Daemon, Wiring
 from cti_daemon.outbox import Outbox
 from cti_daemon.port import CommandPort
+from cti_daemon.store import SnapshotStore
 from cti_daemon.telemetry import Telemetry
 
 if TYPE_CHECKING:
@@ -235,6 +244,7 @@ def build_daemon(  # noqa: PLR0913 — see `wire`, whose arguments these are.
     archive_path: Path | None = None,
     epoch: str | None = None,
     store: Store | None = None,
+    snapshot_directory: Path | None = None,
 ) -> Daemon:
     """Build a stock daemon on this checkout's authored files (#76, #164).
 
@@ -244,22 +254,35 @@ def build_daemon(  # noqa: PLR0913 — see `wire`, whose arguments these are.
 
     `store` wires Phase-2 save/load (#291): None on the daemon the game talks to
     (it has nothing to persist to and refuses save/load by name), and a `Store`
-    on one brought up with a control lane. The concrete store is #290's; this
-    root takes one in rather than building it, so the seam moves when that lands
-    without a second composition root.
+    on one brought up with a control lane.
+
+    ``snapshot_directory``, when given, attaches and starts the checkpoint
+    coordinator that durably snapshots this Campaign (#290): a concrete atomic
+    store rooted there, a coordinator that snapshots through the daemon's lock,
+    and a background thread begun. Kept apart from `store` — the coordinator is
+    the sole writer of its store, and a daemon run for the game checkpoints
+    without a control lane, so the two are independent and either may be given
+    without the other. ``None`` for both leaves the daemon exactly as Phase 1
+    had it, which is the shape every test path here keeps.
     """
-    return Daemon(
-        wiring=wire(
-            telemetry_path=telemetry_path,
-            economy_path=economy_path,
-            manifests_path=manifests_path,
-            loadouts_path=loadouts_path,
-            map_id=map_id,
-            archive_path=archive_path,
-        ),
-        epoch=epoch,
-        store=store,
+    wiring = wire(
+        telemetry_path=telemetry_path,
+        economy_path=economy_path,
+        manifests_path=manifests_path,
+        loadouts_path=loadouts_path,
+        map_id=map_id,
+        archive_path=archive_path,
     )
+    daemon = Daemon(wiring=wiring, epoch=epoch, store=store)
+    if snapshot_directory is not None:
+        checkpoint = coordinator.CheckpointCoordinator(
+            SnapshotStore(snapshot_directory),
+            snapshot_source=daemon.checkpoint_snapshot,
+            telemetry=wiring.telemetry,
+        )
+        daemon.attach_checkpoint(checkpoint)
+        checkpoint.start()
+    return daemon
 
 
 def build(  # noqa: PLR0913 — `wire`'s arguments plus who is under AI command.
@@ -271,6 +294,7 @@ def build(  # noqa: PLR0913 — `wire`'s arguments plus who is under AI command.
     loadouts_path: Path | None = None,
     map_id: str = DEFAULT_MAP,
     store: Store | None = None,
+    snapshot_directory: Path | None = None,
 ) -> Daemon:
     """Build the daemon this process will serve, under command or not (#16, #17).
 
@@ -282,6 +306,9 @@ def build(  # noqa: PLR0913 — `wire`'s arguments plus who is under AI command.
     the manifest and the economy table `build_daemon` has just loaded — read
     back off the Campaign it wired — and loading them twice would be two answers
     to what the map is.
+
+    ``snapshot_directory`` is threaded straight to ``build_daemon`` (#290): the
+    checkpoint coordinator is wired there, where the wiring it needs is in scope.
     """
     daemon = build_daemon(
         telemetry_path=telemetry_path,
@@ -290,6 +317,7 @@ def build(  # noqa: PLR0913 — `wire`'s arguments plus who is under AI command.
         loadouts_path=loadouts_path,
         map_id=map_id,
         store=store,
+        snapshot_directory=snapshot_directory,
     )
     for side, seed in ai or ():
         daemon.commanded_by(
@@ -350,6 +378,7 @@ def serve(  # noqa: PLR0913 — Main's knobs, one parameter apiece: where to lis
     loadouts_path: Path | None = None,
     map_id: str = DEFAULT_MAP,
     store: Store | None = None,
+    snapshot_directory: Path | None = None,
     control_port: int = 0,
     on_control_ready: Callable[[int], None] | None = None,
 ) -> None:
@@ -362,6 +391,12 @@ def serve(  # noqa: PLR0913 — Main's knobs, one parameter apiece: where to lis
     control port already bound when `on_control_ready` fires. None leaves the
     daemon the game has always had — no store, no control lane, save/load
     refused — so nothing changes for a session that does not ask to persist.
+
+    When ``snapshot_directory`` is given, the daemon also checkpoints to it
+    (#290), and the serve loop is the session lifetime: whatever ends it — a
+    clean ``KeyboardInterrupt``, a fault, a returned-from-test stop — runs the
+    coordinator's clean-teardown checkpoint first, so a graceful session ends
+    with nothing unsaved.
     """
     check_loopback(host)
     daemon = build(
@@ -372,9 +407,10 @@ def serve(  # noqa: PLR0913 — Main's knobs, one parameter apiece: where to lis
         loadouts_path=loadouts_path,
         map_id=map_id,
         store=store,
+        snapshot_directory=snapshot_directory,
     )
     control_server = None
-    if store is not None:
+    if daemon.store is not None:
         control_server = _ControlServer((host, control_port), _control_handler_for(daemon))
         if on_control_ready is not None:
             on_control_ready(int(control_server.server_address[1]))
@@ -392,6 +428,9 @@ def serve(  # noqa: PLR0913 — Main's knobs, one parameter apiece: where to lis
             # stop the control thread's `serve_forever` — `shutdown` must not be
             # called from the thread it stops.
             control_server.shutdown()
+        # The coordinator's clean-teardown checkpoint: whatever ended the serve
+        # loop, a daemon with a coordinator leaves nothing unsaved (#290).
+        daemon.shutdown()
 
 
 class DaemonNeverCameUpError(Exception):
@@ -591,6 +630,7 @@ def main(argv: list[str] | None = None) -> int:
             manifests_path=args.manifests,
             loadouts_path=args.loadouts,
             map_id=args.map_id,
+            snapshot_directory=args.telemetry.parent / "snapshots",
         )
     except KeyboardInterrupt:
         return 0
