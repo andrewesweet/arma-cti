@@ -8,13 +8,28 @@
       "name": "gated_semantic_surfaces",
       "label": "Gated semantic surfaces",
       "issue_path_prefixes": [
-        "CLAUDE.md", "CONTEXT.md", "docs/adr/", "tests/specs/", ".claude/skills/",
-        ".claude/agents/", ".claude/settings.json", ".claude/hooks/"
+        "CLAUDE.md",
+        "CONTEXT.md",
+        "docs/adr/",
+        "tests/specs/",
+        ".claude/skills/",
+        ".claude/agents/",
+        ".claude/settings.json",
+        ".claude/hooks/"
       ],
-      "issue_phrases": ["snapshot schema semantics", "project skills"],
+      "issue_phrases": [
+        "snapshot schema semantics",
+        "project skills"
+      ],
       "landing_path_prefixes": [
-        "CLAUDE.md", "CONTEXT.md", "docs/adr/", "tests/specs/", ".claude/skills/",
-        ".claude/agents/", ".claude/settings.json", ".claude/hooks/"
+        "CLAUDE.md",
+        "CONTEXT.md",
+        "docs/adr/",
+        "tests/specs/",
+        ".claude/skills/",
+        ".claude/agents/",
+        ".claude/settings.json",
+        ".claude/hooks/"
       ],
       "remedy": "Route invented wording and permission semantics to a Claude seat. Pure transcription is eligible only when the issue declares `Routing-exception: pure-transcription`."
     },
@@ -22,10 +37,15 @@
       "id": 2,
       "name": "orchestration",
       "label": "Orchestration",
-      "seats": ["orchestrator"],
-      "issue_phrases": ["Routing-class: orchestration"],
+      "seats": [
+        "orchestrator"
+      ],
+      "issue_phrases": [
+        "Routing-class: orchestration"
+      ],
       "landing_path_prefixes": [
-        "docs/agents/orchestration.md", "docs/orchestration-design.md"
+        "docs/agents/orchestration.md",
+        "docs/orchestration-design.md"
       ],
       "remedy": "Keep orchestration on its Claude seat under the standing ruling of 2026-08-06."
     },
@@ -33,9 +53,16 @@
       "id": 3,
       "name": "retros_and_adr_authorship",
       "label": "Retros and ADR authorship",
-      "seats": ["fable"],
-      "issue_phrases": ["Routing-class: retros-and-adr-authorship", "ADR authorship"],
-      "landing_path_prefixes": ["docs/process-log.md"],
+      "seats": [
+        "fable"
+      ],
+      "issue_phrases": [
+        "Routing-class: retros-and-adr-authorship",
+        "ADR authorship"
+      ],
+      "landing_path_prefixes": [
+        "docs/process-log.md"
+      ],
       "remedy": "Take retros and ADR authorship to a Claude fable seat; drafting slack does not make authorship foreign-eligible."
     },
     {
@@ -55,16 +82,30 @@
       "name": "in_world_landings",
       "label": "In-world landings",
       "issue_path_prefixes": [
-        "addons/", "missions/", "extension/", "src/cti_daemon/port.py",
-        "src/cti_daemon/outbox.py", "src/cti_daemon/commands.py",
-        "src/cti_daemon/protocol.py", "src/cti_daemon/transport.py",
+        "addons/",
+        "missions/",
+        "extension/",
+        "src/cti_daemon/port.py",
+        "src/cti_daemon/outbox.py",
+        "src/cti_daemon/commands.py",
+        "src/cti_daemon/protocol.py",
+        "src/cti_daemon/transport.py",
         "src/cti_daemon/manifest.py"
       ],
-      "issue_phrases": ["Routing-class: in-world-landings", "remoteExec", "map UI"],
+      "issue_phrases": [
+        "Routing-class: in-world-landings",
+        "remoteExec",
+        "map UI"
+      ],
       "landing_path_prefixes": [
-        "addons/", "missions/", "extension/", "src/cti_daemon/port.py",
-        "src/cti_daemon/outbox.py", "src/cti_daemon/commands.py",
-        "src/cti_daemon/protocol.py", "src/cti_daemon/transport.py",
+        "addons/",
+        "missions/",
+        "extension/",
+        "src/cti_daemon/port.py",
+        "src/cti_daemon/outbox.py",
+        "src/cti_daemon/commands.py",
+        "src/cti_daemon/protocol.py",
+        "src/cti_daemon/transport.py",
         "src/cti_daemon/manifest.py"
       ],
       "remedy": "Use a Claude seat that can run the full `just regress` corpus, or wait for a human ruling that dispatched sessions may run it."
@@ -74,16 +115,27 @@
       "name": "gates_themselves",
       "label": "The gates themselves",
       "issue_path_prefixes": [
-        "config/dispatch-routing-policy.json", "tools/routing_policy.py",
-        "tools/dispatch.py", "tools/land.py", "tools/mutation_smoke.py", "tools/admission.py"
+        "config/dispatch-routing-policy.json",
+        "tools/routing_policy.py",
+        "tools/dispatch.py",
+        "tools/land.py",
+        "tools/mutation_smoke.py",
+        "tools/admission.py"
       ],
       "issue_phrases": [
-        "Routing-class: gates-themselves", "mutation floors", "hook wiring",
-        "dispatch permissions", "admission bar"
+        "Routing-class: gates-themselves",
+        "mutation floors",
+        "hook wiring",
+        "dispatch permissions",
+        "admission bar"
       ],
       "landing_path_prefixes": [
-        "config/dispatch-routing-policy.json", "tools/routing_policy.py",
-        "tools/dispatch.py", "tools/land.py", "tools/mutation_smoke.py", "tools/admission.py"
+        "config/dispatch-routing-policy.json",
+        "tools/routing_policy.py",
+        "tools/dispatch.py",
+        "tools/land.py",
+        "tools/mutation_smoke.py",
+        "tools/admission.py"
       ],
       "remedy": "Keep changes to the judging mechanism on Claude; a foreign lane must not author the gate that judges it."
     },
@@ -92,11 +144,16 @@
       "name": "anthropic_plan_meter",
       "label": "The Anthropic plan meter",
       "issue_path_prefixes": [
-        "tools/quota_tap.sh", "tests/fixtures/claude-usage-poll.json"
+        "tools/quota_tap.sh",
+        "tests/fixtures/claude-usage-poll.json"
       ],
-      "issue_phrases": ["Routing-class: anthropic-plan-meter", "Anthropic plan meter"],
+      "issue_phrases": [
+        "Routing-class: anthropic-plan-meter",
+        "Anthropic plan meter"
+      ],
       "landing_path_prefixes": [
-        "tools/quota_tap.sh", "tests/fixtures/claude-usage-poll.json"
+        "tools/quota_tap.sh",
+        "tests/fixtures/claude-usage-poll.json"
       ],
       "remedy": "Run work whose instrument is the Anthropic plan meter on Claude, where that instrument exists."
     }
@@ -105,7 +162,16 @@
     {
       "name": "pure_transcription",
       "marker": "Routing-exception: pure-transcription",
-      "classes": [1]
+      "classes": [
+        1
+      ]
+    },
+    {
+      "name": "no_gated_landing",
+      "marker": "Routing-exception: no-gated-landing",
+      "classes": [
+        1
+      ]
     }
   ],
   "route_exceptions": [

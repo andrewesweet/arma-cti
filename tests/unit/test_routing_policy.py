@@ -126,3 +126,20 @@ def test_no_dispatch_flag_can_override_the_class_rule() -> None:
     for flag in ("--skip-routing", "--no-routing-policy", "--routing-override"):
         with pytest.raises(SystemExit):
             dispatch.parse_args([flag])
+
+
+def test_no_gated_landing_is_a_class_1_exception_that_must_be_declared() -> None:
+    """A body that only *mentions* a gated path, and lands nothing there, may declare it.
+
+    The exception is per-issue and visible in the body — there is still no flag on
+    `just dispatch` that skips the class rule (#266, human instruction 2026-08-09).
+    """
+    read = routing_policy.read_policy(POLICY)
+    assert read.policy is not None
+    mentions = "Compare adapters against the gate ADR-0064 in `docs/adr/`."
+    assert routing_policy.advisory_match(read.policy, mentions, route()) is not None
+    declared = mentions + "\n\nRouting-exception: no-gated-landing"
+    assert routing_policy.advisory_match(read.policy, declared, route()) is None
+    # It excepts class 1 only: an in-world landing still refuses with it declared.
+    in_world = declared + "\nA probe issues `remoteExec` orders from a map UI."
+    assert routing_policy.advisory_match(read.policy, in_world, route()) is not None

@@ -18,6 +18,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`Routing-exception: no-gated-landing`**, a second declared exception to the routing policy's
+  gated-semantic class. An issue whose body merely *mentions* a gated path — an ADR under
+  discussion, a settings file being reasoned about — while landing nothing there may declare it and
+  dispatch to a foreign lane. Like the existing transcription exception it is **per-issue and
+  visible in the body**; `just dispatch` still has no flag that skips the class rule, and the
+  exception excepts that one class only, so an in-world landing still refuses with it declared.
+
+  Filed against a live false positive: #281 is a throwaway prototype that lands nothing on `main`,
+  was classified `1:gated_semantic_surfaces` on its ADR-ratification language, and was thereby
+  routed to the one lane whose command vocabulary cannot run it — undispatchable in both directions
+  at once (#266, #281, human instruction 2026-08-09).
+
 - **`just discard <path> <ruling>` is allowlisted for dispatched sessions**, in place of the broad
   `git checkout --` grant that was proposed and declined (human ruling, 2026-08-08, on #248). The
   command restores one named tracked file's unstaged working-tree change from the index and refuses
