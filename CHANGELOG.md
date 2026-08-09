@@ -84,6 +84,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `NO_PYTHON_SUBJECT`). A rate is bound to the subject's bytes, so a legitimate refactor releases the
   ratchet to the global floor automatically rather than blocking. One kill of slack tolerates a
   neutral test rename; two lost kills is the weakening the ratchet names.
+
+- **`docs/research/dissolving-the-claude-class-list.md`**, the analysis commissioned on #262 against the
+  keep-on-Claude class list ruled on #258. Three findings. **The gate-versus-competence split is
+  incomplete**: there is a third kind of obstacle — *permission*, what a dispatched session may execute
+  and write — which is neither a gate question nor a competence one, and which this week blocked #281,
+  #264 and five pieces of human-approved work under `.claude/` (#294). **Class 7 dissolves**: the plan
+  meter's primary feed is `tools/breaker.py`'s call to a hard-coded `api.anthropic.com/api/oauth/usage`
+  with an on-disk OAuth token, so it never consults `ANTHROPIC_BASE_URL` and a base-URL redirect cannot
+  reach it; the status-line half is only the fallback. What remains of class 7 is a policy question
+  about where that credential is used, not a technical barrier. **The programme is cheap in the
+  currency that binds**: all nine experiments together cost about 2.2 seven-day points of Claude plan
+  cap, roughly 2% of one week, so quota is not what is sequencing this work — permission and wall-clock
+  are. The file carries a filing-ready design for E3, E4, E5, E7, E8 and E9, the decision-replay corpus
+  with its packet cut and a runnable contamination check, and a per-experiment cost table. Nothing lands
+  on a gated surface; the routing-policy change is a proposal for the human.
+
 - **`docs/research/mutation-engine-comparison.md`**, the build-on-top comparison the human asked for
   before ratifying ADR-0064 (#281). Cosmic Ray 8.4.6 and mutmut 3.6.0 were each given the smallest
   adapter that attempts `tools/mutation_smoke.py`'s behaviour, and measured against it on the same
