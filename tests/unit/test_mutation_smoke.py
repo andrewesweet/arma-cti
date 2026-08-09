@@ -436,6 +436,149 @@ def test_a_red_verdict_names_the_subject_and_the_arithmetic() -> None:
     assert "75%" in reason
 
 
+# --- the per-module ratchet (#244) ------------------------------------------
+
+
+# A recorded rate of 18/20, the working example for the assertions below.
+_RECORDED = smoke_tool.Row("src/x.py", "deadbeef", 18, 20)
+
+
+def test_the_ratchet_floor_takes_one_kill_of_slack_off_the_recorded_rate() -> None:
+    # 18/20 recorded, SLACK 1: the floor a module must re-clear is 17/20 = 85%,
+    # not 18/20. Losing one kill to the ratchet is allowed; losing two is not.
+    assert (
+        smoke_tool.ratchet_floor(
+            {"tests/unit/test_x.py": _RECORDED},
+            "tests/unit/test_x.py",
+            "src/x.py",
+            "deadbeef",
+            20,
+        )
+        == (18 - smoke_tool.SLACK) / 20
+    )
+
+
+@pytest.mark.parametrize(
+    ("subject", "sha", "run"),
+    [
+        ("src/x.py", "different", 20),  # the subject's bytes changed
+        ("src/other.py", "deadbeef", 20),  # the test now exercises a different file
+        ("src/x.py", "deadbeef", 15),  # the budget cut this run short
+    ],
+)
+def test_the_ratchet_releases_to_the_global_floor_when_the_pair_is_not_the_recorded_one(
+    subject: str,
+    sha: str,
+    run: int,
+) -> None:
+    # None means "use FLOOR": the recorded rate is about a (test module, subject)
+    # pair, and the moment that pair is not the one in front of the gate the
+    # ratchet lets go rather than redding a tree its number no longer describes.
+    assert (
+        smoke_tool.ratchet_floor(
+            {"tests/unit/test_x.py": _RECORDED},
+            "tests/unit/test_x.py",
+            subject,
+            sha,
+            run,
+        )
+        is None
+    )
+
+
+def test_a_module_with_no_recorded_rate_meets_the_global_floor() -> None:
+    assert smoke_tool.ratchet_floor({}, "tests/unit/test_x.py", "src/x.py", "deadbeef", 20) is None
+
+
+def test_the_ratchet_reds_only_after_two_lost_kills() -> None:
+    # The same comparison the gate makes, via Verdict.ok: at the ratchet floor,
+    # losing one kill (within slack) passes and losing two reds.
+    floor = (18 - smoke_tool.SLACK) / 20
+    assert _verdict(killed=18 - smoke_tool.SLACK, run=20, floor=floor, ratcheted=True).ok
+    assert not _verdict(killed=18 - smoke_tool.SLACK - 1, run=20, floor=floor, ratcheted=True).ok
+
+
+def test_a_ratcheted_verdict_marks_its_floor_so_a_reader_can_tell_it_apart() -> None:
+    floor = (18 - smoke_tool.SLACK) / 20
+    assert "(ratchet)" in str(_verdict(killed=18, run=20, floor=floor, ratcheted=True))
+    assert "(ratchet)" not in str(_verdict(killed=18, run=20, floor=floor))
+
+
+def test_a_recorded_rate_below_the_global_floor_does_not_lower_the_bar() -> None:
+    # The effective floor in smoke() is max(FLOOR, ratchet), so a recorded rate
+    # under FLOOR leaves the bar at FLOOR: the ratchet only ever tightens.
+    # ratchet_floor itself still returns the low rate; the caller clamps it.
+    low = smoke_tool.ratchet_floor(
+        {"tests/unit/test_x.py": smoke_tool.Row("src/x.py", "deadbeef", 1, 20)},
+        "tests/unit/test_x.py",
+        "src/x.py",
+        "deadbeef",
+        20,
+    )
+    assert low is not None
+    assert low < smoke_tool.FLOOR
+    assert max(smoke_tool.FLOOR, low) == smoke_tool.FLOOR
+
+
+def test_read_baseline_treats_a_missing_file_as_empty(tmp_path: Path) -> None:
+    assert smoke_tool.read_baseline(tmp_path) == {}
+
+
+def test_read_baseline_drops_a_row_that_is_not_a_full_record(tmp_path: Path) -> None:
+    # A row missing a field, or carrying a bool where an int belongs, is dropped
+    # rather than trusted: a malformed baseline row is not a ratchet.
+    (tmp_path / "tools").mkdir()
+    (tmp_path / smoke_tool.BASELINE).write_text(
+        json.dumps(
+            {
+                "tests/unit/good.py": {
+                    "subject": "src/x.py",
+                    "subject_sha": "ab",
+                    "killed": 5,
+                    "run": 6,
+                },
+                "tests/unit/no_run.py": {
+                    "subject": "src/x.py",
+                    "subject_sha": "ab",
+                    "killed": 5,
+                },
+                "tests/unit/bool_kills.py": {
+                    "subject": "src/x.py",
+                    "subject_sha": "ab",
+                    "killed": True,
+                    "run": 6,
+                },
+                "tests/unit/not_a_dict.py": "nope",
+            }
+        ),
+        encoding="utf-8",
+    )
+    rows = smoke_tool.read_baseline(tmp_path)
+    assert list(rows) == ["tests/unit/good.py"]
+    assert rows["tests/unit/good.py"] == smoke_tool.Row("src/x.py", "ab", 5, 6)
+
+
+def test_read_baseline_treats_unreadable_json_as_empty(tmp_path: Path) -> None:
+    (tmp_path / "tools").mkdir()
+    (tmp_path / smoke_tool.BASELINE).write_text("{not json", encoding="utf-8")
+    assert smoke_tool.read_baseline(tmp_path) == {}
+
+
+def test_write_baseline_round_trips_and_sorts_for_a_stable_diff(tmp_path: Path) -> None:
+    rows = {
+        "tests/unit/test_b.py": smoke_tool.Row("src/b.py", "bb", 3, 4),
+        "tests/unit/test_a.py": smoke_tool.Row("src/a.py", "aa", 6, 6),
+    }
+    smoke_tool.write_baseline(tmp_path, rows)
+    text = (tmp_path / smoke_tool.BASELINE).read_text(encoding="utf-8")
+    # Sorted by module name, so test_a precedes test_b whatever order it was given.
+    assert text.index("test_a.py") < text.index("test_b.py")
+    assert smoke_tool.read_baseline(tmp_path) == {
+        "tests/unit/test_a.py": smoke_tool.Row("src/a.py", "aa", 6, 6),
+        "tests/unit/test_b.py": smoke_tool.Row("src/b.py", "bb", 3, 4),
+    }
+
+
 # --- what is in scope -------------------------------------------------------
 
 
@@ -629,7 +772,7 @@ def _throwaway(root: Path, tests: str) -> str:
 @pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
 def test_a_sound_test_module_clears_the_floor(tmp_path: Path) -> None:
     name = _throwaway(tmp_path, SOUND_TESTS)
-    verdict = smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0)
+    verdict = smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0, rows={})
     assert verdict.subject == "src/subject.py"
     assert verdict.ok, f"{verdict}: {[str(m) for m in verdict.survivors]}"
 
@@ -638,7 +781,7 @@ def test_a_sound_test_module_clears_the_floor(tmp_path: Path) -> None:
 def test_a_vacuous_test_module_is_red(tmp_path: Path) -> None:
     # #239's acceptance, as a test rather than as a demonstration quoted once.
     name = _throwaway(tmp_path, VACUOUS_TESTS)
-    verdict = smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0)
+    verdict = smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0, rows={})
     assert not verdict.ok
     assert verdict.subject is None
     assert "no subject" in verdict.reason
@@ -652,7 +795,57 @@ def test_a_module_that_only_asserts_shapes_is_red(tmp_path: Path) -> None:
     # handed to pytest were wrong passed this subject 100% — a run that never
     # happened cannot produce a survivor.
     name = _throwaway(tmp_path, WEAK_TESTS)
-    verdict = smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0)
+    verdict = smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0, rows={})
     assert verdict.subject == "src/subject.py"
     assert not verdict.ok
     assert verdict.survivors
+
+
+# --- the ratchet, end to end (#244) -----------------------------------------
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_record_writes_a_modules_rate_against_its_subject(tmp_path: Path) -> None:
+    name = _throwaway(tmp_path, SOUND_TESTS)
+    assert smoke_tool.main(["--root", str(tmp_path), "--paths", name, "--record"]) == 0
+    row = smoke_tool.read_baseline(tmp_path)[name]
+    assert row.subject == "src/subject.py"
+    assert row.run > 0
+    assert row.killed <= row.run
+    # The row pins the subject's bytes, which is what makes a release path on a
+    # refactor: the sha is the file as it is now, not a constant.
+    assert row.subject_sha == smoke_tool.subject_sha(tmp_path, "src/subject.py")
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_the_gate_reds_when_a_module_falls_below_its_recorded_rate(tmp_path: Path) -> None:
+    name = _throwaway(tmp_path, SOUND_TESTS)
+    smoke_tool.main(["--root", str(tmp_path), "--paths", name, "--record"])
+    row = smoke_tool.read_baseline(tmp_path)[name]
+    # Inflate the recorded kills past what the tests achieve (beyond slack), so
+    # the ratchet floor sits above this module's reach. The gate reads the
+    # baseline, finds the row's pair still matches, and reds. This is the
+    # read-side of the ratchet exercised end to end.
+    inflated = smoke_tool.Row(
+        row.subject,
+        row.subject_sha,
+        row.killed + smoke_tool.SLACK + 1,
+        row.run,
+    )
+    smoke_tool.write_baseline(tmp_path, {name: inflated})
+    assert smoke_tool.main(["--root", str(tmp_path), "--paths", name]) == 1
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_record_raises_a_row_when_the_tests_grow_stronger(tmp_path: Path) -> None:
+    # The whole point of the ratchet: a strengthening becomes the new floor. The
+    # subject is unchanged across both records, so the row's pair matches and the
+    # kill count is the only thing that moves — upward.
+    name = _throwaway(tmp_path, WEAK_TESTS)
+    smoke_tool.main(["--root", str(tmp_path), "--paths", name, "--record"])
+    weak = smoke_tool.read_baseline(tmp_path)[name]
+    (tmp_path / name).write_text(textwrap.dedent(SOUND_TESTS).lstrip(), encoding="utf-8")
+    smoke_tool.main(["--root", str(tmp_path), "--paths", name, "--record"])
+    strong = smoke_tool.read_baseline(tmp_path)[name]
+    assert strong.subject_sha == weak.subject_sha
+    assert strong.killed > weak.killed

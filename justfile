@@ -233,12 +233,20 @@ probe-contract:
 #   just mutation                          the diff against origin/main, as `fast` runs it
 #   just mutation --paths tests/unit/x.py  one module, while writing it
 #   just mutation --report                 survey: every verdict, never a red
+#   just mutation --record                 measure each in-scope module and write its rate
+#                                          into the ratchet baseline (#244), then exit 0
 #
 # There is no flag that lowers the floor in `just fast`, and no marker a test
 # file can carry to excuse itself. The one escape is `NO_PYTHON_SUBJECT` in
 # `tools/mutation_smoke.py` — a named module with its reason beside it, visible
 # in the diff — for the modules whose subject is a shell script or an authored
 # document rather than Python.
+#
+# The floor is a per-module ratchet (#244): a module reds when it falls below
+# its own recorded rate in `tools/mutation-baseline.json`, not just the global
+# floor. The baseline ships empty, so nothing moves until `--record` measures a
+# module; `--record` raises a row on stronger tests and never lowers one silently
+# — lowering is a hand-edit, in the diff, like `NO_PYTHON_SUBJECT`.
 mutation *args:
     uv run python tools/mutation_smoke.py {{ args }}
 

@@ -66,6 +66,45 @@ lines, was tried and is **not** here: it moved `test_daemon_casualties.py` from
 reach. Measured, disproved, recorded in the research note rather than carried as
 an untested intuition.
 
+## The per-module ratchet
+
+`FLOOR` is one number every module clears, set below the corpus minimum so the
+tree stays green — which means it is decided by the weakest module and every
+stronger one is gated far below what it already achieves (#244: weakest 62%,
+median 85%, sixteen at 100%, floor 50%). The ratchet turns that into a
+direction. Each module's measured kill rate is recorded in a committed baseline
+against the subject it was measured on, and the gate reds when a module falls
+below its *own* recorded rate. A new module meets `FLOOR`; an existing one may
+never get worse; every strengthening of a test module becomes its new floor.
+
+Three things a ratchet gets wrong, and how this one answers each:
+
+- **A floor set from a single observation can lock in a lucky high.** This gate
+  is deterministic — the mutant sample is seeded and the subject's bytes are
+  pinned — so a rate is a fixed function of the (test module, subject) pair, not
+  a draw from a distribution. There is no day-to-day variance to average, so one
+  measurement establishes the rate for that pair. The "luck" is that the
+  particular ≤20-mutant sample is favourable, and it does not vary; the only way
+  the rate stops applying is a change to the tests or the subject, which is what
+  the ratchet exists to notice.
+- **A legitimate refactor that lowers a module's achievable rate must not be
+  blocked.** Editing the subject changes which mutants exist, so the recorded
+  rate is about a *pair*, not a module. The row pins the subject's bytes, and
+  the gate releases the ratchet — back to `FLOOR` — the moment they diverge,
+  then `--record` re-baselines against the new code. The ratchet never locks a
+  module out of its own refactor.
+- **Lowering a row must be visible.** `--record` raises a same-subject row and
+  re-baselines a changed one, but it never lowers a same-subject row silently:
+  it reports "held" and leaves it. Lowering is a hand-edit to the baseline, in
+  the diff, with the same reviewability `NO_PYTHON_SUBJECT` has.
+
+`SLACK` is one kill: a module may lose one kill to its own rate without redding,
+so a neutral test rename (which reorders an equal-cost test selection and can
+flip a single kill) passes, and two lost kills is the weakening the ratchet
+names. The baseline ships empty — landing the mechanism without moving any
+number, so a first red is unambiguously a mechanism failure rather than a
+threshold one — and is populated by `--record`, never by the gate.
+
 ## Safety
 
 Mutants are applied in place, to the real tree, because that is the only way the
@@ -103,6 +142,14 @@ PRODUCT_ROOTS: Final = ("src/", "tools/", ".claude/hooks/")
 # root rather than under ~/.arma-cti, because the thing it repairs is this tree.
 RESTORE: Final = ".mutation-smoke-restore.json"
 
+# The per-module ratchet baseline (#244): a committed JSON the gate reads and
+# `--record` writes. Each row is one test module's measured kill rate bound to
+# the subject it was measured against, and the gate reds when a module falls
+# below its own recorded rate rather than below `FLOOR` alone. Ships empty: no
+# row is populated by landing the mechanism, so no floor moves and a first red is
+# a mechanism failure rather than a threshold one. Populated by `--record`.
+BASELINE: Final = "tools/mutation-baseline.json"
+
 # Mutants planted per test module. Bounded on purpose: this is a smoke, not a
 # proof. Twenty is enough that a suite asserting nothing cannot pass by luck
 # (see `docs/research/mutation-testing.md` for the arithmetic) and few enough
@@ -124,6 +171,16 @@ CAP: Final = 20
 # So 50% sits 20 points above the shape it exists to stop and 12 below the
 # weakest thing it must not stop.
 FLOOR: Final = 0.50
+
+# How many kills a module may lose to its own recorded rate before the ratchet
+# reds. The sample is seeded and the subject is pinned, so a module's rate is a
+# fixed function of its (test module, subject) pair and does not move run to run
+# — there is no jitter to absorb. What this absorbs is the one deterministic-
+# but-fragile shift: renaming a test changes the node ids that reach a line, and
+# under equal-cost ties the cheapest-first selection reorders on the name, which
+# can flip a single kill without the assertions weakening. One kill of tolerance
+# lets a neutral rename through; two lost kills is a weakening the ratchet names.
+SLACK: Final = 1
 
 # A module's smoke gives up after this long and judges what it managed to run.
 # A smoke that ran fewer mutants is a weaker claim, never a pass by default: a
@@ -662,6 +719,7 @@ class Verdict(NamedTuple):
     survivors: tuple[Mutant, ...]
     seconds: float
     floor: float
+    ratcheted: bool = False
 
     @property
     def kill_rate(self) -> float:
@@ -714,10 +772,11 @@ class Verdict(NamedTuple):
         if self.undecided:
             return f"ok {self.test_module} subject={self.subject} {self.reason} {self.seconds:.1f}s"
         where = self.subject or "-"
+        floor = f"{self.floor:.0%}" + (" (ratchet)" if self.ratcheted else "")
         return (
             f"{mark} {self.test_module} subject={where} "
             f"killed={self.killed}/{self.run} planted={self.planted} "
-            f"rate={self.kill_rate:.0%} floor={self.floor:.0%} {self.seconds:.1f}s"
+            f"rate={self.kill_rate:.0%} floor={floor} {self.seconds:.1f}s"
         )
 
 
@@ -894,6 +953,7 @@ def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visibl
     floor: float = FLOOR,
     budget: float = BUDGET_S,
     collect: float = COLLECT_S,
+    rows: dict[str, Row],
 ) -> Verdict:
     """Plant a bounded sample of mutants in what `test_module` exercises, and judge it."""
     started = time.monotonic()
@@ -901,6 +961,7 @@ def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visibl
     subject = reach.subject(test_module)
     if subject is None:
         return Verdict(test_module, None, 0, 0, 0, (), time.monotonic() - started, floor)
+    sha = subject_sha(root, subject)
 
     covered: dict[int, tuple[str, ...]] = {}
     for line, contexts in reach.lines[subject].items():
@@ -947,6 +1008,10 @@ def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visibl
             survivors.append(mutant)
         else:
             killed += 1
+    effective, ratcheted = _clamped_floor(
+        ratchet_floor(rows, test_module, subject, sha, run),
+        floor,
+    )
     return Verdict(
         test_module,
         subject,
@@ -955,7 +1020,8 @@ def smoke(  # noqa: PLR0913 — every bound this gate applies is a caller-visibl
         killed,
         tuple(survivors),
         time.monotonic() - started,
-        floor,
+        effective,
+        ratcheted=ratcheted,
     )
 
 
@@ -1026,8 +1092,136 @@ def restore(root: Path) -> int:
     return 0
 
 
+class Row(NamedTuple):
+    """One module's recorded rate, bound to the subject it was measured against.
+
+    `subject_sha` is what makes the rate about a *pair* rather than a module: a
+    rate recorded against one body of `daemon.py` is meaningless against another,
+    because the mutants that set it no longer exist. The gate releases the
+    ratchet — falls back to `FLOOR` — the moment the subject's bytes diverge, so
+    a legitimate refactor that lowers a module's achievable rate is never blocked
+    by a number its old code earned.
+    """
+
+    subject: str
+    subject_sha: str
+    killed: int
+    run: int
+
+
+def subject_sha(root: Path, subject: str) -> str:
+    """Hash the subject file's bytes to a short, stable id for the ratchet's pair key."""
+    return hashlib.blake2b((root / subject).read_bytes(), digest_size=4).hexdigest()
+
+
+def read_baseline(root: Path) -> dict[str, Row]:
+    """Read the committed per-module ratchet, keyed by test module path.
+
+    A missing or unreadable baseline is empty, never a red: a gate that refused
+    over its own unreadable state would be #137/#186's false red from the gate's
+    own side. A row missing any field — or carrying a bool where an int belongs —
+    is dropped rather than trusted.
+    """
+    path = root / BASELINE
+    if not path.exists():
+        return {}
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    rows: dict[str, Row] = {}
+    for name, entry in raw.items():
+        if not isinstance(name, str) or not isinstance(entry, dict):
+            continue
+        subject = entry.get("subject")
+        sha = entry.get("subject_sha")
+        killed = entry.get("killed")
+        run = entry.get("run")
+        if (
+            isinstance(subject, str)
+            and isinstance(sha, str)
+            and isinstance(killed, int)
+            and not isinstance(killed, bool)
+            and isinstance(run, int)
+            and not isinstance(run, bool)
+        ):
+            rows[name] = Row(subject, sha, killed, run)
+    return rows
+
+
+def ratchet_floor(
+    rows: dict[str, Row],
+    test_module: str,
+    subject: str,
+    subject_sha: str,
+    run: int,
+) -> float | None:
+    """Compute the per-module floor the ratchet sets, or None to fall back to `FLOOR`.
+
+    None is a release, not a gap, in four cases: no row for this module (a new
+    module meets `FLOOR`); the row's subject differs (the test now exercises a
+    different file); the subject's bytes differ (the file changed, so the
+    recorded rate is about a different mutant set — #244's "the number is about a
+    pair, not a module"); or fewer mutants ran than the row recorded (the budget
+    cut the run short, so the rate is on a smaller denominator than the row and
+    the comparison would be across them). In every release the gate still applies
+    `FLOOR` — the ratchet only ever raises the bar.
+
+    The floor takes `SLACK` kills off the recorded rate. With the subject pinned
+    and the run matching, `kill_rate >= this` is integer-exact: it is
+    `killed >= row.killed - SLACK` over one shared denominator.
+    """
+    row = rows.get(test_module)
+    # `row.run == 0` is a hand-edited row with no sample: there is no rate to
+    # enforce and no denominator to divide by, so release rather than crash.
+    if (
+        row is None
+        or row.run == 0
+        or row.subject != subject
+        or row.subject_sha != subject_sha
+        or row.run != run
+    ):
+        return None
+    return (row.killed - SLACK) / row.run
+
+
+def _clamped_floor(ratchet: float | None, floor: float) -> tuple[float, bool]:
+    """Return the effective floor and whether the ratchet raised it above `floor`.
+
+    A release (`ratchet is None`) leaves the bar at `floor` and is not a
+    ratcheted verdict; otherwise the ratchet only ever tightens, so a recorded
+    rate under `floor` is clamped back to `floor` rather than lowering the bar.
+    """
+    if ratchet is None:
+        return floor, False
+    return max(floor, ratchet), ratchet > floor
+
+
+def write_baseline(root: Path, rows: dict[str, Row]) -> None:
+    """Write the ratchet, sorted by module for a stable diff.
+
+    The parent directory is created so a first `--record` in a tree without
+    `tools/` (a throwaway repo under test) does not fail on the write.
+    """
+    path = root / BASELINE
+    path.parent.mkdir(parents=True, exist_ok=True)
+    serialised = {
+        name: {
+            "subject": row.subject,
+            "subject_sha": row.subject_sha,
+            "killed": row.killed,
+            "run": row.run,
+        }
+        for name, row in sorted(rows.items())
+    }
+    path.write_text(json.dumps(serialised, indent=2) + "\n", encoding="utf-8")
+
+
 def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[int, int]:
     """Smoke each target, print its verdict, and count the reds and the refusals."""
+    rows = read_baseline(root)
     red = 0
     refused = 0
     for target in targets:
@@ -1042,6 +1236,7 @@ def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[in
                 floor=args.floor,
                 budget=args.budget,
                 collect=args.collect,
+                rows=rows,
             )
         except Refusal as refusal:
             # One module's refusal is not the others': every target still gets a
@@ -1056,6 +1251,78 @@ def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[in
             for survivor in verdict.survivors:
                 print(f"    survived: {survivor}", file=sys.stderr)  # noqa: T201
     return red, refused
+
+
+def _record(root: Path, targets: list[str], args: argparse.Namespace) -> int:
+    """Measure each target and write its rate into the ratchet baseline.
+
+    Not a gate: it always exits 0, records what it could measure, and reports
+    every row's fate. Three fates, each diff-visible:
+
+    * **recorded** — a new row, or a module whose subject changed (the old rate
+      was about a different pair, so the new one replaces it; reported as a
+      re-baseline);
+    * **raised** — same subject, stronger tests, more kills: the number goes up;
+    * **held** — same subject, fewer kills: the ratchet never lowers a row
+      silently. Lowering is deliberate, so `--record` leaves the row and names
+      it, and the row is lowered by editing the baseline by hand — visible in the
+      diff, the same reviewability `NO_PYTHON_SUBJECT` has.
+
+    A module with no subject, nothing to plant, or no verdict is skipped: there
+    is no rate to record. A refusal (a module not green on its own) is reported
+    and skipped, because a measurement that did not happen cannot populate a row.
+    """
+    rows = read_baseline(root)
+    updated = dict(rows)
+    for target in targets:
+        if target in NO_PYTHON_SUBJECT:
+            continue
+        try:
+            verdict = smoke(
+                root,
+                target,
+                cap=args.cap,
+                floor=args.floor,
+                budget=args.budget,
+                collect=args.collect,
+                rows=rows,
+            )
+        except Refusal as refusal:
+            print(f"?? {target} not recorded: {refusal}", file=sys.stderr)  # noqa: T201
+            continue
+        if verdict.subject is None or verdict.run == 0:
+            continue
+        sha = subject_sha(root, verdict.subject)
+        measured = Row(verdict.subject, sha, verdict.killed, verdict.run)
+        existing = rows.get(target)
+        if existing is None:
+            updated[target] = measured
+            print(  # noqa: T201
+                f"recorded {target}: {verdict.killed}/{verdict.run} against {verdict.subject}",
+            )
+        elif existing.subject_sha != sha:
+            updated[target] = measured
+            print(  # noqa: T201
+                f"re-baselined {target}: subject changed, "
+                f"{existing.killed}/{existing.run} -> {verdict.killed}/{verdict.run} "
+                f"against {verdict.subject}",
+            )
+        elif verdict.killed > existing.killed:
+            updated[target] = measured
+            print(  # noqa: T201
+                f"raised {target}: {existing.killed}/{existing.run} -> "
+                f"{verdict.killed}/{verdict.run}",
+            )
+        elif verdict.killed < existing.killed:
+            print(  # noqa: T201
+                f"held {target}: would lower {existing.killed}/{existing.run} -> "
+                f"{verdict.killed}/{verdict.run} (same subject). Lowering is deliberate: "
+                f"edit {BASELINE} by hand.",
+            )
+        else:
+            print(f"unchanged {target}: {verdict.killed}/{verdict.run}")  # noqa: T201
+    write_baseline(root, updated)
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1080,6 +1347,14 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help=f"put back the file {RESTORE} names, after an interrupted run",
     )
+    parser.add_argument(
+        "--record",
+        action="store_true",
+        help=(
+            "measure each in-scope module and write its rate into the ratchet "
+            f"baseline ({BASELINE}), then exit 0; never lowers a same-subject row"
+        ),
+    )
     args = parser.parse_args(argv)
 
     root = args.root.resolve()
@@ -1099,6 +1374,9 @@ def main(argv: list[str] | None = None) -> int:
     if not targets:
         print(f"mutation smoke: no test module added or changed against {args.base}")  # noqa: T201
         return 0
+
+    if args.record:
+        return _record(root, targets, args)
 
     red, refused = _judge(root, targets, args)
     if refused and not args.report:

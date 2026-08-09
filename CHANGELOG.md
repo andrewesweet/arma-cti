@@ -63,6 +63,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   published on the issue for the orchestration seat, and `docs/research/codex-lane-live-findings.md`
   §4.1 carries the diagnosis with each claim's evidence class and what is still unmeasured.
 
+- **The mutation smoke gate keeps a per-module ratchet** (`tools/mutation-baseline.json`, #244).
+  Each test module's measured kill rate is recorded against its subject, and a module reds when it
+  falls below its *own* recorded rate rather than below the global floor alone — turning a floor set
+  by the weakest module into a direction every strengthening raises. The baseline ships empty, so no
+  floor moves on landing; `just mutation --record` populates a module's rate, raises it on stronger
+  tests, and never lowers one silently (lowering is a hand-edit, diff-visible, like
+  `NO_PYTHON_SUBJECT`). A rate is bound to the subject's bytes, so a legitimate refactor releases the
+  ratchet to the global floor automatically rather than blocking. One kill of slack tolerates a
+  neutral test rename; two lost kills is the weakening the ratchet names.
 - **`docs/research/mutation-engine-comparison.md`**, the build-on-top comparison the human asked for
   before ratifying ADR-0064 (#281). Cosmic Ray 8.4.6 and mutmut 3.6.0 were each given the smallest
   adapter that attempts `tools/mutation_smoke.py`'s behaviour, and measured against it on the same
