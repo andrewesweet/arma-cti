@@ -170,6 +170,51 @@ them.
 and `PostToolUse` — both fire, and the denial path is proven for `PreToolUse`. The suite in
 `tests/unit/test_hook_parity.py` runs the real scripts against this captured payload.
 
+### 4.1 The edit event, which §4's payload does not cover
+
+§4's captured payload is a **Bash** call, and the sentence it earned — "not one of the eight
+committed hooks needed editing" — is true of that call and was over-generalised to all of
+them. A file edit is a different tool call and it broke three hooks (#273, filed as a
+PostToolUse matcher defect; #265's first confirming attempt was blocked by the PreToolUse
+half of the same root). No live Codex **edit** payload has been captured on this box, so
+this section is explicit about which of its claims is measured, which is documented, and
+which is inference. Dated 2026-08-09.
+
+| claim | evidence class |
+|---|---|
+| The `Edit\|Write` matcher **is** selected for a Codex file edit | **[inferred, from this repository's own run]** — dispatch `d-20260807-204151-09d57f` was refused with "it could not inspect the patch tool call for gated-path checking", which is `protect-gated-paths.py`'s fail-closed branch. A hook cannot refuse a call it was never selected for. |
+| Codex's editing tool is `apply_patch`, and Codex also matches it against an `Edit`/`Write` matcher | **[docs]** — `docs/research/agent-config-portability.md` §4, from the vendor's hook documentation; consistent with the inference above but not measured here. |
+| Its `tool_input` carries a patch, not a `file_path` | **[docs]**, same source; and **[inferred]** from the refusal, whose branch is reached only when `tool_input["file_path"]` raises. |
+| The exact key the patch arrives under, and the exact `tool_name` | **unmeasured.** Neither is assumed: `tools/edit_payload.py` keys on the patch format's own `*** Begin Patch` sentinel and sweeps every string in the call, so it is correct for any spelling of either. |
+| The formatter runs before the gate on a live Codex edit | **unmeasured**, and it is #273's remaining acceptance criterion. |
+
+**What this settles about the fix.** The defect is path extraction, not matching. The
+PostToolUse formatter and linter are wired on the same matcher string as the PreToolUse
+guard that demonstrably fired, so they fired too — read `""` for the path, matched no
+extension, and exited 0 having formatted nothing. That is the reported symptom exactly, and
+widening the matcher would not have changed it. Both symptoms are one root: three hooks read
+a key this payload does not carry.
+
+**Why the capture was not taken here.** The session that diagnosed this could neither run
+`codex exec` nor read `~/.codex/sessions/`; both are outside its worktree and the harness
+refuses them. That is the same wall as §4.1's sibling finding below, and it is why the
+in-vivo half of #273 is stated as outstanding rather than quietly dropped.
+
+**A second wall, discriminated.** #273's thread asks whether a dispatched Claude Code
+session can write under `.claude/` at all, given `.claude/settings.json` grants
+`Edit(.claude/skills/**)` and `Write(.claude/skills/**)`. It cannot, and the two refusals
+are different mechanisms, which the grant being present makes legible:
+
+- `.claude/hooks/edit_payload.py` — refused as *"a sensitive file"*. A harness
+  classification, above the project allowlist.
+- `.claude/skills/retro/PERMISSION-PROBE.md` — refused as *"you haven't granted it yet"*,
+  an ordinary permission ask, **despite** `Write(.claude/skills/**)` being granted — while
+  an unlisted path at the worktree root was auto-approved in the same session.
+
+So the project's allowlist does not reach paths under `.claude/`, and `.claude/hooks/`
+is harder-blocked still. Neither is a Codex fact and neither belongs to this document's
+subject; recorded here because it is what stopped the fix landing whole.
+
 ## 5. Telemetry parity needed no engineering
 
 ADR-0061's prior-art sweep found no off-the-shelf OTel hook target for Codex and concluded

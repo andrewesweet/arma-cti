@@ -42,6 +42,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   amendments, so no fact argues itself twice. `Reviewed-by-human: pending`: a new ADR is a sign-off
   gate and only the human flips that field.
 
+- **`tools/edit_payload.py`**, one reader for the paths a file-editing tool call writes, on either
+  harness (#273). Claude Code's `Edit`/`Write` name a `file_path`; Codex's editing tool hands the
+  hook a V4A patch envelope instead, and three hooks that read `file_path` directly break on it —
+  the PostToolUse formatter and linter silently no-op, and `protect-gated-paths.py` fails closed and
+  denies the edit outright. The reader returns the paths, or `None` for a call it cannot read, and
+  never an empty tuple for one it could not tell about.
+
+  **The issue's title records a matcher defect and this is not one.** Dispatch
+  `d-20260807-204151-09d57f` was refused by `protect-gated-paths.py`'s fail-closed branch on a Codex
+  edit, and a hook cannot refuse a call it was never selected for — so the `Edit|Write` matcher
+  fires on a Codex edit, and the PostToolUse pair wired on the same matcher fired too, read `""` for
+  the path and formatted nothing. One root, two symptoms; widening the matcher fixes neither. The
+  reader keys on the patch format's own `*** Begin Patch` sentinel rather than on a tool name,
+  because no live Codex edit payload has been captured on this box and a guessed `tool_name` would
+  stack a second assumption on the first.
+
+  The three hooks that must consume it are **not** in this change: `.claude/hooks/**` is refused to
+  a dispatched session as a sensitive file, which is #273's own second wall. The patches are
+  published on the issue for the orchestration seat, and `docs/research/codex-lane-live-findings.md`
+  §4.1 carries the diagnosis with each claim's evidence class and what is still unmeasured.
+
 - **`docs/research/mutation-engine-comparison.md`**, the build-on-top comparison the human asked for
   before ratifying ADR-0064 (#281). Cosmic Ray 8.4.6 and mutmut 3.6.0 were each given the smallest
   adapter that attempts `tools/mutation_smoke.py`'s behaviour, and measured against it on the same
