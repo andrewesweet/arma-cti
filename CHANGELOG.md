@@ -44,6 +44,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and a skill must declare neither or both; `inherit` is accepted as a skill's model and refused
   as an agent's, where inheriting is the defect rather than the intent.
 
+- **The versioned whole-Campaign snapshot schema, with its pure serialise/restore boundary**
+  (#289; ADR-0003, ADR-0008). A Phase-2 `save`/`load` is a daemon handler and bytes on disk,
+  both landing later; what lands now is the document they inherit — one versioned snapshot of the
+  strategic state for both sides, with a closed typed field set and forward-only additive
+  migrations. `restore(serialise(s)) == s` is held by a hypothesis property test over representative
+  both-sides state; a save written by an older version is walked forward through registered
+  migrations, absent fields filled with documented safe defaults, and a version with no path to the
+  current one is a typed refusal — never a fresh Campaign, because a silent fresh start is the
+  corrupted-world outcome durability exists to prevent. The snapshot is not exposed by any daemon
+  handler, wire schema, debug path or test helper: it reuses the Observation's and the Order's value
+  types but is a distinct document, refused by the other's parser, and a completed-Campaign record
+  (ADR-0023) cannot be parsed as one. Contacts and map positions are excluded — both regenerated at
+  boot — and player role/Squad is deferred to #25.
+
 ### Fixed
 
 - **`just dispatch-follow` takes several ids and wakes on the first of them, not the last** (#295).

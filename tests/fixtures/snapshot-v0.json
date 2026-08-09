@@ -1,0 +1,47 @@
+{
+  "version": 0,
+  "clock": 5400.0,
+  "owners": {
+    "agia_marina": "WEST",
+    "girna": "CONTESTED",
+    "pyrgos": "NEUTRAL",
+    "maxwell": "EAST"
+  },
+  "hq": {
+    "base_west": "intact",
+    "base_east": "destroyed"
+  },
+  "funds": {
+    "WEST": 320,
+    "EAST": 150
+  },
+  "squads": [
+    {
+      "id": "WEST-1",
+      "side": "WEST",
+      "type": "rifle",
+      "size": 8,
+      "order": "defend",
+      "place": "agia_marina",
+      "at": "agia_marina"
+    },
+    {
+      "id": "EAST-1",
+      "side": "EAST",
+      "type": "at",
+      "size": 6,
+      "order": "assault",
+      "place": "base_west",
+      "at": "girna"
+    },
+    {
+      "id": "WEST-2",
+      "side": "WEST",
+      "type": "recon",
+      "size": 4,
+      "order": "reserve",
+      "place": "",
+      "at": "base_west"
+    }
+  ]
+}
