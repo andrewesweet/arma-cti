@@ -263,6 +263,10 @@ FOREIGN_PROFILES: Final[tuple[tuple[str, str], ...]] = (
     # lane and a collapsed one there — each is a route the bar judges separately, since
     # Decision 6 admits a *profile* to a seat and not a lane to a seat.
     ("codex", "codex-sol-xhigh"),
+    # #300: the human's retro ruling registered `codex-sol-max`, and a foreign profile
+    # the registry can dispatch must be a route this bar judges — that equivalence is
+    # asserted in `test_admission.py`, which is what caught its absence.
+    ("codex", "codex-sol-max"),
     ("codex", "codex-sol-high"),
     ("codex", "codex-terra-medium"),
     ("codex", "codex-terra-low"),

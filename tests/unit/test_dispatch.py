@@ -416,8 +416,11 @@ def test_an_unknown_seat_is_refused_rather_than_mis_attributed() -> None:
 # (ADR-0061 decision 5), so a higher profile joins by being named, by the human.
 
 
-def test_the_standing_allowance_lets_fable_dispatch_on_the_one_ruled_foreign_profile() -> None:
-    assert dispatch.resolve_selection("codex", "codex-sol-xhigh", "fable") is None
+@pytest.mark.parametrize("profile", ["codex-sol-xhigh", "codex-sol-max"])
+def test_the_standing_allowance_lets_fable_dispatch_on_each_ruled_foreign_profile(
+    profile: str,
+) -> None:
+    assert dispatch.resolve_selection("codex", profile, "fable") is None
 
 
 def test_the_real_planning_path_admits_the_standing_allowance(tmp_path: Path) -> None:
@@ -441,10 +444,10 @@ def test_the_real_planning_path_admits_the_standing_allowance(tmp_path: Path) ->
         ("zai", "zai-glm47-max"),
     ],
 )
-def test_the_seat_allowance_does_not_widen_beyond_the_one_ruled_triple(
-    lane: str, profile: str
-) -> None:
-    # One triple only. Every other fable-on-foreign combination stays barred.
+def test_the_seat_allowance_does_not_widen_beyond_the_ruled_routes(lane: str, profile: str) -> None:
+    # Two foreign routes only. Every other fable-on-foreign combination stays barred —
+    # including `codex-sol-high`, which is *below* the ruled levels and is the case a
+    # careless "or above" reading would have admitted.
     refusal = dispatch.resolve_selection(lane, profile, "fable")
     assert refusal is not None
     assert refusal.kind == "seat_not_eligible"
@@ -462,16 +465,39 @@ def test_the_orchestrator_seat_stays_barred_on_every_foreign_lane(lane: str) -> 
     assert refusal.kind == "seat_not_eligible"
 
 
+def test_every_retro_approved_profile_is_registered() -> None:
+    """The human's list names profiles; a name with no profile is undispatchable.
+
+    Five of the nine did not exist when the list was ruled (2026-08-09) and were added
+    with it. A later edit that drops one would leave the ruling naming a route nobody
+    can take, which is the failure this asserts against.
+    """
+    for name in dispatch.RETRO_APPROVED_PROFILES:
+        assert name in dispatch.PROFILES, name
+
+
+def test_the_ruled_foreign_routes_are_a_subset_of_the_approved_list() -> None:
+    # The allowance suspends Decision 2; it must never admit a route the human did not
+    # approve for retros at all.
+    for _seat, _lane, profile in dispatch.RETRO_ALLOWANCE:
+        assert profile in dispatch.RETRO_APPROVED_PROFILES, profile
+
+
 def test_the_standing_allowance_is_visible_in_the_dispatch_registry() -> None:
     # A standing exception is stated wherever the registry is read: silence would let a
     # reader believe `SEATS` governs without exception, which is the thing that is false.
     lines = dispatch.registry_lines()
     visible = [line for line in lines if line.startswith("seat_allowance=")]
-    assert len(visible) == 1
-    line = visible[0]
-    assert line.startswith("seat_allowance=standing seat=fable lane=codex profile=codex-sol-xhigh")
-    assert "2026-08-09" in line
-    assert "expires_at" not in line
+    assert len(visible) == 2
+    assert all(line.startswith("seat_allowance=standing seat=fable lane=codex") for line in visible)
+    assert {line.split("profile=")[1].split()[0] for line in visible} == {
+        "codex-sol-xhigh",
+        "codex-sol-max",
+    }
+    assert all("expires_at" not in line for line in visible)
+    approved = [line for line in lines if line.startswith("retro_approved_profiles=")]
+    assert len(approved) == 1
+    assert approved[0].split("=", 1)[1].split() == list(dispatch.RETRO_APPROVED_PROFILES)
 
 
 # ---------------------------------------------------------------------- identity/OTel

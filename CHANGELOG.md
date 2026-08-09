@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Five profiles the retro ruling names but the registry lacked**: `opus-max`, `fable-medium`,
+  `fable-xhigh`, `fable-max` and `codex-sol-max`. Verified against the runners rather than assumed —
+  `claude --effort` accepts `low medium high xhigh max`, and a live `codex exec -c
+  model_reasoning_effort="max" --model gpt-5.6-sol` answered — because a ruling that names an
+  unregistered profile names a route nobody can take (#300).
+
+### Changed
+
+- **The retro allowance is a ruled list, not a single route.** The human enumerated nine approved
+  profiles on 2026-08-09 after "or above" proved to be a comparison the code must not make:
+  profiles are opaque `(lane, model, effort)` tokens and no cross-provider effort scale exists
+  (ADR-0061 decision 5). Only the two `codex` routes need an allowance — `claude-native` already
+  permits the `fable` seat — so Decision 2 is suspended for `fable` on `codex-sol-xhigh` and
+  `codex-sol-max` and for nothing else. `codex-sol-high` stays barred, which is the case a careless
+  "or above" reading would have admitted, and there is a test for exactly that.
+
+  `just dispatch --list` prints both the allowance routes and the full approved list. Nothing tells
+  the dispatcher that an issue is a retro, so the list beyond the two foreign routes is honoured by
+  whoever dispatches rather than enforced — stated in `AGENTS.md` rather than implied (#300).
+
+- **`codex-sol-max` joins the admission bar's foreign routes.** The bar governs a *profile* on a
+  seat, not a lane on a seat, so a newly registered foreign profile is a dispatchable route with no
+  admission record until it is listed. `tests/unit/test_admission.py` asserts that equivalence
+  against the dispatch registry and is what caught the omission (#300).
 ### Changed
 
 - **Retros run every five completed issues again, and may be conducted on `codex-sol-xhigh`.**

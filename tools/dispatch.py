@@ -312,6 +312,7 @@ LANES: Final[dict[str, Lane]] = {
 PROFILES: Final[dict[str, Profile]] = {
     "opus-xhigh": Profile("opus-xhigh", "claude-native", "opus", "xhigh"),
     "opus-high": Profile("opus-high", "claude-native", "opus", "high"),
+    "opus-max": Profile("opus-max", "claude-native", "opus", "max"),
     "sonnet-high": Profile("sonnet-high", "claude-native", "sonnet", "high"),
     "haiku-medium": Profile("haiku-medium", "claude-native", "haiku", "medium"),
     # The fable seat's route to a fable session (#269). #242 ruling 1 keeps fable for named
@@ -326,7 +327,10 @@ PROFILES: Final[dict[str, Profile]] = {
     # runner documents for `--model` alongside `opus` and `sonnet` (verified against the
     # binary's own `--help`, not assumed from its siblings — `build_argv` passes `model`
     # straight through, so nothing else needed changing).
+    "fable-medium": Profile("fable-medium", "claude-native", "fable", "medium"),
     "fable-high": Profile("fable-high", "claude-native", "fable", "high"),
+    "fable-xhigh": Profile("fable-xhigh", "claude-native", "fable", "xhigh"),
+    "fable-max": Profile("fable-max", "claude-native", "fable", "max"),
     # Two profiles on this lane and not ten, because effort collapses to a single arm
     # here — measured, not assumed (#225, docs/research/zai-lane-live-findings.md §2).
     # z.ai's endpoint honours `thinking.type` and ignores `thinking.budget_tokens`: one
@@ -365,6 +369,7 @@ PROFILES: Final[dict[str, Profile]] = {
     # published levels, and its profiles rest on that publication rather than on a second
     # measurement.
     "codex-sol-xhigh": Profile("codex-sol-xhigh", "codex", "gpt-5.6-sol", "xhigh"),
+    "codex-sol-max": Profile("codex-sol-max", "codex", "gpt-5.6-sol", "max"),
     "codex-sol-high": Profile("codex-sol-high", "codex", "gpt-5.6-sol", "high"),
     "codex-terra-medium": Profile("codex-terra-medium", "codex", "gpt-5.6-terra", "medium"),
     "codex-terra-low": Profile("codex-terra-low", "codex", "gpt-5.6-terra", "low"),
@@ -385,23 +390,42 @@ SEATS: Final[dict[str, bool]] = {
 
 
 # The human's ruling of 2026-08-06T21:15Z (#217, #issuecomment-5209125413), verbatim:
-# "Allow use of Sol 5.6 xhigh or above to conduct them." Human ruling, 2026-08-09,
-# superseding the time-boxed allowance of 2026-08-06, which would have lapsed on
-# 2026-08-10. Retros are a fable act; the ruling routes that one act to this
-# triple with no expiry. "Or above" is deliberately not a comparison this module can
-# make — profiles are opaque `(lane, model, effort)` tokens and ADR-0061 decision 5 says
-# no cross-provider effort scale exists — so a higher profile joins by being named here,
-# by the human, and never by an ordering inferred in code.
+# The retro-approved profiles, enumerated by the human on 2026-08-09 after "or above"
+# proved to be a comparison this module must not make: profiles are opaque
+# `(lane, model, effort)` tokens and no cross-provider effort scale exists (ADR-0061
+# decision 5), so a level joins the list by being named and never by an ordering
+# inferred in code.
 #
-# Still deliberately not a temporary-allowance registry: every other fable-on-foreign
-# combination, and orchestrator everywhere, remain governed by `SEATS`.
-RETRO_FABLE_ALLOWANCE: Final = ("fable", "codex", "codex-sol-xhigh")
-RETRO_FABLE_ALLOWANCE_SOURCE: Final = "human ruling 2026-08-09 (#299), superseding #217"
+# The list spans lanes, and only its foreign half needs an allowance at all — on
+# `claude-native` the fable seat is already permitted by `SEATS`. So this constant is
+# what suspends Decision 2, and it suspends it for these two profiles only:
+RETRO_ALLOWANCE: Final = frozenset(
+    {
+        ("fable", "codex", "codex-sol-xhigh"),
+        ("fable", "codex", "codex-sol-max"),
+    }
+)
+# The human's full ruled list, including the native profiles that need no allowance.
+# Enforced where it can be — a foreign dispatch is refused off the set above — and
+# stated here for the dispatcher, because nothing in a dispatch tells this module that
+# the issue it carries is a retro.
+RETRO_APPROVED_PROFILES: Final = (
+    "codex-sol-xhigh",
+    "codex-sol-max",
+    "opus-high",
+    "opus-xhigh",
+    "opus-max",
+    "fable-medium",
+    "fable-high",
+    "fable-xhigh",
+    "fable-max",
+)
+RETRO_ALLOWANCE_SOURCE: Final = "human ruling 2026-08-09 (#300), superseding #217 and #299"
 
 
-def retro_fable_allowance_is_live(seat: str, lane_name: str, profile_name: str) -> bool:
-    """Whether this is the one ruled retro triple. Standing: no expiry to check."""
-    return (seat, lane_name, profile_name) == RETRO_FABLE_ALLOWANCE
+def retro_allowance_is_live(seat: str, lane_name: str, profile_name: str) -> bool:
+    """Whether this is one of the ruled retro routes. Standing: no expiry to check."""
+    return (seat, lane_name, profile_name) in RETRO_ALLOWANCE
 
 
 def plan_charge(lane: Lane, at: datetime) -> dict[str, object] | None:
@@ -664,7 +688,7 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
     if (
         LANES[lane_name].foreign
         and not SEATS[seat]
-        and not retro_fable_allowance_is_live(seat, lane_name, profile_name)
+        and not retro_allowance_is_live(seat, lane_name, profile_name)
     ):
         return Refusal(
             "seat_not_eligible",
@@ -1642,14 +1666,15 @@ def registry_lines() -> tuple[str, ...]:
     # The one ruled exception, stated wherever the registry is read. It was time-boxed
     # from 2026-08-06 and made standing by the human's ruling of 2026-08-09; it is not a
     # general allowance list, and a second entry would need its own ruling.
-    seat, lane_name, profile_name = RETRO_FABLE_ALLOWANCE
-    lines.append(
-        "seat_allowance=standing"
-        f" seat={seat}"
-        f" lane={lane_name}"
-        f" profile={profile_name}"
-        f" source={RETRO_FABLE_ALLOWANCE_SOURCE}"
-    )
+    for seat, lane_name, profile_name in sorted(RETRO_ALLOWANCE):
+        lines.append(
+            "seat_allowance=standing"
+            f" seat={seat}"
+            f" lane={lane_name}"
+            f" profile={profile_name}"
+            f" source={RETRO_ALLOWANCE_SOURCE}"
+        )
+    lines.append(f"retro_approved_profiles={' '.join(RETRO_APPROVED_PROFILES)}")
     return tuple(lines)
 
 

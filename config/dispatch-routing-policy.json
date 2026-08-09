@@ -183,13 +183,22 @@
   ],
   "route_exceptions": [
     {
-      "name": "standing_retro_allowance",
+      "name": "standing_retro_allowance_codex_sol_xhigh",
       "class": 3,
       "lane": "codex",
       "profile": "codex-sol-xhigh",
       "seat": "fable",
-      "source": "human ruling 2026-08-09 (#299), superseding #217 and #270",
-      "standing": true
+      "standing": true,
+      "source": "human ruling 2026-08-09 (#300), superseding #217, #270 and #299"
+    },
+    {
+      "name": "standing_retro_allowance_codex_sol_max",
+      "class": 3,
+      "lane": "codex",
+      "profile": "codex-sol-max",
+      "seat": "fable",
+      "standing": true,
+      "source": "human ruling 2026-08-09 (#300), superseding #217, #270 and #299"
     }
   ]
 }
