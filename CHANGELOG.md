@@ -54,6 +54,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **ADR-0069**, the Phase-2 decision record for durable snapshots, the thirty-second checkpoint
+  bound, and the fail-closed resume barrier (#288). Records the three human rulings of 2026-08-08 on
+  #4 — load failure retains a verified last-known-good and never silently starts a fresh Campaign; a
+  persistent change marks the Campaign dirty and a durable checkpoint lands within thirty seconds of
+  the first one; a resumed Campaign projects through the ordered Effect outbox behind a barrier that
+  stays red until the full reconstruction is acknowledged — together with the crash-safe durability
+  ordering and the five distinguished load-failure cases (corruption, unsupported schema, failed
+  migration, rollback, explicit fresh-Campaign). Closes #288 with no production code; the versioned
+  snapshot document it governs already landed in #289 (`e299d06`).
+
 - **`docs/research/removing-backlog-routing-restrictions.md`**, the proposal-only audit of why 18
   of #296's top 30 ready issues cannot currently leave Claude. The 12/18 measurement reproduces,
   but its fourteen-item `gated_semantic_surfaces` pile mixes semantic authorship, gate authorship,
