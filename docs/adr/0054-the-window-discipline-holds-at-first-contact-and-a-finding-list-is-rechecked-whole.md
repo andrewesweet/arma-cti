@@ -82,6 +82,11 @@ was human-decided directly rather than queued.
   land as its enforcing instances in the same commit. One judgement call flagged:
   `cti-recon` includes Bash for inspection (git/gh/rg) with read-only conduct stated
   in its prompt, since a literal no-Bash seat could not run a triage sweep.
+
+  **Currency note:** that list was superseded on 2026-08-05: `cti-implementer-light`
+  no longer exists, `cti-implementer` is opus/high and is the default tier, and
+  `cti-implementer-xhigh` is the reserved seat. This record is a dated snapshot and is
+  not wrong about its date — the seats moved after it was written.
 - **Open, not taken**: the 500k-token alternative retro trigger (not ruled on —
   orchestrator memory says ask when it next matters); where standing
   orchestrator-only rules live (this retro's answer: repo surfaces when they bind
