@@ -111,3 +111,10 @@ approved-but-queued edit landed by executing the sign-off.
 - The human rejecting any decision above at review: each is a count, an exemplar, or
   a one-sentence record, named above, and reverts cleanly.
 - The per-decision overturn rows above.
+
+Amended 2026-08-09 (#217): decision 2's "further catches are it working, not new findings" stands,
+with one reservation — **the stall count keeps accruing as evidence, even though no retro re-opens
+the attribution.** The ground under "permanent" has moved since decision 2 was written: #218's
+ruling rebased the working-style rule, `just watch` landed under #198, and the handoff convention
+landed with #208/#210/#211. If catches stopped being counted, none of that later work would have
+evidence about whether it helped. Ruled by the human on #217, 2026-08-06.

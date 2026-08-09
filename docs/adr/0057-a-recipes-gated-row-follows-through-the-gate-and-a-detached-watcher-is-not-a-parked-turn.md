@@ -90,3 +90,10 @@ refuse the tool built to satisfy it.
   dispatch brief attributed ADR-0055's memory floor as having fired live; the runs
   tree carries no `starved` marker, so the floor's only proven firing remains the
   no-Arma staged one, and no exemplar here claims otherwise.
+
+Amended 2026-08-09 (#217): this ADR's own overturn text above left open whether a gated
+command-table row may land under ADR-0013 or must each time wait for explicit approval. **Ruled
+generally: decision 1's own test is promoted to the default.** A gated command-table row may land
+under an ADR-0013 record when it documents landed, tested tooling and changes no gate, class, port
+or behaviour. Anything failing that test waits for explicit approval. Ruled by the human on #217,
+2026-08-06.

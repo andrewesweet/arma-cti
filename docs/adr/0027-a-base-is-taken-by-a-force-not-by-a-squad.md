@@ -156,3 +156,13 @@ rules, because a Base is destroyed rather than held and half a mass buys no half
 
 No `CONTEXT.md` term changes. `ASSAULT_MASS` is machinery, not vocabulary: what it operates on
 (Contact, echelon, Assault, Base, Place, Squad) is all already there and unchanged.
+
+Amended 2026-08-09 (#217): "Only somebody looking lowers the Contact-band-derived demand" now
+holds of the banded half only. #181's committed-force floor, built under the human's hysteresis
+ruling on #177/#181, floors demand at the Squads already committed to an Assault until one of its
+defined release conditions ends that commitment; only the band-derived target above that floor
+moves on observation. The qualification previously lived only in `src/cti_daemon/planner.py`'s
+`_mass` docstring and #181's closing comment, so a reader of this ADR alone got the unqualified
+sentence. Flagged by the twentieth retro (ADR-0053, "Recorded here, not delegated") rather than
+taken then, because editing an approved ADR is exactly what the sign-off gate covers; ruled by the
+human on #217, 2026-08-06.

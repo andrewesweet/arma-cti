@@ -114,3 +114,12 @@ entry's prune record.
   by #217's 17:12Z comment and the four landed research commits; an audit showing
   either otherwise cuts the count back. The prune reverts by restoring the
   journal's archived text, which is byte-complete for that purpose.
+
+Amended 2026-08-09 (#217): decision 1's acceptance of a knowingly lagging command table, for as
+long as #228 sat unruled, is withdrawn — **the boundary needs no lag.** A landed recipe's row may
+go through a retro even where an initiative owns the surface, so the always-loaded table is never
+knowingly wrong: an agent reading the table during the lag sees no `just dispatch`, no `just
+land`, no `just breaker` — recipes it is expected to use — and a knowingly-wrong always-loaded
+surface is a different cost from a lagging proposal. This applies to rows documenting
+already-landed recipes only; it does not disturb the #228/#248 split for *rulings*, which stays
+exactly as decision 1 and ADR-0065 decision 2 set it. Ruled by the human on #217, 2026-08-06.
