@@ -31,6 +31,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`CLAUDE.md` points at the orchestration seat's operating rules** (#242 ruling 6, human decision
+  2026-08-06; sentence proposed verbatim by #267). The ruling put the pointer in the Agent-skills
+  section in the same commit as `docs/agents/orchestration.md`; the document landed at `d53eebe`
+  and the pointer, being a gated surface, was left as a proposal. It lands here under the ruling
+  that approved it. `docs/orchestration-design.md` gains a status block: which of its proposals
+  were ruled, where each now lives, and the two that remain — #255's interlocutor seat and #295's
+  `just occupancy` row. Closes #242.
+
 - **Cache reads measured at ≤ 0.0095 pp₅ₕ/Mtok on this plan** (#237, ratified 2026-08-06): a
   multi-turn read arm moved the five-hour meter +1.0 point net of wall-clock-matched idle controls
   over 105.08 Mtok of reads — ≥ 3,477× lighter than output and indistinguishable from zero at the

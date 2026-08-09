@@ -7,12 +7,35 @@ and more — all on fable capacity. Which of those need fable, which can move to
 which to a foreign lane, and which should stop being model work entirely.
 
 **This is not `docs/agents/orchestration.md`.** That document was ruled into existence by the
-human on #217 (decision 5, 2026-08-05T21:50Z) and remains unwritten; it is the *operating* half —
-the rules a dispatching seat must not get wrong in the moment, with a pointer landing in the same
-commit. This document is that one's input: what the mechanism should be, and what is left over
-once it exists. The two should not be merged, for the reason #220 measured — the always-loaded
-prefix is read by every agent on every lane, so a rule only the dispatching seat can act on is a
-candidate for not being resident, and a design study is not a rule at all.
+human on #217 (decision 5, 2026-08-05T21:50Z) and landed at `d53eebe` on 2026-08-08 (#267); it is
+the *operating* half — the rules a dispatching seat must not get wrong in the moment. This
+document is that one's input: what the mechanism should be, and what is left over once it exists.
+The two should not be merged, for the reason #220 measured — the always-loaded prefix is read by
+every agent on every lane, so a rule only the dispatching seat can act on is a candidate for not
+being resident, and a design study is not a rule at all.
+
+## Status, as of 2026-08-09 (#242 closed)
+
+This is a study, not a live rule; read it for reasoning, and read the operating doc for what to do.
+Every proposal below was ruled by the human on 2026-08-06 (rulings and follow-ups on #242) and
+every ruling that created work has been executed, except where named:
+
+| §  | Proposal | Where it now lives |
+|---|---|---|
+| 2 | The queue as data, the freeze as a dispatch rung | `just queue` (#250); the routing policy generalised to a file `just dispatch` reads per dispatch (#266) |
+| 3 | The computed close audit | `just admission audit` (#252) |
+| 4 | The runbook's two computable procedures | `just recover` (#253) |
+| 5 | Composed briefings | `just brief` (#251), which now also carries the single-shot contract (#279) |
+| 6 | The seat inverts to opus/high, fable dispatched | Ruled and in effect since 2026-08-06; running as the pre-registered trial `cti.admission.orchestration-trial/242`, **1 of 10 cycles recorded** at the time of writing |
+| 7 | The review function | Confirmed unchanged, not altered |
+| 8 | Context hygiene | `docs/agents/orchestration.md` (#267), which carries the one-line rule §8 yields |
+
+Landed since, and not proposals of this study: the underfill verdict in `just watch-report` (#278),
+the dispatch completion edge (#280), and the dispatch's measured cost and the cohort barrier behind
+the seat's idle time (#295, `docs/research/dispatch-cost-and-occupancy.md`) — which is the first
+measurement of the §6 "unpriced" gap, on the dispatch rather than on the seat's whole session.
+Outstanding: #255, the human-interlocutor seat at opus/xhigh (ruling 2, filed and open), and #295's
+`just occupancy` command-table row, which waits on the sign-off gate.
 
 ## Outcome
 
