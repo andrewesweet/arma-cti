@@ -16,11 +16,14 @@ evidence, and how often.
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Any
 
-from conftest import rows
+import pytest
+from conftest import REPO, load_tool, rows
 from test_port import EAST_BASE, WEST_BASE
 
+from cti_daemon.observation import serialise
 from cti_daemon.report import Report
 from cti_daemon.squads import Held, Order
 from cti_daemon.transport import build_daemon
@@ -106,6 +109,23 @@ def test_a_reported_slot_mints_a_shell_at_own_base_for_that_side(tmp_path: Path)
     assert (shell.side, shell.size, shell.at) == ("WEST", 1, WEST_BASE)
     assert shell.composition_assigned is False
     assert shell.suspended is False
+
+
+def test_the_shell_appears_in_its_own_sides_observation_and_not_the_others(
+    tmp_path: Path,
+) -> None:
+    # The criterion's first half, at the one place a Commander could see it. A
+    # shell that the roster held but no Observation carried would be a Squad
+    # nobody could order and the map could not draw — and the projection is the
+    # only way to obtain one (#27), so this is the whole of the question.
+    daemon = _daemon(tmp_path)
+
+    daemon.cycle.fold(_report(squad_leaders={UID: "WEST"}))
+
+    ours = serialise(daemon.campaign.observation("WEST"))["squads"]
+    assert [squad["id"] for squad in ours] == [_led(daemon).id]
+    assert ours[0]["suspended"] is False
+    assert serialise(daemon.campaign.observation("EAST"))["squads"] == []
 
 
 def test_the_claim_is_read_as_the_side_it_names(tmp_path: Path) -> None:
@@ -312,6 +332,77 @@ def test_a_player_whose_filled_squad_was_wiped_out_gets_a_fresh_shell(tmp_path: 
     assert fresh.id != lost
     assert fresh.composition_assigned is False
     assert daemon.campaign.squad(lost, "WEST") is None
+
+
+# --- compliance is voluntary ----------------------------------------------
+
+#: The Order path: what lays an Order on a group, and what re-asserts one that
+#: the engine has considered finished. Scoped to those two because they are the
+#: whole of what runs "as a consequence of an Order" — `cti_fnc_effectApply`
+#: only delegates to the first, and `cti_fnc_baseAssault`'s subject is a
+#: building.
+ORDER_PATH = (
+    "addons/main/functions/fn_orderApply.sqf",
+    "addons/main/functions/fn_orderEnforce.sqf",
+)
+
+#: Every way this addon could make a man do what he was told. Positioning him,
+#: commanding him directly, and taking or giving his seat — which is the
+#: criterion's own list of "moves, teleports, re-seats or re-orders". An Order
+#: reaches a Squad through the group's waypoints and a task, both of which a
+#: player is free to ignore, and that freedom is a property of what is *absent*
+#: from these two files rather than of anything present in them. Absences are
+#: what quietly stop being true, so this is the assertion.
+FORCING = (
+    "setPos",
+    "setPosATL",
+    "setPosASL",
+    "setPosWorld",
+    "setVehiclePosition",
+    "setDir",
+    "move",
+    "moveTo",
+    "doMove",
+    "commandMove",
+    "selectLeader",
+    "join",
+    "joinSilent",
+    "assignAsCargo",
+    "orderGetIn",
+)
+
+
+def _forcing_in(path: str) -> list[str]:
+    """Return every forcing command one addon function actually calls.
+
+    Comments and string literals are blanked through the ban gate's own reader,
+    so the prose above each of these files may name a command without being a
+    finding — and `setWaypointType "MOVE"` is a waypoint's type rather than a man
+    being told to walk. Case-insensitive because SQF is.
+    """
+    code = load_tool("check_sqf_bans").strip_noncode((REPO / path).read_text(encoding="utf-8"))
+    return sorted(
+        {command for command in FORCING if re.search(rf"\b{command}\b", code, re.IGNORECASE)}
+    )
+
+
+@pytest.mark.parametrize("path", ORDER_PATH)
+def test_the_order_path_never_moves_or_re_seats_anybody(path: str) -> None:
+    assert _forcing_in(path) == [], f"{path} would force a player-led Squad to comply"
+
+
+def test_the_scan_sees_a_re_seating_where_one_is_meant_to_be() -> None:
+    """The scan's own red, so the assertion above is not vacuous (ADR-0037).
+
+    `cti_fnc_effectApply` joins a returning player into the Squad that carried
+    on without him and seats him at its head, which is what ruling 6 asks for. A
+    scan blind to that would be blind to the same two commands appearing where
+    they must not.
+    """
+    assert _forcing_in("addons/main/functions/fn_effectApply.sqf") == [
+        "joinSilent",
+        "selectLeader",
+    ]
 
 
 # --- the edges ------------------------------------------------------------
