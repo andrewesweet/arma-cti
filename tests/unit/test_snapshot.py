@@ -77,7 +77,7 @@ _shell = st.builds(
     order=st.builds(Order, kind=st.sampled_from(ORDERS), place=st.sampled_from(PLACES)),
     at=st.sampled_from(PLACES),
     player_uid=UIDS,
-    composition_assigned=st.just(False),
+    composition_assigned=st.just(False),  # noqa: FBT003 — `st.just(x)` is hypothesis's canonical way to pin a strategy to one value; the boolean is data here, not a flag argument
     suspended=st.booleans(),
 )
 _squad = _bought_squad | _shell

@@ -384,7 +384,7 @@ class CommandPort:
             )
         return None
 
-    def _reinforce_composition(self, command: Command) -> Judgement:
+    def _reinforce_composition(self, command: Command) -> Judgement:  # noqa: PLR0911 — each return is one typed refusal in a ladder; splitting it would scatter the refusal vocabulary this verb owns across helpers, which is the thing ADR-0040 keeps in one place
         """Assign a player-led shell its first composition, and fill it (ADR-0070).
 
         A form of Reinforce and the Commander's alone (ruling 4). Whether the
