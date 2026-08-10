@@ -21,7 +21,7 @@ The single interface through which every Commander (human or AI) issues orders. 
 _Avoid_: Command API, order bus
 
 **Command**:
-One instruction sent through the Command Port: Purchase, Order, or Reinforce. Purchase and Order are a Commander's; Reinforce may also be issued by a squad leader for his own Squad (ADR-0040).
+One instruction sent through the Command Port: Purchase, Order, or Reinforce. Purchase and Order are a Commander's; Reinforce may also be issued by a squad leader for his own Squad (ADR-0040), except in its composition-carrying form, which is the Commander's alone (ADR-0070).
 _Avoid_: message, request, packet; "command" unqualified for engine scripting commands (say "scripting command")
 
 **Judgement**:
@@ -38,7 +38,8 @@ _Avoid_: Town, sector, zone, POI
 
 **Squad**:
 The unit of command. Purchased whole, ordered whole; leadership passes to the engine AI on leader death, but a player squad leader reclaims leadership on respawn. A Squad is owned by the server for its whole life and is never transferred off it, because the Order path runs through scripting commands that are local to the owner (ADR-0039).
-_Avoid_: Group (reserved for the engine's group concept), team, fireteam
+One Squad per side is not purchased: the player who takes the squad-leader role gets a dedicated roster Squad at own Base with himself as its sole member, **composition-unassigned** until the Commander's first fill assigns one, and fixed thereafter (ADR-0070, human rulings 2026-08-08 on #25). It is a Squad in every other respect — ordered, sampled for presence, snapshotted, counted against the force a side may field. A composition-unassigned Squad whose player has disconnected is **suspended**: it keeps its roster identity and its id, contributes no presence, and is ineligible for filling until he returns. A Squad that has been filled is never suspended — it survives disconnect under an AI leader, keeping its Order.
+_Avoid_: Group (reserved for the engine's group concept), team, fireteam; avatar and slot Squad (a player-led Squad is a roster Squad, not a role's puppet)
 
 **Order**:
 A Commander's standing instruction to one Squad, naming a Place or nothing: Capture(Objective), Defend(Objective or own Base), Assault(enemy Base), or Reserve. An Order survives leader death. A player-led Squad receives Orders but compliance is voluntary.
@@ -53,7 +54,7 @@ Any authored ground an Order or a coarse position can name: an Objective or a Ba
 _Avoid_: location, position (reserved for coordinates), target (reserved for the engine's targeting)
 
 **Observation**:
-The strategic picture at one moment as **one** Commander may know it: every Objective's owner, that Commander's own Funds, and each of its own Squads with composition type, member count, standing Order and coarse position. What it knows of the enemy is Contacts, never roster entries. Assembled by the daemon from what it decides plus the facts only the world can see — how many of a Squad are standing, the ground underfoot, the Sightings its leaders report, and an HQ falling. Deliberately the same set the Campaign snapshot persists (ADR-0008): nothing tactical, and places rather than coordinates — with one exception, ruled on #175 and recorded in ADR-0058. Each of a Commander's **own** Squads also carries its map position in metres, because a coarse position is empty for the whole march between two Places and a Squad that could not be drawn was indistinguishable from a Squad that had been wiped out. It is what a marker is drawn at and nothing else reads it: an Order still names a Place, the planner still reasons in Places, and a Contact carries no such field.
+The strategic picture at one moment as **one** Commander may know it: every Objective's owner, that Commander's own Funds, and each of its own Squads with composition type, member count, standing Order and coarse position. A player-led Squad appears like any other, and one that is composition-unassigned carries no composition type — an absence the Commander reads as the shell it may fill (ADR-0070). What it knows of the enemy is Contacts, never roster entries. Assembled by the daemon from what it decides plus the facts only the world can see — how many of a Squad are standing, the ground underfoot, the Sightings its leaders report, and an HQ falling. Deliberately the same set the Campaign snapshot persists (ADR-0008): nothing tactical, and places rather than coordinates — with one exception, ruled on #175 and recorded in ADR-0058. Each of a Commander's **own** Squads also carries its map position in metres, because a coarse position is empty for the whole march between two Places and a Squad that could not be drawn was indistinguishable from a Squad that had been wiped out. It is what a marker is drawn at and nothing else reads it: an Order still names a Place, the planner still reasons in Places, and a Contact carries no such field.
 _Avoid_: State, world state, telemetry; snapshot (reserved for the persisted Campaign)
 
 **Contact**:
@@ -90,4 +91,5 @@ _Avoid_: Base kill, HQ rush
 
 **Reinforce**:
 Command, issuable by a squad leader for his own Squad or by that side's Commander (ADR-0040): refill a Squad at own Base to its purchased composition, costing Funds pro-rata. Ammo and equipment restock is free at Base and is not a Command.
-_Avoid_: Resupply, heal, replen; port verb (transport verbs and Commands never share a namespace — ADR-0012)
+It has a second form, the Commander's alone, that carries a composition (ADR-0070): it is accepted once for that side's active, composition-unassigned player-led Squad at own Base, assigns the catalogue composition, and fills the missing men at ordinary Reinforce pricing. A squad leader may not choose his own Squad's initial composition — a temporary rule a non-Commander-level economy reopens. After that first fill, Reinforce is refill and nothing else: it restores the fixed composition and never reclassifies a Squad.
+_Avoid_: Resupply, heal, replen; port verb (transport verbs and Commands never share a namespace — ADR-0012); recompose (Reinforce never changes a composition, it restores one)
