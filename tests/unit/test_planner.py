@@ -1481,6 +1481,95 @@ def test_a_fill_standing_in_for_a_purchase_still_says_what_that_purchase_beat() 
     )
 
 
+def test_a_fill_says_in_the_structured_trace_which_purchase_it_displaced() -> None:
+    # #315: the prose above is what a human reads, and the oracle (#5) reads
+    # neither prose nor a `Candidate` the fill deliberately has none of. The
+    # substitution record is the structured half of the same sentence, and
+    # `instead_of` is in `candidates`' own register so the displaced winner can
+    # be found among them rather than merely named.
+    world = live()
+    shell = enrolled(world)
+
+    row = only(brain(world).plan(world.observation("WEST")).decisions, "funds")
+
+    assert row.substituted == planner.Substitution(cost=70, instead_of="rifle", price=100)
+    assert row.substituted.instead_of in [candidate.choice for candidate in row.candidates]
+    assert row.chose == f"fill {shell} as rifle"
+    assert row.chose not in [candidate.choice for candidate in row.candidates]
+
+
+def test_the_purchase_a_fill_displaced_is_still_the_rankings_winner() -> None:
+    # The thing #311 rejected and this must not undo: the fill is recorded
+    # beside the ranking, never priced onto it, so the Purchase it stood in for
+    # is still first and no cheaper also-ran has been lifted above a winner.
+    # Asserted against a board where a live refill also lost, because that is
+    # the case a fourth candidate at 70 would have reordered.
+    world = live()
+    thinned = bought(world, "WEST", "weapons")
+    world.roster.reconcile({thinned: Held(1, "nato_airbase")})
+    shell = enrolled(world)
+
+    row = only(brain(world).plan(world.observation("WEST")).decisions, "funds")
+
+    assert [candidate.choice for candidate in row.candidates] == [
+        "rifle",
+        f"reinforce {thinned}",
+        "weapons",
+    ]
+    assert row.substituted == planner.Substitution(cost=70, instead_of="rifle", price=100)
+    assert shell not in [candidate.choice for candidate in row.candidates]
+
+
+def test_a_fill_with_no_purchase_to_displace_records_that_it_displaced_nothing() -> None:
+    # The second branch: past the map's cap no Purchase was on the table, so
+    # there was no winner to stand in for. The record is written anyway, because
+    # what a mechanical reader must not be left to infer is that the action was
+    # outside the ranking at all — `instead_of` unset is what says the ranking
+    # produced nothing rather than that the trace forgot to say.
+    world, shell = capped_with_a_shell()
+
+    row = only(brain(world).plan(world.observation("WEST")).decisions, "funds")
+
+    assert row.chose == f"fill {shell} as rifle"
+    assert row.substituted == planner.Substitution(cost=70)
+    assert (row.substituted.instead_of, row.substituted.price) == (None, None)
+
+
+def test_a_decision_that_is_its_own_ranking_carries_no_substitution() -> None:
+    # The other half of the contract `Decision` now states: where nothing was
+    # substituted the row says so by carrying none, and `chose` is then the
+    # ranking's winner. Read off both kinds of row the planner writes — the
+    # spend and a deployment — so the default is not merely a spend-side habit.
+    world = live()
+    fielded(world, "WEST", "nato_airbase")
+
+    plan = brain(world).plan(world.observation("WEST"))
+
+    funds = only(plan.decisions, "funds")
+    assert funds.substituted is None
+    assert funds.chose == "purchase rifle"
+    assert funds.chose.endswith(funds.candidates[0].choice)
+    assert {row.about for row in plan.decisions} > {"funds"}
+    assert [row.substituted for row in plan.decisions] == [None] * len(plan.decisions)
+
+
+def test_a_refill_that_won_its_ranking_outright_carries_no_substitution() -> None:
+    # And the case the whole shape exists to protect: a refill that beat the
+    # fresh Squad is the ranking's own winner, so its row carries no
+    # substitution even with an eligible shell standing beside it. A design that
+    # recorded one here would be claiming the shell had displaced something.
+    world = live()
+    thinned = bought(world, "WEST")
+    world.roster.reconcile({thinned: Held(5, "nato_airbase")})
+    enrolled(world)
+
+    row = only(brain(world).plan(world.observation("WEST")).decisions, "funds")
+
+    assert row.chose == f"reinforce {thinned}"
+    assert row.substituted is None
+    assert row.candidates[0].choice == f"reinforce {thinned}"
+
+
 def test_a_refill_that_won_the_comparison_is_not_displaced_by_a_shell() -> None:
     # The ruling substitutes for a Purchase and for nothing else, so #150's
     # choice is resolved first and a refill that already beat the fresh Squad

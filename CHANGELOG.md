@@ -34,6 +34,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   cap and the wire's force limit bar a Purchase and not this — filling a shell adds no Squad — so a
   Commander at its ceiling now fills the shell where it used to spend nothing. The funds row names
   the shell it preferred and the Purchase it stood in for.
+- **A planner decision that substituted something for its ranking's winner now says so in the
+  structured trace** (#315). The shell fill above is chosen after the ranking rather than inside
+  it, so it appears in no candidate and only the row's prose explained it — invisible to anything
+  reading the trace mechanically, the independent oracle of Phase 3 included. Each decision may now
+  carry a substitution record beside its candidates, naming what was displaced and at what price,
+  and telemetry carries it on the rows that have one. The candidates themselves are untouched:
+  pricing the fill onto that ranking is what would have sorted a cheaper also-ran above a refill
+  that won outright. The contract the record sits under is now written down where a consumer reads
+  it — the candidates are the ranking, the choice is the decision, and the two need not agree.
 - **Snapshot version 2**, an additive migration whose safe default is what every Squad written
   before this decision was — composition-assigned, active, unowned. A saved Squad now carries its
   player's UID, whether its composition is assigned, and whether it is suspended (#310, ADR-0070,

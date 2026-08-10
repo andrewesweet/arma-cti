@@ -123,6 +123,64 @@ def test_every_decision_lands_in_telemetry_with_what_it_was_weighed_against(
     assert chosen["chose"] == chosen["candidates"][0]["choice"]
 
 
+def turn_from_base(daemon: Daemon, step: int) -> None:
+    """One turn of a world that stands every Squad without an Order at its own Base.
+
+    `turn` above reports a Squad's Place as whatever it was ordered to, which
+    leaves a Squad nobody has sent anywhere standing in open ground. A shell
+    waiting for a player is exactly that Squad, and the port refuses to fill one
+    away from its Base (`wrong_ground`), so the fill this test is about could
+    never be planned against the world `turn` describes.
+    """
+    roll = daemon.campaign.roster.roll(SIDE)
+    base = next(one.id for one in daemon.campaign.map_manifest.bases if one.side == SIDE)
+    presence: dict[str, list[str]] = {}
+    for squad in roll:
+        presence.setdefault(squad.order.place or base, []).append(SIDE)
+    reply_to(
+        daemon,
+        id=f"base-turn-{step}",
+        verb="observe",
+        payload={
+            "time": (step + 1) * 30,
+            "presence": presence,
+            "squads": {
+                squad.id: {
+                    "size": squad.size,
+                    "at": squad.order.place or base,
+                    "pos": [0, 0, 0],
+                }
+                for squad in roll
+            },
+        },
+    )
+
+
+def test_a_decision_that_substituted_says_so_in_telemetry_and_an_ordinary_one_stays_quiet(
+    tmp_path: Path,
+) -> None:
+    # #315: telemetry is where the oracle (#5) will read decisions from, so the
+    # substitution has to survive the trip and not merely exist in the planner's
+    # own dataclass. A shell fill stands in for the Purchase that won the
+    # ranking, and the row says which — while `chose` matches no candidate, the
+    # hole the record was written to close. The turn after, the shell is
+    # composed, nothing can be substituted, and the key is simply absent: a
+    # `row.get("substituted")` on an ordinary row must not find a shape to read.
+    log = tmp_path / "telemetry.jsonl"
+    daemon = commanded(log)
+    shell = daemon.campaign.enrol(SIDE, "uid-1").id
+    turn_from_base(daemon, 0)
+    first, *_ = [row for row in rows(log, "decision") if row["about"] == "funds"]
+
+    turn_from_base(daemon, 1)
+    *_, last = [row for row in rows(log, "decision") if row["about"] == "funds"]
+
+    assert first["chose"] == f"fill {shell} as rifle"
+    assert first["substituted"] == {"cost": 70, "instead_of": "rifle", "price": 100}
+    assert first["chose"] not in [candidate["choice"] for candidate in first["candidates"]]
+    assert "substituted" not in last
+
+
 def test_a_trace_nobody_could_write_changes_nothing_about_the_campaign(
     tmp_path: Path,
 ) -> None:

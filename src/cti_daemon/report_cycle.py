@@ -410,6 +410,22 @@ class ReportCycle:
         plan = brain.plan(self.campaign.observation(side))
 
         for decision in plan.decisions:
+            # `candidates` is the ranking and `chose` is the decision, and the
+            # two need not agree (#315): where the planner substituted something
+            # for the ranking's winner, the row carries the account of it, and a
+            # reader that assumed `chose` was always `candidates[0]` would learn
+            # nothing about the substitution from a row that went quiet. Written
+            # only where there was one, so every ordinary row stays the shape it
+            # has always been and `row.get("substituted")` is the whole test.
+            substituted = (
+                {
+                    "cost": decision.substituted.cost,
+                    "instead_of": decision.substituted.instead_of,
+                    "price": decision.substituted.price,
+                }
+                if decision.substituted is not None
+                else None
+            )
             self._telemetry.record(
                 "decision",
                 at=at_time,
@@ -427,6 +443,7 @@ class ReportCycle:
                     }
                     for candidate in decision.candidates
                 ],
+                **({"substituted": substituted} if substituted is not None else {}),
             )
 
         for command in plan.commands:

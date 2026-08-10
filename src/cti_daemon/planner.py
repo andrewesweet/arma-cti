@@ -384,8 +384,54 @@ class Candidate:
 
 
 @dataclass(frozen=True, slots=True)
+class Substitution:
+    """The action a Decision took in place of what its own ranking produced.
+
+    Some decisions are not rankings all the way down. A ranking runs, and then
+    something outside it takes the winner's place — the ADR-0070 ruling 2 shell
+    fill is the first, standing in for the Purchase that had already won. The
+    action is therefore in `Decision.chose` and in no `Candidate`, which is a
+    hole for anything reading the trace mechanically: the independent oracle
+    (#5) checks decisions against a separately derived expectation, and an
+    action appearing nowhere in the structured half is one it cannot see was
+    taken by choice rather than by accident (#315).
+
+    This is that account, kept beside the ranking rather than inside it. The
+    alternative — giving the fill a `Candidate` and a score — is the thing #311
+    rejected and this must not undo: `candidates` is one price axis, winner
+    first by construction, and a fill priced onto it would sort a cheaper
+    also-ran above a refill that had won outright, which is a trace lying about
+    its own arithmetic.
+
+    Funds here are positive, as the row's prose names them. `Candidate.score`
+    negates the same numbers so that the cheapest sorts first, and these are
+    deliberately not on that axis, because nothing here was ranked.
+    """
+
+    # What the chosen action cost.
+    cost: int
+    # The candidate it displaced, in `Candidate.choice`'s register — so a reader
+    # can find it among `candidates` and see what was given up. None where the
+    # ranking produced no winner at all and the action displaced nothing: the
+    # record still exists there, because what a consumer must not be left to
+    # infer is that the action was outside the ranking in the first place.
+    instead_of: str | None = None
+    # And what that displaced candidate would have cost. None with `instead_of`.
+    price: int | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class Decision:
-    """One thing the planner decided, and enough of why to argue with it."""
+    """One thing the planner decided, and enough of why to argue with it.
+
+    The contract a consumer needs, stated rather than left to be inferred from
+    the rows (#315): **`candidates` and `scored` are the ranking, and `chose` is
+    the decision.** They usually agree, and a reader that assumed they always do
+    would be wrong — a decision may substitute something for the ranking's
+    winner after the ranking has run. Where it does, `substituted` says what was
+    displaced and at what price, and `chose` names an action no `Candidate`
+    carries. Where it is None, `chose` is the winner and `candidates[0]` is it.
+    """
 
     about: str
     chose: str
@@ -400,6 +446,12 @@ class Decision:
     # that is not this one — the daemon knows only the `Planner` protocol — does
     # not have to have an opinion about vetoes.
     vetoed: int = 0
+    # What was taken in place of the ranking's outcome, where anything was
+    # (#315). Defaulted for the reason `vetoed` is: a planner the daemon reaches
+    # through the `Planner` protocol alone need have no opinion about
+    # substitutions, and a decision that is purely its ranking says so by
+    # carrying none.
+    substituted: Substitution | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -1025,6 +1077,11 @@ class UtilityPlanner:
         is not ranked against them but substituted after they have been, and
         listing it would assert a four-way comparison that was never made — and,
         where a refill won, would put a cheaper also-ran above the winner.
+
+        It is not absent from the structured trace, though, which is a different
+        claim and #315's: a fill carries a `Substitution` on its row saying what
+        it stood in for and at what price. The prose says the same thing, and the
+        prose is not what the oracle reads.
         """
         commands: list[Command] = []
         funds = observation.funds or 0
@@ -1087,6 +1144,9 @@ class UtilityPlanner:
                 because=_stood_in(fill, fresh.id, fresh.price, refill, fielded),
                 scored=scored,
                 candidates=candidates[:TRACE_CANDIDATES],
+                # The Purchase that won the ranking, named in `candidates`' own
+                # register so the displaced winner can be found among them.
+                substituted=Substitution(cost=fill.cost, instead_of=fresh.id, price=fresh.price),
             )
         elif fresh is not None:
             because = f"{fielded} Squads fielded"
@@ -1121,6 +1181,12 @@ class UtilityPlanner:
                 because=_fill_alone(self._spent_nothing(barred, funds, refills), fill, barred),
                 scored=scored,
                 candidates=candidates[:TRACE_CANDIDATES],
+                # Nothing was displaced here — the ranking produced no winner to
+                # displace — but the record is still written, because "the
+                # action taken is not in `candidates`" is the fact a mechanical
+                # reader needs, and it is as true of this branch as of the one
+                # above. `instead_of` unset is what says the ranking was empty.
+                substituted=Substitution(cost=fill.cost),
             )
         else:
             decision = Decision(
