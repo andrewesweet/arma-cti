@@ -22,8 +22,22 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from hypothesis import settings
+
 from cti_daemon import campaign, economy, loadouts, manifest
 from cti_daemon.outbox import Outbox
+
+# No wall-clock deadline on hypothesis tests (#306). The default 200 ms deadline
+# is a per-example bound on this box's scheduler, not on anything a property
+# here asserts: the suite runs `-n auto` on a machine that also carries other
+# agents' gates, and one descheduled example turns into DeadlineExceeded — or,
+# when the replay is fast again, hypothesis's own FlakyFailure ("Unreliable
+# test timings! ... consider turning deadlines off"). That is how the planner
+# determinism property red once in four full-suite runs while 5,500 isolated
+# examples of it found nothing. Every assertion in every property is untouched
+# by this; pathological slowness still fails the suite via its wall clock.
+settings.register_profile("arma-cti", deadline=None)
+settings.load_profile("arma-cti")
 
 if TYPE_CHECKING:
     from types import ModuleType
