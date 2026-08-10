@@ -15,11 +15,12 @@ mechanism, and describing it as one is the error #206 corrected on `just watch`.
 
 ## What this composes, and what it refuses to compose
 
-The **invariant half**: seat, worktree protocol, gate line, flake lines, landing protocol,
-paste rule. The **variable half** — the task statement, the scope boundary, the ground
-truth to read, and the reason for a non-default seat — is the orchestrator's, is the
-actual work of the turn, and is emitted here as a visible placeholder so that an unedited
-brief is obviously unfinished rather than plausibly complete.
+The **invariant half**: prior work already on `origin/main`, seat, worktree protocol, gate
+line, flake lines, landing protocol, paste rule. The **variable half** — the task
+statement, the scope boundary, the ground truth to read, and the reason for a non-default
+seat — is the orchestrator's, is the actual work of the turn, and is emitted here as a
+visible placeholder so that an unedited brief is obviously unfinished rather than
+plausibly complete.
 
 ## Inlined or cited, and why each line is where it is
 
@@ -160,6 +161,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 # The path insert above is what makes these importable.
 import admission
 import dispatch
+import ledger
 import readiness
 
 if TYPE_CHECKING:
@@ -328,6 +330,75 @@ def derive_gate(body: str, vocabulary: Sequence[str]) -> Gate:
             ),
         )
     return Gate(GATE_FAST, FAST_LINE, (f"named_paths={','.join(paths[:4])}", WHY_FAST))
+
+
+# ---------------------------------------------------- prior work already on origin/main
+
+PRIOR_WORK_REF: Final = admission.AUDIT_REF
+PRIOR_WORK_RULE: Final = (
+    "This report states what commit messages on `origin/main` reference; it does not decide whether"
+)
+
+
+class PriorWorkError(RuntimeError):
+    """Git could not answer the prior-work question; absence must not be inferred."""
+
+
+class PriorWork(NamedTuple):
+    """One commit on `origin/main` whose message references the issue."""
+
+    sha: str
+    date: str
+    subject: str
+
+    def line(self) -> str:
+        """Render the SHA, date and subject without interpreting the reference."""
+        return f"- `{self.sha[:7]}` {self.date} — {self.subject}"
+
+
+def prior_work(issue: int, repo: Path = REPO, ref: str = PRIOR_WORK_REF) -> tuple[PriorWork, ...]:
+    """Read commits on `ref` whose messages reference `issue`, newest first.
+
+    The parser is `ledger.referencing_commits`, which is also what admission's dispatch-
+    window check reaches. A failed `git log` is not an empty history: like `just handoff`'s
+    "I could not look" result, it refuses separately so a dispatcher cannot mistake an
+    unavailable check for evidence that no work landed.
+    """
+    try:
+        done = subprocess.run(  # noqa: S603
+            ["git", "log", f"--format={ledger.COMMIT_REFERENCE_FORMAT}", ref],  # noqa: S607
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError as missing:
+        message = f"`git log` could not inspect {ref}: `git` is not on PATH"
+        raise PriorWorkError(message) from missing
+    if done.returncode != 0:
+        detail = (done.stderr.strip() or f"exit {done.returncode}").splitlines()[0]
+        message = f"`git log` could not inspect {ref}: {detail}"
+        raise PriorWorkError(message)
+    return tuple(
+        PriorWork(commit.sha, commit.committed_at[:10], commit.subject)
+        for commit in ledger.referencing_commits(done.stdout, issue)
+    )
+
+
+def render_prior_work(issue: int, work: Sequence[PriorWork]) -> str:
+    """Render a prominent, non-judgmental report, or nothing when there are no hits."""
+    if not work:
+        return ""
+    return "\n".join(
+        (
+            f"## PRIOR WORK ALREADY ON `origin/main` — READ BEFORE DISPATCH ({len(work)})",
+            *(item.line() for item in work),
+            (
+                f"{PRIOR_WORK_RULE} #{issue} is done, superseded, or wants another lens."
+                " That judgement belongs to the dispatching seat."
+            ),
+        )
+    )
 
 
 # ----------------------------------------------------------------------- the flake lines
@@ -600,6 +671,8 @@ class Briefing(NamedTuple):
     # caller composing a brief about anything else says nothing about reserved surfaces,
     # which is the whole point: the section appears only where it applies.
     reserved: tuple[str, ...] = ()
+    # The other silent-default section: hits are made prominent; no hits add no heading.
+    prior_work: tuple[PriorWork, ...] = ()
 
 
 def compose(briefing: Briefing) -> str:
@@ -607,6 +680,11 @@ def compose(briefing: Briefing) -> str:
     issue, seat, tree, gate = briefing.issue, briefing.seat, briefing.tree, briefing.gate
     lines = [
         f"# Dispatch brief — #{issue}: {briefing.title}",
+    ]
+    prior = render_prior_work(issue, briefing.prior_work)
+    if prior:
+        lines += ["", *prior.splitlines()]
+    lines += [
         "",
         "## Task, scope, ground truth",
         _placeholder(TASK_PLACEHOLDER),
@@ -701,6 +779,11 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     )
     parser.add_argument("--out", default="", help="write the brief here instead of stdout")
     parser.add_argument(
+        "--prior-work",
+        action="store_true",
+        help="print only commits on origin/main that reference the issue",
+    )
+    parser.add_argument(
         "--base-sha",
         default="",
         help="the base SHA `just worktree add` printed, when it is not this box's",
@@ -714,10 +797,29 @@ def main(
     *,
     read_issue: Callable[[int, str], dict[str, object]] = fetch_issue,
     read_open: Callable[[str], list[dict[str, object]]] = fetch_open_issues,
+    read_prior: Callable[[int, Path], tuple[PriorWork, ...]] = prior_work,
     repo: Path = REPO,
 ) -> int:
     """Compose the brief, or refuse loudly. Never a silent empty brief."""
     args = parse_args(argv)
+    try:
+        work = read_prior(args.issue, repo)
+    except PriorWorkError as failure:
+        print(f"[brief] {failure}", file=sys.stderr)  # noqa: T201 — a CLI's refusal channel
+        print(  # noqa: T201 — a CLI's refusal channel
+            f"[brief] No report was produced for #{args.issue}. Nothing was written.",
+            file=sys.stderr,
+        )
+        return NO_RESULT
+
+    if args.prior_work:
+        report = render_prior_work(args.issue, work)
+        if args.out and report:
+            Path(args.out).expanduser().write_text(report + "\n", encoding="utf-8")
+        elif report:
+            print(report)  # noqa: T201 — the report IS this script's output
+        return 0
+
     try:
         document = read_issue(args.issue, args.repo)
         open_issues = read_open(args.repo)
@@ -741,6 +843,7 @@ def main(
             tree=resolve_tree(args.issue, args.base_sha, repo),
             assessment=readiness.assess(body),
             reserved=reserved_surfaces(named_paths(body)),
+            prior_work=work,
         )
     )
     if str(document.get("state") or "").upper() == "CLOSED":

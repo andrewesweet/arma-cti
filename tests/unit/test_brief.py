@@ -28,6 +28,8 @@ ones. A worktree path is the near-miss there, because every brief already quotes
 
 from __future__ import annotations
 
+import os
+import subprocess
 from typing import TYPE_CHECKING
 
 import pytest
@@ -62,6 +64,91 @@ IN_WORLD_UNDETERMINED = (149, 152, 172, 174, 175, 176)
 ELSEWHERE_UNDETERMINED = (224, 228, 243)
 
 VOCABULARY = brief.read_vocabulary(REPO)
+
+
+def run_git(repo: Path, *args: str, at: str = "") -> str:
+    """Run git in a scratch repository, optionally pinning the commit date."""
+    env = {**os.environ, "GIT_AUTHOR_DATE": at, "GIT_COMMITTER_DATE": at} if at else None
+    return subprocess.run(  # noqa: S603
+        ["git", *args],  # noqa: S607
+        cwd=repo,
+        check=True,
+        capture_output=True,
+        text=True,
+        env=env,
+    ).stdout.strip()
+
+
+def commit(repo: Path, subject: str, *, at: str) -> str:
+    """Land one dated commit on the scratch repository's `origin/main`."""
+    path = repo / f"{len(tuple(repo.iterdir()))}.txt"
+    path.write_text(subject, encoding="utf-8")
+    run_git(repo, "add", ".")
+    run_git(repo, "commit", "-qm", subject, at=at)
+    run_git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+    return run_git(repo, "rev-parse", "HEAD")
+
+
+@pytest.fixture
+def prior_work_repo(tmp_path: Path) -> Path:
+    """Build a repository whose main has reference forms and unrelated commits."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    run_git(repo, "init", "-q", "-b", "main")
+    run_git(repo, "config", "user.email", "t@example.invalid")
+    run_git(repo, "config", "user.name", "T")
+    commit(repo, "chore: no issue reference", at="2026-08-01T12:00:00+00:00")
+    commit(repo, "docs: refs form\n\nrefs #305", at="2026-08-02T12:00:00+00:00")
+    commit(repo, "docs: unrelated work", at="2026-08-03T12:00:00+00:00")
+    commit(repo, "fix: closing form\n\nCloses #305", at="2026-08-04T12:00:00+00:00")
+    commit(repo, "feat: squash form (#305)", at="2026-08-05T12:00:00+00:00")
+    commit(repo, "fix: fixes form\n\nfixes #305", at="2026-08-06T12:00:00+00:00")
+    commit(repo, "fix: resolves form\n\nresolves #305", at="2026-08-07T12:00:00+00:00")
+    commit(repo, "docs: adjacent issues\n\nrefs #30 and #3050", at="2026-08-08T12:00:00+00:00")
+    return repo
+
+
+# ---------------------------------------------------- prior work already on origin/main
+
+
+def test_prior_work_reads_every_supported_reference_form_and_skips_other_commits(
+    prior_work_repo: Path,
+) -> None:
+    work = brief.prior_work(305, prior_work_repo)
+    assert [item.subject for item in work] == [
+        "fix: resolves form",
+        "fix: fixes form",
+        "feat: squash form (#305)",
+        "fix: closing form",
+        "docs: refs form",
+    ]
+    assert [item.date for item in work] == [
+        "2026-08-07",
+        "2026-08-06",
+        "2026-08-05",
+        "2026-08-04",
+        "2026-08-02",
+    ]
+    assert "unrelated" not in " ".join(item.subject for item in work)
+
+
+def test_issue_number_boundaries_do_not_borrow_adjacent_references(
+    prior_work_repo: Path,
+) -> None:
+    assert brief.prior_work(3, prior_work_repo) == ()
+    subjects = [item.subject for item in brief.prior_work(305, prior_work_repo)]
+    assert "docs: adjacent issues" not in subjects
+
+
+def test_a_repository_without_a_reference_produces_no_report(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    run_git(repo, "init", "-q", "-b", "main")
+    run_git(repo, "config", "user.email", "t@example.invalid")
+    run_git(repo, "config", "user.name", "T")
+    commit(repo, "docs: unrelated work", at="2026-08-01T12:00:00+00:00")
+    assert brief.prior_work(305, repo) == ()
+    assert brief.render_prior_work(305, ()) == ""
 
 
 def gate_of(issue: int, corpus: Path) -> brief.Gate:
@@ -445,6 +532,26 @@ def test_the_brief_carries_the_landing_protocol_and_the_commit_trailer() -> None
     assert "paste its output verbatim" in rendered
 
 
+def test_prior_work_is_loud_and_states_without_interpreting() -> None:
+    work = (
+        brief.PriorWork(
+            sha="3d4e5630123456789",
+            date="2026-08-09",
+            subject="docs(routing): design backlog restriction removal",
+        ),
+    )
+    rendered = composed(prior_work=work)
+    assert "## PRIOR WORK ALREADY ON `origin/main` — READ BEFORE DISPATCH (1)" in rendered
+    assert "`3d4e563` 2026-08-09 — docs(routing): design backlog restriction removal" in rendered
+    assert "does not decide whether #251 is done, superseded, or wants another lens" in rendered
+
+
+def test_no_prior_work_adds_no_permanently_empty_section() -> None:
+    rendered = composed()
+    assert "PRIOR WORK" not in rendered
+    assert brief.PRIOR_WORK_RULE not in rendered
+
+
 def test_the_brief_carries_the_derived_gate_line_and_its_derivation() -> None:
     rendered = composed(gate=brief.derive_gate("addons/main/x.sqf", VOCABULARY))
     assert "## Gate: `just regress`" in rendered
@@ -682,6 +789,67 @@ def test_a_brief_with_no_out_flag_goes_to_stdout(capsys: pytest.CaptureFixture[s
     )
     assert code == 0
     assert "## Gate: `just fast`" in capsys.readouterr().out
+
+
+def test_prior_work_is_reachable_without_composing_a_brief(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    work = (brief.PriorWork("3d4e563f", "2026-08-09", "docs: the prior study"),)
+
+    def issue_read_must_not_run(_issue: int, _repo: str) -> dict[str, object]:
+        message = "standalone prior-work lookup read the issue"
+        raise AssertionError(message)
+
+    code = brief.main(
+        ["305", "--prior-work"],
+        read_issue=issue_read_must_not_run,
+        read_open=lambda _repo: [],
+        read_prior=lambda _issue, _repo: work,
+        repo=REPO,
+    )
+    captured = capsys.readouterr()
+    assert code == 0
+    assert "PRIOR WORK ALREADY" in captured.out
+    assert "# Dispatch brief" not in captured.out
+    assert captured.err == ""
+
+
+def test_a_standalone_lookup_with_no_prior_work_is_silent(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    code = brief.main(
+        ["305", "--prior-work"],
+        read_issue=lambda _issue, _repo: {},
+        read_open=lambda _repo: [],
+        read_prior=lambda _issue, _repo: (),
+        repo=REPO,
+    )
+    captured = capsys.readouterr()
+    assert code == 0
+    assert captured.out == ""
+    assert captured.err == ""
+
+
+def test_a_prior_work_lookup_that_could_not_run_refuses_loudly(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    with pytest.raises(brief.PriorWorkError, match="could not inspect origin/main"):
+        brief.prior_work(305, tmp_path)
+
+    def unreadable(_issue: int, _repo: Path) -> tuple[brief.PriorWork, ...]:
+        message = "git could not inspect origin/main"
+        raise brief.PriorWorkError(message)
+
+    code = brief.main(
+        ["305", "--prior-work"],
+        read_prior=unreadable,
+        repo=tmp_path,
+    )
+    captured = capsys.readouterr()
+    assert code == brief.NO_RESULT
+    assert captured.out == ""
+    assert "git could not inspect origin/main" in captured.err
+    assert "No report was produced" in captured.err
 
 
 def test_an_undetermined_gate_is_loud_on_stderr_as_well_as_in_the_brief(

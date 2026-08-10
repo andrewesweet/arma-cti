@@ -463,7 +463,7 @@ def test_undecidable_is_never_one_of_part_a_s_passing_states() -> None:
 # The strings a second implementation of the window tests would have to contain. Asserted
 # present in `ledger.py` as well as absent from `admission.py`, so a rename in the ledger
 # reds this guard rather than silently emptying it.
-LEDGER_ONLY = ("--ancestry-path", "planned_at", "started_at", "%H%x1f%cI%x1f%B%x1e")
+LEDGER_ONLY = ("--ancestry-path", "planned_at", "started_at", "%H%x1f%cI%x1f%s%x1f%B%x1e")
 
 
 def test_the_window_tests_live_only_in_the_ledger() -> None:

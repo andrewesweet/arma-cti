@@ -443,6 +443,15 @@ class EndState(NamedTuple):
         return {"class": self.class_, "reason": self.reason, "evidence": list(self.evidence)}
 
 
+class ReferencingCommit(NamedTuple):
+    """One commit whose message names the issue a caller asked about."""
+
+    sha: str
+    committed_at: str
+    subject: str
+    message: str
+
+
 class Landing(NamedTuple):
     """What git says about the dispatch's issue landing on `origin/main`.
 
@@ -865,11 +874,36 @@ def dispatch_start(plan: Mapping[str, Any], result: Mapping[str, Any] | None) ->
     return None
 
 
-# The landing query asks git for three fields per commit — the SHA, the committer date in
-# strict ISO 8601, and the whole message — separated by the two record characters no
-# commit message can carry.
-LANDING_FORMAT: Final = "%H%x1f%cI%x1f%B%x1e"
-LANDING_FIELDS: Final = 3
+# Both consumers ask git for the same four fields per commit — SHA, committer date in
+# strict ISO 8601, subject and whole message — separated by the two record characters no
+# commit message can carry. The dispatch-window audit needs the first, second and fourth;
+# `just brief`'s prior-work report also renders the subject. One parser keeps their issue
+# boundary and accepted commit-message forms identical (#305).
+COMMIT_REFERENCE_FORMAT: Final = "%H%x1f%cI%x1f%s%x1f%B%x1e"
+COMMIT_REFERENCE_FIELDS: Final = 4
+
+
+def issue_reference_pattern(issue: int) -> re.Pattern[str]:
+    """Match an issue reference without borrowing a prefix from another issue number."""
+    return re.compile(rf"(?<![\w#])#{issue}(?![0-9])")
+
+
+def referencing_commits(log: str, issue: int) -> tuple[ReferencingCommit, ...]:
+    """Select commits referencing `issue` from a log in `COMMIT_REFERENCE_FORMAT`.
+
+    This deliberately recognises the issue token rather than interpreting the verb around
+    it. The project's `refs #N`, GitHub closing keywords and a squash subject's `(#N)` all
+    carry the same reference; whether any one means the issue is complete is not git's
+    decision and is not this parser's.
+    """
+    pattern = issue_reference_pattern(issue)
+    found: list[ReferencingCommit] = []
+    for entry in log.split("\x1e"):
+        fields = entry.split("\x1f", COMMIT_REFERENCE_FIELDS - 1)
+        if len(fields) != COMMIT_REFERENCE_FIELDS or not pattern.search(fields[3]):
+            continue
+        found.append(ReferencingCommit(*(field.strip() for field in fields)))
+    return tuple(found)
 
 
 def _landing_preflight(repo: Path, base_sha: str, ref: str) -> Landing | None:
@@ -911,23 +945,23 @@ def landed(
     if since is None:
         return Landing(None, 0, "the dispatch record carries no start time")
     log = git(
-        "log", "--ancestry-path", f"--format={LANDING_FORMAT}", f"{base_sha}..{ref}", cwd=repo
+        "log",
+        "--ancestry-path",
+        f"--format={COMMIT_REFERENCE_FORMAT}",
+        f"{base_sha}..{ref}",
+        cwd=repo,
     )
     if not log.strip():
         return Landing(None, 0, f"nothing on {ref} descends from {base_sha[:8]}")
-    pattern = re.compile(rf"(?<![\w#])#{issue}(?![0-9])")
-    referencing = [
-        (fields[0].strip(), fields[1].strip())
-        for entry in log.split("\x1e")
-        if len(fields := entry.split("\x1f", LANDING_FIELDS - 1)) == LANDING_FIELDS
-        and pattern.search(fields[2])
-    ]
+    referencing = referencing_commits(log, issue)
     if not referencing:
         return Landing(
             None, 0, f"no commit on {ref} descending from {base_sha[:8]} references #{issue}"
         )
     floor = since.replace(microsecond=0)
-    matched = [sha for sha, when in referencing if datetime.fromisoformat(when) >= floor]
+    matched = [
+        commit.sha for commit in referencing if datetime.fromisoformat(commit.committed_at) >= floor
+    ]
     if not matched:
         return Landing(
             None,
