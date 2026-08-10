@@ -33,6 +33,17 @@ the reader can see what the gate covered. The gate's output is not captured at
 all: it streams to the caller, so `gate_red` hands back the gate's own words
 rather than this tool's summary of them.
 
+**The second gate is the corpus, and it runs after the first** (#302,
+`tools/corpus_gate.py`). A landing whose real diff reaches an in-world surface
+owes `just regress`, full corpus and no filter, and until now nothing read that
+obligation at landing time — `85dfb1b` landed 181 changed lines of the daemon's
+transport with no corpus run and was found three landings later. `--corpus`
+names the evidence and skips nothing: every claim it makes is checked against
+the pool's own record, so pointing it at the wrong run refuses. It sits *after*
+`just fast` deliberately, because the corpus costs a slot of the Arma tier and
+twenty minutes of it, and nobody should be sent there over a tree that fails
+ruff.
+
 Refusals are this recipe's own vocabulary, not the harness failure-class table:
 a landing is not a corpus verdict and must not borrow its class names. What it
 borrows is the discipline — a named, actionable refusal rather than an opaque
@@ -53,6 +64,10 @@ exit code.
     gate_red                `just fast` failed; its own output is above
     gate_blocked            the gate could not be run to completion. A check
                             that could not run is not a check that passed (#41)
+    corpus_owed             the diff reaches an in-world surface and no passing
+                            full-corpus run over this tree was named (#302)
+    corpus_not_pass         one was, and its worst class is not `pass`
+    corpus_check_unreadable the corpus rung could not run; fail closed
     not_fast_forward        the remote moved under the push
     merge_blocked_by_sandbox    the push landed, the ff-only merge did not run
     merge_not_fast_forward      the push landed, the main checkout cannot
@@ -84,6 +99,7 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 # enables, which is why the import below sits apart from the block above.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import corpus_gate
 import routing_policy
 from check_conflict_markers import Finding, find_in_tree
 from worktree import BASE, GitError, Preflight, Refusal, git, main_checkout, read_status
@@ -328,6 +344,18 @@ def classify_gate(path: Path, result: GateResult) -> Refusal | None:
     )
 
 
+def classify_corpus(finding: corpus_gate.Finding | None) -> Refusal | None:
+    """Turn the corpus rung's answer into this recipe's refusal vocabulary.
+
+    The decision is `tools/corpus_gate.py`'s and the words are its own; all this
+    does is hand them to the same `Refusal` every other rung refuses with, so a
+    reader meets one output shape rather than two.
+    """
+    if finding is None:
+        return None
+    return Refusal(finding.kind, finding.found, finding.action)
+
+
 def classify_push(code: int, stderr: str) -> Refusal | None:
     """Tell a lost race from any other push failure."""
     if code == 0:
@@ -479,6 +507,82 @@ def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, .
     return read, paths, ""
 
 
+def _commit_known(path: Path, sha: str) -> bool:
+    """Whether that commit resolves here at all, so a claim about it can be checked."""
+    if not sha:
+        return False
+    code, _stderr = _run(["git", "cat-file", "-e", f"{sha}^{{commit}}"], cwd=path)
+    return code == 0
+
+
+def _tree_difference(path: Path, sha: str) -> tuple[str, ...] | None:
+    """Every path that differs between that commit's tree and HEAD's.
+
+    A tree comparison rather than a range, deliberately: `just land` rebases, so the
+    commit a corpus ran over is not an ancestor of what gets pushed whenever a sibling
+    landed first. What the corpus rung has to know is whether the world it measured is
+    the world being pushed, and that is a question about trees.
+    """
+    try:
+        listed = git("diff", "--name-only", sha, "HEAD", cwd=path)
+    except GitError:
+        return None
+    return tuple(line.strip() for line in listed.splitlines() if line.strip())
+
+
+def corpus_finding(  # noqa: PLR0911 — a ladder of named refusals, one return per rung
+    path: Path,
+    read: routing_policy.ReadResult,
+    paths: tuple[str, ...] | None,
+    detail: str,
+    named: Path | None,
+) -> corpus_gate.Outcome:
+    """Assemble everything git can answer, then let `corpus_gate` decide.
+
+    The policy comes from fetched `origin/main` rather than from this tree, for
+    `_routing_inputs`' reason one rung along: a landing must not be able to widen
+    the surface list that judges it in the same diff.
+    """
+    if read.policy is None:
+        return corpus_gate.Outcome(corpus_gate.unreadable((f"policy={read.error}",)))
+    if paths is None:
+        return corpus_gate.Outcome(corpus_gate.unreadable((f"detail={detail}",)))
+    in_world = routing_policy.in_world_paths(read.policy, paths)
+    if not in_world:
+        return corpus_gate.Outcome(None)
+    if named is None:
+        return corpus_gate.Outcome(corpus_gate.owed_with_no_run(in_world), in_world)
+
+    document, why = corpus_gate.read_record(named)
+    if document is None:
+        return corpus_gate.Outcome(
+            corpus_gate.Finding(
+                corpus_gate.OWED, (f"corpus_run={named}", f"rejected=unreadable detail={why}")
+            ),
+            in_world,
+        )
+    sha = str(document.get("git_sha", ""))
+    known = _commit_known(path, sha)
+    since = _tree_difference(path, sha) if known else ()
+    if since is None:
+        return corpus_gate.Outcome(
+            corpus_gate.unreadable((f"corpus_run={named}", f"detail=git could not diff {sha}")),
+            in_world,
+        )
+    finding = corpus_gate.judge(
+        corpus_gate.Run(
+            path=named,
+            document=document,
+            sha=sha,
+            known=known,
+            moved=routing_policy.in_world_paths(read.policy, since),
+            dirty=corpus_gate.recorded_dirty(document),
+        ),
+        corpus_gate.full_corpus(path),
+    )
+    return corpus_gate.Outcome(finding, in_world)
+
+
 # ---------------------------------------------------------------------- the run
 
 
@@ -500,13 +604,14 @@ def _merge_needed(here: Path, main: Path) -> bool:
     return branch != "main"
 
 
-def land(
+def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     root: Path,
     here: Path,
     *,
     gate: Gate = run_gate,
     dry_run: bool = False,
     lane: str = "claude-native",
+    corpus: Path | None = None,
 ) -> Report:
     """Run the whole protocol, or refuse by name at the first rung that says no."""
     status = read_status(git("status", "--porcelain", cwd=here))
@@ -528,11 +633,11 @@ def land(
         return Report.refused(idle)
 
     if dry_run:
-        return _dry_run(root, here, ahead, incoming)
+        return _dry_run(root, here, ahead, incoming, corpus)
 
     lines = [f"worktree={here}", f"commits={ahead}"]
     if ahead:
-        moved = _rebase_and_gate(here, incoming, gate, lines, lane)
+        moved = _rebase_and_gate(here, incoming, gate, lines, lane, corpus)
         if moved is not None:
             return moved
     else:
@@ -547,10 +652,10 @@ def land(
     return _merge(root, here, pushed, lines)
 
 
-def _rebase_and_gate(
-    here: Path, incoming: int, gate: Gate, lines: list[str], lane: str
+def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return, one input apiece
+    here: Path, incoming: int, gate: Gate, lines: list[str], lane: str, corpus: Path | None
 ) -> Report | None:
-    """Rebase onto `origin/main`, then gate the result. Either may refuse."""
+    """Rebase onto `origin/main`, then gate the result. Any rung may refuse."""
     code, stderr = _run(["git", "rebase", BASE], cwd=here)
     if code is None:
         return Report.refused(
@@ -582,6 +687,14 @@ def _rebase_and_gate(
     if red is not None:
         return Report.refused(red)
     lines.append(f"gate=green ({' '.join(GATE)})")
+
+    # After the gate on purpose: the corpus costs a slot of the Arma tier, and a tree
+    # that cannot pass `just fast` has no business being sent there (#302).
+    outcome = corpus_finding(here, policy, paths, detail, corpus)
+    owed = classify_corpus(outcome.finding)
+    if owed is not None:
+        return Report.refused(owed)
+    lines.append(outcome.line(corpus))
     return None
 
 
@@ -620,7 +733,7 @@ def _merge(root: Path, here: Path, pushed: str, lines: list[str]) -> Report:
     return Report((("ok=landed"), *lines), 0)
 
 
-def _dry_run(root: Path, here: Path, ahead: int, incoming: int) -> Report:
+def _dry_run(root: Path, here: Path, ahead: int, incoming: int, corpus: Path | None) -> Report:
     """Print the plan and change nothing. Not a landing, and it says so."""
     plan = [
         f"git rebase {BASE}",
@@ -638,27 +751,63 @@ def _dry_run(root: Path, here: Path, ahead: int, incoming: int) -> Report:
             f"commits={ahead}",
             f"incoming={incoming} new commits on {BASE}",
             *[f"would_run={step}" for step in plan],
+            *_corpus_plan(here, corpus),
             "This ran nothing. `just land` runs it, gate included.",
         ),
         0,
     )
 
 
+def _corpus_plan(here: Path, corpus: Path | None) -> tuple[str, ...]:
+    """Say whether this diff owes the corpus, computed the same way the rung computes it.
+
+    Worth saying here rather than only at the refusal, because the whole cost of the
+    corpus is a slot of the Arma tier and knowing before the rebase is what lets an
+    agent hand back instead of running a gate it cannot clear. The pre-rebase diff is
+    what a dry run can see, and it is stated as that.
+    """
+    read, paths, detail = _routing_inputs(here)
+    outcome = corpus_finding(here, read, paths, detail, corpus)
+    if outcome.finding is not None and outcome.finding.kind == corpus_gate.UNREADABLE:
+        return (f"corpus=unknown detail={' '.join(outcome.finding.found)}",)
+    if not outcome.in_world:
+        return ("corpus=not_owed reason=no_in_world_path (diff as it stands, before the rebase)",)
+    listed = " ".join(outcome.in_world[:HOW_MANY_SHOWN])
+    owed = f"corpus=owed in_world={listed}"
+    if outcome.finding is None:
+        return (owed, f"corpus_run={corpus} would_clear=yes")
+    why = [line for line in outcome.finding.found if not line.startswith("in_world=")]
+    return (owed, f"corpus_run={corpus or 'none'} would_clear=no", *(f"why={line}" for line in why))
+
+
 # ------------------------------------------------------------------ invocation
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """One optional flag, and deliberately no others.
+    """Two optional flags, and deliberately no others.
 
     There is no `--no-gate`, no `--force`, and no way to name the refspec or the
     remote: those are #213's criterion 2 and the `git push origin main` trap,
     and the surface that cannot express them is the mechanism.
+
+    `--corpus` is not an exception to that. It **names evidence**; it does not
+    excuse the check. Every claim a named pool makes is verified against the
+    pool's own record — the right corpus, whole, over this landing's history,
+    green — so pointing it at a convenient green run refuses rather than passes,
+    and there is no `--no-corpus` to reach for instead (#302).
     """
     parser = argparse.ArgumentParser(prog="just land", description="Land this worktree on main.")
     parser.add_argument(
         "--dry-run",
         action="store_true",
         help="print the plan and run nothing at all",
+    )
+    parser.add_argument(
+        "--corpus",
+        type=Path,
+        default=None,
+        metavar="POOL",
+        help="the pool evidence directory of the full `just regress` run over this tree",
     )
     return parser.parse_args(argv)
 
@@ -674,6 +823,7 @@ def main(argv: list[str] | None = None) -> int:
             here,
             dry_run=args.dry_run,
             lane=os.environ.get("CTI_DISPATCH_LANE", "claude-native"),
+            corpus=args.corpus,
         )
     except GitError as failure:
         report = Report.refused(

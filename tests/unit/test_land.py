@@ -20,6 +20,7 @@ note: test the ladder, not the network.
 
 from __future__ import annotations
 
+import json
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -31,10 +32,17 @@ from conftest import REPO, load_tool
 # and registered under its own name for that import to find.
 worktree = load_tool("worktree")
 check_conflict_markers = load_tool("check_conflict_markers")
+pool_merge = load_tool("pool_merge")
+pool_comment = load_tool("pool_comment")
+corpus_gate = load_tool("corpus_gate")
 land = load_tool("land")
 routing_policy = load_tool("routing_policy")
 
 POLICY = REPO / routing_policy.POLICY_RELATIVE
+
+# The fixture repository's own corpus: two probes, so "the whole corpus" is a claim a
+# pool record can fail to make rather than a vacuous one.
+FIXTURE_PROBES = ("alpha", "beta")
 
 _CLEAN = worktree.Preflight((), ())
 _HERE = Path("/home/a/repo/.claude/worktrees/issue-213")
@@ -238,6 +246,33 @@ def test_native_landings_do_not_need_the_foreign_routing_gate() -> None:
     assert land.classify_routing(read, None, "claude-native") is None
 
 
+# ------------------------------------------------------------------ the corpus rung
+
+
+def test_a_corpus_rung_with_nothing_to_say_does_not_refuse() -> None:
+    assert land.classify_corpus(None) is None
+
+
+@pytest.mark.parametrize("kind", [corpus_gate.OWED, corpus_gate.NOT_PASS, corpus_gate.UNREADABLE])
+def test_every_corpus_finding_becomes_a_refusal_in_this_recipes_own_vocabulary(kind: str) -> None:
+    refusal = land.classify_corpus(corpus_gate.Finding(kind, ("evidence=here",)))
+    assert _kind(refusal) == kind
+    assert "evidence=here" in _text(refusal)
+    assert _text(refusal).splitlines()[-1].startswith("action=")
+
+
+def test_there_is_no_flag_that_skips_the_corpus_check() -> None:
+    """#302: `--corpus` names evidence and is verified; nothing excuses the check."""
+    for bypass in ("--no-corpus", "--skip-corpus", "--corpus-owed", "--force-corpus"):
+        with pytest.raises(SystemExit):
+            land.parse_args([bypass])
+
+
+def test_the_corpus_flag_takes_a_pool_path_and_defaults_to_naming_nothing() -> None:
+    assert land.parse_args([]).corpus is None
+    assert land.parse_args(["--corpus", "/runs/p"]).corpus == Path("/runs/p")
+
+
 # ------------------------------------------------------------------- the push
 
 
@@ -368,6 +403,9 @@ def repo(tmp_path: Path) -> tuple[Path, Path, Path]:
         routing_policy.POLICY_RELATIVE.as_posix(),
         POLICY.read_text(encoding="utf-8"),
     )
+    # A corpus of two, so "the whole corpus" is a claim a pool record can fail to make.
+    for probe in FIXTURE_PROBES:
+        _commit(main, f"spike/probes/{probe}.sqf", f"// probe: {probe}\n")
     _git("push", "origin", "main", cwd=main)
 
     here = main / ".claude" / "worktrees" / "issue-213"
@@ -620,3 +658,206 @@ def test_a_dry_run_runs_nothing_and_says_so(repo: tuple[Path, Path, Path]) -> No
     assert gate.calls == []
     assert _tip(origin) == before
     assert any(line == "would_run=git push origin HEAD:main" for line in report.lines)
+
+
+# ------------------------------------------ the corpus rung, against a real repository
+
+
+def _write_pool(
+    at: Path,
+    *,
+    sha: str,
+    probes: tuple[str, ...] = FIXTURE_PROBES,
+    worst: str = "pass",
+    class_: str = "pass",
+) -> Path:
+    """Write the pool record a finished `just regress` leaves, and return its directory."""
+    pool = at / "20260809T101500Z-pool"
+    pool.mkdir(parents=True)
+    document = {
+        "started_at": "20260809T101500Z",
+        "git_sha": sha,
+        "slots": [0, 1, 2],
+        "worst_class": worst,
+        "wall_secs": 900,
+        "stopped_early": "",
+        "not_run": [],
+        "verdicts": [
+            {"probe": probe, "class": class_, "slot": "0", "elapsed_secs": 12, "evidence": ""}
+            for probe in probes
+        ],
+    }
+    (pool / "pool.json").write_text(json.dumps(document, indent=2), encoding="utf-8")
+    return pool
+
+
+def test_an_in_world_landing_with_no_corpus_run_refuses_by_name_and_pushes_nothing(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """#302's incident, at the rung that now stands in front of it."""
+    origin, main, here = repo
+    before = _tip(origin)
+    _commit(here, "src/cti_daemon/transport.py", "181 changed lines\n")
+    gate = _Gate()
+
+    report = land.land(main, here, gate=gate)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=corpus_owed"
+    assert "in_world=src/cti_daemon/transport.py" in report.lines
+    assert _tip(origin) == before
+    # The cheap gate ran first: nobody is sent to a slot of the Arma tier over a red ruff.
+    assert gate.calls == ["feat: src/cti_daemon/transport.py"]
+
+
+def test_a_landing_that_reaches_no_in_world_surface_does_not_owe_the_corpus(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    origin, main, here = repo
+    _commit(here, "tools/worker.py", "tooling\n")
+
+    report = land.land(main, here, gate=_Gate())
+
+    assert report.code == 0
+    assert "corpus=not_owed reason=no_in_world_path" in report.lines
+    assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
+
+
+def test_a_whole_green_run_over_this_head_clears_the_in_world_landing(
+    repo: tuple[Path, Path, Path], tmp_path: Path
+) -> None:
+    origin, main, here = repo
+    _commit(here, "addons/main/functions/fn_effectApply.sqf", "in-world work\n")
+    pool = _write_pool(tmp_path, sha=_git("rev-parse", "HEAD", cwd=here).strip())
+
+    report = land.land(main, here, gate=_Gate(), corpus=pool)
+
+    assert report.code == 0
+    assert any(line.startswith("corpus=cleared") for line in report.lines)
+    assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
+
+
+def test_a_run_naming_a_commit_this_repository_has_never_seen_leaves_it_owed(
+    repo: tuple[Path, Path, Path], tmp_path: Path
+) -> None:
+    """Naming a convenient green pool is not a bypass: the rung checks whose tree it measured."""
+    origin, main, here = repo
+    before = _tip(origin)
+    _commit(here, "addons/main/functions/fn_effectApply.sqf", "in-world work\n")
+    pool = _write_pool(tmp_path, sha="0" * 40)
+
+    report = land.land(main, here, gate=_Gate(), corpus=pool)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=corpus_owed"
+    assert "rejected=commit_not_in_this_repository" in report.lines
+    assert _tip(origin) == before
+
+
+def test_a_rebase_over_a_sibling_that_touched_nothing_in_world_keeps_the_run_valid(
+    repo: tuple[Path, Path, Path], tmp_path: Path
+) -> None:
+    """Why coverage is a tree comparison and not ancestry.
+
+    `just land` rebases, so the commit a corpus ran over is orphaned by every landing
+    that follows a sibling's. An ancestry rule would make this gate unclearable in
+    ordinary traffic; what has to hold is that the world measured is the world pushed.
+    """
+    origin, main, here = repo
+    _commit(here, "addons/main/functions/fn_effectApply.sqf", "in-world work\n")
+    pool = _write_pool(tmp_path, sha=_git("rev-parse", "HEAD", cwd=here).strip())
+    _commit(main, "tools/sibling.py", "somebody else's tooling\n")
+    _git("push", "origin", "main", cwd=main)
+
+    report = land.land(main, here, gate=_Gate(), corpus=pool)
+
+    assert report.code == 0
+    assert "rebase=replayed onto 1 new commits" in report.lines
+    assert any(line.startswith("corpus=cleared") for line in report.lines)
+    assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
+
+
+def test_a_filtered_run_leaves_the_corpus_owed_against_the_trees_own_probe_list(
+    repo: tuple[Path, Path, Path], tmp_path: Path
+) -> None:
+    origin, main, here = repo
+    before = _tip(origin)
+    _commit(here, "missions/cti.Stratis/init.sqf", "in-world work\n")
+    pool = _write_pool(tmp_path, sha=_git("rev-parse", "HEAD", cwd=here).strip(), probes=("alpha",))
+
+    report = land.land(main, here, gate=_Gate(), corpus=pool)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=corpus_owed"
+    assert "missing=beta" in report.lines
+    assert _tip(origin) == before
+
+
+def test_a_red_run_over_this_head_refuses_apart_from_a_missing_one(
+    repo: tuple[Path, Path, Path], tmp_path: Path
+) -> None:
+    origin, main, here = repo
+    before = _tip(origin)
+    _commit(here, "extension/src/lib.rs", "in-world work\n")
+    pool = _write_pool(
+        tmp_path,
+        sha=_git("rev-parse", "HEAD", cwd=here).strip(),
+        worst="assertion_failed",
+        class_="assertion_failed",
+    )
+
+    report = land.land(main, here, gate=_Gate(), corpus=pool)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=corpus_not_pass"
+    assert "corpus_class=assertion_failed" in report.lines
+    assert _tip(origin) == before
+
+
+def test_a_run_superseded_by_someone_elses_in_world_commit_no_longer_clears(
+    repo: tuple[Path, Path, Path], tmp_path: Path
+) -> None:
+    """The rebase replayed this work over a tree the corpus never saw."""
+    origin, main, here = repo
+    before = _tip(origin)
+    _commit(here, "addons/main/functions/fn_effectApply.sqf", "in-world work\n")
+    pool = _write_pool(tmp_path, sha=_git("rev-parse", "HEAD", cwd=here).strip())
+    _commit(main, "src/cti_daemon/outbox.py", "somebody else's in-world change\n")
+    _git("push", "origin", "main", cwd=main)
+
+    report = land.land(main, here, gate=_Gate(), corpus=pool)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=corpus_owed"
+    assert "rejected=superseded" in report.lines
+    assert "changed_since=src/cti_daemon/outbox.py" in report.lines
+    assert _tip(origin) != before
+
+
+def test_a_pool_directory_that_never_got_its_merge_is_not_a_result(
+    repo: tuple[Path, Path, Path], tmp_path: Path
+) -> None:
+    """ADR-0022, at the landing gate: a run that died before its merge clears nothing."""
+    _origin, main, here = repo
+    _commit(here, "addons/main/functions/fn_effectApply.sqf", "in-world work\n")
+    dead = tmp_path / "20260809T101500Z-pool"
+    dead.mkdir()
+
+    report = land.land(main, here, gate=_Gate(), corpus=dead)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=corpus_owed"
+    assert any("rejected=unreadable" in line for line in report.lines)
+
+
+def test_a_dry_run_says_whether_the_corpus_is_owed_before_anything_is_spent(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    _origin, main, here = repo
+    _commit(here, "src/cti_daemon/protocol.py", "in-world work\n")
+
+    report = land.land(main, here, gate=_Gate(), dry_run=True, corpus=None)
+
+    assert report.code == 0
+    assert any(line.startswith("corpus=owed") for line in report.lines)
+    assert any("would_clear=no" in line for line in report.lines)

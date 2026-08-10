@@ -145,11 +145,13 @@ sys.path.insert(0, str(Path(__file__).parent))
 # fails if a second implementation of either appears here (#252). Neither imports this
 # module, so there is no cycle to break. `queue_policy` carries the freeze the
 # orchestration-seat trial's first criterion reads, and it imports only `otel_event`,
-# so the cycle argument holds for it too (#260).
+# so the cycle argument holds for it too (#260). `routing_policy` carries the in-world
+# surface list this module's cross-check reads and imports nothing of ours at all (#302).
 import ledger
 import otel_event
 import pool_merge
 import queue_policy
+import routing_policy
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -642,23 +644,31 @@ def _outside(record: Record, bar: str, state: str, reason: str) -> Standing:
 # The in-world surfaces, from CLAUDE.md's `just regress` row and docs/regression-tier.md's
 # cost-control section. The daemon's world-facing half is named there as "anything that
 # builds, validates, serialises or hands over what crosses the extension wire — the port's
-# dispatch and refusals, the outbox, the command/effect codec", which is these modules.
+# dispatch and refusals, the outbox, the command/effect codec", which is those modules.
 #
-# This list is used in one direction only: to refuse a landing that touched one of these
-# while waiving criterion 3. It is never read as "this landing touched nothing, so the
-# corpus was not needed" — that judgement stays the recorder's, because a list of paths
-# cannot know what a change means.
-IN_WORLD_PREFIXES: Final = (
-    "addons/",
-    "missions/",
-    "extension/",
-    "src/cti_daemon/port.py",
-    "src/cti_daemon/outbox.py",
-    "src/cti_daemon/commands.py",
-    "src/cti_daemon/protocol.py",
-    "src/cti_daemon/transport.py",
-    "src/cti_daemon/manifest.py",
-)
+# **Read, not written.** The list itself is class 5 of the routing policy since #302,
+# because `just land`'s corpus rung needs the same answer out of fetched `origin/main` —
+# where only data can be read — and because a second copy here would be the third, after
+# `tools/brief.py`'s gate prediction. An unreadable policy raises rather than defaults:
+# this module would otherwise compute "nothing is in-world" and waive the very criterion
+# the list exists to protect.
+#
+# It is used in one direction only: to refuse a landing that touched one of these while
+# waiving criterion 3. It is never read as "this landing touched nothing, so the corpus
+# was not needed" — that judgement stays the recorder's, because a list of paths cannot
+# know what a change means.
+REPO: Final = Path(__file__).resolve().parents[1]
+
+
+def _in_world_prefixes() -> tuple[str, ...]:
+    """Read the one authority once, at import, and fail loudly rather than guess."""
+    read = routing_policy.read_policy(REPO / routing_policy.POLICY_RELATIVE)
+    if read.policy is None:
+        raise routing_policy.PolicyError(read.error)
+    return routing_policy.in_world_prefixes(read.policy)
+
+
+IN_WORLD_PREFIXES: Final = _in_world_prefixes()
 
 # The globs `.claude/hooks/protect-gated-paths.py` denies writes to. A landing carrying one
 # of these did something the hooks exist to prevent, so criterion 4 cannot be met on it.

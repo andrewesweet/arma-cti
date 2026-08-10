@@ -304,8 +304,9 @@ worktree *args:
 # same way every time — #209 measured 220 hand calls doing it across 117 of 214
 # agents, and its documented traps exist because agents kept falling into them.
 #
-#   just land              the whole protocol, gate included
-#   just land --dry-run    the plan, having run nothing at all
+#   just land                    the whole protocol, gate included
+#   just land --corpus <pool>    name the full `just regress` run an in-world diff owes
+#   just land --dry-run          the plan, having run nothing at all
 #
 # Three things it does that prose could not. The refspec is a constant no
 # argument reaches, so `git push origin main` — which pushes the local `main`
@@ -324,12 +325,25 @@ worktree *args:
 # therefore distinct from dispatch's issue-declaration advisory; an unreadable
 # policy or diff refuses closed and nothing is pushed (#266).
 #
+# The corpus is the second gate, and it runs after the first (#302). A landing
+# whose real diff reaches an in-world surface — class 5 of the same routing
+# policy, the one authority for that list — refuses `corpus_owed` unless
+# `--corpus <pool>` names a `just regress` run that is whole, over a tree whose
+# in-world surfaces match this one's, taken on a clean tree and green. A run
+# that is red or stopped is the separate `corpus_not_pass`, carrying the class
+# for the failure-class table rather than an interpretation of it. `--corpus`
+# names evidence and excuses nothing: every claim it makes is checked, so there
+# is no `--no-corpus` and no way to point it at a convenient green pool. Nothing
+# read that obligation at landing time until now, which is how 85dfb1b landed
+# 181 changed lines of the daemon's transport with no corpus run at all.
+#
 # Refusals are named, each says what was found and what to do, and the exit code
 # separates the two kinds: 1 is nothing landed (dirty_tree, nothing_to_land,
-# rebase_conflict, gate_red, gate_blocked, not_fast_forward, git_failed), 2 is
-# the work IS on origin/main and a step is outstanding
-# (merge_blocked_by_sandbox, merge_not_fast_forward). Nothing here resolves,
-# aborts, resets or tidies on a refusal path.
+# rebase_conflict, gate_red, gate_blocked, corpus_owed, corpus_not_pass,
+# corpus_check_unreadable, not_fast_forward, git_failed), 2 is the work IS on
+# origin/main and a step is outstanding (merge_blocked_by_sandbox,
+# merge_not_fast_forward). Nothing here resolves, aborts, resets or tidies on a
+# refusal path.
 land *args:
     uv run python tools/land.py {{ args }}
 

@@ -47,6 +47,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   text for the orchestrator to transcribe rather than to attempt the edit or route around it. The
   measurement and the routing consequence are in `docs/multi-provider-dispatch.md` (#294).
 
+- **`just land` refuses `corpus_owed` when the diff reaches an in-world surface.** The obligation
+  was stated in `AGENTS.md`, quoted in the dispatch's own brief, and still broken: `85dfb1b` landed
+  181 changed lines of `src/cti_daemon/transport.py` with no `just regress` run, found three
+  landings later. Nothing read the rule at landing time; now the landing does, off the real diff
+  against `origin/main` rather than off the issue body.
+
+  A run clears the landing only if it is about the landing: whole corpus (a filtered run and a probe
+  left unrun both count as gaps), taken over a tree whose in-world surfaces match the one being
+  pushed, on a clean tree, and green. Coverage is a tree comparison rather than commit ancestry,
+  because `just land` rebases — an ancestry rule would make the gate unclearable whenever a sibling
+  lands first, while a tree comparison still refuses a rebase over somebody else's in-world commit.
+
+  A run that is red or stopped is the separate `corpus_not_pass`, which quotes the pool's own class
+  for the failure-class table to answer. It is deliberately not called `corpus_red`: an
+  `infra_unavailable` pool is a stop, not a result. `corpus_check_unreadable` is the fail-closed
+  third, in `gate_blocked`'s tradition.
+
+  `--corpus <pool>` names the evidence and excuses nothing — every claim it makes is verified
+  against the pool's own record, so there is no `--no-corpus` and no way to point it at a
+  convenient green run. `just land --dry-run` now says whether the corpus is owed before any of it
+  is spent, since a dispatched session cannot run the corpus and needs to know that early (#302).
+
 - **Five profiles the retro ruling names but the registry lacked**: `opus-max`, `fable-medium`,
   `fable-xhigh`, `fable-max` and `codex-sol-max`. Verified against the runners rather than assumed —
   `claude --effort` accepts `low medium high xhigh max`, and a live `codex exec -c
@@ -83,6 +105,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   seat, not a lane on a seat, so a newly registered foreign profile is a dispatchable route with no
   admission record until it is listed. `tests/unit/test_admission.py` asserts that equivalence
   against the dispatch registry and is what caught the omission (#300).
+
+- **The in-world surface list has one authority: class 5 of `config/dispatch-routing-policy.json`.**
+  It had two homes and was about to have three. `tools/admission.py`'s `IN_WORLD_PREFIXES` — which
+  `tools/brief.py`'s gate prediction also reads — is now a read of that row rather than a copy of
+  it, and an unreadable policy raises rather than defaulting to an empty list, because an empty list
+  reads as "nothing is in-world" and would waive the criterion it exists to protect. The landing
+  rung reads the same row out of fetched `origin/main`, so a diff cannot widen the list that judges
+  it. `parse_policy` now refuses a document whose class 5 carries no landing prefixes (#302).
+
 ### Changed
 
 - **Retros run every five completed issues again, and may be conducted on `codex-sol-xhigh`.**

@@ -4,6 +4,14 @@ An issue body only declares the expected surface, so dispatch is an advisory rea
 though a match refuses. Landing reads the real diff and is the enforcing gate. This is
 separate from queue policy: queue state decides whether work may start now; this file
 decides whether a class may leave Claude under ADR-0061 and #258.
+
+Since #302 the document carries a second job. Class 5's `landing_path_prefixes` is the
+**one authority** for what an in-world surface is: `just land`'s corpus rung, the
+admission cross-check in `tools/admission.py` and the gate prediction in `tools/brief.py`
+all read it from here rather than each holding a list. It lives in data rather than in
+Python because `just land` reads it out of fetched `origin/main` — a candidate diff must
+not be able to widen the list that judges it — and because three copies of a path list
+rot, which is what #302 was filed about.
 """
 
 from __future__ import annotations
@@ -11,9 +19,19 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Final, NamedTuple
+from typing import TYPE_CHECKING, Final, NamedTuple
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
 POLICY_RELATIVE: Final = Path("config/dispatch-routing-policy.json")
+
+# The class that carries the in-world surfaces. Looked up by **id**, because the id table
+# is already validated as the ordered 1..7 below and is therefore the stable handle; the
+# name is what the row is called today and is asserted against the id in
+# `tests/unit/test_corpus_gate.py` rather than relied on here.
+IN_WORLD_CLASS_ID: Final = 5
+IN_WORLD_CLASS: Final = "in_world_landings"
 
 
 class Route(NamedTuple):
@@ -97,6 +115,10 @@ STANDING_ERROR: Final = (
 CLASSES_LIST_ERROR: Final = "classes must be a list"
 CLASS_IDS_ERROR: Final = "classes must be the ordered table 1..7"
 CLASS_NAMES_ERROR: Final = "class names must be unique"
+IN_WORLD_ERROR: Final = (
+    f"class {IN_WORLD_CLASS_ID} must carry landing_path_prefixes — it is the one authority"
+    " for what an in-world surface is, and three readers depend on it (#302)"
+)
 REMEDY_ERROR: Final = "every class must name its remedy"
 ISSUE_EXCEPTION_ERROR: Final = "each issue exception must be an object"
 ISSUE_CLASSES_ERROR: Final = "issue exception classes must be integers"
@@ -148,6 +170,12 @@ def _rules(document: dict[object, object]) -> tuple[Rule, ...]:
         raise PolicyError(CLASS_NAMES_ERROR)
     if any(not rule.remedy for rule in rules):
         raise PolicyError(REMEDY_ERROR)
+    # Validated on parse rather than at each reader, so a policy that emptied the in-world
+    # class cannot govern silently: the landing rung would then compute "nothing is
+    # in-world" and let every in-world diff through, which is #302's own defect wearing
+    # the fix's clothes. The index is safe because the ids were just proven to be 1..7.
+    if not rules[IN_WORLD_CLASS_ID - 1].landing_path_prefixes:
+        raise PolicyError(IN_WORLD_ERROR)
     return rules
 
 
@@ -205,8 +233,29 @@ def read_policy(path: Path) -> ReadResult:
         return ReadResult(None, f"{path}: {error}")
 
 
-def _path_matches(path: str, prefix: str) -> bool:
+def path_matches(path: str, prefix: str) -> bool:
+    """Match one diff path against one prefix: a directory prefix, or an exact file."""
     return path.startswith(prefix) if prefix.endswith("/") else path == prefix
+
+
+def in_world_prefixes(policy: Policy) -> tuple[str, ...]:
+    """Return the in-world surfaces, off the one class that carries them.
+
+    `parse_policy` has already proven the row exists and is not empty, so this
+    cannot hand back a list that would read as "nothing is in-world".
+    """
+    return policy.rules[IN_WORLD_CLASS_ID - 1].landing_path_prefixes
+
+
+def in_world_paths(policy: Policy, paths: Iterable[str]) -> tuple[str, ...]:
+    """Name every in-world surface these paths reach, empty when they reach none.
+
+    The filtering half of the one authority. `landing_match` answers the same
+    question for the routing gate and this answers it for the corpus rung; both
+    read the same row and the same `path_matches`, so they cannot disagree.
+    """
+    prefixes = in_world_prefixes(policy)
+    return tuple(path for path in paths if any(path_matches(path, p) for p in prefixes))
 
 
 def issue_match(rule: Rule, body: str, seat: str) -> Match | None:
@@ -227,7 +276,7 @@ def landing_match(rule: Rule, paths: tuple[str, ...]) -> Match | None:
     evidence = tuple(
         f"path={path}"
         for path in paths
-        if any(_path_matches(path, prefix) for prefix in rule.landing_path_prefixes)
+        if any(path_matches(path, prefix) for prefix in rule.landing_path_prefixes)
     )
     return Match(rule, evidence) if evidence else None
 
