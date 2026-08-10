@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`docs/research/measuring-the-keep-on-claude-restrictions.md`**, the **zai second lens** on #296
+  (ADR-0061 Decision 3, provider diversity). Independently classifies the same fourteen
+  `gated_semantic_surfaces` issues and reaches the same four-kind split — semantic authorship,
+  independent judging, permission, and reference noise — that the codex lens did, so the split is in
+  the issues rather than in either lane's priors. Adds what the codex lane could not: the zai
+  executor-capability row measured first-hand (zai runs `just`-recipe gates including `just fast` but
+  is refused bare `uv run python`, `python3` and `grep`), a *different* gap from codex's, which
+  decides which lane can be a detached-corpus finisher. Keeps `6:gates_themselves` closed, seconds the
+  codex v2 policy shape, and refines `run_just_fast` to a per-`(lane, profile)` fact. Nothing in the
+  routing policy is landed; every recommendation is quoted for the human's gate (#296).
+
 - **`/interlocutor`, the human interface seat**, now reachable: the two files ADR-0068 designed —
   `.claude/agents/cti-interlocutor.md` and `.claude/skills/interlocutor/SKILL.md`, both opus/xhigh —
   land verbatim as #255 published them. They could not land from the dispatch that wrote them,
@@ -16,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   by hand. `AGENTS.md` has listed the command since `275da82`; until now it named a command that
   missed. Note the harness enumerates `.claude/agents/` once at session start, so both become
   available only in sessions started after this lands (#255, ADR-0068).
-
 - **Five profiles the retro ruling names but the registry lacked**: `opus-max`, `fable-medium`,
   `fable-xhigh`, `fable-max` and `codex-sol-max`. Verified against the runners rather than assumed —
   `claude --effort` accepts `low medium high xhigh max`, and a live `codex exec -c
