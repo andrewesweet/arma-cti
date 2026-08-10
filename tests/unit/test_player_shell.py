@@ -383,8 +383,12 @@ def test_the_principal_rule_gained_no_branch_for_the_composition_carrying_form()
     # refusal has to come from the existing "anything that is not `reinforce`"
     # rule and not from a rule naming this Command.
     source = inspect.getsource(port.CommandPort._principal_refusal)  # noqa: SLF001 — the subject
+    # The docstring is excluded rather than scanned: prose there may legitimately
+    # name the Command, and what must not exist is a *branch* on it.
+    _before, docstring, body = source.split('"""')
+    assert "ADR-0040" in docstring, "the docstring split found no docstring to exclude"
 
-    assert "reinforce_composition" not in source
+    assert "reinforce_composition" not in body
 
 
 # --- suspension and reactivation ------------------------------------------
