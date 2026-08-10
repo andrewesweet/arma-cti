@@ -28,6 +28,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   missed. Note the harness enumerates `.claude/agents/` once at session start, so both become
   available only in sessions started after this lands (#255, ADR-0068).
 
+- **A dispatched session's refused-command list re-derived: three causes, and the largest is
+  ours.** `grep`, `rg`, `find` and `wc` are refused only because RTK rewrites them before the
+  permission decision is taken — the harness is asked to approve `rtk grep …`, which nobody typed
+  and no `--print` session can answer for — so `\grep` runs where `grep` does not. `awk`,
+  `python3 -c` and `uv run python -c` are refused on their own merits, escaped or not. And a
+  compound command is decomposed, each part permitted separately, so a read that runs alone can be
+  refused inside an `&&` chain. Measured from inside a dispatched session and written up in
+  `docs/agents/dispatched-session-commands.md`; nothing was widened (#294, refs #248).
+
 - **A dispatch brief names the surfaces the dispatched session cannot write.** A dispatched session
   is refused every write under `.claude/` — `.claude/hooks/` and any unlisted subdirectory as a
   "sensitive file", `.claude/skills/` and `.claude/agents/` as a permission ask nobody is there to
@@ -45,6 +54,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unregistered profile names a route nobody can take (#300).
 
 ### Changed
+
+- **The `.claude/` measurement sharpened by a second dispatch.** The Edit tool is refused on an
+  existing skill file even though `Edit(.claude/skills/**)` is granted, so the allowlist is
+  overridden rather than mis-spelled — though Claude Code's own startup warning shows
+  `Write(.claude/skills/**)` and `Write(docs/**)` were never consulted at all, since only
+  `Edit(path)` rules are. One hypothesis stays open and is cheap to close: relative patterns may
+  resolve against the repository root, which no worktree's own `.claude/` can ever match; the
+  one-line absolute-form experiment is written down for the human. Also recorded: a subprocess's
+  writes are invisible to the permission check, which is what makes the `just`-recipe route work
+  and why such a grant must stay narrow; and `config/dispatch-routing-policy.json` still routes
+  these paths to "a Claude seat" when the constraint is dispatched-versus-interactive, with the
+  replacement class proposed on the issue rather than landed (#294).
 
 - **The retro allowance is a ruled list, not a single route.** The human enumerated nine approved
   profiles on 2026-08-09 after "or above" proved to be a comparison the code must not make:

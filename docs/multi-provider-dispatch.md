@@ -144,20 +144,59 @@ worktree, reproducing the two refusals #273's Codex dispatch reported three days
 | `Write` to `.claude/agents/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"* |
 | `printf … > .claude/skills/retro/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"*, naming the path |
 | `cp docs/…  .claude/skills/retro/PERMISSION-PROBE.md` | refused — the same, naming the destination |
+| `printf … >> .claude/skills/retro/…` | refused — the same, naming the path |
+| `printf … \| tee .claude/skills/retro/…` | refused — as a compound part: *"the following part requires approval: tee …"* |
+| `Write` to `.claude/settings.local.json` | refused — *"you haven't granted it yet"* |
+| `Write` to `.claude/commands/…` (directory does not exist) | refused — *"you haven't granted it yet"* |
+| **`Edit`** of the existing `.claude/skills/playtest-ingest/SKILL.md` | refused — *"you haven't granted it yet"* |
 | `Write` to `docs/PERMISSION-PROBE.md` | written |
 | `Write` to an unlisted path at the worktree root | written |
 
-Four readings, in the order they matter:
+The last six rows were added by a second `claude-native` dispatch the same day; the first
+eight reproduced exactly.
+
+Five readings, in the order they matter:
 
 - **The two refusals are two mechanisms, and the split is not the one the allowlist
   predicts.** `.claude/hooks/` and an invented `.claude/notes/` are classified sensitive;
-  `.claude/skills/` and `.claude/agents/` are not, and fall to an ordinary permission ask.
-  So the sensitive class is the *default* for the directory and the two content
-  subdirectories are exempted from it — into an ask, not into a grant.
-- **The project allowlist does not reach it.** `.claude/settings.json` grants both
-  `Edit(.claude/skills/**)` and `Write(.claude/skills/**)`, and the write was still asked
-  for. In the same session `just fast` ran on its `Bash(just fast)` grant, so the allowlist
-  was in force; it is overridden for this directory, not absent.
+  `.claude/skills/`, `.claude/agents/`, `.claude/commands/` and `.claude/settings.local.json`
+  are not, and fall to an ordinary permission ask. `.claude/commands/` refines the earlier
+  reading that the sensitive class is the directory's *default*: it did not exist in the
+  tree and was still only asked for, so the exemption tracks paths the harness knows —
+  the content and configuration ones — while `hooks/`, which it also knows, is classified
+  sensitive because a hook executes on the agent's behalf. An invented path is sensitive
+  because it is unrecognised, not because it is under `.claude/`.
+- **The project allowlist does not reach it, and one half of the grant was never live.**
+  Every dispatched session's `dispatch.log` opens with two warnings from Claude Code itself,
+  identical across both #294 dispatches:
+
+  ```
+  Permission allow rule (.claude/settings.json): Write(.claude/skills/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(.claude/skills/**) instead (Edit rules cover all file-editing tools).
+  Permission allow rule (.claude/settings.json): Write(docs/**) is not matched by file permission checks — only Edit(path) rules are. Use Edit(docs/**) instead (Edit rules cover all file-editing tools).
+  ```
+
+  So `Write(.claude/skills/**)` never did anything, and the allowlist's apparent grant was
+  half a no-op. That does not rescue the case, because the `Edit(.claude/skills/**)` twin
+  **is** live and the Edit tool on an existing skill file was refused anyway. The allowlist
+  is loaded and in force — `just land --dry-run` runs on its grant while the ungranted
+  `just probe-contract` is refused — so this is an override for these paths, not a settings
+  file that failed to load.
+- **One hypothesis is still open, and it is cheap to close.** Relative path patterns may
+  resolve against the repository root rather than the assigned worktree. Agent worktrees
+  live at `.claude/worktrees/<name>/`, so a file at
+  `.claude/worktrees/issue-294/.claude/skills/retro/x.md` is under `.claude/worktrees/` and
+  is matched by no relative pattern the allowlist could hold. If that is the cause, the wall
+  is an accident of where worktrees live rather than a harness reservation. The experiment
+  is a single absolute-form rule, and adding it is the human's under #248:
+
+  ```
+  "Edit(//home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/*/.claude/skills/**)"
+  ```
+
+  It grants exactly the surface the project already believed it had granted, so it is a
+  test rather than a widening. If a dispatched session can then edit a skill, the constraint
+  was path resolution; if it still cannot, the harness reserves `.claude/` and that is the
+  end of the question.
 - **An ask is a refusal here.** A dispatched session is `claude --print` with nobody to
   answer a prompt, which is why the orchestrator's own interactive session lands these
   edits by hand and a dispatch cannot. The barrier is "a human must answer", not "nobody
@@ -178,10 +217,38 @@ authors the exact replacement text as a proposal, and the orchestrator transcrib
 `tools/brief.py` says so in the brief when an issue names such a path, so the next dispatch
 learns it at composition time instead of spending itself finding out.
 
+**The routing policy has not caught up.** `config/dispatch-routing-policy.json` still carries
+`.claude/skills/`, `.claude/agents/`, `.claude/settings.json` and `.claude/hooks/` inside
+class 1, `gated_semantic_surfaces`, whose remedy reads *"Route invented wording and permission
+semantics to a Claude seat."* That is true and insufficient: a dispatched `claude-native`
+session **is** a Claude seat and is refused these paths anyway. The policy routes on provider
+where the constraint is dispatched-versus-interactive, so it sends the work to a lane that
+will refuse it. Class 2 already carries the mechanism that fixes this — `"seats":
+["orchestrator"]`. Splitting the four prefixes into their own class is proposed on #294 for
+the human's gate rather than landed here, because the policy file is class 6, the gates
+themselves.
+
+**A subprocess is a way round the parser, and that is why a grant must be narrow.** The
+harness classifies the Bash *command*, not the writes a child process goes on to perform:
+`just land --dry-run` runs on its `Bash(just land --dry-run)` grant and its `uv run` created
+a `.venv` in passing, which no permission check saw. So the `just`-recipe route proposed
+above would work — a recipe that promotes a reviewed file into `.claude/` needs only its own
+`Bash(just …)` grant — and equally, any *broad* recipe grant is an unbounded write channel.
+That is the reasoning `tools/discard.py` already records: allowlist a command constrained
+until it can do nothing except the case it was authorised for.
+
 **What is not established.** Whether a *user-level* or enterprise settings grant would be
-honoured where the project one is not; and whether a write performed inside a subprocess the
-harness cannot parse would pass, since `python3 -c` and `uv run` are not on a dispatched
-session's command surface and neither could be measured from that seat.
+honoured where the project one is not; whether the absolute-form worktree rule above is
+honoured, which is the one open hypothesis and needs a settings change to test; and whether
+`bypassPermissions` reaches `.claude/` — the Remote Control server runs with it, which is
+consistent with the orchestrator landing these files by hand, but nothing here was probed
+and nothing here recommends that mode for a dispatch.
+
+**Its sibling constraint is what a dispatched session may *run*.** That is measured
+separately in `docs/agents/dispatched-session-commands.md`, and it is the larger of the two
+in day-to-day cost: four of the seven commands #294 recorded as refused are refused only
+because RTK rewrites them before the permission decision is taken, and `\grep` works where
+`grep` does not.
 
 ### `zai` — a list of named commands
 
