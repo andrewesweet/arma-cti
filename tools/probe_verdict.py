@@ -31,10 +31,17 @@ ladder now starts with the engine pin:
    the failure-class table says fix the harness first — so it is reported as
    one (`untyped_harness_failure`) rather than folded into the nearest
    plausible class (#83).
-6. `expect:` inverts the verdict for a probe that is red by design, and only
+6. A `timeout` on a client-leg probe whose Windows client RPT reached the
+   SimulWeather cloud renderer and stopped — never loading move types — is a
+   host-state stop, not a synchronisation defect: `infra_unavailable`, with
+   restarting the Windows host named as the only known remedy. Keyed on that
+   content transition rather than a line count, and only when the recorded
+   class is `timeout`, so a real client-leg timeout or `assertion_failed`
+   keeps its own class (#304).
+7. `expect:` inverts the verdict for a probe that is red by design, and only
    for the declared class: a negative probe failing for the wrong reason is
    still a failure, and a green run of it is the bug (#80, #96, #102).
-7. `quarantined:` is applied last, over whatever the run said: the corpus keeps
+8. `quarantined:` is applied last, over whatever the run said: the corpus keeps
    gathering evidence about a flake without the flake gating anyone, and the
    tier never retries — one run, one verdict (#130).
 
@@ -66,6 +73,15 @@ SIGNAL_EXIT_BASE: Final = 128
 MAX_SIGNAL: Final = 64
 EXPECTED_SERVER_VERSION_PATH: Final = Path(__file__).with_name("arma_server_version.txt")
 SERVER_VERSION_PATTERN: Final = re.compile(r"[0-9]+(?:\.[0-9]+)+")
+# The Windows client-leg host stall (#304): the client RPT reaches the cloud
+# renderer and stops, never loading move types — a host-state stop cleared by
+# restarting Windows, not the synchronisation defect the `timeout` class sends a
+# reader to chase. The two markers are the content transition, deliberately not
+# a line count: 690 and 744 are this Arma build's numbers (`2.20.152984`) and
+# move with the next engine update, so a count-based check would silently stop
+# firing where a content check keeps describing the same stop.
+CLIENT_STALL_REACHED: Final = "SimulWeather - Cloud Renderer"
+CLIENT_STALL_NEVER_REACHED: Final = "Loading movesType CfgGesturesMale"
 
 
 def signal_name(number: int) -> str:
@@ -188,6 +204,72 @@ def apply_engine_version(outcome: Outcome, typed: TypedVerdict) -> TypedVerdict:
     return version_verdict
 
 
+def client_rpt_path(outcome: Outcome) -> Path | None:
+    """Resolve the Windows client RPT the harness copied into evidence, if any.
+
+    `client_rpt.py` records the copied path as `windows_client_rpt`; the same
+    file also lands in the evidence directory as `windows-client.rpt` (#73).
+    Either reaches the one RPT a client-leg probe produced.
+    """
+    recorded = outcome.results.get("windows_client_rpt", "")
+    if recorded:
+        return Path(recorded)
+    if outcome.evidence:
+        return Path(outcome.evidence) / "windows-client.rpt"
+    return None
+
+
+def client_host_stall_verdict(outcome: Outcome) -> TypedVerdict | None:
+    """Type the Windows-host stall as `infra_unavailable`, or `None` if not it.
+
+    The client reached the SimulWeather cloud renderer and stopped before
+    loading move types — byte-identical across two episodes seven days apart —
+    so the signature is mechanical. `None` for any other RPT shape (the client
+    connected and loaded move types, or there is no RPT) leaves the recorded
+    class untouched, which is what keeps a real client-leg timeout or an
+    `assertion_failed` reporting as itself rather than being swallowed (#304).
+    """
+    rpt = client_rpt_path(outcome)
+    if rpt is None or not rpt.is_file():
+        return None
+    try:
+        text = rpt.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        # An unreadable evidence file is not the stall signature; fall through to
+        # the recorded class rather than crash the verdict step on it.
+        return None
+    if CLIENT_STALL_REACHED in text and CLIENT_STALL_NEVER_REACHED not in text:
+        return TypedVerdict(
+            verdict="FAIL",
+            class_="infra_unavailable",
+            raw_class="infra_unavailable",
+            detail=(
+                "the Windows client reached the SimulWeather cloud renderer and "
+                "stopped before loading move types — a host-state stop the probe's "
+                "timeout class misreads as a synchronisation defect; restarting the "
+                f"Windows host is the only known remedy (#304); see {rpt}"
+            ),
+        )
+    return None
+
+
+def apply_client_host_stall(outcome: Outcome, raw: str, detail: str) -> tuple[str, str]:
+    """Re-type a client-leg `timeout` as infra when its RPT shows the host stall.
+
+    Returns the ``(class, detail)`` to carry forward — unchanged unless ``raw``
+    is the probe-recorded ``timeout`` and the Windows client RPT stopped at the
+    cloud renderer before loading move types. Kept out of ``type_verdict`` so the
+    ladder reads as a straight run, and so the two branches it adds live behind
+    one call rather than on the ladder's complexity (#304).
+    """
+    if raw != "timeout":
+        return raw, detail
+    stall = client_host_stall_verdict(outcome)
+    if stall is None:
+        return raw, detail
+    return stall.class_, stall.detail
+
+
 def type_verdict(outcome: Outcome) -> TypedVerdict:
     """Apply the module docstring's ladder, in that order."""
     raw = outcome.results.get("failure_class", "")
@@ -242,6 +324,14 @@ def type_verdict(outcome: Outcome) -> TypedVerdict:
             f"run.sh exited {outcome.run_status} without recording a class; "
             f"see {outcome.evidence}/regress.log"
         )
+
+    # A client-leg timeout whose Windows client RPT stopped at the cloud
+    # renderer — never loading move types — is a host-state stop, not the
+    # synchronisation problem the `timeout` class sends a reader to chase.
+    # Re-typed on the raw before expect/quarantine, so the stall wears the
+    # honest class and a real timeout (the client connected, something else
+    # ran out) keeps its own (#304).
+    raw, detail = apply_client_host_stall(outcome, raw, detail)
 
     if not outcome.expect:
         typed = raw

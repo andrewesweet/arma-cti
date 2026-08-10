@@ -18,13 +18,12 @@ stored runs rather than any in-repo reader.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from conftest import load_tool
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     import pytest
 
 probe_verdict = load_tool("probe_verdict")
@@ -443,3 +442,124 @@ def test_main_survives_a_detail_full_of_json_poison(
     assert document["class"] == "timeout"
     assert document["detail"] == 'saw "x\\y"\tand stalled'
     assert lines["class"] == "timeout"
+
+
+STALL_FIXTURES = Path(__file__).parent.parent / "fixtures" / "client-rpt-stall"
+STALL_FAIL_RPTS = [STALL_FIXTURES / "fail-20260803.rpt", STALL_FIXTURES / "fail-20260810.rpt"]
+STALL_PASS_RPTS = [STALL_FIXTURES / "pass-20260805.rpt", STALL_FIXTURES / "pass-20260810.rpt"]
+
+
+def client_timeout_outcome(rpt: Path) -> object:
+    """Return a client-leg probe outcome that timed out waiting for a player to join."""
+    return outcome(
+        run_status=0,
+        results={
+            "verdict": "FAIL",
+            "failure_class": "timeout",
+            "failure_detail": (
+                "FAIL class=timeout client_port_probe_no_client_assigned waited=240 players=0"
+            ),
+            "windows_client_rpt": str(rpt),
+        },
+    )
+
+
+def test_both_archived_stall_episodes_type_as_infra_not_timeout() -> None:
+    """The Windows-host stall wears the honest class (#304).
+
+    Both archived episodes red as `class=timeout` because no player joined the
+    server within the window; each client RPT reaches the SimulWeather cloud
+    renderer and stops, never loading move types. `timeout`'s required response
+    is "investigate synchronisation", which is exactly the wrong instruction for
+    a host that has stopped — `infra_unavailable` is the honest class, and the
+    run says nothing about the code under test.
+    """
+    for rpt in STALL_FAIL_RPTS:
+        typed = probe_verdict.type_verdict(client_timeout_outcome(rpt))
+        assert typed.verdict == "FAIL", rpt
+        assert typed.class_ == "infra_unavailable", rpt
+        assert typed.raw_class == "infra_unavailable", rpt
+        assert "SimulWeather cloud renderer" in typed.detail, rpt
+        assert "restarting the Windows host" in typed.detail, rpt
+        assert str(rpt) in typed.detail, rpt
+
+
+def test_both_archived_passing_rpts_do_not_match_the_stall() -> None:
+    """A real client-leg timeout keeps its class — the failing side is not weakened.
+
+    The discriminator keys on the content transition (cloud renderer reached,
+    move types never loaded), not on the probe name or the line count. A client
+    whose RPT loaded `CfgGesturesMale` got past the stall point, so a timeout on
+    that probe is a genuine synchronisation-shaped failure and keeps `timeout`.
+    """
+    for rpt in STALL_PASS_RPTS:
+        typed = probe_verdict.type_verdict(client_timeout_outcome(rpt))
+        assert typed.class_ == "timeout", rpt
+        assert typed.raw_class == "timeout", rpt
+        assert "no_client_assigned" in typed.detail, rpt
+
+
+def test_an_assertion_failed_client_probe_keeps_its_class() -> None:
+    """An assertion failure is not swallowed as a stall.
+
+    The six client probes also red for real reasons (#304); the detection fires
+    only when the recorded class is `timeout`, so an `assertion_failed` is left
+    untouched even with a stalling RPT present — a different failure wearing the
+    same probe name.
+    """
+    rpt = STALL_FAIL_RPTS[0]
+    typed = probe_verdict.type_verdict(
+        outcome(
+            run_status=1,
+            results={
+                "verdict": "FAIL",
+                "failure_class": "assertion_failed",
+                "failure_detail": "client misbehaved on connect",
+                "windows_client_rpt": str(rpt),
+            },
+        )
+    )
+    assert typed.class_ == "assertion_failed"
+    assert typed.detail == "client misbehaved on connect"
+
+
+def test_a_timeout_with_no_client_rpt_is_not_a_host_stall() -> None:
+    """A non-client probe (no RPT in evidence) timing out is not the stall."""
+    typed = probe_verdict.type_verdict(
+        outcome(
+            run_status=0,
+            results={
+                "verdict": "FAIL",
+                "failure_class": "timeout",
+                "failure_detail": "contacts never closed on the objective",
+            },
+        )
+    )
+    assert typed.class_ == "timeout"
+    assert typed.raw_class == "timeout"
+
+
+def test_the_stall_is_resolved_from_the_evidence_dir_when_unrecorded(tmp_path: Path) -> None:
+    """Resolve the stall from the evidence dir when the recorded path is absent.
+
+    `client_rpt.py` records the path, but the same file also lives in evidence as
+    `windows-client.rpt`; the resolver falls back to it (#73).
+    """
+    evidence = tmp_path
+    (evidence / "windows-client.rpt").write_text(
+        (STALL_FIXTURES / "fail-20260810.rpt").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    typed = probe_verdict.type_verdict(
+        outcome(
+            run_status=0,
+            evidence=str(evidence),
+            results={
+                "verdict": "FAIL",
+                "failure_class": "timeout",
+                "failure_detail": "no client assigned",
+            },
+        )
+    )
+    assert typed.class_ == "infra_unavailable"
+    assert str(evidence / "windows-client.rpt") in typed.detail

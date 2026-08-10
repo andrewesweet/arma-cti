@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **The Windows client-leg host stall is typed `infra_unavailable`, not `timeout`.** When the six
+  `CTI_WINDOWS_CLIENT=1` probes red as a set because the client RPT reached the SimulWeather cloud
+  renderer and stopped — never loading move types — that is a host-state stop cleared by restarting
+  Windows, not the synchronisation defect the `timeout` class sends a reader to chase. The verdict
+  ladder now keys on that content transition (deliberately not a line count, which moves with the
+  engine build) and re-types only a probe-recorded `timeout`, so a real client-leg timeout or an
+  `assertion_failed` wearing the same probe name keeps its own class. Asserted over two archived
+  failing RPTs and two passing ones (#304).
+
 ### Added
 
 - **`docs/research/measuring-the-keep-on-claude-restrictions.md`**, the **zai second lens** on #296

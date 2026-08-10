@@ -1,0 +1,11 @@
+ 3:23:53     - adapter revision  : 161
+ 3:23:53     - dedicated video memory : 1997537280
+ 3:23:53     - dedicated system memory : 0
+ 3:23:53     - shared system memory : 4139599872
+ 3:23:53     - driver version : 59186/r590_00
+ 3:23:53 InitSound ...
+ 3:23:54 Selected Audio Output: Headset Earphone (Jabra Evolve2 40) - Channels: 8, Freq: 48000
+ 3:23:54 InitSound - complete
+ 3:23:56 PhysX3 SDK Init started ...
+ 3:23:56 PhysX3 SDK Init ended.
+ 3:23:58 SimulWeather - Cloud Renderer - noise texture file is not specified!
