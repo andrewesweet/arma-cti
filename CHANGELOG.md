@@ -20,6 +20,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   codex v2 policy shape, and refines `run_just_fast` to a per-`(lane, profile)` fact. Nothing in the
   routing policy is landed; every recommendation is quoted for the human's gate (#296).
 
+- **`docs/research/handoff-break-even.md`** — #208's promised falsification, run against the adoption
+  record rather than against the transcripts, because the transcripts have nothing to say yet. Five
+  days after the convention landed there are five handoff events, three read by a successor and
+  **none by the cold-start dispatched subagent the 56% break-even is defined over**. Two things fall
+  out that needed no telemetry: one of nine handoff comments honoured the ~1,500-character cap, and
+  at the median size actually written the break-even moves from 56% to 91% (at the mean it is
+  unreachable); and `just brief` composes no handoff line, which is a sufficient mechanical
+  explanation for zero reads. The study also re-denominates the question — #208's input-equivalents
+  were inverted by #218/#220/#232 a day later, so the handoff's dominant cost on this plan is
+  **writing** it, not reading it. `SubagentStart` injection is weighed and **not** recommended;
+  the proposed alternatives (a handoff section in `just brief`, a size check) are stated verbatim
+  and not landed (#212).
+
 - **`/interlocutor`, the human interface seat**, now reachable: the two files ADR-0068 designed —
   `.claude/agents/cti-interlocutor.md` and `.claude/skills/interlocutor/SKILL.md`, both opus/xhigh —
   land verbatim as #255 published them. They could not land from the dispatch that wrote them,
