@@ -190,6 +190,7 @@
     "composition_fixed",
     "composition_unassigned",
     "force_limit",
+    "identity_pending",
     "insufficient_funds",
     "malformed_command",
     "not_your_squad",
