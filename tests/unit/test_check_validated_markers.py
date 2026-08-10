@@ -1,11 +1,11 @@
 """Tests for the validated-marker gate (issue #186).
 
-Pinned in three directions, because this gate's scope is the interesting part
-of it. A header narrating a use its own count does not reach is a finding; the
-live repository is not; and the inline parenthetical whose drift was the second
-violation is asserted *not* to be a finding, because no rule derived from the
-corpus counts its exemplars — an untested gap is indistinguishable from one the
-next reader assumes is covered.
+Both marker shapes are counted, each against its own unit. A status header
+narrating a use its own count does not reach is a finding, and both historical
+violations' shapes are reproduced red: the first (a use appended with the count
+left behind) against a header, the second (an exemplar appended with the count
+left behind) against an inline list under the reference-and-colon convention
+the human ruled on #186.
 
 The live repository is checked too. That is the assertion #186 was raised over,
 and it is the only form of this test that a future marker edit can fail.
@@ -72,16 +72,70 @@ def test_a_plural_use_phrase_is_read() -> None:
     assert "7" in findings[0].problem
 
 
-def test_an_inline_parenthetical_is_inventoried_but_not_counted() -> None:
-    # The second violation's shape: convention-lands' #131 exemplar appended
-    # with the count still ×3. This gate does not catch it, and says so — see
-    # UNCOUNTABLE in the checker for the corpus evidence that no rule does.
+def test_an_inline_list_whose_count_matches_passes() -> None:
+    source = "- A rule. _(validated ×3 — #23: held. #116: held again. #131: and again.)_\n"
+    assert check_validated_markers.scan_source(source, "CLAUDE.md") == []
+
+
+def test_an_appended_exemplar_without_a_count_move_is_a_finding() -> None:
+    # The second violation, in its own shape: the fifteenth retro's commit
+    # appended convention-lands' #131 exemplar and left the count at ×3.
+    source = "- A rule. _(validated ×3 — #23: held. #116: held. #118: held. #131: appended.)_\n"
+    findings = check_validated_markers.scan_source(source, "CLAUDE.md")
+    assert len(findings) == 1
+    assert "×3" in findings[0].problem
+    assert "4" in findings[0].problem
+
+
+def test_an_inline_list_not_in_the_convention_is_a_finding() -> None:
+    # The pre-ruling prose style: references without their colons. Openers are
+    # what the gate counts, so a list it cannot parse must red rather than
+    # miscount — this exact body would otherwise read as 1 against ×3.
+    source = "- A rule. _(validated ×3 — #23 held. #116 held. #131: appended.)_\n"
+    findings = check_validated_markers.scan_source(source, "CLAUDE.md")
+    assert len(findings) == 1
+    assert "reference-and-colon" in findings[0].problem
+
+
+def test_slash_runs_adr_runs_and_phases_each_open_one_exemplar() -> None:
     source = (
-        "- A rule. _(validated ×3 — #23 landed it. #116 landed it. #118 landed it. #131: it.)_\n"
+        "- A rule. _(validated ×4 — Phase 0: held. #80/#96/#102: one event. "
+        "ADR-0039/0040/0041: one renumber chain; #171: claimed and renumbered.)_\n"
     )
     assert check_validated_markers.scan_source(source, "CLAUDE.md") == []
-    markers = check_validated_markers.markers_in(source, "CLAUDE.md")
-    assert [(m.shape, m.count) for m in markers] == [("inline parenthetical", 3)]
+
+
+def test_a_mid_sentence_or_possessive_reference_is_not_an_opener() -> None:
+    # "#37's 0024 claim" and "and #24 rode the same discipline" are prose inside
+    # an exemplar, not exemplars — the colon anchor is what the #186 brief's
+    # unanchored-grep caution is about, from the other side.
+    source = (
+        "- A rule. _(validated ×2 — #35/#37: #35 claimed 0022; #37's 0024 claim, "
+        "posted on #35's thread, held. #104/#24: proven first; and #24 rode the "
+        "same discipline the same day, 150 to 300.)_\n"
+    )
+    assert check_validated_markers.scan_source(source, "CLAUDE.md") == []
+
+
+def test_a_pruned_list_keeps_exactly_the_newest_five() -> None:
+    prelude = "newest five exemplars, the rest pruned to docs/process-log.md per #201: "
+    five = "#1: a. #2: b. #3: c. #4: d. #5: e."
+    source = f"- A rule. _(validated ×8 — {prelude}{five})_\n"
+    assert check_validated_markers.scan_source(source, "CLAUDE.md") == []
+    appended = f"- A rule. _(validated ×8 — {prelude}{five} #6: appended.)_\n"
+    findings = check_validated_markers.scan_source(appended, "CLAUDE.md")
+    assert len(findings) == 1
+    assert "6" in findings[0].problem
+    assert "newest 5" in findings[0].problem
+
+
+def test_a_prune_prelude_under_a_countable_list_is_a_finding() -> None:
+    # ×5 fits inline, so the prelude claims a prune that cannot have happened.
+    prelude = "newest five exemplars, the rest pruned to docs/process-log.md per #201: "
+    source = f"- A rule. _(validated ×5 — {prelude}#1: a. #2: b. #3: c. #4: d. #5: e.)_\n"
+    findings = check_validated_markers.scan_source(source, "CLAUDE.md")
+    assert len(findings) == 1
+    assert "×5" in findings[0].problem
 
 
 def test_a_marker_in_neither_shape_is_a_finding() -> None:
@@ -107,7 +161,7 @@ def test_the_markers_are_found_at_all() -> None:
     markers = check_validated_markers.tree_markers(REPO)
     shapes = sorted(m.shape for m in markers)
     assert shapes.count("status header") >= 4, shapes
-    assert shapes.count("inline parenthetical") >= 5, shapes
+    assert shapes.count("inline parenthetical") >= 6, shapes
 
 
 def test_the_narrated_uses_of_the_live_headers_are_read() -> None:

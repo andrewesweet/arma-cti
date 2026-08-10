@@ -54,6 +54,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The validated-marker gate now counts inline exemplar lists, closing #186's second violation
+  shape.** Every `_(validated ×N — …)_` exemplar opens reference-and-colon (`#NN: `,
+  `ADR-NNNN: `, `Phase N: `) under the convention the human ruled on #186 (Option A), and
+  `just check` reds when a list's openers disagree with its ×N — an unpruned list must open
+  exactly N exemplars, a pruned one exactly the newest five with ×N above five. AGENTS.md's six
+  lists are normalised to the convention in the same commit; no exemplar's meaning moved. What
+  stays unproven is named at the checker: a pruned tail's count rests on the process log's prune
+  record, and status headers stay a lower bound.
 - **`Roster.reconcile` no longer deletes a Squad with no living members by construction.** It
   removed any fielded Squad a report did not name, and `fn_squadSample` omits a Squad at zero
   living members — which a composition-unassigned shell reaches without anything having gone

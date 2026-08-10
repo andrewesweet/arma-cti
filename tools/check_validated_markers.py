@@ -8,7 +8,7 @@ then rode three retros' status lines before anyone read the file. The second
 violation is what the retro skill's same-edit clause pre-priced as escalating to
 a mechanical check per ADR-0038's shape. This is that check.
 
-Two marker shapes exist, and only one of them is countable.
+Two marker shapes exist, and both are countable — each against its own unit.
 
 **Status headers** (`> Status: validated ×N — …`, in `docs/agents/recovery.md`
 and three skills) narrate *uses*, and number them as they go: "Eighth use
@@ -17,11 +17,18 @@ arithmetic relation to the prose that a machine can read: a header must not
 narrate a use its own count does not reach. That is a lower bound, not an
 equality, and deliberately so — see `narrated_uses`.
 
-**Inline parentheticals** (`_(validated ×N — …)_`, CLAUDE.md's five) list
-*exemplars*, and are **not counted here**. See `UNCOUNTABLE`: no rule derived
-from the corpus counts them, so the count for those five stays the retro skill's
-step-5 discipline plus whatever list-format convention the human rules on (#186
-carries the proposal). The gate still inventories them, because a marker in a
+**Inline parentheticals** (`_(validated ×N — …)_`, CLAUDE.md's) list
+*exemplars*, under the convention the human ruled on #186 (Option A,
+2026-08-07): every exemplar opens with its reference and a colon — `#NN: `,
+`#80/#96/#102: `, `ADR-0039/0040/0041: `, `Phase 0: ` — at the start of the
+list or after a sentence or semicolon boundary, and a continuation sentence
+inside an exemplar never opens reference-and-colon. Counting those openers is
+counting the exemplars, so an unpruned list's ×N must equal its openers. A
+pruned list (the #201 convention: past five exemplars, the inline list keeps
+only the newest five, announced by its prelude) must keep exactly five, with
+×N above five. See `UNVERIFIED` for what that deliberately leaves unproven.
+
+The gate also inventories every `validated ×N` it sees, because a marker in a
 shape this file does not recognise is a marker nothing checks — so an
 unrecognised shape is itself a finding.
 
@@ -38,23 +45,36 @@ import sys
 from pathlib import Path
 from typing import Final, NamedTuple
 
-UNCOUNTABLE: Final = """\
-CLAUDE.md's exemplar lists are uncountable twice over. Since the twenty-third \
-retro's prune (#201), a list past five exemplars keeps only the newest five \
-while ×N keeps the full validation count, so a list's length is capped by \
-design and no counting rule can equal the count. And even where a list is \
-complete, it has no machine delimiter: one probe-window entry carries "#24 \
-rode the same discipline the same day" as part of the same validation event, \
-one ADR-claiming entry opens "The 0039→0040→0041 renumber chains" with no \
-leading issue reference, and requiring a colon after the reference read \
-convention-lands as 1 against its then-×4. The unit being counted is a \
-validation event as narrated, which is a prose judgement.\
+UNVERIFIED: Final = """\
+Two claims stay deliberately unproven here. A pruned list's count above its \
+inline five rests on docs/process-log.md's prune record (#201), not on a \
+recount — so an exemplar pruned in the same edit that forgot the count bump \
+is invisible to this gate, and stays the retro skill's step-5 discipline. \
+And a status header's count is a lower bound over the uses its prose numbers \
+with an ordinal-qualified noun, never an equality — see `narrated_uses`.\
 """
+
+SAME_EDIT: Final = "The ×N and its appended exemplar move in the same edit (retro skill, step 5)."
 
 MARKER: Final = re.compile(r"validated ×(\d+)")
 STATUS: Final = re.compile(r"^> Status: validated ×(\d+) — ", re.MULTILINE)
 # `(.*?)\)_` and not `\)`: the bodies contain parentheses of their own.
 INLINE: Final = re.compile(r"_\(validated ×(\d+) — (.*?)\)_", re.DOTALL)
+# An exemplar's opener under #186's ruling: a reference run and a colon, at the
+# list's start or after a sentence or semicolon boundary. The reference grammar
+# is the corpus's own: slash-joined issue refs (`#80/#96/#102`), an ADR number
+# run spelt once (`ADR-0039/0040/0041`), or a phase (`Phase 0`). A mid-sentence
+# reference, a possessive (`#37's`), or a sentence-initial reference without
+# its colon is prose, not an opener — anchoring on the colon is what keeps a
+# sentence *about* an exemplar from counting as one.
+OPENER: Final = re.compile(r"(?:^|(?<=[.;] ))(?:#\d+(?:/#\d+)*|ADR-\d{4}(?:/\d{4})*|Phase \d+): ")
+# The #201 prune convention, announced in the list itself: past five exemplars
+# the inline list keeps only the newest five, and the rest live in the process
+# log. The prelude is matched exactly so a list cannot half-claim it.
+PRUNE_PRELUDE: Final = re.compile(
+    r"^newest five exemplars, the rest pruned to docs/process-log\.md per #201: "
+)
+PRUNE_KEEPS: Final = 5
 
 UNITS: Final = (
     "first",
@@ -196,20 +216,75 @@ def scan_source(source: str, path: str) -> list[Finding]:
         if not any(marker.span[0] <= match.start() < marker.span[1] for marker in markers)
     ]
     for marker in markers:
-        if marker.shape != "status header":
-            continue  # inline parentheticals are not countable — see UNCOUNTABLE.
-        uses = narrated_uses(marker.body)
-        beyond = [(word, value) for word, value in uses if value > marker.count]
-        findings.extend(
+        if marker.shape == "status header":
+            uses = narrated_uses(marker.body)
+            beyond = [(word, value) for word, value in uses if value > marker.count]
+            findings.extend(
+                Finding(
+                    marker.path,
+                    marker.line,
+                    f"status header says ×{marker.count} but narrates a {word.lower()} "
+                    f"use ({value})",
+                    SAME_EDIT,
+                )
+                for word, value in beyond
+            )
+        else:
+            findings.extend(inline_findings(marker))
+    return sorted(findings, key=lambda finding: (finding.line, finding.problem))
+
+
+def inline_findings(marker: Marker) -> list[Finding]:
+    """Count an inline list's reference-and-colon exemplars against its ×N."""
+    body = re.sub(r"\s+", " ", marker.body.strip())
+    prelude = PRUNE_PRELUDE.match(body)
+    entries_text = body[prelude.end() :] if prelude else body
+    openers = list(OPENER.finditer(entries_text))
+    if not openers or openers[0].start() != 0:
+        return [
             Finding(
                 marker.path,
                 marker.line,
-                f"status header says ×{marker.count} but narrates a {word.lower()} use ({value})",
-                "The ×N and its appended exemplar move in the same edit (retro skill, step 5).",
+                f"inline list under ×{marker.count} does not open with a "
+                f"reference-and-colon exemplar",
+                "Open every exemplar `#NN: ` (or `ADR-NNNN: `, `Phase N: `) at a sentence "
+                "or semicolon boundary — #186's ruling — and never open a continuation "
+                "sentence reference-and-colon.",
             )
-            for word, value in beyond
-        )
-    return sorted(findings, key=lambda finding: (finding.line, finding.problem))
+        ]
+    entries = len(openers)
+    if prelude is None:
+        if entries != marker.count:
+            return [
+                Finding(
+                    marker.path,
+                    marker.line,
+                    f"inline list says ×{marker.count} but opens {entries} exemplars",
+                    SAME_EDIT,
+                )
+            ]
+    elif marker.count <= PRUNE_KEEPS:
+        return [
+            Finding(
+                marker.path,
+                marker.line,
+                f"a pruned list says ×{marker.count}, but pruning starts past {PRUNE_KEEPS}",
+                "Drop the prune prelude and list every exemplar, or move the count to what "
+                "docs/process-log.md's prune record vouches for (#201).",
+            )
+        ]
+    elif entries != PRUNE_KEEPS:
+        return [
+            Finding(
+                marker.path,
+                marker.line,
+                f"a pruned list keeps {entries} exemplars where the convention keeps "
+                f"the newest {PRUNE_KEEPS}",
+                f"{SAME_EDIT} Past {PRUNE_KEEPS}, prune the oldest to docs/process-log.md "
+                "and bump ×N in that same edit (#201).",
+            )
+        ]
+    return []
 
 
 def marker_files(root: Path) -> list[Path]:
