@@ -192,6 +192,21 @@ class SquadRecord:
 
 
 @dataclass(frozen=True, slots=True)
+class _RosterState:
+    """`SquadRecord`'s version-2 half, as the parser hands it back (ADR-0070).
+
+    Parser-internal and private: the document's shape is `SquadRecord` above and
+    nothing here widens it. This exists so the three fields that constrain each
+    other cross one function boundary as one named value rather than as three
+    positional ones, two of which are booleans a caller could silently swap.
+    """
+
+    player_uid: str
+    composition_assigned: bool
+    suspended: bool
+
+
+@dataclass(frozen=True, slots=True)
 class Snapshot:
     """The whole Campaign's strategic state, for both sides, at one moment.
 
@@ -418,6 +433,32 @@ def _as_squad(entry: object) -> SquadRecord:
     at = record.get("at")
     if not isinstance(at, str):
         _refuse(f"{squad_id}: `at` must be a string, got {at!r}")
+    roster = _as_roster_state(record, squad_id, squad_type)
+
+    return SquadRecord(
+        id=squad_id,
+        side=side,
+        squad_type=squad_type,
+        size=size,
+        order=Order(kind=kind, place=place),
+        at=at,
+        player_uid=roster.player_uid,
+        composition_assigned=roster.composition_assigned,
+        suspended=roster.suspended,
+    )
+
+
+def _as_roster_state(record: dict[str, Any], squad_id: str, squad_type: str) -> _RosterState:
+    """Return the roster's account of one Squad, validated field by field and against `type`.
+
+    ADR-0070's three version-2 fields read together rather than beside the rest,
+    because they are the only fields of a squad record that constrain each other
+    and the composition `type`: read separately, each is a plain type check, and
+    the pairing rules below are what actually decide whether the record says
+    which kind of Squad it is holding. The field-by-field correspondence is the
+    same as its caller's — one branch, one refusal, naming the field that was
+    wrong — and `squad_type` arrives already validated as a string.
+    """
     player_uid = record.get("player")
     if not isinstance(player_uid, str):
         _refuse(f"{squad_id}: `player` must be a player UID or empty, got {player_uid!r}")
@@ -441,13 +482,7 @@ def _as_squad(entry: object) -> SquadRecord:
     if suspended and assigned:
         _refuse(f"{squad_id}: suspension is a state of a composition-unassigned Squad alone")
 
-    return SquadRecord(
-        id=squad_id,
-        side=side,
-        squad_type=squad_type,
-        size=size,
-        order=Order(kind=kind, place=place),
-        at=at,
+    return _RosterState(
         player_uid=player_uid,
         composition_assigned=assigned,
         suspended=suspended,
