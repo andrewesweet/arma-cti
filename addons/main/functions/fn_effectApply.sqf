@@ -164,34 +164,46 @@ if (_name isEqualTo "squad_enrolled") exitWith {
 
     // A Squad the world already holds under this id, with men still in it, and
     // the player not among them: a *filled* Squad whose leader disconnected and
-    // has come back (ruling 6). It stayed active under an engine-selected AI
-    // leader (ruling 5), which is exactly what makes seating him reachable —
-    // `selectLeader` is `arg= local` (commands/selectLeader.wiki) and a Squad an
-    // AI leads is the server's. `joinSilent` is global in both argument and
-    // effect (commands/joinSilent.wiki), so putting him in is locality-blind,
-    // and where his AI members currently are does not matter, which is the
-    // ruling's own accepted cost.
+    // has come back to a group of his own (ruling 6). `joinSilent` is global in
+    // both argument and effect (commands/joinSilent.wiki), so putting him in is
+    // locality-blind, and where his AI members currently are does not matter,
+    // which is the ruling's own accepted cost.
     //
-    // A shell takes neither branch: the group answering to the id is his own,
-    // empty or gone, so there is nobody to join and nobody to displace.
+    // A shell takes this branch never: the group answering to the id is his own,
+    // empty, or gone.
     if (!isNull _held && { _held isNotEqualTo group _unit } && { units _held isNotEqualTo [] }) then {
         [_unit] joinSilent _held;
-        if (local _held) then {
-            _held selectLeader _unit;
-        } else {
-            // Not reachable while a Squad without its player is the server's,
-            // and not reasoned away either: this is the line the wiki ships for
-            // "make unit a leader from server". Server-initiated remoteExec is
-            // not subject to CfgRemoteExec — "these rules only apply to clients"
-            // (topics/Arma_3_CfgRemoteExec.wiki) — so the whitelist stays one
-            // function long and no client gains anything by it.
-            [_held, _unit] remoteExec ["selectLeader", groupOwner _held];
-        };
     };
 
     // Read after the join: which group answers to the minted id is the group he
     // is in now.
     private _group = group _unit;
+
+    // Leading it, not merely in it. Asked of the group he ends up in rather than
+    // only of the one he was joined to, because the commoner return does not
+    // move him at all: he reconnects into the same authored slot, so the engine
+    // puts him back in the very group his Squad's AI are already in — with one
+    // of them leading it. Skipping the seating there would satisfy ruling 6 in
+    // the rarer case and fail it in the usual one, and `cti_fnc_leaderSquad`
+    // reads `leader` before it will take a Command from him at all.
+    //
+    // `selectLeader` is `arg= local` (commands/selectLeader.wiki), and a Squad an
+    // AI leads is the server's (#189) — which is what makes the ordinary branch
+    // reachable. The other is the line the wiki ships for "make unit a leader
+    // from server"; server-initiated remoteExec is not subject to CfgRemoteExec
+    // — "these rules only apply to clients"
+    // (topics/Arma_3_CfgRemoteExec.wiki) — so the mission's whitelist stays one
+    // function long and no client gains anything by it.
+    //
+    // A shell's sole member is already its leader, so this is a no-op for the
+    // enrolment that mints one.
+    if (leader _group isNotEqualTo _unit) then {
+        if (local _group) then {
+            _group selectLeader _unit;
+        } else {
+            [_group, _unit] remoteExec ["selectLeader", groupOwner _group];
+        };
+    };
 
     // One group, one Squad id. A Squad wiped out to the last man is removed
     // from the daemon's roster while the group is still there carrying its
