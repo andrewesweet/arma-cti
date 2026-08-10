@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`/interlocutor`, the human interface seat**, now reachable: the two files ADR-0068 designed —
+  `.claude/agents/cti-interlocutor.md` and `.claude/skills/interlocutor/SKILL.md`, both opus/xhigh —
+  land verbatim as #255 published them. They could not land from the dispatch that wrote them,
+  because a dispatched session cannot write under `.claude/` (#294), so the orchestrator landed them
+  by hand. `AGENTS.md` has listed the command since `275da82`; until now it named a command that
+  missed. Note the harness enumerates `.claude/agents/` once at session start, so both become
+  available only in sessions started after this lands (#255, ADR-0068).
+
 - **Five profiles the retro ruling names but the registry lacked**: `opus-max`, `fable-medium`,
   `fable-xhigh`, `fable-max` and `codex-sol-max`. Verified against the runners rather than assumed —
   `claude --effort` accepts `low medium high xhigh max`, and a live `codex exec -c
