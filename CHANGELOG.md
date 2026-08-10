@@ -27,6 +27,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   by hand. `AGENTS.md` has listed the command since `275da82`; until now it named a command that
   missed. Note the harness enumerates `.claude/agents/` once at session start, so both become
   available only in sessions started after this lands (#255, ADR-0068).
+
+- **A dispatch brief names the surfaces the dispatched session cannot write.** A dispatched session
+  is refused every write under `.claude/` — `.claude/hooks/` and any unlisted subdirectory as a
+  "sensitive file", `.claude/skills/` and `.claude/agents/` as a permission ask nobody is there to
+  answer — above the project allowlist that grants `Write(.claude/skills/**)`, and through the shell
+  as well as the tool call. Measured on `claude-native`, reproducing what a Codex dispatch reported,
+  after the wall had blocked four human-approved landings. `just brief` now opens a **Reserved
+  surfaces** section when the issue names such a path, telling the agent to author the replacement
+  text for the orchestrator to transcribe rather than to attempt the edit or route around it. The
+  measurement and the routing consequence are in `docs/multi-provider-dispatch.md` (#294).
+
 - **Five profiles the retro ruling names but the registry lacked**: `opus-max`, `fable-medium`,
   `fable-xhigh`, `fable-max` and `codex-sol-max`. Verified against the runners rather than assumed —
   `claude --effort` accepts `low medium high xhigh max`, and a live `codex exec -c

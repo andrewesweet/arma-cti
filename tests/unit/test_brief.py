@@ -20,6 +20,10 @@ signal without re-measuring reds.
 
 Then composition: what reaches the brief, what is refused, and the placeholder that makes
 an unedited brief obviously unfinished.
+
+The reserved surfaces (#294) sit with the extractors and again with the composition, for the
+two ways that section can fail: naming the wrong paths, and staying silent about the right
+ones. A worktree path is the near-miss there, because every brief already quotes one.
 """
 
 from __future__ import annotations
@@ -89,6 +93,36 @@ def test_in_world_reads_admissions_list_and_not_a_second_copy() -> None:
     assert brief.in_world(("src/cti_daemon/planner.py",)) == ()
     for prefix in admission.IN_WORLD_PREFIXES:
         assert brief.in_world((f"{prefix}whatever",)) == (f"{prefix}whatever",)
+
+
+# ------------------------------------------------------------------- the reserved surfaces
+
+
+def test_every_directory_under_dot_claude_is_a_reserved_surface() -> None:
+    """#294 measured the whole directory reserved, not the four subdirectories it names."""
+    assert brief.reserved_surfaces(
+        (".claude/hooks/edit_payload.py", ".claude/skills/retro/SKILL.md", ".claude/notes/x.md")
+    ) == (".claude/hooks/edit_payload.py", ".claude/skills/retro/SKILL.md", ".claude/notes/x.md")
+
+
+def test_a_path_outside_dot_claude_is_not_reserved() -> None:
+    assert brief.reserved_surfaces(("tools/brief.py", "docs/adr/0068-seats.md")) == ()
+
+
+def test_a_worktree_path_is_a_location_and_not_a_reserved_surface() -> None:
+    """Every brief quotes one, and the files inside it are ordinary repo paths."""
+    assert brief.reserved_surfaces((".claude/worktrees/issue-294/tools/brief.py",)) == ()
+
+
+def test_a_reserved_surface_beside_a_worktree_path_is_still_reported() -> None:
+    paths = (".claude/worktrees/issue-294/x.py", ".claude/hooks/format-on-edit.py")
+    assert brief.reserved_surfaces(paths) == (".claude/hooks/format-on-edit.py",)
+
+
+def test_the_prefix_and_its_exemption_are_read_from_one_place_each() -> None:
+    """A second copy of either list is a second home for the #294 measurement."""
+    assert brief.RESERVED_PREFIXES == (".claude/",)
+    assert brief.RESERVED_EXEMPT == (".claude/worktrees/",)
 
 
 # ------------------------------------------------------------------- the domain vocabulary
@@ -479,6 +513,27 @@ def test_an_unresolved_base_sha_defers_to_the_worktree_call_rather_than_inventin
     assert "base `printed by that call` (unresolved)" in rendered
 
 
+def test_a_brief_naming_a_reserved_surface_says_so_and_says_what_to_do_instead() -> None:
+    rendered = composed(reserved=(".claude/skills/retro/SKILL.md",))
+    assert "## Reserved surfaces (1)" in rendered
+    assert "`.claude/skills/retro/SKILL.md`" in rendered
+    assert "Do not attempt the edit and do not route around it." in rendered
+    assert "the orchestrator transcribes it" in rendered
+
+
+def test_a_brief_naming_no_reserved_surface_opens_no_such_section() -> None:
+    """The section appears only where it applies; silence is the default, not an empty box."""
+    rendered = composed()
+    assert "## Reserved surfaces" not in rendered
+    assert brief.RESERVED_RULE not in rendered
+
+
+def test_the_reserved_section_counts_the_surfaces_it_lists() -> None:
+    rendered = composed(reserved=(".claude/hooks/a.py", ".claude/agents/b.md"))
+    assert "## Reserved surfaces (2)" in rendered
+    assert "`.claude/hooks/a.py`, `.claude/agents/b.md`" in rendered
+
+
 def test_the_composed_half_stays_within_the_designs_size() -> None:
     """The design says fifteen to twenty-five lines; this is the honest count beside it."""
     assert len(composed().splitlines()) <= 40
@@ -591,6 +646,26 @@ def test_the_out_flag_writes_the_brief_to_the_named_file(tmp_path: Path) -> None
     )
     assert code == 0
     assert "# Dispatch brief — #251: compose a briefing" in out.read_text(encoding="utf-8")
+
+
+def test_the_reserved_section_is_composed_from_the_real_issue_body(tmp_path: Path) -> None:
+    """#294's own body names `.claude/hooks/edit_payload.py`; the brief must not stay silent."""
+    out = tmp_path / "brief.md"
+    code = brief.main(
+        ["294", "--out", str(out)],
+        read_issue=lambda _issue, _repo: {
+            "number": 294,
+            "title": "a dispatched session cannot write under .claude/",
+            "body": "patch `.claude/hooks/edit_payload.py` and `.claude/skills/retro/SKILL.md`",
+            "state": "OPEN",
+        },
+        read_open=lambda _repo: [],
+        repo=REPO,
+    )
+    assert code == 0
+    rendered = out.read_text(encoding="utf-8")
+    assert "## Reserved surfaces (2)" in rendered
+    assert brief.RESERVED_RULE in rendered
 
 
 def test_a_brief_with_no_out_flag_goes_to_stdout(capsys: pytest.CaptureFixture[str]) -> None:

@@ -109,6 +109,20 @@ one (#228) using the word `Command` in its ordinary English sense.
 implementation discovers more. This is a prediction; `just admission audit`'s cross-check
 against the landed commit is the ground truth, and it runs later on the same list.
 
+## The reserved-surface section, and why it is a section rather than a refusal
+
+A dispatched session cannot write under `.claude/` on any lane: the harness classifies most
+of that directory as sensitive and asks a permission for the rest, above the project
+allowlist that grants `Write(.claude/skills/**)` and through the shell as well as the tool
+call. Measured on #294 and tabulated in `docs/multi-provider-dispatch.md`; four human-approved
+landings had already been blocked by it, each one costing a dispatch to rediscover.
+
+So when the body names such a path, the brief says so and says what to do instead — author
+the replacement text, let the orchestrator transcribe it. It is a section and not a refusal
+because proposal-only work on those surfaces is legitimate and common: refusing the dispatch
+would block the very route this section is pointing at. `.claude/worktrees/` is exempt, being
+a location rather than a surface — every brief already quotes a worktree path.
+
 ## The flake lines are read, never remembered
 
 An open flake is an issue whose **title** names a `test_` identifier and says it flakes, or
@@ -183,6 +197,17 @@ CONTEXT_TERM: Final = re.compile(r"^\*\*([A-Z][A-Za-z ]*)\*\*:", re.MULTILINE)
 # them and never will. Everything else in the vocabulary is read from that document.
 ENGINE_WORDS: Final = ("SQF", "in-world")
 
+# What a dispatched session cannot write, measured rather than assumed (#294,
+# `docs/multi-provider-dispatch.md`). One prefix, not four: `.claude/hooks/` and an invented
+# `.claude/notes/` both refused as sensitive files, and `.claude/skills/` and
+# `.claude/agents/` both asked a permission nobody is there to grant — so the directory is
+# reserved and its named subdirectories are not a list to keep in step with.
+RESERVED_PREFIXES: Final = (".claude/",)
+# The one thing under `.claude/` that is not a reserved surface. Every worktree lives at
+# `.claude/worktrees/issue-N`, so an issue quoting its own tree names a *location* whose
+# files are ordinary repo paths — and the write that proved it is this brief's own doc edit.
+RESERVED_EXEMPT: Final = (".claude/worktrees/",)
+
 
 class Gate(NamedTuple):
     """Which gate a briefing must name, and the derivation that reached it."""
@@ -229,6 +254,15 @@ def named_paths(body: str) -> tuple[str, ...]:
 def in_world(paths: Sequence[str]) -> tuple[str, ...]:
     """Name the in-world surfaces among these paths, using admission's list and no other."""
     return tuple(path for path in paths if path.startswith(admission.IN_WORLD_PREFIXES))
+
+
+def reserved_surfaces(paths: Sequence[str]) -> tuple[str, ...]:
+    """Name the paths a dispatched session cannot write, in the caller's order."""
+    return tuple(
+        path
+        for path in paths
+        if path.startswith(RESERVED_PREFIXES) and not path.startswith(RESERVED_EXEMPT)
+    )
 
 
 def domain_mentions(body: str, vocabulary: Sequence[str]) -> tuple[str, ...]:
@@ -542,6 +576,14 @@ PASTE_RULE: Final = (
     "Quote `just verdict`'s rendered body verbatim; never retype the SHA or the evidence"
     " path (CLAUDE.md; #219's A/B — all four failures were retyping)."
 )
+RESERVED_RULE: Final = (
+    "You cannot write these, and neither can any dispatched session on any lane: `.claude/`"
+    " is reserved by the harness above the project allowlist, through the tool call and"
+    " through the shell alike. Do not attempt the edit and do not route around it. Author"
+    " the exact replacement text in your close comment; the orchestrator transcribes it."
+    " These surfaces are human sign-off gated in any case (CLAUDE.md; measured on #294,"
+    " `docs/multi-provider-dispatch.md`)."
+)
 
 
 class Briefing(NamedTuple):
@@ -554,6 +596,10 @@ class Briefing(NamedTuple):
     seat: Seat
     tree: Tree
     assessment: readiness.Assessment
+    # The paths this issue names that no dispatched session can write. Defaulted so that a
+    # caller composing a brief about anything else says nothing about reserved surfaces,
+    # which is the whole point: the section appears only where it applies.
+    reserved: tuple[str, ...] = ()
 
 
 def compose(briefing: Briefing) -> str:
@@ -579,6 +625,13 @@ def compose(briefing: Briefing) -> str:
         "## Single-shot",
         dispatch.SINGLE_SHOT_CONTRACT,
     ]
+    if briefing.reserved:
+        lines += [
+            "",
+            f"## Reserved surfaces ({len(briefing.reserved)})",
+            ", ".join(f"`{path}`" for path in briefing.reserved),
+            RESERVED_RULE,
+        ]
     lines += [
         "",
         "## Worktree",
@@ -687,6 +740,7 @@ def main(
             seat=derive_seat(args.seat),
             tree=resolve_tree(args.issue, args.base_sha, repo),
             assessment=readiness.assess(body),
+            reserved=reserved_surfaces(named_paths(body)),
         )
     )
     if str(document.get("state") or "").upper() == "CLOSED":

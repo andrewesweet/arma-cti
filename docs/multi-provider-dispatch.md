@@ -127,6 +127,62 @@ different mechanisms of different granularity, and nothing here claims they are 
 ADR-0061 decision 5 makes the same point about effort levels; it applies to permission just
 as well.
 
+### Reserved on every lane: everything under `.claude/`
+
+A dispatched session cannot write anywhere under `.claude/`, whatever lane it is on and
+whatever the project allowlist says. This is a property of the harness rather than of a
+lane, so it is stated once here rather than twice below.
+
+Measured on `claude-native` on 2026-08-10 (#294), from a dispatched session in its own
+worktree, reproducing the two refusals #273's Codex dispatch reported three days earlier:
+
+| Attempt | Result |
+|---|---|
+| `Write` to `.claude/hooks/PERMISSION-PROBE.md` | refused — *"which is a sensitive file"* |
+| `Write` to `.claude/notes/PERMISSION-PROBE.md` | refused — *"which is a sensitive file"* |
+| `Write` to `.claude/skills/retro/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"* |
+| `Write` to `.claude/agents/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"* |
+| `printf … > .claude/skills/retro/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"*, naming the path |
+| `cp docs/…  .claude/skills/retro/PERMISSION-PROBE.md` | refused — the same, naming the destination |
+| `Write` to `docs/PERMISSION-PROBE.md` | written |
+| `Write` to an unlisted path at the worktree root | written |
+
+Four readings, in the order they matter:
+
+- **The two refusals are two mechanisms, and the split is not the one the allowlist
+  predicts.** `.claude/hooks/` and an invented `.claude/notes/` are classified sensitive;
+  `.claude/skills/` and `.claude/agents/` are not, and fall to an ordinary permission ask.
+  So the sensitive class is the *default* for the directory and the two content
+  subdirectories are exempted from it — into an ask, not into a grant.
+- **The project allowlist does not reach it.** `.claude/settings.json` grants both
+  `Edit(.claude/skills/**)` and `Write(.claude/skills/**)`, and the write was still asked
+  for. In the same session `just fast` ran on its `Bash(just fast)` grant, so the allowlist
+  was in force; it is overridden for this directory, not absent.
+- **An ask is a refusal here.** A dispatched session is `claude --print` with nobody to
+  answer a prompt, which is why the orchestrator's own interactive session lands these
+  edits by hand and a dispatch cannot. The barrier is "a human must answer", not "nobody
+  may write".
+- **The shell is not a way round it.** The harness reads a Bash command's write targets:
+  the redirect and the `cp` destination were refused by path, with the same wording as the
+  tool call. #265's "re-express it as a shell append" does not reproduce here.
+
+**The routing consequence.** No route a dispatched session can reach exists today. A `just`
+recipe that promotes a reviewed file into `.claude/` would need its own `Bash(just …)` grant
+in `.claude/settings.json`, which is a permissions decision and therefore the human's
+(#248); it is proposed on #294 rather than landed. Meanwhile the wall costs ergonomics
+rather than authority: every surface under `.claude/` — the project skills, the seat
+definitions, the hooks and the settings file — is human sign-off gated by CLAUDE.md
+already, so no dispatched session was ever entitled to land one of these unilaterally. The
+route that works is the one #299 already mandates for a gated edit: the dispatched seat
+authors the exact replacement text as a proposal, and the orchestrator transcribes it.
+`tools/brief.py` says so in the brief when an issue names such a path, so the next dispatch
+learns it at composition time instead of spending itself finding out.
+
+**What is not established.** Whether a *user-level* or enterprise settings grant would be
+honoured where the project one is not; and whether a write performed inside a subprocess the
+harness cannot parse would pass, since `python3 -c` and `uv run` are not on a dispatched
+session's command surface and neither could be measured from that seat.
+
 ### `zai` — a list of named commands
 
 The lane rides the `claude` binary, so it inherits `.claude/settings.json`'s allowlist.
