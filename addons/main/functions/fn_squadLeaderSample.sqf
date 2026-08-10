@@ -21,11 +21,10 @@
  * No shape of its own in `cti_daemon.report`, for `presence`'s reason: this is a
  * map of ids to a closed vocabulary rather than a named object with fields.
  *
- * The watch that fills `cti_squadLeaders` is the mission and lifecycle work of
- * #311/#312, which is where a squad-leader slot first exists at all — the
- * Phase-1 mission is two Commander slots and a headless client (ADR-0007). Until
- * then the honest answer is the empty one, which is the same answer as a world
- * nobody has joined: nobody is leading a Squad.
+ * The map is filled by `cti_fnc_squadLeaderWatch`, which sweeps the slots the
+ * mission authors (#312). Empty before that watch has started, and for a world
+ * nobody has joined, which are the same answer as far as the daemon is
+ * concerned: nobody is leading a Squad.
  *
  * Arguments: none
  *

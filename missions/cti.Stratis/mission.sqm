@@ -7,7 +7,7 @@ class EditorData
 	areaGridStep=2.5;
 	class ItemIDProvider
 	{
-		nextID=12;
+		nextID=13;
 	};
 	class Camera
 	{
@@ -71,7 +71,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=7;
+		items=9;
 		// Base WEST: Stratis Air Base, position from the manifest.
 		class Item0
 		{
@@ -226,6 +226,86 @@ class Mission
 			type="Empty";
 			id=8;
 			atlOffset=0;
+		};
+		// The playable squad-leader slot per side (ADR-0070 ruling 1, #312), at
+		// that side's Base and beside its Commander. A group of its own, because
+		// the group is what becomes the Squad: the daemon mints a roster id when
+		// the world reports the slot occupied, and cti_fnc_effectApply pairs that
+		// id with this group.
+		//
+		// The type is the Commander slots' own, deliberately: what a squad leader
+		// carries is the loadout menu's answer (ADR-0056) and not this line, and
+		// the two addons already declared cover it.
+		class Item7
+		{
+			dataType="Group";
+			side="West";
+			class Entities
+			{
+				items=1;
+				class Item0
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={1992.31,15,5625.9};
+						angles[]={0,3.14159,0};
+					};
+					side="West";
+					flags=7;
+					class Attributes
+					{
+						isPlayable=1;
+						description="NATO Squad Leader";
+						// The slot the server reads this side's player squad
+						// leader from. cti_fnc_squadLeaderWatch matches this
+						// name, in this shape — the same one the Commander
+						// slots above use, with the role's own word.
+						name="cti_squad_leader_west";
+					};
+					id=10;
+					type="B_Soldier_F";
+					atlOffset=0;
+				};
+			};
+			class Attributes
+			{
+			};
+			id=9;
+		};
+		class Item8
+		{
+			dataType="Group";
+			side="East";
+			class Entities
+			{
+				items=1;
+				class Item0
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={6396.97,15,5427.13};
+						angles[]={0,3.14159,0};
+					};
+					side="East";
+					flags=7;
+					class Attributes
+					{
+						isPlayable=1;
+						description="CSAT Squad Leader";
+						// As above, for EAST.
+						name="cti_squad_leader_east";
+					};
+					id=12;
+					type="O_Soldier_F";
+					atlOffset=0;
+				};
+			};
+			class Attributes
+			{
+			};
+			id=11;
 		};
 	};
 };

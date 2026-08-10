@@ -35,6 +35,7 @@ if TYPE_CHECKING:
     from cti_daemon import planner
     from cti_daemon import snapshot as snapshot_module
     from cti_daemon.port import CommandPort
+    from cti_daemon.squads import Squad
     from cti_daemon.telemetry import Telemetry
 
 
@@ -70,6 +71,16 @@ class ReportCycle:
         # not written down again (#172). Comparison only, like the observation
         # above: the Campaign holds the record, this holds "said so once".
         self._dressed: dict[str, str] = {}
+        # Which side each player was last reported leading a Squad for (#312,
+        # ADR-0070). Comparison only, like `_dressed` above: it exists so that a
+        # player who is simply *still there* is not enrolled, reactivated or
+        # re-seated on every report. The Campaign holds who leads what.
+        #
+        # Only the arrival half reads it. A departure is derived from the
+        # Campaign instead (`active_shells`), because a cache is empty after a
+        # restart and a shell whose player left while the daemon was down would
+        # otherwise stay active for the rest of the Campaign.
+        self._leading: dict[str, str] = {}
         # Which sides are under an AI Commander, and the brain playing each
         # (#16, #17). Empty by default: a side belongs to a human until somebody
         # says otherwise, and a Campaign nobody has put under command must not
@@ -142,6 +153,11 @@ class ReportCycle:
         dropped = self.campaign.apply_snapshot(snapshot)
         self._last_observation = {}
         self._dressed = {}
+        # Cleared for a stronger reason than the two above: a loaded Campaign is
+        # played in a world whose groups this daemon has never paired with a
+        # minted Squad id, so the first report after a load has to re-seat every
+        # player who is standing in a slot rather than read them as unchanged.
+        self._leading = {}
         self._concluded = False
         return dropped
 
@@ -162,6 +178,12 @@ class ReportCycle:
         # is left alone. Present but empty, the world is saying it holds none —
         # which is a real answer, and pruning on it is the point.
         lost = () if told.squads is None else self.campaign.reconcile(told.squads)
+        # After `reconcile` rather than before it, and the order is load-bearing
+        # in one case: a player whose *filled* Squad was wiped out while he was
+        # away leads nothing once the world's account of the losses is in, and
+        # what he is owed on his return is a fresh shell rather than a reference
+        # to a Squad the roster has just deleted.
+        self._lead(told.squad_leaders)
         self._sight(told.contacts, told.at_time)
         self._decapitation(told.hq, told.at_time)
         self._casualties(told.casualties)
@@ -284,6 +306,99 @@ class ReportCycle:
                 self._telemetry.record("loadout_chosen", uid=uid, kit=kit)
             else:
                 self._telemetry.record("loadout_unknown", uid=uid, kit=kit)
+
+    def _lead(self, claimed: dict[str, str] | None, /) -> None:
+        """Take the world's account of who is occupying a squad-leader slot (#312).
+
+        The world owns the occupying — a person standing in a slot the mission
+        authors — and the daemon owns what it *means*, which is ADR-0070's four
+        rulings: a claim mints a dedicated roster Squad at own Base with him as
+        its sole member, composition-unassigned (ruling 1); an unfilled shell
+        whose player stops being named is suspended, keeping its identity and
+        its minted id (ruling 7); a filled Squad's is not, because it goes on
+        under an engine-selected AI leader with its Order intact (ruling 5); and
+        a returning player rejoins the same Squad and leads it (ruling 6).
+
+        Absent entirely, the report said nothing about slots and nothing here
+        moves — the distinction `squads` turns on, and it matters more here:
+        reading silence as "nobody is leading" would suspend every shell on the
+        first report from a world whose sampler had not started.
+
+        Nothing is done to a Campaign that has been won, for `reconcile`'s
+        reason: the world does not know it is over until the effect reaches it
+        and goes on reporting in the meantime, and every verb below refuses a
+        finished Campaign outright rather than ignoring the call.
+
+        The arrival half is acted on once per arrival rather than once per
+        report, for `_dress`'s reason — a player who is simply still standing
+        there is not re-seated every five seconds — and the effects it pushes
+        make that more than tidiness: an enrolment on every report would be an
+        outbox the world never drains.
+
+        What the cache may suppress is only that: a player who is here and
+        already leads the Squad the report says he does. A claim from somebody
+        the roster holds no Squad for is acted on whatever the cache says, and
+        that is a case rather than a belt-and-braces — a Squad wiped out to the
+        last man takes its player's corpse with it, `fn_squadSample` stops
+        naming a Squad with nobody living in it, and `reconcile` removes it while
+        he is still standing in his slot. A cache-only reading would leave him
+        leading nothing for the rest of the Campaign.
+        """
+        if claimed is None or self.campaign.complete:
+            return
+
+        for uid, side in claimed.items():
+            squad = self.campaign.led_by(uid)
+            if squad is not None and not squad.suspended and self._leading.get(uid) == side:
+                continue
+            self._leading[uid] = side
+            self._claim(uid, side, squad)
+
+        # Everyone the report has stopped naming, whatever it leaves behind:
+        # forgotten here so that his return is an arrival again, and suspended
+        # below only if what he left behind is an unfilled shell.
+        for uid in [held for held in self._leading if held not in claimed]:
+            del self._leading[uid]
+
+        for shell in self.campaign.active_shells():
+            if shell.player_uid in claimed:
+                continue
+            self.campaign.suspend(shell.id, shell.side)
+            self._telemetry.record(
+                "squad_leader_suspended", uid=shell.player_uid, side=shell.side, squad=shell.id
+            )
+
+    def _claim(self, uid: str, side: str, squad: Squad | None) -> None:
+        """One player newly reported in a squad-leader slot, in the four cases.
+
+        Which case it is comes from the roster rather than from the report: the
+        claim names a UID (ADR-0025, because respawn hands the player a new unit
+        and reconnection a new machine id), and the roster is what knows whether
+        that UID already answers for a Squad. `squad` is that answer, taken by
+        the caller because it is also what decides whether this is called at all.
+
+        A claim naming a side the player's own Squad is not on is written down
+        and otherwise left alone. It is not a case ADR-0070 ruled on — it needs
+        him to have left one side's slot and taken the other's — and neither
+        available answer is obviously right: a Squad cannot change sides, and
+        minting him a second one would make `led_by` ambiguous about a player who
+        is supposed to have at most one. So the roster's answer stands, the row
+        says the two disagreed, and nothing is enrolled, suspended or seated on a
+        guess.
+        """
+        if squad is None:
+            minted = self.campaign.enrol(side, uid)
+            self._telemetry.record("squad_leader_enrolled", uid=uid, side=side, squad=minted.id)
+        elif squad.side != side:
+            self._telemetry.record(
+                "squad_leader_wrong_side", uid=uid, side=side, squad=squad.id, held=squad.side
+            )
+        elif squad.suspended:
+            self.campaign.reactivate(squad.id, squad.side)
+            self._telemetry.record("squad_leader_reactivated", uid=uid, side=side, squad=squad.id)
+        else:
+            self.campaign.rejoin(squad.id, squad.side)
+            self._telemetry.record("squad_leader_rejoined", uid=uid, side=side, squad=squad.id)
 
     def _record_observation(self, side: str) -> None:
         """Write one side's strategic picture out when it has actually changed.

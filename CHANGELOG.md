@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The squad-leader role is playable.** The Phase-1 Stratis mission authors one slot per side at
+  that side's Base (`cti_squad_leader_west` / `cti_squad_leader_east`, `maxPlayers` 3 → 5), a new
+  server sweep reports who is standing in one, and the daemon folds that claim into ADR-0070's
+  lifecycle: taking a slot mints the shell, leaving suspends it if the Commander has not filled it
+  yet, and returning hands back the same Squad with its minted id — and, for a Squad that was
+  filled, with the standing Order it kept while an AI led it. Unlike a Commander's, the assignment
+  is deliberately not latched for the Play Session, because the whole of rulings 6 and 7 is that
+  the sweep sees the player leave and come back. The world's half of the two Effects #310 declared
+  now exists too: `squad_enrolled` pairs the player's group with the minted id — and, for a
+  returning player, joins him into the Squad that carried on without him and seats him at its head
+  — while `squad_filled` spawns the composition's men through the staging-group route a Reinforce
+  already uses, because a player-led group is not the server's to write into (#312, ADR-0070
+  rulings 1, 5, 6 and 7).
 - **A player squad leader leads a roster Squad, and it begins as a
   composition-unassigned shell** (ADR-0070, #310). Taking the role mints a dedicated Squad at own
   Base with the player as its sole member — one man, no composition, no Funds spent — and it is a
@@ -71,6 +84,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   lists are normalised to the convention in the same commit; no exemplar's meaning moved. What
   stays unproven is named at the checker: a pruned tail's count rests on the process log's prune
   record, and status headers stay a lower bound.
+- **An Order now reaches a Squad that is not the server's.** `cti_fnc_orderApply` finished by
+  making the Order's own waypoint the group's current one, on the server — and that command takes
+  local arguments, while a group leaves the server the moment a player leads it and does not come
+  back (#189). From the day the squad-leader slot ships, an Order to a player-led Squad would have
+  recorded on the group, displayed as a task, and never become what the group was doing: a defect
+  every test the project has would pass. The call is now made where the group is. The mission's
+  remote-execution whitelist is untouched and stays one function long — the rules it carries bind
+  clients, and this is the server (#312, ADR-0070).
 - **`Roster.reconcile` no longer deletes a Squad with no living members by construction.** It
   removed any fielded Squad a report did not name, and `fn_squadSample` omits a Squad at zero
   living members — which a composition-unassigned shell reaches without anything having gone

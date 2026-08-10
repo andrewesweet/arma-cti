@@ -88,7 +88,15 @@ if (isNil "cti_fnc_worldInit") then {
         // reading of the manifest cti_fnc_worldInit indexes.
         [] call cti_fnc_loadoutWatch;
 
-        // Something watches the seven loops above (#102). Started last, because a
+        // Who is standing in a squad-leader slot (ADR-0070, #312). Started
+        // beside the loadout watch because it is the same kind of thing — one
+        // fact only the world can see, reported for the daemon to decide what it
+        // means — and after the world is built for `cti_fnc_commanderAssign`'s
+        // reason: a slot can be taken at any moment, so the sweep that sees it
+        // has to exist before anyone can join.
+        [] call cti_fnc_squadLeaderWatch;
+
+        // Something watches the eight loops above (#102). Started last, because a
         // watchdog registered before the loops it watches would sweep a register
         // that is still filling; started at all, because a scripting error in
         // any one of them kills that loop alone and used to do it in silence.

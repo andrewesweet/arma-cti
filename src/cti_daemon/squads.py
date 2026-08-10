@@ -180,6 +180,26 @@ class Roster:
                 return squad
         return None
 
+    def active_shells(self) -> tuple[Squad, ...]:
+        """Every composition-unassigned Squad a player is currently leading.
+
+        The set a report suspends from when it stops naming that player
+        (ADR-0070 ruling 7). Derived rather than remembered, so it answers the
+        same after a daemon restart as before one: what makes a Squad a live
+        shell is `player_uid`, `composition_assigned` and `suspended`, and the
+        snapshot carries all three.
+
+        A filled Squad is never in it, which is ruling 5 rather than an
+        optimisation — it survives its player's disconnect under an
+        engine-selected AI leader and keeps its Order, so there is nothing here
+        for a departure to do to it.
+        """
+        return tuple(
+            squad
+            for squad in self._squads.values()
+            if squad.player_uid and not squad.composition_assigned and not squad.suspended
+        )
+
     def owned_by(self, squad_id: str, side: str) -> Squad | None:
         """Return `side`'s Squad by that id, or None if it has no such Squad.
 

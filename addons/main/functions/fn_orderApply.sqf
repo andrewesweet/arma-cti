@@ -176,7 +176,35 @@ switch (_order) do {
     };
 };
 
-_group setCurrentWaypoint _first;
+// Making the new waypoint the current one is what stops a Squad that has
+// finished its last Order standing where that Order left it: `currentWaypoint`
+// is "1 greater than the last valid index" once every waypoint is complete
+// (commands/currentWaypoint.wiki), and the replacement above does not by itself
+// bring the index back.
+//
+// Which is `arg= local` (commands/setCurrentWaypoint.wiki), and that is the
+// hazard ADR-0070 found before it was built. #189 measured that a group leaves
+// the server the moment a player leads it and does not come back, so from the
+// day the squad-leader slot ships this call on the server would be a no-op for
+// exactly the Squad a person is watching: the Order records on the group,
+// displays as a task, and never becomes what the group is doing. Every plausible
+// test passes. `addWaypoint` and `deleteWaypoint` above are `arg= global,
+// eff= global` and reach a client-local group fine.
+//
+// Server-initiated remote execution is not subject to CfgRemoteExec — "these
+// rules only apply to clients. The server is not subject to any limitations"
+// (topics/Arma_3_CfgRemoteExec.wiki) — so the mission's whitelist stays one
+// function long and no client gains anything by this.
+//
+// What is deliberately *not* changed is the waypoint-property block above.
+// `setWaypointType` and its kin declare no locality at all on their vendored
+// pages, and ADR-0070 is explicit that an absence is not a guarantee: they are
+// unknown, the world is what settles it, and #313 is the issue that asks.
+if (local _group) then {
+    _group setCurrentWaypoint _first;
+} else {
+    [_group, _first] remoteExec ["setCurrentWaypoint", groupOwner _group];
+};
 
 _group setVariable ["cti_order", createHashMapFromArray [
     ["order", _order],

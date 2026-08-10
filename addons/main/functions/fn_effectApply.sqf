@@ -97,7 +97,7 @@ if (_name isEqualTo "order_issued") exitWith {
 // A daemon and an addon out of step after a partial upgrade. Permanent: the same
 // name arrives with the same meaning on every poll, and no amount of waiting
 // teaches this addon what it is.
-if !(_name in ["squad_spawned", "squad_reinforced"]) exitWith {
+if !(_name in ["squad_spawned", "squad_reinforced", "squad_enrolled", "squad_filled"]) exitWith {
     diag_log format ["CTI|FAIL class=assertion_failed unknown_effect=%1", _name];
     ["refused", "unknown_effect"] call _verdict
 };
@@ -128,6 +128,99 @@ if (_missing isNotEqualTo []) exitWith {
     diag_log format ["CTI|FAIL class=assertion_failed effect=%1 side=%2 missing_args=%3",
         _name, _sideName, _missing];
     ["refused", "effect_missing_args"] call _verdict
+};
+
+// A player squad leader has taken a slot and the daemon has minted his Squad
+// (ADR-0070, #312). Ahead of the side and the Base because it needs neither: it
+// creates nobody and spends nothing, so there is no ground for men to arrive on
+// and no roster to read. What it does is the pairing — the daemon mints the id
+// for the resume determinism ADR-0003 requires, the player's group already
+// exists because the engine made it for the slot, and without a group answering
+// to the id no Order can reach the Squad.
+if (_name isEqualTo "squad_enrolled") exitWith {
+    private _squadId = _args get "squad";
+    private _player = _args get "player";
+
+    // By UID, not by unit and not by machine (ADR-0025): respawn hands the
+    // player a new unit and reconnection a new machine id, and neither is a
+    // change of who is leading. `allPlayers` carries dead players
+    // (commands/allPlayers.wiki), so a man serving ADR-0052's death timer is
+    // still found here.
+    private _unit = objNull;
+    { if (getPlayerUID _x isEqualTo _player) exitWith { _unit = _x } } forEach allPlayers;
+    if (isNull _unit) exitWith {
+        // Permanent rather than deferred. A player who has left is one the next
+        // poll meets gone, and the daemon is already being told by the report
+        // that has stopped naming him — which suspends his shell (ruling 7). A
+        // deferral would hold every effect behind it on a man who may never
+        // come back.
+        diag_log format ["CTI|FAIL class=assertion_failed enrol_no_player squad=%1 player=%2",
+            _squadId, _player];
+        ["refused", "enrol_no_player"] call _verdict
+    };
+
+    private _squads = missionNamespace getVariable ["cti_squads", createHashMap];
+    private _held = _squads getOrDefault [_squadId, grpNull];
+
+    // A Squad the world already holds under this id, with men still in it, and
+    // the player not among them: a *filled* Squad whose leader disconnected and
+    // has come back (ruling 6). It stayed active under an engine-selected AI
+    // leader (ruling 5), which is exactly what makes seating him reachable —
+    // `selectLeader` is `arg= local` (commands/selectLeader.wiki) and a Squad an
+    // AI leads is the server's. `joinSilent` is global in both argument and
+    // effect (commands/joinSilent.wiki), so putting him in is locality-blind,
+    // and where his AI members currently are does not matter, which is the
+    // ruling's own accepted cost.
+    //
+    // A shell takes neither branch: the group answering to the id is his own,
+    // empty or gone, so there is nobody to join and nobody to displace.
+    if (!isNull _held && { _held isNotEqualTo group _unit } && { units _held isNotEqualTo [] }) then {
+        [_unit] joinSilent _held;
+        if (local _held) then {
+            _held selectLeader _unit;
+        } else {
+            // Not reachable while a Squad without its player is the server's,
+            // and not reasoned away either: this is the line the wiki ships for
+            // "make unit a leader from server". Server-initiated remoteExec is
+            // not subject to CfgRemoteExec — "these rules only apply to clients"
+            // (topics/Arma_3_CfgRemoteExec.wiki) — so the whitelist stays one
+            // function long and no client gains anything by it.
+            [_held, _unit] remoteExec ["selectLeader", groupOwner _held];
+        };
+    };
+
+    // Read after the join: which group answers to the minted id is the group he
+    // is in now.
+    private _group = group _unit;
+
+    // One group, one Squad id. A Squad wiped out to the last man is removed
+    // from the daemon's roster while the group is still there carrying its
+    // dead, and the shell minted for its player in the same breath is a new id
+    // over the same men — so the entry that named the old Squad is dropped
+    // rather than left. A group the world holds twice is the fault
+    // `squad_spawned`'s own redelivery guard exists to prevent, met from the
+    // other direction: an Order to the stale id reaches men who are counted
+    // under the live one.
+    {
+        if (_x isNotEqualTo _squadId && { _y isEqualTo _group }) then {
+            diag_log format ["CTI|enrol_released_stale_id squad=%1 for=%2", _x, _squadId];
+            _squads deleteAt _x;
+        };
+    } forEach (+_squads);
+
+    _squads set [_squadId, _group];
+    _group setVariable ["cti_squad", _squadId, true];
+
+    // No Order is applied here, unlike a spawn, and the difference is deliberate
+    // rather than an omission. A spawn puts a Squad on the ground and an Order
+    // is what tells it what to do with itself; this puts nobody anywhere, and
+    // laying waypoints on a man because he took a slot is the shape ADR-0070's
+    // "compliance is voluntary" rules out. The Squad's standing Order is the
+    // daemon's record either way, and it reaches the group through
+    // `order_issued` the moment a Commander gives one.
+    diag_log format ["CTI|effect_applied effect=%1 side=%2 squad=%3 player=%4 units=%5 leader=%6",
+        _name, _sideName, _squadId, _player, count units _group, name leader _group];
+    ["applied"] call _verdict
 };
 
 // The side's engine object, through the one owner of the name↔side pairing
@@ -211,16 +304,23 @@ private _noRoster = {
 // judgement was made a poll ago and a man can have died since. A Squad already
 // at strength therefore spawns nobody and is still applied — there is nothing
 // left to do and nothing a later poll would do differently.
-if (_name isEqualTo "squad_reinforced") exitWith {
+// Men into a Squad that is already standing: a Reinforce (ADR-0040), or the
+// first fill of a player squad leader's shell (ADR-0070 ruling 3). One branch
+// because they are one act — bring this group up to `size` out of the
+// composition's roster, and never spawn a second group — and the two differ in
+// exactly one place, which is where the composition comes from.
+if (_name in ["squad_reinforced", "squad_filled"]) exitWith {
+    private _filling = _name isEqualTo "squad_filled";
     private _group = (missionNamespace getVariable ["cti_squads", createHashMap])
         getOrDefault [_squadId, grpNull];
     if (isNull _group) exitWith {
-        diag_log format ["CTI|FAIL class=assertion_failed reinforce_unknown_squad=%1", _squadId];
+        private _why = ["reinforce_unknown_squad", "fill_unknown_squad"] select _filling;
+        diag_log format ["CTI|FAIL class=assertion_failed %1=%2", _why, _squadId];
         // Permanent: the world has no group by that id and will not grow one.
         // A Squad the world has lost is one the daemon is about to be told
         // about, and refilling it would put men on the map answering to an id
         // the roster is removing.
-        ["refused", "reinforce_unknown_squad"] call _verdict
+        ["refused", _why] call _verdict
     };
 
     // Which Squad this is comes from the world, not from the effect: a
@@ -229,9 +329,21 @@ if (_name isEqualTo "squad_reinforced") exitWith {
     // it minted; recording the type alongside it at spawn is the same gesture,
     // and it keeps the roster lookup out of the wire. A Squad standing without
     // one is a Squad this addon did not spawn.
-    private _squadType = _group getVariable ["cti_squadType", ""];
+    //
+    // A shell is exactly that Squad: it was enrolled rather than spawned, so it
+    // carries no type, which is why `squad_filled` is the one effect that brings
+    // a composition with it (ADR-0070 — widening `squad_reinforced` to carry one
+    // was weighed and rejected there). The world learns it from the wire once
+    // and records it as a spawn does, so every later Reinforce reads it off the
+    // group like any other Squad's.
+    private _squadType = if (_filling) then {
+        _args get "squad_type"
+    } else {
+        _group getVariable ["cti_squadType", ""]
+    };
     private _roster = [_squadType] call _rosterOf;
     if (count _roster isEqualTo 0) exitWith { [_squadType] call _noRoster };
+    if (_filling) then { _group setVariable ["cti_squadType", _squadType, true] };
 
     private _standing = count units _group;
     private _owed = _size - _standing;
@@ -255,6 +367,11 @@ if (_name isEqualTo "squad_reinforced") exitWith {
     // Clamped into the roster because `size` arrives from the daemon while the
     // roster is authored: they agree by validation, and if an export ever went
     // stale the last slot repeats rather than the loop reading off the end.
+    //
+    // A first fill takes the same accounting and lands on the reading ADR-0070
+    // priced: one man is standing, so slot 0 — "the man the Squad is built
+    // around" — is the player himself and the seven slots behind him arrive.
+    // That is the seven eighths `EconomyTable.reinforce_cost` charged for.
     if (_owed > 0) then {
         private _staging = createGroup [_side, true];
         private _last = count _roster - 1;

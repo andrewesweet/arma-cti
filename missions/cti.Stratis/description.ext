@@ -8,7 +8,11 @@ class Header
 {
     gameType = "CTI";
     minPlayers = 1;
-    maxPlayers = 3; // the playable roles in mission.sqm: two Commanders plus HC1
+    // The playable roles in mission.sqm: two Commanders, two squad leaders
+    // (ADR-0070 ruling 1, #312), plus HC1. It moves with that list and with
+    // nothing else — a number larger than the roles authored admits a client the
+    // engine then has nowhere to put.
+    maxPlayers = 5;
 };
 
 briefing = 0;

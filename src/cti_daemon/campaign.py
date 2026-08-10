@@ -540,6 +540,38 @@ class Campaign:
         )
         return squad
 
+    def rejoin(self, squad_id: str, side: str) -> Squad:
+        """Tell the world a returning player leads this Squad again (ruling 6).
+
+        Nothing strategic moves, and that is the point: a *filled* Squad stayed
+        active through its player's absence under an engine-selected AI leader
+        and kept its standing Order (ruling 5), so there is no state here to put
+        back. What has to happen is in the world — he reconnects on a group the
+        server has never paired with this Squad's minted id, and that pairing is
+        what an Order travels down. So the enrolment effect is pushed again, for
+        the reason `reactivate` ends with the same act: it creates nobody and
+        spends nothing, it enrols.
+
+        Kept apart from `reactivate`, which is defined for a
+        composition-unassigned shell alone. This is the same return met on a
+        Squad that was never suspended, and collapsing the two would mean
+        suspending a filled Squad, which is exactly the contradiction ruling 7
+        is worded to avoid.
+        """
+        self._playing()
+        squad = self.roster.owned_by(squad_id, side)
+        if squad is None:
+            message = f"{side} has no Squad {squad_id!r} to rejoin"
+            raise KeyError(message)
+        self.outbox.push(
+            Effect(
+                name="squad_enrolled",
+                side=side,
+                args={"squad": squad.id, "player": squad.player_uid},
+            )
+        )
+        return squad
+
     def first_fill(self, squad_id: str, side: str, squad_type: str) -> tuple[Squad, int, int]:
         """Assign a shell the composition the Commander demands, and fill it.
 
@@ -628,6 +660,16 @@ class Campaign:
         again instead of minted a second time.
         """
         return self.roster.led_by(player_uid)
+
+    def active_shells(self) -> tuple[Squad, ...]:
+        """Every composition-unassigned Squad a player is currently leading.
+
+        The roster's read, offered by the root for `led_by`'s reason (#152). It
+        is the set the report cycle suspends from when a report stops naming a
+        player: a shell is defined by state the snapshot carries, so the answer
+        does not depend on anything a session happened to remember.
+        """
+        return self.roster.active_shells()
 
     def missing(self, squad: Squad) -> int:
         """How many men that Squad is short of what it was bought as.
