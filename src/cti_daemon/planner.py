@@ -338,6 +338,26 @@ class _Refill:
 
 
 @dataclass(frozen=True, slots=True)
+class _Fill:
+    """One player-led shell standing at its own Base, and what filling it costs.
+
+    The composition-carrying Reinforce's preconditions read forwards, the way
+    `_Refill` beside it reads the ordinary Reinforce's (ADR-0070 ruling 2): a
+    record exists only for a shell the port would accept a first fill for right
+    now, at the composition named here.
+    """
+
+    squad: str
+    # The composition the Commander's demand names — the one a Purchase would
+    # have bought, on the same cheapest-affordable rule `_spend` applies to one.
+    squad_type: str
+    # What filling it costs: the missing fraction of that composition's price at
+    # the ordinary Reinforce discount (ADR-0070 ruling 3), which is why
+    # preferring a shell is the cheaper route as well as the ruled one.
+    cost: int
+
+
+@dataclass(frozen=True, slots=True)
 class _Muster:
     """Who is going where this cycle, and what became of each Assault."""
 
@@ -450,6 +470,15 @@ class UtilityPlanner:
     compensation factor's rank-preservation proof rests on. If #136 grows a
     spending-consideration framework, this choice migrates into it (the ruling
     says so) rather than living beside it.
+
+    And it prefers an eligible player-led shell to a net-new Purchase (ADR-0070
+    ruling 2, #311). An allocation priority rather than a new economic axis: the
+    strategic decision of *when* a composition is needed is the same decision a
+    Purchase is and is unchanged, so the choice above is resolved first and the
+    shell only takes the place of a Purchase that had already won. It lives in
+    `_spend` for the reason the refill does, and the ADR names a shell
+    preference that could only be written as a ninth consideration as one of the
+    things that would reopen where the choice lives.
     """
 
     map_manifest: MapManifest
@@ -976,6 +1005,26 @@ class UtilityPlanner:
         pro-rata cost strictly beats the fresh Squad the planner would
         otherwise buy. A tie goes to the fresh Squad, which adds a whole Squad
         for the same Funds.
+
+        And a player-led shell is preferred to a net-new Purchase (ADR-0070
+        ruling 2, #311). That is an **allocation priority rather than a fourth
+        way to spend**: the #150 choice above is resolved first, and only where
+        it landed on a Purchase does an eligible shell take that Purchase's
+        place, carrying the very composition it would have bought. A refill that
+        has already won is not displaced, because the ruling substitutes for a
+        Purchase and for nothing else.
+
+        The map's cap and the wire's force limit bar a Purchase and do not bar
+        this: filling a shell adds no Squad to the roster, so the Commander that
+        would otherwise have spent nothing at its ceiling fills instead. Which
+        is why the fill is reached from two branches — where a Purchase was
+        chosen, and where no Purchase was available at all.
+
+        It is deliberately absent from `candidates`. That tuple is the one price
+        axis the fresh Squads and the refills are ranked on, winner first; a fill
+        is not ranked against them but substituted after they have been, and
+        listing it would assert a four-way comparison that was never made — and,
+        where a refill won, would put a cheaper also-ran above the winner.
         """
         commands: list[Command] = []
         funds = observation.funds or 0
@@ -1007,6 +1056,7 @@ class UtilityPlanner:
 
         fresh = priced[0] if priced else None
         refill = affordable[0] if affordable else None
+        fill = next(iter(self._fills(observation, funds)), None)
         fielded = len(observation.squads)
 
         if refill is not None and (fresh is None or refill.cost < fresh.price):
@@ -1029,6 +1079,15 @@ class UtilityPlanner:
                 scored=scored,
                 candidates=candidates[:TRACE_CANDIDATES],
             )
+        elif fresh is not None and fill is not None:
+            commands.append(_fill_command(observation.for_side, fill))
+            decision = Decision(
+                about="funds",
+                chose=_fill_choice(fill),
+                because=_stood_in(fill, fresh.id, fresh.price, refill, fielded),
+                scored=scored,
+                candidates=candidates[:TRACE_CANDIDATES],
+            )
         elif fresh is not None:
             because = f"{fielded} Squads fielded"
             if refill is not None:
@@ -1046,6 +1105,20 @@ class UtilityPlanner:
                 about="funds",
                 chose=f"purchase {fresh.id}",
                 because=because,
+                scored=scored,
+                candidates=candidates[:TRACE_CANDIDATES],
+            )
+        elif fill is not None:
+            # No Purchase was on the table at all, and the shell is filled
+            # anyway: neither ceiling bars a Command that adds no Squad, and a
+            # purse that cannot reach a fresh Squad can still reach a discounted
+            # fill. The register the silence would have used is kept and the
+            # substitution said after it, so the row still explains itself.
+            commands.append(_fill_command(observation.for_side, fill))
+            decision = Decision(
+                about="funds",
+                chose=_fill_choice(fill),
+                because=_fill_alone(self._spent_nothing(barred, funds, refills), fill, barred),
                 scored=scored,
                 candidates=candidates[:TRACE_CANDIDATES],
             )
@@ -1124,6 +1197,56 @@ class UtilityPlanner:
             found.append(_Refill(squad=squad.id, missing=missing, cost=cost))
         return sorted(found, key=lambda refill: (refill.cost, refill.squad))
 
+    def _fills(self, observation: Observation, funds: int) -> list[_Fill]:
+        """Every shell a composition-carrying Reinforce would be accepted for.
+
+        The port's refusal matrix read forwards, exactly as `_refills` reads it
+        for the ordinary Reinforce (ADR-0031, ADR-0070): not suspended, still
+        composition-unassigned, standing at its own Base, and priced at a
+        composition this side can pay to fill. So a candidate here is never one
+        `_fill_refusal` would refuse `squad_suspended`, `composition_fixed` or
+        `wrong_ground`, nor one `first_fill` would refuse for want of Funds.
+
+        A composition-unassigned Squad is one carrying no composition type,
+        which is the representation CONTEXT.md's amended **Observation**
+        ratified; `suspended` beside it is what says whether it may be filled
+        *yet*, and the two are read together because a suspended shell carries
+        no type either.
+
+        Cheapest fill first, like `_refills`, so a Commander with one spend to
+        make reaches for the shell it can most afford.
+        """
+        base = self._base_of[observation.for_side]
+        found = []
+        for squad in observation.squads:
+            if squad.squad_type or squad.suspended or squad.at != base:
+                continue
+            demanded = self._composition(squad.size, funds)
+            if demanded is None:
+                continue
+            squad_type, cost = demanded
+            found.append(_Fill(squad=squad.id, squad_type=squad_type, cost=cost))
+        return sorted(found, key=lambda fill: (fill.cost, fill.squad))
+
+    def _composition(self, standing: int, funds: int) -> tuple[str, int] | None:
+        """Return the composition a Purchase would have bought, and the fill's price.
+
+        The same cheapest-affordable rule `_spend` applies to a Purchase — the
+        table in price order, the first entry the side can pay for — read
+        against what this route actually pays rather than against the full
+        price. Wherever a Purchase is on the table the two agree exactly, and
+        provably so: a fill is a discounted fraction of the composition's price,
+        so the Purchase's own choice is always affordable here, and anything
+        cheaper by price would have been the Purchase. They part only where the
+        purse reaches a fill and no Purchase at all, which is a case a Purchase
+        has no opinion about.
+        """
+        for squad in sorted(self.table.squads, key=lambda squad: (squad.price, squad.id)):
+            cost = self.table.reinforce_cost(squad.id, max(0, squad.size - standing))
+            if cost is not None and cost <= funds:
+                return squad.id, cost
+        return None
+
     def _spent_nothing(self, barred: str, funds: int, refills: list[_Refill]) -> str:
         """Say why no Funds moved, distinguishing every silence (#150).
 
@@ -1157,6 +1280,58 @@ def _refill_candidate(refill: _Refill) -> Candidate:
         score=float(-refill.cost),
         terms={"price": -refill.cost, "missing": refill.missing},
     )
+
+
+def _fill_command(side: str, fill: _Fill) -> Command:
+    """Build the composition-carrying Reinforce that fills one shell (ADR-0070).
+
+    Its own Command name rather than an optional argument on `reinforce`, which
+    is the ADR's call and not this module's: the catalogue's fixed argument
+    lists are what SQF cannot build wrong.
+    """
+    return Command(
+        name="reinforce_composition",
+        side=side,
+        args={"squad": fill.squad, "squad_type": fill.squad_type},
+    )
+
+
+def _fill_choice(fill: _Fill) -> str:
+    """Render a chosen fill as the funds row names it: the shell and its composition."""
+    return f"fill {fill.squad} as {fill.squad_type}"
+
+
+def _stood_in(fill: _Fill, bought: str, price: int, refill: _Refill | None, fielded: int) -> str:
+    """Say which Purchase the shell stood in for, and what that Purchase beat.
+
+    Both halves, because they are two different arguments and dropping either
+    leaves a row that reads as an omission. A fill that went quiet about the
+    Purchase would read as the shell never having been weighed against one —
+    which is #150's own "a live refill lost the comparison, and the row says to
+    what", one substitution further along — and a fill that swallowed #150's
+    sentence would lose the refill that had already lost.
+    """
+    stood = f"filling the shell {fill.squad} at {fill.cost} stands in for"
+    if refill is None:
+        return f"{fielded} Squads fielded; {stood} purchasing {bought} at {price}"
+    return (
+        f"{fielded} Squads fielded; {bought} at {price} adds a whole Squad against "
+        f"refilling {refill.squad} at {refill.cost}, and {stood} that Purchase"
+    )
+
+
+def _fill_alone(stood: str, fill: _Fill, barred: str) -> str:
+    """Say why the shell was filled where no Purchase was on the table at all.
+
+    `stood` is the silence this row would otherwise have carried, kept verbatim
+    so the reader still learns what could not be bought; what follows says why
+    the fill was not barred with it. Two reasons, because the two ceilings and
+    an empty purse stop a Purchase for quite different causes: a ceiling counts
+    Squads and a fill adds none, while a purse is simply reached by the
+    discounted price and not by the full one.
+    """
+    why = "adds no Squad to the roster" if barred else "is what the purse reaches"
+    return f"{stood}; filling the shell {fill.squad} at {fill.cost} {why}"
 
 
 def _sent(chosen: dict[str, _Option], place: str) -> int:

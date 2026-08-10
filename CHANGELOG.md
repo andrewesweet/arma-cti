@@ -24,6 +24,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to the minted id; it creates nobody and spends nothing) and `squad_filled` (the Squad, the
   composition type and the size). Three typed refusals arrive with them, each because an existing
   code would have lied: `composition_unassigned`, `composition_fixed` and `squad_suspended`.
+- **The AI Commander fills an eligible player shell rather than buying a net-new Squad**
+  (ADR-0070 ruling 2, #311). When it decides a composition is needed it now looks first for one of
+  its own active, composition-unassigned Squads standing at own Base, and fills that with the very
+  composition the Purchase would have bought — 70 Funds against 100 for the authored rifle Squad,
+  so the ruled route is the cheaper one too. An allocation priority rather than a new way to spend:
+  the existing Reinforce-or-Purchase choice is settled first and only a Purchase is ever stood in
+  for, so a refill that already won keeps the cycle's one spend. The map's one-Squad-per-Objective
+  cap and the wire's force limit bar a Purchase and not this — filling a shell adds no Squad — so a
+  Commander at its ceiling now fills the shell where it used to spend nothing. The funds row names
+  the shell it preferred and the Purchase it stood in for.
 - **Snapshot version 2**, an additive migration whose safe default is what every Squad written
   before this decision was — composition-assigned, active, unowned. A saved Squad now carries its
   player's UID, whether its composition is assigned, and whether it is suspended (#310, ADR-0070,

@@ -1365,3 +1365,307 @@ def test_no_reinforce_the_planner_issues_is_one_the_port_would_refuse(
     for _ in range(cycles + 1):
         _, judgements = cycle(world, mind, "WEST")
         assert [(one.code, one.detail) for one in judgements if not one.accepted] == []
+
+
+# The shell preference is from here down (ADR-0070 ruling 2, #311). The AI
+# Commander fills an eligible player-led shell rather than issuing a net-new
+# Purchase: an allocation priority over the #150 choice above rather than a
+# fourth way to spend, so that choice is resolved first and only a Purchase is
+# ever stood in for. Real planner, real port, real Campaign, as #150's are.
+
+
+def fills(plan: planner.Plan) -> list[tuple[str, str]]:
+    """Return the shells this plan fills, each with the composition it assigns."""
+    return [
+        (command.args["squad"], command.args["squad_type"])
+        for command in plan.commands
+        if command.name == "reinforce_composition"
+    ]
+
+
+def enrolled(world: campaign.Campaign, side: str = "WEST", uid: str = "uid-1") -> str:
+    """Put a player squad leader's shell in the roster and return its minted id."""
+    return world.enrol(side, uid).id
+
+
+def refusal(world: campaign.Campaign, squad: str, squad_type: str = "rifle") -> str:
+    """Return the code the real port refuses this Squad's first fill with.
+
+    The other half of every eligibility test here: the planner declining is only
+    the right answer if the port would have refused, and a test that asserted
+    the decline alone would pass just as well against a planner that declined
+    for its own private reason.
+    """
+    judged = port.CommandPort(campaign=world).submit(
+        Command("reinforce_composition", "WEST", {"squad": squad, "squad_type": squad_type}),
+        acting_side="WEST",
+    )
+    assert not judged.accepted, judged.result
+    return judged.code
+
+
+def test_an_eligible_shell_is_filled_rather_than_a_fresh_squad_bought_on_every_seed() -> None:
+    # The ruling itself: the Commander wants a composition, a shell is standing
+    # at its own Base waiting for one, so the composition goes there instead of
+    # into a Squad nobody is leading. Judged by the real port and read back off
+    # the roster — the Campaign applied the fill rather than merely planning it.
+    for seed in range(30):
+        world = live()
+        shell = enrolled(world)
+
+        plan, judgements = cycle(world, brain(world, seed=seed), "WEST")
+
+        assert fills(plan) == [(shell, "rifle")]
+        assert purchases(plan) == []
+        assert [one.code for one in judgements if not one.accepted] == []
+        (filled,) = [one for one in world.roster.roll("WEST") if one.id == shell]
+        assert (filled.squad_type, filled.size, filled.composition_assigned) == ("rifle", 8, True)
+
+
+def test_the_same_observation_and_seed_fill_the_same_shell_the_same_way() -> None:
+    # Determinism is unmoved (ADR-0004): `plan` stays a pure function of its
+    # Observation and the authored data, the new branch included.
+    world = live()
+    enrolled(world)
+    mind = brain(world)
+    picture = world.observation("WEST")
+
+    assert mind.plan(picture) == mind.plan(picture)
+
+
+def test_the_composition_filled_is_the_one_the_purchase_would_have_bought() -> None:
+    # Not a composition of its own choosing: the same cheapest-affordable rule
+    # `_spend` buys on, read off a board identical but for the shell.
+    plain = live()
+    with_shell = live()
+    shell = enrolled(with_shell)
+
+    (would_buy,) = purchases(brain(plain).plan(plain.observation("WEST")))
+    (filled,) = fills(brain(with_shell).plan(with_shell.observation("WEST")))
+
+    assert filled == (shell, would_buy)
+
+
+def test_a_fill_that_stands_in_for_a_purchase_says_which_purchase() -> None:
+    # A row that went quiet about the substitution would read as the shell never
+    # having been considered, which is the silence #150's own runner-up sentence
+    # was written against.
+    world = live()
+    shell = enrolled(world)
+
+    row = only(brain(world).plan(world.observation("WEST")).decisions, "funds")
+
+    assert row.chose == f"fill {shell} as rifle"
+    assert row.because == (
+        f"1 Squads fielded; filling the shell {shell} at 70 stands in for purchasing rifle at 100"
+    )
+
+
+def test_a_fill_standing_in_for_a_purchase_still_says_what_that_purchase_beat() -> None:
+    # Both arguments survive the substitution: a weapons Squad missing seven
+    # refills at 105 and loses to a fresh rifle at 100 (#150), and the fill then
+    # stands in for that rifle. Dropping either half leaves a row whose
+    # arithmetic the reader cannot reconstruct.
+    world = live()
+    thinned = bought(world, "WEST", "weapons")
+    world.roster.reconcile({thinned: Held(1, "nato_airbase")})
+    shell = enrolled(world)
+
+    plan = brain(world).plan(world.observation("WEST"))
+
+    assert fills(plan) == [(shell, "rifle")]
+    assert reinforces(plan) == []
+    assert only(plan.decisions, "funds").because == (
+        f"2 Squads fielded; rifle at 100 adds a whole Squad against refilling {thinned} at 105, "
+        f"and filling the shell {shell} at 70 stands in for that Purchase"
+    )
+
+
+def test_a_refill_that_won_the_comparison_is_not_displaced_by_a_shell() -> None:
+    # The ruling substitutes for a Purchase and for nothing else, so #150's
+    # choice is resolved first and a refill that already beat the fresh Squad
+    # keeps the cycle's one spend. A four-way comparison would take it away.
+    world = live()
+    thinned = bought(world, "WEST")
+    world.roster.reconcile({thinned: Held(5, "nato_airbase")})
+    shell = enrolled(world)
+
+    plan = brain(world).plan(world.observation("WEST"))
+
+    assert reinforces(plan) == [thinned]
+    assert fills(plan) == []
+    assert purchases(plan) == []
+    assert only(plan.decisions, "funds").chose == f"reinforce {thinned}"
+    assert shell not in only(plan.decisions, "funds").because
+
+
+def capped_with_a_shell() -> tuple[campaign.Campaign, str]:
+    """Return a WEST force at the map's cap whose last Squad is an empty shell."""
+    world = live()
+    places = [objective.id for objective in world.map_manifest.objectives]
+    fielded(world, "WEST", *places[:-1])
+    return world, enrolled(world)
+
+
+def test_at_the_maps_cap_the_shell_is_still_filled_on_every_seed() -> None:
+    # `_fresh_barred` counts Squads, and filling a shell adds none — the same
+    # argument that put a refill past the cap in #150. Before this the funds row
+    # read "nothing" while a lone player stood at Base with a full purse.
+    for seed in range(30):
+        world, shell = capped_with_a_shell()
+        assert len(world.roster.roll("WEST")) == len(world.map_manifest.objectives)
+
+        plan, judgements = cycle(world, brain(world, seed=seed), "WEST")
+
+        assert fills(plan) == [(shell, "rifle")]
+        assert purchases(plan) == []
+        assert [one.code for one in judgements if not one.accepted] == []
+
+
+def test_a_fill_forced_past_the_maps_cap_names_the_bar_in_the_trace() -> None:
+    # The bar has to be arguable from the row alone, exactly as a capped
+    # refill's is: the silence this row would otherwise have carried, kept
+    # verbatim, and then why the fill was not barred with the Purchase.
+    world, shell = capped_with_a_shell()
+
+    row = only(brain(world).plan(world.observation("WEST")).decisions, "funds")
+
+    assert row.chose == f"fill {shell} as rifle"
+    assert row.because == (
+        f"8 Squads fielded of 8 the map holds; "
+        f"filling the shell {shell} at 70 adds no Squad to the roster"
+    )
+
+
+def test_a_purse_that_reaches_the_fill_and_no_purchase_fills_the_shell() -> None:
+    # The economics the ruling turns on, at the one board where they part: the
+    # fill is the missing fraction at a discount, so 80 Funds buy no Squad this
+    # map sells and still fill the shell. Spending nothing here would leave the
+    # player alone at Base with Funds enough to crew him.
+    world = live()
+    shell = enrolled(world)
+    world.ledger.spend("WEST", world.ledger.balance("WEST") - 80)
+
+    plan, judgements = cycle(world, brain(world), "WEST")
+
+    assert fills(plan) == [(shell, "rifle")]
+    assert purchases(plan) == []
+    assert [one.code for one in judgements if not one.accepted] == []
+    assert only(plan.decisions, "funds").because == (
+        f"80 Funds purchase no Squad this map sells; "
+        f"filling the shell {shell} at 70 is what the purse reaches"
+    )
+
+
+def test_funds_too_low_for_the_fill_leave_the_shell_unnamed() -> None:
+    # The port would refuse it `insufficient_funds`, so the planner does not ask
+    # — and the row says which silence this is in the register `_spent_nothing`
+    # already owns, rather than growing one for the shell.
+    world = live()
+    shell = enrolled(world)
+    world.ledger.spend("WEST", world.ledger.balance("WEST") - 69)
+
+    plan, judgements = cycle(world, brain(world), "WEST")
+
+    assert fills(plan) == []
+    assert [one.code for one in judgements if not one.accepted] == []
+    row = only(plan.decisions, "funds")
+    assert row.chose == "nothing"
+    assert row.because == "69 Funds purchase no Squad this map sells"
+    assert shell not in row.because
+
+
+def test_a_suspended_shell_is_not_a_candidate() -> None:
+    # Ruling 7: a shell whose player has gone is ineligible for filling until he
+    # returns, and the port refuses it by name.
+    world = live()
+    shell = enrolled(world)
+    world.suspend(shell, "WEST")
+
+    plan = brain(world).plan(world.observation("WEST"))
+
+    assert fills(plan) == []
+    assert purchases(plan) == ["rifle"]
+    assert refusal(world, shell) == "squad_suspended"
+
+
+def test_a_squad_that_already_carries_a_composition_is_not_a_candidate() -> None:
+    # Ruling 3: a composition is assigned once and fixed thereafter, so a Squad
+    # at full strength at its own Base is not a shell to fill — the port refuses
+    # it `composition_fixed`, and refilling it would be `already_held` besides.
+    world = live()
+    standing = bought(world, "WEST")
+    world.roster.reconcile({standing: Held(8, "nato_airbase")})
+
+    plan = brain(world).plan(world.observation("WEST"))
+
+    assert fills(plan) == []
+    assert purchases(plan) == ["rifle"]
+    assert refusal(world, standing) == "composition_fixed"
+
+
+def test_a_shell_away_from_its_own_base_is_not_a_candidate() -> None:
+    # A composition is filled where the men arrive, which CONTEXT.md puts at the
+    # Squad's own Base; anywhere else the port refuses `wrong_ground`.
+    world = live()
+    shell = enrolled(world)
+    world.roster.reconcile({shell: Held(1, "agia_marina")})
+
+    plan = brain(world).plan(world.observation("WEST"))
+
+    assert fills(plan) == []
+    assert purchases(plan) == ["rifle"]
+    assert refusal(world, shell) == "wrong_ground"
+
+
+def test_a_shell_of_the_other_side_is_not_this_commanders_to_fill() -> None:
+    # An Observation carries one Commander's own Squads and nobody else's, so
+    # EAST's shell is not in WEST's picture at all — the property is asserted
+    # rather than inferred, because a planner reading the roster instead would
+    # have been refused `unknown_squad`.
+    world = live()
+    theirs = enrolled(world, side="EAST", uid="uid-2")
+
+    plan = brain(world).plan(world.observation("WEST"))
+
+    assert fills(plan) == []
+    assert theirs not in {squad.id for squad in world.observation("WEST").squads}
+
+
+STANDING = st.sampled_from(("base", "field", "suspended"))
+
+
+@given(ROSTER, st.integers(min_value=0, max_value=3), STANDING)
+def test_no_fill_the_planner_issues_is_one_the_port_would_refuse(
+    sizes: list[int], cycles: int, standing: str
+) -> None:
+    # The never-refused family over the boards #311 adds: a shell beside a
+    # roster of every strength, at Base and away from it and suspended, played
+    # for several cycles so a shell filled last cycle is a board this cycle
+    # plans against — which is where `composition_fixed` would fire if the
+    # planner went on reading a filled Squad as a shell.
+    world = live()
+    world.ledger.deposit("WEST", 10_000)
+    open_port = port.CommandPort(campaign=world)
+    for _ in sizes:
+        judged = open_port.submit(
+            Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
+        )
+        assert judged.accepted, judged.detail
+    shell = enrolled(world)
+    world.roster.reconcile(
+        {
+            **{
+                squad.id: Held(size, "nato_airbase")
+                for squad, size in zip(world.roster.roll("WEST")[: len(sizes)], sizes, strict=True)
+            },
+            shell: Held(1, "nato_airbase" if standing == "base" else "agia_marina"),
+        }
+    )
+    if standing == "suspended":
+        world.suspend(shell, "WEST")
+
+    mind = brain(world)
+    for _ in range(cycles + 1):
+        _, judgements = cycle(world, mind, "WEST")
+        assert [(one.code, one.detail) for one in judgements if not one.accepted] == []
