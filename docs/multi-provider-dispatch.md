@@ -65,6 +65,20 @@ after one agent's routine reset has destroyed the other's work.
 A lane that cannot be reached — no credentials file, no key, no worktree — is
 `infra_unavailable`, and `infra_unavailable` is not a result.
 
+**The assertion answers "am I where I was sent"; two further rungs answer "is anyone else
+here" and "how do I make them leave".** #105's sixth instance (2026-08-10) was neither an
+assignment collision nor a mismatch: the seat killed a dispatch, believed it, and
+re-dispatched into the same tree while the original session worked on. So a dispatch whose
+assigned tree already carries a dispatch record with no `result.json` is refused
+`worktree_occupied_by_dispatch`, naming the holder — the record directory is the authority,
+because no result means live or dead-without-writing-one and neither justifies a second
+agent in the tree — and `just dispatch --stop <id>` is how a holder is removed. The stop
+resolves the dispatch to its worktree and then to every process whose `/proc/<pid>/cwd` is
+inside it, because *the worktree, not a pid, is the handle that identifies a dispatch's
+processes*: the pid the seam knows is the launcher, and the session reparents away from it.
+It verifies by re-scanning, and reports what it killed. `tools/dispatch_stop.py` carries the
+predicate, its exclusions and its refusals; `docs/agents/recovery.md` carries the procedure.
+
 ## The breaker, and why it never invents a wait
 
 `just breaker` carries two trip families, and the whole design falls out of their

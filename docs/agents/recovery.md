@@ -128,6 +128,62 @@ touching it, commit early, and on finding foreign files stop and report — the 
 agent loses a dispatch, the reset would have lost another session's work. The pre-flight
 prevented exactly that on its first firing (instance 5, the fifteenth-retro dispatch).
 
+The mode has a third variant, and it is the seat's own doing rather than the harness's:
+**a dispatch the orchestrator believed it had killed** (#105, sixth instance, 2026-08-10,
+twice in one session). `just dispatch` used to return a `pid=`, and that pid is the
+*launcher* — the process the seam forks — not the session it starts. The session reparents
+away from it, so killing the launcher and seeing `ps -p <pid>` return nothing reads exactly
+like a successful stop; in the first instance the real `claude --print` worked on in that
+tree for the next half hour, alongside the agent dispatched into it 28 seconds later. The
+worktree pre-flight ran and passed, and was right to: the tree *was* clean at that instant.
+The pre-flight answers "is this tree clean now", and the question here is "is anyone still
+working in it", which it does not ask.
+
+### Stopping a dispatch: `just dispatch --stop`
+
+```
+just dispatch --stop <dispatch-id>
+```
+
+It resolves the dispatch id to its worktree through the dispatch record, then to every
+process whose `/proc/<pid>/cwd` is inside that tree — which in the incident was four
+processes, the session plus the MCP servers it had spawned, only one of which anyone would
+have thought to look for. It signals, **re-scans to verify**, escalates to `SIGKILL` if the
+first re-scan is not empty, re-scans again, and prints what it killed and which signal
+ended each one. **A tree that is still occupied afterwards is `finding=stop_unverified`
+and never a success** — a stop that does not verify is a guess, which is the whole of what
+went wrong the first time.
+
+Three properties are worth knowing before you need them.
+
+- **It never keys on a pid**, and no pid is published any more. `just dispatch` prints the
+  stop command instead. The launcher pid stays on the record as `launcher_pid`, named so a
+  later reader cannot mistake it for the work.
+- **Every refusal writes nothing and kills nothing** — `unknown_dispatch`,
+  `invalid_dispatch_id`, `dispatch_unreadable`, `worktree_gone`, `procfs_unavailable` — so
+  "refused" and "nothing happened" are the same state. `worktree_gone` in particular is a
+  refusal rather than a clean answer: a process holding a removed directory keeps reporting
+  that path, so a missing tree does not prove the work stopped.
+- **A stop on a dispatch that already ended is a named outcome, not a refusal and not a
+  silent success**: `already_finished` where the run wrote its own result, `already_stopped`
+  where it died without writing one. The second case records an ending, which is what makes
+  the tree dispatchable again — see below.
+
+Two things it deliberately skips and reports rather than kills: this process and its own
+ancestors (`skipped_self.<pid>=`), so a stop typed from inside the target tree does not kill
+the shell that typed it; and any process whose working directory `/proc` reports as deleted
+(`skipped_deleted_cwd=`), because after `worktree done` + `worktree add` at the same path
+that path text belongs to the tree's previous occupant.
+
+### And the rung that makes the misread impossible
+
+`just dispatch` now refuses `worktree_occupied_by_dispatch`, naming the holder, when the
+assigned tree already carries a dispatch record with no `result.json`. The record directory
+is the authority: no result means live, or dead without having written one, and neither
+justifies a second agent in the tree. A predecessor that *did* record an ending is not a
+holder and does not refuse. If the holder is genuinely dead, `--stop` it — that is what
+records the ending and reopens the tree; there is no flag that dispatches through the rung.
+
 The procedure is now a recipe, so a briefing names it rather than narrating it:
 `just worktree add issue-214` fetches, creates `.claude/worktrees/issue-214` off
 `origin/main` detached, pre-flights the result and prints the path and base SHA;

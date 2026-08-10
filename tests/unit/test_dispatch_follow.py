@@ -148,7 +148,11 @@ def test_arming_adds_the_runner_identity_and_authoritative_paths(tmp_path: Path)
     document = json.loads((record / "dispatch.json").read_text(encoding="utf-8"))
     assert document["dispatch_id"] == record.name
     assert document["existing"] == "kept"
-    assert document["runner_pid"] == 7654
+    # `launcher_pid`, and never `runner_pid`: the value is the process the seam forked,
+    # not the session it starts, and the old name invited the check that produced #105's
+    # sixth instance (#308).
+    assert document["launcher_pid"] == 7654
+    assert "runner_pid" not in document
     assert document["runner_pipe"] == str(runner_pipe)
     assert document["result_path"] == str(record / "result.json")
 

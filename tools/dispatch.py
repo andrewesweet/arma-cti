@@ -112,6 +112,18 @@ off-peak rung's precedent exactly, override and failure class included: there is
 no environment variable that dispatches through a freeze, and the refusal **carries no
 failure class**, because nothing was found about any provider, any lane or any code.
 
+**A dispatch can be stopped, and a tree that already holds one refuses a second** (#308).
+Both halves come from #105's sixth instance, where a seat killed a dispatch, saw `ps -p
+<pid>` return nothing, pre-flighted the tree clean and re-dispatched into it — while the
+session it thought it had killed worked on for half an hour. `--stop <id>` resolves the
+dispatch to its worktree and then to every process whose `/proc/<pid>/cwd` is inside that
+tree, signals, and **verifies by re-scanning**; `tools/dispatch_stop.py` owns the scan and
+its refusals, and this file owns the surface. The occupancy rung below is the other half:
+a tree already carrying a dispatch with no `result.json` refuses
+`worktree_occupied_by_dispatch` and names the holder, because the pre-flight answers "is
+this tree clean now" and the question that produced two agents in one worktree was "is
+anyone still working in it".
+
 **The keep-on-Claude class policy is a separate, per-dispatch read** (#266). Queue policy
 answers whether work may start now; `config/dispatch-routing-policy.json` answers whether
 the declared class may leave Claude. The main checkout is read on every dispatch, never at
@@ -143,6 +155,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 # The path insert above is what makes these importable.
 import admission
 import breaker
+import dispatch_stop
 import hook_parity
 import queue_policy
 import readiness
@@ -1334,6 +1347,13 @@ def _as_refusal(found: queue_policy.Refusal | None) -> Refusal | None:
     return Refusal(found.kind, found.found, found.action, failure_class=found.failure_class)
 
 
+def _from_stop(found: dispatch_stop.Refusal | None) -> Refusal | None:
+    """Carry the stop module's refusal across, for `_as_refusal`'s reason exactly."""
+    if found is None:
+        return None
+    return Refusal(found.kind, found.found, found.action, failure_class=found.failure_class)
+
+
 def routing_refusal(
     args: argparse.Namespace, found: Readiness, root: Path, now: datetime
 ) -> Refusal | None:
@@ -1481,6 +1501,18 @@ def plan_dispatch(
                 failure_class="infra_unavailable",
             ),
         )
+
+    # #105's sixth instance: a tree is not free merely because it is clean. The pre-flight
+    # answers "is this tree clean now" and the question that produced two agents in one
+    # worktree was "is anyone still working in it", which nothing asked. The dispatch
+    # record directory answers it — a record with no `result.json` is live, or dead
+    # without having written one — and this rung sits directly below the existence check
+    # because both are properties of the assigned tree rather than of the request (#308).
+    refusal = _from_stop(
+        dispatch_stop.occupancy_refusal(worktree, Path(args.dispatch_dir).expanduser())
+    )
+    if refusal is not None:
+        return None, "", refusal
 
     # The credential is checked here as well as in the child, and the order matters: a
     # dispatch that cannot start should refuse at the recipe rather than hand back an id
@@ -1756,6 +1788,17 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         default=os.environ.get("CTI_QUEUE_DIR", str(queue_policy.DEFAULT_QUEUE_DIR)),
     )
     parser.add_argument("--queue-root", default=os.environ.get("CTI_QUEUE_ROOT", ""))
+    # The supported way to stop a dispatch (#308, from #105). It takes a dispatch id and
+    # nothing else, because the id is all a caller reliably has and everything else — the
+    # worktree, and through it the processes — is derived from the record rather than
+    # retyped. There is no `--stop-pid`, and there is no flag that skips the verifying
+    # re-scan: a stop that does not verify is the guess that produced the incident.
+    parser.add_argument(
+        "--stop",
+        default="",
+        metavar="ID",
+        help="stop this dispatch's processes and verify by re-scanning its worktree",
+    )
     parser.add_argument("--list", action="store_true", help="print the registry and exit")
     parser.add_argument(
         "--readiness",
@@ -1823,12 +1866,19 @@ def emit(lines: Iterable[str], code: int) -> int:
 def answer_directly(args: argparse.Namespace) -> int | None:
     """Serve the modes that dispatch nothing, or return `None` to plan a dispatch.
 
-    Three requests are questions rather than dispatches — the registry, a readiness audit,
-    and the detached child asking to run a record the seam already wrote — and each is
-    answered here so that `main` stays one path: plan, refuse, or launch.
+    Four requests are not dispatches — the registry, a readiness audit, a stop, and the
+    detached child asking to run a record the seam already wrote — and each is answered
+    here so that `main` stays one path: plan, refuse, or launch.
+
+    `--stop` is served before the four required options are checked, because a stop names
+    no lane, profile, seat or issue: it names a dispatch that already exists and takes
+    everything else from that dispatch's own record.
     """
     if args.list:
         return emit(registry_lines(), 0)
+    if args.stop:
+        code, lines = dispatch_stop.stop_by_id(Path(args.dispatch_dir).expanduser(), args.stop)
+        return emit(lines, code)
     if args.readiness:
         return readiness_audit(args)
     if args.run:

@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`just dispatch --stop <id>`, the supported way to stop a dispatch**, and a
+  `worktree_occupied_by_dispatch` refusal that stops a second one entering an occupied tree.
+  Both come from #105's sixth instance, where a seat killed a dispatch, saw `ps -p <pid>` return
+  nothing, pre-flighted the tree clean and re-dispatched into it — while the session it thought it
+  had killed worked in that tree for another half hour. `--stop` resolves the dispatch id to its
+  worktree and then to every process whose `/proc/<pid>/cwd` is inside it (the session **plus** the
+  MCP servers it spawned — four processes in the incident), signals, and **verifies by re-scanning**;
+  a tree still occupied after `SIGKILL` is `finding=stop_unverified`, never a success. It never keys
+  on a pid, every refusal writes nothing and kills nothing, and a stop on a dispatch that already
+  ended is a named outcome (`already_finished` / `already_stopped`) rather than a refusal or a silent
+  success. The dispatch-time rung reads the record directory as the authority — no `result.json`
+  means live or dead-without-writing-one — and names the holder (#308).
+
+### Changed
+
+- **`just dispatch` no longer prints a `pid=` line**, and the record's `runner_pid` is now
+  `launcher_pid`. The value was always the launcher the seam forks rather than the session it
+  starts, and the session reparents away from it — so a published pid that does not identify the
+  work invites exactly the `ps -p <pid>` check that produced two agents in one worktree. What the
+  recipe prints in its place is `stop=just dispatch --stop <id>`, which is the handle that does
+  identify the work (#308, #105).
+
 ### Fixed
 
 - **The Windows client-leg host stall is typed `infra_unavailable`, not `timeout`.** When the six

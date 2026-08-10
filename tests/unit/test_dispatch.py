@@ -1479,7 +1479,12 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     printed = read_lines(done.stdout)
     assert printed["dispatch"].startswith("d-")
     assert dispatch.ID_ALPHABET.fullmatch(printed["dispatch"])
-    assert int(printed["pid"]) > 0
+    # No pid is published, and what replaces it is the handle that identifies the work
+    # (#308). The seam's `$child` is the launcher; the session reparents away from it, so
+    # a caller checking `ps -p <that pid>` learns nothing about whether the dispatch is
+    # still running — which is precisely how #105's sixth instance happened.
+    assert "pid" not in printed
+    assert printed["stop"] == f"just dispatch --stop {printed['dispatch']}"
     # The five-minute rule's whole point: the recipe hands back an id, it does not wait
     # for the run. Ten seconds is a ceiling on `uv run`'s cold start, not a measurement.
     assert elapsed < 10

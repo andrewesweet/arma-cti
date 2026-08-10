@@ -50,13 +50,23 @@ class FollowTarget:
     runner_pipe: Path
 
 
-def arm_record(record: Path, runner_pid: int, runner_pipe: Path) -> None:
-    """Add the authoritative follower fields to an existing dispatch record."""
+def arm_record(record: Path, launcher_pid: int, runner_pipe: Path) -> None:
+    """Add the authoritative follower fields to an existing dispatch record.
+
+    The pid is recorded as `launcher_pid`, which is what it is (#308). It used to be
+    called `runner_pid`, and the name was a trap: the value is the `--run` process the
+    seam forks, not the session that process starts, so anything that treated it as a
+    handle on the work was reasoning about the wrong process — #105's sixth instance,
+    where killing it and seeing `ps -p` come back empty read as a successful stop while
+    the session worked on for half an hour. Nothing reads this field; it is kept because
+    the seam knows the value and a record should say what it forked, and it is named so
+    that a later reader cannot mistake it for the work.
+    """
     record = record.resolve()
     record_path = record / "dispatch.json"
     document: dict[str, Any] = json.loads(record_path.read_text(encoding="utf-8"))
     document["result_path"] = str(record / "result.json")
-    document["runner_pid"] = runner_pid
+    document["launcher_pid"] = launcher_pid
     document["runner_pipe"] = str(runner_pipe.resolve())
 
     temporary = record / f".dispatch.json.{os.getpid()}.tmp"
@@ -170,7 +180,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=Path(os.environ.get("CTI_DISPATCH_DIR", str(DEFAULT_DISPATCH_DIR))),
     )
     parser.add_argument("--arm-record", type=Path)
-    parser.add_argument("--runner-pid", type=int, default=0)
+    parser.add_argument("--launcher-pid", type=int, default=0)
     parser.add_argument("--runner-pipe", type=Path)
     return parser.parse_args(argv)
 
@@ -185,10 +195,10 @@ def emit(lines: tuple[str, ...], code: int) -> int:
 
 def arm_from_args(args: argparse.Namespace) -> int:
     """Record follower fields for the detached seam's internal arm request."""
-    if args.runner_pid <= 0 or args.runner_pipe is None:
+    if args.launcher_pid <= 0 or args.runner_pipe is None:
         return emit(("refusal=runner_identity_missing",), EXIT_REFUSED)
     try:
-        arm_record(args.arm_record, args.runner_pid, args.runner_pipe)
+        arm_record(args.arm_record, args.launcher_pid, args.runner_pipe)
     except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as error:
         return emit(
             ("refusal=dispatch_follow_arm_failed", f"detail={error}"),

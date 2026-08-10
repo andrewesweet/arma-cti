@@ -63,8 +63,18 @@ disown "$child" 2>/dev/null || true
 
 # Record the exact runner identity and paths before returning. The helper
 # owns the JSON decision under pytest; this shell retains only the process seam.
-timeout "$UV_TIMEOUT" uv run --quiet python tools/dispatch_follow.py --arm-record "$record" --runner-pid "$child" --runner-pipe "$completion_pipe"
+timeout "$UV_TIMEOUT" uv run --quiet python tools/dispatch_follow.py --arm-record "$record" --launcher-pid "$child" --runner-pipe "$completion_pipe"
 
-printf 'pid=%s\n' "$child"
+# No `pid=` line, deliberately, and this is the one place the omission has to be
+# explained (#308, from #105's sixth instance). `$child` is the *launcher* — the
+# `uv run … --run` process this script forks. The session it starts is a
+# grandchild that reparents, so killing `$child` and seeing `ps -p` come back
+# empty reads exactly like success while a `claude --print` carries on working;
+# that is what put two agents in one worktree for half an hour. A published pid
+# that does not identify the work invites that check, so it is not published.
+# The launcher pid stays on the record under the name it deserves, and the handle
+# that does identify a dispatch's processes — its worktree — is what `--stop`
+# resolves to.
 printf 'log=%s\n' "$log"
 printf 'dispatched=%s\n' "$dispatch"
+printf 'stop=just dispatch --stop %s\n' "$dispatch"

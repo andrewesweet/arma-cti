@@ -392,6 +392,8 @@ discard path="" ruling="":
 #                                               credential redacted, nothing launched
 #   just dispatch --readiness --issue 241       is this issue ready to be worked on?
 #                                               nothing is dispatched either way
+#   just dispatch --stop <id>                   stop that dispatch's processes and
+#                                               verify by re-scanning its worktree
 #
 # `--lane` picks the runner and the environment that reaches a provider;
 # `--profile` is one opaque `(lane, model, effort)` token, because effort
@@ -437,6 +439,18 @@ discard path="" ruling="":
 # assignment before the runner starts and refuses loudly on a mismatch (#105).
 # A lane that cannot be reached — no credentials file, no key, no worktree — is
 # `infra_unavailable` and is not a result.
+#
+# A tree that already carries a dispatch with no `result.json` refuses a second
+# one — `worktree_occupied_by_dispatch`, naming the holder (#308, from #105's
+# sixth instance). The record directory is the authority: no result means live,
+# or dead without having written one, and neither justifies a second agent in
+# the tree. `--stop <id>` is how a holder is removed. It resolves the dispatch
+# to its worktree and then to every process whose `/proc/<pid>/cwd` is inside
+# it — the session plus its MCP servers — signals, and **verifies by
+# re-scanning**; a tree still occupied after SIGKILL is `stop_unverified`, never
+# a success. It never keys on a pid, and no pid is printed any more: the seam's
+# is the launcher, the session reparents away from it, and a `ps -p` on it reads
+# as success over a live agent. Every refusal writes nothing and kills nothing.
 #
 # The `zai` lane dispatches only in off-peak hours, on the human's ruling of
 # 2026-08-05 (#238). Inside z.ai's published peak band every dispatch to it is
