@@ -295,8 +295,8 @@ fast: check unit mutation
 # not_on_remote, ref_mismatch, git_failed. Nothing here resets, cleans, prunes or
 # removes on a refusal path — foreign files mean stop and report, and the
 # judgement of what a refusal means stays the agent's.
-worktree action="check" name="" ref="":
-    uv run python tools/worktree.py {{ action }} "{{ name }}" --ref "{{ ref }}"
+worktree *args:
+    uv run python tools/worktree.py {{ args }}
 
 # The landing protocol as one call (#213, ADR-0049): fetch, rebase onto
 # origin/main, re-gate, `git push origin HEAD:main`, then fast-forward the main

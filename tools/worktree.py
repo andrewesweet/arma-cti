@@ -750,9 +750,14 @@ def restore(root: Path, name: str, ref: str) -> Report:
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """One action, and the name it acts on where the action takes one."""
+    """One action defaulting to ``check``, and its name where it takes one."""
     parser = argparse.ArgumentParser(prog="just worktree", description=__doc__)
-    parser.add_argument("action", choices=("add", "check", "list", "done", "archive", "restore"))
+    parser.add_argument(
+        "action",
+        nargs="?",
+        default="check",
+        choices=("add", "check", "list", "done", "archive", "restore"),
+    )
     parser.add_argument("name", nargs="?", default="")
     parser.add_argument("--ref", default="")
     return parser.parse_args(argv)
