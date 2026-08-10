@@ -24,7 +24,8 @@
       "contacts",
       "hq",
       "casualties",
-      "loadouts"
+      "loadouts",
+      "squad_leaders"
     ],
     "squad": [
       "size",
@@ -80,7 +81,8 @@
       "order",
       "place",
       "at",
-      "pos"
+      "pos",
+      "suspended"
     ],
     "contact": [
       "at",
@@ -127,6 +129,10 @@
     ],
     "reinforce": [
       "squad"
+    ],
+    "reinforce_composition": [
+      "squad",
+      "squad_type"
     ]
   },
   "effects": {
@@ -142,6 +148,15 @@
     ],
     "squad_reinforced": [
       "squad",
+      "size"
+    ],
+    "squad_enrolled": [
+      "squad",
+      "player"
+    ],
+    "squad_filled": [
+      "squad",
+      "squad_type",
       "size"
     ],
     "objective_captured": [
@@ -172,11 +187,14 @@
     "already_held",
     "caller_dead",
     "campaign_over",
+    "composition_fixed",
+    "composition_unassigned",
     "force_limit",
     "insufficient_funds",
     "malformed_command",
     "not_your_squad",
     "port_unavailable",
+    "squad_suspended",
     "unknown_caller",
     "unknown_command",
     "unknown_squad",
