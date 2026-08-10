@@ -44,7 +44,7 @@ private _squads = _view getOrDefault ["squads", []];
 if (_key isEqualTo 15) exitWith {
     private _ids = _squads apply { _x getOrDefault ["id", ""] };
     if (_ids isEqualTo []) exitWith {
-        cti_uiNote = "no Squads yet — buy one first";
+        cti_uiNote = "no Squads yet — Purchase one first";
         [] call cti_fnc_mapRender;
     };
     private _next = ((_ids find cti_uiSquad) + 1) % (count _ids);

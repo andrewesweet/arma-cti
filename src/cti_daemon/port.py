@@ -286,8 +286,8 @@ class CommandPort:
         ADR-0005 measured the Observation's ceiling and the SQF side logs when a
         reply comes within a tenth of the cap, but nothing stopped a side
         reaching it: Funds were the only question a Purchase was judged on, and a
-        long Campaign with hoarded income buys past the ceiling legally. Past it
-        the engine truncates the return in silence, `fromJSON` fails, and the
+        long Campaign with hoarded income Purchases past the ceiling legally. Past
+        it the engine truncates the return in silence, `fromJSON` fails, and the
         session degrades every cycle with the cause four hours behind it (#101).
 
         ADR-0030's budget is checked per map at `just unit` time, and cannot see
@@ -303,7 +303,7 @@ class CommandPort:
             return _reject(
                 "force_limit",
                 f"this map's Observation does not fit one reply even with no Squads: "
-                f"{side} cannot buy on it at all",
+                f"{side} cannot Purchase on it at all",
             )
         held = self.campaign.squad_count(side)
         if held >= ceiling:

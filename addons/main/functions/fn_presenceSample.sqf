@@ -11,7 +11,8 @@
  * testable (ADR-0012).
  *
  * Only living units on a playable side count. Dead bodies persist in the world
- * and would otherwise hold ground indefinitely; a wreck cannot capture a town.
+ * and would otherwise hold ground indefinitely; a wreck cannot capture an
+ * Objective.
  *
  * Arguments: none
  *

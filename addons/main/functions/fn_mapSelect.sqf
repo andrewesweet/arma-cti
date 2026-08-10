@@ -15,8 +15,8 @@
  * for it (#118, ADR-0041).
  *
  * cti_fnc_placeOf without the nearest-place fallback, so clicking open country
- * selects nothing rather than silently naming a town two kilometres away — the
- * open ground between places has no name (CONTEXT.md), and an Order that
+ * selects nothing rather than silently naming an Objective two kilometres away
+ * — the open ground between places has no name (CONTEXT.md), and an Order that
  * quietly acquired one would be an Order the Commander did not give.
  *
  * Arguments:

@@ -81,7 +81,7 @@ UNKNOWN_THREAT: Final = 1.0
 # Squad is eight, so these run from comfortable at a band's floor to thin at its
 # top — on purpose. The map fields eight Squads (one per Objective), so a table
 # that demanded parity with a company would spend the whole force on one raid
-# and concede Domination to buy Decapitation. Measured on Stratis from a held
+# and trade Domination away for Decapitation. Measured on Stratis from a held
 # island against a fresh company, 200 seeds: at nine the raid is never assembled
 # at all and one sighting vetoes a win condition permanently; at eight it is
 # assembled by emptying the island, no Objective garrisoned on any seed; at four

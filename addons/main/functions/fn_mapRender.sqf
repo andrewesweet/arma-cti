@@ -21,7 +21,7 @@
  *
  * Ownership markers are not drawn here: the server already paints those
  * globally from the public picture, and a second set drawn from a Commander's
- * copy would be two answers to who holds a town.
+ * copy would be two answers to who holds an Objective.
  *
  * Arguments: none
  *
@@ -181,7 +181,7 @@ private _digit = 1;
 {
     _x params ["", "_kind", "", "_label"];
     _legend = _legend + format ["[%1] %2%3    ",
-        _digit, _label, ["", " — buy"] select (_kind isEqualTo "purchase")];
+        _digit, _label, ["", " — Purchase"] select (_kind isEqualTo "purchase")];
     _digit = _digit + 1;
 } forEach (call cti_fnc_mapVerbs);
 

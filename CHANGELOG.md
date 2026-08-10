@@ -92,6 +92,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   every test the project has would pass. The call is now made where the group is. The mission's
   remote-execution whitelist is untouched and stays one function long — the rules it carries bind
   clients, and this is the server (#312, ADR-0070).
+- **The map UI and the force-limit refusal say Purchase where they used to say buy** (#146,
+  #139). The three surfaces a human Commander actually reads — the Tab hint with no Squads to
+  cycle, the map legend's suffix on every Squad type, and the port's `force_limit` detail for a
+  map whose Observation fits no Squads at all — used the word CONTEXT.md's Purchase entry tells
+  us to avoid. Wording only: no code, no wire format and no rejection code moved. The same sweep
+  put the glossary's terms into the comments and docstrings #139's second DDD pass named, and
+  three comments now say Objective rather than town.
 - **`Roster.reconcile` no longer deletes a Squad with no living members by construction.** It
   removed any fielded Squad a report did not name, and `fn_squadSample` omits a Squad at zero
   living members — which a composition-unassigned shell reaches without anything having gone

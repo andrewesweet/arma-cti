@@ -98,7 +98,7 @@ class EconomyTable:
     # Squad's price (docs/mvp-scope.md: "missing fraction x price x ~0.8
     # discount"). A **playtest-tuned placeholder** in ADR-0020's sense: the
     # structure — Reinforce is priced off what is missing, and priced below
-    # buying the same men fresh — is the contract, and 0.8 is a number nobody
+    # Purchasing the same men fresh — is the contract, and 0.8 is a number nobody
     # has played against yet. Authored rather than coded so tuning it is an edit
     # (docs/mvp-scope.md), and it wants a human's sign-off on feel.
     reinforce_discount: float
@@ -227,7 +227,7 @@ def _check_numbers(table: dict[str, Any]) -> None:
             _refuse(f"{key} must be a positive whole number of seconds")
 
     # A discount, so it is a fraction of the price and never more than it: a
-    # Reinforce dearer than buying the Squad again is a table nobody meant to
+    # Reinforce dearer than Purchasing the Squad again is a table nobody meant to
     # author, and a free one is Funds with nothing to spend them on. Bools are
     # excluded explicitly because `isinstance(True, int)` is true and `True`
     # would author a full-price refill.

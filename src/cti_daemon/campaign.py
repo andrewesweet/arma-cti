@@ -393,7 +393,7 @@ class Campaign:
         a caller keeps in step: a Squad that was paid for and never minted, or
         minted and never announced, is a Campaign disagreeing with itself. What
         it costs and how many men it is are the authored table's answer, so
-        nothing outside can buy a Squad at a price of its own.
+        nothing outside can Purchase a Squad at a price of its own.
 
         The Base is not named on purpose: the daemon owns the rules, the game
         owns the geometry, and the manifest already tells it where each side's

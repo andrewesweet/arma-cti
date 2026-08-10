@@ -14,7 +14,7 @@
  *
  * Parsed once per machine and cached: every Command built and every Command
  * judged asks for this, and re-reading a file off disk per Order is a cost
- * with nothing to buy.
+ * with nothing to show for it.
  *
  * Arguments: none
  *

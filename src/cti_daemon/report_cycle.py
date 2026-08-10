@@ -195,7 +195,7 @@ class ReportCycle:
         for side in commands.SIDES:
             self._record_observation(side)
         # Before the Commanders play, so a Campaign that ended on this report
-        # does not get one more cycle of buying and ordering after its own end
+        # does not get one more cycle of Purchase and Order after its own end
         # screen. `_take_command` reads the same completion.
         self._conclude()
         self._take_command(told.at_time)
