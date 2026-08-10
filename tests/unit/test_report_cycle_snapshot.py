@@ -76,8 +76,10 @@ def test_apply_passes_through_the_uids_whose_saved_kit_is_no_longer_offered(
 def test_a_load_does_not_unseat_the_commanders_the_session_wired(
     tmp_path: Path,
 ) -> None:
-    # Commanders are session wiring, not Campaign state (ADR-0008 defers player
-    # role to #25), so the session that loads keeps the side it put under command.
+    # Commanders are session wiring, not Campaign state — ADR-0070 put a
+    # player-led Squad's own states into the snapshot and left which slot a
+    # player occupies where ADR-0025 has it, on the server — so the session that
+    # loads keeps the side it put under command.
     cycle, _ = _cycle(tmp_path)
     cycle.commanded_by("WEST", cast("Any", object()))
     assert cycle.commanded("WEST")

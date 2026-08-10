@@ -2,12 +2,13 @@
  * Author: arma-cti
  * Reports what the world can see to the daemon on a loop. Runs on the server.
  *
- * Six things only, because they are the six nothing else can see: who is
+ * Seven things only, because they are the seven nothing else can see: who is
  * standing inside each Objective's capture radius, what has become of each
  * Squad, what each side's leaders have seen of the other (#28), whether
  * each Base's HQ structure is still standing (#33), who has died since the
- * last report (#39), and which kit each player has picked off the menu at his
- * own Base (#172). The rest —
+ * last report (#39), which kit each player has picked off the menu at his
+ * own Base (#172), and who is occupying a squad-leader slot (ADR-0070). The
+ * rest —
  * ownership, Funds, Orders, and what a sighting means — is the daemon's
  * (ADR-0012). The reply is the return leg on the same call rather than a second
  * channel with a cadence of its own — and it is the public picture alone (#27):
@@ -67,7 +68,7 @@ missionNamespace setVariable ["cti_presenceReport", _turns];
     params ["_turns"];
 
     // The whole report, built through the schema the daemon reads it with (#74).
-    // Which six things the world reports and what each is called is one
+    // Which seven things the world reports and what each is called is one
     // declaration in `cti_daemon.report`, exported into the same JSON the
     // Command catalogue rides in, rather than a list here that has to be kept in
     // step with a list there.
@@ -78,7 +79,8 @@ missionNamespace setVariable ["cti_presenceReport", _turns];
         ["contacts", call cti_fnc_contactSample],
         ["hq", call cti_fnc_hqSample],
         ["casualties", call cti_fnc_casualtySample],
-        ["loadouts", call cti_fnc_loadoutSample]
+        ["loadouts", call cti_fnc_loadoutSample],
+        ["squad_leaders", call cti_fnc_squadLeaderSample]
     ]] call cti_fnc_reportObject;
 
     _turns set ["sent", (_turns get "sent") + 1];

@@ -193,6 +193,22 @@ SHAPES: Final[dict[str, Shape]] = {
             Field(
                 "loadouts", OBJECT, "a map of player UIDs to the kit each has chosen", absent=None
             ),
+            # Who is occupying a squad-leader slot, by player UID (ADR-0070).
+            # It rides the report for `loadouts`' exact reason: it is not a
+            # Command — no Funds move and the rules judge nothing — it is a fact
+            # about the world the daemon writes down, and folding it writes
+            # Campaign state the snapshot then carries. By UID rather than by
+            # unit or machine id, for ADR-0025's reason: respawn hands the
+            # player a new unit and reconnection a new machine id, and neither
+            # is a change of who is leading. Absent means the report said
+            # nothing; present but empty means nobody is leading a Squad, which
+            # is a real answer.
+            Field(
+                "squad_leaders",
+                OBJECT,
+                "a map of player UIDs to the side each leads a Squad for",
+                absent=None,
+            ),
         ),
     ),
     "squad": Shape(
@@ -298,6 +314,7 @@ class Report:
     hq: dict[str, HqSeen] | None
     casualties: Casualties | None
     loadouts: dict[str, str] | None
+    squad_leaders: dict[str, str] | None
 
 
 class MalformedReportError(Exception):
@@ -463,6 +480,29 @@ def _loadouts(reported: object) -> dict[str, str] | None:
     }
 
 
+def _squad_leaders(reported: object) -> dict[str, str] | None:
+    """Read which side each player says he is leading a Squad for (ADR-0070).
+
+    The side is held to the vocabulary rather than passed through as a string,
+    which is `_contacts`' rule and not `_loadouts`': a kit id is authored data
+    the shipped PBO can legitimately drift on, while a side comes out of
+    `commands.SIDES` through the same generated export the samplers read, so a
+    side this Campaign does not play can only be a stale export. Reading it and
+    minting a shell on a side nothing commands would put a Squad in the roster
+    that no Observation ever carries.
+    """
+    if reported is None:
+        return None
+    claimed: dict[str, str] = {}
+    for uid, side in cast("dict[str, Any]", reported).items():
+        path = f"squad_leaders.{uid}"
+        named = _checked(STRING, "a side that is playing", side, path)
+        if named not in commands.SIDES:
+            raise MalformedReportError(path, f"`{path}` names no side that is playing")
+        claimed[uid] = named
+    return claimed
+
+
 def parse(payload: dict[str, Any]) -> Report:
     """Read one observe report off the wire, or refuse it whole.
 
@@ -479,6 +519,7 @@ def parse(payload: dict[str, Any]) -> Report:
         hq=_hq(told["hq"]),
         casualties=_casualties(told["casualties"]),
         loadouts=_loadouts(told["loadouts"]),
+        squad_leaders=_squad_leaders(told["squad_leaders"]),
     )
 
 

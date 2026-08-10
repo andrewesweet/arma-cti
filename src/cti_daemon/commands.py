@@ -57,6 +57,23 @@ CATALOGUE: Final[dict[str, tuple[str, ...]]] = {
     # manifest already knows. A caller who could name a price or a place could
     # name a wrong one.
     "reinforce": ("squad",),
+    # The composition-carrying form of Reinforce, and the Commander's alone
+    # (ADR-0070 ruling 4): it assigns a composition-unassigned player-led Squad
+    # the catalogue composition it demands, once, and fills the missing men at
+    # ordinary Reinforce pricing.
+    #
+    # Its own entry rather than an optional `squad_type` on `reinforce`, and the
+    # ADR fixes that rather than leaving it to taste: the comment above makes
+    # the fixed argument list load-bearing, `cti_fnc_command` checks required
+    # arguments and nothing else, and an optional argument would give one name
+    # two shapes with the choice between them buried inside a handler. The wire
+    # token is this module's to name; the shape is not.
+    #
+    # It also inherits `_principal_refusal` unchanged: a squad-leader caller is
+    # refused anything that is not the plain `reinforce`, so ruling 4 falls out
+    # of ADR-0040's existing rule rather than restating the second principal's
+    # authority in a second place.
+    "reinforce_composition": ("squad", "squad_type"),
 }
 
 # The effects a Command can produce, and the arguments each carries. An
@@ -72,6 +89,22 @@ EFFECTS: Final[dict[str, tuple[str, ...]]] = {
     # paid for, and only one of those two can be right about a man who died
     # between the judgement and the effect being applied.
     "squad_reinforced": ("squad", "size"),
+    # A player squad leader's shell has been minted, and the world must learn
+    # which group answers to the id (ADR-0070). It creates nobody and spends
+    # nothing: the daemon mints Squad ids for the resume determinism ADR-0003
+    # requires, the player's group already exists because the engine made it for
+    # the slot, and without this pairing no Order can reach the Squad. `player`
+    # is the UID, which is how the world finds the group again after a respawn
+    # or a reconnection (ADR-0025).
+    "squad_enrolled": ("squad", "player"),
+    # The first fill: that shell has been assigned a composition and paid for.
+    # It carries the type because `squad_reinforced`'s branch reads the type off
+    # `cti_squadType`, which the world set at spawn — and a shell was never
+    # spawned by an effect, so it carries none. Widening `squad_reinforced` to
+    # carry the type was weighed and rejected in ADR-0070: the argument would be
+    # meaningless on every other Reinforce, and its arity change would break the
+    # addon's declared-argument check for a fact only one caller needs.
+    "squad_filled": ("squad", "squad_type", "size"),
     "objective_captured": ("objective",),
     # The last effect any Campaign produces (#35): which condition ended it, the
     # in-game moment it ended, and the telemetry-sourced summary the end screen

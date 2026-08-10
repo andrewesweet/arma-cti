@@ -103,6 +103,10 @@ def worst_case(
                 place=widest,
                 at=widest,
                 pos=_WORST_POSITION,
+                # `false` is a character longer on the wire than `true`, so the
+                # dearest Squad to carry is one nobody has suspended — which is
+                # also every Squad a Campaign has except a disconnected shell.
+                suspended=False,
             )
             for index in range(squads_per_side)
         ),

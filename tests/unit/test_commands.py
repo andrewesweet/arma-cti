@@ -99,10 +99,16 @@ def test_the_catalogue_holds_the_commands_the_language_names() -> None:
     # what it costs is worked out from what that Squad was bought as, and where
     # it happens is that Squad's own Base, so there is nothing for a caller to
     # get wrong and nothing for it to lie about.
+    #
+    # Its composition-carrying form is a second entry rather than an optional
+    # argument (ADR-0070): a constructor with a fixed argument list is one SQF
+    # cannot build wrong, and an optional `squad_type` would give one name two
+    # shapes with the choice between them buried inside a handler.
     assert commands.CATALOGUE == {
         "purchase": ("squad_type",),
         "order": ("squad", "order", "place"),
         "reinforce": ("squad",),
+        "reinforce_composition": ("squad", "squad_type"),
     }
 
 

@@ -35,6 +35,7 @@ def test_a_report_of_nothing_but_the_clock_says_nothing_about_anything() -> None
     assert told.hq is None
     assert told.casualties is None
     assert told.loadouts is None
+    assert told.squad_leaders is None
 
 
 def test_an_empty_squad_report_is_the_world_saying_it_holds_none() -> None:
@@ -216,6 +217,40 @@ def test_whether_a_kit_is_on_the_menu_is_not_this_documents_question() -> None:
     assert report.parse(_payload(loadouts={"uid-1": "jetpack"})).loadouts == {"uid-1": "jetpack"}
 
 
+def test_an_empty_squad_leader_report_is_the_world_saying_nobody_leads_one() -> None:
+    # `loadouts`' distinction on the field ADR-0070 added: absent leaves the
+    # roster's account of who leads what alone, empty is a world in which nobody
+    # has taken the squad-leader role saying so.
+    assert report.parse(_payload(squad_leaders={})).squad_leaders == {}
+
+
+def test_a_squad_leaders_claim_is_read_as_a_side_against_his_uid() -> None:
+    told = report.parse(_payload(squad_leaders={"76561198000000000": "WEST"}))
+
+    assert told.squad_leaders == {"76561198000000000": "WEST"}
+
+
+def test_a_squad_leader_claiming_a_side_nobody_is_playing_refuses_the_report() -> None:
+    # `contacts`' rule rather than `loadouts`', and the difference is where the
+    # vocabulary comes from: a kit id is authored data a shipped PBO can drift
+    # on, while a side is `commands.SIDES` travelling through the same generated
+    # export the sampler reads. Minting a shell on a side nothing commands would
+    # put a Squad in the roster that no Observation ever carries.
+    with pytest.raises(report.MalformedReportError) as refusal:
+        report.parse(_payload(squad_leaders={"uid-1": "west"}))
+
+    assert refusal.value.path == "squad_leaders.uid-1"
+    assert refusal.value.detail == "`squad_leaders.uid-1` names no side that is playing"
+
+
+def test_a_squad_leader_claim_that_is_not_a_string_is_refused_and_the_uid_is_named() -> None:
+    with pytest.raises(report.MalformedReportError) as refusal:
+        report.parse(_payload(squad_leaders={"uid-1": 7}))
+
+    assert refusal.value.path == "squad_leaders.uid-1"
+    assert refusal.value.detail.startswith("`squad_leaders.uid-1` must be ")
+
+
 def test_the_export_is_the_field_names_of_every_shape() -> None:
     exported = report.exported()
 
@@ -229,4 +264,5 @@ def test_the_export_is_the_field_names_of_every_shape() -> None:
         "hq",
         "casualties",
         "loadouts",
+        "squad_leaders",
     ]

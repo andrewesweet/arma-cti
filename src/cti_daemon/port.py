@@ -82,6 +82,29 @@ REJECTION_CODES: Final = frozenset(
         # resolves who is asking, so a Commander's Command and a squad leader's
         # Reinforce are refused identically.
         "caller_dead",
+        # The three ADR-0070 adds, and each exists because an existing code
+        # would lie about what happened.
+        #
+        # The *ordinary* Reinforce meeting a composition-unassigned shell.
+        # `Campaign.missing` answers 0 for a Squad whose type the table does not
+        # sell and 0 for a Squad that has no type at all, so `_refill_refusal`
+        # would type this `malformed_command` — which tells a Commander the
+        # economy table is broken when it is not, and would be the first refusal
+        # a player squad leader ever meets.
+        "composition_unassigned",
+        # The *first-fill* form meeting a Squad that already carries a
+        # composition: the once-only rule being tested (ruling 3). Not
+        # `already_held`, which means "at the strength it was bought at" and is
+        # about men rather than about what the Squad is. Named for CONTEXT.md's
+        # own other half of the pair — "composition-unassigned until the
+        # Commander's first fill assigns one, and **fixed** thereafter" — rather
+        # than as `composition_assigned`, which differs from the code above by
+        # three letters and is exactly the transposition a log reader makes.
+        "composition_fixed",
+        # Either form meeting a suspended shell (ruling 7). Neither of the two
+        # above: the composition is unassigned *and* it is not the once-only
+        # rule, it is a Squad whose player is not here to lead it.
+        "squad_suspended",
     }
 )
 
@@ -314,6 +337,25 @@ class CommandPort:
         it about the Squad rather than about the caller: what it was bought as,
         how many of it are standing, and where it is standing.
         """
+        # Before the table is consulted, because the table cannot answer for a
+        # Squad that has no type yet and would answer wrongly if asked
+        # (ADR-0070): a suspended shell is not here to be refilled, and an
+        # unassigned one has no composition to restore. Suspension first of the
+        # two, because a suspended shell is unassigned by definition and the
+        # useful thing to tell a Commander is that its player is gone.
+        if squad.suspended:
+            return _reject(
+                "squad_suspended",
+                f"{squad.id}'s squad leader has disconnected before its composition was "
+                f"assigned: it holds its place in the roster and takes no men until he returns",
+            )
+        if not squad.composition_assigned:
+            return _reject(
+                "composition_unassigned",
+                f"{squad.id} has no composition yet, so there is no composition to restore: "
+                f"assign one with the composition-carrying form of Reinforce",
+            )
+
         # A Squad type the authored table has stopped selling is a fault in the
         # table rather than a free refill, and `missing` cannot tell the two
         # apart on its own — it answers 0 for both.
@@ -339,6 +381,81 @@ class CommandPort:
                 "wrong_ground",
                 f"{squad.id} is at {squad.at or 'no place the world has reported'}: "
                 f"Reinforce refills a Squad at its own Base, so bring it home first",
+            )
+        return None
+
+    def _reinforce_composition(self, command: Command) -> Judgement:
+        """Assign a player-led shell its first composition, and fill it (ADR-0070).
+
+        A form of Reinforce and the Commander's alone (ruling 4). Whether the
+        caller may ask at all is decided in `submit`, and it needs no rule of its
+        own there: a squad-leader principal is stamped with `acting_squad` and
+        `_principal_refusal` refuses him anything that is not the plain
+        `reinforce`, so the second principal's authority stays stated in one
+        place.
+
+        What it costs is the ordinary Reinforce rule against the composition
+        being assigned — the missing fraction of its price, discounted — because
+        preserving an active Squad is meant to be cheaper than a net-new
+        Purchase, which is the direction ruling 2's preference needs.
+        """
+        squad_id = command.args.get("squad")
+        if not isinstance(squad_id, str) or not squad_id:
+            return _reject(
+                "malformed_command", "the composition-carrying Reinforce needs a `squad`"
+            )
+
+        squad_type = command.args.get("squad_type")
+        if not isinstance(squad_type, str) or not squad_type:
+            return _reject(
+                "malformed_command", "the composition-carrying Reinforce needs a `squad_type`"
+            )
+        if self.table.sold(squad_type) is None:
+            return _reject("malformed_command", f"no Squad type {squad_type!r} is sold")
+
+        squad = self.campaign.squad(squad_id, command.side)
+        if squad is None:
+            return _reject("unknown_squad", f"{command.side} has no Squad {squad_id!r}")
+
+        refusal = self._fill_refusal(squad)
+        if refusal is not None:
+            return refusal
+
+        try:
+            squad, remaining, cost = self.campaign.first_fill(squad_id, command.side, squad_type)
+        except InsufficientFundsError as exc:
+            return _reject("insufficient_funds", str(exc))
+
+        # Advisory like a Reinforce's, and the same four facts: which Squad, what
+        # is left, what it cost, and the strength it is being brought up to.
+        return _accept({"squad": squad.id, "funds": remaining, "cost": cost, "size": squad.size})
+
+    def _fill_refusal(self, squad: squads.Squad) -> Judgement | None:
+        """Return what the rules refuse this Squad's first fill for, or None.
+
+        Named for what it returns rather than for the check it performs, like
+        `_refill_refusal` beside it (#88). All of it about the Squad: whether its
+        player is here, whether it is still a shell, and where it is standing.
+        """
+        if squad.suspended:
+            return _reject(
+                "squad_suspended",
+                f"{squad.id}'s squad leader has disconnected: a suspended Squad is ineligible "
+                f"for filling until he returns, and it takes no Funds meanwhile",
+            )
+        if squad.composition_assigned:
+            return _reject(
+                "composition_fixed",
+                f"{squad.id} is already a {squad.squad_type!r} Squad: a composition is assigned "
+                f"once and fixed thereafter, so Reinforce it to refill what it has",
+            )
+        # At own Base, exactly as an ordinary Reinforce is judged, and for the
+        # same reason: the men arrive where the manifest puts the side's Base.
+        if self.campaign.based(squad.at) != squad.side:
+            return _reject(
+                "wrong_ground",
+                f"{squad.id} is at {squad.at or 'no place the world has reported'}: "
+                f"a composition is filled at the Squad's own Base, so bring it home first",
             )
         return None
 
@@ -469,4 +586,5 @@ HANDLERS: Final[dict[str, Callable[[CommandPort, Command], Judgement]]] = {
     "purchase": CommandPort._purchase,  # noqa: SLF001 — the class's own dispatch table
     "order": CommandPort._order,  # noqa: SLF001 — ditto
     "reinforce": CommandPort._reinforce,  # noqa: SLF001 — ditto
+    "reinforce_composition": CommandPort._reinforce_composition,  # noqa: SLF001 — ditto
 }

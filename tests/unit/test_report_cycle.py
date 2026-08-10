@@ -78,6 +78,7 @@ def _report(**named: Any) -> Report:  # noqa: ANN401 — a report is a document
         hq=named.get("hq"),
         casualties=named.get("casualties"),
         loadouts=named.get("loadouts"),
+        squad_leaders=named.get("squad_leaders"),
     )
 
 

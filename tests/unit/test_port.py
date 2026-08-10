@@ -158,6 +158,15 @@ def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
                 # unit is dead, so the Command is refused at the door and the
                 # daemon never sees it. Both principals, one code.
                 "caller_dead",
+                # ADR-0070's three, each because an existing code would lie: an
+                # ordinary Reinforce meeting a composition-unassigned shell
+                # (`malformed_command` would blame the economy table), the
+                # composition-carrying form meeting a Squad that already has one
+                # (the once-only rule, which `already_held` does not mean), and
+                # either form meeting a shell whose player has disconnected.
+                "composition_unassigned",
+                "composition_fixed",
+                "squad_suspended",
             }
         )
         == port.REJECTION_CODES
@@ -438,6 +447,18 @@ def reported(open_port: port.CommandPort, **standing: squads.Held) -> None:
 def home(open_port: port.CommandPort, squad_id: str, *, size: int = 5, side: str = "WEST") -> None:
     """Put one Squad at its own Base, `size` men standing."""
     reported(open_port, **{squad_id: squads.Held(size=size, at=BASE_OF[side])})
+
+
+def enrolled(open_port: port.CommandPort, side: str = "WEST", uid: str = "uid-1") -> str:
+    """Enrol a player squad leader's shell for `side`, standing at its own Base.
+
+    Through the Campaign rather than the port, because enrolment is not a
+    Command: a player taking the slot moves no Funds and the rules judge nothing
+    (ADR-0070), so it reaches the daemon on the observe report.
+    """
+    squad = open_port.campaign.enrol(side, uid)
+    home(open_port, squad.id, size=1, side=side)
+    return squad.id
 
 
 def test_a_commander_reinforces_a_squad_of_his_own_side(open_port: port.CommandPort) -> None:
@@ -724,11 +745,13 @@ def test_each_handler_reads_exactly_the_arguments_its_catalogue_entry_declares(
     open_port = fresh()
     squad = bought(open_port)
     home(open_port, squad, size=5)
+    shell = enrolled(open_port)
     args = ReadArgs(
         {
             "purchase": {"squad_type": "rifle"},
             "order": {"squad": squad, "order": "reserve", "place": ""},
             "reinforce": {"squad": squad},
+            "reinforce_composition": {"squad": shell, "squad_type": "rifle"},
         }[name]
     )
     command = Command(name, "WEST", args)

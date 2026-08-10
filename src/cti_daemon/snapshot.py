@@ -24,6 +24,12 @@ What is here is exactly ADR-0008's persistent set and nothing tactical:
   Place (`at`). The map position (`pos`) is tactical and regenerated, so it is
   not here; a Squad's `fielded` flag is bookkeeping for the reconcile that
   re-runs on the first report after a resume, so it is not here either.
+- A Squad's player squad leader, by UID, and the two states a player-led Squad
+  can be in: whether its composition has been assigned, and whether it is
+  suspended (ADR-0070, version 2). ADR-0008's persistent set grows by exactly
+  these three, and by nothing else — the role *assignment* stays server-side
+  state (ADR-0025); what is here is the roster fact that a Squad belongs to a
+  player and how far along its composition is.
 - The campaign clock — in-game seconds elapsed.
 - The chosen loadout catalogue id per player UID (ADR-0056).
 
@@ -36,13 +42,13 @@ code:
   the Observation that carries it. The snapshot regenerates Contacts from the
   first reports after a resume rather than freezing a picture of the enemy that
   the engine has since forgotten for good reason.
-- **Player role/Squad is deferred to #25.** The daemon-owned half of ADR-0008's
-  player set — the loadout choice — is here; the Commander/squad-leader
-  assignment is server-side state (ADR-0025), and #25 has not decided the
-  composition-unassigned/suspended states a player-led Squad can be in. This
-  schema invents no parallel representation for them: when #25's decision record
-  settles how assignment reaches a daemon-persisted field, it arrives as an
-  additive migration, not a redesign (ADR-0008).
+- **Which slot a player occupies is still server-side state.** The daemon-owned
+  half of ADR-0008's player set is here — the loadout choice, and since version
+  2 the roster's own account of a player-led Squad (ADR-0070). What is still not
+  here is the Commander/squad-leader *assignment*, which ADR-0025 keeps as a
+  fact about the server's own state rather than a claim any document carries.
+  #25 promised the shell's states would arrive as an additive migration rather
+  than a redesign, and the 1→2 step below is that promise kept.
 
 A completed Campaign is not a snapshot. ADR-0023 retires the resumable snapshot
 on victory and writes a telemetry-sourced record instead, so this schema carries
@@ -76,7 +82,7 @@ if TYPE_CHECKING:
 # safe default, so the version is the count of those changes rather than a
 # major/minor guess at how breaking each was. A save at a version other than
 # this is either migrated forward or refused — never read as-is.
-CURRENT_VERSION: Final = 1
+CURRENT_VERSION: Final = 2
 
 # The HQ-status vocabulary, shared with the Observation because both documents
 # carry the same scoreboard fact. Imported rather than restated so the two
@@ -119,6 +125,13 @@ SQUAD_FIELDS: Final[tuple[tuple[str, str], ...]] = (
     ("order", "order"),
     ("place", "place"),
     ("at", "at"),
+    # Version 2 (ADR-0070). `player` is the UID of the squad leader who leads
+    # this Squad, empty for an ordinary bought one; `assigned` is whether it
+    # carries a composition; `suspended` is whether its player has disconnected
+    # before the first fill.
+    ("player", "player_uid"),
+    ("assigned", "composition_assigned"),
+    ("suspended", "suspended"),
 )
 
 
@@ -169,6 +182,13 @@ class SquadRecord:
     size: int
     order: Order
     at: str
+    # Version 2 (ADR-0070). Defaulted to what every Squad written before that
+    # decision was — unowned, composition-assigned, active — so the migration's
+    # safe default and this record's default are one statement rather than two
+    # that have to agree.
+    player_uid: str = ""
+    composition_assigned: bool = True
+    suspended: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -203,6 +223,39 @@ def _migrate_loadouts(document: dict[str, Any]) -> dict[str, Any]:
     return migrated
 
 
+def _migrate_player_shell(document: dict[str, Any]) -> dict[str, Any]:
+    """Step 1 -> 2: give every saved Squad the state ADR-0070 introduced.
+
+    Additive, and the safe default is what every Squad written before this
+    decision *was*: composition-assigned, active, and owned by no player. There
+    was no other kind — a shell is minted only by a player taking the
+    squad-leader role, and no build before version 2 could mint one.
+
+    A record already carrying one of the three is left alone rather than
+    overwritten, for `setdefault`'s reason above: a migration fills absence, and
+    a value it found is a value some earlier step meant.
+    """
+    migrated = dict(document)
+    squads = migrated.get(SQUADS_KEY)
+    if isinstance(squads, list):
+        rebuilt: list[Any] = []
+        for entry in cast("list[Any]", squads):
+            if not isinstance(entry, dict):
+                # Not a record this step can fill. Passed through untouched so
+                # the closed-set check below refuses it in its own words rather
+                # than the migration dying on the way past.
+                rebuilt.append(entry)
+                continue
+            record = dict(cast("dict[str, Any]", entry))
+            record.setdefault("player", "")
+            record.setdefault("assigned", True)
+            record.setdefault("suspended", False)
+            rebuilt.append(record)
+        migrated[SQUADS_KEY] = rebuilt
+    migrated[VERSION_KEY] = 2
+    return migrated
+
+
 # Forward migrations: each maps an older version's document to the next version
 # up, as a pure transform that may add fields with safe defaults. A document at
 # version N is walked N -> N+1 -> ... -> CURRENT; a version with no entry here
@@ -217,6 +270,9 @@ _MIGRATIONS: Final[dict[int, Callable[[dict[str, Any]], dict[str, Any]]]] = {
     # re-picks on resume, which is the named-but-not-fatal case ADR-0056 already
     # handles for a kit the menu no longer offers.
     0: _migrate_loadouts,
+    # Version 1 predates ADR-0070's player-led shell. Every save written at it
+    # holds bought Squads alone, which is exactly what the defaults say.
+    1: _migrate_player_shell,
 }
 
 
@@ -344,9 +400,12 @@ def _as_squad(entry: object) -> SquadRecord:
     side = record.get("side")
     if side not in SIDES:
         _refuse(f"{squad_id}: `side` must be one of {list(SIDES)}, got {side!r}")
+    # A string, and no longer a non-empty one: since version 2 a
+    # composition-unassigned Squad legitimately carries none (ADR-0070). Which
+    # of the two it may be is judged below, once `assigned` has been read.
     squad_type = record.get("type")
-    if not isinstance(squad_type, str) or not squad_type:
-        _refuse(f"{squad_id}: `type` must be a non-empty string, got {squad_type!r}")
+    if not isinstance(squad_type, str):
+        _refuse(f"{squad_id}: `type` must be a string, got {squad_type!r}")
     size = record.get("size")
     if isinstance(size, bool) or not isinstance(size, int) or size < 0:
         _refuse(f"{squad_id}: `size` must be a non-negative whole number, got {size!r}")
@@ -359,6 +418,28 @@ def _as_squad(entry: object) -> SquadRecord:
     at = record.get("at")
     if not isinstance(at, str):
         _refuse(f"{squad_id}: `at` must be a string, got {at!r}")
+    player_uid = record.get("player")
+    if not isinstance(player_uid, str):
+        _refuse(f"{squad_id}: `player` must be a player UID or empty, got {player_uid!r}")
+    assigned = record.get("assigned")
+    if not isinstance(assigned, bool):
+        _refuse(f"{squad_id}: `assigned` must be true or false, got {assigned!r}")
+    suspended = record.get("suspended")
+    if not isinstance(suspended, bool):
+        _refuse(f"{squad_id}: `suspended` must be true or false, got {suspended!r}")
+
+    # The two states are held apart in the document as well as in the rules
+    # (ADR-0070): an assigned Squad names the composition it carries, and an
+    # unassigned one names none. A record with both, or with neither, is a save
+    # that cannot say which kind of Squad it is holding — and one that is both
+    # suspended and assigned contradicts ruling 7, which defines suspension for
+    # a composition-unassigned Squad alone.
+    if assigned and not squad_type:
+        _refuse(f"{squad_id}: an assigned Squad must carry a `type`, got {squad_type!r}")
+    if not assigned and squad_type:
+        _refuse(f"{squad_id}: a composition-unassigned Squad carries no `type`, got {squad_type!r}")
+    if suspended and assigned:
+        _refuse(f"{squad_id}: suspension is a state of a composition-unassigned Squad alone")
 
     return SquadRecord(
         id=squad_id,
@@ -367,6 +448,9 @@ def _as_squad(entry: object) -> SquadRecord:
         size=size,
         order=Order(kind=kind, place=place),
         at=at,
+        player_uid=player_uid,
+        composition_assigned=assigned,
+        suspended=suspended,
     )
 
 
@@ -396,6 +480,9 @@ def _render_squad(squad: SquadRecord) -> dict[str, Any]:
         "order": squad.order.kind,
         "place": squad.order.place,
         "at": squad.at,
+        "player": squad.player_uid,
+        "assigned": squad.composition_assigned,
+        "suspended": squad.suspended,
     }
 
 

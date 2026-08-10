@@ -132,8 +132,10 @@ class ReportCycle:
         than read as no-change, and a resumed Campaign has announced no end.
 
         The AI Commanders a session wired survive a load: they are session
-        wiring, not Campaign state (ADR-0008 defers player role to #25), so the
-        session that loads is the session that decides who is playing. Returns
+        wiring, not Campaign state — ADR-0070 put a player-led Squad's own states
+        into the snapshot and left which slot a player occupies where ADR-0025
+        has it, on the server — so the session that loads is the session that
+        decides who is playing. Returns
         the UIDs whose saved kit the menu no longer offers, passed through from
         the Campaign so a caller surfaces them.
         """

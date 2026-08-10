@@ -77,6 +77,13 @@ class SquadView:
     """One of the observing Commander's own Squads, as it sees it."""
 
     id: str
+    # Empty for a composition-unassigned player-led Squad, and that absence is
+    # the representation CONTEXT.md's amended **Observation** ratified: "one
+    # that is composition-unassigned carries no composition type — an absence
+    # the Commander reads as the shell it may fill" (ADR-0070). It is
+    # unambiguous in a view because every *bought* Squad names the type it was
+    # bought as; the flag that keeps the two states apart in the rules lives on
+    # `squads.Squad`, where the ambiguity would otherwise have been.
     squad_type: str
     size: int
     order: str
@@ -92,6 +99,15 @@ class SquadView:
     # a marker trailing its Squad by tens of metres on a strategic map:
     # `cti_fnc_commanderView` sets the rate and states the consequence.
     pos: tuple[int, ...] = ()
+    # Whether this is a shell whose player has disconnected before its first
+    # fill (ADR-0070 ruling 7). Beside the absent composition type rather than
+    # folded into it, because the two answer different questions: the empty
+    # type says the Squad may be filled, and this says it may not be filled
+    # *yet*. Without it a Commander — the AI one included — cannot tell an
+    # eligible shell from an ineligible one, and ruling 2's preference for
+    # filling an active shell over a net-new Purchase is unstateable. False for
+    # every other Squad, which is what it has always been.
+    suspended: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -170,6 +186,7 @@ SQUAD_FIELDS: Final[tuple[tuple[str, str], ...]] = (
     # order here is the document's order and nothing depends on it but the
     # export's own test.
     ("pos", "pos"),
+    ("suspended", "suspended"),
 )
 CONTACT_FIELDS: Final[tuple[tuple[str, str], ...]] = (
     ("at", "at"),

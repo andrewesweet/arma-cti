@@ -247,6 +247,9 @@ class Campaign:
                     size=squad.size,
                     order=squad.order,
                     at=squad.at,
+                    player_uid=squad.player_uid,
+                    composition_assigned=squad.composition_assigned,
+                    suspended=squad.suspended,
                 )
                 for squad in self.roster.all()
             ),
@@ -302,6 +305,9 @@ class Campaign:
                     size=record.size,
                     order=record.order,
                     at=record.at,
+                    player_uid=record.player_uid,
+                    composition_assigned=record.composition_assigned,
+                    suspended=record.suspended,
                 )
                 for record in snapshot.squads
             )
@@ -455,6 +461,174 @@ class Campaign:
         )
         return squad, remaining, cost
 
+    def enrol(self, side: str, player_uid: str) -> Squad:
+        """Put a player squad leader's shell in a side's roster, and tell the world.
+
+        The same single change `purchase` is (#60): the roster gains the Squad
+        and the world is told which group answers to the minted id in one step,
+        because a Squad the daemon holds and the world cannot name is a Squad no
+        Order can reach. No Funds move — a shell is not a Purchase, and the side
+        pays only when the Commander's first fill assigns a composition
+        (ADR-0070 ruling 3).
+
+        It stands at own Base from the moment it is minted, which is the one
+        place a Squad's Place is written here rather than waited for. A bought
+        Squad is nowhere until the world spawns it and reports it; this one's
+        single member is a player already standing in his slot at his own Base
+        when the claim arrives (ruling 1), so leaving it nowhere would refuse
+        the Commander's first fill on `wrong_ground` for a Squad that is
+        demonstrably home. The next report overwrites it either way.
+        """
+        self._playing()
+        squad = self.roster.enrol(side, player_uid)
+        squad.at = self._own_base(side)
+        self.outbox.push(
+            Effect(
+                name="squad_enrolled",
+                side=side,
+                args={"squad": squad.id, "player": player_uid},
+            )
+        )
+        return squad
+
+    def suspend(self, squad_id: str, side: str) -> Squad:
+        """Suspend a shell whose player has disconnected before its first fill.
+
+        A state of the *shell* and of nothing else (ADR-0070 ruling 7): a filled
+        Squad survives disconnect under an engine-selected AI leader and keeps
+        its Order (ruling 5), so suspending one would contradict the ruling
+        beside it. An already-assigned Squad is therefore refused here rather
+        than quietly suspended.
+
+        Nothing is pushed. The world's half of a disconnect is the player's
+        group going with him, which the engine has already done by the time this
+        is called; there is no effect for the world to carry out. The head count
+        goes to nought because nobody is standing, which is the whole of
+        "contributes no presence" — an absence of bodies, not an exemption.
+        """
+        self._playing()
+        squad = self._shell(squad_id, side, doing="suspend")
+        squad.suspended = True
+        squad.size = 0
+        return squad
+
+    def reactivate(self, squad_id: str, side: str) -> Squad:
+        """Bring a suspended shell back at own Base, still composition-unassigned.
+
+        The same roster identity and the same minted id (ADR-0070 ruling 7),
+        which is the whole reason suspension was chosen over dissolution. The
+        world is told again through the enrolment effect, because the player has
+        reconnected on a new group the server has never paired with this id.
+
+        `at` is set here rather than waited for, which is the one place this
+        object writes a fact the world usually owns: the ruling puts the
+        reactivated shell at own Base, and the next report overwrites this with
+        whatever the world says anyway.
+        """
+        self._playing()
+        squad = self._shell(squad_id, side, doing="reactivate")
+        squad.suspended = False
+        squad.size = 1
+        squad.at = self._own_base(side)
+        squad.pos = ()
+        self.outbox.push(
+            Effect(
+                name="squad_enrolled",
+                side=side,
+                args={"squad": squad.id, "player": squad.player_uid},
+            )
+        )
+        return squad
+
+    def first_fill(self, squad_id: str, side: str, squad_type: str) -> tuple[Squad, int, int]:
+        """Assign a shell the composition the Commander demands, and fill it.
+
+        Once only and at ordinary Reinforce pricing (ADR-0070 ruling 3): the
+        missing fraction of the assigned composition's price at the existing
+        discount, which for an eight-man composition whose player is already
+        standing is seven eighths. From here the Squad's composition is fixed
+        and persisted like any other's, and later Reinforce restores it rather
+        than reclassifying it.
+
+        One change like `purchase` and `reinforce` (#60): Funds deducted, the
+        composition assigned, the roster's account of the strength moved and the
+        world told, in one step. Whether the Squad may be filled at all — that
+        it is a shell, that it is not suspended, that it is standing at its own
+        Base — is the port's rule and is judged before this is called.
+
+        Returns the Squad, what the side has left, and what it paid, the last
+        two advisory like a Reinforce's.
+        """
+        self._playing()
+        squad = self.roster.owned_by(squad_id, side)
+        if squad is None:
+            message = f"{side} has no Squad {squad_id!r} to fill"
+            raise KeyError(message)
+        bought = self.table.sold(squad_type)
+        if bought is None:
+            message = f"no Squad type {squad_type!r} is sold"
+            raise KeyError(message)
+        # Against the composition being *assigned*, not against the Squad's own
+        # type, which a shell has not got: what is missing is the men the
+        # demanded composition calls for that are not already standing.
+        cost = self.table.reinforce_cost(bought.id, max(0, bought.size - squad.size))
+        if cost is None:
+            message = f"no Squad type {squad_type!r} is sold"
+            raise KeyError(message)
+
+        remaining = self.ledger.spend(side, cost)
+        squad.squad_type = bought.id
+        squad.composition_assigned = True
+        squad.size = bought.size
+        self.outbox.push(
+            Effect(
+                name="squad_filled",
+                side=side,
+                args={"squad": squad.id, "squad_type": bought.id, "size": bought.size},
+            )
+        )
+        return squad, remaining, cost
+
+    def _own_base(self, side: str) -> str:
+        """Return the manifest id of that side's Base, or empty if it has none.
+
+        Empty rather than raised, for `based`'s reason: a map authored without a
+        Base for a playing side is a world built wrongly, and the refusals that
+        read a Squad's Place already say "no place the world has reported" for
+        the empty answer rather than crashing a Campaign over it.
+        """
+        return next((base.id for base in self.map_manifest.bases if base.side == side), "")
+
+    def _shell(self, squad_id: str, side: str, *, doing: str) -> Squad:
+        """Return that side's composition-unassigned Squad, or refuse the call.
+
+        Raised rather than returned for `purchase`'s reason: whether a Squad may
+        be suspended is not a Commander's mistake to be told about — nothing
+        commands a suspension — so anything reaching here with an ordinary Squad
+        is a caller that has not asked what it was holding.
+        """
+        squad = self.roster.owned_by(squad_id, side)
+        if squad is None:
+            message = f"{side} has no Squad {squad_id!r} to {doing}"
+            raise KeyError(message)
+        if squad.composition_assigned:
+            message = (
+                f"{squad.id} carries a {squad.squad_type!r} composition: "
+                f"{doing} is defined for a composition-unassigned Squad alone"
+            )
+            raise ValueError(message)
+        return squad
+
+    def led_by(self, player_uid: str) -> Squad | None:
+        """Return the Squad that player leads, or None if he leads none.
+
+        The roster's read, offered by the root for `squad`'s reason (#152). The
+        claim that reaches the daemon names a player UID rather than a Squad
+        (ADR-0025), so this is how a reconnecting player's own shell is found
+        again instead of minted a second time.
+        """
+        return self.roster.led_by(player_uid)
+
     def missing(self, squad: Squad) -> int:
         """How many men that Squad is short of what it was bought as.
 
@@ -559,6 +733,7 @@ class Campaign:
                     place=squad.order.place,
                     at=squad.at,
                     pos=squad.pos,
+                    suspended=squad.suspended,
                 )
                 for squad in self.roster.roll(for_side)
             ),

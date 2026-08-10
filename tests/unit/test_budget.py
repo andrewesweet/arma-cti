@@ -92,13 +92,25 @@ def island(objectives: int) -> manifest.MapManifest:
 # five-digit axes is about a fifth again on top of a worst-case Squad record.
 # ADR-0030's trigger is unmoved by it: the row that fails is still the sixtieth
 # Objective, and it still fails before a Squad is bought.
+#
+# Re-measured again for ADR-0070, which put `suspended` on every own Squad so a
+# Commander can tell a shell he may fill from one whose player has gone. The
+# middle column did not move for #175's reason, unchanged: the field rides on a
+# Squad, so an island with no Squads pays nothing for it. The right-hand column
+# fell uniformly again — 59→52 at Stratis's size, 21→18 at forty Objectives,
+# 9→8 at fifty — because `,"suspended":false` is eighteen more bytes on a
+# worst-case Squad record of about a hundred and thirty. ADR-0030's trigger is
+# still unmoved: the row that fails is still the sixtieth Objective, and it
+# still fails before a Squad is bought. Stratis at 52 is still well clear of
+# what its own economy can fund, which is what
+# `test_every_authored_map_fits_inside_one_callextension_return` holds.
 CEILINGS = (
-    (8, 1_611, 59),
-    (10, 1_919, 55),
-    (20, 3_425, 44),
-    (30, 4_941, 32),
-    (40, 6_451, 21),
-    (50, 7_969, 9),
+    (8, 1_611, 52),
+    (10, 1_919, 48),
+    (20, 3_425, 38),
+    (30, 4_941, 28),
+    (40, 6_451, 18),
+    (50, 7_969, 8),
     (60, 9_475, None),
     (90, 14_039, None),
 )

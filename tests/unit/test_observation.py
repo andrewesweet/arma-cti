@@ -29,6 +29,7 @@ SQUAD_VIEWS = st.builds(
     order=st.sampled_from(("capture", "defend", "assault", "reserve")),
     place=st.text(max_size=24),
     at=st.text(max_size=24),
+    suspended=st.booleans(),
 )
 CONTACTS = st.builds(
     contacts.Contact,
@@ -113,13 +114,18 @@ def test_an_observation_carries_nothing_tactical_but_where_its_own_squads_are() 
     # Commander's own Squad carries the position its marker is drawn at, which
     # is about seeing rather than about planning, and the enumeration here is
     # what stops a second field arriving on the same argument.
+    #
+    # ADR-0070 moved it by one more, and on a different argument: `suspended`
+    # is strategic rather than tactical — it survives a resume, it is in the
+    # snapshot beside it, and without it a Commander cannot tell a shell he may
+    # fill from one whose player has gone.
     world = live()
     port.CommandPort(campaign=world).submit(
         Command("purchase", "WEST", {"squad_type": "rifle"}), acting_side="WEST"
     )
     document = observation.serialise(world.observation("WEST"))
     (squad,) = document["squads"]
-    assert set(squad) == {"id", "type", "size", "order", "place", "at", "pos"}
+    assert set(squad) == {"id", "type", "size", "order", "place", "at", "pos", "suspended"}
     # And a Contact does not gain one with it: what a Commander may know of the
     # enemy is Place-grained, which is what the fog rule is actually about.
     assert "pos" not in observation.exported()["contact"]

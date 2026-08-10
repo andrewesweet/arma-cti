@@ -42,6 +42,7 @@ from cti_daemon.squads import ORDERS, Order
 
 REPO = Path(__file__).resolve().parents[2]
 FIXTURE_V0 = REPO / "tests" / "fixtures" / "snapshot-v0.json"
+FIXTURE_V1 = REPO / "tests" / "fixtures" / "snapshot-v1.json"
 
 # Places the snapshot carries as ids. Owners and HQ are keyed by an id, which the
 # parser holds to a non-empty string, so the keys sample only named ground; a
@@ -54,7 +55,7 @@ SQUAD_TYPES = ("rifle", "at", "recon", "mg")
 KITS = ("rifleman", "medic", "marksman")
 UIDS = st.text(min_size=1, max_size=20, alphabet=st.characters(min_codepoint=48, max_codepoint=122))
 
-_squad = st.builds(
+_bought_squad = st.builds(
     SquadRecord,
     id=st.sampled_from(("w1", "e1", "w2", "e2", "w3", "e3")),
     side=st.sampled_from(SIDES),
@@ -63,6 +64,23 @@ _squad = st.builds(
     order=st.builds(Order, kind=st.sampled_from(ORDERS), place=st.sampled_from(PLACES)),
     at=st.sampled_from(PLACES),
 )
+# A shell carries no composition type and may be suspended, and version 2 holds
+# the document to exactly that pairing (ADR-0070) — so it is its own strategy
+# rather than three more free fields on the one above, which would generate the
+# combinations the parser is meant to refuse.
+_shell = st.builds(
+    SquadRecord,
+    id=st.sampled_from(("w4", "e4")),
+    side=st.sampled_from(SIDES),
+    squad_type=st.just(""),
+    size=st.integers(min_value=0, max_value=1),
+    order=st.builds(Order, kind=st.sampled_from(ORDERS), place=st.sampled_from(PLACES)),
+    at=st.sampled_from(PLACES),
+    player_uid=UIDS,
+    composition_assigned=st.just(False),
+    suspended=st.booleans(),
+)
+_squad = _bought_squad | _shell
 
 snapshots = st.builds(
     Snapshot,
@@ -250,6 +268,93 @@ def test_a_squad_whose_order_is_unknown_is_refused() -> None:
         snapshot.restore(document)
 
 
+def _shell_document(**overrides: Any) -> dict[str, Any]:  # noqa: ANN401 — one authored
+    # record, whose values are whatever the caller is putting under test.
+    """Return a document holding one well-formed shell, with fields overridden."""
+    shell = {
+        "id": "w4",
+        "side": "WEST",
+        "type": "",
+        "size": 1,
+        "order": "reserve",
+        "place": "",
+        "at": "base_west",
+        "player": "uid-1",
+        "assigned": False,
+        "suspended": False,
+    }
+    return _document(squads=[shell | overrides])
+
+
+def test_a_composition_unassigned_shell_round_trips_as_itself() -> None:
+    # The state version 2 exists for (ADR-0070): no composition type, one man,
+    # a player UID against it, and it survives the document unchanged.
+    restored = snapshot.restore(_shell_document())
+
+    (shell,) = restored.squads
+    assert (shell.squad_type, shell.player_uid) == ("", "uid-1")
+    assert shell.composition_assigned is False
+    assert shell.suspended is False
+
+
+def test_a_suspended_shell_round_trips_as_itself() -> None:
+    (shell,) = snapshot.restore(_shell_document(size=0, suspended=True)).squads
+    assert shell.suspended is True
+
+
+@pytest.mark.parametrize("key", ["player", "assigned", "suspended"])
+def test_a_version_two_record_missing_one_of_the_new_fields_is_refused(key: str) -> None:
+    # The closed typed field set reaches the record as well as the document: a
+    # save at the current version that has lost a field is a malformed save,
+    # never one quietly defaulted — defaulting is the migration's job, and it
+    # runs only for an older version.
+    record = _shell_document()["squads"][0]
+    del record[key]
+    with pytest.raises(SnapshotError, match=key):
+        snapshot.restore(_document(squads=[record]))
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        pytest.param({"assigned": True}, id="an assigned Squad with no composition type"),
+        pytest.param({"type": "rifle"}, id="an unassigned Squad naming a composition"),
+        pytest.param({"assigned": "yes"}, id="an assignment that is not a boolean"),
+        pytest.param({"suspended": 1}, id="a suspension that is not a boolean"),
+        pytest.param({"player": 7}, id="a player UID that is not a string"),
+    ],
+)
+def test_a_record_that_cannot_say_which_kind_of_squad_it_holds_is_refused(
+    overrides: dict[str, object],
+) -> None:
+    with pytest.raises(SnapshotError, match="w4"):
+        snapshot.restore(_shell_document(**overrides))
+
+
+def test_a_suspended_squad_that_carries_a_composition_is_refused() -> None:
+    # Ruling 5 against ruling 7, in the document: a filled Squad survives
+    # disconnect under an AI leader, so it is never suspended, and a save
+    # claiming both is a save nothing wrote.
+    document = _document(
+        squads=[
+            {
+                "id": "w1",
+                "side": "WEST",
+                "type": "rifle",
+                "size": 8,
+                "order": "reserve",
+                "place": "",
+                "at": "base_west",
+                "player": "uid-1",
+                "assigned": True,
+                "suspended": True,
+            }
+        ]
+    )
+    with pytest.raises(SnapshotError, match="composition-unassigned"):
+        snapshot.restore(document)
+
+
 def test_a_loadout_value_that_is_not_a_catalogue_id_is_refused() -> None:
     # A kit id is one word; an engine loadout array is anything the engine was
     # carrying, which is exactly what ADR-0056 keeps out of the save.
@@ -288,6 +393,43 @@ def test_a_version_zero_fixture_its_fields_were_not_touched_by_the_loadout_defau
     # through the current schema loses nothing the fixture carried.
     restored = snapshot.restore(json.loads(FIXTURE_V0.read_text(encoding="utf-8")))
     assert snapshot.restore(snapshot.serialise(restored)) == restored
+
+
+def test_a_golden_version_one_fixture_migrates_to_current() -> None:
+    # The 1 -> 2 step ADR-0070 promised as an additive migration rather than a
+    # redesign. Every Squad written before that decision was bought, so the safe
+    # default is what every one of them was: composition-assigned, active, and
+    # owned by no player. There was no other kind — no build before version 2
+    # could mint a shell.
+    restored = snapshot.restore(json.loads(FIXTURE_V1.read_text(encoding="utf-8")))
+
+    assert restored.squads == (
+        SquadRecord("WEST-1", "WEST", "rifle", 8, Order("defend", "agia_marina"), "agia_marina"),
+        SquadRecord("EAST-1", "EAST", "at", 6, Order("assault", "base_west"), "girna"),
+        SquadRecord("WEST-2", "WEST", "recon", 4, Order("reserve", ""), "base_west"),
+    )
+    assert [
+        (squad.player_uid, squad.composition_assigned, squad.suspended) for squad in restored.squads
+    ] == [("", True, False)] * 3
+    # And nothing else the fixture carried moved.
+    assert restored.clock == 5400.0
+    assert restored.funds == {"WEST": 320, "EAST": 150}
+    assert restored.loadouts == {"uid-1": "rifleman", "uid-2": "medic"}
+
+
+def test_a_version_one_fixture_round_trips_once_it_has_been_migrated() -> None:
+    restored = snapshot.restore(json.loads(FIXTURE_V1.read_text(encoding="utf-8")))
+    assert snapshot.restore(snapshot.serialise(restored)) == restored
+
+
+def test_a_version_zero_fixture_walks_both_steps_to_the_current_version() -> None:
+    # Two registered steps rather than one: a version-0 document is walked
+    # 0 -> 1 -> 2, so the loadout default and the shell defaults both arrive.
+    restored = snapshot.restore(json.loads(FIXTURE_V0.read_text(encoding="utf-8")))
+
+    assert restored.loadouts == {}
+    assert all(squad.composition_assigned for squad in restored.squads)
+    assert not any(squad.suspended or squad.player_uid for squad in restored.squads)
 
 
 def test_an_old_version_that_is_malformed_is_refused_after_migration() -> None:

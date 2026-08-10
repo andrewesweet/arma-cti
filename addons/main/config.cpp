@@ -77,6 +77,7 @@ class CfgFunctions
             class loadoutMenu {};
             class loadoutWatch {};
             class loadoutSample {};
+            class squadLeaderSample {};
             class placeOf {};
             class placePosition {};
             class placeRadius {};

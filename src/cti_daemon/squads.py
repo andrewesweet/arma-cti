@@ -65,13 +65,45 @@ RESERVE: Final = Order("reserve")
 
 @dataclass(slots=True)
 class Squad:
-    """One bought Squad: who owns it, what it is, and what it has been told."""
+    """One roster Squad: who owns it, what it is, and what it has been told.
+
+    Most of them are bought. One per side need not be: the player who takes the
+    squad-leader role gets a dedicated roster Squad at own Base with himself as
+    its sole member, composition-unassigned until the Commander's first fill
+    (ADR-0070, CONTEXT.md's amended **Squad**). The three fields below are the
+    whole of what such a shell is, and they are on `Squad` rather than on a
+    subclass because a shell is a *state* of a Squad and not a second noun —
+    which is the ADR's own reason for minting no new term.
+    """
 
     id: str
     side: str
     squad_type: str
     size: int
     order: Order = RESERVE
+    # Which player leads it, by UID, and empty for an ordinary bought Squad.
+    # UID rather than unit or machine id, for ADR-0025's reason: respawn hands
+    # the player a new unit and reconnection a new machine id, and neither is a
+    # change of who is leading.
+    player_uid: str = ""
+    # Whether the authored table's composition has been assigned to it. True for
+    # every Squad that was bought, because a Purchase names the type it is
+    # buying; False only for a shell nobody has filled yet.
+    #
+    # A flag rather than an empty `squad_type` doing double duty, and that is
+    # fixed rather than a preference (ADR-0070): `Campaign.missing` answers 0
+    # both for an unassigned shell and for a Squad whose type the table has
+    # stopped selling, and the port types the second `malformed_command`. Were
+    # the two the same state, the first refusal a player meets would be a lie
+    # about the economy table.
+    composition_assigned: bool = True
+    # Whether the shell's player has disconnected before its first fill
+    # (ADR-0070 ruling 7). Defined only for a composition-unassigned Squad: a
+    # filled Squad survives disconnect under an engine-selected AI leader
+    # (ruling 5), which is what keeps the two rulings from contradicting each
+    # other. A suspended shell keeps its roster identity and its minted id,
+    # contributes no presence, and is ineligible for filling.
+    suspended: bool = False
     # Where the world last saw it, to the nearest authored place: an Objective
     # id, a Base id, or empty for the open ground between them. Coarse on
     # purpose — a Commander reasons about places, not coordinates (ADR-0008).
@@ -101,11 +133,52 @@ class Roster:
         source: a resumed campaign has to mint the same ids in the same order
         (ADR-0003), and a Commander has to be able to say one out loud.
         """
-        minted = self._minted.get(side, 0) + 1
-        self._minted[side] = minted
-        squad = Squad(id=f"{side}-{minted}", side=side, squad_type=squad_type, size=size)
+        squad = self._mint(side, squad_type=squad_type, size=size)
         self._squads[squad.id] = squad
         return squad
+
+    def enrol(self, side: str, player_uid: str) -> Squad:
+        """Mint the shell a player squad leader leads: no composition, no price.
+
+        The same id counter `add` takes, deliberately (ADR-0003): a shell is a
+        roster Squad in every respect the roster cares about, so a resumed
+        Campaign that enrolled a player before buying a Squad has to mint the
+        same two ids in the same order it did the first time.
+
+        One member — the player — and no composition until the Commander's first
+        fill assigns one (ADR-0070 ruling 1). Nothing is charged here, because
+        there is nothing to charge for: the shell is not a Purchase, and the
+        side pays only when the composition arrives (ruling 3).
+        """
+        squad = self._mint(side, squad_type="", size=1)
+        squad.player_uid = player_uid
+        squad.composition_assigned = False
+        self._squads[squad.id] = squad
+        return squad
+
+    def _mint(self, side: str, *, squad_type: str, size: int) -> Squad:
+        """Take the next id for that side and build the Squad wearing it."""
+        minted = self._minted.get(side, 0) + 1
+        self._minted[side] = minted
+        return Squad(id=f"{side}-{minted}", side=side, squad_type=squad_type, size=size)
+
+    def led_by(self, player_uid: str) -> Squad | None:
+        """Return the Squad that player leads, or None if he leads none.
+
+        By UID across both sides, which is not the order-of-battle read `all`
+        is: a player is on one side, so this can answer at most one Squad and
+        cannot be walked to enumerate anybody's roster (#27). The lookup exists
+        because the claim that reaches the daemon is a player UID (ADR-0025) and
+        the roster is what knows whether that player already has a Squad — a
+        reconnecting player's shell has to be found again rather than minted
+        twice.
+        """
+        if not player_uid:
+            return None
+        for squad in self._squads.values():
+            if squad.player_uid == player_uid:
+                return squad
+        return None
 
     def owned_by(self, squad_id: str, side: str) -> Squad | None:
         """Return `side`'s Squad by that id, or None if it has no such Squad.
@@ -186,11 +259,22 @@ class Roster:
         silent about a Squad that is on its way — and deleting it on that
         silence leaves the group that arrives answering to an id the roster no
         longer knows: a Squad nobody can order and nobody counts.
+
+        And a Squad with no living members *by construction* is not one it has
+        lost either (ADR-0070, found before it was built). `fn_squadSample`
+        counts `{alive _x} count units _group` and omits a Squad at zero, which
+        a composition-unassigned shell reaches without anything having gone
+        wrong: suspended it has no members at all, and active its only member is
+        the player — whose death is a certainty, made a thirty-second certainty
+        by ADR-0052, with #189 measuring that no AI is promoted and the corpse
+        holds the seat for the whole window. A *filled* Squad has AI members and
+        meets the rule only when it really has been wiped out, so the exemption
+        is exactly the unassigned ones and nothing wider.
         """
         lost = tuple(
             squad_id
             for squad_id, squad in self._squads.items()
-            if squad_id not in seen and squad.fielded
+            if squad_id not in seen and squad.fielded and squad.composition_assigned
         )
         for squad_id in lost:
             del self._squads[squad_id]

@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A player squad leader leads a roster Squad, and it begins as a
+  composition-unassigned shell** (ADR-0070, #310). Taking the role mints a dedicated Squad at own
+  Base with the player as its sole member — one man, no composition, no Funds spent — and it is a
+  roster Squad in every other respect: ordered, sampled for presence, snapshot-persisted, counted
+  against the force a side may field. The Commander assigns its composition exactly once, through a
+  second catalogue entry (`reinforce_composition`, naming the Squad and the type) at ordinary
+  Reinforce pricing — 70 Funds for the authored eight-man rifle Squad whose player is already
+  standing — and the composition is fixed from then on. A squad leader may not choose his own
+  Squad's first composition; ADR-0040's existing principal rule refuses him without a new branch.
+  Disconnecting before the first fill **suspends** the same shell: it keeps its minted id,
+  contributes no presence, is ineligible for filling, and comes back at own Base still unassigned
+  with no Funds moved. Two Effects carry the world's half — `squad_enrolled` (which group answers
+  to the minted id; it creates nobody and spends nothing) and `squad_filled` (the Squad, the
+  composition type and the size). Three typed refusals arrive with them, each because an existing
+  code would have lied: `composition_unassigned`, `composition_fixed` and `squad_suspended`.
+- **Snapshot version 2**, an additive migration whose safe default is what every Squad written
+  before this decision was — composition-assigned, active, unowned. A saved Squad now carries its
+  player's UID, whether its composition is assigned, and whether it is suspended (#310, ADR-0070,
+  ADR-0008).
+
 - **`just dispatch --stop <id>`, the supported way to stop a dispatch**, and a
   `worktree_occupied_by_dispatch` refusal that stops a second one entering an occupied tree.
   Both come from #105's sixth instance, where a seat killed a dispatch, saw `ps -p <pid>` return
@@ -23,6 +43,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   means live or dead-without-writing-one — and names the holder (#308).
 
 ### Changed
+
+- **`Roster.reconcile` no longer deletes a Squad with no living members by construction.** It
+  removed any fielded Squad a report did not name, and `fn_squadSample` omits a Squad at zero
+  living members — which a composition-unassigned shell reaches without anything having gone
+  wrong: suspended it has no members at all, and active its only member is the player, whose death
+  ADR-0052 makes a thirty-second certainty. Either way the Squad was silently deleted, which is
+  exactly the failure a player-led Squad exists to avoid. The exemption is the unassigned Squads
+  and nothing wider: a Squad with a composition has AI members and is still deleted when the world
+  has genuinely lost it (#310, ADR-0070).
+- **A Commander's own Squad now carries `suspended` in its Observation**, so an eligible shell and
+  one whose player has gone are distinguishable; the measured Squad ceiling re-measures with it and
+  falls from 59 to 52 on Stratis, still far clear of what that map's economy can fund (#310).
 
 - **`just dispatch` no longer prints a `pid=` line**, and the record's `runner_pid` is now
   `launcher_pid`. The value was always the launcher the seam forks rather than the session it

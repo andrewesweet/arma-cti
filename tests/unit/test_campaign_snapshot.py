@@ -49,6 +49,15 @@ def _played() -> Campaign:
 
     campaign.purchase("WEST", west_type)
     campaign.purchase("EAST", east_type)
+    # And both states a player-led Squad can be in (ADR-0070): an active shell
+    # whose composition nobody has assigned, and a suspended one whose player
+    # disconnected before the first fill. Both are roster Squads the snapshot
+    # has to put back exactly, ids included — the shell's minted id coming back
+    # with the player is the whole reason ruling 7 chose suspension over
+    # dissolution.
+    campaign.enrol("WEST", "uid-shell")
+    suspended = campaign.enrol("EAST", "uid-away")
+    campaign.suspend(suspended.id, "EAST")
     west_squad = "WEST-1"
     campaign.issue(west_squad, "WEST", Order(kind="defend", place=objective))
     # The world has seen WEST-1 standing: that turns `fielded` true and fixes a
@@ -78,7 +87,17 @@ def _strategic(campaign: Campaign) -> tuple:
         campaign.headquarters(),
         campaign.ledger.holdings(),
         tuple(
-            (squad.id, squad.side, squad.squad_type, squad.size, squad.order, squad.at)
+            (
+                squad.id,
+                squad.side,
+                squad.squad_type,
+                squad.size,
+                squad.order,
+                squad.at,
+                squad.player_uid,
+                squad.composition_assigned,
+                squad.suspended,
+            )
             for squad in campaign.roster.all()
         ),
         campaign.dressed(),
@@ -138,9 +157,29 @@ def test_a_loaded_roster_mints_the_next_id_not_one_already_held() -> None:
     # and WEST-2 mints WEST-3 next, never reusing a live id.
     resumed = live()
     resumed.apply_snapshot(_played().to_snapshot())
-    # The played Campaign bought one WEST Squad, so the save holds WEST-1.
+    # The played Campaign bought one WEST Squad and enrolled one WEST shell, so
+    # the save holds WEST-1 and WEST-2 — a shell counts up on the same counter.
     next_squad = resumed.purchase("WEST", authored_economy().squads[0].id)[0]
-    assert next_squad.id == "WEST-2"
+    assert next_squad.id == "WEST-3"
+
+
+def test_a_loaded_shell_comes_back_as_the_shell_it_was_and_answers_to_its_player() -> None:
+    # The three fields version 2 added, at the aggregate: a resumed Campaign
+    # finds the same player leading the same Squad, still unassigned, and the
+    # suspended one still suspended — which is what lets a reconnecting player
+    # be given his own Squad back rather than a second one.
+    resumed = live()
+    resumed.apply_snapshot(_played().to_snapshot())
+
+    shell = resumed.led_by("uid-shell")
+    assert shell is not None
+    assert (shell.id, shell.side, shell.squad_type) == ("WEST-2", "WEST", "")
+    assert shell.composition_assigned is False
+    assert shell.suspended is False
+
+    away = resumed.led_by("uid-away")
+    assert away is not None
+    assert away.suspended is True
 
 
 # --- a refused apply leaves the live Campaign untouched --------------------
