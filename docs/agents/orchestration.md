@@ -47,8 +47,9 @@ recording surface is `just admission trial-report`, folded into `just watch-repo
 (#260).
 
 The orchestrator seat is **ineligible on every foreign lane** (ADR-0061 Decision 2).
-The time-boxed widening on #217 covers only retros on the `codex` lane until
-`2026-08-10T14:00Z`; it does not reach this seat.
+The standing retro allowance — the human's nine-profile ruling of 2026-08-09 on #300,
+which superseded #217's time-boxed widening before it lapsed at `2026-08-10T14:00Z` —
+covers only retros on the `codex` lane; it does not reach this seat.
 
 ## The duty cycle, and its arithmetic
 
@@ -284,18 +285,15 @@ function, the breaker-wait and `infra_unavailable` rules, and the
 `ANTHROPIC_BASE_URL` prohibition all restate `CLAUDE.md` rules and point at them rather
 than overriding them. No conflict found.
 
-One item is a **proposal for the sign-off gate, not a landed rule** (acceptance
-criterion 5): the pointer from `CLAUDE.md` to this document. `CLAUDE.md` is an
-always-loaded gated surface; the pointer goes through human approval or an ADR-0013
-record (ADR-0057's reconciliation clause), not in unilaterally with this file.
-Proposed sentence, verbatim, for the gate:
+One item this section originally carried as a **proposal for the sign-off gate**
+(acceptance criterion 5) — the pointer from `CLAUDE.md` to this document — has since
+gone through that gate and landed at `b2d9006`: `CLAUDE.md`'s Agent-skills section now
+reads "The orchestration seat's operating rules live in `docs/agents/orchestration.md`;
+read it before dispatching." (Stale "unlanded proposal" wording corrected under #297.)
 
-> The orchestration seat's operating rules live in `docs/agents/orchestration.md`;
-> read it before dispatching.
-
-A second item joins it from #295, on the same gate and for the same reason — a row for
-`CLAUDE.md`'s command table, landing with its recipe as the convention requires, but on
-a human-gated file:
+A second item from #295 remains a proposal on the same gate — a row for `CLAUDE.md`'s
+command table, landing with its recipe as the convention requires, but on a
+human-gated file:
 
 > | `just occupancy --since T --until T --limit N` | One window's seat occupancy in
 > agent-minutes from the dispatch records: capacity under the ruled WIP limit, used,
