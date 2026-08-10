@@ -158,6 +158,11 @@ def test_the_rejection_codes_are_the_only_ones_the_port_issues() -> None:
                 # unit is dead, so the Command is refused at the door and the
                 # daemon never sees it. Both principals, one code.
                 "caller_dead",
+                # Gateway-minted too (#194): the owner match found the caller
+                # alive but the server cannot read his UID yet, so the latch it
+                # is keyed on cannot be matched. Retryable, and the only code
+                # here that is.
+                "identity_pending",
                 # ADR-0070's three, each because an existing code would lie: an
                 # ordinary Reinforce meeting a composition-unassigned shell
                 # (`malformed_command` would blame the economy table), the

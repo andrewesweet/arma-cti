@@ -82,6 +82,25 @@ REJECTION_CODES: Final = frozenset(
         # resolves who is asking, so a Commander's Command and a squad leader's
         # Reinforce are refused identically.
         "caller_dead",
+        # Gateway-minted like the two above, and the only one of the three that
+        # means "ask again in a moment" (#194, ADR-0052). Respawn hands a player
+        # a new unit and the server sees it living before it can read whose it
+        # is: measured in-world, `getPlayerUID` answered "" on a caller the
+        # owner match had already found alive and owner-matched, so
+        # `cti_fnc_commanderSide` could not match the latch and the Commander
+        # was typed `wrong_side` — "this machine commands no side and leads no
+        # Squad", which is false of a latched Commander at one frame and at
+        # fifty (ADR-0025 ruling 2, ADR-0052 ruling 5). Nothing is cached,
+        # re-keyed or re-latched to fix it; the correction is the sentence he is
+        # told.
+        #
+        # Named for the identity rather than for the caller, unlike its two
+        # neighbours, because the caller is not the thing in the refusing state:
+        # he is alive and he is still the Commander, and it is the server's
+        # knowledge of him that has not arrived. Distinct from `unknown_caller`
+        # by every letter as well as by meaning, which the near-miss pair below
+        # is a reminder to check.
+        "identity_pending",
         # The three ADR-0070 adds, and each exists because an existing code
         # would lie about what happened.
         #

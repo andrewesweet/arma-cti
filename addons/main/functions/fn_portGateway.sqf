@@ -133,6 +133,56 @@ if !("sides" in _schema) exitWith {
     false
 };
 
+// The empty-UID frame, split off `wrong_side` before it is answered (#194).
+// Respawn hands the player a new unit and the server sees it living before it
+// can read whose it is: `getPlayerUID` answers "" on a unit the owner match has
+// already found alive, measured in-world on #188's `dead-principal` run. So
+// cti_fnc_commanderSide cannot match the latch it is keyed on, cti_fnc_leaderSquad
+// answers nobody for a man who has just respawned at his Base, and the refusal
+// below would tell a latched Commander he commands no side and leads no Squad —
+// false of him at one frame and at fifty (ADR-0025 ruling 2, ADR-0052 ruling 5).
+//
+// Seated here rather than at the door beside `caller_dead`, and the difference
+// is which principals the state touches. Aliveness owes nothing to who the
+// caller is, so it is asked before either principal is resolved; an unreadable
+// UID costs only the Commander, because cti_fnc_leaderSquad resolves the second
+// principal off the group and `leader` and never off a UID. Asked earlier this
+// would refuse a squad leader's Reinforce the server could have judged, which is
+// the asymmetry ruling 5 forbids, arriving from the other direction. This code
+// exists to split `wrong_side` in two, so it sits at the split.
+//
+// The two halves are distinguishable with certainty, which is what makes this a
+// different sentence rather than a guess: a machine that genuinely commands
+// nothing has a *readable* UID that is not in `cti_commanders`. Aliveness is not
+// re-asked — a dead caller has already left above, and re-asking it here would
+// be a second seat for a question that has one.
+//
+// Nothing is latched, cached or re-keyed. An owner-keyed fallback was declined
+// on the human's ruling for cti_fnc_commanderSide's own stated reason: engine
+// owner ids are per-connection and recur, so a stale entry is a route to
+// attributing one player's Command to another's latch, and a silent
+// misattribution is worse than a visible refusal. Waiting for the UID here was
+// declined too — it would put a wait whose length a client sets inside the door
+// every Command comes through, and the wiki's warning is about propagation
+// *failing*, so any bound expires into a refusal anyway.
+if (_side isEqualTo "" && { !isNull _caller } && { getPlayerUID _caller isEqualTo "" }) exitWith {
+    private _judgement = createHashMapFromArray [
+        ["status", "rejected"],
+        ["reason", createHashMapFromArray [
+            ["code", "identity_pending"],
+            ["detail", "the server has not read who you are yet: your identity "
+                + "has not reached it since you respawned, so this Command was "
+                + "not judged and nothing was spent — issue it again in a moment"]
+        ]]
+    ];
+    // Unguarded, like `caller_dead`'s and unlike the two below: a caller was
+    // only looked for when `_owner` was above zero, so a caller that was found
+    // came over the network.
+    [_judgement] remoteExec ["cti_fnc_portReply", _owner];
+    diag_log format ["CTI|port_rejected owner=%1 code=identity_pending", _owner];
+    false
+};
+
 if !(_side in (_schema get "sides")) exitWith {
     // Identity is the gateway's business, so it answers this one itself rather
     // than asking the daemon about a caller the daemon cannot see.

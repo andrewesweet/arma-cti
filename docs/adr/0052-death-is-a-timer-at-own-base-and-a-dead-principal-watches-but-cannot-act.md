@@ -9,6 +9,10 @@ were left to it by that comment and are flagged below for review
 Claimed: comment on #169, 2026-08-04, after `git fetch origin` (`docs/adr/` on
 origin/main topping at 0051) and a scan of every open issue's comments finding no
 claim above 0051
+Amended: 2026-08-06 — the finding #194 raised against this document, and its
+resolution, added below on the human's ruling of that date recorded on #194's
+thread. The six rulings are unchanged. The amendment closes a tension the finding
+exposed between rulings 2 and 5 rather than altering either one
 
 `docs/mvp-scope.md` makes player respawn a MUST — player death must not end the
 game — and until #169 nothing anywhere defined it: the only MVP MUST with no
@@ -103,6 +107,63 @@ review rather than edited here: CONTEXT.md's Squad entry says "reclaims
 leadership on respawn", which now reads loosely against the ruling — a one-word
 term amendment is the human's call, and #189 is told not to touch it.
 
+## Amendment, 2026-08-06: the frame after respawn, and `identity_pending`
+
+**The finding.** #188's own probe, measuring the edge this ADR told it to probe
+rather than inherit, caught the server holding a living, owner-matched player unit
+with **no UID on it** (`~/.arma-cti/runs/20260805T003409Z-dead-principal`, sha
+`637d718f0c69`). Respawn hands the player a new unit and the server sees it living
+before it can read whose it is; `commands/getPlayerUID.wiki` warns about exactly
+that class of thing. For the width of that window `cti_fnc_commanderSide` cannot
+match the latch it is keyed on, `cti_fnc_leaderSquad` answers nobody, and the
+gateway typed a latched Commander **`wrong_side`** — "this machine commands no
+side and leads no Squad".
+
+That sentence is what put rulings 2 and 5 in tension inside this document. Ruling
+2 promises the latch survives death; ruling 5 refuses exactly the shape where a
+surviving principal is typed `wrong_side` by a check reading past him. The width
+of the window is not what makes it worth correcting: the sentence is false of a
+latched Commander at one frame and at fifty.
+
+**The resolution.** The gateway mints a distinct, retryable refusal for that
+state: a caller matched by `owner`, alive, whose UID the server cannot yet read.
+The implementing issue named it **`identity_pending`** — named for the identity
+rather than for the caller, unlike its two gateway-minted neighbours, because the
+caller is not the thing in the refusing state. He is alive and he is still the
+Commander; it is the server's knowledge of him that has not arrived, and the
+answer to it is to ask again. It joins `port.REJECTION_CODES` the way
+`caller_dead` did, and the human's ruling gives that schema addition its sign-off
+explicitly.
+
+**The latch is untouched** — no cache, no second key, no re-latching. Nothing here
+reopens ADR-0025.
+
+The seat is not `caller_dead`'s. Aliveness owes nothing to who the caller is, so
+it is asked before either principal is resolved; an unreadable UID costs only the
+Commander, because `cti_fnc_leaderSquad` resolves the second principal off the
+group and `leader` and never off a UID. Asked at the door this would refuse a
+squad leader's Reinforce the server could have judged — ruling 5's asymmetry
+arriving from the other direction. So it sits immediately before the `wrong_side`
+refusal it splits, and the two halves are distinguishable with certainty: a
+machine that genuinely commands nothing has a **readable** UID that is not in
+`cti_commanders`.
+
+Rejected by the human, each with its reason. **The owner-match fallback**:
+`cti_fnc_commanderSide`'s own header refuses a cache keyed on the machine id, and
+engine owner ids are per-connection and recur, so a stale entry is a route to
+attributing one player's Command to another's latch — a silent misattribution is
+worse than a visible refusal. **Waiting for the UID inside the gateway**: it puts
+a wait whose length a client sets on the server's own frame, inside the door every
+Command comes through, and the wiki's warning is about propagation *failing*, so
+any bound expires into a refusal regardless. **Accept-and-record**: this document
+would then record that a latched Commander is told he commands nothing, which is
+the state the amendment exists to end.
+
+**`cti_fnc_commanderView` stays unchanged**, as the Consequences below already
+said. Its push resolves the target by UID the same way and skips him for the same
+frames; at a 5 s cadence that costs at most one picture and self-heals, and a view
+is not a refusal a player reads.
+
 ## Consequences
 
 - #188 (gateway aliveness refusal, `caller_dead`, daemon vocabulary + schema
@@ -112,7 +173,12 @@ term amendment is the human's call, and #189 is told not to touch it.
   first. No third issue exists, deliberately: succession is the engine's.
 - `CommandPort.submit` and `fn_commanderView` are explicitly unchanged. The
   in-process planner never meets the refusal, and a dead Commander's `view` keeps
-  arriving.
+  arriving. The amendment above adds a second code to the gateway and leaves both
+  of those unchanged for the same two reasons.
+- #194 carries the amendment's implementation: `identity_pending` in
+  `port.REJECTION_CODES` and the exported schema, the gateway refusal seated
+  before `wrong_side`, and `spike/probes/identity-window.sqf` — an `EachFrame`
+  measurement of the window from the death, reported and never asserted on.
 - The 30 s timer and #189's reclaim distance are both ADR-0020 placeholders,
   documented where set; playtest moves them without reopening this ADR.
 - No CONTEXT.md edit lands here. One wording flag (Squad entry, above) awaits the
@@ -127,6 +193,13 @@ term amendment is the human's call, and #189 is told not to touch it.
   that is, the 30 s absence costing Campaigns rather than moments — would reopen
   a deputy or death-relinquish design; #135 arriving does not, since ADR-0025
   already reserves the explicit-relinquish shape for it.
+- **The amendment**: `spike/probes/identity-window.sqf` measuring a window wide
+  enough for a human to click through would not overturn the refusal — it is the
+  right sentence at any width — but it would open the question the amendment
+  deliberately leaves shut, a client-side retry on `identity_pending`, as its own
+  issue. The identity failing to arrive *at all* is the other direction: the
+  refusal would be permanent while reading as retryable, and the code's name
+  would be the thing to reopen.
 - **Rulings 3/5 and the name**: a revive or incapacitation system arriving
   (out of MVP today) splits "dead" into states and reopens both the predicate and
   `caller_dead`'s name. The human preferring another name at review is one

@@ -75,6 +75,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A just-respawned Commander is no longer told he commands nothing.** Respawn hands the player a
+  new unit and the server sees it living before it can read whose it is, so for that window
+  `getPlayerUID` answers nothing and the Command Port typed a latched Commander `wrong_side` — "this
+  machine commands no side and leads no Squad", which is false of him at one frame and at fifty.
+  He now gets a distinct, retryable refusal, **`identity_pending`**: the server has not read who he
+  is yet, nothing was judged and nothing was spent, and the answer is to issue the Command again in
+  a moment. His latch is untouched — nothing is cached, re-keyed or re-latched — and a caller who
+  genuinely commands nothing, whose UID the server *can* read, still earns `wrong_side` exactly as
+  before. A dead caller still earns `caller_dead`, and a dead Commander's `view` still arrives
+  (#194, ADR-0052 as amended).
+
 - **The Windows client-leg host stall is typed `infra_unavailable`, not `timeout`.** When the six
   `CTI_WINDOWS_CLIENT=1` probes red as a set because the client RPT reached the SimulWeather cloud
   renderer and stopped — never loading move types — that is a host-state stop cleared by restarting
