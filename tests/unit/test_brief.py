@@ -28,6 +28,7 @@ ones. A worktree path is the near-miss there, because every brief already quotes
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 from typing import TYPE_CHECKING
@@ -41,6 +42,7 @@ if TYPE_CHECKING:
 brief = load_tool("brief")
 admission = load_tool("admission")
 dispatch = load_tool("dispatch")
+handoff_fetch = load_tool("handoff_fetch")
 readiness = load_tool("readiness")
 
 GATE_CORPUS = REPO / "tests" / "fixtures" / "gate-corpus"
@@ -552,6 +554,147 @@ def test_no_prior_work_adds_no_permanently_empty_section() -> None:
     assert brief.PRIOR_WORK_RULE not in rendered
 
 
+# --------------------------------------------------------------- the handoff (#309)
+
+# #212 measured that `tools/brief.py` never called `handoff_fetch`, so no cold-start
+# dispatched subagent had ever read a handoff. #309 wires the fetch in; these assert the
+# three states stay as distinguishable in the brief as they are in the tool's exit codes.
+
+A_HANDOFF = (
+    "Handoff-for: #251\n\n"
+    "**State:**     Landed and green.\n"
+    "**SHA:**       `0f21191` on `main`, pushed.\n"
+    "**Gates:**     `just fast` green at `0f21191`.\n"
+)
+
+
+def handoff_payload(*bodies: str) -> str:
+    """Render comment bodies the way `gh api --jq '.[] | .body | @json'` does."""
+    return "".join(json.dumps(body) + "\n" for body in bodies)
+
+
+def no_handoff(_issue: int) -> object:
+    """Return a clean-absence handoff seam — no network, for the main() tests that compose."""
+    return brief.Handoff(brief.HANDOFF_ABSENT)
+
+
+def test_fetch_handoff_returns_the_newest_handoff_carried() -> None:
+    h = brief.fetch_handoff(251, fetch=lambda _i: handoff_payload("noise", A_HANDOFF))
+    assert h.state == brief.HANDOFF_CARRIED
+    assert h.body == A_HANDOFF
+
+
+def test_fetch_handoff_finds_no_marker_as_a_clean_absence() -> None:
+    h = brief.fetch_handoff(251, fetch=lambda _i: handoff_payload("just a comment"))
+    assert h.state == brief.HANDOFF_ABSENT
+    assert h.body == ""
+
+
+def test_fetch_handoff_encodes_a_fetch_error_as_could_not_look_not_absent() -> None:
+    detail = "`gh` could not read #251: 404"
+
+    # Raise the exact class `brief.fetch_handoff` catches — the sibling module `brief`
+    # imports is not identity-equal to the one `load_tool` hands this test, so reaching
+    # through `brief.handoff_fetch` is what reproduces the production path faithfully.
+    def refusing(_issue: int) -> str:
+        raise brief.handoff_fetch.FetchError(detail)
+
+    h = brief.fetch_handoff(251, fetch=refusing)
+    assert h.state == brief.HANDOFF_UNAVAILABLE
+    assert h.state != brief.HANDOFF_ABSENT
+    assert "404" in h.detail
+
+
+def test_a_carried_handoff_is_composed_byte_for_byte_from_select() -> None:
+    # The verdict paste rule applied to a second artefact (#219): what reaches the brief is
+    # exactly what `handoff_fetch.select` returns, never retyped.
+    expected = handoff_fetch.select([A_HANDOFF])
+    rendered = composed(handoff=brief.Handoff(brief.HANDOFF_CARRIED, body=expected))
+    assert brief.HANDOFF_HEADING in rendered
+    assert rendered.count(expected) == 1
+    # the body sits unchanged under the heading, separated by one blank line
+    assert f"{brief.HANDOFF_HEADING}\n\n{expected}" in rendered
+
+
+def test_an_absent_handoff_composes_no_section() -> None:
+    """A clean absence renders nothing — a fresh dispatch, not a continuation with nothing."""
+    rendered = composed(handoff=brief.Handoff(brief.HANDOFF_ABSENT))
+    assert "## Handoff" not in rendered
+    assert brief.HANDOFF_HEADING not in rendered
+
+
+def test_a_handoff_that_could_not_be_looked_is_a_loud_line_not_an_absence() -> None:
+    rendered = composed(
+        handoff=brief.Handoff(brief.HANDOFF_UNAVAILABLE, detail="`gh` could not read #251: 404")
+    )
+    assert "## Handoff" in rendered
+    assert "HANDOFF UNAVAILABLE" in rendered
+    assert "could not look" in rendered
+    assert "404" in rendered
+    assert "not confirm there is none" in rendered
+    assert "`just handoff 251`" in rendered
+
+
+def test_a_handoff_under_the_cap_carries_no_size_report() -> None:
+    assert brief.handoff_oversize("x" * brief.HANDOFF_CAP) == ""
+    assert brief.handoff_oversize("x" * (brief.HANDOFF_CAP - 1)) == ""
+
+
+def test_a_handoff_over_the_cap_is_reported() -> None:
+    report = brief.handoff_oversize("x" * (brief.HANDOFF_CAP + 1))
+    assert report
+    assert "over the" in report
+    assert f"{brief.HANDOFF_CAP:,}" in report
+
+
+def test_an_oversize_handoff_is_still_composed_verbatim_with_the_report() -> None:
+    body = "Handoff-for: #251\n\n" + "x" * (brief.HANDOFF_CAP + 10) + "\n"
+    rendered = composed(handoff=brief.Handoff(brief.HANDOFF_CARRIED, body=body))
+    assert body in rendered  # still composed — the check informs, it does not block
+    assert "over the" in rendered
+
+
+def test_main_composes_a_carried_handoff_through_the_seam(tmp_path: Path) -> None:
+    out = tmp_path / "brief.md"
+    code = brief.main(
+        ["251", "--out", str(out)],
+        read_issue=lambda _issue, _repo: {
+            "number": 251,
+            "title": "t",
+            "body": "rewrite tools/land.py",
+            "state": "OPEN",
+        },
+        read_open=lambda _repo: [],
+        read_handoff=lambda _issue: brief.Handoff(brief.HANDOFF_CARRIED, body=A_HANDOFF),
+        repo=REPO,
+    )
+    assert code == 0
+    assert A_HANDOFF in out.read_text(encoding="utf-8")
+
+
+def test_main_does_not_refuse_when_the_handoff_could_not_be_looked(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    out = tmp_path / "brief.md"
+    code = brief.main(
+        ["251", "--out", str(out)],
+        read_issue=lambda _issue, _repo: {
+            "number": 251,
+            "title": "t",
+            "body": "rewrite tools/land.py",
+            "state": "OPEN",
+        },
+        read_open=lambda _repo: [],
+        read_handoff=lambda _issue: brief.Handoff(
+            brief.HANDOFF_UNAVAILABLE, detail="`gh` is not on PATH"
+        ),
+        repo=REPO,
+    )
+    assert code == 0  # a handoff fetch failure is one section's problem, not the dispatch's
+    assert "handoff=unavailable" in capsys.readouterr().err
+    assert "HANDOFF UNAVAILABLE" in out.read_text(encoding="utf-8")
+
+
 def test_the_brief_carries_the_derived_gate_line_and_its_derivation() -> None:
     rendered = composed(gate=brief.derive_gate("addons/main/x.sqf", VOCABULARY))
     assert "## Gate: `just regress`" in rendered
@@ -749,6 +892,7 @@ def test_the_out_flag_writes_the_brief_to_the_named_file(tmp_path: Path) -> None
             "state": "OPEN",
         },
         read_open=lambda _repo: [],
+        read_handoff=no_handoff,
         repo=REPO,
     )
     assert code == 0
@@ -767,6 +911,7 @@ def test_the_reserved_section_is_composed_from_the_real_issue_body(tmp_path: Pat
             "state": "OPEN",
         },
         read_open=lambda _repo: [],
+        read_handoff=no_handoff,
         repo=REPO,
     )
     assert code == 0
@@ -785,6 +930,7 @@ def test_a_brief_with_no_out_flag_goes_to_stdout(capsys: pytest.CaptureFixture[s
             "state": "OPEN",
         },
         read_open=lambda _repo: [],
+        read_handoff=no_handoff,
         repo=REPO,
     )
     assert code == 0
@@ -864,6 +1010,7 @@ def test_an_undetermined_gate_is_loud_on_stderr_as_well_as_in_the_brief(
             "state": "OPEN",
         },
         read_open=lambda _repo: [],
+        read_handoff=no_handoff,
         repo=REPO,
     )
     captured = capsys.readouterr()
@@ -885,6 +1032,7 @@ def test_composing_for_a_closed_issue_says_so_without_refusing(
             "state": "CLOSED",
         },
         read_open=lambda _repo: [],
+        read_handoff=no_handoff,
         repo=REPO,
     )
     assert code == 0

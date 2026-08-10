@@ -161,6 +161,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 # The path insert above is what makes these importable.
 import admission
 import dispatch
+import handoff_fetch
 import ledger
 import readiness
 
@@ -399,6 +400,101 @@ def render_prior_work(issue: int, work: Sequence[PriorWork]) -> str:
             ),
         )
     )
+
+
+# ---------------------------------------------------------------------------- the handoff
+
+# #212's study (fd9dc29) found the treatment arm empty: `tools/brief.py` never called
+# `handoff_fetch`, so zero cold-start dispatched subagents had read a handoff in five days.
+# #309 wires the fetch in and composes the result — copied byte-for-byte, never retyped —
+# applying the verdict paste rule (#219) to a second artefact. #208 §6 asked the briefing to
+# point at the handoff comment; #212 §3 measured that nothing pointed at one, and #290
+# Finding 2 measured that the hand-written half of a brief is where a wrong ground truth
+# entered. So this inlines the bytes `handoff_fetch.select` returns.
+
+# The three states a brief's handoff can be in, kept as distinguishable as
+# `handoff_fetch`'s three exit codes: a carried handoff, a cleanly determined absence, and a
+# fetch that could not look. A `FetchError` must never collapse into "no handoff" — one says
+# a successor has nothing to read, the other says nobody could look, and the brief must not
+# let a reader mistake one for the other.
+HANDOFF_CARRIED: Final = "carried"
+HANDOFF_ABSENT: Final = "absent"
+HANDOFF_UNAVAILABLE: Final = "unavailable"
+
+# The cap is a named decision, not a discovered constant (#212 §8b). It reds both
+# completion-report-shaped handoffs written to date (#287 at 9,404, #290 at 6,028) and sits
+# above #208 (1,459), the one template handoff that honoured the document's ~1,500-character
+# guidance. The study's §8b claim that it "passes all three template-shaped handoffs" does
+# not hold against its own §1/§2 tables — #170 (2,442) and #221 (2,400) both exceed it — so
+# this states the measured boundary honestly rather than the propagated claim. The check
+# informs and does not block; whether it hardens into a refusal is the human's later call
+# (#309), and under the corrected currency the write is the metered half (#212 §5).
+HANDOFF_CAP: Final = 2000
+
+
+class Handoff(NamedTuple):
+    """The issue's newest handoff, or why the brief cannot say which it is."""
+
+    state: str
+    body: str = ""
+    detail: str = ""
+
+
+def fetch_handoff(issue: int, fetch: handoff_fetch.Fetch = handoff_fetch.fetch_comments) -> Handoff:
+    """Return the issue's handoff as carried, cleanly absent, or could-not-look.
+
+    A fetch failure is encoded as a state rather than raised: the handoff is one section of
+    the brief, not the whole of it, so a handoff that cannot be looked for does not refuse
+    the dispatch — it says so in its own section, the way the gate line carries `GATE
+    UNDETERMINED` rather than defaulting to the cheaper answer.
+    """
+    try:
+        carried = handoff_fetch.select(handoff_fetch.bodies(fetch(issue)))
+    except handoff_fetch.FetchError as failure:
+        return Handoff(HANDOFF_UNAVAILABLE, detail=str(failure))
+    if carried is None:
+        return Handoff(HANDOFF_ABSENT)
+    return Handoff(HANDOFF_CARRIED, body=carried)
+
+
+HANDOFF_HEADING: Final = "## Handoff — your first read, verbatim from `just handoff`"
+HANDOFF_UNAVAILABLE_RULE: Final = (
+    "A fetch failure is not an absence: this brief could not look, not confirm there is"
+    " none. Read `just handoff {issue}` yourself before continuing."
+)
+
+
+def handoff_oversize(body: str, cap: int = HANDOFF_CAP) -> str:
+    """Return the size-report line when a carried handoff exceeds the cap, else nothing."""
+    if len(body) <= cap:
+        return ""
+    return (
+        f"**Size: {len(body):,} characters — over the {cap:,}-character cap.** Under the"
+        " corrected currency the write is the metered half (#212 §5). This check informs and"
+        " does not block; whether it hardens into a refusal is the human's call (#309)."
+    )
+
+
+def render_handoff(issue: int, handoff: Handoff) -> list[str]:
+    """Render the handoff section, or nothing when one is cleanly absent.
+
+    Three states, three renderings, never collapsed: a carried handoff is composed verbatim;
+    a cleanly determined absence renders nothing — it is a fresh dispatch, not a
+    continuation with nothing to say; a fetch failure is a loud line, never an absence.
+    """
+    if handoff.state == HANDOFF_ABSENT:
+        return []
+    if handoff.state == HANDOFF_UNAVAILABLE:
+        return [
+            "## Handoff",
+            f"**HANDOFF UNAVAILABLE — could not look.** {handoff.detail}",
+            HANDOFF_UNAVAILABLE_RULE.format(issue=issue),
+        ]
+    lines = [HANDOFF_HEADING, "", handoff.body]
+    oversize = handoff_oversize(handoff.body)
+    if oversize:
+        lines += ["", oversize]
+    return lines
 
 
 # ----------------------------------------------------------------------- the flake lines
@@ -673,6 +769,10 @@ class Briefing(NamedTuple):
     reserved: tuple[str, ...] = ()
     # The other silent-default section: hits are made prominent; no hits add no heading.
     prior_work: tuple[PriorWork, ...] = ()
+    # The handoff the issue carries, or why the brief cannot say. Defaulted to a clean
+    # absence so a brief composed about anything else opens no handoff section — the section
+    # appears only where one applies, like prior work and reserved surfaces.
+    handoff: Handoff = Handoff(HANDOFF_ABSENT)
 
 
 def compose(briefing: Briefing) -> str:
@@ -684,6 +784,9 @@ def compose(briefing: Briefing) -> str:
     prior = render_prior_work(issue, briefing.prior_work)
     if prior:
         lines += ["", *prior.splitlines()]
+    handoff_lines = render_handoff(issue, briefing.handoff)
+    if handoff_lines:
+        lines += ["", *handoff_lines]
     lines += [
         "",
         "## Task, scope, ground truth",
@@ -792,12 +895,13 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def main(
+def main(  # noqa: PLR0913 — one keyword seam per external read, each injected independently in tests
     argv: Sequence[str] | None = None,
     *,
     read_issue: Callable[[int, str], dict[str, object]] = fetch_issue,
     read_open: Callable[[str], list[dict[str, object]]] = fetch_open_issues,
     read_prior: Callable[[int, Path], tuple[PriorWork, ...]] = prior_work,
+    read_handoff: Callable[[int], Handoff] = fetch_handoff,
     repo: Path = REPO,
 ) -> int:
     """Compose the brief, or refuse loudly. Never a silent empty brief."""
@@ -833,6 +937,7 @@ def main(
 
     body = str(document.get("body") or "")
     gate = derive_gate(body, read_vocabulary(repo))
+    handoff = read_handoff(args.issue)
     rendered = compose(
         Briefing(
             issue=args.issue,
@@ -844,6 +949,7 @@ def main(
             assessment=readiness.assess(body),
             reserved=reserved_surfaces(named_paths(body)),
             prior_work=work,
+            handoff=handoff,
         )
     )
     if str(document.get("state") or "").upper() == "CLOSED":
@@ -855,6 +961,12 @@ def main(
         print(  # noqa: T201 — a CLI's refusal channel
             f"[brief] gate=undetermined for #{args.issue}: {gate.because[0]}."
             " The brief says so; it does not default to the cheaper gate.",
+            file=sys.stderr,
+        )
+    if handoff.state == HANDOFF_UNAVAILABLE:
+        print(  # noqa: T201 — a CLI's refusal channel
+            f"[brief] handoff=unavailable for #{args.issue}: {handoff.detail}"
+            " The brief says so; it does not render the absence.",
             file=sys.stderr,
         )
     if args.out:

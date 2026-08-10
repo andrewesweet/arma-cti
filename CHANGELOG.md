@@ -20,6 +20,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just brief` composes the issue's handoff into the briefing, byte-for-byte.** #212 found the
+  treatment arm of the handoff break-even empty with a mechanical cause: `tools/brief.py` never
+  called `handoff_fetch`, so zero cold-start dispatched subagents had read a handoff. The newest
+  `Handoff-for:` comment now reaches every brief verbatim from `handoff_fetch.select` — the verdict
+  paste rule applied to a second artefact (#219). Three states stay distinguishable: a carried
+  handoff is composed verbatim, a cleanly determined absence renders nothing, and a fetch failure is
+  a loud `HANDOFF UNAVAILABLE` line, never an absence (modelled on the gate line's `GATE
+  UNDETERMINED`). A 2,000-character size check reports oversize without blocking; under the corrected
+  currency the write is the metered half (#212 §5). The `just brief` AGENTS.md row is proposed, not
+  landed (#309).
+
 - **`docs/research/measuring-the-keep-on-claude-restrictions.md`**, the **zai second lens** on #296
   (ADR-0061 Decision 3, provider diversity). Independently classifies the same fourteen
   `gated_semantic_surfaces` issues and reaches the same four-kind split — semantic authorship,
