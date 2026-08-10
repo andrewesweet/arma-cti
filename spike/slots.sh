@@ -367,22 +367,41 @@ cti_slot_holder() { cti_lock_info_render "$(cti_slot_lock_path "$1").info" '    
 # reclaim something is evidence that a previous run died, and that belongs in
 # this run's record rather than in nobody's.
 
-# Pids holding any of this slot's ports, UDP or TCP.
-cti_slot_port_pids() {
-    local n="$1" port first last
-    first="$(cti_slot_port "$n")"
-    last=$((first + CTI_SLOT_PORT_SPAN - 1))
-    {
-        for ((port = first; port <= last; port++)); do
-            cti_host_exec "$CTI_TIER_HOST" ss -lunpH "sport = :$port" 2>/dev/null
-            cti_host_exec "$CTI_TIER_HOST" ss -ltnpH "sport = :$port" 2>/dev/null
-        done
-        cti_host_exec "$CTI_TIER_HOST" ss -lunpH "sport = :$(cti_slot_daemon_port "$n")" 2>/dev/null
-        cti_host_exec "$CTI_TIER_HOST" ss -ltnpH "sport = :$(cti_slot_daemon_port "$n")" 2>/dev/null
-    } | grep -oE 'pid=[0-9]+' | cut -d= -f2 | sort -u
+# Pids holding an explicit server-port block or daemon port, UDP or TCP. This is
+# the shared observation behind both cleanup-on-acquire and `run.sh`'s final
+# launch pre-flight: the former uses a slot's derived geometry, while the latter
+# checks the exact values it is about to pass to the processes. A failed `ss` is
+# returned, never folded into an empty (therefore apparently clean) listing.
+cti_resource_port_rows() {
+    local first="$1" span="$2" daemon="$3" port rows listing=""
+    for ((port = first; port < first + span; port++)); do
+        rows="$(cti_host_exec "$CTI_TIER_HOST" ss -lunpH "sport = :$port" 2>/dev/null)" || return 1
+        listing+=$'\n'"$rows"
+        rows="$(cti_host_exec "$CTI_TIER_HOST" ss -ltnpH "sport = :$port" 2>/dev/null)" || return 1
+        listing+=$'\n'"$rows"
+    done
+    rows="$(cti_host_exec "$CTI_TIER_HOST" ss -lunpH "sport = :$daemon" 2>/dev/null)" || return 1
+    listing+=$'\n'"$rows"
+    rows="$(cti_host_exec "$CTI_TIER_HOST" ss -ltnpH "sport = :$daemon" 2>/dev/null)" || return 1
+    listing+=$'\n'"$rows"
+    sed '/^$/d' <<<"$listing"
+    return 0
 }
 
-# Pids running a binary *out of* this slot's install. Catches a squatting engine
+cti_resource_port_pids() {
+    local rows
+    rows="$(cti_resource_port_rows "$@")" || return 1
+    grep -oE 'pid=[0-9]+' <<<"$rows" | cut -d= -f2 | sort -u || true
+    return 0
+}
+
+# Pids holding any of this slot's ports, UDP or TCP.
+cti_slot_port_pids() {
+    cti_resource_port_pids \
+        "$(cti_slot_port "$1")" "$CTI_SLOT_PORT_SPAN" "$(cti_slot_daemon_port "$1")"
+}
+
+# Pids running a binary *out of* an explicit install. Catches a squatting engine
 # that has not yet bound, or has already lost, its port — which is the case a
 # port sweep alone reads as a clean slot.
 #
@@ -396,9 +415,8 @@ cti_slot_port_pids() {
 # is launched as `./arma3server_x64` from inside the install and its argv names
 # the install nowhere. A command-line match would have found nothing and reported
 # a squatted slot as clean, which is the failure mode this whole file is about.
-cti_slot_install_pids() {
-    local install pid exe
-    install="$(cti_slot_install "$1")/"
+cti_resource_install_pids() {
+    local install="$1/" pid exe
     for pid in /proc/[0-9]*; do
         pid="${pid#/proc/}"
         [[ "$pid" == "$$" ]] && continue
@@ -406,6 +424,23 @@ cti_slot_install_pids() {
         [[ "$exe" == "$install"* ]] && printf '%s\n' "$pid"
     done
     return 0 # a finder, not a test — see cti_slot_lock_holders
+}
+
+# Pids running a binary out of this slot's derived install.
+cti_slot_install_pids() { cti_resource_install_pids "$(cti_slot_install "$1")"; }
+
+# A durable one-line identity for every process a resource sweep found. PID is
+# the identity; `comm` is the human hint. If a process exits between the sweep
+# and this description, it is still named by the PID that held the resource at
+# the pre-flight rather than disappearing from the record.
+cti_resource_pid_summary() {
+    local pid comm summary=()
+    for pid in "$@"; do
+        comm="$(cti_host_exec "$CTI_TIER_HOST" ps -o comm= -p "$pid" 2>/dev/null)"
+        summary+=("$pid(${comm:-exited})")
+    done
+    local IFS=,
+    printf '%s\n' "${summary[*]}"
 }
 
 # When a process started, in clock ticks since boot — field 22 of

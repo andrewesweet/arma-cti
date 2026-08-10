@@ -57,10 +57,32 @@ sleep 600
 """
 
 
-def free_port() -> int:
-    with socket.socket() as sock:
-        sock.bind(("127.0.0.1", 0))
-        return int(sock.getsockname()[1])
+def free_port_block() -> tuple[int, int]:
+    """Find a server span plus daemon port outside this host's ephemeral range.
+
+    `run.sh` now checks all five reserved server ports, so drawing only the game
+    port with `bind(0)` can put +1..+4 on another test's live ephemeral listener.
+    Start from a process-specific block, verify the whole six-port arrangement,
+    then hand the block to this worker, whose runs are sequential.
+    """
+    low = 10_000
+    high = 44_000
+    stride = 10
+    start = low + (os.getpid() % ((high - low) // stride)) * stride
+    candidates = (*range(start, high, stride), *range(low, start, stride))
+    for candidate in candidates:
+        reservations = [socket.socket() for _ in range(6)]
+        try:
+            for offset, reservation in enumerate(reservations):
+                reservation.bind(("127.0.0.1", candidate + offset))
+        except OSError:
+            continue
+        finally:
+            for reservation in reservations:
+                reservation.close()
+        return candidate, candidate + 5
+    message = "no six-port block available for the run.sh unit fixture"
+    raise RuntimeError(message)
 
 
 def run_with_lines(
@@ -92,6 +114,7 @@ def run_with_lines(
     tasklist.chmod(tasklist.stat().st_mode | stat.S_IXUSR)
 
     out = tmp_path / "out"
+    server_port, daemon_port = free_port_block()
     env = dict(
         os.environ,
         CTI_SERVER_DIR=str(server_dir),
@@ -101,8 +124,8 @@ def run_with_lines(
         CTI_WINDOWS_TASKLIST=str(tasklist),
         # Its own daemon on its own port: the tier is shared, and a test that
         # took 9099 would collide with whatever else is on this machine.
-        CTI_DAEMON_PORT=str(free_port()),
-        CTI_SERVER_PORT=str(free_port()),
+        CTI_DAEMON_PORT=str(daemon_port),
+        CTI_SERVER_PORT=str(server_port),
         # Its own state directory for the same reason, and this one is a lock
         # rather than a port (#132). The teardown test below sends a client, and
         # a client run takes the machine-wide Windows client lock — which lives
@@ -147,6 +170,16 @@ def why(records: dict[str, str]) -> str:
     class the failure-class table sends its reader on.
     """
     return f"{records.get('failure_class')}: {records.get('failure_detail')}"
+
+
+def with_networking_mode(tmp_path: Path, mode: str) -> str:
+    """Return a PATH whose `wslinfo --networking-mode` prints ``mode``."""
+    bin_dir = tmp_path / "network-tools"
+    bin_dir.mkdir()
+    wslinfo = bin_dir / "wslinfo"
+    wslinfo.write_text(f"#!/usr/bin/env bash\nprintf '%s\\n' {mode!r}\n")
+    wslinfo.chmod(wslinfo.stat().st_mode | stat.S_IXUSR)
+    return f"{bin_dir}{os.pathsep}{os.environ['PATH']}"
 
 
 @pytest.mark.parametrize(
@@ -263,6 +296,45 @@ def test_a_probe_with_no_optional_legs_records_none(tmp_path: Path) -> None:
     records = run_with_lines(tmp_path, ["measurement thing=1"])
     assert records["verdict"] == "PASS"
     assert "legs" not in records
+
+
+def test_a_demanded_headless_client_that_cannot_join_stops_before_the_probe(
+    tmp_path: Path,
+) -> None:
+    """`CTI_HOLD_HC=1` is a topology requirement, not an optional leg (#70).
+
+    The server stub delays its probe marker until after the HC stub has exited.
+    Before this gate, `run.sh` recorded `hc_joined=false`, carried on, touched the
+    marker and reported PASS. The demanded world was never assembled, so the
+    honest outcome is an infrastructure stop before that marker can be reached.
+    """
+    probe_ran = tmp_path / "probe-ran"
+    server = f"""#!/usr/bin/env bash
+for arg in "$@"; do
+    [[ "$arg" == "-client" ]] && exit 0
+done
+echo "Arma 3 Console version 2.20 : port 2402"
+echo "Dedicated host created"
+echo "SPIKE|mission_running"
+sleep 2
+touch {probe_ran}
+echo "SPIKE|probe_done"
+echo "SPIKE|done"
+sleep 600
+"""
+
+    records = run_with_lines(
+        tmp_path,
+        [],
+        extra_env={"CTI_HOLD_HC": "1"},
+        server_stub=server,
+        mode="--regress",
+    )
+
+    assert records["verdict"] == "FAIL"
+    assert records["failure_class"] == "infra_unavailable"
+    assert "headless client" in records["failure_detail"]
+    assert not probe_ran.exists(), "the probe ran without its demanded headless client"
 
 
 def test_a_declared_red_outranks_an_unverified_leg(tmp_path: Path) -> None:
@@ -426,6 +498,84 @@ def test_a_daemon_port_somebody_else_holds_is_not_a_result(tmp_path: Path) -> No
     assert records["verdict"] == "FAIL"
     assert records["failure_class"] == "infra_unavailable", why(records)
     assert "daemon" in records["failure_detail"]
+
+
+def test_a_server_port_squatter_is_named_before_any_world_launches(tmp_path: Path) -> None:
+    """A stale server is infrastructure, never a later boot timeout (#70).
+
+    The listener is deliberately planted on the exact port `run.sh` was given.
+    The stub server itself does not bind, so without the pre-flight this run goes
+    green; the test cannot pass merely because a later bind happens to fail.
+    """
+    squatter = socket.socket()
+    stale_server: subprocess.Popen[bytes] | None = None
+    stale_pid = -1
+    try:
+        squatter.bind(("127.0.0.1", 0))
+        squatter.listen()
+        port = str(squatter.getsockname()[1])
+
+        stale_install = tmp_path / "stale-install"
+        stale_install.mkdir()
+        sleeper = shutil.which("sleep")
+        assert sleeper is not None
+        stale_binary = stale_install / "arma3server_x64"
+        shutil.copy2(sleeper, stale_binary)
+        # The inherited listener is the planted fault. `Popen` returns after the
+        # exec boundary, so `ss` names this process `arma3server_x64`, not the
+        # pytest parent that created the socket.
+        proc = subprocess.Popen(  # noqa: S603
+            [str(stale_binary), "300"],
+            pass_fds=(squatter.fileno(),),
+        )
+        stale_server = proc
+        stale_pid = proc.pid
+        squatter.close()
+
+        records = run_with_lines(
+            tmp_path,
+            ["measurement thing=1"],
+            extra_env={"CTI_SERVER_PORT": port},
+        )
+    finally:
+        squatter.close()
+        if stale_server is not None:
+            stale_server.kill()
+            stale_server.wait(timeout=10)
+
+    assert records["verdict"] == "FAIL"
+    assert records["failure_class"] == "infra_unavailable"
+    assert port in records["failure_detail"]
+    assert str(stale_pid) in records["failure_detail"]
+    assert "arma3server_x64" in records["failure_detail"]
+    assert "squatter" in records["failure_detail"]
+
+
+def test_nat_networking_does_not_gate_a_server_only_run(tmp_path: Path) -> None:
+    records = run_with_lines(
+        tmp_path,
+        ["measurement thing=1"],
+        extra_env={"PATH": with_networking_mode(tmp_path, "nat")},
+    )
+    assert records["verdict"] == "PASS", why(records)
+    assert records["wsl_networking_mode"] == "nat"
+
+
+def test_nat_networking_refuses_a_run_that_crosses_the_windows_boundary(
+    tmp_path: Path,
+) -> None:
+    records = run_with_lines(
+        tmp_path,
+        ["measurement thing=1"],
+        extra_env={
+            "CTI_WINDOWS_HC": "1",
+            "PATH": with_networking_mode(tmp_path, "nat"),
+        },
+    )
+    assert records["verdict"] == "FAIL"
+    assert records["failure_class"] == "infra_unavailable"
+    assert "networking mode mirrored" in records["failure_detail"]
+    assert "observed nat" in records["failure_detail"]
 
 
 # ------------------------------ the harness's own deadlines fail closed (#144)

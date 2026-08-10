@@ -26,8 +26,11 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # protects the human rather than another agent (#41) — per host and gated on the
 # host's role since #51. `spike/hosts.sh` sources `spike/host-guard.sh`, so the
 # absolute-path resolution of the Windows interop binaries comes with it.
-# shellcheck source=spike/hosts.sh
-source "$REPO/spike/hosts.sh"
+# Slot cleanup and the final resource pre-flight share one port/install
+# observation in `slots.sh`; that file sources `hosts.sh`, so the host seam and
+# exit-code vocabulary still enter through one source graph.
+# shellcheck source=spike/slots.sh
+source "$REPO/spike/slots.sh"
 # The headed Windows client is one machine-wide thing and this run may be one of
 # several agents wanting it (#127). Sourced always, taken only on the client path.
 # shellcheck source=spike/client-lock.sh
@@ -364,7 +367,7 @@ await_or_fail() {
 # wait that could not be bounded has measured nothing (#144). One body for the
 # two legs — they were verbatim copies but for the record prefix (#161).
 await_hc_join() {
-    local prefix="$1" pid="$2" t0="$3" hclog="$4"
+    local prefix="$1" pid="$2" t0="$3" hclog="$4" required="${5:-0}"
     case "$(
         # The HC's player name is "headlessclient" regardless of -name=, and it
         # is assigned an id=HC… rather than a numeric slot id.
@@ -374,10 +377,14 @@ await_hc_join() {
     1)
         record "${prefix}joined" "false"
         record "${prefix}failure" "timeout after ${HC_TIMEOUT}s; see $hclog"
+        ((required == 1)) &&
+            fail "infra_unavailable" "demanded headless client did not join within ${HC_TIMEOUT}s; see $hclog"
         ;;
     2)
         record "${prefix}joined" "false"
         record "${prefix}failure" "process exited; see $hclog"
+        ((required == 1)) &&
+            fail "infra_unavailable" "demanded headless client exited before joining; see $hclog"
         ;;
     3) fail "infra_unavailable" "CTI_HC_TIMEOUT is not a whole number of seconds: $HC_TIMEOUT" ;;
     *)
@@ -540,7 +547,7 @@ global_ipv4s() {
 # WSL2 boundary is told. Staging writes it into daemon_addrs.sqf and the hold
 # banner prints it, so the pipeline behind it has one home (#92).
 lan_ip() {
-    global_ipv4s | grep -E '^192\.168\.' | head -1
+    printf '%s\n' "${LAN_IP:-}"
 }
 
 # The in-mission lines this run reads back, stripped of the log prefix. Both
@@ -736,7 +743,7 @@ start_hc() {
     ) >"$HC_LOG" 2>&1 &
     hc_pid=$!
 
-    await_hc_join "hc_" "$hc_pid" "$t_hc" "$HC_LOG"
+    await_hc_join "hc_" "$hc_pid" "$t_hc" "$HC_LOG" "${CTI_HOLD_HC:-0}"
 }
 
 start_windows_hc() {
@@ -914,6 +921,76 @@ fi
 record "windows_host_free" "true"
 
 [[ -x "$SERVER_BIN" ]] || fail "infra_unavailable" "server binary missing at $SERVER_BIN"
+
+# Mirrored WSL2 networking is a precondition only when this run crosses the
+# Windows boundary: a Windows HC, a driven Windows client, or a human joining a
+# hand-held world. Server-only and Linux-HC regression runs use loopback and do
+# not acquire a dependency they never exercise. LAN selection is decided beside
+# it from every RFC1918 range, replacing the silent 192.168-only assumption.
+NETWORKING_MODE="$(wslinfo --networking-mode 2>/dev/null)" || NETWORKING_MODE="unknown"
+[[ -n "$NETWORKING_MODE" ]] || NETWORKING_MODE="unknown"
+NEEDS_WINDOWS_BOUNDARY=0
+if ((WINDOWS_HC == 1 || WINDOWS_CLIENT == 1 || (HOLD == 1 && NO_CLIENT_WAIT == 0))); then
+    NEEDS_WINDOWS_BOUNDARY=1
+fi
+address_inspection="readable"
+if ! global_addresses="$(global_ipv4s)"; then
+    global_addresses=""
+    address_inspection="failed"
+fi
+preflight_args=(--networking-mode "$NETWORKING_MODE" --address-inspection "$address_inspection")
+((NEEDS_WINDOWS_BOUNDARY == 1)) && preflight_args+=(--needs-windows-boundary)
+while IFS= read -r address; do
+    [[ -n "$address" ]] && preflight_args+=(--address "$address")
+done <<<"$global_addresses"
+preflight_env="$(cd "$REPO" && timeout "$UV_TIMEOUT" uv run --quiet python \
+    tools/harness_preflight.py "${preflight_args[@]}")"
+preflight_status=$?
+if ((preflight_status == 124)); then
+    fail "infra_unavailable" \
+        "the harness environment pre-flight did not finish within ${UV_TIMEOUT}s (uv run tools/harness_preflight.py)"
+elif ((preflight_status != 0 && preflight_status != CTI_EXIT_INFRA_UNAVAILABLE)); then
+    fail "untyped_harness_failure" \
+        "the harness environment pre-flight failed (exit $preflight_status) — harness bug"
+fi
+LAN_IP="$(sed -n 's/^lan_ip=//p' <<<"$preflight_env" | head -1)"
+lan_status="$(sed -n 's/^lan_status=//p' <<<"$preflight_env" | head -1)"
+record "wsl_networking_mode" "$NETWORKING_MODE"
+record "wsl_lan_ip" "$LAN_IP"
+record "wsl_lan_ip_status" "${lan_status:-unavailable: pre-flight returned no LAN status}"
+if ((preflight_status == CTI_EXIT_INFRA_UNAVAILABLE)); then
+    preflight_detail="$(sed -n 's/^failure_detail=//p' <<<"$preflight_env" | head -1)"
+    fail "infra_unavailable" \
+        "${preflight_detail:-the harness environment pre-flight refused without detail}"
+fi
+
+# Acquisition already reclaims a dead holder through this same shared resource
+# observation (`cti_slot_reclaim`, ADR-0022/ADR-0028). Ask once more at the
+# launch boundary: a process can appear after acquisition, and `run.sh` is also
+# directly invokable. A port or install holder here means no world has run; it
+# is infrastructure, named now rather than misreported two minutes later as a
+# server-boot timeout. Detection never kills: only a slot holder may reclaim,
+# and the acquisition layer is where that authority lives.
+if ! resource_port_rows="$(cti_resource_port_rows "$PORT" "$CTI_SLOT_PORT_SPAN" "$DAEMON_PORT")"; then
+    fail "infra_unavailable" \
+        "could not inspect server ports $PORT-$((PORT + CTI_SLOT_PORT_SPAN - 1)) and daemon port $DAEMON_PORT"
+fi
+resource_port_pids="$(grep -oE 'pid=[0-9]+' <<<"$resource_port_rows" | cut -d= -f2 | sort -u || true)"
+if ! resource_install_pids="$(cti_resource_install_pids "$SERVER_DIR")"; then
+    fail "infra_unavailable" "could not inspect processes running from server install $SERVER_DIR"
+fi
+mapfile -t resource_pids < <(
+    printf '%s\n%s\n' "$resource_port_pids" "$resource_install_pids" |
+        grep -E '^[0-9]+$' | sort -u
+)
+if [[ -n "$resource_port_rows" ]] || ((${#resource_pids[@]} > 0)); then
+    resource_squatters="unidentified process (ss exposed no PID)"
+    ((${#resource_pids[@]} > 0)) &&
+        resource_squatters="$(cti_resource_pid_summary "${resource_pids[@]}")"
+    fail "infra_unavailable" \
+        "resource squatter(s) on server ports $PORT-$((PORT + CTI_SLOT_PORT_SPAN - 1)), daemon port $DAEMON_PORT, or install $SERVER_DIR: $resource_squatters"
+fi
+
 # Overridable for the same reason CTI_SERVER_DIR is: it lets the no-Arma tier
 # drive this script's own verdict path against a stub server, which is where the
 # classification of an in-mission FAIL is asserted (tests/unit/test_run_verdict.py).
@@ -938,8 +1015,6 @@ record "daemon_port" "$DAEMON_PORT"
 record "daemon_addr" "$CTI_DAEMON_ADDR"
 record "server_dir" "$SERVER_DIR"
 record "server_profile" "$SERVER_NAME"
-record "wsl_networking_mode" "$(wslinfo --networking-mode 2>/dev/null || echo unknown)"
-record "wsl_lan_ip" "$(global_ipv4s | paste -sd, -)"
 
 # ---------------------------------------------------------------- staging
 stage_mission
