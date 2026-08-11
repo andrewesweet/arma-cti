@@ -32,12 +32,16 @@ Two rules that cannot both be followed, or a mechanism that fails open across a 
 class of work without saying so. The distinguishing property against Medium is
 **silence and reach**: nobody finds out, and it applies to more than the case in hand.
 
-**Worked example.** The seat surfaces fail open on both harnesses (ADR-0068): an effort
-level that does not exist, or a key that has drifted below the top level, leaves the
-seat at the session's tier and reports nothing. That is why `just check-seats` asserts
-the pair rather than trusting it. The z.ai lane's first live run has the same shape —
-it executed the host's global hooks and never entered this repository's, so every
-denial the project relies on was absent and no verdict said so (#225).
+**Worked example.** #44's first two-slot regression run had isolated ports, directories,
+installs and daemons, and the two worlds still merged on a `CTI_DAEMON_ADDR` nobody had
+set. The run did not assert on it, so it went green. Isolation was believed rather than
+established, across every future run of that tier, and the gate said nothing.
+
+Its sibling is ADR-0068's pair of declaration surfaces — `.claude/agents/` definitions
+and skill frontmatter, both on Claude Code — which fail open in the same way: an effort
+level that does not exist, or a key that has drifted below the top level, leaves the seat
+at the session's tier and reports nothing. That is why `just check-seats` asserts the
+pair rather than trusting it.
 
 ## Medium — a material but contained defect
 
@@ -55,9 +59,11 @@ deriving the list from the probe headers.
 Wrong in a way a reader can see and correct without changing a decision. It still gets
 reported: filtering by severity is a separate pass, never the reviewer's to perform.
 
-**Worked example.** The `validated ×N` count lagging its appended exemplar list in two
-consecutive retro commits — each caught only by the next retro reading the log, and
-neither changing what any rule meant (#186).
+**Worked example.** The `validated ×N` count lagging its appended exemplar list. The
+fourteenth retro's lag was caught by the fifteenth; the fifteenth's own lag was then
+propagated by the sixteenth and seventeenth reading the log rather than the file, and
+caught only by the eighteenth — which is why it earned a mechanical check (#186). A Low
+finding that survives four readings is still Low: it changed what no rule meant.
 
 ## How the levels are used
 
@@ -73,5 +79,11 @@ neither changing what any rule meant (#186).
 They are not calibrated. Nobody has measured whether two instances given this document
 agree more than two instances given the bare words, and this document does not claim
 they do. It is a starting scale with worked examples, published so that disagreement is
-about a shared reference rather than about private ones — and the first thing to revise
-if the reviewer-versus-arbiter comparison shows the levels are being read differently.
+about a shared reference rather than about private ones.
+
+They are also **not revised on the arbiter-versus-reviewer comparison**, tempting as that
+is. An arbiter sees only findings that were disputed, and sees the reviewer's rating when
+it rules — a selected, unblinded subset (ADR-0071 ruling 6). Treating its disagreements as
+calibration evidence would read selection and anchoring effects as drift. What would
+justify revising these anchors is a blind classifier over an unselected sample, which
+ADR-0071 files as separate work.

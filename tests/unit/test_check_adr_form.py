@@ -105,15 +105,70 @@ def test_the_trailer_is_required_regardless_of_who_decided() -> None:
     assert [f.missing for f in findings] == ["`Supersedes:` line"]
 
 
-def test_the_live_rescinding_adr_would_fail_without_its_trailer() -> None:
+def test_the_wordings_an_adr_actually_uses_all_trigger() -> None:
+    # The first version of this check recognised only `rescind` and `supersede`,
+    # and so missed every one of ADR-0071's four principal withdrawals — it fired
+    # on one incidental sentence and looked like it worked.
+    for wording in (
+        "ADR-0061 decisions 2, 3 and 4 are withdrawn",
+        "ADR-0061 decision 6 is rescinded",
+        "This ADR supersedes ADR-0014's mechanism",
+        "Amends ADR-0022's declined-runbook clause",
+        "the ruling is repealed",
+        "this decision replaces the mapping of 2026-08-04",
+    ):
+        assert check_adr_form.rescinds_a_ruling(wording), wording
+
+
+def test_a_negated_or_hypothetical_rescission_is_not_one() -> None:
+    for wording in (
+        "This ADR does not supersede ADR-0014",
+        "Nothing here rescinds ADR-0061 decision 5",
+        "ADR-0061 decision 5 is never withdrawn by this",
+    ):
+        assert not check_adr_form.rescinds_a_ruling(wording), wording
+
+
+def test_adrs_written_before_the_convention_are_not_checked() -> None:
+    source = "# A decision\n\nThis ADR supersedes ADR-0014's mechanism.\n"
+    assert check_adr_form.scan_source(source, "docs/adr/0031-x.md") == []
+    findings = check_adr_form.scan_source(source, "docs/adr/0071-x.md")
+    assert [f.missing for f in findings] == ["`Supersedes:` line"]
+
+
+def test_a_trailer_below_the_first_section_is_not_in_the_field_block() -> None:
+    # An unanchored search would be satisfied by a line in a body paragraph or a
+    # fenced example, which answers no question a reader has.
+    source = (
+        "# A decision\n\nDate: 2026-08-11\n\n## Body\n\n"
+        "ADR-0061 decision 2 is withdrawn.\nSupersedes: ADR-0061 decision 2\n"
+    )
+    findings = check_adr_form.scan_source(source, "docs/adr/0071-x.md")
+    assert [f.missing for f in findings] == ["`Supersedes:` line"]
+
+
+def test_the_live_adrs_principal_rescissions_are_the_ones_detected() -> None:
     # Without this, the repository-wide pass below is satisfied by a check that
-    # fires on nothing we actually have.
+    # fires on one passing sentence while missing what the ADR actually does.
     sources = {
         path.name: path.read_text(encoding="utf-8") for path in check_adr_form.adr_files(REPO)
     }
-    rescinding = {name: text for name, text in sources.items() if "\nSupersedes:" in text}
-    assert rescinding, "expected at least one ADR carrying the trailer"
-    for name, text in rescinding.items():
+    carrying = {
+        name: text
+        for name, text in sources.items()
+        if check_adr_form.SUPERSEDES.search(check_adr_form.field_block(text))
+    }
+    assert carrying, "expected at least one ADR carrying the trailer"
+    for name, text in carrying.items():
+        triggers = [
+            line
+            for line in text.splitlines()
+            if check_adr_form.RESCISSION.search(line)
+            and check_adr_form.GOVERNANCE.search(line)
+            and not check_adr_form.NEGATED.search(line)
+            and not line.lstrip().startswith("Supersedes:")
+        ]
+        assert len(triggers) > 1, f"{name}: detected on one line only — {triggers}"
         stripped = "\n".join(
             line for line in text.splitlines() if not line.startswith("Supersedes:")
         )

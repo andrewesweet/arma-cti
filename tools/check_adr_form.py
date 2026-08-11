@@ -1,4 +1,10 @@
-"""Form checks for delegated-decision ADRs (ADR-0019, issue #137).
+"""Form checks over ADRs: the delegated-decision block, and the supersession trailer.
+
+Two conventions, checked here for the same reason. The first (ADR-0019, issue
+#137) binds an ADR carrying `Delegated-decision: yes`; the second (ADR-0071)
+binds any ADR from 0071 onward that takes a prior ruling out of force, whoever
+decided it.
+
 
 ADR-0019 requires that an ADR carrying `Delegated-decision: yes` state what
 evidence would overturn each decision it takes, because that is what makes a
@@ -46,49 +52,73 @@ OVERTURN: Final = re.compile(r"overturn", re.IGNORECASE)
 # The trigger is two words on one line, not one word anywhere. The verb alone is
 # too broad: this project's domain uses it — ADR-0005 says a presence report
 # "supersedes" the one before it, which is about reports and not about rulings.
-# So the line must also name what is being taken out of force. ADR-0005's own
-# real supersession, "two clauses above are superseded", names no ruling either,
-# and correctly does not fire: an ADR amending itself is not what the trailer is
-# for.
+# So the line must also name what is being taken out of force.
 #
-# `SUPERSEDES` uses `[^\S\n]` rather than `\s` for the same reason `REVIEWED`
-# does — under MULTILINE, `\s` steps over the newline and an empty trailer would
-# read as a filled one.
+# The verb list is wide on purpose, and it was not at first. A narrow
+# `rescind|supersede` pair missed every one of ADR-0071's four principal
+# withdrawals, because that ADR says "withdrawn" — the check fired on one
+# incidental sentence and looked like it worked. An independent review found it;
+# no gate could have.
 RESCISSION: Final = re.compile(
-    r"\b(?:rescind(?:s|ed|ing)?|supersed(?:e|es|ed|ing))\b", re.IGNORECASE
+    r"\b(?:rescind|supersed|withdraw|amend|repeal|replace)\w*\b", re.IGNORECASE
 )
 GOVERNANCE: Final = re.compile(r"\b(?:ADR-\d{4}|decisions?|rulings?)\b", re.IGNORECASE)
+
+# Shallow, and the limit is stated rather than hidden: a line saying a ruling is
+# *not* superseded, or *may* be one day, reads the same to a regex as one saying
+# it is. Skipping the obvious negations costs nothing and catches the common
+# phrasings; a determined false positive is answered by writing the trailer,
+# which is cheap and true.
+NEGATED: Final = re.compile(r"\b(?:not|never|nothing|neither|without)\b", re.IGNORECASE)
+
+# The trailer belongs in the field block, which in this corpus is the run of
+# `Key: value` lines between the title and the first `##` section. Anchoring
+# there is what makes the convention a grep: a `Supersedes:` line inside a body
+# paragraph or a fenced example would satisfy an unanchored search while
+# answering no question a reader actually has.
+#
+# `[^\S\n]` rather than `\s` for the same reason `REVIEWED` uses it — under
+# MULTILINE, `\s` steps over the newline and an empty trailer reads as a filled
+# one.
 SUPERSEDES: Final = re.compile(r"^Supersedes:[^\S\n]*\S", re.MULTILINE)
+SECTION: Final = re.compile(r"^##\s", re.MULTILINE)
+
+# The convention starts at ADR-0071, which adopted it. Twenty earlier ADRs amend
+# or supersede an earlier ruling in their prose — 0005, 0008, 0012, 0013, 0017,
+# 0018, 0019, 0023, 0024, 0028, 0031, 0036, 0038, 0039, 0040, 0042, 0044, 0045,
+# 0047, 0053 among them — and retrofitting a trailer into that many
+# human-signed-off records to satisfy a rule written after them is not
+# proportionate.
+#
+# This started life as a named exemption list in the `NO_MUTABLE_SUBJECT` shape
+# and that was the wrong borrowing, which the same review caught: a named list
+# names exceptions to a rule that otherwise applies, and here the rule simply did
+# not exist yet. Three entries also looked complete and were not — they were the
+# three a too-narrow detector happened to see. A number is honest about being a
+# start date, and cannot quietly grow.
+CONVENTION_FROM: Final = 71
+ADR_NUMBER: Final = re.compile(r"^(\d{4})-")
 
 
-# The three ADRs that superseded something before the trailer existed, each with
-# its reason beside it and visible in the diff — the shape `mutation_smoke.py`'s
-# `NO_MUTABLE_SUBJECT` uses. Retrofitting the trailer would mean editing three
-# human-signed-off ADRs to satisfy a convention written after them; naming them
-# here costs nothing and makes the pre-convention supersessions discoverable,
-# which a silent cutoff would not. A fourth entry is a visible diff, so this
-# cannot grow quietly.
-PRE_CONVENTION: Final[dict[str, str]] = {
-    "0005-rust-arma-rs-shim.md": (
-        "records being superseded *by* ADR-0018, retroactively. The trailer is "
-        "for the ADR doing the superseding, which is 0018."
-    ),
-    "0031-the-commander-multiplies-considerations-rather-than-summing-weights.md": (
-        "supersedes ADR-0014's mechanism, 2026-07-31, five days before the trailer was adopted."
-    ),
-    "0066-the-landed-initiative-rulings-get-their-adr-and-two-corrections-are-recorded.md": (
-        "amends passages of ADR-0061, 2026-08-08, three days before adoption."
-    ),
-}
+def governed(path: str) -> bool:
+    """Whether this ADR is new enough for the trailer convention to bind it."""
+    found = ADR_NUMBER.match(path.rsplit("/", 1)[-1])
+    return found is not None and int(found.group(1)) >= CONVENTION_FROM
 
 
 def rescinds_a_ruling(source: str) -> bool:
     """Whether any one line both rescinds and names what it rescinds."""
     return any(
-        RESCISSION.search(line) and GOVERNANCE.search(line)
+        RESCISSION.search(line) and GOVERNANCE.search(line) and not NEGATED.search(line)
         for line in source.splitlines()
         if not line.lstrip().startswith("Supersedes:")
     )
+
+
+def field_block(source: str) -> str:
+    """Return the header above the first `##` section, where the trailers live."""
+    found = SECTION.search(source)
+    return source[: found.start()] if found else source
 
 
 class Finding(NamedTuple):
@@ -111,9 +141,9 @@ def supersession_failures(source: str, path: str) -> list[Finding]:
     session — and it rescinds four decisions of ADR-0061, so it needs the
     trailer for a reason that has nothing to do with who decided.
     """
-    if path.rsplit("/", 1)[-1] in PRE_CONVENTION:
+    if not governed(path):
         return []
-    if not rescinds_a_ruling(source) or SUPERSEDES.search(source):
+    if not rescinds_a_ruling(source) or SUPERSEDES.search(field_block(source)):
         return []
     return [
         Finding(

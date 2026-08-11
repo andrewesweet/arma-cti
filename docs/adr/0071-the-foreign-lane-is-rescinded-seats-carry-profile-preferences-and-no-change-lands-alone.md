@@ -106,7 +106,9 @@ replaced by a preference list per seat, resolved at dispatch time.
 `just dispatch --seat S` resolves the first dispatchable profile, reading the
 breaker and the off-peak rule as it already does, records which it chose and why,
 and refuses when a whole list is unavailable. Naming a profile directly remains
-possible.
+possible — and **every refusal below attaches to the profile, not to the
+resolution path**, so `--profile` is a way of choosing, never a way around. A
+blocked profile is blocked however it was named.
 
 **The interlocutor row is not a dispatch route.** ADR-0068 makes that seat a slash
 command the human invokes in their own session, and this ADR does not reverse it.
@@ -114,6 +116,13 @@ The row governs the pair the seat's own surfaces declare, and the Codex entry is
 reachable only by the human opening a Codex session by hand — which needs the twin
 surface named in ruling 7, without which the fallback silently drops the seat's
 instructions.
+
+**The planner does not gate or land**, and the seat table's "absorbs
+`cti-implementer-xhigh`" means it inherits that seat's *tier*, not its contract.
+A planner works out what to do; an implementer carries it out, gates it and lands
+it. So the ceiling below does not reach the planner head. This is spelled out
+because the second review read the absorption as inheriting the whole contract,
+which the text permitted.
 
 **The Codex head of `implementer` is blocked, not live.** `tools/dispatch.py`
 records a measured ceiling: no `writable_roots` set lets a Codex dispatch both
@@ -150,8 +159,11 @@ inherit that as a known distortion.
 
 **#242 ruling 1's pre-registered trial is superseded in part.** Its criteria and
 records judge an orchestration seat at opus/high; this map sets opus/xhigh. The
-accrued records cannot validate the new pair, and the trial is either restarted
-against it or closed as inconclusive — not silently continued.
+accrued records cannot validate the new pair, so **the trial is closed as
+inconclusive** and its records kept as history. Restarting it against opus/xhigh
+was the alternative and is declined: the observatory of ruling 6 subsumes what the
+trial was measuring, and running both would produce two answers to one question.
+Closing it is a step in the sequencing, not a later choice for whoever notices.
 
 ### 3. Retros are their own kind of work, and they land nothing
 
@@ -175,20 +187,36 @@ Never-alone does not apply to retros, because nothing lands.
 
 ### 4. No change lands alone
 
-**No single model instance may both propose a change and approve it for landing.**
+**No single model instance may both propose a change and produce the review
+verdict that clears it.**
 
-The invariant is stated in the form the design delivers, which the first draft's
-did not. The proposer may land its own approved change: the risk is not the
-mechanical push but the judgement that the change is fit, and the review removes
-exactly that. The alternatives were the reviewer landing — which would give a
-read-only instance write authority and destroy the containment that makes the
-review seat safe — and the orchestrator landing everything, a serial bottleneck.
+Three roles, because the first two drafts collapsed them and the invariant kept
+escaping as a result. The **proposer** authors the change. The **reviewer**
+produces the verdict — the judgement that the change is fit, with its findings and
+severities. The **lander** executes `just land`; it decides nothing, and it may be
+the proposer. The first draft said "propose and land", which forbade the wrong
+act; the second said "propose and approve", which named the right act and then
+specified a refusal that could not tell who had performed it.
+
+**The enforcement reads two fields that already exist.** Every dispatch mints an
+identity and carries it on its telemetry as `cti.dispatch_id`. The verdict records
+the reviewing dispatch's id; the branch carries the implementing dispatch's; and
+`just land` refuses when they are the same. That catches the case that matters — a
+proposer writing its own verdict — without inventing an identity mechanism. It
+does not catch a human hand-writing a verdict, and it is not claimed to.
+
+The alternatives were the reviewer landing, which would give a read-only instance
+write authority and destroy the containment that makes the review seat safe; the
+orchestrator landing everything, a serial bottleneck; and using the tracker's
+actor as the identity oracle, which fails because every dispatch runs as the same
+user.
 
 **Scope is inverted.** Every landing is reviewed except entries on a named
 exemption list, each carrying its reason beside it, visible in the diff — the
 shape `tools/mutation_smoke.py`'s `NO_MUTABLE_SUBJECT` uses. The list is a gate,
-so under ruling 6's restatement of the conflict-of-interest class a diff touching
-it can never itself be exempt. A path allowlist was rejected for failing open.
+so under **routing class 6**'s restatement below — no instance authors the gate
+that judges it — a diff touching it can never itself be exempt. A path allowlist
+was rejected for failing open.
 
 **The loop.** The implementer self-reviews against a named checklist — gates
 green, acceptance criteria ticked off one by one, diff read once end to end — then
@@ -201,8 +229,15 @@ implementer may dispute correctness and severity.
 landing refuses if the SHA it is asked to land is not the one the verdict names.
 Without that, an amended or rebased branch lands on an earlier approval.
 
+**The arbiter is the implementer's seat's escalation entry** — a function of the
+work, not of who happened to review it. One rule, deterministic, using a column
+the seat table already has, and it keeps arbitration proportional to the tier the
+work was done at. It also means the `review` row needs no escalation entry of its
+own, which removes that gap rather than filling it. "The escalation set" was not a
+definition, and two callers could have picked different arbiters for one finding.
+
 **Adjudication is per finding.** Each finding receives at most one arbiter verdict
-from the escalation set and is then closed; a finding raised in a later round is a
+and is then closed; a finding raised in a later round is a
 new item, not a reopening. This bounds *re-argument*, not the total number of
 findings — new rounds can produce new findings, and it is the round budget below,
 not per-finding closure, that guarantees termination. The first draft claimed
@@ -217,11 +252,16 @@ makes "a review blocks a landing" true in the sense that matters — nothing lan
 carrying a live unadjudicated finding. The first draft ordered these two rulings
 against each other.
 
-**Post-landing review survives**, and it needs a new basis. `docs/review-dispatch.md`
-rests on ADR-0061 Decision 3 and the admission bar, both withdrawn here. Its
-substance is untouched — the claims contract, the citation requirement, the
-orchestrator routing — and it is re-founded on this ruling instead. Its citation
-floor moves with it; nothing in this ADR replaces it and nothing removes it.
+**Post-landing review survives**, and it needs a new basis and a new destination.
+`docs/review-dispatch.md` rests on ADR-0061 Decision 3 and the admission bar, both
+withdrawn here, and it does more than cite them: its closing section routes a
+confirmed finding *into* the bar as an `unclean` reason, and accounts the
+reviewer's own dispatch against a per-profile citation floor held there. Removing
+the bar therefore removes two live operations, not two references. Both move to
+the observatory of ruling 6 — a confirmed post-landing finding becomes a rework
+observation on the reviewed profile, and the citation floor becomes a reported
+column on the reviewing one. That rehoming is a step in the sequencing. The claims
+contract, the citation requirement and the orchestrator's routing are untouched.
 
 **The review seat's containment must be forced, not defaulted.** `just dispatch`
 defaults `--permission-mode` to `acceptEdits`, and only `plan` maps to Codex's
@@ -247,12 +287,20 @@ and needs no condition.
 a **named condition**. The list grows only at a retro — the discipline
 `.claude/hooks/deny-subagent-waits.py`'s measured denial list already runs under.
 
-Four conditions seed it: a review cycle still holding non-Low findings after three
-rounds; repeated non-convergence on one kind of item, which is evidence the item
-was under-specified and should be re-planned; one clean retry with a different
-profile, distinguishing a bad implementation from a bad item; and **a diagnosis of
-the #181 shape**, where a plausible wrong fix would also go green — which routing
-class 4 orders and which must therefore be a condition ruling 5 permits.
+Four conditions seed it, each stated as something a tool can decide rather than
+something an agent judges — which is what "data" means here and what the first
+draft's wording did not deliver:
+
+- a review cycle holding a finding above Low after three fix rounds;
+- **two** consecutive items sharing a routing class each reaching that same
+  three-round state, which is evidence the *items* are under-specified and the
+  next one is re-planned rather than re-fixed;
+- an item whose first implementation attempt was discarded and re-dispatched to a
+  different profile from a clean base, which fires once and distinguishes a bad
+  implementation from a bad item;
+- an issue declaring routing class 4, the #181 shape, where a plausible wrong fix
+  would also go green — which that class's remedy orders and which must therefore
+  be a condition this ruling permits.
 
 **The conditions live as data in a tool and reach an agent as an emission when one
 fires** — not resident prose in any harness's memory file. This is #209's rule:
@@ -277,10 +325,15 @@ the gate tier from needs a home before the module goes.
 
 In its place, a mechanism that observes work and is read over time.
 
-**It ranks on rework**: review rounds, escalations, arbiter invocations, dispute
-outcomes, landings per issue — counts, which commensurate across providers — and
-records wall-clock beside them as a duration, which is not a count and varies with
-queueing and task length.
+**It reports rework, and ranks on one primary key.** The measures are review
+rounds, escalations, arbiter invocations, dispute outcomes and landings per issue
+— counts, which commensurate across providers — plus wall-clock beside them as a
+duration, which is not a count and varies with queueing and task length. Five
+dimensions do not order themselves: a profile with two rounds and no escalation
+against one with one round and one escalation has no winner without a conversion,
+and inventing one is Decision 5's error again. So **rounds per landing is the
+ranking key** and everything else is reported beside it, unranked. A different key
+is a ruling, not a preference.
 
 **It does not rank on spend.** Three meters — the Anthropic plan's five-hour
 window, z.ai's prompt count, and Codex's absence of published terms — do not
@@ -330,8 +383,14 @@ or the hypothesis is dropped.
 
 Both harnesses' surfaces are generated from `tools/dispatch.py`'s registry
 **wherever the target surface exists**. `tools/hook_parity.py` is the pattern:
-translate, never reimplement, and refuse to emit an empty result for an event that
-had one — a conditional refusal, which is narrower than "never emits empty".
+translate, never reimplement.
+
+Its refusal is narrower than either draft said. `translate` refuses to emit an
+empty hook list for an event that had one — but where a carried event holds only
+unsupported hook types or malformed groups, the entries are dropped and
+`config_overrides` returns empty without refusing, which is the fail-open shape
+the module was written to prevent. That is a defect in the pattern, filed, not a
+property to cite as exemplary.
 
 Already cheap, verified in session: `AGENTS.md` and `CLAUDE.md` are one symlinked
 file; Codex skills use the same `SKILL.md` convention, so skill parity is a
@@ -364,14 +423,25 @@ a review runs. The `AGENTS.md` amendments this ADR does require are named in the
 sequencing and are corrections, not additions.
 
 The `Supersedes:` trailer is checked by `tools/check_adr_form.py` **as of this
-commit**, with three pre-convention ADRs named in a grandfather list carrying their
-reasons. The first draft claimed the check while it did not exist; that the claim
-survived to a reviewer is the clearest available argument for the review this ADR
-introduces.
+commit**, and the check's own history is the argument for this ADR's ruling 4. The
+first draft claimed the check while it did not exist. The second landed it with a
+`rescind|supersede` detector that missed every one of this ADR's four principal
+withdrawals — because they say "withdrawn" — so it fired on one incidental
+sentence and looked like it worked, and its anti-vacuity test passed on that
+sentence. It also carried a three-entry grandfather list described as complete
+which was in fact the three ADRs the narrow detector happened to see; twenty
+earlier ADRs amend or supersede a ruling in their prose. Two independent reviews
+found those, in sequence. No gate this project runs could have.
 
-A defect found on the way and filed rather than fixed here: `AGENTS.md` names that
-exemption constant `NO_PYTHON_SUBJECT`; the constant is `NO_MUTABLE_SUBJECT`. The
-first draft inherited the error from the file rather than the code.
+What is there now: a wide verb list, negation skipped, the trailer anchored to the
+field block, and a **cutoff at 0071** rather than a named list — because a named
+list names exceptions to a rule that otherwise applies, and here the rule did not
+exist yet. That is a start date, and it cannot quietly grow.
+
+`AGENTS.md` also names that exemption constant `NO_PYTHON_SUBJECT` where the code
+says `NO_MUTABLE_SUBJECT`; the tool's own documentation said it twice and is
+corrected in this commit. `AGENTS.md` is a sign-off surface, so its copy is filed
+rather than fixed here.
 
 ## What the rescission does not take with it
 
@@ -384,8 +454,8 @@ on provenance, and separating them is the substance of this ADR.
 | 2 `orchestration` | **survives unchanged, provisional** | ruling 1's carve-out, and the only provenance rule left |
 | 3 `retros_and_adr_authorship` | **splits** | the retro half dies with ruling 3. ADR authorship survives, bound to the planner's list rather than to Claude |
 | 4 `plausible_wrong_fix_goes_green` | **survives, remedy restated** | gate coverage, not provenance. Remedy becomes route-to-planner-and-escalate, and ruling 5 carries the matching condition |
-| 5 `in_world_landings` | **survives** | capability — but the restriction is this project's own foreground-wait hook applying to every dispatched session, not a provider's limit. The detached runner that would lift it is not specified here |
-| 6 `gates_themselves` | **survives, reframed and widened** | conflict of interest: *no instance authors the gate that judges it*. Now binds Claude too — and its path list omits `tools/hook_parity.py`, `tools/check_adr_form.py`, `tools/ledger.py` and any gate not yet written, so the list must be widened or the rule silently does not fire |
+| 5 `in_world_landings` | **survives** | capability — a *subagent* cannot hold the corpus's foreground wait, so a seat reached that way cannot gate its own in-world work. Not every dispatched session: the wait hook returns 0 where there is no `agent_id`, so a top-level dispatched session is permitted and is the shape that would lift this. The first draft said "every dispatched session", which the hook contradicts |
+| 6 `gates_themselves` | **survives, reframed** | conflict of interest: *no instance authors the gate that judges it*. Now binds Claude too. Its enforcement is a hard-coded path list, which cannot recognise a gate that does not exist yet — `tools/check_adr_form.py`, added by this very commit, is the recurring shape. Widening the list is a fix for today only; the durable form is deriving the list from what `just check` actually runs, and that is filed rather than decided here |
 | 7 `anthropic_plan_meter` | **deleted** | its stated basis is false: `tools/breaker.py` reads the meter over plain `urllib` at a fixed URL, with no Claude session involved |
 
 Five classes survive. Four of them — ADR authorship, the #181 shape, in-world
@@ -399,10 +469,14 @@ was written down.
 - **Never-alone doubles the instances per landing at minimum**, plus up to three
   fix rounds and per-finding arbitration. The observatory measures that cost,
   which means adoption precedes the evidence for it. A choice, not an oversight.
-- **A known severe defect can land.** The pre-declared default lands the change
-  after escalation and arbitration, filing whatever remains. If the arbiter is
-  wrong, a Critical finding lands as an open issue rather than a block. This is
-  the price of a terminus that never waits for a human.
+- **A known severe defect can land, and an unknown one can land silently.** The
+  pre-declared default lands the change after escalation and arbitration, filing
+  whatever the arbiter left unresolved. Two different losses sit here. A finding
+  the arbiter leaves open lands as a tracked issue — visible. A real Critical the
+  arbiter *rejects* is closed, not filed, so it lands with no trace at all; the
+  only remaining catch is the post-landing review seat. That is the price of a
+  terminus that never waits for a human, and it is why post-landing review is
+  retained rather than absorbed.
 - **Retros filing rather than landing slows process change**, and the backlog
   grows by construction.
 - **Dropping the bar means a new profile enters on judgement** with no ex-ante
@@ -447,30 +521,41 @@ was written down.
 1. **This ADR**, alone, with the severity anchors and the `Supersedes:` check that
    ship in the same commit. It is re-reviewed by an independent instance on
    another provider before landing.
-2. **The `AGENTS.md` corrections** the rulings require: the no-further-verification
+2. **The seat map** — three profiles, seat resolution with the review seat's mode
+   forced and the profile-level refusals attached, the pre-work signals added to
+   the dispatch record, generated seat surfaces where a target surface exists, and
+   #242's trial closed as inconclusive.
+3. **The `AGENTS.md` corrections** the rulings require: the no-further-verification
    amendment, the Model roles replacement, the withdrawn provenance rules, and the
-   `NO_MUTABLE_SUBJECT` name. Until these land, an agent reading the always-loaded
-   rules is following the superseded ones.
-3. **The seat map** — three profiles, seat resolution with the review seat's mode
-   forced, the pre-work signals added to the dispatch record, and generated seat
-   surfaces where a target surface exists.
-4. **The provenance removal** — the routing policy re-founded per the table above
-   including class 7's deletion and class 6's widened path list; the bar dropped
-   after the trial harness and the in-world list are extracted.
-5. **The `/retro` skill rewrite**, restating steps 3 to 5 in terms of the backlog
+   `NO_MUTABLE_SUBJECT` name. **After** step 2, not before: the corrections
+   describe routes the command surface must already be able to take, and an
+   always-loaded file naming a seat that does not resolve is the same defect in
+   the other direction. Between steps 1 and 3 the superseded rules stand, which is
+   the cost of a file every session loads.
+4. **The escalation-condition mechanism** — the data surface and the emission,
+   ahead of both its consumers rather than after them.
+5. **The provenance removal** — the routing policy re-founded per the table above,
+   including class 7's deletion and class 4's restated remedy, which is one of
+   those consumers; the bar dropped after the trial harness, the in-world list,
+   and `docs/review-dispatch.md`'s two operations are rehomed.
+6. **The `/retro` skill rewrite**, restating steps 3 to 5 in terms of the backlog
    item.
-6. **Never-alone** — branch exchange, SHA-bound verdict record, the landing
-   refusal, the self-review checklist, per-finding adjudication, the arbiter, the
-   exemption list, and its telemetry events in the same landing.
-7. **The escalation-condition mechanism** — the data surface and the emission.
-8. **The observatory** — the rollup, and the containment column only if a bypass
-   can be made to leave a record.
+7. **Never-alone** — branch exchange, the verdict record carrying the reviewed SHA
+   and the reviewing dispatch id, the landing refusal on both, the self-review
+   checklist, per-finding adjudication, the arbiter, the exemption list, and its
+   telemetry events in the same landing.
+8. **The observatory** — the rollup on rounds per landing, and the containment
+   column only if a bypass can be made to leave a record.
 
 The review loop is deliberately not first: it should not be the first thing to
 land under a rule saying everything is reviewed, because it would have to review
 itself.
 
 Filed separately: lifting #265's gate ceiling, which blocks the Codex implementer
-head; the `AGENTS.md` reduction; the Codex orchestrator backup that ends ruling
-1's carve-out; the Codex seat-definition surface; the blind classifier the severity
-hypothesis needs; and the detached corpus runner that would lift routing class 5.
+head; the `AGENTS.md` reduction and its `NO_PYTHON_SUBJECT` correction; the Codex
+orchestrator backup that ends ruling 1's carve-out; the Codex seat-definition
+surface; the blind classifier the severity hypothesis needs; the top-level
+dispatched corpus runner that would lift routing class 5; `hook_parity`'s
+fail-open on unsupported and malformed hook groups; and deriving class 6's path
+list from what `just check` actually runs, so a gate written tomorrow is covered
+by the rule that judges it.

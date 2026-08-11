@@ -96,7 +96,7 @@ Three things a ratchet gets wrong, and how this one answers each:
 - **Lowering a row must be visible.** `--record` raises a same-subject row and
   re-baselines a changed one, but it never lowers a same-subject row silently:
   it reports "held" and leaves it. Lowering is a hand-edit to the baseline, in
-  the diff, with the same reviewability `NO_PYTHON_SUBJECT` has.
+  the diff, with the same reviewability `NO_MUTABLE_SUBJECT` has.
 
 `SLACK` is one kill: a module may lose one kill to its own rate without redding,
 so a neutral test rename (which reorders an equal-cost test selection and can
@@ -1725,7 +1725,7 @@ def _record(root: Path, targets: list[str], args: argparse.Namespace) -> int:
     * **held** — same subject, fewer kills: the ratchet never lowers a row
       silently. Lowering is deliberate, so `--record` leaves the row and names
       it, and the row is lowered by editing the baseline by hand — visible in the
-      diff, the same reviewability `NO_PYTHON_SUBJECT` has.
+      diff, the same reviewability `NO_MUTABLE_SUBJECT` has.
 
     A module with no subject, nothing to plant, or no verdict is skipped: there
     is no rate to record. A refusal (a module not green on its own) is reported
