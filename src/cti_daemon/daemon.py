@@ -449,7 +449,45 @@ class Daemon:
         return handler(self, request)
 
     def _ping(self, request: protocol.Request) -> protocol.Reply:
-        result: dict[str, Any] = {"pong": True}
+        """Say that the process is up, and how it is doing (#143).
+
+        `{"pong": True}` answered the first question alone, which left the
+        second — how deep the outbox is, how full the replay window is, how much
+        telemetry has been lost — reachable only by reading the log the daemon
+        writes, or not at all. Every one of these is a number this object
+        already holds; a poll that stopped draining, a window at its bound and a
+        disk that stopped taking writes are the three ways a session goes wrong
+        quietly, and this is one dict.
+
+        `pong` stays, and stays first: it is what the existing callers branch on
+        and it is still the honest answer to "are you there".
+
+        The epoch is deliberately *not* repeated here. `_answer` stamps it on
+        every reply out (#96, ADR-0036) and `cti_fnc_daemonCall` reads it off
+        the envelope, so a copy inside `result` would be a second place for the
+        same fact to be right — and the one that could disagree.
+
+        The control lane's replay window is not here either: save and load are
+        not the play path, and #18's UI has no use for a number that moves only
+        when a human saves.
+        """
+        result: dict[str, Any] = {
+            "pong": True,
+            # Where a stalled pump shows up first. The gauge in `_gauge_outbox`
+            # writes a row per band crossed, which needs somebody reading the
+            # log; this is the same depth for somebody who can only ask.
+            "outbox_depth": self.outbox.depth,
+            # How much of the replay window is in use, and what it is bounded
+            # by. Together they are readable: 256 of 256 is a window at its
+            # bound, where the oldest answer is being retired to make room and a
+            # resend older than that would be carried out twice (ADR-0034).
+            "answered": len(self.answered),
+            "answered_window": self.answered.window,
+            # What observability has cost so far, which is otherwise the one
+            # number that cannot be read out of the log — the rows saying so are
+            # exactly the rows that did not get written (ADR-0003).
+            "telemetry_dropped": self._telemetry.dropped,
+        }
         return protocol.accepted(request.id, result)
 
     def _view(self, request: protocol.Request) -> protocol.Reply:

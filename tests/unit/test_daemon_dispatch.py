@@ -36,12 +36,65 @@ ORDER_ISSUED = Effect(
 
 def test_ping_is_answered_with_the_id_it_was_asked_under(tmp_path: Path) -> None:
     daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl", epoch="e-1")
-    assert reply_to(daemon, id="r-1", verb="ping") == {
-        "id": "r-1",
-        "epoch": "e-1",
-        "status": "ok",
-        "result": {"pong": True},
-    }
+    reply = reply_to(daemon, id="r-1", verb="ping")
+    assert reply["id"] == "r-1"
+    assert reply["epoch"] == "e-1"
+    assert reply["status"] == "ok"
+    # Still the answer to "are you there", and still the key a caller branches
+    # on. What the rest of the result carries is the four tests below.
+    assert reply["result"]["pong"] is True
+
+
+def test_ping_says_how_deep_the_outbox_is(tmp_path: Path) -> None:
+    # #143: `{"pong": True}` answered "process up" and stopped there, so a pump
+    # that had stopped draining was a fact the daemon held and nobody could ask
+    # it for — reachable by reading its log, or not at all.
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    assert reply_to(daemon, id="r-p1", verb="ping")["result"]["outbox_depth"] == 0
+
+    for _ in range(3):
+        daemon.outbox.push(ORDER_ISSUED)
+
+    assert reply_to(daemon, id="r-p2", verb="ping")["result"]["outbox_depth"] == 3
+
+
+def test_ping_says_how_full_the_replay_window_is_and_what_bounds_it(tmp_path: Path) -> None:
+    # The pair is what is readable: at its bound the window is retiring its
+    # oldest answer to make room, and a resend older than that is carried out a
+    # second time rather than answered from the record (ADR-0034). One number
+    # without the other says nothing about how close that is.
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl")
+    for index in range(4):
+        reply_to(daemon, id=f"r-p3-{index}", verb="ping")
+
+    result = reply_to(daemon, id="r-p4", verb="ping")["result"]
+    assert result["answered"] == 4
+    assert result["answered_window"] == daemon.answered.window
+
+
+def test_ping_says_how_many_telemetry_events_were_lost(tmp_path: Path) -> None:
+    # The one number that cannot be recovered from the log, because the rows
+    # that would carry it are exactly the rows that did not get written
+    # (ADR-0003). The path is inside a file rather than a directory, so every
+    # write fails; the first ping's own `request` row is the loss the second
+    # one reports.
+    blocker = tmp_path / "not-a-directory"
+    blocker.write_text("", encoding="utf-8")
+    daemon = build_daemon(telemetry_path=blocker / "telemetry.jsonl")
+
+    assert reply_to(daemon, id="r-p5", verb="ping")["result"]["telemetry_dropped"] == 0
+    assert reply_to(daemon, id="r-p6", verb="ping")["result"]["telemetry_dropped"] == 1
+
+
+def test_ping_does_not_repeat_the_epoch_the_envelope_already_stamps(tmp_path: Path) -> None:
+    # `_answer` stamps the epoch on every reply out (#96, ADR-0036) and
+    # cti_fnc_daemonCall reads it from there. A copy inside `result` would be a
+    # second place for one fact to be right — and the one that could disagree.
+    daemon = build_daemon(telemetry_path=tmp_path / "telemetry.jsonl", epoch="e-2")
+    reply = reply_to(daemon, id="r-p7", verb="ping")
+
+    assert reply["epoch"] == "e-2"
+    assert "epoch" not in reply["result"]
 
 
 def test_a_verb_the_daemon_does_not_know_is_an_error_not_a_rejection(tmp_path: Path) -> None:

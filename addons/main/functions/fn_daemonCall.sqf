@@ -45,6 +45,19 @@
  *   cti_daemon_epoch    <STRING> which daemon process the world has been talking
  *                       to (#96). Latched on first contact; a change is a
  *                       different Campaign and goes to cti_fnc_campaignLost.
+ *   cti_daemon_wedged   <ARRAY> of verb <STRING>: the verbs whose last reply was
+ *                       the daemon saying it could not carry the request out.
+ *                       Latched per verb on the first such reply and cleared on
+ *                       that verb's next `ok`, each said once (#143).
+ *
+ * `cti_daemon_wedged` is per verb rather than one flag, and that is the whole of
+ * why it works. A wedge is verb-shaped: an outbox entry too large to cross one
+ * `callExtension` return fails every `poll` and nothing else, so a flag cleared
+ * by any success would be set by the pump every 2 s and cleared by the report
+ * loop in between — a caption cadence in front of the player instead of the one
+ * line the latch exists to produce. Cleared on `ok` and not on `rejected`: a
+ * rejection is the daemon judging and refusing on the rules, which says the
+ * daemon is well but says nothing about the request that was never carried out.
  *
  * `cti_daemon_down` is deliberately *not* a CTI|FAIL line. A daemon that has
  * gone away is news, and the world says so — but the harness reads `FAIL
@@ -99,7 +112,7 @@ if (_extension isEqualTo "") exitWith {
 // completed" is the number #97 found being answered with a lie.
 private _tally = missionNamespace getVariable ["cti_daemonCall", createHashMap];
 if (count _tally isEqualTo 0) then {
-    _tally = createHashMapFromArray [["calls", 0], ["ok", 0], ["unreachable", 0]];
+    _tally = createHashMapFromArray [["calls", 0], ["ok", 0], ["unreachable", 0], ["error", 0]];
     missionNamespace setVariable ["cti_daemonCall", _tally];
 };
 _tally set ["calls", (_tally get "calls") + 1];
@@ -182,10 +195,17 @@ if (missionNamespace getVariable ["cti_daemon_down", false]) then {
     ["The strategic daemon is answering again.", "PLAIN DOWN", 1] remoteExec ["titleText", -2];
 };
 
+private _wedged = missionNamespace getVariable ["cti_daemon_wedged", []];
 private _status = _reply getOrDefault ["status", ""];
 switch (_status) do {
     case "ok": {
         _tally set ["ok", (_tally get "ok") + 1];
+        if (_verb in _wedged) then {
+            missionNamespace setVariable ["cti_daemon_wedged", _wedged - [_verb], true];
+            diag_log format ["CTI|daemon_unwedged verb=%1", _verb];
+            ["The strategic daemon is carrying out the world's requests again.",
+                "PLAIN DOWN", 1] remoteExec ["titleText", -2];
+        };
         ["ok", _reply, _raw] call _answer
     };
     // Understood and refused on the rules. A caller's mistake, not a fault, and
@@ -195,10 +215,29 @@ switch (_status) do {
         // The daemon could not answer as asked: `internal`, `malformed_request`,
         // `unknown_verb`, `oversized_message`. Every one of them is our bug.
         private _error = _reply getOrDefault ["error", createHashMap];
+        private _class = _error getOrDefault ["class", "?"];
+        _tally set ["error", (_tally getOrDefault ["error", 0]) + 1];
         diag_log format ["CTI|FAIL class=assertion_failed daemon_error verb=%1 error=%2 detail=%3",
-            _verb,
-            _error getOrDefault ["class", "?"],
-            _error getOrDefault ["detail", ""]];
+            _verb, _class, _error getOrDefault ["detail", ""]];
+        // And a caption, in cti_daemon_down's shape and for its reason (#143).
+        // The FAIL line above is a verdict in the harness and ends the run
+        // there; in a Play Session it is one line every 2 s in a log nobody is
+        // reading, while the effect pump stops draining and the player learns
+        // the Campaign has stopped progressing by feel. An oversized outbox
+        // entry is the shape that found this — the daemon's refusal of it is
+        // loud and right and stays exactly as it is, and what was missing was
+        // ever telling the person it was happening to.
+        //
+        // Not a CTI|FAIL of its own, for the reason the header gives for
+        // cti_daemon_down: the class on the line above is the verdict, and a
+        // second one for the same fault would only double it.
+        if !(_verb in _wedged) then {
+            missionNamespace setVariable ["cti_daemon_wedged", _wedged + [_verb], true];
+            diag_log format ["CTI|daemon_wedged verb=%1 class=%2", _verb, _class];
+            [format ["The strategic daemon refused a request the world had to make (%1). "
+                + "Part of the Campaign has stopped progressing until this is fixed.", _class],
+                "PLAIN DOWN", 1] remoteExec ["titleText", -2];
+        };
         ["error", _reply, _raw] call _answer
     };
 };

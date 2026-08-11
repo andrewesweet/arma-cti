@@ -45,7 +45,12 @@ def test_a_reply_comes_back_under_the_id_it_was_asked_with(tmp_path: Path) -> No
     # The epoch is the answering process's own (#96, ADR-0036), so it is checked
     # for shape here and pinned by name in test_daemon_epoch.py.
     assert reply.pop("epoch")
-    assert reply == {"id": "r-1", "status": "ok", "result": {"pong": True}}
+    assert reply["id"] == "r-1"
+    assert reply["status"] == "ok"
+    # What a ping's result is made of is `test_daemon_dispatch.py`'s (#143); the
+    # subject here is that the socket carried one back under the id it was asked
+    # with, so this reads the key every caller branches on and no more.
+    assert reply["result"]["pong"] is True
 
 
 def test_one_connection_serves_many_requests(tmp_path: Path) -> None:
