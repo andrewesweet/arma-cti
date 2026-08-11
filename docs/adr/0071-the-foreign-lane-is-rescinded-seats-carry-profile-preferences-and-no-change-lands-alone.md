@@ -13,7 +13,7 @@ ADR-0070) and a scan of all 47 open issues' bodies and comments for an ADR
 number at or above 0071, which returned nothing.
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
-Supersedes: ADR-0009's assignment of process changes to retros, in part
+Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
 Supersedes: the human's ruling on #300 (2026-08-09)
 Supersedes: the human's rulings on #258 and #217 item 9 (2026-08-06)
 Supersedes: the human's ruling on #220 (2026-08-05), in part
@@ -45,13 +45,44 @@ its own work. The answer is a review no landing escapes — which the project co
 not have stated while its verification budget was governed by a rule forbidding
 any additional pass.
 
-**This document is its own first evidence for the second decision.** Its first
-draft was reviewed by an independent instance on another provider, which returned
-49 claims. Seven asserted that the draft stated a falsehood; all seven were
-verified and all seven were correct. The draft claimed a mechanical check that did
-not exist, named a constant that does not exist, asserted a deny list that is not
-there, and rested a routing class on a capability restriction the code
-contradicts. None of that would have been caught by any gate this project runs.
+**The two decisions are one move, and reading them as independent is what made
+the second look unmotivated.** ADR-0061's answer to the ungated surface — where no
+mechanical gate catches a wrong answer — was a provenance rule: keep it on Claude,
+keep it on fable. Ruling 1 removes that protection. Ruling 4 supplies its
+replacement. Never-alone is not primarily a quality tax on gated code; it is
+**what makes rescinding provenance defensible**, and it earns that on exactly the
+surface provenance used to guard.
+
+**This document is its own evidence, and only for that half.** Five independent
+reviews — on `codex-sol-xhigh`, `codex-sol-max` twice, `opus-xhigh` and
+`fable-high` — returned 49, 29, 43, 28 and 13 claims. Seven of the first round's
+asserted the draft stated a falsehood; all seven were verified and all seven were
+correct. The draft claimed a mechanical check that did not exist, named a constant
+that does not, asserted a deny list that is not there, and rested a routing class
+on a capability the code contradicts. No gate this project runs would have caught
+any of it.
+
+But that evidence is from reviews of **ungated semantic prose**, and the
+elimination-context rule applies to this ADR as readily as to anything else. So
+the ruling is scoped to what the evidence supports:
+
+- On **ungated surfaces** — ADRs, specs, conventions, planning, retro findings —
+  never-alone is evidenced, by this document's own history.
+- On **gated code** it is adopted on judgement, and the question is
+  **pre-registered rather than assumed**: does pre-landing review of gated work
+  find defects that the gates and post-landing review would not have? Post-landing
+  findings on landings that passed pre-landing review are the observable, and
+  ruling 6 records them. If the answer is no, the exemption list of ruling 4 is
+  where that goes — which is what turns that list from a hole into the mechanism
+  by which this rule shrinks on evidence.
+
+**The admission bar is abandoned deliberately, and this is the departure.**
+ADR-0061 Decision 6 pre-registered that bar so that observed lane behaviour could
+not move it, and its own amendment A7 records all 24 routes on probation with none
+admitted — **the bar never adjudicated once**. Dropping it after 112 dispatches is
+the move pre-registration exists to prevent, taken knowingly by the human's ruling
+rather than arrived at without noticing. What is being traded is an ex-ante check
+that never ran for a retrospective one that cannot run yet.
 
 ## The decision
 
@@ -67,8 +98,12 @@ vocabulary with them.
 - **Decision 3** (review is eligible off Claude because "a review's output is
   claims, not commits") is withdrawn as a *provenance* rule. Its factual premise
   survives — a reviewer still lands nothing — but under ruling 4 a review now
-  blocks a landing, so what changes is the blast radius of a false claim, and
-  eligibility no longer needs the argument at all.
+  blocks a landing, and **the asymmetry it rested on inverts**. Decision 3 argued
+  that a review's false positives are checkable and its false negatives merely
+  cost an uncaught advisory finding. Once the verdict is the gate, a false
+  negative is a defect that lands *with a clean review attached*, silently and
+  with reach — a High by this project's own anchor. That is the cost of promoting
+  review from advice to gate, and it falls on the side Decision 3 called safe.
 - **Decision 4** (a lane's authority is graded — "all hooks proven means full
   subagent authority, some hooks missing means worktree and commit only") is
   withdrawn. There is no ladder. A lane is judged capable of a kind of work and
@@ -92,6 +127,14 @@ deciding what everything else does should not move before a tested alternative
 exists. When the Codex orchestrator backup is built, Claude becomes primary and
 Codex the last resort, and the carve-out ends. Until then it is the only
 provenance rule the project holds, and it holds an end condition.
+
+**That end condition will be reached with no observation behind it**, and the two
+rulings that produce this should be read together rather than apart. The
+orchestrator is the one seat provenance still protects, and it is also the one
+seat ruling 6 structurally cannot see — its turns carry no dispatch id and reach
+no ledger row. So when the backup exists, the decision to end the carve-out is
+another judgement call, made on exactly as much evidence as this one. Saying so
+now is cheaper than discovering it then.
 
 ### 2. Seats carry ordered profile preferences, and a dispatch names a seat
 
@@ -149,6 +192,17 @@ presented as consistent with it. Its catalogue entry publishes five effort level
 and describes it as a fast, affordable agentic coding model; neither adjective has
 been measured in this project.
 
+**On `recon` that exception has no expiry, and the ADR should say so.** The
+implementer head is at least gated and ranked once #265 lifts. `recon` is
+read-only, so no gate reads its output; it lands nothing, so ruling 6 never ranks
+it; and the admission bar that would have judged it is dropped. Nothing in this
+design will ever check that profile — and recon output is what an orchestrator
+routes on, so a wrong answer there propagates into decisions rather than into a
+diff. The mitigation available is cheap and is adopted: **a recon claim that
+decides a routing choice is cited**, so the orchestrator can check the citation
+rather than trust the summary. That is the same move ruling 3 makes for retro
+findings, for the same reason.
+
 The `mechanical` seat is **retired**, and not because it would share a preference
 list — `review` shares one too and is retained. It is retired because it has no
 distinct *kind of work* left once implementation moves down-tier: `review` names a
@@ -179,7 +233,13 @@ is a loss, not a substitution.
 ### 3. Retros are their own kind of work, and they land nothing
 
 A retro is not a tier and not an escalation. It is a category, on the ground that
-improving the system of work is this project's most important task.
+improving the system of work is this project's most important task — and that
+ground supports the *category*, not the prohibition. The prohibition rests on a
+different reason, which the third draft left unstated: **finding and implementing
+are different jobs**, and a retro that lands its own findings is the
+propose-and-approve shape ruling 4 forbids everywhere else. ADR-0009's assignment
+of process change to retros survives; what is withdrawn is the retro *applying*
+what it finds.
 
 A retro **identifies and researches improvements and files backlog items**. It
 lands nothing — stated as the rule, not as a list of surfaces, because the third
@@ -306,8 +366,22 @@ what remains. Only then does the pre-declared default apply: the change lands, a
 **every finding the arbiter did not dismiss is filed as an issue** on the
 originating item — not only the ones it left unresolved. An upheld Critical is
 closed by the arbiter's verdict, so a rule that filed only the unresolved would
-lose exactly the finding that most needs a trace. That was the second draft's
-error and it was the wrong way round. Escalation precedes the default rather than competing with it, which is what
+lose exactly the finding that most needs a trace.
+
+**And every dismissal is recorded and handed to post-landing review.** The
+landing's record carries each finding above Low with its verdict — fixed, upheld
+or dismissed — and the dismissals go to the post-landing seat as an input beside
+the SHA and the close audit. Dismissals stay on the issue thread rather than
+becoming issues, so this adds no tracker noise and no pass.
+
+The reason is that without it this ADR retains a rule against the #181 shape while
+manufacturing a fresh instance of it. An arbiter wrongly dismissing a real
+Critical is precisely a plausible wrong answer going green with nothing downstream
+firing — routing class 4's definition. It is also the case where this document
+claims post-landing review is the appeal path, a claim that was **empty** until
+now, because that seat reviews a diff and had no way to learn what had been
+dismissed. This does not make the arbiter safe. It converts an invisible loss into
+a delayed and visible one, which is an improvement and not a fix. Escalation precedes the default rather than competing with it, which is what
 makes "a review blocks a landing" true in the sense that matters — nothing lands
 carrying a live unadjudicated finding. The first draft ordered these two rulings
 against each other.
@@ -406,6 +480,23 @@ profile with no landings has no ranking, not a ranking of infinity, and `review`
 `recon`, `planner` and `retro` land nothing by contract. Their rework is reported,
 never ranked. An implementer whose work never lands is a zero denominator too, and
 shows as an unranked row with its rounds visible rather than as a division.
+
+**What the key attributes and what causes it are not the same**, and this is a
+second known distortion beside the subagent one. Rounds are booked to the
+implementer profile, while this ADR's own second escalation condition says a
+repeated three-round state is evidence the *item* was under-specified — caused
+upstream, by planning. So a profile paired with a weak planner ranks badly for
+someone else's defect. Stratifying on routing class and gate tier helps and does
+not solve it, and apportioning rework between implementer and planner would be
+exactly the conversion Decision 5 forbids. The key is therefore read as **where
+rework appears**, never as who caused it.
+
+**And what it can never measure is never-alone's benefit.** Rounds, escalations
+and instances are costs; defects-prevented has no counterfactual and no control
+arm, so the loop's value is not an observable in general. The one narrower
+question that *is* observable is the one pre-registered above — post-landing
+findings on landings that passed pre-landing review — and it is the only evidence
+this design will ever produce about whether the loop earns its cost on gated code.
 
 **It does not rank on spend.** Three meters — the Anthropic plan's five-hour
 window, z.ai's prompt count, and Codex's absence of published terms — do not
@@ -584,18 +675,31 @@ was written down.
 - **Dropping the bar means a new profile enters on judgement** with no ex-ante
   check, and the observatory needs an unmeasured number of landings before it can
   contradict that judgement.
-- **The Codex seat-definition gap is real and unclosed**, and Codex heads four
-  seats under this map.
+- **Two lanes cannot enforce something this map requires, and only one of them
+  blocks anything.** The gate ceiling makes the Codex implementer head a blocking
+  prerequisite; the missing seat-definition surface — whose failure mode is
+  *silent tier inheritance*, the one that consumed the bulk of a weekly budget on
+  2026-08-04 — blocks nothing and is merely recorded. The inconsistency is
+  deliberate: the ceiling is falsifiable by running a gate, while the seat gap is
+  visible only in a bill, so blocking on it would stop the lane indefinitely with
+  no test that could clear it. That is a reason, not a justification, and it is
+  the weakest place in ruling 1's binary rule.
 - **Consultative escalation is unavailable on the lane heading four seats.**
 - **The implementer head is blocked on #265's ceiling**, so ruling 2's headline
   allocation is not the one that runs on the day this lands.
 
 ## What would overturn this
 
-- **Ruling 1** — a landing wrong in a way no gate caught and the reviewer missed,
-  where the cause is traced to provider behaviour. Assignment is not random and
-  there is no control arm, so a single instance will not identify it; what would
-  overturn the ruling is a *rate* that survives stratification, not a case.
+- **Ruling 1 is not falsifiable at this project's scale, and that is stated rather
+  than dressed up.** The obvious falsifier — a rate of provider-caused defects
+  that survives stratification — cannot be obtained: ADR-0061 Decision 6 recorded,
+  with figures, that lane-level marginal effects are not estimable here, ever, on
+  arm count alone (RouteLLM needed 65,000 comparisons). Withdrawing that decision
+  does not make the arithmetic false. So this ruling rests on the human's
+  judgement, checked by cases rather than by rates: a landing wrong in a way no
+  gate caught and no reviewer found, traced to provider behaviour, is a reason to
+  re-open it — one such case, not a significant one. Calling that statistical
+  evidence would be self-sealing, which ADR-0019 exists to prevent.
 - **Ruling 2** — a seat whose preference list never reaches past its head, making
   the list a single choice wearing a fallback.
 - **Ruling 3** — process improvements that stop landing at all, measured as filed
@@ -621,10 +725,20 @@ was written down.
 ## Sequencing
 
 **Every step below is reviewed by an independent instance before it lands**, from
-step 1 onward. That is stated because the mechanism arrives at step 7: between
-here and there the rule is honoured by procedure rather than enforced by a
-refusal, and without saying so, steps 2 to 6 would land alone under a decision
-that forbids exactly that.
+step 1 onward, honoured by procedure until step 7 makes it a refusal.
+
+**The interval is a period of stated inconsistency, not a clean transition**, and
+pretending otherwise would be the "two rules that cannot both be followed" this
+project rates High. From step 1 the trailer withdraws ADR-0061's decisions and
+ruling 4 binds; until step 5 `AGENTS.md` still forbids the loop, so an agent
+reading the always-loaded rules would be right to refuse it; until step 7 no
+refusal enforces it; the admission bar dies at step 4 and the observatory replacing
+it arrives at step 8. For that window the project runs on the new rules by
+agreement and the old ones by machinery, and the reconciliation is that **a human
+is sequencing these landings deliberately** rather than agents discovering the
+conflict one at a time. If that ceases to be true — if the steps are dispatched
+concurrently or the sequence stalls part-way — the window stops being a transition
+and becomes the defect.
 
 1. **This ADR**, alone, with the severity anchors and the `Supersedes:` check that
    ship in the same commit.
