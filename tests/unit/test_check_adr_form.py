@@ -81,6 +81,28 @@ def test_a_review_line_in_body_prose_does_not_count() -> None:
     assert [f.missing for f in findings] == ["`Reviewed-by-human:` line"]
 
 
+def test_a_field_line_inside_a_body_paragraph_does_not_extend_the_field_block() -> None:
+    # The arrangement an earlier version got wrong, and the reason the chunk loop
+    # tests a chunk's *first* line rather than any of them. This test's older
+    # sibling above passed only because its body constant opens with a `##`, which
+    # happened to break the chain — so it pinned nothing.
+    source = (
+        "# A decision\n\nDelegated-decision: yes\n\n"
+        "Some paragraph of prose.\nReviewed-by-human: someone said so\n"
+        "\n## What would overturn this\n\n- Evidence.\n"
+    )
+    findings = check_adr_form.scan_source(source, "docs/adr/0001-x.md")
+    assert [f.missing for f in findings] == ["`Reviewed-by-human:` line"]
+
+
+def test_an_adr_with_no_field_block_at_all_still_needs_its_trailer() -> None:
+    # Here the first body line opened with a field pattern and was taken for the
+    # whole field block, so a governed ADR with no header passed.
+    source = "# A decision\n\n## Body\n\nSupersedes: ADR-0061 decision 2\n"
+    findings = check_adr_form.scan_source(source, "docs/adr/0072-x.md")
+    assert [f.missing for f in findings] == ["`Supersedes:` line"]
+
+
 def test_a_marker_inside_a_fenced_example_does_not_make_an_adr_delegated() -> None:
     source = "# A decision\n\nDate: 2026-08-02\n\n## Body\n\n```\nDelegated-decision: yes\n```\n"
     assert check_adr_form.scan_source(source, "docs/adr/0001-x.md") == []

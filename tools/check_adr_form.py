@@ -101,22 +101,28 @@ def _split(source: str) -> tuple[list[str], list[str]]:
     """Return the field-block lines and the body lines, fenced examples removed."""
     lines = strip_fences(source).splitlines()
     start = 0
-    while start < len(lines) and (not lines[start].strip() or lines[start].startswith("#")):
+    while start < len(lines) and not lines[start].strip():
+        start += 1
+    if start < len(lines) and lines[start].startswith("# "):
+        start += 1  # the title, and only the title: `## Body` must remain body
+    while start < len(lines) and not lines[start].strip():
         start += 1
 
-    # Consume blank-line-separated chunks for as long as each still carries a
-    # field. ADR-0031's block has a blank line inside it — `Stood-in-for:`, a gap,
-    # then `Reviewed-by-human:` — so a single unbroken run is not enough, and a
-    # single chunk would have failed it.
+    # Consume blank-line-separated chunks while each *opens* with a field. Opening
+    # rather than containing one: a chunk that merely contains a field line is a
+    # body paragraph with a colon in it, and accepting those let
+    # `Reviewed-by-human: someone said so` in prose satisfy ADR-0013's worklist
+    # check — an ADR silently leaving the human's pending queue. Found by the
+    # fourth review, which ran the module to prove it.
+    #
+    # Chunks rather than one unbroken run, because ADR-0031's block has a blank
+    # line inside it: `Stood-in-for:`, a gap, then `Reviewed-by-human:`.
     end = start
     while end < len(lines):
-        stop = end
-        while stop < len(lines) and lines[stop].strip():
-            stop += 1
-        chunk = lines[end:stop]
-        if not chunk or not any(FIELD.match(line) for line in chunk):
+        if not FIELD.match(lines[end]):
             break
-        end = stop
+        while end < len(lines) and lines[end].strip():
+            end += 1
         while end < len(lines) and not lines[end].strip():
             end += 1
     return lines[start:end], lines[end:]

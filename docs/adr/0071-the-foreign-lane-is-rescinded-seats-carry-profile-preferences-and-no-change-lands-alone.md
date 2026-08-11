@@ -3,9 +3,11 @@
 Delegated-decision: no
 Date: 2026-08-11
 Reviewed-by-human: 2026-08-11 — every decision below is a ruling the human took
-in session, in a `/grill-me` interview that ran the design tree to an empty
-frontier, then six further rulings answering an independent review of this
-document's first draft. Nothing here was decided on their behalf.
+in session: a `/grill-me` interview that ran the design tree to an empty frontier,
+then further rulings after each of four independent reviews (49, 29, 43 and 28
+claims, on `codex-sol-xhigh`, `codex-sol-max` twice, and `opus-xhigh`). The
+document changed substantially under each, so this line covers the version at this
+commit and not merely the first draft. Nothing here was decided on their behalf.
 Claimed: after `git fetch origin` (origin/main at `76d0309`, topping at
 ADR-0070) and a scan of all 47 open issues' bodies and comments for an ADR
 number at or above 0071, which returned nothing.
@@ -101,7 +103,7 @@ replaced by a preference list per seat, resolved at dispatch time.
 | `planner` (new; absorbs `cti-implementer-xhigh`) | `codex-sol-xhigh`, `opus-xhigh` | `fable-high` |
 | `implementer` | `codex-luna-max`, `zai-glm52-max`, `opus-low` | `codex-sol-high`, `opus-high` |
 | `recon` (read-only) | `codex-luna-medium`, `haiku-medium` | — |
-| `review` | mirrors the implementer's list | — |
+| `review` | the implementer's list, resolved to the first profile that is **not** the one being reviewed, preferring a different lane | the implementer's escalation head |
 | `retro` (ruling 3) | `fable-high`, `opus-xhigh`, `codex-sol-xhigh` | — |
 | `orchestrator` | `opus-xhigh`; Claude only, provisional per ruling 1 | — |
 | interlocutor — **not dispatched** | `opus-xhigh`, `codex-sol-xhigh` | — |
@@ -180,9 +182,17 @@ A retro is not a tier and not an escalation. It is a category, on the ground tha
 improving the system of work is this project's most important task.
 
 A retro **identifies and researches improvements and files backlog items**. It
-does not edit `AGENTS.md`, `.claude/skills/` or `docs/agents/`. Each filed item
-cites the run, issue or commit its finding came from, so a reader can check the
-finding without a reviewer.
+lands nothing — stated as the rule, not as a list of surfaces, because the third
+draft's list named `AGENTS.md`, `.claude/skills/` and `docs/agents/` and thereby
+left `docs/process-log.md`, `CONTEXT.md` and `docs/adr/` unprohibited, all three
+of which retros have landed. Each filed item cites the run, issue or commit its
+finding came from, so a reader can check the finding without a reviewer.
+
+One consequence to settle in the skill rewrite rather than leave implied: the
+retro journal in `docs/process-log.md` is itself a landing. Either the journal
+entry becomes one of the filed items, or the journal is the single named
+exception to "lands nothing" — and that choice belongs in the rewrite with its
+reason, not here as an omission.
 
 The `/retro` skill currently instructs the opposite — its step 3 applies approved
 diffs and its step 4 appends to the process log — so **the skill rewrite is a work
@@ -216,9 +226,17 @@ review found both holes.
 
 So `just land` does not read a claimed id. It requires that a **review dispatch
 record exists** for the SHA being landed, under `~/.arma-cti/dispatches/`, whose
-seat is `review` and whose recorded end state is a completed run; and it refuses
-when that record's id appears among the dispatches that authored the branch. The
-record is written by the dispatcher, not by the reviewed agent.
+seat is `review` and whose recorded end state is a completed run; that its id is
+absent from the dispatches that authored the branch; and — the part the fourth
+review found missing — that **every finding that run reported above Low carries an
+adjudication**, whether the implementer's accepted fix, a dispute the arbiter
+ruled on, or an arbiter dismissal. The record is written by the dispatcher, not by
+the reviewed agent.
+
+Without that last clause the refusal asked only whether a review *happened*. A
+proposer could dispatch a review, receive a Critical, do nothing, and land — no
+forgery, every check satisfied, and the stop condition "nothing above Low remains
+unadjudicated" enforced nowhere.
 
 **What this cannot do, stated plainly.** Every dispatch runs as the same user, so
 an agent determined to forge an evidence directory can. This is the same limit the
@@ -251,12 +269,25 @@ implementer may dispute correctness and severity.
 landing refuses if the SHA it is asked to land is not the one the verdict names.
 Without that, an amended or rebased branch lands on an earlier approval.
 
-**The arbiter is the implementer's seat's escalation entry** — a function of the
-work, not of who happened to review it. One rule, deterministic, using a column
-the seat table already has, and it keeps arbitration proportional to the tier the
-work was done at. It also means the `review` row needs no escalation entry of its
-own, which removes that gap rather than filling it. "The escalation set" was not a
-definition, and two callers could have picked different arbiters for one finding.
+**The arbiter is the head of the implementer's seat's escalation entry** — a
+function of the work, not of who happened to review it, using a column the seat
+table already has, and keeping arbitration proportional to the tier the work was
+done at. *Head*, because those entries hold two profiles and "the escalation
+entry" would have left the same ambiguity as "the escalation set" it replaced:
+two callers, two arbiters, one finding.
+
+**A seat whose escalation column is empty arbitrates at `fable-high`.** The
+`orchestrator` and `recon` rows have no entry, and the orchestrator authors
+changes routinely — without this the loop has no terminus for the seat that runs
+it, which is the worst place for one to be missing.
+
+**And the reviewer must not be the reviewed profile.** The `review` seat resolves
+down the implementer's list to the first profile that is not the one under review,
+preferring a different lane. Without that rule both seats resolve to the same head
+and every review is same-model — which would make never-alone a ritual, since the
+whole argument for it, and every finding in this document's own four reviews,
+rests on the second instance being genuinely different. "Different model
+preferred" was a word nothing read.
 
 **Adjudication is per finding.** Each finding receives at most one arbiter verdict
 and is then closed; a finding raised in a later round is a
@@ -293,9 +324,11 @@ column on the reviewing one. That rehoming is a step in the sequencing. The clai
 contract, the citation requirement and the orchestrator's routing are untouched.
 
 **The review seat's containment must be forced, not defaulted.** `just dispatch`
-defaults `--permission-mode` to `acceptEdits`, and only `plan` maps to Codex's
-`--sandbox read-only`. A review dispatched at the default can edit. Seat resolution
-sets the mode for `review` rather than leaving it to the caller.
+defaults `--permission-mode` to `acceptEdits`, which is writable, so a review
+dispatched at the default can edit. Seat resolution sets the mode for `review`
+rather than leaving it to the caller. (On the Codex lane both `plan` and `default`
+map to `--sandbox read-only`; the writable default is the argument parser's, not
+the sandbox mapping's — see ruling 7.)
 
 **`AGENTS.md`'s no-further-verification rule is amended, not deleted**, with
 never-alone and the post-landing review seat named as its exceptions. Until that
@@ -366,8 +399,9 @@ and inventing one is Decision 5's error again. So **fix rounds per landing is th
 ranking key** and everything else is reported beside it, unranked. A different key
 is a ruling, not a preference.
 
-The key is defined only where its denominator exists: it ranks **profiles in
-landing seats** — implementer and mechanical work that reaches `just land`. A
+The key is defined only where its denominator exists: it ranks **profiles in the
+`implementer` seat**, the only seat this map leaves that reaches `just land`
+— `mechanical` is retired by ruling 2 and naming it here was a leftover. A
 profile with no landings has no ranking, not a ranking of infinity, and `review`,
 `recon`, `planner` and `retro` land nothing by contract. Their rework is reported,
 never ranked. An implementer whose work never lands is a zero denominator too, and
@@ -423,12 +457,15 @@ Both harnesses' surfaces are generated from `tools/dispatch.py`'s registry
 **wherever the target surface exists**. `tools/hook_parity.py` is the pattern:
 translate, never reimplement.
 
-Its refusal is narrower than either draft said. `translate` refuses to emit an
-empty hook list for an event that had one — but where a carried event holds only
-unsupported hook types or malformed groups, the entries are dropped and
-`config_overrides` returns empty without refusing, which is the fail-open shape
-the module was written to prevent. That is a defect in the pattern, filed, not a
-property to cite as exemplary.
+**It has no refusal at all**, and three drafts said otherwise in three different
+ways. `translate` contains no `raise` and no error return; an event whose entries
+are all dropped is skipped by `if not rows: continue`, so an event carrying only
+unsupported types, an event with a malformed group, and an event absent from
+settings are indistinguishable — all three yield an empty result silently. The
+module's own docstring claims the refusal and the code does not implement it. So
+the pattern being adopted here is "translate, never reimplement", and nothing
+more; the floor it was credited with is filed as a defect, and a generated surface
+built on it inherits fail-open silence until that is fixed.
 
 Already cheap, verified in session: `AGENTS.md` and `CLAUDE.md` are one symlinked
 file; Codex skills use the same `SKILL.md` convention, so skill parity is a
@@ -495,6 +532,14 @@ the rule did not exist yet. Its known gap is stated in the code — an ADR below
 cutoff that is later amended to withdraw something is not covered, and closing
 that would mean reading git history in a form check.
 
+**What this trades, said plainly.** The check now verifies a *declaration*, not a
+fact. An ADR that withdraws a ruling in its body and writes `Supersedes: none`
+passes, and `rg '^Supersedes:'` then returns a lie. The previous versions at least
+attempted to notice that, and failed at it in four different ways. So the promise
+is narrower than "the grep returns the amended set": it returns **what each ADR
+declared**, and a false declaration is caught at human review or not at all. That
+is a worse guarantee honestly stated, in place of a better one that did not work.
+
 `AGENTS.md` also names that exemption constant `NO_PYTHON_SUBJECT` where the code
 says `NO_MUTABLE_SUBJECT`; the tool's own documentation said it twice and is
 corrected in this commit. `AGENTS.md` is a sign-off surface, so its copy is filed
@@ -507,13 +552,13 @@ on provenance, and separating them is the substance of this ADR.
 
 | class | disposition | why |
 |---|---|---|
-| 1 `gated_semantic_surfaces` | **dies as a routing rule** | its basis was provenance. The human sign-off gate on those surfaces is untouched — that gate was never this file |
+| 1 `gated_semantic_surfaces` | **dies as a routing rule, except two paths that move to class 6** | its basis was provenance, and the human sign-off gate on those surfaces is untouched — that gate was never this file. But `.claude/hooks/` and `.claude/settings.json` are the denial layer and the permission allowlist, i.e. **gates**, and class 1's list was the only routing rule naming them. Deleting the class outright would let an instance author the hook that judges it with nothing firing, so both paths move to class 6 rather than falling out |
 | 2 `orchestration` | **survives unchanged, provisional** | ruling 1's carve-out, and the only provenance rule left |
-| 3 `retros_and_adr_authorship` | **splits** | the retro half dies with ruling 3. ADR authorship survives, bound to the planner's list rather than to Claude |
+| 3 `retros_and_adr_authorship` | **splits, and the survivor needs a path it does not have** | the retro half dies with ruling 3. ADR authorship survives, bound to the planner's list rather than to Claude — but the class's only `landing_path_prefixes` entry is `docs/process-log.md`, which belongs to the half being killed, so the surviving half would enforce on issue phrases alone. It gains `docs/adr/` as its landing path, or it is a class that catches nothing |
 | 4 `plausible_wrong_fix_goes_green` | **survives, remedy restated** | gate coverage, not provenance. Remedy becomes route-to-planner-and-escalate, and ruling 5 carries the matching condition |
 | 5 `in_world_landings` | **narrowed to a subagent rule** | a *subagent* cannot hold the corpus's foreground wait, so a seat reached that way cannot gate its own in-world work. `just dispatch` already launches a **top-level** session, which the wait hook permits — it returns 0 where there is no `agent_id` — so the class does not restrict the dispatch route this ADR defines, and two drafts said it did. What remains is a real but much smaller rule about subagents |
-| 6 `gates_themselves` | **survives, reframed, and does not yet hold** | conflict of interest: *no instance authors the gate that judges it*. Now binds Claude too. Enforcement is a hard-coded path list, and three holes are recorded rather than papered over: it omits `tools/check_adr_form.py`, **which this commit adds and then uses to judge the ADR in the same commit**; it cannot name the exemption list that step 7 creates; and deriving it from `just check` would still miss gates under `just unit`, `just mutation`, `just land` and `just regress`. Widening the list is a fix for today; the durable form is deriving it from every recipe that can red, and neither is done here. The class is stated as aspirational until it is |
-| 7 `anthropic_plan_meter` | **deleted** | its stated basis is false: `tools/breaker.py` reads the meter over plain `urllib` at a fixed URL, with no Claude session involved |
+| 6 `gates_themselves` | **survives, reframed, and does not yet hold** | conflict of interest: *no instance authors the gate that judges it*. Now binds Claude too, and takes class 1's two gate paths. Enforcement is a hard-coded path list and its coverage is far worse than the third draft admitted: of the seven gate tools `just check` runs it names **one**, `tools/mutation_smoke.py`; it omits `tools/check_adr_form.py` — **which this commit adds and then uses to judge the ADR in the same commit** — along with `check_seat_config`, `check_validated_markers`, `check_conflict_markers`, `check_source_symlink`, `export_command_schema`, `tools/breaker.py`, and the exemption list step 7 creates. Deriving the list from `just check` alone would still miss gates under `just unit`, `just mutation`, `just land` and `just regress`, so that filed item is stated as insufficient rather than as the fix. **The class is aspirational: today it names six paths and the invariant it asserts is not enforced.** |
+| 7 `anthropic_plan_meter` | **deleted** | its basis does not hold. The class's own paths are `tools/quota_tap.sh` and a usage fixture, and the meter itself is read by `tools/breaker.py` over plain `urllib` at a fixed URL with no Claude session involved. `quota_tap.sh` is a Claude Code status-line integration, which is a reason to keep it working on Claude, not a routing rule about who may author it |
 
 Five classes survive. Four of them — ADR authorship, the #181 shape, in-world
 landings, and gates-themselves — would exist in a single-provider project. The
