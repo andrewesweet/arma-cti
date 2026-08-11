@@ -500,6 +500,95 @@ def test_the_standing_allowance_is_visible_in_the_dispatch_registry() -> None:
     assert approved[0].split("=", 1)[1].split() == list(dispatch.RETRO_APPROVED_PROFILES)
 
 
+# ---------------------------------------------- ADR-0071: new profiles and the pair block
+# Luna enters on publication — a named exception to the measure-before-building rule — and
+# its implementer head is blocked by #265's measured gate ceiling. The block attaches to
+# the (profile, seat) pair, so a read-only seat keeps the profile and the implementer seat
+# does not. See `SEAT_PROFILE_BLOCKS` and `pair_block` in tools/dispatch.py.
+
+
+def test_the_three_new_profiles_join_the_registry_under_adr_0071() -> None:
+    # Luna's slug and default effort are the catalogue's own, read from the CLI's model
+    # cache — not the human's shorthand. `medium` is Luna's published default effort.
+    luna_max = dispatch.PROFILES["codex-luna-max"]
+    assert luna_max.lane == "codex"
+    assert luna_max.model == "gpt-5.6-luna"
+    assert luna_max.effort == "max"
+    luna_medium = dispatch.PROFILES["codex-luna-medium"]
+    assert luna_medium.lane == "codex"
+    assert luna_medium.model == "gpt-5.6-luna"
+    assert luna_medium.effort == "medium"
+    # Opus-low is the native tail of the implementer preference list.
+    opus_low = dispatch.PROFILES["opus-low"]
+    assert opus_low.lane == "claude-native"
+    assert opus_low.model == "opus"
+    assert opus_low.effort == "low"
+
+
+def test_the_three_new_profiles_appear_in_the_dispatch_registry() -> None:
+    # `just dispatch --list` renders `registry_lines`; a named profile that did not appear
+    # there would be undispatchable in practice, however registered.
+    lines = dispatch.registry_lines()
+    rendered = {
+        line.split("profile=", 1)[1].split()[0]: line
+        for line in lines
+        if line.lstrip().startswith("profile=")
+    }
+    assert "codex-luna-max" in rendered
+    assert "codex-luna-medium" in rendered
+    assert "opus-low" in rendered
+    # The catalogue slug is rendered, not the human's shorthand, and `medium` is the
+    # published default the entry was named for.
+    assert "model=gpt-5.6-luna" in rendered["codex-luna-max"]
+    assert "effort=max" in rendered["codex-luna-max"]
+    assert "effort=medium" in rendered["codex-luna-medium"]
+
+
+def test_codex_luna_max_blocked_for_implementer_names_the_gate_ceiling() -> None:
+    refusal = dispatch.resolve_selection("codex", "codex-luna-max", "implementer")
+    assert refusal is not None
+    assert refusal.kind == "profile_blocked_for_seat"
+    # A refusal, not a failure class — nothing was found about a provider or about code.
+    assert refusal.failure_class == ""
+    assert not any(line.startswith("class=") for line in refusal.lines())
+    # The pair and the ceiling it waits on are machine-visible in `found`.
+    assert "profile=codex-luna-max" in refusal.found
+    assert "seat=implementer" in refusal.found
+    assert "ceiling=#265" in refusal.found
+    # The action names the ceiling so a reader knows what would clear it.
+    assert "#265" in refusal.action
+    assert "writable_roots" in refusal.action
+    assert "gate" in refusal.action
+
+
+def test_the_pair_block_is_the_one_home_a_seat_resolver_will_share() -> None:
+    # ADR-0071 ruling 2: the refusal attaches to the pair, not to how the profile was
+    # chosen. `resolve_selection` (the `--profile` path) and `pair_block` (the function a
+    # future seat resolver calls, #321) are the same check, so a resolver consults this and
+    # not a second copy of the list.
+    direct = dispatch.pair_block("implementer", "codex-luna-max")
+    via_selection = dispatch.resolve_selection("codex", "codex-luna-max", "implementer")
+    assert direct is not None
+    assert via_selection is not None
+    assert direct == via_selection
+
+
+def test_codex_luna_max_dispatches_normally_on_the_read_only_recon_seat(tmp_path: Path) -> None:
+    # The pair matters: a profile blocked for a seat that must commit and gate is not
+    # thereby blocked for a read-only seat that does neither. Selection clears it ...
+    assert dispatch.resolve_selection("codex", "codex-luna-max", "recon") is None
+    # ... and so does the full planning ladder. The codex lane is not off-peak-ruled, the
+    # profile is on probation (which dispatches), and recon is Decision-2-eligible.
+    plan, _, refusal = plan_for(
+        tmp_path,
+        lane="codex",
+        profile="codex-luna-max",
+        seat="recon",
+    )
+    assert refusal is None
+    assert plan is not None
+
+
 # ---------------------------------------------------------------------- identity/OTel
 
 
@@ -1197,6 +1286,12 @@ def test_the_rung_is_lane_blind(tmp_path: Path) -> None:
     worktree = git_worktree(tmp_path)
     body = unready(tmp_path)
     for profile in dispatch.PROFILES.values():
+        # A profile blocked for this seat at selection never reaches the readiness rung, so
+        # it cannot testify about the rung's lane-blindness. `codex-luna-max` is blocked for
+        # `implementer` by #265's ceiling (ADR-0071 ruling 2); it is skipped for that reason,
+        # not for any lane's treatment of readiness.
+        if dispatch.pair_block("implementer", profile.name) is not None:
+            continue
         _, _, refusal = plan_for(
             tmp_path,
             lane=profile.lane,

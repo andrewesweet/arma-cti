@@ -386,6 +386,30 @@ PROFILES: Final[dict[str, Profile]] = {
     "codex-sol-high": Profile("codex-sol-high", "codex", "gpt-5.6-sol", "high"),
     "codex-terra-medium": Profile("codex-terra-medium", "codex", "gpt-5.6-terra", "medium"),
     "codex-terra-low": Profile("codex-terra-low", "codex", "gpt-5.6-terra", "low"),
+    # Luna, the catalogue's third agentic arm, and Opus at low effort (ADR-0071 ruling 2).
+    # Luna's slug and published default effort are read from the authenticated CLI's own
+    # model cache at `~/.codex/models_cache.json` — the same source the `gpt-5.6-sol` and
+    # `gpt-5.6-terra` slugs above came from — not assumed from the human's shorthand. The
+    # cache fetched 2026-08-11 carries `slug=gpt-5.6-luna`, `default_reasoning_level=medium`
+    # and the description "Fast and affordable agentic coding model", and publishes five
+    # effort levels (`low`, `medium`, `high`, `xhigh`, `max`); `max` is the catalogue's top
+    # for Luna, so there is no `codex-luna-ultra` for this registry to name.
+    #
+    # Luna is a NAMED EXCEPTION to the validated measure-before-building rule (AGENTS.md),
+    # not an application of it. The sol/terra entries above rest on a measurement — one
+    # counting problem, 484 reasoning tokens at `low` and 2,393 at `xhigh`, the factor of
+    # 4.9 the comment block above carries — and Luna rests on publication alone, at the
+    # human's ruling. Neither "fast" nor "affordable" has been measured in this project,
+    # and the entry is recorded as an exception rather than presented as consistent with a
+    # rule it is an exception to. The exception is stated here, beside the act it covers,
+    # because the measure-before-building rule is what every other entry in this registry
+    # was checked against before it joined.
+    "codex-luna-max": Profile("codex-luna-max", "codex", "gpt-5.6-luna", "max"),
+    "codex-luna-medium": Profile("codex-luna-medium", "codex", "gpt-5.6-luna", "medium"),
+    # Opus at low effort: the native tail of the `implementer` preference list and a
+    # dispatch arm in its own right (ADR-0071 ruling 2). `low` was unregistered until now
+    # for no reason deeper than that no seat named it; the seat map names it, so it joins.
+    "opus-low": Profile("opus-low", "claude-native", "opus", "low"),
 }
 
 # ADR-0061 Decision 2: eligibility is a property of the surface, not a per-task
@@ -712,7 +736,63 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
                 "Dispatch it on claude-native."
             ),
         )
-    return None
+    # ADR-0071 ruling 2: a refusal can attach to a (profile, seat) pair. Checked after the
+    # seat-eligibility rung, so it only reaches a seat Decision 2 already admits, and it is
+    # the one home the block list below is consulted — `pair_block` for the reason.
+    return pair_block(seat, profile_name)
+
+
+# ADR-0071 ruling 2: a profile that a measured ceiling holds below a seat's contract is
+# blocked for the seat that needs the contract and open for a read-only seat that does
+# not. The block is on the pair, so naming the profile directly with `--profile` is a way
+# of choosing it and never a way around the block: whether the profile reached the check by
+# `--profile` or by a future seat resolver (#321), the same refusal fires from this one
+# home. A resolver that hits a blocked pair skips to its next preference rather than failing
+# the dispatch, which is why `pair_block` is the function a resolver calls and not a private
+# branch of `resolve_selection`.
+SEAT_PROFILE_BLOCKS: Final = frozenset(
+    {
+        # `codex-luna-max` heads the implementer preference list in the ADR but cannot take
+        # the seat: #265's measured gate ceiling holds it below the binary capability rule.
+        # `pair_block` states the ceiling in full; the measurement lives in
+        # `_codex_sandbox_argv`.
+        ("implementer", "codex-luna-max"),
+    }
+)
+
+
+def pair_block(seat: str, profile_name: str) -> Refusal | None:
+    """Return the refusal for a (profile, seat) pair blocked by ADR-0071 ruling 2, or `None`.
+
+    This is the one home `SEAT_PROFILE_BLOCKS` is consulted, so `resolve_selection` calls it
+    for a profile named directly and a future seat resolver (#321) calls it to skip a
+    blocked preference — never a second copy of the list.
+
+    No failure class, for `off_peak_refusal`'s reason exactly: this refusal found nothing
+    about a provider or about code under test. The provider is up, the lane is reachable,
+    the profile is registered, and this project declines to head a seat with a profile a
+    measured ceiling holds below the seat's contract. `infra_unavailable` would assert an
+    outage that is not happening and `provider_refused` a refusal Codex never made; a wrong
+    class is a harness bug by CLAUDE.md's table, so this carries none.
+    """
+    if (seat, profile_name) not in SEAT_PROFILE_BLOCKS:
+        return None
+    return Refusal(
+        "profile_blocked_for_seat",
+        (f"profile={profile_name}", f"seat={seat}", "ceiling=#265"),
+        (
+            "ADR-0071 ruling 2: this (profile, seat) pair is blocked. #265's measured gate "
+            "ceiling holds it below the seat's contract — no `writable_roots` set lets a "
+            "Codex dispatch both commit and run its own gate, because the commit needs the "
+            "per-worktree git directory named directly and the gate needs that same directory "
+            "not named (see `_codex_sandbox_argv`), and an implementer that cannot run its "
+            "own gate is not an implementer under the binary capability rule. The same "
+            "profile on a read-only seat dispatches normally, because a read-only seat needs "
+            "neither commit nor gate. What would clear it: #265 — a Codex discovery path "
+            "that lets the gate run under the same roots that let the commit through. "
+            "Nothing was dispatched."
+        ),
+    )
 
 
 class Readiness(NamedTuple):

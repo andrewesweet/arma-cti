@@ -272,6 +272,12 @@ FOREIGN_PROFILES: Final[tuple[tuple[str, str], ...]] = (
     ("codex", "codex-sol-high"),
     ("codex", "codex-terra-medium"),
     ("codex", "codex-terra-low"),
+    # ADR-0071 ruling 2. Luna enters on publication — a named exception to the
+    # measure-before-building rule — so both its arms are foreign routes this bar judges.
+    # The `max` arm is blocked from the implementer seat until #265's ceiling lifts and
+    # judges on the recon seat instead; see `SEAT_PROFILE_BLOCKS` in tools/dispatch.py.
+    ("codex", "codex-luna-max"),
+    ("codex", "codex-luna-medium"),
 )
 
 EXEMPT: Final = "exempt"

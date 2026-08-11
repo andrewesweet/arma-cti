@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The dispatch registry carries three new profile tokens and the first `(profile, seat)` block.**
+  `codex-luna-max` and `codex-luna-medium` name Luna (`gpt-5.6-luna`), read from the authenticated
+  Codex CLI's own model cache alongside sol and terra; `opus-low` is the native tail of the
+  `implementer` preference list. Luna enters on publication — a named exception to the
+  measure-before-building rule, not an application of it. ADR-0071 ruling 2 also blocks
+  `codex-luna-max` from the `implementer` seat: #265's measured gate ceiling holds it below the
+  binary capability rule, because no `writable_roots` set lets a Codex dispatch both commit and run
+  its own gate. The block is the one home a future seat resolver (#321) will consult, not a second
+  copy; the same profile dispatches normally on the read-only `recon` seat, which needs neither.
+
 - **ADR-0071 records the rescission of the foreign lane and the arrival of never-alone review.**
   ADR-0061's decisions 2, 3 and 4 are withdrawn: eligibility stops being a property of provenance,
   the graded authority ladder goes, and the word *foreign* leaves the vocabulary. Decision 5
