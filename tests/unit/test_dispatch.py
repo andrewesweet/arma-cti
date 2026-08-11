@@ -589,6 +589,23 @@ def test_codex_luna_max_dispatches_normally_on_the_read_only_recon_seat(tmp_path
     assert plan is not None
 
 
+def test_the_pair_blocks_are_visible_in_the_dispatch_registry() -> None:
+    # ADR-0071 ruling 2: a (profile, seat) pair held below a seat's contract is stated
+    # wherever the registry is read, so `codex-luna-max` and `implementer` do not read as
+    # available together — a reader sees the block without attempting the dispatch. The
+    # ceiling is taken from `pair_block` rather than named a second time, so the registry's
+    # ceiling must match the refusal's.
+    lines = dispatch.registry_lines()
+    blocks = [line for line in lines if line.startswith("seat_profile_block=")]
+    assert len(blocks) == len(dispatch.SEAT_PROFILE_BLOCKS)
+    luna = next(line for line in blocks if "profile=codex-luna-max" in line)
+    assert "seat=implementer" in luna
+    refusal = dispatch.pair_block("implementer", "codex-luna-max")
+    assert refusal is not None
+    ceiling = next(found for found in refusal.found if found.startswith("ceiling="))
+    assert ceiling in luna
+
+
 # ---------------------------------------------------------------------- identity/OTel
 
 

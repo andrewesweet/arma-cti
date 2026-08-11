@@ -313,7 +313,7 @@ LANES: Final[dict[str, Lane]] = {
             "this lane's credential column is empty for a different reason than "
             "`claude-native`'s — there it is the box's Claude login, here it is the box's "
             "ChatGPT login, and in neither case does `just dispatch` handle a secret. "
-            "The models are the two the authenticated catalogue lists as agentic coding "
+            "The models are the three the authenticated catalogue lists as agentic coding "
             "arms, verified from the CLI's own model cache rather than assumed (#243). "
             "Not off-peak-ruled: OpenAI publishes no time-of-day discount, so there is no "
             "band to price against and `plan_charge` is `None` here — an absence of terms, "
@@ -1775,6 +1775,18 @@ def registry_lines() -> tuple[str, ...]:
     barred = " ".join(sorted(seat for seat, ok in SEATS.items() if not ok))
     lines.append(f"seats_eligible_on_foreign_lanes={eligible}")
     lines.append(f"seats_claude_native_only={barred}")
+    # ADR-0071 ruling 2: a (profile, seat) pair held below a seat's contract is blocked,
+    # and the block is stated wherever the registry is read. `codex-luna-max` renders as a
+    # profile and `implementer` renders as an eligible seat, so a reader who paired them
+    # would discover the exception only by attempting the dispatch; the line names the
+    # ceiling so they do not have to. The ceiling is taken from `pair_block` rather than
+    # named a second time here, so the registry and the refusal cannot drift apart.
+    for seat, profile_name in sorted(SEAT_PROFILE_BLOCKS):
+        block = pair_block(seat, profile_name)
+        if block is None:
+            continue  # unreachable: members always block; the count test guards it
+        ceiling = next(line for line in block.found if line.startswith("ceiling="))
+        lines.append(f"seat_profile_block=adr0071 seat={seat} profile={profile_name} {ceiling}")
     # The one ruled exception, stated wherever the registry is read. It was time-boxed
     # from 2026-08-06 and made standing by the human's ruling of 2026-08-09; it is not a
     # general allowance list, and a second entry would need its own ruling.

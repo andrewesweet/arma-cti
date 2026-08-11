@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   binary capability rule, because no `writable_roots` set lets a Codex dispatch both commit and run
   its own gate. The block is the one home a future seat resolver (#321) will consult, not a second
   copy; the same profile dispatches normally on the read-only `recon` seat, which needs neither.
+  `just dispatch --list` renders the block beside the profiles it touches, naming the ceiling each
+  pair waits on, so a reader does not discover the exception only by attempting the dispatch.
 
 - **ADR-0071 records the rescission of the foreign lane and the arrival of never-alone review.**
   ADR-0061's decisions 2, 3 and 4 are withdrawn: eligibility stops being a property of provenance,
