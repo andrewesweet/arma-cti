@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **ADR-0071 records the rescission of the foreign lane and the arrival of never-alone review.**
+  ADR-0061's decisions 2, 3 and 4 are withdrawn: eligibility stops being a property of provenance,
+  the graded authority ladder goes, and the word *foreign* leaves the vocabulary. Decision 5
+  survives and is strengthened, since it is now the only thing between this project and an invented
+  ranking of providers. One carve-out remains and it is provisional — the orchestrator stays on
+  Claude until a Codex backup exists. Alongside it: seats carry ordered profile preferences rather
+  than one `(model, effort)` pair; retros become their own kind of work that files backlog items and
+  lands nothing; no change lands without review by a different session, with per-finding
+  adjudication and a pre-declared default at three rounds; the admission bar gives way to a
+  retrospective observatory that ranks on rework and never combines three incommensurable spend
+  meters. Every decision is the human's, taken in session on 2026-08-11. The `Supersedes:` field
+  block trailer lands as its own first applied instance.
+
 - **The squad-leader role is playable.** The Phase-1 Stratis mission authors one slot per side at
   that side's Base (`cti_squad_leader_west` / `cti_squad_leader_east`, `maxPlayers` 3 → 5), a new
   server sweep reports who is standing in one, and the daemon folds that claim into ADR-0070's
@@ -177,6 +190,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the proposed alternatives (a handoff section in `just brief`, a size check) are stated verbatim
   and not landed (#212).
 
+||||||| parent of d76f3a5 (docs(adr): rescind the foreign lane and require review before every landing)
 - **`/interlocutor`, the human interface seat**, now reachable: the two files ADR-0068 designed —
   `.claude/agents/cti-interlocutor.md` and `.claude/skills/interlocutor/SKILL.md`, both opus/xhigh —
   land verbatim as #255 published them. They could not land from the dispatch that wrote them,
