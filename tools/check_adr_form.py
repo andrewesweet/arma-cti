@@ -35,6 +35,61 @@ MARKER: Final = re.compile(r"^Delegated-decision:\s*yes\s*$", re.MULTILINE)
 REVIEWED: Final = re.compile(r"^Reviewed-by-human:[^\S\n]*\S", re.MULTILINE)
 OVERTURN: Final = re.compile(r"overturn", re.IGNORECASE)
 
+# The second convention this module checks, and it arrived the same way the
+# first did. ADR-0071 adopted a `Supersedes:` field-block trailer so that "tell
+# me every ruling that has been amended" is a grep, the way
+# `Delegated-decision: yes` already answers "tell me every decision made on my
+# behalf". Its own first draft then claimed this check existed before it did —
+# caught by an independent review, not by a sitting. So the check lands with the
+# convention, which is what `AGENTS.md` asks for and what the first draft broke.
+#
+# The trigger is two words on one line, not one word anywhere. The verb alone is
+# too broad: this project's domain uses it — ADR-0005 says a presence report
+# "supersedes" the one before it, which is about reports and not about rulings.
+# So the line must also name what is being taken out of force. ADR-0005's own
+# real supersession, "two clauses above are superseded", names no ruling either,
+# and correctly does not fire: an ADR amending itself is not what the trailer is
+# for.
+#
+# `SUPERSEDES` uses `[^\S\n]` rather than `\s` for the same reason `REVIEWED`
+# does — under MULTILINE, `\s` steps over the newline and an empty trailer would
+# read as a filled one.
+RESCISSION: Final = re.compile(
+    r"\b(?:rescind(?:s|ed|ing)?|supersed(?:e|es|ed|ing))\b", re.IGNORECASE
+)
+GOVERNANCE: Final = re.compile(r"\b(?:ADR-\d{4}|decisions?|rulings?)\b", re.IGNORECASE)
+SUPERSEDES: Final = re.compile(r"^Supersedes:[^\S\n]*\S", re.MULTILINE)
+
+
+# The three ADRs that superseded something before the trailer existed, each with
+# its reason beside it and visible in the diff — the shape `mutation_smoke.py`'s
+# `NO_MUTABLE_SUBJECT` uses. Retrofitting the trailer would mean editing three
+# human-signed-off ADRs to satisfy a convention written after them; naming them
+# here costs nothing and makes the pre-convention supersessions discoverable,
+# which a silent cutoff would not. A fourth entry is a visible diff, so this
+# cannot grow quietly.
+PRE_CONVENTION: Final[dict[str, str]] = {
+    "0005-rust-arma-rs-shim.md": (
+        "records being superseded *by* ADR-0018, retroactively. The trailer is "
+        "for the ADR doing the superseding, which is 0018."
+    ),
+    "0031-the-commander-multiplies-considerations-rather-than-summing-weights.md": (
+        "supersedes ADR-0014's mechanism, 2026-07-31, five days before the trailer was adopted."
+    ),
+    "0066-the-landed-initiative-rulings-get-their-adr-and-two-corrections-are-recorded.md": (
+        "amends passages of ADR-0061, 2026-08-08, three days before adoption."
+    ),
+}
+
+
+def rescinds_a_ruling(source: str) -> bool:
+    """Whether any one line both rescinds and names what it rescinds."""
+    return any(
+        RESCISSION.search(line) and GOVERNANCE.search(line)
+        for line in source.splitlines()
+        if not line.lstrip().startswith("Supersedes:")
+    )
+
 
 class Finding(NamedTuple):
     """One delegated-decision ADR missing a line ADR-0019 requires."""
@@ -48,11 +103,33 @@ class Finding(NamedTuple):
         return f"{self.path}:1: no {self.missing}. {self.remedy}"
 
 
-def scan_source(source: str, path: str) -> list[Finding]:
-    """Report what `source` lacks, if it is a delegated decision at all."""
-    if not MARKER.search(source):
+def supersession_failures(source: str, path: str) -> list[Finding]:
+    """Report a rescinding ADR that names nothing in a `Supersedes:` trailer.
+
+    Independent of the delegated-decision marker: ADR-0071 is
+    `Delegated-decision: no` — every ruling in it was the human's, taken in
+    session — and it rescinds four decisions of ADR-0061, so it needs the
+    trailer for a reason that has nothing to do with who decided.
+    """
+    if path.rsplit("/", 1)[-1] in PRE_CONVENTION:
         return []
-    findings = []
+    if not rescinds_a_ruling(source) or SUPERSEDES.search(source):
+        return []
+    return [
+        Finding(
+            path,
+            "`Supersedes:` line",
+            "An ADR that takes a prior ruling out of force names it in the "
+            "field block, so the amended set is a grep (ADR-0071).",
+        )
+    ]
+
+
+def scan_source(source: str, path: str) -> list[Finding]:
+    """Report what `source` lacks: its supersessions, and its delegated form."""
+    findings = supersession_failures(source, path)
+    if not MARKER.search(source):
+        return findings
     if not OVERTURN.search(source):
         findings.append(
             Finding(

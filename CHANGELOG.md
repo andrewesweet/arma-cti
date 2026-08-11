@@ -19,8 +19,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   lands nothing; no change lands without review by a different session, with per-finding
   adjudication and a pre-declared default at three rounds; the admission bar gives way to a
   retrospective observatory that ranks on rework and never combines three incommensurable spend
-  meters. Every decision is the human's, taken in session on 2026-08-11. The `Supersedes:` field
-  block trailer lands as its own first applied instance.
+  meters. Every decision is the human's, taken in session on 2026-08-11.
+
+- **`Supersedes:` is a checked field-block trailer**, not a convention on paper. `just check` now
+  refuses an ADR whose body takes a prior *ruling* out of force without naming it — two words on
+  one line, so the domain sense ("the next report supersedes it") is not a trigger and an ADR
+  amending its own clauses is not either. Three ADRs that superseded something before the trailer
+  existed are named in a grandfather list with their reasons rather than edited. The check landed
+  because ADR-0071's first draft claimed it existed and an independent review found it did not
+  (ADR-0071 ruling 8).
+
+- **`docs/agents/review-severity.md` anchors Critical/High/Medium/Low** against four worked
+  examples from this repository's history, so the never-alone loop's stop condition means the same
+  thing to instances from different model families. The four definitions are kept as the
+  independent reviewer of ADR-0071 wrote them, rather than replaced by the author's.
 
 - **The squad-leader role is playable.** The Phase-1 Stratis mission authors one slot per side at
   that side's Base (`cti_squad_leader_west` / `cti_squad_leader_east`, `maxPlayers` 3 → 5), a new
