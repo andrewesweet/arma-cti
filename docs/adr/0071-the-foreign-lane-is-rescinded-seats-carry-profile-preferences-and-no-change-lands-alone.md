@@ -2,12 +2,14 @@
 
 Delegated-decision: no
 Date: 2026-08-11
-Reviewed-by-human: 2026-08-11 — every decision below is a ruling the human took
-in session: a `/grill-me` interview that ran the design tree to an empty frontier,
-then further rulings after each of four independent reviews (49, 29, 43 and 28
-claims, on `codex-sol-xhigh`, `codex-sol-max` twice, and `opus-xhigh`). The
-document changed substantially under each, so this line covers the version at this
-commit and not merely the first draft. Nothing here was decided on their behalf.
+Reviewed-by-human: 2026-08-11 — signed off after five independent reviews. Every
+decision below is a ruling the human took in session: a `/grill-me` interview that
+ran the design tree to an empty frontier, then further rulings after each review
+(49, 29, 43, 28 and 13 claims, on `codex-sol-xhigh`, `codex-sol-max` twice,
+`opus-xhigh` and `fable-high`, the last scoped to the reasoning rather than the
+text). The document changed substantially under each, so this line covers the
+version at this commit and not merely the first draft. Nothing here was decided on
+their behalf.
 Claimed: after `git fetch origin` (origin/main at `76d0309`, topping at
 ADR-0070) and a scan of all 47 open issues' bodies and comments for an ADR
 number at or above 0071, which returned nothing.
