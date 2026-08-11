@@ -9,12 +9,15 @@ document's first draft. Nothing here was decided on their behalf.
 Claimed: after `git fetch origin` (origin/main at `76d0309`, topping at
 ADR-0070) and a scan of all 47 open issues' bodies and comments for an ADR
 number at or above 0071, which returned nothing.
-Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06), and the quality-floor
-clause of its decision 1; the human's rulings on #300 (2026-08-09), on #258 and
-#217 item 9 (2026-08-06), on #220 (2026-08-05) in part, and on #242 rulings 1
-and 2 (2026-08-06) in part; the Model roles mapping of 2026-08-04 and its
-amendment of 2026-08-05; and the binding-decisions basis of
-`docs/review-dispatch.md`.
+Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
+Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
+Supersedes: ADR-0009's assignment of process changes to retros, in part
+Supersedes: the human's ruling on #300 (2026-08-09)
+Supersedes: the human's rulings on #258 and #217 item 9 (2026-08-06)
+Supersedes: the human's ruling on #220 (2026-08-05), in part
+Supersedes: the human's #242 rulings 1 and 2 (2026-08-06), in part
+Supersedes: the Model roles mapping of 2026-08-04 and its amendment of 2026-08-05
+Supersedes: the binding-decisions basis of `docs/review-dispatch.md`
 
 ## Why this is a decision record and not a feature
 
@@ -106,9 +109,10 @@ replaced by a preference list per seat, resolved at dispatch time.
 `just dispatch --seat S` resolves the first dispatchable profile, reading the
 breaker and the off-peak rule as it already does, records which it chose and why,
 and refuses when a whole list is unavailable. Naming a profile directly remains
-possible — and **every refusal below attaches to the profile, not to the
-resolution path**, so `--profile` is a way of choosing, never a way around. A
-blocked profile is blocked however it was named.
+possible — and **a refusal attaches to a `(profile, seat)` pair, not to the
+resolution path**, so `--profile` is a way of choosing, never a way around. The
+pair matters: a profile blocked for a seat that must commit and gate is not
+thereby blocked for a read-only seat that does neither.
 
 **The interlocutor row is not a dispatch route.** ADR-0068 makes that seat a slash
 command the human invokes in their own session, and this ADR does not reverse it.
@@ -160,10 +164,15 @@ inherit that as a known distortion.
 **#242 ruling 1's pre-registered trial is superseded in part.** Its criteria and
 records judge an orchestration seat at opus/high; this map sets opus/xhigh. The
 accrued records cannot validate the new pair, so **the trial is closed as
-inconclusive** and its records kept as history. Restarting it against opus/xhigh
-was the alternative and is declined: the observatory of ruling 6 subsumes what the
-trial was measuring, and running both would produce two answers to one question.
-Closing it is a step in the sequencing, not a later choice for whoever notices.
+inconclusive** and its records kept as history. Closing it is a step in the
+sequencing, not a later choice for whoever notices.
+
+It is closed rather than restarted, and **not** because the observatory replaces
+it — that claim was made in the third draft and is withdrawn. The trial measures
+five orchestration-process criteria, among them honouring a freeze and refusing to
+treat `quota_exhausted` as a result; the observatory measures rework and sees none
+of them. What is being accepted is that those five criteria go unmeasured, which
+is a loss, not a substitution.
 
 ### 3. Retros are their own kind of work, and they land nothing
 
@@ -198,12 +207,25 @@ the proposer. The first draft said "propose and land", which forbade the wrong
 act; the second said "propose and approve", which named the right act and then
 specified a refusal that could not tell who had performed it.
 
-**The enforcement reads two fields that already exist.** Every dispatch mints an
-identity and carries it on its telemetry as `cti.dispatch_id`. The verdict records
-the reviewing dispatch's id; the branch carries the implementing dispatch's; and
-`just land` refuses when they are the same. That catches the case that matters — a
-proposer writing its own verdict — without inventing an identity mechanism. It
-does not catch a human hand-writing a verdict, and it is not claimed to.
+**The enforcement is derived, not declared, and its reach is narrower than the
+invariant.** A verdict that merely *states* a reviewing dispatch id is data the
+proposer controls: it can paste any real id, and where authorship spans two
+dispatches — a recovery amending a branch — the branch's own id is the second
+one, so the first can review its own work and the strings differ. Two rounds of
+review found both holes.
+
+So `just land` does not read a claimed id. It requires that a **review dispatch
+record exists** for the SHA being landed, under `~/.arma-cti/dispatches/`, whose
+seat is `review` and whose recorded end state is a completed run; and it refuses
+when that record's id appears among the dispatches that authored the branch. The
+record is written by the dispatcher, not by the reviewed agent.
+
+**What this cannot do, stated plainly.** Every dispatch runs as the same user, so
+an agent determined to forge an evidence directory can. This is the same limit the
+credentials design already records — it protects against the accident and the
+shortcut, not against a deceptive agent. The invariant is therefore a **convention
+with a mechanical floor**, not a guarantee, and calling it more than that is what
+the first three drafts did.
 
 The alternatives were the reviewer landing, which would give a read-only instance
 write authority and destroy the containment that makes the review seat safe; the
@@ -243,11 +265,18 @@ findings — new rounds can produce new findings, and it is the round budget bel
 not per-finding closure, that guarantees termination. The first draft claimed
 otherwise.
 
-**Three rounds, then escalate, then land.** At three rounds still holding non-Low
-findings, ruling 5's transferring escalation fires and an arbiter adjudicates what
-remains. Only then does the pre-declared default apply: the change lands, and
-every finding the arbiter left unresolved is filed as an issue on the originating
-item. Escalation precedes the default rather than competing with it, which is what
+**Three fix rounds, then escalate, then land.** A round is one *fix-and-re-review*
+cycle; the first review is round zero, so escalation fires after the third
+re-review — four reviews in total. The count is stated because "three rounds" was
+ambiguous by one and a tool has to decide it.
+
+At that point ruling 5's transferring escalation fires and an arbiter adjudicates
+what remains. Only then does the pre-declared default apply: the change lands, and
+**every finding the arbiter did not dismiss is filed as an issue** on the
+originating item — not only the ones it left unresolved. An upheld Critical is
+closed by the arbiter's verdict, so a rule that filed only the unresolved would
+lose exactly the finding that most needs a trace. That was the second draft's
+error and it was the wrong way round. Escalation precedes the default rather than competing with it, which is what
 makes "a review blocks a landing" true in the sense that matters — nothing lands
 carrying a live unadjudicated finding. The first draft ordered these two rulings
 against each other.
@@ -295,9 +324,11 @@ draft's wording did not deliver:
 - **two** consecutive items sharing a routing class each reaching that same
   three-round state, which is evidence the *items* are under-specified and the
   next one is re-planned rather than re-fixed;
-- an item whose first implementation attempt was discarded and re-dispatched to a
-  different profile from a clean base, which fires once and distinguishes a bad
-  implementation from a bad item;
+- an item whose second implementation attempt, from a clean base on a different
+  profile, itself reaches the three-round state — the *retry's outcome*, which is
+  what distinguishes a bad implementation from a bad item. The third draft made
+  the retry itself the condition, which fires only after the transfer it was meant
+  to trigger and tells nobody anything;
 - an issue declaring routing class 4, the #181 shape, where a plausible wrong fix
   would also go green — which that class's remedy orders and which must therefore
   be a condition this ruling permits.
@@ -331,9 +362,16 @@ rounds, escalations, arbiter invocations, dispute outcomes and landings per issu
 duration, which is not a count and varies with queueing and task length. Five
 dimensions do not order themselves: a profile with two rounds and no escalation
 against one with one round and one escalation has no winner without a conversion,
-and inventing one is Decision 5's error again. So **rounds per landing is the
+and inventing one is Decision 5's error again. So **fix rounds per landing is the
 ranking key** and everything else is reported beside it, unranked. A different key
 is a ruling, not a preference.
+
+The key is defined only where its denominator exists: it ranks **profiles in
+landing seats** — implementer and mechanical work that reaches `just land`. A
+profile with no landings has no ranking, not a ranking of infinity, and `review`,
+`recon`, `planner` and `retro` land nothing by contract. Their rework is reported,
+never ranked. An implementer whose work never lands is a zero denominator too, and
+shows as an unranked row with its rounds visible rather than as a division.
 
 **It does not rank on spend.** Three meters — the Anthropic plan's five-hour
 window, z.ai's prompt count, and Codex's absence of published terms — do not
@@ -395,7 +433,10 @@ property to cite as exemplary.
 Already cheap, verified in session: `AGENTS.md` and `CLAUDE.md` are one symlinked
 file; Codex skills use the same `SKILL.md` convention, so skill parity is a
 frontmatter translation; and `codex exec -s read-only` is the counterpart of
-Claude's `plan` mode, subject to ruling 4's requirement that the mode be forced.
+Claude's `plan` mode. On the Codex lane both `plan` **and** `default` already map
+to `--sandbox read-only` — the third draft said only `plan` did — but the argument
+parser's own default is `acceptEdits`, which is writable, so ruling 4's
+requirement that the review seat's mode be *forced* stands unchanged.
 
 **Codex has no seat-definition surface**, so there is nothing to generate into and
 generation is not a claim this ADR can make for both harnesses. Until such a
@@ -433,10 +474,26 @@ which was in fact the three ADRs the narrow detector happened to see; twenty
 earlier ADRs amend or supersede a ruling in their prose. Two independent reviews
 found those, in sequence. No gate this project runs could have.
 
-What is there now: a wide verb list, negation skipped, the trailer anchored to the
-field block, and a **cutoff at 0071** rather than a named list — because a named
-list names exceptions to a rule that otherwise applies, and here the rule did not
-exist yet. That is a start date, and it cannot quietly grow.
+A third draft widened the verbs and added a negation guard, and a third review
+defeated that too: "deleted" — which this ADR itself uses for routing class 7 —
+"dropped", "overturned" and "retired" were all outside the list; *"the Model roles
+mapping is replaced"* matched no governance noun; a wrapped line separated the two
+words it needed together; and *"withdrawn without changing decision 5"* was
+discarded by the negation guard as an operative withdrawal.
+
+**So the trigger is gone.** Every ADR from 0071 carries a `Supersedes:` line —
+one per superseded ruling, or the single line `Supersedes: none`. Nothing infers
+intent from prose, because three attempts established that a regex cannot. The
+cost is one line per future ADR; the gain is a check with no vocabulary to miss,
+no wrapping to break on, and no negation to invert. One line per target rather
+than a wrapped list, because the promise is that `rg '^Supersedes:'` returns the
+amended set, and a continuation line answers no such grep.
+
+The **cutoff at 0071** replaced a named grandfather list for a reason worth
+keeping: a named list names exceptions to a rule that otherwise applies, and here
+the rule did not exist yet. Its known gap is stated in the code — an ADR below the
+cutoff that is later amended to withdraw something is not covered, and closing
+that would mean reading git history in a form check.
 
 `AGENTS.md` also names that exemption constant `NO_PYTHON_SUBJECT` where the code
 says `NO_MUTABLE_SUBJECT`; the tool's own documentation said it twice and is
@@ -454,8 +511,8 @@ on provenance, and separating them is the substance of this ADR.
 | 2 `orchestration` | **survives unchanged, provisional** | ruling 1's carve-out, and the only provenance rule left |
 | 3 `retros_and_adr_authorship` | **splits** | the retro half dies with ruling 3. ADR authorship survives, bound to the planner's list rather than to Claude |
 | 4 `plausible_wrong_fix_goes_green` | **survives, remedy restated** | gate coverage, not provenance. Remedy becomes route-to-planner-and-escalate, and ruling 5 carries the matching condition |
-| 5 `in_world_landings` | **survives** | capability — a *subagent* cannot hold the corpus's foreground wait, so a seat reached that way cannot gate its own in-world work. Not every dispatched session: the wait hook returns 0 where there is no `agent_id`, so a top-level dispatched session is permitted and is the shape that would lift this. The first draft said "every dispatched session", which the hook contradicts |
-| 6 `gates_themselves` | **survives, reframed** | conflict of interest: *no instance authors the gate that judges it*. Now binds Claude too. Its enforcement is a hard-coded path list, which cannot recognise a gate that does not exist yet — `tools/check_adr_form.py`, added by this very commit, is the recurring shape. Widening the list is a fix for today only; the durable form is deriving the list from what `just check` actually runs, and that is filed rather than decided here |
+| 5 `in_world_landings` | **narrowed to a subagent rule** | a *subagent* cannot hold the corpus's foreground wait, so a seat reached that way cannot gate its own in-world work. `just dispatch` already launches a **top-level** session, which the wait hook permits — it returns 0 where there is no `agent_id` — so the class does not restrict the dispatch route this ADR defines, and two drafts said it did. What remains is a real but much smaller rule about subagents |
+| 6 `gates_themselves` | **survives, reframed, and does not yet hold** | conflict of interest: *no instance authors the gate that judges it*. Now binds Claude too. Enforcement is a hard-coded path list, and three holes are recorded rather than papered over: it omits `tools/check_adr_form.py`, **which this commit adds and then uses to judge the ADR in the same commit**; it cannot name the exemption list that step 7 creates; and deriving it from `just check` would still miss gates under `just unit`, `just mutation`, `just land` and `just regress`. Widening the list is a fix for today; the durable form is deriving it from every recipe that can red, and neither is done here. The class is stated as aspirational until it is |
 | 7 `anthropic_plan_meter` | **deleted** | its stated basis is false: `tools/breaker.py` reads the meter over plain `urllib` at a fixed URL, with no Claude session involved |
 
 Five classes survive. Four of them — ADR authorship, the #181 shape, in-world
@@ -518,26 +575,35 @@ was written down.
 
 ## Sequencing
 
+**Every step below is reviewed by an independent instance before it lands**, from
+step 1 onward. That is stated because the mechanism arrives at step 7: between
+here and there the rule is honoured by procedure rather than enforced by a
+refusal, and without saying so, steps 2 to 6 would land alone under a decision
+that forbids exactly that.
+
 1. **This ADR**, alone, with the severity anchors and the `Supersedes:` check that
-   ship in the same commit. It is re-reviewed by an independent instance on
-   another provider before landing.
+   ship in the same commit.
 2. **The seat map** — three profiles, seat resolution with the review seat's mode
    forced and the profile-level refusals attached, the pre-work signals added to
    the dispatch record, generated seat surfaces where a target surface exists, and
    #242's trial closed as inconclusive.
-3. **The `AGENTS.md` corrections** the rulings require: the no-further-verification
-   amendment, the Model roles replacement, the withdrawn provenance rules, and the
-   `NO_MUTABLE_SUBJECT` name. **After** step 2, not before: the corrections
-   describe routes the command surface must already be able to take, and an
-   always-loaded file naming a seat that does not resolve is the same defect in
-   the other direction. Between steps 1 and 3 the superseded rules stand, which is
-   the cost of a file every session loads.
-4. **The escalation-condition mechanism** — the data surface and the emission,
+3. **The escalation-condition mechanism** — the data surface and the emission,
    ahead of both its consumers rather than after them.
-5. **The provenance removal** — the routing policy re-founded per the table above,
+4. **The provenance removal** — the routing policy re-founded per the table above,
    including class 7's deletion and class 4's restated remedy, which is one of
    those consumers; the bar dropped after the trial harness, the in-world list,
    and `docs/review-dispatch.md`'s two operations are rehomed.
+5. **The documents the rulings contradict**, all in one landing and **after** the
+   mechanisms that make them true: `AGENTS.md`'s no-further-verification
+   amendment, Model roles replacement, withdrawn provenance rules and
+   `NO_MUTABLE_SUBJECT` name; `docs/agents/orchestration.md`, which still commands
+   opus/high, calls #242's trial live and declares the orchestrator ineligible on
+   every foreign lane — and which `AGENTS.md` requires a dispatching seat to read;
+   and `docs/multi-provider-dispatch.md`, which still calls ADR-0061 binding,
+   routes review findings to the admission bar, and forbids registering an
+   unmeasured profile. Two earlier drafts sequenced the `AGENTS.md` half *before*
+   the mechanisms and omitted the other two documents entirely, which would have
+   left agents following new rules that the surviving machinery refuses.
 6. **The `/retro` skill rewrite**, restating steps 3 to 5 in terms of the backlog
    item.
 7. **Never-alone** — branch exchange, the verdict record carrying the reviewed SHA

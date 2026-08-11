@@ -6,11 +6,12 @@ reviewer on one model family and an arbiter on another can agree perfectly and m
 different things, and the drift measurement built on top of them would be agreement on
 an undefined scale.
 
-Binding: ADR-0071 ruling 4, which makes these anchors a prerequisite the first review
-cannot run without. The drafting is owed to ADR-0071's own first review, run on
-`codex-sol-xhigh`, which had to invent four definitions before it could report and
-whose wording is kept here rather than replaced — an independent instance's scale is a
-better starting point than the author's.
+Binding: ADR-0071 ruling 4, which requires these anchors before **the first review run
+under that ruling** — that is, before never-alone operates, which is sequencing step 7.
+They did not precede ADR-0071's own reviews, which ran while the ruling was still being
+drafted; those reviews are what produced them. The first, on `codex-sol-xhigh`, had to
+invent four definitions before it could report, and its wording is kept here rather than
+replaced — an independent instance's scale is a better starting point than the author's.
 
 Each level carries one worked example from this repository's own history, because a
 level defined only in the abstract is a level every reader calibrates privately.
@@ -70,7 +71,8 @@ finding that survives four readings is still Low: it changed what no rule meant.
 - The **reviewer** assigns a severity to every finding it reports. It never withholds a
   finding on the grounds that it is minor.
 - The **implementer** may dispute a finding's correctness and its severity.
-- An **arbiter** from the escalation set rules once per finding, and that ruling binds.
+- An **arbiter** — the implementer's seat's escalation entry, one rule with one answer —
+  rules once per finding, and that ruling binds.
 - The loop's stop condition is that nothing above **Low** remains unadjudicated. Low
   findings do not block; they are recorded.
 

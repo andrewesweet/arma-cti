@@ -1,30 +1,40 @@
 """Form checks over ADRs: the delegated-decision block, and the supersession trailer.
 
-Two conventions, checked here for the same reason. The first (ADR-0019, issue
-#137) binds an ADR carrying `Delegated-decision: yes`; the second (ADR-0071)
-binds any ADR from 0071 onward that takes a prior ruling out of force, whoever
-decided it.
+Two conventions, checked here for the same reason — a rule nothing enforces is a
+rule that goes missing. The first (ADR-0019, issue #137) binds an ADR carrying
+`Delegated-decision: yes`. The second (ADR-0071) binds every ADR from 0071
+onward, whoever decided it.
 
+ADR-0019 requires that a delegated decision state what evidence would overturn
+it, because that is what makes a post-hoc ratification auditable rather than
+self-sealing: the reviewer can disagree by pointing at the evidence the ADR
+named. It also gives the field block a `Reviewed-by-human:` line, which is the
+human's outstanding-review worklist. Nothing detected either — three ADRs (0016,
+0030, 0036) reached a guided review of all twenty-nine delegated decisions
+without an overturning-evidence section, found only because one sitting read all
+of them, which is not a repeatable mechanism.
 
-ADR-0019 requires that an ADR carrying `Delegated-decision: yes` state what
-evidence would overturn each decision it takes, because that is what makes a
-post-hoc ratification auditable rather than self-sealing: the reviewer can
-disagree by pointing at the evidence the ADR named. It also gives the field
-block a `Reviewed-by-human:` line, which is the human's outstanding-review
-worklist.
+**The supersession check does not read prose, and that is its whole design.**
+Three earlier versions tried to decide from the body whether an ADR took a prior
+ruling out of force, and three independent reviews defeated each in turn: a
+narrow `rescind|supersede` pair missed every one of ADR-0071's own withdrawals,
+which say "withdrawn"; widening it still missed "deleted", "dropped",
+"overturned" and "retired"; requiring a governance noun on the same line missed
+"the Model roles mapping is replaced" and broke on line wrapping; a negation
+guard then discarded "withdrawn *without* changing decision 5". Each version
+looked like it worked because it fired on something.
 
-Nothing detected either. Three ADRs (0016, 0030, 0036) reached a guided review
-of all twenty-nine delegated decisions without an overturning-evidence section,
-and were found only because one sitting read all of them — which is not a
-repeatable mechanism. This is the check that is.
+So the trigger is gone. **Every ADR from 0071 carries a `Supersedes:` line** —
+one per superseded target, or the single line `Supersedes: none`. That is exactly
+checkable, has no vocabulary, wrapping or negation to defeat, and costs one line
+in each new ADR. One target per line rather than a wrapped list, because the
+convention's promise is that `rg '^Supersedes:'` returns the amended set, and a
+continuation line does not answer that grep.
 
-Deliberately shallow. It asks whether the words are there, in the file, at all;
-it cannot ask whether the evidence named is any good, and that judgement stays
-the human's at review. The heading's wording is not fixed either — the corpus
-spells it `## What would overturn this`, `## Overturned by`, `**What would
-overturn each decision**` and, in ADR-0014, as prose per decision — so the test
-is the word itself outside the field block, which is what the review's own grep
-asked.
+Deliberately shallow throughout. It asks whether the words are there, in the
+right part of the file; it cannot ask whether the evidence named is any good or
+whether the supersession list is complete, and those judgements stay the human's
+at review.
 """
 
 from __future__ import annotations
@@ -35,94 +45,43 @@ import sys
 from pathlib import Path
 from typing import Final, NamedTuple
 
-MARKER: Final = re.compile(r"^Delegated-decision:\s*yes\s*$", re.MULTILINE)
 # `[^\S\n]` and not `\s`: under MULTILINE, `\s` would step over the newline and
 # find the next paragraph, so an empty field would read as a filled one.
+MARKER: Final = re.compile(r"^Delegated-decision:[^\S\n]*yes[^\S\n]*$", re.MULTILINE)
 REVIEWED: Final = re.compile(r"^Reviewed-by-human:[^\S\n]*\S", re.MULTILINE)
+SUPERSEDES: Final = re.compile(r"^Supersedes:[^\S\n]*\S", re.MULTILINE)
 OVERTURN: Final = re.compile(r"overturn", re.IGNORECASE)
 
-# The second convention this module checks, and it arrived the same way the
-# first did. ADR-0071 adopted a `Supersedes:` field-block trailer so that "tell
-# me every ruling that has been amended" is a grep, the way
-# `Delegated-decision: yes` already answers "tell me every decision made on my
-# behalf". Its own first draft then claimed this check existed before it did —
-# caught by an independent review, not by a sitting. So the check lands with the
-# convention, which is what `AGENTS.md` asks for and what the first draft broke.
+# The field block is the first unbroken run of non-blank lines after the title,
+# and it is defined that way rather than "up to the first `##`" because nine ADRs
+# in this corpus have no `##` at all — 0013, 0014, 0015, 0016, 0017, 0019, 0020,
+# 0023 and 0025 are short prose records. Sectioning would have given every one of
+# them an empty body and failed them all, which is how this definition was found.
+# It also tolerates a wrapped field value, which ADR-0070's four-line
+# `Reviewed-by-human:` needs.
 #
-# The trigger is two words on one line, not one word anywhere. The verb alone is
-# too broad: this project's domain uses it — ADR-0005 says a presence report
-# "supersedes" the one before it, which is about reports and not about rulings.
-# So the line must also name what is being taken out of force.
-#
-# The verb list is wide on purpose, and it was not at first. A narrow
-# `rescind|supersede` pair missed every one of ADR-0071's four principal
-# withdrawals, because that ADR says "withdrawn" — the check fired on one
-# incidental sentence and looked like it worked. An independent review found it;
-# no gate could have.
-RESCISSION: Final = re.compile(
-    r"\b(?:rescind|supersed|withdraw|amend|repeal|replace)\w*\b", re.IGNORECASE
-)
-GOVERNANCE: Final = re.compile(r"\b(?:ADR-\d{4}|decisions?|rulings?)\b", re.IGNORECASE)
+# Anchoring the field regexes here is what stops a fenced example or a body
+# paragraph from satisfying them — the failure ADR-0013 cares about most, since
+# `Reviewed-by-human:` in body prose would drop an ADR off the human's pending
+# worklist without a human ever seeing it.
+FENCE: Final = re.compile(r"^[^\S\n]*(?:```|~~~).*?^[^\S\n]*(?:```|~~~)", re.MULTILINE | re.DOTALL)
+FIELD: Final = re.compile(r"^[A-Z][A-Za-z-]*:")
 
-# Shallow, and the limit is stated rather than hidden: a line saying a ruling is
-# *not* superseded, or *may* be one day, reads the same to a regex as one saying
-# it is. Skipping the obvious negations costs nothing and catches the common
-# phrasings; a determined false positive is answered by writing the trailer,
-# which is cheap and true.
-NEGATED: Final = re.compile(r"\b(?:not|never|nothing|neither|without)\b", re.IGNORECASE)
-
-# The trailer belongs in the field block, which in this corpus is the run of
-# `Key: value` lines between the title and the first `##` section. Anchoring
-# there is what makes the convention a grep: a `Supersedes:` line inside a body
-# paragraph or a fenced example would satisfy an unanchored search while
-# answering no question a reader actually has.
-#
-# `[^\S\n]` rather than `\s` for the same reason `REVIEWED` uses it — under
-# MULTILINE, `\s` steps over the newline and an empty trailer reads as a filled
-# one.
-SUPERSEDES: Final = re.compile(r"^Supersedes:[^\S\n]*\S", re.MULTILINE)
-SECTION: Final = re.compile(r"^##\s", re.MULTILINE)
-
-# The convention starts at ADR-0071, which adopted it. Twenty earlier ADRs amend
-# or supersede an earlier ruling in their prose — 0005, 0008, 0012, 0013, 0017,
-# 0018, 0019, 0023, 0024, 0028, 0031, 0036, 0038, 0039, 0040, 0042, 0044, 0045,
-# 0047, 0053 among them — and retrofitting a trailer into that many
+# The convention starts at the ADR that adopted it. Twenty earlier ADRs amend or
+# supersede a ruling in their prose, and retrofitting a trailer into that many
 # human-signed-off records to satisfy a rule written after them is not
 # proportionate.
 #
-# This started life as a named exemption list in the `NO_MUTABLE_SUBJECT` shape
-# and that was the wrong borrowing, which the same review caught: a named list
-# names exceptions to a rule that otherwise applies, and here the rule simply did
-# not exist yet. Three entries also looked complete and were not — they were the
-# three a too-narrow detector happened to see. A number is honest about being a
-# start date, and cannot quietly grow.
+# Known gap, stated rather than hidden: the cutoff is on the file's number, which
+# is fixed at creation, so an ADR below it that is *later* amended to withdraw
+# something is not covered. Closing that would mean reading git history in a form
+# check, which is a worse trade than the gap.
 CONVENTION_FROM: Final = 71
 ADR_NUMBER: Final = re.compile(r"^(\d{4})-")
 
 
-def governed(path: str) -> bool:
-    """Whether this ADR is new enough for the trailer convention to bind it."""
-    found = ADR_NUMBER.match(path.rsplit("/", 1)[-1])
-    return found is not None and int(found.group(1)) >= CONVENTION_FROM
-
-
-def rescinds_a_ruling(source: str) -> bool:
-    """Whether any one line both rescinds and names what it rescinds."""
-    return any(
-        RESCISSION.search(line) and GOVERNANCE.search(line) and not NEGATED.search(line)
-        for line in source.splitlines()
-        if not line.lstrip().startswith("Supersedes:")
-    )
-
-
-def field_block(source: str) -> str:
-    """Return the header above the first `##` section, where the trailers live."""
-    found = SECTION.search(source)
-    return source[: found.start()] if found else source
-
-
 class Finding(NamedTuple):
-    """One delegated-decision ADR missing a line ADR-0019 requires."""
+    """One ADR missing a line one of the two conventions requires."""
 
     path: str
     missing: str
@@ -133,34 +92,70 @@ class Finding(NamedTuple):
         return f"{self.path}:1: no {self.missing}. {self.remedy}"
 
 
-def supersession_failures(source: str, path: str) -> list[Finding]:
-    """Report a rescinding ADR that names nothing in a `Supersedes:` trailer.
+def strip_fences(source: str) -> str:
+    """Return `source` with fenced code blocks removed."""
+    return FENCE.sub("", source)
 
-    Independent of the delegated-decision marker: ADR-0071 is
-    `Delegated-decision: no` — every ruling in it was the human's, taken in
-    session — and it rescinds four decisions of ADR-0061, so it needs the
-    trailer for a reason that has nothing to do with who decided.
-    """
-    if not governed(path):
-        return []
-    if not rescinds_a_ruling(source) or SUPERSEDES.search(field_block(source)):
-        return []
-    return [
-        Finding(
-            path,
-            "`Supersedes:` line",
-            "An ADR that takes a prior ruling out of force names it in the "
-            "field block, so the amended set is a grep (ADR-0071).",
-        )
-    ]
+
+def _split(source: str) -> tuple[list[str], list[str]]:
+    """Return the field-block lines and the body lines, fenced examples removed."""
+    lines = strip_fences(source).splitlines()
+    start = 0
+    while start < len(lines) and (not lines[start].strip() or lines[start].startswith("#")):
+        start += 1
+
+    # Consume blank-line-separated chunks for as long as each still carries a
+    # field. ADR-0031's block has a blank line inside it — `Stood-in-for:`, a gap,
+    # then `Reviewed-by-human:` — so a single unbroken run is not enough, and a
+    # single chunk would have failed it.
+    end = start
+    while end < len(lines):
+        stop = end
+        while stop < len(lines) and lines[stop].strip():
+            stop += 1
+        chunk = lines[end:stop]
+        if not chunk or not any(FIELD.match(line) for line in chunk):
+            break
+        end = stop
+        while end < len(lines) and not lines[end].strip():
+            end += 1
+    return lines[start:end], lines[end:]
+
+
+def field_block(source: str) -> str:
+    """Return the field block: the first unbroken run of lines after the title."""
+    return "\n".join(_split(source)[0])
+
+
+def body(source: str) -> str:
+    """Return everything after the field block."""
+    return "\n".join(_split(source)[1])
+
+
+def governed(path: str) -> bool:
+    """Return whether the supersession convention binds this ADR."""
+    found = ADR_NUMBER.match(path.rsplit("/", 1)[-1])
+    return found is not None and int(found.group(1)) >= CONVENTION_FROM
 
 
 def scan_source(source: str, path: str) -> list[Finding]:
-    """Report what `source` lacks: its supersessions, and its delegated form."""
-    findings = supersession_failures(source, path)
-    if not MARKER.search(source):
+    """Report what `source` lacks under both conventions."""
+    header = field_block(source)
+    findings: list[Finding] = []
+
+    if governed(path) and not SUPERSEDES.search(header):
+        findings.append(
+            Finding(
+                path,
+                "`Supersedes:` line",
+                "Every ADR from 0071 carries one per superseded ruling, or "
+                "`Supersedes: none` — so the amended set is a grep (ADR-0071).",
+            )
+        )
+
+    if not MARKER.search(header):
         return findings
-    if not OVERTURN.search(source):
+    if not OVERTURN.search(body(source)):
         findings.append(
             Finding(
                 path,
@@ -169,7 +164,7 @@ def scan_source(source: str, path: str) -> list[Finding]:
                 "would overturn each decision it takes.",
             )
         )
-    if not REVIEWED.search(source):
+    if not REVIEWED.search(header):
         findings.append(
             Finding(
                 path,
@@ -191,7 +186,7 @@ def adr_files(root: Path) -> list[Path]:
 
 
 def scan_tree(root: Path) -> list[Finding]:
-    """Report every delegated-decision ADR under `root` missing a required line."""
+    """Report every ADR under `root` missing a line either convention requires."""
     findings: list[Finding] = []
     for path in adr_files(root):
         relative = path.relative_to(root).as_posix()

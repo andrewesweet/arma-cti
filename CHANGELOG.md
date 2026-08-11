@@ -21,13 +21,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   retrospective observatory that ranks on rework and never combines three incommensurable spend
   meters. Every decision is the human's, taken in session on 2026-08-11.
 
-- **`Supersedes:` is a checked field-block trailer**, not a convention on paper. `just check` now
-  refuses an ADR whose body takes a prior *ruling* out of force without naming it — two words on
-  one line, so the domain sense ("the next report supersedes it") is not a trigger and an ADR
-  amending its own clauses is not either. Three ADRs that superseded something before the trailer
-  existed are named in a grandfather list with their reasons rather than edited. The check landed
-  because ADR-0071's first draft claimed it existed and an independent review found it did not
-  (ADR-0071 ruling 8).
+- **`Supersedes:` is a checked field-block trailer**, not a convention on paper. Every ADR from
+  0071 carries one line per superseded ruling, or the single line `Supersedes: none`, and
+  `just check` refuses one that does not. It reads no prose: three drafts tried to detect
+  supersession from the body and three independent reviews defeated each in turn — a narrow
+  `rescind|supersede` pair missed every one of ADR-0071's own withdrawals because they say
+  "withdrawn"; widening it still missed "deleted", which the same ADR uses; requiring a governance
+  noun on the line broke on wrapping; a negation guard then discarded "withdrawn *without*
+  changing decision 5". One line per target rather than a wrapped list, so `rg '^Supersedes:'`
+  returns the whole amended set. The convention starts at 0071 and its gap — an older ADR amended
+  later — is recorded in the code (ADR-0071 ruling 8).
 
 - **`docs/agents/review-severity.md` anchors Critical/High/Medium/Low** against four worked
   examples from this repository's history, so the never-alone loop's stop condition means the same
