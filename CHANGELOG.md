@@ -205,7 +205,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the proposed alternatives (a handoff section in `just brief`, a size check) are stated verbatim
   and not landed (#212).
 
-||||||| parent of d76f3a5 (docs(adr): rescind the foreign lane and require review before every landing)
 - **`/interlocutor`, the human interface seat**, now reachable: the two files ADR-0068 designed —
   `.claude/agents/cti-interlocutor.md` and `.claude/skills/interlocutor/SKILL.md`, both opus/xhigh —
   land verbatim as #255 published them. They could not land from the dispatch that wrote them,
