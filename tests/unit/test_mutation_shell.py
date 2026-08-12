@@ -326,6 +326,32 @@ def test_the_preamble_traces_to_its_own_descriptor_and_not_to_stderr(tmp_path: P
     assert shell_tool.TRACED.match(trace.read_text(encoding="utf-8").splitlines()[0])
 
 
+def test_the_preamble_survives_a_nounset_shell_with_no_script_file(tmp_path: Path) -> None:
+    # `bash -c` with `set -u` is `just`'s own recipe shell, and `BASH_SOURCE` has
+    # no element 0 there — so a `PS4` naming it unguarded aborts the recipe before
+    # its first command, and the tests that shell into `just` red for a reason
+    # belonging to this harness (#324). The traced row keeps the shape `TRACED`
+    # parses, with an empty source that `read_traces` then drops.
+    preamble = tmp_path / "bash-env.sh"
+    preamble.write_text(shell_tool.TRACE_PREAMBLE, encoding="utf-8")
+    trace = tmp_path / "trace"
+    done = subprocess.run(
+        ["bash", "-euo", "pipefail", "-c", "printf survived"],  # noqa: S607 — as everywhere here
+        env={**os.environ, "BASH_ENV": str(preamble), "CTI_SHELL_TRACE": str(trace)},
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    assert done.returncode == 0, done.stderr
+    assert done.stdout == "survived"
+    assert "unbound variable" not in done.stderr
+    row = shell_tool.TRACED.match(trace.read_text(encoding="utf-8").splitlines()[0])
+    assert row is not None
+    assert row.group("source") == ""
+    assert not shell_tool.is_shell_subject(row.group("source"))
+
+
 # --- the stage ---------------------------------------------------------------
 
 

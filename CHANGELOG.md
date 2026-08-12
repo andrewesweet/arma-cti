@@ -223,6 +223,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The mutation gate's shell tracing no longer kills a test that shells into a `set -u` bash.**
+  Its `BASH_ENV` preamble named `${BASH_SOURCE}` in `PS4`, and `BASH_SOURCE` has no element 0 in a
+  `bash -c` body — which is exactly `just`'s recipe shell, `["bash", "-euo", "pipefail", "-c"]`. So
+  under tracing every `just` recipe aborted with `BASH_SOURCE: unbound variable` before running a
+  command, and any test module that drives `just` failed its baseline collect pass. The gate then
+  reported `?? could not run` rather than refusing, which is how `tools/generate_seats.py` came to
+  be measured by nothing at all while `just fast` looked merely noisy. The default form
+  `${BASH_SOURCE:-}` traces identically for every real script and yields an empty source for a
+  `bash -c` body, which `read_traces` already drops as not one of this repository's scripts.
+
 - **A just-respawned Commander is no longer told he commands nothing.** Respawn hands the player a
   new unit and the server sees it living before it can read whose it is, so for that window
   `getPlayerUID` answers nothing and the Command Port typed a latched Commander `wrong_side` — "this
