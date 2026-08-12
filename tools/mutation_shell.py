@@ -107,11 +107,22 @@ SHELL_ROOTS: Final = ("spike/", "tools/", ".claude/hooks/")
 # `exec {fd}>>` asks bash for a free descriptor rather than naming one: the
 # scripts under test open their own (`exec 9>` for `flock` in `spike/slots.sh`),
 # and a fixed number here would fight them.
+#
+# `${BASH_SOURCE:-}` and not `${BASH_SOURCE}`: `BASH_SOURCE` has no element 0 in
+# a `bash -c` body, so under `set -u` — which is what `just`'s recipe shell is,
+# `["bash", "-euo", "pipefail", "-c"]` — expanding `PS4` aborts the shell with
+# `BASH_SOURCE: unbound variable` before the recipe runs a command. Tracing then
+# reds every test that shells into a `set -u` bash, for a reason belonging to
+# this harness rather than to the module under measurement (#324: it took
+# `tools/generate_seats.py` off the mutation gate entirely, with the gate
+# reporting `?? could not run` rather than refusing). The empty source that the
+# default yields is dropped by `read_traces`, which only keeps this repository's
+# own scripts.
 TRACE_PREAMBLE: Final = """\
 if [ -n "${CTI_SHELL_TRACE:-}" ]; then
   exec {__cti_trace_fd}>>"$CTI_SHELL_TRACE"
   BASH_XTRACEFD=$__cti_trace_fd
-  PS4='+@${BASH_SOURCE}@${LINENO}@ '
+  PS4='+@${BASH_SOURCE:-}@${LINENO}@ '
   set -x
 fi
 """
