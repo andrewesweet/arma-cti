@@ -21,13 +21,21 @@ check: check-commits check-generated check-adr check-source-link check-markers c
 # Export what SQF cannot read from an authored file. The map manifests are not
 # here: the addon ships and parses the authored JSON itself (ADR-0017), so
 # there is nothing to regenerate. The Command Port schema lives in Python, so
-# it still has to be written out.
+# it still has to be written out. The Claude seat surfaces are the second
+# generated family (#324, ADR-0071 ruling 7): a seat's (model, effort) pair
+# lives once, in tools/dispatch.py's registry, and every surface declaring it
+# is written from there.
 generate:
     uv run python tools/export_command_schema.py
+    uv run python tools/generate_seats.py
 
-# A stale export is a schema_stale failure, never a silent divergence.
+# A stale export is a schema_stale failure, never a silent divergence. The seat
+# surfaces need it more than the schema does: both declaration surfaces fail
+# open (ADR-0068), so a drifted seat runs at a tier nobody ratified and says
+# nothing.
 check-generated:
     uv run python tools/export_command_schema.py --check
+    uv run python tools/generate_seats.py --check
 
 # Conventional Commits (ADR-0010).
 check-commits:

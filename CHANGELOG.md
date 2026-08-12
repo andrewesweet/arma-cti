@@ -50,6 +50,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `just dispatch --list` states both rules, and the dispatch record names the profile under
   review so ruling 4's landing check can ask later.
 
+- **The Claude seat surfaces are generated from the dispatch registry, and `just check` catches a
+  drifted one.** A seat's `(model, effort)` pair was typed out wherever a surface wanted it — the
+  `.claude/agents/` definition, the interlocutor skill's frontmatter, and the always-loaded
+  prefix's own description of the mapping — which is how the interlocutor's pair came to exist in
+  five places and how `cti-implementer`'s came to disagree with ADR-0071 ruling 2's table with
+  nothing to notice. `tools/generate_seats.py` writes every surface from `tools/dispatch.py`'s
+  registry instead, each seat declaring the first `claude-native` profile in its own preference
+  list, and `just generate` runs it. Nothing decides a pair any more; the registry does, once.
+  The check earns its place on the way these surfaces fail: both of them fail **open** (ADR-0068),
+  so a hand edit or an un-regenerated registry change means a seat that answers at a tier nobody
+  ratified and says nothing about it. `just check-seats` still asserts a pair is declared and
+  valid; the generated-file check now asserts it is the registry's. Writing converges the
+  directory rather than adding to it, so a retired seat's file is removed and named rather than
+  left to be obeyed. Two consequences of reading ruling 2's table mechanically: `cti-implementer`
+  is opus/low, the native tail of that seat's list, and `cti-recon` is haiku/medium. The
+  interlocutor's row governs both its surfaces without becoming a dispatch route — it is
+  registered as `DECLARED_ONLY_SEATS`, which nothing resolves through, so `--seat interlocutor`
+  stays unknown (ADR-0068 stands).
+
 - **`just dispatch --seat S --issue N` now resolves its own profile, and the record says which and
   why.** Naming a seat is the ordinary way to dispatch. Each seat carries ADR-0071 ruling 2's
   ordered preference, head first, and the planner walks it to the first entry dispatchable *right
@@ -221,6 +240,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   work invites exactly the `ps -p <pid>` check that produced two agents in one worktree. What the
   recipe prints in its place is `stop=just dispatch --stop <id>`, which is the handle that does
   identify the work (#308, #105).
+
+- **`.claude/agents/cti-mechanical.md` and `.claude/agents/cti-implementer-xhigh.md` are gone**, and
+  `.claude/agents/cti-planner.md` replaces the second (#324, ADR-0071 ruling 2). `mechanical` is
+  retired — it named a cheaper tier rather than a different job — and `planner` absorbs the xhigh
+  seat's tier and not its contract: a planner works out what to do, and neither gates nor lands.
+  A file for a seat the registry does not carry still declares a pair and is still enumerated at
+  session start, so it is removed rather than left, and `just check` now names one that grows back.
+  AGENTS.md's Model roles bullets still describe the superseded mapping; that rewrite is #329's.
 
 ### Fixed
 

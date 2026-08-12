@@ -556,6 +556,25 @@ SEATS: Final[dict[str, Seat]] = {
     "orchestrator": Seat("orchestrator", foreign_eligible=False, preference=("opus-xhigh",)),
 }
 
+# ADR-0071 ruling 2's last row, which is **not a dispatch route**. ADR-0068 makes the
+# interlocutor a slash command the human invokes in their own session, and ruling 2 does
+# not reverse it — so the row is deliberately not in `SEATS`, where `resolve_seat` would
+# walk it and `--seat interlocutor` would become a way of dispatching a seat nobody
+# dispatches. It is registered here because the same table "governs the pair the seat's
+# own surfaces declare", and `tools/generate_seats.py` needs one registry to read rather
+# than a second copy of the row (#324). Nothing in this module resolves through it.
+#
+# `foreign_eligible` is unread for a seat nothing dispatches; it is `True` only so the
+# field does not contradict the row's own Codex entry, which the ADR says is reachable by
+# the human opening a Codex session by hand. #327 removes the field.
+DECLARED_ONLY_SEATS: Final[dict[str, Seat]] = {
+    "interlocutor": Seat(
+        "interlocutor",
+        foreign_eligible=True,
+        preference=("opus-xhigh", "codex-sol-xhigh"),
+    ),
+}
+
 
 # The human's ruling of 2026-08-06T21:15Z (#217, #issuecomment-5209125413), verbatim:
 # The retro-approved profiles, enumerated by the human on 2026-08-09 after "or above"
