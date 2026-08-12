@@ -242,15 +242,26 @@ CITATION_BAR: Final = "citations"
 # keeps off foreign lanes entirely; `just dispatch` refuses them before admission is
 # consulted, so naming a bar for them here would be a second copy of that rule.
 SEAT_BARS: Final[dict[str, str]] = {
+    # ADR-0071 ruling 2's two new seats. Both are judged on citations rather than on a
+    # gate, for `review`'s reason: a plan and a retro finding are claims, and no gate runs
+    # over either. `mechanical` left this map with the seat itself, which that ruling
+    # retired.
+    "planner": CITATION_BAR,
     "implementer": GATE_BAR,
-    "mechanical": GATE_BAR,
     "recon": CITATION_BAR,
     "review": CITATION_BAR,
+    "retro": CITATION_BAR,
 }
 
 # The ruling's first mechanical route: clearing this seat's bar admits the profile to the
 # key's seat as well, without a second ten.
-INHERITS_FROM: Final[dict[str, str]] = {"mechanical": "implementer"}
+#
+# Empty since ADR-0071 ruling 2, which retired `mechanical` — the only seat that ever
+# inherited, and the only source-and-target pair the ruling named. The mechanism stays
+# because the ruling that created it is not the ruling that emptied it: a later seat pair
+# would rejoin here rather than reintroduce the concept. No seat inherits today, and
+# `test_admission.py` holds that as an invariant rather than leaving it to be noticed.
+INHERITS_FROM: Final[dict[str, str]] = {}
 
 # The lanes and profiles this bar governs. Kept here rather than imported from
 # `tools/dispatch.py` for `breaker.py`'s reason: admission is read *by* the dispatcher, and

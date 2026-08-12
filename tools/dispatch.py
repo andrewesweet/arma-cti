@@ -124,6 +124,21 @@ a tree already carrying a dispatch with no `result.json` refuses
 this tree clean now" and the question that produced two agents in one worktree was "is
 anyone still working in it".
 
+**A seat resolves its own profile, and the record says which and why** (#321, ADR-0071
+ruling 2). Naming a seat is the ordinary way to dispatch: each seat carries an ordered
+preference over profiles, head first, and `resolve_seat` walks it to the first entry that
+is dispatchable *right now* — reading the `(profile, seat)` block, the profile's admission
+standing, the lane's breaker, the human's off-peak rule and the lane's credential, each by
+calling the same function the ladder calls rather than by keeping a second copy of it. The
+resolved route is written into the request, so every rung below climbs a complete one and
+none of them can tell how it was arrived at, which is the ruling's point that a refusal
+attaches to a `(profile, seat)` pair rather than to a path. What was walked past,
+and on which refusal, goes on the dispatch record beside what was chosen, because an
+outcome attributed to a profile nobody chose deliberately is an outcome nobody can read
+later. A whole list unavailable is `seat_list_exhausted` — named, never a silent fallback
+to something the seat's table does not carry. Naming `--profile` still works and is still
+subject to every `(profile, seat)` refusal: it is a way of choosing, never a way around.
+
 **The keep-on-Claude class policy is a separate, per-dispatch read** (#266). Queue policy
 answers whether work may start now; `config/dispatch-routing-policy.json` answers whether
 the declared class may leave Claude. The main checkout is read on every dispatch, never at
@@ -136,6 +151,7 @@ land` is the enforcing half and checks the actual rebased diff against the trust
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import os
 import re
@@ -412,17 +428,81 @@ PROFILES: Final[dict[str, Profile]] = {
     "opus-low": Profile("opus-low", "claude-native", "opus", "low"),
 }
 
-# ADR-0061 Decision 2: eligibility is a property of the surface, not a per-task
-# judgement. A seat is dispatchable to a foreign lane when a mechanical gate catches a
-# wrong answer from it. Review is eligible on Decision 3 — its output is claims, which
-# land nothing on their own.
-SEATS: Final[dict[str, bool]] = {
-    "implementer": True,
-    "mechanical": True,
-    "recon": True,
-    "review": True,
-    "fable": False,
-    "orchestrator": False,
+
+class Seat(NamedTuple):
+    """One seat: what may leave Claude for it, and which profiles it prefers."""
+
+    name: str
+    # ADR-0061 Decision 2: eligibility is a property of the surface, not a per-task
+    # judgement. A seat is dispatchable to a foreign lane when a mechanical gate catches a
+    # wrong answer from it. Review is eligible on Decision 3 — its output is claims, which
+    # land nothing on their own. ADR-0071 ruling 1 rescinds the concept this flag encodes;
+    # it survives here until #327 removes `foreign` from the lane and seat model, which is
+    # why a new seat's value below is argued from ruling 2's table rather than from a bar
+    # the same ADR withdrew.
+    foreign_eligible: bool
+    # ADR-0071 ruling 2's preference column, head first. `resolve_seat` walks exactly this
+    # and nothing else, so a seat gains a route by being written here.
+    preference: tuple[str, ...]
+    # The ADR's escalation column, and deliberately **not** part of resolution. An
+    # escalation is a judgement that the work is harder than the seat's tier, not a
+    # fallback for a head the breaker happens to be refusing; resolving into it would
+    # answer "this seat is out of profiles" by silently spending a dearer one, and would
+    # make the exhaustion refusal unreachable for every seat that has an entry. It is
+    # registry data — printed by `--list`, and what #333's arbiter rule reads — and
+    # nothing resolves through it.
+    escalation: tuple[str, ...] = ()
+
+
+# Named once because two seats share it: ADR-0071 ruling 2 gives `review` "the
+# implementer's list" and the implementer's escalation *head*. Sharing the object is what
+# keeps that a fact rather than a copy that drifts. The rule that makes `review`'s
+# resolution differ — never the profile under review, preferring a different lane — is
+# #322's and is deliberately absent here.
+IMPLEMENTER_PREFERENCE: Final = ("codex-luna-max", "zai-glm52-max", "opus-low")
+IMPLEMENTER_ESCALATION: Final = ("codex-sol-high", "opus-high")
+
+# ADR-0071 ruling 2's seat table, transcribed. `mechanical` is **retired** by that ruling
+# and is absent rather than kept for compatibility: it named a cheaper tier rather than a
+# different job, and two names for one choice is what the retirement removes. `fable`
+# survives the table because it is not in it — the seat still carries #300's standing
+# retro allowance and ADR-0071's ruling 3 hands retros to `retro` without deleting it;
+# closing that overlap is #329's and #330's.
+SEATS: Final[dict[str, Seat]] = {
+    # New in ruling 2, absorbing `cti-implementer-xhigh`'s tier and not its contract: a
+    # planner works out what to do and neither gates nor lands. Foreign-eligible because
+    # ruling 2 puts a Codex profile at its head, which is the newer human-signed decision;
+    # ADR-0061 Decision 2 would have asked whether a gate catches a wrong plan, and that
+    # question is one ruling 1 withdrew rather than one this line answers.
+    "planner": Seat(
+        "planner",
+        foreign_eligible=True,
+        preference=("codex-sol-xhigh", "opus-xhigh"),
+        escalation=("fable-high",),
+    ),
+    "implementer": Seat(
+        "implementer",
+        foreign_eligible=True,
+        preference=IMPLEMENTER_PREFERENCE,
+        escalation=IMPLEMENTER_ESCALATION,
+    ),
+    "recon": Seat("recon", foreign_eligible=True, preference=("codex-luna-medium", "haiku-medium")),
+    "review": Seat(
+        "review",
+        foreign_eligible=True,
+        preference=IMPLEMENTER_PREFERENCE,
+        escalation=IMPLEMENTER_ESCALATION[:1],
+    ),
+    # Ruling 3's own kind of work. Every entry is on the human's enumerated retro list of
+    # 2026-08-09 (#300); `RETRO_ALLOWANCE` below stays keyed on the `fable` seat, which is
+    # the seat that ruling still names, so nothing here widens it.
+    "retro": Seat(
+        "retro",
+        foreign_eligible=True,
+        preference=("fable-high", "opus-xhigh", "codex-sol-xhigh"),
+    ),
+    "fable": Seat("fable", foreign_eligible=False, preference=("fable-high",)),
+    "orchestrator": Seat("orchestrator", foreign_eligible=False, preference=("opus-xhigh",)),
 }
 
 
@@ -500,6 +580,90 @@ def plan_charge(lane: Lane, at: datetime) -> dict[str, object] | None:
     }
 
 
+class PassedOver(NamedTuple):
+    """One preference entry a seat's resolution walked past, and what refused it."""
+
+    profile: str
+    refusal: str
+    failure_class: str = ""
+
+    def line(self, key: str) -> str:
+        """Render the entry under a caller's key, carrying its own class where it had one."""
+        classed = f" class={self.failure_class}" if self.failure_class else ""
+        return f"{key}={self.profile} refusal={self.refusal}{classed}"
+
+
+class Resolution(NamedTuple):
+    """Which profile this dispatch runs on, and why that one (ADR-0071 ruling 2, #321).
+
+    Two shapes, and the difference is recorded rather than erased: a caller who named a
+    profile chose it, and a caller who named only a seat had it chosen for them from the
+    seat's ordered preference. Both are routes and both are subject to every
+    `(profile, seat)` refusal — naming a profile is a way of choosing and never a way
+    around a block — so the distinction the record keeps is *provenance of the choice*,
+    which is what attributing an outcome later needs.
+    """
+
+    seat: str
+    profile: str
+    lane: str
+    named: bool
+    passed_over: tuple[PassedOver, ...] = ()
+
+    def lines(self) -> tuple[str, ...]:
+        """Render the route as the lines a reader gets: the profile, and why this one."""
+        if self.named:
+            return (f"route=profile profile={self.profile} lane={self.lane}",)
+        return (
+            f"route=seat seat={self.seat}",
+            f"route_preference={' '.join(SEATS[self.seat].preference)}",
+            *(entry.line("route_passed_over") for entry in self.passed_over),
+            f"route_chosen={self.profile} lane={self.lane}",
+        )
+
+    def document(self) -> dict[str, object]:
+        """Render the route for the dispatch record, passed-over entries and all."""
+        return {
+            "named": self.named,
+            "seat": self.seat,
+            "chosen": self.profile,
+            "lane": self.lane,
+            "passed_over": [
+                {
+                    "profile": entry.profile,
+                    "refusal": entry.refusal,
+                    "failure_class": entry.failure_class,
+                }
+                for entry in self.passed_over
+            ],
+        }
+
+
+def read_route(document: Mapping[str, object]) -> Resolution:
+    """Read a route back off a dispatch record, so a reloaded plan is the plan that was written.
+
+    A record written before this field existed reads back as the named route it was: the
+    seat, profile and lane it already carries, with nothing passed over. That is what those
+    dispatches were — every one of them named its profile, because naming it was the only
+    way to dispatch — so the fallback states a fact rather than papering over a gap.
+    """
+    found = document.get("route")
+    route = found if isinstance(found, dict) else {}
+    entries = route.get("passed_over", ())
+    return Resolution(
+        seat=str(route.get("seat", document["seat"])),
+        profile=str(route.get("chosen", document["profile"])),
+        lane=str(route.get("lane", document["lane"])),
+        named=bool(route.get("named", True)),
+        passed_over=tuple(
+            PassedOver(
+                str(entry["profile"]), str(entry["refusal"]), str(entry.get("failure_class", ""))
+            )
+            for entry in entries
+        ),
+    )
+
+
 class Identity(NamedTuple):
     """What a dispatch is, as the six attributes that make its telemetry self-describing."""
 
@@ -531,6 +695,11 @@ class Plan(NamedTuple):
     argv: tuple[str, ...]
     credentials: Path
     permission_mode: str
+    # Which profile this dispatch runs on and how that was decided (#321). On the record
+    # rather than only on stdout for the reason the advisories below are: an attribution
+    # nobody kept is one nobody can make later, and "which entries did this seat walk past,
+    # and on what refusal" is exactly what the ledger cannot reconstruct from an outcome.
+    route: Resolution
     breaker_dir: Path = breaker.DEFAULT_BREAKER_DIR
     # What the readiness rung said about the issue without refusing it (#241). On the
     # record rather than only on stdout, because an advisory nobody kept is an advisory
@@ -555,6 +724,7 @@ class Plan(NamedTuple):
             "credential": lane.credential,
             "credentials_file": str(self.credentials),
             "breaker_dir": str(self.breaker_dir),
+            "route": self.route.document(),
             "readiness_advisories": list(self.advisories),
             "resource_attributes": dict(self.identity.attributes()),
             "plan_charge": plan_charge(lane, planned_at),
@@ -687,6 +857,23 @@ def lane_credential(lane: Lane, path: Path) -> tuple[str, Refusal | None]:
     return token, None
 
 
+def unknown_seat_refusal(seat: str) -> Refusal | None:
+    """Refuse a seat the registry does not carry, and be the one home for that refusal.
+
+    Two callers reach it: `resolve_selection`, for a route the caller named in full, and
+    `resolve_seat`, which has no lane and no profile to check first because resolving is
+    what it is about to do. A second copy of this refusal is how the two paths would come
+    to disagree about which seats exist.
+    """
+    if seat in SEATS:
+        return None
+    return Refusal(
+        "unknown_seat",
+        (f"seat={seat}", f"known={' '.join(sorted(SEATS))}"),
+        "Name a known seat: the seat is a telemetry attribute and a typo mis-attributes.",
+    )
+
+
 def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal | None:
     """Check lane, profile and seat against the registry and against Decision 2.
 
@@ -716,15 +903,12 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
                 "pick a profile registered for the lane you asked for."
             ),
         )
-    if seat not in SEATS:
-        return Refusal(
-            "unknown_seat",
-            (f"seat={seat}", f"known={' '.join(sorted(SEATS))}"),
-            "Name a known seat: the seat is a telemetry attribute and a typo mis-attributes.",
-        )
+    refusal = unknown_seat_refusal(seat)
+    if refusal is not None:
+        return refusal
     if (
         LANES[lane_name].foreign
-        and not SEATS[seat]
+        and not SEATS[seat].foreign_eligible
         and not retro_allowance_is_live(seat, lane_name, profile_name)
     ):
         return Refusal(
@@ -1025,6 +1209,140 @@ def off_peak_refusal(lane: Lane, at: datetime) -> Refusal | None:
             "the rule is the human's and only they amend it."
         ),
     )
+
+
+def candidate_refusal(
+    args: argparse.Namespace, seat: str, profile_name: str, now: datetime
+) -> Refusal | None:
+    """Judge one preference entry with the same rungs the ladder judges a named route by.
+
+    Which rungs, and the rule that decides: **a rung belongs here when it is a function of
+    `(lane, profile, seat)` and of nothing else.** Those are the registry and Decision 2's
+    bar, the `(profile, seat)` block, the profile's admission standing, the lane's breaker
+    and the human's off-peak rule — each one the ladder's own function, called here rather
+    than restated, because a second copy is how a profile comes to be dispatchable to a
+    resolver and refused by the ladder two lines later.
+
+    Readiness and the queue policy are deliberately absent: each reads the *issue*, so each
+    judges the dispatch rather than the candidate, and no change of profile could ever clear
+    one. The routing policy is a function of both and is #326's to fold in; leaving it out
+    means a resolved route can still be refused by the ladder below, which is the honest
+    outcome — the alternative is this resolver quietly re-deciding a policy question.
+
+    The lane's credential is here for the same reason the breaker is, and it is the one
+    rung this resolver reads that `ladder_refusal` does not: a lane with no key on this box
+    cannot be reached at all, which is the plainest form of "not dispatchable right now".
+    Left out, a seat whose live head sits on an unconfigured lane would refuse every
+    dispatch instead of resolving past it, which is the seat unusable rather than the lane
+    unreachable. It is not silent — the entry is recorded as passed over with the
+    credential refusal's own name and `infra_unavailable` class beside it.
+    """
+    profile = PROFILES[profile_name]
+    lane = LANES[profile.lane]
+    refusal = resolve_selection(lane.name, profile_name, seat)
+    if refusal is not None:
+        return refusal
+    refusal = admission_refusal(
+        lane.name, profile_name, seat, Path(args.admission_dir).expanduser()
+    )
+    if refusal is not None:
+        return refusal
+    refusal = breaker_refusal(lane.name, Path(args.breaker_dir).expanduser(), now.timestamp())
+    if refusal is not None:
+        return refusal
+    refusal = off_peak_refusal(lane, now)
+    if refusal is not None:
+        return refusal
+    _, refusal = lane_credential(lane, Path(args.credentials).expanduser())
+    return refusal
+
+
+def exhausted_refusal(seat: Seat, passed: tuple[PassedOver, ...]) -> Refusal:
+    """Refuse by name when a seat's whole preference list is unavailable (#321).
+
+    Named rather than quietly escalated or defaulted, because the story this serves is "I
+    never discover exhaustion by watching a dispatch fail" — and a fallback to a profile the
+    seat's table does not name is that discovery deferred to whoever reads the ledger.
+
+    **No failure class of its own**, and the reasoning is `pair_block`'s. This refusal found
+    nothing its constituents had not already found, and each constituent's own class travels
+    with it in the lines below. A class here would either flatten a mixed set — one entry out
+    of quota, one blocked for this seat — into a single wrong answer, or copy whichever class
+    happened to come last, and a wrong class is a harness bug by CLAUDE.md's table.
+    """
+    escalation = " ".join(seat.escalation)
+    return Refusal(
+        "seat_list_exhausted",
+        (
+            f"seat={seat.name}",
+            f"preference={' '.join(seat.preference)}",
+            *(entry.line("refused") for entry in passed),
+            f"escalation={escalation or 'none'}",
+        ),
+        (
+            "Every profile in this seat's preference list refused, each for the reason above, "
+            "so no route was resolved and nothing was dispatched. Read each refusal's own "
+            "class: a lane out of quota reopens at its published window, a quality trip needs "
+            "a human, and a blocked (profile, seat) pair reopens when the ceiling that blocks "
+            "it lifts. Name a profile with --profile if you have a reason the list does not "
+            f"know, or dispatch this seat's escalation entry ({escalation or 'none registered'}"
+            "), which is a judgement about the work and is deliberately not resolved into "
+            "automatically."
+        ),
+    )
+
+
+def resolve_seat(
+    args: argparse.Namespace, now: datetime
+) -> tuple[Resolution | None, Refusal | None]:
+    """Resolve the route: the profile the caller named, or the seat's first dispatchable one.
+
+    This runs above every other rung for a mechanical reason rather than a re-ranking of
+    `ladder_refusal`'s order: each rung below consumes a lane and a profile, and until this
+    returns there is no route for them to climb with. It reports nothing at all unless the
+    whole list refuses — a breaker-refused head is a *skip*, not a refusal — so the only
+    order this changes is the one case where the seat has no route to offer, and there the
+    ladder below could not have run anyway.
+    """
+    refusal = unknown_seat_refusal(args.seat)
+    if refusal is not None:
+        return None, refusal
+    if args.profile:
+        # The named route. It is validated by `resolve_selection` on the ladder exactly as
+        # it always was, block included: this function chooses, and never clears.
+        return Resolution(args.seat, args.profile, args.lane, named=True), None
+    seat = SEATS[args.seat]
+    passed: list[PassedOver] = []
+    for name in seat.preference:
+        found = candidate_refusal(args, seat.name, name, now)
+        if found is None:
+            return (
+                Resolution(
+                    seat.name, name, PROFILES[name].lane, named=False, passed_over=tuple(passed)
+                ),
+                None,
+            )
+        passed.append(PassedOver(name, found.kind, found.failure_class))
+    return None, exhausted_refusal(seat, tuple(passed))
+
+
+def routed(args: argparse.Namespace, route: Resolution) -> argparse.Namespace:
+    """Return the request with the resolved route written into it, mutating nothing.
+
+    Every rung below resolution reads the request, and none of them may care *how* the
+    route was arrived at — that is ADR-0071 ruling 2's rule that a refusal attaches to a
+    `(profile, seat)` pair rather than to the resolution path, expressed as an argument
+    they are not given rather than as a discipline they are asked to keep. So resolution
+    completes the request and the ladder climbs one that is complete, exactly as it did
+    when every caller typed the pair by hand.
+
+    A copy, because the caller's namespace is `main`'s parsed argv and a rung that read a
+    lane the caller never typed would make `--dry-run` print a request nobody made.
+    """
+    chosen = copy.copy(args)
+    chosen.lane = route.lane
+    chosen.profile = route.profile
+    return chosen
 
 
 def assert_worktree(assigned: Path, observed: str) -> Refusal | None:
@@ -1553,6 +1871,10 @@ def plan_dispatch(
 ) -> tuple[Plan | None, str, Refusal | None]:
     """Validate the request and mint the plan and the brief, writing nothing."""
     found = read_issue(args.issue, args.issue_body)
+    route, refusal = resolve_seat(args, now)
+    if refusal is not None or route is None:
+        return None, "", refusal
+    args = routed(args, route)
     refusal = ladder_refusal(args, now, found, root)
     if refusal is not None:
         return None, "", refusal
@@ -1629,6 +1951,7 @@ def plan_dispatch(
         argv=build_argv(lane, profile, args.permission_mode, worktree),
         credentials=credentials,
         permission_mode=args.permission_mode,
+        route=route,
         breaker_dir=breaker_dir,
         advisories=readiness_advisories(args.issue, found),
     )
@@ -1662,6 +1985,7 @@ def load_record(record: Path) -> Plan:
         argv=tuple(str(part) for part in document["argv"]),
         credentials=Path(str(document["credentials_file"])),
         permission_mode=str(document["permission_mode"]),
+        route=read_route(document),
         breaker_dir=Path(str(document.get("breaker_dir", breaker.DEFAULT_BREAKER_DIR))),
         advisories=tuple(str(line) for line in document.get("readiness_advisories", ())),
     )
@@ -1771,10 +2095,18 @@ def registry_lines() -> tuple[str, ...]:
             for profile in sorted(PROFILES.values())
             if profile.lane == lane.name
         )
-    eligible = " ".join(sorted(seat for seat, ok in SEATS.items() if ok))
-    barred = " ".join(sorted(seat for seat, ok in SEATS.items() if not ok))
+    eligible = " ".join(sorted(seat.name for seat in SEATS.values() if seat.foreign_eligible))
+    barred = " ".join(sorted(seat.name for seat in SEATS.values() if not seat.foreign_eligible))
     lines.append(f"seats_eligible_on_foreign_lanes={eligible}")
     lines.append(f"seats_claude_native_only={barred}")
+    # ADR-0071 ruling 2's other half: what `--seat S` alone will resolve to, in order. The
+    # escalation entry is printed beside it and marked, because it is registry data that
+    # resolution deliberately does not walk — a reader who saw only the preference would
+    # have no way to tell whether an absent escalation meant "none" or "not shown".
+    for seat in sorted(SEATS.values()):
+        lines.append(f"seat={seat.name} foreign_eligible={str(seat.foreign_eligible).lower()}")
+        lines.append(f"  preference={' '.join(seat.preference)}")
+        lines.append(f"  escalation={' '.join(seat.escalation) or 'none'} (not resolved into)")
     # ADR-0071 ruling 2: a (profile, seat) pair held below a seat's contract is blocked,
     # and the block is stated wherever the registry is read. `codex-luna-max` renders as a
     # profile and `implementer` renders as an eligible seat, so a reader who paired them
@@ -1783,8 +2115,15 @@ def registry_lines() -> tuple[str, ...]:
     # named a second time here, so the registry and the refusal cannot drift apart.
     for seat, profile_name in sorted(SEAT_PROFILE_BLOCKS):
         block = pair_block(seat, profile_name)
-        if block is None:
-            continue  # unreachable: members always block; the count test guards it
+        if block is None:  # pragma: no cover - a member that does not block is a registry bug
+            # #320's review found this branch skipping where the assertion it replaced failed
+            # loudly. A member of `SEAT_PROFILE_BLOCKS` that `pair_block` clears is the two
+            # halves of one fact disagreeing, and the registry listing's job is to state that
+            # fact; printing the listing without the block would be the quiet wrong answer.
+            message = (
+                f"SEAT_PROFILE_BLOCKS carries ({seat}, {profile_name}) and pair_block cleared it"
+            )
+            raise ValueError(message)
         ceiling = next(line for line in block.found if line.startswith("ceiling="))
         lines.append(f"seat_profile_block=adr0071 seat={seat} profile={profile_name} {ceiling}")
     # The one ruled exception, stated wherever the registry is read. It was time-boxed
@@ -1818,6 +2157,7 @@ def dry_run_lines(plan: Plan, brief: str, parent: Mapping[str, str]) -> tuple[st
         f"lane={plan.identity.lane}",
         f"profile={plan.identity.profile}",
         f"seat={plan.identity.seat}",
+        *plan.route.lines(),
         f"issue={plan.identity.issue}",
         f"worktree={plan.worktree}",
         f"base_sha={plan.identity.base_sha}",
@@ -1903,11 +2243,26 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 
 
 def missing_required(args: argparse.Namespace) -> tuple[str, ...]:
-    """Name which of the four required options the caller left out."""
-    required = (("--lane", args.lane), ("--profile", args.profile), ("--seat", args.seat))
-    absent = [name for name, value in required if not value]
+    """Name what the caller left out. A dispatch names a seat and an issue, and may name a route.
+
+    `--lane` and `--profile` stopped being required together when ADR-0071 ruling 2 made the
+    seat the ordinary way to dispatch (#321): named neither, the seat's preference list
+    resolves one; named both, they are the caller's own choice and every `(profile, seat)`
+    refusal still applies to it.
+
+    One without the other is refused rather than completed, and deliberately: deriving the
+    lane from the profile's registry entry would make `profile_lane_mismatch` unreachable,
+    which is the rung that catches a caller who believed a profile lived somewhere else.
+    """
+    absent = []
+    if not args.seat:
+        absent.append("--seat")
     if args.issue <= 0:
         absent.append("--issue")
+    if args.profile and not args.lane:
+        absent.append("--lane")
+    if args.lane and not args.profile:
+        absent.append("--profile")
     return tuple(absent)
 
 
@@ -1992,7 +2347,11 @@ def main(argv: list[str] | None = None) -> int:
             Refusal(
                 "incomplete_request",
                 (f"missing={' '.join(absent)}",),
-                "A dispatch names its lane, profile, seat and issue. Nothing was dispatched.",
+                (
+                    "A dispatch names a seat and an issue, and either both of --lane and "
+                    "--profile or neither: name neither and the seat's preference list "
+                    "resolves one. Nothing was dispatched."
+                ),
             ).lines(),
             EXIT_REFUSED,
         )
@@ -2009,6 +2368,7 @@ def main(argv: list[str] | None = None) -> int:
             f"dispatch={plan.identity.dispatch_id}",
             f"record={plan.record}",
             f"worktree={plan.worktree}",
+            *plan.route.lines(),
             *plan.advisories,
         ),
         0,

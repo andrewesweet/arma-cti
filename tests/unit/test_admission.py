@@ -292,31 +292,22 @@ def test_reset_is_what_ends_an_escalation(tmp_path: Path) -> None:
 
 
 # ------------------------------------------------------------- the seats, and inheritance
+#
+# The ruling's one inheritance route was `mechanical` inheriting the implementer's cleared
+# bar, and ADR-0071 ruling 2 retired that seat: it named a cheaper tier rather than a
+# different job. Its three tests went with it, because their subject is a seat no roster
+# carries any more — `INHERITS_FROM` keeps the mechanism and is empty. What replaces them
+# is the invariant below, which is what actually has to hold: no seat inherits from
+# another unless the ruling says so, and every eligible seat is judged under some bar.
 
 
-def test_clearing_the_implementer_bar_admits_the_mechanical_seat_with_no_second_ten(
-    tmp_path: Path,
-) -> None:
+def test_no_seat_inherits_a_cleared_bar_from_another(tmp_path: Path) -> None:
     state = store(tmp_path)
     feed(state, "implementer", [assessment(n) for n in range(1, 11)])
-    mechanical = admission.standing_for(state, LANE, PROFILE, "mechanical")
-    assert mechanical.admitted
-    assert "implementer" in mechanical.reason
-    assert mechanical.judgement.assessed == 0
-
-
-def test_the_mechanical_seat_can_also_be_earned_directly(tmp_path: Path) -> None:
-    state = store(tmp_path)
-    standing = feed(state, "mechanical", [assessment(n) for n in range(1, 11)])
-    assert standing.admitted
-    # Earned, not inherited: the implementer seat has run nothing.
-    assert admission.standing_for(state, LANE, PROFILE, "implementer").state == admission.PROBATION
-
-
-def test_the_implementer_seat_does_not_inherit_from_mechanical(tmp_path: Path) -> None:
-    state = store(tmp_path)
-    feed(state, "mechanical", [assessment(n) for n in range(1, 11)])
-    assert not admission.standing_for(state, LANE, PROFILE, "implementer").admitted
+    for seat in admission.SEAT_BARS:
+        if seat == "implementer":
+            continue
+        assert not admission.standing_for(state, LANE, PROFILE, seat).admitted, seat
 
 
 def test_claude_native_is_exempt_because_nothing_leaves_claude_there(tmp_path: Path) -> None:
@@ -663,5 +654,5 @@ def test_the_bar_governs_exactly_the_registry_dispatch_carries() -> None:
 
 
 def test_every_seat_a_foreign_lane_accepts_has_a_bar() -> None:
-    eligible = {seat for seat, allowed in dispatch.SEATS.items() if allowed}
+    eligible = {seat.name for seat in dispatch.SEATS.values() if seat.foreign_eligible}
     assert set(admission.SEAT_BARS) == eligible

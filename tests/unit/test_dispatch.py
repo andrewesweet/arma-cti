@@ -1828,9 +1828,12 @@ def test_no_module_in_this_repo_exports_a_lane_variable_globally() -> None:
 def test_the_dispatch_module_is_the_one_place_the_registry_lives() -> None:
     """No caller composes a model with an effort — that is Decision 5's whole content."""
     module: ModuleType = dispatch
-    assert set(module.SEATS) >= {"implementer", "mechanical", "recon", "review", "fable"}
-    assert module.SEATS["fable"] is False
-    assert module.SEATS["review"] is True
+    assert set(module.SEATS) >= {"implementer", "recon", "review", "fable"}
+    assert module.SEATS["fable"].foreign_eligible is False
+    assert module.SEATS["review"].foreign_eligible is True
+    # ADR-0071 ruling 2 retires `mechanical`: it named a cheaper tier rather than a
+    # different job, and the registry is the enforcing copy of the roster.
+    assert "mechanical" not in module.SEATS
 
 
 # ------------------------------------------------------- the lane breaker, read first (#226)

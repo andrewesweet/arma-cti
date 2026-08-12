@@ -985,10 +985,14 @@ def landed(
 # about a seat it has never met. `tools/dispatch.py`'s `SEATS` is the roster, and a unit
 # test holds the two in step so a new seat cannot arrive here unclassified.
 SEAT_LANDS: Final[dict[str, bool]] = {
+    # ADR-0071 ruling 2 says it in as many words: the planner works out what to do and
+    # neither gates nor lands, so `landed` is the same category error here as on `review`.
+    "planner": False,
     "implementer": True,
-    "mechanical": True,
     "recon": False,
     "review": False,
+    # Ruling 3: a retro identifies, researches and files backlog items, and lands nothing.
+    "retro": False,
     "fable": True,
     "orchestrator": True,
 }

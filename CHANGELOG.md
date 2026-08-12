@@ -9,6 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just dispatch --seat S --issue N` now resolves its own profile, and the record says which and
+  why.** Naming a seat is the ordinary way to dispatch. Each seat carries ADR-0071 ruling 2's
+  ordered preference, head first, and the planner walks it to the first entry dispatchable *right
+  now* — reading the `(profile, seat)` block, the profile's admission standing, the lane's breaker,
+  the human's off-peak rule and the lane's credential, each by calling the same function the refusal
+  ladder calls rather than keeping a second copy. So the `implementer` head `codex-luna-max` is
+  stepped past on #265's gate ceiling, and what was walked past — with each refusal's own name and
+  failure class — lands on the dispatch record beside what was chosen, which is what attributing an
+  outcome to a profile later needs. A whole list unavailable is `seat_list_exhausted`: named, never
+  a silent fall back to something the seat's table does not carry, and never into the escalation
+  entry, which is a judgement about the work rather than a fallback for a busy head. `--profile`
+  keeps working and stays subject to every `(profile, seat)` refusal — a way of choosing, never a
+  way around one — and now requires `--lane` beside it or neither.
+
+- **The seat table is the ADR's, and `mechanical` is retired.** `planner` and `retro` join as seats
+  of their own; `mechanical` leaves the dispatcher's roster, the ledger's lands-or-not map and the
+  admission bar together, because it named a cheaper tier rather than a different job. The
+  admission bar's one inheritance route went with it and the map is now empty, with a test holding
+  "no seat inherits" as the invariant. `just dispatch --list` prints each seat's preference and
+  marks the escalation entry as one resolution does not walk.
+
 - **The dispatch registry carries three new profile tokens and the first `(profile, seat)` block.**
   `codex-luna-max` and `codex-luna-medium` name Luna (`gpt-5.6-luna`), read from the authenticated
   Codex CLI's own model cache alongside sol and terra; `opus-low` is the native tail of the

@@ -553,9 +553,10 @@ def select_flakes(rows: Sequence[Mapping[str, object]]) -> tuple[Flake, ...]:
 # Keyed off that registry rather than beside it: `test_brief.py` asserts the two agree, so
 # a seat cannot join the registry without a reason to state in a briefing.
 SEAT_REASON: Final[dict[str, str]] = {
+    "planner": "ADR-0071 ruling 2: works out what to do; neither gates nor lands.",
     "implementer": "CLAUDE.md Model roles: implementation and day-to-day review.",
-    "mechanical": "CLAUDE.md Model roles: mechanical one-commit executions.",
     "recon": "CLAUDE.md Model roles: read-only reconnaissance; never edits or lands.",
+    "retro": "ADR-0071 ruling 3: finds, researches and files backlog items; lands nothing.",
     "review": "CLAUDE.md Model roles: review; a review lands nothing (ADR-0061 decision 3).",
     "fable": (
         "CLAUDE.md Model roles: ADRs, CONTEXT.md, schema semantics and process docs — "
