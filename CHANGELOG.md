@@ -21,7 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a silent fall back to something the seat's table does not carry, and never into the escalation
   entry, which is a judgement about the work rather than a fallback for a busy head. `--profile`
   keeps working and stays subject to every `(profile, seat)` refusal — a way of choosing, never a
-  way around one — and now requires `--lane` beside it or neither.
+  way around one — and now requires `--lane` beside it or neither. The exhaustion refusal's remedy
+  is written to be typed: it names the lane-and-profile pair rather than `--profile` alone, and a
+  seat that registers no escalation entry is told so rather than offered one.
 
 - **The seat table is the ADR's, and `mechanical` is retired.** `planner` and `retro` join as seats
   of their own; `mechanical` leaves the dispatcher's roster, the ledger's lands-or-not map and the

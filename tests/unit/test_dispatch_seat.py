@@ -119,6 +119,38 @@ def walked_past(entries: tuple[Any, ...]) -> list[tuple[str, str]]:
     return [(entry.profile, entry.refusal) for entry in entries]
 
 
+def seat_only_argv(tmp_path: Path, worktree: Path, *extra: str) -> list[str]:
+    """Build a whole command line naming a seat and an issue and no route at all.
+
+    Shared rather than written twice, because two criteria make a claim about *this* argv:
+    that resolution reaches the command line, and that leaving both route options out is a
+    complete request. Every state directory is this test's own, for `plan_for`'s reasons.
+    """
+    return [
+        "--seat",
+        "implementer",
+        "--issue",
+        "223",
+        "--worktree",
+        str(worktree),
+        "--issue-body",
+        str(READY_BODY),
+        "--dispatch-dir",
+        str(tmp_path / "dispatches"),
+        "--credentials",
+        str(tmp_path / "credentials.env"),
+        "--breaker-dir",
+        str(tmp_path / "breaker"),
+        "--admission-dir",
+        str(tmp_path / "admission"),
+        "--queue-dir",
+        str(open_policy(tmp_path)),
+        "--queue-root",
+        str(tmp_path / "queue-root"),
+        *extra,
+    ]
+
+
 # ------------------------------------------------------- the table the ADR transcribed
 
 
@@ -174,31 +206,7 @@ def test_the_dry_run_prints_the_resolved_profile_and_why_that_one(
 ) -> None:
     """Criterion 1, through the command line the criterion names."""
     worktree = git_worktree(tmp_path)
-    code = dispatch.main(
-        [
-            "--seat",
-            "implementer",
-            "--issue",
-            "223",
-            "--dry-run",
-            "--worktree",
-            str(worktree),
-            "--issue-body",
-            str(READY_BODY),
-            "--dispatch-dir",
-            str(tmp_path / "dispatches"),
-            "--credentials",
-            str(tmp_path / "credentials.env"),
-            "--breaker-dir",
-            str(tmp_path / "breaker"),
-            "--admission-dir",
-            str(tmp_path / "admission"),
-            "--queue-dir",
-            str(open_policy(tmp_path)),
-            "--queue-root",
-            str(tmp_path / "queue-root"),
-        ]
-    )
+    code = dispatch.main(seat_only_argv(tmp_path, worktree, "--dry-run"))
     printed = capsys.readouterr().out
     assert code == 0, printed
     assert "route=seat seat=implementer" in printed
@@ -317,6 +325,56 @@ def test_the_exhaustion_refusal_carries_no_failure_class_of_its_own(tmp_path: Pa
     assert any("class=provider_refused" in line for line in refusal.found)
 
 
+def test_the_exhaustion_remedy_is_a_command_line_the_cli_actually_accepts(
+    tmp_path: Path,
+) -> None:
+    """#321's review, finding 1: the old remedy named `--profile` and the CLI refuses that.
+
+    The claim is about a command line, so it is made against the parser and the
+    required-option check rather than through planning: what a reader types is refused or
+    accepted before any route is resolved, and `incomplete_request missing=--lane` is
+    exactly what the superseded wording earned.
+    """
+    for lane in ("claude-native", "codex", "zai"):
+        trip(tmp_path, lane, breaker.GATE_FAILED, 3)
+    _, _, refusal = plan_for(tmp_path)
+    assert refusal is not None
+    template = next(part for part in refusal.action.split("`") if part.startswith("just dispatch "))
+    typed = (
+        template.removeprefix("just dispatch ")
+        .replace("<lane>", "claude-native")
+        .replace("<profile>", "opus-high")
+        .replace("<n>", "223")
+        .split()
+    )
+    assert dispatch.missing_required(dispatch.parse_args(typed)) == ()
+
+
+def test_the_exhaustion_remedy_names_the_escalation_entry_beside_its_lane(
+    tmp_path: Path,
+) -> None:
+    """An escalation is only typeable with the lane it lives on, since the pair travels."""
+    for lane in ("claude-native", "codex", "zai"):
+        trip(tmp_path, lane, breaker.GATE_FAILED, 3)
+    _, _, refusal = plan_for(tmp_path)
+    assert refusal is not None
+    assert "escalation entry is codex-sol-high opus-high" in refusal.action
+    assert "--lane codex --profile codex-sol-high" in refusal.action
+
+
+def test_a_seat_with_no_escalation_entry_is_told_so_rather_than_offered_a_non_thing(
+    tmp_path: Path,
+) -> None:
+    """`retro` registers none, and the old text put `none registered` where a name goes."""
+    trip(tmp_path, "claude-native", breaker.GATE_FAILED, 3)
+    trip(tmp_path, "codex", breaker.GATE_FAILED, 3)
+    _, _, refusal = plan_for(tmp_path, seat="retro")
+    assert refusal is not None
+    assert "escalation=none" in refusal.found
+    assert "none registered" not in refusal.action
+    assert "The retro seat registers no escalation entry" in refusal.action
+
+
 def test_an_unknown_seat_is_refused_before_any_list_is_walked(tmp_path: Path) -> None:
     _, _, refusal = plan_for(tmp_path, seat="implemeter")
     assert refusal is not None
@@ -358,12 +416,22 @@ def test_naming_a_profile_without_its_lane_is_refused_rather_than_completed(
 
 
 def test_a_request_with_neither_lane_nor_profile_is_complete(
-    capsys: pytest.CaptureFixture[str],
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """The whole point of the seat: naming one, with an issue, is a whole request."""
-    code = dispatch.main(["--seat", "implementer", "--issue", "223", "--list"])
-    assert code == 0
-    assert "seat=implementer" in capsys.readouterr().out
+    """The whole point of the seat: naming one, with an issue, is a whole request.
+
+    Deliberately **not** `--list`. `answer_directly` serves the registry before
+    `missing_required` runs at all, so a `--list` arrangement would stay green if seat-only
+    dispatch started demanding a lane again — it never reaches the check it names (#321's
+    review, finding 3). A dry run is the cheapest command line that passes required-option
+    validation and then goes on to plan the dispatch the request describes.
+    """
+    worktree = git_worktree(tmp_path)
+    code = dispatch.main(seat_only_argv(tmp_path, worktree, "--dry-run"))
+    printed = capsys.readouterr()
+    assert code == 0, printed.err
+    assert "refusal=incomplete_request" not in printed.err
+    assert "seat=implementer" in printed.out
 
 
 # --------------------------------------------------------- the record, criteria 3 and 5

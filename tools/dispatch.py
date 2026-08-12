@@ -1269,8 +1269,27 @@ def exhausted_refusal(seat: Seat, passed: tuple[PassedOver, ...]) -> Refusal:
     with it in the lines below. A class here would either flatten a mixed set — one entry out
     of quota, one blocked for this seat — into a single wrong answer, or copy whichever class
     happened to come last, and a wrong class is a harness bug by CLAUDE.md's table.
+
+    The remedy is written to be **typed rather than paraphrased**, which is the one part of a
+    refusal a reader acts on verbatim. Two ways of getting that wrong were found by #321's
+    review and are closed here: naming `--profile` alone, which `missing_required` refuses
+    with `incomplete_request missing=--lane` because the pair travels together; and offering
+    to dispatch an escalation entry for a seat that registers none, where the old text
+    interpolated the phrase `none registered` into the position a profile name goes.
     """
     escalation = " ".join(seat.escalation)
+    if seat.escalation:
+        head = seat.escalation[0]
+        alternative = (
+            f"This seat's escalation entry is {escalation}, reached the same way "
+            f"(--lane {PROFILES[head].lane} --profile {head}); spending one is a judgement "
+            "about the work and is deliberately not resolved into automatically."
+        )
+    else:
+        alternative = (
+            f"The {seat.name} seat registers no escalation entry, so there is no dearer "
+            "route above its list for this refusal to point at."
+        )
     return Refusal(
         "seat_list_exhausted",
         (
@@ -1284,10 +1303,10 @@ def exhausted_refusal(seat: Seat, passed: tuple[PassedOver, ...]) -> Refusal:
             "so no route was resolved and nothing was dispatched. Read each refusal's own "
             "class: a lane out of quota reopens at its published window, a quality trip needs "
             "a human, and a blocked (profile, seat) pair reopens when the ceiling that blocks "
-            "it lifts. Name a profile with --profile if you have a reason the list does not "
-            f"know, or dispatch this seat's escalation entry ({escalation or 'none registered'}"
-            "), which is a judgement about the work and is deliberately not resolved into "
-            "automatically."
+            "it lifts. To dispatch anyway, name a route this list does not know — --lane and "
+            "--profile travel together, and one without the other is refused: "
+            f"`just dispatch --lane <lane> --profile <profile> --seat {seat.name} "
+            f"--issue <n>`. {alternative}"
         ),
     )
 

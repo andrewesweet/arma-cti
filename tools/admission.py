@@ -42,21 +42,27 @@ running tally.
 
 ## Per seat
 
-- **implementer** — the bar above. This is the seat the 131-issue baseline describes.
-- **mechanical** — two routes, either sufficient. A profile that cleared the implementer
-  bar is admitted here too, because mechanical work is the strictly easier and fully
-  gate-covered class and an implementer-derived bar cannot be too soft for it. A profile
-  may also earn it directly on ten mechanical dispatches under the same rule. No lighter
-  mechanical bar was created, and the derivation's refusal to invent a mechanical number
-  is upheld.
-- **recon** and **review** — the citation bar: over ten dispatches, at least 90% of the
-  findings' file-and-line citations resolve to the code they name. This rests on Decision
-  3's argument and on no baseline at all, and the record should keep saying so: all 26
-  historical recon issues sit outside the eligible population by construction, so the seat
-  has zero gate signal in the entire history and Decision 6's mechanism does not reach it.
-  90% rather than 100% is deliberate — a citation can go stale under a concurrent landing
-  through no fault of the reviewer, which this repo produces routinely. The inherited
-  weakness stands unfixed: the check is silent about findings the lane failed to raise.
+- **implementer** — the bar above, judged on this seat's own gate record. It is the seat
+  the 131-issue baseline describes, and since ADR-0071 ruling 2 it is the only seat judged
+  on gates at all.
+- **planner**, **recon**, **review** and **retro** — the citation bar: over ten dispatches,
+  at least 90% of the findings' file-and-line citations resolve to the code they name. This
+  rests on Decision 3's argument and on no baseline at all, and the record should keep
+  saying so: all 26 historical recon issues sit outside the eligible population by
+  construction, so the seat has zero gate signal in the entire history and Decision 6's
+  mechanism does not reach it. 90% rather than 100% is deliberate — a citation can go stale
+  under a concurrent landing through no fault of the reviewer, which this repo produces
+  routinely. The inherited weakness stands unfixed: the check is silent about findings the
+  lane failed to raise. `planner` and `retro` joined under ADR-0071 ruling 2 on `review`'s
+  reason rather than a new one — a plan and a retro finding are claims, and no gate runs
+  over either.
+- **mechanical** — **retired** by ADR-0071 ruling 2, and gone from `SEAT_BARS` with the seat
+  itself. It carried the bar's only two-route seat: a profile that cleared the implementer
+  bar was admitted here without a second ten, and a profile could also earn it directly on
+  ten mechanical dispatches. Both routes went with the seat, so nothing inherits today and
+  `INHERITS_FROM` is empty — the mechanism outlives the emptiness because a later seat pair
+  would rejoin it rather than reintroduce the concept. No lighter mechanical bar was ever
+  created, and the derivation's refusal to invent a mechanical number was never overturned.
 
 ## What this binds, and what it does not
 
