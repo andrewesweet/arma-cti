@@ -71,13 +71,15 @@ BANNER: Final = (
 UNGENERATED_HARNESSES: Final[tuple[tuple[str, str], ...]] = (
     (
         "codex",
-        "No seat-definition surface exists, so a self-spawned subagent's model is "
-        "unenforced there: it runs at whatever model that session was started with, and "
-        "nothing refuses. Instructions in AGENTS.md were rejected as the remedy because "
-        "they fail open silently — the same failure they would be there to prevent. This "
-        "is the map's intended primary implementation lane, so the seat concept the map is "
-        "built from is unenforceable on it. Accepted gap until such a surface exists; do "
-        "not invent one.",
+        (
+            "No seat-definition surface exists, so a self-spawned subagent's model is "
+            "unenforced there: it runs at whatever model that session was started with, and "
+            "nothing refuses. Instructions in AGENTS.md were rejected as the remedy because "
+            "they fail open silently — the same failure they would be there to prevent. This "
+            "is the map's intended primary implementation lane, so the seat concept the map "
+            "is built from is unenforceable on it. Accepted gap until such a surface exists; "
+            "do not invent one."
+        ),
     ),
 )
 
@@ -232,7 +234,7 @@ SKILL_SURFACES: Final[tuple[SkillSurface, ...]] = (
 
 
 def seat(name: str) -> dispatch.Seat:
-    """The registry's entry for this seat, dispatchable or declared-only."""
+    """Look up the registry's entry for this seat, dispatchable or declared-only."""
     found = dispatch.SEATS.get(name) or dispatch.DECLARED_ONLY_SEATS.get(name)
     if found is None:
         message = f"`{name}` is in no registry: neither SEATS nor DECLARED_ONLY_SEATS"
@@ -241,7 +243,7 @@ def seat(name: str) -> dispatch.Seat:
 
 
 def native_profile(name: str) -> dispatch.Profile:
-    """The first profile in this seat's preference list a Claude seat file can declare."""
+    """Resolve the first profile in this seat's list a Claude seat file can declare."""
     for entry in seat(name).preference:
         profile = dispatch.PROFILES[entry]
         if profile.lane == NATIVE_LANE:
@@ -255,7 +257,7 @@ def native_profile(name: str) -> dispatch.Profile:
 
 
 def describe(surface: AgentSurface, profile: dispatch.Profile) -> str:
-    """The seat's blurb with its tier appended — derived, so it cannot disagree."""
+    """Append the seat's tier to its blurb — derived, so it cannot disagree."""
     return (
         f"{surface.blurb} {profile.model} at {profile.effort} effort, resolved from the"
         f" `{surface.seat}` seat's preference list in tools/dispatch.py (ADR-0071 ruling 2)."
@@ -263,7 +265,7 @@ def describe(surface: AgentSurface, profile: dispatch.Profile) -> str:
 
 
 def render(surface: AgentSurface) -> str:
-    """The whole seat file the registry would write."""
+    """Render the whole seat file the registry would write."""
     profile = native_profile(surface.seat)
     front = [
         FENCE,
@@ -362,7 +364,7 @@ def stale(root: Path, planned: list[tuple[Path, str]]) -> list[str]:
 
 
 def gap_report() -> list[str]:
-    """The harnesses with no surface to generate into, and what that costs."""
+    """Report the harnesses with no surface to generate into, and what that costs."""
     return [
         f"ungenerated: {harness}: {consequence}" for harness, consequence in UNGENERATED_HARNESSES
     ]
@@ -390,10 +392,13 @@ def main(argv: list[str] | None = None) -> int:
     for path, text in planned:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
-    # Writing converges the directory rather than adding to it, which is what makes
-    # `--check` a check and not a to-do list: every failure it can name is one this branch
-    # would fix. A retired seat's file is removed here and named in the output, so the
-    # removal is visible in the diff and in the runner's terminal rather than silent.
+    # Writing converges the directory rather than adding to it, on two merits of its own.
+    # First, it is what makes `--check` a check and not a to-do list: every failure that
+    # branch can name is one this branch would fix, so the two halves agree on what a
+    # correct directory is. Second, a retired seat's file is not inert — it still declares
+    # a pair and the harness still enumerates it at session start — so leaving it behind
+    # leaves a dispatchable seat the registry has dropped. The removal is named in the
+    # output, so it is visible in the runner's terminal as well as in the diff.
     for name in strays(args.root):
         (args.root / ".claude" / "agents" / name).unlink()
         retired = f"retired: .claude/agents/{name} — the registry no longer carries this seat"

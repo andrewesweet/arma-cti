@@ -28,7 +28,7 @@ SKILL = ".claude/skills/interlocutor/SKILL.md"
 
 @pytest.fixture
 def root(tmp_path: Path) -> Path:
-    """A repository root carrying only what the generator reads and writes."""
+    """Build a repository root carrying only what the generator reads and writes."""
     skill = tmp_path / SKILL
     skill.parent.mkdir(parents=True)
     shutil.copy(REPO / SKILL, skill)
@@ -37,7 +37,7 @@ def root(tmp_path: Path) -> Path:
 
 
 def agent(root: Path, stem: str) -> Path:
-    """The seat file `stem` names under this root."""
+    """Resolve the seat file `stem` names under this root."""
     return root / ".claude" / "agents" / f"{stem}.md"
 
 
