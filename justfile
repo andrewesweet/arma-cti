@@ -556,6 +556,14 @@ watch-report *args:
     uv run python tools/breaker.py report
     uv run python tools/queue_policy.py report
     uv run python tools/stall_watch.py report {{ args }}
+    # A Remote Control session the bridge killed (#343): the RC servers spawn every
+    # worktree session this project runs from a phone, and when one dies for a token
+    # refresh nothing else records it — the transcript stops, telemetry goes quiet at
+    # the last completed turn with no error event, and the pane holding the only three
+    # lines about it is 2,000 lines deep against a reconnect storm. On 2026-08-12 that
+    # cost fifteen hours. Reads `CTI_RC_HEALTH_DIR`, the seam #249 landed, and takes no
+    # argument: `{{ args }}` is the watchers' alone.
+    uv run python tools/rc_health.py report
     # The orchestration-seat trial (#260): one line when it has failed, silent while clean.
     # Not a gate — it reports — and it reads `CTI_ADMISSION_DIR`, the same seam the records use.
     uv run python tools/admission.py trial-report

@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A Remote Control session the bridge kills is now said once, at the top of the next
+  orchestrator turn.** The RC servers spawn every worktree session this project runs from a
+  phone, and when the bridge cannot refresh one's session token it kills that session's process
+  and records the fact nowhere durable: the transcript simply stops, telemetry goes quiet at the
+  last completed turn with no error event, and the only account of it is three lines in a tmux
+  pane whose 2,000-line scrollback a reconnect storm evicts within seconds. On 2026-08-12 a
+  session died at 07:13 and the loss was noticed at 22:44; two earlier instances on 2026-08-06
+  were never noticed at all. The RC wrappers now watch their pane log for those lines and record
+  what they saw, and `just watch-report` prints one line per unread crash — naming the kept
+  worktree and the `claude --resume` command that reopens it, derived from the transcript rather
+  than typed. It only notices: nothing restarts a session, because those servers run at
+  `--permission-mode bypassPermissions` and a process that resurrects such a session on a
+  transport fault is a worse failure than the one it repairs. A refresh warning is kept distinct
+  from a crash, so a warning that stands alone does not read as a lost session, and a crash
+  arriving after an acknowledged warning still surfaces.
 - **A review can no longer be dispatched onto the profile it is reviewing, and can no longer
   edit.** ADR-0071 ruling 4's never-alone rests entirely on the reviewing instance being a
   different one, and until now it was not: the `review` seat shares the implementer's preference

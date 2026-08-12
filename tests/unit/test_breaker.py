@@ -1313,6 +1313,9 @@ def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripp
         "CTI_DISPATCH_DIR": str(tmp_path / "dispatches"),
         "CTI_QUEUE_DIR": str(queue_dir),
         "CTI_QUEUE_ROOT": str(tmp_path / "queue-root"),
+        # #249 again, for the read #343 folded in: without this seam a Remote Control
+        # session the bridge killed on this box would redden a run about the breaker.
+        "CTI_RC_HEALTH_DIR": str(tmp_path / "rc-health"),
         "CTI_WATCH_DIR": str(tmp_path / "watch"),
     }
 
