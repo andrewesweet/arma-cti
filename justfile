@@ -413,14 +413,20 @@ discard path="" ruling="":
 #
 # `--seat review` is the one seat with an extra required option and a forced
 # containment (#322, ADR-0071 ruling 4). `--reviewing <profile>` names the
-# profile whose work is under review: resolution removes it from the seat's
-# preference list before walking it and prefers an entry on a different lane
-# among what is left, so a review is never produced by the instance that
-# produced the change. A dispatch that names none is refused
-# `review_subject_unknown`; one whose declaration the issue's own dispatch
-# records contradict is refused `review_subject_contradicted`; and where those
-# records cannot answer, the route is recorded `reviewing_verified: false` with
-# the reason rather than passed off as checked. The seat's permission mode is
+# profile whose work is under review: resolution removes it — and every other
+# profile the issue's own dispatch records place on the work — from the seat's
+# preference list before walking it, and prefers an entry on a different lane
+# among what is left, so a review is never produced by an instance that worked
+# on the change. Those records are read as a *potential*-author set and never as
+# proof: nothing on a record names the commits a run produced, so the route says
+# `reviewing_checked` and never `reviewing_verified`. A dispatch that names no
+# subject is refused `review_subject_unknown`; one whose declaration a complete
+# read of the records contradicts is refused `review_subject_contradicted`; one
+# naming a profile the records carry with `--profile` is refused
+# `review_same_profile`; and where a record could not be read at all, the route
+# is recorded `reviewing_checked: false` with the reason rather than passed off
+# as checked, while everything that was read is still excluded. The seat's
+# permission mode is
 # **forced** rather than defaulted — `plan` on the `claude` family and
 # `--sandbox read-only` on `codex` — because a containment a caller can switch
 # off by typing a flag is a default, and it is printed as
@@ -809,7 +815,18 @@ handoff issue:
 #
 #   just brief 251                       the brief on stdout
 #   just brief 251 --seat review         a seat other than `implementer`
+#   just brief 251 --seat review --reviewing opus-high
+#                                        the profile whose work the review judges
 #   just brief 251 --out /tmp/b.md       a file for `just dispatch --brief-file`
+#
+# `--reviewing` carries #322's required relationship into the briefing so the
+# orchestrator meets it at composition time rather than as a dispatch refusal.
+# It is refused on a seat that reviews nothing, which is the same answer `just
+# dispatch` gives that pair (`reviewing_without_review_seat`): an option that
+# silently decides nothing is one a caller will believe did something, and two
+# adjacent surfaces disagreeing about one flag is worse than either answer. The
+# profile name itself is not validated here — `tools/dispatch.py` owns what a
+# legal subject is, and a second copy of that list would drift.
 #
 # What it composes: the seat and the Model roles line behind it, the worktree
 # protocol as the two calls it now is, the landing protocol, the live flake

@@ -645,29 +645,52 @@ class PassedOver(NamedTuple):
 
 
 class Authorship(NamedTuple):
-    """Who the dispatch records say authored an issue's work, or why they say nobody did.
+    """Which profiles an issue's records place on its work: a *potential* author set (#322).
 
-    `authoring_dispatches` below is what fills this in and carries the reasoning; it lives
-    here, above `Resolution`, only because `Resolution` carries one as a default.
+    Never a finding that any of them wrote a line of it.
 
-    `authors` is the derivation and `why` is its absence, and exactly one of them is ever
-    populated: a subject that could be derived carries the profiles it was checked against,
-    and one that could not carries the reason it could not, which is what
-    `Resolution.subject_line` prints and what the record marks unverified with.
+    `potential_authors` below is what fills this in and carries the reasoning; it lives here,
+    above `Resolution`, only because `Resolution` carries one as a default.
+
+    **`potential` is not "the authors".** A dispatch record is written at plan time and says
+    which profile was sent at which issue on which seat. Nothing on it says whether that run
+    produced a commit, so a planner, a recon, a run stopped before it edited anything, a
+    successful no-op and a dispatch against a branch this one supersedes all leave the same
+    record as the implementer that wrote the diff. What this set is, therefore, is the set
+    the records cannot rule out — which is exactly the right shape for the one thing it
+    decides: every entry is removed from the review seat's candidate list, because
+    over-excluding costs a resolution step and under-excluding costs ruling 4's invariant.
+
+    `why` is why the set may not be treated as the whole answer — the directory is absent, no
+    record on this issue could have authored anything, or a record could not be read. It is
+    populated **alongside** `potential` rather than instead of it: a scan that read four
+    records and could not read a fifth still excludes those four, and still must not report
+    itself as checked (#41 — a check that could not run is not a check that passed).
 
     `records` names the dispatch ids the profiles came from, in the order they were read, so
-    a reader shown `authored_by=` can go and look at the same records rather than take the
-    derivation's word for it.
+    a reader shown `potential_authors=` can go and look at the same records rather than take
+    this scan's word for it.
     """
 
-    authors: tuple[str, ...] = ()
+    potential: tuple[str, ...] = ()
     records: tuple[str, ...] = ()
     why: str = ""
 
     @property
-    def derived(self) -> bool:
-        """Whether the records answered at all. A subject that was not derived is unverified."""
-        return bool(self.authors)
+    def complete(self) -> bool:
+        """Whether every record read cleanly and at least one of them names a profile.
+
+        The only state in which the declared subject can be *checked* against the records at
+        all. Every other state is unchecked, and is recorded as unchecked rather than
+        allowed to read as a pass.
+        """
+        return bool(self.potential) and not self.why
+
+
+# The empty read, named once so it can be a default argument without being rebuilt at every
+# call — and so that "this seat has no subject to check" is one object rather than a literal
+# repeated at four signatures.
+NO_AUTHORSHIP: Final = Authorship()
 
 
 class Resolution(NamedTuple):
@@ -691,10 +714,11 @@ class Resolution(NamedTuple):
     # landing check has to be able to ask, later and from the record alone, whether the
     # instance that produced a verdict was the instance that produced the change.
     reviewed: str = ""
-    # What the issue's dispatch records said about who authored its work (#322). A subject
-    # the records confirmed is *derived*; one they could not speak to is the caller's word
-    # and is recorded as such. The empty default is every seat that reviews nothing.
-    authorship: Authorship = Authorship()
+    # What the issue's dispatch records could say about who worked on it (#322). A potential
+    # author set and never a finding of authorship: every entry is excluded from the
+    # candidate list, and the declared subject is *checked* against the set rather than
+    # verified by it. The empty default is every seat that reviews nothing.
+    authorship: Authorship = NO_AUTHORSHIP
 
     def lines(self) -> tuple[str, ...]:
         """Render the route as the lines a reader gets: the profile, and why this one."""
@@ -704,10 +728,11 @@ class Resolution(NamedTuple):
             head = (
                 f"route=seat seat={self.seat}",
                 # The list *this* dispatch walks, which on the review seat is the seat's
-                # preference with the reviewed profile removed and a different lane put
+                # preference with every potential author removed and a different lane put
                 # first. Printing the raw preference here would show a reader an order
                 # resolution did not use, and one containing a profile it refused to use.
-                f"route_preference={' '.join(review_candidates(SEATS[self.seat], self.reviewed))}",
+                "route_preference="
+                + " ".join(review_candidates(SEATS[self.seat], self.reviewed, self.authorship)),
                 *(entry.line("route_passed_over") for entry in self.passed_over),
                 f"route_chosen={self.profile} lane={self.lane}",
             )
@@ -734,20 +759,29 @@ class Resolution(NamedTuple):
         return tuple(lines)
 
     def subject_line(self) -> str:
-        """Say whether the declared subject was derived, and from what — or why it was not.
+        """Say whether the declared subject was checked against the records, or why it was not.
 
         Printed on every review dispatch, both routes, because "the caller said so" and "the
-        records say so" are different facts and a reader who cannot tell them apart has the
-        same guarantee the declaration alone gave, which is none.
+        records do not contradict it" are different facts and a reader who cannot tell them
+        apart has the same guarantee the declaration alone gave, which is none.
+
+        **`checked`, deliberately, and never `verified`.** What a complete read supports is
+        that the declared subject is among the profiles the records place on this issue's
+        work, and that every one of those profiles was removed from the candidate list. It
+        does not support "this profile wrote the commits", which is not on the record at all
+        — `potential_authors` states the gap and where closing it belongs.
         """
-        if self.authorship.derived:
+        excluded = " ".join(self.authorship.potential) or "none"
+        if self.authorship.complete:
             return (
-                "route_reviewing_verified=derived"
-                f" authored_by={' '.join(self.authorship.authors)}"
+                f"route_reviewing_checked=yes potential_authors={excluded}"
                 f" records={' '.join(self.authorship.records)}"
+                " (all excluded from the candidate list; not a finding that any of them"
+                " wrote the diff)"
             )
         return (
-            f"route_reviewing_verified=unverified why={self.authorship.why or 'not_derived'}"
+            f"route_reviewing_checked=no why={self.authorship.why or 'not_checked'}"
+            f" excluded_anyway={excluded}"
             " (the caller's declaration, unchecked; ADR-0071 ruling 4's landing check"
             " refuses on this)"
         )
@@ -762,11 +796,13 @@ class Resolution(NamedTuple):
             "reviewing": self.reviewed,
             # Written as its own boolean rather than left for a reader to infer from an empty
             # list: #334's landing check greps a record for "was this review's subject
-            # checked", and an absence is what a record written before #322 also has.
-            "reviewing_verified": self.authorship.derived,
-            "reviewing_authored_by": list(self.authorship.authors),
-            "reviewing_authored_by_records": list(self.authorship.records),
-            "reviewing_unverified_why": self.authorship.why,
+            # checked", and an absence is what a record written before #322 also has. It says
+            # *checked* and not *verified* — `subject_line` for the difference, which is the
+            # difference between what the records support and what a reader would assume.
+            "reviewing_checked": self.authorship.complete,
+            "reviewing_potential_authors": list(self.authorship.potential),
+            "reviewing_potential_author_records": list(self.authorship.records),
+            "reviewing_unchecked_why": self.authorship.why,
             "passed_over": [
                 {
                     "profile": entry.profile,
@@ -799,13 +835,16 @@ def read_route(document: Mapping[str, object]) -> Resolution:
         lane=str(route.get("lane", document["lane"])),
         named=bool(route.get("named", True)),
         reviewed=str(route.get("reviewing", "")),
-        # `reviewing_verified` is not read back: it is `authors` being non-empty, and one
-        # fact stored twice is one fact that can disagree with itself. A record written
-        # before this landed reads back as underived with no reason, which is what it was.
+        # `reviewing_checked` is not read back: it is `potential` being non-empty with no
+        # `why`, and one fact stored twice is one fact that can disagree with itself. A record
+        # written before this landed reads back as unchecked with no reason, which is what it
+        # was.
         authorship=Authorship(
-            authors=tuple(str(name) for name in route.get("reviewing_authored_by", ())),
-            records=tuple(str(name) for name in route.get("reviewing_authored_by_records", ())),
-            why=str(route.get("reviewing_unverified_why", "")),
+            potential=tuple(str(name) for name in route.get("reviewing_potential_authors", ())),
+            records=tuple(
+                str(name) for name in route.get("reviewing_potential_author_records", ())
+            ),
+            why=str(route.get("reviewing_unchecked_why", "")),
         ),
         passed_over=tuple(
             PassedOver(
@@ -1147,10 +1186,11 @@ def reviewed_profile_refusal(seat_name: str, reviewed: str) -> Refusal | None:
     **The flag names the subject; it does not settle it.** This function checks the name
     against the registry, which is the cheap half — a typo would resolve past nothing and
     produce exactly the same-model review the check exists to prevent. The expensive half is
-    `authoring_dispatches` below, which derives the subject from the issue's own dispatch
-    records and refuses a declaration they contradict, because a check that only compares a
-    caller's `--profile` against the caller's `--reviewing` is satisfied by naming any two
-    registered profiles and enforces nothing.
+    `potential_authors` below, which reads the issue's own dispatch records for every profile
+    that may have worked on it, excludes all of them from the candidate list and refuses a
+    declaration a complete read contradicts — because a check that only compares a caller's
+    `--profile` against the caller's `--reviewing` is satisfied by naming any two registered
+    profiles and enforces nothing.
 
     **The absent case refuses**, which is the whole point: a review seat with no declared
     subject cannot be resolved past anything, and resolving it anyway would take the head of
@@ -1202,13 +1242,22 @@ def reviewed_profile_refusal(seat_name: str, reviewed: str) -> Refusal | None:
     return None
 
 
-def _refused_before_running(directory: Path) -> bool:
+def _refused_before_running(directory: Path) -> bool | None:
     """Whether this dispatch's own result says it refused before the lane was reached.
 
-    `write_result`'s refusal path is written *instead of* a run, so such a record authored
-    nothing and counting its profile as an author would invent an implementer out of a
-    dispatch that never edited a file. The key is the same one `tools/ledger.py` reads as
-    decisive proof of a pre-lane refusal; a stop's result deliberately carries none.
+    `write_result`'s refusal path is written *instead of* a run, so such a record produced
+    nothing and counting its profile as a potential author would invent an implementer out of
+    a dispatch that never reached a lane. The key is the same one `tools/ledger.py` reads as
+    decisive proof of a pre-lane refusal.
+
+    **`None` where the question could not be answered** — a `result.json` that is there and
+    will not parse. The caller keeps the profile, which is the safe direction for an
+    exclusion, *and* marks the scan incomplete, because a record it could not read is a
+    record it did not check.
+
+    A stop's result deliberately carries no refusal, so a stopped run is `False` here and
+    stays in the potential set. That is one of the cases `potential_authors` cannot narrow,
+    and it says so rather than guessing.
     """
     result = directory / "result.json"
     if not result.is_file():
@@ -1216,65 +1265,138 @@ def _refused_before_running(directory: Path) -> bool:
     try:
         document = json.loads(result.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError, ValueError):
-        return False
-    return isinstance(document, dict) and bool(document.get("refusal"))
+        return None
+    if not isinstance(document, dict):
+        return None
+    return bool(document.get("refusal"))
 
 
-def authoring_dispatches(issue: int, dispatch_dir: Path) -> Authorship:
-    """Derive which profiles authored this issue's work, from the dispatch records (#322).
+class _Read(NamedTuple):
+    """What one dispatch directory contributed to the scan, in the two facts it can carry.
+
+    A record can be both at once — a plan that read cleanly beside a `result.json` that did
+    not — so these are two fields rather than one verdict. Keeping the profile is the safe
+    direction for an exclusion; setting `unreadable` is the safe direction for the record.
+    """
+
+    profile: str = ""
+    record: str = ""
+    unreadable: bool = False
+
+
+_UNREADABLE: Final = _Read(unreadable=True)
+_NOT_THIS_ISSUE: Final = _Read()
+
+
+def _read_plan(entry: Path) -> dict[str, object] | None:
+    """Return this dispatch directory's plan, or `None` where it could not be read.
+
+    Four ways of not having a plan — no file, unreadable bytes, JSON that is not an object,
+    an object carrying no issue — and one answer, because the caller acts on all four
+    identically: it could not read this record, so it has not checked the issue.
+    """
+    plan = entry / "dispatch.json"
+    if not plan.is_file():
+        return None
+    try:
+        document = json.loads(plan.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, ValueError):
+        return None
+    if not isinstance(document, dict) or "issue" not in document:
+        return None
+    return document
+
+
+def _read_record(entry: Path, issue: int) -> _Read:
+    """Classify one dispatch directory against the issue under review.
+
+    Every way of failing to read it lands on `_UNREADABLE` rather than being passed over,
+    because with the issue as the only key an unopened record cannot be shown to be about
+    some other issue — and a scan that skipped it would report itself complete having not
+    looked (#41).
+    """
+    document = _read_plan(entry)
+    if document is None:
+        return _UNREADABLE
+    try:
+        same_issue = int(str(document["issue"])) == issue
+    except (ValueError, TypeError):
+        return _UNREADABLE
+    if not same_issue:
+        return _NOT_THIS_ISSUE
+    seat = SEATS.get(str(document.get("seat", "")))
+    if seat is not None and seat.reviews:
+        return _NOT_THIS_ISSUE
+    refused = _refused_before_running(entry)
+    if refused:
+        return _NOT_THIS_ISSUE
+    return _Read(
+        profile=str(document.get("profile", "")),
+        record=str(document.get("dispatch_id", entry.name)),
+        unreadable=refused is None,
+    )
+
+
+def potential_authors(issue: int, dispatch_dir: Path) -> Authorship:
+    """Read this issue's dispatch records for the profiles a review must not run on (#322).
 
     **The issue is the key, and it is the only one available.** A review dispatch is handed
-    `--issue <n>`, `--base-sha <sha>` and a worktree of its own; the SHA on an authoring
-    record is where that dispatch *started*, not what it produced, and the review's tree is a
+    `--issue <n>`, `--base-sha <sha>` and a worktree of its own; the SHA on an earlier record
+    is where that dispatch *started*, not what it produced, and the review's tree is a
     different tree from the implementer's, so neither joins. The issue does: it is required
     on every dispatch, it is on every record, and it is the thing the work and the review of
     the work have in common.
 
-    **A review is not an author.** The `reviews` column is what excludes it, so a second
-    review of the same issue never becomes its own subject, and a dispatch that refused
-    before it ran is excluded too — it produced nothing to review.
+    **What the record supports, and what it does not.** Two narrowings can be read off a
+    record honestly. A dispatch on a seat the registry marks `reviews` was judging the work
+    rather than doing it, so a second review of the same issue never becomes its own subject.
+    A dispatch whose `result.json` carries a refusal never reached a lane and so edited
+    nothing. Everything else is out of reach: a planner, a recon, a stopped run, a successful
+    no-op and a dispatch against a branch a later one supersedes are all indistinguishable
+    here from the implementer that wrote the diff, because **nothing on the record names the
+    commits a run produced**. Putting that on the record is a change to what a dispatch
+    writes, and it belongs with #333's adjudication rather than here.
 
-    Everything unreadable is skipped rather than raised on, and an empty answer is reported
-    with its reason rather than as a pass. That is not this project's "a check that could not
-    run is not a check that passed" (#41) being waived: the caller of this function does not
-    treat an empty answer as a clearance either, it records the subject as **unverified**,
-    which is a fact ruling 4's landing check can refuse on.
+    So this returns a **potential**-author set, not an author set, and the caller uses it for
+    the one thing a superset is right for: removing every entry from the review seat's
+    candidate list. It is never evidence that a named profile did the work, and the route it
+    feeds says `checked` rather than `verified` for that reason.
+
+    **A partial read is never a complete one.** An unreadable plan, a dispatch directory with
+    no plan in it, a plan carrying no issue, a `result.json` that will not parse: each leaves
+    `why=records_unreadable`, and the profiles that *were* read are still returned and still
+    excluded. That is #41's rule with its two halves kept apart — the check did not run, so
+    it must not report as passed; the exclusion is a superset, so an incomplete read still
+    narrows it.
     """
     directory = dispatch_dir.expanduser()
     if not directory.is_dir():
         return Authorship(why="no_dispatch_records")
-    authors: list[str] = []
+    found: list[str] = []
     records: list[str] = []
     unreadable = 0
     for entry in sorted(directory.iterdir()):
-        plan = entry / "dispatch.json"
-        if not entry.is_dir() or not plan.is_file():
+        if not entry.is_dir():
+            # Not a record at all. A stray file beside the records is not a record this scan
+            # failed to read, so it does not make the read partial.
             continue
-        try:
-            document = json.loads(plan.read_text(encoding="utf-8"))
-            same_issue = isinstance(document, dict) and int(document.get("issue", 0)) == issue
-        except (OSError, json.JSONDecodeError, ValueError, TypeError):
-            unreadable += 1
-            continue
-        if not same_issue:
-            continue
-        seat = SEATS.get(str(document.get("seat", "")))
-        if (seat is not None and seat.reviews) or _refused_before_running(entry):
-            continue
-        profile_name = str(document.get("profile", ""))
-        if profile_name and profile_name not in authors:
-            authors.append(profile_name)
-            records.append(str(document.get("dispatch_id", entry.name)))
-    if authors:
-        return Authorship(tuple(authors), tuple(records))
-    return Authorship(why="records_unreadable" if unreadable else "no_authoring_dispatch")
+        read = _read_record(entry, issue)
+        unreadable += int(read.unreadable)
+        if read.profile and read.profile not in found:
+            found.append(read.profile)
+            records.append(read.record)
+    if unreadable:
+        return Authorship(tuple(found), tuple(records), why="records_unreadable")
+    if found:
+        return Authorship(tuple(found), tuple(records))
+    return Authorship(why="no_authoring_dispatch")
 
 
 def review_authorship(seat: Seat, args: argparse.Namespace) -> Authorship:
-    """Derive the subject's authorship, on the one seat and the one dispatch that has one."""
+    """Read the records, on the one seat and the one dispatch that has a subject to check."""
     if not seat.reviews or not args.reviewing:
         return Authorship()
-    return authoring_dispatches(args.issue, Path(args.dispatch_dir))
+    return potential_authors(args.issue, Path(args.dispatch_dir))
 
 
 def contradicted_refusal(seat: Seat, reviewed: str, issue: int, authorship: Authorship) -> Refusal:
@@ -1282,9 +1404,14 @@ def contradicted_refusal(seat: Seat, reviewed: str, issue: int, authorship: Auth
 
     The Critical this closes: with the subject declared and nothing else, `--profile
     opus-high --reviewing codex-luna-max` passes — both are registered, the equality check
-    compares the profile against the declaration rather than against anything derived, and
-    the implementing instance produces the verdict on its own work while the record names
-    somebody else. The records know better, so they are asked.
+    compares the profile against the declaration rather than against anything read off the
+    box, and the implementing instance produces the verdict on its own work while the record
+    names somebody else. The records know better, so they are asked.
+
+    **Only ever reached on a complete read.** Where any record could not be read the subject
+    is recorded unchecked instead of refused, because the profile this declaration names
+    could be sitting in the record that would not open — refusing there would turn a gap in
+    the scan into an accusation about the caller.
 
     **No failure class**, for `pair_block`'s reason: the provider is up, the lane is
     reachable, both profiles are registered, and this is an incorrect request. Nothing was
@@ -1296,30 +1423,53 @@ def contradicted_refusal(seat: Seat, reviewed: str, issue: int, authorship: Auth
             f"seat={seat.name}",
             f"reviewing={reviewed}",
             f"issue={issue}",
-            f"authored_by={' '.join(authorship.authors)}",
+            f"potential_authors={' '.join(authorship.potential)}",
             f"records={' '.join(authorship.records)}",
         ),
         (
-            f"The dispatch records for #{issue} say its work was authored by "
-            f"{' and '.join(authorship.authors)}, and this dispatch declares it is reviewing "
-            f"{reviewed}. One of the two is wrong, and the declaration is the half a caller "
-            "controls, so it is the half that is refused. Nothing was dispatched. Name the "
-            "profile that did the work, or — if the work was authored somewhere these records "
-            "cannot see — say so on the issue and dispatch from a box that holds the record, "
-            f"because a subject nobody can check is the hole this refusal exists to close. "
-            f"{NEVER_ALONE}"
+            f"The dispatch records for #{issue} place its work on "
+            f"{' and '.join(authorship.potential)}, and this dispatch declares it is reviewing "
+            f"{reviewed}, which is none of them. One of the two is wrong, and the declaration "
+            "is the half a caller controls, so it is the half that is refused. Nothing was "
+            "dispatched. Name a profile the records carry, or — if the work was done somewhere "
+            "these records cannot see — say so on the issue and dispatch from a box that holds "
+            "the record, because a subject nobody can check is the hole this refusal exists to "
+            f"close. {NEVER_ALONE}"
         ),
     )
 
 
-def review_candidates(seat: Seat, reviewed: str) -> tuple[str, ...]:
+def excluded_from_review(reviewed: str, authorship: Authorship) -> frozenset[str]:
+    """Every profile a review must not run on: the declared subject and every potential author.
+
+    The Critical this closes: excluding the declared subject alone enforces "not the one you
+    named", where ruling 4's invariant is "no profile that worked on the change produces the
+    verdict that clears it". On a branch two dispatches touched, declaring one of them left
+    the other free to review work it may have coauthored — and the declaration is the half a
+    caller controls, so that is a hole a caller can walk through on purpose.
+
+    The set is deliberately a **superset** of the profiles that actually wrote commits,
+    because the record cannot narrow it further (`potential_authors` states why). Excluding
+    too much costs a resolution step down the seat's list; excluding too little costs the
+    invariant. Those prices are not comparable, so the conservative side is the only one.
+
+    One home, so that resolution, the refusal text and the printed route cannot disagree
+    about which profiles this dispatch was never going to take.
+    """
+    return frozenset({reviewed, *authorship.potential})
+
+
+def review_candidates(
+    seat: Seat, reviewed: str, authorship: Authorship = NO_AUTHORSHIP
+) -> tuple[str, ...]:
     """Order a seat's preference for reviewing work done on `reviewed` (ADR-0071 ruling 4).
 
-    Two rules, and only the first is absolute. The profile under review is **removed**: it
-    is never a candidate, whatever the rest of the world says about it. A different lane is
-    **preferred**, which is an ordering and not a second filter — the entries that share the
-    reviewed profile's lane keep their places behind the ones that do not, and are still
-    walked.
+    Two rules, and only the first is absolute. The profile under review is **removed**, and
+    so is every other profile the issue's dispatch records place on the work — the whole of
+    `excluded_from_review`, none of which is ever a candidate whatever the rest of the world
+    says about it. A different lane is **preferred**, which is an ordering and not a second
+    filter — the entries that share the reviewed profile's lane keep their places behind the
+    ones that do not, and are still walked.
 
     Being explicit about the case the ADR's one word leaves open: **when the only
     non-matching entries share the lane, they are used.** Making the lane a filter would
@@ -1345,24 +1495,40 @@ def review_candidates(seat: Seat, reviewed: str) -> tuple[str, ...]:
         # dispatch could walk must not raise. Empty is also the fail-closed answer if this
         # were ever reached while deciding — no candidate resolves.
         return ()
+    excluded = excluded_from_review(reviewed, authorship)
     other_lane = tuple(
-        name for name in seat.preference if name != reviewed and PROFILES[name].lane != subject.lane
+        name
+        for name in seat.preference
+        if name not in excluded and PROFILES[name].lane != subject.lane
     )
     same_lane = tuple(
-        name for name in seat.preference if name != reviewed and PROFILES[name].lane == subject.lane
+        name
+        for name in seat.preference
+        if name not in excluded and PROFILES[name].lane == subject.lane
     )
     return (*other_lane, *same_lane)
 
 
-def same_profile_refusal(seat: Seat, reviewed: str, why: str) -> Refusal:
-    """Refuse a review that would run on the profile it is reviewing (#322, criterion 4).
+def same_profile_refusal(
+    seat: Seat,
+    reviewed: str,
+    why: str,
+    authorship: Authorship = NO_AUTHORSHIP,
+    named: str = "",
+) -> Refusal:
+    """Refuse a review that would run on a profile that worked on what it reviews (#322).
 
-    One refusal kind reached two ways, because it is one fact: this dispatch would have the
-    reviewed profile produce the verdict on its own work. `why=` says which way — a caller
-    who named that profile with `--profile`, or a seat whose list offers nothing else once
-    the reviewed profile is removed. The remedies differ and the finding does not, and
-    giving the finding two names would mean two strings to grep for the thing the ticket is
-    about.
+    One refusal kind reached three ways, because it is one fact: this dispatch would have a
+    profile the records place on the change produce the verdict that clears it. `why=` says
+    which way — `named`, a caller who typed the declared subject into `--profile`;
+    `named_author`, a caller who typed a *different* profile the issue's records also carry;
+    and `list_offers_nothing_else`, a seat whose list is empty once every one of them is
+    removed. The remedies differ and the finding does not, and giving the finding three names
+    would mean three strings to grep for the thing the ticket is about.
+
+    `named_author` reuses this kind rather than opening a second refusal on the adjudicated
+    ground that the finding is the same one. What differs is which profile a reader has to
+    stop using, so the action names it and `excluded=` prints the whole set.
 
     Naming `--profile` is a way of choosing and never a way around, exactly as ADR-0071
     ruling 2 says of every other `(profile, seat)` refusal, so the named route meets this
@@ -1372,22 +1538,32 @@ def same_profile_refusal(seat: Seat, reviewed: str, why: str) -> Refusal:
     found about a provider, a lane, or the code under test. The provider is up and the
     profile is registered; this project declines to let one instance clear its own change.
     """
-    candidates = review_candidates(seat, reviewed)
+    candidates = review_candidates(seat, reviewed, authorship)
+    excluded = excluded_from_review(reviewed, authorship)
+    resolves_to = " ".join(candidates) or "nothing else"
     if why == "named":
         action = (
             f"You named {reviewed}, which is the profile whose work is under review. Name a "
             "different one, or leave --lane and --profile out and let the seat resolve: it "
-            f"walks {' '.join(candidates) or 'nothing else'} for this subject. Nothing was "
-            f"dispatched. {NEVER_ALONE}"
+            f"walks {resolves_to} for this subject. Nothing was dispatched. {NEVER_ALONE}"
+        )
+    elif why == "named_author":
+        action = (
+            f"You named {named}, which is not the declared subject but is a profile this "
+            f"issue's own dispatch records carry ({' '.join(authorship.records)}) — so it may "
+            "have coauthored the change it would be clearing. The invariant is about every "
+            "profile that worked on the change, not the one a caller chose to declare. Name a "
+            "different one, or leave --lane and --profile out and let the seat resolve: it "
+            f"walks {resolves_to} for this subject. Nothing was dispatched. {NEVER_ALONE}"
         )
     else:
         action = (
             f"The {seat.name} seat's preference is {' '.join(seat.preference)}, and removing "
-            f"{reviewed} leaves it with nothing, so the only route this seat could offer is "
-            "the profile under review. Nothing was dispatched, and this refusal is the "
-            "point rather than an obstacle to route around: register another profile for "
-            "this seat, or have the change reviewed from a seat whose list offers one. "
-            f"{NEVER_ALONE}"
+            f"{' and '.join(sorted(excluded))} leaves it with nothing, so the only route this "
+            "seat could offer is a profile that worked on the change. Nothing was dispatched, "
+            "and this refusal is the point rather than an obstacle to route around: register "
+            "another profile for this seat, or have the change reviewed from a seat whose list "
+            f"offers one. {NEVER_ALONE}"
         )
     return Refusal(
         "review_same_profile",
@@ -1395,6 +1571,8 @@ def same_profile_refusal(seat: Seat, reviewed: str, why: str) -> Refusal:
             f"seat={seat.name}",
             f"reviewing={reviewed}",
             f"why={why}",
+            *((f"profile={named}",) if named else ()),
+            f"excluded={' '.join(sorted(excluded))}",
             f"candidates={' '.join(candidates) or 'none'}",
         ),
         action,
@@ -1679,7 +1857,12 @@ def candidate_refusal(
     return refusal
 
 
-def exhausted_refusal(seat: Seat, passed: tuple[PassedOver, ...], reviewed: str = "") -> Refusal:
+def exhausted_refusal(
+    seat: Seat,
+    passed: tuple[PassedOver, ...],
+    reviewed: str = "",
+    authorship: Authorship = NO_AUTHORSHIP,
+) -> Refusal:
     """Refuse by name when a seat's whole preference list is unavailable (#321).
 
     Named rather than quietly escalated or defaulted, because the story this serves is "I
@@ -1699,14 +1882,14 @@ def exhausted_refusal(seat: Seat, passed: tuple[PassedOver, ...], reviewed: str 
     to dispatch an escalation entry for a seat that registers none, where the old text
     interpolated the phrase `none registered` into the position a profile name goes.
 
-    On the review seat the list that was walked is not the seat's raw preference — the
-    profile under review was removed before anything was tried (#322) — so both are printed
-    and the removed one is named. A reader shown only `preference=` would count the entries,
-    count the refusals, find one unaccounted for, and reasonably conclude the resolver had
-    skipped a live route.
+    On the review seat the list that was walked is not the seat's raw preference — every
+    profile the issue's records place on the work was removed before anything was tried
+    (#322) — so both are printed and the removed ones are named. A reader shown only
+    `preference=` would count the entries, count the refusals, find one unaccounted for, and
+    reasonably conclude the resolver had skipped a live route.
     """
     escalation = " ".join(seat.escalation)
-    walked = review_candidates(seat, reviewed)
+    walked = review_candidates(seat, reviewed, authorship)
     if seat.escalation:
         head = seat.escalation[0]
         alternative = (
@@ -1720,7 +1903,11 @@ def exhausted_refusal(seat: Seat, passed: tuple[PassedOver, ...], reviewed: str 
             "route above its list for this refusal to point at."
         )
     excluded = (
-        (f"reviewing={reviewed} (removed before the walk)", f"walked={' '.join(walked)}")
+        (
+            f"reviewing={reviewed} (removed before the walk)",
+            f"excluded={' '.join(sorted(excluded_from_review(reviewed, authorship)))}",
+            f"walked={' '.join(walked)}",
+        )
         if reviewed
         else ()
     )
@@ -1766,7 +1953,9 @@ def resolve_seat(
 
     The subject is then checked against the issue's dispatch records, above both routes for
     the same reason and above the block on naming it: a caller who declares the wrong subject
-    has already defeated that block, since it compares two strings the caller typed.
+    has already defeated that block, since it compares two strings the caller typed. The
+    contradiction is refused only on a **complete** read of those records — a partial read
+    marks the subject unchecked and still excludes everything it did read.
     """
     refusal = unknown_seat_refusal(args.seat)
     if refusal is not None:
@@ -1776,7 +1965,7 @@ def resolve_seat(
         return None, refusal
     seat = SEATS[args.seat]
     authorship = review_authorship(seat, args)
-    if authorship.derived and args.reviewing not in authorship.authors:
+    if authorship.complete and args.reviewing not in authorship.potential:
         return None, contradicted_refusal(seat, args.reviewing, args.issue, authorship)
     if args.profile:
         return _named_route(seat, args, authorship)
@@ -1793,9 +1982,14 @@ def _named_route(
     same-profile check is here because the ladder judges `(lane, profile, seat)` and the
     profile under review is none of those three, so a caller naming it would otherwise reach
     a rung that has no way to know it is the wrong instance.
+
+    The check is against `excluded_from_review` and not against `--reviewing` alone, so a
+    caller who declares one author and names another is refused too. Comparing only the two
+    strings the caller typed is what let a coauthor review its own work.
     """
-    if seat.reviews and args.profile == args.reviewing:
-        return None, same_profile_refusal(seat, args.reviewing, "named")
+    if seat.reviews and args.profile in excluded_from_review(args.reviewing, authorship):
+        why = "named" if args.profile == args.reviewing else "named_author"
+        return None, same_profile_refusal(seat, args.reviewing, why, authorship, named=args.profile)
     return (
         Resolution(
             seat.name,
@@ -1815,13 +2009,13 @@ def _walk_preference(
     """Walk this dispatch's candidate list to the first entry that is dispatchable right now.
 
     The list is `review_candidates`', not the seat's raw preference: on every seat that
-    reviews nothing the two are the same object, and on the review seat the profile under
-    review has been removed and a different lane put first (#322).
+    reviews nothing the two are the same object, and on the review seat every profile the
+    issue's records place on the work has been removed and a different lane put first (#322).
     """
     reviewed = args.reviewing
-    candidates = review_candidates(seat, reviewed)
+    candidates = review_candidates(seat, reviewed, authorship)
     if not candidates:
-        return None, same_profile_refusal(seat, reviewed, "list_offers_nothing_else")
+        return None, same_profile_refusal(seat, reviewed, "list_offers_nothing_else", authorship)
     passed: list[PassedOver] = []
     for name in candidates:
         found = candidate_refusal(args, seat.name, name, now)
@@ -1839,7 +2033,7 @@ def _walk_preference(
                 None,
             )
         passed.append(PassedOver(name, found.kind, found.failure_class))
-    return None, exhausted_refusal(seat, tuple(passed), reviewed)
+    return None, exhausted_refusal(seat, tuple(passed), reviewed, authorship)
 
 
 def routed(args: argparse.Namespace, route: Resolution) -> argparse.Namespace:
@@ -2631,12 +2825,12 @@ def seat_listing(seat: Seat) -> tuple[str, ...]:
     ]
     if seat.reviews:
         lines.append(
-            "  reviews=true resolves_past=--reviewing prefers=a-different-lane"
-            " refusal=review_same_profile"
+            "  reviews=true resolves_past=--reviewing-and-every-potential-author"
+            " prefers=a-different-lane refusal=review_same_profile"
         )
         lines.append(
-            "  review_subject=derived-from-dispatch-records"
-            " refusal=review_subject_contradicted underived=recorded-unverified"
+            "  review_subject=checked-against-dispatch-records"
+            " refusal=review_subject_contradicted unchecked=recorded-unchecked"
         )
     if seat.permission_mode:
         lines.append(f"  permission_mode={seat.permission_mode} forced=true (no caller override)")

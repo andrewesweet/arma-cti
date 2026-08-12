@@ -22,9 +22,18 @@ substituted-seat claims below are kept because they exercise the ordering *withi
 half, which the real three-entry preference is too short to show; they are not a stand-in
 for a real-registry arrangement that does not exist.
 
-Arrangements that need the derivation plant dispatch records of their own, under this
-test's `--dispatch-dir` and never this box's, so the suite's answer never depends on what
-was dispatched here today.
+**What the records support is a potential-author set, and the claims say so.** A dispatch
+record is written at plan time and names a profile, a seat and an issue; nothing on it names
+the commits a run produced. So the profiles read off this issue's records are the ones the
+box cannot rule out, every one of them is removed from the candidate list — over-excluding
+costs a resolution step, under-excluding costs the invariant — and the route records the
+subject as *checked* rather than *verified*. The claims below are made in that vocabulary
+deliberately: an earlier draft called the same set "the authors", and a superset presented as
+a derivation is how a coauthor came to be eligible to review its own work.
+
+Arrangements that need that read plant dispatch records of their own, under this test's
+`--dispatch-dir` and never this box's, so the suite's answer never depends on what was
+dispatched here today.
 
 Arrangements are **clock-free** for `test_dispatch_seat.py`'s reason: entries are walked past
 by tripping a breaker or withholding a lane credential, both of which hold at any hour, where
@@ -102,7 +111,7 @@ def trip(tmp_path: Path, lane: str, count: int = 3) -> None:
         )
 
 
-def authoring_record(  # noqa: PLR0913 — one keyword per field of the record the derivation reads; folding them into a dict would hide which field each arrangement varies
+def dispatch_record(  # noqa: PLR0913 — one keyword per field of the record the scan reads; folding them into a dict would hide which field each arrangement varies
     tmp_path: Path,
     dispatch_id: str = "d-20260812-000000-aaaaaa",
     *,
@@ -111,11 +120,14 @@ def authoring_record(  # noqa: PLR0913 — one keyword per field of the record t
     profile: str = "opus-high",
     refusal: str = "",
 ) -> Path:
-    """Plant a dispatch record of the shape `just dispatch` writes, for the derivation to read.
+    """Plant a dispatch record of the shape `just dispatch` writes, for the scan to read.
+
+    Named for what it is rather than for what it might have done: nothing this helper writes
+    says the run produced a commit, because nothing on a real record says so either.
 
     The worktree is deliberately not the review's own. An implementer works in `issue-<n>`
     and a review in a tree of its own, and pointing both at one path would trip the occupancy
-    rung (#308) rather than exercise the derivation.
+    rung (#308) rather than exercise the scan.
     """
     directory = tmp_path / "dispatches" / dispatch_id
     directory.mkdir(parents=True, exist_ok=True)
@@ -442,25 +454,25 @@ def test_declaring_a_subject_on_a_seat_that_reviews_nothing_is_refused(tmp_path:
     assert refusal.kind == "reviewing_without_review_seat"
 
 
-# ------------------------- criterion 4, again: the subject is derived, not merely declared
+# ------------------ criterion 4, again: the subject is checked, not merely declared
 
 
 def test_a_declaration_the_issues_records_contradict_is_refused(tmp_path: Path) -> None:
-    """The defeat the review found: two registered names satisfied every check.
+    """The defeat the first review found: two registered names satisfied every check.
 
     `--profile opus-high --reviewing codex-luna-max` names two profiles the registry carries,
     so the equality check passes and the implementing instance produces the verdict on its
-    own work while the record names somebody else. The issue's own records know who worked
-    on it, so they are asked, and the declaration they contradict is the half that loses.
+    own work while the record names somebody else. The issue's own records carry a different
+    profile, so the declaration a complete read of them contradicts is the half that loses.
     """
-    authoring_record(tmp_path, profile="opus-high")
+    dispatch_record(tmp_path, profile="opus-high")
     plan, _, refusal = plan_for(
         tmp_path, lane="claude-native", profile="opus-high", reviewing="codex-luna-max"
     )
     assert plan is None
     assert refusal is not None
     assert refusal.kind == "review_subject_contradicted"
-    assert "authored_by=opus-high" in refusal.found
+    assert "potential_authors=opus-high" in refusal.found
     assert "records=d-20260812-000000-aaaaaa" in refusal.found
     # Nothing was found about a provider, a lane or the code under test (CLAUDE.md's table).
     assert refusal.failure_class == ""
@@ -468,33 +480,48 @@ def test_a_declaration_the_issues_records_contradict_is_refused(tmp_path: Path) 
 
 def test_the_contradiction_is_refused_on_a_resolved_route_too(tmp_path: Path) -> None:
     """Naming no profile at all does not buy a false subject: the check is above both routes."""
-    authoring_record(tmp_path, profile="opus-high")
+    dispatch_record(tmp_path, profile="opus-high")
     plan, _, refusal = plan_for(tmp_path, reviewing="codex-luna-max")
     assert plan is None
     assert refusal is not None
     assert refusal.kind == "review_subject_contradicted"
 
 
-def test_a_declaration_the_records_confirm_is_recorded_as_derived(tmp_path: Path) -> None:
-    authoring_record(tmp_path, profile="opus-high")
+def test_a_declaration_the_records_carry_is_recorded_as_checked_and_not_as_verified(
+    tmp_path: Path,
+) -> None:
+    """The positive answer, in the only vocabulary the records support.
+
+    `checked` says the declared subject is among the profiles this box's records place on the
+    issue and that every one of them was excluded. It deliberately does not say any of them
+    wrote a line: nothing on a dispatch record names the commits a run produced, and a
+    landing check reading `verified` here would be reading a guarantee nobody made.
+    """
+    dispatch_record(tmp_path, profile="opus-high")
     plan, brief, refusal = plan_for(tmp_path, reviewing="opus-high")
     assert refusal is None, refusal
     assert plan is not None
-    assert plan.route.authorship.authors == ("opus-high",)
+    assert plan.route.authorship.potential == ("opus-high",)
+    assert plan.route.authorship.complete
     assert (
-        "route_reviewing_verified=derived authored_by=opus-high"
-        " records=d-20260812-000000-aaaaaa" in plan.route.lines()
+        "route_reviewing_checked=yes potential_authors=opus-high"
+        " records=d-20260812-000000-aaaaaa"
+        " (all excluded from the candidate list; not a finding that any of them"
+        " wrote the diff)" in plan.route.lines()
     )
     dispatch.write_record(plan, brief)
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
-    assert document["route"]["reviewing_verified"] is True
-    assert document["route"]["reviewing_authored_by"] == ["opus-high"]
+    assert document["route"]["reviewing_checked"] is True
+    assert document["route"]["reviewing_potential_authors"] == ["opus-high"]
+    # The old spelling is gone rather than kept beside the new one: two names for one fact is
+    # two facts that can disagree, and `verified` is the one that overstated it.
+    assert "reviewing_verified" not in document["route"]
 
 
-def test_an_underived_subject_is_recorded_as_unverified_rather_than_as_a_pass(
+def test_an_unchecked_subject_is_recorded_as_unchecked_rather_than_as_a_pass(
     tmp_path: Path,
 ) -> None:
-    """Where nothing can be derived the declaration stands, and says so on the record.
+    """Where nothing can be read the declaration stands, and says so on the record.
 
     That is what ADR-0071 ruling 4's landing check (#334) refuses on: a field the proposer
     controls, marked as one, rather than a guarantee the dispatcher did not make.
@@ -502,30 +529,35 @@ def test_an_underived_subject_is_recorded_as_unverified_rather_than_as_a_pass(
     plan, brief, refusal = plan_for(tmp_path)
     assert refusal is None, refusal
     assert plan is not None
-    assert not plan.route.authorship.derived
+    assert not plan.route.authorship.complete
     assert (
-        "route_reviewing_verified=unverified why=no_dispatch_records"
+        "route_reviewing_checked=no why=no_dispatch_records excluded_anyway=none"
         " (the caller's declaration, unchecked; ADR-0071 ruling 4's landing check"
         " refuses on this)" in plan.route.lines()
     )
     dispatch.write_record(plan, brief)
     document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
-    assert document["route"]["reviewing_verified"] is False
-    assert document["route"]["reviewing_unverified_why"] == "no_dispatch_records"
+    assert document["route"]["reviewing_checked"] is False
+    assert document["route"]["reviewing_unchecked_why"] == "no_dispatch_records"
 
 
-def test_a_review_of_the_same_issue_is_never_counted_as_its_author(tmp_path: Path) -> None:
-    """Otherwise a second review would derive the first one and review it instead."""
-    authoring_record(tmp_path, seat="review", profile="codex-sol-xhigh")
+def test_a_review_of_the_same_issue_is_never_counted_among_the_potential_authors(
+    tmp_path: Path,
+) -> None:
+    """Otherwise a second review would read the first one off the records and review it."""
+    dispatch_record(tmp_path, seat="review", profile="codex-sol-xhigh")
     plan, _, refusal = plan_for(tmp_path, reviewing=REVIEWED)
     assert refusal is None, refusal
     assert plan is not None
+    assert plan.route.authorship.potential == ()
     assert plan.route.authorship.why == "no_authoring_dispatch"
 
 
-def test_a_dispatch_that_refused_before_it_ran_authored_nothing(tmp_path: Path) -> None:
-    """A refusal is written instead of a run, so that record's profile edited no file."""
-    authoring_record(tmp_path, profile="opus-xhigh", refusal="worktree_mismatch")
+def test_a_dispatch_that_refused_before_it_ran_could_not_have_worked_on_anything(
+    tmp_path: Path,
+) -> None:
+    """A refusal is written instead of a run, so that record's profile reached no lane."""
+    dispatch_record(tmp_path, profile="opus-xhigh", refusal="worktree_mismatch")
     plan, _, refusal = plan_for(tmp_path, reviewing=REVIEWED)
     assert refusal is None, refusal
     assert plan is not None
@@ -534,33 +566,252 @@ def test_a_dispatch_that_refused_before_it_ran_authored_nothing(tmp_path: Path) 
 
 def test_another_issues_records_say_nothing_about_this_one(tmp_path: Path) -> None:
     """The issue is the join, and a record for a different one is not evidence about this one."""
-    authoring_record(tmp_path, issue=999, profile="opus-xhigh")
+    dispatch_record(tmp_path, issue=999, profile="opus-xhigh")
     plan, _, refusal = plan_for(tmp_path, reviewing=REVIEWED)
     assert refusal is None, refusal
     assert plan is not None
     assert plan.route.authorship.why == "no_authoring_dispatch"
 
 
-def test_authorship_spanning_two_dispatches_carries_both(tmp_path: Path) -> None:
-    """The hole ruling 4 already found once: either name is an honest subject, so both pass.
+def test_a_branch_two_dispatches_touched_carries_both(tmp_path: Path) -> None:
+    """Either name is an honest subject, so declaring either passes the check.
 
     Which of them a review should be resolved past when they differ is #333's adjudication
-    and is deliberately not decided here — what this landing owes is that a name neither of
-    them carries is refused.
+    and is deliberately not decided here. What this landing owes is that a name neither of
+    them carries is refused, and that **both** are excluded — see the claims below.
     """
-    authoring_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-high")
-    authoring_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-low")
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-high")
+    dispatch_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-low")
     plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
     assert refusal is None, refusal
     assert plan is not None
-    assert plan.route.authorship.authors == ("opus-high", "opus-low")
+    assert plan.route.authorship.potential == ("opus-high", "opus-low")
     assert plan.identity.profile != "opus-low"
 
 
-def test_an_unreadable_record_leaves_the_subject_unverified_and_names_why(
+# ------------------------- claim 1: every potential author is excluded, not only the declared
+
+
+def test_a_profile_the_records_carry_is_excluded_even_when_another_is_declared(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The Critical: excluding the declared subject alone enforces "not the one you named".
+
+    Two dispatches touched this issue, `codex-luna-max` and `opus-low`, and the caller
+    declares `opus-low`. Excluding the declaration alone leaves `codex-luna-max` at the head
+    of the list, dispatchable — the Codex lane needs no credential of ours — so a profile
+    that may have coauthored the change would produce the verdict clearing it. The substituted
+    list carries a third entry so the claim is about the exclusion rather than about running
+    out of profiles.
+    """
+    substitute_review_seat(monkeypatch, "codex-luna-max", "opus-low", "opus-xhigh")
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="codex-luna-max")
+    dispatch_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-low")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.identity.profile == "opus-xhigh"
+    assert "route_preference=opus-xhigh" in plan.route.lines()
+
+
+def test_the_exclusion_reaches_the_real_registry_rather_than_a_substituted_seat(
     tmp_path: Path,
 ) -> None:
-    """Skipped rather than raised on, and reported rather than counted as an answer."""
+    """The same claim with nothing substituted, where the exclusion costs the whole list.
+
+    The registered preference is `codex-luna-max zai-glm52-max opus-low`. With both Codex and
+    native entries on the issue's records, only the z.ai entry survives the exclusion, and
+    this arrangement withholds its key — so the honest answer is the exhaustion refusal, and
+    the refusal prints what was removed. Excluding the declared subject alone would have
+    resolved to `codex-luna-max` and dispatched.
+    """
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="codex-luna-max")
+    dispatch_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-low")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "seat_list_exhausted"
+    assert "excluded=codex-luna-max opus-low" in refusal.found
+    assert "walked=zai-glm52-max" in refusal.found
+
+
+def test_naming_a_profile_the_records_carry_is_refused_even_when_it_is_not_the_subject(
+    tmp_path: Path,
+) -> None:
+    """`--profile` is a way of choosing, and the choice is checked against the whole set.
+
+    Reusing `review_same_profile` rather than opening a second refusal: the finding is the
+    same one — this dispatch would have a profile that worked on the change clear it — and
+    `why=` says which way it was arrived at.
+    """
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="codex-luna-max")
+    dispatch_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-low")
+    plan, _, refusal = plan_for(
+        tmp_path, lane="codex", profile="codex-luna-max", reviewing="opus-low"
+    )
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_same_profile"
+    assert "why=named_author" in refusal.found
+    assert "profile=codex-luna-max" in refusal.found
+    assert "excluded=codex-luna-max opus-low" in refusal.found
+    assert refusal.failure_class == ""
+
+
+def test_an_exclusion_that_empties_the_list_reuses_the_existing_refusal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Emptied by a coauthor rather than by the subject, and it is still one finding.
+
+    A second refusal kind here would mean two strings to grep for the thing the ticket is
+    about; what differs is the action, which names the whole removed set rather than the
+    subject alone.
+    """
+    substitute_review_seat(monkeypatch, "opus-low", "opus-xhigh")
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-xhigh")
+    dispatch_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-low")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_same_profile"
+    assert "why=list_offers_nothing_else" in refusal.found
+    assert "candidates=none" in refusal.found
+    assert "opus-low and opus-xhigh leaves it with nothing" in refusal.action
+
+
+# --------------------- claim 2: a potential author, because the record cannot say more
+
+
+def test_a_seat_that_may_have_written_nothing_is_still_excluded(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The narrowing, stated as what the record supports rather than guessed at.
+
+    Nothing on a dispatch record says which run produced a commit, so a `planner` on this
+    issue is indistinguishable here from the implementer that wrote the diff — as are a
+    recon, a stopped run, a successful no-op and a dispatch against a superseded branch. The
+    honest answer is a superset, and a superset is exactly right for an exclusion: the
+    planner's profile is removed, and the route still says `checked` rather than `verified`.
+    """
+    substitute_review_seat(monkeypatch, "codex-luna-max", "opus-low", "opus-xhigh")
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", seat="planner", profile="codex-luna-max")
+    dispatch_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-low")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.potential == ("codex-luna-max", "opus-low")
+    assert plan.identity.profile == "opus-xhigh"
+
+
+def test_a_stopped_run_stays_in_the_set_because_its_result_carries_no_refusal(
+    tmp_path: Path,
+) -> None:
+    """The case the record cannot narrow, pinned so that narrowing it later is a decision.
+
+    `write_result`'s refusal path is decisive — that dispatch never reached a lane. A stop
+    deliberately writes no refusal, so a stopped run is indistinguishable from a completed
+    one here and stays in the set. Closing that needs the record to say what a run produced,
+    which is #333's and not this ticket's.
+    """
+    directory = dispatch_record(tmp_path, profile="opus-low")
+    (directory / "result.json").write_text(
+        json.dumps({"dispatch_id": "d-20260812-000000-aaaaaa", "outcome": "stopped"}),
+        encoding="utf-8",
+    )
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.potential == ("opus-low",)
+
+
+# ------------------------- claim 3: a read that could not complete is not a read that passed
+
+
+def test_one_unreadable_record_leaves_the_whole_scan_unchecked(tmp_path: Path) -> None:
+    """#41 head-on: the readable record still excludes, and still does not clear the check.
+
+    Round 1 discarded the unreadable record and reported `derived` off the readable one, so a
+    coauthor sitting in the record that would not open was invisible *and* the route said the
+    subject had been checked. Both halves are fixed, and they are separable: the profile that
+    was read is still removed, because an incomplete superset is still a superset.
+    """
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-low")
+    broken = tmp_path / "dispatches" / "d-20260812-000001-bbbbbb"
+    broken.mkdir(parents=True)
+    (broken / "dispatch.json").write_text("{ not json", encoding="utf-8")
+    plan, brief, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.potential == ("opus-low",)
+    assert not plan.route.authorship.complete
+    assert plan.route.authorship.why == "records_unreadable"
+    assert (
+        "route_reviewing_checked=no why=records_unreadable excluded_anyway=opus-low"
+        " (the caller's declaration, unchecked; ADR-0071 ruling 4's landing check"
+        " refuses on this)" in plan.route.lines()
+    )
+    assert plan.identity.profile != "opus-low"
+    dispatch.write_record(plan, brief)
+    document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
+    assert document["route"]["reviewing_checked"] is False
+
+
+def test_a_dispatch_directory_with_no_plan_in_it_is_a_record_that_could_not_be_read(
+    tmp_path: Path,
+) -> None:
+    """It cannot be skipped: with the issue as the only key, an unopened record is unclassified."""
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-low")
+    (tmp_path / "dispatches" / "d-20260812-000001-bbbbbb").mkdir(parents=True)
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.why == "records_unreadable"
+
+
+def test_an_unreadable_result_leaves_the_scan_incomplete_and_keeps_the_profile(
+    tmp_path: Path,
+) -> None:
+    """The other half of a partial read: "did this one refuse before it ran" went unanswered.
+
+    Keeping the profile is the safe direction for an exclusion; marking the scan incomplete is
+    the safe direction for the record. Both, rather than a choice between them.
+    """
+    directory = dispatch_record(tmp_path, profile="opus-low")
+    (directory / "result.json").write_text("{ not json", encoding="utf-8")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.potential == ("opus-low",)
+    assert plan.route.authorship.why == "records_unreadable"
+
+
+def test_a_partial_read_does_not_refuse_a_declaration_it_could_not_check(tmp_path: Path) -> None:
+    """The direction the fail-closed rule actually points, stated so it is a decision.
+
+    An unreadable record could be the one naming the declared subject, so calling the
+    declaration contradicted would turn a gap in the scan into an accusation about the caller.
+    The subject is recorded unchecked instead — which is what #334 refuses on — and every
+    profile that *was* read is still excluded, so the invariant does not rest on this.
+
+    `opus-high` against a readable record naming `opus-low` is exactly the arrangement the
+    contradiction refusal fires on when the read is complete; the unreadable record beside it
+    is the whole difference.
+    """
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-low")
+    broken = tmp_path / "dispatches" / "d-20260812-000001-bbbbbb"
+    broken.mkdir(parents=True)
+    (broken / "dispatch.json").write_text("{ not json", encoding="utf-8")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-high")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.why == "records_unreadable"
+    assert plan.identity.profile not in {"opus-high", "opus-low"}
+
+
+def test_an_unreadable_record_leaves_the_subject_unchecked_and_names_why(
+    tmp_path: Path,
+) -> None:
+    """Not raised on, and reported rather than counted as an answer."""
     directory = tmp_path / "dispatches" / "d-20260812-000002-cccccc"
     directory.mkdir(parents=True)
     (directory / "dispatch.json").write_text("{ not json", encoding="utf-8")
@@ -570,13 +821,34 @@ def test_an_unreadable_record_leaves_the_subject_unverified_and_names_why(
     assert plan.route.authorship.why == "records_unreadable"
 
 
-def test_a_derived_route_reads_back_off_the_record_as_derived(tmp_path: Path) -> None:
-    authoring_record(tmp_path, profile="opus-high")
+def test_a_checked_route_reads_back_off_the_record_as_checked(tmp_path: Path) -> None:
+    dispatch_record(tmp_path, profile="opus-high")
     plan, brief, _ = plan_for(tmp_path, reviewing="opus-high")
     assert plan is not None
     dispatch.write_record(plan, brief)
     assert dispatch.load_record(plan.record) == plan
-    assert dispatch.load_record(plan.record).route.authorship.derived
+    assert dispatch.load_record(plan.record).route.authorship.complete
+
+
+def test_an_unchecked_route_reads_back_off_the_record_carrying_its_reason(
+    tmp_path: Path,
+) -> None:
+    """`complete` is `potential` and `why` together, so a partial read must survive the trip.
+
+    Reading back only the profiles would turn an incomplete scan into a complete one the
+    moment a record was reloaded, which is the same overstatement one indirection later.
+    """
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-low")
+    broken = tmp_path / "dispatches" / "d-20260812-000001-bbbbbb"
+    broken.mkdir(parents=True)
+    (broken / "dispatch.json").write_text("{ not json", encoding="utf-8")
+    plan, brief, _ = plan_for(tmp_path, reviewing="opus-low")
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    reloaded = dispatch.load_record(plan.record).route.authorship
+    assert reloaded.potential == ("opus-low",)
+    assert reloaded.why == "records_unreadable"
+    assert not reloaded.complete
 
 
 # ------------------------------------------------- criterion 5: the negative, pinned hard
@@ -722,13 +994,13 @@ def test_the_registry_listing_states_both_halves_of_the_rule(
     assert dispatch.main(["--list"]) == 0
     printed = capsys.readouterr().out
     assert (
-        "  reviews=true resolves_past=--reviewing prefers=a-different-lane"
-        " refusal=review_same_profile" in printed
+        "  reviews=true resolves_past=--reviewing-and-every-potential-author"
+        " prefers=a-different-lane refusal=review_same_profile" in printed
     )
     assert "  permission_mode=plan forced=true (no caller override)" in printed
     assert (
-        "  review_subject=derived-from-dispatch-records"
-        " refusal=review_subject_contradicted underived=recorded-unverified" in printed
+        "  review_subject=checked-against-dispatch-records"
+        " refusal=review_subject_contradicted unchecked=recorded-unchecked" in printed
     )
 
 

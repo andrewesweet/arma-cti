@@ -759,11 +759,12 @@ SEAT_PLACEHOLDER: Final = "Why this issue wants a non-default seat."
 # instead of the instruction at composition time.
 REVIEW_SUBJECT_RULE: Final = (
     "Dispatch this seat with `--reviewing <profile>`, the profile whose work is under review."
-    " Resolution never returns that profile and prefers an entry on a different lane, the seat"
-    " forces a read-only permission mode over whatever is passed, and the dispatcher derives"
-    " the subject from the issue's own dispatch records — a declaration they contradict is"
-    " refused `review_subject_contradicted`, and one they cannot speak to is recorded"
-    " unverified (ADR-0071 ruling 4)."
+    " Resolution returns neither that profile nor any other one the issue's own dispatch"
+    " records place on the work, prefers an entry on a different lane among what is left, and"
+    " the seat forces a read-only permission mode over whatever is passed. A declaration a"
+    " complete read of those records contradicts is refused `review_subject_contradicted`;"
+    " where they cannot answer, the route is recorded unchecked rather than passed off as"
+    " checked (ADR-0071 ruling 4)."
 )
 REVIEW_SUBJECT_PLACEHOLDER: Final = (
     "Which profile's work this review judges. Compose with `--reviewing <profile>` and pass"
@@ -921,8 +922,10 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         choices=("", *sorted(dispatch.SEATS)),
         help="the seat this dispatch is for (default: implementer)",
     )
-    # Unvalidated here on purpose: `tools/dispatch.py` owns what a legal subject is, and a
-    # `choices=` list built from its registry would be a second copy that drifts (#322).
+    # The profile name itself is unvalidated on purpose: `tools/dispatch.py` owns what a legal
+    # subject is, and a `choices=` list built from its registry would be a second copy that
+    # drifts (#322). Whether the *seat* takes the option at all is a different question, and
+    # it is answered below rather than left to render as silence.
     parser.add_argument(
         "--reviewing",
         default="",
@@ -941,7 +944,23 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         help="the base SHA `just worktree add` printed, when it is not this box's",
     )
     parser.add_argument("--repo", default=REPO_SLUG, help=argparse.SUPPRESS)
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    # The two adjacent surfaces answer the same question the same way (#322 re-review). `just
+    # dispatch` refuses this pair `reviewing_without_review_seat`, on the rule that an option
+    # which silently decides nothing is one a caller will believe did something; a composer
+    # that accepted the flag and rendered nothing about it was that rule broken on the other
+    # half of the same command line. The registry's `reviews` column decides, so neither
+    # surface carries a list of seat names to keep in step.
+    seat = dispatch.SEATS.get(args.seat or DEFAULT_SEAT)
+    if args.reviewing and (seat is None or not seat.reviews):
+        parser.error(
+            f"--reviewing names the profile whose work is under review, and only a seat that"
+            f" reviews resolves against it; --seat {args.seat or DEFAULT_SEAT} does not. Drop"
+            " the option, or compose for --seat review. `just dispatch` refuses the same pair"
+            " `reviewing_without_review_seat`, and two adjacent surfaces disagreeing about one"
+            " flag is worse than either answer on its own."
+        )
+    return args
 
 
 def main(  # noqa: PLR0913 — one keyword seam per external read, each injected independently in tests

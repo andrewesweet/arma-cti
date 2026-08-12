@@ -37,8 +37,9 @@ Five things, and the dispatch record carries four of them by construction:
   confirmed defect gets raised on, and — since #322 — the key the reviewed profile is derived
   through;
 - **the profile under review** — `--reviewing <profile>`, which resolution removes from the
-  seat's preference list before walking it, and which the dispatcher checks against the
-  issue's own dispatch records rather than taking on the caller's word;
+  seat's preference list before walking it — along with every other profile the issue's own
+  dispatch records place on the work — and which the dispatcher checks against those records
+  rather than taking on the caller's word;
 - **the close audit** — read by the reviewer from the issue thread, because the audit is what
   states which criteria the landing claimed to meet and a review that does not read it can
   only check the code against itself;
@@ -70,29 +71,58 @@ rule both seats resolve to the head of one shared list and every review is same-
 makes ADR-0071 ruling 4's never-alone a ritual: the whole argument for a second instance rests
 on it being genuinely different.
 
-Three things about that, because each was a choice:
+Five things about that, because each was a choice:
 
+- **Every potential author is removed, not only the declared one.** The invariant is that no
+  profile that worked on the change produces the verdict clearing it; removing the declaration
+  alone enforces the narrower "not the one you named", and on a branch two dispatches touched,
+  declaring one left the other eligible to review work it may have coauthored — through a
+  field the proposer controls. So the whole set comes out of the candidate list. Over-excluding
+  costs a resolution step down the seat's list; under-excluding costs the invariant, and those
+  prices are not comparable.
+- **What the records support is a *potential*-author set, and the vocabulary says so.** A
+  dispatch record is written at plan time and carries the issue, the seat, the profile and the
+  lane. Two narrowings can be read off it honestly: a dispatch on a seat marked `reviews` was
+  judging rather than doing, and a dispatch whose `result.json` carries a refusal never reached
+  a lane. Nothing else — a planner, a recon, a stopped run, a successful no-op and a dispatch
+  against a superseded branch are indistinguishable here from the implementer that wrote the
+  diff, because **nothing on the record names the commits a run produced**. A superset is the
+  right shape for an exclusion and the wrong shape for a claim of authorship, so the route says
+  `reviewing_checked` and never `reviewing_verified`. Putting the produced commits on the
+  record would make the stronger word available; that is a change to what a dispatch writes,
+  and it belongs with #333 rather than here.
 - **The subject is named by the caller and checked against the records.** A declaration on its
   own settles nothing: `--profile opus-high --reviewing codex-luna-max` names two registered
   profiles, passes every check, and lets the implementing instance clear its own work while
   the record misstates the subject. So the dispatcher reads this box's dispatch records for
-  the issue — every dispatch on it that was not itself a review and did not refuse before it
-  ran — and refuses `review_subject_contradicted` where the declaration is not among the
-  profiles that authored the work. A dispatch that declares nothing at all is refused
-  `review_subject_unknown` rather than quietly resolved.
-- **Where the records cannot answer, the subject is recorded unverified, not treated as
-  checked.** The route carries `reviewing_verified: false` and the reason
+  the issue and refuses `review_subject_contradicted` where a **complete** read carries
+  profiles and the declaration is none of them. A dispatch that declares nothing at all is
+  refused `review_subject_unknown` rather than quietly resolved.
+- **A read that could not complete is not a read that passed.** One unreadable plan, one
+  dispatch directory with no plan in it, one `result.json` that will not parse: any of them
+  leaves the route `reviewing_checked: false` with `reviewing_unchecked_why`
   (`no_dispatch_records`, `no_authoring_dispatch`, `records_unreadable`), which is what ruling
-  4's landing check (#334) refuses on. Deciding *which* of several authoring profiles a
-  multi-dispatch branch should be reviewed past is #333's adjudication and is not done here —
-  a branch with two authors verifies against either of them.
+  4's landing check (#334) refuses on. The two halves are kept apart deliberately — the
+  profiles that *were* read are still excluded, because an incomplete superset is still a
+  superset — and a partial read does **not** refuse the declaration, because the record that
+  would not open could be the one naming it. Deciding *which* of several profiles a
+  multi-dispatch branch should be reviewed past is #333's adjudication and is not done here.
 - **A different lane is preferred, not required.** Where the only remaining entries share the
   reviewed profile's lane, one of them is used. The invariant is about the instance producing
   the verdict; provider diversity is the preference, and refusing there would turn away a
   genuinely different model for sharing an endpoint.
-- **`review_same_profile` refuses** where removal leaves nothing, and meets a caller who names
-  the reviewed profile with `--profile` too. It carries no failure class: nothing was found
-  about a provider or about the code under test.
+- **`review_same_profile` refuses** where the exclusion leaves nothing, and meets a caller who
+  names the reviewed profile with `--profile` — or names any other profile the records carry,
+  which is `why=named_author`. One refusal kind rather than three, because it is one finding
+  reached three ways. It carries no failure class: nothing was found about a provider or about
+  the code under test.
+
+**The residual, stated rather than left to be discovered.** These are this box's records. Work
+dispatched from another box, or done outside `just dispatch` altogether, leaves nothing here to
+read, so a profile that never appears in the records is never excluded and a complete read that
+does not carry it will refuse the declaration naming it. The refusal names the remedy — say so
+on the issue, or dispatch from a box that holds the record — and closing it properly is the
+same missing fact as above: what a run produced, on the record.
 
 ## What the seat hands back
 

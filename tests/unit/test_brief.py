@@ -746,6 +746,34 @@ def test_the_default_seat_opens_only_the_one_placeholder() -> None:
     assert composed().count(brief.PLACEHOLDER) == 1
 
 
+def test_the_review_seat_still_opens_the_placeholder_for_its_own_reason() -> None:
+    """Restored coverage for the seat the assertion above used to be made on (#322 claim 4).
+
+    That assertion moved to `planner` when the review seat grew a second, unrelated
+    placeholder, and nothing replaced it — so a regression removing the seat-reason
+    placeholder from `review` alone would have stayed green. The count is meaningful again
+    here because the subject is *named*, which closes the other placeholder: two left, and
+    both are the ones every non-default seat opens.
+    """
+    rendered = composed(seat=brief.derive_seat("review", "opus-high"))
+    assert "## Seat: review" in rendered
+    assert "Why this issue wants a non-default seat." in rendered
+    assert rendered.count(brief.PLACEHOLDER) == 2
+
+
+def test_a_review_briefing_with_no_subject_opens_the_seat_reason_placeholder_as_well() -> None:
+    """The other arrangement, so the count claim above cannot be satisfied by a swap.
+
+    Three placeholders: the task statement's, the seat reason's, and the subject's. A fix
+    that dropped the seat reason and kept the subject would keep the two-placeholder count
+    above at two on the named arrangement, and this one names which three are expected.
+    """
+    rendered = composed(seat=brief.derive_seat("review"))
+    assert "Why this issue wants a non-default seat." in rendered
+    assert "Which profile's work this review judges." in rendered
+    assert rendered.count(brief.PLACEHOLDER) == 3
+
+
 def test_a_review_briefing_states_the_relationship_its_dispatch_now_requires() -> None:
     """#322: an orchestrator meeting `--reviewing` at dispatch time met it too late."""
     rendered = composed(seat=brief.derive_seat("review", "opus-high"))
@@ -753,6 +781,9 @@ def test_a_review_briefing_states_the_relationship_its_dispatch_now_requires() -
     assert "Dispatch this seat with `--reviewing <profile>`" in rendered
     assert "Reviewing: `opus-high`." in rendered
     assert "review_subject_contradicted" in rendered
+    # The relationship the dispatcher actually enforces, not the narrower one round 1 stated:
+    # every profile the records place on the work is resolved past, not the declared one.
+    assert "nor any other one the issue's own dispatch records place on the work" in rendered
 
 
 def test_a_review_briefing_composed_without_a_subject_opens_a_placeholder_for_it() -> None:
@@ -775,6 +806,28 @@ def test_the_composer_takes_the_subject_from_the_command_line() -> None:
     assert brief.parse_args(["322", "--seat", "review", "--reviewing", "opus-high"]).reviewing == (
         "opus-high"
     )
+
+
+@pytest.mark.parametrize("seat", ["implementer", "planner", "recon", "retro"])
+def test_the_composer_refuses_the_subject_on_a_seat_that_reviews_nothing(
+    capsys: pytest.CaptureFixture[str], seat: str
+) -> None:
+    """The two command surfaces answer the same question the same way (#322 claim 5).
+
+    `just dispatch --seat implementer --reviewing opus-high` refuses
+    `reviewing_without_review_seat`; the composer accepted the flag and rendered nothing about
+    it, which is the same rule broken on the other half of the same command line.
+    """
+    with pytest.raises(SystemExit) as refused:
+        brief.parse_args(["322", "--seat", seat, "--reviewing", "opus-high"])
+    assert refused.value.code == 2
+    assert "reviewing_without_review_seat" in capsys.readouterr().err
+
+
+def test_the_composer_refuses_the_subject_on_the_default_seat_too() -> None:
+    """The default is `implementer`, which reviews nothing, so an omitted `--seat` is not a gap."""
+    with pytest.raises(SystemExit):
+        brief.parse_args(["322", "--reviewing", "opus-high"])
 
 
 def test_the_footer_names_the_readiness_findings_and_refuses_the_token_claim() -> None:
