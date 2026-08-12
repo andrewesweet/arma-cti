@@ -905,6 +905,85 @@ class Identity(NamedTuple):
         )
 
 
+# A record written before #323 carries none of these, so the default is the honest reading
+# of that: nothing recorded, nothing checked. Named once so the Plan default and `read_strata`
+# share one object, the way `NO_AUTHORSHIP` does for the route.
+
+
+class Strata(NamedTuple):
+    """The pre-work signals the observatory stratifies on (#323).
+
+    Each carries #322's checked flag beside its value. The observatory compares profiles
+    on assignment that is not random, so a confident value standing alone cannot tell
+    'the issue has none' from 'nobody could look' — and an unstratified comparison that
+    read the two the same would measure the router and report it as a profile finding.
+    Everything here is knowable before the seat starts work: the gate tier off the issue
+    body and CONTEXT.md, the routing class off the body and the policy, the labels off
+    GitHub. Nothing on this record is an outcome (diff size, review rounds, result), and
+    #323 criterion 3 is satisfied by that absence rather than by a marking — there is no
+    outcome-shaped field here to mark as description.
+    """
+
+    gate_tier: str
+    gate_tier_checked: bool
+    gate_tier_unchecked_why: str
+    routing_class: str
+    routing_class_checked: bool
+    routing_class_unchecked_why: str
+    labels: tuple[str, ...]
+    labels_checked: bool
+    labels_unchecked_why: str
+
+    def document(self) -> dict[str, object]:
+        """Render the three signals, each with its checked flag and its reason."""
+        return {
+            "gate_tier": self.gate_tier,
+            "gate_tier_checked": self.gate_tier_checked,
+            "gate_tier_unchecked_why": self.gate_tier_unchecked_why,
+            "routing_class": self.routing_class,
+            "routing_class_checked": self.routing_class_checked,
+            "routing_class_unchecked_why": self.routing_class_unchecked_why,
+            "labels": list(self.labels),
+            "labels_checked": self.labels_checked,
+            "labels_unchecked_why": self.labels_unchecked_why,
+        }
+
+
+NO_STRATA: Final = Strata(
+    gate_tier="",
+    gate_tier_checked=False,
+    gate_tier_unchecked_why="",
+    routing_class="",
+    routing_class_checked=False,
+    routing_class_unchecked_why="",
+    labels=(),
+    labels_checked=False,
+    labels_unchecked_why="",
+)
+
+
+def read_strata(document: Mapping[str, object]) -> Strata:
+    """Read the strata back off a record, so a reloaded plan is the plan that was written.
+
+    A record written before #323 carries none of these fields and reads back unchecked:
+    nothing was recorded, so nothing was checked. It is the fact those dispatches carry
+    about every field #323 added, rather than a guess dressed as one.
+    """
+    found = document.get("strata")
+    row = found if isinstance(found, dict) else {}
+    return Strata(
+        gate_tier=str(row.get("gate_tier", "")),
+        gate_tier_checked=bool(row.get("gate_tier_checked", False)),
+        gate_tier_unchecked_why=str(row.get("gate_tier_unchecked_why", "")),
+        routing_class=str(row.get("routing_class", "")),
+        routing_class_checked=bool(row.get("routing_class_checked", False)),
+        routing_class_unchecked_why=str(row.get("routing_class_unchecked_why", "")),
+        labels=tuple(str(name) for name in row.get("labels", ())),
+        labels_checked=bool(row.get("labels_checked", False)),
+        labels_unchecked_why=str(row.get("labels_unchecked_why", "")),
+    )
+
+
 class Plan(NamedTuple):
     """Everything the detached child needs, and nothing it must not write down."""
 
@@ -925,6 +1004,11 @@ class Plan(NamedTuple):
     # nobody can count later — and counting them is how this project will know whether
     # the enumerability sub-check ever earns a hard refusal.
     advisories: tuple[str, ...] = ()
+    # The pre-work strata the observatory compares profiles on (#323). On the record
+    # rather than reconstructed afterwards, because reconstruction from an outcome is the
+    # confound the observatory exists to remove: a gate tier read off the diff would put
+    # the router's assignment back into a profile finding in a subtler form.
+    strata: Strata = NO_STRATA
 
     def document(self) -> dict[str, object]:
         """Render the dispatch record, which names the credential key and never its value."""
@@ -945,6 +1029,7 @@ class Plan(NamedTuple):
             "breaker_dir": str(self.breaker_dir),
             "route": self.route.document(),
             "readiness_advisories": list(self.advisories),
+            "strata": self.strata.document(),
             "resource_attributes": dict(self.identity.attributes()),
             "plan_charge": plan_charge(lane, planned_at),
             "planned_at": planned_at.isoformat(),
@@ -2543,6 +2628,108 @@ def _from_stop(found: dispatch_stop.Refusal | None) -> Refusal | None:
     return Refusal(found.kind, found.found, found.action, failure_class=found.failure_class)
 
 
+def _policy_path(root: Path) -> Path:
+    """Resolve the routing policy file the dispatch and the strata read from the same place.
+
+    The bootstrap fallback is #266's own first-landing window: while the policy file is
+    being introduced, origin/main cannot yet contain it, so the in-tree candidate is read
+    when its main checkout is the one this dispatch runs from. `routing_refusal` and
+    `capture_strata` share this so a class refused on and a class recorded cannot be read
+    off two different files.
+    """
+    policy_path = root / routing_policy.POLICY_RELATIVE
+    if policy_path.exists():
+        return policy_path
+    candidate = Path(__file__).resolve().parents[1] / routing_policy.POLICY_RELATIVE
+    if candidate.exists() and main_checkout(candidate.parent) == root:
+        return candidate
+    return policy_path
+
+
+def _read_routing_policy(root: Path) -> routing_policy.ReadResult:
+    """Read the policy on every call — the same no-cache rule `routing_refusal` keeps."""
+    return routing_policy.read_policy(_policy_path(root))
+
+
+def capture_strata(body: str, issue: int, seat: str, root: Path, *, body_from_file: bool) -> Strata:
+    """Compute the three pre-work strata at dispatch time (#323).
+
+    Pure of the request's mutable state: nothing here depends on the lane, the profile or
+    any outcome, because the observatory stratifies to keep those out of the comparison.
+    The reads are the same ones the brief and the routing rung make — CONTEXT.md for the
+    gate, the policy for the class, `gh` for the labels — so a stratum and the line a brief
+    prints cannot quietly disagree.
+
+    Gate tier: `derive_gate` is unchecked only when it is undetermined *because* CONTEXT.md
+    could not be read. An in-world path decides `regress` without the vocabulary, and a
+    readable vocabulary decides everything else — including a genuine `undetermined`, which
+    is a stratum and not a failure.
+
+    Routing class: lane-blind `classify_issue`, so a Claude-native dispatch carries the
+    class a foreign one would. A body that declares no class is the empty string and is
+    distinct from an unreadable policy, which is the unchecked state — the third value
+    #323 names, never collapsed with 'no class'.
+
+    Labels: skipped when the body came from `--issue-body`, because that mode arms a
+    dispatch where `gh` cannot reach GitHub — there are no labels to fetch, not 'no
+    labels'. A `gh` that fails for its own reasons is unchecked for the same reason, with
+    its reason recorded.
+    """
+    # Local import: brief imports dispatch; a module-level import is a load-time cycle.
+    import brief  # noqa: PLC0415
+
+    vocabulary = brief.read_vocabulary(root)
+    reached = brief.in_world(brief.named_paths(body))
+    gate = brief.derive_gate(body, vocabulary)
+    gate_unreadable = not vocabulary and not reached
+    gate_tier_checked = not gate_unreadable
+    gate_tier_unchecked_why = (
+        "CONTEXT.md could not be read, so the vocabulary signal did not run"
+        if gate_unreadable
+        else ""
+    )
+
+    read = _read_routing_policy(root)
+    if read.policy is None:
+        routing_class_checked = False
+        routing_class = ""
+        routing_class_unchecked_why = read.error
+    else:
+        match = routing_policy.classify_issue(read.policy, body, seat)
+        routing_class_checked = True
+        routing_class = f"{match.rule.id}:{match.rule.name}" if match else ""
+        routing_class_unchecked_why = ""
+
+    if body_from_file:
+        labels: tuple[str, ...] = ()
+        labels_checked = False
+        labels_unchecked_why = (
+            "body came from --issue-body; labels live on GitHub, which this mode bypasses"
+        )
+    else:
+        fetched, why = readiness.fetch_labels(issue)
+        if why:
+            labels = ()
+            labels_checked = False
+            labels_unchecked_why = why
+        else:
+            labels = fetched
+            labels_checked = True
+            labels_unchecked_why = ""
+
+    return Strata(
+        gate_tier=gate.kind,
+        gate_tier_checked=gate_tier_checked,
+        gate_tier_unchecked_why=gate_tier_unchecked_why,
+        routing_class=routing_class,
+        routing_class_checked=routing_class_checked,
+        routing_class_unchecked_why=routing_class_unchecked_why,
+        labels=labels,
+        labels_checked=labels_checked,
+        labels_unchecked_why=labels_unchecked_why,
+    )
+
+
 def routing_refusal(
     args: argparse.Namespace, found: Readiness, root: Path, now: datetime
 ) -> Refusal | None:
@@ -2556,17 +2743,10 @@ def routing_refusal(
     There is no failure class. Refusing to produce a dispatch found nothing about a
     provider and nothing about code under test, exactly like the spent-attempt refusal.
     """
-    policy_path = root / routing_policy.POLICY_RELATIVE
-    if not policy_path.exists():
-        # Bootstrap only: while #266 itself is being tested, origin/main cannot contain
-        # the file that this commit introduces. Once landed, the main-checkout path above
-        # always wins, including when a running session's older worktree carries another
-        # copy. Without this narrow fallback the real process-seam test could not exercise
-        # the first landing of the mechanism at all.
-        candidate = Path(__file__).resolve().parents[1] / routing_policy.POLICY_RELATIVE
-        if candidate.exists() and main_checkout(candidate.parent) == root:
-            policy_path = candidate
-    read = routing_policy.read_policy(policy_path)
+    # `_read_routing_policy` carries the bootstrap fallback (#266's first landing) and is
+    # shared with `capture_strata`, so the class this refuses on and the class the record
+    # carries are read off one file and cannot quietly disagree.
+    read = _read_routing_policy(root)
     if read.policy is None:
         if args.lane == "claude-native":
             return None
@@ -2745,6 +2925,9 @@ def plan_dispatch(
         route=route,
         breaker_dir=breaker_dir,
         advisories=readiness_advisories(args.issue, found),
+        strata=capture_strata(
+            found.body, args.issue, route.seat, root, body_from_file=bool(args.issue_body)
+        ),
     )
     return plan, brief, None
 
@@ -2779,6 +2962,7 @@ def load_record(record: Path) -> Plan:
         route=read_route(document),
         breaker_dir=Path(str(document.get("breaker_dir", breaker.DEFAULT_BREAKER_DIR))),
         advisories=tuple(str(line) for line in document.get("readiness_advisories", ())),
+        strata=read_strata(document),
     )
 
 
