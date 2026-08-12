@@ -213,33 +213,39 @@ def test_the_skills_pair_is_retuned_and_its_prose_is_left_exactly_as_authored(
     assert path.read_text(encoding="utf-8") == before
 
 
-def test_a_hand_edited_skill_pair_is_caught(root: Path) -> None:
+def hand_edit_the_skill(root: Path, was: str, now: str) -> None:
+    """Write the surfaces, then drift one string in the skill and nothing else.
+
+    Writing first is the part that matters: a bare fixture has no agent files at all, so
+    `--check` reds on the four missing ones whatever the skill says, and a drift test that
+    skips this step asserts nothing (#324, review round 1 — found while proving these tests
+    fail on the defect they name).
+    """
+    assert generate_seats.main(["--root", str(root)]) == 0
+    assert generate_seats.main(["--root", str(root), "--check"]) == 0
     path = root / SKILL
-    path.write_text(
-        path.read_text(encoding="utf-8").replace("effort: xhigh", "effort: low"), encoding="utf-8"
-    )
+    before = path.read_text(encoding="utf-8")
+    drifted = before.replace(was, now)
+    assert drifted != before, f"nothing in the skill said {was!r}"
+    path.write_text(drifted, encoding="utf-8")
+
+
+def test_a_hand_edited_skill_pair_is_caught(root: Path) -> None:
+    hand_edit_the_skill(root, "effort: xhigh", "effort: low")
     assert generate_seats.main(["--root", str(root), "--check"]) == 1
 
 
 def test_a_hand_edited_session_command_in_the_skill_is_caught(root: Path) -> None:
     """`/effort xhigh` is the pair in a second vocabulary, so it drifts like the first."""
     profile = generate_seats.native_profile("interlocutor")
-    path = root / SKILL
-    before = path.read_text(encoding="utf-8")
-    drifted = before.replace(f"`/effort {profile.effort}`", "`/effort low`")
-    assert drifted != before
-    path.write_text(drifted, encoding="utf-8")
+    hand_edit_the_skill(root, f"`/effort {profile.effort}`", "`/effort low`")
     assert generate_seats.main(["--root", str(root), "--check"]) == 1
 
 
 def test_a_hand_edited_narrated_pair_in_the_skill_is_caught(root: Path) -> None:
     """The third notation: `at opus/xhigh` in a sentence, which used to be maintained by hand."""
     profile = generate_seats.native_profile("interlocutor")
-    path = root / SKILL
-    before = path.read_text(encoding="utf-8")
-    drifted = before.replace(f"{profile.model}/{profile.effort}", f"{profile.model}/high")
-    assert drifted != before
-    path.write_text(drifted, encoding="utf-8")
+    hand_edit_the_skill(root, f"{profile.model}/{profile.effort}", f"{profile.model}/high")
     assert generate_seats.main(["--root", str(root), "--check"]) == 1
 
 
@@ -390,7 +396,12 @@ def test_no_authored_agent_surface_text_carries_a_pair() -> None:
 
     `describe` derives the tier into each description; a blurb or a body that also stated
     one would be a second copy inside the generator itself, and `--check` could not see it.
+
+    The two positive controls come first: an assertion that finds nothing is worth what its
+    pattern is worth, and both patterns are built rather than written out.
     """
+    assert generate_seats.PROSE_PAIR.search("the seat runs at opus/xhigh today") is not None
+    assert generate_seats.SESSION_COMMAND.search("type `/model opus` first") is not None
     for surface in generate_seats.AGENT_SURFACES:
         authored = f"{surface.blurb}\n{surface.body}"
         assert generate_seats.PROSE_PAIR.search(authored) is None
