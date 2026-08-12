@@ -29,6 +29,12 @@ refuse — the seat answers, the work lands, and the only trace is a tier nobody
 `just check-seats` asserts that a pair is *declared and valid*; this asserts that it is the
 *registry's*, which is the half that was missing.
 
+**What a surface declares is generated; what a human narrates is checked.** A skill states
+its seat's tier in sentences too, and those go stale the same way — but rewriting them would
+make this tool the author of prose it did not write, so a disagreeing sentence is a
+`pair_drift` finding for a human to fix rather than an edit `just generate` performs behind
+one (#324, review round 2).
+
 **One harness has no surface to generate into.** That is recorded as a gap with its failure
 mode named, in `UNGENERATED_HARNESSES` below and in `docs/multi-provider-dispatch.md`,
 rather than papered over with instructions in a file that fails open the same way.
@@ -56,40 +62,75 @@ NATIVE_LANE: Final = "claude-native"
 
 FENCE: Final = "---"
 
-# The pair's other two notations, both of them prose. `just check` stayed green while the
+# The pair's other notations, all of them prose. `just check` stayed green while the
 # interlocutor's pair lived in three places, because only its frontmatter was derived (#324,
-# review round 1) — so a restatement in prose is a declaration surface too, and gets written
-# from the registry like every other one. This is what `describe` already does for the agent
-# files, whose description sentence carries a derived tier rather than no tier: the answer to
-# a pair narrated in prose is to derive the narration, not to delete it.
+# review round 1) — so a restatement in prose is a declaration surface too, and drift in it
+# has to be *caught*.
 #
-# `SESSION_COMMAND` is the operative one: `/model opus` and `/effort xhigh` are the commands
-# the human types to set a whole session to this seat's tier, so the argument is the pair in
-# a second vocabulary. The backticks are part of the match because that is how a skill writes
-# a command meant to be typed, and they keep the pattern off ordinary prose.
-SESSION_COMMAND: Final = re.compile(r"`/(model|effort) [^`\s]+`")
+# Caught, not rewritten (#324, review round 2, claim 2). A generator that owned every
+# matching string in a human-authored skill would silently rewrite sentences it did not
+# write: "compare recon at haiku/medium with the interlocutor at opus/xhigh" becomes a
+# sentence comparing one tier with itself, and the gate's own prescribed remedy — run
+# `just generate` — is what does it. So the frontmatter, which is a declared field, stays
+# generated, and prose that disagrees with the registry reds for a human to fix. The cost is
+# stated where it falls: a skill in `SKILL_SURFACES` is *that seat's* declaration surface,
+# so every pair narrated in it must be that seat's, and a sentence about another seat's tier
+# is a red rather than a silent rewrite.
+#
+# `SESSION_COMMAND` is the operative notation: `/model opus` and `/effort xhigh` are the
+# commands the human types to set a whole session to this seat's tier, so the argument is
+# the pair in a second vocabulary. The backticks are part of the match because that is how a
+# skill writes a command meant to be typed, and they keep the pattern off ordinary prose.
+SESSION_COMMAND: Final = re.compile(r"`/(model|effort) ([^`\s]+)`")
+
+COMMANDS: Final = ("model", "effort")
 
 
-# `PROSE_PAIR` is the narrated one — "at opus/xhigh", as the interlocutor's description and
-# its opening sentence both used to say by hand. The vocabulary is the registry's own native
-# models and efforts, built here rather than typed, so nothing in the pattern is a fourth
-# copy of the pair. Longest alternative first, so `xhigh` cannot be read as `high`.
-#
-# The scope this rests on: a file in `SKILL_SURFACES` is *that seat's* declaration surface,
-# so a native pair in it is that seat's pair. A skill narrating some other seat's tier would
-# be rewritten to its own, which is why it must not — `--check` shows the rewrite in the
-# diff rather than hiding it, and no skill does this today.
-def _prose_pair_pattern() -> re.Pattern[str]:
-    """Build the `model/effort` prose pattern out of the registry's native vocabulary."""
+def _notations() -> tuple[re.Pattern[str], ...]:
+    """Build the pair's prose notations out of the registry's own native vocabulary.
+
+    Nothing here is a second copy of a pair: the models and the efforts come from the
+    registry, and only the *shapes* a human writes them in are stated. Longest alternative
+    first, so `xhigh` cannot be read as `high`.
+
+    Four shapes, each one a human has actually written in this repository: `opus/xhigh`,
+    `opus at xhigh effort` (which is what `describe` renders), `run at opus xhigh`, and
+    `opus[1m], effort xhigh` (AGENTS.md's Model roles bullets). Every pattern captures the
+    model and then the effort, so a caller reads a stated pair without knowing the shape.
+    """
     native = [profile for profile in dispatch.PROFILES.values() if profile.lane == NATIVE_LANE]
     models = sorted({profile.model for profile in native}, key=len, reverse=True)
     efforts = sorted({profile.effort for profile in native}, key=len, reverse=True)
-    alternatives = "|".join(re.escape(model) for model in models)
-    levels = "|".join(re.escape(effort) for effort in efforts)
-    return re.compile(rf"\b(?:{alternatives})/(?:{levels})\b")
+    model = "(?:{})".format("|".join(re.escape(name) for name in models))
+    effort = "(?:{})".format("|".join(re.escape(level) for level in efforts))
+    return (
+        re.compile(rf"\b({model})/({effort})\b"),
+        re.compile(rf"\b({model}) at ({effort}) effort\b"),
+        re.compile(rf"\bat ({model}) ({effort})\b"),
+        re.compile(rf"\b({model})(?:\[1m\])?, effort ({effort})\b"),
+    )
 
 
-PROSE_PAIR: Final = _prose_pair_pattern()
+PAIR_NOTATIONS: Final = _notations()
+
+# The slash notation on its own, because it is the one shape that can only ever be a pair.
+# The other three are prose, so a surface that narrates tiers by hand — AGENTS.md's Model
+# roles section, which is #329's — states them legitimately, and a check over that surface
+# scopes itself by region rather than by notation.
+SLASH_PAIR: Final = PAIR_NOTATIONS[0]
+
+
+def stated_pairs(text: str) -> list[tuple[str, str]]:
+    """Every `(model, effort)` this text states, in any notation the vocabulary reads.
+
+    Its limit, stated rather than implied: this reads notations, not meanings. A profile
+    name (`opus-xhigh`), a paraphrase ("the top effort on opus") and a tier named across two
+    sentences are all invisible to it, and no pattern makes them visible. What it buys is
+    that the shapes a human actually types are enumerable, so a hand-written pair in one of
+    them cannot sit beside a derived one unnoticed.
+    """
+    return [(match[1], match[2]) for pattern in PAIR_NOTATIONS for match in pattern.finditer(text)]
+
 
 # Written into every generated agent file, where the next hand to open one meets it. Not a
 # substitute for the check — an instruction in a file is exactly the fail-open remedy
@@ -139,10 +180,12 @@ class SkillSurface(NamedTuple):
 
     A skill is prose the human invokes, with frontmatter keys this module has no opinion
     about; generating the whole file would move a skill into Python to own a handful of its
-    lines. So every pair the file declares is retuned in place — the frontmatter's, the
-    narrated `model/effort` in its sentences, and the arguments of the `/model` and
-    `/effort` commands it tells the human to type — and the rest is left exactly as
-    authored. Three notations of one fact, none of them hand-maintained (#324).
+    lines. So the declared pair — the top-level `model:` and `effort:` keys — is retuned in
+    place, and the rest of the file is left exactly as authored.
+
+    The same fact is also stated in the file's sentences and in the `/model` and `/effort`
+    commands it tells the human to type. Those are **checked, not written**: three notations
+    of one fact, one of them generated and the other two guarded (#324).
     """
 
     seat: str
@@ -328,10 +371,11 @@ def retune(where: str, text: str, profile: dispatch.Profile) -> str:
     scalars — which is the same reading `tools/check_seat_config.py` does, for the same
     reason.
 
-    The pair is declared twice in two notations, so both are rewritten: `model:`/`effort:`
-    in the frontmatter, and the `/model` and `/effort` session commands in the prose. A
-    surface that declared one of them by hand is a surface that goes stale silently, which
-    is the whole of what this module exists to prevent.
+    Only the frontmatter moves. The pair is *also* stated in the file's prose — narrated in
+    sentences, and typed as `/model` and `/effort` commands — and those are checked rather
+    than rewritten (`prose_findings`), because a generator that edits sentences it did not
+    author is how the gate's own remedy comes to change what a human meant (#324, review
+    round 2, claim 2).
     """
     lines = text.split("\n")
     if not lines or lines[0].strip() != FENCE:
@@ -360,33 +404,64 @@ def retune(where: str, text: str, profile: dispatch.Profile) -> str:
             " (tools/check_seat_config.py); this one declares part of it."
         )
         raise SeatSurfaceError(message)
-    return retune_prose(where, "\n".join(lines), profile)
+    return "\n".join(lines)
 
 
-def retune_prose(where: str, text: str, profile: dispatch.Profile) -> str:
-    """Point a skill's narrated and typed pairs at the one the registry chose.
+def prose_findings(where: str, text: str, profile: dispatch.Profile) -> list[str]:
+    """Every pair this file states in prose that is not the one the registry chose.
 
-    Two notations, one rule. `at opus/xhigh` in a sentence is rewritten wherever it appears;
-    `/model opus` and `/effort xhigh` are rewritten together or not at all. Naming one
-    command and not the other is refused rather than half-rewritten: a human who sets the
-    model and not the effort gets a session running the other half at whatever tier it
-    already had, silently, which is ADR-0068's fail-open failure reached by advice instead
-    of by frontmatter. A skill naming neither command is left alone — the commands are how a
-    skill talks about a whole session, and not every skill needs to.
+    A finding, never an edit. The narrated pair and the `/model` and `/effort` commands are
+    the same fact in other vocabularies, so they go stale the way the frontmatter does — but
+    they live in sentences a human wrote, and the remedy for a stale sentence is a human
+    rewriting it. What this buys is that the staleness cannot be silent; what it costs is
+    that a sentence about *another* seat's tier reds here, because a notation check cannot
+    tell whose tier a narrated pair is.
+
+    The half-named commands case is a finding for the same reason it used to be a refusal: a
+    human who sets the model and not the effort gets a session running the other half at
+    whatever tier it already had, silently, which is ADR-0068's fail-open failure reached by
+    advice instead of by frontmatter. A skill naming neither command is fine — the commands
+    are how a skill talks about a whole session, and not every skill needs to.
+
+    Not classed `schema_stale`: that class prescribes regenerating, and regenerating is
+    exactly what must not happen to these lines. The class tells its reader what to do.
     """
     wanted = {"model": profile.model, "effort": profile.effort}
-    named = {match[1] for match in SESSION_COMMAND.finditer(text)}
-    if named and named != set(wanted):
-        absent = sorted(set(wanted) - named)
-        message = (
-            f"{where}: the prose runs {', '.join(f'`/{key}`' for key in sorted(named))}"
+    found = [
+        f"pair_drift: {where} states `{model}/{effort}` where the registry chose"
+        f" `{profile.model}/{profile.effort}`. Fix the sentence by hand — `just generate`"
+        " writes the frontmatter and deliberately leaves authored prose alone."
+        for model, effort in stated_pairs(text)
+        if (model, effort) != (profile.model, profile.effort)
+    ]
+    commands = SESSION_COMMAND.findall(text)
+    named = {command for command, _ in commands}
+    if named and named != set(COMMANDS):
+        absent = sorted(set(COMMANDS) - named)
+        found.append(
+            f"pair_drift: {where} runs {', '.join(f'`/{key}`' for key in sorted(named))}"
             f" without {', '.join(f'`/{key}`' for key in absent)}. A session set to half a"
             " seat's tier runs the other half at whatever it already had, silently"
             " (ADR-0068), so a skill names both commands or neither."
         )
-        raise SeatSurfaceError(message)
-    text = SESSION_COMMAND.sub(lambda found: f"`/{found[1]} {wanted[found[1]]}`", text)
-    return PROSE_PAIR.sub(f"{profile.model}/{profile.effort}", text)
+    found.extend(
+        f"pair_drift: {where} tells the human to type `/{command} {argument}` where the"
+        f" registry chose `{wanted[command]}`. Fix the command by hand."
+        for command, argument in commands
+        if argument != wanted[command]
+    )
+    return found
+
+
+def prose_drift(root: Path) -> list[str]:
+    """Report the prose findings across every skill surface this root carries."""
+    found: list[str] = []
+    for surface in SKILL_SURFACES:
+        path = root / surface.path
+        if path.exists():
+            text = path.read_text(encoding="utf-8")
+            found.extend(prose_findings(surface.path, text, native_profile(surface.seat)))
+    return found
 
 
 def plan(root: Path) -> list[tuple[Path, str]]:
@@ -420,17 +495,23 @@ def strays(root: Path) -> list[str]:
 
 
 def stale(root: Path, planned: list[tuple[Path, str]]) -> list[str]:
-    """Every way a surface on disk is not the surface the registry describes."""
+    """Every way a surface on disk is not the surface the registry describes.
+
+    Each finding carries its own remedy, because they do not share one: a generated file is
+    regenerated, and a sentence a human wrote is rewritten by a human.
+    """
     found = [
         f"schema_stale: {path.relative_to(root).as_posix()} is not what the seat registry"
-        " would write."
+        " would write. Run `just generate`."
         for path, text in planned
         if not path.exists() or path.read_text(encoding="utf-8") != text
     ]
     found.extend(
         f"schema_stale: .claude/agents/{name} is a seat the registry does not carry."
+        " Run `just generate`."
         for name in strays(root)
     )
+    found.extend(prose_drift(root))
     return found
 
 
@@ -457,7 +538,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.check:
         found = stale(args.root, planned)
         for line in found:
-            print(f"{line} Run `just generate`.", file=sys.stderr)  # noqa: T201 — ditto
+            print(line, file=sys.stderr)  # noqa: T201 — ditto
         return 1 if found else 0
 
     for path, text in planned:
@@ -476,7 +557,14 @@ def main(argv: list[str] | None = None) -> int:
         print(retired)  # noqa: T201 — the removal is named rather than silent
     for line in gap_report():
         print(line)  # noqa: T201 — what `just generate` tells its runner
-    return 0
+    # The half this command cannot write. A drifted sentence is a human's to fix, so writing
+    # ends non-zero rather than reporting the finding into a scroll-back nobody reads: the
+    # runner came here because `--check` sent them, and leaving with an unfixed finding and
+    # an exit code of 0 would read as done.
+    drifted = prose_drift(args.root)
+    for line in drifted:
+        print(line, file=sys.stderr)  # noqa: T201 — the gate's channel
+    return 1 if drifted else 0
 
 
 if __name__ == "__main__":
