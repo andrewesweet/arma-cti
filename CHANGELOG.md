@@ -26,7 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is opus/low, the native tail of that seat's list, and `cti-recon` is haiku/medium. The
   interlocutor's row governs both its surfaces without becoming a dispatch route — it is
   registered as `DECLARED_ONLY_SEATS`, which nothing resolves through, so `--seat interlocutor`
-  stays unknown (ADR-0068 stands).
+  stays unknown (ADR-0068 stands). A pair narrated in prose is a declaration surface too, so the
+  interlocutor skill's description, its opening sentence and the `/model` and `/effort` commands
+  it tells the human to type are all written from the registry as well — three notations of one
+  fact, none hand-maintained. Naming one of those two commands without the other is refused
+  rather than half-rewritten, because a session set to half a seat's tier runs the other half at
+  whatever it already had. And the wiring itself is now pinned: a test asserts `check-generated`
+  is a dependency of `just check` and that its body still invokes the checker, so enforcement
+  cannot leave the gate while every drift test stays green.
 
 - **`just dispatch --seat S --issue N` now resolves its own profile, and the record says which and
   why.** Naming a seat is the ordinary way to dispatch. Each seat carries ADR-0071 ruling 2's

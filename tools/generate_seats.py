@@ -37,6 +37,7 @@ rather than papered over with instructions in a file that fails open the same wa
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 from typing import Final, NamedTuple
@@ -54,6 +55,41 @@ import dispatch
 NATIVE_LANE: Final = "claude-native"
 
 FENCE: Final = "---"
+
+# The pair's other two notations, both of them prose. `just check` stayed green while the
+# interlocutor's pair lived in three places, because only its frontmatter was derived (#324,
+# review round 1) — so a restatement in prose is a declaration surface too, and gets written
+# from the registry like every other one. This is what `describe` already does for the agent
+# files, whose description sentence carries a derived tier rather than no tier: the answer to
+# a pair narrated in prose is to derive the narration, not to delete it.
+#
+# `SESSION_COMMAND` is the operative one: `/model opus` and `/effort xhigh` are the commands
+# the human types to set a whole session to this seat's tier, so the argument is the pair in
+# a second vocabulary. The backticks are part of the match because that is how a skill writes
+# a command meant to be typed, and they keep the pattern off ordinary prose.
+SESSION_COMMAND: Final = re.compile(r"`/(model|effort) [^`\s]+`")
+
+
+# `PROSE_PAIR` is the narrated one — "at opus/xhigh", as the interlocutor's description and
+# its opening sentence both used to say by hand. The vocabulary is the registry's own native
+# models and efforts, built here rather than typed, so nothing in the pattern is a fourth
+# copy of the pair. Longest alternative first, so `xhigh` cannot be read as `high`.
+#
+# The scope this rests on: a file in `SKILL_SURFACES` is *that seat's* declaration surface,
+# so a native pair in it is that seat's pair. A skill narrating some other seat's tier would
+# be rewritten to its own, which is why it must not — `--check` shows the rewrite in the
+# diff rather than hiding it, and no skill does this today.
+def _prose_pair_pattern() -> re.Pattern[str]:
+    """Build the `model/effort` prose pattern out of the registry's native vocabulary."""
+    native = [profile for profile in dispatch.PROFILES.values() if profile.lane == NATIVE_LANE]
+    models = sorted({profile.model for profile in native}, key=len, reverse=True)
+    efforts = sorted({profile.effort for profile in native}, key=len, reverse=True)
+    alternatives = "|".join(re.escape(model) for model in models)
+    levels = "|".join(re.escape(effort) for effort in efforts)
+    return re.compile(rf"\b(?:{alternatives})/(?:{levels})\b")
+
+
+PROSE_PAIR: Final = _prose_pair_pattern()
 
 # Written into every generated agent file, where the next hand to open one meets it. Not a
 # substitute for the check — an instruction in a file is exactly the fail-open remedy
@@ -102,8 +138,11 @@ class SkillSurface(NamedTuple):
     """A partly authored file whose declared pair is rewritten and nothing else is.
 
     A skill is prose the human invokes, with frontmatter keys this module has no opinion
-    about; generating the whole file would move a skill into Python to own two of its
-    lines. So the pair is retuned in place and the rest is left exactly as authored.
+    about; generating the whole file would move a skill into Python to own a handful of its
+    lines. So every pair the file declares is retuned in place — the frontmatter's, the
+    narrated `model/effort` in its sentences, and the arguments of the `/model` and
+    `/effort` commands it tells the human to type — and the rest is left exactly as
+    authored. Three notations of one fact, none of them hand-maintained (#324).
     """
 
     seat: str
@@ -281,12 +320,18 @@ def render(surface: AgentSurface) -> str:
 
 
 def retune(where: str, text: str, profile: dispatch.Profile) -> str:
-    """Rewrite a partly authored surface's declared pair, leaving everything else alone.
+    """Rewrite every pair a partly authored surface declares, leaving everything else alone.
 
     Deliberately not a YAML round-trip: the file is authored prose with authored
     frontmatter, and a reformat would be this tool editing lines it has no opinion about.
-    Only the two values move, and only where they are already top-level scalars — which is
-    the same reading `tools/check_seat_config.py` does, for the same reason.
+    Only the values move, and in the frontmatter only where they are already top-level
+    scalars — which is the same reading `tools/check_seat_config.py` does, for the same
+    reason.
+
+    The pair is declared twice in two notations, so both are rewritten: `model:`/`effort:`
+    in the frontmatter, and the `/model` and `/effort` session commands in the prose. A
+    surface that declared one of them by hand is a surface that goes stale silently, which
+    is the whole of what this module exists to prevent.
     """
     lines = text.split("\n")
     if not lines or lines[0].strip() != FENCE:
@@ -315,7 +360,33 @@ def retune(where: str, text: str, profile: dispatch.Profile) -> str:
             " (tools/check_seat_config.py); this one declares part of it."
         )
         raise SeatSurfaceError(message)
-    return "\n".join(lines)
+    return retune_prose(where, "\n".join(lines), profile)
+
+
+def retune_prose(where: str, text: str, profile: dispatch.Profile) -> str:
+    """Point a skill's narrated and typed pairs at the one the registry chose.
+
+    Two notations, one rule. `at opus/xhigh` in a sentence is rewritten wherever it appears;
+    `/model opus` and `/effort xhigh` are rewritten together or not at all. Naming one
+    command and not the other is refused rather than half-rewritten: a human who sets the
+    model and not the effort gets a session running the other half at whatever tier it
+    already had, silently, which is ADR-0068's fail-open failure reached by advice instead
+    of by frontmatter. A skill naming neither command is left alone — the commands are how a
+    skill talks about a whole session, and not every skill needs to.
+    """
+    wanted = {"model": profile.model, "effort": profile.effort}
+    named = {match[1] for match in SESSION_COMMAND.finditer(text)}
+    if named and named != set(wanted):
+        absent = sorted(set(wanted) - named)
+        message = (
+            f"{where}: the prose runs {', '.join(f'`/{key}`' for key in sorted(named))}"
+            f" without {', '.join(f'`/{key}`' for key in absent)}. A session set to half a"
+            " seat's tier runs the other half at whatever it already had, silently"
+            " (ADR-0068), so a skill names both commands or neither."
+        )
+        raise SeatSurfaceError(message)
+    text = SESSION_COMMAND.sub(lambda found: f"`/{found[1]} {wanted[found[1]]}`", text)
+    return PROSE_PAIR.sub(f"{profile.model}/{profile.effort}", text)
 
 
 def plan(root: Path) -> list[tuple[Path, str]]:
