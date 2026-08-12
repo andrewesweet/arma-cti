@@ -360,3 +360,52 @@ One more asymmetry, and it is a property of this box rather than of either rulin
 sandbox, and dispatch `d-20260806-165944-1b31e5` reached a green landing that way while the
 sandbox was still refusing its `git add`. A sandbox that a reviewer model can be asked to
 step outside is not a containment boundary in the way an allowlist is.
+
+## The seat surfaces are generated, and only one harness has a surface
+
+ADR-0071 ruling 7: both harnesses' surfaces are generated from `tools/dispatch.py`'s
+registry **wherever the target surface exists**, and the pattern is `tools/hook_parity.py`'s
+— translate, never reimplement. `tools/generate_seats.py` is the seat half of that, run by
+`just generate` and checked by `just check` (#324).
+
+What it removes is a class of drift rather than a single mistake. A seat's `(model, effort)`
+pair was typed out wherever a surface wanted it: the agent definition, the skill frontmatter
+that ADR-0068 added, and the always-loaded prefix's own description of the mapping. The
+interlocutor's pair reached five places that way, and `cti-implementer`'s came to disagree
+with ruling 2's table with nothing to notice. The registry already held each pair once,
+behind a seat's ordered preference list (#320, #321), so the surfaces are written from it.
+
+**A Claude seat file declares the first `claude-native` profile in the seat's preference
+list**, and that lane filter is the whole of the derivation. A `.claude/agents/` definition
+cannot pin a lane — it names a Claude-vocabulary model, and which provider that reaches is
+a property of the session that spawns the subagent — so a foreign head has no expression
+here. `zai-glm52-max` is the trap rather than `codex-luna-max`: its Claude vocabulary is
+`opus`/`max`, which a native session would read as a native pair the registry never chose.
+
+**The check matters more here than for the schema export, because both declaration surfaces
+fail open** (ADR-0068). A misspelled key, an indented line, a value nobody regenerated —
+none of them refuse. The seat answers, the work lands, and the only trace is a tier nobody
+ratified. `just check-seats` asserts that a pair is declared and valid; the generated-file
+check asserts that it is the registry's, which is the half that was missing. Writing also
+*converges* the directory rather than adding to it: a file for a seat the registry has
+retired is removed and named, so every failure `--check` can report is one `just generate`
+would fix.
+
+**Codex has no seat-definition surface, and that is an accepted gap with a named failure
+mode.** There is nothing to generate into, so generation is not a claim this project can
+make for both harnesses. The consequence: a subagent a Codex session spawns on its own
+judgement runs at whatever model that session was started with, and nothing refuses — on
+the lane ruling 2 intends as the primary implementation lane, which means the seat concept
+the map is built from is unenforceable there. Instructions in `AGENTS.md` were rejected as
+the remedy, because they fail open in exactly the way they would exist to prevent. The gap
+is carried as data in `generate_seats.UNGENERATED_HARNESSES` and printed by `just generate`,
+so it is met by whoever touches the surfaces rather than filed somewhere they will not look.
+**Do not invent a surface**; when one exists, it is a translation and this module is where
+it goes.
+
+**Running the generator is the orchestrator's, not a dispatch's**, and for the reason the
+permission section above already records: a dispatched session cannot write under `.claude/`
+at all, so it can author this module and its check but cannot materialise the output. That
+is not the #299 proposal-and-transcribe shape — there is no wording to transcribe, only one
+deterministic command to run. A `Bash(just generate)` grant in `.claude/settings.json` would
+close it, and that is a permissions decision and therefore the human's (#248).
