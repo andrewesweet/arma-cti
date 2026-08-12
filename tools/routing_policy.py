@@ -307,6 +307,33 @@ def advisory_match(policy: Policy, body: str, route: Route) -> Match | None:
     return None
 
 
+def classify_issue(policy: Policy, body: str, seat: str) -> Match | None:
+    """Return the routing class an issue's declaration puts it in, lane-blind (#323).
+
+    `advisory_match` answers the enforcement question — may this *foreign* route take
+    this class — and so returns `None` on the Claude lane before it looks. The
+    observatory asks a different question: which class an issue belongs to, regardless of
+    the lane that took it, so a comparison of profiles is not silently a comparison of
+    the router. That needs the same `issue_match` walked without the lane gate.
+
+    No exception filter, on purpose. `_excepted` widens a *route* past a class — a
+    standing allowance or a body marker that lifts keep-on-Claude for one dispatch — and
+    a route exemption does not reclassify the issue. The class an issue *is* is the first
+    row its body declares, the stable signal a stratified comparison wants; the
+    enforcement read in `advisory_match` is the one that honours exemptions, and the two
+    answer different questions.
+
+    `None` is a third value and not an empty string: a body that declares no class is a
+    stratum, and a stratification that could not tell it from "could not look" (#323's
+    trap) would bucket both as blank.
+    """
+    for rule in policy.rules:
+        match = issue_match(rule, body, seat)
+        if match is not None:
+            return match
+    return None
+
+
 def enforcing_match(policy: Policy, paths: tuple[str, ...], lane: str) -> Match | None:
     """Return the first class the actual diff touches for a foreign landing."""
     if lane == policy.claude_lane:

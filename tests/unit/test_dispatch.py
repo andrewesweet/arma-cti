@@ -46,6 +46,9 @@ if TYPE_CHECKING:
 dispatch = load_tool("dispatch")
 breaker = load_tool("breaker")
 admission = load_tool("admission")
+brief = load_tool("brief")
+readiness = load_tool("readiness")
+routing_policy = load_tool("routing_policy")
 
 SEAM = REPO / "tools" / "dispatch.sh"
 JUSTFILE = REPO / "justfile"
@@ -2060,3 +2063,180 @@ def test_the_seam_refuses_a_profile_that_has_spent_both_admission_attempts(
     assert "state=escalated" not in done.stdout
     assert not (tmp_path / "dispatches").exists(), "nothing was written for a run that never was"
     assert not capture.exists(), "and the runner was never reached"
+
+
+# -------------------------------------------------------------------- the pre-work strata (#323)
+#
+# The observatory compares profiles, and assignment is not random, so the record carries
+# signals knowable *before* the seat starts work — gate tier, routing class, labels —
+# never outcomes. Each carries #322's checked flag beside its value: a confident value
+# standing alone cannot tell 'the issue has none' from 'nobody could look', and reading
+# the two the same is the stratification error #323 was filed to prevent. The tests below
+# pin that distinction for each signal; the ones a reviewer should weigh most carefully
+# are the absent-versus-unchecked pairs, where a weakened assertion would let a collapse
+# through green.
+
+# Bodies that name a surface without depending on any fixture's prose. Each is a path the
+# real CONTEXT.md vocabulary and the real routing policy judge, so the assertions pin what
+# those authorities actually return rather than a paraphrase of them.
+IN_WORLD_BODY = "Implement the change in `addons/main/fn_foo.sqf` and its test.\n"
+NON_WORLD_BODY = "Implement the change in `tools/dispatch.py` and its test.\n"
+NO_CLASS_BODY = "Implement the change in `tools/worker.py` and its test.\n"
+NO_PATH_BODY = "A change to the README prose only, naming no path.\n"
+
+
+def test_strata_records_an_in_world_issue_as_regress_with_its_class() -> None:
+    s = dispatch.capture_strata(IN_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
+    assert s.gate_tier == "regress"
+    assert s.gate_tier_checked is True
+    assert s.gate_tier_unchecked_why == ""
+    # Lane-blind: a Claude-native dispatch carries the same class a foreign one would.
+    assert s.routing_class == "5:in_world_landings"
+    assert s.routing_class_checked is True
+
+
+def test_strata_records_a_non_world_issue_as_fast() -> None:
+    s = dispatch.capture_strata(NON_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
+    assert s.gate_tier == "fast"
+    assert s.gate_tier_checked is True
+    # Non-world is about the gate tier, not the routing class: this body is fast *and*
+    # carries a class, which is the combination that proves the two signals are independent.
+    assert s.routing_class == "6:gates_themselves"
+    assert s.routing_class_checked is True
+
+
+def test_strata_records_no_routing_class_as_a_checked_absence() -> None:
+    s = dispatch.capture_strata(NO_CLASS_BODY, 323, "implementer", REPO, body_from_file=True)
+    # No class is the empty string, and it is checked: we looked, and the issue declares
+    # none. That is the third value #323 names, never collapsed with "could not look".
+    assert s.routing_class == ""
+    assert s.routing_class_checked is True
+    assert s.routing_class_unchecked_why == ""
+
+
+def test_strata_labels_are_unchecked_when_the_body_came_from_issue_body() -> None:
+    # `--issue-body` arms a dispatch where `gh` cannot reach GitHub, so labels are not
+    # fetched — not "no labels". The distinction is the one the observatory depends on.
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=True)
+    assert s.labels_checked is False
+    assert s.labels == ()
+    assert s.labels_unchecked_why
+
+
+def test_strata_labels_are_checked_when_gh_is_reachable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(dispatch.readiness, "fetch_labels", lambda *_: (("bug", "ui"), ""))
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=False)
+    assert s.labels_checked is True
+    assert s.labels == ("bug", "ui")
+    assert s.labels_unchecked_why == ""
+
+
+def test_strata_treats_an_empty_label_list_as_a_checked_absence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # An issue that carries no labels is checked-True with an empty list — the absence the
+    # observatory must not mistake for "could not look".
+    monkeypatch.setattr(dispatch.readiness, "fetch_labels", lambda *_: ((), ""))
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=False)
+    assert s.labels_checked is True
+    assert s.labels == ()
+    assert s.labels_unchecked_why == ""
+
+
+def test_strata_labels_are_unchecked_when_gh_fails(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        dispatch.readiness, "fetch_labels", lambda *_: ((), "gh did not answer within 30s")
+    )
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=False)
+    assert s.labels_checked is False
+    assert s.labels == ()
+    assert s.labels_unchecked_why == "gh did not answer within 30s"
+
+
+def test_strata_gate_is_unchecked_when_the_vocabulary_could_not_be_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # CONTEXT.md unreadable and no in-world path to fall back on: undetermined *because*
+    # the check could not run, which is the unchecked state — not a genuine undetermined.
+    monkeypatch.setattr(brief, "read_vocabulary", lambda *_: ())
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=True)
+    assert s.gate_tier == "undetermined"
+    assert s.gate_tier_checked is False
+    assert s.gate_tier_unchecked_why
+
+
+def test_strata_gate_undetermined_is_checked_when_the_vocabulary_was_readable() -> None:
+    # A genuine undetermined (readable vocabulary, no paths) is a stratum, not a failure:
+    # the two undetermined-states must not collapse into one.
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=True)
+    assert s.gate_tier == "undetermined"
+    assert s.gate_tier_checked is True
+    assert s.gate_tier_unchecked_why == ""
+
+
+def test_strata_routing_class_is_unchecked_when_the_policy_could_not_be_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        dispatch.routing_policy,
+        "read_policy",
+        lambda *_: routing_policy.ReadResult(None, "policy unreadable"),
+    )
+    s = dispatch.capture_strata(IN_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
+    assert s.routing_class_checked is False
+    assert s.routing_class == ""
+    assert s.routing_class_unchecked_why == "policy unreadable"
+
+
+def test_the_dispatch_record_carries_the_strata(tmp_path: Path) -> None:
+    # End-to-end through plan_dispatch: the default fixture body (tools/worker.py) is a
+    # non-world issue with no routing class, dispatched in --issue-body mode.
+    plan, _brief, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+    strata = plan.document()["strata"]
+    assert strata["gate_tier"] == "fast"
+    assert strata["gate_tier_checked"] is True
+    assert strata["routing_class"] == ""
+    assert strata["routing_class_checked"] is True
+    assert strata["labels_checked"] is False  # --issue-body mode
+
+
+def test_the_dispatch_record_carries_an_in_world_issue_strata(tmp_path: Path) -> None:
+    body = tmp_path / "in-world.md"
+    body.write_text(
+        "## Scope\n\nImplement the change in `addons/main/fn_foo.sqf`.\n\n"
+        "## Acceptance criteria\n\n"
+        "- [ ] `addons/main/fn_foo.sqf` returns the expected value.\n"
+        "- [ ] `just unit` is green.\n",
+        encoding="utf-8",
+    )
+    plan, _brief, refusal = plan_for(tmp_path, issue_body=str(body))
+    assert refusal is None
+    assert plan is not None
+    strata = plan.document()["strata"]
+    assert strata["gate_tier"] == "regress"
+    assert strata["routing_class"] == "5:in_world_landings"
+
+
+def test_a_record_round_trips_its_strata(tmp_path: Path) -> None:
+    plan, brief_text, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+    reloaded = dispatch.load_record(plan.record)
+    assert reloaded.strata == plan.strata
+
+
+def test_a_record_written_before_strata_reads_back_unchecked() -> None:
+    # A pre-#323 record carries no strata: read_strata returns the honest statement of
+    # that — nothing recorded, nothing checked — rather than a guess dressed as a value.
+    s = dispatch.read_strata({})
+    assert s == dispatch.NO_STRATA
+    assert s.gate_tier_checked is False
+    assert s.routing_class_checked is False
+    assert s.labels_checked is False

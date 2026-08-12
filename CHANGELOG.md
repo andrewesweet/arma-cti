@@ -24,6 +24,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   transport fault is a worse failure than the one it repairs. A refresh warning is kept distinct
   from a crash, so a warning that stands alone does not read as a lost session, and a crash
   arriving after an acknowledged warning still surfaces.
+- **The dispatch record carries the pre-work strata the observatory needs to compare profiles
+  fairly.** ADR-0071's observatory attributes outcomes to profiles, and assignment is not random
+  — an in-world issue reaches a different seat than a tools-only one — so a comparison that
+  ignores that is a comparison of the router wearing a profile's clothes. The record now carries
+  three signals knowable *before* the seat starts work — the gate tier, the routing class and the
+  issue's labels — captured at dispatch and never reconstructed afterwards, because an
+  outcome-shaped field is exactly the confound the strata exist to keep out, and the record
+  carries none. Each signal carries #322's `checked` flag beside its value: a confident value
+  standing alone cannot tell 'the issue has none' from 'nobody could look', and reading the two
+  the same is the stratification error #323 was filed to prevent. So `--issue-body` arms a
+  dispatch where `gh` cannot reach GitHub and labels are *unchecked* rather than empty; an
+  unreadable CONTEXT.md leaves the gate tier unchecked rather than guessed; an unreadable policy
+  leaves the routing class the same; and a genuine absence — no labels, no class — is a checked
+  stratum, the third value never collapsed with 'could not look'. The routing class is lane-blind:
+  `classify_issue` walks the policy's `issue_match` without the foreign-lane gate, so a
+  Claude-native dispatch carries the class a foreign one would, and a body that declares no class
+  is the empty string rather than a blank that hides a failure to look. A pre-#323 record reads
+  back honestly as nothing-recorded-nothing-checked rather than a guess dressed as a value.
+
 - **A review can no longer be dispatched onto the profile it is reviewing, and can no longer
   edit.** ADR-0071 ruling 4's never-alone rests entirely on the reviewing instance being a
   different one, and until now it was not: the `review` seat shares the implementer's preference

@@ -398,3 +398,43 @@ def fetch_body(issue: int, repo: str = REPO_SLUG) -> tuple[str, str]:
     if not done.stdout.strip():
         return "", "the issue body is empty"
     return done.stdout, ""
+
+
+def fetch_labels(issue: int, repo: str = REPO_SLUG) -> tuple[tuple[str, ...], str]:
+    """Read an issue's labels through `gh`, returning `(labels, "")` or `((), reason)`.
+
+    `fetch_body`'s shape on purpose: the reason is handed back rather than raised, because
+    what an unreadable label list means for a dispatch's stratification is the dispatcher's
+    ruling to make — and the observatory's, which is why this exists (#323). The one
+    difference from `fetch_body` is that an empty result is a valid answer here: an issue
+    that carries no labels is not an issue nobody could look at, and collapsing the two is
+    exactly the stratification error #323 was filed to prevent.
+    """
+    # S603/S607: fixed literals plus an integer issue number; `gh` resolves off PATH like
+    # every other tool this project shells out to.
+    try:
+        done = subprocess.run(  # noqa: S603
+            [  # noqa: S607
+                "gh",
+                "issue",
+                "view",
+                str(issue),
+                "--repo",
+                repo,
+                "--json",
+                "labels",
+                "--jq",
+                ".labels[].name",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=FETCH_TIMEOUT_SECONDS,
+        )
+    except FileNotFoundError:
+        return (), "gh is not on PATH"
+    except subprocess.TimeoutExpired:
+        return (), f"gh did not answer within {FETCH_TIMEOUT_SECONDS}s"
+    if done.returncode != 0:
+        return (), (done.stderr.strip() or f"gh exited {done.returncode}").splitlines()[0]
+    return tuple(line.strip() for line in done.stdout.splitlines() if line.strip()), ""
