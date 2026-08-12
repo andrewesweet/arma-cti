@@ -10,6 +10,7 @@ that a hand edit, a retired seat's file, or an un-regenerated registry change is
 
 from __future__ import annotations
 
+import re
 import shutil
 from typing import TYPE_CHECKING
 
@@ -24,6 +25,15 @@ generate_seats = load_tool("generate_seats")
 check_seat_config = load_tool("check_seat_config")
 
 SKILL = ".claude/skills/interlocutor/SKILL.md"
+JUSTFILE = REPO / "justfile"
+
+# Every `model/effort` a Claude surface could declare, built from the registry rather than
+# listed — a list here would be one more hand-maintained copy of the thing under test.
+NATIVE_PAIRS = {
+    f"{profile.model}/{profile.effort}"
+    for profile in dispatch.PROFILES.values()
+    if profile.lane == "claude-native"
+}
 
 
 @pytest.fixture
@@ -192,10 +202,13 @@ def test_writing_removes_a_stray_so_the_check_names_nothing_it_cannot_fix(
 def test_the_skills_pair_is_retuned_and_its_prose_is_left_exactly_as_authored(
     root: Path,
 ) -> None:
+    """A round trip through another profile: every pair moves, and nothing else does."""
     path = root / SKILL
     before = path.read_text(encoding="utf-8")
-    drifted = before.replace("model: opus", "model: haiku").replace("effort: xhigh", "effort: low")
-    path.write_text(drifted, encoding="utf-8")
+    path.write_text(
+        generate_seats.retune(SKILL, before, dispatch.PROFILES["haiku-medium"]), encoding="utf-8"
+    )
+    assert path.read_text(encoding="utf-8") != before
     assert generate_seats.main(["--root", str(root)]) == 0
     assert path.read_text(encoding="utf-8") == before
 
@@ -206,6 +219,54 @@ def test_a_hand_edited_skill_pair_is_caught(root: Path) -> None:
         path.read_text(encoding="utf-8").replace("effort: xhigh", "effort: low"), encoding="utf-8"
     )
     assert generate_seats.main(["--root", str(root), "--check"]) == 1
+
+
+def test_a_hand_edited_session_command_in_the_skill_is_caught(root: Path) -> None:
+    """`/effort xhigh` is the pair in a second vocabulary, so it drifts like the first."""
+    profile = generate_seats.native_profile("interlocutor")
+    path = root / SKILL
+    before = path.read_text(encoding="utf-8")
+    drifted = before.replace(f"`/effort {profile.effort}`", "`/effort low`")
+    assert drifted != before
+    path.write_text(drifted, encoding="utf-8")
+    assert generate_seats.main(["--root", str(root), "--check"]) == 1
+
+
+def test_a_hand_edited_narrated_pair_in_the_skill_is_caught(root: Path) -> None:
+    """The third notation: `at opus/xhigh` in a sentence, which used to be maintained by hand."""
+    profile = generate_seats.native_profile("interlocutor")
+    path = root / SKILL
+    before = path.read_text(encoding="utf-8")
+    drifted = before.replace(f"{profile.model}/{profile.effort}", f"{profile.model}/high")
+    assert drifted != before
+    path.write_text(drifted, encoding="utf-8")
+    assert generate_seats.main(["--root", str(root), "--check"]) == 1
+
+
+def test_retune_refuses_a_skill_naming_one_session_command_and_not_the_other() -> None:
+    """Half a tier set by advice is ADR-0068's fail-open reached without touching frontmatter."""
+    text = "---\nmodel: opus\neffort: xhigh\n---\n\nRun `/model opus` to set the session.\n"
+    with pytest.raises(generate_seats.SeatSurfaceError, match=r"`/model` without `/effort`"):
+        generate_seats.retune("x", text, dispatch.PROFILES["opus-xhigh"])
+
+
+def test_retune_leaves_a_skill_that_names_no_session_command_alone() -> None:
+    """Not every skill talks about setting a session; the commands are optional, not implied."""
+    text = "---\nmodel: haiku\neffort: low\n---\n\nBody with no commands.\n"
+    moved = generate_seats.retune("x", text, dispatch.PROFILES["opus-xhigh"])
+    assert moved == "---\nmodel: opus\neffort: xhigh\n---\n\nBody with no commands.\n"
+
+
+def test_retune_rewrites_every_notation_of_the_pair_in_one_pass() -> None:
+    text = (
+        "---\nmodel: haiku\neffort: low\n---\n\n"
+        "The seat runs at haiku/low; `/model haiku` and `/effort low` set the session.\n"
+    )
+    moved = generate_seats.retune("x", text, dispatch.PROFILES["opus-xhigh"])
+    assert moved.endswith(
+        "The seat runs at opus/xhigh; `/model opus` and `/effort xhigh` set the session.\n"
+    )
+    assert check_seat_config.frontmatter(moved) == {"model": "opus", "effort": "xhigh"}
 
 
 def test_retune_refuses_a_file_with_no_frontmatter() -> None:
@@ -289,8 +350,72 @@ def test_no_seat_pair_is_maintained_by_hand_in_the_always_loaded_prefix() -> Non
     AGENTS.md used to enumerate every seat file beside its pair, so a registry change had
     to be mirrored into a paragraph nothing checked. The pairs are gone; the sentence that
     replaced them points at the generator.
+
+    Asserted as the property rather than as two known-stale strings, which is what let the
+    workflow paragraph go on calling the interlocutor `opus/xhigh` with this test green
+    (#324, review round 1, claim 3). The vocabulary is the registry's own native pairs, so
+    a profile added there widens the check without anyone remembering to.
+
+    Its one stated limit: the `model/effort` notation is the enumerable one. The Model
+    roles bullets narrate tiers as `opus[1m], effort high`, which is #329's surface and not
+    this test's, and no test catches every paraphrase — the generated seat files and
+    `just dispatch --list` are what a reader is sent to for a live pair.
     """
     prefix = (REPO / "AGENTS.md").read_text(encoding="utf-8")
     assert "tools/generate_seats.py" in prefix
-    for stale_pair in ("`cti-implementer` opus/high", "`cti-recon` haiku/low"):
-        assert stale_pair not in prefix
+    assert [pair for pair in sorted(NATIVE_PAIRS) if pair in prefix] == []
+
+
+def test_no_hand_written_pair_survives_a_skill_when_the_registry_moves() -> None:
+    """Criterion 4 on the other surface, and as the property: retune, then look for a trace.
+
+    Only the frontmatter used to be derived, so the interlocutor's description, its opening
+    sentence and its `/model` and `/effort` commands all went on saying `opus/xhigh` while
+    `--check` passed. Retuning the shipped file to a deliberately different profile and
+    finding neither the old model nor the old effort anywhere in it is the property those
+    three copies failed, stated once instead of listed.
+    """
+    for surface in generate_seats.SKILL_SURFACES:
+        was = generate_seats.native_profile(surface.seat)
+        other = dispatch.PROFILES["haiku-medium"]
+        assert (other.model, other.effort) != (was.model, was.effort)
+        text = (REPO / surface.path).read_text(encoding="utf-8")
+        moved = generate_seats.retune(surface.path, text, other)
+        assert was.model not in moved
+        assert was.effort not in moved
+
+
+def test_no_authored_agent_surface_text_carries_a_pair() -> None:
+    """The wholly generated files have the same hazard in the halves a human writes.
+
+    `describe` derives the tier into each description; a blurb or a body that also stated
+    one would be a second copy inside the generator itself, and `--check` could not see it.
+    """
+    for surface in generate_seats.AGENT_SURFACES:
+        authored = f"{surface.blurb}\n{surface.body}"
+        assert generate_seats.PROSE_PAIR.search(authored) is None
+        assert generate_seats.SESSION_COMMAND.search(authored) is None
+
+
+# --------------------------------------------------------------------- the gate is wired
+
+
+def test_the_seat_checker_is_a_dependency_of_just_check() -> None:
+    """#324, review round 1, claim 1: the checker must not be able to leave the gate.
+
+    Every drift case above calls `generate_seats.main([...])`, so deleting the recipe line
+    that runs it — or dropping `check-generated` from `check:` — takes enforcement off the
+    whole seat class while all of them stay green. That is exactly the fail-open shape
+    ADR-0068 built `just check-seats` to prevent, one level up: a surface that stops being
+    looked at and says nothing. Pinned the way `tests/unit/test_dispatch.py` already pins
+    gitleaks — the dependency, then the body that runs the tool.
+    """
+    text = JUSTFILE.read_text(encoding="utf-8")
+    check = next(line for line in text.splitlines() if line.startswith("check:"))
+    assert "check-generated" in check
+    assert re.search(
+        r"^check-generated:\n(?:[ \t]+\S[^\n]*\n)*?"
+        r"[ \t]+uv run python tools/generate_seats\.py --check$",
+        text,
+        re.MULTILINE,
+    )
