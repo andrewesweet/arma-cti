@@ -404,10 +404,28 @@ discard path="" ruling="":
 #
 # Options: `--worktree` (default `.claude/worktrees/issue-<N>`, which is what
 # `just worktree add` makes and which this recipe never creates for itself),
-# `--brief-file`, `--base-sha`, `--permission-mode` (default `acceptEdits`; a
-# seat that needs Bash passes something wider deliberately), `--dispatch-dir`,
-# `--credentials`, `--issue-body` (read the body from a file rather than from
-# `gh` — how triage checks a draft before filing one).
+# `--brief-file`, `--base-sha`, `--reviewing` (required by `--seat review`, see
+# below), `--permission-mode` (default `acceptEdits`; a seat that needs Bash
+# passes something wider deliberately — except `review`, which forces `plan`
+# over whatever is passed), `--dispatch-dir`, `--credentials`, `--issue-body`
+# (read the body from a file rather than from `gh` — how triage checks a draft
+# before filing one).
+#
+# `--seat review` is the one seat with an extra required option and a forced
+# containment (#322, ADR-0071 ruling 4). `--reviewing <profile>` names the
+# profile whose work is under review: resolution removes it from the seat's
+# preference list before walking it and prefers an entry on a different lane
+# among what is left, so a review is never produced by the instance that
+# produced the change. A dispatch that names none is refused
+# `review_subject_unknown`; one whose declaration the issue's own dispatch
+# records contradict is refused `review_subject_contradicted`; and where those
+# records cannot answer, the route is recorded `reviewing_verified: false` with
+# the reason rather than passed off as checked. The seat's permission mode is
+# **forced** rather than defaulted — `plan` on the `claude` family and
+# `--sandbox read-only` on `codex` — because a containment a caller can switch
+# off by typing a flag is a default, and it is printed as
+# `route_permission_mode=plan forced_by_seat=review` rather than applied
+# silently.
 #
 # The issue is read before anything is planned, and one that states no criteria
 # is refused (#241). Definition of ready, mechanically: criteria must exist, and

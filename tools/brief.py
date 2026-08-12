@@ -574,18 +574,36 @@ class Seat(NamedTuple):
     name: str
     reason: str
     owes_reason: bool
+    # The profile whose work a review dispatch judges (#322, ADR-0071 ruling 4). Empty on
+    # every other seat, and empty on a review the composer was not told about — which is a
+    # placeholder in the rendered brief rather than a silence, because a review dispatched
+    # without it meets `review_subject_unknown` at dispatch time instead.
+    reviewing: str = ""
+
+    @property
+    def reviews(self) -> bool:
+        """Whether the dispatcher's registry says this seat reviews another profile's work."""
+        registered = dispatch.SEATS.get(self.name)
+        return registered is not None and registered.reviews
 
 
-def derive_seat(override: str) -> Seat:
+def derive_seat(override: str, reviewing: str = "") -> Seat:
     """Name the seat and quote the mapping's reason, or ask for the orchestrator's.
 
     A non-default seat is a judgement the design leaves with the orchestrator, so the
     mapping's line is printed *and* a placeholder is opened beside it: the mapping says
     what the seat is for, and only the orchestrator knows why this issue wants it.
+
+    The reviewed profile is carried through unvalidated. `tools/dispatch.py` checks it
+    against the registry and against the issue's own dispatch records, and a second, weaker
+    copy of that check here would be a place for the two to disagree.
     """
     name = override or DEFAULT_SEAT
     return Seat(
-        name, SEAT_REASON.get(name, ""), owes_reason=bool(override) and name != DEFAULT_SEAT
+        name,
+        SEAT_REASON.get(name, ""),
+        owes_reason=bool(override) and name != DEFAULT_SEAT,
+        reviewing=reviewing,
     )
 
 
@@ -736,6 +754,21 @@ TASK_PLACEHOLDER: Final = (
     " `just brief` composes none of it, and an unedited brief is not a brief."
 )
 SEAT_PLACEHOLDER: Final = "Why this issue wants a non-default seat."
+# ADR-0071 ruling 4 (#322). A review seat's briefing has to carry the relationship the
+# dispatch itself now requires, or the orchestrator meets the refusal at dispatch time
+# instead of the instruction at composition time.
+REVIEW_SUBJECT_RULE: Final = (
+    "Dispatch this seat with `--reviewing <profile>`, the profile whose work is under review."
+    " Resolution never returns that profile and prefers an entry on a different lane, the seat"
+    " forces a read-only permission mode over whatever is passed, and the dispatcher derives"
+    " the subject from the issue's own dispatch records — a declaration they contradict is"
+    " refused `review_subject_contradicted`, and one they cannot speak to is recorded"
+    " unverified (ADR-0071 ruling 4)."
+)
+REVIEW_SUBJECT_PLACEHOLDER: Final = (
+    "Which profile's work this review judges. Compose with `--reviewing <profile>` and pass"
+    " the same one to `just dispatch`; a review that declares none is refused."
+)
 FLAKE_RESPONSE: Final = (
     "`flake_quarantine`: do not act. If one of those exact tests is your only red, quote its"
     " issue number and re-run once; a second red, or any other red, is yours."
@@ -798,6 +831,13 @@ def compose(briefing: Briefing) -> str:
     ]
     if seat.owes_reason:
         lines.append(_placeholder(SEAT_PLACEHOLDER))
+    if seat.reviews:
+        lines.append(REVIEW_SUBJECT_RULE)
+        lines.append(
+            f"Reviewing: `{seat.reviewing}`."
+            if seat.reviewing
+            else _placeholder(REVIEW_SUBJECT_PLACEHOLDER)
+        )
     # The single-shot contract, verbatim from `dispatch.SINGLE_SHOT_CONTRACT` — one home,
     # shared with `default_brief`, so the composed brief and the default brief cannot
     # disagree. A detached session has no second turn, which is the one fact a briefing
@@ -881,6 +921,14 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         choices=("", *sorted(dispatch.SEATS)),
         help="the seat this dispatch is for (default: implementer)",
     )
+    # Unvalidated here on purpose: `tools/dispatch.py` owns what a legal subject is, and a
+    # `choices=` list built from its registry would be a second copy that drifts (#322).
+    parser.add_argument(
+        "--reviewing",
+        default="",
+        metavar="PROFILE",
+        help="the profile whose work is under review; carried into a --seat review briefing",
+    )
     parser.add_argument("--out", default="", help="write the brief here instead of stdout")
     parser.add_argument(
         "--prior-work",
@@ -945,7 +993,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
             title=str(document.get("title") or ""),
             gate=gate,
             flakes=select_flakes(open_issues),
-            seat=derive_seat(args.seat),
+            seat=derive_seat(args.seat, args.reviewing),
             tree=resolve_tree(args.issue, args.base_sha, repo),
             assessment=readiness.assess(body),
             reserved=reserved_surfaces(named_paths(body)),

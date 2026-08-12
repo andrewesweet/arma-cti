@@ -733,14 +733,48 @@ def test_the_variable_half_is_a_visible_placeholder_and_not_composed() -> None:
 
 
 def test_a_non_default_seat_opens_a_second_placeholder_for_its_reason() -> None:
-    rendered = composed(seat=brief.derive_seat("review"))
-    assert "## Seat: review" in rendered
+    # `planner`, not `review`: the review seat opens a placeholder of its own for the profile
+    # under review (#322), and a count assertion over two unrelated placeholders would stop
+    # being about the seat reason.
+    rendered = composed(seat=brief.derive_seat("planner"))
+    assert "## Seat: planner" in rendered
     assert rendered.count(brief.PLACEHOLDER) == 2
     assert "Why this issue wants a non-default seat." in rendered
 
 
 def test_the_default_seat_opens_only_the_one_placeholder() -> None:
     assert composed().count(brief.PLACEHOLDER) == 1
+
+
+def test_a_review_briefing_states_the_relationship_its_dispatch_now_requires() -> None:
+    """#322: an orchestrator meeting `--reviewing` at dispatch time met it too late."""
+    rendered = composed(seat=brief.derive_seat("review", "opus-high"))
+    assert "## Seat: review" in rendered
+    assert "Dispatch this seat with `--reviewing <profile>`" in rendered
+    assert "Reviewing: `opus-high`." in rendered
+    assert "review_subject_contradicted" in rendered
+
+
+def test_a_review_briefing_composed_without_a_subject_opens_a_placeholder_for_it() -> None:
+    """Silence would compose a briefing for a dispatch that cannot be made."""
+    rendered = composed(seat=brief.derive_seat("review"))
+    assert "Which profile's work this review judges." in rendered
+    assert "Reviewing: `" not in rendered
+
+
+def test_no_other_seat_is_told_to_declare_a_subject() -> None:
+    """The section follows the registry's `reviews` column, not a name this module tests for."""
+    for name, seat in dispatch.SEATS.items():
+        if seat.reviews:
+            continue
+        assert "--reviewing <profile>" not in composed(seat=brief.derive_seat(name)), name
+
+
+def test_the_composer_takes_the_subject_from_the_command_line() -> None:
+    """A real option on the real parser, not a namespace field a test sets."""
+    assert brief.parse_args(["322", "--seat", "review", "--reviewing", "opus-high"]).reviewing == (
+        "opus-high"
+    )
 
 
 def test_the_footer_names_the_readiness_findings_and_refuses_the_token_claim() -> None:

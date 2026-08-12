@@ -11,14 +11,20 @@ following `test_dispatch_seat.py`'s rule: what a caller gets is a plan or a refu
 resolver that returned the right token while the ladder below refused the route would satisfy
 an internal test and none of the criteria.
 
-**Two claims are made against `review_candidates` directly, and the reason is a registry
-fact rather than convenience.** The `review` seat's real preference is three profiles on
-three distinct lanes, so removing any one of them leaves two entries that are *both* on a
-different lane from the subject — the ordering rule cannot change the answer, and an
-end-to-end arrangement over the real registry cannot distinguish "prefers a different lane"
-from "keeps the seat's order". The ordering claims are therefore made two ways: against the
-pure function with a constructed seat, and end to end with a seat this module substitutes,
-so neither rests on the other.
+**The lane-ordering rule is observable against the real registry, and is claimed there.**
+`--reviewing` takes any registered profile and not only an entry of the seat's own
+preference, so a subject from outside it leaves all three entries in the list and reorders
+them: reviewing `codex-sol-high` puts the two non-Codex entries first, and a box with no
+z.ai key therefore answers `opus-low` where the seat's unmodified order would have answered
+`codex-luna-max`. An earlier draft of this module asserted the opposite — that three
+distinct lanes made the rule unobservable end to end — and that was simply wrong. The
+substituted-seat claims below are kept because they exercise the ordering *within* each
+half, which the real three-entry preference is too short to show; they are not a stand-in
+for a real-registry arrangement that does not exist.
+
+Arrangements that need the derivation plant dispatch records of their own, under this
+test's `--dispatch-dir` and never this box's, so the suite's answer never depends on what
+was dispatched here today.
 
 Arrangements are **clock-free** for `test_dispatch_seat.py`'s reason: entries are walked past
 by tripping a breaker or withholding a lane credential, both of which hold at any hour, where
@@ -96,6 +102,43 @@ def trip(tmp_path: Path, lane: str, count: int = 3) -> None:
         )
 
 
+def authoring_record(  # noqa: PLR0913 — one keyword per field of the record the derivation reads; folding them into a dict would hide which field each arrangement varies
+    tmp_path: Path,
+    dispatch_id: str = "d-20260812-000000-aaaaaa",
+    *,
+    issue: int = 322,
+    seat: str = "implementer",
+    profile: str = "opus-high",
+    refusal: str = "",
+) -> Path:
+    """Plant a dispatch record of the shape `just dispatch` writes, for the derivation to read.
+
+    The worktree is deliberately not the review's own. An implementer works in `issue-<n>`
+    and a review in a tree of its own, and pointing both at one path would trip the occupancy
+    rung (#308) rather than exercise the derivation.
+    """
+    directory = tmp_path / "dispatches" / dispatch_id
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "dispatch.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": dispatch_id,
+                "lane": dispatch.PROFILES[profile].lane,
+                "profile": profile,
+                "seat": seat,
+                "issue": issue,
+                "worktree": str(tmp_path / f"authored-by-{dispatch_id}"),
+            }
+        ),
+        encoding="utf-8",
+    )
+    if refusal:
+        (directory / "result.json").write_text(
+            json.dumps({"dispatch_id": dispatch_id, "refusal": refusal}), encoding="utf-8"
+        )
+    return directory
+
+
 def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     """Plan a review dispatch over a real worktree, writing nothing.
 
@@ -135,10 +178,10 @@ def substitute_review_seat(
 ) -> None:
     """Give the `review` seat a preference list this test chose, keeping its other columns.
 
-    The real seat's three entries sit on three distinct lanes, which makes two of ADR-0071
-    ruling 4's clauses unobservable against it — see this module's docstring. `reviews` and
-    `permission_mode` are carried across from the registered seat rather than restated, so a
-    substitution cannot accidentally test a seat that reviews nothing.
+    Used where the claim is about ordering *within* one half of the reordering, or about a
+    list the registry does not carry — three entries cannot show a two-entry half staying in
+    order. `reviews` and `permission_mode` are carried across from the registered seat rather
+    than restated, so a substitution cannot accidentally test a seat that reviews nothing.
     """
     real = dispatch.SEATS["review"]
     monkeypatch.setitem(
@@ -202,6 +245,28 @@ def test_a_different_lane_is_preferred_over_the_seats_own_head(
     # the Codex entry is that the two native entries share the reviewed profile's lane.
     assert plan.identity.profile == "codex-sol-high"
     assert plan.identity.lane == "codex"
+
+
+def test_a_different_lane_is_preferred_against_the_real_registry(tmp_path: Path) -> None:
+    """Criterion 2, end to end on the registered seat with nothing substituted.
+
+    Reviewing `codex-sol-high` leaves all three preference entries in the list — the subject
+    is not one of them — and only reorders them, putting the two non-Codex entries first.
+    This arrangement withholds the z.ai key, so the answer is `opus-low`. The seat's
+    unmodified order would have answered `codex-luna-max`: it is registered, it is not
+    blocked for *this* seat, and the Codex lane needs no credential of ours, so it would have
+    been dispatchable at the head. The two orders therefore disagree here, and the assertions
+    below are the ordering rule and nothing else.
+    """
+    plan, _, refusal = plan_for(tmp_path, reviewing="codex-sol-high")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.identity.profile == "opus-low"
+    assert plan.identity.lane == "claude-native"
+    assert "route_preference=zai-glm52-max opus-low codex-luna-max" in plan.route.lines()
+    # The Codex head was never reached, rather than reached and refused: only the z.ai entry
+    # ahead of the answer was walked past, which is what the reordering did.
+    assert [entry.profile for entry in plan.route.passed_over] == ["zai-glm52-max"]
 
 
 def test_the_lane_preference_is_an_ordering_and_never_a_filter(
@@ -377,6 +442,143 @@ def test_declaring_a_subject_on_a_seat_that_reviews_nothing_is_refused(tmp_path:
     assert refusal.kind == "reviewing_without_review_seat"
 
 
+# ------------------------- criterion 4, again: the subject is derived, not merely declared
+
+
+def test_a_declaration_the_issues_records_contradict_is_refused(tmp_path: Path) -> None:
+    """The defeat the review found: two registered names satisfied every check.
+
+    `--profile opus-high --reviewing codex-luna-max` names two profiles the registry carries,
+    so the equality check passes and the implementing instance produces the verdict on its
+    own work while the record names somebody else. The issue's own records know who worked
+    on it, so they are asked, and the declaration they contradict is the half that loses.
+    """
+    authoring_record(tmp_path, profile="opus-high")
+    plan, _, refusal = plan_for(
+        tmp_path, lane="claude-native", profile="opus-high", reviewing="codex-luna-max"
+    )
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_subject_contradicted"
+    assert "authored_by=opus-high" in refusal.found
+    assert "records=d-20260812-000000-aaaaaa" in refusal.found
+    # Nothing was found about a provider, a lane or the code under test (CLAUDE.md's table).
+    assert refusal.failure_class == ""
+
+
+def test_the_contradiction_is_refused_on_a_resolved_route_too(tmp_path: Path) -> None:
+    """Naming no profile at all does not buy a false subject: the check is above both routes."""
+    authoring_record(tmp_path, profile="opus-high")
+    plan, _, refusal = plan_for(tmp_path, reviewing="codex-luna-max")
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_subject_contradicted"
+
+
+def test_a_declaration_the_records_confirm_is_recorded_as_derived(tmp_path: Path) -> None:
+    authoring_record(tmp_path, profile="opus-high")
+    plan, brief, refusal = plan_for(tmp_path, reviewing="opus-high")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.authors == ("opus-high",)
+    assert (
+        "route_reviewing_verified=derived authored_by=opus-high"
+        " records=d-20260812-000000-aaaaaa" in plan.route.lines()
+    )
+    dispatch.write_record(plan, brief)
+    document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
+    assert document["route"]["reviewing_verified"] is True
+    assert document["route"]["reviewing_authored_by"] == ["opus-high"]
+
+
+def test_an_underived_subject_is_recorded_as_unverified_rather_than_as_a_pass(
+    tmp_path: Path,
+) -> None:
+    """Where nothing can be derived the declaration stands, and says so on the record.
+
+    That is what ADR-0071 ruling 4's landing check (#334) refuses on: a field the proposer
+    controls, marked as one, rather than a guarantee the dispatcher did not make.
+    """
+    plan, brief, refusal = plan_for(tmp_path)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert not plan.route.authorship.derived
+    assert (
+        "route_reviewing_verified=unverified why=no_dispatch_records"
+        " (the caller's declaration, unchecked; ADR-0071 ruling 4's landing check"
+        " refuses on this)" in plan.route.lines()
+    )
+    dispatch.write_record(plan, brief)
+    document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
+    assert document["route"]["reviewing_verified"] is False
+    assert document["route"]["reviewing_unverified_why"] == "no_dispatch_records"
+
+
+def test_a_review_of_the_same_issue_is_never_counted_as_its_author(tmp_path: Path) -> None:
+    """Otherwise a second review would derive the first one and review it instead."""
+    authoring_record(tmp_path, seat="review", profile="codex-sol-xhigh")
+    plan, _, refusal = plan_for(tmp_path, reviewing=REVIEWED)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.why == "no_authoring_dispatch"
+
+
+def test_a_dispatch_that_refused_before_it_ran_authored_nothing(tmp_path: Path) -> None:
+    """A refusal is written instead of a run, so that record's profile edited no file."""
+    authoring_record(tmp_path, profile="opus-xhigh", refusal="worktree_mismatch")
+    plan, _, refusal = plan_for(tmp_path, reviewing=REVIEWED)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.why == "no_authoring_dispatch"
+
+
+def test_another_issues_records_say_nothing_about_this_one(tmp_path: Path) -> None:
+    """The issue is the join, and a record for a different one is not evidence about this one."""
+    authoring_record(tmp_path, issue=999, profile="opus-xhigh")
+    plan, _, refusal = plan_for(tmp_path, reviewing=REVIEWED)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.why == "no_authoring_dispatch"
+
+
+def test_authorship_spanning_two_dispatches_carries_both(tmp_path: Path) -> None:
+    """The hole ruling 4 already found once: either name is an honest subject, so both pass.
+
+    Which of them a review should be resolved past when they differ is #333's adjudication
+    and is deliberately not decided here — what this landing owes is that a name neither of
+    them carries is refused.
+    """
+    authoring_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-high")
+    authoring_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-low")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.authors == ("opus-high", "opus-low")
+    assert plan.identity.profile != "opus-low"
+
+
+def test_an_unreadable_record_leaves_the_subject_unverified_and_names_why(
+    tmp_path: Path,
+) -> None:
+    """Skipped rather than raised on, and reported rather than counted as an answer."""
+    directory = tmp_path / "dispatches" / "d-20260812-000002-cccccc"
+    directory.mkdir(parents=True)
+    (directory / "dispatch.json").write_text("{ not json", encoding="utf-8")
+    plan, _, refusal = plan_for(tmp_path, reviewing=REVIEWED)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.why == "records_unreadable"
+
+
+def test_a_derived_route_reads_back_off_the_record_as_derived(tmp_path: Path) -> None:
+    authoring_record(tmp_path, profile="opus-high")
+    plan, brief, _ = plan_for(tmp_path, reviewing="opus-high")
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    assert dispatch.load_record(plan.record) == plan
+    assert dispatch.load_record(plan.record).route.authorship.derived
+
+
 # ------------------------------------------------- criterion 5: the negative, pinned hard
 
 
@@ -524,6 +726,10 @@ def test_the_registry_listing_states_both_halves_of_the_rule(
         " refusal=review_same_profile" in printed
     )
     assert "  permission_mode=plan forced=true (no caller override)" in printed
+    assert (
+        "  review_subject=derived-from-dispatch-records"
+        " refusal=review_subject_contradicted underived=recorded-unverified" in printed
+    )
 
 
 def test_the_review_seat_is_the_only_one_carrying_either_column() -> None:

@@ -21,8 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Where removal leaves nothing, or a caller names the reviewed profile with `--profile`,
   `review_same_profile` refuses rather than proceeding same-model — and a dispatch that declares
   no subject at all is refused too, since resolving it anyway would take exactly the head the
-  implementer took. The subject is a declaration rather than something derived from the review
-  branch's dispatch records, which is #333's machinery and unbuilt. Separately, the seat now
+  implementer took. The subject is named by the caller and **checked against the issue's own
+  dispatch records** rather than believed: a declaration alone settles nothing, since `--profile
+  opus-high --reviewing codex-luna-max` names two registered profiles and passes every check
+  while the implementing instance clears its own work. A declaration those records contradict is
+  refused `review_subject_contradicted`; where they cannot answer, the route is recorded
+  `reviewing_verified: false` with the reason, so ruling 4's landing check has a fact to refuse
+  on rather than a field the proposer controls. `just brief --seat review --reviewing <profile>`
+  carries the same relationship into a composed briefing. Separately, the seat now
   **forces** its permission mode instead of inheriting the writable `acceptEdits` default: `plan`
   on the `claude` family and `--sandbox read-only` on `codex`, over whatever the caller passed,
   printed as `route_permission_mode=plan forced_by_seat=review` rather than applied silently.

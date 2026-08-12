@@ -29,12 +29,16 @@ diversity ADR-0061 Decision 3 wants, because one model family's blind spots are 
 
 ## What the seat is handed
 
-Four things, and the dispatch record carries three of them by construction:
+Five things, and the dispatch record carries four of them by construction:
 
 - **the landed SHA** — `--base-sha <sha>`, which lands in `cti.base_sha` on the run's
   telemetry, so the review's ledger row names the commit it reviewed;
 - **the issue** — `--issue <n>`, the issue that landing closed, which is also the issue a
-  confirmed defect gets raised on;
+  confirmed defect gets raised on, and — since #322 — the key the reviewed profile is derived
+  through;
+- **the profile under review** — `--reviewing <profile>`, which resolution removes from the
+  seat's preference list before walking it, and which the dispatcher checks against the
+  issue's own dispatch records rather than taking on the caller's word;
 - **the close audit** — read by the reviewer from the issue thread, because the audit is what
   states which criteria the landing claimed to meet and a review that does not read it can
   only check the code against itself;
@@ -68,11 +72,20 @@ on it being genuinely different.
 
 Three things about that, because each was a choice:
 
-- **The subject is declared, not derived.** Reading it off the dispatch records that authored
-  the review branch is ruling 4's landing check and belongs to #333; inferring it from "the
-  newest dispatch on this issue" would be a guess dressed as a derivation, wrong exactly where
-  authorship spanned two dispatches. So the caller states it, and a dispatch that states
-  nothing is refused (`review_subject_unknown`) rather than quietly resolved.
+- **The subject is named by the caller and checked against the records.** A declaration on its
+  own settles nothing: `--profile opus-high --reviewing codex-luna-max` names two registered
+  profiles, passes every check, and lets the implementing instance clear its own work while
+  the record misstates the subject. So the dispatcher reads this box's dispatch records for
+  the issue — every dispatch on it that was not itself a review and did not refuse before it
+  ran — and refuses `review_subject_contradicted` where the declaration is not among the
+  profiles that authored the work. A dispatch that declares nothing at all is refused
+  `review_subject_unknown` rather than quietly resolved.
+- **Where the records cannot answer, the subject is recorded unverified, not treated as
+  checked.** The route carries `reviewing_verified: false` and the reason
+  (`no_dispatch_records`, `no_authoring_dispatch`, `records_unreadable`), which is what ruling
+  4's landing check (#334) refuses on. Deciding *which* of several authoring profiles a
+  multi-dispatch branch should be reviewed past is #333's adjudication and is not done here —
+  a branch with two authors verifies against either of them.
 - **A different lane is preferred, not required.** Where the only remaining entries share the
   reviewed profile's lane, one of them is used. The invariant is about the instance producing
   the verdict; provider diversity is the preference, and refusing there would turn away a

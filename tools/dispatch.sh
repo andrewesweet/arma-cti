@@ -20,7 +20,11 @@
 #
 #   tools/dispatch.sh --lane claude-native --profile opus-high --seat implementer --issue 223
 #   tools/dispatch.sh --list
-#   tools/dispatch.sh --dry-run --lane zai --profile zai-glm52-max --seat review --issue 223
+#   tools/dispatch.sh --dry-run --seat review --reviewing opus-high --issue 223
+#
+# The review example names no lane or profile because the seat resolves its own, past the
+# profile under review; `--reviewing` is required there and a review dispatched without it
+# is refused `review_subject_unknown` (#322, ADR-0071 ruling 4).
 
 set -euo pipefail
 
