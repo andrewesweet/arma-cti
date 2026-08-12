@@ -71,7 +71,7 @@ rule both seats resolve to the head of one shared list and every review is same-
 makes ADR-0071 ruling 4's never-alone a ritual: the whole argument for a second instance rests
 on it being genuinely different.
 
-Five things about that, because each was a choice:
+Each of the following was a choice:
 
 - **Every potential author is removed, not only the declared one.** The invariant is that no
   profile that worked on the change produces the verdict clearing it; removing the declaration
@@ -99,7 +99,8 @@ Five things about that, because each was a choice:
   profiles and the declaration is none of them. A dispatch that declares nothing at all is
   refused `review_subject_unknown` rather than quietly resolved.
 - **A read that could not complete is not a read that passed.** One unreadable plan, one
-  dispatch directory with no plan in it, one `result.json` that will not parse: any of them
+  dispatch directory with no plan in it, one plan that does not name its profile, one
+  `result.json` that will not parse: any of them
   leaves the route `reviewing_checked: false` with `reviewing_unchecked_why`
   (`no_dispatch_records`, `no_authoring_dispatch`, `records_unreadable`), which is what ruling
   4's landing check (#334) refuses on. The two halves are kept apart deliberately — the
@@ -107,6 +108,14 @@ Five things about that, because each was a choice:
   superset — and a partial read does **not** refuse the declaration, because the record that
   would not open could be the one naming it. Deciding *which* of several profiles a
   multi-dispatch branch should be reviewed past is #333's adjudication and is not done here.
+
+  The profile-less plan is the one that does not look like a gap: it parses, it carries the
+  issue, and it answers a different question from the one being asked. Beside one good record
+  a scan that accepted it would report itself complete while that dispatch's profile —
+  unknown, therefore possibly the author — was excluded nowhere. A profile the registry has
+  since dropped is **not** that case and stays a completed read: it names itself, it is
+  excluded like any other name, and calling a retired profile unread would make every later
+  scan of that issue partial over a fact its record states perfectly well.
 - **A different lane is preferred, not required.** Where the only remaining entries share the
   reviewed profile's lane, one of them is used. The invariant is about the instance producing
   the verdict; provider diversity is the preference, and refusing there would turn away a

@@ -36,9 +36,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   declaration a **complete** read contradicts is refused `review_subject_contradicted`; one
   unreadable record anywhere leaves the route `reviewing_checked: false` with its reason — while
   everything that *was* read is still excluded — so ruling 4's landing check meets the truth rather
-  than an optimistic summary. `just brief --seat review --reviewing <profile>` carries the same
-  relationship into a composed briefing, and refuses the option on a seat that reviews nothing,
-  which is the answer `just dispatch` already gave that pair. Separately, the seat now
+  than an optimistic summary. A record that cannot name its profile counts as unread for this
+  purpose even though it parses: its dispatch ran on an unknown profile, which is therefore
+  excluded nowhere, and a scan that accepted it would report itself complete with an unknown
+  potential author still eligible to review. `just brief --seat review --reviewing <profile>`
+  carries the same relationship into a composed briefing, and refuses the option on a seat that
+  reviews nothing in `just dispatch`'s own typed refusal shape — the same
+  `refusal=reviewing_without_review_seat` lines, rendered from the dispatcher's refusal rather
+  than paraphrased. Separately, the seat now
   **forces** its permission mode instead of inheriting the writable `acceptEdits` default: `plan`
   on the `claude` family and `--sandbox read-only` on `codex`, over whatever the caller passed,
   printed as `route_permission_mode=plan forced_by_seat=review` rather than applied silently.

@@ -909,6 +909,45 @@ def issue_number(raw: str) -> int:
     return int(text)
 
 
+def reviewing_refusal(seat_name: str, reviewing: str) -> dispatch.Refusal | None:
+    """Refuse `--reviewing` on a seat that reviews nothing, in the dispatcher's own shape.
+
+    The two adjacent surfaces answer the same question the same way (#322), and round 2
+    made them agree in *wording* while leaving them disagreeing in *form*: `just dispatch`
+    emits a typed refusal — `refusal=<kind>`, the `found=` fields, `action=` — and this
+    composer emitted an argparse usage error that merely mentioned the kind in prose. A
+    reader or a script that can parse one and not the other has two surfaces, not one, so
+    the refusal is not restated here at all: `dispatch.reviewed_profile_refusal` builds it
+    and `Refusal.lines()` renders it, exactly as the dispatcher renders its own.
+
+    Only this one pair is borrowed. A review briefing composed with no subject is
+    legitimate — it opens a placeholder, where a dispatch meets `review_subject_unknown` —
+    and the profile name stays unvalidated for `derive_seat`'s stated reason, so the
+    dispatcher's other two answers are deliberately not reached from here.
+
+    An unregistered seat name cannot be reached through the parser, whose `--seat` choices
+    are the registry's own keys; it is answered anyway, and fail-closed, because the one way
+    to arrive is this module's default drifting out of that registry — a check that could not
+    run is not a check that passed (#41).
+    """
+    if not reviewing:
+        return None
+    seat = dispatch.SEATS.get(seat_name)
+    if seat is None:
+        return dispatch.Refusal(
+            "reviewing_without_review_seat",
+            (f"seat={seat_name}", f"reviewing={reviewing}", "registry=absent"),
+            (
+                "This composer's seat is not in `just dispatch`'s registry, so whether it "
+                "reviews could not be read, and a check that could not run is not a check "
+                "that passed (#41). Nothing was composed."
+            ),
+        )
+    if seat.reviews:
+        return None
+    return dispatch.reviewed_profile_refusal(seat_name, reviewing)
+
+
 def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     """One door: which issue, which seat, where the output goes."""
     parser = argparse.ArgumentParser(
@@ -945,21 +984,11 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     )
     parser.add_argument("--repo", default=REPO_SLUG, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
-    # The two adjacent surfaces answer the same question the same way (#322 re-review). `just
-    # dispatch` refuses this pair `reviewing_without_review_seat`, on the rule that an option
-    # which silently decides nothing is one a caller will believe did something; a composer
-    # that accepted the flag and rendered nothing about it was that rule broken on the other
-    # half of the same command line. The registry's `reviews` column decides, so neither
-    # surface carries a list of seat names to keep in step.
-    seat = dispatch.SEATS.get(args.seat or DEFAULT_SEAT)
-    if args.reviewing and (seat is None or not seat.reviews):
-        parser.error(
-            f"--reviewing names the profile whose work is under review, and only a seat that"
-            f" reviews resolves against it; --seat {args.seat or DEFAULT_SEAT} does not. Drop"
-            " the option, or compose for --seat review. `just dispatch` refuses the same pair"
-            " `reviewing_without_review_seat`, and two adjacent surfaces disagreeing about one"
-            " flag is worse than either answer on its own."
-        )
+    refusal = reviewing_refusal(args.seat or DEFAULT_SEAT, args.reviewing)
+    if refusal is not None:
+        for line in refusal.lines():
+            print(f"[brief] {line}", file=sys.stderr)  # noqa: T201 — a CLI's refusal channel
+        raise SystemExit(dispatch.EXIT_REFUSED)
     return args
 
 

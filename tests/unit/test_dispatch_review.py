@@ -525,13 +525,17 @@ def test_an_unchecked_subject_is_recorded_as_unchecked_rather_than_as_a_pass(
 
     That is what ADR-0071 ruling 4's landing check (#334) refuses on: a field the proposer
     controls, marked as one, rather than a guarantee the dispatcher did not make.
+
+    `excluded_anyway` is the declared subject even with nothing read, because the declaration
+    is excluded whether or not a record confirms it. It used to say `none` here, which is the
+    printed route disagreeing with the exclusion the code performed.
     """
     plan, brief, refusal = plan_for(tmp_path)
     assert refusal is None, refusal
     assert plan is not None
     assert not plan.route.authorship.complete
     assert (
-        "route_reviewing_checked=no why=no_dispatch_records excluded_anyway=none"
+        f"route_reviewing_checked=no why=no_dispatch_records excluded_anyway={REVIEWED}"
         " (the caller's declaration, unchecked; ADR-0071 ruling 4's landing check"
         " refuses on this)" in plan.route.lines()
     )
@@ -677,6 +681,11 @@ def test_an_exclusion_that_empties_the_list_reuses_the_existing_refusal(
     assert "why=list_offers_nothing_else" in refusal.found
     assert "candidates=none" in refusal.found
     assert "opus-low and opus-xhigh leaves it with nothing" in refusal.action
+    # Round 3's claim 2: the refusal says what the records support and no more. The whole
+    # potential-author vocabulary exists because they cannot establish that anyone wrote the
+    # change, so the sentence that claimed one did is the one thing here that must not return.
+    assert "None of those profiles can be ruled out as an author of this change" in refusal.action
+    assert "is a profile that worked on the change" not in refusal.action
 
 
 # --------------------- claim 2: a potential author, because the record cannot say more
@@ -808,6 +817,30 @@ def test_a_partial_read_does_not_refuse_a_declaration_it_could_not_check(tmp_pat
     assert plan.identity.profile not in {"opus-high", "opus-low"}
 
 
+def test_the_printed_route_prints_the_exclusion_the_code_performed(tmp_path: Path) -> None:
+    """Round 3's Medium: one home for the exclusion, the printed route included.
+
+    `subject_line` derived its own set from the potential authors alone, so the declared
+    subject was excluded by resolution and missing from the line a reader gets — two
+    computations of one set, free to drift. This is the arrangement where they differ: the
+    read is partial, so the potential set is `opus-low` alone while the exclusion is
+    `opus-high` as well, and the line must carry both.
+    """
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-low")
+    broken = tmp_path / "dispatches" / "d-20260812-000001-bbbbbb"
+    broken.mkdir(parents=True)
+    (broken / "dispatch.json").write_text("{ not json", encoding="utf-8")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-high")
+    assert refusal is None, refusal
+    assert plan is not None
+    printed = next(
+        line for line in plan.route.lines() if line.startswith("route_reviewing_checked")
+    )
+    assert "excluded_anyway=opus-high opus-low" in printed
+    excluded = dispatch.excluded_from_review("opus-high", plan.route.authorship)
+    assert f"excluded_anyway={' '.join(sorted(excluded))}" in printed
+
+
 def test_an_unreadable_record_leaves_the_subject_unchecked_and_names_why(
     tmp_path: Path,
 ) -> None:
@@ -819,6 +852,99 @@ def test_an_unreadable_record_leaves_the_subject_unchecked_and_names_why(
     assert refusal is None, refusal
     assert plan is not None
     assert plan.route.authorship.why == "records_unreadable"
+
+
+def plan_without_a_profile(tmp_path: Path, dispatch_id: str, profile: object) -> None:
+    """Plant a plan that parses and carries this issue, with the profile field this test names.
+
+    Deliberately not `dispatch_record`: that helper resolves the profile against the registry
+    to fill in the lane, which is exactly the field these arrangements withhold.
+    """
+    directory = tmp_path / "dispatches" / dispatch_id
+    directory.mkdir(parents=True, exist_ok=True)
+    document: dict[str, object] = {"dispatch_id": dispatch_id, "issue": 322, "seat": "implementer"}
+    if profile is not None:
+        document["profile"] = profile
+    (directory / "dispatch.json").write_text(json.dumps(document), encoding="utf-8")
+
+
+def test_a_plan_that_does_not_name_its_profile_is_a_record_that_could_not_be_read(
+    tmp_path: Path,
+) -> None:
+    """Round 3's Critical: the same failure entering through a narrower door.
+
+    A plan carrying `issue` and no `profile` parses, is about this issue, and is *readable*
+    in every sense but the one this scan wants. Beside one good record the scan reported
+    itself complete while that dispatch's profile — unknown, therefore possibly the author —
+    was excluded nowhere, which puts an unknown potential author outside the never-alone
+    floor. The rule adjudicated in round 2 applies unchanged: a record that cannot name its
+    profile has not been read for this purpose, so the scan is incomplete.
+    """
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-low")
+    plan_without_a_profile(tmp_path, "d-20260812-000001-bbbbbb", None)
+    plan, brief, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.why == "records_unreadable"
+    assert not plan.route.authorship.complete
+    # The other half, unchanged: the profile that *was* read is still excluded.
+    assert plan.route.authorship.potential == ("opus-low",)
+    assert plan.identity.profile != "opus-low"
+    dispatch.write_record(plan, brief)
+    document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
+    assert document["route"]["reviewing_checked"] is False
+
+
+@pytest.mark.parametrize("profile", ["", "   ", 7, ["opus-low"], None])
+def test_no_shape_of_unusable_profile_field_clears_the_scan(
+    tmp_path: Path, profile: object
+) -> None:
+    """Every structurally readable but uninformative shape, decided rather than defaulted.
+
+    A blank or whitespace name is absent wearing a string, and a number or a list is not a
+    profile name at all — `str()` would have turned each into a plausible-looking token that
+    matches no preference entry and silently cleared the check. They land together because
+    the caller acts on them identically: this record did not say who ran.
+    """
+    dispatch_record(tmp_path, "d-20260812-000000-aaaaaa", profile="opus-low")
+    plan_without_a_profile(tmp_path, "d-20260812-000001-bbbbbb", profile)
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.why == "records_unreadable"
+    assert plan.route.authorship.potential == ("opus-low",)
+
+
+def test_a_profile_the_registry_no_longer_carries_is_a_read_record_and_is_excluded(
+    tmp_path: Path,
+) -> None:
+    """The neighbouring shape, decided the other way and on purpose.
+
+    A retired profile names itself, so the record answers the question this scan asks. It is
+    excluded like any other name — the exclusion is a set of strings, and a name outside the
+    registry simply matches no preference entry — and the scan stays complete. Calling it
+    unread would make every later scan of the issue partial over a fact its record states.
+    """
+    directory = tmp_path / "dispatches" / "d-20260812-000000-aaaaaa"
+    directory.mkdir(parents=True)
+    (directory / "dispatch.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": "d-20260812-000000-aaaaaa",
+                "issue": 322,
+                "seat": "implementer",
+                "profile": "opus-retired",
+            }
+        ),
+        encoding="utf-8",
+    )
+    dispatch_record(tmp_path, "d-20260812-000001-bbbbbb", profile="opus-high")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-high")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.potential == ("opus-retired", "opus-high")
+    assert plan.route.authorship.complete
+    assert "opus-retired" in dispatch.excluded_from_review("opus-high", plan.route.authorship)
 
 
 def test_a_checked_route_reads_back_off_the_record_as_checked(tmp_path: Path) -> None:

@@ -809,25 +809,101 @@ def test_the_composer_takes_the_subject_from_the_command_line() -> None:
 
 
 @pytest.mark.parametrize("seat", ["implementer", "planner", "recon", "retro"])
-def test_the_composer_refuses_the_subject_on_a_seat_that_reviews_nothing(
+def test_the_composer_refuses_the_subject_in_the_dispatchers_own_refusal_shape(
     capsys: pytest.CaptureFixture[str], seat: str
 ) -> None:
-    """The two command surfaces answer the same question the same way (#322 claim 5).
+    """The two command surfaces answer the same question the same way (#322, round 3 claim 5).
 
-    `just dispatch --seat implementer --reviewing opus-high` refuses
-    `reviewing_without_review_seat`; the composer accepted the flag and rendered nothing about
-    it, which is the same rule broken on the other half of the same command line.
+    Round 2 made them agree in wording and left them disagreeing in form: the composer emitted
+    an argparse usage error that *mentioned* `reviewing_without_review_seat` in prose, where
+    the dispatcher emits a typed refusal. So the claim is the whole rendered shape — the same
+    lines, in the same order, at the same exit code — rather than a substring that a sentence
+    happening to contain the token would satisfy.
     """
+    expected = dispatch.reviewed_profile_refusal(seat, "opus-high")
+    assert expected is not None
+    assert expected.kind == "reviewing_without_review_seat"
     with pytest.raises(SystemExit) as refused:
         brief.parse_args(["322", "--seat", seat, "--reviewing", "opus-high"])
-    assert refused.value.code == 2
-    assert "reviewing_without_review_seat" in capsys.readouterr().err
+    assert refused.value.code == dispatch.EXIT_REFUSED
+    printed = capsys.readouterr().err.splitlines()
+    assert printed == [f"[brief] {line}" for line in expected.lines()]
 
 
-def test_the_composer_refuses_the_subject_on_the_default_seat_too() -> None:
+def test_the_composers_refusal_is_the_dispatchers_and_not_a_second_copy_of_it(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """One home, proven by moving it: a paraphrase here would not follow the dispatcher.
+
+    Asserting the two strings are equal cannot distinguish "reads the dispatcher's refusal"
+    from "carries an identical copy". Changing the dispatcher's wording can, and this is the
+    substring assertion round 2 settled for, made honest.
+
+    Patched on `brief.dispatch` and not on this module's `dispatch`: `load_tool` loads a
+    standalone script into a module object of its own, so the copy a test holds is not the
+    copy `brief` imported, and patching the wrong one leaves a claim like this quietly
+    asserting nothing.
+    """
+    real = brief.dispatch.reviewed_profile_refusal
+
+    def moved(seat_name: str, reviewing: str) -> dispatch.Refusal | None:
+        found = real(seat_name, reviewing)
+        if found is None or found.kind != "reviewing_without_review_seat":
+            return found
+        return found._replace(action="the dispatcher's wording, moved")
+
+    monkeypatch.setattr(brief.dispatch, "reviewed_profile_refusal", moved)
+    with pytest.raises(SystemExit):
+        brief.parse_args(["322", "--seat", "implementer", "--reviewing", "opus-high"])
+    assert "action=the dispatcher's wording, moved" in capsys.readouterr().err
+
+
+def test_a_seat_outside_the_dispatchers_registry_refuses_rather_than_composing(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Fail closed on the one arrival the parser's own `choices` cannot produce.
+
+    `--seat` is validated against the registry, so this is reachable only by this module's
+    default drifting out of it. A check that could not run is not a check that passed (#41),
+    and the refusal says which half could not be read rather than composing anyway.
+    """
+    monkeypatch.setattr(brief, "DEFAULT_SEAT", "nonesuch")
+    with pytest.raises(SystemExit) as refused:
+        brief.parse_args(["322", "--reviewing", "opus-high"])
+    assert refused.value.code == dispatch.EXIT_REFUSED
+    printed = capsys.readouterr().err
+    assert "[brief] refusal=reviewing_without_review_seat" in printed
+    assert "[brief] registry=absent" in printed
+
+
+def test_the_composer_refuses_the_subject_on_the_default_seat_too(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     """The default is `implementer`, which reviews nothing, so an omitted `--seat` is not a gap."""
     with pytest.raises(SystemExit):
         brief.parse_args(["322", "--reviewing", "opus-high"])
+    assert "[brief] refusal=reviewing_without_review_seat" in capsys.readouterr().err
+
+
+def test_the_review_seat_still_takes_the_subject_and_composes(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The negative: only this one pair is borrowed from the dispatcher.
+
+    A review briefing with a subject composes, and one without opens a placeholder rather than
+    meeting the dispatcher's `review_subject_unknown` — that refusal belongs at dispatch time,
+    where the resolution it guards actually happens.
+    """
+    assert brief.parse_args(["322", "--seat", "review", "--reviewing", "opus-high"]).reviewing == (
+        "opus-high"
+    )
+    assert brief.parse_args(["322", "--seat", "review"]).reviewing == ""
+    # An unregistered profile name is still carried through: `derive_seat` states why the
+    # composer does not hold a second, weaker copy of the registry check.
+    assert brief.parse_args(["322", "--seat", "review", "--reviewing", "opus-hgih"]).reviewing == (
+        "opus-hgih"
+    )
+    assert capsys.readouterr().err == ""
 
 
 def test_the_footer_names_the_readiness_findings_and_refuses_the_token_claim() -> None:

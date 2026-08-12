@@ -770,8 +770,17 @@ class Resolution(NamedTuple):
         work, and that every one of those profiles was removed from the candidate list. It
         does not support "this profile wrote the commits", which is not on the record at all
         — `potential_authors` states the gap and where closing it belongs.
+
+        **The printed set is `excluded_from_review`'s, not a second derivation of it.** The
+        line a reader gets and the exclusion resolution performed have to be the same set, or
+        they can drift; the declared subject was missing from this line for exactly that
+        reason. On a complete read the two are equal anyway — `contradicted_refusal` fires
+        above here unless the declaration is among the potential authors — so what the fix
+        actually changes is the unchecked route, where the declaration is excluded and used
+        to say so. Sorted, matching `same_profile_refusal`'s rendering of the same set, so
+        one set has one spelling wherever it is printed.
         """
-        excluded = " ".join(self.authorship.potential) or "none"
+        excluded = " ".join(sorted(excluded_from_review(self.reviewed, self.authorship))) or "none"
         if self.authorship.complete:
             return (
                 f"route_reviewing_checked=yes potential_authors={excluded}"
@@ -1307,6 +1316,18 @@ def _read_plan(entry: Path) -> dict[str, object] | None:
     return document
 
 
+def _named_profile(document: dict[str, object]) -> str:
+    """Return the profile this plan names, or empty where it names none this scan can use.
+
+    Absent, blank, whitespace-only and non-string collapse to one answer because the caller
+    acts on all four identically: this record did not say which profile ran. `str()` over the
+    field would instead have turned a number or a list into a plausible-looking token that
+    matches no preference entry and silently clears the check.
+    """
+    profile = document.get("profile")
+    return profile.strip() if isinstance(profile, str) else ""
+
+
 def _read_record(entry: Path, issue: int) -> _Read:
     """Classify one dispatch directory against the issue under review.
 
@@ -1314,6 +1335,20 @@ def _read_record(entry: Path, issue: int) -> _Read:
     because with the issue as the only key an unopened record cannot be shown to be about
     some other issue — and a scan that skipped it would report itself complete having not
     looked (#41).
+
+    **A record that cannot name its profile has not been read for this purpose**, and that
+    is the narrower door round 2 left open. A plan that parses, carries this issue and
+    carries no usable `profile` is *readable* in every sense except the one this scan wants:
+    whichever profile that dispatch ran on is unknown, so it is excluded nowhere, and beside
+    one good record the scan would have reported itself complete with an unknown potential
+    author outside the never-alone floor. Absent, blank, whitespace and non-string all land
+    here together, because the caller acts on them identically.
+
+    **A profile the registry no longer carries is deliberately not that case.** It names
+    itself, so it is excluded like any other name — `excluded_from_review` is a set of
+    strings and a name outside `PROFILES` simply matches no preference entry — and treating
+    a retired profile as an unread record would make every later scan of that issue read as
+    partial for a fact the record states perfectly well.
     """
     document = _read_plan(entry)
     if document is None:
@@ -1322,16 +1357,23 @@ def _read_record(entry: Path, issue: int) -> _Read:
         same_issue = int(str(document["issue"])) == issue
     except (ValueError, TypeError):
         return _UNREADABLE
-    if not same_issue:
-        return _NOT_THIS_ISSUE
+    # Two conditions, one answer: a record about another issue and a record of a dispatch on
+    # a seat that judges rather than does are both records this scan walks past, neither of
+    # them a gap in it.
     seat = SEATS.get(str(document.get("seat", "")))
-    if seat is not None and seat.reviews:
+    if not same_issue or (seat is not None and seat.reviews):
         return _NOT_THIS_ISSUE
     refused = _refused_before_running(entry)
     if refused:
         return _NOT_THIS_ISSUE
+    # Below both narrowings on purpose. A review dispatch and a dispatch that refused before
+    # reaching a lane authored nothing whichever profile they named, so a missing profile
+    # there is genuinely irrelevant rather than a gap in the scan.
+    profile = _named_profile(document)
+    if not profile:
+        return _UNREADABLE
     return _Read(
-        profile=str(document.get("profile", "")),
+        profile=profile,
         record=str(document.get("dispatch_id", entry.name)),
         unreadable=refused is None,
     )
@@ -1363,11 +1405,13 @@ def potential_authors(issue: int, dispatch_dir: Path) -> Authorship:
     feeds says `checked` rather than `verified` for that reason.
 
     **A partial read is never a complete one.** An unreadable plan, a dispatch directory with
-    no plan in it, a plan carrying no issue, a `result.json` that will not parse: each leaves
-    `why=records_unreadable`, and the profiles that *were* read are still returned and still
-    excluded. That is #41's rule with its two halves kept apart — the check did not run, so
-    it must not report as passed; the exclusion is a superset, so an incomplete read still
-    narrows it.
+    no plan in it, a plan carrying no issue, a plan that does not name its profile, a
+    `result.json` that will not parse: each leaves `why=records_unreadable`, and the profiles
+    that *were* read are still returned and still excluded. That is #41's rule with its two
+    halves kept apart — the check did not run, so it must not report as passed; the exclusion
+    is a superset, so an incomplete read still narrows it. The profile-less plan is the one
+    that reads as an answer rather than as a gap, which is why `_read_record` states its case
+    separately.
     """
     directory = dispatch_dir.expanduser()
     if not directory.is_dir():
@@ -1559,11 +1603,11 @@ def same_profile_refusal(
     else:
         action = (
             f"The {seat.name} seat's preference is {' '.join(seat.preference)}, and removing "
-            f"{' and '.join(sorted(excluded))} leaves it with nothing, so the only route this "
-            "seat could offer is a profile that worked on the change. Nothing was dispatched, "
-            "and this refusal is the point rather than an obstacle to route around: register "
-            "another profile for this seat, or have the change reviewed from a seat whose list "
-            f"offers one. {NEVER_ALONE}"
+            f"{' and '.join(sorted(excluded))} leaves it with nothing. None of those profiles "
+            "can be ruled out as an author of this change, so this seat has no route it can "
+            "offer. Nothing was dispatched, and this refusal is the point rather than an "
+            "obstacle to route around: register another profile for this seat, or have the "
+            f"change reviewed from a seat whose list offers one. {NEVER_ALONE}"
         )
     return Refusal(
         "review_same_profile",
