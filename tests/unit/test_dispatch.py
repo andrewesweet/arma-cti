@@ -71,6 +71,14 @@ READY_BODY = REPO / "tests" / "fixtures" / "readiness-corpus" / "223.md"
 ROUTING_ELIGIBLE_BODY = REPO / "tests" / "fixtures" / "routing-eligible.md"
 UNREADY_BODY = "The dispatcher feels slow lately and somebody should have a look.\n"
 
+# A review dispatch declares the profile whose work it reviews (#322), so every arrangement
+# below that uses the `review` seat — several of which are really about environments,
+# breakers or windows and reach for it only because it is foreign-eligible — names one. It
+# is a native profile on purpose: every such arrangement dispatches a z.ai profile, so the
+# subject differs from the dispatched profile in both name and lane and the same-profile
+# refusal is never what those tests are measuring.
+REVIEWED = "opus-high"
+
 
 # --------------------------------------------------------------------------- helpers
 
@@ -239,6 +247,11 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "issue_body": str(ROUTING_ELIGIBLE_BODY),
         "queue_dir": str(open_policy(tmp_path)),
         "queue_root": str(tmp_path / "queue-root"),
+        # Empty is what a non-review dispatch passes (#322), and it is also the fail-closed
+        # value: a review seat reaching resolution with no declared subject refuses rather
+        # than resolving to the head the implementer would have taken. The review-seat
+        # arrangements below override it with `REVIEWED`.
+        "reviewing": "",
     }
     request.update(overrides)
     args = _namespace(**request)
@@ -1041,6 +1054,7 @@ def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path)
         issue_body=str(ROUTING_ELIGIBLE_BODY),
         queue_dir=str(open_policy(tmp_path)),
         queue_root=str(tmp_path / "queue-root"),
+        reviewing="",
     )
     _, _, refusal = dispatch.plan_dispatch(args, REPO, datetime.now(tz=UTC))
     assert refusal is not None
@@ -1050,7 +1064,12 @@ def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path)
 def test_the_record_names_the_credential_key_and_never_its_value(tmp_path: Path) -> None:
     credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
     plan, brief, refusal = plan_for(
-        tmp_path, lane="zai", profile="zai-glm52-max", seat="review", now=OFF_PEAK
+        tmp_path,
+        lane="zai",
+        profile="zai-glm52-max",
+        seat="review",
+        reviewing=REVIEWED,
+        now=OFF_PEAK,
     )
     assert refusal is None
     assert plan is not None
@@ -1069,7 +1088,12 @@ def test_a_zai_record_carries_the_plan_charge_block_the_estimator_will_read(
 ) -> None:
     credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
     plan, brief, refusal = plan_for(
-        tmp_path, lane="zai", profile="zai-glm52-max", seat="review", now=OFF_PEAK
+        tmp_path,
+        lane="zai",
+        profile="zai-glm52-max",
+        seat="review",
+        reviewing=REVIEWED,
+        now=OFF_PEAK,
     )
     assert refusal is None
     assert plan is not None
@@ -1133,7 +1157,12 @@ def zai_at(tmp_path: Path, now: datetime) -> tuple[Any, Any]:
     """Plan a z.ai dispatch at a chosen moment, with everything else in order."""
     credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
     plan, _, refusal = plan_for(
-        tmp_path, lane="zai", profile="zai-glm52-max", seat="review", now=now
+        tmp_path,
+        lane="zai",
+        profile="zai-glm52-max",
+        seat="review",
+        reviewing=REVIEWED,
+        now=now,
     )
     return plan, refusal
 
@@ -1226,6 +1255,7 @@ def test_every_profile_on_a_ruled_lane_is_refused_and_not_merely_the_named_one(
             lane="zai",
             profile=profile,
             seat="review",
+            reviewing=REVIEWED,
             worktree=str(worktree),
             now=PEAK,
         )
@@ -1240,6 +1270,7 @@ def test_the_window_is_read_before_the_worktree_and_the_credentials_are(tmp_path
         lane="zai",
         profile="zai-glm52-max",
         seat="review",
+        reviewing=REVIEWED,
         worktree=str(tmp_path / "no-such-tree"),
         credentials=str(tmp_path / "absent.env"),
         now=PEAK,
@@ -1371,6 +1402,7 @@ def test_readiness_outranks_admission_the_breaker_and_the_window(tmp_path: Path)
         lane="zai",
         profile="zai-glm52-max",
         seat="review",
+        reviewing=REVIEWED,
         issue_body=unready(tmp_path),
         now=PEAK,
     )
@@ -1492,6 +1524,8 @@ def test_the_clock_the_rule_is_judged_against_is_the_real_one(
             "zai-glm52-max",
             "--seat",
             "review",
+            "--reviewing",
+            REVIEWED,
             "--issue",
             "238",
             "--dispatch-dir",
@@ -1535,6 +1569,7 @@ def test_the_zai_lane_refuses_at_the_recipe_while_its_key_does_not_exist(
         lane="zai",
         profile="zai-glm52-max",
         seat="review",
+        reviewing=REVIEWED,
         credentials=str(tmp_path / "absent.env"),
         now=OFF_PEAK,
     )
@@ -1548,7 +1583,12 @@ def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: P
     """Defence in depth: the file can go between the plan and the launch."""
     credentials = credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
     plan, brief, _ = plan_for(
-        tmp_path, lane="zai", profile="zai-glm52-max", seat="review", now=OFF_PEAK
+        tmp_path,
+        lane="zai",
+        profile="zai-glm52-max",
+        seat="review",
+        reviewing=REVIEWED,
+        now=OFF_PEAK,
     )
     assert plan is not None
     dispatch.write_record(plan, brief)
@@ -1637,6 +1677,8 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
     common = [
         "--seat",
         "review",
+        "--reviewing",
+        REVIEWED,
         "--issue",
         "223",
         "--worktree",
@@ -1715,6 +1757,8 @@ def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
             "zai-glm52-max",
             "--seat",
             "review",
+            "--reviewing",
+            REVIEWED,
             "--issue",
             "223",
             "--worktree",

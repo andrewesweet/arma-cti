@@ -1,0 +1,532 @@
+"""The review seat cannot review its own profile, and cannot edit (#322, ADR-0071 ruling 4).
+
+Two halves of one invariant: no single model instance may both propose a change and produce
+the verdict that clears it. The first half is resolution — the profile under review is an
+input, it is removed before the list is walked, and a different lane goes first among what
+is left. The second is containment — the seat forces a read-only permission mode rather than
+inheriting the writable default, on both runner families.
+
+Claims are made through `plan_dispatch` or `main` wherever the criterion is about a dispatch,
+following `test_dispatch_seat.py`'s rule: what a caller gets is a plan or a refusal, and a
+resolver that returned the right token while the ladder below refused the route would satisfy
+an internal test and none of the criteria.
+
+**Two claims are made against `review_candidates` directly, and the reason is a registry
+fact rather than convenience.** The `review` seat's real preference is three profiles on
+three distinct lanes, so removing any one of them leaves two entries that are *both* on a
+different lane from the subject — the ordering rule cannot change the answer, and an
+end-to-end arrangement over the real registry cannot distinguish "prefers a different lane"
+from "keeps the seat's order". The ordering claims are therefore made two ways: against the
+pure function with a constructed seat, and end to end with a seat this module substitutes,
+so neither rests on the other.
+
+Arrangements are **clock-free** for `test_dispatch_seat.py`'s reason: entries are walked past
+by tripping a breaker or withholding a lane credential, both of which hold at any hour, where
+staging z.ai's published band would make the suite's answer depend on when it ran.
+"""
+
+from __future__ import annotations
+
+import json
+import subprocess
+import time
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any
+
+import pytest
+from conftest import REPO, load_tool
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+dispatch = load_tool("dispatch")
+breaker = load_tool("breaker")
+
+READY_BODY = REPO / "tests" / "fixtures" / "routing-eligible.md"
+
+# The profile whose work is under review in the arrangements that do not vary it. Native,
+# and deliberately not one of the review seat's own preference entries, so that a test about
+# containment or about the record is not also a test about exclusion.
+REVIEWED = "opus-high"
+
+
+# --------------------------------------------------------------------------- helpers
+
+
+def git_worktree(tmp_path: Path) -> Path:
+    """Make a real git repository: the plan reads a real HEAD out of the assigned tree."""
+    root = tmp_path / "tree"
+    root.mkdir(parents=True)
+    for args in (
+        ("init", "-q", "-b", "main"),
+        ("config", "user.email", "t@example.invalid"),
+        ("config", "user.name", "t"),
+    ):
+        subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)  # noqa: S603, S607
+    (root / "README.md").write_text("t\n", encoding="utf-8")
+    for args in (("add", "-A"), ("commit", "-qm", "t")):
+        subprocess.run(["git", *args], cwd=root, check=True, capture_output=True)  # noqa: S603, S607
+    return root
+
+
+def open_policy(tmp_path: Path) -> Path:
+    """Write a queue policy of this test's own: dispatch open, a limit nothing here reaches."""
+    directory = tmp_path / "queue"
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "policy.json").write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "freeze": {"state": "open", "since": "2026-08-06T00:00:00Z", "ruling": "a test"},
+                "wip_limit": {"value": 9, "since": "2026-08-06T00:00:00Z", "ruling": "a test"},
+                "packages": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return directory
+
+
+def trip(tmp_path: Path, lane: str, count: int = 3) -> None:
+    """Stage a lane's breaker into a state that refuses, without touching this box's own."""
+    store = breaker.Store(directory=tmp_path / "breaker", endpoint="http://127.0.0.1:2999/v1/logs")
+    for step in range(count):
+        breaker.record_outcome(
+            store, lane, breaker.Outcome(breaker.GATE_FAILED), time.time() + step
+        )
+
+
+def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
+    """Plan a review dispatch over a real worktree, writing nothing.
+
+    The credentials file is absent by default, which is what makes the arrangements
+    deterministic: the z.ai entry cannot be reached without a key at any hour, so a review
+    resolves over the Codex and native entries alone unless a test says otherwise.
+    """
+    now = overrides.pop("now", None) or datetime.now(tz=UTC)
+    worktree = overrides.pop("worktree", None) or git_worktree(tmp_path)
+    request = {
+        "lane": "",
+        "profile": "",
+        "seat": "review",
+        "reviewing": REVIEWED,
+        "issue": 322,
+        "worktree": str(worktree),
+        "brief_file": "",
+        "base_sha": "",
+        # The writable default the dispatcher really has. Every containment claim below is
+        # made against this value, because "without the caller passing anything" is the
+        # criterion and passing `plan` here would test the caller rather than the seat.
+        "permission_mode": "acceptEdits",
+        "dispatch_dir": str(tmp_path / "dispatches"),
+        "credentials": str(tmp_path / "credentials.env"),
+        "breaker_dir": str(tmp_path / "breaker"),
+        "admission_dir": str(tmp_path / "admission"),
+        "issue_body": str(READY_BODY),
+        "queue_dir": str(open_policy(tmp_path)),
+        "queue_root": str(tmp_path / "queue-root"),
+    }
+    request.update(overrides)
+    return dispatch.plan_dispatch(type("Args", (), request)(), REPO, now)
+
+
+def substitute_review_seat(
+    monkeypatch: pytest.MonkeyPatch, *preference: str, escalation: tuple[str, ...] = ()
+) -> None:
+    """Give the `review` seat a preference list this test chose, keeping its other columns.
+
+    The real seat's three entries sit on three distinct lanes, which makes two of ADR-0071
+    ruling 4's clauses unobservable against it — see this module's docstring. `reviews` and
+    `permission_mode` are carried across from the registered seat rather than restated, so a
+    substitution cannot accidentally test a seat that reviews nothing.
+    """
+    real = dispatch.SEATS["review"]
+    monkeypatch.setitem(
+        dispatch.SEATS,
+        "review",
+        real._replace(preference=preference, escalation=escalation),
+    )
+
+
+# ------------------------------------------- criterion 1: never the profile under review
+
+
+@pytest.mark.parametrize("reviewed", dispatch.SEATS["review"].preference)
+def test_a_review_never_resolves_to_the_profile_whose_work_it_reviews(
+    tmp_path: Path, reviewed: str
+) -> None:
+    """Criterion 1, over every entry the seat could otherwise have taken."""
+    plan, _, refusal = plan_for(tmp_path, reviewing=reviewed)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.identity.profile != reviewed
+
+
+def test_removing_the_head_resolves_to_the_next_entry_rather_than_refusing(
+    tmp_path: Path,
+) -> None:
+    plan, _, refusal = plan_for(tmp_path, reviewing="codex-luna-max")
+    assert refusal is None
+    assert plan is not None
+    # The z.ai entry needs a key this arrangement withholds, so the native tail is what a
+    # box with no z.ai credential resolves to once the Codex head is the subject.
+    assert plan.identity.profile == "opus-low"
+    assert plan.route.reviewed == "codex-luna-max"
+
+
+def test_the_removed_profile_is_not_recorded_as_passed_over(tmp_path: Path) -> None:
+    """It was never a candidate, and "walked past on a refusal" would be a different fact.
+
+    A reader reconciling a route reads `route_preference` against the passed-over entries;
+    recording the subject as though a rung had refused it would attribute the exclusion to
+    the breaker, the credential or the block, none of which said anything about it.
+    """
+    plan, _, _ = plan_for(tmp_path, reviewing="codex-luna-max")
+    assert plan is not None
+    assert "codex-luna-max" not in [entry.profile for entry in plan.route.passed_over]
+
+
+# ------------------------------------------------- criterion 2: preferring a different lane
+
+
+def test_a_different_lane_is_preferred_over_the_seats_own_head(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Criterion 2, end to end, on a list whose head shares the reviewed profile's lane."""
+    substitute_review_seat(monkeypatch, "opus-xhigh", "opus-low", "codex-sol-high")
+    plan, _, refusal = plan_for(tmp_path, reviewing=REVIEWED)
+    assert refusal is None, refusal
+    assert plan is not None
+    # Without the lane preference the head `opus-xhigh` would have resolved: it is not the
+    # subject, it is not blocked, and nothing here refuses it. The only reason the answer is
+    # the Codex entry is that the two native entries share the reviewed profile's lane.
+    assert plan.identity.profile == "codex-sol-high"
+    assert plan.identity.lane == "codex"
+
+
+def test_the_lane_preference_is_an_ordering_and_never_a_filter(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The case the ADR's one word leaves open: only same-lane entries left, so one is used.
+
+    Refusing here would confuse ruling 4's invariant — which is about the instance producing
+    the verdict — with the provider it is reached through, and would refuse a genuinely
+    different model for sharing an endpoint with the one under review.
+    """
+    substitute_review_seat(monkeypatch, "opus-xhigh", "opus-low")
+    plan, _, refusal = plan_for(tmp_path, reviewing=REVIEWED)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.identity.profile == "opus-xhigh"
+    assert plan.identity.lane == "claude-native"
+
+
+def test_the_seats_own_order_survives_inside_each_half() -> None:
+    """Head-first is the ADR's ranking of the work, and the lane rule does not re-rank it."""
+    seat = dispatch.SEATS["review"]._replace(
+        preference=("opus-xhigh", "codex-sol-high", "opus-low", "codex-sol-max")
+    )
+    assert dispatch.review_candidates(seat, "opus-high") == (
+        "codex-sol-high",
+        "codex-sol-max",
+        "opus-xhigh",
+        "opus-low",
+    )
+
+
+def test_a_seat_that_reviews_nothing_walks_its_preference_untouched() -> None:
+    """Every other seat's resolution is the function it always was."""
+    for name, seat in dispatch.SEATS.items():
+        if seat.reviews:
+            continue
+        assert dispatch.review_candidates(seat, "") == seat.preference, name
+        # Even handed a subject, which nothing does: the column decides, not the argument.
+        assert dispatch.review_candidates(seat, "opus-high") == seat.preference, name
+
+
+# ------------------------------------- criterion 3: read-only, forced, on both runners
+
+
+def test_a_claude_lane_review_runs_read_only_without_the_caller_passing_anything(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    substitute_review_seat(monkeypatch, "opus-low")
+    plan, _, refusal = plan_for(tmp_path)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.identity.lane == "claude-native"
+    assert plan.permission_mode == "plan"
+    assert "--permission-mode" in plan.argv
+    assert plan.argv[plan.argv.index("--permission-mode") + 1] == "plan"
+    assert "acceptEdits" not in plan.argv
+
+
+def test_a_codex_lane_review_runs_read_only_without_the_caller_passing_anything(
+    tmp_path: Path,
+) -> None:
+    """The other runner family, whose vocabulary for the same thing is a sandbox policy."""
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.identity.lane == "codex"
+    assert plan.permission_mode == "plan"
+    assert "--sandbox" in plan.argv
+    assert plan.argv[plan.argv.index("--sandbox") + 1] == "read-only"
+    # `workspace-write`'s widening is what a committing seat gets; a review buys none of it.
+    assert not [part for part in plan.argv if part.startswith("sandbox_workspace_write.")]
+    assert "--dangerously-bypass-approvals-and-sandbox" not in plan.argv
+
+
+@pytest.mark.parametrize("asked", ["acceptEdits", "bypassPermissions", "default"])
+def test_the_seat_overrides_whatever_permission_mode_the_caller_typed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, asked: str
+) -> None:
+    """Forced, not defaulted: a containment a caller can switch off with a flag is a default."""
+    substitute_review_seat(monkeypatch, "opus-low")
+    plan, _, refusal = plan_for(tmp_path, permission_mode=asked)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.permission_mode == "plan"
+
+
+def test_the_forcing_is_recorded_rather_than_silent(tmp_path: Path) -> None:
+    """A reader who typed a writable mode and got a read-only run can see who overrode them."""
+    plan, _, _ = plan_for(tmp_path)
+    assert plan is not None
+    lines = plan.route.lines()
+    assert "route_permission_mode=plan forced_by_seat=review (no caller override)" in lines
+    assert f"route_reviewing={REVIEWED} (never resolved to)" in lines
+
+
+def test_no_other_seat_has_its_permission_mode_taken_away_from_the_caller(
+    tmp_path: Path,
+) -> None:
+    """The default is still the default everywhere it was right: seats that commit and gate."""
+    plan, _, refusal = plan_for(tmp_path, seat="implementer", reviewing="")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.permission_mode == "acceptEdits"
+
+
+# ----------------------------------------- criterion 4: it refuses rather than proceeding
+
+
+def test_naming_the_reviewed_profile_is_refused_rather_than_dispatched(tmp_path: Path) -> None:
+    """`--profile` is a way of choosing, never a way around (ADR-0071 ruling 2)."""
+    plan, _, refusal = plan_for(
+        tmp_path, lane="claude-native", profile="opus-low", reviewing="opus-low"
+    )
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_same_profile"
+    assert "why=named" in refusal.found
+    assert refusal.failure_class == ""
+
+
+def test_a_list_offering_nothing_but_the_reviewed_profile_refuses_by_name(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Criterion 4's own case: removal empties the list, so there is no route but the subject."""
+    substitute_review_seat(monkeypatch, "opus-low")
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_same_profile"
+    assert "why=list_offers_nothing_else" in refusal.found
+    assert "candidates=none" in refusal.found
+    # The refusal is the point of the ticket, so it says so rather than reading as a fault.
+    assert "this refusal is the point" in refusal.action
+
+
+def test_the_same_profile_refusal_carries_no_failure_class(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Nothing was found about a provider, a lane or the code under test (CLAUDE.md's table)."""
+    substitute_review_seat(monkeypatch, "opus-low")
+    _, _, refusal = plan_for(tmp_path, reviewing="opus-low")
+    assert refusal is not None
+    assert refusal.failure_class == ""
+
+
+def test_a_review_that_declares_no_subject_refuses_rather_than_taking_the_head(
+    tmp_path: Path,
+) -> None:
+    """The absent case is a refusal, because the alternative is a silent same-model review."""
+    plan, _, refusal = plan_for(tmp_path, reviewing="")
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_subject_unknown"
+    assert "--reviewing <profile>" in refusal.action
+
+
+def test_a_subject_the_registry_does_not_carry_is_refused_rather_than_ignored(
+    tmp_path: Path,
+) -> None:
+    """A typo would resolve past nothing, which is the same-model review wearing a flag."""
+    plan, _, refusal = plan_for(tmp_path, reviewing="opus-hgih")
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "unknown_reviewed_profile"
+
+
+def test_declaring_a_subject_on_a_seat_that_reviews_nothing_is_refused(tmp_path: Path) -> None:
+    """An option that silently decides nothing is one a caller will believe did something."""
+    plan, _, refusal = plan_for(tmp_path, seat="implementer", reviewing=REVIEWED)
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "reviewing_without_review_seat"
+
+
+# ------------------------------------------------- criterion 5: the negative, pinned hard
+
+
+@pytest.mark.parametrize("reviewed", sorted(dispatch.PROFILES))
+def test_no_registered_profile_can_ever_be_returned_as_its_own_reviewer(
+    tmp_path: Path, reviewed: str
+) -> None:
+    """Criterion 5, across the whole registry and both outcomes.
+
+    Either a route resolves and it is somebody else, or the dispatch refuses. There is no
+    third answer, and in particular there is no arrangement in which the resolver's honest
+    reading of the world produces the profile under review.
+    """
+    plan, _, refusal = plan_for(tmp_path, reviewing=reviewed)
+    if plan is None:
+        assert refusal is not None
+        return
+    assert plan.identity.profile != reviewed
+
+
+@pytest.mark.parametrize("reviewed", dispatch.SEATS["review"].preference)
+def test_the_reviewed_profile_is_not_a_fallback_when_it_is_the_last_lane_conducting(
+    tmp_path: Path, reviewed: str
+) -> None:
+    """The arrangement that would tempt a fallback: every other lane refused.
+
+    Each other candidate's lane is tripped, so the reviewed profile's own lane is the only
+    one still conducting and the reviewed profile is the only registered entry on it that
+    the seat's list carries. A resolver that treated the subject as a last resort would
+    dispatch here; this one refuses, and the refusal names what it removed.
+    """
+    seat = dispatch.SEATS["review"]
+    subject_lane = dispatch.PROFILES[reviewed].lane
+    for name in seat.preference:
+        lane = dispatch.PROFILES[name].lane
+        if lane != subject_lane:
+            trip(tmp_path, lane)
+    plan, _, refusal = plan_for(tmp_path, reviewing=reviewed)
+    assert plan is None, plan
+    assert refusal is not None
+    assert refusal.kind == "seat_list_exhausted"
+    assert f"reviewing={reviewed} (removed before the walk)" in refusal.found
+    assert all(not line.startswith(f"refused={reviewed} ") for line in refusal.found)
+
+
+def test_the_exhaustion_refusal_distinguishes_the_registered_list_from_the_walked_one(
+    tmp_path: Path,
+) -> None:
+    """A reader counting refusals against `preference=` would otherwise find one missing."""
+    for lane in ("claude-native", "codex", "zai"):
+        trip(tmp_path, lane)
+    _, _, refusal = plan_for(tmp_path, reviewing="codex-luna-max")
+    assert refusal is not None
+    assert "preference=codex-luna-max zai-glm52-max opus-low" in refusal.found
+    assert "walked=zai-glm52-max opus-low" in refusal.found
+
+
+# ------------------------------------------------ the command line, the record, the listing
+
+
+def test_the_subject_reaches_the_dispatcher_from_the_command_line(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`--reviewing` is a real option on the real parser, not a namespace field tests set."""
+    worktree = git_worktree(tmp_path)
+    code = dispatch.main(
+        [
+            "--seat",
+            "review",
+            "--reviewing",
+            "codex-luna-max",
+            "--issue",
+            "322",
+            "--worktree",
+            str(worktree),
+            "--issue-body",
+            str(READY_BODY),
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+            "--credentials",
+            str(tmp_path / "credentials.env"),
+            "--breaker-dir",
+            str(tmp_path / "breaker"),
+            "--admission-dir",
+            str(tmp_path / "admission"),
+            "--queue-dir",
+            str(open_policy(tmp_path)),
+            "--queue-root",
+            str(tmp_path / "queue-root"),
+            "--dry-run",
+        ]
+    )
+    printed = capsys.readouterr()
+    assert code == 0, printed.err
+    assert "route_reviewing=codex-luna-max (never resolved to)" in printed.out
+    assert "route_permission_mode=plan forced_by_seat=review" in printed.out
+    assert "route_chosen=opus-low lane=claude-native" in printed.out
+    # The list the dispatch actually walked, with the subject gone from it.
+    assert "route_preference=zai-glm52-max opus-low" in printed.out
+    assert "--permission-mode plan" in printed.out
+
+
+def test_the_record_names_the_profile_under_review(tmp_path: Path) -> None:
+    """ADR-0071 ruling 4's landing check reads records, so the subject has to be in one."""
+    plan, brief, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
+    assert document["route"]["reviewing"] == REVIEWED
+    assert document["permission_mode"] == "plan"
+
+
+def test_a_recorded_review_route_reads_back_as_the_route_that_was_written(
+    tmp_path: Path,
+) -> None:
+    plan, brief, _ = plan_for(tmp_path)
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    assert dispatch.load_record(plan.record) == plan
+
+
+def test_a_record_written_before_this_landed_reads_back_with_no_subject(
+    tmp_path: Path,
+) -> None:
+    """No review before #322 declared one, which is the finding the ADR records."""
+    plan, brief, _ = plan_for(tmp_path)
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    path = plan.record / "dispatch.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    del document["route"]["reviewing"]
+    path.write_text(json.dumps(document), encoding="utf-8")
+    assert dispatch.load_record(plan.record).route.reviewed == ""
+
+
+def test_the_registry_listing_states_both_halves_of_the_rule(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A reader asking "what can I dispatch?" is told what this seat does differently."""
+    assert dispatch.main(["--list"]) == 0
+    printed = capsys.readouterr().out
+    assert (
+        "  reviews=true resolves_past=--reviewing prefers=a-different-lane"
+        " refusal=review_same_profile" in printed
+    )
+    assert "  permission_mode=plan forced=true (no caller override)" in printed
+
+
+def test_the_review_seat_is_the_only_one_carrying_either_column() -> None:
+    """Both columns are ADR-0071 ruling 4's and #322 landed them for the seat that ruling names."""
+    assert [name for name, seat in dispatch.SEATS.items() if seat.reviews] == ["review"]
+    assert [name for name, seat in dispatch.SEATS.items() if seat.permission_mode] == ["review"]

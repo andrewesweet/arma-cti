@@ -139,6 +139,23 @@ later. A whole list unavailable is `seat_list_exhausted` — named, never a sile
 to something the seat's table does not carry. Naming `--profile` still works and is still
 subject to every `(profile, seat)` refusal: it is a way of choosing, never a way around.
 
+**The review seat cannot review its own profile, and cannot edit** (#322, ADR-0071 ruling 4).
+Both halves come from one invariant: no single model instance may both propose a change and
+produce the verdict that clears it. So a review dispatch declares the profile whose work it
+reviews — `--reviewing`, a declaration rather than a derivation because the derivation reads
+the branch's dispatch records and that is #333's, unbuilt — and resolution *removes* that
+profile from the list before walking it, putting a different lane first among what is left.
+Preferring is an ordering and not a second filter: an entry that shares the reviewed lane is
+still walked, because the invariant is about the instance producing the verdict and provider
+diversity is what is merely preferred. Where removal leaves nothing, `review_same_profile`
+refuses rather than proceeding same-model, and the same refusal meets a caller who names the
+reviewed profile with `--profile`. The absent declaration refuses too: without it nothing
+could resolve past anything, and resolving anyway would take the head the implementer took.
+The second half is containment. `--permission-mode` defaults to `acceptEdits`, which is
+writable on both runner families, so a review dispatched at the default could edit; the seat
+now *forces* `plan` in `routed`, which `build_argv` renders as `--permission-mode plan` on
+the `claude` family and `--sandbox read-only` on `codex`.
+
 **The keep-on-Claude class policy is a separate, per-dispatch read** (#266). Queue policy
 answers whether work may start now; `config/dispatch-routing-policy.json` answers whether
 the declared class may leave Claude. The main checkout is read on every dispatch, never at
@@ -452,13 +469,30 @@ class Seat(NamedTuple):
     # registry data — printed by `--list`, and what #333's arbiter rule reads — and
     # nothing resolves through it.
     escalation: tuple[str, ...] = ()
+    # ADR-0071 ruling 4 (#322): this seat judges work another profile produced, so its
+    # resolution takes that profile as an input and never returns it. The column is on the
+    # registry rather than a name this module tests for, because "which seats review" is a
+    # fact about the seat table and the table is where every other such fact lives.
+    reviews: bool = False
+    # The permission mode this seat *forces*, whatever the caller asked for, or the empty
+    # string where the seat leaves the mode to the caller. ADR-0071 ruling 4: the review
+    # seat's containment must be forced, not defaulted — `--permission-mode` defaults to
+    # `acceptEdits`, which is writable, so a review dispatched at the default could edit.
+    #
+    # `recon` is read-only by description and deliberately does **not** carry a mode here.
+    # #322 is the review seat's ticket, and forcing a mode on a seat nobody asked about
+    # would be a behaviour change nothing in this issue's criteria covers. The column is
+    # what makes joining a one-line edit when somebody does ask.
+    permission_mode: str = ""
 
 
 # Named once because two seats share it: ADR-0071 ruling 2 gives `review` "the
 # implementer's list" and the implementer's escalation *head*. Sharing the object is what
 # keeps that a fact rather than a copy that drifts. The rule that makes `review`'s
 # resolution differ — never the profile under review, preferring a different lane — is
-# #322's and is deliberately absent here.
+# #322's and lives in `review_candidates`, which reorders this list rather than holding a
+# second one: the seat still prefers exactly these profiles in exactly this order, and what
+# the reviewed profile changes is which of them are reachable and which goes first.
 IMPLEMENTER_PREFERENCE: Final = ("codex-luna-max", "zai-glm52-max", "opus-low")
 IMPLEMENTER_ESCALATION: Final = ("codex-sol-high", "opus-high")
 
@@ -487,11 +521,17 @@ SEATS: Final[dict[str, Seat]] = {
         escalation=IMPLEMENTER_ESCALATION,
     ),
     "recon": Seat("recon", foreign_eligible=True, preference=("codex-luna-medium", "haiku-medium")),
+    # ADR-0071 ruling 4 (#322) adds the two columns that make never-alone real. `reviews`
+    # is what makes this seat's resolution take the profile under review as an input and
+    # never return it; `permission_mode` forces the containment `--permission-mode`'s
+    # writable default would otherwise have left to whoever typed the command.
     "review": Seat(
         "review",
         foreign_eligible=True,
         preference=IMPLEMENTER_PREFERENCE,
         escalation=IMPLEMENTER_ESCALATION[:1],
+        reviews=True,
+        permission_mode="plan",
     ),
     # Ruling 3's own kind of work. Every entry is on the human's enumerated retro list of
     # 2026-08-09 (#300); `RETRO_ALLOWANCE` below stays keyed on the `fable` seat, which is
@@ -609,17 +649,47 @@ class Resolution(NamedTuple):
     lane: str
     named: bool
     passed_over: tuple[PassedOver, ...] = ()
+    # The profile whose work this dispatch reviews, empty on every seat that reviews none
+    # (#322). On the route rather than only on the command line because ADR-0071 ruling 4's
+    # landing check has to be able to ask, later and from the record alone, whether the
+    # instance that produced a verdict was the instance that produced the change.
+    reviewed: str = ""
 
     def lines(self) -> tuple[str, ...]:
         """Render the route as the lines a reader gets: the profile, and why this one."""
         if self.named:
-            return (f"route=profile profile={self.profile} lane={self.lane}",)
-        return (
-            f"route=seat seat={self.seat}",
-            f"route_preference={' '.join(SEATS[self.seat].preference)}",
-            *(entry.line("route_passed_over") for entry in self.passed_over),
-            f"route_chosen={self.profile} lane={self.lane}",
-        )
+            head = (f"route=profile profile={self.profile} lane={self.lane}",)
+        else:
+            head = (
+                f"route=seat seat={self.seat}",
+                # The list *this* dispatch walks, which on the review seat is the seat's
+                # preference with the reviewed profile removed and a different lane put
+                # first. Printing the raw preference here would show a reader an order
+                # resolution did not use, and one containing a profile it refused to use.
+                f"route_preference={' '.join(review_candidates(SEATS[self.seat], self.reviewed))}",
+                *(entry.line("route_passed_over") for entry in self.passed_over),
+                f"route_chosen={self.profile} lane={self.lane}",
+            )
+        return (*head, *self.containment_lines())
+
+    def containment_lines(self) -> tuple[str, ...]:
+        """Render what the seat forced on this dispatch, on both routes and never silently.
+
+        Forcing a caller's permission mode is the right mechanism and a bad thing to do
+        quietly: a reader who typed `--permission-mode acceptEdits` and got a read-only run
+        should be able to see, in the dispatch's own output, that a seat overrode them and
+        which seat it was.
+        """
+        seat = SEATS[self.seat]
+        lines = []
+        if self.reviewed:
+            lines.append(f"route_reviewing={self.reviewed} (never resolved to)")
+        if seat.permission_mode:
+            lines.append(
+                f"route_permission_mode={seat.permission_mode}"
+                f" forced_by_seat={seat.name} (no caller override)"
+            )
+        return tuple(lines)
 
     def document(self) -> dict[str, object]:
         """Render the route for the dispatch record, passed-over entries and all."""
@@ -628,6 +698,7 @@ class Resolution(NamedTuple):
             "seat": self.seat,
             "chosen": self.profile,
             "lane": self.lane,
+            "reviewing": self.reviewed,
             "passed_over": [
                 {
                     "profile": entry.profile,
@@ -646,6 +717,10 @@ def read_route(document: Mapping[str, object]) -> Resolution:
     seat, profile and lane it already carries, with nothing passed over. That is what those
     dispatches were — every one of them named its profile, because naming it was the only
     way to dispatch — so the fallback states a fact rather than papering over a gap.
+
+    A record written before #322 carries no reviewed profile, and reads back with none. It
+    is a fact about those dispatches too: no review before this landed declared its subject,
+    which is why the ADR calls same-model review the finding it does.
     """
     found = document.get("route")
     route = found if isinstance(found, dict) else {}
@@ -655,6 +730,7 @@ def read_route(document: Mapping[str, object]) -> Resolution:
         profile=str(route.get("chosen", document["profile"])),
         lane=str(route.get("lane", document["lane"])),
         named=bool(route.get("named", True)),
+        reviewed=str(route.get("reviewing", "")),
         passed_over=tuple(
             PassedOver(
                 str(entry["profile"]), str(entry["refusal"]), str(entry.get("failure_class", ""))
@@ -979,6 +1055,167 @@ def pair_block(seat: str, profile_name: str) -> Refusal | None:
     )
 
 
+# ADR-0071 ruling 4's invariant, in one string because the three refusals that enforce it
+# all quote it: the absent-subject one, and both arrivals at `review_same_profile`. Writing
+# it out three times is how a rule and the refusals that enforce it come to disagree.
+NEVER_ALONE: Final = (
+    "ADR-0071 ruling 4: no single model instance may both propose a change and produce the "
+    "review verdict that clears it, and the whole argument for that rests on the second "
+    "instance being genuinely different — a same-model review makes never-alone a ritual."
+)
+
+
+def reviewed_profile_refusal(seat_name: str, reviewed: str) -> Refusal | None:
+    """Check `--reviewing` against the seat that needs it, before any list is walked (#322).
+
+    **How the reviewed profile reaches the dispatcher is a flag, and the reason is that the
+    alternative does not exist yet.** Deriving it — reading the dispatch records that
+    authored the review branch, the way ADR-0071 ruling 4's landing check will — is #333's
+    machinery and is not built; requiring it here would couple this seat to a surface that
+    does not exist, and inferring it from "the newest dispatch on this issue" would be a
+    guess dressed as a derivation, wrong exactly when authorship spanned two dispatches,
+    which is the hole ruling 4 already found once. So the caller declares the subject, and
+    the declaration is checked against the registry rather than trusted as a string.
+
+    **The absent case refuses**, which is the whole point: a review seat with no declared
+    subject cannot be resolved past anything, and resolving it anyway would take the head of
+    the implementer's list — the same profile the implementer took — and call it a review.
+    That is the silent same-model review this ticket exists to make impossible, so it is a
+    named refusal rather than a default.
+
+    The flag is refused on a seat that does not review, because an option that silently
+    decides nothing is one a caller will believe did something.
+
+    No failure class, for `pair_block`'s reason: nothing was found about a provider, a lane
+    or the code under test. This is an incomplete or contradictory request.
+    """
+    seat = SEATS[seat_name]
+    if not seat.reviews:
+        if not reviewed:
+            return None
+        return Refusal(
+            "reviewing_without_review_seat",
+            (f"seat={seat_name}", f"reviewing={reviewed}"),
+            (
+                "`--reviewing` declares the profile whose work is under review and only the "
+                "review seat resolves against it. Drop the option, or dispatch `--seat "
+                "review`. Nothing was dispatched."
+            ),
+        )
+    if not reviewed:
+        return Refusal(
+            "review_subject_unknown",
+            (f"seat={seat_name}", "reviewing=<absent>"),
+            (
+                "A review dispatch declares the profile whose work it is reviewing: "
+                "`--reviewing <profile>`. Without it nothing here can resolve past that "
+                f"profile, and resolving anyway would take the same head the implementer "
+                f"took. {NEVER_ALONE} Nothing was dispatched."
+            ),
+        )
+    if reviewed not in PROFILES:
+        return Refusal(
+            "unknown_reviewed_profile",
+            (f"reviewing={reviewed}", f"known={' '.join(sorted(PROFILES))}"),
+            (
+                "The profile under review is checked against the registry rather than "
+                "taken as a string, because a typo would resolve past nothing and produce "
+                "exactly the same-model review the check exists to prevent. Name a "
+                "registered profile. Nothing was dispatched."
+            ),
+        )
+    return None
+
+
+def review_candidates(seat: Seat, reviewed: str) -> tuple[str, ...]:
+    """Order a seat's preference for reviewing work done on `reviewed` (ADR-0071 ruling 4).
+
+    Two rules, and only the first is absolute. The profile under review is **removed**: it
+    is never a candidate, whatever the rest of the world says about it. A different lane is
+    **preferred**, which is an ordering and not a second filter — the entries that share the
+    reviewed profile's lane keep their places behind the ones that do not, and are still
+    walked.
+
+    Being explicit about the case the ADR's one word leaves open: **when the only
+    non-matching entries share the lane, they are used.** Making the lane a filter would
+    refuse a genuinely different model — GLM-5.2 reviewing Luna's work is a different
+    instance of a different family, and z.ai and Codex are separate providers anyway — and
+    it would confuse ruling 4's invariant, which is about the *instance* producing the
+    verdict, with the provider it is reached through. Provider diversity is preferred
+    because one family's blind spots are not another's; it is not the invariant.
+
+    Within each half the seat's own head-first order survives, because that order is the
+    ADR's ranking of the work and nothing here re-ranks it.
+
+    A seat that does not review is returned unchanged, so this is the one function every
+    caller can ask for "the list this dispatch walks" without knowing which seat it has.
+    """
+    if not seat.reviews:
+        return seat.preference
+    subject = PROFILES.get(reviewed)
+    if subject is None:
+        # `reviewed_profile_refusal` refuses an absent or unregistered subject above every
+        # resolution, so this is the rendering path only: a dispatch record read back off
+        # disk can name a profile the registry has since dropped, and printing what that
+        # dispatch could walk must not raise. Empty is also the fail-closed answer if this
+        # were ever reached while deciding — no candidate resolves.
+        return ()
+    other_lane = tuple(
+        name for name in seat.preference if name != reviewed and PROFILES[name].lane != subject.lane
+    )
+    same_lane = tuple(
+        name for name in seat.preference if name != reviewed and PROFILES[name].lane == subject.lane
+    )
+    return (*other_lane, *same_lane)
+
+
+def same_profile_refusal(seat: Seat, reviewed: str, why: str) -> Refusal:
+    """Refuse a review that would run on the profile it is reviewing (#322, criterion 4).
+
+    One refusal kind reached two ways, because it is one fact: this dispatch would have the
+    reviewed profile produce the verdict on its own work. `why=` says which way — a caller
+    who named that profile with `--profile`, or a seat whose list offers nothing else once
+    the reviewed profile is removed. The remedies differ and the finding does not, and
+    giving the finding two names would mean two strings to grep for the thing the ticket is
+    about.
+
+    Naming `--profile` is a way of choosing and never a way around, exactly as ADR-0071
+    ruling 2 says of every other `(profile, seat)` refusal, so the named route meets this
+    check too.
+
+    **No failure class**, for `pair_block`'s and `exhausted_refusal`'s reason: nothing was
+    found about a provider, a lane, or the code under test. The provider is up and the
+    profile is registered; this project declines to let one instance clear its own change.
+    """
+    candidates = review_candidates(seat, reviewed)
+    if why == "named":
+        action = (
+            f"You named {reviewed}, which is the profile whose work is under review. Name a "
+            "different one, or leave --lane and --profile out and let the seat resolve: it "
+            f"walks {' '.join(candidates) or 'nothing else'} for this subject. Nothing was "
+            f"dispatched. {NEVER_ALONE}"
+        )
+    else:
+        action = (
+            f"The {seat.name} seat's preference is {' '.join(seat.preference)}, and removing "
+            f"{reviewed} leaves it with nothing, so the only route this seat could offer is "
+            "the profile under review. Nothing was dispatched, and this refusal is the "
+            "point rather than an obstacle to route around: register another profile for "
+            "this seat, or have the change reviewed from a seat whose list offers one. "
+            f"{NEVER_ALONE}"
+        )
+    return Refusal(
+        "review_same_profile",
+        (
+            f"seat={seat.name}",
+            f"reviewing={reviewed}",
+            f"why={why}",
+            f"candidates={' '.join(candidates) or 'none'}",
+        ),
+        action,
+    )
+
+
 class Readiness(NamedTuple):
     """What the readiness rung learned: an assessment of the issue, or why there is none."""
 
@@ -1257,7 +1494,7 @@ def candidate_refusal(
     return refusal
 
 
-def exhausted_refusal(seat: Seat, passed: tuple[PassedOver, ...]) -> Refusal:
+def exhausted_refusal(seat: Seat, passed: tuple[PassedOver, ...], reviewed: str = "") -> Refusal:
     """Refuse by name when a seat's whole preference list is unavailable (#321).
 
     Named rather than quietly escalated or defaulted, because the story this serves is "I
@@ -1276,8 +1513,15 @@ def exhausted_refusal(seat: Seat, passed: tuple[PassedOver, ...]) -> Refusal:
     with `incomplete_request missing=--lane` because the pair travels together; and offering
     to dispatch an escalation entry for a seat that registers none, where the old text
     interpolated the phrase `none registered` into the position a profile name goes.
+
+    On the review seat the list that was walked is not the seat's raw preference — the
+    profile under review was removed before anything was tried (#322) — so both are printed
+    and the removed one is named. A reader shown only `preference=` would count the entries,
+    count the refusals, find one unaccounted for, and reasonably conclude the resolver had
+    skipped a live route.
     """
     escalation = " ".join(seat.escalation)
+    walked = review_candidates(seat, reviewed)
     if seat.escalation:
         head = seat.escalation[0]
         alternative = (
@@ -1290,11 +1534,17 @@ def exhausted_refusal(seat: Seat, passed: tuple[PassedOver, ...]) -> Refusal:
             f"The {seat.name} seat registers no escalation entry, so there is no dearer "
             "route above its list for this refusal to point at."
         )
+    excluded = (
+        (f"reviewing={reviewed} (removed before the walk)", f"walked={' '.join(walked)}")
+        if reviewed
+        else ()
+    )
     return Refusal(
         "seat_list_exhausted",
         (
             f"seat={seat.name}",
             f"preference={' '.join(seat.preference)}",
+            *excluded,
             *(entry.line("refused") for entry in passed),
             f"escalation={escalation or 'none'}",
         ),
@@ -1322,27 +1572,72 @@ def resolve_seat(
     whole list refuses — a breaker-refused head is a *skip*, not a refusal — so the only
     order this changes is the one case where the seat has no route to offer, and there the
     ladder below could not have run anyway.
+
+    On a seat that reviews, the profile under review is an input and the list walked is
+    `review_candidates`' — never the raw preference (#322). The check on that input runs
+    above the named route as well as above the resolved one, because ADR-0071 ruling 4's
+    invariant is about which instance produces the verdict and `--profile` chooses an
+    instance just as resolution does.
     """
     refusal = unknown_seat_refusal(args.seat)
     if refusal is not None:
         return None, refusal
-    if args.profile:
-        # The named route. It is validated by `resolve_selection` on the ladder exactly as
-        # it always was, block included: this function chooses, and never clears.
-        return Resolution(args.seat, args.profile, args.lane, named=True), None
+    refusal = reviewed_profile_refusal(args.seat, args.reviewing)
+    if refusal is not None:
+        return None, refusal
     seat = SEATS[args.seat]
+    if args.profile:
+        return _named_route(seat, args)
+    return _walk_preference(seat, args, now)
+
+
+def _named_route(seat: Seat, args: argparse.Namespace) -> tuple[Resolution | None, Refusal | None]:
+    """Take the route the caller typed, after the one check the ladder below cannot make.
+
+    Everything else about a named route is validated by `resolve_selection` on the ladder
+    exactly as it always was, block included: this function chooses, and never clears. The
+    same-profile check is here because the ladder judges `(lane, profile, seat)` and the
+    profile under review is none of those three, so a caller naming it would otherwise reach
+    a rung that has no way to know it is the wrong instance.
+    """
+    if seat.reviews and args.profile == args.reviewing:
+        return None, same_profile_refusal(seat, args.reviewing, "named")
+    return (
+        Resolution(seat.name, args.profile, args.lane, named=True, reviewed=args.reviewing),
+        None,
+    )
+
+
+def _walk_preference(
+    seat: Seat, args: argparse.Namespace, now: datetime
+) -> tuple[Resolution | None, Refusal | None]:
+    """Walk this dispatch's candidate list to the first entry that is dispatchable right now.
+
+    The list is `review_candidates`', not the seat's raw preference: on every seat that
+    reviews nothing the two are the same object, and on the review seat the profile under
+    review has been removed and a different lane put first (#322).
+    """
+    reviewed = args.reviewing
+    candidates = review_candidates(seat, reviewed)
+    if not candidates:
+        return None, same_profile_refusal(seat, reviewed, "list_offers_nothing_else")
     passed: list[PassedOver] = []
-    for name in seat.preference:
+    for name in candidates:
         found = candidate_refusal(args, seat.name, name, now)
         if found is None:
             return (
                 Resolution(
-                    seat.name, name, PROFILES[name].lane, named=False, passed_over=tuple(passed)
+                    seat.name,
+                    name,
+                    PROFILES[name].lane,
+                    named=False,
+                    passed_over=tuple(passed),
+                    reviewed=reviewed,
                 ),
                 None,
             )
         passed.append(PassedOver(name, found.kind, found.failure_class))
-    return None, exhausted_refusal(seat, tuple(passed))
+    return None, exhausted_refusal(seat, tuple(passed), reviewed)
 
 
 def routed(args: argparse.Namespace, route: Resolution) -> argparse.Namespace:
@@ -1357,10 +1652,28 @@ def routed(args: argparse.Namespace, route: Resolution) -> argparse.Namespace:
 
     A copy, because the caller's namespace is `main`'s parsed argv and a rung that read a
     lane the caller never typed would make `--dry-run` print a request nobody made.
+
+    **The seat's permission mode is completed here too, and that is a force rather than a
+    default** (ADR-0071 ruling 4, #322). `--permission-mode` defaults to `acceptEdits`,
+    which is writable on both runner families, so a review dispatched with the caller
+    passing nothing could edit — and a review that can edit is a review that can land its
+    own findings, which is the containment `docs/review-dispatch.md` says the mode is the
+    mechanism for. Overwriting whatever the caller passed is deliberate: a containment a
+    caller can switch off by typing a flag is a default, and this ruling asked for the other
+    thing. It is never silent — `Resolution.containment_lines` names the seat that forced
+    it, in the dry run and in the record's own argv.
+
+    Here rather than in `build_argv`, because a seat is a property of the *route* and
+    `build_argv` is handed a lane and a profile: putting it there would mean the record's
+    `permission_mode` field and the runner's own flags could disagree, since both are read
+    from this namespace afterwards.
     """
     chosen = copy.copy(args)
     chosen.lane = route.lane
     chosen.profile = route.profile
+    forced = SEATS[route.seat].permission_mode
+    if forced:
+        chosen.permission_mode = forced
     return chosen
 
 
@@ -2094,6 +2407,36 @@ def classify_finished_run(record: Path, returncode: int) -> tuple[str, float | N
     return breaker.classify_run(returncode, text[-LOG_TAIL_BYTES:])
 
 
+def seat_listing(seat: Seat) -> tuple[str, ...]:
+    """Render one seat for the registry: what `--seat S` alone resolves to, and its rules.
+
+    ADR-0071 ruling 2's other half. The escalation entry is printed beside the preference
+    and marked, because it is registry data that resolution deliberately does not walk — a
+    reader who saw only the preference would have no way to tell whether an absent
+    escalation meant "none" or "not shown".
+
+    Ruling 4's two columns (#322) print only where they apply: a `reviews=false` line on
+    every other seat would be noise, and a reader asking "which seat is the one that cannot
+    review its own profile" gets the answer by their absence everywhere else. The preference
+    line stays the seat's *registered* order — what a review dispatch actually walks depends
+    on its subject, which the registry does not know, so the rule is stated rather than a
+    resolved order invented for a dispatch nobody has asked for.
+    """
+    lines = [
+        f"seat={seat.name} foreign_eligible={str(seat.foreign_eligible).lower()}",
+        f"  preference={' '.join(seat.preference)}",
+        f"  escalation={' '.join(seat.escalation) or 'none'} (not resolved into)",
+    ]
+    if seat.reviews:
+        lines.append(
+            "  reviews=true resolves_past=--reviewing prefers=a-different-lane"
+            " refusal=review_same_profile"
+        )
+    if seat.permission_mode:
+        lines.append(f"  permission_mode={seat.permission_mode} forced=true (no caller override)")
+    return tuple(lines)
+
+
 def registry_lines() -> tuple[str, ...]:
     """Render every lane and profile: the answer to "what can I dispatch?"."""
     lines: list[str] = []
@@ -2118,14 +2461,8 @@ def registry_lines() -> tuple[str, ...]:
     barred = " ".join(sorted(seat.name for seat in SEATS.values() if not seat.foreign_eligible))
     lines.append(f"seats_eligible_on_foreign_lanes={eligible}")
     lines.append(f"seats_claude_native_only={barred}")
-    # ADR-0071 ruling 2's other half: what `--seat S` alone will resolve to, in order. The
-    # escalation entry is printed beside it and marked, because it is registry data that
-    # resolution deliberately does not walk — a reader who saw only the preference would
-    # have no way to tell whether an absent escalation meant "none" or "not shown".
     for seat in sorted(SEATS.values()):
-        lines.append(f"seat={seat.name} foreign_eligible={str(seat.foreign_eligible).lower()}")
-        lines.append(f"  preference={' '.join(seat.preference)}")
-        lines.append(f"  escalation={' '.join(seat.escalation) or 'none'} (not resolved into)")
+        lines.extend(seat_listing(seat))
     # ADR-0071 ruling 2: a (profile, seat) pair held below a seat's contract is blocked,
     # and the block is stated wherever the registry is read. `codex-luna-max` renders as a
     # profile and `implementer` renders as an eligible seat, so a reader who paired them
@@ -2204,7 +2541,22 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument("--worktree", default="")
     parser.add_argument("--brief-file", default="")
     parser.add_argument("--base-sha", default="")
+    # The writable default, and the reason it is still the default (#322). Most seats commit
+    # and gate, so `acceptEdits` is right for them; what was wrong was that the review seat
+    # inherited it. A seat that must not write now forces its own mode through `routed`,
+    # which is where a seat's properties belong — flipping this default instead would have
+    # left every other seat needing a flag to get back the mode its contract requires.
     parser.add_argument("--permission-mode", default="acceptEdits")
+    # Which profile's work this dispatch reviews (#322, ADR-0071 ruling 4). Required by the
+    # review seat and refused on every other, with the reasoning in
+    # `reviewed_profile_refusal` — including why this is a declaration rather than something
+    # derived from the branch's dispatch records, which is #333's machinery and not built.
+    parser.add_argument(
+        "--reviewing",
+        default="",
+        metavar="PROFILE",
+        help="the profile whose work is under review; required by --seat review",
+    )
     parser.add_argument("--dispatch-dir", default=str(DISPATCH_ROOT))
     parser.add_argument("--credentials", default=str(CREDENTIALS))
     # `CTI_BREAKER_DIR` exists so that a test can run the real seam — `tools/dispatch.sh`

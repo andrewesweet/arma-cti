@@ -109,6 +109,9 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "issue_body": str(READY_BODY),
         "queue_dir": str(open_policy(tmp_path)),
         "queue_root": str(tmp_path / "queue-root"),
+        # #322: what a non-review dispatch passes, and the fail-closed value for a review
+        # one. The review arrangements below override it.
+        "reviewing": "",
     }
     request.update(overrides)
     return dispatch.plan_dispatch(type("Args", (), request)(), REPO, now)

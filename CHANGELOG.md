@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A review can no longer be dispatched onto the profile it is reviewing, and can no longer
+  edit.** ADR-0071 ruling 4's never-alone rests entirely on the reviewing instance being a
+  different one, and until now it was not: the `review` seat shares the implementer's preference
+  list and resolution took the head, so both resolved to the same profile and every review was
+  same-model. A review dispatch now declares its subject — `just dispatch --seat review
+  --reviewing <profile> …` — and resolution removes that profile before walking the list,
+  preferring an entry on a different lane among what is left. Preferring is an ordering and not a
+  filter: where the only remaining entries share the reviewed lane, one is used, because the
+  invariant is about the instance producing the verdict and provider diversity is the preference.
+  Where removal leaves nothing, or a caller names the reviewed profile with `--profile`,
+  `review_same_profile` refuses rather than proceeding same-model — and a dispatch that declares
+  no subject at all is refused too, since resolving it anyway would take exactly the head the
+  implementer took. The subject is a declaration rather than something derived from the review
+  branch's dispatch records, which is #333's machinery and unbuilt. Separately, the seat now
+  **forces** its permission mode instead of inheriting the writable `acceptEdits` default: `plan`
+  on the `claude` family and `--sandbox read-only` on `codex`, over whatever the caller passed,
+  printed as `route_permission_mode=plan forced_by_seat=review` rather than applied silently.
+  `just dispatch --list` states both rules, and the dispatch record names the profile under
+  review so ruling 4's landing check can ask later.
+
 - **`just dispatch --seat S --issue N` now resolves its own profile, and the record says which and
   why.** Naming a seat is the ordinary way to dispatch. Each seat carries ADR-0071 ruling 2's
   ordered preference, head first, and the planner walks it to the first entry dispatchable *right

@@ -6,6 +6,13 @@ ADR-0061 Decision 3 (review is eligible on a foreign lane, and provider diversit
 point), the human's ruling on #228 (a review lands nothing — its output is claims, each
 checkable against the code it cites), and the admission bar in `tools/admission.py`.
 
+**ADR-0071 supersedes the first and third of those**, and this document has not yet been
+re-based on it: ruling 1 rescinds the foreign-lane concept Decision 3 rests on, and ruling 6
+withdraws the admission bar, rehoming the closing section's two live operations onto the
+observatory. That rehoming is a sequenced work item, not this issue's. What ruling 4 *has*
+changed here is the permission-mode paragraph and the resolution rule below it, both of which
+are now mechanism rather than instruction (#322).
+
 The lane and profile machinery is `docs/multi-provider-dispatch.md`; nothing here restates it.
 
 ## Why the seat exists at all
@@ -35,11 +42,44 @@ Four things, and the dispatch record carries three of them by construction:
   with `git show`, and the tree's own head is recorded, because a citation into a landing that
   a later commit has moved is stale rather than wrong and the two must be distinguishable.
 
-The permission mode is **`plan`**. That is the mechanical face of "a review lands nothing":
-read-only tools and read-only Bash work in it headless, and no edit can be applied. Verified
-before first use — a `plan`-mode headless run executed `git rev-parse --short HEAD` and
-returned its output. The brief forbids landing as well, but the brief is an instruction and
-the mode is a mechanism.
+The permission mode is **`plan`**, and since #322 the seat forces it rather than asking the
+caller for it. That is the mechanical face of "a review lands nothing": read-only tools and
+read-only Bash work in it headless, and no edit can be applied. Verified before first use — a
+`plan`-mode headless run executed `git rev-parse --short HEAD` and returned its output. The
+brief forbids landing as well, but the brief is an instruction and the mode is a mechanism.
+
+Forced, because a default is not a containment. `--permission-mode` defaults to `acceptEdits`,
+which is writable on both runner families, so until #322 a review dispatched without the flag
+could edit — and the sentence above described what a careful caller would type rather than what
+the dispatcher would do. `tools/dispatch.py`'s `review` seat now carries the mode in the
+registry and `routed` writes it over whatever the caller passed; on the `claude` family that is
+`--permission-mode plan`, and on `codex` the sandbox mapping renders it `--sandbox read-only`.
+The override is printed, in the dry run and on the record, as
+`route_permission_mode=plan forced_by_seat=review`.
+
+### The reviewer is never the reviewed profile
+
+A review dispatch declares the profile whose work it reviews — `just dispatch --seat review
+--reviewing <profile> …` — and resolution removes that profile from the seat's preference list
+before walking it, preferring an entry on a different lane among what is left. Without the
+rule both seats resolve to the head of one shared list and every review is same-model, which
+makes ADR-0071 ruling 4's never-alone a ritual: the whole argument for a second instance rests
+on it being genuinely different.
+
+Three things about that, because each was a choice:
+
+- **The subject is declared, not derived.** Reading it off the dispatch records that authored
+  the review branch is ruling 4's landing check and belongs to #333; inferring it from "the
+  newest dispatch on this issue" would be a guess dressed as a derivation, wrong exactly where
+  authorship spanned two dispatches. So the caller states it, and a dispatch that states
+  nothing is refused (`review_subject_unknown`) rather than quietly resolved.
+- **A different lane is preferred, not required.** Where the only remaining entries share the
+  reviewed profile's lane, one of them is used. The invariant is about the instance producing
+  the verdict; provider diversity is the preference, and refusing there would turn away a
+  genuinely different model for sharing an endpoint.
+- **`review_same_profile` refuses** where removal leaves nothing, and meets a caller who names
+  the reviewed profile with `--profile` too. It carries no failure class: nothing was found
+  about a provider or about the code under test.
 
 ## What the seat hands back
 

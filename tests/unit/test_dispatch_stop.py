@@ -617,6 +617,8 @@ def plan_over(tmp_path: Path, worktree: Path) -> tuple[Any, str, Any]:
         "issue_body": str(REPO / "tests" / "fixtures" / "routing-eligible.md"),
         "queue_dir": str(open_policy(tmp_path)),
         "queue_root": str(tmp_path / "queue-root"),
+        # No profile is under review here; the `implementer` seat declares none (#322).
+        "reviewing": "",
     }
     args = type("Args", (), request)()
     return dispatch.plan_dispatch(args, REPO, datetime.now(tz=UTC))
