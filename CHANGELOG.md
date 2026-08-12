@@ -69,12 +69,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   registered as `DECLARED_ONLY_SEATS`, which nothing resolves through, so `--seat interlocutor`
   stays unknown (ADR-0068 stands). A pair narrated in prose is a declaration surface too, so the
   interlocutor skill's description, its opening sentence and the `/model` and `/effort` commands
-  it tells the human to type are all written from the registry as well — three notations of one
-  fact, none hand-maintained. Naming one of those two commands without the other is refused
-  rather than half-rewritten, because a session set to half a seat's tier runs the other half at
-  whatever it already had. And the wiring itself is now pinned: a test asserts `check-generated`
-  is a dependency of `just check` and that its body still invokes the checker, so enforcement
-  cannot leave the gate while every drift test stays green.
+  it tells the human to type are all checked against the registry as well — three notations of
+  one fact, one written and two guarded. Guarded rather than rewritten on purpose: a generator
+  that owned every matching string in a file a human wrote would silently turn a sentence
+  comparing two seats' tiers into one comparing a tier with itself, and `just generate` — the
+  remedy the gate itself prescribes — is what would do it. So a disagreeing sentence is a
+  `pair_drift` finding a human fixes, and `just generate` reports it and ends non-zero rather
+  than editing prose it did not author. Naming one of those two commands without the other is a
+  finding too, because a session set to half a seat's tier runs the other half at whatever it
+  already had. And the wiring itself is pinned by its effect rather than by its text: a test
+  drifts a seat file, runs the repository's own `just check` with every other rung stubbed, and
+  requires it to go red — with two negative controls showing the routes a text assertion could
+  not see, an orphaned recipe and a command in a branch that never executes.
 
 - **`just dispatch --seat S --issue N` now resolves its own profile, and the record says which and
   why.** Naming a seat is the ordinary way to dispatch. Each seat carries ADR-0071 ruling 2's
