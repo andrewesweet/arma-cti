@@ -60,6 +60,16 @@ KIND_REFRESH_FAILED: Final = "refresh_failed"
 KINDS: Final = (KIND_CRASHED, KIND_REFRESH_FAILED)
 
 
+# The two lines the bridge prints, as the pane carries them: a leading `[HH:MM:SS]`
+# stamp the wrapper's own `sed` has already stripped of colour. Matched rather than
+# split on, because the tail of each line differs — the crash names only the session,
+# the kept-worktree line names the path, and the refresh error's own detail is
+# sometimes empty after its colon, as it was on 2026-08-12.
+CRASH_PATTERN: Final = re.compile(r"Session failed: Process exited with error (cse_[A-Za-z0-9]+)")
+REFRESH_PATTERN: Final = re.compile(r"Failed to refresh session (cse_[A-Za-z0-9]+) token")
+WORKTREE_PATTERN: Final = re.compile(r"kept worktree (\S+) · session crashed")
+
+
 class Marker(NamedTuple):
     """One thing the wrapper saw, as `report` reads it back."""
 
@@ -182,6 +192,85 @@ def record(rc_health_dir: Path, seen: Marker) -> Marker:
     return marker
 
 
+def scan_text(text: str) -> tuple[Marker, ...]:
+    """Read one batch of pane lines into the markers they carry, in order.
+
+    The bridge names the worktree on its own third line rather than on the crash
+    line, so a crash takes the worktree from the `kept worktree` line that follows
+    it — the pair arrives in the same second and, on 2026-08-12, in the same batch.
+    A crash whose companion line never arrives keeps an empty worktree rather than
+    borrowing the previous crash's: two sessions dying in one batch is exactly when
+    a wrong path would be most confidently reported.
+    """
+    seen: list[Marker] = []
+    for line in text.splitlines():
+        refresh = REFRESH_PATTERN.search(line)
+        if refresh:
+            seen.append(_blank(refresh.group(1), KIND_REFRESH_FAILED, line))
+            continue
+        crash = CRASH_PATTERN.search(line)
+        if crash:
+            seen.append(_blank(crash.group(1), KIND_CRASHED, line))
+            continue
+        kept = WORKTREE_PATTERN.search(line)
+        if kept and seen and seen[-1].kind == KIND_CRASHED and not seen[-1].worktree:
+            seen[-1] = seen[-1]._replace(worktree=kept.group(1))
+    return tuple(seen)
+
+
+def _blank(session: str, kind: str, line: str) -> Marker:
+    """One parsed line, with the fields only the caller can fill left empty."""
+    return Marker(
+        session=session,
+        server="",
+        kind=kind,
+        detail=line.strip(),
+        worktree="",
+        detected_at=0,
+        acknowledged_at=0,
+    )
+
+
+def offset_path(rc_health_dir: Path, log: Path) -> Path:
+    """Where `scan` remembers how far into one log it has already read."""
+    return rc_health_dir / f"offset-{slug(log.name)}.txt"
+
+
+def scan(rc_health_dir: Path, log: Path, *, server: str, now: int) -> tuple[Marker, ...]:
+    """Read a pane log forward from where the last scan stopped, and record what is new.
+
+    The offset is kept per log file rather than in memory, because the caller is a
+    30-second shell loop that the wrapper's own restart interrupts: an offset in
+    memory would replay the whole log as new findings every time systemd restarted
+    the unit, and a crash already acknowledged would come back as news.
+
+    A log shorter than the stored offset has been rotated, so the scan restarts at
+    zero. That is the only rotation contract between this and the shell: the wrapper
+    may rename or truncate whenever it likes, and the worst case is re-reading a file
+    whose events `record` then folds onto the markers they already wrote.
+    """
+    if not log.is_file():
+        return ()
+    marker_file = offset_path(rc_health_dir, log)
+    try:
+        start = int(marker_file.read_text(encoding="utf-8").strip())
+    except (OSError, ValueError):
+        start = 0
+    size = log.stat().st_size
+    if size < start:
+        start = 0
+    with log.open("r", encoding="utf-8", errors="replace") as handle:
+        handle.seek(start)
+        text = handle.read()
+        stopped = handle.tell()
+    marker_file.parent.mkdir(parents=True, exist_ok=True)
+    marker_file.write_text(f"{stopped}\n", encoding="utf-8")
+    return tuple(
+        record(rc_health_dir, seen._replace(server=server, detected_at=now))
+        for seen in scan_text(text)
+    )
+
+
 def stamp(epoch: int) -> str:
     """Render a local-time stamp, so a line reads against the box's own other logs."""
     return time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime(epoch))
@@ -242,6 +331,10 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     entry.add_argument("--detail", default="")
     entry.add_argument("--worktree", default="")
 
+    sweep = verbs.add_parser("scan", help="read a pane log forward and record what is new")
+    sweep.add_argument("--log", type=Path, required=True)
+    sweep.add_argument("--server", default="")
+
     report = verbs.add_parser("report", help="one line per unread crash; silent when clean")
     report.add_argument("--ack", action="store_true", help="mark what is printed as read")
     report.add_argument("--all", action="store_true", help="include already-read records")
@@ -270,6 +363,13 @@ def main(argv: list[str] | None = None) -> int:
             ),
         )
         print(f"recorded={marker.session} kind={marker.kind}")  # noqa: T201 — the shell reads this
+        return 0
+
+    if args.verb == "scan":
+        for marker in scan(args.rc_health_dir, args.log, server=args.server, now=now):
+            # The wrapper's own journal line, so a crash is visible where the unit is
+            # read as well as where `just watch-report` reads it.
+            print(f"recorded={marker.session} kind={marker.kind}")  # noqa: T201 — for the journal
         return 0
 
     if args.verb == "ack":

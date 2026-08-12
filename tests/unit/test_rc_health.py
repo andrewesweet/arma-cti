@@ -33,7 +33,7 @@ rc_health = load_tool("rc_health")
 SESSION = "cse_01Czi2G6JHvdRZxNPymhnmCr"
 SERVER = "claude-rc-arma-cti"
 WORKTREE = "/home/andre/code/github.com/andrewesweet/arma-cti/.claude/worktrees/bridge-" + SESSION
-CRASH_AT = 1786594410  # 2026-08-12 07:13:30 BST, the incident this module answers
+CRASH_AT = 1786515210  # 2026-08-12T07:13:30+01:00, the incident this module answers
 
 
 def seen(kind: str, *, at: int, worktree: str = WORKTREE) -> rc_health.Marker:
@@ -291,3 +291,88 @@ def test_watch_report_prints_a_staged_crash(tmp_path: Path) -> None:
     crashes = [line for line in printed.splitlines() if line.startswith("RC-CRASH ")]
     assert len(crashes) == 1, printed
     assert SESSION in crashes[0]
+
+
+# --------------------------------------------------------------- the pane-log scan
+
+# The incident's own three lines, verbatim from the pane, with the ordinary reconnect
+# noise between them that the storm buried them in.
+PANE = f"""[07:08:18] Error: Failed to refresh session cse_01Czi2G6JHvdRZxNPymhnmCr token:
+[07:08:20] Reconnected after 5s
+[07:13:30] Session failed: Process exited with error cse_01Czi2G6JHvdRZxNPymhnmCr
+[07:13:30] kept worktree {WORKTREE} · session crashed
+[07:13:35] Reconnected after 4s
+"""
+
+
+def test_scan_text_reads_the_incidents_own_pane_lines() -> None:
+    warning, killed = rc_health.scan_text(PANE)
+    assert (warning.kind, warning.session) == (rc_health.KIND_REFRESH_FAILED, SESSION)
+    assert (killed.kind, killed.session) == (rc_health.KIND_CRASHED, SESSION)
+    assert killed.worktree == WORKTREE, "the worktree is on the following line, not the crash's"
+
+
+def test_scan_text_ignores_the_reconnect_noise_that_buries_them() -> None:
+    assert rc_health.scan_text("[06:50:10] Reconnected after 6s\n" * 500) == ()
+
+
+def test_a_crash_without_its_worktree_line_does_not_borrow_the_previous_ones() -> None:
+    """Two sessions dying in one batch is when a wrong path would be most confident."""
+    other = "cse_01OtherSessionAAAAAAAAAA"
+    text = (
+        f"[07:13:30] Session failed: Process exited with error {SESSION}\n"
+        f"[07:13:30] kept worktree {WORKTREE} · session crashed\n"
+        f"[07:13:31] Session failed: Process exited with error {other}\n"
+    )
+    first, second = rc_health.scan_text(text)
+    assert first.worktree == WORKTREE
+    assert second.worktree == ""
+
+
+def test_scan_records_each_line_once_across_calls(tmp_path: Path) -> None:
+    """The caller is a 30-second loop; a re-read must not resurface an old crash."""
+    log = tmp_path / "pane.log"
+    log.write_text(PANE, encoding="utf-8")
+    state = tmp_path / "state"
+
+    first = rc_health.scan(state, log, server=SERVER, now=CRASH_AT)
+    assert [marker.kind for marker in first] == [
+        rc_health.KIND_REFRESH_FAILED,
+        rc_health.KIND_CRASHED,
+    ]
+
+    assert rc_health.scan(state, log, server=SERVER, now=CRASH_AT + 30) == ()
+    (marker,) = rc_health.unread(state, include_read=False)
+    assert marker.detected_at == CRASH_AT, "the second pass must not re-stamp the first's find"
+
+
+def test_scan_survives_an_offset_that_outlives_the_wrapper(tmp_path: Path) -> None:
+    """Systemd restarts the unit; an in-memory offset would replay the log as news."""
+    log = tmp_path / "pane.log"
+    log.write_text(PANE, encoding="utf-8")
+    state = tmp_path / "state"
+    rc_health.scan(state, log, server=SERVER, now=CRASH_AT)
+
+    with log.open("a", encoding="utf-8") as handle:
+        handle.write("[07:20:00] Reconnected after 3s\n")
+    assert rc_health.scan(state, log, server=SERVER, now=CRASH_AT + 400) == ()
+    assert int(rc_health.offset_path(state, log).read_text(encoding="utf-8")) == log.stat().st_size
+
+
+def test_scan_restarts_at_zero_when_the_log_was_rotated(tmp_path: Path) -> None:
+    """A file shorter than the offset was rotated; reading from the old one finds nothing."""
+    log = tmp_path / "pane.log"
+    log.write_text(PANE + "[07:20:00] Reconnected after 3s\n" * 40, encoding="utf-8")
+    state = tmp_path / "state"
+    rc_health.scan(state, log, server=SERVER, now=CRASH_AT)
+
+    log.write_text(
+        "[08:01:02] Session failed: Process exited with error cse_01Fresh\n", encoding="utf-8"
+    )
+    (fresh,) = rc_health.scan(state, log, server=SERVER, now=CRASH_AT + 2800)
+    assert fresh.session == "cse_01Fresh"
+
+
+def test_scan_on_a_log_that_does_not_exist_yet_is_silent(tmp_path: Path) -> None:
+    """The wrapper arms `pipe-pane` and scans on the same loop; the first pass may race it."""
+    assert rc_health.scan(tmp_path, tmp_path / "absent.log", server=SERVER, now=CRASH_AT) == ()
