@@ -131,6 +131,13 @@ EXIT_LANDED_INCOMPLETE: Final = 2
 
 HOW_MANY_SHOWN: Final = 10
 
+# The rungs `--dry-run` genuinely cannot consult, because each needs the tree the
+# rebase produces or a command the dry run refuses to run. Named in the output so a
+# plan's silence is not read as a clearance it never gave (#344).
+NOT_CHECKED: Final = (
+    "the rebase itself, conflict markers in the rebased tree, `just fast`, the push race"
+)
+
 # git's own words when a push loses a race, across its several phrasings.
 REJECTED_MARKERS: Final = ("non-fast-forward", "fetch first", "stale info", "[rejected]")
 # git's words when the main checkout has diverged rather than merely lagged.
@@ -633,7 +640,7 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
         return Report.refused(idle)
 
     if dry_run:
-        return _dry_run(root, here, ahead, incoming, corpus)
+        return _dry_run(root, here, ahead, incoming, corpus, lane)
 
     lines = [f"worktree={here}", f"commits={ahead}"]
     if ahead:
@@ -733,14 +740,30 @@ def _merge(root: Path, here: Path, pushed: str, lines: list[str]) -> Report:
     return Report((("ok=landed"), *lines), 0)
 
 
-def _dry_run(root: Path, here: Path, ahead: int, incoming: int, corpus: Path | None) -> Report:
-    """Print the plan and change nothing. Not a landing, and it says so."""
-    plan = [
-        f"git rebase {BASE}",
-        " ".join(GATE),
+def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter apiece
+    root: Path, here: Path, ahead: int, incoming: int, corpus: Path | None, lane: str
+) -> Report:
+    """Print the plan and change nothing. Not a landing, and it says so.
+
+    The routing rung is **consulted here**, not merely mentioned: its inputs are the
+    trusted policy on fetched `origin/main` and the `origin/main..HEAD` diff, and
+    neither needs the rebase — which is why `--dry-run` printing `would_run=git push`
+    for a landing the gate refuses was a silence rather than a limit (#344). What a dry
+    run genuinely cannot reach — the rebase's own result, the markers in the rebased
+    tree, `just fast` — it names, so its silence stops reading as a clearance (#41's
+    line, applied to a plan).
+    """
+    read, paths, detail = _routing_inputs(here)
+    misrouted = classify_routing(read, paths, lane, detail)
+    onward = [
         " ".join(push_argv()),
         " ".join(merge_argv(root)) if _merge_needed(here, root) else "(merge not needed)",
     ]
+    plan = [f"would_run={step}" for step in (f"git rebase {BASE}", " ".join(GATE))]
+    if misrouted is None:
+        plan += [f"would_run={step}" for step in onward]
+    else:
+        plan += [f"would_not_run={step} reason={misrouted.kind}" for step in onward]
     return Report(
         (
             "ok=dry_run",
@@ -750,15 +773,44 @@ def _dry_run(root: Path, here: Path, ahead: int, incoming: int, corpus: Path | N
             f"head={_describe(here)}",
             f"commits={ahead}",
             f"incoming={incoming} new commits on {BASE}",
-            *[f"would_run={step}" for step in plan],
-            *_corpus_plan(here, corpus),
+            *plan,
+            *_routing_plan(misrouted, lane),
+            *_corpus_plan(here, read, paths, detail, corpus),
+            f"not_checked={NOT_CHECKED}",
             "This ran nothing. `just land` runs it, gate included.",
         ),
         0,
     )
 
 
-def _corpus_plan(here: Path, corpus: Path | None) -> tuple[str, ...]:
+def _routing_plan(misrouted: Refusal | None, lane: str) -> tuple[str, ...]:
+    """State the routing rung's verdict on the pre-rebase diff, refusal and evidence alike.
+
+    A verdict rather than a plan step, because the check really did run: the policy
+    comes from fetched `origin/main` and the paths from `origin/main..HEAD`, exactly
+    the inputs the enforcing rung uses one step later. The rebase can only add the
+    paths a sibling brought, and those are judged against the same policy — so a
+    `would_refuse` here is what the landing does, and a `would_pass` is a claim about
+    the diff as it stands, which is what it says.
+    """
+    if lane == "claude-native":
+        return ("routing=not_applicable lane=claude-native",)
+    if misrouted is None:
+        return (f"routing=would_pass lane={lane} (diff as it stands, before the rebase)",)
+    return (
+        f"routing=would_refuse lane={lane} refusal={misrouted.kind}",
+        *misrouted.found,
+        f"action={misrouted.action}",
+    )
+
+
+def _corpus_plan(
+    here: Path,
+    read: routing_policy.ReadResult,
+    paths: tuple[str, ...] | None,
+    detail: str,
+    corpus: Path | None,
+) -> tuple[str, ...]:
     """Say whether this diff owes the corpus, computed the same way the rung computes it.
 
     Worth saying here rather than only at the refusal, because the whole cost of the
@@ -766,7 +818,6 @@ def _corpus_plan(here: Path, corpus: Path | None) -> tuple[str, ...]:
     agent hand back instead of running a gate it cannot clear. The pre-rebase diff is
     what a dry run can see, and it is stated as that.
     """
-    read, paths, detail = _routing_inputs(here)
     outcome = corpus_finding(here, read, paths, detail, corpus)
     if outcome.finding is not None and outcome.finding.kind == corpus_gate.UNREADABLE:
         return (f"corpus=unknown detail={' '.join(outcome.finding.found)}",)
