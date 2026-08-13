@@ -298,6 +298,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A dispatch record is now stamped with the instant its caller injected, not the one the
+  record happened to be written at.** `just dispatch` threads a `now` through every rung that
+  decides anything — the breaker's reset times, z.ai's peak band, the id it mints — and then
+  `Plan.document()` asked the wall clock again, so the argument decided the routing and the clock
+  decided the record. Two consequences. The landing gate was red for the four hours a day z.ai
+  sits in its published peak band, for a reason belonging to no change being landed, which
+  teaches the opposite of the honest response to a red gate. And at a band boundary the two
+  instants could disagree outright: an off-peak refusal filed against a record saying it was
+  peak, or the reverse, in the one field a later reader cannot recompute. The instant is now
+  carried on the plan and written from there, a record read back recovers it from the record
+  rather than from the clock — falling back to the dispatch id, which stamps the same instant to
+  the second, for a record written before this change — and the command line takes the same
+  injection the planner already did, so a test making a claim about `just dispatch`'s output can
+  be clock-free as its neighbours already were.
 - **The mutation gate's shell tracing no longer kills a test that shells into a `set -u` bash.**
   Its `BASH_ENV` preamble named `${BASH_SOURCE}` in `PS4`, and `BASH_SOURCE` has no element 0 in a
   `bash -c` body — which is exactly `just`'s recipe shell, `["bash", "-euo", "pipefail", "-c"]`. So

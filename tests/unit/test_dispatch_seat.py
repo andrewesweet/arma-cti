@@ -35,6 +35,10 @@ READY_BODY = REPO / "tests" / "fixtures" / "routing-eligible.md"
 # z.ai's published peak band is Mon-Fri 14:00-18:00 SGT (UTC+8); 2026-08-05 is a Wednesday,
 # so 07:00 UTC is 15:00 SGT and inside it.
 PEAK = datetime(2026, 8, 5, 7, 0, tzinfo=UTC)
+# The same Wednesday at 20:00 UTC is 04:00 SGT and outside the band, so z.ai is refused
+# for the absent credential rather than for the hour — which is what the criterion-1
+# arrangements below are claiming (#341).
+OFF_PEAK = datetime(2026, 8, 5, 20, 0, tzinfo=UTC)
 
 FAKE_TOKEN = "zai-" + "test-" * 6
 
@@ -207,9 +211,14 @@ def test_naming_only_a_seat_resolves_a_profile_and_plans_the_dispatch(tmp_path: 
 def test_the_dry_run_prints_the_resolved_profile_and_why_that_one(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """Criterion 1, through the command line the criterion names."""
+    """Criterion 1, through the command line the criterion names.
+
+    The instant is injected for the module docstring's reason: the z.ai entry must be
+    walked past on its absent credential, and inside the published peak band it would be
+    walked past on the hour instead, which is a different claim (#341).
+    """
     worktree = git_worktree(tmp_path)
-    code = dispatch.main(seat_only_argv(tmp_path, worktree, "--dry-run"))
+    code = dispatch.main(seat_only_argv(tmp_path, worktree, "--dry-run"), now=OFF_PEAK)
     printed = capsys.readouterr().out
     assert code == 0, printed
     assert "route=seat seat=implementer" in printed
