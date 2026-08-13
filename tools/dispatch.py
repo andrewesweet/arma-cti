@@ -3161,6 +3161,11 @@ def load_record(record: Path) -> Plan:
         credentials=Path(str(document["credentials_file"])),
         permission_mode=str(document["permission_mode"]),
         route=read_route(document),
+        # Strict, with no fallback (#341). `planned_at` has been written on every record
+        # since `b4be003` created `dispatch.json` at all, so there is no older shape to
+        # fall back for, and a record without the key is one this code did not write — a
+        # `KeyError` `run_dispatch` refuses on, because a plausible instant a consumer
+        # cannot tell from a real one is the expensive kind of wrong.
         planned_at=datetime.fromisoformat(str(document["planned_at"])),
         breaker_dir=Path(str(document.get("breaker_dir", breaker.DEFAULT_BREAKER_DIR))),
         advisories=tuple(str(line) for line in document.get("readiness_advisories", ())),
@@ -3178,9 +3183,40 @@ def write_result(record: Path, **fields: object) -> None:
     (record / "result.json").write_text(json.dumps(fields, indent=2) + "\n", encoding="utf-8")
 
 
+def unreadable_record_refusal(record: Path, unreadable: Exception) -> tuple[str, ...]:
+    """Refuse a record that cannot be read back, and leave the refusal beside it."""
+    refusal = Refusal(
+        "unreadable_record",
+        (f"record={record}", f"found={type(unreadable).__name__}: {unreadable}"),
+        (
+            "The record this child was pointed at is not one this version wrote. Nothing "
+            "ran. Re-plan the dispatch rather than repairing the file by hand."
+        ),
+        failure_class="infra_unavailable",
+    )
+    if record.is_dir():
+        write_result(
+            record,
+            dispatch_id=record.name,
+            refusal=refusal.kind,
+            failure_class=refusal.failure_class,
+            ended_at=datetime.now(tz=UTC).isoformat(),
+        )
+    return refusal.lines()
+
+
 def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[str, ...]]:
-    """Run the detached child: assert the worktree, assemble the environment, start the runner."""
-    plan = load_record(record)
+    """Run the detached child: assert the worktree, assemble the environment, start the runner.
+
+    An unreadable record refuses rather than raising into the seam. The child is detached,
+    so an uncaught exception here reaches nobody but `dispatch.log`; a named refusal with a
+    failure class reaches whoever reads `result.json`, and `infra_unavailable` is the right
+    one — a record this code did not write says nothing about the code under test.
+    """
+    try:
+        plan = load_record(record)
+    except (KeyError, ValueError) as unreadable:
+        return EXIT_REFUSED, unreadable_record_refusal(record, unreadable)
     profile = PROFILES[plan.identity.profile]
     lane = LANES[plan.identity.lane]
 
@@ -3584,7 +3620,7 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
         )
 
     plan, brief, refusal = plan_dispatch(
-        args, main_checkout(Path.cwd()), now or datetime.now(tz=UTC)
+        args, main_checkout(Path.cwd()), datetime.now(tz=UTC) if now is None else now
     )
     if refusal is not None or plan is None:
         return emit(refusal.lines() if refusal else (), EXIT_REFUSED)

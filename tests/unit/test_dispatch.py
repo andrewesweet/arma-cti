@@ -1135,18 +1135,15 @@ def test_the_record_is_stamped_with_the_injected_instant_not_the_clock(
     assert document["planned_at"] == moment.isoformat()
 
 
-@pytest.mark.parametrize(
-    ("moment", "peak", "multiplier"), [(PEAK, True, 1.0), (OFF_PEAK, False, 0.5)]
-)
-def test_the_plan_charge_prices_the_carried_instant(
-    tmp_path: Path, moment: datetime, *, peak: bool, multiplier: float
-) -> None:
+def test_the_plan_charge_prices_the_carried_instant(tmp_path: Path) -> None:
     """The priced band follows the record's own instant, not the hour it was rendered in.
 
-    Both halves of the schedule are exercised through one plan, which no clock-driven
-    arrangement could do: z.ai refuses a dispatch planned inside its peak band, so the peak
-    row cannot be reached by planning at a peak moment. What is under test is the record's
-    dependence on the field, and `_replace` states exactly that and nothing about routing.
+    Only the off-peak row. A peak row here would pin a state production refuses to produce
+    — z.ai is off-peak-only, so no z.ai plan reaches `document()` carrying a peak
+    `planned_at` — and a test pinning an unreachable state can stay green against a rule
+    that no longer holds. Peak pricing is a property of `plan_charge` rather than of a
+    record, and `test_a_zai_dispatch_records_the_band_it_was_charged_in` pins it there
+    directly. What is left under test here is the record's dependence on the field.
     """
     credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
     plan, _, refusal = plan_for(
@@ -1159,9 +1156,9 @@ def test_the_plan_charge_prices_the_carried_instant(
     )
     assert refusal is None
     assert plan is not None
-    charge = plan._replace(planned_at=moment).document()["plan_charge"]
+    charge = plan._replace(planned_at=OFF_PEAK).document()["plan_charge"]
     assert isinstance(charge, dict)
-    assert (charge["peak"], charge["multiplier"]) == (peak, multiplier)
+    assert (charge["peak"], charge["multiplier"]) == (False, 0.5)
 
 
 def test_a_native_record_carries_no_plan_charge_block(tmp_path: Path) -> None:
@@ -1177,6 +1174,62 @@ def test_a_written_record_reads_back_as_the_same_plan(tmp_path: Path) -> None:
     assert plan is not None
     dispatch.write_record(plan, brief)
     assert dispatch.load_record(plan.record) == plan
+
+
+def test_a_record_without_planned_at_is_an_error_not_an_invented_instant(tmp_path: Path) -> None:
+    """No fallback. `planned_at` has been on every record since `dispatch.json` existed.
+
+    The fallback this replaces preferred the field over the dispatch id, which for exactly
+    the records it claimed to serve was the *less* true copy: before #341 the id came from
+    the injected `now` and the field from the wall clock. Rather than reorder a preference
+    over a shape that has never been written, the read is strict.
+    """
+    plan, brief, _ = plan_for(tmp_path)
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    path = plan.record / "dispatch.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    del document["planned_at"]
+    path.write_text(json.dumps(document), encoding="utf-8")
+
+    with pytest.raises(KeyError):
+        dispatch.load_record(plan.record)
+
+
+def test_planned_at_reads_back_from_the_z_spelling(tmp_path: Path) -> None:
+    # `Z` and `+00:00` are the same instant, and `datetime.fromisoformat` has read both
+    # since 3.11, which this project pins past. Pinned because records written by
+    # something other than this module use the `Z` spelling.
+    plan, brief, _ = plan_for(tmp_path, now=OFF_PEAK)
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    path = plan.record / "dispatch.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    document["planned_at"] = OFF_PEAK.isoformat().replace("+00:00", "Z")
+    path.write_text(json.dumps(document), encoding="utf-8")
+
+    assert dispatch.load_record(plan.record).planned_at == OFF_PEAK
+
+
+def test_an_unreadable_record_refuses_rather_than_raising_into_the_detached_child(
+    tmp_path: Path,
+) -> None:
+    """The child has no caller to raise at, so it refuses with a class and records it."""
+    plan, brief, _ = plan_for(tmp_path)
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    path = plan.record / "dispatch.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    document["planned_at"] = "not-an-instant"
+    path.write_text(json.dumps(document), encoding="utf-8")
+
+    code, lines = dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=unreadable_record" in lines
+    assert "class=infra_unavailable" in lines
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["refusal"] == "unreadable_record"
+    assert result["failure_class"] == "infra_unavailable"
 
 
 def test_an_incomplete_request_names_what_is_missing(capsys: pytest.CaptureFixture[str]) -> None:
