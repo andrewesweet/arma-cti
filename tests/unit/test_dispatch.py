@@ -1114,6 +1114,56 @@ def test_a_zai_record_carries_the_plan_charge_block_the_estimator_will_read(
     assert charge["window_source"] == "https://docs.z.ai/devpack/overview"
 
 
+@pytest.mark.parametrize("moment", [PEAK, OFF_PEAK])
+def test_the_record_is_stamped_with_the_injected_instant_not_the_clock(
+    tmp_path: Path, moment: datetime
+) -> None:
+    """A caller that injects `now` is entitled to a record built from *that* instant (#341).
+
+    The two named symptoms are time-dependent by construction — they were the four hours a
+    day `just fast` was red — so they pin the day rather than the property. This pins the
+    property: both instants are asserted at whatever hour the suite runs, so it is the same
+    test at 07:00 and at 22:00, and a second wall-clock read added to `document()` tomorrow
+    reds it on one of the two.
+    """
+    plan, brief, refusal = plan_for(tmp_path, now=moment)
+    assert refusal is None
+    assert plan is not None
+    assert plan.planned_at == moment
+    dispatch.write_record(plan, brief)
+    document = json.loads((plan.record / "dispatch.json").read_text(encoding="utf-8"))
+    assert document["planned_at"] == moment.isoformat()
+
+
+@pytest.mark.parametrize(
+    ("moment", "peak", "multiplier"), [(PEAK, True, 1.0), (OFF_PEAK, False, 0.5)]
+)
+def test_the_plan_charge_prices_the_carried_instant(
+    tmp_path: Path, moment: datetime, *, peak: bool, multiplier: float
+) -> None:
+    """The priced band follows the record's own instant, not the hour it was rendered in.
+
+    Both halves of the schedule are exercised through one plan, which no clock-driven
+    arrangement could do: z.ai refuses a dispatch planned inside its peak band, so the peak
+    row cannot be reached by planning at a peak moment. What is under test is the record's
+    dependence on the field, and `_replace` states exactly that and nothing about routing.
+    """
+    credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
+    plan, _, refusal = plan_for(
+        tmp_path,
+        lane="zai",
+        profile="zai-glm52-max",
+        seat="review",
+        reviewing=REVIEWED,
+        now=OFF_PEAK,
+    )
+    assert refusal is None
+    assert plan is not None
+    charge = plan._replace(planned_at=moment).document()["plan_charge"]
+    assert isinstance(charge, dict)
+    assert (charge["peak"], charge["multiplier"]) == (peak, multiplier)
+
+
 def test_a_native_record_carries_no_plan_charge_block(tmp_path: Path) -> None:
     plan, brief, _ = plan_for(tmp_path)
     assert plan is not None

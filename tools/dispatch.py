@@ -1206,6 +1206,12 @@ class Plan(NamedTuple):
     # nobody kept is one nobody can make later, and "which entries did this seat walk past,
     # and on what refusal" is exactly what the ledger cannot reconstruct from an outcome.
     route: Resolution
+    # The instant this dispatch was planned at, carried rather than re-read (#341). The
+    # caller already injects `now` and the whole ladder above decides on it, so a record
+    # that asked the wall clock a second time could disagree with the decision it records
+    # — an off-peak refusal filed against a record claiming peak, at a band boundary. It
+    # is also what made `just fast` red for the four hours a day z.ai is in peak, because
+    # the routing argument and the recorded charge were two different instants.
     planned_at: datetime
     breaker_dir: Path = breaker.DEFAULT_BREAKER_DIR
     # What the readiness rung said about the issue without refusing it (#241). On the
@@ -3549,8 +3555,14 @@ def answer_directly(args: argparse.Namespace) -> int | None:
     return None
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Plan a dispatch, or run one the seam already planned."""
+def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
+    """Plan a dispatch, or run one the seam already planned.
+
+    `now` is the same seam `plan_dispatch` already takes, lifted to the command line so a
+    test making a claim about the argv can be clock-free (#341). No flag reaches it: the
+    off-peak rule has no override and this must not become one, which is why it is a
+    keyword argument of the function rather than an option of the parser.
+    """
     args = parse_args(argv)
     answered = answer_directly(args)
     if answered is not None:
@@ -3571,7 +3583,9 @@ def main(argv: list[str] | None = None) -> int:
             EXIT_REFUSED,
         )
 
-    plan, brief, refusal = plan_dispatch(args, main_checkout(Path.cwd()), datetime.now(tz=UTC))
+    plan, brief, refusal = plan_dispatch(
+        args, main_checkout(Path.cwd()), now or datetime.now(tz=UTC)
+    )
     if refusal is not None or plan is None:
         return emit(refusal.lines() if refusal else (), EXIT_REFUSED)
     if args.dry_run:
