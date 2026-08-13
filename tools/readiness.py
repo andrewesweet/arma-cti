@@ -361,12 +361,15 @@ def assess(body: str) -> Assessment:
     return Assessment(units=units, leads=leads, evidence=evidence, findings=tuple(findings))
 
 
-def fetch_body(issue: int, repo: str = REPO_SLUG) -> tuple[str, str]:
-    """Read an issue body through `gh`, returning `(body, "")` or `("", reason)`.
+def _run_gh(issue: int, repo: str, json_field: str, jq: str) -> tuple[str, str]:
+    """Run `gh issue view` for one JSON field, returning `(stdout, "")` or `("", reason)`.
 
-    The reason is handed back rather than raised, and rather than being turned into a
-    verdict here, because what an unreadable issue means for a dispatch is the
-    dispatcher's ruling to make and CLAUDE.md's table is where it is made.
+    The shared transport for `fetch_body` and `fetch_labels`: the argv shape, the timeout,
+    and the missing-command, timeout and non-zero-return policies are one here so a
+    transport change is one edit rather than two (#323 review finding 4). What an empty
+    result means differs between those callers and stays there — it is unreadable for a
+    body and a valid absence for labels — because that difference is the stratification
+    signal, not plumbing.
     """
     # S603/S607: fixed literals plus an integer issue number; `gh` resolves off PATH like
     # every other tool this project shells out to.
@@ -380,9 +383,9 @@ def fetch_body(issue: int, repo: str = REPO_SLUG) -> tuple[str, str]:
                 "--repo",
                 repo,
                 "--json",
-                "body",
+                json_field,
                 "--jq",
-                ".body",
+                jq,
             ],
             capture_output=True,
             text=True,
@@ -395,9 +398,24 @@ def fetch_body(issue: int, repo: str = REPO_SLUG) -> tuple[str, str]:
         return "", f"gh did not answer within {FETCH_TIMEOUT_SECONDS}s"
     if done.returncode != 0:
         return "", (done.stderr.strip() or f"gh exited {done.returncode}").splitlines()[0]
-    if not done.stdout.strip():
-        return "", "the issue body is empty"
     return done.stdout, ""
+
+
+def fetch_body(issue: int, repo: str = REPO_SLUG) -> tuple[str, str]:
+    """Read an issue body through `gh`, returning `(body, "")` or `("", reason)`.
+
+    The reason is handed back rather than raised, and rather than being turned into a
+    verdict here, because what an unreadable issue means for a dispatch is the
+    dispatcher's ruling to make and CLAUDE.md's table is where it is made.
+    """
+    stdout, why = _run_gh(issue, repo, "body", ".body")
+    if why:
+        return "", why
+    # An empty body could mean a wrong issue number, so it is unreadable rather than a body
+    # at all — the one place this differs from `fetch_labels`, whose empty result is valid.
+    if not stdout.strip():
+        return "", "the issue body is empty"
+    return stdout, ""
 
 
 def fetch_labels(issue: int, repo: str = REPO_SLUG) -> tuple[tuple[str, ...], str]:
@@ -410,31 +428,7 @@ def fetch_labels(issue: int, repo: str = REPO_SLUG) -> tuple[tuple[str, ...], st
     that carries no labels is not an issue nobody could look at, and collapsing the two is
     exactly the stratification error #323 was filed to prevent.
     """
-    # S603/S607: fixed literals plus an integer issue number; `gh` resolves off PATH like
-    # every other tool this project shells out to.
-    try:
-        done = subprocess.run(  # noqa: S603
-            [  # noqa: S607
-                "gh",
-                "issue",
-                "view",
-                str(issue),
-                "--repo",
-                repo,
-                "--json",
-                "labels",
-                "--jq",
-                ".labels[].name",
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=FETCH_TIMEOUT_SECONDS,
-        )
-    except FileNotFoundError:
-        return (), "gh is not on PATH"
-    except subprocess.TimeoutExpired:
-        return (), f"gh did not answer within {FETCH_TIMEOUT_SECONDS}s"
-    if done.returncode != 0:
-        return (), (done.stderr.strip() or f"gh exited {done.returncode}").splitlines()[0]
-    return tuple(line.strip() for line in done.stdout.splitlines() if line.strip()), ""
+    stdout, why = _run_gh(issue, repo, "labels", ".labels[].name")
+    if why:
+        return (), why
+    return tuple(line.strip() for line in stdout.splitlines() if line.strip()), ""

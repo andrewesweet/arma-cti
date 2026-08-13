@@ -200,13 +200,14 @@ sys.path.insert(0, str(Path(__file__).parent))
 import admission
 import breaker
 import dispatch_stop
+import gate
 import hook_parity
 import queue_policy
 import readiness
 import routing_policy
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping
+    from collections.abc import Callable, Iterable, Mapping
 
 EXIT_REFUSED: Final = 1
 
@@ -910,77 +911,200 @@ class Identity(NamedTuple):
 # share one object, the way `NO_AUTHORSHIP` does for the route.
 
 
+class RoutingClass(NamedTuple):
+    """A policy class the issue matched at dispatch time: its stable id and its name.
+
+    Recorded as two fields rather than an `id:name` string (#323 review finding 6): the id
+    is stable and the name is mutable, so flattening them would fragment the stratification
+    history the observatory (#336) reads across a class rename. The matched-no-rule case is
+    `RoutingClass("", "")` — a checked absence, kept distinct from `None`, which means the
+    policy could not be read at all.
+    """
+
+    rule_id: str
+    name: str
+
+
+class Stratum(NamedTuple):
+    """One pre-work signal: its value, whether that value was checked, and why not if not.
+
+    The value is `None` when the signal did not run (#323 review finding 1): a consumer that
+    ignores `checked` and reads `value` then gets no answer rather than a plausible wrong one,
+    and `unchecked_why` still says why. The three signals below each carry one of these, so the
+    three-part invariant — a value beside a flag beside a reason — lives in one type rather
+    than being rebuilt at every layer (#323 review finding 5), and `read_strata` has one reader
+    that validates it rather than three readers that coerce (#323 review finding 2).
+    """
+
+    value: object
+    checked: bool
+    unchecked_why: str
+
+    @classmethod
+    def known(cls, value: object) -> Stratum:
+        """Build the stratum for a signal that ran: checked, with its value and no reason.
+
+        The empty value is a value, not an absence — an empty label tuple means the issue
+        carries no labels, and is checked-True where 'could not look' is checked-False.
+        """
+        return cls(value=value, checked=True, unchecked_why="")
+
+    @classmethod
+    def unknown(cls, why: str) -> Stratum:
+        """Build the stratum for a signal that could not run: unchecked, value None, reason kept."""
+        return cls(value=None, checked=False, unchecked_why=why)
+
+
 class Strata(NamedTuple):
     """The pre-work signals the observatory stratifies on (#323).
 
-    Each carries #322's checked flag beside its value. The observatory compares profiles
-    on assignment that is not random, so a confident value standing alone cannot tell
-    'the issue has none' from 'nobody could look' — and an unstratified comparison that
-    read the two the same would measure the router and report it as a profile finding.
-    Everything here is knowable before the seat starts work: the gate tier off the issue
-    body and CONTEXT.md, the routing class off the body and the policy, the labels off
-    GitHub. Nothing on this record is an outcome (diff size, review rounds, result), and
-    #323 criterion 3 is satisfied by that absence rather than by a marking — there is no
-    outcome-shaped field here to mark as description.
+    Each signal is a `Stratum` carrying #322's checked flag beside its value. The observatory
+    compares profiles on assignment that is not random, so a confident value standing alone
+    cannot tell 'the issue has none' from 'nobody could look' — and an unstratified comparison
+    that read the two the same would measure the router and report it as a profile finding.
+    Everything here is knowable before the seat starts work: the gate tier off the issue body
+    and CONTEXT.md, the routing class off the body and the policy, the labels off GitHub.
+    Nothing on this record is an outcome (diff size, review rounds, result), and #323 criterion
+    3 is satisfied by that absence rather than by a marking — there is no outcome-shaped field
+    here to mark as description.
     """
 
-    gate_tier: str
-    gate_tier_checked: bool
-    gate_tier_unchecked_why: str
-    routing_class: str
-    routing_class_checked: bool
-    routing_class_unchecked_why: str
-    labels: tuple[str, ...]
-    labels_checked: bool
-    labels_unchecked_why: str
+    gate_tier: Stratum
+    routing_class: Stratum
+    labels: Stratum
 
     def document(self) -> dict[str, object]:
-        """Render the three signals, each with its checked flag and its reason."""
+        """Render each signal with its flag, reason, and a null value when it did not run.
+
+        An unchecked signal writes `None` for its value, never a value a checked run could have
+        written, so the absent-versus-unchecked distinction cannot collapse for a consumer that
+        reads only the value (#323 review finding 1). The routing class records its stable id
+        and its mutable name as separate fields, so a class rename cannot fragment the history
+        the observatory reads (#323 review finding 6).
+        """
+        routing = self.routing_class.value
+        labels = self.labels.value
         return {
-            "gate_tier": self.gate_tier,
-            "gate_tier_checked": self.gate_tier_checked,
-            "gate_tier_unchecked_why": self.gate_tier_unchecked_why,
-            "routing_class": self.routing_class,
-            "routing_class_checked": self.routing_class_checked,
-            "routing_class_unchecked_why": self.routing_class_unchecked_why,
-            "labels": list(self.labels),
-            "labels_checked": self.labels_checked,
-            "labels_unchecked_why": self.labels_unchecked_why,
+            "gate_tier": self.gate_tier.value,
+            "gate_tier_checked": self.gate_tier.checked,
+            "gate_tier_unchecked_why": self.gate_tier.unchecked_why,
+            "routing_class_id": routing.rule_id if isinstance(routing, RoutingClass) else None,
+            "routing_class_name": routing.name if isinstance(routing, RoutingClass) else None,
+            "routing_class_checked": self.routing_class.checked,
+            "routing_class_unchecked_why": self.routing_class.unchecked_why,
+            "labels": list(labels) if isinstance(labels, tuple) else None,
+            "labels_checked": self.labels.checked,
+            "labels_unchecked_why": self.labels.unchecked_why,
         }
 
 
 NO_STRATA: Final = Strata(
-    gate_tier="",
-    gate_tier_checked=False,
-    gate_tier_unchecked_why="",
-    routing_class="",
-    routing_class_checked=False,
-    routing_class_unchecked_why="",
-    labels=(),
-    labels_checked=False,
-    labels_unchecked_why="",
+    gate_tier=Stratum.unknown(""),
+    routing_class=Stratum.unknown(""),
+    labels=Stratum.unknown(""),
 )
+
+
+# A value the reader cannot make sense of. A sentinel rather than `None`, because `None` is
+# the legitimate value of an unchecked signal and a validator must tell 'wrong shape' from
+# 'no value'.
+_MALFORMED: Final = object()
+
+
+def _read_signal(  # noqa: PLR0913 — keyword-only validator mirroring the per-signal value/checked/why triple
+    row: Mapping[str, object],
+    *,
+    value_keys: tuple[str, ...],
+    checked_key: str,
+    why_key: str,
+    decode_value: Callable[[tuple[object, ...]], object],
+    label: str,
+) -> Stratum:
+    """Read one signal back off a record, validating rather than coercing (#323 review finding 2).
+
+    `decode_value` receives the raw values at `value_keys` and returns the decoded value, or
+    `_MALFORMED` if they are not the shape this signal writes. A record the reader cannot make
+    sense of — a checked flag that is not a bool, a checked signal whose value is missing or the
+    wrong type, a reason that is not a string — comes back unchecked with a reason, never as a
+    confident value and never as an exception. That is the property `str(None)` giving `"None"`,
+    `bool("false")` giving `True`, `"labels": "bug"` giving `("b","u","g")` and a null label list
+    raising `TypeError` all break, and one reader holds it for all three signals.
+    """
+    checked = row.get(checked_key)
+    why = row.get(why_key)
+    if not isinstance(checked, bool) or not isinstance(why, str):
+        return Stratum.unknown(f"the recorded {label} stratum was malformed")
+    if not checked:
+        # An unchecked signal wrote `None` for its value; the reason is the thing to keep.
+        return Stratum.unknown(why)
+    decoded = decode_value(tuple(row.get(key) for key in value_keys))
+    if decoded is _MALFORMED:
+        return Stratum.unknown(f"the recorded {label} stratum was malformed")
+    return Stratum.known(decoded)
+
+
+def _gate_tier_value(raw: tuple[object, ...]) -> object:
+    value = raw[0]
+    return value if isinstance(value, str) else _MALFORMED
+
+
+def _routing_class_value(raw: tuple[object, ...]) -> object:
+    rule_id = raw[0]
+    name = raw[1]
+    if isinstance(rule_id, str) and isinstance(name, str):
+        return RoutingClass(rule_id, name)
+    return _MALFORMED
+
+
+def _labels_value(raw: tuple[object, ...]) -> object:
+    value = raw[0]
+    if isinstance(value, (list, tuple)) and all(isinstance(item, str) for item in value):
+        return tuple(value)
+    return _MALFORMED
 
 
 def read_strata(document: Mapping[str, object]) -> Strata:
     """Read the strata back off a record, so a reloaded plan is the plan that was written.
 
     A record written before #323 carries none of these fields and reads back unchecked:
-    nothing was recorded, so nothing was checked. It is the fact those dispatches carry
-    about every field #323 added, rather than a guess dressed as one.
+    nothing was recorded, so nothing was checked — the fact those dispatches carry about every
+    field #323 added, rather than a guess dressed as one. A record that carries them in a shape
+    this reader cannot make sense of degrades the same way, to unchecked with a reason, rather
+    than coercing a confident value out of malformed data.
     """
     found = document.get("strata")
-    row = found if isinstance(found, dict) else {}
+    # No strata object at all is the pre-#323 record: nothing recorded, nothing checked, with
+    # no reason to give. A strata object that is present but malformed is a different case, and
+    # the per-field reader below gives that one its reason — so this short-circuit is what keeps
+    # 'nobody recorded anything' from being read as 'the recording was broken'.
+    if not isinstance(found, dict):
+        return NO_STRATA
+    row = found
     return Strata(
-        gate_tier=str(row.get("gate_tier", "")),
-        gate_tier_checked=bool(row.get("gate_tier_checked", False)),
-        gate_tier_unchecked_why=str(row.get("gate_tier_unchecked_why", "")),
-        routing_class=str(row.get("routing_class", "")),
-        routing_class_checked=bool(row.get("routing_class_checked", False)),
-        routing_class_unchecked_why=str(row.get("routing_class_unchecked_why", "")),
-        labels=tuple(str(name) for name in row.get("labels", ())),
-        labels_checked=bool(row.get("labels_checked", False)),
-        labels_unchecked_why=str(row.get("labels_unchecked_why", "")),
+        gate_tier=_read_signal(
+            row,
+            value_keys=("gate_tier",),
+            checked_key="gate_tier_checked",
+            why_key="gate_tier_unchecked_why",
+            decode_value=_gate_tier_value,
+            label="gate_tier",
+        ),
+        routing_class=_read_signal(
+            row,
+            value_keys=("routing_class_id", "routing_class_name"),
+            checked_key="routing_class_checked",
+            why_key="routing_class_unchecked_why",
+            decode_value=_routing_class_value,
+            label="routing_class",
+        ),
+        labels=_read_signal(
+            row,
+            value_keys=("labels",),
+            checked_key="labels_checked",
+            why_key="labels_unchecked_why",
+            decode_value=_labels_value,
+            label="labels",
+        ),
     )
 
 
@@ -2674,60 +2798,46 @@ def capture_strata(body: str, issue: int, seat: str, root: Path, *, body_from_fi
     dispatch where `gh` cannot reach GitHub — there are no labels to fetch, not 'no
     labels'. A `gh` that fails for its own reasons is unchecked for the same reason, with
     its reason recorded.
-    """
-    # Local import: brief imports dispatch; a module-level import is a load-time cycle.
-    import brief  # noqa: PLC0415
 
-    vocabulary = brief.read_vocabulary(root)
-    reached = brief.in_world(brief.named_paths(body))
-    gate = brief.derive_gate(body, vocabulary)
+    The body-reading functions live in `gate`, not `brief`: `brief` imports this module at
+    load time, so importing it back here is the cycle that loads a second dispatcher under
+    the production `__main__` shape (#323 review finding 3). `gate` owns them and imports
+    neither module, so reaching them costs no cycle.
+    """
+    vocabulary = gate.read_vocabulary(root)
+    reached = gate.in_world(gate.named_paths(body))
+    derived = gate.derive_gate(body, vocabulary)
     gate_unreadable = not vocabulary and not reached
-    gate_tier_checked = not gate_unreadable
-    gate_tier_unchecked_why = (
-        "CONTEXT.md could not be read, so the vocabulary signal did not run"
+    gate_tier = (
+        Stratum.unknown("CONTEXT.md could not be read, so the vocabulary signal did not run")
         if gate_unreadable
-        else ""
+        else Stratum.known(derived.kind)
     )
 
     read = _read_routing_policy(root)
     if read.policy is None:
-        routing_class_checked = False
-        routing_class = ""
-        routing_class_unchecked_why = read.error
+        routing_class = Stratum.unknown(read.error)
     else:
         match = routing_policy.classify_issue(read.policy, body, seat)
-        routing_class_checked = True
-        routing_class = f"{match.rule.id}:{match.rule.name}" if match else ""
-        routing_class_unchecked_why = ""
+        # The stable id and the mutable name are recorded as two fields, not an `id:name`
+        # string, so renaming a class cannot fragment the history the observatory reads
+        # (#323 review finding 6). No match is `RoutingClass("", "")` — a checked absence.
+        # The id is coerced to str because the policy holds it as an int and the record's
+        # reader validates str: an int on the wire would read back malformed, and the
+        # observatory wants one stable spelling across every dispatch either way.
+        routing_class = Stratum.known(
+            RoutingClass(str(match.rule.id), match.rule.name) if match else RoutingClass("", "")
+        )
 
     if body_from_file:
-        labels: tuple[str, ...] = ()
-        labels_checked = False
-        labels_unchecked_why = (
+        labels = Stratum.unknown(
             "body came from --issue-body; labels live on GitHub, which this mode bypasses"
         )
     else:
         fetched, why = readiness.fetch_labels(issue)
-        if why:
-            labels = ()
-            labels_checked = False
-            labels_unchecked_why = why
-        else:
-            labels = fetched
-            labels_checked = True
-            labels_unchecked_why = ""
+        labels = Stratum.unknown(why) if why else Stratum.known(fetched)
 
-    return Strata(
-        gate_tier=gate.kind,
-        gate_tier_checked=gate_tier_checked,
-        gate_tier_unchecked_why=gate_tier_unchecked_why,
-        routing_class=routing_class,
-        routing_class_checked=routing_class_checked,
-        routing_class_unchecked_why=routing_class_unchecked_why,
-        labels=labels,
-        labels_checked=labels_checked,
-        labels_unchecked_why=labels_unchecked_why,
-    )
+    return Strata(gate_tier=gate_tier, routing_class=routing_class, labels=labels)
 
 
 def routing_refusal(

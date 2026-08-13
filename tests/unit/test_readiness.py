@@ -340,3 +340,100 @@ def test_the_fetch_asks_gh_for_the_body_and_nothing_else(monkeypatch: pytest.Mon
         ".body",
     ]
     assert seen["timeout"] == readiness.FETCH_TIMEOUT_SECONDS
+
+
+# ------------------------------------------------------------------- the labels seam
+#
+# `fetch_labels` shares `fetch_body`'s transport and error policy through `_run_gh`, with the
+# one real difference kept visible: an empty result is a valid checked absence for labels and
+# is unreadable for a body (#323 review finding 4). The tests mirror the body seam above so a
+# drift in the shared transport reds on whichever side it touches.
+
+
+def test_a_missing_gh_is_a_reason_rather_than_an_exception_for_labels(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def absent(*_args: object, **_kwargs: object) -> None:
+        raise FileNotFoundError
+
+    monkeypatch.setattr(readiness.subprocess, "run", absent)
+    assert readiness.fetch_labels(241) == ((), "gh is not on PATH")
+
+
+def test_a_gh_timeout_names_the_bound_it_exceeded_for_labels(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def slow(*_args: object, **_kwargs: object) -> None:
+        raise readiness.subprocess.TimeoutExpired(cmd="gh", timeout=readiness.FETCH_TIMEOUT_SECONDS)
+
+    monkeypatch.setattr(readiness.subprocess, "run", slow)
+    labels, why = readiness.fetch_labels(241)
+    assert labels == ()
+    assert str(readiness.FETCH_TIMEOUT_SECONDS) in why
+
+
+def test_a_gh_failure_hands_back_its_own_first_line_for_labels(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def refused(*_args: object, **_kwargs: object) -> object:
+        return type("Done", (), {"returncode": 1, "stdout": "", "stderr": "no such issue\ntrace"})()
+
+    monkeypatch.setattr(readiness.subprocess, "run", refused)
+    assert readiness.fetch_labels(241) == ((), "no such issue")
+
+
+def test_an_empty_label_list_is_a_valid_checked_absence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The one difference from `fetch_body`: a blank result is `((), "")`, not a reason. An
+    # issue that carries no labels is not an issue nobody could look at.
+    def blank(*_args: object, **_kwargs: object) -> object:
+        return type("Done", (), {"returncode": 0, "stdout": "\n", "stderr": ""})()
+
+    monkeypatch.setattr(readiness.subprocess, "run", blank)
+    assert readiness.fetch_labels(241) == ((), "")
+
+
+def test_the_label_fetch_asks_gh_for_the_label_names_and_nothing_else(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    seen: dict[str, object] = {}
+
+    def capture(argv: list[str], **kwargs: object) -> object:
+        seen["argv"] = argv
+        seen["timeout"] = kwargs.get("timeout")
+        return type("Done", (), {"returncode": 0, "stdout": "bug\nui\n", "stderr": ""})()
+
+    monkeypatch.setattr(readiness.subprocess, "run", capture)
+    assert readiness.fetch_labels(241) == (("bug", "ui"), "")
+    assert seen["argv"] == [
+        "gh",
+        "issue",
+        "view",
+        "241",
+        "--repo",
+        readiness.REPO_SLUG,
+        "--json",
+        "labels",
+        "--jq",
+        ".labels[].name",
+    ]
+    assert seen["timeout"] == readiness.FETCH_TIMEOUT_SECONDS
+
+
+def test_fetch_body_and_fetch_labels_route_through_the_one_shared_transport(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # #323 review finding 4: both callers go through `_run_gh`, so a transport change is one
+    # edit, not two — and the empty-result difference stays in the callers, where it belongs.
+    seen: dict[tuple[str, str], tuple[object, ...]] = {}
+
+    def fake_run_gh(issue: int, repo: str, json_field: str, jq: str) -> tuple[str, str]:
+        seen[(json_field, jq)] = (issue, repo)
+        return "raw\n", ""
+
+    monkeypatch.setattr(readiness, "_run_gh", fake_run_gh)
+    readiness.fetch_body(241)
+    readiness.fetch_labels(241)
+    assert seen[("body", ".body")] == (241, readiness.REPO_SLUG)
+    assert seen[("labels", ".labels[].name")] == (241, readiness.REPO_SLUG)

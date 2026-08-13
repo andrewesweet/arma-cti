@@ -32,6 +32,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -2087,40 +2088,39 @@ NO_PATH_BODY = "A change to the README prose only, naming no path.\n"
 
 def test_strata_records_an_in_world_issue_as_regress_with_its_class() -> None:
     s = dispatch.capture_strata(IN_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
-    assert s.gate_tier == "regress"
-    assert s.gate_tier_checked is True
-    assert s.gate_tier_unchecked_why == ""
-    # Lane-blind: a Claude-native dispatch carries the same class a foreign one would.
-    assert s.routing_class == "5:in_world_landings"
-    assert s.routing_class_checked is True
+    assert s.gate_tier == dispatch.Stratum.known("regress")
+    # Lane-blind: a Claude-native dispatch carries the same class a foreign one would. The
+    # stable id and the mutable name are kept as two fields, not one `id:name` string.
+    assert s.routing_class == dispatch.Stratum.known(
+        dispatch.RoutingClass("5", "in_world_landings"),
+    )
 
 
 def test_strata_records_a_non_world_issue_as_fast() -> None:
     s = dispatch.capture_strata(NON_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
-    assert s.gate_tier == "fast"
-    assert s.gate_tier_checked is True
+    assert s.gate_tier == dispatch.Stratum.known("fast")
     # Non-world is about the gate tier, not the routing class: this body is fast *and*
     # carries a class, which is the combination that proves the two signals are independent.
-    assert s.routing_class == "6:gates_themselves"
-    assert s.routing_class_checked is True
+    assert s.routing_class == dispatch.Stratum.known(
+        dispatch.RoutingClass("6", "gates_themselves"),
+    )
 
 
 def test_strata_records_no_routing_class_as_a_checked_absence() -> None:
     s = dispatch.capture_strata(NO_CLASS_BODY, 323, "implementer", REPO, body_from_file=True)
-    # No class is the empty string, and it is checked: we looked, and the issue declares
+    # No class is RoutingClass("", "") and it is checked: we looked, and the issue declares
     # none. That is the third value #323 names, never collapsed with "could not look".
-    assert s.routing_class == ""
-    assert s.routing_class_checked is True
-    assert s.routing_class_unchecked_why == ""
+    assert s.routing_class == dispatch.Stratum.known(dispatch.RoutingClass("", ""))
 
 
 def test_strata_labels_are_unchecked_when_the_body_came_from_issue_body() -> None:
     # `--issue-body` arms a dispatch where `gh` cannot reach GitHub, so labels are not
-    # fetched — not "no labels". The distinction is the one the observatory depends on.
+    # fetched — not "no labels". The value is None (no answer), and the distinction is the
+    # one the observatory depends on.
     s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=True)
-    assert s.labels_checked is False
-    assert s.labels == ()
-    assert s.labels_unchecked_why
+    assert s.labels == dispatch.Stratum.unknown(s.labels.unchecked_why)
+    assert s.labels.value is None
+    assert s.labels.unchecked_why
 
 
 def test_strata_labels_are_checked_when_gh_is_reachable(
@@ -2128,21 +2128,18 @@ def test_strata_labels_are_checked_when_gh_is_reachable(
 ) -> None:
     monkeypatch.setattr(dispatch.readiness, "fetch_labels", lambda *_: (("bug", "ui"), ""))
     s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=False)
-    assert s.labels_checked is True
-    assert s.labels == ("bug", "ui")
-    assert s.labels_unchecked_why == ""
+    assert s.labels == dispatch.Stratum.known(("bug", "ui"))
 
 
 def test_strata_treats_an_empty_label_list_as_a_checked_absence(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # An issue that carries no labels is checked-True with an empty list — the absence the
-    # observatory must not mistake for "could not look".
+    # An issue that carries no labels is checked-True with an empty tuple — the absence the
+    # observatory must not mistake for "could not look", and distinct from None.
     monkeypatch.setattr(dispatch.readiness, "fetch_labels", lambda *_: ((), ""))
     s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=False)
-    assert s.labels_checked is True
-    assert s.labels == ()
-    assert s.labels_unchecked_why == ""
+    assert s.labels == dispatch.Stratum.known(())
+    assert s.labels.value == ()
 
 
 def test_strata_labels_are_unchecked_when_gh_fails(
@@ -2152,9 +2149,7 @@ def test_strata_labels_are_unchecked_when_gh_fails(
         dispatch.readiness, "fetch_labels", lambda *_: ((), "gh did not answer within 30s")
     )
     s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=False)
-    assert s.labels_checked is False
-    assert s.labels == ()
-    assert s.labels_unchecked_why == "gh did not answer within 30s"
+    assert s.labels == dispatch.Stratum.unknown("gh did not answer within 30s")
 
 
 def test_strata_gate_is_unchecked_when_the_vocabulary_could_not_be_read(
@@ -2162,20 +2157,19 @@ def test_strata_gate_is_unchecked_when_the_vocabulary_could_not_be_read(
 ) -> None:
     # CONTEXT.md unreadable and no in-world path to fall back on: undetermined *because*
     # the check could not run, which is the unchecked state — not a genuine undetermined.
-    monkeypatch.setattr(brief, "read_vocabulary", lambda *_: ())
+    # Patched on `gate`, which is where capture_strata now reads it (not `brief`).
+    monkeypatch.setattr(dispatch.gate, "read_vocabulary", lambda *_: ())
     s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=True)
-    assert s.gate_tier == "undetermined"
-    assert s.gate_tier_checked is False
-    assert s.gate_tier_unchecked_why
+    assert s.gate_tier == dispatch.Stratum.unknown(s.gate_tier.unchecked_why)
+    assert s.gate_tier.value is None
+    assert s.gate_tier.unchecked_why
 
 
 def test_strata_gate_undetermined_is_checked_when_the_vocabulary_was_readable() -> None:
     # A genuine undetermined (readable vocabulary, no paths) is a stratum, not a failure:
     # the two undetermined-states must not collapse into one.
     s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=True)
-    assert s.gate_tier == "undetermined"
-    assert s.gate_tier_checked is True
-    assert s.gate_tier_unchecked_why == ""
+    assert s.gate_tier == dispatch.Stratum.known("undetermined")
 
 
 def test_strata_routing_class_is_unchecked_when_the_policy_could_not_be_read(
@@ -2187,9 +2181,8 @@ def test_strata_routing_class_is_unchecked_when_the_policy_could_not_be_read(
         lambda *_: routing_policy.ReadResult(None, "policy unreadable"),
     )
     s = dispatch.capture_strata(IN_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
-    assert s.routing_class_checked is False
-    assert s.routing_class == ""
-    assert s.routing_class_unchecked_why == "policy unreadable"
+    assert s.routing_class == dispatch.Stratum.unknown("policy unreadable")
+    assert s.routing_class.value is None
 
 
 def test_the_dispatch_record_carries_the_strata(tmp_path: Path) -> None:
@@ -2201,9 +2194,13 @@ def test_the_dispatch_record_carries_the_strata(tmp_path: Path) -> None:
     strata = plan.document()["strata"]
     assert strata["gate_tier"] == "fast"
     assert strata["gate_tier_checked"] is True
-    assert strata["routing_class"] == ""
+    assert strata["routing_class_id"] == ""
+    assert strata["routing_class_name"] == ""
     assert strata["routing_class_checked"] is True
     assert strata["labels_checked"] is False  # --issue-body mode
+    # An unchecked signal writes None for its value, never one a checked run could have
+    # written (#323 review finding 1).
+    assert strata["labels"] is None
 
 
 def test_the_dispatch_record_carries_an_in_world_issue_strata(tmp_path: Path) -> None:
@@ -2220,7 +2217,8 @@ def test_the_dispatch_record_carries_an_in_world_issue_strata(tmp_path: Path) ->
     assert plan is not None
     strata = plan.document()["strata"]
     assert strata["gate_tier"] == "regress"
-    assert strata["routing_class"] == "5:in_world_landings"
+    assert strata["routing_class_id"] == "5"
+    assert strata["routing_class_name"] == "in_world_landings"
 
 
 def test_a_record_round_trips_its_strata(tmp_path: Path) -> None:
@@ -2237,6 +2235,159 @@ def test_a_record_written_before_strata_reads_back_unchecked() -> None:
     # that — nothing recorded, nothing checked — rather than a guess dressed as a value.
     s = dispatch.read_strata({})
     assert s == dispatch.NO_STRATA
-    assert s.gate_tier_checked is False
-    assert s.routing_class_checked is False
-    assert s.labels_checked is False
+    assert s.gate_tier == dispatch.Stratum.unknown("")
+    assert s.routing_class == dispatch.Stratum.unknown("")
+    assert s.labels == dispatch.Stratum.unknown("")
+
+
+# ---------------------------------------------- the findings from review round 1
+#
+# Each is one test that fails without its fix, so a regression is a named red rather than a
+# silent drift. The ones that matter most are the unknowable and malformed cases — the
+# shapes a consumer that ignores the flag, or a record the reader cannot make sense of, must
+# never turn into a confident value.
+
+
+def test_document_emits_null_for_every_value_when_no_signal_ran() -> None:
+    # #323 review finding 1: an unchecked signal writes None for its value, so a consumer
+    # that ignores the checked flag gets no answer rather than a plausible wrong one. The
+    # absent-versus-unchecked distinction cannot collapse for any of the three signals.
+    unchecked = dispatch.Strata(
+        gate_tier=dispatch.Stratum.unknown("vocabulary unreadable"),
+        routing_class=dispatch.Stratum.unknown("policy unreadable"),
+        labels=dispatch.Stratum.unknown("body from --issue-body"),
+    )
+    doc = unchecked.document()
+    assert doc["gate_tier"] is None
+    assert doc["routing_class_id"] is None
+    assert doc["routing_class_name"] is None
+    assert doc["labels"] is None
+    # The flags and reasons survive, so a consumer that does read them still knows what happened.
+    assert doc["gate_tier_checked"] is False
+    assert doc["labels_unchecked_why"] == "body from --issue-body"
+
+
+def test_the_routing_class_records_its_stable_id_separately_from_its_mutable_name() -> None:
+    # #323 review finding 6: a class rename must not fragment the history the observatory
+    # reads, so the stable id and the mutable name are two fields — and the flattened
+    # `routing_class` string is gone.
+    s = dispatch.capture_strata(IN_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
+    assert s.routing_class.value == dispatch.RoutingClass("5", "in_world_landings")
+    doc = s.document()
+    assert doc["routing_class_id"] == "5"
+    assert doc["routing_class_name"] == "in_world_landings"
+    assert "routing_class" not in doc
+
+
+def test_read_strata_degrades_a_missing_value_beside_checked_true_to_unchecked() -> None:
+    # #323 review finding 2: a checked flag with no value beside it once became a confident
+    # empty value; it degrades to unchecked with a reason instead.
+    s = dispatch.read_strata({"strata": {"gate_tier_checked": True, "gate_tier_unchecked_why": ""}})
+    assert s.gate_tier.checked is False
+    assert s.gate_tier.value is None
+    assert "malformed" in s.gate_tier.unchecked_why
+
+
+def test_read_strata_does_not_coerce_a_null_into_the_string_none() -> None:
+    # str(None) gives "None"; the validator rejects None rather than dressing it as a tier.
+    s = dispatch.read_strata(
+        {"strata": {"gate_tier": None, "gate_tier_checked": True, "gate_tier_unchecked_why": ""}}
+    )
+    assert s.gate_tier.checked is False
+    assert s.gate_tier.value is None
+
+
+def test_read_strata_does_not_coerce_the_string_false_into_true() -> None:
+    # bool("false") gives True; the validator rejects a checked flag that is not a bool.
+    s = dispatch.read_strata(
+        {
+            "strata": {
+                "gate_tier": "fast",
+                "gate_tier_checked": "false",
+                "gate_tier_unchecked_why": "",
+            }
+        }
+    )
+    assert s.gate_tier.checked is False
+    assert s.gate_tier.value is None
+
+
+def test_read_strata_does_not_iterate_a_label_string_into_characters() -> None:
+    # "labels": "bug" once became ("b", "u", "g"); the validator wants a list of strings.
+    s = dispatch.read_strata(
+        {"strata": {"labels": "bug", "labels_checked": True, "labels_unchecked_why": ""}}
+    )
+    assert s.labels.checked is False
+    assert s.labels.value is None
+
+
+def test_read_strata_tolerates_a_null_label_list_without_raising() -> None:
+    # A null label list once raised TypeError inside the reader; it degrades to unchecked.
+    s = dispatch.read_strata(
+        {"strata": {"labels": None, "labels_checked": True, "labels_unchecked_why": ""}}
+    )
+    assert s.labels.checked is False
+    assert s.labels.value is None
+
+
+def test_read_strata_degrades_a_routing_class_missing_one_field_to_unchecked() -> None:
+    # The id without the name (or vice versa) is not a class this recorder writes.
+    s = dispatch.read_strata(
+        {
+            "strata": {
+                "routing_class_id": "5",
+                "routing_class_checked": True,
+                "routing_class_unchecked_why": "",
+            }
+        }
+    )
+    assert s.routing_class.checked is False
+    assert s.routing_class.value is None
+
+
+def test_read_strata_reads_back_a_well_formed_record() -> None:
+    # The tolerant reader still reads exactly what a well-formed record writes.
+    s = dispatch.read_strata(
+        {
+            "strata": {
+                "gate_tier": "fast",
+                "gate_tier_checked": True,
+                "gate_tier_unchecked_why": "",
+                "routing_class_id": "5",
+                "routing_class_name": "in_world_landings",
+                "routing_class_checked": True,
+                "routing_class_unchecked_why": "",
+                "labels": ["bug", "ui"],
+                "labels_checked": True,
+                "labels_unchecked_why": "",
+            }
+        }
+    )
+    assert s.gate_tier == dispatch.Stratum.known("fast")
+    assert s.routing_class == dispatch.Stratum.known(
+        dispatch.RoutingClass("5", "in_world_landings"),
+    )
+    assert s.labels == dispatch.Stratum.known(("bug", "ui"))
+
+
+def test_the_gate_derivation_lives_in_a_module_that_imports_neither_dispatcher_nor_brief() -> None:
+    # #323 review finding 3: when the body-reading functions lived in `brief`, a capture_strata
+    # that imported `brief` closed the ring with brief's module-level `import dispatch` and
+    # loaded a second dispatcher under the production `__main__` shape. `gate` owns them now
+    # and imports neither, so reaching them costs no cycle. Asserted in a clean subprocess,
+    # which is the one place `load_tool('dispatch')` cannot mask the edge.
+    probe = (
+        "import sys; sys.path.insert(0, 'tools'); import gate; "
+        "assert 'dispatch' not in sys.modules, 'gate imported the dispatcher'; "
+        "assert 'brief' not in sys.modules, 'gate imported the brief composer'; "
+        "print('gate_is_acyclic')"
+    )
+    result = subprocess.run(  # noqa: S603 — the interpreter and a fixed probe string, not input
+        [sys.executable, "-c", probe],
+        capture_output=True,
+        check=False,
+        text=True,
+        cwd=REPO,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "gate_is_acyclic" in result.stdout
