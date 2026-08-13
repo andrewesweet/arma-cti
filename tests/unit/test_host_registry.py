@@ -40,10 +40,21 @@ def write(tmp_path: Path, text: str = REGISTRY) -> Path:
 
 
 def test_absent_registry_preserves_the_local_host(tmp_path: Path) -> None:
+    """The fallback's whole shape, slot count included.
+
+    The slot count is pinned here rather than left as a detail because another
+    module rests on it: `tests/unit/test_host_seam.py` writes a fixture registry
+    whose only observable difference from this fallback is `server_slots`, and
+    that difference is what proves the fixture is being read at all. Edit
+    `default_hosts()` to any other count and that proof evaporates in silence —
+    the host-seam tests go on passing while asserting nothing about isolation.
+    So this test fails instead (#356).
+    """
     hosts = host_registry.load(tmp_path / "absent.toml")
     assert list(hosts) == ["local"]
     assert hosts["local"].transport == "null"
     assert hosts["local"].human is True
+    assert hosts["local"].server_slots == host_registry.MAX_SLOTS
 
 
 def test_bravo_is_one_whole_pass_ssh_host(tmp_path: Path) -> None:

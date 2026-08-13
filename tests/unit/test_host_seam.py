@@ -73,12 +73,20 @@ def hosts_sh(script: str, env: dict[str, str] | None = None) -> subprocess.Compl
 #
 # `server_slots = 5` is load-bearing and not a detail: `host_registry.load()`
 # falls back to `default_hosts()` when its path does not exist, and that default
-# is a single `local` row otherwise identical to this one at the registry's
-# maximum of 6 slots. A fixture registry indistinguishable from the fallback
-# proves no isolation at all — a mistyped fixture path passes every test in this
-# module. Five is the one value that makes the fallback observable, and
-# `test_a_one_host_registry_is_the_humans_row` asserts it so the difference is
-# something a test fails on rather than something a comment claims.
+# is a single `local` row otherwise identical to this one. A fixture registry
+# indistinguishable from the fallback proves no isolation at all — a mistyped
+# fixture path passes every test in this module.
+#
+# Five is a choice; the constraints are two, and they are what a later edit must
+# preserve. It must differ from `default_hosts()`'s count, which is the registry
+# maximum of 6 — that difference is the whole canary, and
+# `test_a_one_host_registry_is_the_humans_row` asserts it so it is something a
+# test fails on rather than something a comment claims. And it must be at least
+# 3, because `regress.sh` refuses a pool wider than the host's slots and the
+# pool test below asks for `--slots 3`. Both ends are held from the other side
+# too: `test_absent_registry_preserves_the_local_host` pins the fallback to
+# `MAX_SLOTS`, so moving the default reds there rather than silently unmaking
+# the canary here.
 LOCAL_ROW = """version = 1
 [hosts.local]
 ssh_target = ""
@@ -364,15 +372,24 @@ def test_a_run_refused_by_the_guard_still_names_the_host(tmp_path: Path) -> None
 
     `run.sh` recorded the host well after the guard, so the verdicts most about a
     host — the ones that never got past it — were the ones that did not name it.
+
+    Which refusal this is, is asserted rather than assumed. `run.sh` has several
+    `infra_unavailable` stops after this one — an unbuilt shim is the next — and
+    the four host fields hold on every one of them, so a test reading only those
+    would go green on a run the guard never touched. It did: flipping the
+    fixture's role to `tier` skips the guard entirely and the shim check refuses
+    a few lines later, with the same class and the same host. So the guard's own
+    words are pinned, and so is the tasklist actually having been asked.
     """
     out = tmp_path / "out"
     out.mkdir()
+    calls = tmp_path / "calls"
     env = {
         **os.environ,
         "CTI_HOSTS_FILE": local_only_registry(tmp_path),
         "CTI_SPIKE_OUT": str(out),
         "CTI_WINDOWS_TASKLIST": str(executable(tmp_path / "tasklist.sh", TASKLIST_RUNNING)),
-        "CTI_TEST_TASKLIST_CALLS": str(tmp_path / "calls"),
+        "CTI_TEST_TASKLIST_CALLS": str(calls),
         "CTI_TIER_SLOT": "2",
         # No test of this tier owns machine state (#132): the locks under
         # $HOME/.arma-cti belong to runs that have Arma in front of them.
@@ -389,6 +406,10 @@ def test_a_run_refused_by_the_guard_still_names_the_host(tmp_path: Path) -> None
     assert recorded["failure_class"] == "infra_unavailable"
     assert recorded["tier_host"] == "local"
     assert recorded["tier_slot"] == "2"
+    assert recorded["failure_detail"] == (
+        "arma3_x64.exe is in the Windows process list — that is a play session, not ours"
+    )
+    assert calls.read_text().split() == ["asked"], "the guard was not the thing that refused"
 
 
 def test_an_unknown_host_is_refused_by_the_harness_too(tmp_path: Path) -> None:
