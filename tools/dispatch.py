@@ -187,6 +187,7 @@ import secrets as secrets_module
 import stat
 import subprocess
 import sys
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
@@ -925,7 +926,8 @@ class RoutingClass(NamedTuple):
     name: str
 
 
-class Stratum(NamedTuple):
+@dataclass(frozen=True)
+class Stratum:
     """One pre-work signal: its value, whether that value was checked, and why not if not.
 
     The value is `None` when the signal did not run (#323 review finding 1): a consumer that
@@ -939,6 +941,20 @@ class Stratum(NamedTuple):
     value: object
     checked: bool
     unchecked_why: str
+
+    def __post_init__(self) -> None:
+        """Refuse an unchecked stratum that carries a value — F1, made structural.
+
+        A signal that did not run carries no value, so an unchecked stratum cannot be built
+        with one (#323 review round 2 finding 1). The record boundary does not have to
+        re-assert this — `document()` can write `value` unconditionally because nothing can
+        put a real value beside `checked=False`. A frozen dataclass refuses the bad shape at
+        construction; `known`, `unknown` and the reader all build through this, so the
+        invariant is the type's, not a guard's.
+        """
+        if not self.checked and self.value is not None:
+            message = "an unchecked Stratum carries no value (F1)"
+            raise ValueError(message)
 
     @classmethod
     def known(cls, value: object) -> Stratum:
@@ -998,10 +1014,34 @@ class Strata(NamedTuple):
         }
 
 
+def _valueless_stratum(why: str) -> Stratum:
+    """Build the value-less unchecked stratum without running the validator.
+
+    `NO_STRATA`'s signals are unchecked by definition and carry no value, so the validator has
+    nothing to check — and running it at import would make the type's own invariant un-testable:
+    a mutant that inverts `__post_init__`'s check raises while `NO_STRATA` is still being built,
+    crashing collection before any test can score the mutant as a kill. This private path skips
+    the validator. It takes no value, so it cannot build the shape F1 refuses; its fields are
+    identical to `Stratum.unknown(why)`. It bypasses `__init__` with `object.__new__` plus
+    direct field setting because a frozen dataclass refuses ordinary assignment.
+    """
+    obj = object.__new__(Stratum)
+    object.__setattr__(obj, "value", None)
+    object.__setattr__(obj, "checked", False)
+    object.__setattr__(obj, "unchecked_why", why)
+    return obj
+
+
+# `NO_STRATA` is built at import through `_valueless_stratum`, not `Stratum.unknown`: the
+# constant is constructed while the module loads, and a mutant inverting `__post_init__`'s
+# check would raise inside `unknown` while this line ran — crashing collection before any test
+# could score the mutant. `_valueless_stratum` skips the validator (it takes no value, so it
+# cannot build the shape F1 refuses), so the module imports under every mutant and the
+# validator stays scoreable. Its fields are identical to `unknown("")`.
 NO_STRATA: Final = Strata(
-    gate_tier=Stratum.unknown(""),
-    routing_class=Stratum.unknown(""),
-    labels=Stratum.unknown(""),
+    gate_tier=_valueless_stratum(""),
+    routing_class=_valueless_stratum(""),
+    labels=_valueless_stratum(""),
 )
 
 
@@ -1029,17 +1069,43 @@ def _read_signal(  # noqa: PLR0913 — keyword-only validator mirroring the per-
     confident value and never as an exception. That is the property `str(None)` giving `"None"`,
     `bool("false")` giving `True`, `"labels": "bug"` giving `("b","u","g")` and a null label list
     raising `TypeError` all break, and one reader holds it for all three signals.
+
+    Two shapes that are not corruption get their own reasons. A record that contradicts itself —
+    a value beside `checked: false`, which F1 never writes — reads back unchecked *and names what
+    it saw*, so the contradiction leaves a trace rather than a silent empty reason (review round 2
+    finding 2). And a record whose value fields this reader does not carry at all is told apart
+    from a broken one: the only records in that shape are this branch's own earlier format, never
+    a landed one, so it says the fields are absent rather than that the record is malformed (review
+    round 2 finding 4 — no migration, because nothing landed in that shape).
     """
     checked = row.get(checked_key)
     why = row.get(why_key)
     if not isinstance(checked, bool) or not isinstance(why, str):
         return Stratum.unknown(f"the recorded {label} stratum was malformed")
+    raw_values = tuple(row.get(key) for key in value_keys)
     if not checked:
-        # An unchecked signal wrote `None` for its value; the reason is the thing to keep.
+        # F1 writes `None` for an unchecked value. A value present here contradicts that, so
+        # name it rather than silently dropping it — the right state, carrying the reason the
+        # contradiction left behind (review round 2 finding 2).
+        if any(part is not None for part in raw_values):
+            seen = raw_values[0] if len(raw_values) == 1 else raw_values
+            return Stratum.unknown(
+                f"the recorded {label} stratum was unchecked but carried {seen!r}"
+            )
         return Stratum.unknown(why)
-    decoded = decode_value(tuple(row.get(key) for key in value_keys))
+    decoded = decode_value(raw_values)
     if decoded is _MALFORMED:
-        return Stratum.unknown(f"the recorded {label} stratum was malformed")
+        if all(key not in row for key in value_keys):
+            # None of the value fields this reader expects are present: the record was written
+            # in an earlier shape (the flattened `routing_class` string before the split). Say
+            # the fields are absent, not that the record is broken — it was valid in the shape
+            # it was written in (review round 2 finding 4).
+            return Stratum.unknown(
+                f"the recorded {label} stratum carries none of the value fields this reader reads"
+            )
+        return Stratum.unknown(
+            f"the recorded {label} stratum's value was not in the shape this reader expects"
+        )
     return Stratum.known(decoded)
 
 
@@ -1072,13 +1138,23 @@ def read_strata(document: Mapping[str, object]) -> Strata:
     this reader cannot make sense of degrades the same way, to unchecked with a reason, rather
     than coercing a confident value out of malformed data.
     """
-    found = document.get("strata")
-    # No strata object at all is the pre-#323 record: nothing recorded, nothing checked, with
-    # no reason to give. A strata object that is present but malformed is a different case, and
-    # the per-field reader below gives that one its reason — so this short-circuit is what keeps
-    # 'nobody recorded anything' from being read as 'the recording was broken'.
-    if not isinstance(found, dict):
+    if "strata" not in document:
+        # No strata field at all is the pre-#323 record: the field did not exist, so nothing
+        # was recorded and nothing was checked, with no reason to give. This is the only case
+        # that reads back as `NO_STRATA`.
         return NO_STRATA
+    found = document["strata"]
+    if not isinstance(found, dict):
+        # Present but not a mapping — `[]`, `null`, `"x"` — is a malformed container, not a
+        # pre-#323 record, and it never reaches the per-field reader below. Give every signal
+        # the same reason so 'nobody recorded anything' (no field) stays distinct from 'the
+        # recording was broken' (a present non-mapping) (review round 2 finding 3).
+        reason = "the recorded strata object was present but not a mapping"
+        return Strata(
+            gate_tier=Stratum.unknown(reason),
+            routing_class=Stratum.unknown(reason),
+            labels=Stratum.unknown(reason),
+        )
     row = found
     return Strata(
         gate_tier=_read_signal(
