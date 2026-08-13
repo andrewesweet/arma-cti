@@ -161,9 +161,11 @@ sys.path.insert(0, str(Path(__file__).parent))
 # The path insert above is what makes these importable.
 import admission
 import dispatch
+import escalation
 import handoff_fetch
 import ledger
 import readiness
+import routing_policy
 
 # The gate derivation lives in `gate`, the owner neither this module nor the dispatcher imports
 # the other to reach (#323 review finding 3). Re-exported under the names this module has always
@@ -686,6 +688,13 @@ RESERVED_RULE: Final = (
     " These surfaces are human sign-off gated in any case (CLAUDE.md; measured on #294,"
     " `docs/multi-provider-dispatch.md`)."
 )
+ESCALATION_RULE: Final = (
+    "A transferring-escalation condition has fired — the task moves to a higher profile only on a"
+    " named condition, never by an agent's judgement in the moment (ADR-0071 ruling 5). Each"
+    " emission below names the condition, the recorded facts that fired it, and the remedy; act"
+    " on it before landing. A condition that has not fired emits nothing, so a brief without this"
+    " section has no escalation due."
+)
 
 
 class Briefing(NamedTuple):
@@ -708,6 +717,37 @@ class Briefing(NamedTuple):
     # absence so a brief composed about anything else opens no handoff section — the section
     # appears only where one applies, like prior work and reserved surfaces.
     handoff: Handoff = Handoff(HANDOFF_ABSENT)
+    # A transferring-escalation condition that has fired for this item, or nothing. Defaulted so
+    # a brief about an item with no condition due opens no escalation section — the section appears
+    # only where one applies, like reserved surfaces and the handoff (ADR-0071 ruling 5, #325).
+    escalation: tuple[escalation.Emission, ...] = ()
+
+
+def escalation_for(body: str, seat_name: str, repo: Path) -> tuple[escalation.Emission, ...]:
+    """Decide the transferring-escalation conditions for an item from what the brief can read.
+
+    The escalation tool decides from facts in a `Context`; this assembles that context from the
+    data a composition-time read actually has. `routing_class` is recorded — derived lane-blind
+    from the body through `routing_policy.classify_issue` — so condition 4 fires for a #181-shape
+    item for real. `review_rounds`, `finding_above_low` and `attempts` are **not** recorded today
+    (the review loop, observatory and arbiter are sequenced: ADR-0071 rulings 4 and 6, #333), so
+    they are `None` and conditions 1, 2 and 3 stay silent until those land. The arbiter condition
+    1 would name is resolved here from the implementer seat's escalation head and supplied anyway,
+    so the emission is correct the moment its facts arrive.
+    """
+    read = routing_policy.read_policy(repo / routing_policy.POLICY_RELATIVE)
+    routing_class: int | None = None
+    if read.policy is not None:
+        match = routing_policy.classify_issue(read.policy, body, seat_name)
+        if match is not None:
+            routing_class = match.rule.id
+    conditions = escalation.read_conditions(repo / escalation.CONDITIONS_RELATIVE)
+    context = escalation.Context(
+        item=escalation.ItemState(routing_class=routing_class),
+        prior=(),
+        arbiter=dispatch.IMPLEMENTER_ESCALATION[0] if dispatch.IMPLEMENTER_ESCALATION else None,
+    )
+    return escalation.evaluate(conditions.conditions, context)
 
 
 def compose(briefing: Briefing) -> str:
@@ -722,6 +762,9 @@ def compose(briefing: Briefing) -> str:
     handoff_lines = render_handoff(issue, briefing.handoff)
     if handoff_lines:
         lines += ["", *handoff_lines]
+    if briefing.escalation:
+        lines += ["", "## Escalation", ESCALATION_RULE]
+        lines += escalation.render(briefing.escalation)
     lines += [
         "",
         "## Task, scope, ground truth",
@@ -935,18 +978,20 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
     body = str(document.get("body") or "")
     gate = derive_gate(body, read_vocabulary(repo))
     handoff = read_handoff(args.issue)
+    seat = derive_seat(args.seat, args.reviewing)
     rendered = compose(
         Briefing(
             issue=args.issue,
             title=str(document.get("title") or ""),
             gate=gate,
             flakes=select_flakes(open_issues),
-            seat=derive_seat(args.seat, args.reviewing),
+            seat=seat,
             tree=resolve_tree(args.issue, args.base_sha, repo),
             assessment=readiness.assess(body),
             reserved=reserved_surfaces(named_paths(body)),
             prior_work=work,
             handoff=handoff,
+            escalation=escalation_for(body, seat.name, repo),
         )
     )
     if str(document.get("state") or "").upper() == "CLOSED":

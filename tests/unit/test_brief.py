@@ -42,6 +42,7 @@ if TYPE_CHECKING:
 brief = load_tool("brief")
 admission = load_tool("admission")
 dispatch = load_tool("dispatch")
+escalation = load_tool("escalation")
 handoff_fetch = load_tool("handoff_fetch")
 readiness = load_tool("readiness")
 
@@ -552,6 +553,46 @@ def test_no_prior_work_adds_no_permanently_empty_section() -> None:
     rendered = composed()
     assert "PRIOR WORK" not in rendered
     assert brief.PRIOR_WORK_RULE not in rendered
+
+
+# ----------------------------------------------- the escalation (#325, ADR-0071 ruling 5)
+
+# A transferring-escalation condition reaches the agent only when one has fired; a brief about an
+# item with none due opens no section. Condition 4 is the one decidable from the dispatch record
+# today (routing class, off the body), so it is also the one the live wiring can actually fire.
+
+
+def test_a_fired_condition_reaches_the_agent_as_an_emission_with_its_remedy() -> None:
+    fired_condition = escalation.evaluate(
+        escalation.read_conditions(REPO / escalation.CONDITIONS_RELATIVE).conditions,
+        escalation.Context(item=escalation.ItemState(routing_class=4)),
+    )
+    rendered = composed(escalation=fired_condition)
+    assert "## Escalation" in rendered
+    assert brief.ESCALATION_RULE in rendered
+    assert "escalation=4:plausible_wrong_fix_goes_green" in rendered
+    assert "#181 shape" in rendered
+
+
+def test_no_fired_condition_emits_nothing() -> None:
+    """Criterion 3: a brief about an item with no condition due carries no escalation section."""
+    assert "## Escalation" not in composed()
+    assert brief.ESCALATION_RULE not in composed()
+
+
+def test_the_live_wiring_fires_condition_four_for_a_181_shape_body() -> None:
+    """routing_class is the one fact the brief can read today, so condition 4 fires for real."""
+    (emission,) = brief.escalation_for("Routing-class: #181-shape\n", "implementer", REPO)
+    assert emission.condition.id == 4
+
+
+def test_the_live_wiring_emits_nothing_for_an_item_no_condition_decides() -> None:
+    assert (
+        brief.escalation_for(
+            "Implement a generic helper with no routing class.\n", "implementer", REPO
+        )
+        == ()
+    )
 
 
 # --------------------------------------------------------------- the handoff (#309)

@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Transferring-escalation conditions are data, emitted to an agent only when one fires.**
+  Escalation splits in two: *consultative* escalation borrows judgement and keeps control, so it
+  needs no condition; *transferring* escalation hands the task to a higher profile and fires only
+  on a named condition. ADR-0071 ruling 5 seeds four such conditions, each stated as something a
+  tool decides from recorded facts rather than something an agent judges — a review cycle holding
+  a finding above Low after three fix rounds; two consecutive items of one routing class each
+  reaching that state; an item whose second attempt from a clean base on a different profile also
+  reaches it; and an issue declaring the #181 shape. They live as data in
+  `config/escalation-conditions.json`, and `tools/escalation.py` decides each and emits the fired
+  condition with its remedy, or nothing at all when none fire — never as prose a memory file loads
+  every session. The list grows only at a retro. Of the four, only the #181-shape condition is
+  decidable from the dispatch record today (its routing class); the other three are decided by the
+  tool but wait on the review loop and observatory to record their inputs, and a fact no record
+  carries is `None` and emits nothing rather than being guessed. A fired condition reaches the
+  agent through `just brief`'s new `## Escalation` section.
 - **A Remote Control session the bridge kills is now said once, at the top of the next
   orchestrator turn.** The RC servers spawn every worktree session this project runs from a
   phone, and when the bridge cannot refresh one's session token it kills that session's process

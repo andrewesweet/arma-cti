@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "source": "ADR-0071 ruling 5, 2026-08-11; seeded by #325",
+  "growth": "The list of transferring-escalation conditions grows only at a retro, never by an agent's judgement in the moment (ADR-0071 ruling 5). Each condition is something a tool decides from recorded data, not something an agent judges; a fifth condition joins this file by being named at a retro and carrying its own predicate and remedy.",
+  "arbiter_source": "Condition 1 names the arbiter a transferring escalation reaches. That profile is the head of the implementer seat's escalation entry (tools/dispatch.py IMPLEMENTER_ESCALATION[0]); the caller resolves and supplies it, so this data never carries a profile name that drifts.",
+  "conditions": [
+    {
+      "id": 1,
+      "name": "review_stuck_after_three_rounds",
+      "predicate": "three_round_wall",
+      "remedy": "Three fix-and-re-review rounds have not cleared a finding above Low. Transfer the item to the arbiter named in the emission (the head of the implementer seat's escalation entry); the pre-declared landing default applies only after the arbiter adjudicates what remains, and every finding the arbiter does not dismiss is filed on the originating issue (ADR-0071 ruling 4)."
+    },
+    {
+      "id": 2,
+      "name": "two_consecutive_same_class_stuck",
+      "predicate": "consecutive_same_class_wall",
+      "remedy": "Two consecutive items of one routing class each reached the three-round state, which is evidence the items are under-specified rather than mis-implemented. Re-plan this item rather than re-fixing it (ADR-0071 ruling 5)."
+    },
+    {
+      "id": 3,
+      "name": "retry_on_new_profile_stuck",
+      "predicate": "retry_wall",
+      "remedy": "A second implementation attempt, from a clean base on a different profile, itself reached the three-round state, which distinguishes a bad item from a bad implementation. Re-plan the item rather than dispatching a third attempt (ADR-0071 ruling 5)."
+    },
+    {
+      "id": 4,
+      "name": "plausible_wrong_fix_goes_green",
+      "predicate": "routing_class_four",
+      "remedy": "This item declares the #181 shape (routing class 4): a diagnosis whose plausible wrong fix would also go green, which no mechanical gate distinguishes. Transfer it to a fable seat for diagnosis; ruling 5 permits this escalation precisely because the gate cannot catch the wrong answer (CLAUDE.md model roles; #181)."
+    }
+  ]
+}

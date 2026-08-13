@@ -1,0 +1,316 @@
+"""Transferring-escalation conditions as data, emitted when one fires (ADR-0071 ruling 5, #325).
+
+Escalation has two kinds. *Consultative* escalation borrows judgement and keeps control — a
+running model asking a stronger one for advice — and because it transfers no accountability it
+needs no condition and lives nowhere here. *Transferring* escalation hands the task to a higher
+profile and fires only on a **named condition**. This module is the four conditions ADR-0071
+ruling 5 seeds, each stated as something a tool decides from recorded facts rather than something
+an agent judges — which is what "data" means here.
+
+The conditions live as data in `config/escalation-conditions.json`, read on every call with no
+module cache. That is the same discipline `tools/routing_policy.py` runs under, and the row
+shape — id, name, remedy — mirrors its `Rule`. The decision logic is code rather than data,
+because each condition's predicate is structurally different: a routing class matches by path or
+phrase uniformly, so its matcher can be one walk over data rows, whereas these four ask four
+different questions of four different facts. So the *rows* are data and the list grows only at a
+retro, while each row's `predicate` names the Python function that decides it.
+
+Emission, not resident prose (#209, ADR-0071 ruling 5). Where a rule-table already decides, an
+agent is not handed numbers to reason about, so this tool decides and what reaches the agent is
+the fired condition and its remedy. A condition that has not fired emits nothing at all: the
+`evaluate` walk returns an empty tuple and a brief composed from one opens no escalation section.
+This is the difference between a condition and a rule written into a memory file every session
+loads — the condition is silent until it is true.
+
+What is decidable today, and what is not. A condition fires only on facts the caller supplies in
+a `Context`, and each fact is either recorded or it is not:
+
+- `routing_class` is recorded on every dispatch record (#323), reachable from an issue body
+  through `routing_policy.classify_issue`. A caller reading the body can supply it, and condition
+  4 fires for real.
+- `review_rounds`, `finding_above_low` and `attempts` are **not** mechanically recorded today. The
+  review loop, the observatory and the arbiter are sequenced work (ADR-0071 rulings 4 and 6,
+  #333), so a caller that has none of these supplies `None`, and conditions 1, 2 and 3 do not
+  fire.
+
+`None` is a third value. It is "this fact is not recorded", distinct from "this fact is recorded
+false", and a condition that lacks a fact it needs emits nothing rather than guessing. That is
+the "say so plainly rather than invent a heuristic" of #325: the tool never fires on missing
+data, and the gap is documented in this docstring rather than papered over with a default. When
+the review loop records rounds and findings, the same caller supplies them as integers and
+booleans and the conditions light up unchanged.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import TYPE_CHECKING, Final, NamedTuple
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+CONDITIONS_RELATIVE: Final = Path("config/escalation-conditions.json")
+
+# ADR-0071 ruling 4: "Three fix rounds, then escalate." A round is one fix-and-re-review cycle;
+# the first review is round zero, so this fires after the third re-review. Stated as a constant
+# because "three rounds" was ambiguous by one and a tool has to decide it.
+THREE_ROUND_THRESHOLD: Final = 3
+
+# Condition 2 reads the two most recent prior items; condition 3 needs at least two attempts.
+# Named because the ADR counts both, and a tool that decides them holds the count as a constant
+# rather than a bare integer a reader has to map back to the ruling.
+CONSECUTIVE_ITEMS: Final = 2
+RETRY_MIN_ATTEMPTS: Final = 2
+
+# Routing class 4, `plausible_wrong_fix_goes_green` — the #181 shape. A constant rather than a
+# read of the policy so this module does not couple to `routing_policy` to recognise its own
+# fourth condition; the class id is stable (validated as the ordered 1..7 in routing_policy).
+CLASS_FOUR: Final = 4
+
+
+class Attempt(NamedTuple):
+    """One implementation attempt of an item, in the facts a condition reads."""
+
+    profile: str
+    clean_base: bool
+
+
+class ItemState(NamedTuple):
+    """One item's escalation-relevant facts. Each is recorded or it is `None`.
+
+    `None` is "not recorded" and never "recorded as false": a condition that needs a fact it does
+    not have emits nothing, so missing data can never manufacture a firing.
+    """
+
+    routing_class: int | None
+    # Completed fix-and-re-review cycles; 0 is the first review alone. `None` until the review
+    # loop records it (ADR-0071 ruling 4, sequenced).
+    review_rounds: int | None = None
+    # A live review finding above Low exists. `None` until findings carry severity (ruling 4).
+    finding_above_low: bool | None = None
+    # Implementation attempts of this item, oldest first. Empty until attempts are recorded.
+    attempts: tuple[Attempt, ...] = ()
+
+
+class Context(NamedTuple):
+    """The facts the four conditions are decided from.
+
+    `item` is the item the emission would reach (conditions 1, 3, 4 read it). `prior` is the
+    ordered history of recently-resolved items, most-recent-last, which condition 2 reads. The
+    `arbiter` is the implementer seat's escalation head that condition 1 names; the caller
+    resolves it so this module never carries a profile that drifts.
+    """
+
+    item: ItemState
+    prior: tuple[ItemState, ...] = ()
+    arbiter: str | None = None
+
+
+class Condition(NamedTuple):
+    """One escalation condition row: its identity, its deciding predicate, and its remedy."""
+
+    id: int
+    name: str
+    predicate: str
+    remedy: str
+
+
+class Conditions(NamedTuple):
+    """The parsed condition table."""
+
+    source: str
+    conditions: tuple[Condition, ...]
+
+
+class ReadResult(NamedTuple):
+    """A parsed condition table or the reason reading it failed."""
+
+    conditions: Conditions | None
+    error: str = ""
+
+
+class EscalationError(ValueError):
+    """An escalation condition table whose shape cannot safely govern emissions."""
+
+
+class Emission(NamedTuple):
+    """One fired condition and the recorded facts that fired it."""
+
+    condition: Condition
+    evidence: tuple[str, ...]
+
+
+VERSION_ERROR: Final = "conditions must be a version 1 object"
+CONDITIONS_LIST_ERROR: Final = "conditions must be a list"
+CONDITION_OBJECT_ERROR: Final = "each condition must be an object"
+CONDITION_FIELDS_ERROR: Final = "each condition must carry id, name, predicate and remedy"
+PREDICATE_ERROR: Final = (
+    "each condition's predicate must name a decided predicate; an unknown one cannot fire and"
+    " must be corrected in the data rather than silently skipped"
+)
+REMEDY_ERROR: Final = "every condition must name its remedy"
+IDS_UNIQUE_ERROR: Final = "condition ids must be unique"
+
+
+def at_three_round_wall(item: ItemState) -> bool:
+    """Return whether the item sits at the wall conditions 1, 2 and 3 share.
+
+    That wall is three fix rounds with a finding above Low still open. Both facts must be
+    recorded — a wall read off missing data is a guess, and the tool does not guess.
+    `finding_above_low is True` rather than truthy so `None` (not recorded) is distinct from
+    `False` (recorded: no such finding).
+    """
+    return (
+        item.review_rounds is not None
+        and item.review_rounds >= THREE_ROUND_THRESHOLD
+        and item.finding_above_low is True
+    )
+
+
+def _three_round_wall(context: Context) -> tuple[str, ...] | None:
+    """Condition 1: a review cycle holding a finding above Low after three fix rounds."""
+    item = context.item
+    if not at_three_round_wall(item):
+        return None
+    evidence = [f"review_rounds={item.review_rounds}", "finding_above_low=true"]
+    # The arbiter the transfer reaches; recorded as a fact so the emission names a profile the
+    # caller resolved rather than one this module hard-codes.
+    if context.arbiter:
+        evidence.append(f"arbiter={context.arbiter}")
+    return tuple(evidence)
+
+
+def _consecutive_same_class_wall(context: Context) -> tuple[str, ...] | None:
+    """Condition 2: two consecutive items of one routing class each at the three-round wall.
+
+    A fact about the history, read off the two most recent prior items: they must be consecutive
+    (which `prior[-2]`, `prior[-1]` are by construction), share a recorded routing class, and
+    each be at the wall. The current item is "the next one" the remedy re-plans; the condition
+    does not require it to share the class, because the ADR names two items, not three. That
+    reading is recorded here rather than hidden in a branch.
+    """
+    prior = context.prior
+    if len(prior) < CONSECUTIVE_ITEMS:
+        return None
+    first, second = prior[-2], prior[-1]
+    if first.routing_class is None or first.routing_class != second.routing_class:
+        return None
+    if not (at_three_round_wall(first) and at_three_round_wall(second)):
+        return None
+    return (f"routing_class={first.routing_class}", f"consecutive_items={CONSECUTIVE_ITEMS}")
+
+
+def _retry_wall(context: Context) -> tuple[str, ...] | None:
+    """Condition 3: a second attempt from a clean base on a different profile itself at the wall.
+
+    The retry's outcome is the signal, not the retry itself: the current attempt must have
+    reached the three-round wall, and the attempt before it must differ in profile and have been
+    from a clean base. The ADR's third draft made the retry the condition, which fires only after
+    the transfer it was meant to trigger; this reads the outcome instead.
+    """
+    item = context.item
+    if not at_three_round_wall(item):
+        return None
+    attempts = item.attempts
+    if len(attempts) < RETRY_MIN_ATTEMPTS:
+        return None
+    previous, latest = attempts[-2], attempts[-1]
+    if not latest.clean_base or latest.profile == previous.profile:
+        return None
+    return (
+        f"attempts={len(attempts)}",
+        f"prior_profile={previous.profile}",
+        f"retry_profile={latest.profile}",
+        "retry_clean_base=true",
+    )
+
+
+def _routing_class_four(context: Context) -> tuple[str, ...] | None:
+    """Condition 4: an item declaring routing class 4, the #181 shape."""
+    if context.item.routing_class == CLASS_FOUR:
+        return (f"routing_class={CLASS_FOUR}",)
+    return None
+
+
+# Each condition's `predicate` names one entry. A key not here is rejected at parse time rather
+# than silently skipped, so a condition the code cannot decide is fixed in the data.
+PREDICATES: Final[dict[str, Callable[[Context], tuple[str, ...] | None]]] = {
+    "three_round_wall": _three_round_wall,
+    "consecutive_same_class_wall": _consecutive_same_class_wall,
+    "retry_wall": _retry_wall,
+    "routing_class_four": _routing_class_four,
+}
+
+
+def _condition(entry: object) -> Condition:
+    if not isinstance(entry, dict):
+        raise EscalationError(CONDITION_OBJECT_ERROR)
+    try:
+        identifier = int(entry["id"])
+        name = str(entry["name"])
+        predicate = str(entry["predicate"])
+        remedy = str(entry["remedy"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise EscalationError(CONDITION_FIELDS_ERROR) from error
+    if predicate not in PREDICATES:
+        raise EscalationError(PREDICATE_ERROR)
+    if not remedy:
+        raise EscalationError(REMEDY_ERROR)
+    return Condition(identifier, name, predicate, remedy)
+
+
+def parse_conditions(text: str) -> Conditions:
+    """Validate enough shape that a partial condition table can never govern silently."""
+    document = json.loads(text)
+    if not isinstance(document, dict) or document.get("version") != 1:
+        raise EscalationError(VERSION_ERROR)
+    raw = document.get("conditions")
+    if not isinstance(raw, list):
+        raise EscalationError(CONDITIONS_LIST_ERROR)
+    conditions = tuple(_condition(entry) for entry in raw)
+    ids = [condition.id for condition in conditions]
+    if len(set(ids)) != len(ids):
+        raise EscalationError(IDS_UNIQUE_ERROR)
+    return Conditions(source=str(document.get("source", "")), conditions=conditions)
+
+
+def read_conditions(path: Path) -> ReadResult:
+    """Read on every call. There is intentionally no module cache or startup load."""
+    try:
+        return ReadResult(parse_conditions(path.read_text(encoding="utf-8")))
+    except (OSError, ValueError, json.JSONDecodeError, KeyError, TypeError) as error:
+        return ReadResult(None, f"{path}: {error}")
+
+
+def evaluate(conditions: Conditions | None, context: Context) -> tuple[Emission, ...]:
+    """Return every fired condition as an emission, in id order; empty when none fire.
+
+    `conditions` is `None` when the table could not be read, and an unreadable table emits
+    nothing: escalation is advisory, so the safe fall-through is silence, never a crash. A
+    predicate returning `None` is the unfired case and contributes no emission.
+    """
+    if conditions is None:
+        return ()
+    fired = []
+    for condition in conditions.conditions:
+        evidence = PREDICATES[condition.predicate](context)
+        if evidence is not None:
+            fired.append(Emission(condition, evidence))
+    return tuple(sorted(fired, key=lambda emission: emission.condition.id))
+
+
+def render(emissions: tuple[Emission, ...]) -> tuple[str, ...]:
+    """Render fired emissions as the lines a briefing carries to the agent.
+
+    Each emission names its condition, the facts that fired it, and its remedy — the data a
+    transferring escalation hands over. Mirrors the `refusal=<kind>` / evidence / `action=` shape
+    a routing advisory carries, so an agent reads both the same way.
+    """
+    lines: list[str] = []
+    for emission in emissions:
+        condition = emission.condition
+        lines.append(f"escalation={condition.id}:{condition.name}")
+        lines.extend(f"  {fact}" for fact in emission.evidence)
+        lines.extend(f"  {line}" for line in condition.remedy.splitlines())
+    return tuple(lines)
