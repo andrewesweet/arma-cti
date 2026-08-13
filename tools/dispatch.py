@@ -1206,6 +1206,7 @@ class Plan(NamedTuple):
     # nobody kept is one nobody can make later, and "which entries did this seat walk past,
     # and on what refusal" is exactly what the ledger cannot reconstruct from an outcome.
     route: Resolution
+    planned_at: datetime
     breaker_dir: Path = breaker.DEFAULT_BREAKER_DIR
     # What the readiness rung said about the issue without refusing it (#241). On the
     # record rather than only on stdout, because an advisory nobody kept is an advisory
@@ -1221,7 +1222,6 @@ class Plan(NamedTuple):
     def document(self) -> dict[str, object]:
         """Render the dispatch record, which names the credential key and never its value."""
         lane = LANES[self.identity.lane]
-        planned_at = datetime.now(tz=UTC)
         return {
             "dispatch_id": self.identity.dispatch_id,
             "lane": self.identity.lane,
@@ -1239,8 +1239,8 @@ class Plan(NamedTuple):
             "readiness_advisories": list(self.advisories),
             "strata": self.strata.document(),
             "resource_attributes": dict(self.identity.attributes()),
-            "plan_charge": plan_charge(lane, planned_at),
-            "planned_at": planned_at.isoformat(),
+            "plan_charge": plan_charge(lane, self.planned_at),
+            "planned_at": self.planned_at.isoformat(),
         }
 
 
@@ -3117,6 +3117,7 @@ def plan_dispatch(
         credentials=credentials,
         permission_mode=args.permission_mode,
         route=route,
+        planned_at=now,
         breaker_dir=breaker_dir,
         advisories=readiness_advisories(args.issue, found),
         strata=capture_strata(
@@ -3154,6 +3155,7 @@ def load_record(record: Path) -> Plan:
         credentials=Path(str(document["credentials_file"])),
         permission_mode=str(document["permission_mode"]),
         route=read_route(document),
+        planned_at=datetime.fromisoformat(str(document["planned_at"])),
         breaker_dir=Path(str(document.get("breaker_dir", breaker.DEFAULT_BREAKER_DIR))),
         advisories=tuple(str(line) for line in document.get("readiness_advisories", ())),
         strata=read_strata(document),

@@ -1108,6 +1108,7 @@ def test_a_zai_record_carries_the_plan_charge_block_the_estimator_will_read(
     assert charge["meter"] == "prompts"
     assert (charge["peak"], charge["multiplier"]) == (False, 0.5)
     assert charge["schedule"] == "zai-off-peak"
+    assert document["planned_at"] == OFF_PEAK.isoformat()
     # The record cites the published terms rather than the module that copied them: a
     # file path stops answering "priced against what?" the moment the file moves.
     assert charge["window_source"] == "https://docs.z.ai/devpack/overview"
