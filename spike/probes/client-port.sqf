@@ -1,7 +1,7 @@
 // probe: client-port
 // issues: 21, 46, 116, 128
 // window: 420
-// env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
+// env: CTI_HEADED_CLIENT=1 CTI_PROBE_CLIENT=240
 //
 // #21 in-world probe: the leg between a real client and the Command Port's
 // gateway, including the failure modes one accepted Purchase cannot reach.

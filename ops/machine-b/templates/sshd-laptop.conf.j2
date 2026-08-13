@@ -1,0 +1,14 @@
+# Managed by just machine-b apply. Windows Firewall remains a separate manual gate.
+Port {{ cti_laptop_ssh_port }}
+AuthenticationMethods publickey
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin no
+MaxAuthTries 3
+X11Forwarding no
+AllowAgentForwarding no
+AllowTcpForwarding no
+AllowStreamLocalForwarding no
+PermitTunnel no
+GatewayPorts no
+AllowUsers {{ cti_laptop_peer_user }}

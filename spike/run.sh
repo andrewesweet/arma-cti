@@ -39,6 +39,10 @@ source "$REPO/spike/client-lock.sh"
 # that dies mid-copy used to leave it broken for the next play session (#153).
 # shellcheck source=spike/play-install.sh
 source "$REPO/spike/play-install.sh"
+# The headed client is a host capability. Its Linux implementation owns Steam,
+# Proton and Arma through one user-service cgroup.
+# shellcheck source=spike/headed-client.sh
+source "$REPO/spike/headed-client.sh"
 SERVER_DIR="${CTI_SERVER_DIR:-$HOME/arma3server}"
 SERVER_BIN="$SERVER_DIR/arma3server_x64"
 OUT="${CTI_SPIKE_OUT:-$REPO/.spike-out}"
@@ -84,7 +88,8 @@ WINDOWS_CONNECT="${CTI_WINDOWS_CONNECT:-127.0.0.1}"
 # A *headed* Windows client — the thing #8 still needs and the thing that cannot
 # yet get past role selection unattended. Windowed and -noPause so it keeps
 # simulating when it does not have focus.
-WINDOWS_CLIENT="${CTI_WINDOWS_CLIENT:-0}"
+HEADED_CLIENT="${CTI_HEADED_CLIENT:-${CTI_WINDOWS_CLIENT:-0}}"
+HEADED_CLIENT_DRIVER="${CTI_HEADED_CLIENT_DRIVER:-windows}"
 WINDOWS_CLIENT_PROFILE="${CTI_WINDOWS_CLIENT_PROFILE:-ctitest}"
 # How long teardown waits for a Windows process this run launched to leave the
 # host's process list before it releases the tier (#119). A deadline on a
@@ -164,6 +169,7 @@ server_pid=""
 hc_pid=""
 win_hc_pid=""
 win_client_pid=""
+proton_client_started=""
 # Set once this run has begun writing into the human's Arma install, which only
 # happens under the machine-wide client lock. Teardown reads it to decide whether
 # the swap window is this run's to close (#153); a run that never staged must not
@@ -242,6 +248,10 @@ reap_bounded() {
 
 cleanup() {
     local code=$?
+    if [[ -n "$proton_client_started" ]]; then
+        cti_proton_client_stop "$OUT/headed-client" ||
+            log "teardown: Proton client service did not become cleanly inactive; see $OUT/headed-client"
+    fi
     for pid in "$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
         [[ -n "$pid" ]] && kill "$pid" 2>/dev/null
     done
@@ -776,7 +786,7 @@ start_windows_hc() {
 
 start_windows_client() {
     win_client_pid=""
-    ((WINDOWS_CLIENT == 1)) || return 0
+    ((HEADED_CLIENT == 1)) || return 0
     WIN_GAME="$WINDOWS_ARMA_DIR/arma3_x64.exe"
     [[ -f "$WIN_GAME" ]] || fail "infra_unavailable" "Windows Arma 3 not found at $WIN_GAME"
     # The client needs the addon too: client-side SQF is the only lever we have
@@ -812,6 +822,34 @@ start_windows_client() {
     win_client_pid=$!
     record "windows_client_launched" "true"
     record "windows_client_connect" "$WINDOWS_CONNECT:$PORT"
+    record "headed_client_launched" "true"
+    record "headed_client_driver" "windows"
+}
+
+start_proton_client() {
+    proton_client_started=""
+    ((HEADED_CLIENT == 1)) || return 0
+    if ! cti_proton_client_start "$OUT/headed-client" "$WINDOWS_CONNECT" "$PORT" \
+        "$SERVER_PASSWORD" "$WINDOWS_CLIENT_PROFILE" "$SERVER_DIR/$MOD_NAME"; then
+        fail "infra_unavailable" \
+            "could not start the owned Proton client service; see $OUT/headed-client"
+    fi
+    proton_client_started=1
+    record "headed_client_launched" "true"
+    record "headed_client_driver" "proton"
+    record "headed_client_connect" "$WINDOWS_CONNECT:$PORT"
+}
+
+start_headed_client() {
+    case "$HEADED_CLIENT_DRIVER" in
+    windows) start_windows_client ;;
+    proton) start_proton_client ;;
+    none)
+        ((HEADED_CLIENT == 0)) || fail "infra_unavailable" \
+            "headed client requested but this host declares no client driver"
+        ;;
+    *) fail "infra_unavailable" "unknown headed-client driver: $HEADED_CLIENT_DRIVER" ;;
+    esac
 }
 
 # ---------------------------------------------------------------- preconditions
@@ -881,7 +919,7 @@ client_wait_left() {
     ((left > 0)) || left=0
     printf '%s\n' "$left"
 }
-if ((WINDOWS_CLIENT == 1)) && [[ "${CTI_CLIENT_LOCK_HELD:-0}" != 1 ]]; then
+if ((HEADED_CLIENT == 1)) && [[ "${CTI_CLIENT_LOCK_HELD:-0}" != 1 ]]; then
     if cti_client_lock_acquire "$(client_wait_left)" "run.sh ${CTI_HARNESS_EXTRA:-hold} on $HOST"; then
         record "windows_client_lock" "held"
     else
@@ -930,7 +968,9 @@ record "windows_host_free" "true"
 NETWORKING_MODE="$(wslinfo --networking-mode 2>/dev/null)" || NETWORKING_MODE="unknown"
 [[ -n "$NETWORKING_MODE" ]] || NETWORKING_MODE="unknown"
 NEEDS_WINDOWS_BOUNDARY=0
-if ((WINDOWS_HC == 1 || WINDOWS_CLIENT == 1 || (HOLD == 1 && NO_CLIENT_WAIT == 0))); then
+if ((WINDOWS_HC == 1)) ||
+    [[ "$HEADED_CLIENT" == "1" && "$HEADED_CLIENT_DRIVER" == "windows" ]] ||
+    ((HOLD == 1 && NO_CLIENT_WAIT == 0)); then
     NEEDS_WINDOWS_BOUNDARY=1
 fi
 address_inspection="readable"
@@ -1134,8 +1174,8 @@ fi
 # ---------------------------------------------------------------- windows client
 start_windows_hc
 
-# ---------------------------------------------------------------- windows headed client
-start_windows_client
+# ---------------------------------------------------------------- headed client
+start_headed_client
 
 # ---------------------------------------------------------------- human client
 if ((HOLD == 1)); then

@@ -1,0 +1,602 @@
+---
+- name: Commission the dedicated Ubuntu Arma host
+  hosts: all
+  gather_facts: true
+  become: true
+  force_handlers: true
+  vars:
+    cti_runtime_home: "/home/{{ cti_runtime_user }}"
+  handlers:
+    - name: Validate sshd
+      ansible.builtin.command: /usr/sbin/sshd -t
+      changed_when: false
+      listen: Rebind ssh endpoint
+
+    - name: Reload systemd after SSH socket changes
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+      listen: Rebind ssh endpoint
+
+    - name: Restart SSH socket
+      ansible.builtin.systemd_service:
+        name: ssh.socket
+        state: restarted
+      listen: Rebind ssh endpoint
+
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+      listen: Rebind ssh endpoint
+
+    - name: Update dconf
+      ansible.builtin.command: dconf update
+      changed_when: true
+
+    - name: Restart NetworkManager
+      ansible.builtin.service:
+        name: NetworkManager
+        state: restarted
+
+    - name: Restart GDM after an explicit autologin change
+      ansible.builtin.service:
+        name: gdm
+        state: restarted
+      listen: Activate GDM autologin
+
+    - name: Reload the cti user service manager
+      become: true
+      become_user: "{{ cti_runtime_user }}"
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+        scope: user
+      environment:
+        XDG_RUNTIME_DIR: "/run/user/{{ cti_runtime_uid.stdout }}"
+        DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ cti_runtime_uid.stdout }}/bus"
+      changed_when: true
+      listen: Reload cti client service
+
+  pre_tasks:
+    - name: Require the commissioned Ubuntu release
+      ansible.builtin.assert:
+        that:
+          - ansible_facts["distribution"] == "Ubuntu"
+          - ansible_facts["distribution_version"] is version('24.04', '>=')
+          - ansible_facts["distribution_version"] is version('24.05', '<')
+        fail_msg: Machine B must remain on Ubuntu 24.04 LTS.
+
+    - name: Require the expected architecture
+      ansible.builtin.assert:
+        that: ansible_facts["architecture"] == "x86_64"
+        fail_msg: The Arma and Proton package set is pinned for x86_64.
+
+  tasks:
+    - name: Set the stable system hostname
+      ansible.builtin.hostname:
+        name: "{{ cti_system_hostname }}"
+
+    - name: Read enabled foreign architectures
+      ansible.builtin.command: dpkg --print-foreign-architectures
+      register: cti_foreign_architectures
+      changed_when: false
+
+    - name: Enable i386 packages for Steam and Proton
+      ansible.builtin.command: dpkg --add-architecture i386
+      register: cti_i386_architecture
+      when: "'i386' not in cti_foreign_architectures.stdout_lines"
+      changed_when: true
+
+    - name: Refresh package lists after enabling i386
+      ansible.builtin.apt:
+        update_cache: true
+      when:
+        - not ansible_check_mode
+        - cti_i386_architecture.changed
+
+    - name: Read SteamCMD package availability
+      ansible.builtin.command: apt-cache policy steamcmd
+      register: cti_steamcmd_policy
+      changed_when: false
+      check_mode: false
+      when: not ansible_check_mode or 'i386' in cti_foreign_architectures.stdout_lines
+
+    - name: Enable Ubuntu multiverse for SteamCMD
+      ansible.builtin.command: add-apt-repository -y multiverse
+      register: cti_multiverse_repository
+      when:
+        - not ansible_check_mode or 'i386' in cti_foreign_architectures.stdout_lines
+        - "'Candidate: (none)' in cti_steamcmd_policy.stdout"
+      changed_when: true
+
+    - name: Refresh package lists after enabling multiverse
+      ansible.builtin.apt:
+        update_cache: true
+      when:
+        - not ansible_check_mode
+        - cti_multiverse_repository.changed
+
+    - name: Re-read SteamCMD package availability after repository bootstrap
+      ansible.builtin.command: apt-cache policy steamcmd
+      register: cti_steamcmd_ready_policy
+      changed_when: false
+      check_mode: false
+      when: not ansible_check_mode
+
+    - name: Require a SteamCMD package candidate after repository bootstrap
+      ansible.builtin.assert:
+        that: "'Candidate: (none)' not in cti_steamcmd_ready_policy.stdout"
+        fail_msg: Ubuntu multiverse did not expose SteamCMD after enabling i386.
+      when: not ansible_check_mode
+
+    - name: Install the native runtime and diagnostic package set
+      ansible.builtin.apt:
+        name:
+          - curl
+          - dconf-cli
+          - ethtool
+          - git
+          - gnome-settings-daemon
+          - iproute2
+          - jq
+          - libvulkan1
+          - lsof
+          - netcat-openbsd
+          - openssh-server
+          - procps
+          - python3
+          - rsync
+          - socat
+          - ufw
+          - ubuntu-session
+          - util-linux
+          - vulkan-tools
+          - wakeonlan
+          - xserver-xorg
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install the Steam and i386 runtime package set
+      ansible.builtin.apt:
+        name:
+          - lib32gcc-s1
+          - lib32stdc++6
+          - libgl1:i386
+          - libnvidia-gl-595:i386
+          - libvulkan1:i386
+        state: present
+      when: not ansible_check_mode or 'i386' in cti_foreign_architectures.stdout_lines
+
+    - name: Read the human-accepted Steam package state
+      ansible.builtin.command:
+        argv:
+          - dpkg-query
+          - -W
+          - "-f=${binary:Package}=${db:Status-Abbrev}\\n"
+          - steamcmd
+          - steam-installer
+      register: cti_steam_package_state
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: Require the human-accepted Steam packages
+      ansible.builtin.assert:
+        that:
+          - cti_steam_package_state.rc == 0
+          - "'steamcmd:i386=ii ' in cti_steam_package_state.stdout"
+          - "'steam-installer=ii ' in cti_steam_package_state.stdout"
+        fail_msg: >-
+          Steam packages require a human EULA decision. At B's local console run
+          `sudo apt-get install steamcmd steam-installer`, accept the agreement,
+          then rerun apply.
+
+    - name: Install the pinned controller uv binary
+      ansible.builtin.copy:
+        src: "{{ cti_uv_binary }}"
+        dest: /usr/local/bin/uv
+        owner: root
+        group: root
+        mode: "0755"
+      when: cti_uv_binary | length > 0
+
+    - name: Create the non-admin tier identity
+      ansible.builtin.user:
+        name: "{{ cti_runtime_user }}"
+        comment: Arma CTI tier runtime
+        create_home: true
+        shell: /bin/bash
+        groups:
+          - audio
+          - render
+          - video
+        append: true
+        password_lock: true
+
+    - name: Retain the bounded laptop key for administrative commissioning
+      ansible.builtin.blockinfile:
+        path: "/home/{{ cti_admin_user }}/.ssh/authorized_keys"
+        marker: "# {mark} arma-cti machine-b bootstrap"
+        block: >-
+          from="{{ cti_laptop_lan }},{{ cti_laptop_tail }}",restrict
+          {{ cti_laptop_to_bravo_public_key }}
+        owner: "{{ cti_admin_user }}"
+        group: "{{ cti_admin_user }}"
+        mode: "0600"
+        create: true
+
+    - name: Confirm the tier identity has no sudo membership
+      ansible.builtin.command: "id -nG {{ cti_runtime_user }}"
+      register: cti_runtime_groups
+      changed_when: false
+      when: not ansible_check_mode
+
+    - name: Read the tier identity numeric uid for its user manager
+      ansible.builtin.command: "id -u {{ cti_runtime_user }}"
+      register: cti_runtime_uid
+      changed_when: false
+      when: not ansible_check_mode
+
+    - name: Refuse administrative membership for the tier identity
+      ansible.builtin.assert:
+        that:
+          - "'sudo' not in cti_runtime_groups.stdout.split()"
+          - "'adm' not in cti_runtime_groups.stdout.split()"
+        fail_msg: The cti identity must remain non-admin.
+      when: not ansible_check_mode
+
+    - name: Create runtime directories
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: "{{ cti_runtime_user }}"
+        group: "{{ cti_runtime_user }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - {path: "{{ cti_runtime_home }}/.arma-cti/slots", mode: "0700"}
+        - {path: "{{ cti_runtime_home }}/.arma-cti/runs", mode: "0700"}
+        - {path: "{{ cti_runtime_home }}/.arma-cti/staging", mode: "0700"}
+        - {path: "{{ cti_runtime_home }}/.config/autostart", mode: "0700"}
+        - {path: "{{ cti_runtime_home }}/.config/systemd/user", mode: "0700"}
+        - {path: "{{ cti_runtime_home }}/.local/libexec", mode: "0700"}
+        - {path: "{{ cti_runtime_home }}/.ssh", mode: "0700"}
+        - {path: "{{ cti_server_install }}", mode: "0700"}
+      when: not ansible_check_mode
+
+    - name: Authorize the independent laptop automation key
+      ansible.builtin.copy:
+        content: >-
+          from="{{ cti_laptop_lan }},{{ cti_laptop_tail }}",restrict
+          {{ cti_laptop_to_bravo_public_key }}
+        dest: "{{ cti_runtime_home }}/.ssh/authorized_keys"
+        owner: "{{ cti_runtime_user }}"
+        group: "{{ cti_runtime_user }}"
+        mode: "0600"
+      when: not ansible_check_mode
+
+    - name: Trust only the console-verified laptop host key
+      ansible.builtin.copy:
+        content: |
+          {{ cti_laptop_known_host_lan }} {{ cti_laptop_host_public_key }}
+          {{ cti_laptop_known_host_tail }} {{ cti_laptop_host_public_key }}
+        dest: "{{ cti_runtime_home }}/.ssh/known_hosts"
+        owner: "{{ cti_runtime_user }}"
+        group: "{{ cti_runtime_user }}"
+        mode: "0600"
+      when: not ansible_check_mode
+
+    - name: Generate bravo's independent reverse automation key
+      ansible.builtin.command:
+        argv:
+          - ssh-keygen
+          - -q
+          - -t
+          - ed25519
+          - -N
+          - ""
+          - -C
+          - arma-cti bravo to laptop
+          - -f
+          - "{{ cti_runtime_home }}/.ssh/id_ed25519_laptop"
+        creates: "{{ cti_runtime_home }}/.ssh/id_ed25519_laptop"
+      become_user: "{{ cti_runtime_user }}"
+      become: true
+      when: not ansible_check_mode
+
+    - name: Fetch bravo's reverse public key through the commissioning session
+      ansible.builtin.fetch:
+        src: "{{ cti_runtime_home }}/.ssh/id_ed25519_laptop.pub"
+        dest: "{{ cti_reverse_public_key_fetch }}"
+        flat: true
+      when: not ansible_check_mode
+
+    - name: Install bounded reverse SSH aliases
+      ansible.builtin.template:
+        src: ssh-config-bravo.j2
+        dest: "{{ cti_runtime_home }}/.ssh/config"
+        owner: "{{ cti_runtime_user }}"
+        group: "{{ cti_runtime_user }}"
+        mode: "0600"
+      when: not ansible_check_mode
+
+    - name: Install the hardened SSH server policy
+      ansible.builtin.template:
+        src: sshd-machine-b.conf.j2
+        dest: /etc/ssh/sshd_config.d/60-arma-cti.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Rebind ssh endpoint
+
+    - name: Permit the runtime identity to read only security status
+      ansible.builtin.copy:
+        content: >-
+          {{ cti_runtime_user }} ALL=(root) NOPASSWD:
+          /usr/sbin/ufw status verbose,
+          /usr/sbin/sshd -T,
+          /usr/sbin/ethtool {{ cti_wired_interface }}
+        dest: /etc/sudoers.d/60-arma-cti-ufw-audit
+        owner: root
+        group: root
+        mode: "0440"
+        validate: /usr/sbin/visudo -cf %s
+
+    - name: Read NetworkManager wake mode
+      ansible.builtin.command:
+        argv:
+          - nmcli
+          - -g
+          - 802-3-ethernet.wake-on-lan
+          - connection
+          - show
+          - "{{ cti_network_connection }}"
+      register: cti_nm_wol
+      changed_when: false
+
+    - name: Enable persistent magic-packet wake
+      ansible.builtin.command:
+        argv:
+          - nmcli
+          - connection
+          - modify
+          - "{{ cti_network_connection }}"
+          - 802-3-ethernet.wake-on-lan
+          - magic
+      when: cti_nm_wol.stdout.strip() != "magic"
+      changed_when: true
+      notify: Restart NetworkManager
+
+    - name: Mask automatic sleep and hibernation targets
+      ansible.builtin.systemd_service:
+        name: "{{ item }}"
+        masked: true
+      loop:
+        - sleep.target
+        - suspend.target
+        - hibernate.target
+        - hybrid-sleep.target
+
+    - name: Read the logind drop-in directory state
+      ansible.builtin.stat:
+        path: /etc/systemd/logind.conf.d
+      register: cti_logind_dropin_directory
+
+    - name: Create the logind drop-in directory
+      ansible.builtin.file:
+        path: /etc/systemd/logind.conf.d
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Install the no-idle-action logind policy
+      ansible.builtin.copy:
+        content: |
+          [Login]
+          IdleAction=ignore
+          HandleLidSwitch=ignore
+          HandleLidSwitchExternalPower=ignore
+        dest: /etc/systemd/logind.conf.d/60-arma-cti.conf
+        owner: root
+        group: root
+        mode: "0644"
+      when: >-
+        not ansible_check_mode or
+        (cti_logind_dropin_directory.stat.isdir | default(false))
+
+    - name: Configure an unambiguous X11 autologin identity
+      ansible.builtin.replace:
+        path: /etc/gdm3/custom.conf
+        regexp: '(?ms)^\[daemon\]\n.*?(?=^\[security\])'
+        replace: |
+          [daemon]
+          WaylandEnable=false
+          AutomaticLoginEnable=true
+          AutomaticLogin={{ cti_runtime_user }}
+
+        mode: "0644"
+      notify: Activate GDM autologin
+
+    - name: Read the dconf local database directory state
+      ansible.builtin.stat:
+        path: /etc/dconf/db/local.d
+      register: cti_dconf_local_directory
+
+    - name: Read the dconf profile directory state
+      ansible.builtin.stat:
+        path: /etc/dconf/profile
+      register: cti_dconf_profile_directory
+
+    - name: Create the dconf policy directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - /etc/dconf/db/local.d
+        - /etc/dconf/profile
+
+    - name: Select the managed local dconf database
+      ansible.builtin.copy:
+        content: |
+          user-db:user
+          system-db:local
+        dest: /etc/dconf/profile/user
+        owner: root
+        group: root
+        mode: "0644"
+      when: >-
+        not ansible_check_mode or
+        (cti_dconf_profile_directory.stat.isdir | default(false))
+      notify: Update dconf
+
+    - name: Install GNOME power and locking defaults
+      ansible.builtin.template:
+        src: dconf-power.j2
+        dest: /etc/dconf/db/local.d/60-arma-cti-power
+        owner: root
+        group: root
+        mode: "0644"
+      when: >-
+        not ansible_check_mode or
+        (cti_dconf_local_directory.stat.isdir | default(false))
+      notify: Update dconf
+
+    - name: Check whether the dedicated firewall baseline was established
+      ansible.builtin.stat:
+        path: /var/lib/arma-cti/ufw-baseline-v1
+      register: cti_ufw_baseline
+
+    - name: Clear inherited firewall rules once on the dedicated host
+      ansible.builtin.command: ufw --force reset
+      when: not cti_ufw_baseline.stat.exists
+      changed_when: true
+
+    - name: Permit SSH only from the laptop control addresses
+      ansible.builtin.command: >-
+        ufw allow proto tcp from {{ item }} to any port 22
+        comment 'arma-cti laptop control'
+      register: cti_ufw_ssh
+      changed_when: "'Skipping adding existing rule' not in cti_ufw_ssh.stdout"
+      loop:
+        - "{{ cti_laptop_lan }}"
+        - "{{ cti_laptop_tail }}"
+
+    - name: Permit LAN-only tier UDP blocks
+      ansible.builtin.command: >-
+        ufw allow proto udp from {{ cti_laptop_lan }} to any
+        port {{ item }}:{{ item + 4 }} comment 'arma-cti tier slot'
+      register: cti_ufw_tier
+      changed_when: "'Skipping adding existing rule' not in cti_ufw_tier.stdout"
+      loop: "{{ cti_slot_ports }}"
+
+    - name: Read UFW policy
+      ansible.builtin.command: ufw status verbose
+      register: cti_ufw_status
+      changed_when: false
+
+    - name: Set default incoming deny
+      ansible.builtin.command: ufw default deny incoming
+      when: "'Default: deny (incoming)' not in cti_ufw_status.stdout"
+      changed_when: true
+
+    - name: Set default outgoing allow
+      ansible.builtin.command: ufw default allow outgoing
+      when: "'allow (outgoing)' not in cti_ufw_status.stdout"
+      changed_when: true
+
+    - name: Enable UFW
+      ansible.builtin.command: ufw --force enable
+      when: "'Status: active' not in cti_ufw_status.stdout"
+      changed_when: true
+
+    - name: Create the firewall baseline record directory
+      ansible.builtin.file:
+        path: /var/lib/arma-cti
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Record that inherited firewall rules were cleared
+      ansible.builtin.copy:
+        content: "dedicated Machine B UFW baseline v1\n"
+        dest: /var/lib/arma-cti/ufw-baseline-v1
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Remove the superseded Tailscale-only SSH policy
+      ansible.builtin.file:
+        path: /etc/ssh/sshd_config.d/00-tailscale-only.conf
+        state: absent
+      notify: Rebind ssh endpoint
+
+    - name: Remove the superseded Tailscale-only SSH socket policy
+      ansible.builtin.file:
+        path: /etc/systemd/system/ssh.socket.d/tailscale-only.conf
+        state: absent
+      notify: Rebind ssh endpoint
+
+    - name: Install the interactive native-server installer
+      ansible.builtin.copy:
+        src: install-arma-server
+        dest: "{{ cti_runtime_home }}/.local/libexec/install-arma-server"
+        owner: "{{ cti_runtime_user }}"
+        group: "{{ cti_runtime_user }}"
+        mode: "0755"
+      when: not ansible_check_mode
+
+    - name: Install the owned Proton client supervisor
+      ansible.builtin.copy:
+        src: cti_arma_client.py
+        dest: "{{ cti_runtime_home }}/.local/libexec/cti-arma-client"
+        owner: "{{ cti_runtime_user }}"
+        group: "{{ cti_runtime_user }}"
+        mode: "0755"
+      when: not ansible_check_mode
+
+    - name: Install the headed-client user service
+      ansible.builtin.template:
+        src: cti-arma-client.service.j2
+        dest: "{{ cti_runtime_home }}/.config/systemd/user/cti-arma-client.service"
+        owner: "{{ cti_runtime_user }}"
+        group: "{{ cti_runtime_user }}"
+        mode: "0644"
+      when: not ansible_check_mode
+      notify: Reload cti client service
+
+    - name: Import the graphical session into the user manager at login
+      ansible.builtin.copy:
+        src: cti-session-environment.desktop
+        dest: "{{ cti_runtime_home }}/.config/autostart/cti-session-environment.desktop"
+        owner: "{{ cti_runtime_user }}"
+        group: "{{ cti_runtime_user }}"
+        mode: "0644"
+      when: not ansible_check_mode
+
+    - name: Keep the user manager available between SSH sessions
+      ansible.builtin.command: "loginctl enable-linger {{ cti_runtime_user }}"
+      args:
+        creates: "/var/lib/systemd/linger/{{ cti_runtime_user }}"
+      when: not ansible_check_mode
+
+    - name: Validate the final SSH policy before handlers run
+      ansible.builtin.command: /usr/sbin/sshd -t
+      changed_when: false
+
+    - name: Read NIC wake capabilities after configuration
+      ansible.builtin.command: "ethtool {{ cti_wired_interface }}"
+      register: cti_ethtool
+      changed_when: false
+      when: not ansible_check_mode
+
+    - name: Require magic-packet support and active mode
+      ansible.builtin.assert:
+        that:
+          - cti_ethtool.stdout is regex('Supports Wake-on:.*g')
+          - cti_ethtool.stdout is regex('Wake-on:\\s*g')
+        fail_msg: Record unsupported NIC WOL honestly; do not weaken the acceptance check.
+      when: not ansible_check_mode

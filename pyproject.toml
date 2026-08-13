@@ -14,6 +14,10 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
+  # Machine B provisioning is a repository-owned interface. Pin both halves so
+  # an unattended commissioning run does not change underneath the runbook.
+  "ansible-core==2.21.2",
+  "ansible-lint==26.6.0",
   "pytest>=9.1",
   "hypothesis>=6.163",
   # `just mutation` runs the tests under coverage with `dynamic_context =
@@ -58,8 +62,15 @@ ignore = [
 ]
 # Standalone build tools, run as scripts rather than imported.
 "tools/*.py" = ["INP001"]
+# This file is a command coordinator: it prints its machine contract and keeps
+# validation ladders together so their typed failures cannot drift by helper.
+"tools/machine_b.py" = ["C901", "FBT001", "PLR0911", "PLR0912", "PLR0915", "T201"]
+# The installed client supervisor keeps its launch/observe/teardown ladder in
+# one function so every exit reaches the same owned-cgroup cleanup.
+"ops/machine-b/files/cti_arma_client.py" = ["C901", "PLR0912", "PLR0915"]
 # Claude Code hooks: single-purpose scripts on a stdin/stderr/exit-code contract.
 ".claude/hooks/*.py" = [
+  "EXE001",   # commit-msg invokes its guard through python3; Git mode is intentionally non-executable
   "T201",     # stdout/stderr text IS the hook's output channel
   "S603",     # the formatter argv is built from a fixed allow-list
   "S607",     # formatters are resolved off PATH on purpose

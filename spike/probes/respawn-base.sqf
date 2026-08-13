@@ -1,7 +1,7 @@
 // probe: respawn-base
 // issues: 189
 // window: 480
-// env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
+// env: CTI_HEADED_CLIENT=1 CTI_PROBE_CLIENT=240
 //
 // #189 in-world probe: ADR-0052's rulings 1 and 6. A real person leading a Squad
 // is killed in the field, and comes back at his own side's Base after the

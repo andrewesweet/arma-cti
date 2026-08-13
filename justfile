@@ -16,7 +16,15 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-seats check-sqf check-secrets check-python check-rust
+check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-seats check-sqf check-secrets check-python check-machine-b check-rust
+
+# Static validation for the repository-managed Machine B playbooks. The live
+# inventory is deliberately absent here: syntax and lint must be available to
+# every checkout, while host facts stay in ~/.arma-cti/machine-b.toml.
+check-machine-b:
+    uv run ansible-playbook --syntax-check -i localhost, ops/machine-b/apply.yml
+    uv run ansible-playbook --syntax-check -i localhost, ops/machine-b/laptop.yml
+    uv run ansible-lint --strict ops/machine-b/apply.yml ops/machine-b/laptop.yml
 
 # Export what SQF cannot read from an authored file. The map manifests are not
 # here: the addon ships and parses the authored JSON itself (ADR-0017), so
@@ -101,6 +109,16 @@ check-python:
     uv run ruff check .
     uv run ruff format --check .
     uv run ty check
+
+# Commission and operate the dedicated Ubuntu tier host (#52-#54). `bootstrap`
+# exchanges only public SSH material through 1Password; `audit` is read-only;
+# `apply` prompts for sudo and never accepts a password argument; `verify` emits
+# typed discrepancies; `steam-library-script` generates but never executes the
+# root storage handoff; `wake` polls the bounded control paths. Host facts and
+# the verified trust cache live outside Git.
+[positional-arguments]
+machine-b action="audit" *args:
+    uv run python tools/machine_b.py "$@"
 
 # Rust format check and clippy.
 check-rust:
@@ -219,9 +237,9 @@ probe file="" hold="150": build-shim build-addon
 # `just probe` and `just spike` take slot 0, which is what
 # makes a hand run and a pool run exclude each other where they would collide.
 #
-# The probes that drive the headed Windows client run last and serially, with
-# the rest of the pool drained: there is one Windows host, and the guard that
-# protects the human's play session cannot tell our client from theirs (#119).
+# Probes that drive a headed client run last and serially with the pool drained.
+# The selected host supplies either the local Windows driver or bravo's owned
+# Proton cgroup; the guard applies only where the registry says a human plays.
 #
 # Evidence, including the probe as staged, lands in ~/.arma-cti/runs/ per probe,
 # with the pool's own schedule, RAM trace and merged verdict set beside it in

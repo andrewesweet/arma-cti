@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import os
+import shlex
 import shutil
 import subprocess
 from typing import TYPE_CHECKING
@@ -75,21 +76,156 @@ def test_an_unknown_host_is_refused_by_the_handle() -> None:
     assert "no host named 'bravo'" in result.stderr
 
 
-def test_no_transport_is_built_and_the_seam_says_so_rather_than_running_here() -> None:
-    """The one failure the seam exists to make impossible.
-
-    A `cti_host_exec` that fell back to this machine for a host it cannot reach
-    would run machine B's work here and report it as machine B's. So the
-    fallback is a refusal, asserted against a host injected past the registry.
-    """
+def test_an_unknown_transport_refuses_instead_of_running_here() -> None:
+    """A bad registry state cannot silently fall through to local execution."""
     marker = "ran-here"
     result = hosts_sh(
-        "CTI_HOST_ROLE[bravo]=tier; CTI_HOST_TRANSPORT[bravo]=ssh\n"
+        "CTI_HOST_ROLE[bravo]=tier; CTI_HOST_TRANSPORT[bravo]=unknown\n"
         f'cti_host_exec bravo echo "{marker}"'
     )
     assert result.returncode == EXIT_INFRA_UNAVAILABLE
     assert marker not in result.stdout
     assert "no transport to 'bravo'" in result.stderr
+
+
+def registry(tmp_path: Path) -> Path:
+    path = tmp_path / "hosts.toml"
+    path.write_text(
+        """version = 1
+[hosts.local]
+ssh_target = ""
+server_slots = 6
+headed_client = true
+human = true
+client_driver = "windows"
+remote_root = ""
+[hosts.bravo]
+ssh_target = "bravo-lan"
+server_slots = 3
+headed_client = true
+human = false
+client_driver = "proton"
+remote_root = "/home/cti/.arma-cti/staging"
+""",
+        encoding="utf-8",
+    )
+    return path
+
+
+def test_registry_adds_bravo_with_one_primary_transport(tmp_path: Path) -> None:
+    result = hosts_sh(
+        "cti_host_resolve; cti_host_transport bravo; cti_host_slots bravo; "
+        "cti_host_client_driver bravo; cti_host_remote_root bravo",
+        env={"CTI_HOSTS_FILE": str(registry(tmp_path)), "CTI_TIER_HOST": "bravo"},
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.splitlines() == [
+        "bravo",
+        "ssh",
+        "3",
+        "proton",
+        "/home/cti/.arma-cti/staging",
+    ]
+
+
+def test_ssh_transport_is_batch_bounded_and_uses_only_the_declared_alias(tmp_path: Path) -> None:
+    calls = tmp_path / "ssh-calls"
+    ssh = executable(
+        tmp_path / "ssh",
+        """#!/usr/bin/env bash
+printf '%s\\n' "$@" >"$CTI_TEST_SSH_CALLS"
+""",
+    )
+    result = hosts_sh(
+        "cti_host_exec bravo true",
+        env={
+            "CTI_HOSTS_FILE": str(registry(tmp_path)),
+            "CTI_TEST_SSH_CALLS": str(calls),
+            "PATH": f"{ssh.parent}:{os.environ['PATH']}",
+        },
+    )
+    assert result.returncode == 0, result.stderr
+    argv = calls.read_text(encoding="utf-8").splitlines()
+    assert "-oBatchMode=yes" in argv
+    assert "-oStrictHostKeyChecking=yes" in argv
+    assert "-oConnectTimeout=8" in argv
+    assert "-oClearAllForwardings=yes" in argv
+    assert argv[-3:] == ["--", "true"] or argv[-2:] == ["--", "true"]
+
+
+def test_ssh_transport_preserves_build_id_sed_argv_across_remote_shell(tmp_path: Path) -> None:
+    """OpenSSH joins remote argv; the seam must quote it before that boundary."""
+    manifest = tmp_path / "appmanifest_233780.acf"
+    manifest.write_text('    "buildid"        "24610432"\n', encoding="utf-8")
+    bin_dir = tmp_path / "bin"
+    executable(
+        bin_dir / "ssh",
+        """#!/usr/bin/env bash
+while (($#)); do
+    case "$1" in
+    -T|-o*) shift ;;
+    bravo-lan) shift; break ;;
+    *) printf 'unexpected ssh argument: %s\\n' "$1" >&2; exit 64 ;;
+    esac
+done
+[[ "${1:-}" == -- ]] && shift
+remote_command="$*"
+exec /bin/bash -c "$remote_command"
+""",
+    )
+    sed_program = r's/^[[:space:]]*"buildid"[[:space:]]*"\([0-9]*\)".*/\1/p'
+    result = hosts_sh(
+        f"cti_host_exec bravo sed -n {shlex.quote(sed_program)} {shlex.quote(str(manifest))}",
+        env={
+            "CTI_HOSTS_FILE": str(registry(tmp_path)),
+            "PATH": f"{bin_dir}:{os.environ['PATH']}",
+        },
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "24610432"
+
+
+def test_an_invalid_registry_refuses_every_host(tmp_path: Path) -> None:
+    path = registry(tmp_path)
+    path.write_text(
+        path.read_text(encoding="utf-8").replace("server_slots = 3", "server_slots = 30")
+    )
+    result = hosts_sh("cti_host_resolve", env={"CTI_HOSTS_FILE": str(path)})
+    assert result.returncode == EXIT_INFRA_UNAVAILABLE
+    assert "registry could not be read" in result.stderr
+
+
+def test_remote_whole_pass_preserves_the_callers_selection(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    manifest = home / "arma3server" / "steamapps" / "appmanifest_233780.acf"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text('"buildid" "123"\n', encoding="utf-8")
+    calls = tmp_path / "ssh-calls"
+    bin_dir = tmp_path / "bin"
+    executable(
+        bin_dir / "ssh",
+        """#!/usr/bin/env bash
+printf 'CALL' >>"$CTI_TEST_SSH_CALLS"
+printf '\t%s' "$@" >>"$CTI_TEST_SSH_CALLS"
+printf '\n' >>"$CTI_TEST_SSH_CALLS"
+if [[ "$*" == *appmanifest_233780.acf* ]]; then printf '123\n'; fi
+""",
+    )
+    executable(bin_dir / "rsync", "#!/usr/bin/env bash\nexit 0\n")
+    result = hosts_sh(
+        f'cti_host_remote_regress bravo "{REPO}" --host bravo --slots 2 client-port',
+        env={
+            "CTI_HOSTS_FILE": str(registry(tmp_path)),
+            "CTI_TEST_SSH_CALLS": str(calls),
+            "HOME": str(home),
+            "PATH": f"{bin_dir}:{os.environ['PATH']}",
+        },
+    )
+    assert result.returncode == 0, result.stderr
+    main_call = next(
+        line for line in calls.read_text(encoding="utf-8").splitlines() if "regress.sh" in line
+    )
+    assert "\t--host\tbravo\t--slots\t2\tclient-port" in main_call
 
 
 # -------------------------------------------------------------------- the guard

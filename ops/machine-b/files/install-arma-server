@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+install_dir="${CTI_SERVER_INSTALL:-$HOME/arma3server}"
+steamcmd_path="${CTI_STEAMCMD:-/usr/games/steamcmd}"
+[[ -x "$steamcmd_path" ]] || {
+    printf 'SteamCMD is not executable at %s.\n' "$steamcmd_path" >&2
+    exit 69
+}
+read -r -p "SteamCMD no-purchase account name: " steam_account
+[[ -n "$steam_account" ]] || {
+    printf 'An account name is required.\n' >&2
+    exit 64
+}
+printf 'SteamCMD will prompt for the password and Steam Guard code itself.\n' >&2
+exec "$steamcmd_path" \
+    +force_install_dir "$install_dir" \
+    +login "$steam_account" \
+    +app_update 233780 validate \
+    +quit

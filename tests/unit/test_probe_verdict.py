@@ -297,7 +297,7 @@ def run_main(
     results = tmp_path / "results.env"
     if not results.exists():
         results.write_text(
-            "verdict=PASS\nserver_version=2.20.152984\nlegs=client:ran\n",
+            "verdict=PASS\nserver_version=2.22.153995\nlegs=client:ran\n",
             encoding="utf-8",
         )
     verdict_json = tmp_path / "verdict.json"
@@ -343,7 +343,7 @@ def test_main_writes_the_document_the_merge_reads(
     assert document["elapsed_secs"] == 97
     assert document["slot"] == 1
     assert document["git_dirty"] is False
-    assert document["arma_version"] == "2.20.152984"
+    assert document["arma_version"] == "2.22.153995"
     assert lines["class"] == "pass"
     assert lines["verdict"] == "PASS"
     assert lines["legs"] == "client:ran"
@@ -367,7 +367,7 @@ def test_main_rejects_an_engine_version_other_than_the_pin(
     assert document["class"] == "engine_drift"
     assert document["raw_class"] == "engine_drift"
     assert document["detail"] == (
-        "Arma server version drift: expected 2.20.152984, observed 2.22.999999; "
+        "Arma server version drift: expected 2.22.153995, observed 2.22.999999; "
         "update tools/arma_server_version.txt only after accepting the engine update"
     )
     assert lines["class"] == "engine_drift"
@@ -390,7 +390,7 @@ def test_engine_drift_outranks_the_probe_result_and_its_treatments(
 
     assert document["class"] == "engine_drift"
     assert document["detail"].startswith(
-        "Arma server version drift: expected 2.20.152984, observed 2.22.999999"
+        "Arma server version drift: expected 2.22.153995, observed 2.22.999999"
     )
 
 
@@ -406,7 +406,7 @@ def test_main_fails_closed_when_the_engine_version_was_not_recorded(
     assert document["class"] == "infra_unavailable"
     assert document["raw_class"] == "infra_unavailable"
     assert document["detail"] == (
-        "Arma server version was not recorded; expected 2.20.152984, observed <missing>; "
+        "Arma server version was not recorded; expected 2.22.153995, observed <missing>; "
         "the engine identity could not be checked"
     )
     assert lines["class"] == "infra_unavailable"
@@ -422,7 +422,7 @@ def test_main_fails_closed_when_the_engine_version_is_unreadable(
 
     assert document["class"] == "infra_unavailable"
     assert document["detail"] == (
-        "Arma server version is unreadable; expected 2.20.152984, "
+        "Arma server version is unreadable; expected 2.22.153995, "
         "observed not-a-version; the engine identity could not be checked"
     )
     assert lines["class"] == "infra_unavailable"
@@ -434,7 +434,7 @@ def test_main_survives_a_detail_full_of_json_poison(
     """The escaping `json_string` existed for, without the hand-rolled escaping."""
     results = tmp_path / "results.env"
     results.write_text(
-        "server_version=2.20.152984\n"
+        "server_version=2.22.153995\n"
         'verdict=FAIL\nfailure_class=timeout\nfailure_detail=saw "x\\y"\tand stalled\n',
         encoding="utf-8",
     )

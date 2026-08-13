@@ -1,0 +1,27 @@
+Host {{ cti_laptop_alias_lan }}
+    HostName {{ cti_laptop_lan }}
+    Port {{ cti_laptop_ssh_port }}
+    User {{ cti_laptop_peer_user }}
+    IdentityFile ~/.ssh/id_ed25519_laptop
+    IdentitiesOnly yes
+    BatchMode yes
+    StrictHostKeyChecking yes
+    ConnectTimeout 8
+    ServerAliveInterval 5
+    ServerAliveCountMax 2
+    RequestTTY no
+    ClearAllForwardings yes
+
+Host {{ cti_laptop_alias_tail }}
+    HostName {{ cti_laptop_tail }}
+    Port {{ cti_laptop_tail_port }}
+    User {{ cti_laptop_peer_user }}
+    IdentityFile ~/.ssh/id_ed25519_laptop
+    IdentitiesOnly yes
+    BatchMode yes
+    StrictHostKeyChecking yes
+    ConnectTimeout 8
+    ServerAliveInterval 5
+    ServerAliveCountMax 2
+    RequestTTY no
+    ClearAllForwardings yes

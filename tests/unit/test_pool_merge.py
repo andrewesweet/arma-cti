@@ -287,7 +287,7 @@ def test_the_merge_reads_what_the_typer_writes(tmp_path: Path) -> None:
     """The two tools share `verdict.json`; a drift between them is pinned here."""
     results = tmp_path / "results.env"
     results.write_text(
-        "server_version=2.20.152984\nverdict=FAIL\nfailure_class=oracle_disagreement\n",
+        "server_version=2.22.153995\nverdict=FAIL\nfailure_class=oracle_disagreement\n",
         encoding="utf-8",
     )
     out = claim(tmp_path, "contacts")

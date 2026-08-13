@@ -1,0 +1,182 @@
+---
+- name: Configure laptop WSL as bravo's bounded reverse endpoint
+  hosts: all
+  gather_facts: true
+  become: true
+  force_handlers: true
+  handlers:
+    - name: Validate laptop sshd
+      ansible.builtin.command: /usr/sbin/sshd -t
+      changed_when: false
+      listen: Restart laptop sshd
+
+    - name: Restart laptop sshd
+      ansible.builtin.service:
+        name: ssh
+        state: restarted
+      listen: Restart laptop sshd
+
+  tasks:
+    - name: Require WSL before changing the reverse endpoint
+      ansible.builtin.assert:
+        that: "'microsoft' in ansible_facts['kernel'] | lower"
+        fail_msg: laptop.yml may run only inside the initiating laptop's WSL instance.
+
+    - name: Install reverse-endpoint packages
+      ansible.builtin.apt:
+        name:
+          - openssh-server
+          - ufw
+          - wakeonlan
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Create the non-admin reverse identity
+      ansible.builtin.user:
+        name: "{{ cti_laptop_peer_user }}"
+        comment: Arma CTI reverse automation peer
+        create_home: true
+        shell: /bin/bash
+        password_lock: true
+
+    - name: Create its SSH directory
+      ansible.builtin.file:
+        path: "/home/{{ cti_laptop_peer_user }}/.ssh"
+        state: directory
+        owner: "{{ cti_laptop_peer_user }}"
+        group: "{{ cti_laptop_peer_user }}"
+        mode: "0700"
+
+    - name: Authorize only bravo's independent reverse key
+      ansible.builtin.copy:
+        content: >-
+          from="{{ cti_host_lan }},{{ cti_host_tail }}",restrict
+          {{ cti_bravo_to_laptop_public_key }}
+        dest: "/home/{{ cti_laptop_peer_user }}/.ssh/authorized_keys"
+        owner: "{{ cti_laptop_peer_user }}"
+        group: "{{ cti_laptop_peer_user }}"
+        mode: "0600"
+
+    - name: Read superseded WSL listener policy files
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: cti_laptop_superseded_listener_files
+      loop:
+        - /etc/ssh/sshd_config.d/10-tailnet-hardening.conf
+        - /etc/ssh/sshd_config.d/99-codex-wsl.conf
+
+    - name: Remove superseded WSL listener address restrictions
+      ansible.builtin.lineinfile:
+        path: "{{ item.item }}"
+        regexp: '^\s*ListenAddress\s'
+        state: absent
+      when: item.stat.exists
+      notify: Restart laptop sshd
+      loop: "{{ cti_laptop_superseded_listener_files.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Install the bounded WSL SSH listener policy
+      ansible.builtin.template:
+        src: sshd-laptop.conf.j2
+        dest: /etc/ssh/sshd_config.d/60-arma-cti-peer.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart laptop sshd
+
+    - name: Permit the peer identity to read only the WSL firewall status
+      ansible.builtin.copy:
+        content: |
+          {{ cti_laptop_peer_user }} ALL=(root) NOPASSWD: /usr/sbin/ufw status verbose
+        dest: /etc/sudoers.d/60-arma-cti-peer-ufw-audit
+        owner: root
+        group: root
+        mode: "0440"
+        validate: /usr/sbin/visudo -cf %s
+
+    - name: Read laptop UFW policy before rule migration
+      ansible.builtin.command: ufw status verbose
+      register: cti_laptop_ufw_before
+      changed_when: false
+
+    - name: Remove obsolete WSL port 2222 allowances
+      ansible.builtin.command: >-
+        ufw --force delete allow proto tcp from {{ item }} to any port 2222
+      when:
+        - cti_laptop_ssh_port | int != 2222
+        - "'2222/tcp' in cti_laptop_ufw_before.stdout"
+        - item in cti_laptop_ufw_before.stdout
+      changed_when: true
+      loop:
+        - "{{ cti_host_lan }}"
+        - "{{ cti_host_tail }}"
+
+    - name: Permit reverse SSH only from bravo
+      ansible.builtin.command: >-
+        ufw allow proto tcp from {{ item }} to any port {{ cti_laptop_ssh_port }}
+        comment 'arma-cti bravo reverse control'
+      register: cti_laptop_ufw
+      changed_when: "'Skipping adding existing rule' not in cti_laptop_ufw.stdout"
+      loop:
+        - "{{ cti_host_lan }}"
+        - "{{ cti_host_tail }}"
+
+    - name: Permit the source-restricted Windows LAN proxy into WSL
+      ansible.builtin.command: >-
+        ufw allow proto tcp from {{ cti_laptop_wsl_proxy_source }}
+        to any port {{ cti_laptop_ssh_port }}
+        comment 'arma-cti Windows LAN proxy'
+      register: cti_laptop_proxy_ufw
+      changed_when: "'Skipping adding existing rule' not in cti_laptop_proxy_ufw.stdout"
+
+    - name: Read laptop UFW policy
+      ansible.builtin.command: ufw status verbose
+      register: cti_laptop_ufw_status
+      changed_when: false
+
+    - name: Set laptop default incoming deny
+      ansible.builtin.command: ufw default deny incoming
+      when: "'Default: deny (incoming)' not in cti_laptop_ufw_status.stdout"
+      changed_when: true
+
+    - name: Set laptop default outgoing allow
+      ansible.builtin.command: ufw default allow outgoing
+      when: "'allow (outgoing)' not in cti_laptop_ufw_status.stdout"
+      changed_when: true
+
+    - name: Enable laptop UFW
+      ansible.builtin.command: ufw --force enable
+      when: "'Status: active' not in cti_laptop_ufw_status.stdout"
+      changed_when: true
+
+    - name: Create the initiating user's SSH include directory
+      ansible.builtin.file:
+        path: "/home/{{ cti_admin_user }}/.ssh/config.d"
+        state: directory
+        owner: "{{ cti_admin_user }}"
+        group: "{{ cti_admin_user }}"
+        mode: "0700"
+
+    - name: Ensure the initiating SSH config reads managed aliases
+      ansible.builtin.lineinfile:
+        path: "/home/{{ cti_admin_user }}/.ssh/config"
+        line: Include ~/.ssh/config.d/*
+        create: true
+        owner: "{{ cti_admin_user }}"
+        group: "{{ cti_admin_user }}"
+        mode: "0600"
+        insertbefore: BOF
+
+    - name: Install bounded bravo aliases
+      ansible.builtin.template:
+        src: ssh-config-laptop.j2
+        dest: "/home/{{ cti_admin_user }}/.ssh/config.d/arma-cti-machine-b"
+        owner: "{{ cti_admin_user }}"
+        group: "{{ cti_admin_user }}"
+        mode: "0600"
+
+    - name: Validate the final laptop SSH policy
+      ansible.builtin.command: /usr/sbin/sshd -t
+      changed_when: false

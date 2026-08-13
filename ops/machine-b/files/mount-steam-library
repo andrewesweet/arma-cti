@@ -1,0 +1,165 @@
+#!/bin/bash
+set -euo pipefail
+
+readonly filesystem_uuid="__STEAM_LIBRARY_UUID__"
+readonly mount_point="__STEAM_LIBRARY_MOUNT__"
+readonly runtime_user="cti"
+readonly device="/dev/disk/by-uuid/${filesystem_uuid}"
+readonly fstab_line="UUID=${filesystem_uuid} ${mount_point} ext4 rw,exec,nosuid,nodev 0 2"
+readonly durable_backup="/etc/fstab.arma-cti-before-steam-library"
+
+if (( EUID != 0 )); then
+    printf 'Run this generated script with sudo at Machine B\047s local console.\n' >&2
+    exit 77
+fi
+
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin
+for command in blkid chmod chown cp find findmnt getent grep id install mktemp mount mv pgrep \
+    rm rmdir stat systemctl umount; do
+    command -v "$command" >/dev/null || {
+        printf 'Required command is absent: %s\n' "$command" >&2
+        exit 69
+    }
+done
+
+[[ -b "$device" ]] || {
+    printf 'Expected UUID does not resolve to a block device: %s\n' "$filesystem_uuid" >&2
+    exit 65
+}
+[[ "$(blkid -s UUID -o value -- "$device")" == "$filesystem_uuid" ]] || {
+    printf 'Resolved device UUID does not match the commissioned value.\n' >&2
+    exit 65
+}
+[[ "$(blkid -s TYPE -o value -- "$device")" == ext4 ]] || {
+    printf 'Refusing a non-ext4 filesystem; no partition operation was attempted.\n' >&2
+    exit 65
+}
+getent passwd "$runtime_user" >/dev/null || {
+    printf 'Runtime identity is absent: %s\n' "$runtime_user" >&2
+    exit 65
+}
+runtime_group="$(id -gn "$runtime_user")"
+readonly runtime_group
+runtime_uid="$(id -u "$runtime_user")"
+readonly runtime_uid
+
+for process in steam steamwebhelper; do
+    if pgrep -u "$runtime_uid" -x "$process" >/dev/null; then
+        printf 'Stop %s for %s before mounting its library.\n' "$process" "$runtime_user" >&2
+        exit 75
+    fi
+done
+
+mounted_target="$(findmnt --source "UUID=${filesystem_uuid}" --noheadings --output TARGET || true)"
+if [[ -n "$mounted_target" && "$mounted_target" != "$mount_point" ]]; then
+    printf 'Filesystem is already mounted at an unexpected target: %s\n' "$mounted_target" >&2
+    exit 65
+fi
+if [[ -L "$mount_point" || ( -e "$mount_point" && ! -d "$mount_point" ) ]]; then
+    printf 'Mount target must be a real directory: %s\n' "$mount_point" >&2
+    exit 65
+fi
+if [[ -d "$mount_point" ]] && ! findmnt --mountpoint "$mount_point" >/dev/null; then
+    if find "$mount_point" -mindepth 1 -maxdepth 1 -print -quit | grep -q .; then
+        printf 'Refusing to hide existing files beneath %s.\n' "$mount_point" >&2
+        exit 65
+    fi
+fi
+
+exact_rows="$(grep -Fxc -- "$fstab_line" /etc/fstab || true)"
+if (( exact_rows > 1 )); then
+    printf 'Duplicate commissioned Steam-library rows exist in /etc/fstab.\n' >&2
+    exit 65
+fi
+while read -r source target _rest; do
+    [[ -n "$source" ]] || continue
+    if [[ "$source" == "UUID=${filesystem_uuid}" || "$target" == "$mount_point" ]]; then
+        if [[ "$source $target $_rest" != "$fstab_line" ]]; then
+            printf 'Conflicting /etc/fstab row for %s or %s; refusing to rewrite it.\n' \
+                "$filesystem_uuid" "$mount_point" >&2
+            exit 65
+        fi
+    fi
+done < <(findmnt --fstab --raw --noheadings --output SOURCE,TARGET,FSTYPE,OPTIONS,FREQ,PASSNO)
+
+rollback_fstab="$(mktemp /run/arma-cti-fstab.XXXXXX)"
+cp --preserve=all /etc/fstab "$rollback_fstab"
+changed_fstab=0
+mounted_now=0
+created_mountpoint=0
+candidate=""
+cleanup() {
+    status=$?
+    trap - EXIT
+    if (( status != 0 )); then
+        if (( mounted_now == 1 )); then
+            umount "$mount_point" || true
+        fi
+        if (( changed_fstab == 1 )); then
+            cp --preserve=all "$rollback_fstab" /etc/fstab
+            systemctl daemon-reload || true
+        fi
+        if (( created_mountpoint == 1 )); then
+            rmdir "$mount_point" 2>/dev/null || true
+        fi
+        printf 'steam-library=rolled-back status=%s\n' "$status" >&2
+    fi
+    [[ -z "$candidate" ]] || rm -f "$candidate"
+    rm -f "$rollback_fstab"
+    exit "$status"
+}
+trap cleanup EXIT
+
+if [[ ! -d "$mount_point" ]]; then
+    install -d -o "$runtime_user" -g "$runtime_group" -m 0750 "$mount_point"
+    created_mountpoint=1
+fi
+
+if (( exact_rows == 0 )); then
+    cp --preserve=all --no-clobber /etc/fstab "$durable_backup"
+    candidate="$(mktemp /etc/fstab.arma-cti.XXXXXX)"
+    cp --preserve=all /etc/fstab "$candidate"
+    printf '\n# Arma CTI Machine B Steam library\n%s\n' "$fstab_line" >>"$candidate"
+    findmnt --verify --tab-file "$candidate" >/dev/null
+    chown root:root "$candidate"
+    chmod 0644 "$candidate"
+    mv "$candidate" /etc/fstab
+    candidate=""
+    changed_fstab=1
+    systemctl daemon-reload
+fi
+
+if ! findmnt --mountpoint "$mount_point" >/dev/null; then
+    mount "$mount_point"
+    mounted_now=1
+fi
+
+live_uuid="$(findmnt --mountpoint "$mount_point" --noheadings --output UUID)"
+live_type="$(findmnt --mountpoint "$mount_point" --noheadings --output FSTYPE)"
+live_options="$(findmnt --mountpoint "$mount_point" --noheadings --output OPTIONS)"
+[[ "$live_uuid" == "$filesystem_uuid" && "$live_type" == ext4 ]] || {
+    printf 'Mounted filesystem identity or type is wrong.\n' >&2
+    exit 65
+}
+for required_option in rw nosuid nodev; do
+    case ",$live_options," in
+        *",${required_option},"*) ;;
+        *)
+            printf 'Mounted filesystem lacks required option: %s\n' "$required_option" >&2
+            exit 65
+            ;;
+    esac
+done
+case ",$live_options," in
+    *,noexec,*)
+        printf 'Mounted filesystem explicitly forbids execution.\n' >&2
+        exit 65
+        ;;
+esac
+
+chown "$runtime_user:$runtime_group" "$mount_point"
+chmod 0750 "$mount_point"
+owner="$(stat -c %U:%G "$mount_point")"
+available_bytes="$(findmnt --bytes --df --mountpoint "$mount_point" --noheadings --output AVAIL)"
+printf 'steam-library=ready uuid=%s mount=%s type=%s owner=%s options=%s available_bytes=%s\n' \
+    "$live_uuid" "$mount_point" "$live_type" "$owner" "$live_options" "$available_bytes"

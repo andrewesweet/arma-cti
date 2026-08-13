@@ -1,0 +1,27 @@
+Host {{ cti_bravo_alias_lan }}
+    HostName {{ cti_host_lan }}
+    User {{ cti_runtime_user }}
+    IdentityFile {{ cti_laptop_to_bravo_identity }}
+    IdentitiesOnly yes
+    BatchMode yes
+    StrictHostKeyChecking yes
+    UserKnownHostsFile {{ cti_laptop_known_hosts_file }}
+    ConnectTimeout 8
+    ServerAliveInterval 5
+    ServerAliveCountMax 2
+    RequestTTY no
+    ClearAllForwardings yes
+
+Host {{ cti_bravo_alias_tail }}
+    HostName {{ cti_host_tail }}
+    User {{ cti_runtime_user }}
+    IdentityFile {{ cti_laptop_to_bravo_identity }}
+    IdentitiesOnly yes
+    BatchMode yes
+    StrictHostKeyChecking yes
+    UserKnownHostsFile {{ cti_laptop_known_hosts_file }}
+    ConnectTimeout 8
+    ServerAliveInterval 5
+    ServerAliveCountMax 2
+    RequestTTY no
+    ClearAllForwardings yes

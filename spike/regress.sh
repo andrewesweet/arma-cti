@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The Phase-1 in-game regression tier (issue #23, ADR-0016; a pool of slots since
 # #47, ADR-0028). Design: docs/regression-tier.md. Invoked as
-# `just regress [--slots <n>] [--wait <secs>] [--issues <n,...>] [--list] [name...]`.
+# `just regress [--host <name>] [--slots <n>] [--wait <secs>] [--issues <n,...>] [--list] [name...]`.
 #
 # Per probe: a fresh Phase-1 world, the probe appended to the generated harness,
 # and a wait on that probe's own completion line under the deadline its own
@@ -160,6 +160,7 @@ die() {
 }
 
 # ------------------------------------------------------------------ arguments
+ORIGINAL_ARGS=("$@")
 WAIT_SECS=0
 SELECTED=()
 WANT_ISSUES=()
@@ -171,6 +172,10 @@ parse_args() {
     local spec n
     while (($# > 0)); do
         case "$1" in
+        --host)
+            CTI_TIER_HOST="${2:-}"
+            shift 2
+            ;;
         --wait)
             WAIT_SECS="${2:-}"
             shift 2
@@ -316,6 +321,13 @@ for name in "${CORPUS[@]}"; do
     fi
 done
 
+CORPUS_NEEDS_HEADED=0
+for name in "${CORPUS[@]}"; do
+    [[ "$(header_of "$PROBE_DIR/$name.sqf" env)" == *CTI_WINDOWS_CLIENT=1* || \
+        "$(header_of "$PROBE_DIR/$name.sqf" env)" == *CTI_HEADED_CLIENT=1* ]] &&
+        CORPUS_NEEDS_HEADED=1
+done
+
 # ------------------------------------------------------------------ dry run
 # `--list` is the whole selection path with nothing after it: it resolves the
 # filters, validates the headers of what they chose, prints that and stops. It
@@ -376,6 +388,28 @@ if ! HOST="$(cti_host_resolve)"; then
         printf 'host=%s\n' "${CTI_TIER_HOST:-local}"
     } >&2
     record_refusal infra_unavailable "CTI_TIER_HOST names a host the tier does not know: ${CTI_TIER_HOST:-local}"
+    exit "${CLASS_RANK[infra_unavailable]}"
+fi
+
+# An SSH host executes the entire pass below one remote channel. Nothing after
+# this branch may acquire a local slot for remote work: a missing transport is
+# infra_unavailable, never permission to continue on the initiating machine.
+if [[ "${CTI_REMOTE_ACTIVE:-0}" != 1 && "$(cti_host_transport "$HOST")" == ssh ]]; then
+    cti_host_remote_regress "$HOST" "$REPO" "${ORIGINAL_ARGS[@]}"
+    remote_status=$?
+    if [[ "$remote_status" == "${CLASS_RANK[infra_unavailable]}" ]]; then
+        record_refusal infra_unavailable "remote pass on $HOST did not produce an interpretable result"
+        printf 'verdict=FAIL\nfailure_class=infra_unavailable\n' >&2
+        printf 'failure_detail=remote pass on %s did not produce an interpretable result\n' "$HOST" >&2
+    fi
+    exit "$remote_status"
+fi
+
+HOST_SLOTS="$(cti_host_slots "$HOST")"
+((WANT_SLOTS <= HOST_SLOTS)) ||
+    die "--slots $WANT_SLOTS exceeds host $HOST's declared $HOST_SLOTS server slot(s)"
+if ((CORPUS_NEEDS_HEADED == 1)) && ! cti_host_headed_client "$HOST"; then
+    record_refusal infra_unavailable "selected corpus requires a headed client; host $HOST declares none"
     exit "${CLASS_RANK[infra_unavailable]}"
 fi
 
@@ -756,7 +790,7 @@ RUN_STARTED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 # `date` has one-second resolution: two agents starting inside the same second
 # would otherwise share one evidence directory, and with it one `claims/`, and
 # each would silently take probes off the other's corpus.
-POOL_STAMP="$(date -u +%Y%m%dT%H%M%SZ)-$$"
+POOL_STAMP="${CTI_REMOTE_RUN_ID:+${CTI_REMOTE_RUN_ID}-}$(date -u +%Y%m%dT%H%M%SZ)-$$"
 POOL_OUT="$RUNS_DIR/$POOL_STAMP-pool"
 CLAIMS="$POOL_OUT/claims"
 STOP_FLAG="$POOL_OUT/stop"
@@ -983,15 +1017,14 @@ start_starvation_watch() {
 # tail: `campaign-end` is ~390 s of a ~1,550 s corpus, so a pool that starts it
 # late idles every other slot waiting for it. Its 750 s window puts it first.
 #
-# The Windows-host probes are not in that schedule. Every probe declaring
-# `CTI_WINDOWS_CLIENT=1` drives the headed client on the Windows host, of which
-# there is one, and the host guard that protects the human is ownership-blind on
-# purpose (#119) — so a second slot starting a probe while one slot's client is
-# up would read that client as a play session and stop the corpus. They run
+# The headed-client probes are not in that schedule. Every probe declaring
+# `CTI_HEADED_CLIENT=1` drives the one headed client on the selected host. On a
+# human host the guard is ownership-blind on purpose (#119), so a second slot
+# starting while one slot's client is up would stop the corpus. They run
 # **serially, in a tail, with the rest of the pool drained**, on the lowest slot
 # held. Last rather than first: a human who sits down to play at minute eight
 # then costs us the tail rather than the pass.
-host_probe() { [[ "$(header_of "$PROBE_DIR/$1.sqf" env)" == *CTI_WINDOWS_CLIENT=1* ]]; }
+host_probe() { [[ "$(header_of "$PROBE_DIR/$1.sqf" env)" == *CTI_HEADED_CLIENT=1* ]]; }
 
 by_window_desc() {
     local name
@@ -1012,9 +1045,13 @@ if ((${#SLOTS[@]} > 1 && ${#PARALLEL_JOBS[@]} > 1)); then
 fi
 
 # ------------------------------------------------------------------ the probe
-GIT_SHA="$(git -C "$REPO" rev-parse HEAD 2>/dev/null || echo unknown)"
-GIT_DIRTY="$(git -C "$REPO" status --porcelain 2>/dev/null | head -1)"
-[[ -n "$GIT_DIRTY" ]] && GIT_DIRTY=true || GIT_DIRTY=false
+GIT_SHA="${CTI_REMOTE_GIT_SHA:-$(git -C "$REPO" rev-parse HEAD 2>/dev/null || echo unknown)}"
+if [[ -n "${CTI_REMOTE_GIT_DIRTY:-}" ]]; then
+    GIT_DIRTY="$CTI_REMOTE_GIT_DIRTY"
+else
+    GIT_DIRTY="$(git -C "$REPO" status --porcelain 2>/dev/null | head -1)"
+    [[ -n "$GIT_DIRTY" ]] && GIT_DIRTY=true || GIT_DIRTY=false
+fi
 
 # One probe, in one slot. This runs inside a worker subshell, so it writes its
 # result where the parent can find it and never into a shell variable: a verdict
@@ -1031,7 +1068,7 @@ run_probe() {
     probe_env="$(header_of "$file" env)"
 
     prune_passes "$name"
-    stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+    stamp="${CTI_REMOTE_RUN_ID:+${CTI_REMOTE_RUN_ID}-}$(date -u +%Y%m%dT%H%M%SZ)"
     out="$RUNS_DIR/$stamp-$name"
     mkdir -p "$out"
     printf '%s\n' "$out" >"$CLAIMS/$name/evidence"
@@ -1085,6 +1122,7 @@ run_probe() {
         timeout --kill-after="$WATCHDOG_KILL_AFTER" "$watchdog" \
         env ${env_args[@]+"${env_args[@]}"} "${slot_args[@]}" \
         CTI_TIER_HOST="$HOST" \
+        CTI_HEADED_CLIENT_DRIVER="$(cti_host_client_driver "$HOST")" \
         CTI_CLIENT_LOCK_WAIT="$WAIT_SECS" \
         CTI_SPIKE_OUT="$out" \
         CTI_MISSION=cti.Stratis \
@@ -1280,7 +1318,7 @@ worker() {
 log "corpus: ${CORPUS[*]}"
 log "sha: $GIT_SHA dirty: $GIT_DIRTY started: $RUN_STARTED"
 ((${#PARALLEL_JOBS[@]} > 0)) && log "schedule: ${PARALLEL_JOBS[*]}"
-((${#HOST_JOBS[@]} > 0)) && log "windows-host tail (serial, pool drained): ${HOST_JOBS[*]}"
+((${#HOST_JOBS[@]} > 0)) && log "headed-client tail (serial, pool drained): ${HOST_JOBS[*]}"
 
 POOL_T0=$(date +%s)
 start_ram_sampler
@@ -1313,7 +1351,7 @@ CLIENT_LOCK_BLOCKED=0
 CLIENT_LOCK_EVIDENCE=""
 if ((${#HOST_JOBS[@]} > 0)) && [[ ! -f "$STOP_FLAG" ]]; then
     if cti_client_lock_acquire "$WAIT_SECS" "$POOL_LABEL"; then
-        log "windows-host tail holds the machine-wide client lock: $(cti_client_lock_path)"
+        log "headed-client tail holds the machine-wide client lock: $(cti_client_lock_path)"
         # Told to the tail's children so `run.sh` does not queue for a lock its
         # own parent is holding.
         export CTI_CLIENT_LOCK_HELD=1

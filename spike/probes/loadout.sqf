@@ -1,7 +1,7 @@
 // probe: loadout
 // issues: 172
 // window: 600
-// env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
+// env: CTI_HEADED_CLIENT=1 CTI_PROBE_CLIENT=240
 //
 // #172 in-world probe: the human's loadout ruling (ADR-0056), on a real player.
 // A menu offered on his own body at his own Base, a pick granted and worn, the

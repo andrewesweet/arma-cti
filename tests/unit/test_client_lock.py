@@ -45,6 +45,7 @@ from conftest import REPO
 from test_probe_headers import HOST_PROBES
 
 CLIENT_LOCK_SH = REPO / "spike" / "client-lock.sh"
+HEADED_CLIENT_SH = REPO / "spike" / "headed-client.sh"
 REGRESS = REPO / "spike" / "regress.sh"
 RUN = REPO / "spike" / "run.sh"
 BASH = shutil.which("bash") or "/bin/bash"
@@ -84,7 +85,7 @@ if [[ ",${CTI_STUB_HOST_PROBES:-}," == *",$name,"* ]]; then
     sleep "$CTI_STUB_CLIENT_LEG_SECS"
     printf '%s\t%s\t%s\t%s\n' "$CTI_STUB_TAG" "$name" close "$(date +%s%N)" >>"$CTI_STUB_TRACE"
 fi
-printf 'server_version=2.20.152984\n' >>"$out/results.env"
+printf 'server_version=2.22.153995\n' >>"$out/results.env"
 printf 'verdict=PASS\n' >>"$out/results.env"
 """
 
@@ -127,6 +128,81 @@ def lock_eval(script: str, env: dict[str, str] | None = None) -> subprocess.Comp
         env={**os.environ, **(env or {})},
         timeout=120,
     )
+
+
+def headed_eval(script: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+    """Run the Proton driver against fake user-service commands."""
+    return subprocess.run(  # noqa: S603 — this repo's sourced shell library
+        [BASH, "-c", f'source "{HEADED_CLIENT_SH}"\n{script}'],
+        capture_output=True,
+        text=True,
+        check=False,
+        env={**os.environ, **env},
+    )
+
+
+def test_proton_driver_writes_private_run_environment_and_starts_one_unit(tmp_path: Path) -> None:
+    calls = tmp_path / "systemctl.calls"
+    bin_dir = tmp_path / "bin"
+    executable(bin_dir / "timeout", '#!/usr/bin/env bash\nshift\nexec "$@"\n')
+    executable(
+        bin_dir / "systemctl",
+        '#!/usr/bin/env bash\nprintf \'%s\\n\' "$*" >>"$CTI_TEST_SYSTEMCTL"\n',
+    )
+    runtime = tmp_path / "runtime"
+    result = headed_eval(
+        f'cti_proton_client_start "{tmp_path / "evidence"}" 127.0.0.1 2402 secret cti '
+        f'"{tmp_path / "@cti"}"',
+        {
+            "PATH": f"{bin_dir}:{os.environ['PATH']}",
+            "XDG_RUNTIME_DIR": str(runtime),
+            "CTI_TEST_SYSTEMCTL": str(calls),
+        },
+    )
+    assert result.returncode == 0, result.stderr
+    env_file = runtime / "arma-cti" / "client.env"
+    assert stat.S_IMODE(env_file.stat().st_mode) == 0o600
+    assert env_file.read_text(encoding="utf-8").splitlines() == [
+        "CTI_CLIENT_SERVER=127.0.0.1",
+        "CTI_CLIENT_PORT=2402",
+        "CTI_CLIENT_PASSWORD=secret",
+        "CTI_CLIENT_PROFILE=cti",
+        f"CTI_CLIENT_MOD={tmp_path / '@cti'}",
+        f"CTI_CLIENT_EVIDENCE={tmp_path / 'evidence'}",
+    ]
+    assert calls.read_text(encoding="utf-8").splitlines() == [
+        "--user reset-failed cti-arma-client.service",
+        "--user start cti-arma-client.service",
+    ]
+
+
+def test_proton_teardown_requires_an_inactive_empty_service(tmp_path: Path) -> None:
+    bin_dir = tmp_path / "bin"
+    executable(bin_dir / "timeout", '#!/usr/bin/env bash\nshift\nexec "$@"\n')
+    executable(
+        bin_dir / "systemctl",
+        """#!/usr/bin/env bash
+if [[ "$*" == *" show "* ]]; then
+    printf 'ActiveState=inactive\\nSubState=dead\\nResult=success\\n'
+    printf 'ExecMainStatus=0\\nControlGroup=\\n'
+fi
+""",
+    )
+    executable(bin_dir / "journalctl", "#!/usr/bin/env bash\nprintf 'owned journal\\n'\n")
+    out = tmp_path / "evidence"
+    result = headed_eval(
+        f'cti_proton_client_stop "{out}"',
+        {
+            "PATH": f"{bin_dir}:{os.environ['PATH']}",
+            "XDG_RUNTIME_DIR": str(tmp_path / "runtime"),
+        },
+    )
+    assert result.returncode == 0, result.stderr
+    assert "ActiveState=inactive" in (out / "service-status.txt").read_text(encoding="utf-8")
+    assert (out / "service.journal").read_text(encoding="utf-8") == "owned journal\n"
+    source = HEADED_CLIENT_SH.read_text(encoding="utf-8")
+    assert "pkill" not in source
+    assert "killall" not in source
 
 
 def holding(

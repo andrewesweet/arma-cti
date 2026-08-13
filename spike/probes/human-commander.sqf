@@ -1,7 +1,7 @@
 // probe: human-commander
 // issues: 18, 19, 46, 116, 174, 175, 176
 // window: 420
-// env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240 CTI_AI_SIDE=EAST CTI_AI_SEED=1
+// env: CTI_HEADED_CLIENT=1 CTI_PROBE_CLIENT=240 CTI_AI_SIDE=EAST CTI_AI_SEED=1
 //
 // #18 in-world probe: the human Commander's path, as far as a world with no
 // human in it can be made to answer for it.

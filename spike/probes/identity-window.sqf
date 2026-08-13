@@ -1,7 +1,7 @@
 // probe: identity-window
 // issues: 194
 // window: 480
-// env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
+// env: CTI_HEADED_CLIENT=1 CTI_PROBE_CLIENT=240
 //
 // #194 in-world probe: how wide the empty-UID frame after respawn actually is,
 // and that the Command Port now says the right thing on either side of it.

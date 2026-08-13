@@ -73,7 +73,7 @@ printf 'daemon_port=%s\n' "${CTI_DAEMON_PORT:-}" >>"$out/results.env"
 printf 'daemon_addr=%s\n' "${CTI_DAEMON_ADDR:-}" >>"$out/results.env"
 printf 'server_dir=%s\n' "${CTI_SERVER_DIR:-}" >>"$out/results.env"
 printf 'server_profile=%s\n' "${CTI_SERVER_NAME:-}" >>"$out/results.env"
-printf 'server_version=2.20.152984\n' >>"$out/results.env"
+printf 'server_version=2.22.153995\n' >>"$out/results.env"
 printf '%s\t%s\t%s\n' "$name" "${CTI_TIER_SLOT:-}" "$(date +%s%N)" >>"$CTI_STUB_TRACE"
 
 # A worker that dies mid-probe, on purpose: the claim is made, no verdict is
@@ -701,10 +701,10 @@ def test_the_longest_probe_is_scheduled_first(tmp_path: Path) -> None:
     assert schedule.group(1).split()[0] == "campaign-end"
 
 
-def test_the_windows_host_probes_are_a_serial_tail_not_part_of_the_schedule(
+def test_the_headed_client_probes_are_a_serial_tail_not_part_of_the_schedule(
     tmp_path: Path,
 ) -> None:
-    """One Windows host, one headed client, one ownership-blind guard.
+    """One selected host, one headed client, one ownership-blind human-host guard.
 
     The guard that protects the human refuses to tell our client from theirs, on
     purpose (#119) — so a slot starting a probe beside another slot's client
@@ -713,7 +713,7 @@ def test_the_windows_host_probes_are_a_serial_tail_not_part_of_the_schedule(
     """
     result = pool_run(tmp_path, "--slots", "3")
     schedule = re.search(r"^\[regress\] schedule: (.*)$", result.stderr, re.MULTILINE)
-    tail = re.search(r"^\[regress\] windows-host tail[^:]*: (.*)$", result.stderr, re.MULTILINE)
+    tail = re.search(r"^\[regress\] headed-client tail[^:]*: (.*)$", result.stderr, re.MULTILINE)
     assert schedule is not None, result.stderr[-2000:]
     assert tail is not None, result.stderr[-2000:]
     assert sorted(tail.group(1).split()) == HOST_PROBES
@@ -1250,7 +1250,7 @@ def test_a_granted_run_is_floored_when_the_machine_starves_mid_flight(tmp_path: 
         f"    touch {starved_now}\n"
         "    sleep 300\n"
         "fi\n"
-        "printf 'server_version=2.20.152984\\n' >>\"$CTI_SPIKE_OUT/results.env\"\n"
+        "printf 'server_version=2.22.153995\\n' >>\"$CTI_SPIKE_OUT/results.env\"\n"
         "printf 'verdict=PASS\\n' >>\"$CTI_SPIKE_OUT/results.env\"\n",
     )
     reader = executable(

@@ -1,0 +1,20 @@
+[Unit]
+Description=Owned Arma 3 Proton client for the CTI regression tier
+After=graphical-session.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart={{ cti_runtime_home }}/.local/libexec/cti-arma-client
+Environment=PROTON_LOG=1
+Environment=PROTON_LOG_DIR={{ cti_runtime_home }}/.arma-cti/client-logs
+Environment="CTI_STEAM_LIBRARY_ROOT={{ cti_steam_library_root }}"
+Environment="CTI_CLIENT_INSTALL={{ cti_client_install }}"
+EnvironmentFile=%t/arma-cti/client.env
+KillMode=control-group
+TimeoutStopSec=45
+SendSIGKILL=yes
+Restart=no
+
+[Install]
+WantedBy=default.target

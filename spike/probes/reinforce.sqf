@@ -1,7 +1,7 @@
 // probe: reinforce
 // issues: 123
 // window: 420
-// env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
+// env: CTI_HEADED_CLIENT=1 CTI_PROBE_CLIENT=240
 //
 // #123 in-world probe: the Command Port's second principal (ADR-0040). A real
 // client, in no Commander slot, leading a Squad, issuing Reinforce for that

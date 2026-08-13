@@ -63,7 +63,7 @@ def header_block(path: Path) -> dict[str, str]:
 # looked there were six, which is the drift a second declaration produces (#123,
 # #172, #188, #189 each added one).
 HOST_PROBES = sorted(
-    path.stem for path in PROBES if "CTI_WINDOWS_CLIENT=1" in header_block(path).get("env", "")
+    path.stem for path in PROBES if "CTI_HEADED_CLIENT=1" in header_block(path).get("env", "")
 )
 
 
@@ -165,7 +165,7 @@ def test_a_probe_with_a_client_leg_turns_it_on_in_the_corpus(path: Path) -> None
     settings = dict(
         assignment.split("=", 1) for assignment in header_block(path).get("env", "").split()
     )
-    assert settings.get("CTI_WINDOWS_CLIENT") == "1", (
+    assert settings.get("CTI_HEADED_CLIENT") == "1", (
         f"{path.name} drives a headed client but its env: header does not ask for one"
     )
     assert int(settings.get("CTI_PROBE_CLIENT", "0")) > 0, (

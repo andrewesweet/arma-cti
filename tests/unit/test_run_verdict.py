@@ -114,6 +114,8 @@ def run_with_lines(
     tasklist.chmod(tasklist.stat().st_mode | stat.S_IXUSR)
 
     out = tmp_path / "out"
+    default_networking = tmp_path / "default-networking"
+    default_networking.mkdir()
     server_port, daemon_port = free_port_block()
     env = dict(
         os.environ,
@@ -142,6 +144,9 @@ def run_with_lines(
         CTI_BASIC_CFG="",
         CTI_HC_TIMEOUT="20",
         CTI_HARNESS_TIMEOUT="60",
+        # Windows-client tests need the simulated mirrored boundary; server-only
+        # tests are indifferent. ``extra_env`` below still lets NAT tests override it.
+        PATH=with_networking_mode(default_networking, "mirrored"),
     )
     # Last word to the caller, so a test can substitute one of the defaults above
     # as well as add to them.

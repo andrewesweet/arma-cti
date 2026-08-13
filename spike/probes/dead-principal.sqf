@@ -1,7 +1,7 @@
 // probe: dead-principal
 // issues: 188
 // window: 870
-// env: CTI_WINDOWS_CLIENT=1 CTI_PROBE_CLIENT=240
+// env: CTI_HEADED_CLIENT=1 CTI_PROBE_CLIENT=240
 //
 // #188 in-world probe: ADR-0052's rulings 3 and 5 at the Command Port's door. A
 // real client, killed by the server, refused `caller_dead` when he Commands and

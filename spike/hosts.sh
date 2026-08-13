@@ -17,7 +17,7 @@
 #
 #   cti_host_valid NAME          is this a host the tier knows?
 #   cti_host_role NAME           human | tier — whose machine it is
-#   cti_host_transport NAME      null today; the ssh row is #53's
+#   cti_host_transport NAME      null or the registry's one SSH target
 #   cti_host_resolve             validate CTI_TIER_HOST and echo it, or refuse
 #   cti_host_state               the tier state root (host-invariant; see below)
 #   cti_host_runs                the evidence root, under it
@@ -25,25 +25,64 @@
 #   cti_host_client_state NAME   the play-session question, per host and role
 #   cti_host_guard NAME          ask it, and map the answer onto a verdict
 #
-# What this file is **not**: a registry file, an SSH transport, remote cleanup
-# or evidence pull-back. ADR-0032 defers every one of them to the metal, because
-# none can be tested before it exists, and untestable infrastructure built ahead
-# of its hardware arrives wrong.
+# The registry stays outside Git. This file implements its null and SSH
+# transports, remote whole-pass staging, and evidence pull-back.
 
 # The Windows process list, `taskkill`, and the play-session question itself.
 # shellcheck source=spike/host-guard.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/host-guard.sh"
 
-# The hosts the tier knows. One today: the machine this repository is checked
-# out on, which is also the machine the human plays on — hence `human`, hence
-# the play-session guard applies to it. Machine B arrives as
-#   CTI_HOST_ROLE[bravo]=tier ; CTI_HOST_TRANSPORT[bravo]=ssh
-# and nothing above this line changes.
+# The machine-scoped registry is parsed in Python, where malformed TOML and a
+# contradictory capability are unit-testable. An absent file preserves the
+# original local-only row; a present unreadable file refuses the host seam.
 #
 # The role is what the guard is gated on. Guarding the tier's own client against
 # the tier would be guarding it against itself (ADR-0032, second-machine.md §5).
-declare -A CTI_HOST_ROLE=([local]=human)
-declare -A CTI_HOST_TRANSPORT=([local]=null)
+declare -A CTI_HOST_ROLE=()
+declare -A CTI_HOST_TRANSPORT=()
+declare -A CTI_HOST_SSH_TARGET=()
+declare -A CTI_HOST_SLOTS=()
+declare -A CTI_HOST_HEADED=()
+declare -A CTI_HOST_CLIENT_DRIVER=()
+declare -A CTI_HOST_REMOTE_ROOT=()
+CTI_HOST_REGISTRY_STATUS=0
+
+cti_host_registry_load() {
+    local registry="${CTI_HOSTS_FILE:-$HOME/.arma-cti/hosts.toml}"
+    local name role transport ssh_target slots headed driver remote_root
+    local rows status
+    rows="$(python3 "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/tools/host_registry.py" \
+        shell --config "$registry")"
+    status=$?
+    if ((status != 0)); then
+        CTI_HOST_REGISTRY_STATUS=$status
+        return 0
+    fi
+    while IFS=$'\t' read -r name role transport ssh_target slots headed driver remote_root; do
+        [[ -n "$name" ]] || continue
+        [[ "$ssh_target" == - ]] && ssh_target=""
+        [[ "$remote_root" == - ]] && remote_root=""
+        CTI_HOST_ROLE[$name]="$role"
+        CTI_HOST_TRANSPORT[$name]="$transport"
+        CTI_HOST_SSH_TARGET[$name]="$ssh_target"
+        CTI_HOST_SLOTS[$name]="$slots"
+        CTI_HOST_HEADED[$name]="$headed"
+        CTI_HOST_CLIENT_DRIVER[$name]="$driver"
+        CTI_HOST_REMOTE_ROOT[$name]="$remote_root"
+    done <<<"$rows"
+
+    # Once a pass has crossed SSH, this process is executing *as* that host. It
+    # retains the reported host name while every operation becomes local to the
+    # remote kernel. No secondary alias is copied or tried as a fallback.
+    if [[ -n "${CTI_EXECUTION_HOST:-}" ]]; then
+        CTI_HOST_ROLE[$CTI_EXECUTION_HOST]=tier
+        CTI_HOST_TRANSPORT[$CTI_EXECUTION_HOST]=null
+        CTI_HOST_SLOTS[$CTI_EXECUTION_HOST]="${CTI_REMOTE_SLOTS:-3}"
+        CTI_HOST_HEADED[$CTI_EXECUTION_HOST]="${CTI_REMOTE_HEADED_CLIENT:-1}"
+        CTI_HOST_CLIENT_DRIVER[$CTI_EXECUTION_HOST]="${CTI_REMOTE_CLIENT_DRIVER:-proton}"
+    fi
+}
+cti_host_registry_load
 
 # The handle this run executes on. One value resolves today; an unknown name is
 # refused rather than quietly treated as this machine, because the failure mode
@@ -56,15 +95,24 @@ cti_host_log() { printf '[hosts] %s\n' "$*" >&2; }
 cti_host_valid() { [[ -n "${CTI_HOST_ROLE[${1:-}]:-}" ]]; }
 cti_host_role() { printf '%s\n' "${CTI_HOST_ROLE[${1:-}]:-unknown}"; }
 cti_host_transport() { printf '%s\n' "${CTI_HOST_TRANSPORT[${1:-}]:-none}"; }
+cti_host_ssh_target() { printf '%s\n' "${CTI_HOST_SSH_TARGET[${1:-}]:-}"; }
+cti_host_slots() { printf '%s\n' "${CTI_HOST_SLOTS[${1:-}]:-0}"; }
+cti_host_headed_client() { [[ "${CTI_HOST_HEADED[${1:-}]:-0}" == 1 ]]; }
+cti_host_client_driver() { printf '%s\n' "${CTI_HOST_CLIENT_DRIVER[${1:-}]:-none}"; }
+cti_host_remote_root() { printf '%s\n' "${CTI_HOST_REMOTE_ROOT[${1:-}]:-}"; }
 
 # Echo the host this run is for, having checked the tier knows it. Refusing is
 # `infra_unavailable`: a run aimed at a machine we have no way to reach measured
 # nothing, and the caller must not read the absence as a result.
 cti_host_resolve() {
     local host="${CTI_TIER_HOST:-local}"
+    if ((CTI_HOST_REGISTRY_STATUS != 0)); then
+        cti_host_log "the host registry could not be read; refusing every host"
+        return "$CTI_EXIT_INFRA_UNAVAILABLE"
+    fi
     if ! cti_host_valid "$host"; then
         cti_host_log "no host named '$host' — the tier knows: ${!CTI_HOST_ROLE[*]}"
-        cti_host_log "a second host is #52 (the metal) and #53 (the transport); neither exists yet"
+        cti_host_log "configure the host in ~/.arma-cti/hosts.toml; no local fallback is permitted"
         return "$CTI_EXIT_INFRA_UNAVAILABLE"
     fi
     printf '%s\n' "$host"
@@ -95,15 +143,28 @@ cti_host_runs() { printf '%s/runs\n' "$(cti_host_state)"; }
 # been worth building before its second implementation exists (ADR-0032's
 # restraint clause).
 #
-# Redirections stay on the caller's side. For a remote host that makes them
-# writes on the *initiating* machine, which is exactly the evidence pull-back
-# ADR-0032 defers — a distinction worth having in the shape now rather than
-# discovering later.
+# Redirections stay on the caller's side. Whole remote passes use the dedicated
+# staging and pull-back operation below instead of composing this primitive.
 cti_host_exec() {
     local host="$1"
     shift
     case "$(cti_host_transport "$host")" in
     null) "$@" ;;
+    ssh)
+        # OpenSSH sends its post-target argv as one command string for the
+        # remote login shell. Quote each local word before that join so the
+        # shell reconstructs the argv that this function received.
+        local remote_command
+        printf -v remote_command '%q ' "$@"
+        ssh -T \
+            -oBatchMode=yes \
+            -oStrictHostKeyChecking=yes \
+            -oConnectTimeout=8 \
+            -oServerAliveInterval=5 \
+            -oServerAliveCountMax=2 \
+            -oClearAllForwardings=yes \
+            "$(cti_host_ssh_target "$host")" -- "${remote_command% }"
+        ;;
     *)
         # Unreachable while `local` is the only row: cti_host_resolve refuses an
         # unknown host before anything is launched. Asserted anyway, because
@@ -114,6 +175,82 @@ cti_host_exec() {
         return "$CTI_EXIT_INFRA_UNAVAILABLE"
         ;;
     esac
+}
+
+cti_host_rsync_shell() {
+    printf '%s\n' \
+        'ssh -T -oBatchMode=yes -oStrictHostKeyChecking=yes -oConnectTimeout=8 -oServerAliveInterval=5 -oServerAliveCountMax=2 -oClearAllForwardings=yes'
+}
+
+# Ship and run one whole pass. The unchanged pool executes below one SSH
+# channel, so its slot descriptors, stale-state cleanup, ports and worlds all
+# live on the remote kernel. A broken transport never returns into local work.
+cti_host_remote_regress() {
+    local host="$1" repo="$2"
+    shift 2
+    local target root run_id remote_repo local_build remote_build status pull_status git_sha git_dirty
+    target="$(cti_host_ssh_target "$host")"
+    root="$(cti_host_remote_root "$host")"
+    run_id="remote-$(date -u +%Y%m%dT%H%M%SZ)-$$"
+    remote_repo="$root/$run_id"
+    git_sha="$(git -C "$repo" rev-parse HEAD 2>/dev/null || printf unknown)"
+    if [[ -n "$(git -C "$repo" status --porcelain 2>/dev/null | head -1)" ]]; then
+        git_dirty=true
+    else
+        git_dirty=false
+    fi
+
+    [[ -n "$target" && "$root" == /* ]] || {
+        cti_host_log "$host has no bounded SSH target or absolute remote root"
+        return "$CTI_EXIT_INFRA_UNAVAILABLE"
+    }
+
+    local_build="$(sed -n 's/^[[:space:]]*"buildid"[[:space:]]*"\([0-9]*\)".*/\1/p' \
+        "$HOME/arma3server/steamapps/appmanifest_233780.acf" 2>/dev/null | head -1)"
+    remote_build="$(cti_host_exec "$host" sed -n \
+        's/^[[:space:]]*"buildid"[[:space:]]*"\([0-9]*\)".*/\1/p' \
+        /home/cti/arma3server/steamapps/appmanifest_233780.acf 2>/dev/null | head -1)"
+    if [[ -z "$local_build" || -z "$remote_build" || "$local_build" != "$remote_build" ]]; then
+        cti_host_log "engine build disagreement before launch: local=${local_build:-unreadable} $host=${remote_build:-unreadable}"
+        return "$CTI_EXIT_INFRA_UNAVAILABLE"
+    fi
+
+    cti_host_exec "$host" mkdir -p "$remote_repo" || return "$CTI_EXIT_INFRA_UNAVAILABLE"
+    rsync -a --delete --timeout=60 \
+        --exclude=.git/ --exclude=.venv/ --exclude=.pytest_cache/ \
+        -e "$(cti_host_rsync_shell)" \
+        "$repo/" "$target:$remote_repo/" || return "$CTI_EXIT_INFRA_UNAVAILABLE"
+
+    cti_host_log "engine build $local_build agrees; running $run_id on $host"
+    ssh -T \
+        -oBatchMode=yes \
+        -oStrictHostKeyChecking=yes \
+        -oConnectTimeout=8 \
+        -oServerAliveInterval=5 \
+        -oServerAliveCountMax=2 \
+        -oClearAllForwardings=yes \
+        "$target" -- \
+        env CTI_REMOTE_ACTIVE=1 CTI_EXECUTION_HOST="$host" CTI_TIER_HOST="$host" \
+        CTI_REMOTE_GIT_SHA="$git_sha" CTI_REMOTE_GIT_DIRTY="$git_dirty" UV_NO_DEV=1 \
+        CTI_REMOTE_RUN_ID="$run_id" CTI_REMOTE_SLOTS="$(cti_host_slots "$host")" \
+        CTI_REMOTE_HEADED_CLIENT="${CTI_HOST_HEADED[$host]}" \
+        CTI_REMOTE_CLIENT_DRIVER="$(cti_host_client_driver "$host")" \
+        bash "$remote_repo/spike/regress.sh" "$@"
+    status=$?
+
+    mkdir -p "$HOME/.arma-cti/runs"
+    rsync -a --timeout=60 \
+        --include="${run_id}-*/" --include="${run_id}-*/**" --exclude='*' \
+        -e "$(cti_host_rsync_shell)" \
+        "$target:/home/cti/.arma-cti/runs/" "$HOME/.arma-cti/runs/"
+    pull_status=$?
+    cti_host_exec "$host" rm -rf "$remote_repo" || true
+    ((pull_status == 0)) || {
+        cti_host_log "evidence copy from $host failed; remote evidence remains in place"
+        return "$CTI_EXIT_INFRA_UNAVAILABLE"
+    }
+    ((status == 255)) && return "$CTI_EXIT_INFRA_UNAVAILABLE"
+    return "$status"
 }
 
 # Is the human playing on this host? Per host and gated on the role, which is
