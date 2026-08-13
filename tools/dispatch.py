@@ -2439,8 +2439,10 @@ def assert_worktree(assigned: Path, observed: str) -> Refusal | None:
     """Refuse unless the assigned path is its own git top level (#105's fourth instance).
 
     `observed` is what `git rev-parse --show-toplevel` printed inside `assigned`, or the
-    empty string when git refused. Both halves are failures worth naming: a path that is
-    not a worktree root at all, and a path that resolves into somebody else's tree.
+    empty string when git gave no answer — which is both git refusing and git never
+    starting, an absent directory being the latter (see `git`). Both halves are failures
+    worth naming: a path that is not a worktree root at all, and a path that resolves into
+    somebody else's tree.
     """
     if not observed:
         return Refusal(
@@ -2503,16 +2505,32 @@ def default_brief(identity: Identity, worktree: Path) -> str:
 
 
 def git(*args: str, cwd: Path) -> str:
-    """Run one git command and return its stdout, or the empty string if git refused."""
+    """Run one git command and return its stdout, or the empty string if it gave no answer.
+
+    "No answer" covers git refusing *and* git never starting. A `cwd` that does not exist
+    raises `FileNotFoundError` out of `subprocess.run` before git runs at all, and that is
+    the commonest shape here rather than an exotic one: `plan.worktree` comes off the
+    record, `just worktree done` removes trees as a matter of routine, and a record naming
+    a tree this box no longer has is exactly the record a detached child is handed. Left
+    raising, it reached nobody — no `result.json`, so the ledger and `occupancy` saw a
+    dispatch that started and never ended — and it made `assert_worktree`'s own
+    `worktree_unreadable` branch unreachable for the case that branch most names.
+
+    Both halves collapse to the empty string on purpose: every caller here already reads
+    that as "git could not tell me", and no caller can act differently on the difference.
+    """
     # S603/S607: fixed literals plus paths this tool computed, and `git` resolves off
     # PATH on purpose — the checkout's toolchain is the caller's.
-    done = subprocess.run(  # noqa: S603
-        ["git", *args],  # noqa: S607
-        cwd=cwd,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    try:
+        done = subprocess.run(  # noqa: S603
+            ["git", *args],  # noqa: S607
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError:
+        return ""
     return done.stdout.strip() if done.returncode == 0 else ""
 
 
@@ -3187,16 +3205,34 @@ def unreadable_record_refusal(record: Path, unreadable: Exception) -> tuple[str,
     """Refuse a record that cannot be read back, and leave the refusal beside it.
 
     The name is `dispatch_stop.find_record`'s, deliberately, and not a second one for the
-    same condition: `tools/dispatch_stop.py` already refuses an unparseable dispatch record
-    as `dispatch_unreadable`, and the failure-class vocabulary earns its keep by an operator
-    grepping `~/.arma-cti/dispatches/` for one string rather than two.
+    same condition: `tools/dispatch_stop.py` already refuses a dispatch record that will
+    not read back as `dispatch_unreadable`, and one vocabulary across the two tools is
+    worth more than two precise ones. Not, however, for the reason it is tempting to give:
+    the stop side's refusal is *printed* and never written — `find_record` returns it to
+    `tools/dispatch_stop.py:548`, which puts its lines on the terminal, and by construction
+    there is no record to write it beside — so this site is the only one that puts the
+    string under `~/.arma-cti/dispatches/`. Sharing the name buys a reader one thing to
+    look up, not one place to grep.
+
+    The evidence fields are `dispatch_stop`'s too, and for the grep to work they have to
+    be: `dispatch=` the id and `record=` the `dispatch.json` itself, matching
+    `tools/dispatch_stop.py:258` rather than pointing one key at the file and the other at
+    its parent. The two do not cover the same conditions even so — an absent
+    `dispatch.json` is `unknown_dispatch` there and `dispatch_unreadable` here, because
+    there it means "no such dispatch" and here the child was handed one.
     """
     refusal = Refusal(
         "dispatch_unreadable",
-        (f"record={record}", f"found={type(unreadable).__name__}: {unreadable}"),
         (
-            "The record this child was pointed at is not one this version wrote. Nothing "
-            "ran. Re-plan the dispatch rather than repairing the file by hand."
+            f"dispatch={record.name}",
+            f"record={record / 'dispatch.json'}",
+            f"found={type(unreadable).__name__}: {unreadable}",
+        ),
+        (
+            "The record this child was pointed at could not be read back as one this "
+            "version wrote — it may be foreign, or merely unreachable, and `found=` above "
+            "says which. Nothing ran. Re-plan the dispatch; a permission bit or a full "
+            "disk is the box's to fix, not the record's."
         ),
         failure_class="infra_unavailable",
     )
@@ -3231,11 +3267,19 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
     practice — a record naming a profile this version no longer has is precisely "a
     record this code did not write" — and they used to sit one and two lines outside the
     guard, which meant no `result.json` and a dispatch the ledger and `occupancy` see as
-    started and never ended.
+    started and never ended. The same consequence used to reach past the guard through the
+    worktree, which comes off the record too: `subprocess.run(cwd=…)` raises before git
+    runs when the assigned tree is gone, which `just worktree done` makes routine. `git`
+    now answers the empty string there, so that record refuses `worktree_unreadable` with
+    a `result.json` beside it — the branch that names the case can now reach it.
 
     The brief is read here rather than at its point of use for the same reason and no
     other: it is part of the record, so an unreadable one is this refusal and not a
-    traceback. Reading it early is otherwise inert.
+    traceback. It is not inert, and the cost is worth stating: a record whose worktree is
+    also gone now refuses `dispatch_unreadable` where it used to refuse
+    `worktree_unreadable`, and the worktree diagnosis is the more actionable of the two —
+    it names `just worktree add`. Read-back before assignment is still the right order,
+    because a record that will not read back cannot be trusted to name a worktree at all.
     """
     try:
         plan = load_record(record)
