@@ -2281,11 +2281,14 @@ def test_the_routing_class_records_its_stable_id_separately_from_its_mutable_nam
 
 def test_read_strata_degrades_a_missing_value_beside_checked_true_to_unchecked() -> None:
     # #323 review finding 2: a checked flag with no value beside it once became a confident
-    # empty value; it degrades to unchecked with a reason instead.
+    # empty value; it degrades to unchecked with a reason instead. The value field is absent
+    # here, so the reason says the fields are missing rather than that the record is broken —
+    # a record valid in an earlier shape must not be accused of being malformed (round 2
+    # finding 4).
     s = dispatch.read_strata({"strata": {"gate_tier_checked": True, "gate_tier_unchecked_why": ""}})
     assert s.gate_tier.checked is False
     assert s.gate_tier.value is None
-    assert "malformed" in s.gate_tier.unchecked_why
+    assert "none of the value fields" in s.gate_tier.unchecked_why
 
 
 def test_read_strata_does_not_coerce_a_null_into_the_string_none() -> None:
@@ -2368,6 +2371,104 @@ def test_read_strata_reads_back_a_well_formed_record() -> None:
         dispatch.RoutingClass("5", "in_world_landings"),
     )
     assert s.labels == dispatch.Stratum.known(("bug", "ui"))
+
+
+# ---------------------------------------------- the findings from review round 2
+#
+# Each is one test that fails without its fix, named for the property it pins. The shared
+# thread is the read boundary: what a record that contradicts itself, or that this reader does
+# not recognise, leaves behind for the observatory that will one day read it.
+
+
+def test_an_unchecked_stratum_cannot_be_built_with_a_value() -> None:
+    # #323 review round 2 finding 1: F1 ("null whenever unchecked") held only because
+    # capture_strata built through Stratum.unknown; the type let any caller put a value beside
+    # checked=False. The type refuses that shape now, so document() writes `value`
+    # unconditionally without a boundary guard, and no future writer has to remember.
+    with pytest.raises(ValueError, match="carries no value"):
+        dispatch.Stratum(value="fast", checked=False, unchecked_why="")
+    # The two honest shapes still construct, including a checked empty value (an issue with no
+    # labels) and an unchecked no-value (a signal that could not run).
+    assert dispatch.Stratum.known("fast") == dispatch.Stratum(
+        "fast", checked=True, unchecked_why=""
+    )
+    assert dispatch.Stratum.unknown("why") == dispatch.Stratum(
+        None, checked=False, unchecked_why="why"
+    )
+    assert dispatch.Stratum.known(()) == dispatch.Stratum((), checked=True, unchecked_why="")
+
+
+def test_read_strata_names_a_value_beside_an_unchecked_flag() -> None:
+    # #323 review round 2 finding 2: a record carrying a value beside checked=False contradicts
+    # F1, which writes None for an unchecked signal. The reader returns unchecked — the right
+    # state — and says what it saw, so the contradiction leaves a trace rather than a silent
+    # empty reason.
+    s = dispatch.read_strata(
+        {"strata": {"gate_tier": "fast", "gate_tier_checked": False, "gate_tier_unchecked_why": ""}}
+    )
+    assert s.gate_tier.checked is False
+    assert s.gate_tier.value is None
+    assert "'fast'" in s.gate_tier.unchecked_why
+    assert "unchecked" in s.gate_tier.unchecked_why
+
+
+@pytest.mark.parametrize("container", [[], None, "x", 7])
+def test_read_strata_distinguishes_a_present_non_mapping_from_a_pre_strata_record(
+    container: object,
+) -> None:
+    # #323 review round 2 finding 3: {"strata": []}, {"strata": null} and {"strata": "x"} all
+    # returned NO_STRATA — indistinguishable from a record predating the field, and every
+    # reason empty. A present non-mapping is a malformed container, not a pre-#323 record, so
+    # it gets the same reason on every signal. The comment above that short-circuit claimed the
+    # per-field reader handled it, which it could not: a non-dict never reaches it.
+    s = dispatch.read_strata({"strata": container})
+    assert s != dispatch.NO_STRATA
+    assert s.gate_tier.checked is False
+    assert s.routing_class.checked is False
+    assert s.labels.checked is False
+    assert s.gate_tier.unchecked_why == s.routing_class.unchecked_why == s.labels.unchecked_why
+    assert "not a mapping" in s.gate_tier.unchecked_why
+
+
+def test_read_strata_keeps_an_absent_strata_field_as_no_strata() -> None:
+    # The pre-#323 record carries no strata field at all: nothing recorded, nothing checked,
+    # no reason. Only that case reads back as NO_STRATA — a present container (even an empty
+    # dict) does not, so 'nobody recorded anything' stays distinct from 'the recording broke'.
+    assert dispatch.read_strata({}) == dispatch.NO_STRATA
+    assert dispatch.read_strata({"strata": {}}) != dispatch.NO_STRATA
+
+
+def test_read_strata_does_not_call_an_earlier_shapes_routing_class_malformed() -> None:
+    # #323 review round 2 finding 4: a record written in the unlanded 5ff7f29 shape carried the
+    # flattened "id:name" routing_class string. The new reader looks for the split id/name
+    # fields, so it reads back unchecked — correctly — but the reason must say the fields are
+    # absent, not accuse a record that was valid in the shape it was written in. No migration:
+    # that shape never landed.
+    s = dispatch.read_strata(
+        {
+            "strata": {
+                "routing_class": "5:in_world_landings",
+                "routing_class_checked": True,
+                "routing_class_unchecked_why": "",
+            }
+        }
+    )
+    assert s.routing_class.checked is False
+    assert s.routing_class.value is None
+    assert "malformed" not in s.routing_class.unchecked_why
+    assert "none of the value fields" in s.routing_class.unchecked_why
+
+
+def test_read_strata_distinguishes_a_present_wrong_type_from_an_absent_field() -> None:
+    # The absent-fields reason (finding 4) is for a value this reader does not carry at all. A
+    # value that is present but the wrong type is a different shape and gets its own reason, so
+    # the two stay distinguishable rather than collapsing back into one "malformed".
+    s = dispatch.read_strata(
+        {"strata": {"gate_tier": 7, "gate_tier_checked": True, "gate_tier_unchecked_why": ""}}
+    )
+    assert s.gate_tier.checked is False
+    assert "none of the value fields" not in s.gate_tier.unchecked_why
+    assert "not in the shape" in s.gate_tier.unchecked_why
 
 
 def test_the_gate_derivation_lives_in_a_module_that_imports_neither_dispatcher_nor_brief() -> None:
