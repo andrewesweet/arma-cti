@@ -24,13 +24,12 @@ import os
 import shlex
 import shutil
 import subprocess
-from typing import TYPE_CHECKING
+from pathlib import Path
 
-from conftest import REPO
+from conftest import REPO, load_tool
 from test_pool_slots import EXIT_INFRA_UNAVAILABLE, executable, pool_json, pool_run
 
-if TYPE_CHECKING:
-    from pathlib import Path
+host_registry = load_tool("host_registry")
 
 HOSTS_SH = REPO / "spike" / "hosts.sh"
 RUN_SH = REPO / "spike" / "run.sh"
@@ -78,15 +77,15 @@ def hosts_sh(script: str, env: dict[str, str] | None = None) -> subprocess.Compl
 # fixture path passes every test in this module.
 #
 # Five is a choice; the constraints are two, and they are what a later edit must
-# preserve. It must differ from `default_hosts()`'s count, which is the registry
-# maximum of 6 — that difference is the whole canary, and
-# `test_a_one_host_registry_is_the_humans_row` asserts it so it is something a
-# test fails on rather than something a comment claims. And it must be at least
-# 3, because `regress.sh` refuses a pool wider than the host's slots and the
-# pool test below asks for `--slots 3`. Both ends are held from the other side
-# too: `test_absent_registry_preserves_the_local_host` pins the fallback to
-# `MAX_SLOTS`, so moving the default reds there rather than silently unmaking
-# the canary here.
+# preserve. It must differ from `default_hosts()`'s count — that difference is
+# the whole canary, and `test_the_fixture_registry_differs_from_the_fallback`
+# asserts the difference itself, on neither side's literal, so it reds whichever
+# side moves. And it must be at least 2: `regress.sh` refuses a pool wider than
+# the host's slots, and the widest pool that reaches that comparison is the
+# `--slots 2` of `test_the_host_reaches_the_run_that_executes_on_it`. The
+# `--slots 3` test below never reaches it — it sets `CTI_TIER_HOST=nosuchhost`
+# and `regress.sh` refuses at `cti_host_resolve` first, long before the host's
+# slot count is read.
 LOCAL_ROW = """version = 1
 [hosts.local]
 ssh_target = ""
@@ -122,6 +121,30 @@ def local_only_registry(tmp_path: Path) -> str:
 
 
 # ------------------------------------------------------------------- the table
+
+
+def test_the_fixture_registry_differs_from_the_fallback(tmp_path: Path) -> None:
+    """The canary's premise, asserted as the difference rather than as two numbers.
+
+    Every isolation claim in this module rests on the fixture registry being
+    distinguishable from `host_registry.default_hosts()`: `load()` falls back to
+    that default when its path does not exist, so a mistyped `CTI_HOSTS_FILE`
+    silently reads a one-row `local` registry, and a fallback indistinguishable
+    from the fixture passes every test here while proving nothing.
+
+    Pinning the two counts separately does not close that. The previous pin
+    compared `default_hosts()`'s output against `MAX_SLOTS` — the symbol
+    `default_hosts()` is written from — so it was a tautology with respect to
+    the value it guarded: lowering `MAX_SLOTS` to the fixture's 5 left it green
+    with the canary dead. This asserts the difference itself, which rests on no
+    third value and so reds however either side moves (#356).
+    """
+    fixture = host_registry.load(Path(local_only_registry(tmp_path)))["local"]
+    fallback = host_registry.default_hosts()["local"]
+    assert fixture.server_slots != fallback.server_slots, (
+        "the fixture registry is indistinguishable from the no-registry fallback, "
+        "so no test in this module proves it is being read"
+    )
 
 
 def test_a_one_host_registry_is_the_humans_row(tmp_path: Path) -> None:
@@ -374,8 +397,10 @@ def test_a_run_refused_by_the_guard_still_names_the_host(tmp_path: Path) -> None
     host — the ones that never got past it — were the ones that did not name it.
 
     Which refusal this is, is asserted rather than assumed. `run.sh` has several
-    `infra_unavailable` stops after this one — an unbuilt shim is the next — and
-    the four host fields hold on every one of them, so a test reading only those
+    `infra_unavailable` stops after this one — which one comes next depends on
+    the box, an unbuilt shim in a fresh worktree and the server binary or a
+    pre-flight where `extension/target/release/` is populated — and the four
+    host fields hold on every one of them, so a test reading only those
     would go green on a run the guard never touched. It did: flipping the
     fixture's role to `tier` skips the guard entirely and the shim check refuses
     a few lines later, with the same class and the same host. So the guard's own

@@ -45,10 +45,13 @@ def test_absent_registry_preserves_the_local_host(tmp_path: Path) -> None:
     The slot count is pinned here rather than left as a detail because another
     module rests on it: `tests/unit/test_host_seam.py` writes a fixture registry
     whose only observable difference from this fallback is `server_slots`, and
-    that difference is what proves the fixture is being read at all. Edit
-    `default_hosts()` to any other count and that proof evaporates in silence —
-    the host-seam tests go on passing while asserting nothing about isolation.
-    So this test fails instead (#356).
+    that difference is what proves the fixture is being read at all.
+
+    This pin is the shape of the fallback, not the canary's guard — it compares
+    `default_hosts()` against the symbol it is written from, so it cannot fail
+    when `MAX_SLOTS` itself moves. What guards the canary against every edit is
+    `test_the_fixture_registry_differs_from_the_fallback`, which asserts the
+    difference and rests on neither literal (#356).
     """
     hosts = host_registry.load(tmp_path / "absent.toml")
     assert list(hosts) == ["local"]
