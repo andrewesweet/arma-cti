@@ -2492,3 +2492,67 @@ def test_the_gate_derivation_lives_in_a_module_that_imports_neither_dispatcher_n
     )
     assert result.returncode == 0, result.stderr
     assert "gate_is_acyclic" in result.stdout
+
+
+# ---------------------------------------------- the findings from review round 3
+#
+# Round 2's contradiction check named a carried value only when the reason was a well-typed
+# string; a missing or non-string reason beside `checked: false` hit the type guard first and
+# returned the generic "malformed", losing the value F2 exists to surface. The four degradation
+# states a record can land in must stay mechanically apart, because #336 will tell them apart by
+# reason alone.
+
+
+def test_read_strata_names_a_carried_value_even_when_the_reason_is_missing() -> None:
+    # #323 review round 3 finding 2: F2 was implemented for the well-formed-reason case only.
+    # A record carrying a value beside `checked: false` with a *missing* reason once hit the
+    # type guard first and returned the generic "was malformed", so the carried value — the
+    # very thing F2 exists to surface — was lost. The contradiction is read before the reason's
+    # type is inspected, so the value is named here too, not only when the reason is a string.
+    s = dispatch.read_strata({"strata": {"gate_tier": "fast", "gate_tier_checked": False}})
+    assert s.gate_tier.checked is False
+    assert s.gate_tier.value is None
+    assert "'fast'" in s.gate_tier.unchecked_why
+    # It is the contradiction reason, not the generic malformed one: a non-string reason beside
+    # a carried value does not collapse this state back into corruption.
+    assert "malformed" not in s.gate_tier.unchecked_why
+
+
+def test_read_strata_names_a_carried_value_when_the_reason_is_the_wrong_type() -> None:
+    # The same property as above, through a non-string reason rather than a missing one: a
+    # reason of the wrong type beside a carried value still names the value, because the
+    # contradiction is read first.
+    s = dispatch.read_strata(
+        {"strata": {"gate_tier": "fast", "gate_tier_checked": False, "gate_tier_unchecked_why": 7}}
+    )
+    assert s.gate_tier.checked is False
+    assert s.gate_tier.value is None
+    assert "'fast'" in s.gate_tier.unchecked_why
+    assert "malformed" not in s.gate_tier.unchecked_why
+
+
+def test_read_strata_keeps_the_four_degradation_reasons_mechanically_apart() -> None:
+    # #323 review round 3 finding 2: #336 will tell the strata's degradation states apart by
+    # their reason alone, without reading English, so the four must never collide. Each is a
+    # distinct shape the reader meets — a value carried beside `checked: false`, a present
+    # non-mapping container, a record carrying none of the value fields this reader reads, and
+    # the plain pre-#323 absence — and their gate_tier reasons are four distinct strings.
+    carried = dispatch.read_strata({"strata": {"gate_tier": "fast", "gate_tier_checked": False}})
+    non_mapping = dispatch.read_strata({"strata": []})
+    no_value_fields = dispatch.read_strata(
+        {"strata": {"gate_tier_checked": True, "gate_tier_unchecked_why": ""}}
+    )
+    pre_strata = dispatch.read_strata({})
+    reasons = {
+        carried.gate_tier.unchecked_why,
+        non_mapping.gate_tier.unchecked_why,
+        no_value_fields.gate_tier.unchecked_why,
+        pre_strata.gate_tier.unchecked_why,
+    }
+    assert len(reasons) == 4
+    # Each is recognisable on its own, so a drift in one cannot hide behind another. The
+    # carried-state assertion is the one that reds without round 3's fix.
+    assert "'fast'" in carried.gate_tier.unchecked_why
+    assert "not a mapping" in non_mapping.gate_tier.unchecked_why
+    assert "none of the value fields" in no_value_fields.gate_tier.unchecked_why
+    assert pre_strata.gate_tier.unchecked_why == ""

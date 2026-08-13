@@ -1073,25 +1073,33 @@ def _read_signal(  # noqa: PLR0913 — keyword-only validator mirroring the per-
     Two shapes that are not corruption get their own reasons. A record that contradicts itself —
     a value beside `checked: false`, which F1 never writes — reads back unchecked *and names what
     it saw*, so the contradiction leaves a trace rather than a silent empty reason (review round 2
-    finding 2). And a record whose value fields this reader does not carry at all is told apart
+    finding 2). That naming is done before the reason's type is inspected, so a missing or
+    non-string reason beside a carried value still names the value — otherwise the very thing F2
+    exists to surface is lost to a generic "malformed" (review round 3 finding 2). And a record
+    whose value fields this reader does not carry at all is told apart
     from a broken one: the only records in that shape are this branch's own earlier format, never
     a landed one, so it says the fields are absent rather than that the record is malformed (review
     round 2 finding 4 — no migration, because nothing landed in that shape).
     """
     checked = row.get(checked_key)
     why = row.get(why_key)
+    raw_values = tuple(row.get(key) for key in value_keys)
+    # An unchecked signal carrying a value contradicts F1, which writes `None` for an unchecked
+    # value. Name the carried value so the contradiction leaves a trace — and do it before the
+    # reason's type is inspected: a record carrying a value beside `checked: false` with a
+    # missing or non-string reason must still name what it saw, or the value F2 exists to
+    # surface is lost to a generic "malformed" (review round 3 finding 2). This is the one
+    # state whose reason carries the value, keeping the four degradation states — a value
+    # beside `checked: false`, a present non-mapping container, a record carrying none of the
+    # value fields, and the plain pre-#323 absence — mechanically apart, so #336 can tell them
+    # apart by reason without reading English.
+    if checked is False and any(part is not None for part in raw_values):
+        seen = raw_values[0] if len(raw_values) == 1 else raw_values
+        return Stratum.unknown(f"the recorded {label} stratum was unchecked but carried {seen!r}")
     if not isinstance(checked, bool) or not isinstance(why, str):
         return Stratum.unknown(f"the recorded {label} stratum was malformed")
-    raw_values = tuple(row.get(key) for key in value_keys)
     if not checked:
-        # F1 writes `None` for an unchecked value. A value present here contradicts that, so
-        # name it rather than silently dropping it — the right state, carrying the reason the
-        # contradiction left behind (review round 2 finding 2).
-        if any(part is not None for part in raw_values):
-            seen = raw_values[0] if len(raw_values) == 1 else raw_values
-            return Stratum.unknown(
-                f"the recorded {label} stratum was unchecked but carried {seen!r}"
-            )
+        # F1 writes `None` for an unchecked value; the reason is the thing to keep.
         return Stratum.unknown(why)
     decoded = decode_value(raw_values)
     if decoded is _MALFORMED:

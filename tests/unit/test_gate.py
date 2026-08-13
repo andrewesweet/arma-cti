@@ -125,3 +125,17 @@ def test_derive_gate_is_fast_when_no_surface_and_no_domain_term_is_reached() -> 
     assert gate_result.kind == gate.GATE_FAST
     assert gate_result.reads_a_verdict is False
     assert any(part.startswith("named_paths=") for part in gate_result.because)
+
+
+def test_derive_gate_picks_an_unreadable_vocabulary_over_no_paths_when_both_hold() -> None:
+    # #323 review round 3 finding 3: no test combined an empty vocabulary with no named path,
+    # so the two `undetermined` branches could be swapped with every test still green. The kind
+    # stays `undetermined` either way; what changes is the `because` reason, and that reason is
+    # consumed mechanically (it is written to the strata record). When the vocabulary could not
+    # be read, the domain-mentions signal did not run — #41: a check that could not run is not a
+    # check that cleared — and that outranks a body that merely names no path, so the vocabulary
+    # reason wins. This test fails if the two branches trade places.
+    gate_result = gate.derive_gate("refactor the dispatcher", ())
+    assert gate_result.kind == gate.GATE_UNDETERMINED
+    assert any(part.startswith("vocabulary=unreadable") for part in gate_result.because)
+    assert not any(part.startswith("named_paths=none") for part in gate_result.because)
