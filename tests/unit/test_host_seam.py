@@ -24,12 +24,13 @@ import os
 import shlex
 import shutil
 import subprocess
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-from conftest import REPO, load_tool
+from conftest import REPO
 from test_pool_slots import EXIT_INFRA_UNAVAILABLE, executable, pool_json, pool_run
 
-host_registry = load_tool("host_registry")
+if TYPE_CHECKING:
+    from pathlib import Path
 
 HOSTS_SH = REPO / "spike" / "hosts.sh"
 RUN_SH = REPO / "spike" / "run.sh"
@@ -127,21 +128,42 @@ def test_the_fixture_registry_differs_from_the_fallback(tmp_path: Path) -> None:
     """The canary's premise, asserted as the difference rather than as two numbers.
 
     Every isolation claim in this module rests on the fixture registry being
-    distinguishable from `host_registry.default_hosts()`: `load()` falls back to
-    that default when its path does not exist, so a mistyped `CTI_HOSTS_FILE`
-    silently reads a one-row `local` registry, and a fallback indistinguishable
-    from the fixture passes every test here while proving nothing.
+    distinguishable from the no-registry fallback: `host_registry.load()` falls
+    back to a one-row `local` default when its path does not exist, so a
+    mistyped `CTI_HOSTS_FILE` silently reads that default, and a fallback
+    indistinguishable from the fixture passes every test here while proving
+    nothing.
 
-    Pinning the two counts separately does not close that. The previous pin
+    Pinning the two counts separately does not close that. The first pin
     compared `default_hosts()`'s output against `MAX_SLOTS` — the symbol
     `default_hosts()` is written from — so it was a tautology with respect to
     the value it guarded: lowering `MAX_SLOTS` to the fixture's 5 left it green
     with the canary dead. This asserts the difference itself, which rests on no
     third value and so reds however either side moves (#356).
+
+    The difference is read *through the seam* rather than through a Python
+    import of the registry, for two reasons. It is the stronger claim: the same
+    `cti_host_slots local` under the fixture and under a path that does not
+    exist also reds if `hosts.sh` ever stops honouring `CTI_HOSTS_FILE`, which
+    is the mistyped-path failure this canary exists to catch and which the
+    Python-side version cannot see. And it keeps this module free of any
+    repo-Python import: `tools/mutation_smoke.py` routes a test module to its
+    Python subject wherever one exists and only reaches the shell arm when there
+    is none, so importing `host_registry` here silently costs `spike/hosts.sh` —
+    the script this module's other tests exist to drive, and the subject
+    `SHELL_SUBJECT` names for it — its mutation arm on any gate (#356).
     """
-    fixture = host_registry.load(Path(local_only_registry(tmp_path)))["local"]
-    fallback = host_registry.default_hosts()["local"]
-    assert fixture.server_slots != fallback.server_slots, (
+    fixture = hosts_sh(
+        "cti_host_slots local",
+        env={"CTI_HOSTS_FILE": local_only_registry(tmp_path)},
+    )
+    fallback = hosts_sh(
+        "cti_host_slots local",
+        env={"CTI_HOSTS_FILE": str(tmp_path / "no-such-registry.toml")},
+    )
+    assert fixture.returncode == 0, fixture.stderr
+    assert fallback.returncode == 0, fallback.stderr
+    assert fixture.stdout.split() != fallback.stdout.split(), (
         "the fixture registry is indistinguishable from the no-registry fallback, "
         "so no test in this module proves it is being read"
     )
@@ -397,10 +419,12 @@ def test_a_run_refused_by_the_guard_still_names_the_host(tmp_path: Path) -> None
     host — the ones that never got past it — were the ones that did not name it.
 
     Which refusal this is, is asserted rather than assumed. `run.sh` has several
-    `infra_unavailable` stops after this one — which one comes next depends on
-    the box, an unbuilt shim in a fresh worktree and the server binary or a
-    pre-flight where `extension/target/release/` is populated — and the four
-    host fields hold on every one of them, so a test reading only those
+    `infra_unavailable` stops after this one, and which one comes next depends
+    on the box: in source order it is the server binary
+    (`${CTI_SERVER_DIR:-$HOME/arma3server}/arma3server_x64`, machine state
+    outside the worktree), then the pre-flight, and only then the unbuilt shim a
+    fresh worktree stops on. The four host fields hold on every one of them, so
+    a test reading only those
     would go green on a run the guard never touched. It did: flipping the
     fixture's role to `tier` skips the guard entirely and the shim check refuses
     a few lines later, with the same class and the same host. So the guard's own

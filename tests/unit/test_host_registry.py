@@ -42,16 +42,17 @@ def write(tmp_path: Path, text: str = REGISTRY) -> Path:
 def test_absent_registry_preserves_the_local_host(tmp_path: Path) -> None:
     """The fallback's whole shape, slot count included.
 
-    The slot count is pinned here rather than left as a detail because another
-    module rests on it: `tests/unit/test_host_seam.py` writes a fixture registry
-    whose only observable difference from this fallback is `server_slots`, and
-    that difference is what proves the fixture is being read at all.
+    The slot count is pinned here rather than left as a detail because it is
+    part of that shape: the fallback is the whole registry a machine with no
+    `hosts.toml` has, so its slot count is a contract and not an incidental.
+    It compares `default_hosts()` against the symbol it is written from, so it
+    cannot fail when `MAX_SLOTS` itself moves — it reds when the fallback stops
+    being written from `MAX_SLOTS`, which is what it is for.
 
-    This pin is the shape of the fallback, not the canary's guard — it compares
-    `default_hosts()` against the symbol it is written from, so it cannot fail
-    when `MAX_SLOTS` itself moves. What guards the canary against every edit is
-    `test_the_fixture_registry_differs_from_the_fallback`, which asserts the
-    difference and rests on neither literal (#356).
+    Nothing else rests on this pin. `tests/unit/test_host_seam.py` distinguishes
+    its fixture registry from this fallback with a claim of its own,
+    `test_the_fixture_registry_differs_from_the_fallback`, which reads both
+    through `spike/hosts.sh` and so rests on neither literal (#356).
     """
     hosts = host_registry.load(tmp_path / "absent.toml")
     assert list(hosts) == ["local"]
