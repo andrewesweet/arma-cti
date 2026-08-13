@@ -336,7 +336,9 @@ worktree *args:
 #                                routing gate, which needs no rebase, and names what it
 #                                could not consult; a dry run lands nothing either way,
 #                                so its exit carries the verdict — 0 where nothing it
-#                                could ask refused, 1 where routing would (#344)
+#                                could ask refused, 1 for any refusal, routing's
+#                                included, with the body naming which. The plan is on
+#                                stdout either way (#344)
 #
 # Three things it does that prose could not. The refspec is a constant no
 # argument reaches, so `git push origin main` — which pushes the local `main`

@@ -367,13 +367,28 @@ def test_the_gate_exempts_the_lane_the_policy_names_rather_than_a_second_literal
     The policy's `claude_lane` is the authority, and the constant is what remains when
     the policy could not be read — which is also the order the gate needs, since the
     Claude lane must not be refused for an unreadable policy it is the remedy for.
+
+    **Driven against a policy that names a different lane**, because the shipped policy's
+    `claude_lane` and `land.CLAUDE_LANE` are the same string: every assertion phrased in
+    terms of both at once passes whichever one the code actually reads, which is how
+    round 1's version of this test went green on the pre-fix code (review round 2
+    claim 2). Renaming the policy's lane separates them, so the constant-only form reds
+    on the first assertion and the union form reds on the second.
     """
-    policy = routing_policy.parse_policy(POLICY.read_text(encoding="utf-8"))
-    read = routing_policy.ReadResult(policy)
+    shipped = routing_policy.parse_policy(POLICY.read_text(encoding="utf-8"))
+    renamed = shipped._replace(claude_lane="claude-anthropic")
+    read = routing_policy.ReadResult(renamed)
     gated = ("addons/main/ui.sqf",)
 
-    assert land.classify_routing(read, gated, policy.claude_lane) is None
+    # The policy's name is exempt, and it is not the constant.
+    assert renamed.claude_lane != land.CLAUDE_LANE
+    assert land.classify_routing(read, gated, renamed.claude_lane) is None
+    # The constant is *replaced*, not joined: a readable policy that does not name it
+    # leaves it judged like any other lane.
+    assert _kind(land.classify_routing(read, gated, land.CLAUDE_LANE)) == "routing_policy_gate"
     assert land.classify_routing(read, gated, "zai") is not None
+    # With no policy to read, the constant is what is left — and the Claude lane must not
+    # be refused for an unreadable policy it is the remedy for.
     unreadable = routing_policy.ReadResult(None, "could not be read")
     assert land.classify_routing(unreadable, gated, land.CLAUDE_LANE) is None
     assert (
@@ -688,6 +703,11 @@ def _pushes_unqualified(report: Any) -> bool:  # noqa: ANN401
     return any(line == "would_run=git push origin HEAD:main" for line in report.lines)
 
 
+# The qualification both routing verdicts carry, spelled out here so the assertions on it
+# fail on a rewording rather than passing on its absence (round 2 claim 9).
+_CAVEAT = "(this branch's own diff, merge-base relative)"
+
+
 def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
     repo: tuple[Path, Path, Path],
 ) -> None:
@@ -710,6 +730,13 @@ def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
     assert any("routing=would_refuse" in line for line in report.lines)
     assert any("routing_policy_gate" in line for line in report.lines)
     assert any("routing_class=5:in_world_landings" in line for line in report.lines)
+    # The caveat, on the refusal and not only on the pass — that was round 1 claim 5's
+    # whole substance and nothing pinned it, so stripping it stayed green (round 2
+    # claim 9).
+    assert any(line.endswith(_CAVEAT) for line in report.lines if "routing=would_refuse" in line)
+    # And the remedy without the clause about a push that was never in prospect.
+    action = next(line for line in report.lines if line.startswith("action="))
+    assert not action.endswith("Nothing was pushed.")
     assert _tip(origin) == before
 
 
@@ -724,7 +751,7 @@ def test_a_dry_run_on_an_ungated_surface_from_a_foreign_lane_still_plans_the_pus
 
     assert report.code == 0
     assert _pushes_unqualified(report)
-    assert any(line.startswith("routing=would_pass lane=zai") for line in report.lines)
+    assert f"routing=would_pass lane=zai {_CAVEAT}" in report.lines
 
 
 def test_a_sibling_landing_a_gated_path_does_not_make_this_ungated_diff_refuse(
@@ -748,7 +775,7 @@ def test_a_sibling_landing_a_gated_path_does_not_make_this_ungated_diff_refuse(
 
     assert report.code == 0
     assert _pushes_unqualified(report)
-    assert any(line.startswith("routing=would_pass lane=zai") for line in report.lines)
+    assert f"routing=would_pass lane=zai {_CAVEAT}" in report.lines
 
 
 def test_a_dry_run_with_nothing_to_push_mirrors_the_landing_and_consults_no_gate(
@@ -790,6 +817,31 @@ def test_a_native_dry_run_says_the_routing_rung_does_not_apply_to_it(
 
     assert _pushes_unqualified(report)
     assert "routing=not_applicable lane=claude-native" in report.lines
+
+
+def test_a_refusing_dry_run_still_prints_its_plan_on_stdout(
+    repo: tuple[Path, Path, Path],
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`main` routes on the exit code, and a refusing dry run's code is now non-zero.
+
+    Left alone that emptied stdout exactly when the plan had the most to say, so the
+    foreign-lane seat #344 was filed for got a bare `recipe … failed` banner — the shape
+    this project trains agents to read as a harness failure rather than a verdict
+    (review round 2 claim 3).
+    """
+    _origin, _main, here = repo
+    _commit(here, "addons/main/ui.sqf", "in-world work\n")
+    monkeypatch.chdir(here)
+    monkeypatch.setenv("CTI_DISPATCH_LANE", "zai")
+
+    code = land.main(["--dry-run"])
+
+    captured = capsys.readouterr()
+    assert code == land.EXIT_REFUSED
+    assert any("routing=would_refuse" in line for line in captured.out.splitlines())
+    assert captured.err == ""
 
 
 # ------------------------------------------ the corpus rung, against a real repository

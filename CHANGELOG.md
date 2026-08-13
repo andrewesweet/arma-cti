@@ -334,8 +334,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the rebase itself, markers in the rebased tree, `just fast`, the push race, and whether the push
   and the ff-only merge can be run at all — is now named in a `not_checked=` line rather than left
   to be inferred. Because the plan now decides something, its exit code carries the decision: a dry
-  run lands nothing whatever it finds, so 0 means no rung it could consult refused and 1 means the
-  routing gate would (#344).
+  run lands nothing whatever it finds, so 0 means no rung it could consult refused and 1 means some
+  refusal fired — the routing gate's, but equally the dirty tree and the nothing-to-land that
+  `just land` decides before it reaches the plan — with the body naming which. The plan goes to
+  **stdout either way**: `just land` sends a refusal to stderr, and a dry run whose exit is now
+  non-zero exactly when it has the most to say would otherwise leave a foreign-lane seat with an
+  empty stdout and a bare `recipe … failed` banner (#344).
 
   Two things had to be right for that to be an improvement rather than the same defect pointing the
   other way. **The diff is merge-base relative.** `git diff A..B` is a symmetric tree comparison
@@ -344,11 +348,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   refuses, a sibling landing an ADR was enough to tell a `zai` seat working on one ungated doc that
   its work would be refused, when the real landing rebases first and lands it. Both call sites now
   use `origin/main...HEAD`, so the enforcing rung's answer is right by construction rather than by
-  accident of where it is called from. **And the plan mirrors the landing's own control flow,
+  accident of where it is called from — with one narrow exception, stated where the code is: a
+  commit of this branch's that the rebase discards as already upstream is in the merge-base set and
+  gone from the rebased tree, so a plan can still be pessimistic about a patch a sibling landed
+  first. **And the plan mirrors the landing's own control flow,
   including where that flow skips the gate**: with nothing to push — the re-run after
   `merge_blocked_by_sandbox` — the landing never enters the rebase-and-gate rung at all, so the plan
   now names each skipped rung with the landing's own reason instead of refusing the one outstanding
   merge for a check that does not run.
+
+  One home for which lane the gate never judges, and the policy is it. `land.py` read the lane name
+  from a constant while `routing_policy.enforcing_match` read it from the policy document, so a
+  policy that moved `claude_lane` would have left the landing gate exempting the old name silently —
+  fail-open, on the class that keeps the gates themselves on Claude. The policy now **replaces** the
+  constant rather than joining it, and the constant is what remains only when the policy could not be
+  read at all, which is the order the gate needs: the Claude lane must not be refused for an
+  unreadable policy it is the remedy for.
 
 - **The mutation gate's shell tracing no longer kills a test that shells into a `set -u` bash.**
   Its `BASH_ENV` preamble named `${BASH_SOURCE}` in `PS4`, and `BASH_SOURCE` has no element 0 in a
