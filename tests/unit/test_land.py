@@ -361,6 +361,26 @@ def test_a_completed_merge_does_not_refuse() -> None:
     assert land.classify_merge(_MAIN, "abc1234", 0, "") is None
 
 
+def test_the_gate_exempts_the_lane_the_policy_names_rather_than_a_second_literal() -> None:
+    """Claim 6: one home for 'which lane the routing gate never judges'.
+
+    The policy's `claude_lane` is the authority, and the constant is what remains when
+    the policy could not be read — which is also the order the gate needs, since the
+    Claude lane must not be refused for an unreadable policy it is the remedy for.
+    """
+    policy = routing_policy.parse_policy(POLICY.read_text(encoding="utf-8"))
+    read = routing_policy.ReadResult(policy)
+    gated = ("addons/main/ui.sqf",)
+
+    assert land.classify_routing(read, gated, policy.claude_lane) is None
+    assert land.classify_routing(read, gated, "zai") is not None
+    unreadable = routing_policy.ReadResult(None, "could not be read")
+    assert land.classify_routing(unreadable, gated, land.CLAUDE_LANE) is None
+    assert (
+        _kind(land.classify_routing(unreadable, gated, "zai")) == "routing_policy_gate_unreadable"
+    )
+
+
 # ---------------------------------------------------------------- end to end
 
 
@@ -673,9 +693,11 @@ def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
 ) -> None:
     """#344: the dry run consulted no routing rung, so it planned a push the gate refuses.
 
-    Asserted on the behaviour — no unqualified push step, and the same refusal class the
-    enforcing rung produces — rather than on any sentence, so a rewording stays green and
-    dropping the check from this path goes red.
+    The push step is asserted behaviourally, through `_pushes_unqualified`. The routing
+    assertions are **not** wording-independent and are not meant to be: the emitted line
+    is this rung's contract with its reader, so renaming `would_refuse` reds these on
+    purpose. Verified by running it — see the round's own note on #344; the claim that a
+    rewording stays green was wrong about these three assertions (review round 1 claim 8).
     """
     origin, main, here = repo
     before = _tip(origin)
@@ -683,6 +705,7 @@ def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
 
     report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai")
 
+    assert report.code == land.EXIT_REFUSED
     assert not _pushes_unqualified(report)
     assert any("routing=would_refuse" in line for line in report.lines)
     assert any("routing_policy_gate" in line for line in report.lines)
@@ -699,8 +722,61 @@ def test_a_dry_run_on_an_ungated_surface_from_a_foreign_lane_still_plans_the_pus
 
     report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai")
 
+    assert report.code == 0
     assert _pushes_unqualified(report)
     assert any(line.startswith("routing=would_pass lane=zai") for line in report.lines)
+
+
+def test_a_sibling_landing_a_gated_path_does_not_make_this_ungated_diff_refuse(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """The pre-rebase superset, which turned #344's fix the other way round.
+
+    `git diff A..B` is a symmetric tree comparison, so before the rebase — and `land`
+    has already fetched by then — it reported this branch's paths *and* every path the
+    incoming commits touched. A sibling landing an ADR while a `zai` seat worked on one
+    ungated doc was enough to make the dry run refuse work the real landing accepts, and
+    hand it back. `origin/main...HEAD` is merge-base relative, so it answers with this
+    branch's own paths and the sibling's ADR is not among them.
+    """
+    _origin, main, here = repo
+    _commit(here, "docs/telemetry-ledger.md", "ungated work\n")
+    _commit(main, "docs/adr/0099-a-sibling-decision.md", "# ADR\n")
+    _git("push", "origin", "main", cwd=main)
+
+    report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai")
+
+    assert report.code == 0
+    assert _pushes_unqualified(report)
+    assert any(line.startswith("routing=would_pass lane=zai") for line in report.lines)
+
+
+def test_a_dry_run_with_nothing_to_push_mirrors_the_landing_and_consults_no_gate(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """The re-run after a blocked merge, where the real landing skips the gate entirely.
+
+    `ahead == 0` with a stale main checkout reaches `_push`'s not-needed branch without
+    ever entering `_rebase_and_gate`, so routing is never consulted and the merge is the
+    one outstanding step. A plan that classified routing here would refuse that merge for
+    a rung that does not run — which is what it did (review round 1 claim 2).
+    """
+    _origin, main, here = repo
+    _commit(here, "addons/main/ui.sqf", "in-world work\n")
+    _git("push", "origin", "HEAD:main", cwd=here)
+
+    report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai")
+
+    assert report.code == 0
+    assert "routing=not_consulted reason=nothing_to_push" in report.lines
+    assert "corpus=not_consulted reason=nothing_to_push" in report.lines
+    assert not any(line.startswith("would_not_run=") for line in report.lines)
+    assert any(
+        line.startswith("would_run=git -C ") and "merge --ff-only" in line for line in report.lines
+    )
+    # What it did not check is the merge's, not the gate's: the gate does not run here.
+    unchecked = [line for line in report.lines if line.startswith("not_checked=")]
+    assert unchecked == [f"not_checked={land.NOT_CHECKED_MERGE_ONLY}"]
 
 
 def test_a_native_dry_run_says_the_routing_rung_does_not_apply_to_it(

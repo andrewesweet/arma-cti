@@ -304,12 +304,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `zai` seat briefed that its `tools/dispatch.py` diff would be refused ran the dry run, met
   `would_run=git push origin HEAD:main`, and reported the brief's premise wrong. The error ran in
   the worst direction — most optimistic exactly where the surface is most gated. The rung needs no
-  rebase, only the policy on fetched `origin/main` and the `origin/main..HEAD` diff, so it now runs
-  there: the plan carries `routing=would_refuse` with the refusal's own evidence and turns the push
-  and merge steps into `would_not_run=… reason=<class>`, `routing=would_pass` when it clears, and
-  `routing=not_applicable lane=claude-native` where the gate does not apply. What a dry run
-  genuinely cannot reach — the rebase itself, markers in the rebased tree, `just fast`, the push
-  race — is now named in a `not_checked=` line rather than left to be inferred (#344).
+  rebase, only the policy on fetched `origin/main` and the branch's own diff, so it now runs there:
+  the plan carries `routing=would_refuse` with the refusal's own evidence and turns the push and
+  merge steps into `would_not_run=… reason=<class>`, `routing=would_pass` when it clears, and
+  `routing=not_applicable` where the gate does not apply. What a dry run genuinely cannot reach —
+  the rebase itself, markers in the rebased tree, `just fast`, the push race, and whether the push
+  and the ff-only merge can be run at all — is now named in a `not_checked=` line rather than left
+  to be inferred. Because the plan now decides something, its exit code carries the decision: a dry
+  run lands nothing whatever it finds, so 0 means no rung it could consult refused and 1 means the
+  routing gate would (#344).
+
+  Two things had to be right for that to be an improvement rather than the same defect pointing the
+  other way. **The diff is merge-base relative.** `git diff A..B` is a symmetric tree comparison
+  rather than a commit range, so before a rebase — and `just land` has already fetched by then — it
+  named this branch's paths *and* every path the incoming commits touched; since a match on any path
+  refuses, a sibling landing an ADR was enough to tell a `zai` seat working on one ungated doc that
+  its work would be refused, when the real landing rebases first and lands it. Both call sites now
+  use `origin/main...HEAD`, so the enforcing rung's answer is right by construction rather than by
+  accident of where it is called from. **And the plan mirrors the landing's own control flow,
+  including where that flow skips the gate**: with nothing to push — the re-run after
+  `merge_blocked_by_sandbox` — the landing never enters the rebase-and-gate rung at all, so the plan
+  now names each skipped rung with the landing's own reason instead of refusing the one outstanding
+  merge for a check that does not run.
 
 - **The mutation gate's shell tracing no longer kills a test that shells into a `set -u` bash.**
   Its `BASH_ENV` preamble named `${BASH_SOURCE}` in `PS4`, and `BASH_SOURCE` has no element 0 in a
