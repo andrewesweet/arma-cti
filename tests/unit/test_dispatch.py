@@ -1152,11 +1152,14 @@ def test_the_plan_charge_prices_the_carried_instant(
     issue exists to remove.
 
     A peak `planned_at` is reached by writing the record and substituting the field on
-    disk, which is production's own route rather than a fixture convenience: `plan_for`
-    refuses a peak z.ai dispatch (#238), but `load_record` prices whatever instant the
-    file carries, and `plan_charge`'s docstring is explicit that the published band can
-    move under a record already written. Re-pricing a stored instant against today's
-    schedule is exactly what the detached child does.
+    disk, for one reason and not a grander one: `plan_for` refuses a peak z.ai dispatch
+    (#238), so there is no other way to get a peak instant onto a record at all. Nothing
+    in production re-prices a stored instant — `document()`'s only production caller is
+    `write_record`, and the detached child calls `load_record` and never `document()` on
+    what it gets back — which is the property `plan_charge`'s own docstring argues for,
+    since a record that re-priced itself would silently restate its history the first time
+    the published band moved. This route exercises the wiring; it does not imitate a
+    caller.
     """
     credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
     plan, brief, refusal = plan_for(
@@ -1728,6 +1731,44 @@ def test_the_child_refuses_a_worktree_that_is_not_its_assignment(tmp_path: Path)
     result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
     assert result["failure_class"] == "infra_unavailable"
     assert "returncode" not in result
+
+
+def test_the_child_refuses_a_worktree_that_has_been_removed(tmp_path: Path) -> None:
+    """The likeliest shape of all: `just worktree done` ran, and the record outlived the tree.
+
+    `plan.worktree` comes off the record, so a record naming a tree this box no longer has
+    reaches the child intact and only fails at `subprocess.run(cwd=…)` — which used to
+    raise `FileNotFoundError` before git ran, writing no `result.json` and leaving the
+    ledger and `occupancy` with a dispatch that started and never ended. It must be a
+    named refusal with a class instead, and specifically `worktree_unreadable`, whose own
+    docstring names this case and which nothing could previously reach it by.
+    """
+    plan, brief, _ = plan_for(tmp_path)
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    shutil.rmtree(plan.worktree)
+
+    code, lines = dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=worktree_unreadable" in lines
+    assert "class=infra_unavailable" in lines
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["refusal"] == "worktree_unreadable"
+    assert result["failure_class"] == "infra_unavailable"
+    # The end-state the raise used to deny the ledger: an `ended_at` and no `returncode`,
+    # which is how `type_end_state` tells a refused dispatch from a live one.
+    assert "ended_at" in result
+    assert "returncode" not in result
+
+
+def test_git_answers_nothing_when_it_cannot_be_run_at_all(tmp_path: Path) -> None:
+    """An absent `cwd` is git giving no answer, not an exception for a caller to catch.
+
+    Both halves of "no answer" collapse to the empty string, and this pins the half that
+    never starts the process; `test_a_path_git_cannot_read_is_infra_unavailable` covers
+    what the callers then do with it.
+    """
+    assert dispatch.git("rev-parse", "--show-toplevel", cwd=tmp_path / "never-created") == ""
 
 
 def test_the_zai_lane_refuses_at_the_recipe_while_its_key_does_not_exist(
