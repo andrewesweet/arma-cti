@@ -158,7 +158,8 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     deterministic: the z.ai entry cannot be reached without a key at any hour, so a review
     resolves over the Codex and native entries alone unless a test says otherwise.
     """
-    now = overrides.pop("now", None) or datetime.now(tz=UTC)
+    injected = overrides.pop("now", None)
+    now = datetime.now(tz=UTC) if injected is None else injected
     worktree = overrides.pop("worktree", None) or git_worktree(tmp_path)
     request = {
         "lane": "",

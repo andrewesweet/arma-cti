@@ -95,7 +95,8 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     z.ai entry cannot be reached without a key, so the native tail is what a box with no
     z.ai credential resolves to at any hour.
     """
-    now = overrides.pop("now", None) or datetime.now(tz=UTC)
+    injected = overrides.pop("now", None)
+    now = datetime.now(tz=UTC) if injected is None else injected
     worktree = overrides.pop("worktree", None) or git_worktree(tmp_path)
     request = {
         "lane": "",
