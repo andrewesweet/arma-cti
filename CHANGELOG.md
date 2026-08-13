@@ -312,8 +312,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   did, so a test making a claim about `just dispatch`'s output can be clock-free as its
   neighbours already were. The read is strict: `planned_at` has been written on every record
   since `dispatch.json` first existed, so a record without it is not an older shape but one this
-  code did not write, and a record a detached child cannot read back now refuses by name —
-  `unreadable_record`, class `infra_unavailable` — instead of raising where nobody is listening.
+  code did not write. A detached child that cannot read its record back now refuses by name —
+  `dispatch_unreadable`, class `infra_unavailable`, the name `just dispatch --stop` already used
+  for the same condition — instead of raising where nobody is listening. That covers the whole
+  read-back: an instant that will not parse, an `issue` or `argv` of the wrong JSON type, a
+  since-retired profile or an unregistered lane, and an absent `dispatch.json` or `brief.md`. The
+  refusal is recorded beside the record where there is a record to record it beside, so the
+  ledger sees a dispatch that ended rather than one still running.
 - **The mutation gate's shell tracing no longer kills a test that shells into a `set -u` bash.**
   Its `BASH_ENV` preamble named `${BASH_SOURCE}` in `PS4`, and `BASH_SOURCE` has no element 0 in a
   `bash -c` body — which is exactly `just`'s recipe shell, `["bash", "-euo", "pipefail", "-c"]`. So

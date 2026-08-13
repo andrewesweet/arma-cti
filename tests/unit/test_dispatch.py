@@ -233,7 +233,8 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     passes an explicitly off-peak moment instead — there is no override that would let it
     do anything else, which is the point of that rung.
     """
-    now = overrides.pop("now", None) or datetime.now(tz=UTC)
+    injected = overrides.pop("now", None)
+    now = datetime.now(tz=UTC) if injected is None else injected
     worktree = overrides.pop("worktree", None) or git_worktree(tmp_path)
     request = {
         "lane": "claude-native",
@@ -1135,18 +1136,30 @@ def test_the_record_is_stamped_with_the_injected_instant_not_the_clock(
     assert document["planned_at"] == moment.isoformat()
 
 
-def test_the_plan_charge_prices_the_carried_instant(tmp_path: Path) -> None:
+@pytest.mark.parametrize(("moment", "priced"), [(PEAK, (True, 1.0)), (OFF_PEAK, (False, 0.5))])
+def test_the_plan_charge_prices_the_carried_instant(
+    tmp_path: Path, moment: datetime, priced: tuple[bool, float]
+) -> None:
     """The priced band follows the record's own instant, not the hour it was rendered in.
 
-    Only the off-peak row. A peak row here would pin a state production refuses to produce
-    — z.ai is off-peak-only, so no z.ai plan reaches `document()` carrying a peak
-    `planned_at` — and a test pinning an unreachable state can stay green against a rule
-    that no longer holds. Peak pricing is a property of `plan_charge` rather than of a
-    record, and `test_a_zai_dispatch_records_the_band_it_was_charged_in` pins it there
-    directly. What is left under test here is the record's dependence on the field.
+    Both bands, and that is the whole discriminating force of this test (#341). One row
+    alone cannot tell a `document()` that reads `self.planned_at` from one that re-reads
+    the clock, because at some hour of the day the clock agrees with whichever single
+    instant was substituted — off-peak for twenty hours, peak for four. With both rows
+    asserted, one of them disagrees with the wall clock at every hour, so this is the same
+    test at 07:00 and at 22:00. The round that dropped the peak row left the wiring pinned
+    only by tests that happen to plan off-peak, which is the four-hours-a-day shape this
+    issue exists to remove.
+
+    A peak `planned_at` is reached by writing the record and substituting the field on
+    disk, which is production's own route rather than a fixture convenience: `plan_for`
+    refuses a peak z.ai dispatch (#238), but `load_record` prices whatever instant the
+    file carries, and `plan_charge`'s docstring is explicit that the published band can
+    move under a record already written. Re-pricing a stored instant against today's
+    schedule is exactly what the detached child does.
     """
     credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
-    plan, _, refusal = plan_for(
+    plan, brief, refusal = plan_for(
         tmp_path,
         lane="zai",
         profile="zai-glm52-max",
@@ -1156,9 +1169,15 @@ def test_the_plan_charge_prices_the_carried_instant(tmp_path: Path) -> None:
     )
     assert refusal is None
     assert plan is not None
-    charge = plan._replace(planned_at=OFF_PEAK).document()["plan_charge"]
+    dispatch.write_record(plan, brief)
+    path = plan.record / "dispatch.json"
+    document = json.loads(path.read_text(encoding="utf-8"))
+    document["planned_at"] = moment.isoformat()
+    path.write_text(json.dumps(document), encoding="utf-8")
+
+    charge = dispatch.load_record(plan.record).document()["plan_charge"]
     assert isinstance(charge, dict)
-    assert (charge["peak"], charge["multiplier"]) == (False, 0.5)
+    assert (charge["peak"], charge["multiplier"]) == priced
 
 
 def test_a_native_record_carries_no_plan_charge_block(tmp_path: Path) -> None:
@@ -1198,8 +1217,9 @@ def test_a_record_without_planned_at_is_an_error_not_an_invented_instant(tmp_pat
 
 def test_planned_at_reads_back_from_the_z_spelling(tmp_path: Path) -> None:
     # `Z` and `+00:00` are the same instant, and `datetime.fromisoformat` has read both
-    # since 3.11, which this project pins past. Pinned because records written by
-    # something other than this module use the `Z` spelling.
+    # since 3.11, which this project pins past. Pinned because it is the spelling records
+    # are written in when something other than this module writes them — not because it
+    # discriminates between two implementations.
     plan, brief, _ = plan_for(tmp_path, now=OFF_PEAK)
     assert plan is not None
     dispatch.write_record(plan, brief)
@@ -1211,8 +1231,21 @@ def test_planned_at_reads_back_from_the_z_spelling(tmp_path: Path) -> None:
     assert dispatch.load_record(plan.record).planned_at == OFF_PEAK
 
 
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        # One row per way the read-back was measured to fail. The two registry rows are the
+        # likely ones — profiles and lanes are retired here as a matter of routine — and
+        # they were the ones that used to raise, because the lookups sat outside the guard.
+        ("planned_at", "not-an-instant"),
+        ("issue", {"number": 341}),
+        ("argv", 7),
+        ("profile", "opus-retired"),
+        ("lane", "gone"),
+    ],
+)
 def test_an_unreadable_record_refuses_rather_than_raising_into_the_detached_child(
-    tmp_path: Path,
+    tmp_path: Path, field: str, value: object
 ) -> None:
     """The child has no caller to raise at, so it refuses with a class and records it."""
     plan, brief, _ = plan_for(tmp_path)
@@ -1220,16 +1253,45 @@ def test_an_unreadable_record_refuses_rather_than_raising_into_the_detached_chil
     dispatch.write_record(plan, brief)
     path = plan.record / "dispatch.json"
     document = json.loads(path.read_text(encoding="utf-8"))
-    document["planned_at"] = "not-an-instant"
+    document[field] = value
     path.write_text(json.dumps(document), encoding="utf-8")
 
     code, lines = dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
     assert code == dispatch.EXIT_REFUSED
-    assert "refusal=unreadable_record" in lines
+    assert "refusal=dispatch_unreadable" in lines
     assert "class=infra_unavailable" in lines
     result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
-    assert result["refusal"] == "unreadable_record"
+    assert result["refusal"] == "dispatch_unreadable"
     assert result["failure_class"] == "infra_unavailable"
+
+
+@pytest.mark.parametrize("missing", ["dispatch.json", "brief.md"])
+def test_a_record_missing_a_file_refuses_rather_than_raising(tmp_path: Path, missing: str) -> None:
+    """An absent half of the record is the same condition: `OSError`, refused by name."""
+    plan, brief, _ = plan_for(tmp_path)
+    assert plan is not None
+    dispatch.write_record(plan, brief)
+    (plan.record / missing).unlink()
+
+    code, lines = dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=dispatch_unreadable" in lines
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["refusal"] == "dispatch_unreadable"
+
+
+def test_a_record_directory_that_does_not_exist_refuses_and_writes_nothing(tmp_path: Path) -> None:
+    """There is nowhere to leave a `result.json` when the record itself is absent.
+
+    The refusal still reaches the caller, and nothing is created beside a path that was
+    never a record — which is what the `is_dir()` guard in the refusal is for.
+    """
+    absent = tmp_path / "dispatches" / "d-20260813-120000-abcdef"
+
+    code, lines = dispatch.run_dispatch(absent, {"HOME": str(tmp_path)})
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=dispatch_unreadable" in lines
+    assert not absent.exists()
 
 
 def test_an_incomplete_request_names_what_is_missing(capsys: pytest.CaptureFixture[str]) -> None:

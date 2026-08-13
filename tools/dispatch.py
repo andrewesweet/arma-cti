@@ -3184,9 +3184,15 @@ def write_result(record: Path, **fields: object) -> None:
 
 
 def unreadable_record_refusal(record: Path, unreadable: Exception) -> tuple[str, ...]:
-    """Refuse a record that cannot be read back, and leave the refusal beside it."""
+    """Refuse a record that cannot be read back, and leave the refusal beside it.
+
+    The name is `dispatch_stop.find_record`'s, deliberately, and not a second one for the
+    same condition: `tools/dispatch_stop.py` already refuses an unparseable dispatch record
+    as `dispatch_unreadable`, and the failure-class vocabulary earns its keep by an operator
+    grepping `~/.arma-cti/dispatches/` for one string rather than two.
+    """
     refusal = Refusal(
-        "unreadable_record",
+        "dispatch_unreadable",
         (f"record={record}", f"found={type(unreadable).__name__}: {unreadable}"),
         (
             "The record this child was pointed at is not one this version wrote. Nothing "
@@ -3194,6 +3200,9 @@ def unreadable_record_refusal(record: Path, unreadable: Exception) -> tuple[str,
         ),
         failure_class="infra_unavailable",
     )
+    # A record directory that does not exist at all reaches here — `FileNotFoundError` out
+    # of `load_record` is one of the ways a pointed-at record fails — and there is nowhere
+    # to leave the refusal then. The refusal still goes back to the caller either way.
     if record.is_dir():
         write_result(
             record,
@@ -3212,13 +3221,29 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
     so an uncaught exception here reaches nobody but `dispatch.log`; a named refusal with a
     failure class reaches whoever reads `result.json`, and `infra_unavailable` is the right
     one — a record this code did not write says nothing about the code under test.
+
+    The whole read-back is inside that guard, not only the JSON parse, because the record
+    fails in more ways than one and every one of them lands in the same place. Measured:
+    a `planned_at` that is not an instant raises `ValueError`, an `issue` or `argv` of the
+    wrong JSON type raises `TypeError`, a since-retired profile or an unregistered lane
+    raises `KeyError` out of the registries, and an absent `dispatch.json` or `brief.md`
+    raises `OSError`. Registry churn makes the two `KeyError`s the likely ones in
+    practice — a record naming a profile this version no longer has is precisely "a
+    record this code did not write" — and they used to sit one and two lines outside the
+    guard, which meant no `result.json` and a dispatch the ledger and `occupancy` see as
+    started and never ended.
+
+    The brief is read here rather than at its point of use for the same reason and no
+    other: it is part of the record, so an unreadable one is this refusal and not a
+    traceback. Reading it early is otherwise inert.
     """
     try:
         plan = load_record(record)
-    except (KeyError, ValueError) as unreadable:
+        profile = PROFILES[plan.identity.profile]
+        lane = LANES[plan.identity.lane]
+        brief = (record / "brief.md").read_text(encoding="utf-8")
+    except (KeyError, TypeError, ValueError, OSError) as unreadable:
         return EXIT_REFUSED, unreadable_record_refusal(record, unreadable)
-    profile = PROFILES[plan.identity.profile]
-    lane = LANES[plan.identity.lane]
 
     refusal = assert_worktree(plan.worktree, git("rev-parse", "--show-toplevel", cwd=plan.worktree))
     if refusal is None:
@@ -3234,7 +3259,6 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         return EXIT_REFUSED, refusal.lines()
 
     child = assemble_environment(parent, profile, plan.identity, token)
-    brief = (record / "brief.md").read_text(encoding="utf-8")
     started = datetime.now(tz=UTC)
     # S603: argv is the registry's runner plus registry values; the brief is on stdin so
     # that nothing a dispatch carries reaches the process table.
