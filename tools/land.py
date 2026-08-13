@@ -77,7 +77,9 @@ exit code.
 Exit 0 is landed. Exit 1 is "nothing landed". Exit 2 is the pair above it: the
 work **is** on `origin/main` and a step is outstanding — a distinction an
 orchestrator can act on without parsing prose, and never a success exit (#213's
-criterion 4).
+criterion 4). A `--dry-run` lands nothing whatever it finds, so its exit carries its
+verdict instead: 0 where no rung it could consult refused, 1 where the routing gate
+would. A plan that decides something needs a machine channel for the decision (#344).
 
 Nothing here resets, cleans or aborts on a refusal path, for `tools/worktree.py`'s
 reason: on a shared tree the files are evidence, and the judgement of what a
@@ -131,11 +133,26 @@ EXIT_LANDED_INCOMPLETE: Final = 2
 
 HOW_MANY_SHOWN: Final = 10
 
+# The lane the routing gate never judges, as one literal in this module. The trusted
+# policy carries its own name for it (`claude_lane`) and `_exempt_lane` prefers that;
+# this is what remains when the policy could not be read at all, and it is the default
+# every entry point here uses.
+CLAUDE_LANE: Final = "claude-native"
+
 # The rungs `--dry-run` genuinely cannot consult, because each needs the tree the
 # rebase produces or a command the dry run refuses to run. Named in the output so a
-# plan's silence is not read as a clearance it never gave (#344).
+# plan's silence is not read as a clearance it never gave (#344). Two lists, because
+# the plan mirrors the landing's own control flow: a tree with nothing to push reaches
+# neither the rebase nor the gate, and naming rungs that will not run would be the same
+# defect pointing the other way.
 NOT_CHECKED: Final = (
-    "the rebase itself, conflict markers in the rebased tree, `just fast`, the push race"
+    "the rebase itself, conflict markers in the rebased tree, `just fast`, the push race, "
+    "whether the push and the ff-only merge can be run at all, and whether the main "
+    "checkout carries commits of its own"
+)
+NOT_CHECKED_MERGE_ONLY: Final = (
+    "whether the ff-only merge into the main checkout can be run at all, and whether that "
+    "checkout carries commits of its own"
 )
 
 # git's own words when a push loses a race, across its several phrasings.
@@ -281,6 +298,21 @@ def classify_conflict_markers(path: Path, findings: Sequence[Finding]) -> Refusa
     )
 
 
+def _exempt_lane(read: routing_policy.ReadResult, lane: str) -> bool:
+    """Whether the routing gate exempts this lane at all — the one home for that question.
+
+    The policy's own `claude_lane` is the authority and `enforcing_match` reads it from
+    there; the constant is the fallback for a policy that could not be read, which is
+    also the order the gate needs — the Claude lane must not be refused for an unreadable
+    policy it is the remedy for. One predicate rather than a literal at each site, because
+    a second copy is how changing `claude_lane` would silently move only one of them
+    (#344, review round 1 claim 6).
+    """
+    if lane == CLAUDE_LANE:
+        return True
+    return read.policy is not None and lane == read.policy.claude_lane
+
+
 def classify_routing(
     read: routing_policy.ReadResult,
     paths: tuple[str, ...] | None,
@@ -293,7 +325,7 @@ def classify_routing(
     here says something about the paths that will actually be pushed. An unreadable
     policy or diff refuses: a check that did not run is not a clearance (#41).
     """
-    if lane == "claude-native":
+    if _exempt_lane(read, lane):
         return None
     if read.policy is None:
         return Refusal(
@@ -490,11 +522,22 @@ def _run(argv: list[str], cwd: Path) -> tuple[int | None, str]:
 
 
 def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, ...] | None, str]:
-    """Read the trusted policy from fetched origin/main and the paths above that base.
+    """Read the trusted policy from fetched origin/main and this branch's own paths.
 
     Reading the worktree's copy would let a foreign diff weaken the policy that judges
     itself. `land` has already fetched at this point, so `origin/main` is both current and
     outside the candidate diff.
+
+    **Three dots, and the third is load-bearing.** `git diff A..B` is a synonym for
+    `git diff A B` — a symmetric tree comparison, not a commit range — so on a fetched
+    base it reports this branch's paths *and* every path the incoming commits touch.
+    That is harmless after a rebase, where the two sets coincide, and wrong before one:
+    `landing_match` matches on any path, so a superset only ever adds matches, and a
+    pre-rebase caller would refuse an ungated diff for a class a sibling brought.
+    `origin/main...HEAD` is merge-base relative, so this answers with the branch's own
+    paths wherever it is called from. The enforcing rung's answer was previously right by
+    accident of ordering; this makes it right by construction, so moving the call cannot
+    quietly reintroduce the bug (#344, review round 1 claim 1).
     """
     try:
         policy_text = git("show", f"{BASE}:{routing_policy.POLICY_RELATIVE.as_posix()}", cwd=path)
@@ -507,7 +550,7 @@ def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, .
             read = routing_policy.ReadResult(None, str(error))
 
     try:
-        listed = git("diff", "--name-only", f"{BASE}..HEAD", cwd=path)
+        listed = git("diff", "--name-only", f"{BASE}...HEAD", cwd=path)
     except GitError as error:
         return read, None, error.stderr
     paths = tuple(line.strip() for line in listed.splitlines() if line.strip())
@@ -617,7 +660,7 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     *,
     gate: Gate = run_gate,
     dry_run: bool = False,
-    lane: str = "claude-native",
+    lane: str = CLAUDE_LANE,
     corpus: Path | None = None,
 ) -> Report:
     """Run the whole protocol, or refuse by name at the first rung that says no."""
@@ -746,19 +789,42 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
     """Print the plan and change nothing. Not a landing, and it says so.
 
     The routing rung is **consulted here**, not merely mentioned: its inputs are the
-    trusted policy on fetched `origin/main` and the `origin/main..HEAD` diff, and
-    neither needs the rebase — which is why `--dry-run` printing `would_run=git push`
-    for a landing the gate refuses was a silence rather than a limit (#344). What a dry
-    run genuinely cannot reach — the rebase's own result, the markers in the rebased
-    tree, `just fast` — it names, so its silence stops reading as a clearance (#41's
+    trusted policy on fetched `origin/main` and the merge-base-relative
+    `origin/main...HEAD` diff, and neither needs the rebase — which is why `--dry-run`
+    printing `would_run=git push` for a landing the gate refuses was a silence rather
+    than a limit (#344). What a dry run genuinely cannot reach — the rebase's own
+    result, the markers in the rebased tree, `just fast`, whether the push and the merge
+    can be run at all — it names, so its silence stops reading as a clearance (#41's
     line, applied to a plan).
+
+    **It mirrors the landing's own control flow, including where that flow skips the
+    gate.** With nothing to push, `land` skips `_rebase_and_gate` entirely and finishes
+    the outstanding merge, so classifying routing here would be a verdict about a rung
+    that will not run — a new way to be wrong, not a more honest plan (review round 1
+    claim 2).
+
+    The exit code carries the verdict, because a dry run lands nothing either way and
+    the body is the only other channel there is: 0 where no rung it could consult
+    refused, `EXIT_REFUSED` where the routing gate would (review round 1 claim 7).
     """
+    merge_step = " ".join(merge_argv(root)) if _merge_needed(here, root) else None
+    head = (
+        "ok=dry_run",
+        "landed=no",
+        f"worktree={here}",
+        f"main_checkout={root}",
+        f"head={_describe(here)}",
+        f"commits={ahead}",
+        f"incoming={incoming} new commits on {BASE}",
+    )
+    ran_nothing = "This ran nothing. `just land` runs it, gate included."
+    if not ahead:
+        plan = _nothing_to_push_plan(merge_step)
+        return Report((*head, *plan, f"not_checked={NOT_CHECKED_MERGE_ONLY}", ran_nothing), 0)
+
     read, paths, detail = _routing_inputs(here)
     misrouted = classify_routing(read, paths, lane, detail)
-    onward = [
-        " ".join(push_argv()),
-        " ".join(merge_argv(root)) if _merge_needed(here, root) else "(merge not needed)",
-    ]
+    onward = [" ".join(push_argv()), merge_step or "(merge not needed)"]
     plan = [f"would_run={step}" for step in (f"git rebase {BASE}", " ".join(GATE))]
     if misrouted is None:
         plan += [f"would_run={step}" for step in onward]
@@ -766,39 +832,63 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
         plan += [f"would_not_run={step} reason={misrouted.kind}" for step in onward]
     return Report(
         (
-            "ok=dry_run",
-            "landed=no",
-            f"worktree={here}",
-            f"main_checkout={root}",
-            f"head={_describe(here)}",
-            f"commits={ahead}",
-            f"incoming={incoming} new commits on {BASE}",
+            *head,
             *plan,
-            *_routing_plan(misrouted, lane),
+            *_routing_plan(read, misrouted, lane),
             *_corpus_plan(here, read, paths, detail, corpus),
             f"not_checked={NOT_CHECKED}",
-            "This ran nothing. `just land` runs it, gate included.",
+            ran_nothing,
         ),
-        0,
+        EXIT_REFUSED if misrouted is not None else 0,
     )
 
 
-def _routing_plan(misrouted: Refusal | None, lane: str) -> tuple[str, ...]:
-    """State the routing rung's verdict on the pre-rebase diff, refusal and evidence alike.
+def _nothing_to_push_plan(merge_step: str | None) -> tuple[str, ...]:
+    """Plan the one state `land` handles by skipping the gate altogether.
 
-    A verdict rather than a plan step, because the check really did run: the policy
-    comes from fetched `origin/main` and the paths from `origin/main..HEAD`, exactly
-    the inputs the enforcing rung uses one step later. The rebase can only add the
-    paths a sibling brought, and those are judged against the same policy — so a
-    `would_refuse` here is what the landing does, and a `would_pass` is a claim about
-    the diff as it stands, which is what it says.
+    `ahead == 0` past `classify_nothing_to_land` is the re-run after
+    `merge_blocked_by_sandbox`: the work is already on `origin/main`, so the landing
+    skips the rebase, the markers, the routing gate, `just fast` and the corpus alike,
+    pushes nothing, and finishes the merge the last run could not make. Each skipped
+    rung is named with the reason the landing itself gives, rather than left out — an
+    omission here would read as a clearance for exactly the reason `not_checked=` exists
+    (#344, review round 1 claim 2).
     """
-    if lane == "claude-native":
-        return ("routing=not_applicable lane=claude-native",)
-    if misrouted is None:
-        return (f"routing=would_pass lane={lane} (diff as it stands, before the rebase)",)
+    why = "reason=nothing_to_push"
     return (
-        f"routing=would_refuse lane={lane} refusal={misrouted.kind}",
+        f"would_skip=git rebase {BASE} {why}",
+        f"would_skip={' '.join(GATE)} {why}",
+        f"would_skip={' '.join(push_argv())} reason=already_on_origin/main",
+        f"routing=not_consulted {why}",
+        f"corpus=not_consulted {why}",
+        f"would_run={merge_step}"
+        if merge_step
+        else "merge=not_needed reason=landed_from_the_main_checkout",
+    )
+
+
+def _routing_plan(
+    read: routing_policy.ReadResult, misrouted: Refusal | None, lane: str
+) -> tuple[str, ...]:
+    """State the routing rung's verdict on this branch's own diff, refusal and evidence alike.
+
+    A verdict rather than a plan step, because the check really did run, on exactly the
+    inputs the enforcing rung uses one step later: the trusted policy from fetched
+    `origin/main`, and `origin/main...HEAD`, which is merge-base relative and so names
+    this branch's own paths whether or not the rebase has happened (`_routing_inputs`).
+
+    Both verdicts carry the same qualification, and deliberately. The caveat used to sit
+    on the pass and not on the refusal, which steered a reader away from whichever line
+    was the one that could be wrong; they are claims about one path set and are stated as
+    that (review round 1 claim 5).
+    """
+    where = "(this branch's own diff, merge-base relative)"
+    if _exempt_lane(read, lane):
+        return (f"routing=not_applicable lane={lane}",)
+    if misrouted is None:
+        return (f"routing=would_pass lane={lane} {where}",)
+    return (
+        f"routing=would_refuse lane={lane} refusal={misrouted.kind} {where}",
         *misrouted.found,
         f"action={misrouted.action}",
     )
@@ -815,14 +905,17 @@ def _corpus_plan(
 
     Worth saying here rather than only at the refusal, because the whole cost of the
     corpus is a slot of the Arma tier and knowing before the rebase is what lets an
-    agent hand back instead of running a gate it cannot clear. The pre-rebase diff is
-    what a dry run can see, and it is stated as that.
+    agent hand back instead of running a gate it cannot clear. The diff is the one
+    `_routing_inputs` names — merge-base relative, this branch's own — and it is stated
+    as that rather than as a pre-rebase approximation of it.
     """
     outcome = corpus_finding(here, read, paths, detail, corpus)
     if outcome.finding is not None and outcome.finding.kind == corpus_gate.UNREADABLE:
         return (f"corpus=unknown detail={' '.join(outcome.finding.found)}",)
     if not outcome.in_world:
-        return ("corpus=not_owed reason=no_in_world_path (diff as it stands, before the rebase)",)
+        return (
+            "corpus=not_owed reason=no_in_world_path (this branch's own diff, merge-base relative)",
+        )
     listed = " ".join(outcome.in_world[:HOW_MANY_SHOWN])
     owed = f"corpus=owed in_world={listed}"
     if outcome.finding is None:
@@ -873,7 +966,7 @@ def main(argv: list[str] | None = None) -> int:
             root,
             here,
             dry_run=args.dry_run,
-            lane=os.environ.get("CTI_DISPATCH_LANE", "claude-native"),
+            lane=os.environ.get("CTI_DISPATCH_LANE", CLAUDE_LANE),
             corpus=args.corpus,
         )
     except GitError as failure:
