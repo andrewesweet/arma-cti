@@ -83,7 +83,10 @@ routing gate's included. A plan that decides something needs a machine channel f
 decision (#344). Any, and not only routing's: `dirty_tree`, `nothing_to_land` and
 `git_failed` are all decided before the dry-run branch and all exit 1 too, so a caller
 keying 1 to "routing refused" would read a dirty tree as a routing verdict (review
-round 2 claim 5). The body names which one; the code says only that one fired.
+round 2 claim 5). The body names which one; the code says only that one fired. A dry
+run's **whole output** is on stdout, refusals included, for the same reason: it lands
+nothing, so it has no error output to separate, and its exit being non-zero exactly
+when it has the most to say is what emptied stdout in the case #344 was filed about.
 
 Nothing here resets, cleans or aborts on a refusal path, for `tools/worktree.py`'s
 reason: on a shared tree the files are evidence, and the judgement of what a
@@ -306,6 +309,12 @@ def classify_conflict_markers(path: Path, findings: Sequence[Finding]) -> Refusa
 # push and needs it; a dry run pushed nothing whatever it found, and printing it two
 # lines under "This ran nothing." describes an act that was never in prospect. Named once
 # so the plan can drop exactly the clause the landing keeps (#344, round 2 claim 7).
+#
+# **Every** routing refusal ends with it, and that is what makes the plan's `removesuffix`
+# a rule rather than a special case. Round 2 named the clause once and then left the two
+# unreadable kinds carrying their own past-tense wording inline, so the plan printed those
+# two unchanged — and they are precisely the kinds a dry run meets when something is
+# broken (round 2 claim 3). The wording before the clause is now tenseless in all three.
 PUSHED_CLAUSE: Final = " Nothing was pushed."
 
 
@@ -348,15 +357,17 @@ def classify_routing(
         return Refusal(
             "routing_policy_gate_unreadable",
             ("check=enforcing actual diff", f"policy={read.error}"),
-            "The trusted routing policy could not be read, so this foreign landing was not "
-            "pushed. Repair the policy on Claude and run `just land` again.",
+            "The trusted routing policy could not be read, so the routing gate cannot clear "
+            "this foreign landing. Repair the policy on Claude and run `just land` "
+            f"again.{PUSHED_CLAUSE}",
         )
     if paths is None:
         return Refusal(
             "routing_policy_diff_unreadable",
             ("check=enforcing actual diff", f"detail={detail}"),
-            "Git could not name the real diff, so the routing gate did not run and nothing "
-            "was pushed (#41). Repair the repository state and run `just land` again.",
+            "Git could not name the real diff, so the routing gate cannot run and a check "
+            "that could not run is not a check that passed (#41). Repair the repository "
+            f"state and run `just land` again.{PUSHED_CLAUSE}",
         )
     match = routing_policy.enforcing_match(read.policy, paths, lane)
     if match is None:
@@ -548,9 +559,13 @@ def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, .
     **Three dots, and the third is load-bearing.** `git diff A..B` is a synonym for
     `git diff A B` — a symmetric tree comparison, not a commit range — so on a fetched
     base it reports this branch's paths *and* every path the incoming commits touch.
-    That is harmless after a rebase, where the two sets coincide, and wrong before one:
-    `landing_match` matches on any path, so a superset only ever adds matches, and a
-    pre-rebase caller would refuse an ungated diff for a class a sibling brought.
+    That is harmless after a rebase, where the two sets coincide, and wrong before one, in
+    **both** directions. Adding: `landing_match` matches on any path, so a pre-rebase
+    caller would refuse an ungated diff for a class a sibling brought. Dropping, which is
+    the fail-open half and the one worth naming — a tree comparison lists only paths where
+    the two trees *differ*, so where a sibling has already landed a patch-identical change
+    the path is in neither difference and falls out of the set entirely, and a foreign
+    landing of a gated class would have been told `would_pass`.
     `origin/main...HEAD` is merge-base relative, so this answers with the branch's own
     paths wherever it is called from. The enforcing rung's answer was previously right by
     accident of ordering; this makes it right by construction, so moving the call cannot
@@ -560,9 +575,11 @@ def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, .
     sibling one: a commit of this branch's that the rebase discards as already upstream —
     a patch-identical change a sibling landed first — is in the merge-base-relative set
     and gone from the post-rebase tree. A pre-rebase caller can therefore still refuse a
-    class the landing will not see. Fail-closed, unlike the superset this replaced, and
-    it needs the identical patch already on `origin/main`; stated because "right by
-    construction" is what a later reader will rely on (review round 2 claim 6).
+    class the landing will not see. Fail-closed, and it needs the identical patch already
+    on `origin/main`; stated because "right by construction" is what a later reader will
+    rely on (review round 2 claim 6). Note the direction: on that same scenario the
+    two-dot form was fail-*open*, which is why "only ever adds matches" was the wrong
+    account of it and is not the one above (review round 2 claim 4).
     """
     try:
         policy_text = git("show", f"{BASE}:{routing_policy.POLICY_RELATIVE.as_posix()}", cwd=path)
@@ -916,9 +933,22 @@ def _routing_plan(
 
     The remedy is printed without its `Nothing was pushed.` clause: the `Refusal` carries
     one action string for the landing and the plan alike, and here nothing was ever going
-    to be pushed, two lines above "This ran nothing." (review round 2 claim 7).
+    to be pushed, two lines above "This ran nothing." (review round 2 claim 7). Every
+    routing refusal ends with `PUSHED_CLAUSE` so that one `removesuffix` covers all three
+    kinds; round 2's stripped only the gate's and left the two unreadable kinds — the ones
+    a dry run meets when something is broken — printing it (review round 2 claim 3).
+
+    The caveat names the divergence rather than only the provenance. "Merge-base relative"
+    on its own reads as a statement of precision, and the case a lander needs warning about
+    is the one where this verdict and the real landing disagree: a commit of this branch's
+    that the rebase will discard as already upstream is in this path set and gone from the
+    tree that gets pushed, so a `would_refuse` can dissolve on the rebase. The docstring is
+    where round 2 put that; the line below is where the lander looks (round 2 claim 8).
     """
-    where = "(this branch's own diff, merge-base relative)"
+    where = (
+        "(this branch's own diff, merge-base relative; a commit the rebase drops as "
+        "already upstream is still counted, so a refusal can dissolve on the rebase)"
+    )
     if _exempt_lane(read, lane):
         return (f"routing=not_applicable lane={lane}",)
     if misrouted is None:
@@ -1014,11 +1044,18 @@ def main(argv: list[str] | None = None) -> int:
                 "`git log --oneline origin/main..HEAD` before running anything else.",
             )
         )
-    # A landing's refusal is an error and belongs on stderr. A dry run's whole output is
-    # its plan, and since #344 gave it a verdict its exit is non-zero exactly when it has
-    # the most to say — so routing on the code alone emptied stdout in the one case #344
-    # was filed about, leaving a foreign-lane seat with a bare `recipe … failed` banner
-    # that this project trains agents to read as a harness failure (round 2 claim 3).
+    # A landing's refusal is an error and belongs on stderr. Since #344 gave a dry run a
+    # verdict its exit is non-zero exactly when it has the most to say, so routing on the
+    # code alone emptied stdout in the one case #344 was filed about, leaving a
+    # foreign-lane seat with a bare `recipe … failed` banner that this project trains
+    # agents to read as a harness failure (round 2 claim 3).
+    #
+    # The condition is `--dry-run` and not "is a plan", so **everything** a dry run prints
+    # goes to stdout — the plan, and equally the `dirty_tree`, `nothing_to_land` and
+    # `git_failed` refusals `land` decides before it reaches the plan. Deliberate, and
+    # stated because three surfaces used to say "the plan": a run that lands nothing has
+    # no error output to separate, and the seat reading it needs the words wherever it
+    # looks. What must not move is a real landing's refusal (round 2 claim 5).
     stream = sys.stdout if report.code == 0 or args.dry_run else sys.stderr
     for line in report.lines:
         print(line, file=stream)

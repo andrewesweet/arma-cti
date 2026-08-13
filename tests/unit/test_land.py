@@ -246,6 +246,34 @@ def test_native_landings_do_not_need_the_foreign_routing_gate() -> None:
     assert land.classify_routing(read, None, "claude-native") is None
 
 
+def test_every_routing_refusal_ends_with_the_clause_the_plan_strips() -> None:
+    """One `removesuffix` covers all three kinds, or it covers one and misleads on two.
+
+    Round 2 named `PUSHED_CLAUSE` once and stripped it in `_routing_plan`, but only the
+    `routing_policy_gate` remedy ended with it: the two unreadable kinds carried their own
+    past-tense wording inline, so a dry run printed "was not pushed" two lines above "This
+    ran nothing." — and those are exactly the kinds a dry run reaches when something is
+    broken (review round 2 claim 3). Asserted over every kind rather than the one, so a
+    fourth refusal added here cannot reintroduce it silently.
+    """
+    unreadable_policy = routing_policy.ReadResult(None, "policy is absent")
+    refusals = [
+        land.classify_routing(_policy_read(), ("addons/main/ui.sqf",), "zai"),
+        land.classify_routing(unreadable_policy, ("tools/worker.py",), "zai"),
+        land.classify_routing(_policy_read(), None, "zai", "fatal: bad revision"),
+    ]
+    assert {_kind(refusal) for refusal in refusals} == {
+        "routing_policy_gate",
+        "routing_policy_gate_unreadable",
+        "routing_policy_diff_unreadable",
+    }
+    for refusal in refusals:
+        assert refusal.action.endswith(land.PUSHED_CLAUSE), refusal.kind
+        # And nothing before it says the same thing again, which is what made the strip
+        # look like it worked while two kinds still read as past tense in the plan.
+        assert "pushed" not in refusal.action.removesuffix(land.PUSHED_CLAUSE), refusal.kind
+
+
 # ------------------------------------------------------------------ the corpus rung
 
 
@@ -372,8 +400,12 @@ def test_the_gate_exempts_the_lane_the_policy_names_rather_than_a_second_literal
     `claude_lane` and `land.CLAUDE_LANE` are the same string: every assertion phrased in
     terms of both at once passes whichever one the code actually reads, which is how
     round 1's version of this test went green on the pre-fix code (review round 2
-    claim 2). Renaming the policy's lane separates them, so the constant-only form reds
-    on the first assertion and the union form reds on the second.
+    claim 2). Renaming the policy's lane separates them, and **both** pre-fix forms red on
+    the same assertion: the `land.CLAUDE_LANE` one below, verified by reverting each in
+    turn. The `renamed.claude_lane` assertion above it cannot fail under any form of
+    `_exempt_lane`, because `enforcing_match` exempts the policy's own lane internally; it
+    is kept as a statement of the pair, and the binding half is the constant's (review
+    round 2 claim 6, correcting this docstring's first version).
     """
     shipped = routing_policy.parse_policy(POLICY.read_text(encoding="utf-8"))
     renamed = shipped._replace(claude_lane="claude-anthropic")
@@ -704,8 +736,13 @@ def _pushes_unqualified(report: Any) -> bool:  # noqa: ANN401
 
 
 # The qualification both routing verdicts carry, spelled out here so the assertions on it
-# fail on a rewording rather than passing on its absence (round 2 claim 9).
-_CAVEAT = "(this branch's own diff, merge-base relative)"
+# fail on a rewording rather than passing on its absence (round 2 claim 9). It names the
+# divergence and not only the provenance, because the case a lander needs warning about is
+# the one where this verdict and the real landing disagree (round 2 claim 8).
+_CAVEAT = (
+    "(this branch's own diff, merge-base relative; a commit the rebase drops as "
+    "already upstream is still counted, so a refusal can dissolve on the rebase)"
+)
 
 
 def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
@@ -734,9 +771,18 @@ def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
     # whole substance and nothing pinned it, so stripping it stayed green (round 2
     # claim 9).
     assert any(line.endswith(_CAVEAT) for line in report.lines if "routing=would_refuse" in line)
-    # And the remedy without the clause about a push that was never in prospect.
+    # And the remedy without the clause about a push that was never in prospect. Named from
+    # the module rather than respelled here: round 2 named it once in the source and then
+    # hardcoded it again in the very test that guards it, so rewording the constant and
+    # dropping the `removesuffix` together stayed green (round 2 claim 3).
     action = next(line for line in report.lines if line.startswith("action="))
-    assert not action.endswith("Nothing was pushed.")
+    assert not action.endswith(land.PUSHED_CLAUSE)
+    # Both steps of the onward pair are withheld, and the merge one was unasserted.
+    withheld = [line for line in report.lines if line.startswith("would_not_run=")]
+    assert withheld == [
+        "would_not_run=git push origin HEAD:main reason=routing_policy_gate",
+        f"would_not_run={' '.join(land.merge_argv(main))} reason=routing_policy_gate",
+    ]
     assert _tip(origin) == before
 
 
@@ -752,6 +798,7 @@ def test_a_dry_run_on_an_ungated_surface_from_a_foreign_lane_still_plans_the_pus
     assert report.code == 0
     assert _pushes_unqualified(report)
     assert f"routing=would_pass lane=zai {_CAVEAT}" in report.lines
+    assert f"would_run={' '.join(land.merge_argv(main))}" in report.lines
 
 
 def test_a_sibling_landing_a_gated_path_does_not_make_this_ungated_diff_refuse(
@@ -806,6 +853,31 @@ def test_a_dry_run_with_nothing_to_push_mirrors_the_landing_and_consults_no_gate
     assert unchecked == [f"not_checked={land.NOT_CHECKED_MERGE_ONLY}"]
 
 
+def test_a_dry_run_from_the_main_checkout_itself_says_the_merge_is_not_needed(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """The onward pair's second step where there is no second checkout to fast-forward.
+
+    Every other end-to-end test here lands from a linked worktree, so `_merge_needed` is
+    always true and `merge_step or "(merge not needed)"` never took its right-hand side.
+    That is why the `or` survived exhaustive mutation — under `and` the plan prints
+    `would_run=None` and nothing noticed (review round 2 claim 2). Landing from the main
+    checkout on `main` is the arrangement that reaches it, and it is a real one: the ff-only
+    merge exists to carry a *second* checkout, and there is not one here.
+    """
+    _origin, main, here = repo
+    # The fixture's linked worktree is an untracked directory in the main checkout, which
+    # is #105's own refusal condition; this arrangement is the one without it.
+    _git("worktree", "remove", str(here), cwd=main)
+    _commit(main, "tools/worker.py", "eligible work\n")
+
+    report = land.land(main, main, gate=_Gate(), dry_run=True, lane="zai")
+
+    assert report.code == 0
+    assert _pushes_unqualified(report)
+    assert "would_run=(merge not needed)" in report.lines
+
+
 def test_a_native_dry_run_says_the_routing_rung_does_not_apply_to_it(
     repo: tuple[Path, Path, Path],
 ) -> None:
@@ -841,6 +913,60 @@ def test_a_refusing_dry_run_still_prints_its_plan_on_stdout(
     captured = capsys.readouterr()
     assert code == land.EXIT_REFUSED
     assert any("routing=would_refuse" in line for line in captured.out.splitlines())
+    assert captured.err == ""
+
+
+def test_a_real_landings_refusal_is_an_error_and_goes_to_stderr(
+    repo: tuple[Path, Path, Path],
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The other half of the same conditional, which nothing asserted.
+
+    Round 2 moved a refusing dry run to stdout and left `report.code == 0` carrying the
+    landing's half alone: collapsing the whole expression to `sys.stdout` left all 74 tests
+    in this module passing, and two mutants survived on the line (review round 2 claim 1).
+    The property is the line's own comment — a landing's refusal is an error — and it is
+    the half a later simplification would take, since the dry-run half has a test and this
+    one had none.
+
+    `dirty_tree` is the refusal chosen because it is decided before anything runs: no
+    rebase, no gate, no push, so the assertion is about the stream and nothing else.
+    """
+    _origin, _main, here = repo
+    (here / "foreign_file.txt").write_text("another agent's work\n", encoding="utf-8")
+    monkeypatch.chdir(here)
+
+    code = land.main([])
+
+    captured = capsys.readouterr()
+    assert code == land.EXIT_REFUSED
+    assert captured.out == ""
+    assert "refusal=dirty_tree" in captured.err.splitlines()
+
+
+def test_a_dry_runs_refusal_decided_before_the_plan_is_on_stdout_too(
+    repo: tuple[Path, Path, Path],
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The condition is `--dry-run`, not "is a plan", and three surfaces used to say plan.
+
+    `dirty_tree`, `nothing_to_land` and `git_failed` are decided before the dry-run branch
+    and are not plans, yet a dry run puts them on stdout as well. The direction is right —
+    a run that lands nothing has no error output to separate — but it was the rule the code
+    had rather than the rule the docs stated, and nothing pinned it (review round 2 claim
+    5). Same arrangement as the landing above, so the pair differ only in the flag.
+    """
+    _origin, _main, here = repo
+    (here / "foreign_file.txt").write_text("another agent's work\n", encoding="utf-8")
+    monkeypatch.chdir(here)
+
+    code = land.main(["--dry-run"])
+
+    captured = capsys.readouterr()
+    assert code == land.EXIT_REFUSED
+    assert "refusal=dirty_tree" in captured.out.splitlines()
     assert captured.err == ""
 
 

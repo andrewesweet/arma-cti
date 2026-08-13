@@ -336,17 +336,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to be inferred. Because the plan now decides something, its exit code carries the decision: a dry
   run lands nothing whatever it finds, so 0 means no rung it could consult refused and 1 means some
   refusal fired — the routing gate's, but equally the dirty tree and the nothing-to-land that
-  `just land` decides before it reaches the plan — with the body naming which. The plan goes to
-  **stdout either way**: `just land` sends a refusal to stderr, and a dry run whose exit is now
-  non-zero exactly when it has the most to say would otherwise leave a foreign-lane seat with an
-  empty stdout and a bare `recipe … failed` banner (#344).
+  `just land` decides before it reaches the plan — with the body naming which. **Everything a dry
+  run prints now goes to stdout**, the plan and those earlier refusals alike: `just land` sends a
+  landing's refusal to stderr, and a dry run whose exit is now non-zero exactly when it has the most
+  to say would otherwise leave a foreign-lane seat with an empty stdout and a bare `recipe … failed`
+  banner. A run that lands nothing has no error output to separate, so the split is on `--dry-run`
+  rather than on whether the output happens to be a plan (#344).
 
   Two things had to be right for that to be an improvement rather than the same defect pointing the
   other way. **The diff is merge-base relative.** `git diff A..B` is a symmetric tree comparison
   rather than a commit range, so before a rebase — and `just land` has already fetched by then — it
   named this branch's paths *and* every path the incoming commits touched; since a match on any path
   refuses, a sibling landing an ADR was enough to tell a `zai` seat working on one ungated doc that
-  its work would be refused, when the real landing rebases first and lands it. Both call sites now
+  its work would be refused, when the real landing rebases first and lands it. It was wrong in the
+  other direction too, and that half was fail-open: a tree comparison lists only paths where the two
+  trees *differ*, so a gated path a sibling had already landed patch-identically fell out of the set
+  altogether and a foreign landing of it would have been told `would_pass`. Both call sites now
   use `origin/main...HEAD`, so the enforcing rung's answer is right by construction rather than by
   accident of where it is called from — with one narrow exception, stated where the code is: a
   commit of this branch's that the rebase discards as already upstream is in the merge-base set and
