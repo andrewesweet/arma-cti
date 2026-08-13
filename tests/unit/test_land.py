@@ -658,6 +658,62 @@ def test_a_dry_run_runs_nothing_and_says_so(repo: tuple[Path, Path, Path]) -> No
     assert gate.calls == []
     assert _tip(origin) == before
     assert any(line == "would_run=git push origin HEAD:main" for line in report.lines)
+    # Whatever it could not consult, it names.
+    assert any(line.startswith("not_checked=") for line in report.lines)
+
+
+# ANN401: `land` is loaded by path, so its `Report` is not a type an annotation here names.
+def _pushes_unqualified(report: Any) -> bool:  # noqa: ANN401
+    """Whether this plan presents the push as a step it would take, with no caveat."""
+    return any(line == "would_run=git push origin HEAD:main" for line in report.lines)
+
+
+def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """#344: the dry run consulted no routing rung, so it planned a push the gate refuses.
+
+    Asserted on the behaviour — no unqualified push step, and the same refusal class the
+    enforcing rung produces — rather than on any sentence, so a rewording stays green and
+    dropping the check from this path goes red.
+    """
+    origin, main, here = repo
+    before = _tip(origin)
+    _commit(here, "addons/main/ui.sqf", "in-world work\n")
+
+    report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai")
+
+    assert not _pushes_unqualified(report)
+    assert any("routing=would_refuse" in line for line in report.lines)
+    assert any("routing_policy_gate" in line for line in report.lines)
+    assert any("routing_class=5:in_world_landings" in line for line in report.lines)
+    assert _tip(origin) == before
+
+
+def test_a_dry_run_on_an_ungated_surface_from_a_foreign_lane_still_plans_the_push(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """The other half: the rung ran and cleared, and the plan says which it was."""
+    _origin, main, here = repo
+    _commit(here, "tools/worker.py", "eligible work\n")
+
+    report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai")
+
+    assert _pushes_unqualified(report)
+    assert any(line.startswith("routing=would_pass lane=zai") for line in report.lines)
+
+
+def test_a_native_dry_run_says_the_routing_rung_does_not_apply_to_it(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """A gated path on `claude-native` is not misrouted, and the plan must not imply it is."""
+    _origin, main, here = repo
+    _commit(here, "addons/main/ui.sqf", "in-world work\n")
+
+    report = land.land(main, here, gate=_Gate(), dry_run=True)
+
+    assert _pushes_unqualified(report)
+    assert "routing=not_applicable lane=claude-native" in report.lines
 
 
 # ------------------------------------------ the corpus rung, against a real repository

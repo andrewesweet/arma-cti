@@ -321,6 +321,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   makes routine — now refuses `worktree_unreadable` rather than dying on a `cwd` that is not
   there. Either refusal is recorded beside the record where there is a record to record it
   beside, so the ledger sees a dispatch that ended rather than one still running.
+- **`just land --dry-run` consults the routing gate instead of planning a push the real landing
+  refuses.** The dry run returned before `_rebase_and_gate`, so the one rung that decides whether a
+  lane may land this diff at all was never asked, and its silence read as a clearance: on #323 a
+  `zai` seat briefed that its `tools/dispatch.py` diff would be refused ran the dry run, met
+  `would_run=git push origin HEAD:main`, and reported the brief's premise wrong. The error ran in
+  the worst direction — most optimistic exactly where the surface is most gated. The rung needs no
+  rebase, only the policy on fetched `origin/main` and the `origin/main..HEAD` diff, so it now runs
+  there: the plan carries `routing=would_refuse` with the refusal's own evidence and turns the push
+  and merge steps into `would_not_run=… reason=<class>`, `routing=would_pass` when it clears, and
+  `routing=not_applicable lane=claude-native` where the gate does not apply. What a dry run
+  genuinely cannot reach — the rebase itself, markers in the rebased tree, `just fast`, the push
+  race — is now named in a `not_checked=` line rather than left to be inferred (#344).
+
 - **The mutation gate's shell tracing no longer kills a test that shells into a `set -u` bash.**
   Its `BASH_ENV` preamble named `${BASH_SOURCE}` in `PS4`, and `BASH_SOURCE` has no element 0 in a
   `bash -c` body — which is exactly `just`'s recipe shell, `["bash", "-euo", "pipefail", "-c"]`. So
