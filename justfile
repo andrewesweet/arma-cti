@@ -319,8 +319,11 @@ worktree *args:
 #                                could not consult; a dry run lands nothing either way,
 #                                so its exit carries the verdict — 0 where nothing it
 #                                could ask refused, 1 for any refusal, routing's
-#                                included, with the body naming which. The plan is on
-#                                stdout either way (#344)
+#                                included, with the body naming which. Everything a dry
+#                                run prints is on stdout whatever its exit — the plan,
+#                                and the dirty_tree, nothing_to_land and git_failed
+#                                refusals decided before it. Only a real landing's
+#                                refusal goes to stderr (#344)
 #
 # Three things it does that prose could not. The refspec is a constant no
 # argument reaches, so `git push origin main` — which pushes the local `main`
