@@ -78,8 +78,12 @@ Exit 0 is landed. Exit 1 is "nothing landed". Exit 2 is the pair above it: the
 work **is** on `origin/main` and a step is outstanding — a distinction an
 orchestrator can act on without parsing prose, and never a success exit (#213's
 criterion 4). A `--dry-run` lands nothing whatever it finds, so its exit carries its
-verdict instead: 0 where no rung it could consult refused, 1 where the routing gate
-would. A plan that decides something needs a machine channel for the decision (#344).
+verdict instead: 0 where no rung it could consult refused, 1 for **any** refusal, the
+routing gate's included. A plan that decides something needs a machine channel for the
+decision (#344). Any, and not only routing's: `dirty_tree`, `nothing_to_land` and
+`git_failed` are all decided before the dry-run branch and all exit 1 too, so a caller
+keying 1 to "routing refused" would read a dirty tree as a routing verdict (review
+round 2 claim 5). The body names which one; the code says only that one fired.
 
 Nothing here resets, cleans or aborts on a refusal path, for `tools/worktree.py`'s
 reason: on a shared tree the files are evidence, and the judgement of what a
@@ -298,6 +302,13 @@ def classify_conflict_markers(path: Path, findings: Sequence[Finding]) -> Refusa
     )
 
 
+# The past-tense half of the routing refusal's remedy. A landing really did decline to
+# push and needs it; a dry run pushed nothing whatever it found, and printing it two
+# lines under "This ran nothing." describes an act that was never in prospect. Named once
+# so the plan can drop exactly the clause the landing keeps (#344, round 2 claim 7).
+PUSHED_CLAUSE: Final = " Nothing was pushed."
+
+
 def _exempt_lane(read: routing_policy.ReadResult, lane: str) -> bool:
     """Whether the routing gate exempts this lane at all — the one home for that question.
 
@@ -307,10 +318,16 @@ def _exempt_lane(read: routing_policy.ReadResult, lane: str) -> bool:
     policy it is the remedy for. One predicate rather than a literal at each site, because
     a second copy is how changing `claude_lane` would silently move only one of them
     (#344, review round 1 claim 6).
+
+    The policy **replaces** the constant rather than joining it. Round 1 unioned the two,
+    which left the exempt set both `CLAUDE_LANE` and `policy.claude_lane` while
+    `enforcing_match` exempts only the policy's name — so a policy moving `claude_lane`
+    elsewhere would have had `land.py` exempt the old name silently, and this is the
+    enforcing rung, not the dry run's half (#344, review round 2 claim 1).
     """
-    if lane == CLAUDE_LANE:
-        return True
-    return read.policy is not None and lane == read.policy.claude_lane
+    if read.policy is not None:
+        return lane == read.policy.claude_lane
+    return lane == CLAUDE_LANE
 
 
 def classify_routing(
@@ -353,7 +370,7 @@ def classify_routing(
             *match.evidence,
             f"source={read.policy.source}",
         ),
-        f"{match.rule.remedy} Nothing was pushed.",
+        f"{match.rule.remedy}{PUSHED_CLAUSE}",
     )
 
 
@@ -538,6 +555,14 @@ def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, .
     paths wherever it is called from. The enforcing rung's answer was previously right by
     accident of ordering; this makes it right by construction, so moving the call cannot
     quietly reintroduce the bug (#344, review round 1 claim 1).
+
+    One divergence survives, and it is the other direction of the rebase rather than the
+    sibling one: a commit of this branch's that the rebase discards as already upstream —
+    a patch-identical change a sibling landed first — is in the merge-base-relative set
+    and gone from the post-rebase tree. A pre-rebase caller can therefore still refuse a
+    class the landing will not see. Fail-closed, unlike the superset this replaced, and
+    it needs the identical patch already on `origin/main`; stated because "right by
+    construction" is what a later reader will rely on (review round 2 claim 6).
     """
     try:
         policy_text = git("show", f"{BASE}:{routing_policy.POLICY_RELATIVE.as_posix()}", cwd=path)
@@ -805,9 +830,12 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
 
     The exit code carries the verdict, because a dry run lands nothing either way and
     the body is the only other channel there is: 0 where no rung it could consult
-    refused, `EXIT_REFUSED` where the routing gate would (review round 1 claim 7).
+    refused, `EXIT_REFUSED` where the routing gate would (review round 1 claim 7). It is
+    not a routing-only channel — the rungs `land` decides before this branch exit 1 as
+    well, so 1 means "some refusal, read which" (round 2 claim 5).
     """
-    merge_step = " ".join(merge_argv(root)) if _merge_needed(here, root) else None
+    merge_command = " ".join(merge_argv(root))
+    merge_step = merge_command if _merge_needed(here, root) else None
     head = (
         "ok=dry_run",
         "landed=no",
@@ -819,7 +847,7 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
     )
     ran_nothing = "This ran nothing. `just land` runs it, gate included."
     if not ahead:
-        plan = _nothing_to_push_plan(merge_step)
+        plan = _nothing_to_push_plan(merge_command)
         return Report((*head, *plan, f"not_checked={NOT_CHECKED_MERGE_ONLY}", ran_nothing), 0)
 
     read, paths, detail = _routing_inputs(here)
@@ -843,7 +871,7 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
     )
 
 
-def _nothing_to_push_plan(merge_step: str | None) -> tuple[str, ...]:
+def _nothing_to_push_plan(merge_step: str) -> tuple[str, ...]:
     """Plan the one state `land` handles by skipping the gate altogether.
 
     `ahead == 0` past `classify_nothing_to_land` is the re-run after
@@ -853,6 +881,12 @@ def _nothing_to_push_plan(merge_step: str | None) -> tuple[str, ...]:
     rung is named with the reason the landing itself gives, rather than left out — an
     omission here would read as a clearance for exactly the reason `not_checked=` exists
     (#344, review round 1 claim 2).
+
+    The merge step is a `str` and not an optional one, because reaching here at all
+    implies it exists: `ahead == 0` survives `classify_nothing_to_land` only when the
+    main checkout is behind, and that is what `_merge_needed` reports. Round 1 branched
+    on it regardless and the second arm was unreachable — invisible to `just mutation`
+    too, which plants only in what the tests execute (round 2 claim 4).
     """
     why = "reason=nothing_to_push"
     return (
@@ -861,9 +895,7 @@ def _nothing_to_push_plan(merge_step: str | None) -> tuple[str, ...]:
         f"would_skip={' '.join(push_argv())} reason=already_on_origin/main",
         f"routing=not_consulted {why}",
         f"corpus=not_consulted {why}",
-        f"would_run={merge_step}"
-        if merge_step
-        else "merge=not_needed reason=landed_from_the_main_checkout",
+        f"would_run={merge_step}",
     )
 
 
@@ -881,6 +913,10 @@ def _routing_plan(
     on the pass and not on the refusal, which steered a reader away from whichever line
     was the one that could be wrong; they are claims about one path set and are stated as
     that (review round 1 claim 5).
+
+    The remedy is printed without its `Nothing was pushed.` clause: the `Refusal` carries
+    one action string for the landing and the plan alike, and here nothing was ever going
+    to be pushed, two lines above "This ran nothing." (review round 2 claim 7).
     """
     where = "(this branch's own diff, merge-base relative)"
     if _exempt_lane(read, lane):
@@ -890,7 +926,7 @@ def _routing_plan(
     return (
         f"routing=would_refuse lane={lane} refusal={misrouted.kind} {where}",
         *misrouted.found,
-        f"action={misrouted.action}",
+        f"action={misrouted.action.removesuffix(PUSHED_CLAUSE)}",
     )
 
 
@@ -978,7 +1014,12 @@ def main(argv: list[str] | None = None) -> int:
                 "`git log --oneline origin/main..HEAD` before running anything else.",
             )
         )
-    stream = sys.stdout if report.code == 0 else sys.stderr
+    # A landing's refusal is an error and belongs on stderr. A dry run's whole output is
+    # its plan, and since #344 gave it a verdict its exit is non-zero exactly when it has
+    # the most to say — so routing on the code alone emptied stdout in the one case #344
+    # was filed about, leaving a foreign-lane seat with a bare `recipe … failed` banner
+    # that this project trains agents to read as a harness failure (round 2 claim 3).
+    stream = sys.stdout if report.code == 0 or args.dry_run else sys.stderr
     for line in report.lines:
         print(line, file=stream)
     return report.code
