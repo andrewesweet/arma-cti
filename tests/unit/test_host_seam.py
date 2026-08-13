@@ -63,12 +63,26 @@ def hosts_sh(script: str, env: dict[str, str] | None = None) -> subprocess.Compl
 # a second row silently unmakes the premise of every test whose subject is an
 # *unknown* host: commissioning Machine B on 2026-08-12 turned `bravo` from the
 # canonical unknown into a resolvable one and reddened four tests here in every
-# tree (#356). So every test below names its own registry, and the two fixtures
-# are the two registries the seam has to be right about.
+# tree (#356). So every test below names its own registry, and this module
+# writes three: the local-only one, the two-host one, and the invalid one
+# `test_an_invalid_registry_refuses_every_host` derives from the second — which
+# is the registry the seam has to be most right about, since it must refuse
+# every host rather than fall back to any. The same coupling survives elsewhere —
+# every test reaching `regress.sh` or `run.sh` without `CTI_HOSTS_FILE` still
+# reads the machine's registry, which is #362.
+#
+# `server_slots = 5` is load-bearing and not a detail: `host_registry.load()`
+# falls back to `default_hosts()` when its path does not exist, and that default
+# is a single `local` row otherwise identical to this one at the registry's
+# maximum of 6 slots. A fixture registry indistinguishable from the fallback
+# proves no isolation at all — a mistyped fixture path passes every test in this
+# module. Five is the one value that makes the fallback observable, and
+# `test_a_one_host_registry_is_the_humans_row` asserts it so the difference is
+# something a test fails on rather than something a comment claims.
 LOCAL_ROW = """version = 1
 [hosts.local]
 ssh_target = ""
-server_slots = 6
+server_slots = 5
 headed_client = true
 human = true
 client_driver = "windows"
@@ -88,8 +102,11 @@ remote_root = "/home/cti/.arma-cti/staging"
 def local_only_registry(tmp_path: Path) -> str:
     """Write a registry holding the one host that existed before Machine B, and nothing else.
 
-    Its point is what it *lacks*: `bravo` is unknown here whatever this machine
-    has been commissioned with, which is the premise the refusal tests assert on.
+    Its point is what it *lacks*: `nosuchhost` is unknown here whatever this
+    machine has been commissioned with, which is the premise the refusal tests
+    assert on. The name is deliberately one no machine can ever be commissioned
+    as — `bravo` was a real machine's name a day after these tests were written,
+    which is how #356 happened.
     """
     path = tmp_path / "hosts-local-only.toml"
     path.write_text(LOCAL_ROW, encoding="utf-8")
@@ -99,26 +116,29 @@ def local_only_registry(tmp_path: Path) -> str:
 # ------------------------------------------------------------------- the table
 
 
-def test_the_tier_knows_one_host_and_it_is_the_humans(tmp_path: Path) -> None:
-    """One value today, and the role that decides whether the guard applies.
+def test_a_one_host_registry_is_the_humans_row(tmp_path: Path) -> None:
+    """What the seam derives from a one-row registry: role, transport, slots, key set.
 
-    Machine B becomes a second row here rather than a rewrite of the runner —
-    which is the whole claim the seam makes.
+    A claim about the derivation, not about this machine — no test here watches
+    the real registry any more, by design (#356). The slot count is the assertion
+    that carries the isolation: it is the one value differing from the
+    no-registry fallback, so it fails if the registry this test wrote is unread.
     """
     result = hosts_sh(
-        'cti_host_role local; cti_host_transport local; echo "${!CTI_HOST_ROLE[*]}"',
+        "cti_host_role local; cti_host_transport local; cti_host_slots local; "
+        'echo "${!CTI_HOST_ROLE[*]}"',
         env={"CTI_HOSTS_FILE": local_only_registry(tmp_path)},
     )
-    assert result.stdout.split() == ["human", "null", "local"], result.stderr
+    assert result.stdout.split() == ["human", "null", "5", "local"], result.stderr
 
 
 def test_an_unknown_host_is_refused_by_the_handle(tmp_path: Path) -> None:
     result = hosts_sh(
         "cti_host_resolve",
-        env={"CTI_HOSTS_FILE": local_only_registry(tmp_path), "CTI_TIER_HOST": "bravo"},
+        env={"CTI_HOSTS_FILE": local_only_registry(tmp_path), "CTI_TIER_HOST": "nosuchhost"},
     )
     assert result.returncode == EXIT_INFRA_UNAVAILABLE
-    assert "no host named 'bravo'" in result.stderr
+    assert "no host named 'nosuchhost'" in result.stderr
 
 
 def test_an_unknown_transport_refuses_instead_of_running_here(tmp_path: Path) -> None:
@@ -307,12 +327,12 @@ def test_a_pool_run_aimed_at_an_unknown_host_launches_nothing(tmp_path: Path) ->
         "3",
         extra_env={
             "CTI_HOSTS_FILE": local_only_registry(tmp_path),
-            "CTI_TIER_HOST": "bravo",
+            "CTI_TIER_HOST": "nosuchhost",
         },
     )
     assert result.returncode == EXIT_INFRA_UNAVAILABLE, result.stderr[-4000:]
     assert "failure_class=infra_unavailable" in result.stderr
-    assert "host=bravo" in result.stderr
+    assert "host=nosuchhost" in result.stderr
     assert not (tmp_path / "trace.tsv").exists(), "a probe ran on a host the tier cannot reach"
     assert not sorted((tmp_path / "state").rglob("*-pool")), "evidence was written for a non-run"
 
@@ -379,7 +399,7 @@ def test_an_unknown_host_is_refused_by_the_harness_too(tmp_path: Path) -> None:
         **os.environ,
         "CTI_HOSTS_FILE": local_only_registry(tmp_path),
         "CTI_SPIKE_OUT": str(out),
-        "CTI_TIER_HOST": "bravo",
+        "CTI_TIER_HOST": "nosuchhost",
         "CTI_WINDOWS_TASKLIST": str(executable(tmp_path / "tasklist.sh", TASKLIST_RUNNING)),
         "CTI_TEST_TASKLIST_CALLS": str(tmp_path / "calls"),
         "CTI_TIER_STATE": str(tmp_path / "state"),
@@ -392,5 +412,5 @@ def test_an_unknown_host_is_refused_by_the_harness_too(tmp_path: Path) -> None:
         line.split("=", 1) for line in (out / "results.env").read_text().splitlines() if "=" in line
     )
     assert recorded["failure_class"] == "infra_unavailable"
-    assert "bravo" in recorded["failure_detail"]
+    assert "nosuchhost" in recorded["failure_detail"]
     assert not (tmp_path / "calls").exists(), "a run aimed at an unreachable host touched a host"
