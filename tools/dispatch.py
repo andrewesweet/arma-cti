@@ -1232,6 +1232,12 @@ class Plan(NamedTuple):
     # nobody can count later — and counting them is how this project will know whether
     # the enumerability sub-check ever earns a hard refusal.
     advisories: tuple[str, ...] = ()
+    # What the routing rung said when it did *not* refuse (#326, review round 2 claim 5).
+    # Deliberately its own field rather than more `advisories`: an advisory is a readiness
+    # finding about the issue, and this is a verdict about the route — folding them together
+    # would file it under `readiness_advisories` on the record, where a later reader counting
+    # readiness advisories would count routing lines among them.
+    routing: tuple[str, ...] = ()
     # The pre-work strata the observatory compares profiles on (#323). On the record
     # rather than reconstructed afterwards, because reconstruction from an outcome is the
     # confound the observatory exists to remove: a gate tier read off the diff would put
@@ -1256,6 +1262,7 @@ class Plan(NamedTuple):
             "breaker_dir": str(self.breaker_dir),
             "route": self.route.document(),
             "readiness_advisories": list(self.advisories),
+            "routing_clearance": list(self.routing),
             "strata": self.strata.document(),
             "resource_attributes": dict(self.identity.attributes()),
             "plan_charge": plan_charge(lane, self.planned_at),
@@ -3012,6 +3019,41 @@ def routing_refusal(
     )
 
 
+def routing_clearance(args: argparse.Namespace, root: Path) -> tuple[str, ...]:
+    """Say what a *clear* dispatch routing read did and did not establish (round 2 claim 5).
+
+    `just land`'s counterpart, and the argument is round 1 claim 3's own, applied on the side
+    it was not: the reader told nothing is wrong is the reader forming a belief about what
+    was checked. It matters more here than there, because since #326 dispatch is the **only**
+    rung that checks class 3 at all — a landing has no seat — so a dispatcher cleared here is
+    cleared by the one check that could have caught an ADR taken by an unadmitted seat, and
+    hears nothing about classes 4 and 5 refusing no route, class 6 naming a minority of the
+    gates, or the landing rung not re-checking any of it.
+
+    **The unreadable-policy fallback is stated rather than silent (round 2 claim 7).** The
+    Claude lane dispatches on an unreadable policy so the policy can be repaired on Claude,
+    and before #326 that cost nothing, because Claude was exempt from every row anyway. Class
+    3 is now lane-blind, so the fallback silently reverses the one row made to bind Claude.
+    The bootstrap still holds; what changes is that the hole says so.
+    """
+    read = _read_routing_policy(root)
+    if read.policy is None:
+        if args.lane != "claude-native":  # pragma: no cover - `routing_refusal` refused it
+            return ()
+        return (
+            "routing=not_checked reason=policy_unreadable",
+            f"policy={read.error}",
+            (
+                "fallback=claude-native dispatches anyway so the policy can be repaired on"
+                " Claude — a seat-bound class binding this lane escapes through it unchecked"
+            ),
+        )
+    return (
+        f"routing=clear check=advisory issue declaration seat={args.seat} lane={args.lane}",
+        f"coverage={read.policy.coverage}",
+    )
+
+
 def ladder_refusal(
     args: argparse.Namespace, now: datetime, found: Readiness, root: Path
 ) -> Refusal | None:
@@ -3162,6 +3204,7 @@ def plan_dispatch(
         planned_at=now,
         breaker_dir=breaker_dir,
         advisories=readiness_advisories(args.issue, found),
+        routing=routing_clearance(args, root),
         strata=capture_strata(
             found.body, args.issue, route.seat, root, body_from_file=bool(args.issue_body)
         ),
@@ -3205,6 +3248,7 @@ def load_record(record: Path) -> Plan:
         planned_at=datetime.fromisoformat(str(document["planned_at"])),
         breaker_dir=Path(str(document.get("breaker_dir", breaker.DEFAULT_BREAKER_DIR))),
         advisories=tuple(str(line) for line in document.get("readiness_advisories", ())),
+        routing=tuple(str(line) for line in document.get("routing_clearance", ())),
         strata=read_strata(document),
     )
 
@@ -3491,6 +3535,7 @@ def dry_run_lines(plan: Plan, brief: str, parent: Mapping[str, str]) -> tuple[st
         f"argv={' '.join(plan.argv)}",
         f"brief_bytes={len(brief.encode('utf-8'))}",
         *plan.advisories,
+        *plan.routing,
     ]
     lines += [f"env_child.{key}={child[key]}" for key in sorted(child) if key not in parent]
     lines += [
@@ -3721,6 +3766,7 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
             f"worktree={plan.worktree}",
             *plan.route.lines(),
             *plan.advisories,
+            *plan.routing,
         ),
         0,
     )

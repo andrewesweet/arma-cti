@@ -200,15 +200,15 @@ def test_every_path_backed_class_is_exercised_beyond_the_first_row() -> None:
     """The ids are #326's five survivors less the two no diff path can prove.
 
     Class 4 was never one: no path proves the #181 shape. Class 3 joined it in #326's review
-    round 1 — re-founded on the `planner` seat, and a landing has no seat, so the row carries
-    no landing prefixes and this rung has nothing of its to exercise. That gap is stated in
-    the row's own remedy and in the policy's `coverage` sentence rather than left here.
+    round 1 — re-founded on seats, and a landing has no seat, so the row carries no landing
+    prefixes and this rung has nothing of its to exercise. That gap is stated in the row's own
+    remedy and in the policy's `coverage` sentence rather than left here.
     """
     read = _policy_read()
     assert read.policy is not None
     path_backed = [rule for rule in read.policy.rules if rule.landing_path_prefixes]
     assert [rule.id for rule in path_backed] == [2, 5, 6]
-    assert next(rule for rule in read.policy.rules if rule.id == 3).required_seats == ("planner",)
+    assert next(rule for rule in read.policy.rules if rule.id == 3).required_seats
     for rule in path_backed:
         match = routing_policy.landing_match(rule, (_seed(rule.landing_path_prefixes[0]),))
         assert match is not None, rule.name
@@ -267,13 +267,35 @@ def test_the_cleared_lander_is_told_what_the_clear_read_did_not_establish() -> N
     assert f"coverage={read.policy.coverage}" in lines
 
 
-def test_a_clear_read_says_nothing_where_no_check_ran() -> None:
-    """An exempt lane never consulted the table, and an unreadable one was already refused.
+def test_the_exempt_lander_is_told_it_was_exempted_rather_than_cleared() -> None:
+    """Round 2 claim 6: the withheld sentence was the one this reader most needed.
 
-    A coverage sentence in either place would describe a check that did not run, which is the
-    same misreading in the other direction.
+    A `claude-native` landing of `docs/adr/…` is precisely the case class 3's own remedy calls
+    out — an ADR reaching `origin/main` from an unappointed seat is uncaught, not cleared —
+    and the exempt lane is the one the landing rung structurally cannot catch. Round 1
+    withheld the line on the ground that it would "describe a check that did not run", which
+    is what the line says.
     """
-    assert land.routing_clearance(_policy_read(), "claude-native") == ()
+    read = _policy_read()
+    assert read.policy is not None
+    assert land.classify_routing(read, ("docs/adr/0072-x.md",), "claude-native") is None
+    lines = land.routing_clearance(read, "claude-native")
+    assert "routing=exempt lane=claude-native check=not run" in lines
+    assert any("nothing here was cleared" in line for line in lines)
+    assert f"coverage={read.policy.coverage}" in lines
+    # Still distinguishable from the non-exempt clearance, which claims a check that ran.
+    assert not any("check=enforcing actual diff" in line for line in lines)
+
+
+def test_an_exempt_lane_that_could_not_read_the_policy_names_the_error_not_a_coverage() -> None:
+    """The exempt lane is exempt from the refusal too, so silence would be its whole verdict."""
+    lines = land.routing_clearance(routing_policy.ReadResult(None, "absent"), "claude-native")
+    assert "policy=absent" in lines
+    assert not any(line.startswith("coverage=") for line in lines)
+
+
+def test_a_clear_read_says_nothing_where_the_refusal_already_said_it() -> None:
+    """A non-exempt lane's unreadable policy is `classify_routing`'s refusal, with the error."""
     assert land.routing_clearance(routing_policy.ReadResult(None, "absent"), "zai") == ()
 
 
@@ -681,6 +703,13 @@ def test_a_rerun_after_a_blocked_merge_finishes_the_merge_and_pushes_nothing(
 def test_a_diverged_main_checkout_reports_the_work_landed_and_the_merge_owed(
     repo: tuple[Path, Path, Path],
 ) -> None:
+    """And it keeps the lines the landing earned — round 2 claim 8.
+
+    This is the one refusal that follows a push that happened. Every other discard path is a
+    landing that did not occur, so its routing and gate lines describe work with no
+    consequence; here the work **is** on `origin/main`, and dropping them left the only lander
+    who has actually shipped as the only one never told what the routing rung checked.
+    """
     origin, main, here = repo
     _commit(main, "local-only.txt", "never pushed\n")
     _commit(here, "feature.txt", "work\n")
@@ -688,9 +717,15 @@ def test_a_diverged_main_checkout_reports_the_work_landed_and_the_merge_owed(
     report = land.land(main, here, gate=_Gate())
 
     assert report.code == land.EXIT_LANDED_INCOMPLETE
-    assert report.lines[0] == "refusal=merge_not_fast_forward"
+    assert "refusal=merge_not_fast_forward" in report.lines
     assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
     assert any(line.startswith("merge_command=") for line in report.lines)
+    # The earned lines, and the refusal still after them rather than instead of them.
+    assert any(line.startswith("pushed=") for line in report.lines)
+    assert any(line.startswith("routing=") for line in report.lines)
+    assert report.lines.index("refusal=merge_not_fast_forward") > report.lines.index(
+        next(line for line in report.lines if line.startswith("pushed="))
+    )
 
 
 def test_a_conflicting_rebase_stops_before_the_gate_and_leaves_the_rebase_in_progress(

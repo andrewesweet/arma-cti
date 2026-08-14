@@ -10,10 +10,11 @@ the two classes the re-founding deleted refuse nothing.
 from __future__ import annotations
 
 import json
+import re
 import shutil
 from datetime import UTC, datetime
 from functools import cache
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 from conftest import REPO, load_tool
@@ -139,12 +140,53 @@ def test_class_3_refuses_an_unappointed_seat_on_the_claude_lane_too() -> None:
     appointed foreign one — provenance wearing a capability remedy.
     """
     for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
-        unappointed = routing_policy.Route(lane, profile, "implementer", NOW)
+        unappointed = routing_policy.Route(lane, profile, "recon", NOW)
         match = routing_policy.advisory_match(policy(), "ADR authorship for #999.", unappointed)
         assert match is not None, lane
         assert (match.rule.id, match.rule.name) == (3, "adr_authorship")
-        assert "seat=implementer" in match.evidence
-        assert "required_seats=planner" in match.evidence
+        assert "seat=recon" in match.evidence
+        assert "required_seats=planner implementer review" in match.evidence
+
+
+# The seats an ADR issue must be able to reach, and why each is required by a landed ruling.
+# `planner` authors (ruling 2), `implementer` lands (ruling 2 again — the planner "neither
+# gates nor lands"), `review` reviews that landing (ruling 4 — no change lands alone).
+ADR_ROUTE: Final = ("planner", "implementer", "review")
+
+
+def test_every_seat_is_walked_against_class_3_rather_than_the_row_being_read() -> None:
+    """Round 1's deadlock was invisible to inspection and visible to a walk (round 2 claim 1).
+
+    It admitted `planner` alone — the one seat ADR-0071 ruling 2 defines as neither gating nor
+    landing — so on an ADR issue every seat that could have finished the work was refused, on
+    every lane, and ruling 4's reviewing instance could not be dispatched at all. The finding
+    is not "the row names the wrong seat"; it is that nobody walked the row. So this walks it:
+    every seat in the dispatch registry, on both a Claude and a foreign lane, with the verdict
+    asserted for each rather than for the ones that came to mind.
+    """
+    body = "ADR authorship for #999."
+    for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
+        for seat in dispatch().SEATS:
+            match = routing_policy.advisory_match(
+                policy(), body, routing_policy.Route(lane, profile, seat, NOW)
+            )
+            admitted = match is None
+            assert admitted == (seat in ADR_ROUTE), f"{lane}/{seat}"
+
+
+def test_the_admitted_set_is_a_whole_route_and_names_the_ruling_each_seat_comes_from() -> None:
+    """Author, land, review — the three ruling 2 and ruling 4 require between them.
+
+    The planner is deliberately not alone and the row's remedy says why. `retro` is deliberately
+    absent: ruling 3 hands retros their own seat and that seat files and lands nothing, which is
+    the half of this class ruling 3 withdrew along with its `docs/process-log.md` path.
+    """
+    authorship = next(rule for rule in policy().rules if rule.id == 3)
+    assert authorship.required_seats == ADR_ROUTE
+    assert set(ADR_ROUTE) <= set(dispatch().SEATS)
+    assert "retro" not in authorship.required_seats
+    assert "neither gates nor lands" in authorship.remedy
+    assert "ruling 4 lands no change alone" in authorship.remedy
 
 
 def test_class_3_is_unenforced_at_landing_because_a_landing_has_no_seat() -> None:
@@ -156,12 +198,35 @@ def test_class_3_is_unenforced_at_landing_because_a_landing_has_no_seat() -> Non
     the policy's `coverage` sentence rather than left for a reader to discover.
     """
     authorship = next(rule for rule in policy().rules if rule.id == 3)
-    assert authorship.required_seats == ("planner",)
+    assert authorship.required_seats == ADR_ROUTE
     assert authorship.landing_path_prefixes == ()
     assert landing("docs/adr/0072-a-later-record.md") is None
     assert landing("docs/process-log.md") is None
     assert "no landing prefixes" in authorship.remedy
     assert "checked at dispatch only" in policy().coverage
+
+
+def test_the_departure_from_the_adrs_prescribed_landing_path_is_flagged_in_the_row() -> None:
+    """CLAUDE.md: binding decisions are flagged explicitly, never silently overridden.
+
+    ADR-0071's re-founding table prescribes `docs/adr/` as this row's landing path, and the
+    row has none, because a `required_seats` row carrying landing prefixes is the shape
+    `parse_policy` refuses. The two cannot both hold as written, so the conflict is stated on
+    the row a reader consults rather than in a commit message (review round 2 claim 3); which
+    of the ADR or the row gives way is the human's, and the flag is what makes the question
+    reachable.
+    """
+    authorship = next(rule for rule in policy().rules if rule.id == 3)
+    assert "ADR-0071's re-founding table prescribes `docs/adr/`" in authorship.remedy
+    assert "is the human's" in authorship.remedy
+    # The flag is about a real conflict, not a remembered one: the shape the ADR asks for is
+    # still refused by the parser today.
+    document = json.loads(POLICY.read_text(encoding="utf-8"))
+    next(entry for entry in document["classes"] if entry["id"] == 3)["landing_path_prefixes"] = [
+        "docs/adr/"
+    ]
+    with pytest.raises(routing_policy.PolicyError, match="enforceable only where a seat exists"):
+        routing_policy.parse_policy(json.dumps(document))
 
 
 def test_a_seat_bound_class_may_not_also_carry_landing_prefixes() -> None:
@@ -297,6 +362,60 @@ def test_class_6_binds_every_instance_and_therefore_carries_no_exception() -> No
         )
 
 
+def test_binds_every_instance_does_not_reach_the_claude_lane_and_required_seats_does() -> None:
+    """The fact two docstrings asserted wrongly, now pinned by behaviour (round 2 claim 2).
+
+    A future row author wanting a class that binds Claude was told by the module docstring and
+    by `Rule`'s that the field for it is `binds_every_instance`. It is not — `_refusing_rules`
+    consults `refuses` and `required_seats` and nothing else — so they would have set a field
+    that does nothing and shipped a silently Claude-exempt row. Asserted on the two fields in
+    isolation, planted on a parsed policy, so neither can be inferred from the shipped rows.
+    """
+    parsed = policy()
+    gate = "tools/mutation_smoke.py"
+
+    def planted(**fields: object) -> Any:  # noqa: ANN401 — a NamedTuple `_replace` result
+        return parsed._replace(
+            rules=tuple(rule._replace(**fields) if rule.id == 6 else rule for rule in parsed.rules)
+        )
+
+    binding = planted(binds_every_instance=True, required_seats=())
+    assert routing_policy.enforcing_match(binding, (gate,), "zai") is not None
+    assert routing_policy.enforcing_match(binding, (gate,), "claude-native") is None
+
+    # `required_seats` is what reaches the lane, and it does so on the seat-checked rung —
+    # `enforcing_match` skips such a row by rule, because a landing has no seat.
+    seat_bound = planted(binds_every_instance=False, required_seats=("planner",))
+    body = "Change `tools/mutation_smoke.py`."
+    for lane, profile in (("claude-native", "opus-low"), ("zai", "zai-glm52-max")):
+        unadmitted = routing_policy.Route(lane, profile, "implementer", NOW)
+        assert routing_policy.advisory_match(seat_bound, body, unadmitted) is not None, lane
+        admitted = routing_policy.Route(lane, profile, "planner", NOW)
+        assert routing_policy.advisory_match(seat_bound, body, admitted) is None, lane
+
+
+def test_a_seat_bound_rows_evidence_names_the_seat_once() -> None:
+    """Round 2 claim 11: a row matching on a seat *and* appointing one printed `seat=` twice.
+
+    No shipped row carries both `seats` and `required_seats`, so this plants the shape rather
+    than waiting for someone to write it — the de-duplication is by rule, not by absence.
+    """
+    parsed = policy()
+    both = parsed._replace(
+        rules=tuple(
+            rule._replace(seats=("implementer",), required_seats=("planner",))
+            if rule.id == 3
+            else rule
+            for rule in parsed.rules
+        )
+    )
+    route_taken = routing_policy.Route("zai", "zai-glm52-max", "implementer", NOW)
+    match = routing_policy.advisory_match(both, "ADR authorship for #999.", route_taken)
+    assert match is not None
+    assert match.evidence.count("seat=implementer") == 1
+    assert "required_seats=planner" in match.evidence
+
+
 def test_a_route_exception_cannot_except_the_class_that_binds_every_instance() -> None:
     """The guard's second door, which round 1 left unpinned (review round 1 claim 9).
 
@@ -411,33 +530,63 @@ def test_the_advisory_refusal_carries_the_coverage_line_a_reader_meets() -> None
     assert f"coverage={policy().coverage}" in refusal.found
 
 
+def just_check_tools() -> frozenset[str]:
+    """Every `tools/*.py` the `just check` recipe actually reaches, derived from the justfile.
+
+    Round 1's version asserted only that each named tool appeared *somewhere* in the
+    justfile, which `tools/breaker.py` satisfies through its own `just breaker` recipe while
+    no `check-*` recipe runs it — so the remedy's claim that all nine are reached by
+    `just check` passed a test written to catch exactly that (review round 2 claim 4). This
+    walks `check`'s dependency list and reads those recipes' bodies, so a tenth gate joining
+    `just check` reds the assertions below instead of ageing quietly, and a gate leaving
+    `just check` does too.
+    """
+    text = JUSTFILE.read_text(encoding="utf-8")
+    recipe = re.compile(r"^([a-z0-9-]+):([^\n]*)\n((?:[ \t][^\n]*\n|\n)*)", re.MULTILINE)
+    bodies = {match[1]: (match[2], match[3]) for match in recipe.finditer(text)}
+    assert "check" in bodies, "the justfile no longer has a `check` recipe"
+    reached = set()
+    for name in bodies["check"][0].split():
+        assert name in bodies, name
+        reached.update(re.findall(r"tools/[a-z0-9_]+\.py", bodies[name][1]))
+    return frozenset(reached)
+
+
 def test_class_6s_own_remedy_names_the_gates_it_does_not_cover() -> None:
     """ADR-0071 calls the class aspirational; the remedy the refusal prints says so too.
 
     The enumeration exists so a reader can trust that the omissions are known, which makes an
     omission from the omission list worse here than elsewhere: round 1 named seven tools and
-    `just check` runs two more (review round 1 claim 6). Derived from the justfile rather than
-    retyped, so a tenth gate joining `just check` reds this instead of ageing quietly.
+    `just check` runs two more (review round 1 claim 6).
     """
     conflict = next(rule for rule in policy().rules if rule.id == 6)
     assert "uncovered, never cleared" in conflict.remedy
-    # Every Python gate `just check` reaches, each either named by the class or named as an
-    # omission. `check_sqf_bans` and `generate_seats` are the two round 1 left out of both.
-    for tool in (
-        "check_adr_form",
-        "check_seat_config",
-        "check_validated_markers",
-        "check_conflict_markers",
-        "check_source_symlink",
-        "check_sqf_bans",
-        "generate_seats",
-        "export_command_schema",
-        "breaker",
-    ):
-        path = f"tools/{tool}.py"
-        assert path not in conflict.landing_path_prefixes, path
-        assert path in conflict.remedy, path
-        assert path.removesuffix(".py") in JUSTFILE.read_text(encoding="utf-8"), path
+    reached = just_check_tools()
+    # The derivation is real rather than a set that happens to be empty.
+    assert "tools/check_adr_form.py" in reached
+    for path in reached:
+        named = path in conflict.landing_path_prefixes
+        assert named or path in conflict.remedy, path
+
+
+def test_the_remedys_just_check_clause_is_true_of_every_tool_it_scopes() -> None:
+    """The clause claims a scope, and the scope is checked rather than counted.
+
+    Round 1's remedy said nine tools were "all nine reached by `just check`". Eight are;
+    `tools/breaker.py` is reached by `just breaker` and folded into `just watch-report`, and
+    ADR-0071's own row 6 made the same slip (review round 2 claim 4). The clause now scopes
+    eight and names the ninth separately, so this asserts both halves against the justfile
+    rather than against the sentence.
+    """
+    conflict = next(rule for rule in policy().rules if rule.id == 6)
+    reached = just_check_tools()
+    scoped, _, rest = conflict.remedy.partition("— the eight `just check` reaches —")
+    assert rest, "the remedy no longer scopes its `just check` clause"
+    omissions = set(re.findall(r"tools/[a-z0-9_]+\.py", scoped))
+    assert omissions <= reached, sorted(omissions - reached)
+    assert len(omissions) == 8
+    assert "tools/breaker.py" not in reached
+    assert "tools/breaker.py" in rest
 
 
 def test_class_6_keeps_the_label_of_the_refusal_it_actually_issues() -> None:
@@ -490,7 +639,7 @@ def test_class_4s_two_remedies_name_one_seat_rather_than_agreeing_by_accident() 
     ("class_id", "body", "seat"),
     [
         (2, "Routing-class: orchestration", "orchestrator"),
-        (3, "Routing-class: adr-authorship", "implementer"),
+        (3, "Routing-class: adr-authorship", "recon"),
         (6, "Change `tools/dispatch.py`.", "implementer"),
     ],
 )

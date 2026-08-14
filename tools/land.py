@@ -319,7 +319,16 @@ PUSHED_CLAUSE: Final = " Nothing was pushed."
 
 
 def _exempt_lane(read: routing_policy.ReadResult, lane: str) -> bool:
-    """Whether the routing gate exempts this lane at all — the one home for that question.
+    """Whether the *landing* rung's per-policy lane exemption covers this lane.
+
+    **Not the one home for the lane question, and since #326 it cannot be.** The routing
+    policy's exemption is decided per row inside `routing_policy._refusing_rules`: a row
+    carrying `required_seats` binds every lane, Claude's included. This predicate is the
+    landing rung's coarser, per-policy copy, and the two agree today only because
+    `parse_policy` refuses a `required_seats` row any `landing_path_prefixes` — so no row
+    that binds Claude can reach the landing rung at all. Relax that guard and they diverge
+    silently, which is why this docstring names the coupling rather than claiming sole
+    ownership (review round 2 claim 9).
 
     The policy's own `claude_lane` is the authority and `enforcing_match` reads it from
     there; the constant is the fallback for a policy that could not be read, which is
@@ -407,12 +416,31 @@ def routing_clearance(read: routing_policy.ReadResult, lane: str) -> tuple[str, 
     touching `tools/check_seat_config.py`, a gate `just check` runs and class 6 does not
     name, passed the routing rung in silence and read as approved (review round 1 claim 3).
 
-    Empty for an exempt lane and for an unreadable policy, both of which are somebody else's
-    verdict to state: `classify_routing` has already refused the unreadable case, and an
-    exempt lane never consulted the table, so a coverage sentence there would describe a
-    check that did not run.
+    Empty only for a non-exempt lane whose policy could not be read, which is somebody else's
+    verdict to state: `classify_routing` has already refused that case with the error in it.
+    The exempt lane meets an unreadable policy in silence otherwise, because that refusal is
+    the one it is exempt from.
+
+    **An exempt lane gets a line, and round 1's reasoning for withholding one was the wrong
+    way round (review round 2 claim 6).** "A coverage sentence there would describe a check
+    that did not run" is exactly what the sentence exists to say — a rung that did not run is
+    not a rung that passed — and the Claude lander is both the reader most likely to land
+    `docs/adr/` from an unappointed seat and the one this rung structurally cannot catch. So
+    the exempt lane is told that it was exempted rather than cleared, in its own words rather
+    than in the non-exempt lane's.
     """
-    if _exempt_lane(read, lane) or read.policy is None:
+    if _exempt_lane(read, lane):
+        stated = (
+            f"coverage={read.policy.coverage}"
+            if read.policy is not None
+            else f"policy={read.error}"
+        )
+        return (
+            f"routing=exempt lane={lane} check=not run",
+            "exempt=this lane never consulted the class table, so nothing here was cleared",
+            stated,
+        )
+    if read.policy is None:
         return ()
     return (
         f"routing=clear lane={lane} check=enforcing actual diff",
@@ -849,14 +877,22 @@ def _push(here: Path, ahead: int, lines: list[str]) -> Report | str:
 
 
 def _merge(root: Path, here: Path, pushed: str, lines: list[str]) -> Report:
-    """Fast-forward the main checkout, and make a merge that did not run loud."""
+    """Fast-forward the main checkout, and make a merge that did not run loud.
+
+    The exit-2 refusal keeps the lines the landing already earned, and it is the one refusal
+    that must (review round 2 claim 8). Every other discard path is a landing that did not
+    happen, so the routing clearance and the gate line describe work with no consequence; on
+    this path the work **is** on `origin/main`, and dropping the lines would leave the only
+    lander who has actually shipped as the only one never told what the routing rung did and
+    did not check.
+    """
     if not _merge_needed(here, root):
         lines.append(f"merge=not_needed reason=landed_from_the_main_checkout ({root})")
         return Report((("ok=landed"), *lines), 0)
     code, stderr = _run(merge_argv(root), cwd=root)
     outstanding = classify_merge(root, pushed, code, stderr)
     if outstanding is not None:
-        return Report.refused(outstanding, EXIT_LANDED_INCOMPLETE)
+        return Report((*lines, *outstanding.lines()), EXIT_LANDED_INCOMPLETE)
     lines.append(f"merge=fast-forwarded {root} to {pushed}")
     return Report((("ok=landed"), *lines), 0)
 

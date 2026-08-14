@@ -19,9 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Anthropic plan meter* dies because the meter is read over plain HTTP at a fixed URL with no
   Claude session involved. Of the five survivors: *retros and ADR authorship* splits, the retro
   half dying with ruling 3 (a retro lands nothing, so it needs no routing rule) and the surviving
-  ADR-authorship half being re-founded on the **seat** — any lane's `planner` is admitted and
-  every other seat is refused, on every lane including Claude's, because ADR authorship rests on
-  that seat's ordered preferences rather than on which provider answered; *the #181 shape*
+  ADR-authorship half being re-founded on the **seat** — the class admits the whole route ADR-0071
+  rulings 2 and 4 require between them (`planner` authors, `implementer` lands because the planner
+  neither gates nor lands, `review` reviews that landing because no change lands alone), on any
+  lane including a foreign one, and refuses every other seat on every lane including Claude's,
+  because ADR authorship rests on seats rather than on which provider answered; *the #181 shape*
   survives with a capability remedy — route to the planner seat and escalate — matched to the
   transferring-escalation condition of the same name, which fires on the class the same issue
   body classifies into; *in-world landings* narrows to a rule about subagents, because a subagent
@@ -35,9 +37,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exception at all, the withdrawn `proposal-only` marker included. Class ids are now stable
   historical handles rather than positions: the two retired ids leave gaps rather than
   renumbering the rows other modules address by id, and a table dropping one of those rows is
-  refused instead of governing silently. The policy states its own incomplete coverage, and
-  `just land` and `just dispatch` print that statement on every routing verdict — refusal and
-  clear read alike — so the reader told nothing is wrong meets it too.
+  refused instead of governing silently, the ADR-authorship class among them — it is the only row
+  that refuses on the Claude lane, so dropping it would return that lane to exempt-from-everything.
+  The policy states its own incomplete coverage, and `just land` and `just dispatch` print that
+  statement on every routing verdict — refusal, clear read, and the reads that did not happen
+  alike. A Claude landing is told it was *exempted* rather than cleared, and a Claude dispatch
+  that ran on an unreadable policy is told the check did not run and that a seat-bound class
+  binding that lane escaped through the bootstrap unchecked. The one refusal that follows a push
+  that already happened keeps the lines the landing earned rather than replacing them, because
+  that lander is the only one whose work is on `origin/main` regardless.
+
+  **One conflict is flagged rather than resolved.** ADR-0071's re-founding table prescribes
+  `docs/adr/` as the ADR-authorship class's landing path, and the class carries none: a
+  seat-bound row is enforceable only where a seat exists, and `just land` is handed a lane and a
+  diff and no seat, so such a row carrying landing prefixes would clear at dispatch for a seat it
+  admits and refuse the same route at landing. The row states the departure and its reasoning;
+  amending the ADR, or covering the departure with an ADR-0013 record, is the human's.
 
 ### Added
 

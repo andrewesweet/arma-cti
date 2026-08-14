@@ -36,6 +36,7 @@ import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -2037,6 +2038,43 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
     assert "routing_class=2:orchestration" in done.stderr
     assert "seat=orchestrator" in done.stderr
     assert not (tmp_path / "dispatches").exists()
+
+
+def _routing_args(*, lane: str = "zai", seat: str = "implementer") -> Any:  # noqa: ANN401
+    return SimpleNamespace(lane=lane, profile="zai-glm52-max", seat=seat)
+
+
+def test_the_cleared_dispatcher_is_told_what_the_clear_read_did_not_check() -> None:
+    """Round 2 claim 5: round 1's own argument, applied on the rung it was not.
+
+    Since #326 dispatch is the **only** rung that checks class 3 — a landing has no seat — so
+    a dispatcher cleared here is cleared by the one check that could have caught an ADR taken
+    by an unadmitted seat, and heard nothing at all about what the table does not cover.
+    """
+    lines = dispatch.routing_clearance(_routing_args(), REPO)
+    read = routing_policy.read_policy(REPO / routing_policy.POLICY_RELATIVE)
+    assert read.policy is not None
+    assert any(line.startswith("routing=clear check=advisory issue declaration") for line in lines)
+    assert f"coverage={read.policy.coverage}" in lines
+
+
+def test_the_unreadable_policy_fallback_on_claude_says_it_is_a_hole(tmp_path: Path) -> None:
+    """Round 2 claim 7: the bootstrap still holds, and now it stops being silent.
+
+    The Claude lane dispatches on an unreadable policy so the policy can be repaired on
+    Claude. Before #326 that cost nothing — Claude was exempt from every row anyway — but
+    class 3 is lane-blind, so the fallback silently reverses the one row made to bind Claude.
+    """
+    args = _routing_args(lane="claude-native")
+    lines = dispatch.routing_clearance(args, tmp_path)
+    assert "routing=not_checked reason=policy_unreadable" in lines
+    assert any(line.startswith("policy=") for line in lines)
+    assert any("escapes through it unchecked" in line for line in lines)
+    # And the route really is unrefused, which is what makes the line worth printing.
+    assert (
+        dispatch.routing_refusal(args, dispatch.Readiness(None, body=""), tmp_path, OFF_PEAK)
+        is None
+    )
 
 
 # ------------------------------------------------------------------ the command surface

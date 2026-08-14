@@ -23,17 +23,29 @@ one of the rows another module addresses would otherwise parse and govern silent
 **Four fields decide what a row does, and three of them are new.** `refuses` (default true)
 says whether a match produces a refusal at all: classes 4 and 5 classify without refusing,
 because their remedies are a capability route and a subagent prohibition rather than a bar
-on a route. `binds_every_instance` (default false) lifts the Claude-lane exemption for one
-row: class 6's conflict of interest — no instance authors the gate that judges it — binds
-Claude too, which the provenance framing it replaces could not express.
+on a route. `binds_every_instance` (default false) does **not** touch the Claude-lane
+exemption and never has — `_refusing_rules` does not consult it. What it does is forbid the
+row any exception: class 6's conflict of interest — no instance authors the gate that judges
+it — cannot be excepted by the instance it judges. Round 1 documented it here as the field
+that binds Claude, which is the one false sentence a future row author would act on, so it
+is corrected rather than softened (#326, review round 2 claim 2).
 
 `required_seats` (default empty) is the third, and it is what re-founding a row on
-**capability** actually takes. A row that names it refuses every route whose seat is not on
-the list, **on every lane including Claude's**, and refuses none whose seat is on it. Class 3
-is the row: ADR authorship rests on the `planner` seat's ordered preferences (ADR-0071
-ruling 2), not on provenance, and a lane-selected refusal there was a keep-on-Claude rule
-wearing a capability remedy — it refused `codex`/`codex-sol-xhigh`/`planner`, the first entry
-in the very list its remedy prescribes (#326, review round 1 claim 2). A seat-bound row is
+**capability** actually takes, and it is also the only field that lifts the Claude-lane
+exemption. A row that names it refuses every route whose seat is not on the list, **on every
+lane including Claude's**, and refuses none whose seat is on it. Class 3 is the row: ADR
+authorship rests on seats (ADR-0071 rulings 2 and 4) rather than on provenance, and a
+lane-selected refusal there was a keep-on-Claude rule wearing a capability remedy — it
+refused `codex`/`codex-sol-xhigh`/`planner`, the first entry in the very list its remedy
+prescribes (#326, review round 1 claim 2).
+
+**A row admits the whole route, not its first step.** Round 1 admitted `planner` alone, and
+the planner is the seat ruling 2 defines as neither gating nor landing — so no route could
+author *and* land an ADR, and ruling 4's reviewing instance could not be dispatched at all
+(review round 2 claim 1). Class 3 therefore admits `planner`, `implementer` and `review`
+together. The rule this generalises: what a capability row admits is every seat some landed
+ruling requires for that work to be finished, and a row is checked by walking every seat in
+`tools/dispatch.py`'s `SEATS` against it rather than by reading it. A seat-bound row is
 therefore enforceable only where a seat exists, which is dispatch: `just land` has no seat
 and never will, so such a row carries no `landing_path_prefixes` and `parse_policy` refuses
 one that does, rather than letting the landing rung silently re-derive the lane bar.
@@ -73,15 +85,24 @@ IN_WORLD_CLASS: Final = "in_world_landings"
 # gate paths the withdrawn class 1 held arrived here rather than falling out.
 CONFLICT_OF_INTEREST_CLASS_ID: Final = 6
 
-# The rows another module addresses by id, and which therefore cannot leave silently. Class
-# 4 is `tools/escalation.py`'s `CLASS_FOUR`, deliberately a decoupled copy; class 5 is the
-# in-world authority three readers depend on; class 6 is the conflict-of-interest rule
-# ADR-0071 ruling 4's exemption list is bound by. A table missing one of these parses
-# nowhere. Ids only, never names: the name is what a row is called today and a rename is
-# not a removal — `tests/unit/test_corpus_gate.py` holds that the row's own name is not
-# load-bearing, and pinning it here would quietly make it so.
+# The ADR-authorship class. Named for `REQUIRED_CLASSES` rather than for a lookup: it is the
+# one row that can refuse on the Claude lane, so its silent departure would have a
+# consequence no other row's has (review round 2 claim 10).
+ADR_AUTHORSHIP_CLASS_ID: Final = 3
+
+# The rows that cannot leave silently, on either of two grounds. **Addressed by id
+# elsewhere**: class 4 is `tools/escalation.py`'s `CLASS_FOUR`, deliberately a decoupled
+# copy; class 5 is the in-world authority three readers depend on; class 6 is the
+# conflict-of-interest rule ADR-0071 ruling 4's exemption list is bound by. **Load-bearing by
+# absence**: class 3 is the only row that refuses on the Claude lane at all, so a table
+# dropping it would not merely stop enforcing one class — it would return the Claude lane to
+# exempt-from-everything, which is the state #326 was re-founded to end, and `parse_policy`
+# would accept it (review round 2 claim 10). A table missing one of these parses nowhere.
+# Ids only, never names: the name is what a row is called today and a rename is not a removal
+# — `tests/unit/test_corpus_gate.py` holds that the row's own name is not load-bearing, and
+# pinning it here would quietly make it so.
 REQUIRED_CLASSES: Final[frozenset[int]] = frozenset(
-    {4, IN_WORLD_CLASS_ID, CONFLICT_OF_INTEREST_CLASS_ID}
+    {ADR_AUTHORSHIP_CLASS_ID, 4, IN_WORLD_CLASS_ID, CONFLICT_OF_INTEREST_CLASS_ID}
 )
 
 
@@ -101,8 +122,9 @@ class Rule(NamedTuple):
     capability and conflict of interest needed (#326), and all three default to the pre-#326
     behaviour so an older-shaped row still means what it used to. `refuses` false is a row
     that classifies and never bars a route — its remedy is addressed to whoever takes the
-    work, not to the router. `binds_every_instance` true is a row the Claude-lane exemption
-    does not reach.
+    work, not to the router. `binds_every_instance` true is a row that may carry **no
+    exception**, and that is its whole live effect; the field a row uses to reach the Claude
+    lane is `required_seats`, and only that (review round 2 claim 2).
 
     `seats` and `required_seats` are opposites and are deliberately not one field. `seats`
     lists the seats a row **matches** — class 2's `orchestrator`, a provenance keep-on-Claude
@@ -462,8 +484,8 @@ def _refusing_rules(policy: Policy, lane: str) -> tuple[Rule, ...]:
     row founded on provenance is exempt on the Claude lane, because provenance is what it
     selects on — class 2's orchestration carve-out, the one ruling 1 left standing. A row
     founded on a *seat* is not, because its basis has nothing to do with which provider is
-    answering: class 3 refuses an ADR authored from a seat that is not `planner` on the
-    Claude lane exactly as it does on `codex`. Exempting it by lane was what made the class
+    answering: class 3 refuses an ADR taken by a seat it does not admit on the Claude lane
+    exactly as it does on `codex`. Exempting it by lane was what made the class
     refuse `codex`/`codex-sol-xhigh`/`planner` — the head of the very list its own remedy
     prescribes — while clearing `claude-native` on any seat at all.
 
@@ -512,7 +534,13 @@ def advisory_match(policy: Policy, body: str, route: Route) -> Match | None:
         if not rule.required_seats:
             return match
         appointed = " ".join(rule.required_seats)
-        return Match(rule, (*match.evidence, f"seat={route.seat}", f"required_seats={appointed}"))
+        # `issue_match` already appends `seat=` when the row *matches* on the seat, so a
+        # future row carrying both `seats` and `required_seats` would otherwise print it
+        # twice to the refused reader (review round 2 claim 11). No shipped row does today;
+        # the de-duplication is by rule rather than by nobody having written that row yet.
+        seat = f"seat={route.seat}"
+        evidence = match.evidence if seat in match.evidence else (*match.evidence, seat)
+        return Match(rule, (*evidence, f"required_seats={appointed}"))
     return None
 
 
