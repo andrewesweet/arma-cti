@@ -31,7 +31,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple, cast
 
 import pytest
 from conftest import REPO, load_tool
@@ -42,13 +42,16 @@ if TYPE_CHECKING:
 brief = load_tool("brief")
 admission = load_tool("admission")
 dispatch = load_tool("dispatch")
-# `brief` imports `escalation` as a sibling, and the discriminated outcome #325 round 2 introduced
-# is identity-checked by type. `load_tool` re-execs the module on every call, so a separate
-# `load_tool("escalation")` here would be a *different* module object than the one
-# `brief.escalation_for` builds its outcomes from — `isinstance` across them is False, where the
-# old duck-typed `.emissions` access did not care. Use brief's own `escalation` so the classes the
-# tests construct and narrow on are the same objects brief produces.
-escalation = brief.escalation
+# A *separate* load of escalation from the one `brief` imports. `load_tool` re-execs the module on
+# every call, so this is a different module object than `brief.escalation`, and its `Firing` /
+# `Unreadable` classes are different class objects than the ones `brief.compose` narrows on. That
+# difference is the boundary under test, not something to paper over: a discriminator that trusted
+# identity (#325 round 2's `isinstance`) would drop an outcome this copy built and brief's copy
+# rendered, and aliasing `escalation = brief.escalation` to make an `isinstance` test pass was
+# exactly the mask that hid it (#325 round 3, claim 1). `brief.compose` narrows on the `kind`
+# value, which the creating copy wrote and any copy reads, so an outcome built here reaches the
+# brief intact — asserted below rather than assumed.
+escalation = load_tool("escalation")
 handoff_fetch = load_tool("handoff_fetch")
 readiness = load_tool("readiness")
 routing_policy = load_tool("routing_policy")
@@ -590,7 +593,10 @@ def test_no_fired_condition_emits_nothing() -> None:
 def test_the_live_wiring_fires_condition_four_for_a_181_shape_body() -> None:
     """routing_class is the one fact the brief can read today, so condition 4 fires for real."""
     outcome = brief.escalation_for("Routing-class: #181-shape\n", "implementer", REPO)
-    assert isinstance(outcome, escalation.Firing)
+    # `escalation_for` builds from brief's own escalation module, so narrowing through that
+    # producer class is correct here — distinct from the cross-module value discrimination
+    # `compose` runs, which the constructed-outcome tests below exercise.
+    assert isinstance(outcome, brief.escalation.Firing)
     (emission,) = outcome.emissions
     assert emission.condition.id == 4
 
@@ -599,7 +605,7 @@ def test_the_live_wiring_emits_nothing_for_an_item_no_condition_decides() -> Non
     evaluation = brief.escalation_for(
         "Implement a generic helper with no routing class.\n", "implementer", REPO
     )
-    assert isinstance(evaluation, escalation.NoFiring)
+    assert evaluation.kind == escalation.NO_FIRING
 
 
 def test_an_unreadable_input_surfaces_in_the_brief_rather_than_vanishing() -> None:
@@ -626,11 +632,85 @@ def test_the_live_wiring_reports_unreadable_inputs_rather_than_silence(tmp_path:
     (claim 4), so each input is named by the source it failed to read.
     """
     evaluation = brief.escalation_for("Routing-class: #181-shape\n", "implementer", tmp_path)
-    assert isinstance(evaluation, escalation.Unreadable)
+    # Outcome is brief.escalation's; narrow through the producer (see the wiring test above).
+    assert isinstance(evaluation, brief.escalation.Unreadable)
     # Both inputs failed; assert each by the source it names, not by truthiness — claim 4.
     joined = "\n".join(evaluation.reasons)
     assert str(routing_policy.POLICY_RELATIVE) in joined
     assert str(escalation.CONDITIONS_RELATIVE) in joined
+
+
+def test_an_outcome_a_separate_module_copy_built_is_recognised_by_value_not_identity() -> None:
+    """The `kind` value carries the third state across two module copies; `isinstance` would not.
+
+    Reproduces the reviewer's construction (#325 round 3, claim 1): re-execute `escalation` the way
+    `load_tool` does and pass its outcomes to `brief.compose`. This module's `escalation` is a
+    different object than `brief.escalation`, so its `Firing` / `Unreadable` are different class
+    objects than the ones `compose` holds — an identity discriminator drops them, a value one does
+    not. Assert both: the copies are not identical, and the outcome reaches the brief intact.
+    """
+    assert escalation is not brief.escalation
+    assert escalation.Firing is not brief.escalation.Firing
+    assert escalation.Unreadable is not brief.escalation.Unreadable
+
+    firing = composed(
+        escalation=escalation.evaluate(
+            escalation.read_conditions(REPO / escalation.CONDITIONS_RELATIVE),
+            escalation.Context(item=escalation.ItemState(routing_class=4)),
+        )
+    )
+    assert "## Escalation" in firing
+    assert brief.ESCALATION_RULE in firing
+    assert "escalation=4:plausible_wrong_fix_goes_green" in firing
+
+    unreadable = composed(escalation=escalation.Unreadable(("a reason another copy wrote",)))
+    assert "## Escalation" in unreadable
+    assert "unreadable" in unreadable
+    assert "a reason another copy wrote" in unreadable
+
+
+def test_a_firing_that_also_carries_an_unreadable_input_names_both() -> None:
+    """A fired condition is the priority; an unreadable input it could not check is named after it.
+
+    The exclusive third state of round 2 could not carry a firing alongside an unreadable source,
+    so a class-4 item whose policy cannot be read while condition 1 fires on recorded review facts
+    would have lost its emission. `with_unreadable` keeps them independent (#325 round 3, claim 3),
+    and the brief renders the firing first and the gap after it — never the gap in the firing's
+    place.
+    """
+    firing = escalation.Firing(
+        escalation.evaluate(
+            escalation.read_conditions(REPO / escalation.CONDITIONS_RELATIVE),
+            escalation.Context(item=escalation.ItemState(routing_class=4)),
+        ).emissions,
+        ("config/routing-policy.json: could not be read",),
+    )
+    rendered = composed(escalation=firing)
+    assert brief.ESCALATION_RULE in rendered
+    assert "escalation=4:plausible_wrong_fix_goes_green" in rendered
+    assert "unreadable" in rendered
+    assert "could not be read" in rendered
+
+
+def test_an_outcome_the_renderer_cannot_narrow_is_refused_not_rendered_as_silence() -> None:
+    """The renderer is the last place a distinction can be lost before a human reads the brief.
+
+    Value discrimination survives the loader where identity did not, but it can lose a distinction
+    of its own: a fall-through that renders nothing for a kind it does not recognise presents a
+    not-the-confident-silence outcome as the confident silence — this branch's shape one
+    representation later. `compose` refuses instead of rendering a brief with no escalation section.
+    """
+
+    class Fourth(NamedTuple):
+        @property
+        def kind(self) -> str:
+            return "some_kind_this_copy_does_not_decide"
+
+    # `brief.escalation`'s exception class, not this copy's: `compose` raises the one its own copy
+    # holds, and the two are different class objects, so `pytest.raises` on this copy's would never
+    # match. The identity boundary claim 1 is about, met again on the way out.
+    with pytest.raises(brief.escalation.EscalationError, match=escalation.UNKNOWN_KIND_ERROR):
+        composed(escalation=cast("object", Fourth()))
 
 
 # --------------------------------------------------------------- the handoff (#309)

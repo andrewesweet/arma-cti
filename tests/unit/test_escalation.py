@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import json
 import shutil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NamedTuple, cast
 
 import pytest
 from conftest import REPO, load_tool
@@ -153,6 +153,21 @@ def test_the_live_table_is_read_again_for_each_call(tmp_path: Path) -> None:
             ),
             escalation.IDS_UNIQUE_ERROR,
         ),
+        (
+            # Three valid, distinct conditions — but the table is missing routing_class_four, so the
+            # class-4 item that condition decides would return no firing as though it had been
+            # checked and cleared. The parser keeps its own docstring's promise that a partial table
+            # can never govern silently (#325 round 3, claim 2); the live fixture catches this same
+            # edit at the gate, the contract did not.
+            (
+                '{"version": 1, "conditions": ['
+                '{"id": 1, "name": "a", "predicate": "three_round_wall", "remedy": "r"},'
+                '{"id": 2, "name": "b", "predicate": "consecutive_same_class_wall", "remedy": "r"},'
+                '{"id": 3, "name": "c", "predicate": "retry_wall", "remedy": "r"}'
+                "]}"
+            ),
+            escalation.PARTIAL_TABLE_ERROR,
+        ),
     ],
 )
 def test_a_partial_table_is_rejected_not_silently_skipped(text: str, message: str) -> None:
@@ -180,6 +195,68 @@ def test_an_unreadable_table_is_a_third_state_not_silence() -> None:
     # `emissions` exists only on Firing, so a consumer cannot read it on the third state at all —
     # the hole two parallel tuples left (#325 round 2, claim 2; #347).
     assert not hasattr(evaluation, "emissions")
+
+
+# --------------------------- combining an outcome with an unreadable input (#325 claim 3)
+
+
+def test_with_unreadable_keeps_a_firing_and_carries_the_reason_alongside() -> None:
+    """A firing survives an unreadable input; the reason rides with it, never displaces it."""
+    firing = escalation.Firing(_emissions(live(), escalation.Context(item=item(routing_class=4))))
+    combined = escalation.with_unreadable(
+        firing, ("config/routing-policy.json: could not be read",)
+    )
+    assert isinstance(combined, escalation.Firing)
+    assert combined.emissions == firing.emissions
+    assert combined.unreadable == ("config/routing-policy.json: could not be read",)
+
+
+def test_with_unreadable_turns_a_no_firing_into_unreadable_not_silence() -> None:
+    """The confident silence is not honest while a checkable condition could not be checked."""
+    combined = escalation.with_unreadable(
+        escalation.NoFiring(), ("config/routing-policy.json: could not be read",)
+    )
+    assert isinstance(combined, escalation.Unreadable)
+    assert combined.reasons == ("config/routing-policy.json: could not be read",)
+
+
+def test_with_unreadable_accumulates_reasons_on_an_already_unreadable_outcome() -> None:
+    """The table being unreadable is itself the third state; a second input adds to its reasons."""
+    combined = escalation.with_unreadable(
+        escalation.Unreadable(("the condition table: could not be read",)),
+        ("config/routing-policy.json: could not be read",),
+    )
+    assert isinstance(combined, escalation.Unreadable)
+    assert combined.reasons == (
+        "the condition table: could not be read",
+        "config/routing-policy.json: could not be read",
+    )
+
+
+def test_with_unreadable_leaves_an_outcome_unchanged_when_nothing_was_unreadable() -> None:
+    firing = escalation.Firing(_emissions(live(), escalation.Context(item=item(routing_class=4))))
+    assert escalation.with_unreadable(firing, ()) is firing
+    assert escalation.with_unreadable(escalation.NoFiring(), ()) == escalation.NoFiring()
+
+
+def test_an_unrecognised_kind_is_refused_rather_than_absorbed_into_the_silence() -> None:
+    """Where the *new* representation could lose a distinction, and the answer.
+
+    Value discrimination fixed identity's failure across module copies (claim 1), but it is itself
+    a representation, and its own losing place is the fall-through: an `else` that treated any kind
+    it did not recognise as the confident silence would repeat this branch's shape one layer later.
+    A fourth outcome — added later, or built by a copy of this module ahead of this one — must not
+    be able to arrive as "nothing fired". `with_unreadable` matches `NO_FIRING` and refuses the
+    rest.
+    """
+
+    class Fourth(NamedTuple):
+        @property
+        def kind(self) -> str:
+            return "some_kind_this_copy_does_not_decide"
+
+    with pytest.raises(escalation.EscalationError, match=escalation.UNKNOWN_KIND_ERROR):
+        escalation.with_unreadable(cast("escalation.Evaluation", Fourth()), ("a reason",))
 
 
 # ------------------------------------------------------------------ condition 4: the #181 shape

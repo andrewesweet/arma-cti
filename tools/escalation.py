@@ -150,6 +150,19 @@ class Emission(NamedTuple):
     evidence: tuple[str, ...]
 
 
+# The kind a consumer narrows on. Each outcome carries its kind as a class attribute and a
+# caller reads it as a value (`outcome.kind == FIRING`) rather than with `isinstance`, because
+# `load_tool` re-execs this module on every call and two copies of it have *different*
+# `Firing`/`Unreadable` class objects — `isinstance` across them is False, so a discriminator that
+# trusted identity silently dropped an outcome built by one copy and rendered by another
+# (#325 round 3, claim 1). A kind is a string literal, so the value the *creating* copy wrote is
+# the value the reading copy compares, and they agree where identity does not. The brief the human
+# reads is rendered from one copy and the outcome another copy built must reach it intact.
+NO_FIRING: Final = "no_firing"
+FIRING: Final = "firing"
+UNREADABLE: Final = "unreadable"
+
+
 class NoFiring(NamedTuple):
     """The confident silence: every input was readable and no condition fired.
 
@@ -158,11 +171,34 @@ class NoFiring(NamedTuple):
     never be read past an input that could not be looked at.
     """
 
+    @property
+    def kind(self) -> str:
+        """The value a consumer narrows on; a module re-exec cannot change it (claim 1)."""
+        # `load_tool` re-execs this module, so two copies hold different `NoFiring` / `Firing` /
+        # `Unreadable` class objects and identity checks across them are False. `kind` returns this
+        # copy's literal, which any copy reads and agrees on, so an outcome built by one copy
+        # reaches a brief another rendered intact (#325 round 3, claim 1).
+        return NO_FIRING
+
 
 class Firing(NamedTuple):
-    """At least one condition fired; `emissions` are the fired conditions in id order."""
+    """At least one condition fired; `emissions` are the fired conditions in id order.
+
+    `unreadable` carries reasons for inputs *other* conditions needed that could not be read —
+    surfaced alongside the firing rather than displacing it, because a fired condition is the
+    priority and an unreadable input is not licence to hide it (#325 round 3, claim 3). A class-4
+    item that cannot be checked (its policy unreadable) while condition 1 fires on recorded review
+    facts is a real state once those facts are wired, and its emission must reach the agent with
+    the gap named after it, not in its place. Empty when every input the conditions needed read.
+    """
 
     emissions: tuple[Emission, ...]
+    unreadable: tuple[str, ...] = ()
+
+    @property
+    def kind(self) -> str:
+        """The value a consumer narrows on; a module re-exec cannot change it (claim 1)."""
+        return FIRING
 
 
 class Unreadable(NamedTuple):
@@ -182,9 +218,15 @@ class Unreadable(NamedTuple):
 
     reasons: tuple[str, ...]
 
+    @property
+    def kind(self) -> str:
+        """The value a consumer narrows on; a module re-exec cannot change it (claim 1)."""
+        return UNREADABLE
 
-# The discriminated outcome. A consumer must narrow on the type — `emissions` exists only on
-# `Firing` — so it cannot inspect `emissions == ()` and silently recover the confident answer the
+
+# The discriminated outcome. A consumer narrows on the `kind` value — never `isinstance`, which
+# breaks across two copies of this module (#325 round 3, claim 1) — and `emissions` exists only on
+# `Firing`, so it cannot inspect `emissions == ()` and silently recover the confident answer the
 # Highs were about, the way two parallel tuples let it (#325 round 2, claim 2; #347).
 Evaluation = NoFiring | Firing | Unreadable
 
@@ -199,6 +241,21 @@ PREDICATE_ERROR: Final = (
 )
 REMEDY_ERROR: Final = "every condition must name its remedy"
 IDS_UNIQUE_ERROR: Final = "condition ids must be unique"
+PARTIAL_TABLE_ERROR: Final = (
+    "the table must carry one row for every condition the code decides; a table missing one is"
+    " partial and would govern silently — the item that condition decides would return no firing"
+    " as though it had been checked and cleared"
+)
+UNKNOWN_KIND_ERROR: Final = (
+    "an outcome must carry one of the three decided kinds; a consumer that falls through to the"
+    " confident silence for an unrecognised one loses the distinction in exactly the place the"
+    " last four rounds lost it, one representation later"
+)
+
+
+def unknown_kind_error(kind: str) -> str:
+    """Return the refusal for a kind no consumer can narrow, naming the kind it was handed."""
+    return f"{UNKNOWN_KIND_ERROR}: {kind!r}"
 
 
 def at_three_round_wall(item: ItemState) -> bool:
@@ -328,7 +385,15 @@ def _condition(entry: object) -> Condition:
 
 
 def parse_conditions(text: str) -> Conditions:
-    """Validate enough shape that a partial condition table can never govern silently."""
+    """Validate enough shape that a partial condition table can never govern silently.
+
+    The promise is kept by the parser, not only by the live fixture: the code decides exactly the
+    predicates in `PREDICATES`, so a table that carries no row for one of them is partial, and the
+    item that condition decides would evaluate to no firing as though it had been checked and
+    cleared. Requiring one row for every decided predicate makes a hand-edited table that drops a
+    condition fail at parse time, the way the shipped table's id assertion catches this same edit
+    at the gate (#325 round 3, claim 2).
+    """
     document = json.loads(text)
     if not isinstance(document, dict) or document.get("version") != 1:
         raise EscalationError(VERSION_ERROR)
@@ -339,6 +404,8 @@ def parse_conditions(text: str) -> Conditions:
     ids = [condition.id for condition in conditions]
     if len(set(ids)) != len(ids):
         raise EscalationError(IDS_UNIQUE_ERROR)
+    if PREDICATES.keys() - {condition.predicate for condition in conditions}:
+        raise EscalationError(PARTIAL_TABLE_ERROR)
     return Conditions(source=str(document.get("source", "")), conditions=conditions)
 
 
@@ -371,6 +438,35 @@ def evaluate(read: ReadResult, context: Context) -> Evaluation:
     if not fired:
         return NoFiring()
     return Firing(tuple(sorted(fired, key=lambda emission: emission.condition.id)))
+
+
+def with_unreadable(outcome: Evaluation, reasons: tuple[str, ...]) -> Evaluation:
+    """Combine an evaluation with reasons for inputs a condition needed that could not be read.
+
+    An unreadable input is independent of whether a condition fired, and neither may lose the
+    other (#325 round 3, claim 3): a `Firing` keeps its emissions and carries the reasons — the
+    fired condition is the priority, and the unreadable input is surfaced after it in the brief
+    rather than displacing it; a `NoFiring` becomes `Unreadable`, because the confident silence is
+    not honestly available while a condition that could have fired could not be checked; an
+    `Unreadable` (the table itself was unreadable, so nothing could be evaluated) accumulates the
+    reasons. No reasons leaves any outcome unchanged. The discrimination is by the `kind` value, so
+    a caller that holds one copy of this module and an outcome another built still combines it
+    correctly where `isinstance` would not (#325 round 3, claim 1).
+
+    `NO_FIRING` is matched, never fallen through to: the value discrimination replacing `isinstance`
+    is itself a representation, and the place *it* can lose a distinction is an `else` that absorbs
+    an unrecognised kind into the confident silence — the same shape as every earlier round of this
+    branch, one representation later. An unknown kind raises instead.
+    """
+    if not reasons:
+        return outcome
+    if outcome.kind == FIRING:
+        return Firing(outcome.emissions, (*outcome.unreadable, *reasons))
+    if outcome.kind == UNREADABLE:
+        return Unreadable((*outcome.reasons, *reasons))
+    if outcome.kind == NO_FIRING:
+        return Unreadable(reasons)
+    raise EscalationError(unknown_kind_error(outcome.kind))
 
 
 def render(emissions: tuple[Emission, ...]) -> tuple[str, ...]:

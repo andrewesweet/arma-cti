@@ -740,18 +740,17 @@ def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluati
 
     Two inputs can fail to read — the routing policy, which alone decides condition 4's class,
     and the condition table — and each is the third state, not silence: an unreadable policy is
-    not "this item has no class" and an unreadable table is not "nothing fired". Either makes the
-    outcome `Unreadable` — the evaluation will not return the confident `NoFiring` while a
-    condition it could not check might have fired — and each reason it carries reaches the brief
-    under the heading an unreadable input earns, so a class-4 issue that must escalate cannot
-    disappear (#325; the #323 distinction, #347).
+    not "this item has no class" and an unreadable table is not "nothing fired". They are combined
+    with the evaluation by `escalation.with_unreadable`, which keeps them independent of whether a
+    condition fired: an unreadable input cannot turn a confident `NoFiring` honest (so it becomes
+    `Unreadable`), but neither may it displace a `Firing` — a class-4 item whose policy cannot be
+    read while condition 1 fires on recorded review facts is a real state once those facts are
+    wired, and its emission reaches the agent with the gap named after it, not in its place
+    (#325 round 3, claim 3; the #323 distinction, #347).
     """
-    reasons: list[str] = []
     policy_read = routing_policy.read_policy(repo / routing_policy.POLICY_RELATIVE)
     routing_class: int | None = None
-    if policy_read.policy is None:
-        reasons.append(policy_read.error)
-    else:
+    if policy_read.policy is not None:
         match = routing_policy.classify_issue(policy_read.policy, body, seat_name)
         if match is not None:
             routing_class = match.rule.id
@@ -762,11 +761,40 @@ def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluati
         arbiter=dispatch.IMPLEMENTER_ESCALATION[0] if dispatch.IMPLEMENTER_ESCALATION else None,
     )
     outcome = escalation.evaluate(conditions_read, context)
-    if isinstance(outcome, escalation.Unreadable):
-        reasons.extend(outcome.reasons)
-    if reasons:
-        return escalation.Unreadable((*reasons,))
-    return outcome
+    # The table's own unreadable reason is already inside `outcome` (evaluate returns Unreadable
+    # for it). The policy is a separate input the conditions need, combined here so a firing
+    # survives it and a no-firing does not claim the confident silence (#325 round 3, claim 3).
+    return escalation.with_unreadable(outcome, (policy_read.error,) if policy_read.error else ())
+
+
+def _escalation_lines(outcome: escalation.Evaluation) -> list[str]:
+    """Return the escalation section for an outcome, or nothing for the confident silence.
+
+    Narrows on the `kind` value, never `isinstance`: `load_tool` re-execs the escalation module, so
+    the outcome a brief carries can be an instance of a different copy's class than the one this
+    copy holds, and `isinstance` is False across them. A `kind` read off the object returns the
+    value the creating copy wrote, so it agrees across copies where identity does not (#325 round 3,
+    claim 1). A firing that also carries an unreadable input renders the fired condition first and
+    the gap after it — never the gap in the firing's place (#325 round 3, claim 3).
+
+    The confident silence is matched, never fallen through to. This renderer is the last place a
+    distinction can be lost before a human reads the brief, so an `else` that rendered nothing for
+    an unrecognised kind would be this branch's own failure shape one representation later: an
+    outcome that is not the confident silence, presented as it. An unknown kind raises.
+    """
+    if outcome.kind == escalation.FIRING:
+        lines = ["", "## Escalation", ESCALATION_RULE, *escalation.render(outcome.emissions)]
+        if outcome.unreadable:
+            lines += escalation.render_unreadable(outcome.unreadable)
+        return lines
+    if outcome.kind == escalation.UNREADABLE:
+        # A distinct heading, never the "has fired" preamble above: an unreadable input is the
+        # third state, not a firing and not the silence of nothing fired (#325 round 2, claim 1).
+        return ["", "## Escalation", *escalation.render_unreadable(outcome.reasons)]
+    if outcome.kind == escalation.NO_FIRING:
+        # The confident silence, the only outcome a brief renders nothing for.
+        return []
+    raise escalation.EscalationError(escalation.unknown_kind_error(outcome.kind))
 
 
 def compose(briefing: Briefing) -> str:
@@ -781,16 +809,7 @@ def compose(briefing: Briefing) -> str:
     handoff_lines = render_handoff(issue, briefing.handoff)
     if handoff_lines:
         lines += ["", *handoff_lines]
-    outcome = briefing.escalation
-    if isinstance(outcome, escalation.Firing):
-        lines += ["", "## Escalation", ESCALATION_RULE]
-        lines += escalation.render(outcome.emissions)
-    elif isinstance(outcome, escalation.Unreadable):
-        # A distinct heading, never the "has fired" preamble above: an unreadable input is the
-        # third state, not a firing and not the silence of nothing fired (#325 round 2, claim 1).
-        lines += ["", "## Escalation"]
-        lines += escalation.render_unreadable(outcome.reasons)
-    # NoFiring: no section — the confident silence, the only outcome a brief renders nothing for.
+    lines += _escalation_lines(briefing.escalation)
     lines += [
         "",
         "## Task, scope, ground truth",
