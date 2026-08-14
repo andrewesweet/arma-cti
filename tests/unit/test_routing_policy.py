@@ -163,15 +163,21 @@ def test_every_seat_is_walked_against_class_3_rather_than_the_row_being_read() -
     is not "the row names the wrong seat"; it is that nobody walked the row. So this walks it:
     every seat in the dispatch registry, on both a Claude and a foreign lane, with the verdict
     asserted for each rather than for the ones that came to mind.
+
+    Walked through `routing_refusal` — the dispatch rung itself, reading this branch's policy
+    off `REPO` — rather than through `advisory_match`, so what is exercised is the thing that
+    would have refused the review dispatch. The rung's own policy *resolution* is #364's blind
+    spot and not this test's: it reads `main_checkout(Path.cwd())` in production, which is the
+    parent checkout, so a walk that let it resolve its own path would have been answered by the
+    landed policy rather than by the row under test.
     """
     body = "ADR authorship for #999."
     for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
         for seat in dispatch().SEATS:
-            match = routing_policy.advisory_match(
-                policy(), body, routing_policy.Route(lane, profile, seat, NOW)
-            )
-            admitted = match is None
-            assert admitted == (seat in ADR_ROUTE), f"{lane}/{seat}"
+            args = type("Args", (), {"lane": lane, "profile": profile, "seat": seat})()
+            found = dispatch().Readiness(None, body=body)
+            refusal = dispatch().routing_refusal(args, found, REPO, NOW)
+            assert (refusal is None) == (seat in ADR_ROUTE), f"{lane}/{seat}"
 
 
 def test_the_admitted_set_is_a_whole_route_and_names_the_ruling_each_seat_comes_from() -> None:
