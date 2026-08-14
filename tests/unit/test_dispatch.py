@@ -417,9 +417,10 @@ def test_the_orchestrator_seat_still_dispatches_on_claude_native() -> None:
 
 
 def test_every_seat_walks_every_lane_with_the_verdict_named_for_each() -> None:
-    """The carve-out is this ladder's only provenance refusal, and no verdict reads a tier
-    token. The routing rung's class 6 bridge is the other lane-selected refusal the project
-    holds, and it lives in a different table with its own walk (review round 2, claim 3).
+    """The carve-out is this ladder's only provenance refusal; no verdict reads a tier token.
+
+    The routing rung's class 6 bridge is the other lane-selected refusal the project holds,
+    and it lives in a different table with its own walk (review round 2, claim 3).
 
     Every seat in the registry against every registered profile on every lane — the
     exhaustive walk, with the expected verdict asserted for each combination rather than
