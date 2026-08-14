@@ -62,7 +62,23 @@ def _eval(
 
 
 def fired(conditions: escalation.Conditions | None, context: escalation.Context) -> set[int]:
-    return {emission.condition.id for emission in _eval(conditions, context).emissions}
+    # `_eval` is only ever called here with a readable table (conditions built directly, never
+    # None), so the outcome is NoFiring or Firing — never Unreadable — and narrowing to Firing is
+    # the test reading the outcome the way a consumer now must: through the type, not `emissions`.
+    outcome = _eval(conditions, context)
+    if isinstance(outcome, escalation.NoFiring):
+        return set()
+    assert isinstance(outcome, escalation.Firing), outcome
+    return {emission.condition.id for emission in outcome.emissions}
+
+
+def _emissions(
+    conditions: escalation.Conditions | None, context: escalation.Context
+) -> tuple[escalation.Emission, ...]:
+    """Return the emissions of a firing outcome — narrowed the way a consumer must, by type."""
+    outcome = _eval(conditions, context)
+    assert isinstance(outcome, escalation.Firing), outcome
+    return outcome.emissions
 
 
 # --------------------------------------------------------------------------- the data table
@@ -156,8 +172,14 @@ def test_an_unreadable_table_is_a_third_state_not_silence() -> None:
     missing = escalation.read_conditions(REPO / "does-not-exist.json")
     assert missing.conditions is None
     evaluation = escalation.evaluate(missing, context)
-    assert evaluation.emissions == ()
-    assert evaluation.unreadable == (missing.error,)
+    # The third state is a type a consumer must narrow to: `emissions` does not exist on it, so a
+    # caller cannot inspect `emissions == ()` and silently recover the confident "nothing fired"
+    # the two-tuple outcome let it (#325 round 2, claim 2; #347's source-unavailable code).
+    assert isinstance(evaluation, escalation.Unreadable)
+    assert evaluation.reasons == (missing.error,)
+    # `emissions` exists only on Firing, so a consumer cannot read it on the third state at all —
+    # the hole two parallel tuples left (#325 round 2, claim 2; #347).
+    assert not hasattr(evaluation, "emissions")
 
 
 # ------------------------------------------------------------------ condition 4: the #181 shape
@@ -181,7 +203,7 @@ def test_condition_one_fires_after_three_rounds_with_a_finding_above_low() -> No
         arbiter="codex-sol-high",
     )
     assert 1 in fired(live(), context)
-    (one,) = [e for e in _eval(live(), context).emissions if e.condition.id == 1]
+    (one,) = [e for e in _emissions(live(), context) if e.condition.id == 1]
     assert "review_rounds=3" in one.evidence
     assert "finding_above_low=true" in one.evidence
     assert "arbiter=codex-sol-high" in one.evidence
@@ -219,7 +241,7 @@ def test_condition_one_does_not_fire_when_the_caller_did_not_resolve_an_arbiter(
     """
     context = escalation.Context(item=item(review_rounds=3, finding_above_low=True))
     assert 1 not in fired(live(), context)
-    assert _eval(live(), context).emissions == ()
+    assert isinstance(_eval(live(), context), escalation.NoFiring)
 
 
 def test_condition_one_fires_for_the_323_facts_and_names_the_seat_tables_arbiter() -> None:
@@ -237,7 +259,7 @@ def test_condition_one_fires_for_the_323_facts_and_names_the_seat_tables_arbiter
         item=item(review_rounds=3, finding_above_low=True),
         arbiter=arbiter,
     )
-    (one,) = [e for e in _eval(live(), context).emissions if e.condition.id == 1]
+    (one,) = [e for e in _emissions(live(), context) if e.condition.id == 1]
     assert f"arbiter={arbiter}" in one.evidence
 
 
@@ -257,7 +279,7 @@ def test_condition_three_fires_when_a_retry_on_a_new_profile_reaches_the_wall() 
         )
     )
     assert 3 in fired(live(), context)
-    (three,) = [e for e in _eval(live(), context).emissions if e.condition.id == 3]
+    (three,) = [e for e in _emissions(live(), context) if e.condition.id == 3]
     assert "prior_profile=opus-low" in three.evidence
     assert "retry_profile=codex-luna-max" in three.evidence
     assert "retry_clean_base=true" in three.evidence
@@ -355,7 +377,7 @@ def test_condition_two_fires_for_two_consecutive_items_of_one_class_at_the_wall(
         prior=(_wall(5, review_rounds=3), _wall(5, review_rounds=4)),
     )
     assert 2 in fired(live(), context)
-    (two,) = [e for e in _eval(live(), context).emissions if e.condition.id == 2]
+    (two,) = [e for e in _emissions(live(), context) if e.condition.id == 2]
     assert "routing_class=5" in two.evidence
     assert "consecutive_items=2" in two.evidence
 
@@ -363,7 +385,8 @@ def test_condition_two_fires_for_two_consecutive_items_of_one_class_at_the_wall(
 @pytest.mark.parametrize(
     ("prior", "why"),
     [
-        ((), "no history"),
+        (None, "prior not recorded — distinct from a recorded-empty history (#325 claim 3)"),
+        ((), "no history recorded"),
         ((_wall(5),), "only one prior item"),
         ((_wall(5), _wall(6)), "the two prior items do not share a class"),
         ((_wall(None), _wall(None)), "the prior items declare no class"),
@@ -380,7 +403,7 @@ def test_condition_two_fires_for_two_consecutive_items_of_one_class_at_the_wall(
     ],
 )
 def test_condition_two_does_not_fire_short_of_two_consecutive_at_the_wall(
-    prior: tuple[escalation.ItemState, ...], why: str
+    prior: tuple[escalation.ItemState, ...] | None, why: str
 ) -> None:
     context = escalation.Context(item=item(routing_class=5), prior=prior)
     assert 2 not in fired(live(), context), why
@@ -412,7 +435,7 @@ def test_independent_conditions_co_fire_in_id_order() -> None:
         item=item(routing_class=4, review_rounds=3, finding_above_low=True),
         arbiter="codex-sol-high",
     )
-    ids = [emission.condition.id for emission in _eval(live(), context).emissions]
+    ids = [emission.condition.id for emission in _emissions(live(), context)]
     assert ids == sorted(ids)
     assert set(ids) == {1, 4}
 
@@ -420,13 +443,12 @@ def test_independent_conditions_co_fire_in_id_order() -> None:
 def test_an_item_with_no_recorded_facts_emits_nothing() -> None:
     """The brief's live state today: only routing_class is recorded, and it is absent here."""
     evaluation = _eval(live(), escalation.Context(item=item()))
-    assert evaluation.emissions == ()  # nothing fired
-    assert evaluation.unreadable == ()  # the table read fine — this is silence, not a hidden gap
+    assert isinstance(evaluation, escalation.NoFiring)  # nothing fired, every input readable
 
 
 def test_render_names_the_condition_its_facts_and_its_remedy() -> None:
     context = escalation.Context(item=item(routing_class=4))
-    (rendered,) = _eval(live(), context).emissions
+    (rendered,) = _emissions(live(), context)
     lines = escalation.render((rendered,))
     assert lines[0] == "escalation=4:plausible_wrong_fix_goes_green"
     assert "  routing_class=4" in lines

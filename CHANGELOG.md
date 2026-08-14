@@ -20,8 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `config/escalation-conditions.json`, and `tools/escalation.py` decides each and emits the fired
   condition with its remedy, or nothing at all when none fire — never as prose a memory file loads
   every session. An input a condition needs that could not be read is a third state, distinct from
-"nothing fired": it reaches the agent as a notice rather than as the silence reserved for that case
-alone (#323, #347). The list grows only at a retro. Of the four, only the #181-shape condition is
+"nothing fired": it is a typed outcome — `Unreadable`, alongside `Firing` and `NoFiring` — that a
+consumer must narrow to by type rather than two tuples it can read past, so it cannot be mistaken
+for the silence reserved for "nothing fired", and in the brief it renders under its own heading
+rather than announced as a firing (#323, #347 — the source-unavailable code). The list grows only at a retro. Of the four, only the #181-shape condition is
   decidable from the dispatch record today (its routing class); the other three are decided by the
   tool but wait on the review loop and observatory to record their inputs, and a fact no record
   carries is `None` and emits nothing rather than being guessed. A fired condition reaches the

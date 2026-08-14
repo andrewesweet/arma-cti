@@ -18,11 +18,11 @@ retro, while each row's `predicate` names the Python function that decides it.
 Emission, not resident prose (#209, ADR-0071 ruling 5). Where a rule-table already decides, an
 agent is not handed numbers to reason about, so this tool decides and what reaches the agent is
 the fired condition and its remedy. A condition that has not fired emits nothing at all — but a
-table that could not be read is not "nothing fired": `evaluate` carries that as a third state in
-its `unreadable`, which a brief surfaces rather than rendering as the empty section a brief with
-no escalation due carries. The difference between a condition and a rule written into a memory
-file every session loads is that the condition is silent until it is true — and silent only then,
-not when the table that holds it could not be read.
+table that could not be read is not "nothing fired": `evaluate` returns that as a third state,
+`Unreadable`, which a brief surfaces under its own heading rather than as the empty section a
+brief with no escalation due carries. The difference between a condition and a rule written into
+a memory file every session loads is that the condition is silent until it is true — and silent
+only then, not when the table that holds it could not be read.
 
 What is decidable today, and what is not. A condition fires only on facts the caller supplies in
 a `Context`, and each fact is either recorded or it is not:
@@ -104,13 +104,15 @@ class Context(NamedTuple):
     """The facts the four conditions are decided from.
 
     `item` is the item the emission would reach (conditions 1, 3, 4 read it). `prior` is the
-    ordered history of recently-resolved items, most-recent-last, which condition 2 reads. The
-    `arbiter` is the implementer seat's escalation head that condition 1 names; the caller
-    resolves it so this module never carries a profile that drifts.
+    ordered history of recently-resolved items, most-recent-last, which condition 2 reads; it is
+    `None` when that history is not recorded — distinct from `()`, a successfully recorded empty
+    history — the same not-recorded/recorded-empty split every other fact holds. The `arbiter` is
+    the implementer seat's escalation head that condition 1 names; the caller resolves it so this
+    module never carries a profile that drifts.
     """
 
     item: ItemState
-    prior: tuple[ItemState, ...] = ()
+    prior: tuple[ItemState, ...] | None = None
     arbiter: str | None = None
 
 
@@ -148,21 +150,43 @@ class Emission(NamedTuple):
     evidence: tuple[str, ...]
 
 
-class Evaluation(NamedTuple):
-    """The evaluation outcome: fired emissions, or inputs no evaluation could read.
+class NoFiring(NamedTuple):
+    """The confident silence: every input was readable and no condition fired.
 
-    The third state (#323's distinction; #347): an input the conditions need that could not be
-    read is neither "fired" nor "did not fire", and it reaches the caller in `unreadable` rather
-    than as the empty `emissions` a brief with no escalation due carries. Each `unreadable` entry
-    names an input and why it could not be read — prose diagnostic, never a grouping key. Silence
-    — empty `emissions` with nothing `unreadable` — is reserved for "nothing fired", never for
-    "nobody could look": escalation is advisory, which is exactly why a lost emission costs
-    nothing to report and everything to hide (#41 — a check that could not run is not a check
-    that passed).
+    The only outcome that licenses a brief to carry no escalation section. A consumer cannot
+    reach it through `emissions` — `emissions` lives only on `Firing` — so "nothing fired" can
+    never be read past an input that could not be looked at.
     """
 
+
+class Firing(NamedTuple):
+    """At least one condition fired; `emissions` are the fired conditions in id order."""
+
     emissions: tuple[Emission, ...]
-    unreadable: tuple[str, ...] = ()
+
+
+class Unreadable(NamedTuple):
+    """An input a condition needs could not be read — the third state (#323's distinction, #347).
+
+    Neither "fired" nor "did not fire": an input the conditions need was unavailable, so the
+    evaluation refuses the confident answer either way rather than collapsing into the silence
+    reserved for `NoFiring`. This is #347's **source-unavailable** code: the condition table and
+    the routing policy are sources a condition needs, and an unreadable one is a typed state, not
+    one told apart by prose. Each reason names an input and why it could not be read — diagnostic
+    only, never a grouping key, exactly as #347 requires `unchecked_why` to behave; two unreadable
+    inputs carry two reasons and lose neither. Escalation is advisory, which is the reason a lost
+    emission costs nothing to surface and everything to hide (#41 — a check that could not run is
+    not a check that passed), and the reason the third state is a type a caller must narrow to
+    rather than a tuple it can read past.
+    """
+
+    reasons: tuple[str, ...]
+
+
+# The discriminated outcome. A consumer must narrow on the type — `emissions` exists only on
+# `Firing` — so it cannot inspect `emissions == ()` and silently recover the confident answer the
+# Highs were about, the way two parallel tuples let it (#325 round 2, claim 2; #347).
+Evaluation = NoFiring | Firing | Unreadable
 
 
 VERSION_ERROR: Final = "conditions must be a version 1 object"
@@ -231,7 +255,7 @@ def _consecutive_same_class_wall(context: Context) -> tuple[str, ...] | None:
     """
     shared = context.item.routing_class
     prior = context.prior
-    if shared is None or len(prior) < CONSECUTIVE_ITEMS:
+    if shared is None or prior is None or len(prior) < CONSECUTIVE_ITEMS:
         return None
     first, second = prior[-2], prior[-1]
     if first.routing_class != shared or second.routing_class != shared:
@@ -327,23 +351,26 @@ def read_conditions(path: Path) -> ReadResult:
 
 
 def evaluate(read: ReadResult, context: Context) -> Evaluation:
-    """Return fired conditions as emissions in id order; an unreadable table is a third state.
+    """Return the discriminated outcome: a firing, the confident silence, or unreadable.
 
-    Three outcomes a caller must not conflate (ADR-0071 ruling 5; the #323 distinction, #347): a
-    condition fired (`emissions` non-empty); the table read and none fired (`emissions` empty,
-    `unreadable` empty); and the table could not be read (`emissions` empty, `unreadable` names
-    why). A predicate returning `None` is the unfired case and contributes no emission. The read
-    result — parsed table or the reason it failed — is the input, so the unreadable case carries
-    its reason to the caller rather than collapsing into the silence reserved for nothing fired.
+    Three outcomes a caller must narrow to and cannot conflate (ADR-0071 ruling 5; the #323
+    distinction, #347): `Firing` — the table read and at least one condition fired; `NoFiring` —
+    the table read and none fired, with every input readable; `Unreadable` — the table could not
+    be read, so no condition could be evaluated and the confident silence is not honestly
+    available. A predicate returning `None` is the unfired case and contributes no emission.
+    `emissions` lives only on `Firing`, so a consumer that reads it has already narrowed past the
+    third state.
     """
     if read.conditions is None:
-        return Evaluation((), (read.error or "the condition table could not be read",))
+        return Unreadable((read.error or "the condition table could not be read",))
     fired = []
     for condition in read.conditions.conditions:
         evidence = PREDICATES[condition.predicate](context)
         if evidence is not None:
             fired.append(Emission(condition, evidence))
-    return Evaluation(tuple(sorted(fired, key=lambda emission: emission.condition.id)))
+    if not fired:
+        return NoFiring()
+    return Firing(tuple(sorted(fired, key=lambda emission: emission.condition.id)))
 
 
 def render(emissions: tuple[Emission, ...]) -> tuple[str, ...]:

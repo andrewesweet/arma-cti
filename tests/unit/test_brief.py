@@ -42,9 +42,16 @@ if TYPE_CHECKING:
 brief = load_tool("brief")
 admission = load_tool("admission")
 dispatch = load_tool("dispatch")
-escalation = load_tool("escalation")
+# `brief` imports `escalation` as a sibling, and the discriminated outcome #325 round 2 introduced
+# is identity-checked by type. `load_tool` re-execs the module on every call, so a separate
+# `load_tool("escalation")` here would be a *different* module object than the one
+# `brief.escalation_for` builds its outcomes from — `isinstance` across them is False, where the
+# old duck-typed `.emissions` access did not care. Use brief's own `escalation` so the classes the
+# tests construct and narrow on are the same objects brief produces.
+escalation = brief.escalation
 handoff_fetch = load_tool("handoff_fetch")
 readiness = load_tool("readiness")
+routing_policy = load_tool("routing_policy")
 
 GATE_CORPUS = REPO / "tests" / "fixtures" / "gate-corpus"
 READINESS_CORPUS = REPO / "tests" / "fixtures" / "readiness-corpus"
@@ -582,7 +589,9 @@ def test_no_fired_condition_emits_nothing() -> None:
 
 def test_the_live_wiring_fires_condition_four_for_a_181_shape_body() -> None:
     """routing_class is the one fact the brief can read today, so condition 4 fires for real."""
-    (emission,) = brief.escalation_for("Routing-class: #181-shape\n", "implementer", REPO).emissions
+    outcome = brief.escalation_for("Routing-class: #181-shape\n", "implementer", REPO)
+    assert isinstance(outcome, escalation.Firing)
+    (emission,) = outcome.emissions
     assert emission.condition.id == 4
 
 
@@ -590,33 +599,38 @@ def test_the_live_wiring_emits_nothing_for_an_item_no_condition_decides() -> Non
     evaluation = brief.escalation_for(
         "Implement a generic helper with no routing class.\n", "implementer", REPO
     )
-    assert evaluation.emissions == ()
-    assert evaluation.unreadable == ()
+    assert isinstance(evaluation, escalation.NoFiring)
 
 
 def test_an_unreadable_input_surfaces_in_the_brief_rather_than_vanishing() -> None:
-    """The third state reaches the agent: an input that could not be read is not 'nothing fired'."""
-    evaluation = escalation.Evaluation(
-        emissions=(),
-        unreadable=("config/escalation-conditions.json: could not be read",),
-    )
+    """The third state reaches the agent under its own heading — never announced as a firing."""
+    evaluation = escalation.Unreadable(("config/escalation-conditions.json: could not be read",))
     rendered = composed(escalation=evaluation)
     assert "## Escalation" in rendered
     assert "unreadable" in rendered
     assert "could not be read" in rendered
     assert "not the silence" in rendered
+    # The whole point of round 2, claim 1: an unreadable input is not a firing, so the brief must
+    # not announce one. The "has fired" preamble belongs to Firing alone.
+    assert brief.ESCALATION_RULE not in rendered
+    assert "has fired" not in rendered
 
 
 def test_the_live_wiring_reports_unreadable_inputs_rather_than_silence(tmp_path: Path) -> None:
-    """A #181-shape body whose policy and table cannot be read surfaces the gap, not silence.
+    """A #181-shape body whose policy and table cannot be read surfaces both gaps, not silence.
 
-    Without the third state this returns empty emissions: condition 4 cannot fire (no class, the
-    policy unreadable) and the loss is invisible — exactly the High 2 defect, that a class-4 item
-    which must escalate disappears whenever the policy cannot be read.
+    Without the third state condition 4 cannot fire (no class, the policy unreadable) and the loss
+    is invisible — the High 2 defect, that a class-4 item which must escalate disappears whenever
+    the policy cannot be read. Both reads fail against `tmp_path`, and the outcome must carry both
+    reasons distinctly: a truthiness check that passes if either survives is the round-1 regression
+    (claim 4), so each input is named by the source it failed to read.
     """
     evaluation = brief.escalation_for("Routing-class: #181-shape\n", "implementer", tmp_path)
-    assert evaluation.emissions == ()
-    assert evaluation.unreadable  # neither the policy nor the table could be read
+    assert isinstance(evaluation, escalation.Unreadable)
+    # Both inputs failed; assert each by the source it names, not by truthiness — claim 4.
+    joined = "\n".join(evaluation.reasons)
+    assert str(routing_policy.POLICY_RELATIVE) in joined
+    assert str(escalation.CONDITIONS_RELATIVE) in joined
 
 
 # --------------------------------------------------------------- the handoff (#309)

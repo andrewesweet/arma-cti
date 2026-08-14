@@ -720,8 +720,10 @@ class Briefing(NamedTuple):
     # A transferring-escalation condition that has fired for this item, an input that could not be
     # read, or nothing. Defaulted so a brief about an item with no condition due opens no
     # escalation section — the section appears only where one applies, like reserved surfaces and
-    # the handoff (ADR-0071 ruling 5, #325).
-    escalation: escalation.Evaluation = escalation.Evaluation(())
+    # the handoff (ADR-0071 ruling 5, #325). The default is the confident silence, `NoFiring`, the
+    # one outcome that renders no section; `Firing` renders the firing and `Unreadable` renders the
+    # gap, each under its own heading.
+    escalation: escalation.Evaluation = escalation.NoFiring()
 
 
 def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluation:
@@ -738,15 +740,17 @@ def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluati
 
     Two inputs can fail to read — the routing policy, which alone decides condition 4's class,
     and the condition table — and each is the third state, not silence: an unreadable policy is
-    not "this item has no class" and an unreadable table is not "nothing fired". Both reach the
-    caller in the returned `unreadable` so the brief surfaces them rather than letting a class-4
-    issue that must escalate disappear (#325; the #323 distinction, #347).
+    not "this item has no class" and an unreadable table is not "nothing fired". Either makes the
+    outcome `Unreadable` — the evaluation will not return the confident `NoFiring` while a
+    condition it could not check might have fired — and each reason it carries reaches the brief
+    under the heading an unreadable input earns, so a class-4 issue that must escalate cannot
+    disappear (#325; the #323 distinction, #347).
     """
-    unreadable: list[str] = []
+    reasons: list[str] = []
     policy_read = routing_policy.read_policy(repo / routing_policy.POLICY_RELATIVE)
     routing_class: int | None = None
     if policy_read.policy is None:
-        unreadable.append(policy_read.error)
+        reasons.append(policy_read.error)
     else:
         match = routing_policy.classify_issue(policy_read.policy, body, seat_name)
         if match is not None:
@@ -754,11 +758,15 @@ def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluati
     conditions_read = escalation.read_conditions(repo / escalation.CONDITIONS_RELATIVE)
     context = escalation.Context(
         item=escalation.ItemState(routing_class=routing_class),
-        prior=(),
+        prior=None,
         arbiter=dispatch.IMPLEMENTER_ESCALATION[0] if dispatch.IMPLEMENTER_ESCALATION else None,
     )
-    evaluation = escalation.evaluate(conditions_read, context)
-    return escalation.Evaluation(evaluation.emissions, (*evaluation.unreadable, *unreadable))
+    outcome = escalation.evaluate(conditions_read, context)
+    if isinstance(outcome, escalation.Unreadable):
+        reasons.extend(outcome.reasons)
+    if reasons:
+        return escalation.Unreadable((*reasons,))
+    return outcome
 
 
 def compose(briefing: Briefing) -> str:
@@ -773,12 +781,16 @@ def compose(briefing: Briefing) -> str:
     handoff_lines = render_handoff(issue, briefing.handoff)
     if handoff_lines:
         lines += ["", *handoff_lines]
-    evaluation = briefing.escalation
-    if evaluation.emissions or evaluation.unreadable:
+    outcome = briefing.escalation
+    if isinstance(outcome, escalation.Firing):
         lines += ["", "## Escalation", ESCALATION_RULE]
-        lines += escalation.render(evaluation.emissions)
-        if evaluation.unreadable:
-            lines += escalation.render_unreadable(evaluation.unreadable)
+        lines += escalation.render(outcome.emissions)
+    elif isinstance(outcome, escalation.Unreadable):
+        # A distinct heading, never the "has fired" preamble above: an unreadable input is the
+        # third state, not a firing and not the silence of nothing fired (#325 round 2, claim 1).
+        lines += ["", "## Escalation"]
+        lines += escalation.render_unreadable(outcome.reasons)
+    # NoFiring: no section — the confident silence, the only outcome a brief renders nothing for.
     lines += [
         "",
         "## Task, scope, ground truth",
