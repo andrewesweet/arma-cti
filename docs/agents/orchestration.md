@@ -301,9 +301,14 @@ gone through that gate and landed at `b2d9006`: `AGENTS.md`'s Agent-skills secti
 reads "The orchestration seat's operating rules live in `docs/agents/orchestration.md`;
 read it before dispatching." (Stale "unlanded proposal" wording corrected under #297.)
 
-A second item from #295 remains a proposal on the same gate — a row for `AGENTS.md`'s
-command table, landing with its recipe as the convention requires, but on a
-human-gated file:
+A second item from #295 — a row for `AGENTS.md`'s command table, landing with its recipe
+as the convention requires — is no longer waiting on that gate. The human approved it
+**in substance** on 2026-08-14 (#217, "Human ruling — the piled command-table rows are
+approved in substance; the text is re-derived, never pasted"), stating that `AGENTS.md`
+being a sign-off gate is what that ruling discharges. What is outstanding is a
+derivation-and-landing pass, not a human decision: the wording is derived from the
+recipe's own behaviour at landing time and reviewed under ADR-0071 ruling 4, never pasted
+from the text below, which stands only as the intent that was approved:
 
 > | `just occupancy --since T --until T --limit N` | One window's seat occupancy in
 > agent-minutes from the dispatch records: capacity under the ruled WIP limit, used,
