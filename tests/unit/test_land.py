@@ -202,7 +202,7 @@ def test_every_path_backed_class_is_exercised_beyond_the_first_row() -> None:
     Class 4 was never one: no path proves the #181 shape. Class 3 joined it in #326's review
     round 1 — re-founded on seats, and a landing has no seat, so the row carries no landing
     prefixes and this rung has nothing of its to exercise. Class 2 joined them in #327's
-    review round 2, on the same ground: re-founded on the `orchestrator` seat, so what was
+    review round 2, on the same ground: re-founded on its seats, so what was
     its landing half — orchestration docs — is no longer refused by anything this rung
     reads. That gap is stated in the row's own remedy and in the policy's `coverage`
     sentence rather than left here.
@@ -245,7 +245,7 @@ def test_the_enforcing_refusal_says_the_class_list_does_not_cover_everything() -
 
     The path is a class-6 one (`tools/dispatch.py`, named by both of that row's halves), not
     the orchestration doc class 2 used to refuse: #327's round 2 re-founded class 2 on its
-    seat, so `docs/agents/orchestration.md` no longer refuses a landing anywhere and would
+    seats, so `docs/agents/orchestration.md` no longer refuses a landing anywhere and would
     turn this into an assertion on `None`.
     """
     read = _policy_read()

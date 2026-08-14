@@ -37,8 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exception at all, the withdrawn `proposal-only` marker included. Class ids are now stable
   historical handles rather than positions: the two retired ids leave gaps rather than
   renumbering the rows other modules address by id, and a table dropping one of those rows is
-  refused instead of governing silently, the ADR-authorship class among them — it is the only row
-  that refuses on the Claude lane, so dropping it would return that lane to exempt-from-everything.
+  refused instead of governing silently, the ADR-authorship class among them — at that landing
+  the only row that refused on the Claude lane, so dropping it would have returned that lane to
+  exempt-from-everything; #327's second round gave the lane a second refusing row, the
+  orchestration class below.
   The policy states its own incomplete coverage, and `just land` and `just dispatch` print that
   statement on every routing verdict — refusal, clear read, and the reads that did not happen
   alike. A Claude landing is told it was *exempted* rather than cleared, and a Claude dispatch
@@ -122,6 +124,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pre-#326 half keeps its copy until #365 deletes it), and `fable`'s citation bar is
   recorded as an interval measure for the window between this issue and #328, which deletes
   the module — not a decision about how the seat is judged in perpetuity.
+
+  **Round 3: the re-founded orchestration row admits the whole route, not the one seat.**
+  Round 2's `required_seats` appointed `orchestrator` alone, which repeated on class 2 the
+  exact deadlock #326's review had fixed on class 3 — an issue declaring
+  `Routing-class: orchestration` could be planned by no seat, landed by none, reviewed by
+  none (ruling 4's review dispatch was refused on every lane) and reconnoitred by none, so
+  such an issue was dispatchable only to the one seat that must not review its own landing;
+  #331, filed with that marker, was the concrete victim. The row now admits the route —
+  `orchestrator` to perform the act, `planner` to plan it, `implementer` to land it,
+  `review` to review that landing, `recon` on the read-only ground class 3 already admits —
+  and refuses `retro` and `fable` and nothing else, a thinness named in the row's remedy
+  because whether the row should be widened no further but deleted outright is the human's.
+  The round also walks the row: a test now exercises every seat on two lanes through the
+  dispatch rung itself, which is the walk that would have caught round 2's appointment (and
+  did, in review); the lane-selected-row count is measured by differencing the refusing set
+  across lanes rather than by re-deriving it from field shapes; and the counting prose that
+  still said one row binds the Claude lane — in `just dispatch`'s clearance docstring and in
+  this file's own re-founding entry — now says two.
 
 ### Added
 

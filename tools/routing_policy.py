@@ -44,20 +44,30 @@ prescribes (#326, review round 1 claim 2). Class 2 joined it in #327's second ro
 row's `seats: ["orchestrator"]` read as scoping and never was, so the lane-selected refusal
 it carried refused every seat on every non-Claude lane for an orchestration declaration —
 a second provenance refusal the landing's prose had counted away — and `required_seats`
-scopes it to the seat it appoints.
+scoped it to the one seat that performs the act. The third round widened that appointment to
+the whole route (review round 3 claim 1): a list of one refused `review`, the seat ruling 4
+mandates, `implementer`, the seat ruling 2 leaves to land, and `recon`, the read-only seat —
+the same deadlock the paragraph below rules on, one paragraph too late, caught by walking
+the row rather than reading it.
 
 **A row admits the whole route, not its first step.** Round 1 admitted `planner` alone, and
 the planner is the seat ruling 2 defines as neither gating nor landing — so no route could
 author *and* land an ADR, and ruling 4's reviewing instance could not be dispatched at all
 (review round 2 claim 1). Class 3 therefore admits `planner`, `implementer` and `review`
-together, and `recon` beside them. The rule this generalises has two halves, and round 2
-landed only the first: what a capability row admits is every seat some landed ruling
-requires for that work to be finished, **and every seat that cannot perform the act the row
-is about at all**. Applying the first half as a necessity rule is what refused `recon` — a
-read-only sweep of prior ADRs, from a seat that authors, lands and reviews nothing — and a
-bar on a seat that cannot do the thing defeats no purpose of the class while routing cheap
-reconnaissance to a seat that gates and lands (review round 3 claim 4). A row is checked by
-walking every seat in `tools/dispatch.py`'s `SEATS` against it rather than by reading it.
+together, and `recon` beside them. Class 2 has admitted the same shape plus its own seat
+since #327's third round: `orchestrator` performs the act, `planner`, `implementer` and
+`review` are the route, `recon` rides the same cannot-perform ground, and `retro` and
+`fable` stay outside on the ground the caveat demanded a fixer pick — both seats can take
+work and neither is a seat any landed ruling requires for the route, so refusing them
+selects something, where refusing `recon` selected nothing. The rule this generalises has
+two halves, and round 2 landed only the first: what a capability row admits is every seat
+some landed ruling requires for that work to be finished, **and every seat that cannot
+perform the act the row is about at all**. Applying the first half as a necessity rule is
+what refused `recon` — a read-only sweep of prior ADRs, from a seat that authors, lands and
+reviews nothing — and a bar on a seat that cannot do the thing defeats no purpose of the
+class while routing cheap reconnaissance to a seat that gates and lands (review round 3
+claim 4). A row is checked by walking every seat in `tools/dispatch.py`'s `SEATS` against it
+rather than by reading it.
 A seat-bound row is
 therefore enforceable only where a seat exists, which is dispatch: `just land` has no seat
 and never will, so such a row carries no `landing_path_prefixes` and `parse_policy` refuses
@@ -116,9 +126,9 @@ IN_WORLD_CLASS: Final = "in_world_landings"
 CONFLICT_OF_INTEREST_CLASS_ID: Final = 6
 
 # The orchestration class. Named for `REQUIRED_CLASSES` on class 3's ground rather than
-# because another module addresses it by id: since #327's second round it is founded on its
-# seat, one of the two rows that refuse on the Claude lane, and its silent departure would
-# withdraw the orchestration seating rule with nothing red.
+# because another module addresses it by id: since #327 it is founded on its seats rather
+# than on a lane, one of the two rows that refuse on the Claude lane, and its silent
+# departure would withdraw the orchestration seating rule with nothing red.
 ORCHESTRATION_CLASS_ID: Final = 2
 
 # The ADR-authorship class. Named for `REQUIRED_CLASSES` rather than for a lookup: with
@@ -583,7 +593,7 @@ def _refusing_rules(policy: Policy, lane: str) -> tuple[Rule, ...]:
     founded on a *seat* is not, because its basis has nothing to do with which provider is
     answering: class 3 refuses an ADR taken by a seat it does not admit on the Claude lane
     exactly as it does on `codex`, and class 2 refuses an orchestration declaration taken by
-    any seat but the orchestrator's on the Claude lane exactly as it does on `zai`.
+    a seat outside its route on the Claude lane exactly as it does on `zai`.
     Exempting it by lane was what made the class
     refuse `codex`/`codex-sol-xhigh`/`planner` — the head of the very list its own remedy
     prescribes — while clearing `claude-native` on any seat at all.

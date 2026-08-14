@@ -2037,8 +2037,13 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
     and the `implementer` seat carries no legacy seat evidence — so the assertion holds
     against either copy, which is the only property that makes a seam test about *the seam*
     rather than about which policy it found. Class 2 was the arrangement until #327's second
-    round re-founded it on its seat: an `orchestrator`-seat arrangement now appoints that row
-    and clears, where this suite needs a refusal that survives both policy vintages.
+    round re-founded it, and the durable reason it stays former is not that some seat of it
+    clears — under one vintage or another a different seat always has — but that class 2 is
+    the row routing issues keep re-founding (#326 re-founded it, #327 has re-founded it
+    twice more), so a pair riding it rides the next change. The reason lives here on the
+    record rather than in a commit message, which is class 3's own remedy's rule
+    (`config/dispatch-routing-policy.json`), so a successor who wants the old arrangement
+    back meets why it left (review round 3, claim 5).
     """
     done = run_seam(
         [
@@ -2072,9 +2077,10 @@ def _routing_args(*, lane: str = "zai", seat: str = "implementer") -> Any:  # no
 def test_the_cleared_dispatcher_is_told_what_the_clear_read_did_not_check() -> None:
     """Round 2 claim 5: round 1's own argument, applied on the rung it was not.
 
-    Since #326 dispatch is the **only** rung that checks class 3 — a landing has no seat — so
-    a dispatcher cleared here is cleared by the one check that could have caught an ADR taken
-    by an unadmitted seat, and heard nothing at all about what the table does not cover.
+    Since #326 dispatch is the **only** rung that checks the seat-bound classes — 2 and 3, a
+    landing has no seat — so a dispatcher cleared here is cleared by the one check that
+    could have caught an ADR or an orchestration issue taken by an unadmitted seat, and
+    heard nothing at all about what the table does not cover.
     """
     lines = dispatch.routing_clearance(
         _routing_args(), REPO, dispatch.Readiness(None, body="Something unclassified."), OFF_PEAK

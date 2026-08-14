@@ -288,29 +288,32 @@ def test_the_file_says_which_half_is_frozen_and_when_it_goes() -> None:
 # --- one landing under each surviving class ------------------------------------------------
 
 
-def test_class_2_is_founded_on_its_seat_rather_than_on_a_lane() -> None:
-    """#327 review round 2, claim 1: the second lane-selected provenance refusal, ended.
+def test_class_2_is_founded_on_its_route_rather_than_on_a_lane() -> None:
+    """#327 review round 2 claim 1 founded the row; round 3 claim 1 widened the appointment.
 
     The row's `seats: ["orchestrator"]` read as scoping and never was — `seats` is one
     evidence term, never a filter (#366) — so the lane-selected refusal it carried refused
     every seat on every non-Claude lane for an orchestration declaration while clearing the
-    same declaration on Claude. `required_seats` is the mechanism that actually scopes, so
-    the row uses it: it refuses an orchestration declaration taken by any seat but the
-    orchestrator's on every lane including Claude's, admits the orchestrator seat itself,
-    and — seat-bound — carries no landing prefixes, so nothing is left for a lane to exempt
-    or a landing to enforce.
+    same declaration on Claude. `required_seats` is the mechanism that actually scopes, and
+    round 2 used it to appoint `orchestrator` alone — which left the issue reviewable by no
+    seat and landable by no seat, the deadlock `tools/routing_policy.py` states one row up.
+    Round 3 admitted the whole route: the orchestrator to perform the act, `planner`,
+    `implementer` and `review` to plan, land and review it, `recon` on the cannot-perform
+    ground. `retro` and `fable` stay outside — the reading the review's caveat asked to be
+    picked — and the row remains seat-bound, so it carries no landing prefixes and nothing
+    is left for a lane to exempt or a landing to enforce.
     """
     body = "Routing-class: orchestration — the standing loop's next seat."
     for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
-        taken_elsewhere = routing_policy.Route(lane, profile, "planner", NOW)
+        taken_elsewhere = routing_policy.Route(lane, profile, "retro", NOW)
         match = routing_policy.advisory_match(policy(), body, taken_elsewhere)
         assert match is not None, lane
         assert (match.rule.id, match.rule.name) == (2, "orchestration")
-        assert "required_seats=orchestrator" in match.evidence
+        assert "required_seats=orchestrator planner implementer review recon" in match.evidence
     taken_properly = routing_policy.Route("claude-native", "opus-xhigh", "orchestrator", NOW)
     assert routing_policy.advisory_match(policy(), body, taken_properly) is None
     orchestration = next(rule for rule in policy().rules if rule.id == 2)
-    assert orchestration.required_seats == ("orchestrator",)
+    assert orchestration.required_seats == ORCHESTRATION_ADMITTED
     assert orchestration.seats == ()
     assert orchestration.landing_path_prefixes == ()
     # The live document no longer carries the field that reads as scoping and is not; the
@@ -335,17 +338,68 @@ def test_class_2_carries_no_landing_half_because_a_landing_has_no_seat() -> None
     assert landing("docs/agents/orchestration.md", "docs/orchestration-design.md") is None
 
 
+# The seats an orchestration issue's route can reach, and why each is admitted.
+# `orchestrator` performs the act, `planner` plans the work, `implementer` lands it (ruling 2
+# — the planner neither gates nor lands), `review` reviews that landing (ruling 4 — no change
+# lands alone); `recon` is the read-only seat, admitted beside the route on round 3 claim 4's
+# ground exactly as class 3 admits it. `retro` and `fable` are the seats left outside.
+ORCHESTRATION_ROUTE: Final = ("orchestrator", "planner", "implementer", "review")
+ORCHESTRATION_ADMITTED: Final = (*ORCHESTRATION_ROUTE, "recon")
+
+# Which row refuses each seat class 2 does not admit, on the Claude lane and on Codex.
+# Round 2's test exercised `planner` on two lanes and `orchestrator` on one, and that
+# absence is what let a row refusing `review` ship — nothing asserted which seats the row
+# refuses, only that `planner` was one of them (review round 3, claim 2). Every verdict
+# here is class 2's own: the body matches no other row.
+ORCHESTRATION_REFUSING_CLASS: Final = {
+    ("claude-native", "retro"): 2,
+    ("codex", "retro"): 2,
+    ("claude-native", "fable"): 2,
+    ("codex", "fable"): 2,
+}
+
+
+def test_every_seat_is_walked_against_class_2_rather_than_the_row_being_read() -> None:
+    """Round 3 claim 1: the same walk that caught class 3's deadlock, on the class that repeated it.
+
+    Round 2 appointed `orchestrator` alone, and reading the row missed what walking it shows
+    — no seat that could plan, land or review an orchestration issue was dispatchable, so
+    #331 (filed `Routing-class: orchestration`) could reach only the seat that must not
+    review its own landing. The module now says a row is checked by walking every seat
+    against it; this is that walk for class 2, through `routing_refusal` — the dispatch
+    rung itself, reading this branch's policy off `REPO` — so what is exercised is the
+    thing that would have refused the work (round 3, claim 2).
+    """
+    body = "Routing-class: orchestration — the standing loop's next seat."
+    for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
+        for seat in dispatch().SEATS:
+            args = type("Args", (), {"lane": lane, "profile": profile, "seat": seat})()
+            found = dispatch().Readiness(None, body=body)
+            refusal = dispatch().routing_refusal(args, found, REPO, NOW)
+            assert (refusal is None) == (seat in ORCHESTRATION_ADMITTED), f"{lane}/{seat}"
+            if refusal is None:
+                continue
+            expected = ORCHESTRATION_REFUSING_CLASS[lane, seat]
+            assert any(line.startswith(f"routing_class={expected}:") for line in refusal.found), (
+                f"{lane}/{seat}: {refusal.found}"
+            )
+
+
 def test_the_one_lane_selected_refusing_row_is_the_class_6_bridge() -> None:
     """Acceptance criteria 1 and 2, measured rather than asserted in prose.
 
     The round-1 landing claimed exactly one provenance refusal survived outside the seat
     table and there were two, because nothing walked the table (review round 2, claim 1).
-    This is that walk: the rows that refuse and consult no seat list — the lane-selected
-    shape, exempt on the Claude lane — are exactly class 6's bridge, and every other
-    refusing row names the seats it admits. The seat table's own half lives in
-    `test_dispatch.py`, pinned on the `claude_only` column.
+    This is that walk, and the lane-selected half is measured **by behaviour**: the rows
+    `_refusing_rules` yields off Claude minus the rows it yields on it, which is the
+    exemption itself, not a re-derivation from field shapes — a row that gained the Claude
+    exemption by any field other than an empty `required_seats` would be lane-selected in
+    behaviour and invisible to a field-shape walk (review round 3, claim 6). The seat
+    table's own half lives in `test_dispatch.py`, pinned on the `claude_only` column.
     """
-    lane_selected = [rule for rule in policy().rules if rule.refuses and not rule.required_seats]
+    on_claude = routing_policy._refusing_rules(policy(), "claude-native")  # noqa: SLF001 — claim 6: measuring the exemption means calling the predicate that grants it, not a public re-derivation
+    off_claude = routing_policy._refusing_rules(policy(), "zai")  # noqa: SLF001 — same
+    lane_selected = [rule for rule in off_claude if rule not in on_claude]
     assert [(rule.id, rule.name) for rule in lane_selected] == [(6, "gates_themselves")]
     # And the bridge really is lane-selected: it clears the Claude lane on the same input.
     assert routing_policy.enforcing_match(policy(), ("tools/land.py",), "zai") is not None
@@ -995,7 +1049,7 @@ def test_class_4s_two_remedies_name_one_seat_rather_than_agreeing_by_accident() 
 @pytest.mark.parametrize(
     ("class_id", "body", "seat"),
     [
-        (2, "Routing-class: orchestration", "planner"),
+        (2, "Routing-class: orchestration", "retro"),
         (3, "Routing-class: adr-authorship", "retro"),
         (6, "Change `tools/dispatch.py`.", "implementer"),
     ],
@@ -1022,9 +1076,12 @@ def test_the_seams_own_arrangement_refuses_the_same_way_against_this_branchs_pol
     the suite rather than by a clone somebody has to remember to build. If a later edit
     moves class 6, this reds here first and the seam test follows it on landing, instead of
     the landing being the first thing to find out (review round 1 claim 1). The arrangement
-    moved off class 2 in #327's second round: the row is founded on its seat now, so an
-    `orchestrator`-seat arrangement appoints it and clears where this suite needs a refusal
-    that holds against both policy vintages.
+    moved off class 2 in #327's second round, and the reason it stays off is durability
+    rather than any one seat clearing: class 2 is the row routing issues keep re-founding —
+    #326 re-founded it, #327 has re-founded it twice more — so a pair riding it rides the
+    next change, where class 6 has refused this route identically under every policy this
+    window has shipped. The reason stands here rather than in a commit message, which is
+    class 3's own remedy's rule.
     """
     args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "implementer"})()
     found = dispatch().Readiness(None, body=GATES_BODY)

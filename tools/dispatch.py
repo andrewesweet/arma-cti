@@ -28,9 +28,11 @@ Four ideas, and each is a ruling made mechanical:
   never-alone exemption list lands, the invariant the bridge is kept in lieu of, and
   not evidence for, is enforced and the bridge retires, because deleting it first
   would leave the gates with neither rule. Routing class 2, orchestration, is not a
-  second one: #327's second round re-founded it on its seat, so it refuses an
-  orchestration declaration taken by any seat but the orchestrator on every lane,
-  including Claude's, and consults nothing a lane could exempt.
+  second one: #327 re-founded it on its seats, so it refuses an orchestration declaration
+  taken by any seat outside the route that finishes that work — `orchestrator` to perform
+  it, `planner`, `implementer` and `review` to plan, land and review it, `recon` to
+  reconnoitre it — on every lane, including Claude's, and consults nothing a lane could
+  exempt.
 - **Identity** is `OTEL_RESOURCE_ATTRIBUTES`, which is what makes a dispatch's telemetry
   self-identifying downstream: `cti.dispatch_id`, `cti.lane`, `cti.profile`, `cti.seat`,
   `cti.issue`, `cti.base_sha`. Decision 1 wants fraction-of-cap for all three pools from
@@ -1409,10 +1411,11 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
     on the same row's landing half, a non-Claude `just land` whose diff touches them.
     It is #331's — retired when that issue's never-alone exemption list lands, because
     deleting it first would leave the gates with neither rule (review round 1, claim 1).
-    Routing class 2 was a second until this round re-founded it on its seat (#327
-    review round 2, claim 1): an orchestration declaration now refuses on seating
-    grounds — every seat but the orchestrator's, every lane — and no longer on a lane.
-    The pair block after the carve-out is a capability ceiling, not a provenance one.
+    Routing class 2 was a second until #327 re-founded it on its seats (review round 2,
+    claim 1; widened from the one seat to the whole route in round 3, claim 1): an
+    orchestration declaration now refuses on seating grounds — any seat outside its route,
+    every lane — and no longer on a lane. The pair block after the carve-out is a
+    capability ceiling, not a provenance one.
     """
     if lane_name not in LANES:
         return Refusal(
@@ -3019,16 +3022,18 @@ def routing_clearance(
     `just land`'s counterpart, and the argument is round 1 claim 3's own, applied on the side
     it was not: the reader told nothing is wrong is the reader forming a belief about what
     was checked. It matters more here than there, because since #326 dispatch is the **only**
-    rung that checks class 3 at all — a landing has no seat — so a dispatcher cleared here is
-    cleared by the one check that could have caught an ADR taken by an unadmitted seat, and
-    hears nothing about classes 4 and 5 refusing no route, class 6 naming a minority of the
-    gates, or the landing rung not re-checking any of it.
+    rung that checks the seat-bound classes — 2 and 3, a landing has no seat — so a
+    dispatcher cleared here is cleared by the one check that could have caught an ADR or an
+    orchestration issue taken by an unadmitted seat, and hears nothing about classes 4 and 5
+    refusing no route, class 6 naming a minority of the gates, or the landing rung not
+    re-checking any of it.
 
     **The unreadable-policy fallback is stated rather than silent (round 2 claim 7).** The
     Claude lane dispatches on an unreadable policy so the policy can be repaired on Claude,
-    and before #326 that cost nothing, because Claude was exempt from every row anyway. Class
-    3 is now lane-blind, so the fallback silently reverses the one row made to bind Claude.
-    The bootstrap still holds; what changes is that the hole says so.
+    and before #326 that cost nothing, because Claude was exempt from every row anyway.
+    Classes 2 and 3 are now lane-blind, so the fallback silently reverses both rows made to
+    bind Claude (#327 review round 3, claim 3: two rows escape through it, not one). The
+    bootstrap still holds; what changes is that the hole says so.
 
     **An excepted route is told so, and is not told it is clear (round 3 claim 2).** This
     function computes no match of its own — it re-reads the walk `routing_refusal` already
