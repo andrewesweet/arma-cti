@@ -197,18 +197,24 @@ def _seed(prefix: str) -> str:
 
 
 def test_every_path_backed_class_is_exercised_beyond_the_first_row() -> None:
-    """The ids are #326's five survivors less the two no diff path can prove.
+    """The ids are #326's five survivors less the three no diff path can prove.
 
     Class 4 was never one: no path proves the #181 shape. Class 3 joined it in #326's review
     round 1 — re-founded on seats, and a landing has no seat, so the row carries no landing
-    prefixes and this rung has nothing of its to exercise. That gap is stated in the row's own
-    remedy and in the policy's `coverage` sentence rather than left here.
+    prefixes and this rung has nothing of its to exercise. Class 2 joined them in #327's
+    review round 2, on the same ground: re-founded on the `orchestrator` seat, so what was
+    its landing half — orchestration docs — is no longer refused by anything this rung
+    reads. That gap is stated in the row's own remedy and in the policy's `coverage`
+    sentence rather than left here.
     """
     read = _policy_read()
     assert read.policy is not None
     path_backed = [rule for rule in read.policy.rules if rule.landing_path_prefixes]
-    assert [rule.id for rule in path_backed] == [2, 5, 6]
-    assert next(rule for rule in read.policy.rules if rule.id == 3).required_seats
+    assert [rule.id for rule in path_backed] == [5, 6]
+    for rule_id in (2, 3):
+        row = next(rule for rule in read.policy.rules if rule.id == rule_id)
+        assert row.required_seats, rule_id
+        assert row.landing_path_prefixes == (), rule_id
     for rule in path_backed:
         match = routing_policy.landing_match(rule, (_seed(rule.landing_path_prefixes[0]),))
         assert match is not None, rule.name
@@ -235,9 +241,15 @@ def test_a_routed_class_diff_is_an_enforcing_named_refusal() -> None:
 
 
 def test_the_enforcing_refusal_says_the_class_list_does_not_cover_everything() -> None:
-    """#326: a clear read is not a statement that the diff was covered, and the gate says so."""
+    """#326: a clear read is not a statement that the diff was covered, and the gate says so.
+
+    The path is a class-6 one (`tools/dispatch.py`, named by both of that row's halves), not
+    the orchestration doc class 2 used to refuse: #327's round 2 re-founded class 2 on its
+    seat, so `docs/agents/orchestration.md` no longer refuses a landing anywhere and would
+    turn this into an assertion on `None`.
+    """
     read = _policy_read()
-    refusal = land.classify_routing(read, ("docs/agents/orchestration.md",), "zai")
+    refusal = land.classify_routing(read, ("tools/dispatch.py",), "zai")
     assert f"coverage={read.policy.coverage}" in _text(refusal)
 
 

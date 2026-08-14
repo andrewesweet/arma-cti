@@ -45,8 +45,9 @@ running tally.
 - **implementer** — the bar above, judged on this seat's own gate record. It is the seat
   the 131-issue baseline describes, and since ADR-0071 ruling 2 it is the only seat judged
   on gates at all.
-- **planner**, **recon**, **review** and **retro** — the citation bar: over ten dispatches,
-  at least 90% of the findings' file-and-line citations resolve to the code they name. This
+- **planner**, **recon**, **review**, **retro** and **fable** — the citation bar: over ten
+  dispatches, at least 90% of the findings' file-and-line citations resolve to the code they
+  name. This
   rests on Decision 3's argument and on no baseline at all, and the record should keep
   saying so: all 26 historical recon issues sit outside the eligible population by
   construction, so the seat has zero gate signal in the entire history and Decision 6's
@@ -55,7 +56,8 @@ running tally.
   routinely. The inherited weakness stands unfixed: the check is silent about findings the
   lane failed to raise. `planner` and `retro` joined under ADR-0071 ruling 2 on `review`'s
   reason rather than a new one — a plan and a retro finding are claims, and no gate runs
-  over either.
+  over either. `fable` joined under #327 on the same reason, for the window between that
+  issue and #328 — see its row's own comment below.
 - **mechanical** — **retired** by ADR-0071 ruling 2, and gone from `SEAT_BARS` with the seat
   itself. It carried the bar's only two-route seat: a profile that cleared the implementer
   bar was admitted here without a second ten, and a profile could also earn it directly on
@@ -263,7 +265,12 @@ SEAT_BARS: Final[dict[str, str]] = {
     # owes the bar: without it the seat dispatched off Claude accruing no record, a hole
     # the old equality assertion had been loosened to hide (review round 1, claim 2).
     # Judged on citations for the seats above's own reason — a ruling, an ADR paragraph
-    # and a schema reading are claims, and no gate runs over a claim.
+    # and a schema reading are claims, and no gate runs over a claim. The row's lifetime
+    # is bounded and deliberately so: #328 deletes this module, and the enforcement the
+    # row buys needs twenty recorded issues across two failed attempts to reach a
+    # refusal, which cannot accrue inside that window — an interval measure for the gap
+    # #327 opened, not a decision about how the seat is judged in perpetuity (review
+    # round 2, claim 11).
     "fable": CITATION_BAR,
 }
 
@@ -2468,7 +2475,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     verbs = parser.add_subparsers(dest="verb", required=True)
 
     verbs.add_parser("bar", help="the bar as ruled, printed")
-    verbs.add_parser("status", help="every foreign route and its standing")
+    verbs.add_parser("status", help="every off-Claude route and its standing")
 
     audit_verb = verbs.add_parser("audit", help="compute what a close's Part A claims can be")
     audit_verb.add_argument("--issue", type=int, required=True)

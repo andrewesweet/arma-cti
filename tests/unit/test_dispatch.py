@@ -74,6 +74,8 @@ OFF_PEAK = datetime(2026, 8, 5, 20, 0, tzinfo=UTC)
 # than becoming a test about GitHub being reachable from this box.
 READY_BODY = REPO / "tests" / "fixtures" / "readiness-corpus" / "223.md"
 ROUTING_ELIGIBLE_BODY = REPO / "tests" / "fixtures" / "routing-eligible.md"
+# Same shape, scope naming a gate path: the body a seam arrangement refuses on class 6.
+ROUTING_ELIGIBLE_GATES_BODY = REPO / "tests" / "fixtures" / "routing-eligible-gates.md"
 UNREADY_BODY = "The dispatcher feels slow lately and somebody should have a look.\n"
 
 # A review dispatch declares the profile whose work it reviews (#322), so every arrangement
@@ -379,10 +381,11 @@ def test_a_registered_selection_is_not_refused() -> None:
 #
 # Ruling 1 rescinds ADR-0061's graded eligibility ladder, so what replaced the Decision 2
 # block below is one survivor and a walk. The survivor is the orchestrator carve-out;
-# the walk is the proof that it is the only provenance refusal left, and — because it
-# crosses three providers' profiles under one seat — the proof that no verdict anywhere
-# in the ladder is a function of a model or an effort token (ADR-0061 decision 5: a
-# profile is one opaque token, and no cross-provider effort scale exists to infer).
+# the walk is the proof that it is this ladder's only provenance refusal — the routing
+# rung's class 6 bridge is the other lane-selected one, and lives in another table — and —
+# because it crosses three providers' profiles under one seat — the proof that no verdict
+# anywhere in the ladder is a function of a model or an effort token (ADR-0061 decision 5:
+# a profile is one opaque token, and no cross-provider effort scale exists to infer).
 
 
 def test_an_unknown_seat_is_refused_rather_than_mis_attributed() -> None:
@@ -394,7 +397,9 @@ def test_an_unknown_seat_is_refused_rather_than_mis_attributed() -> None:
 @pytest.mark.parametrize("lane", ["codex", "zai"])
 def test_the_orchestrator_carve_out_refuses_on_every_other_lane(lane: str) -> None:
     # ADR-0071 ruling 1's one survivor: orchestration runs on Claude with a Claude model
-    # until a tested alternative exists. It is the only provenance rule the project holds.
+    # until a tested alternative exists. Of this ladder's refusals it is the only
+    # provenance-shaped one; the routing rung holds the other lane-selected refusal, class
+    # 6's bridge, one rung up and pinned in test_routing_policy.py.
     profile = "codex-sol-xhigh" if lane == "codex" else "zai-glm52-max"
     refusal = dispatch.resolve_selection(lane, profile, "orchestrator")
     assert refusal is not None
@@ -412,7 +417,9 @@ def test_the_orchestrator_seat_still_dispatches_on_claude_native() -> None:
 
 
 def test_every_seat_walks_every_lane_with_the_verdict_named_for_each() -> None:
-    """The carve-out is the only provenance refusal, and no verdict reads a tier token.
+    """The carve-out is this ladder's only provenance refusal, and no verdict reads a tier
+    token. The routing rung's class 6 bridge is the other lane-selected refusal the project
+    holds, and it lives in a different table with its own walk (review round 2, claim 3).
 
     Every seat in the registry against every registered profile on every lane — the
     exhaustive walk, with the expected verdict asserted for each combination rather than
@@ -456,10 +463,14 @@ def _expected_selection_refusal(lane: str, profile: str, seat: str) -> str | Non
     return None
 
 
-def test_a_seat_other_than_orchestrator_is_never_refused_on_provenance_grounds() -> None:
-    # The walk above pins verdicts per combination; this pins the property the issue's
-    # acceptance criteria name directly, so a future seat cannot arrive outside the walk's
-    # enumeration. `claude_only` is a column the carve-out owns: one seat carries it.
+def test_the_carve_out_is_one_seats_column_not_a_rule_about_seats() -> None:
+    # The walk above pins verdicts per combination; this pins the property the walk's
+    # enumeration rests on, so a future seat cannot arrive outside it. `claude_only` is a
+    # column the carve-out owns: one seat carries it, and the selection ladder reads no
+    # other per-seat provenance. Narrowed from the round-1 reading — "no seat but
+    # `orchestrator` is ever refused on provenance grounds" — which overreached this
+    # ladder: the routing table refuses seats by lane on its own rung, and that walk is
+    # test_routing_policy.py's (review round 2, claim 3).
     assert {seat.name for seat in dispatch.SEATS.values() if seat.claude_only} == {"orchestrator"}
 
 
@@ -2011,7 +2022,7 @@ def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
 def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> None:
     """A routing refusal reaches the caller's stderr and nothing forks.
 
-    The arrangement is on class 2, and which class it is on is load-bearing. This test runs
+    The arrangement is on class 6, and which class it is on is load-bearing. This test runs
     the **real seam**, so `tools/dispatch.py` reads the routing policy from
     `main_checkout(Path.cwd())` — the parent checkout, not this worktree — and every other
     box dependency in `seam_env` has an override for exactly that reason while the policy has
@@ -2019,10 +2030,14 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
     landed policy and is green for the wrong reason: this test asserted the old
     `3:retros_and_adr_authorship`, stayed green through five in-worktree gates, and was red the
     moment #326 reached `origin/main` (review round 1 claim 1). The blindness itself is #364's;
-    what belongs here is an arrangement that does not depend on it. Class 2 is that
-    arrangement — id, name and `seats: ["orchestrator"]` alike are what they were before #326
-    and what they are after — so the assertion holds against either copy, which is the only
-    property that makes a seam test about *the seam* rather than about which policy it found.
+    what belongs here is an arrangement that does not depend on it. Class 6 is that
+    arrangement — it refused this route before #326, after it, and through #327's rounds
+    alike, because both of its halves name `tools/dispatch.py` and the row appoints no seat,
+    and the `implementer` seat carries no legacy seat evidence — so the assertion holds
+    against either copy, which is the only property that makes a seam test about *the seam*
+    rather than about which policy it found. Class 2 was the arrangement until #327's second
+    round re-founded it on its seat: an `orchestrator`-seat arrangement now appoints that row
+    and clears, where this suite needs a refusal that survives both policy vintages.
     """
     done = run_seam(
         [
@@ -2031,18 +2046,21 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
             "--profile",
             "zai-glm52-max",
             "--seat",
-            "orchestrator",
+            "implementer",
             "--issue",
             "223",
             "--dispatch-dir",
             str(tmp_path / "dispatches"),
         ],
-        seam_env(tmp_path, tmp_path / "must-not-run.txt"),
+        seam_env(
+            tmp_path,
+            tmp_path / "must-not-run.txt",
+            CTI_READINESS_BODY=str(ROUTING_ELIGIBLE_GATES_BODY),
+        ),
     )
     assert done.returncode == dispatch.EXIT_REFUSED
     assert "refusal=routing_policy_advisory" in done.stderr
-    assert "routing_class=2:orchestration" in done.stderr
-    assert "seat=orchestrator" in done.stderr
+    assert "routing_class=6:gates_themselves" in done.stderr
     assert not (tmp_path / "dispatches").exists()
 
 

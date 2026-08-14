@@ -22,10 +22,15 @@ Four ideas, and each is a ruling made mechanical:
   dispatches on every lane. The carve-out is the exception and it is provisional:
   orchestration runs on Claude with a Claude model until a tested alternative exists.
   One second provenance refusal survives outside the seat table: routing class 6's
-  #326 bridge refuses a dispatch whose issue names the gates themselves on every lane
-  but `claude-native`. #331 owns it — when that issue's never-alone exemption list
-  lands, the invariant the bridge stands in for is enforced and the bridge retires,
-  because deleting it first would leave the gates with neither rule.
+  #326 bridge, which refuses on every lane but `claude-native` — a dispatch whose
+  issue names the gates themselves, and, on the same row's landing half, a `just land`
+  on any lane but this one whose diff touches them. #331 owns it — when that issue's
+  never-alone exemption list lands, the invariant the bridge is kept in lieu of, and
+  not evidence for, is enforced and the bridge retires, because deleting it first
+  would leave the gates with neither rule. Routing class 2, orchestration, is not a
+  second one: #327's second round re-founded it on its seat, so it refuses an
+  orchestration declaration taken by any seat but the orchestrator on every lane,
+  including Claude's, and consults nothing a lane could exempt.
 - **Identity** is `OTEL_RESOURCE_ATTRIBUTES`, which is what makes a dispatch's telemetry
   self-identifying downstream: `cti.dispatch_id`, `cti.lane`, `cti.profile`, `cti.seat`,
   `cti.issue`, `cti.base_sha`. Decision 1 wants fraction-of-cap for all three pools from
@@ -486,7 +491,8 @@ class Seat(NamedTuple):
     # rule the project holds, and it ends when a Codex orchestrator backup exists. That
     # "every seat" is a statement about seats, not a promise that nothing else refuses:
     # routing class 6's bridge still refuses a dispatch naming the gates themselves on
-    # every lane but `claude-native`, until #331's exemption list retires it.
+    # every lane but `claude-native`, and its landing half refuses the same row's paths
+    # on a non-Claude `just land`, until #331's exemption list retires the row.
     claude_only: bool
     # ADR-0071 ruling 2's preference column, head first. `resolve_seat` walks exactly this
     # and nothing else, so a seat gains a route by being written here.
@@ -1399,9 +1405,13 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
     alternative exists. #327 deleted the eligibility ladder ADR-0061 built and the retro
     allowance that suspended it, but one further provenance refusal survives, outside
     this function: routing class 6's keep-on-Claude bridge, which refuses a dispatch
-    whose issue names the gates themselves on every lane but `claude-native`. It is
-    #331's — retired when that issue's never-alone exemption list lands, because
+    whose issue names the gates themselves on every lane but `claude-native` — and,
+    on the same row's landing half, a non-Claude `just land` whose diff touches them.
+    It is #331's — retired when that issue's never-alone exemption list lands, because
     deleting it first would leave the gates with neither rule (review round 1, claim 1).
+    Routing class 2 was a second until this round re-founded it on its seat (#327
+    review round 2, claim 1): an orchestration declaration now refuses on seating
+    grounds — every seat but the orchestrator's, every lane — and no longer on a lane.
     The pair block after the carve-out is a capability ceiling, not a provenance one.
     """
     if lane_name not in LANES:

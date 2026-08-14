@@ -102,6 +102,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   — and the prose that claimed no second rule existed now names it, its owner and what
   retires it.
 
+  **Round 2: the count round 1 wrote was wrong, and the fix went into the table rather
+  than the prose.** The paragraph above said one provenance refusal survives outside the
+  seat table; two did. Routing class 2 `orchestration` was lane-selected by the identical
+  mechanism as class 6's bridge — no `required_seats`, so it refused every seat on every
+  non-Claude lane for an issue declaring `Routing-class: orchestration` and cleared the same
+  declaration on Claude — because its `seats: ["orchestrator"]` reads as scoping and `seats`
+  is one evidence term, never a filter (#366 files the semantic; the fix here does not wait
+  on it). Class 2 is re-founded on its seat: it now refuses an orchestration declaration
+  taken by any seat but `orchestrator` **on every lane including Claude's**, admits the
+  orchestrator seat itself, and — being seat-bound — carries no landing prefixes, so an
+  orchestration-docs diff is no longer refused at `just land` off Claude; the keep-on-Claude
+  half of the rule is the seat table's carve-out, unchanged. A test now walks the table and
+  pins class 6 as the one lane-selected refusing row, so the count is measured rather than
+  asserted in prose. Class 6's bridge is also described whole for the first time — its issue
+  half refuses a dispatch naming the gates, its landing half refuses a non-Claude `just
+  land` touching them — #331 is named in the remedy a refused reader actually sees, the
+  withdrawn word is retired from the live remedies that print on every refusal (the frozen
+  pre-#326 half keeps its copy until #365 deletes it), and `fable`'s citation bar is
+  recorded as an interval measure for the window between this issue and #328, which deletes
+  the module — not a decision about how the seat is judged in perpetuity.
+
 ### Added
 
 - **Transferring-escalation conditions are data, emitted to an agent only when one fires.**

@@ -63,6 +63,11 @@ LEGACY: Final = routing_policy.LEGACY
 # than of drift that had already happened.
 FROZEN_HALF_DIGEST: Final = "7169d99bfdd08321c8bf4eda46ae51f1f68713ae346314160fdc019b8e246b67"
 
+# The body both halves of the seam pair share: ready-shaped, with a scope naming
+# `tools/dispatch.py` so the gates row's dispatch half refuses it on any lane. Read from the
+# fixture rather than restated here, so the two halves cannot drift apart (#327 round 2).
+GATES_BODY: Final = (REPO / "tests/fixtures/routing-eligible-gates.md").read_text(encoding="utf-8")
+
 
 def route(*, seat: str = "implementer") -> object:
     return routing_policy.Route("zai", "zai-glm52-max", seat, NOW)
@@ -283,11 +288,68 @@ def test_the_file_says_which_half_is_frozen_and_when_it_goes() -> None:
 # --- one landing under each surviving class ------------------------------------------------
 
 
-def test_class_2_orchestration_still_refuses_a_landing_on_its_own_surface() -> None:
-    """The one provenance rule ruling 1 left standing, and it is unchanged."""
-    match = landing("docs/agents/orchestration.md")
-    assert match is not None
-    assert (match.rule.id, match.rule.name) == (2, "orchestration")
+def test_class_2_is_founded_on_its_seat_rather_than_on_a_lane() -> None:
+    """#327 review round 2, claim 1: the second lane-selected provenance refusal, ended.
+
+    The row's `seats: ["orchestrator"]` read as scoping and never was — `seats` is one
+    evidence term, never a filter (#366) — so the lane-selected refusal it carried refused
+    every seat on every non-Claude lane for an orchestration declaration while clearing the
+    same declaration on Claude. `required_seats` is the mechanism that actually scopes, so
+    the row uses it: it refuses an orchestration declaration taken by any seat but the
+    orchestrator's on every lane including Claude's, admits the orchestrator seat itself,
+    and — seat-bound — carries no landing prefixes, so nothing is left for a lane to exempt
+    or a landing to enforce.
+    """
+    body = "Routing-class: orchestration — the standing loop's next seat."
+    for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
+        taken_elsewhere = routing_policy.Route(lane, profile, "planner", NOW)
+        match = routing_policy.advisory_match(policy(), body, taken_elsewhere)
+        assert match is not None, lane
+        assert (match.rule.id, match.rule.name) == (2, "orchestration")
+        assert "required_seats=orchestrator" in match.evidence
+    taken_properly = routing_policy.Route("claude-native", "opus-xhigh", "orchestrator", NOW)
+    assert routing_policy.advisory_match(policy(), body, taken_properly) is None
+    orchestration = next(rule for rule in policy().rules if rule.id == 2)
+    assert orchestration.required_seats == ("orchestrator",)
+    assert orchestration.seats == ()
+    assert orchestration.landing_path_prefixes == ()
+    # The live document no longer carries the field that reads as scoping and is not; the
+    # frozen pre-#326 half still does, and is #365's to delete rather than this test's to
+    # tolerate silently.
+    live_class_2 = next(
+        row
+        for row in json.loads(POLICY.read_text(encoding="utf-8"))[LIVE.classes]
+        if row["id"] == 2
+    )
+    assert "seats" not in live_class_2
+
+
+def test_class_2_carries_no_landing_half_because_a_landing_has_no_seat() -> None:
+    """The designed skip, pinned: a seat-bound row enforces nothing at `just land`.
+
+    The row's orchestration-doc prefixes went with the re-founding, not by omission: a
+    seat-bound row carrying landing prefixes would clear at dispatch for the seat it
+    appoints and then refuse that same route at landing, where no seat is knowable, so
+    `parse_policy` refuses the combination and the landing rung skips the row.
+    """
+    assert landing("docs/agents/orchestration.md", "docs/orchestration-design.md") is None
+
+
+def test_the_one_lane_selected_refusing_row_is_the_class_6_bridge() -> None:
+    """Acceptance criteria 1 and 2, measured rather than asserted in prose.
+
+    The round-1 landing claimed exactly one provenance refusal survived outside the seat
+    table and there were two, because nothing walked the table (review round 2, claim 1).
+    This is that walk: the rows that refuse and consult no seat list — the lane-selected
+    shape, exempt on the Claude lane — are exactly class 6's bridge, and every other
+    refusing row names the seats it admits. The seat table's own half lives in
+    `test_dispatch.py`, pinned on the `claude_only` column.
+    """
+    lane_selected = [rule for rule in policy().rules if rule.refuses and not rule.required_seats]
+    assert [(rule.id, rule.name) for rule in lane_selected] == [(6, "gates_themselves")]
+    # And the bridge really is lane-selected: it clears the Claude lane on the same input.
+    assert routing_policy.enforcing_match(policy(), ("tools/land.py",), "zai") is not None
+    assert routing_policy.enforcing_match(policy(), ("tools/land.py",), "claude-native") is None
 
 
 def test_class_3_admits_the_seat_its_own_remedy_prescribes_on_codex() -> None:
@@ -332,12 +394,14 @@ ADMITTED: Final = (*ADR_ROUTE, "recon")
 
 # Which row refuses each seat class 3 does not admit, on the Claude lane and on Codex.
 # Round 2's walk asserted only that *a* refusal existed, and two of its fourteen verdicts
-# were satisfied by a different row: `orchestrator` is refused by class 2 on Codex,
-# where class 2's own `seats` matches, so class 3 could have stopped refusing it there with
-# the test still green (round 3 claim 3). Naming the class makes every verdict attributable.
+# were satisfied by a different row, so class 3 could have stopped refusing a seat there
+# with the test still green (round 3 claim 3). Naming the class makes every verdict
+# attributable. Since #327's second round every verdict here is class 3's own: class 2
+# used to satisfy `("codex", "orchestrator")` off its `seats` evidence alone, and being
+# founded on its seat now it appoints `orchestrator` and skips the row instead.
 REFUSING_CLASS: Final = {
     ("claude-native", "orchestrator"): 3,
-    ("codex", "orchestrator"): 2,
+    ("codex", "orchestrator"): 3,
     ("claude-native", "retro"): 3,
     ("codex", "retro"): 3,
     ("claude-native", "fable"): 3,
@@ -371,9 +435,11 @@ def test_every_seat_is_walked_against_class_3_rather_than_the_row_being_read() -
             assert (refusal is None) == (seat in ADMITTED), f"{lane}/{seat}"
             if refusal is None:
                 continue
-            # Which row refused, not merely that one did (round 3 claim 3). Two of these
-            # verdicts are class 2's, so a bare boolean would have gone on passing if
-            # class 3 stopped refusing `orchestrator` on Codex.
+            # Which row refused, not merely that one did (round 3 claim 3). Until #327's
+            # second round two of these verdicts were class 2's, satisfied off `seats`
+            # evidence alone, so a bare boolean would have gone on passing if class 3
+            # stopped refusing `orchestrator` on Codex; the attribution is kept now that
+            # every verdict is class 3's own.
             expected = REFUSING_CLASS[lane, seat]
             assert any(line.startswith(f"routing_class={expected}:") for line in refusal.found), (
                 f"{lane}/{seat}: {refusal.found}"
@@ -888,7 +954,7 @@ def test_class_6_keeps_the_label_of_the_refusal_it_actually_issues() -> None:
     is lane-selected. Round 1 relabelled the row "Conflict of interest" while leaving that
     refusal unchanged, so a reader meeting `routing_class=6` would have read a
     conflict-of-interest verdict where a provenance one was issued (review round 1 claim 4).
-    Kept rather than retired to `refuses: false`, because retiring it before step 7's
+    Kept rather than retired to `refuses: false`, because retiring it before #331's
     exemption list exists would leave the gates with neither rule.
     """
     conflict = next(rule for rule in policy().rules if rule.id == 6)
@@ -929,7 +995,7 @@ def test_class_4s_two_remedies_name_one_seat_rather_than_agreeing_by_accident() 
 @pytest.mark.parametrize(
     ("class_id", "body", "seat"),
     [
-        (2, "Routing-class: orchestration", "orchestrator"),
+        (2, "Routing-class: orchestration", "planner"),
         (3, "Routing-class: adr-authorship", "retro"),
         (6, "Change `tools/dispatch.py`.", "implementer"),
     ],
@@ -951,19 +1017,21 @@ def test_the_seams_own_arrangement_refuses_the_same_way_against_this_branchs_pol
 
     That test runs the real seam, so it reads the policy from the **main checkout** and can
     only ever exercise the landed copy (#364). This one puts the identical arrangement —
-    `zai`, the `orchestrator` seat, #223's body — through `routing_refusal` rooted at `REPO`,
-    which is this worktree, so between them both copies of the policy are covered by the
-    suite rather than by a clone somebody has to remember to build. If a later edit moves
-    class 2, this reds here first and the seam test follows it on landing, instead of the
-    landing being the first thing to find out (review round 1 claim 1).
+    `zai`, the `implementer` seat, the gates body — through `routing_refusal` rooted at
+    `REPO`, which is this worktree, so between them both copies of the policy are covered by
+    the suite rather than by a clone somebody has to remember to build. If a later edit
+    moves class 6, this reds here first and the seam test follows it on landing, instead of
+    the landing being the first thing to find out (review round 1 claim 1). The arrangement
+    moved off class 2 in #327's second round: the row is founded on its seat now, so an
+    `orchestrator`-seat arrangement appoints it and clears where this suite needs a refusal
+    that holds against both policy vintages.
     """
-    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "orchestrator"})()
-    found = dispatch().Readiness(None, body="Dispatch environments, end to end.")
+    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "implementer"})()
+    found = dispatch().Readiness(None, body=GATES_BODY)
     refusal = dispatch().routing_refusal(args, found, REPO, NOW)
     assert refusal is not None
     assert refusal.kind == "routing_policy_advisory"
-    assert "routing_class=2:orchestration" in refusal.found
-    assert "seat=orchestrator" in refusal.found
+    assert "routing_class=6:gates_themselves" in refusal.found
 
 
 def test_work_outside_every_class_dispatches_unimpeded() -> None:

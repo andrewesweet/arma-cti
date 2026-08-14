@@ -12,7 +12,10 @@ class on what each row actually rests on — capability, or conflict of interest
 case a provisional carve-out. Two rows died: `gated_semantic_surfaces`, whose basis was
 provenance and whose human sign-off gate was never this file, save its two gate paths
 which moved to class 6; and `anthropic_plan_meter`, whose meter is read over plain HTTP
-with no Claude session involved. Their ids, 1 and 7, are retired and never reused.
+with no Claude session involved. Their ids, 1 and 7, are retired and never reused. The
+third case did not outlive #327's second round: class 2's provisional carve-out is
+re-founded on its seat there, and the carve-out itself lives in `tools/dispatch.py`'s seat
+table, where the issue that deleted the provenance vocabulary could name it.
 
 **An id is a stable historical handle, not a position.** Ids must be unique, positive and
 strictly ascending, but need not be contiguous, because a retired class must be able to
@@ -37,7 +40,11 @@ lane including Claude's**, and refuses none whose seat is on it. Class 3 is the 
 authorship rests on seats (ADR-0071 rulings 2 and 4) rather than on provenance, and a
 lane-selected refusal there was a keep-on-Claude rule wearing a capability remedy — it
 refused `codex`/`codex-sol-xhigh`/`planner`, the first entry in the very list its remedy
-prescribes (#326, review round 1 claim 2).
+prescribes (#326, review round 1 claim 2). Class 2 joined it in #327's second round: the
+row's `seats: ["orchestrator"]` read as scoping and never was, so the lane-selected refusal
+it carried refused every seat on every non-Claude lane for an orchestration declaration —
+a second provenance refusal the landing's prose had counted away — and `required_seats`
+scopes it to the seat it appoints.
 
 **A row admits the whole route, not its first step.** Round 1 admitted `planner` alone, and
 the planner is the seat ruling 2 defines as neither gating nor landing — so no route could
@@ -108,24 +115,38 @@ IN_WORLD_CLASS: Final = "in_world_landings"
 # gate paths the withdrawn class 1 held arrived here rather than falling out.
 CONFLICT_OF_INTEREST_CLASS_ID: Final = 6
 
-# The ADR-authorship class. Named for `REQUIRED_CLASSES` rather than for a lookup: it is the
-# one row that can refuse on the Claude lane, so its silent departure would have a
-# consequence no other row's has (review round 2 claim 10).
+# The orchestration class. Named for `REQUIRED_CLASSES` on class 3's ground rather than
+# because another module addresses it by id: since #327's second round it is founded on its
+# seat, one of the two rows that refuse on the Claude lane, and its silent departure would
+# withdraw the orchestration seating rule with nothing red.
+ORCHESTRATION_CLASS_ID: Final = 2
+
+# The ADR-authorship class. Named for `REQUIRED_CLASSES` rather than for a lookup: with
+# class 2 it is one of the two rows that can refuse on the Claude lane, so its silent
+# departure would have a consequence no other row's has (review round 2 claim 10).
 ADR_AUTHORSHIP_CLASS_ID: Final = 3
 
 # The rows that cannot leave silently, on either of two grounds. **Addressed by id
 # elsewhere**: class 4 is `tools/escalation.py`'s `CLASS_FOUR`, deliberately a decoupled
 # copy; class 5 is the in-world authority three readers depend on; class 6 is the
 # conflict-of-interest rule ADR-0071 ruling 4's exemption list is bound by. **Load-bearing by
-# absence**: class 3 is the only row that refuses on the Claude lane at all, so a table
-# dropping it would not merely stop enforcing one class — it would return the Claude lane to
-# exempt-from-everything, which is the state #326 was re-founded to end, and `parse_policy`
-# would accept it (review round 2 claim 10). A table missing one of these parses nowhere.
+# absence**: classes 2 and 3 are the only rows that refuse on the Claude lane at all, so a
+# table dropping either would not merely stop enforcing one class, and a table dropping both
+# would return the Claude lane to exempt-from-everything, which is the state #326 was
+# re-founded to end — and `parse_policy` would accept either table (review round 2 claim 10;
+# class 2 joined the set in #327's second round, when it became the second seat-bound
+# refusing row). A table missing one of these parses nowhere.
 # Ids only, never names: the name is what a row is called today and a rename is not a removal
 # — `tests/unit/test_corpus_gate.py` holds that the row's own name is not load-bearing, and
 # pinning it here would quietly make it so.
 REQUIRED_CLASSES: Final[frozenset[int]] = frozenset(
-    {ADR_AUTHORSHIP_CLASS_ID, 4, IN_WORLD_CLASS_ID, CONFLICT_OF_INTEREST_CLASS_ID}
+    {
+        ORCHESTRATION_CLASS_ID,
+        ADR_AUTHORSHIP_CLASS_ID,
+        4,
+        IN_WORLD_CLASS_ID,
+        CONFLICT_OF_INTEREST_CLASS_ID,
+    }
 )
 
 
@@ -172,12 +193,16 @@ class Rule(NamedTuple):
     lane is `required_seats`, and only that (review round 2 claim 2).
 
     `seats` and `required_seats` are opposites and are deliberately not one field. `seats`
-    lists the seats a row **matches** — class 2's `orchestrator`, a provenance keep-on-Claude
-    row whose remedy says as much and calls itself provisional. `required_seats` lists the
-    seats a row **admits**: the match is on the declaration, and the refusal fires for every
-    seat that is not on the list, lane-blind. One is "this seat is the problem", the other is
-    "only this seat is the answer", and collapsing them would have made class 3 unwritable
-    without a lane bar.
+    lists the seats a row **matches** — it appends one evidence term and never filters, so it
+    can only widen a match and never narrow one; #366 files the semantic, and since #327's
+    second round no row in the live document carries the field (the frozen pre-#326 half
+    still does, and this parser reads that view too, which is why the field survives here).
+    `required_seats` lists the seats a row **admits**: the match is on the declaration, and
+    the refusal fires for every seat that is not on the list, lane-blind. One is "this seat
+    is the problem", the other is "only this seat is the answer", and collapsing them would
+    have made class 3 unwritable without a lane bar — which is also why class 2's
+    `seats: ["orchestrator"]`, read as scoping and never scoping, was replaced by
+    `required_seats` in #327's second round rather than trusted.
     """
 
     id: int
@@ -552,10 +577,14 @@ def _refusing_rules(policy: Policy, lane: str) -> tuple[Rule, ...]:
 
     **The Claude-lane exemption is per row, not per policy, and that is claim 2's fix.** A
     row founded on provenance is exempt on the Claude lane, because provenance is what it
-    selects on — class 2's orchestration carve-out, the one ruling 1 left standing. A row
+    selects on — after #327's second round the live document's one such row is class 6's
+    bridge, which #331 owns the retirement of; class 2 was the other until that round
+    re-founded it on its seat. A row
     founded on a *seat* is not, because its basis has nothing to do with which provider is
     answering: class 3 refuses an ADR taken by a seat it does not admit on the Claude lane
-    exactly as it does on `codex`. Exempting it by lane was what made the class
+    exactly as it does on `codex`, and class 2 refuses an orchestration declaration taken by
+    any seat but the orchestrator's on the Claude lane exactly as it does on `zai`.
+    Exempting it by lane was what made the class
     refuse `codex`/`codex-sol-xhigh`/`planner` — the head of the very list its own remedy
     prescribes — while clearing `claude-native` on any seat at all.
 
@@ -563,7 +592,7 @@ def _refusing_rules(policy: Policy, lane: str) -> tuple[Rule, ...]:
     reading of ADR-0071.** Class 6's conflict of interest — no instance authors the gate
     that judges it — binds Claude too, but the ADR records the class as *aspirational*: the
     invariant it asserts is not enforced, and is discharged by an independent review under
-    ruling 4, which no refusal enforces until step 7's exemption list lands. Enforcing it
+    ruling 4, which no refusal enforces until #331's exemption list lands. Enforcing it
     here instead would refuse every Claude landing that touches a gate, this project's own
     maintenance of its gates included, with no review record yet existing to lift it — a bar
     on all gate work rather than a conflict-of-interest rule. What the field does enforce is
