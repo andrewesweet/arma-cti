@@ -3,7 +3,7 @@
 Every other gate in `just fast` asks whether the code is right. None of them asks
 whether the *tests* are. A suite of `assert True` passes `just check`, passes
 `just unit`, and lands — the defences against that were red-first discipline in a
-briefing (prose, unenforced for a foreign session), a habit visible in closing
+briefing (prose, unenforced for a session on another lane), a habit visible in closing
 comments (#214, #196: "six planted mutants, all six killed" — by hand, every
 time), and `mutmut`, which #172's close found scoped to modules that did not
 exist and which does not run against this repo's pytest config as shipped.

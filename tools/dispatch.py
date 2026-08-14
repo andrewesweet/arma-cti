@@ -16,12 +16,11 @@ Four ideas, and each is a ruling made mechanical:
   `opus-high` and `zai-glm52-max` are names in a registry; nothing outside the registry
   knows that one of them means `--effort high`. Effort vocabularies do not commensurate
   across providers, so the registry is the only place the mapping is allowed to exist.
-- **Seat** carries Decision 2's eligibility. Work may leave Claude only where a
-  mechanical gate catches a wrong answer, so a foreign lane refuses the seats the ADR
-  excludes — the fable seat and orchestration — rather than trusting the caller to
-  remember. On `claude-native` nothing is leaving Claude and every seat is dispatchable.
-  One human ruling suspends the fable bar for `codex`/`codex-sol-xhigh` until its stated
-  instant; the clock reapplies the standing bar without a later revocation (#217, #270).
+- **Seat** carries ADR-0071 ruling 1's one survivor: the orchestrator carve-out. Ruling 1
+  rescinds the graded authority ladder ADR-0061 built, so no seat is refused on
+  provenance grounds any more — every seat dispatches on every lane. The carve-out is the
+  exception and it is provisional: orchestration runs on Claude with a Claude model until
+  a tested alternative exists, which is the only provenance rule the project holds.
 - **Identity** is `OTEL_RESOURCE_ATTRIBUTES`, which is what makes a dispatch's telemetry
   self-identifying downstream: `cti.dispatch_id`, `cti.lane`, `cti.profile`, `cti.seat`,
   `cti.issue`, `cti.base_sha`. Decision 1 wants fraction-of-cap for all three pools from
@@ -280,7 +279,6 @@ class Lane(NamedTuple):
     base_url: str
     credential: str
     model_slots: tuple[tuple[str, str], ...]
-    foreign: bool
     note: str
     # Whether the human has ruled this lane off-peak-only. This is *policy*, which is why
     # it lives in the registry beside the lane's wiring and not in `tools/breaker.py`
@@ -323,7 +321,6 @@ LANES: Final[dict[str, Lane]] = {
         base_url="",
         credential="",
         model_slots=(),
-        foreign=False,
         note=(
             "The Anthropic subscription through Claude Code, which ADR-0061 records as "
             "the one compliant configuration. No credential of ours: the binary uses "
@@ -341,7 +338,6 @@ LANES: Final[dict[str, Lane]] = {
             ("ANTHROPIC_DEFAULT_SONNET_MODEL", "glm-5.2"),
             ("ANTHROPIC_DEFAULT_HAIKU_MODEL", "glm-4.7"),
         ),
-        foreign=True,
         note=(
             "The permitted mirror: the `claude` binary against z.ai's Anthropic-shaped "
             "endpoint, which consumes no Anthropic quota, credential or traffic. The "
@@ -362,7 +358,6 @@ LANES: Final[dict[str, Lane]] = {
         base_url="",
         credential="",
         model_slots=(),
-        foreign=True,
         runner_family="codex",
         note=(
             "OpenAI's Codex CLI against the ChatGPT Plus subscription, permitted by the "
@@ -392,8 +387,9 @@ PROFILES: Final[dict[str, Profile]] = {
     # the orchestration seat was itself fable a subagent inherited it from its dispatcher,
     # which is how the twenty-fifth retro ran unattended; the seat drop to opus/high removed
     # that inheritance, and the ruling's "dispatched" had no `(model, effort)` token to
-    # dispatch through. The seat was always expressible (`SEATS` has `fable`, barred on a
-    # foreign lane only); only the profile was missing. Effort is `high` per the Model roles
+    # dispatch through. The seat was always expressible (`SEATS` has `fable`, and since
+    # ADR-0071 ruling 1 no bar reaches it); only the profile was missing. Effort is `high`
+    # per the Model roles
     # mapping, the effort fable acts run at; the model is `fable`, the alias the `claude`
     # runner documents for `--model` alongside `opus` and `sonnet` (verified against the
     # binary's own `--help`, not assumed from its siblings — `build_argv` passes `model`
@@ -472,17 +468,18 @@ PROFILES: Final[dict[str, Profile]] = {
 
 
 class Seat(NamedTuple):
-    """One seat: what may leave Claude for it, and which profiles it prefers."""
+    """One seat: which profiles it prefers, and the one provenance rule that reaches it."""
 
     name: str
-    # ADR-0061 Decision 2: eligibility is a property of the surface, not a per-task
-    # judgement. A seat is dispatchable to a foreign lane when a mechanical gate catches a
-    # wrong answer from it. Review is eligible on Decision 3 — its output is claims, which
-    # land nothing on their own. ADR-0071 ruling 1 rescinds the concept this flag encodes;
-    # it survives here until #327 removes `foreign` from the lane and seat model, which is
-    # why a new seat's value below is argued from ruling 2's table rather than from a bar
-    # the same ADR withdrew.
-    foreign_eligible: bool
+    # ADR-0071 ruling 1 rescinds ADR-0061's graded eligibility ladder, so a seat's
+    # provenance is no longer a property this table encodes: every seat dispatches on
+    # every lane. One rule survives the rescission — the orchestrator carve-out, which
+    # runs orchestration on Claude with a Claude model until a tested alternative exists.
+    # It is a column on the table for the same reason `reviews` and `permission_mode`
+    # are: "which seats the carve-out reaches" is a fact about the seat table, and the
+    # table is where every other such fact lives. The ADR names it the only provenance
+    # rule the project holds, and it ends when a Codex orchestrator backup exists.
+    claude_only: bool
     # ADR-0071 ruling 2's preference column, head first. `resolve_seat` walks exactly this
     # and nothing else, so a seat gains a route by being written here.
     preference: tuple[str, ...]
@@ -524,50 +521,51 @@ IMPLEMENTER_ESCALATION: Final = ("codex-sol-high", "opus-high")
 # ADR-0071 ruling 2's seat table, transcribed. `mechanical` is **retired** by that ruling
 # and is absent rather than kept for compatibility: it named a cheaper tier rather than a
 # different job, and two names for one choice is what the retirement removes. `fable`
-# survives the table because it is not in it — the seat still carries #300's standing
-# retro allowance and ADR-0071's ruling 3 hands retros to `retro` without deleting it;
-# closing that overlap is #329's and #330's.
+# survives the table because it is not in it — ADR-0071's ruling 3 hands retros to `retro`
+# without deleting it; closing that overlap is #329's and #330's.
 SEATS: Final[dict[str, Seat]] = {
     # New in ruling 2, absorbing `cti-implementer-xhigh`'s tier and not its contract: a
-    # planner works out what to do and neither gates nor lands. Foreign-eligible because
-    # ruling 2 puts a Codex profile at its head, which is the newer human-signed decision;
-    # ADR-0061 Decision 2 would have asked whether a gate catches a wrong plan, and that
-    # question is one ruling 1 withdrew rather than one this line answers.
+    # planner works out what to do and neither gates nor lands. A Codex profile heads its
+    # list because ruling 2 is the newer human-signed decision; ruling 1 had already
+    # withdrawn the question of whether a gate catches a wrong plan.
     "planner": Seat(
         "planner",
-        foreign_eligible=True,
+        claude_only=False,
         preference=("codex-sol-xhigh", "opus-xhigh"),
         escalation=("fable-high",),
     ),
     "implementer": Seat(
         "implementer",
-        foreign_eligible=True,
+        claude_only=False,
         preference=IMPLEMENTER_PREFERENCE,
         escalation=IMPLEMENTER_ESCALATION,
     ),
-    "recon": Seat("recon", foreign_eligible=True, preference=("codex-luna-medium", "haiku-medium")),
+    "recon": Seat("recon", claude_only=False, preference=("codex-luna-medium", "haiku-medium")),
     # ADR-0071 ruling 4 (#322) adds the two columns that make never-alone real. `reviews`
     # is what makes this seat's resolution take the profile under review as an input and
     # never return it; `permission_mode` forces the containment `--permission-mode`'s
     # writable default would otherwise have left to whoever typed the command.
     "review": Seat(
         "review",
-        foreign_eligible=True,
+        claude_only=False,
         preference=IMPLEMENTER_PREFERENCE,
         escalation=IMPLEMENTER_ESCALATION[:1],
         reviews=True,
         permission_mode="plan",
     ),
-    # Ruling 3's own kind of work. Every entry is on the human's enumerated retro list of
-    # 2026-08-09 (#300); `RETRO_ALLOWANCE` below stays keyed on the `fable` seat, which is
-    # the seat that ruling still names, so nothing here widens it.
+    # Ruling 3's own kind of work, on the human's enumerated retro list of 2026-08-09
+    # (#300). The named list — never "or above" — is the seat's own preference order
+    # written out; profiles are opaque tokens and no cross-provider ordering exists.
     "retro": Seat(
         "retro",
-        foreign_eligible=True,
+        claude_only=False,
         preference=("fable-high", "opus-xhigh", "codex-sol-xhigh"),
     ),
-    "fable": Seat("fable", foreign_eligible=False, preference=("fable-high",)),
-    "orchestrator": Seat("orchestrator", foreign_eligible=False, preference=("opus-xhigh",)),
+    "fable": Seat("fable", claude_only=False, preference=("fable-high",)),
+    # ADR-0071 ruling 1's one survivor, and the only `claude_only=True` row the table
+    # carries: orchestration runs on Claude with a Claude model until a tested
+    # alternative exists. The ADR calls it the only provenance rule the project holds.
+    "orchestrator": Seat("orchestrator", claude_only=True, preference=("opus-xhigh",)),
 }
 
 # ADR-0071 ruling 2's last row, which is **not a dispatch route**. ADR-0068 makes the
@@ -578,64 +576,25 @@ SEATS: Final[dict[str, Seat]] = {
 # own surfaces declare", and `tools/generate_seats.py` needs one registry to read rather
 # than a second copy of the row (#324). Nothing in this module resolves through it.
 #
-# `foreign_eligible` is unread for a seat nothing dispatches; it is `True` only so the
-# field does not contradict the row's own Codex entry, which the ADR says is reachable by
-# the human opening a Codex session by hand. #327 removes the field.
+# `claude_only` is unread for a seat nothing dispatches; it is `False` because the row's
+# own Codex entry is reachable by the human opening a Codex session by hand, and no
+# refusal of this module's ever reaches this registry.
 DECLARED_ONLY_SEATS: Final[dict[str, Seat]] = {
     "interlocutor": Seat(
         "interlocutor",
-        foreign_eligible=True,
+        claude_only=False,
         preference=("opus-xhigh", "codex-sol-xhigh"),
     ),
 }
 
 
-# The human's ruling of 2026-08-06T21:15Z (#217, #issuecomment-5209125413), verbatim:
-# The retro-approved profiles, enumerated by the human on 2026-08-09 after "or above"
-# proved to be a comparison this module must not make: profiles are opaque
-# `(lane, model, effort)` tokens and no cross-provider effort scale exists (ADR-0061
-# decision 5), so a level joins the list by being named and never by an ordering
-# inferred in code.
-#
-# The list spans lanes, and only its foreign half needs an allowance at all — on
-# `claude-native` the fable seat is already permitted by `SEATS`. So this constant is
-# what suspends Decision 2, and it suspends it for these two profiles only:
-#
-# **#300's ruling is superseded, and this is the second of its two records.** ADR-0071's
-# trailer reads `Supersedes: the human's ruling on #300 (2026-08-09)`, and #326 deleted the
-# other record — the two standing `route_exceptions` in the routing policy — because ruling 3
-# hands retros to the `retro` seat. This one is deliberately still here rather than deleted in
-# the same landing: it is keyed on the `fable` seat, which ruling 3 does not delete, and
-# closing the `fable`/`retro` overlap is #329's and #330's, not this issue's. Left unsaid, a
-# grep for the standing retro allowance would return a live constant with no sign that the
-# ruling behind it had moved (#326, review round 1 claim 10).
-RETRO_ALLOWANCE: Final = frozenset(
-    {
-        ("fable", "codex", "codex-sol-xhigh"),
-        ("fable", "codex", "codex-sol-max"),
-    }
-)
-# The human's full ruled list, including the native profiles that need no allowance.
-# Enforced where it can be — a foreign dispatch is refused off the set above — and
-# stated here for the dispatcher, because nothing in a dispatch tells this module that
-# the issue it carries is a retro.
-RETRO_APPROVED_PROFILES: Final = (
-    "codex-sol-xhigh",
-    "codex-sol-max",
-    "opus-high",
-    "opus-xhigh",
-    "opus-max",
-    "fable-medium",
-    "fable-high",
-    "fable-xhigh",
-    "fable-max",
-)
-RETRO_ALLOWANCE_SOURCE: Final = "human ruling 2026-08-09 (#300), superseding #217 and #299"
-
-
-def retro_allowance_is_live(seat: str, lane_name: str, profile_name: str) -> bool:
-    """Whether this is one of the ruled retro routes. Standing: no expiry to check."""
-    return (seat, lane_name, profile_name) in RETRO_ALLOWANCE
+# The standing retro allowance lived here until #327: two `(fable, codex, …)` routes
+# suspending ADR-0061 Decision 2's seat bar for #300's ruled retro profiles. ADR-0071
+# ruling 1 rescinds that bar, and its trailer supersedes #300's ruling outright — #326
+# already deleted the policy half (the two standing `route_exceptions`). Nothing
+# consults an allowance once no bar exists to suspend, so the constant, its source line
+# and its predicate are deleted here rather than kept as data nothing reads. The
+# fable/`retro` seat overlap that ruling 3 leaves behind is #329's and #330's.
 
 
 def plan_charge(lane: Lane, at: datetime) -> dict[str, object] | None:
@@ -1421,11 +1380,13 @@ def unknown_seat_refusal(seat: str) -> Refusal | None:
 
 
 def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal | None:
-    """Check lane, profile and seat against the registry and against Decision 2.
+    """Check lane, profile and seat against the registry and the carve-out.
 
-    Decision 2's standing bar remains in `SEATS`. The only exception is #217's exact
-    retro triple before its expiry instant; `now` alone decides whether it holds. The
-    planning ladder passes the same clock it threads to the breaker and off-peak rungs.
+    Three registry rungs — lane, profile, seat — then ADR-0071 ruling 1's one survivor:
+    the orchestrator carve-out, which keeps orchestration on Claude until a tested
+    alternative exists. No other provenance rule remains (#327 deleted the eligibility
+    ladder ADR-0061 built and the retro allowance that suspended it), and the pair block
+    after it is a capability ceiling, not a provenance one.
     """
     if lane_name not in LANES:
         return Refusal(
@@ -1452,22 +1413,19 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
     refusal = unknown_seat_refusal(seat)
     if refusal is not None:
         return refusal
-    if (
-        LANES[lane_name].foreign
-        and not SEATS[seat].foreign_eligible
-        and not retro_allowance_is_live(seat, lane_name, profile_name)
-    ):
+    if SEATS[seat].claude_only and lane_name != CLAUDE_LANE:
         return Refusal(
-            "seat_not_eligible",
+            "orchestrator_claude_only",
             (f"seat={seat}", f"lane={lane_name}"),
             (
-                "ADR-0061 Decision 2: work leaves Claude only where a mechanical gate "
-                "catches a wrong answer, and this seat's output is not gate-covered. "
-                "Dispatch it on claude-native."
+                "ADR-0071 ruling 1: the orchestrator carve-out. Orchestration runs on "
+                "Claude with a Claude model until a tested alternative exists — the only "
+                "provenance rule the project holds, and every other seat dispatches on "
+                "every lane. Dispatch it on claude-native."
             ),
         )
     # ADR-0071 ruling 2: a refusal can attach to a (profile, seat) pair. Checked after the
-    # seat-eligibility rung, so it only reaches a seat Decision 2 already admits, and it is
+    # carve-out, so it only reaches a seat the carve-out already admits, and it is
     # the one home the block list below is consulted — `pair_block` for the reason.
     return pair_block(seat, profile_name)
 
@@ -2027,7 +1985,7 @@ def readiness_refusal(issue: int, found: Readiness) -> Refusal | None:
     is looking.
 
     **Lane-blind.** Nothing about the lane, the profile or the seat reaches this function,
-    so a foreign lane meets exactly the refusal `claude-native` meets.
+    so every lane meets exactly the refusal every other lane meets.
     """
     if found.assessment is None:
         return Refusal(
@@ -2207,8 +2165,8 @@ def candidate_refusal(
     """Judge one preference entry with the same rungs the ladder judges a named route by.
 
     Which rungs, and the rule that decides: **a rung belongs here when it is a function of
-    `(lane, profile, seat)` and of nothing else.** Those are the registry and Decision 2's
-    bar, the `(profile, seat)` block, the profile's admission standing, the lane's breaker
+    `(lane, profile, seat)` and of nothing else.** Those are the registry, the carve-out,
+    the `(profile, seat)` block, the profile's admission standing, the lane's breaker
     and the human's off-peak rule — each one the ladder's own function, called here rather
     than restated, because a second copy is how a profile comes to be dispatchable to a
     resolver and refused by the ladder two lines later.
@@ -2926,7 +2884,7 @@ def capture_strata(body: str, issue: int, seat: str, root: Path, *, body_from_fi
     is a stratum and not a failure.
 
     Routing class: lane-blind `classify_issue`, so a Claude-native dispatch carries the
-    class a foreign one would. A body that declares no class is the empty string and is
+    class any other lane would. A body that declares no class is the empty string and is
     distinct from an unreadable policy, which is the unchecked state — the third value
     #323 names, never collapsed with 'no class'.
 
@@ -2979,7 +2937,7 @@ def capture_strata(body: str, issue: int, seat: str, root: Path, *, body_from_fi
 def routing_refusal(
     args: argparse.Namespace, found: Readiness, root: Path, now: datetime
 ) -> Refusal | None:
-    """Refuse a foreign route from the issue declaration — the advisory enforcement point.
+    """Refuse a route the issue declaration's class rules out — the advisory enforcement point.
 
     The policy is read from the main checkout on every call, never at import or process
     startup. That is how a rule landed after an orchestrator session started reaches its
@@ -3114,7 +3072,7 @@ def ladder_refusal(
     """
     refusal = resolve_selection(args.lane, args.profile, args.seat)
     if refusal is not None:
-        if refusal.kind == "seat_not_eligible":
+        if refusal.kind == "orchestrator_claude_only":
             policy_refusal = routing_refusal(args, found, root, now)
             if policy_refusal is not None:
                 return policy_refusal
@@ -3461,16 +3419,23 @@ def seat_listing(seat: Seat) -> tuple[str, ...]:
 
     Ruling 4's two columns (#322) print only where they apply: a `reviews=false` line on
     every other seat would be noise, and a reader asking "which seat is the one that cannot
-    review its own profile" gets the answer by their absence everywhere else. The preference
+    review its own profile" gets the answer by their absence everywhere else. Ruling 1's
+    carve-out column (#327) follows the same rule for the same reason — one `claude_only`
+    seat, named where it applies and absent everywhere else. The preference
     line stays the seat's *registered* order — what a review dispatch actually walks depends
     on its subject, which the registry does not know, so the rule is stated rather than a
     resolved order invented for a dispatch nobody has asked for.
     """
     lines = [
-        f"seat={seat.name} foreign_eligible={str(seat.foreign_eligible).lower()}",
+        f"seat={seat.name}",
         f"  preference={' '.join(seat.preference)}",
         f"  escalation={' '.join(seat.escalation) or 'none'} (not resolved into)",
     ]
+    if seat.claude_only:
+        lines.append(
+            "  claude_only=true refusal=orchestrator_claude_only (ADR-0071 ruling 1's"
+            " one survivor, ends when a tested alternative exists)"
+        )
     if seat.reviews:
         lines.append(
             "  reviews=true resolves_past=--reviewing-and-every-potential-author"
@@ -3489,7 +3454,7 @@ def registry_lines() -> tuple[str, ...]:
     """Render every lane and profile: the answer to "what can I dispatch?"."""
     lines: list[str] = []
     for lane in sorted(LANES.values()):
-        lines.append(f"lane={lane.name} runner={lane.runner} foreign={str(lane.foreign).lower()}")
+        lines.append(f"lane={lane.name} runner={lane.runner}")
         if lane.base_url:
             lines.append(f"  base_url={lane.base_url}")
         if lane.credential:
@@ -3505,10 +3470,8 @@ def registry_lines() -> tuple[str, ...]:
             for profile in sorted(PROFILES.values())
             if profile.lane == lane.name
         )
-    eligible = " ".join(sorted(seat.name for seat in SEATS.values() if seat.foreign_eligible))
-    barred = " ".join(sorted(seat.name for seat in SEATS.values() if not seat.foreign_eligible))
-    lines.append(f"seats_eligible_on_foreign_lanes={eligible}")
-    lines.append(f"seats_claude_native_only={barred}")
+    carve_out = " ".join(sorted(seat.name for seat in SEATS.values() if seat.claude_only))
+    lines.append(f"seats_claude_only={carve_out} (ADR-0071 ruling 1: the only provenance rule)")
     for seat in sorted(SEATS.values()):
         lines.extend(seat_listing(seat))
     # ADR-0071 ruling 2: a (profile, seat) pair held below a seat's contract is blocked,
@@ -3530,18 +3493,6 @@ def registry_lines() -> tuple[str, ...]:
             raise ValueError(message)
         ceiling = next(line for line in block.found if line.startswith("ceiling="))
         lines.append(f"seat_profile_block=adr0071 seat={seat} profile={profile_name} {ceiling}")
-    # The one ruled exception, stated wherever the registry is read. It was time-boxed
-    # from 2026-08-06 and made standing by the human's ruling of 2026-08-09; it is not a
-    # general allowance list, and a second entry would need its own ruling.
-    for seat, lane_name, profile_name in sorted(RETRO_ALLOWANCE):
-        lines.append(
-            "seat_allowance=standing"
-            f" seat={seat}"
-            f" lane={lane_name}"
-            f" profile={profile_name}"
-            f" source={RETRO_ALLOWANCE_SOURCE}"
-        )
-    lines.append(f"retro_approved_profiles={' '.join(RETRO_APPROVED_PROFILES)}")
     return tuple(lines)
 
 

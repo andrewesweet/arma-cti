@@ -15,8 +15,8 @@ surface and renders it.
 **Which profile a Claude seat file declares is the first `claude-native` one in the seat's
 preference list**, and the lane filter is the whole of the judgement. A `.claude/agents/`
 definition cannot pin a lane: it declares a Claude-vocabulary model, and which provider
-that reaches is a property of the session that spawns the subagent, not of the file. So the
-foreign heads of a preference list have no expression here — `codex-luna-max` is not a
+that reaches is a property of the session that spawns the subagent, not of the file. So
+preference entries on other lanes have no expression here — `codex-luna-max` is not a
 model the Claude harness can be handed — and neither does `zai-glm52-max`, whose Claude
 vocabulary (`opus`, `max`) would be read by a native session as a native pair the registry
 never chose. The native entry is the one that is true wherever the file is read.
@@ -56,8 +56,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 import dispatch
 
 # The one lane whose `(model, effort)` a Claude seat file can declare. See the module
-# docstring: the file names a Claude-vocabulary model, so a foreign profile has no
-# expression here and a Claude-vocabulary foreign profile has a misleading one.
+# docstring: the file names a Claude-vocabulary model, so a profile on another lane has
+# no expression here and a Claude-vocabulary one on another lane has a misleading one.
 NATIVE_LANE: Final = "claude-native"
 
 FENCE: Final = "---"

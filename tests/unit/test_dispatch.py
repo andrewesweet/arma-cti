@@ -78,7 +78,7 @@ UNREADY_BODY = "The dispatcher feels slow lately and somebody should have a look
 
 # A review dispatch declares the profile whose work it reviews (#322), so every arrangement
 # below that uses the `review` seat — several of which are really about environments,
-# breakers or windows and reach for it only because it is foreign-eligible — names one. It
+# breakers or windows and reach for it only because it reviews — names one. It
 # is a native profile on purpose: every such arrangement dispatches a z.ai profile, so the
 # subject differs from the dispatched profile in both name and lane and the same-profile
 # refusal is never what those tests are measuring.
@@ -142,15 +142,16 @@ def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
     env = dict(os.environ)
     env["PATH"] = f"{fake_claude(tmp_path)}:{env['PATH']}"
     env["CTI_FAKE_CLAUDE_OUT"] = str(capture)
-    # The accident this whole design exists to prevent: a parent that already carries a
-    # foreign base URL. Every child must come out the same whether or not this is here.
+    # The accident this whole design exists to prevent: a parent that already carries
+    # another provider's base URL. Every child must come out the same whether or not this
+    # is here.
     env["ANTHROPIC_BASE_URL"] = "https://poisoned.invalid"
     # The seam forks a real process, so its breaker has to be pointed somewhere of this
     # test's own: a run whose result depended on what this box's lanes were doing would
     # be a test of the machine rather than of the dispatcher (#226).
     env["CTI_BREAKER_DIR"] = str(tmp_path / "breaker")
     # Same reason for the admission records (#224): a seam run must not read, and must
-    # not write, this box's real standing for a foreign profile.
+    # not write, this box's real standing for a profile on another lane.
     env["CTI_ADMISSION_DIR"] = str(tmp_path / "admission")
     # And the same reason again for the issue body (#241): a forked seam must not reach
     # GitHub to find out whether #223 is ready, or the whole suite would be a test of this
@@ -345,7 +346,6 @@ def test_the_native_lane_supplies_no_credential_and_no_base_url() -> None:
     lane = dispatch.LANES["claude-native"]
     assert lane.base_url == ""
     assert lane.credential == ""
-    assert lane.foreign is False
 
 
 def test_an_unknown_lane_is_refused_by_name() -> None:
@@ -375,20 +375,92 @@ def test_a_registered_selection_is_not_refused() -> None:
     assert dispatch.resolve_selection("zai", "zai-glm52-max", "review") is None
 
 
-# ------------------------------------------------------------- Decision 2 eligibility
+# ------------------------------------- ADR-0071 ruling 1: the carve-out, and nothing else
+#
+# Ruling 1 rescinds ADR-0061's graded eligibility ladder, so what replaced the Decision 2
+# block below is one survivor and a walk. The survivor is the orchestrator carve-out;
+# the walk is the proof that it is the only provenance refusal left, and — because it
+# crosses three providers' profiles under one seat — the proof that no verdict anywhere
+# in the ladder is a function of a model or an effort token (ADR-0061 decision 5: a
+# profile is one opaque token, and no cross-provider effort scale exists to infer).
 
 
-def test_a_foreign_lane_refuses_the_seats_no_gate_covers() -> None:
-    for seat in ("fable", "orchestrator"):
-        refusal = dispatch.resolve_selection("zai", "zai-glm52-max", seat)
-        assert refusal is not None, seat
-        assert refusal.kind == "seat_not_eligible"
-        assert "Decision 2" in refusal.action
+def test_an_unknown_seat_is_refused_rather_than_mis_attributed() -> None:
+    refusal = dispatch.resolve_selection("claude-native", "opus-high", "implemeter")
+    assert refusal is not None
+    assert refusal.kind == "unknown_seat"
 
 
-def test_the_same_seats_dispatch_freely_on_claude_native() -> None:
-    # Nothing is leaving Claude on this lane, so Decision 2 does not bind.
-    assert dispatch.resolve_selection("claude-native", "opus-xhigh", "fable") is None
+@pytest.mark.parametrize("lane", ["codex", "zai"])
+def test_the_orchestrator_carve_out_refuses_on_every_other_lane(lane: str) -> None:
+    # ADR-0071 ruling 1's one survivor: orchestration runs on Claude with a Claude model
+    # until a tested alternative exists. It is the only provenance rule the project holds.
+    profile = "codex-sol-xhigh" if lane == "codex" else "zai-glm52-max"
+    refusal = dispatch.resolve_selection(lane, profile, "orchestrator")
+    assert refusal is not None
+    assert refusal.kind == "orchestrator_claude_only"
+    assert "ADR-0071 ruling 1" in refusal.action
+    assert "claude-native" in refusal.action
+    # A refusal, not a failure class — nothing was found about a provider or about code.
+    assert refusal.failure_class == ""
+    assert not any(line.startswith("class=") for line in refusal.lines())
+
+
+def test_the_orchestrator_seat_still_dispatches_on_claude_native() -> None:
+    # The carve-out names where orchestration runs; it does not retire the seat.
+    assert dispatch.resolve_selection("claude-native", "opus-xhigh", "orchestrator") is None
+
+
+def test_every_seat_walks_every_lane_with_the_verdict_named_for_each() -> None:
+    """The carve-out is the only provenance refusal, and no verdict reads a tier token.
+
+    Every seat in the registry against every registered profile on every lane — the
+    exhaustive walk, with the expected verdict asserted for each combination rather than
+    for the ones that came to mind. Three refusals exist at this rung and only these:
+    `unknown_*` cannot appear (every name comes from the registries),
+    `profile_lane_mismatch` cannot appear (every profile runs on its own lane), the
+    carve-out fires for `orchestrator` off `claude-native`, and `pair_block` fires for
+    the pairs `SEAT_PROFILE_BLOCKS` names. Anything else — `fable`, the seat Decision 2
+    barred from every non-Claude lane until #327 — clears, on every provider.
+
+    That is also the opaque-profile-token proof (ADR-0061 decision 5, surviving ruling 1):
+    the walk spans `medium`/`high`/`xhigh`/`max` across three providers under one seat,
+    and asserts the verdict is a function of `(seat, lane)` alone. Code that inferred a
+    cross-provider ordering — the "or above" reading #300's ruling forbade — would have
+    to make some `(lane, profile, seat)` verdict differ by effort token, and every
+    combination's verdict is pinned here.
+    """
+    for lane_name, lane_profiles in _profiles_by_lane().items():
+        for profile in lane_profiles:
+            for seat in dispatch.SEATS:
+                refusal = dispatch.resolve_selection(lane_name, profile.name, seat)
+                expected = _expected_selection_refusal(lane_name, profile.name, seat)
+                assert (refusal.kind if refusal else None) == expected, (
+                    f"{lane_name}/{profile.name}/{seat}: {refusal}"
+                )
+
+
+def _profiles_by_lane() -> dict[str, list[dispatch.Profile]]:
+    grouped: dict[str, list[dispatch.Profile]] = {}
+    for profile in dispatch.PROFILES.values():
+        grouped.setdefault(profile.lane, []).append(profile)
+    return grouped
+
+
+def _expected_selection_refusal(lane: str, profile: str, seat: str) -> str | None:
+    """The one refusal this ladder may return for registered names, and why each is typed."""
+    if seat == "orchestrator" and lane != dispatch.CLAUDE_LANE:
+        return "orchestrator_claude_only"
+    if (seat, profile) in dispatch.SEAT_PROFILE_BLOCKS:
+        return "profile_blocked_for_seat"
+    return None
+
+
+def test_a_seat_other_than_orchestrator_is_never_refused_on_provenance_grounds() -> None:
+    # The walk above pins verdicts per combination; this pins the property the issue's
+    # acceptance criteria name directly, so a future seat cannot arrive outside the walk's
+    # enumeration. `claude_only` is a column the carve-out owns: one seat carries it.
+    assert {seat.name for seat in dispatch.SEATS.values() if seat.claude_only} == {"orchestrator"}
 
 
 def test_the_fable_seat_has_a_dispatchable_profile_on_claude_native() -> None:
@@ -423,26 +495,11 @@ def test_an_unknown_seat_is_refused_rather_than_mis_attributed() -> None:
     assert refusal.kind == "unknown_seat"
 
 
-# -------------------------------------------------------- the standing retro allowance
-# The human's ruling of 2026-08-09 (#299) supersedes the time-boxed allowance of
-# 2026-08-06 (#217, #270) that would have lapsed at 2026-08-10T14:00Z: retros may run as
-# the `fable` seat on `codex`/`codex-sol-xhigh` with no expiry. So these tests no longer
-# inject a clock — there is nothing time-dependent left to prove — and they assert
-# instead that the allowance is exactly one triple and widens to nothing else.
-#
-# "Or above" in the ruling is deliberately not a comparison this module makes: profiles
-# are opaque `(lane, model, effort)` tokens and no cross-provider effort scale exists
-# (ADR-0061 decision 5), so a higher profile joins by being named, by the human.
-
-
-@pytest.mark.parametrize("profile", ["codex-sol-xhigh", "codex-sol-max"])
-def test_the_standing_allowance_lets_fable_dispatch_on_each_ruled_foreign_profile(
-    profile: str,
-) -> None:
-    assert dispatch.resolve_selection("codex", profile, "fable") is None
-
-
-def test_the_real_planning_path_admits_the_standing_allowance(tmp_path: Path) -> None:
+def test_the_real_planning_path_admits_fable_on_codex(tmp_path: Path) -> None:
+    # The rescission's observable end: the seat ADR-0061 Decision 2 barred from every
+    # non-Claude lane plans cleanly on `codex` through the real ladder, not only through
+    # `resolve_selection`. Until #327 this was the standing retro allowance's one route;
+    # ruling 1 removed the bar itself, so there is no allowance left to consult.
     plan, _, refusal = plan_for(
         tmp_path,
         lane="codex",
@@ -453,70 +510,23 @@ def test_the_real_planning_path_admits_the_standing_allowance(tmp_path: Path) ->
     assert plan is not None
 
 
-@pytest.mark.parametrize(
-    ("lane", "profile"),
-    [
-        ("codex", "codex-sol-high"),
-        ("codex", "codex-terra-medium"),
-        ("codex", "codex-terra-low"),
-        ("zai", "zai-glm52-max"),
-        ("zai", "zai-glm47-max"),
-    ],
-)
-def test_the_seat_allowance_does_not_widen_beyond_the_ruled_routes(lane: str, profile: str) -> None:
-    # Two foreign routes only. Every other fable-on-foreign combination stays barred —
-    # including `codex-sol-high`, which is *below* the ruled levels and is the case a
-    # careless "or above" reading would have admitted.
-    refusal = dispatch.resolve_selection(lane, profile, "fable")
-    assert refusal is not None
-    assert refusal.kind == "seat_not_eligible"
-    # A refusal, not a failure class — nothing was found about a provider or about code.
-    assert refusal.failure_class == ""
-    assert not any(line.startswith("class=") for line in refusal.lines())
-
-
-@pytest.mark.parametrize("lane", ["codex", "zai"])
-def test_the_orchestrator_seat_stays_barred_on_every_foreign_lane(lane: str) -> None:
-    # The ruling touches fable alone; the orchestrator seat never leaves Claude.
-    profile = "codex-sol-xhigh" if lane == "codex" else "zai-glm52-max"
-    refusal = dispatch.resolve_selection(lane, profile, "orchestrator")
-    assert refusal is not None
-    assert refusal.kind == "seat_not_eligible"
-
-
-def test_every_retro_approved_profile_is_registered() -> None:
-    """The human's list names profiles; a name with no profile is undispatchable.
-
-    Five of the nine did not exist when the list was ruled (2026-08-09) and were added
-    with it. A later edit that drops one would leave the ruling naming a route nobody
-    can take, which is the failure this asserts against.
-    """
-    for name in dispatch.RETRO_APPROVED_PROFILES:
-        assert name in dispatch.PROFILES, name
-
-
-def test_the_ruled_foreign_routes_are_a_subset_of_the_approved_list() -> None:
-    # The allowance suspends Decision 2; it must never admit a route the human did not
-    # approve for retros at all.
-    for _seat, _lane, profile in dispatch.RETRO_ALLOWANCE:
-        assert profile in dispatch.RETRO_APPROVED_PROFILES, profile
-
-
-def test_the_standing_allowance_is_visible_in_the_dispatch_registry() -> None:
-    # A standing exception is stated wherever the registry is read: silence would let a
-    # reader believe `SEATS` governs without exception, which is the thing that is false.
+def test_the_carve_out_is_the_only_provenance_rule_the_registry_states() -> None:
+    # One provenance rule survives, and the registry says so wherever it is read: the
+    # carve-out line names the seat, and no `foreign`, allowance or approved-list line
+    # remains to suggest a second one. The retro allowance's registry lines died with
+    # the bar they suspended (ADR-0071 ruling 1; #326 deleted the policy half).
     lines = dispatch.registry_lines()
-    visible = [line for line in lines if line.startswith("seat_allowance=")]
-    assert len(visible) == 2
-    assert all(line.startswith("seat_allowance=standing seat=fable lane=codex") for line in visible)
-    assert {line.split("profile=")[1].split()[0] for line in visible} == {
-        "codex-sol-xhigh",
-        "codex-sol-max",
-    }
-    assert all("expires_at" not in line for line in visible)
-    approved = [line for line in lines if line.startswith("retro_approved_profiles=")]
-    assert len(approved) == 1
-    assert approved[0].split("=", 1)[1].split() == list(dispatch.RETRO_APPROVED_PROFILES)
+    assert any(line.startswith("seats_claude_only=orchestrator ") for line in lines)
+    assert not any("foreign" in line for line in lines)
+    assert not any(line.startswith("seat_allowance=") for line in lines)
+    assert not any(line.startswith("retro_approved_profiles=") for line in lines)
+    # Stated once, on the seat it reaches: a `claude_only` line on any other seat would
+    # be a second provenance rule the registry had grown without a ruling.
+    assert [line for line in lines if "claude_only" in line] == [
+        "seats_claude_only=orchestrator (ADR-0071 ruling 1: the only provenance rule)",
+        "  claude_only=true refusal=orchestrator_claude_only (ADR-0071 ruling 1's"
+        " one survivor, ends when a tested alternative exists)",
+    ]
 
 
 # ---------------------------------------------- ADR-0071: new profiles and the pair block
@@ -738,7 +748,7 @@ def test_a_lane_with_no_time_of_day_term_records_no_multiplier_at_all() -> None:
     assert dispatch.plan_charge(dispatch.LANES["claude-native"], datetime.now(tz=UTC)) is None
 
 
-def test_a_foreign_lane_with_no_token_exports_no_empty_one() -> None:
+def test_a_zai_dispatch_with_no_token_exports_no_empty_one() -> None:
     # An empty `ANTHROPIC_AUTH_TOKEN` outranks the subscription OAuth in Claude Code's
     # credential ladder, so exporting a blank one is worse than exporting none.
     child = assembled("zai", "zai-glm52-max", {"HOME": "/home/t"}, "")
@@ -1308,7 +1318,7 @@ def test_an_incomplete_request_names_what_is_missing(capsys: pytest.CaptureFixtu
     assert "--issue" in printed
 
 
-def test_the_registry_listing_names_both_lanes_and_the_barred_seats(
+def test_the_registry_listing_names_both_lanes_and_the_carve_out(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     assert dispatch.main(["--list"]) == 0
@@ -1316,7 +1326,7 @@ def test_the_registry_listing_names_both_lanes_and_the_barred_seats(
     assert "lane=claude-native" in printed
     assert "lane=zai" in printed
     assert "profile=zai-glm52-max" in printed
-    assert "seats_claude_native_only=fable orchestrator" in printed
+    assert "seats_claude_only=orchestrator" in printed
     assert "off_peak_only=true" in printed
 
 
@@ -1901,7 +1911,7 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
         str(credentials),
     ]
     before_band = breaker.zai_is_peak(time.time())
-    foreign = run_seam(
+    zai_run = run_seam(
         ["--lane", "zai", "--profile", "zai-glm52-max", *common],
         parent,
     )
@@ -1911,18 +1921,18 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
         # #238's rule is running and there is deliberately no clock override that would
         # let a test dispatch through it, so the claim available in this band is the rule
         # itself, asserted through the same real seam.
-        assert foreign.returncode == dispatch.EXIT_REFUSED
-        assert "refusal=lane_peak_hours" in foreign.stderr
+        assert zai_run.returncode == dispatch.EXIT_REFUSED
+        assert "refusal=lane_peak_hours" in zai_run.stderr
         assert not (tmp_path / "zai-ran.txt").exists(), "and the runner was never reached"
         assert parent == before
         return
-    assert foreign.returncode == 0, foreign.stderr
-    foreign_record = Path(read_lines(foreign.stdout)["record"])
-    assert await_file(foreign_record / "result.json")
-    foreign_env = read_lines((tmp_path / "zai-ran.txt").read_text(encoding="utf-8"))
-    assert foreign_env["ANTHROPIC_BASE_URL"] == "https://api.z.ai/api/anthropic"
-    assert foreign_env["ANTHROPIC_AUTH_TOKEN"] == FAKE_TOKEN
-    assert foreign_env["ANTHROPIC_DEFAULT_OPUS_MODEL"] == "glm-5.2"
+    assert zai_run.returncode == 0, zai_run.stderr
+    zai_record = Path(read_lines(zai_run.stdout)["record"])
+    assert await_file(zai_record / "result.json")
+    zai_env = read_lines((tmp_path / "zai-ran.txt").read_text(encoding="utf-8"))
+    assert zai_env["ANTHROPIC_BASE_URL"] == "https://api.z.ai/api/anthropic"
+    assert zai_env["ANTHROPIC_AUTH_TOKEN"] == FAKE_TOKEN
+    assert zai_env["ANTHROPIC_DEFAULT_OPUS_MODEL"] == "glm-5.2"
 
     # The parent mapping this test handed the seam is untouched, and so is this
     # process's own environment: nothing was exported anywhere.
@@ -2177,8 +2187,9 @@ def test_the_dispatch_module_is_the_one_place_the_registry_lives() -> None:
     """No caller composes a model with an effort — that is Decision 5's whole content."""
     module: ModuleType = dispatch
     assert set(module.SEATS) >= {"implementer", "recon", "review", "fable"}
-    assert module.SEATS["fable"].foreign_eligible is False
-    assert module.SEATS["review"].foreign_eligible is True
+    # Ruling 1 deleted the eligibility column; what replaced it names one seat, and the
+    # walk above proves no other seat is refused on provenance grounds anywhere.
+    assert [name for name, seat in module.SEATS.items() if seat.claude_only] == ["orchestrator"]
     # ADR-0071 ruling 2 retires `mechanical`: it named a cheaper tier rather than a
     # different job, and the registry is the enforcing copy of the roster.
     assert "mechanical" not in module.SEATS
@@ -2389,7 +2400,7 @@ NO_PATH_BODY = "A change to the README prose only, naming no path.\n"
 def test_strata_records_an_in_world_issue_as_regress_with_its_class() -> None:
     s = dispatch.capture_strata(IN_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
     assert s.gate_tier == dispatch.Stratum.known("regress")
-    # Lane-blind: a Claude-native dispatch carries the same class a foreign one would. The
+    # Lane-blind: a Claude-native dispatch carries the same class any other lane would. The
     # stable id and the mutable name are kept as two fields, not one `id:name` string.
     assert s.routing_class == dispatch.Stratum.known(
         dispatch.RoutingClass("5", "in_world_landings"),

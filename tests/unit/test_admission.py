@@ -637,22 +637,27 @@ def test_dispatch_does_not_consult_admission_for_claude_native(tmp_path: Path) -
 
 
 def test_the_bar_governs_exactly_the_registry_dispatch_carries() -> None:
-    # `tools/admission.py` keeps its own copy of the foreign lanes and profiles, because a
-    # cycle between it and the dispatcher would make either one unloadable alone. This is
+    # `tools/admission.py` keeps its own copy of the non-Claude lanes and profiles, because
+    # a cycle between it and the dispatcher would make either one unloadable alone. This is
     # the guard that keeps the copy honest: registering a lane or profile in one place and
-    # not the other is a red unit tier rather than a route nothing judges.
-    foreign_lanes = tuple(sorted(name for name, lane in dispatch.LANES.items() if lane.foreign))
+    # not the other is a red unit tier rather than a route nothing judges. Derived from
+    # `CLAUDE_LANE` since #327 deleted the `foreign` column both sides used to read — the
+    # sets are the same ones, computed off the surviving data.
+    foreign_lanes = tuple(sorted(name for name in dispatch.LANES if name != dispatch.CLAUDE_LANE))
     assert foreign_lanes == admission.FOREIGN_LANES
     foreign_profiles = tuple(
         sorted(
             (profile.lane, profile.name)
             for profile in dispatch.PROFILES.values()
-            if dispatch.LANES[profile.lane].foreign
+            if profile.lane != dispatch.CLAUDE_LANE
         )
     )
     assert tuple(sorted(admission.FOREIGN_PROFILES)) == foreign_profiles
 
 
-def test_every_seat_a_foreign_lane_accepts_has_a_bar() -> None:
-    eligible = {seat.name for seat in dispatch.SEATS.values() if seat.foreign_eligible}
-    assert set(admission.SEAT_BARS) == eligible
+def test_every_barred_seat_the_bar_names_exists_in_the_registry() -> None:
+    # The reverse containment survived #327 on purpose: the old test asserted equality
+    # against the seat-eligibility map ruling 1 deleted, so this half is re-founded on the
+    # roster alone — a bar naming a seat the dispatcher cannot dispatch is the drift this
+    # catches, and nothing about eligibility is needed to catch it.
+    assert set(admission.SEAT_BARS) <= set(dispatch.SEATS)

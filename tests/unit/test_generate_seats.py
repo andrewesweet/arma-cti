@@ -74,7 +74,7 @@ def test_every_seats_pair_is_the_first_native_profile_in_its_preference_list() -
         assert (front["model"], front["effort"]) == (profile.model, profile.effort)
 
 
-def test_the_foreign_head_of_a_preference_list_is_not_what_a_claude_seat_declares() -> None:
+def test_the_non_native_head_of_a_preference_list_is_not_what_a_claude_seat_declares() -> None:
     """#324's one judgement call, pinned.
 
     `implementer` prefers a Codex profile and then a z.ai one, and neither is a pair a
@@ -92,8 +92,8 @@ def test_the_foreign_head_of_a_preference_list_is_not_what_a_claude_seat_declare
 def test_a_seat_with_no_native_profile_refuses_rather_than_inventing_one(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    foreign_only = dispatch.SEATS["planner"]._replace(preference=("codex-sol-xhigh",))
-    monkeypatch.setitem(dispatch.SEATS, "planner", foreign_only)
+    non_native = dispatch.SEATS["planner"]._replace(preference=("codex-sol-xhigh",))
+    monkeypatch.setitem(dispatch.SEATS, "planner", non_native)
     with pytest.raises(generate_seats.SeatSurfaceError, match="none of them on `claude-native`"):
         generate_seats.native_profile("planner")
 

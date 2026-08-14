@@ -11,9 +11,10 @@ issue, proposes replacement wording, or files anything. A tool that repaired the
 was judging would be marking its own homework, and the whole value of a readiness gate is
 that a person had to think about what "done" means before a lane was spent on it.
 
-**Lane-blind.** `assess` takes a body and nothing else — no lane, no profile, no seat. A
-foreign lane meets exactly the refusal `claude-native` meets, which is ADR-0061's rule for
-every gate in this project and the one property that makes the check worth having at all.
+**Lane-blind.** `assess` takes a body and nothing else — no lane, no profile, no seat.
+Every lane meets exactly the refusal every other lane meets, which is the routing rule
+ADR-0061 set for every gate in this project and the one property that makes the check
+worth having at all.
 
 ## The three sub-checks
 

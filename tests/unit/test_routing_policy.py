@@ -2,7 +2,7 @@
 
 The table used to be the keep-on-Claude policy, every row resting on provenance. ADR-0071
 ruling 1 withdrew provenance and #326 re-founded the rows one at a time, so what these tests
-hold is no longer "seven rows all refuse a foreign route". It is a per-class claim: which
+hold is no longer "seven rows all refuse a non-exempt route". It is a per-class claim: which
 classes survive, what each one now rests on, which of them refuse a landing at all, and that
 the two classes the re-founding deleted refuse nothing.
 """
@@ -290,7 +290,7 @@ def test_class_2_orchestration_still_refuses_a_landing_on_its_own_surface() -> N
     assert (match.rule.id, match.rule.name) == (2, "orchestration")
 
 
-def test_class_3_admits_the_seat_its_own_remedy_prescribes_on_a_foreign_lane() -> None:
+def test_class_3_admits_the_seat_its_own_remedy_prescribes_on_codex() -> None:
     """The defect this row was re-founded to remove: it refused the route it appoints.
 
     ADR-0071 ruling 2 puts `codex-sol-xhigh` at the head of the `planner` seat's preferences
@@ -309,7 +309,7 @@ def test_class_3_refuses_an_unappointed_seat_on_the_claude_lane_too() -> None:
 
     ADR-0071 ruling 1. A seat-founded row has nothing to say about which provider answered,
     so exempting it by lane would have cleared any Claude seat whatever while refusing the
-    appointed foreign one — provenance wearing a capability remedy.
+    appointed Codex one — provenance wearing a capability remedy.
     """
     for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
         unappointed = routing_policy.Route(lane, profile, "retro", NOW)
@@ -330,9 +330,9 @@ ADR_ROUTE: Final = ("planner", "implementer", "review")
 # claim 4). Kept separate from `ADR_ROUTE` so the two reasons for admission stay distinct.
 ADMITTED: Final = (*ADR_ROUTE, "recon")
 
-# Which row refuses each seat class 3 does not admit, on a Claude and on a foreign lane.
+# Which row refuses each seat class 3 does not admit, on the Claude lane and on Codex.
 # Round 2's walk asserted only that *a* refusal existed, and two of its fourteen verdicts
-# were satisfied by a different row: `orchestrator` is refused by class 2 on a foreign lane,
+# were satisfied by a different row: `orchestrator` is refused by class 2 on Codex,
 # where class 2's own `seats` matches, so class 3 could have stopped refusing it there with
 # the test still green (round 3 claim 3). Naming the class makes every verdict attributable.
 REFUSING_CLASS: Final = {
@@ -352,7 +352,7 @@ def test_every_seat_is_walked_against_class_3_rather_than_the_row_being_read() -
     landing — so on an ADR issue every seat that could have finished the work was refused, on
     every lane, and ruling 4's reviewing instance could not be dispatched at all. The finding
     is not "the row names the wrong seat"; it is that nobody walked the row. So this walks it:
-    every seat in the dispatch registry, on both a Claude and a foreign lane, with the verdict
+    every seat in the dispatch registry, on the Claude lane and on Codex, with the verdict
     asserted for each rather than for the ones that came to mind.
 
     Walked through `routing_refusal` — the dispatch rung itself, reading this branch's policy
@@ -373,7 +373,7 @@ def test_every_seat_is_walked_against_class_3_rather_than_the_row_being_read() -
                 continue
             # Which row refused, not merely that one did (round 3 claim 3). Two of these
             # verdicts are class 2's, so a bare boolean would have gone on passing if
-            # class 3 stopped refusing `orchestrator` on a foreign lane.
+            # class 3 stopped refusing `orchestrator` on Codex.
             expected = REFUSING_CLASS[lane, seat]
             assert any(line.startswith(f"routing_class={expected}:") for line in refusal.found), (
                 f"{lane}/{seat}: {refusal.found}"

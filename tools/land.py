@@ -57,8 +57,8 @@ exit code.
                             nothing here resolves or aborts on your behalf
     conflict_markers        the rebased tree carries git conflict markers, named
                             by file and line (#231, ADR-0062)
-    routing_policy_gate     a foreign lane's real rebased diff touches a class
-                            the trusted policy keeps on Claude (#266)
+    routing_policy_gate     a non-exempt lane's real rebased diff touches a
+                            class the trusted policy keeps on Claude (#266)
     routing_policy_gate_unreadable / routing_policy_diff_unreadable
                             the enforcing routing check could not run; fail closed
     gate_red                `just fast` failed; its own output is above
@@ -378,7 +378,7 @@ def classify_routing(
             "routing_policy_gate_unreadable",
             ("check=enforcing actual diff", f"policy={read.error}"),
             "The trusted routing policy could not be read, so the routing gate cannot clear "
-            "this foreign landing. Repair the policy on Claude and run `just land` "
+            "this landing. Repair the policy on Claude and run `just land` "
             f"again.{PUSHED_CLAUSE}",
         )
     if paths is None:
@@ -615,9 +615,9 @@ def _run(argv: list[str], cwd: Path) -> tuple[int | None, str]:
 def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, ...] | None, str]:
     """Read the trusted policy from fetched origin/main and this branch's own paths.
 
-    Reading the worktree's copy would let a foreign diff weaken the policy that judges
-    itself. `land` has already fetched at this point, so `origin/main` is both current and
-    outside the candidate diff.
+    Reading the worktree's copy would let the very diff under judgement weaken the
+    policy that judges it. `land` has already fetched at this point, so `origin/main` is
+    both current and outside the candidate diff.
 
     **Three dots, and the third is load-bearing.** `git diff A..B` is a synonym for
     `git diff A B` — a symmetric tree comparison, not a commit range — so on a fetched
@@ -627,8 +627,8 @@ def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, .
     caller would refuse an ungated diff for a class a sibling brought. Dropping, which is
     the fail-open half and the one worth naming — a tree comparison lists only paths where
     the two trees *differ*, so where a sibling has already landed a patch-identical change
-    the path is in neither difference and falls out of the set entirely, and a foreign
-    landing of a gated class would have been told `would_pass`.
+    the path is in neither difference and falls out of the set entirely, and a
+    non-exempt landing of a gated class would have been told `would_pass`.
     `origin/main...HEAD` is merge-base relative, so this answers with the branch's own
     paths wherever it is called from. The enforcing rung's answer was previously right by
     accident of ordering; this makes it right by construction, so moving the call cannot
@@ -1140,7 +1140,7 @@ def main(argv: list[str] | None = None) -> int:
     # A landing's refusal is an error and belongs on stderr. Since #344 gave a dry run a
     # verdict its exit is non-zero exactly when it has the most to say, so routing on the
     # code alone emptied stdout in the one case #344 was filed about, leaving a
-    # foreign-lane seat with a bare `recipe … failed` banner that this project trains
+    # seat on another lane with a bare `recipe … failed` banner that this project trains
     # agents to read as a harness failure (round 2 claim 3).
     #
     # The condition is `--dry-run` and not "is a plan", so **everything** a dry run prints

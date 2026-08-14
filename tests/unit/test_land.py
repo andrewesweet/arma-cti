@@ -306,13 +306,13 @@ def test_an_unreadable_diff_refuses_instead_of_passing() -> None:
     assert "#41" in _text(refusal)
 
 
-def test_an_unreadable_policy_refuses_a_foreign_landing() -> None:
+def test_an_unreadable_policy_refuses_a_non_exempt_landing() -> None:
     read = routing_policy.ReadResult(None, "policy is absent")
     refusal = land.classify_routing(read, ("tools/worker.py",), "zai")
     assert _kind(refusal) == "routing_policy_gate_unreadable"
 
 
-def test_native_landings_do_not_need_the_foreign_routing_gate() -> None:
+def test_native_landings_do_not_need_the_non_exempt_routing_gate() -> None:
     read = routing_policy.ReadResult(None, "policy is absent")
     assert land.classify_routing(read, None, "claude-native") is None
 
@@ -636,7 +636,7 @@ def test_a_routed_class_diff_refuses_before_the_normal_gate_or_push(
     assert _tip(origin) == before
 
 
-def test_a_foreign_diff_outside_every_class_lands_unimpeded(
+def test_a_non_exempt_diff_outside_every_class_lands_unimpeded(
     repo: tuple[Path, Path, Path],
 ) -> None:
     origin, main, here = repo
@@ -839,7 +839,7 @@ _CAVEAT = (
 )
 
 
-def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
+def test_a_dry_run_on_a_gated_surface_from_a_non_exempt_lane_does_not_plan_to_push(
     repo: tuple[Path, Path, Path],
 ) -> None:
     """#344: the dry run consulted no routing rung, so it planned a push the gate refuses.
@@ -880,7 +880,7 @@ def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
     assert _tip(origin) == before
 
 
-def test_a_dry_run_on_an_ungated_surface_from_a_foreign_lane_still_plans_the_push(
+def test_a_dry_run_on_an_ungated_surface_from_a_non_exempt_lane_still_plans_the_push(
     repo: tuple[Path, Path, Path],
 ) -> None:
     """The other half: the rung ran and cleared, and the plan says which it was."""
@@ -999,7 +999,7 @@ def test_a_refusing_dry_run_still_prints_its_plan_on_stdout(
     """`main` routes on the exit code, and a refusing dry run's code is now non-zero.
 
     Left alone that emptied stdout exactly when the plan had the most to say, so the
-    foreign-lane seat #344 was filed for got a bare `recipe … failed` banner — the shape
+    seat on another lane #344 was filed for got a bare `recipe … failed` banner — the shape
     this project trains agents to read as a harness failure rather than a verdict
     (review round 2 claim 3).
     """

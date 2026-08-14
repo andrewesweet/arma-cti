@@ -640,8 +640,8 @@ def advisory_match(policy: Policy, body: str, route: Route) -> Match | None:
 def classify_issue(policy: Policy, body: str, seat: str) -> Match | None:
     """Return the routing class an issue's declaration puts it in, lane-blind (#323).
 
-    `advisory_match` answers the enforcement question — may this *foreign* route take
-    this class — and so returns `None` on the Claude lane before it looks. The
+    `advisory_match` answers the enforcement question — may this *non-exempt* route
+    take this class — and so returns `None` on the Claude lane before it looks. The
     observatory asks a different question: which class an issue belongs to, regardless of
     the lane that took it, so a comparison of profiles is not silently a comparison of
     the router. That needs the same `issue_match` walked without the lane gate.

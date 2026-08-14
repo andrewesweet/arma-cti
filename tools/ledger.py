@@ -306,8 +306,8 @@ ATTRIBUTION_NOTE: Final = (
     "dispatch_only: the orchestrator's own Claude turns — composing the briefing, reading "
     "the report, quoting the verdict — share their parent's resource block, carry no "
     "cti.dispatch_id and so reach no row (#227). Every row is therefore a known "
-    "under-attribution and never a complete one; on a foreign lane that missing term is "
-    "precisely the one that decides whether routing off Claude saved anything"
+    "under-attribution and never a complete one; on a non-Claude lane that missing term "
+    "is precisely the one that decides whether routing off Claude saved anything"
 )
 
 
@@ -724,10 +724,10 @@ def cap_fraction(lane: str | None, usage: Usage) -> CapFraction:
     """Price one dispatch in its pool's currency: percentage points of a window cap.
 
     The pool comes from the lane, never from what the records happen to contain, because
-    the counters on a foreign lane's row are that provider's tokens and dividing them by
-    a Claude calibration would charge the wrong pool. A lane with no pool, and a pool with
-    no measured estimator, are both typed rather than defaulted — the third of #220's
-    prohibitions is that a foreign-lane dispatch must not be booked a Claude cost of zero
+    the counters on a non-Claude lane's row are that provider's tokens and dividing them
+    by a Claude calibration would charge the wrong pool. A lane with no pool, and a pool
+    with no measured estimator, are both typed rather than defaulted — the third of #220's
+    prohibitions is that a non-Claude dispatch must not be booked a Claude cost of zero
     by construction, and a zero is exactly what a defaulted estimator would produce.
 
     The observed half is empty and stays empty here. The meter is a status-line spool
@@ -977,8 +977,9 @@ def landed(
     )
 
 
-# ADR-0061 Decision 3 admits `review` to a foreign lane precisely because its output is
-# claims, which land nothing on their own, and `recon` is read-only by construction. For
+# A review seat's output is claims, which land nothing on their own — the reason
+# ADR-0071 ruling 2 gives it a preference list at all — and `recon` is read-only by
+# construction. For
 # those two seats `landed` is not a weak answer but a category error, so the row says the
 # seat lands nothing and names no commit at all (#245). A seat this table does not know
 # is assumed to land: the view reads what the record carries and does not invent a claim

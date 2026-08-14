@@ -212,8 +212,9 @@ def test_the_7bc3f72_case_replayed_audits_outside_window(tmp_path: Path) -> None
 def test_the_real_case_s_review_seat_leaves_the_window_unbounded(tmp_path: Path) -> None:
     """The real `d-20260805-221743-8957c3` is a review seat, and review lands nothing.
 
-    ADR-0061 Decision 3 admits `review` to a foreign lane because its output is claims, so
-    bounding a landing by its window is a category error rather than a weak answer (#245).
+    A review seat's output is claims — the reason ADR-0071 ruling 2 gives it a preference
+    list at all — so bounding a landing by its window is a category error rather than a
+    weak answer (#245).
     An issue whose only dispatch is a review seat therefore has no window at all.
     """
     repo = tmp_path / "repo"

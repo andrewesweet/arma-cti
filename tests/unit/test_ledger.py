@@ -26,7 +26,7 @@ a record carrying prompt text and asserts no byte of it reaches `ledger.json`.
 **Its spend column is fraction-of-cap, and every way that column could lie is staged.**
 The list-price figure is anti-correlated with plan cost by three orders of magnitude
 (#218), so the tests assert on what the row must *not* say as much as on the arithmetic:
-a foreign lane is never booked a Claude cost of zero, an unknown lane is never defaulted
+a non-Claude lane is never booked a Claude cost of zero, an unknown lane is never defaulted
 onto Claude, the meter's absent half is `null` and never `0.0`, and no key called
 `cost_usd` survives anywhere in the row.
 """
@@ -191,7 +191,7 @@ def stage_record(
 ) -> Path:
     """Lay down a dispatch record the way `just dispatch` leaves one.
 
-    Any further keyword overrides a field of the plan — `lane="zai"` for a foreign one.
+    Any further keyword overrides a field of the plan — `lane="zai"` for a z.ai one.
     """
     record = root / dispatch_id
     record.mkdir(parents=True, exist_ok=True)
@@ -346,7 +346,7 @@ def test_another_dispatch_s_records_in_the_same_file_are_not_read() -> None:
 # ADR-0061 Decision 1 optimises Claude spend, and #220 settles what that number is:
 # percentage points of the binding plan window, estimated from output tokens over a
 # measured constant. Every test below is arranged so that one way of getting that wrong —
-# ranking on list price, defaulting a foreign lane to zero, reporting an estimator nobody
+# ranking on list price, defaulting a non-Claude lane to zero, reporting an estimator nobody
 # can check, or reading a silent meter as free — produces a red rather than a plausible
 # number.
 
@@ -391,7 +391,7 @@ def test_both_halves_are_recorded_per_window_and_the_meter_half_is_absent_not_ze
     assert "quota feed" in document["observed_reason"]
 
 
-def test_a_foreign_lane_is_priced_against_its_own_pool_and_never_claude_at_zero() -> None:
+def test_a_non_claude_lane_is_priced_against_its_own_pool_and_never_claude_at_zero() -> None:
     # The counters on a z.ai row are z.ai's tokens. Dividing them by a Claude calibration
     # would charge the wrong pool; booking the row a Claude cost of zero would make
     # routing work off Claude look free by construction. Neither happens: the pool is
@@ -1013,7 +1013,7 @@ def test_no_row_calls_anything_cost_usd_and_the_summary_line_carries_both_halves
     assert "849" not in summary
 
 
-def test_a_foreign_lanes_row_takes_its_pool_from_the_plan_and_not_from_the_counters(
+def test_a_non_claude_lanes_row_takes_its_pool_from_the_plan_and_not_from_the_counters(
     tmp_path: Path,
 ) -> None:
     # The counters look identical whichever lane emitted them — the z.ai lane runs the
