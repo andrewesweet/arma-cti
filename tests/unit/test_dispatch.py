@@ -2038,12 +2038,14 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
     against either copy, which is the only property that makes a seam test about *the seam*
     rather than about which policy it found. Class 2 was the arrangement until #327's second
     round re-founded it, and the durable reason it stays former is not that some seat of it
-    clears — under one vintage or another a different seat always has — but that class 2 is
-    the row routing issues keep re-founding (#326 re-founded it, #327 has re-founded it
-    twice more), so a pair riding it rides the next change. The reason lives here on the
+    clears — across the two vintages #327 itself has written, the founding and the widening,
+    some seat always has, though before the founding the row was a lane carve-out and no
+    seat of it cleared off Claude at all — but that class 2 is
+    the row routing issues keep re-founding (#326 re-founded it; #327 founded it anew and
+    widened it), so a pair riding it rides the next change. The reason lives here on the
     record rather than in a commit message, which is class 3's own remedy's rule
     (`config/dispatch-routing-policy.json`), so a successor who wants the old arrangement
-    back meets why it left (review round 3, claim 5).
+    back meets why it left (#327 review round 3, claim 5).
     """
     done = run_seam(
         [
@@ -2092,12 +2094,12 @@ def test_the_cleared_dispatcher_is_told_what_the_clear_read_did_not_check() -> N
 
 
 def test_an_excepted_route_is_told_it_was_excepted_rather_than_cleared(tmp_path: Path) -> None:
-    """Round 3 claim 2: `advisory_match` returns `None` for two different facts.
+    """#326 review round 3, claim 2: `advisory_match` returns `None` for two different facts.
 
     "No row matched" and "a row matched and an exception lifted it" both reached this rung as
     `routing=clear`, which reads as "no class applies to this route". The truth in the second
     case is that a class applies and a standing human allowance lifted it — the same
-    "exempted is not cleared" distinction the landing rung was fixed for in round 2 claim 6.
+    "exempted is not cleared" distinction the landing rung was fixed for in #326 round 2, claim 6.
     Planted, because `route_exceptions` is empty today and the shape is fixed by rule rather
     than by nobody having written that row yet: the exception below is exactly the class-3
     route exception `origin/main` carried until this branch emptied the list.
@@ -2129,11 +2131,12 @@ def test_an_excepted_route_is_told_it_was_excepted_rather_than_cleared(tmp_path:
 
 
 def test_the_unreadable_policy_fallback_on_claude_says_it_is_a_hole(tmp_path: Path) -> None:
-    """Round 2 claim 7: the bootstrap still holds, and now it stops being silent.
+    """#326 review round 2, claim 7: the bootstrap still holds, and now it stops being silent.
 
     The Claude lane dispatches on an unreadable policy so the policy can be repaired on
     Claude. Before #326 that cost nothing — Claude was exempt from every row anyway — but
-    class 3 is lane-blind, so the fallback silently reverses the one row made to bind Claude.
+    classes 2 and 3 are lane-blind, so the fallback silently reverses both rows made to bind
+    Claude.
     """
     args = _routing_args(lane="claude-native")
     lines = dispatch.routing_clearance(args, tmp_path, dispatch.Readiness(None, body=""), OFF_PEAK)

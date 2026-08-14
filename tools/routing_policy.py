@@ -45,7 +45,7 @@ row's `seats: ["orchestrator"]` read as scoping and never was, so the lane-selec
 it carried refused every seat on every non-Claude lane for an orchestration declaration —
 a second provenance refusal the landing's prose had counted away — and `required_seats`
 scoped it to the one seat that performs the act. The third round widened that appointment to
-the whole route (review round 3 claim 1): a list of one refused `review`, the seat ruling 4
+the whole route (#327 review round 3, claim 1): a list of one refused `review`, the seat ruling 4
 mandates, `implementer`, the seat ruling 2 leaves to land, and `recon`, the read-only seat —
 the same deadlock the paragraph below rules on, one paragraph too late, caught by walking
 the row rather than reading it.
@@ -53,7 +53,7 @@ the row rather than reading it.
 **A row admits the whole route, not its first step.** Round 1 admitted `planner` alone, and
 the planner is the seat ruling 2 defines as neither gating nor landing — so no route could
 author *and* land an ADR, and ruling 4's reviewing instance could not be dispatched at all
-(review round 2 claim 1). Class 3 therefore admits `planner`, `implementer` and `review`
+(#326 review round 2, claim 1). Class 3 therefore admits `planner`, `implementer` and `review`
 together, and `recon` beside them. Class 2 has admitted the same shape plus its own seat
 since #327's third round: `orchestrator` performs the act, `planner`, `implementer` and
 `review` are the route, `recon` rides the same cannot-perform ground, and `retro` and
@@ -65,8 +65,8 @@ some landed ruling requires for that work to be finished, **and every seat that 
 perform the act the row is about at all**. Applying the first half as a necessity rule is
 what refused `recon` — a read-only sweep of prior ADRs, from a seat that authors, lands and
 reviews nothing — and a bar on a seat that cannot do the thing defeats no purpose of the
-class while routing cheap reconnaissance to a seat that gates and lands (review round 3
-claim 4). A row is checked by walking every seat in `tools/dispatch.py`'s `SEATS` against it
+class while routing cheap reconnaissance to a seat that gates and lands (#326 review round
+3, claim 4). A row is checked by walking every seat in `tools/dispatch.py`'s `SEATS` against it
 rather than by reading it.
 A seat-bound row is
 therefore enforceable only where a seat exists, which is dispatch: `just land` has no seat
@@ -74,7 +74,7 @@ and never will, so such a row carries no `landing_path_prefixes` and `parse_poli
 one that does, rather than letting the landing rung silently re-derive the lane bar.
 
 **The document carries the pre-#326 one beside it for one transition window, and that is
-review round 3's claim 1.** A parser is imported by a *running process*: `just land` in an
+#326 review round 3's claim 1.** A parser is imported by a *running process*: `just land` in an
 in-flight worktree reads the policy out of fetched `origin/main` with whatever
 `tools/routing_policy.py` that process started with, and the rebase brings the new module
 into the tree but not into the process. The pre-#326 parser demanded the ordered table
@@ -640,7 +640,7 @@ def _seat_evidence(rule: Rule, match: Match, route: Route) -> Match:
 
 
 def advisory_read(policy: Policy, body: str, route: Route) -> Advisory:
-    """Walk the declaration once and tell a refusal apart from a lifted match (round 3 claim 2).
+    """Walk the declaration once, telling a refusal from a lifted match (#326 round 3, claim 2).
 
     A seat-bound row is skipped for the seats it appoints and refuses every other, which is
     where "route ADR authorship to the `planner` seat" stops being advice in a remedy string

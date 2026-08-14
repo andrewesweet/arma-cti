@@ -802,7 +802,7 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
         #
         # The routing and corpus rungs are named here as skipped, in the same words the
         # dry run's `_nothing_to_push_plan` uses, because this is the run that prints
-        # `ok=landed` (review round 3 claim 8). The exit-2 refusal it follows carried a
+        # `ok=landed` (#326 review round 3 claim 8). The exit-2 refusal it follows carried a
         # routing verdict; without these lines the one output a reader quotes into an
         # issue as the successful landing is the one output with no routing line at all,
         # and an omission reads as a clearance for exactly the reason `not_checked=`

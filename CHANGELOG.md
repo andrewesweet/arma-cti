@@ -111,13 +111,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   non-Claude lane for an issue declaring `Routing-class: orchestration` and cleared the same
   declaration on Claude — because its `seats: ["orchestrator"]` reads as scoping and `seats`
   is one evidence term, never a filter (#366 files the semantic; the fix here does not wait
-  on it). Class 2 is re-founded on its seat: it now refuses an orchestration declaration
-  taken by any seat but `orchestrator` **on every lane including Claude's**, admits the
-  orchestrator seat itself, and — being seat-bound — carries no landing prefixes, so an
-  orchestration-docs diff is no longer refused at `just land` off Claude; the keep-on-Claude
-  half of the rule is the seat table's carve-out, unchanged. A test now walks the table and
-  pins class 6 as the one lane-selected refusing row, so the count is measured rather than
-  asserted in prose. Class 6's bridge is also described whole for the first time — its issue
+  on it). Class 2 was re-founded on its seat: from that landing it refused an orchestration
+  declaration taken by any seat but `orchestrator` **on every lane including Claude's**,
+  admitted the orchestrator seat itself, and — being seat-bound — carried no landing
+  prefixes, so an orchestration-docs diff was no longer refused at `just land` off Claude;
+  the keep-on-Claude half of the rule was the seat table's carve-out, unchanged. A test
+  walked the table and pinned class 6 as the one lane-selected refusing row, so the count
+  was measured rather than asserted in prose. Class 6's bridge is also described whole for the first time — its issue
   half refuses a dispatch naming the gates, its landing half refuses a non-Claude `just
   land` touching them — #331 is named in the remedy a refused reader actually sees, the
   withdrawn word is retired from the live remedies that print on every refusal (the frozen
@@ -137,11 +137,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and refuses `retro` and `fable` and nothing else, a thinness named in the row's remedy
   because whether the row should be widened no further but deleted outright is the human's.
   The round also walks the row: a test now exercises every seat on two lanes through the
-  dispatch rung itself, which is the walk that would have caught round 2's appointment (and
-  did, in review); the lane-selected-row count is measured by differencing the refusing set
-  across lanes rather than by re-deriving it from field shapes; and the counting prose that
-  still said one row binds the Claude lane — in `just dispatch`'s clearance docstring and in
-  this file's own re-founding entry — now says two.
+  dispatch rung itself; the lane-selected-row count is measured by differencing the refusing
+  set across lanes rather than by re-deriving it from field shapes; and the counting prose
+  that still said one row binds the Claude lane — in `just dispatch`'s clearance docstring
+  and in this file's own re-founding entry — now says two.
+
+  **Round 4: the walk could not red on a re-narrowing, and a pin now can.** Round 3
+  credited its walk with an ability it never had — the walk's expectations are literals in
+  the same file as the row, so a round that narrows the row and moves the literals together
+  stays green — so the claim, made here and in the walk test's own docstring, that the walk
+  "would have caught round 2's appointment" is corrected: review caught it, and what reds
+  on such a round now is a structural pin asserting the route against the seat registry and
+  the two rulings the row carries, while the walk keeps the job it is fit for — making a
+  re-founding loud in the diff. The class 2 remedy now flags, as class 3's already did,
+  that `AGENTS.md` still sends "process docs" — among them `docs/agents/orchestration.md` —
+  to a `fable` seat the row refuses: a stale sentence rather than a wrong row, the overlap
+  #329 and #330 own. Review citations across the routing surface now name their issue and,
+  where known, the reviewing dispatch, because #326 and #327 each had a "review round 3"
+  and the bare ordinals collided; the lane-selected row count is described as the symmetric
+  difference that measures it; and the measurement test's `noqa` is bare with its
+  justification above the line, where the length gate can still read it.
 
 ### Added
 

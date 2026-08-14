@@ -320,7 +320,7 @@ class Profile(NamedTuple):
 # claim 6): a second copy is how renaming the lane, or moving `claude_lane` in the policy,
 # would silently move only one of the places that reads it. The two routing sites below
 # take it from here; the ones that *can* consult a parsed policy prefer `policy.claude_lane`
-# and reach this only where there is no policy to ask (review round 3 claim 6).
+# and reach this only where there is no policy to ask (#326 review round 3 claim 6).
 CLAUDE_LANE: Final = "claude-native"
 
 # The registry. Adding a lane or a profile is an edit here and nowhere else, which is
@@ -1411,8 +1411,9 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
     on the same row's landing half, a non-Claude `just land` whose diff touches them.
     It is #331's — retired when that issue's never-alone exemption list lands, because
     deleting it first would leave the gates with neither rule (review round 1, claim 1).
-    Routing class 2 was a second until #327 re-founded it on its seats (review round 2,
-    claim 1; widened from the one seat to the whole route in round 3, claim 1): an
+    Routing class 2 was a second until #327 re-founded it on its seats (#327 review round
+    2, claim 1; widened from the one seat to the whole route in #327 review round 3, claim
+    1): an
     orchestration declaration now refuses on seating grounds — any seat outside its route,
     every lane — and no longer on a lane. The pair block after the carve-out is a
     capability ceiling, not a provenance one.
@@ -3028,14 +3029,16 @@ def routing_clearance(
     refusing no route, class 6 naming a minority of the gates, or the landing rung not
     re-checking any of it.
 
-    **The unreadable-policy fallback is stated rather than silent (round 2 claim 7).** The
+    **The unreadable-policy fallback is stated rather than silent (#326 round 2, claim 7).** The
     Claude lane dispatches on an unreadable policy so the policy can be repaired on Claude,
     and before #326 that cost nothing, because Claude was exempt from every row anyway.
     Classes 2 and 3 are now lane-blind, so the fallback silently reverses both rows made to
-    bind Claude (#327 review round 3, claim 3: two rows escape through it, not one). The
+    bind Claude (#327 review round 3, claim 3: two rows escape through it, not one — the
+    label names the issue, as every citation here now does, because #326's own review
+    round 3 used the same ordinals for different findings). The
     bootstrap still holds; what changes is that the hole says so.
 
-    **An excepted route is told so, and is not told it is clear (round 3 claim 2).** This
+    **An excepted route is told so, and is not told it is clear (#326 round 3, claim 2).** This
     function computes no match of its own — it re-reads the walk `routing_refusal` already
     made, through `advisory_read`, which returns the lifted match as a third value. Without
     it, a route matching class 3 and lifted by a standing human allowance read

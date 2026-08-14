@@ -139,8 +139,8 @@ def pre_326_read(document: dict[str, Any]) -> list[dict[str, Any]]:
     `_rule` indexes without a default.
 
     It exists for one measurement: the older parser is the one an in-flight worktree's running
-    `just land` imported, and it is handed this branch's policy the moment this lands (round 3
-    claim 1). Deleted with the frozen half of the document it reads.
+    `just land` imported, and it is handed this branch's policy the moment this lands (#326
+    review round 3, claim 1). Deleted with the frozen half of the document it reads.
     """
     classes = document["classes"]
     assert isinstance(classes, list), "classes must be a list"
@@ -161,7 +161,7 @@ def pre_326_read(document: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def test_the_landed_policy_is_still_readable_by_a_parser_that_predates_this_branch() -> None:
-    """Round 3 claim 1, the direction round 2 did not check.
+    """#326 review round 3, claim 1: the direction round 2 did not check.
 
     A parser is imported by a running process. `just land` in a worktree branched before this
     landing reads the policy out of fetched `origin/main` with the module that process started
@@ -287,9 +287,31 @@ def test_the_file_says_which_half_is_frozen_and_when_it_goes() -> None:
 
 # --- one landing under each surviving class ------------------------------------------------
 
+# The seats an orchestration issue's route can reach, and why each is admitted.
+# `orchestrator` performs the act, `planner` plans the work, `implementer` lands it (ruling 2
+# — the planner neither gates nor lands), `review` reviews that landing (ruling 4 — no change
+# lands alone); `recon` is the read-only seat, admitted beside the route on #326 review round
+# 3 claim 4's ground exactly as class 3 admits it. `retro` and `fable` are the seats left
+# outside. Declared above the tests that consume them, as class 3's equivalents are, so a
+# reader meets the definition before the pin (#327 re-review of round 3, claim 9).
+ORCHESTRATION_ROUTE: Final = ("orchestrator", "planner", "implementer", "review")
+ORCHESTRATION_ADMITTED: Final = (*ORCHESTRATION_ROUTE, "recon")
+
+# Which row refuses each seat class 2 does not admit, on the Claude lane and on Codex.
+# Round 2's test exercised `planner` on two lanes and `orchestrator` on one, and that
+# absence is what let a row refusing `review` ship — nothing asserted which seats the row
+# refuses, only that `planner` was one of them (#327 review round 3, claim 2). Every verdict
+# here is class 2's own: the body matches no other row.
+ORCHESTRATION_REFUSING_CLASS: Final = {
+    ("claude-native", "retro"): 2,
+    ("codex", "retro"): 2,
+    ("claude-native", "fable"): 2,
+    ("codex", "fable"): 2,
+}
+
 
 def test_class_2_is_founded_on_its_route_rather_than_on_a_lane() -> None:
-    """#327 review round 2 claim 1 founded the row; round 3 claim 1 widened the appointment.
+    """#327 review round 2 claim 1 founded the row; its round 3 claim 1 widened the appointment.
 
     The row's `seats: ["orchestrator"]` read as scoping and never was — `seats` is one
     evidence term, never a filter (#366) — so the lane-selected refusal it carried refused
@@ -338,37 +360,23 @@ def test_class_2_carries_no_landing_half_because_a_landing_has_no_seat() -> None
     assert landing("docs/agents/orchestration.md", "docs/orchestration-design.md") is None
 
 
-# The seats an orchestration issue's route can reach, and why each is admitted.
-# `orchestrator` performs the act, `planner` plans the work, `implementer` lands it (ruling 2
-# — the planner neither gates nor lands), `review` reviews that landing (ruling 4 — no change
-# lands alone); `recon` is the read-only seat, admitted beside the route on round 3 claim 4's
-# ground exactly as class 3 admits it. `retro` and `fable` are the seats left outside.
-ORCHESTRATION_ROUTE: Final = ("orchestrator", "planner", "implementer", "review")
-ORCHESTRATION_ADMITTED: Final = (*ORCHESTRATION_ROUTE, "recon")
-
-# Which row refuses each seat class 2 does not admit, on the Claude lane and on Codex.
-# Round 2's test exercised `planner` on two lanes and `orchestrator` on one, and that
-# absence is what let a row refusing `review` ship — nothing asserted which seats the row
-# refuses, only that `planner` was one of them (review round 3, claim 2). Every verdict
-# here is class 2's own: the body matches no other row.
-ORCHESTRATION_REFUSING_CLASS: Final = {
-    ("claude-native", "retro"): 2,
-    ("codex", "retro"): 2,
-    ("claude-native", "fable"): 2,
-    ("codex", "fable"): 2,
-}
-
-
 def test_every_seat_is_walked_against_class_2_rather_than_the_row_being_read() -> None:
-    """Round 3 claim 1: the same walk that caught class 3's deadlock, on the class that repeated it.
+    """Every seat's verdict against the row, through the rung that would refuse the work.
 
-    Round 2 appointed `orchestrator` alone, and reading the row missed what walking it shows
-    — no seat that could plan, land or review an orchestration issue was dispatchable, so
-    #331 (filed `Routing-class: orchestration`) could reach only the seat that must not
-    review its own landing. The module now says a row is checked by walking every seat
-    against it; this is that walk for class 2, through `routing_refusal` — the dispatch
-    rung itself, reading this branch's policy off `REPO` — so what is exercised is the
-    thing that would have refused the work (round 3, claim 2).
+    Round 2 appointed `orchestrator` alone, and reading the row missed what walking it
+    shows — no seat that could plan, land or review an orchestration issue was
+    dispatchable, so #331 (filed `Routing-class: orchestration`) could reach only the seat
+    that must not review its own landing. This is the walk for class 2, through
+    `routing_refusal` — the dispatch rung itself, reading this branch's policy off `REPO` —
+    so what is exercised is the thing that would have refused the work (#327 review round
+    3, claim 2).
+
+    What the walk cannot do is red on a re-narrowing (#327 re-review of round 3, claim 1):
+    its expectation is the `ORCHESTRATION_ADMITTED` literal above, which the founding test
+    pins to the row itself, so row and expectation move together — a future round that
+    reverts `required_seats` to `["orchestrator"]` and updates the literals stays green
+    here. The walk makes such a round loud in the diff; the test below this one is what
+    makes it red in the gate.
     """
     body = "Routing-class: orchestration — the standing loop's next seat."
     for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
@@ -385,21 +393,71 @@ def test_every_seat_is_walked_against_class_2_rather_than_the_row_being_read() -
             )
 
 
+def test_the_class_2_admitted_set_is_structural_not_pinned_to_the_row() -> None:
+    """The pin the walk cannot be (#327 re-review of round 3, claim 1).
+
+    Class 3 has had this shape since its own re-founding: the admitted set is asserted
+    structurally — every seat of the route exists in the registry, and the seats that land
+    and review the work are inside the admitted set — rather than against a literal that
+    another test pins to the row, so a re-narrowing reds here instead of moving the
+    expectation with the row. Class 2 repeated class 3's deadlock twice in this one issue
+    (round 1 on class 3, round 2 on class 2); this is the assertion that cannot miss a
+    third.
+    """
+    orchestration = next(rule for rule in policy().rules if rule.id == 2)
+    assert orchestration.required_seats == ORCHESTRATION_ADMITTED
+    assert set(ORCHESTRATION_ROUTE) <= set(dispatch().SEATS)
+    assert {"implementer", "review"} <= set(orchestration.required_seats)
+    assert "neither gates nor lands" in orchestration.remedy
+    assert "no change lands alone" in orchestration.remedy
+
+
+def test_the_conflict_with_the_model_roles_paragraph_is_flagged_in_the_class_2_row() -> None:
+    """#327 re-review of round 3, claim 3: `AGENTS.md` sends process docs to a refused seat.
+
+    `docs/agents/orchestration.md` — the orchestration seat's operating rules, by
+    `AGENTS.md`'s own Orchestration seat section — is a process doc, which is the very
+    landing prefix the row's frozen pre-#326 half carried, and the `fable` seat its Model
+    roles paragraph routes process docs to is one of the two seats this row refuses. A
+    reader following `AGENTS.md` before dispatching meets a refusal whose remedy now names
+    the instruction it contradicts, as class 3's row already does for its own conflict.
+    """
+    orchestration = next(rule for rule in policy().rules if rule.id == 2)
+    assert "AGENTS.md" in orchestration.remedy
+    assert "#329" in orchestration.remedy
+    # The conflict is live, not remembered: the instruction is in the file, and the route it
+    # prescribes is refused.
+    roles = (REPO / "AGENTS.md").read_text(encoding="utf-8")
+    assert "process docs" in roles
+    assert "docs/agents/orchestration.md" in roles
+    fable_seat = routing_policy.Route("claude-native", "fable-high", "fable", NOW)
+    assert routing_policy.advisory_match(policy(), "Routing-class: orchestration.", fable_seat)
+
+
 def test_the_one_lane_selected_refusing_row_is_the_class_6_bridge() -> None:
     """Acceptance criteria 1 and 2, measured rather than asserted in prose.
 
     The round-1 landing claimed exactly one provenance refusal survived outside the seat
-    table and there were two, because nothing walked the table (review round 2, claim 1).
-    This is that walk, and the lane-selected half is measured **by behaviour**: the rows
-    `_refusing_rules` yields off Claude minus the rows it yields on it, which is the
-    exemption itself, not a re-derivation from field shapes — a row that gained the Claude
-    exemption by any field other than an empty `required_seats` would be lane-selected in
-    behaviour and invisible to a field-shape walk (review round 3, claim 6). The seat
-    table's own half lives in `test_dispatch.py`, pinned on the `claude_only` column.
+    table and there were two, because nothing walked the table (#327 review round 2, claim
+    1). This is that walk, and the lane-selected half is measured **by behaviour**: the
+    symmetric difference of the rows `_refusing_rules` yields off Claude and on it, which
+    is the exemption itself, not a re-derivation from field shapes — a row that gained the
+    Claude exemption by any field other than an empty `required_seats` would be
+    lane-selected in behaviour and invisible to a field-shape walk, and the difference is
+    symmetric so the row that refuses only the Claude lane is caught too, not just the one
+    that clears it (#327 re-review of round 3 `d-20260814-160910-42c68f`, claims 5 and 6).
+    The seat table's own half lives in `test_dispatch.py`, pinned on the `claude_only`
+    column.
     """
-    on_claude = routing_policy._refusing_rules(policy(), "claude-native")  # noqa: SLF001 — claim 6: measuring the exemption means calling the predicate that grants it, not a public re-derivation
-    off_claude = routing_policy._refusing_rules(policy(), "zai")  # noqa: SLF001 — same
-    lane_selected = [rule for rule in off_claude if rule not in on_claude]
+    # The noqa justification (re-review of round 3, claim 6): measuring the exemption means
+    # calling the predicate that grants it, not a public re-derivation. The directives stay
+    # bare so ruff's E501 exemption for noqa-carrying lines cannot also silence the length
+    # gate — a justification on the line itself is suppressed twice and names one rule.
+    on_claude = routing_policy._refusing_rules(policy(), "claude-native")  # noqa: SLF001
+    off_claude = routing_policy._refusing_rules(policy(), "zai")  # noqa: SLF001
+    lane_selected = [
+        rule for rule in off_claude + on_claude if rule not in off_claude or rule not in on_claude
+    ]
     assert [(rule.id, rule.name) for rule in lane_selected] == [(6, "gates_themselves")]
     # And the bridge really is lane-selected: it clears the Claude lane on the same input.
     assert routing_policy.enforcing_match(policy(), ("tools/land.py",), "zai") is not None
@@ -442,14 +500,14 @@ def test_class_3_refuses_an_unappointed_seat_on_the_claude_lane_too() -> None:
 ADR_ROUTE: Final = ("planner", "implementer", "review")
 
 # `recon` is admitted and is not part of that route: it authors, lands and reviews nothing,
-# so refusing it bars a read-only sweep without protecting an ADR from anybody (round 3
-# claim 4). Kept separate from `ADR_ROUTE` so the two reasons for admission stay distinct.
+# so refusing it bars a read-only sweep without protecting an ADR from anybody (#326 review
+# round 3, claim 4). Kept separate from `ADR_ROUTE` so the two reasons stay distinct.
 ADMITTED: Final = (*ADR_ROUTE, "recon")
 
 # Which row refuses each seat class 3 does not admit, on the Claude lane and on Codex.
 # Round 2's walk asserted only that *a* refusal existed, and two of its fourteen verdicts
 # were satisfied by a different row, so class 3 could have stopped refusing a seat there
-# with the test still green (round 3 claim 3). Naming the class makes every verdict
+# with the test still green (#326 review round 3, claim 3). Naming the class makes every verdict
 # attributable. Since #327's second round every verdict here is class 3's own: class 2
 # used to satisfy `("codex", "orchestrator")` off its `seats` evidence alone, and being
 # founded on its seat now it appoints `orchestrator` and skips the row instead.
@@ -464,7 +522,7 @@ REFUSING_CLASS: Final = {
 
 
 def test_every_seat_is_walked_against_class_3_rather_than_the_row_being_read() -> None:
-    """Round 1's deadlock was invisible to inspection and visible to a walk (round 2 claim 1).
+    """Round 1's deadlock was visible to a walk, not to inspection (#326 review round 2, claim 1).
 
     It admitted `planner` alone — the one seat ADR-0071 ruling 2 defines as neither gating nor
     landing — so on an ADR issue every seat that could have finished the work was refused, on
@@ -489,7 +547,7 @@ def test_every_seat_is_walked_against_class_3_rather_than_the_row_being_read() -
             assert (refusal is None) == (seat in ADMITTED), f"{lane}/{seat}"
             if refusal is None:
                 continue
-            # Which row refused, not merely that one did (round 3 claim 3). Until #327's
+            # Which row refused, not that one did (#326 review round 3, claim 3). Until #327's
             # second round two of these verdicts were class 2's, satisfied off `seats`
             # evidence alone, so a bare boolean would have gone on passing if class 3
             # stopped refusing `orchestrator` on Codex; the attribution is kept now that
@@ -516,7 +574,7 @@ def test_the_admitted_set_is_a_whole_route_and_names_the_ruling_each_seat_comes_
 
 
 def test_a_seat_that_authors_nothing_is_admitted_rather_than_barred() -> None:
-    """Round 3 claim 4: the sufficiency rule was applied as a necessity rule.
+    """#326 review round 3, claim 4: the sufficiency rule was applied as a necessity rule.
 
     The class exists so an ADR is not *authored* from a seat that cannot author one. `recon`
     changes nothing — that is offered as the reason to refuse it and it is the reason to admit
@@ -537,7 +595,7 @@ def test_a_seat_that_authors_nothing_is_admitted_rather_than_barred() -> None:
 
 
 def test_the_conflict_with_the_model_roles_paragraph_is_flagged_in_the_row() -> None:
-    """Round 3 claim 5: `AGENTS.md` is the file an agent reads before dispatching.
+    """#326 review round 3, claim 5: `AGENTS.md` is the file an agent reads before dispatching.
 
     Its Model roles paragraph still sends "anything touching ADRs" to a `fable` seat, which
     this row refuses — a refusal that did not exist before this branch, against an instruction
@@ -557,7 +615,7 @@ def test_the_conflict_with_the_model_roles_paragraph_is_flagged_in_the_row() -> 
 
 
 def test_both_departures_from_the_adrs_row_are_labelled_not_only_the_first() -> None:
-    """Round 3 claim 9: one clause is a conflict, the other a synthesis, and both are named.
+    """#326 review round 3, claim 9: one clause is a conflict, the other a synthesis, both named.
 
     The re-founding table binds this class "to the planner's list rather than to Claude", and
     the row admits four seats. The synthesis from rulings 2 and 4 is what removes the deadlock
@@ -917,12 +975,12 @@ def just_check_tools(source: str | None = None) -> frozenset[str]:
     Round 1's version asserted only that each named tool appeared *somewhere* in the
     justfile, which `tools/breaker.py` satisfies through its own `just breaker` recipe while
     no `check-*` recipe runs it — so the remedy's claim that all nine are reached by
-    `just check` passed a test written to catch exactly that (review round 2 claim 4). This
+    `just check` passed a test written to catch exactly that (#326, review round 2 claim 4). This
     walks `check`'s dependency list and reads those recipes' bodies, so a tenth gate joining
     `just check` reds the assertions below instead of ageing quietly, and a gate leaving
     `just check` does too.
 
-    **The walk is transitive, and round 2's was not (review round 3 claim 7).** It read only
+    **The walk is transitive, and round 2's was not (#326, review round 3 claim 7).** It read only
     `check`'s direct dependencies, so a `check-foo` that gained a dependency of its own would
     hide that recipe's tools: they would never enter `reached`, both assertions below would
     stay green, and class 6's remedy would silently omit a gate `just check` runs.
@@ -947,7 +1005,7 @@ def just_check_tools(source: str | None = None) -> frozenset[str]:
 
 
 def test_the_derivation_follows_a_dependency_of_a_dependency() -> None:
-    """Round 3 claim 7: a tool reached only transitively was invisible to round 2's walk.
+    """#326 round 3, claim 7: a tool reached only transitively was invisible to round 2's walk.
 
     Planted rather than waited for — no `check-*` recipe has its own dependency today, so the
     fix is by rule and not by the justfile happening to be flat. The inner tool is the one a
@@ -1078,7 +1136,7 @@ def test_the_seams_own_arrangement_refuses_the_same_way_against_this_branchs_pol
     the landing being the first thing to find out (review round 1 claim 1). The arrangement
     moved off class 2 in #327's second round, and the reason it stays off is durability
     rather than any one seat clearing: class 2 is the row routing issues keep re-founding —
-    #326 re-founded it, #327 has re-founded it twice more — so a pair riding it rides the
+    #326 re-founded it; #327 founded it anew and widened it — so a pair riding it rides the
     next change, where class 6 has refused this route identically under every policy this
     window has shipped. The reason stands here rather than in a commit message, which is
     class 3's own remedy's rule.
