@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 escalation = load_tool("escalation")
+dispatch = load_tool("dispatch")
 
 TABLE = REPO / escalation.CONDITIONS_RELATIVE
 
@@ -41,7 +42,7 @@ def item(
     *,
     review_rounds: int | None = None,
     finding_above_low: bool | None = None,
-    attempts: tuple[escalation.Attempt, ...] = (),
+    attempts: tuple[escalation.Attempt, ...] | None = None,
 ) -> escalation.ItemState:
     return escalation.ItemState(
         routing_class=routing_class,
@@ -51,8 +52,17 @@ def item(
     )
 
 
+def _eval(
+    conditions: escalation.Conditions | None, context: escalation.Context
+) -> escalation.Evaluation:
+    # `evaluate` takes the read result (parsed table or the reason it failed), so a caller wraps
+    # the conditions it built directly — and passes None for the unreadable case, which is the
+    # third state under test rather than the empty emissions of nothing fired.
+    return escalation.evaluate(escalation.ReadResult(conditions), context)
+
+
 def fired(conditions: escalation.Conditions | None, context: escalation.Context) -> set[int]:
-    return {emission.condition.id for emission in escalation.evaluate(conditions, context)}
+    return {emission.condition.id for emission in _eval(conditions, context).emissions}
 
 
 # --------------------------------------------------------------------------- the data table
@@ -134,11 +144,20 @@ def test_a_partial_table_is_rejected_not_silently_skipped(text: str, message: st
         escalation.parse_conditions(text)
 
 
-def test_an_unreadable_table_emits_nothing() -> None:
-    """Escalation is advisory: the safe fall-through for a missing table is silence, not a crash."""
+def test_an_unreadable_table_is_a_third_state_not_silence() -> None:
+    """An unreadable table is not "nothing fired": it reaches the caller as unreadable (#325).
+
+    Escalation is advisory, which is the reason a failed read must be reported rather than hidden:
+    a lost emission costs nothing to surface and everything to silence, and a class-4 issue that
+    must escalate would otherwise disappear. Empty emissions are reserved for a condition that has
+    not fired, so the empty section a brief carries for that case alone is not reached here.
+    """
     context = escalation.Context(item=item(routing_class=4))
-    assert escalation.evaluate(None, context) == ()
-    assert escalation.read_conditions(REPO / "does-not-exist.json").conditions is None
+    missing = escalation.read_conditions(REPO / "does-not-exist.json")
+    assert missing.conditions is None
+    evaluation = escalation.evaluate(missing, context)
+    assert evaluation.emissions == ()
+    assert evaluation.unreadable == (missing.error,)
 
 
 # ------------------------------------------------------------------ condition 4: the #181 shape
@@ -162,7 +181,7 @@ def test_condition_one_fires_after_three_rounds_with_a_finding_above_low() -> No
         arbiter="codex-sol-high",
     )
     assert 1 in fired(live(), context)
-    (one,) = [e for e in escalation.evaluate(live(), context) if e.condition.id == 1]
+    (one,) = [e for e in _eval(live(), context).emissions if e.condition.id == 1]
     assert "review_rounds=3" in one.evidence
     assert "finding_above_low=true" in one.evidence
     assert "arbiter=codex-sol-high" in one.evidence
@@ -191,25 +210,35 @@ def test_condition_one_does_not_fire_short_of_the_wall_or_on_missing_facts(
     assert 1 not in fired(live(), context), why
 
 
-def test_condition_one_names_no_arbiter_when_the_caller_did_not_resolve_one() -> None:
-    context = escalation.Context(item=item(review_rounds=3, finding_above_low=True))
-    (one,) = [e for e in escalation.evaluate(live(), context) if e.condition.id == 1]
-    assert not any(fact.startswith("arbiter=") for fact in one.evidence)
+def test_condition_one_does_not_fire_when_the_caller_did_not_resolve_an_arbiter() -> None:
+    """The arbiter is the transfer target condition 1 names; without one it must not fire.
 
-
-def test_condition_one_would_have_fired_on_the_323_record_naming_its_arbiter() -> None:
-    """#323 reached review round 3 with a Medium still open and escalated to codex-sol-high.
-
-    The seed condition has to fire on that record at that moment and name the arbiter the
-    transfer reached — the head of the implementer seat's escalation entry. If it would not, one
-    of the two is wrong.
+    Its remedy orders a transfer to "the arbiter named in the emission", so an emission that
+    names none is unactionable. The arbiter is a fact this condition needs, and a condition that
+    lacks a fact it needs emits nothing — the same rule as a missing wall fact.
     """
+    context = escalation.Context(item=item(review_rounds=3, finding_above_low=True))
+    assert 1 not in fired(live(), context)
+    assert _eval(live(), context).emissions == ()
+
+
+def test_condition_one_fires_for_the_323_facts_and_names_the_seat_tables_arbiter() -> None:
+    """Condition 1 fires for the facts #323 exhibited and names the arbiter the seat table holds.
+
+    #323 reached review round 3 with a Medium still open and escalated to `codex-sol-high`, the
+    head of the implementer seat's escalation entry. The dispatch record does not yet carry
+    review rounds or findings (they are sequenced: ADR-0071 rulings 4 and 6, #333), so this is
+    not a replay off that record — it asserts the condition fires on the stated facts and names
+    the arbiter the seat table resolves, which is the contract a real replay will exercise
+    unchanged once the loop records the data.
+    """
+    arbiter = dispatch.IMPLEMENTER_ESCALATION[0]
     context = escalation.Context(
         item=item(review_rounds=3, finding_above_low=True),
-        arbiter="codex-sol-high",
+        arbiter=arbiter,
     )
-    (one,) = [e for e in escalation.evaluate(live(), context) if e.condition.id == 1]
-    assert "arbiter=codex-sol-high" in one.evidence
+    (one,) = [e for e in _eval(live(), context).emissions if e.condition.id == 1]
+    assert f"arbiter={arbiter}" in one.evidence
 
 
 # ----------------------------------- condition 3: a retry on a new profile at the wall
@@ -228,7 +257,7 @@ def test_condition_three_fires_when_a_retry_on_a_new_profile_reaches_the_wall() 
         )
     )
     assert 3 in fired(live(), context)
-    (three,) = [e for e in escalation.evaluate(live(), context) if e.condition.id == 3]
+    (three,) = [e for e in _eval(live(), context).emissions if e.condition.id == 3]
     assert "prior_profile=opus-low" in three.evidence
     assert "retry_profile=codex-luna-max" in three.evidence
     assert "retry_clean_base=true" in three.evidence
@@ -237,7 +266,8 @@ def test_condition_three_fires_when_a_retry_on_a_new_profile_reaches_the_wall() 
 @pytest.mark.parametrize(
     ("attempts", "why"),
     [
-        ((), "no attempts recorded"),
+        (None, "attempts not recorded"),
+        ((), "recorded zero attempts"),
         ((escalation.Attempt(profile="opus-low", clean_base=False),), "only one attempt"),
         (
             (
@@ -279,6 +309,39 @@ def test_condition_three_does_not_fire_when_the_retry_has_not_reached_the_wall()
     assert 3 not in fired(live(), context)
 
 
+def test_condition_three_does_not_fire_on_a_third_attempt() -> None:
+    """Ruling 5 names the second attempt; a third is what the remedy says not to dispatch."""
+    context = escalation.Context(
+        item=item(
+            routing_class=6,
+            review_rounds=3,
+            finding_above_low=True,
+            attempts=(
+                escalation.Attempt(profile="opus-low", clean_base=False),
+                escalation.Attempt(profile="codex-luna-max", clean_base=True),
+                escalation.Attempt(profile="zai-glm52-max", clean_base=True),
+            ),
+        )
+    )
+    assert 3 not in fired(live(), context)
+
+
+def test_condition_three_does_not_fire_when_the_clean_base_fact_is_not_recorded() -> None:
+    """A not-recorded clean base is distinct from a recorded False, and neither fires (#323)."""
+    context = escalation.Context(
+        item=item(
+            routing_class=6,
+            review_rounds=3,
+            finding_above_low=True,
+            attempts=(
+                escalation.Attempt(profile="opus-low", clean_base=False),
+                escalation.Attempt(profile="codex-luna-max", clean_base=None),
+            ),
+        )
+    )
+    assert 3 not in fired(live(), context)
+
+
 # -------------------------------------- condition 2: two consecutive items of one class at the wall
 
 
@@ -292,7 +355,7 @@ def test_condition_two_fires_for_two_consecutive_items_of_one_class_at_the_wall(
         prior=(_wall(5, review_rounds=3), _wall(5, review_rounds=4)),
     )
     assert 2 in fired(live(), context)
-    (two,) = [e for e in escalation.evaluate(live(), context) if e.condition.id == 2]
+    (two,) = [e for e in _eval(live(), context).emissions if e.condition.id == 2]
     assert "routing_class=5" in two.evidence
     assert "consecutive_items=2" in two.evidence
 
@@ -323,6 +386,23 @@ def test_condition_two_does_not_fire_short_of_two_consecutive_at_the_wall(
     assert 2 not in fired(live(), context), why
 
 
+def test_condition_two_requires_the_current_item_to_share_the_stuck_class() -> None:
+    """Ruling 5 re-plans "the next one" of the under-specified class, not an unrelated one."""
+    context = escalation.Context(
+        item=item(routing_class=6),  # a different class from the stuck pair
+        prior=(_wall(5), _wall(5)),
+    )
+    assert 2 not in fired(live(), context)
+
+
+def test_condition_two_does_not_fire_when_the_current_item_declares_no_class() -> None:
+    context = escalation.Context(
+        item=item(routing_class=None),
+        prior=(_wall(5), _wall(5)),
+    )
+    assert 2 not in fired(live(), context)
+
+
 # ----------------------------------------------------------------- co-firing and the silent default
 
 
@@ -332,19 +412,21 @@ def test_independent_conditions_co_fire_in_id_order() -> None:
         item=item(routing_class=4, review_rounds=3, finding_above_low=True),
         arbiter="codex-sol-high",
     )
-    ids = [emission.condition.id for emission in escalation.evaluate(live(), context)]
+    ids = [emission.condition.id for emission in _eval(live(), context).emissions]
     assert ids == sorted(ids)
     assert set(ids) == {1, 4}
 
 
 def test_an_item_with_no_recorded_facts_emits_nothing() -> None:
     """The brief's live state today: only routing_class is recorded, and it is absent here."""
-    assert escalation.evaluate(live(), escalation.Context(item=item())) == ()
+    evaluation = _eval(live(), escalation.Context(item=item()))
+    assert evaluation.emissions == ()  # nothing fired
+    assert evaluation.unreadable == ()  # the table read fine — this is silence, not a hidden gap
 
 
 def test_render_names_the_condition_its_facts_and_its_remedy() -> None:
     context = escalation.Context(item=item(routing_class=4))
-    (rendered,) = escalation.evaluate(live(), context)
+    (rendered,) = _eval(live(), context).emissions
     lines = escalation.render((rendered,))
     assert lines[0] == "escalation=4:plausible_wrong_fix_goes_green"
     assert "  routing_class=4" in lines

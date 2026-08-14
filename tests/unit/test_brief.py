@@ -564,7 +564,7 @@ def test_no_prior_work_adds_no_permanently_empty_section() -> None:
 
 def test_a_fired_condition_reaches_the_agent_as_an_emission_with_its_remedy() -> None:
     fired_condition = escalation.evaluate(
-        escalation.read_conditions(REPO / escalation.CONDITIONS_RELATIVE).conditions,
+        escalation.read_conditions(REPO / escalation.CONDITIONS_RELATIVE),
         escalation.Context(item=escalation.ItemState(routing_class=4)),
     )
     rendered = composed(escalation=fired_condition)
@@ -582,17 +582,41 @@ def test_no_fired_condition_emits_nothing() -> None:
 
 def test_the_live_wiring_fires_condition_four_for_a_181_shape_body() -> None:
     """routing_class is the one fact the brief can read today, so condition 4 fires for real."""
-    (emission,) = brief.escalation_for("Routing-class: #181-shape\n", "implementer", REPO)
+    (emission,) = brief.escalation_for("Routing-class: #181-shape\n", "implementer", REPO).emissions
     assert emission.condition.id == 4
 
 
 def test_the_live_wiring_emits_nothing_for_an_item_no_condition_decides() -> None:
-    assert (
-        brief.escalation_for(
-            "Implement a generic helper with no routing class.\n", "implementer", REPO
-        )
-        == ()
+    evaluation = brief.escalation_for(
+        "Implement a generic helper with no routing class.\n", "implementer", REPO
     )
+    assert evaluation.emissions == ()
+    assert evaluation.unreadable == ()
+
+
+def test_an_unreadable_input_surfaces_in_the_brief_rather_than_vanishing() -> None:
+    """The third state reaches the agent: an input that could not be read is not 'nothing fired'."""
+    evaluation = escalation.Evaluation(
+        emissions=(),
+        unreadable=("config/escalation-conditions.json: could not be read",),
+    )
+    rendered = composed(escalation=evaluation)
+    assert "## Escalation" in rendered
+    assert "unreadable" in rendered
+    assert "could not be read" in rendered
+    assert "not the silence" in rendered
+
+
+def test_the_live_wiring_reports_unreadable_inputs_rather_than_silence(tmp_path: Path) -> None:
+    """A #181-shape body whose policy and table cannot be read surfaces the gap, not silence.
+
+    Without the third state this returns empty emissions: condition 4 cannot fire (no class, the
+    policy unreadable) and the loss is invisible — exactly the High 2 defect, that a class-4 item
+    which must escalate disappears whenever the policy cannot be read.
+    """
+    evaluation = brief.escalation_for("Routing-class: #181-shape\n", "implementer", tmp_path)
+    assert evaluation.emissions == ()
+    assert evaluation.unreadable  # neither the policy nor the table could be read
 
 
 # --------------------------------------------------------------- the handoff (#309)

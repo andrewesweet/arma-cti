@@ -17,10 +17,12 @@ retro, while each row's `predicate` names the Python function that decides it.
 
 Emission, not resident prose (#209, ADR-0071 ruling 5). Where a rule-table already decides, an
 agent is not handed numbers to reason about, so this tool decides and what reaches the agent is
-the fired condition and its remedy. A condition that has not fired emits nothing at all: the
-`evaluate` walk returns an empty tuple and a brief composed from one opens no escalation section.
-This is the difference between a condition and a rule written into a memory file every session
-loads — the condition is silent until it is true.
+the fired condition and its remedy. A condition that has not fired emits nothing at all — but a
+table that could not be read is not "nothing fired": `evaluate` carries that as a third state in
+its `unreadable`, which a brief surfaces rather than rendering as the empty section a brief with
+no escalation due carries. The difference between a condition and a rule written into a memory
+file every session loads is that the condition is silent until it is true — and silent only then,
+not when the table that holds it could not be read.
 
 What is decidable today, and what is not. A condition fires only on facts the caller supplies in
 a `Context`, and each fact is either recorded or it is not:
@@ -70,10 +72,14 @@ CLASS_FOUR: Final = 4
 
 
 class Attempt(NamedTuple):
-    """One implementation attempt of an item, in the facts a condition reads."""
+    """One implementation attempt of an item, in the facts a condition reads.
+
+    `clean_base` is `None` when that fact is not recorded, distinct from a recorded `False`: a
+    retry whose clean-base status is unknown is not a retry condition 3 can fire on.
+    """
 
     profile: str
-    clean_base: bool
+    clean_base: bool | None
 
 
 class ItemState(NamedTuple):
@@ -89,8 +95,9 @@ class ItemState(NamedTuple):
     review_rounds: int | None = None
     # A live review finding above Low exists. `None` until findings carry severity (ruling 4).
     finding_above_low: bool | None = None
-    # Implementation attempts of this item, oldest first. Empty until attempts are recorded.
-    attempts: tuple[Attempt, ...] = ()
+    # Implementation attempts of this item, oldest first. `None` until attempts are recorded;
+    # an empty tuple is recorded-zero, distinct from not-recorded the way every other fact is.
+    attempts: tuple[Attempt, ...] | None = None
 
 
 class Context(NamedTuple):
@@ -141,6 +148,23 @@ class Emission(NamedTuple):
     evidence: tuple[str, ...]
 
 
+class Evaluation(NamedTuple):
+    """The evaluation outcome: fired emissions, or inputs no evaluation could read.
+
+    The third state (#323's distinction; #347): an input the conditions need that could not be
+    read is neither "fired" nor "did not fire", and it reaches the caller in `unreadable` rather
+    than as the empty `emissions` a brief with no escalation due carries. Each `unreadable` entry
+    names an input and why it could not be read — prose diagnostic, never a grouping key. Silence
+    — empty `emissions` with nothing `unreadable` — is reserved for "nothing fired", never for
+    "nobody could look": escalation is advisory, which is exactly why a lost emission costs
+    nothing to report and everything to hide (#41 — a check that could not run is not a check
+    that passed).
+    """
+
+    emissions: tuple[Emission, ...]
+    unreadable: tuple[str, ...] = ()
+
+
 VERSION_ERROR: Final = "conditions must be a version 1 object"
 CONDITIONS_LIST_ERROR: Final = "conditions must be a list"
 CONDITION_OBJECT_ERROR: Final = "each condition must be an object"
@@ -169,36 +193,52 @@ def at_three_round_wall(item: ItemState) -> bool:
 
 
 def _three_round_wall(context: Context) -> tuple[str, ...] | None:
-    """Condition 1: a review cycle holding a finding above Low after three fix rounds."""
+    """Condition 1: a review cycle holding a finding above Low after three fix rounds.
+
+    The arbiter is the implementer seat's escalation head (ADR-0071 ruling 4) — the profile the
+    transfer reaches, and a fact this condition needs: its remedy orders a transfer to "the
+    arbiter named in the emission", so a caller that resolved none must not fire, the same way a
+    missing wall fact must not. The arbiter is recorded in the seat table and reaches a real
+    dispatch resolved, so this guards the unresolvable case rather than a common one.
+    """
     item = context.item
     if not at_three_round_wall(item):
+        return None
+    if not context.arbiter:
         return None
     evidence = [f"review_rounds={item.review_rounds}", "finding_above_low=true"]
     # The arbiter the transfer reaches; recorded as a fact so the emission names a profile the
     # caller resolved rather than one this module hard-codes.
-    if context.arbiter:
-        evidence.append(f"arbiter={context.arbiter}")
+    evidence.append(f"arbiter={context.arbiter}")
     return tuple(evidence)
 
 
 def _consecutive_same_class_wall(context: Context) -> tuple[str, ...] | None:
-    """Condition 2: two consecutive items of one routing class each at the three-round wall.
+    """Condition 2: two consecutive prior items of one routing class each at the three-round wall.
 
     A fact about the history, read off the two most recent prior items: they must be consecutive
     (which `prior[-2]`, `prior[-1]` are by construction), share a recorded routing class, and
-    each be at the wall. The current item is "the next one" the remedy re-plans; the condition
-    does not require it to share the class, because the ADR names two items, not three. That
-    reading is recorded here rather than hidden in a branch.
+    each be at the wall. Ruling 5 reads this as evidence that the *class* is under-specified and
+    "the next one is re-planned rather than re-fixed", so the current item the remedy re-plans
+    must be of that same class — a class-6 current item is not "the next one" of two stuck
+    class-5 items, and re-planning it would answer a question the history did not ask.
+
+    The pair is read from `prior` because the next item exists only once the two before it have
+    each reached the wall and moved on: the current item is the one dispatched against that
+    history, not the second of the pair, so the condition fires for it. Firing the moment a
+    second item reaches the wall would re-plan an item already at the wall — which is the re-fix
+    the remedy exists to replace — so it deliberately does not.
     """
+    shared = context.item.routing_class
     prior = context.prior
-    if len(prior) < CONSECUTIVE_ITEMS:
+    if shared is None or len(prior) < CONSECUTIVE_ITEMS:
         return None
     first, second = prior[-2], prior[-1]
-    if first.routing_class is None or first.routing_class != second.routing_class:
+    if first.routing_class != shared or second.routing_class != shared:
         return None
     if not (at_three_round_wall(first) and at_three_round_wall(second)):
         return None
-    return (f"routing_class={first.routing_class}", f"consecutive_items={CONSECUTIVE_ITEMS}")
+    return (f"routing_class={shared}", f"consecutive_items={CONSECUTIVE_ITEMS}")
 
 
 def _retry_wall(context: Context) -> tuple[str, ...] | None:
@@ -206,17 +246,20 @@ def _retry_wall(context: Context) -> tuple[str, ...] | None:
 
     The retry's outcome is the signal, not the retry itself: the current attempt must have
     reached the three-round wall, and the attempt before it must differ in profile and have been
-    from a clean base. The ADR's third draft made the retry the condition, which fires only after
-    the transfer it was meant to trigger; this reads the outcome instead.
+    from a clean base. Ruling 5 names the **second** attempt — a third or later attempt is not
+    this condition, because the transfer it triggers should have fired on the second and a third
+    is what the remedy says not to dispatch. So this fires at exactly two attempts, not two or
+    more. `clean_base is not True` so a not-recorded base (`None`, distinct from a recorded
+    `False`) does not manufacture a firing, and `attempts is None` is the not-recorded case.
     """
     item = context.item
     if not at_three_round_wall(item):
         return None
     attempts = item.attempts
-    if len(attempts) < RETRY_MIN_ATTEMPTS:
+    if attempts is None or len(attempts) != RETRY_MIN_ATTEMPTS:
         return None
-    previous, latest = attempts[-2], attempts[-1]
-    if not latest.clean_base or latest.profile == previous.profile:
+    previous, latest = attempts[0], attempts[1]
+    if latest.clean_base is not True or latest.profile == previous.profile:
         return None
     return (
         f"attempts={len(attempts)}",
@@ -283,21 +326,24 @@ def read_conditions(path: Path) -> ReadResult:
         return ReadResult(None, f"{path}: {error}")
 
 
-def evaluate(conditions: Conditions | None, context: Context) -> tuple[Emission, ...]:
-    """Return every fired condition as an emission, in id order; empty when none fire.
+def evaluate(read: ReadResult, context: Context) -> Evaluation:
+    """Return fired conditions as emissions in id order; an unreadable table is a third state.
 
-    `conditions` is `None` when the table could not be read, and an unreadable table emits
-    nothing: escalation is advisory, so the safe fall-through is silence, never a crash. A
-    predicate returning `None` is the unfired case and contributes no emission.
+    Three outcomes a caller must not conflate (ADR-0071 ruling 5; the #323 distinction, #347): a
+    condition fired (`emissions` non-empty); the table read and none fired (`emissions` empty,
+    `unreadable` empty); and the table could not be read (`emissions` empty, `unreadable` names
+    why). A predicate returning `None` is the unfired case and contributes no emission. The read
+    result — parsed table or the reason it failed — is the input, so the unreadable case carries
+    its reason to the caller rather than collapsing into the silence reserved for nothing fired.
     """
-    if conditions is None:
-        return ()
+    if read.conditions is None:
+        return Evaluation((), (read.error or "the condition table could not be read",))
     fired = []
-    for condition in conditions.conditions:
+    for condition in read.conditions.conditions:
         evidence = PREDICATES[condition.predicate](context)
         if evidence is not None:
             fired.append(Emission(condition, evidence))
-    return tuple(sorted(fired, key=lambda emission: emission.condition.id))
+    return Evaluation(tuple(sorted(fired, key=lambda emission: emission.condition.id)))
 
 
 def render(emissions: tuple[Emission, ...]) -> tuple[str, ...]:
@@ -313,4 +359,21 @@ def render(emissions: tuple[Emission, ...]) -> tuple[str, ...]:
         lines.append(f"escalation={condition.id}:{condition.name}")
         lines.extend(f"  {fact}" for fact in emission.evidence)
         lines.extend(f"  {line}" for line in condition.remedy.splitlines())
+    return tuple(lines)
+
+
+def render_unreadable(unreadable: tuple[str, ...]) -> tuple[str, ...]:
+    """Render inputs an evaluation could not read, so the third state is not mistaken for silence.
+
+    Pairs with `render`: fired emissions become `escalation=N:...` lines and an unreadable input
+    becomes these, so a reader who sees the section can tell "nothing fired" (no section at all)
+    from "nobody could look" (this notice). Each entry is the `path: reason` a read returned.
+    """
+    lines = [
+        (
+            "  unreadable — an input a condition needs could not be read, so this is not the"
+            " silence of a condition that has not fired:"
+        )
+    ]
+    lines.extend(f"  could not read {reason}" for reason in unreadable)
     return tuple(lines)

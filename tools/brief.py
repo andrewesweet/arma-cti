@@ -717,13 +717,14 @@ class Briefing(NamedTuple):
     # absence so a brief composed about anything else opens no handoff section — the section
     # appears only where one applies, like prior work and reserved surfaces.
     handoff: Handoff = Handoff(HANDOFF_ABSENT)
-    # A transferring-escalation condition that has fired for this item, or nothing. Defaulted so
-    # a brief about an item with no condition due opens no escalation section — the section appears
-    # only where one applies, like reserved surfaces and the handoff (ADR-0071 ruling 5, #325).
-    escalation: tuple[escalation.Emission, ...] = ()
+    # A transferring-escalation condition that has fired for this item, an input that could not be
+    # read, or nothing. Defaulted so a brief about an item with no condition due opens no
+    # escalation section — the section appears only where one applies, like reserved surfaces and
+    # the handoff (ADR-0071 ruling 5, #325).
+    escalation: escalation.Evaluation = escalation.Evaluation(())
 
 
-def escalation_for(body: str, seat_name: str, repo: Path) -> tuple[escalation.Emission, ...]:
+def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluation:
     """Decide the transferring-escalation conditions for an item from what the brief can read.
 
     The escalation tool decides from facts in a `Context`; this assembles that context from the
@@ -734,20 +735,30 @@ def escalation_for(body: str, seat_name: str, repo: Path) -> tuple[escalation.Em
     they are `None` and conditions 1, 2 and 3 stay silent until those land. The arbiter condition
     1 would name is resolved here from the implementer seat's escalation head and supplied anyway,
     so the emission is correct the moment its facts arrive.
+
+    Two inputs can fail to read — the routing policy, which alone decides condition 4's class,
+    and the condition table — and each is the third state, not silence: an unreadable policy is
+    not "this item has no class" and an unreadable table is not "nothing fired". Both reach the
+    caller in the returned `unreadable` so the brief surfaces them rather than letting a class-4
+    issue that must escalate disappear (#325; the #323 distinction, #347).
     """
-    read = routing_policy.read_policy(repo / routing_policy.POLICY_RELATIVE)
+    unreadable: list[str] = []
+    policy_read = routing_policy.read_policy(repo / routing_policy.POLICY_RELATIVE)
     routing_class: int | None = None
-    if read.policy is not None:
-        match = routing_policy.classify_issue(read.policy, body, seat_name)
+    if policy_read.policy is None:
+        unreadable.append(policy_read.error)
+    else:
+        match = routing_policy.classify_issue(policy_read.policy, body, seat_name)
         if match is not None:
             routing_class = match.rule.id
-    conditions = escalation.read_conditions(repo / escalation.CONDITIONS_RELATIVE)
+    conditions_read = escalation.read_conditions(repo / escalation.CONDITIONS_RELATIVE)
     context = escalation.Context(
         item=escalation.ItemState(routing_class=routing_class),
         prior=(),
         arbiter=dispatch.IMPLEMENTER_ESCALATION[0] if dispatch.IMPLEMENTER_ESCALATION else None,
     )
-    return escalation.evaluate(conditions.conditions, context)
+    evaluation = escalation.evaluate(conditions_read, context)
+    return escalation.Evaluation(evaluation.emissions, (*evaluation.unreadable, *unreadable))
 
 
 def compose(briefing: Briefing) -> str:
@@ -762,9 +773,12 @@ def compose(briefing: Briefing) -> str:
     handoff_lines = render_handoff(issue, briefing.handoff)
     if handoff_lines:
         lines += ["", *handoff_lines]
-    if briefing.escalation:
+    evaluation = briefing.escalation
+    if evaluation.emissions or evaluation.unreadable:
         lines += ["", "## Escalation", ESCALATION_RULE]
-        lines += escalation.render(briefing.escalation)
+        lines += escalation.render(evaluation.emissions)
+        if evaluation.unreadable:
+            lines += escalation.render_unreadable(evaluation.unreadable)
     lines += [
         "",
         "## Task, scope, ground truth",
