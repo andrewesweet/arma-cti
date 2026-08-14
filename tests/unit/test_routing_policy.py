@@ -9,6 +9,7 @@ the two classes the re-founding deleted refuse nothing.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shutil
@@ -56,6 +57,11 @@ RETIRED = (1, 7)
 # test that mutated `classes` would be editing the half no parser of this vintage reads.
 LIVE: Final = routing_policy.REFOUNDED
 LEGACY: Final = routing_policy.LEGACY
+
+# `sha256` over the frozen half as the landed file carries it, computed from that file. The
+# half is value-identical to `bbb6ade`, so this is the digest of the intended content rather
+# than of drift that had already happened.
+FROZEN_HALF_DIGEST: Final = "7169d99bfdd08321c8bf4eda46ae51f1f68713ae346314160fdc019b8e246b67"
 
 
 def route(*, seat: str = "implementer") -> object:
@@ -164,6 +170,49 @@ def test_the_landed_policy_is_still_readable_by_a_parser_that_predates_this_bran
     assert [row["id"] for row in legacy] == [1, 2, 3, 4, 5, 6, 7]
 
 
+def test_the_source_string_is_true_under_both_readings_of_this_file() -> None:
+    """`source` is the one key both parser vintages read, so it must serve both readers.
+
+    A process predating #326 is refused under the frozen half's class 1 and is shown that
+    half's remedy beside this string. Told the authority is a table that does not contain the
+    class it was just refused by, that reader may conclude the gate file is corrupt and go and
+    edit it — the induced wrong repair the compatibility half exists to prevent, arriving at
+    the same class-6 gated file by a different door. The frozen row's `remedy` must stay
+    frozen and the old parser reads `document["source"]` by a name it cannot be told to
+    change, so this string is the only channel that reaches that reader.
+
+    Substring assertions are weak proof and are not pretended otherwise: their purpose is
+    drift detection on a string that has no other guard, so that a later tidy-up cannot
+    silently reintroduce the single-reading wording. Deleted with the frozen half (#365).
+    """
+    source = json.loads(POLICY.read_text(encoding="utf-8"))["source"]
+    assert "#326" in source, "the re-founded half's authority must be named"
+    assert "#258" in source, "the frozen half's authority must be named, and still in force"
+    assert "#217" in source
+    assert LIVE.classes in source, "the re-founded half must be identified by key"
+    assert LEGACY.classes in source, "the frozen half must be identified by key"
+    assert "superseding" not in source, "#258 governs the frozen half rather than being past"
+    assert "the policy is not broken" in source, (
+        "the reader refused by an id the live table does not carry must be told where that "
+        "refusal came from and that the file is not broken"
+    )
+
+
+def test_the_frozen_half_is_pinned_against_a_silent_edit() -> None:
+    """No parser of this vintage reads the frozen half, so an edit into it is a silent no-op.
+
+    That is the hazard of carrying two tables: a grant written into `classes` by habit raises
+    no error and no warning — it simply does not exist. This digest makes such an edit loud.
+    A pinned digest rather than a git object, because a shallow clone carries no history to
+    compare against. Deleted with the frozen half (#365).
+    """
+    document = json.loads(POLICY.read_text(encoding="utf-8"))
+    frozen = json.dumps(
+        {key: document[key] for key in LEGACY}, sort_keys=True, separators=(",", ":")
+    )
+    assert hashlib.sha256(frozen.encode("utf-8")).hexdigest() == FROZEN_HALF_DIGEST
+
+
 def test_this_parser_still_reads_a_copy_that_carries_only_the_pre_326_document() -> None:
     """The other diagonal: `origin/main`'s copy, read by this branch's parser.
 
@@ -224,7 +273,11 @@ def test_the_file_says_which_half_is_frozen_and_when_it_goes() -> None:
     compat = document["compat"]
     assert LIVE.classes in compat
     assert LEGACY.classes in compat
-    assert "deleted once no worktree predating this landing is still in flight" in compat
+    # An owner and a date rather than a condition nothing evaluates: the elapsed-time phrasing
+    # this replaces told every reader that no one need act (#365).
+    assert "#365" in compat
+    assert "not before 2026-08-21" in compat
+    assert "not computable" in compat
 
 
 # --- one landing under each surviving class ------------------------------------------------

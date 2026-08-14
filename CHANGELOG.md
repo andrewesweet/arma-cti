@@ -71,9 +71,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   So the re-founded document lives under `routing_classes` and its two sibling keys, the
   unprefixed `classes`, `issue_exceptions` and `route_exceptions` keep the pre-#326 document
   frozen, and a parser reads one set whole and never mixes them: an old process is governed
-  exactly as it was, and a new parser handed `origin/main`'s older copy still reads it. The
-  frozen half needs nothing but elapsed time and is deleted once no worktree predating this
-  landing is in flight.
+  exactly as it was, and a new parser handed `origin/main`'s older copy still reads it.
+  Deleting the frozen half is owned by #365, not before 2026-08-21; the condition that stood
+  here before — "once no worktree predating this landing is in flight" — was withdrawn on
+  arbitration because it is not computable, `just worktree list` sweeping registrations and
+  this box carrying over 150 of them, most long abandoned.
 
   **Two lines a reader used to be told wrongly.** A dispatch whose class was lifted by an
   exception is now told `routing=excepted` with the class named, instead of `routing=clear`,

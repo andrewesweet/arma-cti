@@ -269,9 +269,11 @@ unprefixed `classes`, `issue_exceptions` and `route_exceptions` keep the pre-#32
 frozen as `bbb6ade` carried it. `routing_policy.View` picks one set on the presence of the
 re-founded table and everything reads that set, so the two halves are never mixed: an old
 process goes on being governed exactly as it was, and a new parser handed `origin/main`'s
-older copy still reads it whole. The frozen half is deleted once no worktree predating that
-landing is still in flight; nothing but elapsed time is needed for it, and it governs nobody
-who has fetched.
+older copy still reads it whole. Deleting the frozen half is owned by #365, not before
+2026-08-21. The condition that stood here before — "once no worktree predating that landing
+is still in flight" — was withdrawn on arbitration because it is not computable: `just
+worktree list` sweeps registrations and this box carries over 150 of them, most long
+abandoned, so it would never have read true.
 
 **A subprocess is a way round the parser, and that is why a grant must be narrow.** The
 harness classifies the Bash *command*, not the writes a child process goes on to perform:
