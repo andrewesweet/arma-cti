@@ -51,6 +51,12 @@ NOW = datetime(2026, 8, 8, 12, 0, tzinfo=UTC)
 # carried one again would be reviving a rule the record killed under its own old number.
 RETIRED = (1, 7)
 
+# The keys the live document lives under. Named rather than spelled, because the file also
+# carries the pre-#326 document under the unprefixed keys for the transition window, and a
+# test that mutated `classes` would be editing the half no parser of this vintage reads.
+LIVE: Final = routing_policy.REFOUNDED
+LEGACY: Final = routing_policy.LEGACY
+
 
 def route(*, seat: str = "implementer") -> object:
     return routing_policy.Route("zai", "zai-glm52-max", seat, NOW)
@@ -92,7 +98,7 @@ def test_ids_need_not_be_contiguous_but_must_ascend_without_repeating() -> None:
     base = json.loads(POLICY.read_text(encoding="utf-8"))
     for broken in ([6, 5, 4, 3, 2], [2, 3, 4, 5, 5], [0, 3, 4, 5, 6]):
         document = json.loads(json.dumps(base))
-        for entry, new_id in zip(document["classes"], broken, strict=True):
+        for entry, new_id in zip(document[LIVE.classes], broken, strict=True):
             entry["id"] = new_id
         with pytest.raises(routing_policy.PolicyError, match="stable handle"):
             routing_policy.parse_policy(json.dumps(document))
@@ -103,9 +109,122 @@ def test_a_table_that_dropped_a_class_another_module_addresses_cannot_govern() -
     base = json.loads(POLICY.read_text(encoding="utf-8"))
     for class_id in routing_policy.REQUIRED_CLASSES:
         document = json.loads(json.dumps(base))
-        document["classes"] = [row for row in document["classes"] if row["id"] != class_id]
+        document[LIVE.classes] = [row for row in document[LIVE.classes] if row["id"] != class_id]
         with pytest.raises(routing_policy.PolicyError):
             routing_policy.parse_policy(json.dumps(document))
+
+
+# --- the pre-#326 document, frozen for the transition window --------------------------------
+
+
+def pre_326_read(document: dict[str, Any]) -> list[dict[str, Any]]:
+    """Read a policy the way `tools/routing_policy.py` did before this branch, and refuse alike.
+
+    A transcription of `_rules` and `_rule` as `origin/main` carried them at `bbb6ade`, not an
+    import of them: a test that loaded the historical blob would red on a shallow clone and
+    would pin this project's gate to a git object's continued existence. What it transcribes is
+    the whole of what that parser demanded of the document — the ordered table 1..7, unique
+    names, a remedy on every row, the in-world row found *by position*, and the four keys
+    `_rule` indexes without a default.
+
+    It exists for one measurement: the older parser is the one an in-flight worktree's running
+    `just land` imported, and it is handed this branch's policy the moment this lands (round 3
+    claim 1). Deleted with the frozen half of the document it reads.
+    """
+    classes = document["classes"]
+    assert isinstance(classes, list), "classes must be a list"
+    for row in classes:
+        for key in ("id", "name", "label", "remedy"):
+            assert key in row, f"pre-#326 `_rule` indexes {key} without a default"
+        assert row["remedy"], "every class must name its remedy"
+    assert tuple(row["id"] for row in classes) == tuple(range(1, 8)), (
+        "classes must be the ordered table 1..7"
+    )
+    assert len({row["name"] for row in classes}) == len(classes), "class names must be unique"
+    # By index, which is what made the ids a position rather than a handle.
+    in_world = classes[routing_policy.IN_WORLD_CLASS_ID - 1]
+    assert in_world["landing_path_prefixes"], "class 5 must carry landing_path_prefixes"
+    for raw in document.get("route_exceptions", []):
+        assert (raw.get("standing") is True) != ("expires_at" in raw), "standing xor expires_at"
+    return classes
+
+
+def test_the_landed_policy_is_still_readable_by_a_parser_that_predates_this_branch() -> None:
+    """Round 3 claim 1, the direction round 2 did not check.
+
+    A parser is imported by a running process. `just land` in a worktree branched before this
+    landing reads the policy out of fetched `origin/main` with the module that process started
+    with, and the rebase brings the new one into the tree but not into the process. Shipping
+    only the re-founded table made that read fail — `PolicyError: classes must be the ordered
+    table 1..7` — and its remedy tells the reader to repair a policy that is not broken, on a
+    class-6 gated file. So the pre-#326 document stays under the unprefixed keys until no such
+    worktree is in flight, and this is the measurement that says it is readable.
+    """
+    legacy = pre_326_read(json.loads(POLICY.read_text(encoding="utf-8")))
+    assert [row["id"] for row in legacy] == [1, 2, 3, 4, 5, 6, 7]
+
+
+def test_this_parser_still_reads_a_copy_that_carries_only_the_pre_326_document() -> None:
+    """The other diagonal: `origin/main`'s copy, read by this branch's parser.
+
+    `just land` reads the *trusted* policy out of fetched `origin/main`, so between this
+    landing and the next fetch a new parser is handed an old document. It takes the legacy view
+    whole — seven rows, and the exceptions that belong to them — because a document with no
+    re-founded table is a pre-#326 document and not a re-founded one missing its exceptions.
+    """
+    document = json.loads(POLICY.read_text(encoding="utf-8"))
+    for key in (LIVE.classes, LIVE.issue_exceptions, LIVE.route_exceptions):
+        document.pop(key)
+    parsed = routing_policy.parse_policy(json.dumps(document))
+    assert [rule.id for rule in parsed.rules] == [1, 2, 3, 4, 5, 6, 7]
+    assert len(parsed.issue_exceptions) == 3
+    assert {entry.profile for entry in parsed.route_exceptions} == {
+        "codex-sol-xhigh",
+        "codex-sol-max",
+    }
+
+
+def test_a_parser_reads_one_document_whole_and_never_mixes_the_two() -> None:
+    """The failure the `View` shape forbids, asserted on both halves of the mix.
+
+    Reading the re-founded classes beside the legacy exceptions would hand a class-1 allowance
+    to a table with no class 1 — which `parse_policy` refuses outright — and reading the legacy
+    classes beside the empty re-founded exceptions would silently withdraw #300's standing
+    retro allowance from a document that still carries it.
+    """
+    parsed = policy()
+    assert [rule.id for rule in parsed.rules] == [2, 3, 4, 5, 6]
+    assert parsed.issue_exceptions == ()
+    assert parsed.route_exceptions == ()
+    # The legacy exceptions are still in the file, and are not what this parser read.
+    document = json.loads(POLICY.read_text(encoding="utf-8"))
+    assert len(document[LEGACY.issue_exceptions]) == 3
+    assert len(document[LEGACY.route_exceptions]) == 2
+
+
+def test_the_frozen_half_still_says_what_an_in_world_surface_is() -> None:
+    """The one authority (#302) cannot depend on the vintage of the parser that read it.
+
+    Class 5's landing prefixes are read by `just land`'s corpus rung, `tools/admission.py` and
+    `tools/brief.py`. A frozen half whose list had drifted would make "is this diff in-world"
+    answerable two ways in one window, which is the defect #302 was filed about wearing the
+    compatibility fix's clothes.
+    """
+    document = json.loads(POLICY.read_text(encoding="utf-8"))
+    frozen = next(row for row in document[LEGACY.classes] if row["id"] == 5)
+    assert tuple(frozen["landing_path_prefixes"]) == routing_policy.in_world_prefixes(policy())
+    assert tuple(frozen["issue_path_prefixes"]) == tuple(
+        next(rule for rule in policy().rules if rule.id == 5).issue_path_prefixes
+    )
+
+
+def test_the_file_says_which_half_is_frozen_and_when_it_goes() -> None:
+    """A reader meeting two class tables is told why there are two, in the file itself."""
+    document = json.loads(POLICY.read_text(encoding="utf-8"))
+    compat = document["compat"]
+    assert LIVE.classes in compat
+    assert LEGACY.classes in compat
+    assert "deleted once no worktree predating this landing is still in flight" in compat
 
 
 # --- one landing under each surviving class ------------------------------------------------
@@ -140,18 +259,37 @@ def test_class_3_refuses_an_unappointed_seat_on_the_claude_lane_too() -> None:
     appointed foreign one — provenance wearing a capability remedy.
     """
     for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
-        unappointed = routing_policy.Route(lane, profile, "recon", NOW)
+        unappointed = routing_policy.Route(lane, profile, "retro", NOW)
         match = routing_policy.advisory_match(policy(), "ADR authorship for #999.", unappointed)
         assert match is not None, lane
         assert (match.rule.id, match.rule.name) == (3, "adr_authorship")
-        assert "seat=recon" in match.evidence
-        assert "required_seats=planner implementer review" in match.evidence
+        assert "seat=retro" in match.evidence
+        assert "required_seats=planner implementer review recon" in match.evidence
 
 
 # The seats an ADR issue must be able to reach, and why each is required by a landed ruling.
 # `planner` authors (ruling 2), `implementer` lands (ruling 2 again — the planner "neither
 # gates nor lands"), `review` reviews that landing (ruling 4 — no change lands alone).
 ADR_ROUTE: Final = ("planner", "implementer", "review")
+
+# `recon` is admitted and is not part of that route: it authors, lands and reviews nothing,
+# so refusing it bars a read-only sweep without protecting an ADR from anybody (round 3
+# claim 4). Kept separate from `ADR_ROUTE` so the two reasons for admission stay distinct.
+ADMITTED: Final = (*ADR_ROUTE, "recon")
+
+# Which row refuses each seat class 3 does not admit, on a Claude and on a foreign lane.
+# Round 2's walk asserted only that *a* refusal existed, and two of its fourteen verdicts
+# were satisfied by a different row: `orchestrator` is refused by class 2 on a foreign lane,
+# where class 2's own `seats` matches, so class 3 could have stopped refusing it there with
+# the test still green (round 3 claim 3). Naming the class makes every verdict attributable.
+REFUSING_CLASS: Final = {
+    ("claude-native", "orchestrator"): 3,
+    ("codex", "orchestrator"): 2,
+    ("claude-native", "retro"): 3,
+    ("codex", "retro"): 3,
+    ("claude-native", "fable"): 3,
+    ("codex", "fable"): 3,
+}
 
 
 def test_every_seat_is_walked_against_class_3_rather_than_the_row_being_read() -> None:
@@ -177,7 +315,16 @@ def test_every_seat_is_walked_against_class_3_rather_than_the_row_being_read() -
             args = type("Args", (), {"lane": lane, "profile": profile, "seat": seat})()
             found = dispatch().Readiness(None, body=body)
             refusal = dispatch().routing_refusal(args, found, REPO, NOW)
-            assert (refusal is None) == (seat in ADR_ROUTE), f"{lane}/{seat}"
+            assert (refusal is None) == (seat in ADMITTED), f"{lane}/{seat}"
+            if refusal is None:
+                continue
+            # Which row refused, not merely that one did (round 3 claim 3). Two of these
+            # verdicts are class 2's, so a bare boolean would have gone on passing if
+            # class 3 stopped refusing `orchestrator` on a foreign lane.
+            expected = REFUSING_CLASS[lane, seat]
+            assert any(line.startswith(f"routing_class={expected}:") for line in refusal.found), (
+                f"{lane}/{seat}: {refusal.found}"
+            )
 
 
 def test_the_admitted_set_is_a_whole_route_and_names_the_ruling_each_seat_comes_from() -> None:
@@ -188,11 +335,66 @@ def test_the_admitted_set_is_a_whole_route_and_names_the_ruling_each_seat_comes_
     the half of this class ruling 3 withdrew along with its `docs/process-log.md` path.
     """
     authorship = next(rule for rule in policy().rules if rule.id == 3)
-    assert authorship.required_seats == ADR_ROUTE
-    assert set(ADR_ROUTE) <= set(dispatch().SEATS)
+    assert authorship.required_seats == ADMITTED
+    assert set(ADMITTED) <= set(dispatch().SEATS)
     assert "retro" not in authorship.required_seats
     assert "neither gates nor lands" in authorship.remedy
     assert "ruling 4 lands no change alone" in authorship.remedy
+
+
+def test_a_seat_that_authors_nothing_is_admitted_rather_than_barred() -> None:
+    """Round 3 claim 4: the sufficiency rule was applied as a necessity rule.
+
+    The class exists so an ADR is not *authored* from a seat that cannot author one. `recon`
+    changes nothing — that is offered as the reason to refuse it and it is the reason to admit
+    it — so refusing it defeats no purpose of the class and routes a read-only sweep of prior
+    ADRs to a seat that gates and lands. Admitted on both lanes, and the row says why.
+    """
+    authorship = next(rule for rule in policy().rules if rule.id == 3)
+    assert "recon" in authorship.required_seats
+    assert "recon" not in ADR_ROUTE
+    assert "read-only by description" in authorship.remedy
+    for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
+        sweeping = routing_policy.Route(lane, profile, "recon", NOW)
+        assert routing_policy.advisory_match(policy(), "ADR authorship for #999.", sweeping) is None
+    # The admission rests on what the seat is for, not on an enforced containment, and the
+    # remedy says so rather than implying a mechanism the registry does not carry.
+    assert dispatch().SEATS["recon"].permission_mode == ""
+    assert "not an enforced `permission_mode`" in authorship.remedy
+
+
+def test_the_conflict_with_the_model_roles_paragraph_is_flagged_in_the_row() -> None:
+    """Round 3 claim 5: `AGENTS.md` is the file an agent reads before dispatching.
+
+    Its Model roles paragraph still sends "anything touching ADRs" to a `fable` seat, which
+    this row refuses — a refusal that did not exist before this branch, against an instruction
+    in a human-gated file this branch does not amend. ADR-0071 ruling 2 supersedes that mapping
+    in substance, so the sentence is stale rather than the row wrong; CLAUDE.md's own rule is
+    to flag the conflict explicitly either way, and the row flags the `docs/adr/` one already.
+    """
+    authorship = next(rule for rule in policy().rules if rule.id == 3)
+    assert "AGENTS.md" in authorship.remedy
+    assert "#329" in authorship.remedy
+    # The conflict is live, not remembered: the instruction is in the file, and the route it
+    # prescribes is refused.
+    roles = (REPO / "AGENTS.md").read_text(encoding="utf-8")
+    assert "anything touching ADRs" in roles
+    fable_seat = routing_policy.Route("claude-native", "fable-high", "fable", NOW)
+    assert routing_policy.advisory_match(policy(), "ADR authorship for #999.", fable_seat)
+
+
+def test_both_departures_from_the_adrs_row_are_labelled_not_only_the_first() -> None:
+    """Round 3 claim 9: one clause is a conflict, the other a synthesis, and both are named.
+
+    The re-founding table binds this class "to the planner's list rather than to Claude", and
+    the row admits four seats. The synthesis from rulings 2 and 4 is what removes the deadlock
+    a literal reading produced — but a reader auditing the row against the ADR found the
+    landing-path departure flagged in bold and no equivalent note for this one.
+    """
+    authorship = next(rule for rule in policy().rules if rule.id == 3)
+    assert "Two departures" in authorship.remedy
+    assert "to the planner's list rather than to Claude" in authorship.remedy
+    assert "synthesis rather than a conflict" in authorship.remedy
 
 
 def test_class_3_is_unenforced_at_landing_because_a_landing_has_no_seat() -> None:
@@ -204,7 +406,7 @@ def test_class_3_is_unenforced_at_landing_because_a_landing_has_no_seat() -> Non
     the policy's `coverage` sentence rather than left for a reader to discover.
     """
     authorship = next(rule for rule in policy().rules if rule.id == 3)
-    assert authorship.required_seats == ADR_ROUTE
+    assert authorship.required_seats == ADMITTED
     assert authorship.landing_path_prefixes == ()
     assert landing("docs/adr/0072-a-later-record.md") is None
     assert landing("docs/process-log.md") is None
@@ -228,7 +430,7 @@ def test_the_departure_from_the_adrs_prescribed_landing_path_is_flagged_in_the_r
     # The flag is about a real conflict, not a remembered one: the shape the ADR asks for is
     # still refused by the parser today.
     document = json.loads(POLICY.read_text(encoding="utf-8"))
-    next(entry for entry in document["classes"] if entry["id"] == 3)["landing_path_prefixes"] = [
+    next(entry for entry in document[LIVE.classes] if entry["id"] == 3)["landing_path_prefixes"] = [
         "docs/adr/"
     ]
     with pytest.raises(routing_policy.PolicyError, match="enforceable only where a seat exists"):
@@ -244,7 +446,7 @@ def test_a_seat_bound_class_may_not_also_carry_landing_prefixes() -> None:
     """
     base = json.loads(POLICY.read_text(encoding="utf-8"))
     document = json.loads(json.dumps(base))
-    next(entry for entry in document["classes"] if entry["id"] == 3)["landing_path_prefixes"] = [
+    next(entry for entry in document[LIVE.classes] if entry["id"] == 3)["landing_path_prefixes"] = [
         "docs/adr/"
     ]
     with pytest.raises(routing_policy.PolicyError, match="enforceable only where a seat exists"):
@@ -358,12 +560,12 @@ def test_class_6_binds_every_instance_and_therefore_carries_no_exception() -> No
     with pytest.raises(routing_policy.PolicyError, match="conflict of interest"):
         routing_policy.parse_policy(
             json.dumps(
-                dict(
-                    base,
-                    issue_exceptions=[
+                base
+                | {
+                    LIVE.issue_exceptions: [
                         {"marker": "Routing-exception: proposal-only", "classes": [6]}
-                    ],
-                )
+                    ]
+                }
             )
         )
 
@@ -434,9 +636,9 @@ def test_a_route_exception_cannot_except_the_class_that_binds_every_instance() -
     with pytest.raises(routing_policy.PolicyError, match="conflict of interest"):
         routing_policy.parse_policy(
             json.dumps(
-                dict(
-                    base,
-                    route_exceptions=[
+                base
+                | {
+                    LIVE.route_exceptions: [
                         {
                             "class": 6,
                             "lane": "codex",
@@ -444,8 +646,8 @@ def test_a_route_exception_cannot_except_the_class_that_binds_every_instance() -
                             "seat": "implementer",
                             "standing": True,
                         }
-                    ],
-                )
+                    ]
+                }
             )
         )
 
@@ -492,10 +694,10 @@ def test_the_retired_exception_markers_no_longer_appear_anywhere() -> None:
 def test_an_exception_naming_a_retired_class_is_refused_rather_than_ignored() -> None:
     base = json.loads(POLICY.read_text(encoding="utf-8"))
     for document in (
-        dict(base, issue_exceptions=[{"marker": "Routing-exception: x", "classes": [1]}]),
-        dict(
-            base,
-            route_exceptions=[
+        base | {LIVE.issue_exceptions: [{"marker": "Routing-exception: x", "classes": [1]}]},
+        base
+        | {
+            LIVE.route_exceptions: [
                 {
                     "class": 7,
                     "lane": "codex",
@@ -503,8 +705,8 @@ def test_an_exception_naming_a_retired_class_is_refused_rather_than_ignored() ->
                     "seat": "fable",
                     "standing": True,
                 }
-            ],
-        ),
+            ]
+        },
     ):
         with pytest.raises(routing_policy.PolicyError, match="retired or absent"):
             routing_policy.parse_policy(json.dumps(document))
@@ -536,7 +738,7 @@ def test_the_advisory_refusal_carries_the_coverage_line_a_reader_meets() -> None
     assert f"coverage={policy().coverage}" in refusal.found
 
 
-def just_check_tools() -> frozenset[str]:
+def just_check_tools(source: str | None = None) -> frozenset[str]:
     """Every `tools/*.py` the `just check` recipe actually reaches, derived from the justfile.
 
     Round 1's version asserted only that each named tool appeared *somewhere* in the
@@ -546,16 +748,46 @@ def just_check_tools() -> frozenset[str]:
     walks `check`'s dependency list and reads those recipes' bodies, so a tenth gate joining
     `just check` reds the assertions below instead of ageing quietly, and a gate leaving
     `just check` does too.
+
+    **The walk is transitive, and round 2's was not (review round 3 claim 7).** It read only
+    `check`'s direct dependencies, so a `check-foo` that gained a dependency of its own would
+    hide that recipe's tools: they would never enter `reached`, both assertions below would
+    stay green, and class 6's remedy would silently omit a gate `just check` runs.
     """
-    text = JUSTFILE.read_text(encoding="utf-8")
+    text = JUSTFILE.read_text(encoding="utf-8") if source is None else source
     recipe = re.compile(r"^([a-z0-9-]+):([^\n]*)\n((?:[ \t][^\n]*\n|\n)*)", re.MULTILINE)
     bodies = {match[1]: (match[2], match[3]) for match in recipe.finditer(text)}
     assert "check" in bodies, "the justfile no longer has a `check` recipe"
-    reached = set()
-    for name in bodies["check"][0].split():
+    reached: set[str] = set()
+    seen: set[str] = set()
+    pending = list(bodies["check"][0].split())
+    while pending:
+        name = pending.pop()
         assert name in bodies, name
-        reached.update(re.findall(r"tools/[a-z0-9_]+\.py", bodies[name][1]))
+        if name in seen:
+            continue
+        seen.add(name)
+        dependencies, body = bodies[name]
+        reached.update(re.findall(r"tools/[a-z0-9_]+\.py", body))
+        pending.extend(dependencies.split())
     return frozenset(reached)
+
+
+def test_the_derivation_follows_a_dependency_of_a_dependency() -> None:
+    """Round 3 claim 7: a tool reached only transitively was invisible to round 2's walk.
+
+    Planted rather than waited for — no `check-*` recipe has its own dependency today, so the
+    fix is by rule and not by the justfile happening to be flat. The inner tool is the one a
+    direct-only walk misses, and the assertion is that it is found.
+    """
+    planted = (
+        "check: check-outer\n\n"
+        "check-outer: check-inner\n"
+        "    uv run python tools/check_outer.py\n\n"
+        "check-inner:\n"
+        "    uv run python tools/check_inner.py\n"
+    )
+    assert just_check_tools(planted) == frozenset({"tools/check_outer.py", "tools/check_inner.py"})
 
 
 def test_class_6s_own_remedy_names_the_gates_it_does_not_cover() -> None:
@@ -645,7 +877,7 @@ def test_class_4s_two_remedies_name_one_seat_rather_than_agreeing_by_accident() 
     ("class_id", "body", "seat"),
     [
         (2, "Routing-class: orchestration", "orchestrator"),
-        (3, "Routing-class: adr-authorship", "recon"),
+        (3, "Routing-class: adr-authorship", "retro"),
         (6, "Change `tools/dispatch.py`.", "implementer"),
     ],
 )
@@ -707,7 +939,7 @@ def test_dispatch_reads_the_file_again_for_each_call(tmp_path: Path) -> None:
     assert "routing_class=6:gates_themselves" in first.found
 
     document = json.loads(policy_path.read_text(encoding="utf-8"))
-    conflict = next(entry for entry in document["classes"] if entry["id"] == 6)
+    conflict = next(entry for entry in document[LIVE.classes] if entry["id"] == 6)
     conflict["name"] = "gates_after_rebase"
     policy_path.write_text(json.dumps(document), encoding="utf-8")
 
@@ -744,11 +976,11 @@ def test_a_route_exception_carries_exactly_one_of_expiry_or_standing() -> None:
     base = json.loads(POLICY.read_text(encoding="utf-8"))
     entry = {"class": 3, "lane": "codex", "profile": "codex-sol-xhigh", "seat": "fable"}
 
-    standing = dict(base, route_exceptions=[dict(entry, standing=True)])
+    standing = base | {LIVE.route_exceptions: [dict(entry, standing=True)]}
     parsed = routing_policy.parse_policy(json.dumps(standing))
     assert parsed.route_exceptions[0].expires_at is None
 
-    dated = dict(base, route_exceptions=[dict(entry, expires_at="2026-08-10T14:00:00+00:00")])
+    dated = base | {LIVE.route_exceptions: [dict(entry, expires_at="2026-08-10T14:00:00+00:00")]}
     assert routing_policy.parse_policy(json.dumps(dated)).route_exceptions[0].expires_at
 
     for wrong in (
@@ -756,7 +988,7 @@ def test_a_route_exception_carries_exactly_one_of_expiry_or_standing() -> None:
         dict(entry, standing=True, expires_at="2026-08-10T14:00:00+00:00"),  # both
     ):
         with pytest.raises(routing_policy.PolicyError):
-            routing_policy.parse_policy(json.dumps(dict(base, route_exceptions=[wrong])))
+            routing_policy.parse_policy(json.dumps(base | {LIVE.route_exceptions: [wrong]}))
 
 
 def test_the_shipped_policy_carries_no_route_exception_for_a_dead_retro_rule() -> None:

@@ -2,8 +2,9 @@
   "version": 1,
   "source": "ADR-0071's re-founding table, 2026-08-11 (#326), superseding the human ruling on #258 as amended by #217 item 9",
   "coverage": "This table is not a complete account of what needs routing, and this sentence rides on a clear read as well as on a refusal, because the reader told nothing is wrong is the reader forming a belief about what was checked. Class 6 asserts an invariant no refusal enforces, and its path list names a minority of the gates this project runs; classes 4 and 5 refuse no route at all; class 3 is bound to a seat and so is checked at dispatch only, since a landing has no seat to check. A surface this file does not name is uncovered, never cleared, and a rung that did not run is not a rung that passed. Class ids 1 and 7 are retired by ADR-0071's re-founding table and are never reused, so an id is a stable historical handle rather than a position.",
+  "compat": "Two documents live in this file for one transition window, and a parser reads exactly one of them. `routing_classes`, `routing_issue_exceptions` and `routing_route_exceptions` are the re-founded document and are read by every parser from #326 onward. `classes`, `issue_exceptions` and `route_exceptions` are the pre-#326 document, frozen verbatim as `origin/main` carried it at bbb6ade, and are read only by a `tools/routing_policy.py` that predates #326 — which is the copy an in-flight worktree's already-running `just land` or `just dispatch` imported before this landing. That older parser demands the ordered table 1..7 and cannot read a table with retired ids, so shipping only the re-founded half would refuse every in-flight landing and dispatch until each worktree rebased, on a remedy that sends the reader to repair a file that is not broken (#326, review round 3 claim 1). It is the argument `COVERAGE_UNSTATED` already makes about a newly-mandatory field, applied to the id shape it was not applied to. The frozen half governs only processes that have not fetched, is never consulted alongside the live half, and is deleted once no worktree predating this landing is still in flight.",
   "claude_lane": "claude-native",
-  "classes": [
+  "routing_classes": [
     {
       "id": 2,
       "name": "orchestration",
@@ -27,14 +28,15 @@
       "required_seats": [
         "planner",
         "implementer",
-        "review"
+        "review",
+        "recon"
       ],
       "issue_phrases": [
         "Routing-class: adr-authorship",
         "ADR authorship"
       ],
       "landing_path_prefixes": [],
-      "remedy": "Route ADR authorship to the three seats ADR-0071 rulings 2 and 4 require between them, on any lane including a foreign one: `planner` authors it, off the ordered profile preferences ruling 2 gives that seat; `implementer` lands it, because ruling 2's planner \"neither gates nor lands\"; and `review` reviews that landing, because ruling 4 lands no change alone. A row admitting the planner alone admitted nobody who could finish the work and refused the very review dispatch ruling 4 mandates — the deadlock found in review round 2, claim 1 — so the admitted set is the whole route rather than its first step. Every other seat is refused on every lane including Claude's: `recon` changes nothing, `orchestrator` is class 2's seat, `fable` survives only as #300's retro allowance, and `retro` files and lands nothing under ruling 3 — the retro half of the class this row descends from is withdrawn by that ruling, along with its `docs/process-log.md` path. That is what ruling 1 means by eligibility ceasing to be a property of provenance — a lane-selected refusal here would have refused `codex`/`codex-sol-xhigh`/`planner`, the first entry in the list this remedy prescribes, while clearing any Claude seat whatever. The class is therefore enforced where a seat exists, which is dispatch. `just land` is handed a lane and a diff and no seat, so this row carries no landing prefixes and the landing rung does not test it — an ADR reaching `origin/main` from an unappointed seat is uncaught, not cleared. **Flagged, not silently overridden (review round 2 claim 3): ADR-0071's re-founding table prescribes `docs/adr/` as this row's landing path, and this row has none.** A seat-bound row carrying landing prefixes would clear at dispatch for the seat it appoints and then refuse that same route at landing, where no seat is knowable, so the two cannot both hold as written; whether the ADR is amended or an ADR-0013 record covers the departure is the human's, and until one of those lands the conflict stands on the record rather than in a commit message."
+      "remedy": "Route ADR authorship to the three seats ADR-0071 rulings 2 and 4 require between them, on any lane including a foreign one: `planner` authors it, off the ordered profile preferences ruling 2 gives that seat; `implementer` lands it, because ruling 2's planner \"neither gates nor lands\"; and `review` reviews that landing, because ruling 4 lands no change alone. A row admitting the planner alone admitted nobody who could finish the work and refused the very review dispatch ruling 4 mandates — the deadlock found in review round 2, claim 1 — so the admitted set is the whole route rather than its first step. `recon` is admitted beside those three and is not one of them (review round 3 claim 4): it is read-only by description in `tools/dispatch.py`'s `SEATS`, so it authors, lands and reviews nothing, and refusing it defeats no purpose of a class that exists to stop an ADR being authored from a seat that cannot author one — the round that refused it applied the sufficiency rule (\"admit every seat some ruling requires\") as a necessity rule, which turns a capability requirement into a bar and routes a cheap read-only sweep to a seat that gates and lands. Its read-only standing is a description and not an enforced `permission_mode`, so the admission rests on what that seat is for, and a `recon` seat that gained write powers would need this row revisited. Refused on every lane including Claude's: `orchestrator` is class 2's seat, `fable` survives only as #300's retro allowance, and `retro` files and lands nothing under ruling 3 — the retro half of the class this row descends from is withdrawn by that ruling, along with its `docs/process-log.md` path. **Flagged, not silently overridden (review round 3 claim 5): `AGENTS.md`'s Model roles paragraph — the file an agent actually reads before dispatching, and `CLAUDE.md` is the committed symlink to it — still sends \"anything touching ADRs\" to a `fable` seat, which this row refuses.** ADR-0071 ruling 2 supersedes that mapping in substance, so the sentence is stale rather than this row wrong, and `SEATS` records that closing the overlap is #329's and #330's; until one of those lands the conflict stands on the record rather than in a commit message. That is what ruling 1 means by eligibility ceasing to be a property of provenance — a lane-selected refusal here would have refused `codex`/`codex-sol-xhigh`/`planner`, the first entry in the list this remedy prescribes, while clearing any Claude seat whatever. The class is therefore enforced where a seat exists, which is dispatch. `just land` is handed a lane and a diff and no seat, so this row carries no landing prefixes and the landing rung does not test it — an ADR reaching `origin/main` from an unappointed seat is uncaught, not cleared. **Two departures from ADR-0071's re-founding table, both labelled (review round 2 claim 3, review round 3 claim 9).** The first is a conflict: ADR-0071's re-founding table prescribes `docs/adr/` as this row's landing path and this row has none, because a seat-bound row carrying landing prefixes would clear at dispatch for the seat it appoints and then refuse that same route at landing, where no seat is knowable, so the two cannot both hold as written; whether the ADR is amended or an ADR-0013 record covers it is the human's. The second is a synthesis rather than a conflict, and is named so a reader auditing this row against the ADR is not left to spot it: the table binds this class \"to the planner's list rather than to Claude\", and this row admits four seats. Read literally that is the deadlock — the planner neither gates nor lands — so the row is read together with rulings 2 and 4, whose seats it names above. A reader who thinks the literal words should have won has the departure in front of them rather than buried in a commit message."
     },
     {
       "id": 4,
@@ -119,6 +121,205 @@
       "remedy": "Two rules live on this row and they are not the same rule, so read which one refused you. The **invariant** is the conflict of interest — no instance authors the gate that judges it — and it binds every instance, Claude's included; it is discharged by an independent review under ADR-0071 ruling 4, and **no refusal enforces it** until step 7's exemption list lands, so today it is asserted and honoured by procedure. The **refusal** you have actually met is the older keep-on-Claude bar, still selected by lane: a foreign lane is refused these paths and the Claude lane is exempt. It is kept, and the label kept with it, because retiring it before the exemption list exists would leave the gates with neither rule; it is not evidence that the invariant was checked, and a Claude landing here has cleared nothing. The half of the invariant that is enforceable today is enforced: this class carries no exception, and the withdrawn `Routing-exception: proposal-only` marker went with the framing, because an instance that can except itself from the gate that judges it is precisely the shape being forbidden. `.claude/hooks/` and `.claude/settings.json` are here, not dropped: they are the denial layer and the permission allowlist, and the withdrawn gated-semantic-surfaces class was the only routing rule that named them. Coverage is incomplete: the list names six tools plus those two paths, and omits `tools/check_adr_form.py`, `tools/check_seat_config.py`, `tools/check_validated_markers.py`, `tools/check_conflict_markers.py`, `tools/check_source_symlink.py`, `tools/check_sqf_bans.py`, `tools/generate_seats.py` and `tools/export_command_schema.py` — the eight `just check` reaches — and `tools/breaker.py`, which no `check-*` recipe runs and which `just breaker` and `just watch-report` reach instead (review round 2 claim 4, correcting both this clause and ADR-0071's own row 6, which made the same slip) — along with every gate reached only through `just unit`, `just mutation`, `just land` and `just regress`. A diff touching a gate this list does not name is uncovered, never cleared."
     }
   ],
-  "issue_exceptions": [],
-  "route_exceptions": []
+  "routing_issue_exceptions": [],
+  "routing_route_exceptions": [],
+  "classes": [
+    {
+      "id": 1,
+      "name": "gated_semantic_surfaces",
+      "label": "Gated semantic surfaces",
+      "issue_path_prefixes": [
+        "CLAUDE.md",
+        "CONTEXT.md",
+        "docs/adr/",
+        "tests/specs/",
+        ".claude/skills/",
+        ".claude/agents/",
+        ".claude/settings.json",
+        ".claude/hooks/"
+      ],
+      "issue_phrases": [
+        "snapshot schema semantics",
+        "project skills"
+      ],
+      "landing_path_prefixes": [
+        "CLAUDE.md",
+        "CONTEXT.md",
+        "docs/adr/",
+        "tests/specs/",
+        ".claude/skills/",
+        ".claude/agents/",
+        ".claude/settings.json",
+        ".claude/hooks/"
+      ],
+      "remedy": "Route invented wording and permission semantics to a Claude seat. Pure transcription is eligible only when the issue declares `Routing-exception: pure-transcription`."
+    },
+    {
+      "id": 2,
+      "name": "orchestration",
+      "label": "Orchestration",
+      "seats": [
+        "orchestrator"
+      ],
+      "issue_phrases": [
+        "Routing-class: orchestration"
+      ],
+      "landing_path_prefixes": [
+        "docs/agents/orchestration.md",
+        "docs/orchestration-design.md"
+      ],
+      "remedy": "Keep orchestration on its Claude seat under the standing ruling of 2026-08-06."
+    },
+    {
+      "id": 3,
+      "name": "retros_and_adr_authorship",
+      "label": "Retros and ADR authorship",
+      "seats": [
+        "fable"
+      ],
+      "issue_phrases": [
+        "Routing-class: retros-and-adr-authorship",
+        "ADR authorship"
+      ],
+      "landing_path_prefixes": [
+        "docs/process-log.md"
+      ],
+      "remedy": "Take retros and ADR authorship to a Claude fable seat; drafting slack does not make authorship foreign-eligible."
+    },
+    {
+      "id": 4,
+      "name": "plausible_wrong_fix_goes_green",
+      "label": "The #181 shape",
+      "issue_phrases": [
+        "Routing-class: #181-shape",
+        "plausible wrong fix would also have gone green",
+        "plausible wrong fix would also go green"
+      ],
+      "landing_path_prefixes": [],
+      "remedy": "Route this diagnosis to Claude: the mechanical gate cannot distinguish its plausible wrong fix."
+    },
+    {
+      "id": 5,
+      "name": "in_world_landings",
+      "label": "In-world landings",
+      "issue_path_prefixes": [
+        "addons/",
+        "missions/",
+        "extension/",
+        "src/cti_daemon/port.py",
+        "src/cti_daemon/outbox.py",
+        "src/cti_daemon/commands.py",
+        "src/cti_daemon/protocol.py",
+        "src/cti_daemon/transport.py",
+        "src/cti_daemon/manifest.py"
+      ],
+      "issue_phrases": [
+        "Routing-class: in-world-landings",
+        "remoteExec",
+        "map UI"
+      ],
+      "landing_path_prefixes": [
+        "addons/",
+        "missions/",
+        "extension/",
+        "src/cti_daemon/port.py",
+        "src/cti_daemon/outbox.py",
+        "src/cti_daemon/commands.py",
+        "src/cti_daemon/protocol.py",
+        "src/cti_daemon/transport.py",
+        "src/cti_daemon/manifest.py"
+      ],
+      "remedy": "Use a Claude seat that can run the full `just regress` corpus, or wait for a human ruling that dispatched sessions may run it."
+    },
+    {
+      "id": 6,
+      "name": "gates_themselves",
+      "label": "The gates themselves",
+      "issue_path_prefixes": [
+        "config/dispatch-routing-policy.json",
+        "tools/routing_policy.py",
+        "tools/dispatch.py",
+        "tools/land.py",
+        "tools/mutation_smoke.py",
+        "tools/admission.py"
+      ],
+      "issue_phrases": [
+        "Routing-class: gates-themselves",
+        "mutation floors",
+        "hook wiring",
+        "dispatch permissions",
+        "admission bar"
+      ],
+      "landing_path_prefixes": [
+        "config/dispatch-routing-policy.json",
+        "tools/routing_policy.py",
+        "tools/dispatch.py",
+        "tools/land.py",
+        "tools/mutation_smoke.py",
+        "tools/admission.py"
+      ],
+      "remedy": "Keep changes to the judging mechanism on Claude; a foreign lane must not author the gate that judges it."
+    },
+    {
+      "id": 7,
+      "name": "anthropic_plan_meter",
+      "label": "The Anthropic plan meter",
+      "issue_path_prefixes": [
+        "tools/quota_tap.sh",
+        "tests/fixtures/claude-usage-poll.json"
+      ],
+      "issue_phrases": [
+        "Routing-class: anthropic-plan-meter",
+        "Anthropic plan meter"
+      ],
+      "landing_path_prefixes": [
+        "tools/quota_tap.sh",
+        "tests/fixtures/claude-usage-poll.json"
+      ],
+      "remedy": "Run work whose instrument is the Anthropic plan meter on Claude, where that instrument exists."
+    }
+  ],
+  "issue_exceptions": [
+    {
+      "name": "pure_transcription",
+      "marker": "Routing-exception: pure-transcription",
+      "classes": [
+        1
+      ]
+    },
+    {
+      "name": "no_gated_landing",
+      "marker": "Routing-exception: no-gated-landing",
+      "classes": [
+        1
+      ]
+    },
+    {
+      "name": "proposal_only",
+      "marker": "Routing-exception: proposal-only",
+      "classes": [
+        6
+      ]
+    }
+  ],
+  "route_exceptions": [
+    {
+      "name": "standing_retro_allowance_codex_sol_xhigh",
+      "class": 3,
+      "lane": "codex",
+      "profile": "codex-sol-xhigh",
+      "seat": "fable",
+      "standing": true,
+      "source": "human ruling 2026-08-09 (#300), superseding #217, #270 and #299"
+    },
+    {
+      "name": "standing_retro_allowance_codex_sol_max",
+      "class": 3,
+      "lane": "codex",
+      "profile": "codex-sol-max",
+      "seat": "fable",
+      "standing": true,
+      "source": "human ruling 2026-08-09 (#300), superseding #217, #270 and #299"
+    }
+  ]
 }

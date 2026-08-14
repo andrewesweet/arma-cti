@@ -698,6 +698,14 @@ def test_a_rerun_after_a_blocked_merge_finishes_the_merge_and_pushes_nothing(
     assert gate.calls == []
     assert "push=not_needed reason=already_on_origin/main" in report.lines
     assert _git("rev-parse", "main", cwd=main).strip() == landed
+    # Round 3 claim 8: this is the output bearing `ok=landed`, and it is the one a lander
+    # quotes into an issue. The exit-2 refusal it follows carried a routing verdict; without
+    # these lines the successful landing is the only report in the sequence that says nothing
+    # about routing at all, and an omission reads as the clearance it never gave.
+    assert report.lines[0] == "ok=landed"
+    assert "routing=not_consulted reason=nothing_to_push" in report.lines
+    assert "corpus=not_consulted reason=nothing_to_push" in report.lines
+    assert "gate=not_run reason=nothing_to_push" in report.lines
 
 
 def test_a_diverged_main_checkout_reports_the_work_landed_and_the_merge_owed(

@@ -43,12 +43,35 @@ prescribes (#326, review round 1 claim 2).
 the planner is the seat ruling 2 defines as neither gating nor landing — so no route could
 author *and* land an ADR, and ruling 4's reviewing instance could not be dispatched at all
 (review round 2 claim 1). Class 3 therefore admits `planner`, `implementer` and `review`
-together. The rule this generalises: what a capability row admits is every seat some landed
-ruling requires for that work to be finished, and a row is checked by walking every seat in
-`tools/dispatch.py`'s `SEATS` against it rather than by reading it. A seat-bound row is
+together, and `recon` beside them. The rule this generalises has two halves, and round 2
+landed only the first: what a capability row admits is every seat some landed ruling
+requires for that work to be finished, **and every seat that cannot perform the act the row
+is about at all**. Applying the first half as a necessity rule is what refused `recon` — a
+read-only sweep of prior ADRs, from a seat that authors, lands and reviews nothing — and a
+bar on a seat that cannot do the thing defeats no purpose of the class while routing cheap
+reconnaissance to a seat that gates and lands (review round 3 claim 4). A row is checked by
+walking every seat in `tools/dispatch.py`'s `SEATS` against it rather than by reading it.
+A seat-bound row is
 therefore enforceable only where a seat exists, which is dispatch: `just land` has no seat
 and never will, so such a row carries no `landing_path_prefixes` and `parse_policy` refuses
 one that does, rather than letting the landing rung silently re-derive the lane bar.
+
+**The document carries the pre-#326 one beside it for one transition window, and that is
+review round 3's claim 1.** A parser is imported by a *running process*: `just land` in an
+in-flight worktree reads the policy out of fetched `origin/main` with whatever
+`tools/routing_policy.py` that process started with, and the rebase brings the new module
+into the tree but not into the process. The pre-#326 parser demanded the ordered table
+1..7, so a file carrying only the re-founded table is unreadable to it — measured, all four
+ways — and every in-flight landing and dispatch would refuse until its worktree rebased, on
+a remedy telling the reader to repair a policy that is not broken, which sends them at a
+class-6 gated file. That is `COVERAGE_UNSTATED`'s own argument, which this module already
+made about a newly-mandatory field and did not apply to the id shape. So the re-founded
+document lives under `routing_classes`, `routing_issue_exceptions` and
+`routing_route_exceptions`, and `classes`, `issue_exceptions` and `route_exceptions` keep
+the pre-#326 document frozen for the older parser. A parser reads **one** view whole: this
+one takes the re-founded keys when the table is there and the legacy keys otherwise, which
+is also how it goes on reading `origin/main`'s pre-#326 copy. The frozen half is deleted
+once no worktree predating that landing is still in flight.
 
 Since #302 the document carries a second job. Class 5's `landing_path_prefixes` is the
 **one authority** for what an in-world surface is: `just land`'s corpus rung, the
@@ -104,6 +127,28 @@ ADR_AUTHORSHIP_CLASS_ID: Final = 3
 REQUIRED_CLASSES: Final[frozenset[int]] = frozenset(
     {ADR_AUTHORSHIP_CLASS_ID, 4, IN_WORLD_CLASS_ID, CONFLICT_OF_INTEREST_CLASS_ID}
 )
+
+
+class View(NamedTuple):
+    """The three document keys one parser vintage reads, taken together or not at all.
+
+    Mixing them is the failure this shape forbids: reading the re-founded classes beside the
+    legacy exceptions would hand a class-1 allowance to a table with no class 1, and reading
+    the legacy classes beside the empty re-founded exceptions would silently withdraw #300's
+    standing retro allowance from a document that still carries it. A view is chosen once,
+    on the presence of the re-founded table, and everything below reads that view.
+    """
+
+    classes: str
+    issue_exceptions: str
+    route_exceptions: str
+
+
+# The re-founded document (#326) and the pre-#326 one it is landing beside. The legacy names
+# are the unprefixed keys because they are the ones the older parser reads by name and cannot
+# be told to read anything else — the compatibility is entirely on this side of the fence.
+REFOUNDED: Final = View("routing_classes", "routing_issue_exceptions", "routing_route_exceptions")
+LEGACY: Final = View("classes", "issue_exceptions", "route_exceptions")
 
 
 class Route(NamedTuple):
@@ -194,6 +239,19 @@ class Match(NamedTuple):
 
     rule: Rule
     evidence: tuple[str, ...]
+
+
+class Advisory(NamedTuple):
+    """What one declaration read found for one route: a refusal, an exemption, or neither.
+
+    Three states rather than two, because "no row matched" and "a row matched and an
+    exception lifted it" are different facts about a route and only one of them means the
+    table had nothing to say. `refusal` is what the dispatch rung refuses on; `exemption` is
+    what a cleared dispatcher is told instead of being told it is clear.
+    """
+
+    refusal: Match | None
+    exemption: Match | None = None
 
 
 class ReadResult(NamedTuple):
@@ -303,8 +361,19 @@ def _timestamp(value: object) -> datetime:
     return parsed
 
 
-def _rules(document: dict[object, object]) -> tuple[Rule, ...]:
-    raw_classes = document.get("classes")
+def _view(document: dict[object, object]) -> View:
+    """Pick the document this parser reads, and read only that one.
+
+    Presence of the re-founded table is the whole test. A copy that carries it is a #326 or
+    later document and its exceptions are the re-founded ones — empty today; a copy that does
+    not is `origin/main`'s pre-#326 document, which this parser still reads whole, because
+    that is what a landing fetching a policy older than its own tree is handed.
+    """
+    return REFOUNDED if REFOUNDED.classes in document else LEGACY
+
+
+def _rules(document: dict[object, object], view: View) -> tuple[Rule, ...]:
+    raw_classes = document.get(view.classes)
     if not isinstance(raw_classes, list):
         raise PolicyError(CLASSES_LIST_ERROR)
     rules = tuple(_rule(item) for item in raw_classes)
@@ -344,10 +413,10 @@ def _check_exception_classes(named: set[int], rules: tuple[Rule, ...]) -> None:
 
 
 def _issue_exceptions(
-    document: dict[object, object], rules: tuple[Rule, ...]
+    document: dict[object, object], rules: tuple[Rule, ...], view: View
 ) -> tuple[IssueException, ...]:
     found: list[IssueException] = []
-    for raw in document.get("issue_exceptions", []):
+    for raw in document.get(view.issue_exceptions, []):
         if not isinstance(raw, dict):
             raise PolicyError(ISSUE_EXCEPTION_ERROR)
         classes = raw.get("classes")
@@ -361,10 +430,10 @@ def _issue_exceptions(
 
 
 def _route_exceptions(
-    document: dict[object, object], rules: tuple[Rule, ...]
+    document: dict[object, object], rules: tuple[Rule, ...], view: View
 ) -> tuple[RouteException, ...]:
     found: list[RouteException] = []
-    for raw in document.get("route_exceptions", []):
+    for raw in document.get(view.route_exceptions, []):
         if not isinstance(raw, dict):
             raise PolicyError(ROUTE_EXCEPTION_ERROR)
         standing = raw.get("standing") is True
@@ -389,14 +458,15 @@ def parse_policy(text: str) -> Policy:
     if not isinstance(document, dict) or document.get("version") != 1:
         raise PolicyError(VERSION_ERROR)
     coverage = str(document.get("coverage") or COVERAGE_UNSTATED)
-    rules = _rules(document)
+    view = _view(document)
+    rules = _rules(document, view)
     return Policy(
         source=str(document["source"]),
         coverage=coverage,
         claude_lane=str(document["claude_lane"]),
         rules=rules,
-        issue_exceptions=_issue_exceptions(document, rules),
-        route_exceptions=_route_exceptions(document, rules),
+        issue_exceptions=_issue_exceptions(document, rules, view),
+        route_exceptions=_route_exceptions(document, rules, view),
     )
 
 
@@ -516,32 +586,55 @@ def _appoints(rule: Rule, seat: str) -> bool:
     return bool(rule.required_seats) and seat in rule.required_seats
 
 
-def advisory_match(policy: Policy, body: str, route: Route) -> Match | None:
-    """Return the first non-excepted declaration match that can refuse this route.
+def _seat_evidence(rule: Rule, match: Match, route: Route) -> Match:
+    """Add the seat and the seats a row wanted, once each, to a seat-bound row's evidence."""
+    if not rule.required_seats:
+        return match
+    appointed = " ".join(rule.required_seats)
+    # `issue_match` already appends `seat=` when the row *matches* on the seat, so a
+    # future row carrying both `seats` and `required_seats` would otherwise print it
+    # twice to the refused reader (review round 2 claim 11). No shipped row does today;
+    # the de-duplication is by rule rather than by nobody having written that row yet.
+    seat = f"seat={route.seat}"
+    evidence = match.evidence if seat in match.evidence else (*match.evidence, seat)
+    return Match(rule, (*evidence, f"required_seats={appointed}"))
+
+
+def advisory_read(policy: Policy, body: str, route: Route) -> Advisory:
+    """Walk the declaration once and tell a refusal apart from a lifted match (round 3 claim 2).
 
     A seat-bound row is skipped for the seats it appoints and refuses every other, which is
     where "route ADR authorship to the `planner` seat" stops being advice in a remedy string
     and becomes the thing the router does. The seat it was given rides on the evidence beside
     the seats it wanted, so the refusal a reader meets states the capability it is about
     rather than leaving them to infer it from the class name.
+
+    `exemption` is the third value round 1 claim 3's rule asks for on this rung: a match a
+    live exception lifted is **not** the absence of a match, and reporting both as
+    `routing=clear` tells a dispatcher "no class applies" when the truth is "a class applies
+    and a standing human allowance lifted it". Both are returned from one walk rather than
+    from a second pass, so the two answers cannot be computed by different rules and disagree.
+    A refusal wins where a row refuses and an earlier row was excepted: the refusal is the
+    consequential half, and the exemption still rides beside it for the reader.
     """
+    exemption: Match | None = None
     for rule in _refusing_rules(policy, route.lane):
         if _appoints(rule, route.seat):
             continue
-        match = issue_match(rule, body, route.seat)
-        if match is None or _excepted(policy, match, body, route):
+        found = issue_match(rule, body, route.seat)
+        if found is None:
             continue
-        if not rule.required_seats:
-            return match
-        appointed = " ".join(rule.required_seats)
-        # `issue_match` already appends `seat=` when the row *matches* on the seat, so a
-        # future row carrying both `seats` and `required_seats` would otherwise print it
-        # twice to the refused reader (review round 2 claim 11). No shipped row does today;
-        # the de-duplication is by rule rather than by nobody having written that row yet.
-        seat = f"seat={route.seat}"
-        evidence = match.evidence if seat in match.evidence else (*match.evidence, seat)
-        return Match(rule, (*evidence, f"required_seats={appointed}"))
-    return None
+        match = _seat_evidence(rule, found, route)
+        if _excepted(policy, match, body, route):
+            exemption = exemption or match
+            continue
+        return Advisory(match, exemption)
+    return Advisory(None, exemption)
+
+
+def advisory_match(policy: Policy, body: str, route: Route) -> Match | None:
+    """Return the first non-excepted declaration match that can refuse this route."""
+    return advisory_read(policy, body, route).refusal
 
 
 def classify_issue(policy: Policy, body: str, seat: str) -> Match | None:

@@ -255,6 +255,24 @@ documents refuses a dispatched write to either regardless of lane. What
 is lost is the *advisory* — an issue declaring one of those paths no longer learns at dispatch
 that it cannot land it, and learns instead from `tools/brief.py`'s composition-time note.
 
+**The policy file carries two class tables for one transition window, and a parser reads
+one of them whole.** A parser is imported by a *running process*: `just land` in a worktree
+branched before #326 landed reads the trusted policy out of fetched `origin/main` with the
+`tools/routing_policy.py` that process started with, and the rebase brings the new module
+into the tree but not into the process. That older parser demanded the ordered table 1..7
+and cannot read a table whose retired ids leave gaps, so a file carrying only the re-founded
+table refused every in-flight landing and dispatch until each worktree rebased — on a remedy
+telling the reader to repair a policy that is not broken, which sends them at a class-6 gated
+file (#326, review round 3 claim 1). So the re-founded document lives under
+`routing_classes`, `routing_issue_exceptions` and `routing_route_exceptions`, and the
+unprefixed `classes`, `issue_exceptions` and `route_exceptions` keep the pre-#326 document
+frozen as `bbb6ade` carried it. `routing_policy.View` picks one set on the presence of the
+re-founded table and everything reads that set, so the two halves are never mixed: an old
+process goes on being governed exactly as it was, and a new parser handed `origin/main`'s
+older copy still reads it whole. The frozen half is deleted once no worktree predating that
+landing is still in flight; nothing but elapsed time is needed for it, and it governs nobody
+who has fetched.
+
 **A subprocess is a way round the parser, and that is why a grant must be narrow.** The
 harness classifies the Bash *command*, not the writes a child process goes on to perform:
 `just land --dry-run` runs on its `Bash(just land --dry-run)` grant and its `uv run` created

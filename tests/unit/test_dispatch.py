@@ -2051,11 +2051,50 @@ def test_the_cleared_dispatcher_is_told_what_the_clear_read_did_not_check() -> N
     a dispatcher cleared here is cleared by the one check that could have caught an ADR taken
     by an unadmitted seat, and heard nothing at all about what the table does not cover.
     """
-    lines = dispatch.routing_clearance(_routing_args(), REPO)
+    lines = dispatch.routing_clearance(
+        _routing_args(), REPO, dispatch.Readiness(None, body="Something unclassified."), OFF_PEAK
+    )
     read = routing_policy.read_policy(REPO / routing_policy.POLICY_RELATIVE)
     assert read.policy is not None
     assert any(line.startswith("routing=clear check=advisory issue declaration") for line in lines)
     assert f"coverage={read.policy.coverage}" in lines
+
+
+def test_an_excepted_route_is_told_it_was_excepted_rather_than_cleared(tmp_path: Path) -> None:
+    """Round 3 claim 2: `advisory_match` returns `None` for two different facts.
+
+    "No row matched" and "a row matched and an exception lifted it" both reached this rung as
+    `routing=clear`, which reads as "no class applies to this route". The truth in the second
+    case is that a class applies and a standing human allowance lifted it — the same
+    "exempted is not cleared" distinction the landing rung was fixed for in round 2 claim 6.
+    Planted, because `route_exceptions` is empty today and the shape is fixed by rule rather
+    than by nobody having written that row yet: the exception below is exactly the class-3
+    route exception `origin/main` carried until this branch emptied the list.
+    """
+    document = json.loads((REPO / routing_policy.POLICY_RELATIVE).read_text(encoding="utf-8"))
+    document[routing_policy.REFOUNDED.route_exceptions] = [
+        {
+            "class": 3,
+            "lane": "codex",
+            "profile": "codex-sol-xhigh",
+            "seat": "retro",
+            "standing": True,
+        }
+    ]
+    root = tmp_path
+    (root / routing_policy.POLICY_RELATIVE.parent).mkdir(parents=True)
+    (root / routing_policy.POLICY_RELATIVE).write_text(json.dumps(document), encoding="utf-8")
+
+    args = SimpleNamespace(lane="codex", profile="codex-sol-xhigh", seat="retro")
+    found = dispatch.Readiness(None, body="ADR authorship for #999.")
+    # The route really is unrefused — the exception did lift it — which is what makes the
+    # difference between this line and `routing=clear` a difference about the same route.
+    assert dispatch.routing_refusal(args, found, root, OFF_PEAK) is None
+    lines = dispatch.routing_clearance(args, root, found, OFF_PEAK)
+    assert any(line.startswith("routing=excepted check=advisory") for line in lines)
+    assert "routing_class=3:adr_authorship" in lines
+    assert any("an exception in the policy lifted" in line for line in lines)
+    assert not any(line.startswith("routing=clear") for line in lines)
 
 
 def test_the_unreadable_policy_fallback_on_claude_says_it_is_a_hole(tmp_path: Path) -> None:
@@ -2066,7 +2105,7 @@ def test_the_unreadable_policy_fallback_on_claude_says_it_is_a_hole(tmp_path: Pa
     class 3 is lane-blind, so the fallback silently reverses the one row made to bind Claude.
     """
     args = _routing_args(lane="claude-native")
-    lines = dispatch.routing_clearance(args, tmp_path)
+    lines = dispatch.routing_clearance(args, tmp_path, dispatch.Readiness(None, body=""), OFF_PEAK)
     assert "routing=not_checked reason=policy_unreadable" in lines
     assert any(line.startswith("policy=") for line in lines)
     assert any("escapes through it unchecked" in line for line in lines)

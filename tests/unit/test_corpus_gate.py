@@ -115,7 +115,7 @@ def test_the_rows_two_halves_agree_so_a_dispatch_and_a_landing_mean_the_same_thi
 def test_a_policy_that_lost_the_in_world_class_cannot_govern_at_all() -> None:
     """Otherwise the rung computes 'nothing is in-world' and passes every in-world diff."""
     document = json.loads(POLICY.read_text(encoding="utf-8"))
-    for rule in document["classes"]:
+    for rule in document[routing_policy.REFOUNDED.classes]:
         if rule["id"] == 5:
             rule["landing_path_prefixes"] = []
     with pytest.raises(routing_policy.PolicyError, match="one authority"):
@@ -125,7 +125,7 @@ def test_a_policy_that_lost_the_in_world_class_cannot_govern_at_all() -> None:
 def test_the_authority_is_found_by_id_so_the_rows_own_name_is_not_load_bearing() -> None:
     """The ids are validated as ascending and unique, which makes them the stable handle."""
     document = json.loads(POLICY.read_text(encoding="utf-8"))
-    for rule in document["classes"]:
+    for rule in document[routing_policy.REFOUNDED.classes]:
         if rule["id"] == routing_policy.IN_WORLD_CLASS_ID:
             rule["name"] = "world_landings"
     policy = routing_policy.parse_policy(json.dumps(document))

@@ -305,12 +305,20 @@ class Profile(NamedTuple):
     effort: str
 
 
+# The lane the routing policy exempts, as one literal in this module — `tools/land.py`'s
+# `CLAUDE_LANE`, for the reason that module's own comment gives (#344, review round 1
+# claim 6): a second copy is how renaming the lane, or moving `claude_lane` in the policy,
+# would silently move only one of the places that reads it. The two routing sites below
+# take it from here; the ones that *can* consult a parsed policy prefer `policy.claude_lane`
+# and reach this only where there is no policy to ask (review round 3 claim 6).
+CLAUDE_LANE: Final = "claude-native"
+
 # The registry. Adding a lane or a profile is an edit here and nowhere else, which is
 # the whole point of Decision 5: no caller anywhere gets to compose a model with an
 # effort, because across providers those two do not compose.
 LANES: Final[dict[str, Lane]] = {
-    "claude-native": Lane(
-        name="claude-native",
+    CLAUDE_LANE: Lane(
+        name=CLAUDE_LANE,
         runner="claude",
         base_url="",
         credential="",
@@ -2986,7 +2994,7 @@ def routing_refusal(
     # carries are read off one file and cannot quietly disagree.
     read = _read_routing_policy(root)
     if read.policy is None:
-        if args.lane == "claude-native":
+        if args.lane == CLAUDE_LANE:
             return None
         return Refusal(
             "routing_policy_unreadable",
@@ -3019,7 +3027,9 @@ def routing_refusal(
     )
 
 
-def routing_clearance(args: argparse.Namespace, root: Path) -> tuple[str, ...]:
+def routing_clearance(
+    args: argparse.Namespace, root: Path, found: Readiness, now: datetime
+) -> tuple[str, ...]:
     """Say what a *clear* dispatch routing read did and did not establish (round 2 claim 5).
 
     `just land`'s counterpart, and the argument is round 1 claim 3's own, applied on the side
@@ -3035,10 +3045,18 @@ def routing_clearance(args: argparse.Namespace, root: Path) -> tuple[str, ...]:
     and before #326 that cost nothing, because Claude was exempt from every row anyway. Class
     3 is now lane-blind, so the fallback silently reverses the one row made to bind Claude.
     The bootstrap still holds; what changes is that the hole says so.
+
+    **An excepted route is told so, and is not told it is clear (round 3 claim 2).** This
+    function computes no match of its own — it re-reads the walk `routing_refusal` already
+    made, through `advisory_read`, which returns the lifted match as a third value. Without
+    it, a route matching class 3 and lifted by a standing human allowance read
+    `routing=clear`, which says no class applies; the truth is that one applies and an
+    allowance lifted it. That is round 1 claim 3's "exempted is not cleared" on this rung,
+    and the landing rung already says it in its own words.
     """
     read = _read_routing_policy(root)
     if read.policy is None:
-        if args.lane != "claude-native":  # pragma: no cover - `routing_refusal` refused it
+        if args.lane != CLAUDE_LANE:  # pragma: no cover - `routing_refusal` refused it
             return ()
         return (
             "routing=not_checked reason=policy_unreadable",
@@ -3048,10 +3066,25 @@ def routing_clearance(args: argparse.Namespace, root: Path) -> tuple[str, ...]:
                 " Claude — a seat-bound class binding this lane escapes through it unchecked"
             ),
         )
-    return (
-        f"routing=clear check=advisory issue declaration seat={args.seat} lane={args.lane}",
-        f"coverage={read.policy.coverage}",
-    )
+    where = f"check=advisory issue declaration seat={args.seat} lane={args.lane}"
+    lifted = routing_policy.advisory_read(
+        read.policy,
+        found.body,
+        routing_policy.Route(args.lane, args.profile, args.seat, now),
+    ).exemption
+    if lifted is not None:
+        return (
+            f"routing=excepted {where}",
+            f"routing_class={lifted.rule.id}:{lifted.rule.name}",
+            f"class_label={lifted.rule.label}",
+            *lifted.evidence,
+            (
+                "excepted=this class applies to this route and an exception in the policy"
+                " lifted it, so the class was not cleared and nothing about it was checked"
+            ),
+            f"coverage={read.policy.coverage}",
+        )
+    return (f"routing=clear {where}", f"coverage={read.policy.coverage}")
 
 
 def ladder_refusal(
@@ -3204,7 +3237,7 @@ def plan_dispatch(
         planned_at=now,
         breaker_dir=breaker_dir,
         advisories=readiness_advisories(args.issue, found),
-        routing=routing_clearance(args, root),
+        routing=routing_clearance(args, root, found, now),
         strata=capture_strata(
             found.body, args.issue, route.seat, root, body_from_file=bool(args.issue_body)
         ),

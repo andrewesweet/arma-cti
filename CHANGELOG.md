@@ -52,7 +52,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   seat-bound row is enforceable only where a seat exists, and `just land` is handed a lane and a
   diff and no seat, so such a row carrying landing prefixes would clear at dispatch for a seat it
   admits and refuse the same route at landing. The row states the departure and its reasoning;
-  amending the ADR, or covering the departure with an ADR-0013 record, is the human's.
+  amending the ADR, or covering the departure with an ADR-0013 record, is the human's. A second
+  departure is labelled rather than left to be spotted: the table binds the class "to the
+  planner's list", and read literally that is the deadlock, so the row admits the seats rulings
+  2 and 4 name and says that this clause is a synthesis rather than a conflict. The row also
+  admits `recon`, which is not part of that route: a seat that authors, lands and reviews
+  nothing cannot author an ADR, so refusing it barred a read-only sweep without protecting
+  anything. And the row flags its conflict with `AGENTS.md`'s Model roles paragraph, which
+  still sends "anything touching ADRs" to a `fable` seat this class refuses; ADR-0071 ruling 2
+  supersedes that mapping in substance, and closing the overlap is #329's and #330's.
+
+  **The policy file carries the pre-#326 document beside the new one for one transition
+  window.** A parser is imported by a running process, so an in-flight worktree's `just land`
+  reads the fetched policy with the module it started with — and the pre-#326 parser demanded
+  the ordered class table 1..7, which retiring two ids breaks. Shipping only the new table would
+  have refused every in-flight landing and dispatch until each worktree rebased, on a remedy
+  telling the reader to repair a policy that is not broken and pointing them at a gated file.
+  So the re-founded document lives under `routing_classes` and its two sibling keys, the
+  unprefixed `classes`, `issue_exceptions` and `route_exceptions` keep the pre-#326 document
+  frozen, and a parser reads one set whole and never mixes them: an old process is governed
+  exactly as it was, and a new parser handed `origin/main`'s older copy still reads it. The
+  frozen half needs nothing but elapsed time and is deleted once no worktree predating this
+  landing is in flight.
+
+  **Two lines a reader used to be told wrongly.** A dispatch whose class was lifted by an
+  exception is now told `routing=excepted` with the class named, instead of `routing=clear`,
+  which reads as "no class applies"; and the `just land` re-run that finishes a blocked merge
+  names its skipped routing and corpus rungs, because that run is the one that prints
+  `ok=landed` and the one a lander quotes into an issue.
 
 ### Added
 
