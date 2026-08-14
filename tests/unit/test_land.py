@@ -197,11 +197,18 @@ def _seed(prefix: str) -> str:
 
 
 def test_every_path_backed_class_is_exercised_beyond_the_first_row() -> None:
-    """The ids are #326's five survivors less class 4, which no diff path can prove."""
+    """The ids are #326's five survivors less the two no diff path can prove.
+
+    Class 4 was never one: no path proves the #181 shape. Class 3 joined it in #326's review
+    round 1 — re-founded on the `planner` seat, and a landing has no seat, so the row carries
+    no landing prefixes and this rung has nothing of its to exercise. That gap is stated in
+    the row's own remedy and in the policy's `coverage` sentence rather than left here.
+    """
     read = _policy_read()
     assert read.policy is not None
     path_backed = [rule for rule in read.policy.rules if rule.landing_path_prefixes]
-    assert [rule.id for rule in path_backed] == [2, 3, 5, 6]
+    assert [rule.id for rule in path_backed] == [2, 5, 6]
+    assert next(rule for rule in read.policy.rules if rule.id == 3).required_seats == ("planner",)
     for rule in path_backed:
         match = routing_policy.landing_match(rule, (_seed(rule.landing_path_prefixes[0]),))
         assert match is not None, rule.name
@@ -241,6 +248,33 @@ def test_a_narrowed_in_world_diff_no_longer_refuses_a_landing() -> None:
 
 def test_a_non_class_diff_clears_the_routing_gate() -> None:
     assert land.classify_routing(_policy_read(), ("tools/worker.py",), "zai") is None
+
+
+def test_the_cleared_lander_is_told_what_the_clear_read_did_not_establish() -> None:
+    """The reader told nothing is wrong is the reader forming the belief (round 1 claim 3).
+
+    Round 1 put the coverage line on refusals only, so the one landing that never met "a
+    surface this file does not name is uncovered, never cleared" was the one being cleared.
+    The concrete case: a `zai` landing touching `tools/check_seat_config.py`, a gate
+    `just check` runs and class 6 does not name, passing the rung in silence.
+    """
+    read = _policy_read()
+    assert read.policy is not None
+    uncovered = ("tools/check_seat_config.py",)
+    assert land.classify_routing(read, uncovered, "zai") is None
+    lines = land.routing_clearance(read, "zai")
+    assert "routing=clear lane=zai check=enforcing actual diff" in lines
+    assert f"coverage={read.policy.coverage}" in lines
+
+
+def test_a_clear_read_says_nothing_where_no_check_ran() -> None:
+    """An exempt lane never consulted the table, and an unreadable one was already refused.
+
+    A coverage sentence in either place would describe a check that did not run, which is the
+    same misreading in the other direction.
+    """
+    assert land.routing_clearance(_policy_read(), "claude-native") == ()
+    assert land.routing_clearance(routing_policy.ReadResult(None, "absent"), "zai") == ()
 
 
 def test_an_unreadable_diff_refuses_instead_of_passing() -> None:
@@ -825,14 +859,20 @@ def test_a_sibling_landing_a_gated_path_does_not_make_this_ungated_diff_refuse(
 
     `git diff A..B` is a symmetric tree comparison, so before the rebase — and `land`
     has already fetched by then — it reported this branch's paths *and* every path the
-    incoming commits touched. A sibling landing an ADR while a `zai` seat worked on one
+    incoming commits touched. A sibling landing a gated path while a `zai` seat worked on one
     ungated doc was enough to make the dry run refuse work the real landing accepts, and
     hand it back. `origin/main...HEAD` is merge-base relative, so it answers with this
-    branch's own paths and the sibling's ADR is not among them.
+    branch's own paths and the sibling's gated path is not among them.
+
+    The sibling lands `tools/land.py` and not, as it once did, an ADR. Class 3 stopped
+    carrying landing prefixes when #326's review re-founded it on the `planner` seat, and a
+    landing has no seat to check — so a sibling ADR is no longer a path any class refuses,
+    and this test would have gone on passing while proving nothing about the superset. Class
+    6 is a gated landing path still.
     """
     _origin, main, here = repo
     _commit(here, "docs/telemetry-ledger.md", "ungated work\n")
-    _commit(main, "docs/adr/0099-a-sibling-decision.md", "# ADR\n")
+    _commit(main, "tools/land.py", "# a sibling's gate change\n")
     _git("push", "origin", "main", cwd=main)
 
     report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai")

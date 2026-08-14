@@ -67,7 +67,10 @@ RETRY_MIN_ATTEMPTS: Final = 2
 
 # Routing class 4, `plausible_wrong_fix_goes_green` — the #181 shape. A constant rather than a
 # read of the policy so this module does not couple to `routing_policy` to recognise its own
-# fourth condition; the class id is stable (validated as the ordered 1..7 in routing_policy).
+# fourth condition. What keeps the id from drifting out from under this copy is
+# `routing_policy.REQUIRED_CLASSES`, which carries 4 and refuses to parse a table that dropped
+# it. It used to be the ordered-1..7 check, and #326 retired ids 1 and 7 — so the table is no
+# longer contiguous and that check is gone, but the guarantee this line depends on is not.
 CLASS_FOUR: Final = 4
 
 

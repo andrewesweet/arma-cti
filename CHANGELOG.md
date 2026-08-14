@@ -19,21 +19,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Anthropic plan meter* dies because the meter is read over plain HTTP at a fixed URL with no
   Claude session involved. Of the five survivors: *retros and ADR authorship* splits, the retro
   half dying with ruling 3 (a retro lands nothing, so it needs no routing rule) and the surviving
-  ADR-authorship half gaining `docs/adr/` as a landing path, since its only path belonged to the
-  half being killed and it would otherwise enforce on issue phrases alone; *the #181 shape*
+  ADR-authorship half being re-founded on the **seat** — any lane's `planner` is admitted and
+  every other seat is refused, on every lane including Claude's, because ADR authorship rests on
+  that seat's ordered preferences rather than on which provider answered; *the #181 shape*
   survives with a capability remedy — route to the planner seat and escalate — matched to the
   transferring-escalation condition of the same name, which fires on the class the same issue
   body classifies into; *in-world landings* narrows to a rule about subagents, because a subagent
   cannot hold the corpus's foreground wait but the top-level session `just dispatch` launches
   can, so the class bars no dispatch route while remaining the one authority for what an in-world
-  surface is; and *the gates themselves* is reframed as conflict of interest — no instance
-  authors the gate that judges it — which binds Claude too and therefore carries no exception at
-  all, the withdrawn `proposal-only` marker included. Class ids are now stable historical handles
-  rather than positions: the two retired ids leave gaps rather than renumbering the rows other
-  modules address by id, and a table dropping one of those rows is refused instead of governing
-  silently. The policy states its own incomplete coverage, and `just land` and `just dispatch`
-  print that statement on every routing refusal, so a reader meets it where the table is being
-  applied to them rather than in a docstring.
+  surface is; and *the gates themselves* now carries two rules that are not the same rule, and
+  says which one refused you — the conflict-of-interest invariant, which binds every instance
+  including Claude's and which **no refusal enforces** until the exemption list lands, and the
+  older keep-on-Claude bar, still lane-selected and kept because retiring it first would leave
+  the gates with neither. The invariant's enforceable half is enforced: the class carries no
+  exception at all, the withdrawn `proposal-only` marker included. Class ids are now stable
+  historical handles rather than positions: the two retired ids leave gaps rather than
+  renumbering the rows other modules address by id, and a table dropping one of those rows is
+  refused instead of governing silently. The policy states its own incomplete coverage, and
+  `just land` and `just dispatch` print that statement on every routing verdict — refusal and
+  clear read alike — so the reader told nothing is wrong meets it too.
 
 ### Added
 

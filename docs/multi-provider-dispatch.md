@@ -223,9 +223,11 @@ Five readings, in the order they matter:
 recipe that promotes a reviewed file into `.claude/` would need its own `Bash(just …)` grant
 in `.claude/settings.json`, which is a permissions decision and therefore the human's
 (#248); it is proposed on #294 rather than landed. Meanwhile the wall costs ergonomics
-rather than authority: every surface under `.claude/` — the project skills, the seat
-definitions, the hooks and the settings file — is human sign-off gated by CLAUDE.md
-already, so no dispatched session was ever entitled to land one of these unilaterally. The
+rather than authority: every surface under `.claude/` is spoken for by something other than
+this wall — the project skills by CLAUDE.md's own sign-off list, the seat definitions by
+`just check`'s generated-file check, the settings file by #248's ruling that a permissions
+change is the human's, and the hooks and the settings file again by routing class 6 — so no
+dispatched session was ever entitled to land one of these unilaterally. The
 route that works is the one #299 already mandates for a gated edit: the dispatched seat
 authors the exact replacement text as a proposal, and the orchestrator transcribes it.
 `tools/brief.py` says so in the brief when an issue names such a path, so the next dispatch
@@ -241,8 +243,15 @@ sign-off gate was never this file. Two of the four prefixes survived the deletio
 class 6, because `.claude/settings.json` and `.claude/hooks/` are the permission allowlist and
 the denial layer, i.e. gates, and class 1's list was the only routing rule that named them. The
 other two, `.claude/skills/` and `.claude/agents/`, are named by no routing class at all now.
-That is not an oversight to fix here: both are human sign-off gated by CLAUDE.md already, and
-the wall this section documents refuses a dispatched write to either regardless of lane. What
+That is not an oversight to fix here, but the two are not covered by the same thing and this
+paragraph used to say they were (review round 1 claim 7). `.claude/skills/` is human sign-off
+gated by CLAUDE.md, whose list ends "changes to this file or the project skills".
+`.claude/agents/` appears nowhere in that list, and nowhere in
+`.claude/hooks/protect-gated-paths.py`'s `GATED` either, which is `*/generated/*` and
+`*tests/specs/*` only; what covers it is `just check`'s generated-file check, since every seat
+file is written from `tools/dispatch.py`'s registry by `tools/generate_seats.py` and a
+hand-edit reds the gate. The ground both share is the second one: the wall this section
+documents refuses a dispatched write to either regardless of lane. What
 is lost is the *advisory* — an issue declaring one of those paths no longer learns at dispatch
 that it cannot land it, and learns instead from `tools/brief.py`'s composition-time note.
 

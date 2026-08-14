@@ -2002,6 +2002,21 @@ def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
 
 
 def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> None:
+    """A routing refusal reaches the caller's stderr and nothing forks.
+
+    The arrangement is on class 2, and which class it is on is load-bearing. This test runs
+    the **real seam**, so `tools/dispatch.py` reads the routing policy from
+    `main_checkout(Path.cwd())` — the parent checkout, not this worktree — and every other
+    box dependency in `seam_env` has an override for exactly that reason while the policy has
+    none. So an assertion here on a row the branch under test is *editing* is answered by the
+    landed policy and is green for the wrong reason: this test asserted the old
+    `3:retros_and_adr_authorship`, stayed green through five in-worktree gates, and was red the
+    moment #326 reached `origin/main` (review round 1 claim 1). The blindness itself is #364's;
+    what belongs here is an arrangement that does not depend on it. Class 2 is that
+    arrangement — id, name and `seats: ["orchestrator"]` alike are what they were before #326
+    and what they are after — so the assertion holds against either copy, which is the only
+    property that makes a seam test about *the seam* rather than about which policy it found.
+    """
     done = run_seam(
         [
             "--lane",
@@ -2009,7 +2024,7 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
             "--profile",
             "zai-glm52-max",
             "--seat",
-            "fable",
+            "orchestrator",
             "--issue",
             "223",
             "--dispatch-dir",
@@ -2019,7 +2034,8 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
     )
     assert done.returncode == dispatch.EXIT_REFUSED
     assert "refusal=routing_policy_advisory" in done.stderr
-    assert "routing_class=3:retros_and_adr_authorship" in done.stderr
+    assert "routing_class=2:orchestration" in done.stderr
+    assert "seat=orchestrator" in done.stderr
     assert not (tmp_path / "dispatches").exists()
 
 

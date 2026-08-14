@@ -592,6 +592,15 @@ DECLARED_ONLY_SEATS: Final[dict[str, Seat]] = {
 # The list spans lanes, and only its foreign half needs an allowance at all — on
 # `claude-native` the fable seat is already permitted by `SEATS`. So this constant is
 # what suspends Decision 2, and it suspends it for these two profiles only:
+#
+# **#300's ruling is superseded, and this is the second of its two records.** ADR-0071's
+# trailer reads `Supersedes: the human's ruling on #300 (2026-08-09)`, and #326 deleted the
+# other record — the two standing `route_exceptions` in the routing policy — because ruling 3
+# hands retros to the `retro` seat. This one is deliberately still here rather than deleted in
+# the same landing: it is keyed on the `fable` seat, which ruling 3 does not delete, and
+# closing the `fable`/`retro` overlap is #329's and #330's, not this issue's. Left unsaid, a
+# grep for the standing retro allowance would return a live constant with no sign that the
+# ruling behind it had moved (#326, review round 1 claim 10).
 RETRO_ALLOWANCE: Final = frozenset(
     {
         ("fable", "codex", "codex-sol-xhigh"),

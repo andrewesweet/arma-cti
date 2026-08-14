@@ -352,11 +352,15 @@ def classify_routing(
     policy or diff refuses: a check that did not run is not a clearance (#41).
 
     A clear read is **not** a statement that the diff was covered, and since #326 it says
-    so: the refusal carries the policy's own `coverage` line, so the incomplete coverage of
-    the class list is met by the reader the classes are being applied to rather than left
-    in a docstring. It rides on every routing refusal and not only class 6's, because a
+    so: the policy's own `coverage` line rides on every routing verdict, so the incomplete
+    coverage of the class list is met by the reader the classes are being applied to rather
+    than left in a docstring. It rides on every refusal and not only class 6's, because a
     reader refused under one class is exactly the reader forming a belief about what the
-    table checks.
+    table checks — and, since review round 1 claim 3, on the clear read too. Round 1 put the
+    line only on refusals, which left the one reader who is *told nothing is wrong* as the
+    only reader who never meets "a surface this file does not name is uncovered, never
+    cleared" — and that reader is the one forming the belief. `routing_clearance` below is
+    where the clear read says it.
     """
     if _exempt_lane(read, lane):
         return None
@@ -390,6 +394,29 @@ def classify_routing(
             f"coverage={read.policy.coverage}",
         ),
         f"{match.rule.remedy}{PUSHED_CLAUSE}",
+    )
+
+
+def routing_clearance(read: routing_policy.ReadResult, lane: str) -> tuple[str, ...]:
+    """Say what a *clear* routing read did and did not establish, for one non-exempt lane.
+
+    The counterpart to `classify_routing`'s refusal and deliberately not a silence. A
+    landing whose routing rung finds no match currently prints nothing at all, so the
+    incomplete coverage of the class table — stated on every refusal — is the one thing the
+    cleared lander never hears. Concretely, the case that motivated this: a `zai` landing
+    touching `tools/check_seat_config.py`, a gate `just check` runs and class 6 does not
+    name, passed the routing rung in silence and read as approved (review round 1 claim 3).
+
+    Empty for an exempt lane and for an unreadable policy, both of which are somebody else's
+    verdict to state: `classify_routing` has already refused the unreadable case, and an
+    exempt lane never consulted the table, so a coverage sentence there would describe a
+    check that did not run.
+    """
+    if _exempt_lane(read, lane) or read.policy is None:
+        return ()
+    return (
+        f"routing=clear lane={lane} check=enforcing actual diff",
+        f"coverage={read.policy.coverage}",
     )
 
 
@@ -782,6 +809,7 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
     misrouted = classify_routing(policy, paths, lane, detail)
     if misrouted is not None:
         return Report.refused(misrouted)
+    lines.extend(routing_clearance(policy, lane))
 
     red = classify_gate(here, gate(here))
     if red is not None:
@@ -960,7 +988,14 @@ def _routing_plan(
     if _exempt_lane(read, lane):
         return (f"routing=not_applicable lane={lane}",)
     if misrouted is None:
-        return (f"routing=would_pass lane={lane} {where}",)
+        return (
+            f"routing=would_pass lane={lane} {where}",
+            # The same reason the enforcing rung says it: the reader told the diff is fine is
+            # the reader who most needs "a surface this file does not name is uncovered,
+            # never cleared" (review round 1 claim 3). `routing_clearance` is not reused here
+            # because its own first line is a verdict on the real diff, and this is a plan.
+            *((f"coverage={read.policy.coverage}",) if read.policy is not None else ()),
+        )
     return (
         f"routing=would_refuse lane={lane} refusal={misrouted.kind} {where}",
         *misrouted.found,

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "ADR-0071's re-founding table, 2026-08-11 (#326), superseding the human ruling on #258 as amended by #217 item 9",
-  "coverage": "This table is not a complete account of what needs routing. Class 6 asserts an invariant no refusal enforces, and its path list names a minority of the gates this project runs; classes 4 and 5 refuse no route at all. A surface this file does not name is uncovered, never cleared. Class ids 1 and 7 are retired by ADR-0071's re-founding table and are never reused, so an id is a stable historical handle rather than a position.",
+  "coverage": "This table is not a complete account of what needs routing, and this sentence rides on a clear read as well as on a refusal, because the reader told nothing is wrong is the reader forming a belief about what was checked. Class 6 asserts an invariant no refusal enforces, and its path list names a minority of the gates this project runs; classes 4 and 5 refuse no route at all; class 3 is bound to a seat and so is checked at dispatch only, since a landing has no seat to check. A surface this file does not name is uncovered, never cleared, and a rung that did not run is not a rung that passed. Class ids 1 and 7 are retired by ADR-0071's re-founding table and are never reused, so an id is a stable historical handle rather than a position.",
   "claude_lane": "claude-native",
   "classes": [
     {
@@ -24,14 +24,15 @@
       "id": 3,
       "name": "adr_authorship",
       "label": "ADR authorship",
+      "required_seats": [
+        "planner"
+      ],
       "issue_phrases": [
         "Routing-class: adr-authorship",
         "ADR authorship"
       ],
-      "landing_path_prefixes": [
-        "docs/adr/"
-      ],
-      "remedy": "Route ADR authorship to the `planner` seat, whose ordered profile preferences carry it (ADR-0071 ruling 2). It enforces on `docs/adr/`, its own landing surface, rather than on issue phrases alone. The retro half of the class this row descends from is withdrawn by ruling 3 — a retro identifies and files and lands nothing, so it needs no routing rule and its `docs/process-log.md` path went with it."
+      "landing_path_prefixes": [],
+      "remedy": "Route ADR authorship to the `planner` seat, whose ordered profile preferences carry it (ADR-0071 ruling 2). The rule is the seat and nothing else: any lane's `planner` is admitted, including a foreign one, and every other seat is refused on every lane including Claude's. That is what ruling 1 means by eligibility ceasing to be a property of provenance — a lane-selected refusal here would have refused `codex`/`codex-sol-xhigh`/`planner`, the first entry in the list this remedy prescribes, while clearing any Claude seat whatever. The class is therefore enforced where a seat exists, which is dispatch. `just land` is handed a lane and a diff and no seat, so this row carries no landing prefixes and the landing rung does not test it — an ADR reaching `origin/main` from an unappointed seat is uncaught, not cleared. The retro half of the class this row descends from is withdrawn by ruling 3 — a retro identifies and files and lands nothing, so it needs no routing rule and its `docs/process-log.md` path went with it."
     },
     {
       "id": 4,
@@ -83,7 +84,7 @@
     {
       "id": 6,
       "name": "gates_themselves",
-      "label": "Conflict of interest: the gates themselves",
+      "label": "The gates themselves",
       "binds_every_instance": true,
       "issue_path_prefixes": [
         "config/dispatch-routing-policy.json",
@@ -113,7 +114,7 @@
         ".claude/settings.json",
         ".claude/hooks/"
       ],
-      "remedy": "Conflict of interest: no instance authors the gate that judges it. This binds every instance, Claude's included, and is discharged by an independent review under ADR-0071 ruling 4 — which no refusal enforces until step 7's exemption list lands, so today the invariant is asserted and honoured by procedure. It carries no exception, and the withdrawn `Routing-exception: proposal-only` marker went with the framing: an instance that can except itself from the gate that judges it is precisely the shape this class forbids. `.claude/hooks/` and `.claude/settings.json` are here, not dropped: they are the denial layer and the permission allowlist, and the withdrawn gated-semantic-surfaces class was the only routing rule that named them. Coverage is incomplete and this refusal is not evidence otherwise: the list names six tools plus those two paths, and omits `tools/check_adr_form.py`, `tools/check_seat_config.py`, `tools/check_validated_markers.py`, `tools/check_conflict_markers.py`, `tools/check_source_symlink.py`, `tools/export_command_schema.py` and `tools/breaker.py`, along with every gate reached only through `just unit`, `just mutation`, `just land` and `just regress`. A diff touching a gate this list does not name is uncovered, never cleared."
+      "remedy": "Two rules live on this row and they are not the same rule, so read which one refused you. The **invariant** is the conflict of interest — no instance authors the gate that judges it — and it binds every instance, Claude's included; it is discharged by an independent review under ADR-0071 ruling 4, and **no refusal enforces it** until step 7's exemption list lands, so today it is asserted and honoured by procedure. The **refusal** you have actually met is the older keep-on-Claude bar, still selected by lane: a foreign lane is refused these paths and the Claude lane is exempt. It is kept, and the label kept with it, because retiring it before the exemption list exists would leave the gates with neither rule; it is not evidence that the invariant was checked, and a Claude landing here has cleared nothing. The half of the invariant that is enforceable today is enforced: this class carries no exception, and the withdrawn `Routing-exception: proposal-only` marker went with the framing, because an instance that can except itself from the gate that judges it is precisely the shape being forbidden. `.claude/hooks/` and `.claude/settings.json` are here, not dropped: they are the denial layer and the permission allowlist, and the withdrawn gated-semantic-surfaces class was the only routing rule that named them. Coverage is incomplete: the list names six tools plus those two paths, and omits `tools/check_adr_form.py`, `tools/check_seat_config.py`, `tools/check_validated_markers.py`, `tools/check_conflict_markers.py`, `tools/check_source_symlink.py`, `tools/check_sqf_bans.py`, `tools/generate_seats.py`, `tools/export_command_schema.py` and `tools/breaker.py` — all nine reached by `just check` — along with every gate reached only through `just unit`, `just mutation`, `just land` and `just regress`. A diff touching a gate this list does not name is uncovered, never cleared."
     }
   ],
   "issue_exceptions": [],

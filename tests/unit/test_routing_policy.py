@@ -41,6 +41,9 @@ def dispatch() -> Any:  # noqa: ANN401 — load_tool returns a runtime module ty
 
 POLICY = REPO / routing_policy.POLICY_RELATIVE
 CONDITIONS = REPO / escalation.CONDITIONS_RELATIVE
+# Read to prove the gates class 6 names as omissions are gates this project actually runs; a
+# name in that list that `just check` never reaches would be a reassurance about nothing.
+JUSTFILE = REPO / "justfile"
 NOW = datetime(2026, 8, 8, 12, 0, tzinfo=UTC)
 
 # The ids ADR-0071's re-founding table retires. They are never reused, so a table that
@@ -114,17 +117,97 @@ def test_class_2_orchestration_still_refuses_a_landing_on_its_own_surface() -> N
     assert (match.rule.id, match.rule.name) == (2, "orchestration")
 
 
-def test_class_3_adr_authorship_enforces_on_a_landing_path_not_issue_phrases_alone() -> None:
-    """The surviving half gained `docs/adr/`; the retro half took `docs/process-log.md`.
+def test_class_3_admits_the_seat_its_own_remedy_prescribes_on_a_foreign_lane() -> None:
+    """The defect this row was re-founded to remove: it refused the route it appoints.
 
-    ADR-0071: the class's only landing path belonged to the half being killed, so without
-    this the survivor "would enforce on issue phrases alone" — a class that catches nothing
-    on the enforcing read.
+    ADR-0071 ruling 2 puts `codex-sol-xhigh` at the head of the `planner` seat's preferences
+    and the re-founding table binds ADR authorship "to the planner's list rather than to
+    Claude". Founded on the lane, the class refused that exact triple — measured in review
+    round 1, claim 2 — so the rule forbade the route the ADR appoints. Founded on the seat, it
+    clears it.
     """
-    match = landing("docs/adr/0072-a-later-record.md")
-    assert match is not None
-    assert (match.rule.id, match.rule.name) == (3, "adr_authorship")
+    appointed = routing_policy.Route("codex", "codex-sol-xhigh", "planner", NOW)
+    assert routing_policy.advisory_match(policy(), "ADR authorship for #999.", appointed) is None
+    assert dispatch().SEATS["planner"].preference[0] == "codex-sol-xhigh"
+
+
+def test_class_3_refuses_an_unappointed_seat_on_the_claude_lane_too() -> None:
+    """Eligibility stopped being a property of provenance, so the Claude lane is not exempt.
+
+    ADR-0071 ruling 1. A seat-founded row has nothing to say about which provider answered,
+    so exempting it by lane would have cleared any Claude seat whatever while refusing the
+    appointed foreign one — provenance wearing a capability remedy.
+    """
+    for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
+        unappointed = routing_policy.Route(lane, profile, "implementer", NOW)
+        match = routing_policy.advisory_match(policy(), "ADR authorship for #999.", unappointed)
+        assert match is not None, lane
+        assert (match.rule.id, match.rule.name) == (3, "adr_authorship")
+        assert "seat=implementer" in match.evidence
+        assert "required_seats=planner" in match.evidence
+
+
+def test_class_3_is_unenforced_at_landing_because_a_landing_has_no_seat() -> None:
+    """Stated, not silent: an ADR landing from an unappointed seat is uncaught, not cleared.
+
+    `just land` is handed a lane and a diff. A row whose whole basis is which seat took the
+    work has nothing to test there, and testing it on the lane instead is exactly the
+    provenance rule the re-founding withdrew. The gap is named in the row's own remedy and in
+    the policy's `coverage` sentence rather than left for a reader to discover.
+    """
+    authorship = next(rule for rule in policy().rules if rule.id == 3)
+    assert authorship.required_seats == ("planner",)
+    assert authorship.landing_path_prefixes == ()
+    assert landing("docs/adr/0072-a-later-record.md") is None
     assert landing("docs/process-log.md") is None
+    assert "no landing prefixes" in authorship.remedy
+    assert "checked at dispatch only" in policy().coverage
+
+
+def test_a_seat_bound_class_may_not_also_carry_landing_prefixes() -> None:
+    """Fail closed on the shape that would quietly reinstate the lane bar.
+
+    Such a row would clear at dispatch for the seat it appoints and then refuse that same
+    route at landing, where no seat is knowable — the two rungs disagreeing about what the
+    class means, which is the defect in a second costume.
+    """
+    base = json.loads(POLICY.read_text(encoding="utf-8"))
+    document = json.loads(json.dumps(base))
+    next(entry for entry in document["classes"] if entry["id"] == 3)["landing_path_prefixes"] = [
+        "docs/adr/"
+    ]
+    with pytest.raises(routing_policy.PolicyError, match="enforceable only where a seat exists"):
+        routing_policy.parse_policy(json.dumps(document))
+
+
+def test_the_landing_rung_skips_a_seat_bound_row_by_rule_not_by_empty_list() -> None:
+    """The guard is the rule, so a future row carrying both is skipped rather than enforced.
+
+    Planted directly on a parsed policy rather than through `parse_policy`, which refuses the
+    shape one test above: the point here is that `enforcing_match` would still not enforce it
+    if it ever arrived by another door.
+    """
+    parsed = policy()
+    authorship = next(rule for rule in parsed.rules if rule.id == 3)
+    planted = parsed._replace(
+        rules=tuple(
+            rule._replace(landing_path_prefixes=("docs/adr/",)) if rule.id == 3 else rule
+            for rule in parsed.rules
+        )
+    )
+    assert authorship.required_seats
+    # The plant is real: the same paths under a row without `required_seats` do refuse, so a
+    # `None` above is the guard and not an empty prefix list quietly agreeing with it.
+    control = parsed._replace(
+        rules=tuple(
+            rule._replace(landing_path_prefixes=("docs/adr/",), required_seats=())
+            if rule.id == 3
+            else rule
+            for rule in parsed.rules
+        )
+    )
+    assert routing_policy.enforcing_match(control, ("docs/adr/0072-x.md",), "zai") is not None
+    assert routing_policy.enforcing_match(planted, ("docs/adr/0072-x.md",), "zai") is None
 
 
 def test_class_4_is_declaration_only_and_refuses_no_route() -> None:
@@ -208,6 +291,34 @@ def test_class_6_binds_every_instance_and_therefore_carries_no_exception() -> No
                     base,
                     issue_exceptions=[
                         {"marker": "Routing-exception: proposal-only", "classes": [6]}
+                    ],
+                )
+            )
+        )
+
+
+def test_a_route_exception_cannot_except_the_class_that_binds_every_instance() -> None:
+    """The guard's second door, which round 1 left unpinned (review round 1 claim 9).
+
+    `_check_exception_classes` is shared, so the behaviour is right today and the issue
+    exception above proves the helper. What was untested is that `_route_exceptions` still
+    calls it — a future edit dropping that call would leave a route exception able to except
+    an instance from the gate that judges it, with the issue-exception test still green.
+    """
+    base = json.loads(POLICY.read_text(encoding="utf-8"))
+    with pytest.raises(routing_policy.PolicyError, match="conflict of interest"):
+        routing_policy.parse_policy(
+            json.dumps(
+                dict(
+                    base,
+                    route_exceptions=[
+                        {
+                            "class": 6,
+                            "lane": "codex",
+                            "profile": "codex-luna-max",
+                            "seat": "implementer",
+                            "standing": True,
+                        }
                     ],
                 )
             )
@@ -301,10 +412,75 @@ def test_the_advisory_refusal_carries_the_coverage_line_a_reader_meets() -> None
 
 
 def test_class_6s_own_remedy_names_the_gates_it_does_not_cover() -> None:
-    """ADR-0071 calls the class aspirational; the remedy the refusal prints says so too."""
-    remedy = next(rule for rule in policy().rules if rule.id == 6).remedy
-    assert "tools/check_adr_form.py" in remedy
-    assert "uncovered, never cleared" in remedy
+    """ADR-0071 calls the class aspirational; the remedy the refusal prints says so too.
+
+    The enumeration exists so a reader can trust that the omissions are known, which makes an
+    omission from the omission list worse here than elsewhere: round 1 named seven tools and
+    `just check` runs two more (review round 1 claim 6). Derived from the justfile rather than
+    retyped, so a tenth gate joining `just check` reds this instead of ageing quietly.
+    """
+    conflict = next(rule for rule in policy().rules if rule.id == 6)
+    assert "uncovered, never cleared" in conflict.remedy
+    # Every Python gate `just check` reaches, each either named by the class or named as an
+    # omission. `check_sqf_bans` and `generate_seats` are the two round 1 left out of both.
+    for tool in (
+        "check_adr_form",
+        "check_seat_config",
+        "check_validated_markers",
+        "check_conflict_markers",
+        "check_source_symlink",
+        "check_sqf_bans",
+        "generate_seats",
+        "export_command_schema",
+        "breaker",
+    ):
+        path = f"tools/{tool}.py"
+        assert path not in conflict.landing_path_prefixes, path
+        assert path in conflict.remedy, path
+        assert path.removesuffix(".py") in JUSTFILE.read_text(encoding="utf-8"), path
+
+
+def test_class_6_keeps_the_label_of_the_refusal_it_actually_issues() -> None:
+    """Two rules on one row, and the reader is told which one refused them.
+
+    The invariant — no instance authors the gate that judges it — binds every instance and no
+    refusal enforces it. The refusal that fires is still the older keep-on-Claude bar, and it
+    is lane-selected. Round 1 relabelled the row "Conflict of interest" while leaving that
+    refusal unchanged, so a reader meeting `routing_class=6` would have read a
+    conflict-of-interest verdict where a provenance one was issued (review round 1 claim 4).
+    Kept rather than retired to `refuses: false`, because retiring it before step 7's
+    exemption list exists would leave the gates with neither rule.
+    """
+    conflict = next(rule for rule in policy().rules if rule.id == 6)
+    assert conflict.label == "The gates themselves"
+    assert conflict.binds_every_instance is True
+    assert conflict.refuses is True
+    assert "no refusal enforces it" in conflict.remedy
+    assert "still selected by lane" in conflict.remedy
+    # The lane selection is the finding, so it is measured rather than read off the prose.
+    assert landing("tools/land.py") is not None
+    assert routing_policy.enforcing_match(policy(), ("tools/land.py",), "claude-native") is None
+
+
+def test_class_4s_two_remedies_name_one_seat_rather_than_agreeing_by_accident() -> None:
+    """The policy says `planner` and escalate; the condition says transfer to a fable seat.
+
+    They agree only because `SEATS["planner"].escalation` and `SEATS["fable"].preference` are
+    both `("fable-high",)`, and nothing asserted it — so reordering the planner's escalation
+    list would have silently broken the agreement with both files still reading as if they
+    matched (review round 1 claim 8).
+    """
+    remedy = next(rule for rule in policy().rules if rule.id == 4).remedy
+    read = escalation.read_conditions(CONDITIONS)
+    assert read.conditions is not None
+    condition = next(
+        entry
+        for entry in read.conditions.conditions
+        if entry.name == "plausible_wrong_fix_goes_green"
+    )
+    assert "`planner` seat" in remedy
+    assert "fable" in condition.remedy
+    assert dispatch().SEATS["planner"].escalation == dispatch().SEATS["fable"].preference
 
 
 # --- unchanged behaviour the re-founding must not have broken -------------------------------
@@ -328,6 +504,26 @@ def test_every_refusing_class_row_refuses_by_name(class_id: int, body: str, seat
     assert any(line.startswith(f"routing_class={class_id}:") for line in refusal.found)
     assert "check=advisory issue declaration" in refusal.found
     assert refusal.action
+
+
+def test_the_seams_own_arrangement_refuses_the_same_way_against_this_branchs_policy() -> None:
+    """The other half of `test_the_seam_passes_a_refusal_through_without_forking`.
+
+    That test runs the real seam, so it reads the policy from the **main checkout** and can
+    only ever exercise the landed copy (#364). This one puts the identical arrangement —
+    `zai`, the `orchestrator` seat, #223's body — through `routing_refusal` rooted at `REPO`,
+    which is this worktree, so between them both copies of the policy are covered by the
+    suite rather than by a clone somebody has to remember to build. If a later edit moves
+    class 2, this reds here first and the seam test follows it on landing, instead of the
+    landing being the first thing to find out (review round 1 claim 1).
+    """
+    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "orchestrator"})()
+    found = dispatch().Readiness(None, body="Dispatch environments, end to end.")
+    refusal = dispatch().routing_refusal(args, found, REPO, NOW)
+    assert refusal is not None
+    assert refusal.kind == "routing_policy_advisory"
+    assert "routing_class=2:orchestration" in refusal.found
+    assert "seat=orchestrator" in refusal.found
 
 
 def test_work_outside_every_class_dispatches_unimpeded() -> None:

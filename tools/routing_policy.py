@@ -20,12 +20,23 @@ leave without renumbering the rows two other modules address by id — class 5 h
 in `tools/escalation.py`. `REQUIRED_CLASSES` is the fail-closed half: a table that dropped
 one of the rows another module addresses would otherwise parse and govern silently.
 
-**Three fields decide what a row does, and two of them are new.** `refuses` (default true)
+**Four fields decide what a row does, and three of them are new.** `refuses` (default true)
 says whether a match produces a refusal at all: classes 4 and 5 classify without refusing,
 because their remedies are a capability route and a subagent prohibition rather than a bar
 on a route. `binds_every_instance` (default false) lifts the Claude-lane exemption for one
 row: class 6's conflict of interest — no instance authors the gate that judges it — binds
 Claude too, which the provenance framing it replaces could not express.
+
+`required_seats` (default empty) is the third, and it is what re-founding a row on
+**capability** actually takes. A row that names it refuses every route whose seat is not on
+the list, **on every lane including Claude's**, and refuses none whose seat is on it. Class 3
+is the row: ADR authorship rests on the `planner` seat's ordered preferences (ADR-0071
+ruling 2), not on provenance, and a lane-selected refusal there was a keep-on-Claude rule
+wearing a capability remedy — it refused `codex`/`codex-sol-xhigh`/`planner`, the first entry
+in the very list its remedy prescribes (#326, review round 1 claim 2). A seat-bound row is
+therefore enforceable only where a seat exists, which is dispatch: `just land` has no seat
+and never will, so such a row carries no `landing_path_prefixes` and `parse_policy` refuses
+one that does, rather than letting the landing rung silently re-derive the lane bar.
 
 Since #302 the document carries a second job. Class 5's `landing_path_prefixes` is the
 **one authority** for what an in-world surface is: `just land`'s corpus rung, the
@@ -86,11 +97,20 @@ class Route(NamedTuple):
 class Rule(NamedTuple):
     """One class; its matching remains data rather than a branch per class.
 
-    `refuses` and `binds_every_instance` are what re-founding the table on capability and
-    conflict of interest needed (#326), and both default to the pre-#326 behaviour so an
-    older-shaped row still means what it used to. `refuses` false is a row that classifies
-    and never bars a route — its remedy is addressed to whoever takes the work, not to the
-    router. `binds_every_instance` true is a row the Claude-lane exemption does not reach.
+    `refuses`, `binds_every_instance` and `required_seats` are what re-founding the table on
+    capability and conflict of interest needed (#326), and all three default to the pre-#326
+    behaviour so an older-shaped row still means what it used to. `refuses` false is a row
+    that classifies and never bars a route — its remedy is addressed to whoever takes the
+    work, not to the router. `binds_every_instance` true is a row the Claude-lane exemption
+    does not reach.
+
+    `seats` and `required_seats` are opposites and are deliberately not one field. `seats`
+    lists the seats a row **matches** — class 2's `orchestrator`, a provenance keep-on-Claude
+    row whose remedy says as much and calls itself provisional. `required_seats` lists the
+    seats a row **admits**: the match is on the declaration, and the refusal fires for every
+    seat that is not on the list, lane-blind. One is "this seat is the problem", the other is
+    "only this seat is the answer", and collapsing them would have made class 3 unwritable
+    without a lane bar.
     """
 
     id: int
@@ -103,6 +123,7 @@ class Rule(NamedTuple):
     remedy: str
     refuses: bool = True
     binds_every_instance: bool = False
+    required_seats: tuple[str, ...] = ()
 
 
 class IssueException(NamedTuple):
@@ -205,6 +226,11 @@ IN_WORLD_ERROR: Final = (
     f"class {IN_WORLD_CLASS_ID} must carry landing_path_prefixes — it is the one authority"
     " for what an in-world surface is, and three readers depend on it (#302)"
 )
+SEAT_BOUND_LANDING_ERROR: Final = (
+    "a class bound to required_seats may carry no landing_path_prefixes — a seat-bound class is"
+    " enforceable only where a seat exists, and `just land` has no seat, so landing prefixes on"
+    " such a row would enforce something other than the rule the row states (#326)"
+)
 REMEDY_ERROR: Final = "every class must name its remedy"
 ISSUE_EXCEPTION_ERROR: Final = "each issue exception must be an object"
 ISSUE_CLASSES_ERROR: Final = "issue exception classes must be integers"
@@ -239,6 +265,7 @@ def _rule(document: object) -> Rule:
         # exempt from it. Only a row that says otherwise gets otherwise.
         refuses=document.get("refuses", True) is not False,
         binds_every_instance=document.get("binds_every_instance") is True,
+        required_seats=_strings(document.get("required_seats"), "required_seats"),
     )
 
 
@@ -270,6 +297,11 @@ def _rules(document: dict[object, object]) -> tuple[Rule, ...]:
         raise PolicyError(CLASS_NAMES_ERROR)
     if any(not rule.remedy for rule in rules):
         raise PolicyError(REMEDY_ERROR)
+    # Fail closed on the shape that would quietly reinstate the lane bar #326 removed: a
+    # seat-bound row with landing prefixes would clear at dispatch for the seat it appoints
+    # and then refuse that same route at landing, where no seat is knowable.
+    if any(rule.required_seats and rule.landing_path_prefixes for rule in rules):
+        raise PolicyError(SEAT_BOUND_LANDING_ERROR)
     if REQUIRED_CLASSES - set(ids):
         raise PolicyError(REQUIRED_CLASSES_ERROR)
     # Validated on parse rather than at each reader, so a policy that emptied the in-world
@@ -422,10 +454,18 @@ def _excepted(policy: Policy, match: Match, body: str, route: Route) -> bool:
 def _refusing_rules(policy: Policy, lane: str) -> tuple[Rule, ...]:
     """Return the rows that can refuse this lane, in table order (#326).
 
-    `refuses` is about the row, and it is the whole of the runtime filter: classes 4 and 5
-    rest on capability and on a subagent prohibition, so their remedies are addressed to
-    whoever takes the work rather than to the router, and neither bars a route. The lane
-    check is unchanged and still exempts the Claude lane.
+    `refuses` is about the row and comes first: classes 4 and 5 rest on capability and on a
+    subagent prohibition, so their remedies are addressed to whoever takes the work rather
+    than to the router, and neither bars a route.
+
+    **The Claude-lane exemption is per row, not per policy, and that is claim 2's fix.** A
+    row founded on provenance is exempt on the Claude lane, because provenance is what it
+    selects on — class 2's orchestration carve-out, the one ruling 1 left standing. A row
+    founded on a *seat* is not, because its basis has nothing to do with which provider is
+    answering: class 3 refuses an ADR authored from a seat that is not `planner` on the
+    Claude lane exactly as it does on `codex`. Exempting it by lane was what made the class
+    refuse `codex`/`codex-sol-xhigh`/`planner` — the head of the very list its own remedy
+    prescribes — while clearing `claude-native` on any seat at all.
 
     **`binds_every_instance` deliberately does not appear here, and that is the honest
     reading of ADR-0071.** Class 6's conflict of interest — no instance authors the gate
@@ -439,16 +479,40 @@ def _refusing_rules(policy: Policy, lane: str) -> tuple[Rule, ...]:
     every instance may carry no exception, because an instance that can except itself from
     the gate that judges it is exactly the shape being forbidden.
     """
-    exempt = lane == policy.claude_lane
-    return tuple(rule for rule in policy.rules if rule.refuses and not exempt)
+    claude = lane == policy.claude_lane
+    return tuple(
+        rule for rule in policy.rules if rule.refuses and (rule.required_seats or not claude)
+    )
+
+
+def _appoints(rule: Rule, seat: str) -> bool:
+    """Whether this row appoints seats *and* this is one of them — never vacuously true.
+
+    A row appointing none is not satisfied by every seat, it is simply not about seats, and
+    collapsing those two would clear every row for every route.
+    """
+    return bool(rule.required_seats) and seat in rule.required_seats
 
 
 def advisory_match(policy: Policy, body: str, route: Route) -> Match | None:
-    """Return the first non-excepted declaration match that can refuse this route."""
+    """Return the first non-excepted declaration match that can refuse this route.
+
+    A seat-bound row is skipped for the seats it appoints and refuses every other, which is
+    where "route ADR authorship to the `planner` seat" stops being advice in a remedy string
+    and becomes the thing the router does. The seat it was given rides on the evidence beside
+    the seats it wanted, so the refusal a reader meets states the capability it is about
+    rather than leaving them to infer it from the class name.
+    """
     for rule in _refusing_rules(policy, route.lane):
+        if _appoints(rule, route.seat):
+            continue
         match = issue_match(rule, body, route.seat)
-        if match is not None and not _excepted(policy, match, body, route):
+        if match is None or _excepted(policy, match, body, route):
+            continue
+        if not rule.required_seats:
             return match
+        appointed = " ".join(rule.required_seats)
+        return Match(rule, (*match.evidence, f"seat={route.seat}", f"required_seats={appointed}"))
     return None
 
 
@@ -480,8 +544,19 @@ def classify_issue(policy: Policy, body: str, seat: str) -> Match | None:
 
 
 def enforcing_match(policy: Policy, paths: tuple[str, ...], lane: str) -> Match | None:
-    """Return the first refusing class the actual diff touches for a non-exempt landing."""
+    """Return the first refusing class the actual diff touches for a non-exempt landing.
+
+    **A seat-bound row is skipped here, and the skip is explicit rather than incidental.**
+    There is no seat at landing — `just land` runs in a worktree and is handed a lane and a
+    diff — so a row whose whole basis is which seat took the work has nothing to test, and
+    testing it on the lane instead is the defect #326 was re-founded to remove. `parse_policy`
+    already refuses such a row landing prefixes, so this loop would skip it for want of a
+    match anyway; the guard is here so a future row carrying both is refused by the rule
+    rather than by the accident of an empty list.
+    """
     for rule in _refusing_rules(policy, lane):
+        if rule.required_seats:
+            continue
         match = landing_match(rule, paths)
         if match is not None:
             return match
