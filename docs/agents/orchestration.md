@@ -114,7 +114,9 @@ worth naming: the loss while *awake* was 73 agent-minutes over 19 minutes of tur
    intent this session. This, and not the queue, is the step that decides.
 4. **`just brief N`**, then write the variable half — the task, the scope, the ground
    truth, and the reason for a non-default seat. This is the real work of the turn;
-   an unedited brief is obviously unfinished by construction. Measured at **837 output
+   an unedited brief is obviously unfinished by construction. Before writing it, read the
+   issue body and its latest comments; an explicit human ruling is ground truth, and
+   neither the title nor the seat's memory may widen it. Measured at **837 output
    tokens and about 30 seconds**, 57% of a dispatch turn's generation and 0.028 pp₅ₕ
    (#295). Do not spend that as a reason to write less of it: over the block where the
    seat's occupancy collapsed, all the brief-writing in it was worth under 1% of the
@@ -240,6 +242,14 @@ does by hand.
   an unreviewed ADR draft sitting in a worktree that landed. Gated-surface drafting
   (ADRs, `CLAUDE.md`, `CONTEXT.md`, schema semantics) dispatches to fable; the seat
   does not hold it.
+- **Never write a brief's task, scope or ground truth from the issue body alone.** Read the
+  thread first, and name the comment each pre-derived decision comes from, so that a body
+  the thread has superseded shows up in the brief rather than being resolved silently.
+  #25's brief asked for implementation at `opus-xhigh`, named the full corpus and offered
+  ADR-0013's standing authorisation, after nine rulings on its own thread had converted the
+  issue to a decision ticket with no production code; the dispatched agent read the thread,
+  built nothing and said why. The same shape is recorded once before, on #234. Both were
+  caught by the agent, not by the seat.
 - **Dispatch off a table the human has not agreed.** The class rule is the policy; any
   routing table is its first applied instance, never the policy itself (#258 ruling 1).
 - **Interpret a `quota_exhausted` or `provider_refused` stop.** Neither is a result;
@@ -276,22 +286,22 @@ should try to: the human's live intent this session, the cycle's shape, the open
 rulings, and which issues are *about* the same thing where no `Blocked-by:` line has
 been written.
 
-## Consistency with CLAUDE.md (acceptance criterion 2)
+## Consistency with AGENTS.md (acceptance criterion 2)
 
-Checked against `CLAUDE.md`'s Working-style and Model-roles sections as landed at the
+Checked against `AGENTS.md`'s Working-style and Model-roles sections as landed at the
 time of writing (`04d6d55`): the seat (opus/high, fable dispatched for named acts), the
 hold-the-wait / end-don't-wait split, the single-shot shape, the no-added-pass review
 function, the breaker-wait and `infra_unavailable` rules, and the
-`ANTHROPIC_BASE_URL` prohibition all restate `CLAUDE.md` rules and point at them rather
+`ANTHROPIC_BASE_URL` prohibition all restate `AGENTS.md` rules and point at them rather
 than overriding them. No conflict found.
 
 One item this section originally carried as a **proposal for the sign-off gate**
-(acceptance criterion 5) — the pointer from `CLAUDE.md` to this document — has since
-gone through that gate and landed at `b2d9006`: `CLAUDE.md`'s Agent-skills section now
+(acceptance criterion 5) — the pointer from `AGENTS.md` to this document — has since
+gone through that gate and landed at `b2d9006`: `AGENTS.md`'s Agent-skills section now
 reads "The orchestration seat's operating rules live in `docs/agents/orchestration.md`;
 read it before dispatching." (Stale "unlanded proposal" wording corrected under #297.)
 
-A second item from #295 remains a proposal on the same gate — a row for `CLAUDE.md`'s
+A second item from #295 remains a proposal on the same gate — a row for `AGENTS.md`'s
 command table, landing with its recipe as the convention requires, but on a
 human-gated file:
 
