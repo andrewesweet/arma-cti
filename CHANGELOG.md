@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **The routing policy is re-founded class by class on capability and conflict of interest, and
+  is no longer the keep-on-Claude policy.** ADR-0071 ruling 1 withdrew provenance as a reason to
+  route work, and its re-founding table separates what each class actually rested on. Two classes
+  die. *Gated semantic surfaces* rested on provenance and the human sign-off gate on those
+  surfaces was never this file — but `.claude/hooks/` and `.claude/settings.json` are the denial
+  layer and the permission allowlist, i.e. gates, and this was the only routing rule naming them,
+  so those two paths move to the conflict-of-interest class rather than falling out. *The
+  Anthropic plan meter* dies because the meter is read over plain HTTP at a fixed URL with no
+  Claude session involved. Of the five survivors: *retros and ADR authorship* splits, the retro
+  half dying with ruling 3 (a retro lands nothing, so it needs no routing rule) and the surviving
+  ADR-authorship half gaining `docs/adr/` as a landing path, since its only path belonged to the
+  half being killed and it would otherwise enforce on issue phrases alone; *the #181 shape*
+  survives with a capability remedy — route to the planner seat and escalate — matched to the
+  transferring-escalation condition of the same name, which fires on the class the same issue
+  body classifies into; *in-world landings* narrows to a rule about subagents, because a subagent
+  cannot hold the corpus's foreground wait but the top-level session `just dispatch` launches
+  can, so the class bars no dispatch route while remaining the one authority for what an in-world
+  surface is; and *the gates themselves* is reframed as conflict of interest — no instance
+  authors the gate that judges it — which binds Claude too and therefore carries no exception at
+  all, the withdrawn `proposal-only` marker included. Class ids are now stable historical handles
+  rather than positions: the two retired ids leave gaps rather than renumbering the rows other
+  modules address by id, and a table dropping one of those rows is refused instead of governing
+  silently. The policy states its own incomplete coverage, and `just land` and `just dispatch`
+  print that statement on every routing refusal, so a reader meets it where the table is being
+  applied to them rather than in a docstring.
+
 ### Added
 
 - **Transferring-escalation conditions are data, emitted to an agent only when one fires.**

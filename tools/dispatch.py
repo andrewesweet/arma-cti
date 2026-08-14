@@ -167,11 +167,15 @@ writable on both runner families, so a review dispatched at the default could ed
 now *forces* `plan` in `routed`, which `build_argv` renders as `--permission-mode plan` on
 the `claude` family and `--sandbox read-only` on `codex`.
 
-**The keep-on-Claude class policy is a separate, per-dispatch read** (#266). Queue policy
-answers whether work may start now; `config/dispatch-routing-policy.json` answers whether
-the declared class may leave Claude. The main checkout is read on every dispatch, never at
-startup, so a policy edit landed after an orchestrator session began reaches its next call.
-A match refuses by class name and remedy with no override and no failure class. This first
+**The routing class policy is a separate, per-dispatch read** (#266). Queue policy answers
+whether work may start now; `config/dispatch-routing-policy.json` answers which class the
+declared work is in and what that class asks for. It was the keep-on-Claude policy until
+#326 re-founded it class by class on capability and conflict of interest, so a match no
+longer implies a refusal: two of the five classes classify without barring a route. The main
+checkout is read on every dispatch, never at startup, so a policy edit landed after an
+orchestrator session began reaches its next call. A refusing match refuses by class name and
+remedy with no override and no failure class, and carries the policy's own statement that
+its class list does not cover everything it asserts an invariant over. This first
 read is explicitly advisory because an issue can understate its eventual surface; `just
 land` is the enforcing half and checks the actual rebased diff against the trusted policy.
 """
@@ -2989,6 +2993,11 @@ def routing_refusal(
             f"class_label={match.rule.label}",
             *match.evidence,
             f"source={read.policy.source}",
+            # The class list does not cover every surface it asserts an invariant over, and
+            # since #326 the refusal says so rather than leaving it to a docstring: the
+            # reader being routed by the table is the reader forming a belief about what it
+            # checks. `just land`'s enforcing refusal carries the same line.
+            f"coverage={read.policy.coverage}",
         ),
         match.rule.remedy,
     )

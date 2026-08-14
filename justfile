@@ -479,10 +479,13 @@ discard path="" ruling="":
 # tool will not rewrite an issue it is judging, and there is no override flag.
 # The rung is lane-blind: a foreign lane meets exactly what `claude-native` does.
 #
-# The repository's keep-on-Claude class policy is a separate rung from queue
-# state. It is read from the main checkout per dispatch, never at process
-# startup, and a foreign issue declaring one of its seven classes is refused by
-# class name with the remedy. This read is advisory because the body predicts
+# The repository's routing class policy is a separate rung from queue state. It
+# is read from the main checkout per dispatch, never at process startup, and an
+# issue declaring one of its refusing classes is refused by class name with the
+# remedy. Not every class refuses: ADR-0071 re-founded the table class by class
+# (#326), and the two that rest on capability and on a subagent prohibition —
+# `plausible_wrong_fix_goes_green` and `in_world_landings` — classify without
+# barring a route. This read is advisory because the body predicts
 # the surface; `just land` checks the real diff. There is no override and the
 # refusal has no failure class, because no provider or code verdict exists
 # (#266, #258).

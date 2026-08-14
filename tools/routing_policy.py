@@ -1,9 +1,31 @@
-"""Keep-on-Claude routing classes, read for every dispatch and landing (#266).
+"""The routing classes, read for every dispatch and landing (#266), re-founded by #326.
 
 An issue body only declares the expected surface, so dispatch is an advisory read even
 though a match refuses. Landing reads the real diff and is the enforcing gate. This is
 separate from queue policy: queue state decides whether work may start now; this file
-decides whether a class may leave Claude under ADR-0061 and #258.
+decides which class a piece of work is in and what that class asks for.
+
+**The classes no longer share one basis, and that is ADR-0071's re-founding (#326).** The
+document used to be the keep-on-Claude policy, every row resting on provenance under
+ADR-0061 Decision 2. Ruling 1 withdrew provenance, and the table was re-founded class by
+class on what each row actually rests on — capability, or conflict of interest, or in one
+case a provisional carve-out. Two rows died: `gated_semantic_surfaces`, whose basis was
+provenance and whose human sign-off gate was never this file, save its two gate paths
+which moved to class 6; and `anthropic_plan_meter`, whose meter is read over plain HTTP
+with no Claude session involved. Their ids, 1 and 7, are retired and never reused.
+
+**An id is a stable historical handle, not a position.** Ids must be unique, positive and
+strictly ascending, but need not be contiguous, because a retired class must be able to
+leave without renumbering the rows two other modules address by id — class 5 here, class 4
+in `tools/escalation.py`. `REQUIRED_CLASSES` is the fail-closed half: a table that dropped
+one of the rows another module addresses would otherwise parse and govern silently.
+
+**Three fields decide what a row does, and two of them are new.** `refuses` (default true)
+says whether a match produces a refusal at all: classes 4 and 5 classify without refusing,
+because their remedies are a capability route and a subagent prohibition rather than a bar
+on a route. `binds_every_instance` (default false) lifts the Claude-lane exemption for one
+row: class 6's conflict of interest — no instance authors the gate that judges it — binds
+Claude too, which the provenance framing it replaces could not express.
 
 Since #302 the document carries a second job. Class 5's `landing_path_prefixes` is the
 **one authority** for what an in-world surface is: `just land`'s corpus rung, the
@@ -11,13 +33,15 @@ admission cross-check in `tools/admission.py` and the gate prediction in `tools/
 all read it from here rather than each holding a list. It lives in data rather than in
 Python because `just land` reads it out of fetched `origin/main` — a candidate diff must
 not be able to widen the list that judges it — and because three copies of a path list
-rot, which is what #302 was filed about.
+rot, which is what #302 was filed about. Narrowing class 5 to a subagent rule leaves that
+job untouched: `refuses` governs the routing gate, never `in_world_prefixes`.
 """
 
 from __future__ import annotations
 
 import json
 from datetime import datetime
+from itertools import pairwise
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
@@ -26,12 +50,28 @@ if TYPE_CHECKING:
 
 POLICY_RELATIVE: Final = Path("config/dispatch-routing-policy.json")
 
-# The class that carries the in-world surfaces. Looked up by **id**, because the id table
-# is already validated as the ordered 1..7 below and is therefore the stable handle; the
-# name is what the row is called today and is asserted against the id in
+# The class that carries the in-world surfaces. Looked up by **id** — a real lookup since
+# #326, not an index, because the table is no longer contiguous — and the id is the stable
+# handle; the name is what the row is called today and is asserted against the id in
 # `tests/unit/test_corpus_gate.py` rather than relied on here.
 IN_WORLD_CLASS_ID: Final = 5
 IN_WORLD_CLASS: Final = "in_world_landings"
+
+# The conflict-of-interest class. Named here because it is the one row whose invariant
+# binds every instance, and because `tests/unit/test_routing_policy.py` asserts that the
+# gate paths the withdrawn class 1 held arrived here rather than falling out.
+CONFLICT_OF_INTEREST_CLASS_ID: Final = 6
+
+# The rows another module addresses by id, and which therefore cannot leave silently. Class
+# 4 is `tools/escalation.py`'s `CLASS_FOUR`, deliberately a decoupled copy; class 5 is the
+# in-world authority three readers depend on; class 6 is the conflict-of-interest rule
+# ADR-0071 ruling 4's exemption list is bound by. A table missing one of these parses
+# nowhere. Ids only, never names: the name is what a row is called today and a rename is
+# not a removal — `tests/unit/test_corpus_gate.py` holds that the row's own name is not
+# load-bearing, and pinning it here would quietly make it so.
+REQUIRED_CLASSES: Final[frozenset[int]] = frozenset(
+    {4, IN_WORLD_CLASS_ID, CONFLICT_OF_INTEREST_CLASS_ID}
+)
 
 
 class Route(NamedTuple):
@@ -44,7 +84,14 @@ class Route(NamedTuple):
 
 
 class Rule(NamedTuple):
-    """One class; its matching remains data rather than a branch per class."""
+    """One class; its matching remains data rather than a branch per class.
+
+    `refuses` and `binds_every_instance` are what re-founding the table on capability and
+    conflict of interest needed (#326), and both default to the pre-#326 behaviour so an
+    older-shaped row still means what it used to. `refuses` false is a row that classifies
+    and never bars a route — its remedy is addressed to whoever takes the work, not to the
+    router. `binds_every_instance` true is a row the Claude-lane exemption does not reach.
+    """
 
     id: int
     name: str
@@ -54,6 +101,8 @@ class Rule(NamedTuple):
     seats: tuple[str, ...]
     landing_path_prefixes: tuple[str, ...]
     remedy: str
+    refuses: bool = True
+    binds_every_instance: bool = False
 
 
 class IssueException(NamedTuple):
@@ -79,9 +128,18 @@ class RouteException(NamedTuple):
 
 
 class Policy(NamedTuple):
-    """The complete validated policy document."""
+    """The complete validated policy document.
+
+    `coverage` is always a sentence and never empty: ADR-0071 records that this table's
+    classes do not cover the surfaces they assert an invariant over, and a document that
+    could drop that sentence would read as complete. A document that omits it gets
+    `COVERAGE_UNSTATED`, the pessimistic reading. It is carried on the parsed policy so a
+    consumer can put it where a reader meets it — `just land` and `just dispatch` both print
+    it on a routing refusal.
+    """
 
     source: str
+    coverage: str
     claude_lane: str
     rules: tuple[Rule, ...]
     issue_exceptions: tuple[IssueException, ...]
@@ -113,8 +171,36 @@ STANDING_ERROR: Final = (
     " an undated widening must say so deliberately, and a dated one cannot also be standing"
 )
 CLASSES_LIST_ERROR: Final = "classes must be a list"
-CLASS_IDS_ERROR: Final = "classes must be the ordered table 1..7"
+CLASS_IDS_ERROR: Final = (
+    "class ids must be positive, unique and strictly ascending — an id is a stable handle other"
+    " modules address a row by, so a retired class leaves a gap rather than renumbering its"
+    " neighbours (#326)"
+)
 CLASS_NAMES_ERROR: Final = "class names must be unique"
+REQUIRED_CLASSES_ERROR: Final = (
+    "the table must carry every class another module addresses by id — dropping one would parse"
+    " and govern silently, leaving that module matching against a row that is not there"
+)
+# A policy that states no coverage gets the honest default rather than silence, and the
+# default is the pessimistic reading. Not a parse error, because the enforcing readers parse
+# a copy they did not write: `just land` reads the policy out of fetched `origin/main` and
+# `just dispatch` out of the main checkout, so making a newly-added field mandatory would
+# make every pre-#326 copy unreadable and refuse every landing and dispatch for the whole
+# window between this landing and that fetch. Fail-closed in the wrong place is still a
+# break. The shipped file is held to stating its own coverage by
+# `tests/unit/test_routing_policy.py` instead, which judges the copy this repo writes.
+COVERAGE_UNSTATED: Final = (
+    "This policy states no coverage of its own, so treat its class list as incomplete: a surface"
+    " it does not name is uncovered, never cleared."
+)
+EXCEPTION_CLASS_ERROR: Final = (
+    "an exception must name a class this table carries; one naming a retired or absent id excepts"
+    " nothing and would sit in the file looking like a live allowance"
+)
+BINDING_EXCEPTION_ERROR: Final = (
+    "a class that binds every instance may carry no exception: an instance that can except itself"
+    " from the gate that judges it is the conflict of interest the class exists to forbid"
+)
 IN_WORLD_ERROR: Final = (
     f"class {IN_WORLD_CLASS_ID} must carry landing_path_prefixes — it is the one authority"
     " for what an in-world surface is, and three readers depend on it (#302)"
@@ -149,7 +235,16 @@ def _rule(document: object) -> Rule:
             document.get("landing_path_prefixes"), "landing_path_prefixes"
         ),
         remedy=str(document["remedy"]),
+        # Absent means the pre-#326 behaviour: a matched row refuses, and the Claude lane is
+        # exempt from it. Only a row that says otherwise gets otherwise.
+        refuses=document.get("refuses", True) is not False,
+        binds_every_instance=document.get("binds_every_instance") is True,
     )
+
+
+def _by_id(rules: tuple[Rule, ...], class_id: int) -> Rule:
+    """Return the row with this id. A real lookup: since #326 the ids are not positions."""
+    return next(rule for rule in rules if rule.id == class_id)
 
 
 def _timestamp(value: object) -> datetime:
@@ -164,22 +259,39 @@ def _rules(document: dict[object, object]) -> tuple[Rule, ...]:
     if not isinstance(raw_classes, list):
         raise PolicyError(CLASSES_LIST_ERROR)
     rules = tuple(_rule(item) for item in raw_classes)
-    if tuple(rule.id for rule in rules) != tuple(range(1, 8)):
+    ids = [rule.id for rule in rules]
+    # Ascending and unique, but no longer contiguous: #326 retired ids 1 and 7, and forcing
+    # contiguity would have renumbered class 4, 5 and 6 out from under the two modules that
+    # address them by id. `REQUIRED_CLASSES` is what contiguity used to buy — proof that the
+    # rows other code depends on are actually here.
+    if not ids or ids[0] < 1 or any(later <= earlier for earlier, later in pairwise(ids)):
         raise PolicyError(CLASS_IDS_ERROR)
     if len({rule.name for rule in rules}) != len(rules):
         raise PolicyError(CLASS_NAMES_ERROR)
     if any(not rule.remedy for rule in rules):
         raise PolicyError(REMEDY_ERROR)
+    if REQUIRED_CLASSES - set(ids):
+        raise PolicyError(REQUIRED_CLASSES_ERROR)
     # Validated on parse rather than at each reader, so a policy that emptied the in-world
     # class cannot govern silently: the landing rung would then compute "nothing is
     # in-world" and let every in-world diff through, which is #302's own defect wearing
-    # the fix's clothes. The index is safe because the ids were just proven to be 1..7.
-    if not rules[IN_WORLD_CLASS_ID - 1].landing_path_prefixes:
+    # the fix's clothes. The row is present because `REQUIRED_CLASSES` just proved it.
+    if not _by_id(rules, IN_WORLD_CLASS_ID).landing_path_prefixes:
         raise PolicyError(IN_WORLD_ERROR)
     return rules
 
 
-def _issue_exceptions(document: dict[object, object]) -> tuple[IssueException, ...]:
+def _check_exception_classes(named: set[int], rules: tuple[Rule, ...]) -> None:
+    """Refuse an exception naming a retired class, or one naming a class that binds all."""
+    if not named <= {rule.id for rule in rules}:
+        raise PolicyError(EXCEPTION_CLASS_ERROR)
+    if any(rule.id in named and rule.binds_every_instance for rule in rules):
+        raise PolicyError(BINDING_EXCEPTION_ERROR)
+
+
+def _issue_exceptions(
+    document: dict[object, object], rules: tuple[Rule, ...]
+) -> tuple[IssueException, ...]:
     found: list[IssueException] = []
     for raw in document.get("issue_exceptions", []):
         if not isinstance(raw, dict):
@@ -187,11 +299,16 @@ def _issue_exceptions(document: dict[object, object]) -> tuple[IssueException, .
         classes = raw.get("classes")
         if not isinstance(classes, list) or not all(isinstance(item, int) for item in classes):
             raise PolicyError(ISSUE_CLASSES_ERROR)
+        # Retiring a class in #326 orphaned three of these, and an orphan is worse than an
+        # absence: it reads as a live allowance and excepts nothing at all.
+        _check_exception_classes(set(classes), rules)
         found.append(IssueException(str(raw["marker"]), tuple(classes)))
     return tuple(found)
 
 
-def _route_exceptions(document: dict[object, object]) -> tuple[RouteException, ...]:
+def _route_exceptions(
+    document: dict[object, object], rules: tuple[Rule, ...]
+) -> tuple[RouteException, ...]:
     found: list[RouteException] = []
     for raw in document.get("route_exceptions", []):
         if not isinstance(raw, dict):
@@ -199,6 +316,7 @@ def _route_exceptions(document: dict[object, object]) -> tuple[RouteException, .
         standing = raw.get("standing") is True
         if standing == ("expires_at" in raw):
             raise PolicyError(STANDING_ERROR)
+        _check_exception_classes({int(raw["class"])}, rules)
         found.append(
             RouteException(
                 int(raw["class"]),
@@ -216,12 +334,15 @@ def parse_policy(text: str) -> Policy:
     document = json.loads(text)
     if not isinstance(document, dict) or document.get("version") != 1:
         raise PolicyError(VERSION_ERROR)
+    coverage = str(document.get("coverage") or COVERAGE_UNSTATED)
+    rules = _rules(document)
     return Policy(
         source=str(document["source"]),
+        coverage=coverage,
         claude_lane=str(document["claude_lane"]),
-        rules=_rules(document),
-        issue_exceptions=_issue_exceptions(document),
-        route_exceptions=_route_exceptions(document),
+        rules=rules,
+        issue_exceptions=_issue_exceptions(document, rules),
+        route_exceptions=_route_exceptions(document, rules),
     )
 
 
@@ -242,9 +363,11 @@ def in_world_prefixes(policy: Policy) -> tuple[str, ...]:
     """Return the in-world surfaces, off the one class that carries them.
 
     `parse_policy` has already proven the row exists and is not empty, so this
-    cannot hand back a list that would read as "nothing is in-world".
+    cannot hand back a list that would read as "nothing is in-world". Narrowing class 5
+    to a subagent rule in #326 set its `refuses` false and left this untouched: the row
+    stops barring routes and goes on being the one authority for the surface list.
     """
-    return policy.rules[IN_WORLD_CLASS_ID - 1].landing_path_prefixes
+    return _by_id(policy.rules, IN_WORLD_CLASS_ID).landing_path_prefixes
 
 
 def in_world_paths(policy: Policy, paths: Iterable[str]) -> tuple[str, ...]:
@@ -296,11 +419,33 @@ def _excepted(policy: Policy, match: Match, body: str, route: Route) -> bool:
     return declared or routed
 
 
+def _refusing_rules(policy: Policy, lane: str) -> tuple[Rule, ...]:
+    """Return the rows that can refuse this lane, in table order (#326).
+
+    `refuses` is about the row, and it is the whole of the runtime filter: classes 4 and 5
+    rest on capability and on a subagent prohibition, so their remedies are addressed to
+    whoever takes the work rather than to the router, and neither bars a route. The lane
+    check is unchanged and still exempts the Claude lane.
+
+    **`binds_every_instance` deliberately does not appear here, and that is the honest
+    reading of ADR-0071.** Class 6's conflict of interest — no instance authors the gate
+    that judges it — binds Claude too, but the ADR records the class as *aspirational*: the
+    invariant it asserts is not enforced, and is discharged by an independent review under
+    ruling 4, which no refusal enforces until step 7's exemption list lands. Enforcing it
+    here instead would refuse every Claude landing that touches a gate, this project's own
+    maintenance of its gates included, with no review record yet existing to lift it — a bar
+    on all gate work rather than a conflict-of-interest rule. What the field does enforce is
+    the half that is enforceable today and is the ADR's own reasoning: a class that binds
+    every instance may carry no exception, because an instance that can except itself from
+    the gate that judges it is exactly the shape being forbidden.
+    """
+    exempt = lane == policy.claude_lane
+    return tuple(rule for rule in policy.rules if rule.refuses and not exempt)
+
+
 def advisory_match(policy: Policy, body: str, route: Route) -> Match | None:
-    """Return the first non-excepted declaration match for a foreign route."""
-    if route.lane == policy.claude_lane:
-        return None
-    for rule in policy.rules:
+    """Return the first non-excepted declaration match that can refuse this route."""
+    for rule in _refusing_rules(policy, route.lane):
         match = issue_match(rule, body, route.seat)
         if match is not None and not _excepted(policy, match, body, route):
             return match
@@ -335,10 +480,8 @@ def classify_issue(policy: Policy, body: str, seat: str) -> Match | None:
 
 
 def enforcing_match(policy: Policy, paths: tuple[str, ...], lane: str) -> Match | None:
-    """Return the first class the actual diff touches for a foreign landing."""
-    if lane == policy.claude_lane:
-        return None
-    for rule in policy.rules:
+    """Return the first refusing class the actual diff touches for a non-exempt landing."""
+    for rule in _refusing_rules(policy, lane):
         match = landing_match(rule, paths)
         if match is not None:
             return match

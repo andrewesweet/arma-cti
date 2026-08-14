@@ -197,10 +197,11 @@ def _seed(prefix: str) -> str:
 
 
 def test_every_path_backed_class_is_exercised_beyond_the_first_row() -> None:
+    """The ids are #326's five survivors less class 4, which no diff path can prove."""
     read = _policy_read()
     assert read.policy is not None
     path_backed = [rule for rule in read.policy.rules if rule.landing_path_prefixes]
-    assert [rule.id for rule in path_backed] == [1, 2, 3, 5, 6, 7]
+    assert [rule.id for rule in path_backed] == [2, 3, 5, 6]
     for rule in path_backed:
         match = routing_policy.landing_match(rule, (_seed(rule.landing_path_prefixes[0]),))
         assert match is not None, rule.name
@@ -210,18 +211,32 @@ def test_every_path_backed_class_is_exercised_beyond_the_first_row() -> None:
 def test_the_181_shape_stays_declaration_only_because_no_diff_path_can_prove_it() -> None:
     read = _policy_read()
     assert read.policy is not None
-    diagnosis = read.policy.rules[3]
-    assert diagnosis.id == 4
+    # By id, not by position: #326 retired ids 1 and 7 and left the table with gaps.
+    diagnosis = next(rule for rule in read.policy.rules if rule.id == 4)
     assert diagnosis.landing_path_prefixes == ()
     assert routing_policy.landing_match(diagnosis, ("tools/anything.py",)) is None
 
 
-def test_a_foreign_keep_class_diff_is_an_enforcing_named_refusal() -> None:
-    refusal = land.classify_routing(_policy_read(), ("addons/main/ui.sqf",), "zai")
+def test_a_routed_class_diff_is_an_enforcing_named_refusal() -> None:
+    refusal = land.classify_routing(
+        _policy_read(), (".claude/hooks/deny-subagent-waits.py",), "zai"
+    )
     assert _kind(refusal) == "routing_policy_gate"
     assert "check=enforcing actual diff" in _text(refusal)
-    assert "routing_class=5:in_world_landings" in _text(refusal)
-    assert "full `just regress` corpus" in _text(refusal)
+    assert "routing_class=6:gates_themselves" in _text(refusal)
+    assert "no instance authors the gate that judges it" in _text(refusal)
+
+
+def test_the_enforcing_refusal_says_the_class_list_does_not_cover_everything() -> None:
+    """#326: a clear read is not a statement that the diff was covered, and the gate says so."""
+    read = _policy_read()
+    refusal = land.classify_routing(read, ("docs/agents/orchestration.md",), "zai")
+    assert f"coverage={read.policy.coverage}" in _text(refusal)
+
+
+def test_a_narrowed_in_world_diff_no_longer_refuses_a_landing() -> None:
+    """Class 5 became a subagent rule (#326): a dispatched top-level session may hold the wait."""
+    assert land.classify_routing(_policy_read(), ("addons/main/ui.sqf",), "zai") is None
 
 
 def test_a_non_class_diff_clears_the_routing_gate() -> None:
@@ -258,7 +273,7 @@ def test_every_routing_refusal_ends_with_the_clause_the_plan_strips() -> None:
     """
     unreadable_policy = routing_policy.ReadResult(None, "policy is absent")
     refusals = [
-        land.classify_routing(_policy_read(), ("addons/main/ui.sqf",), "zai"),
+        land.classify_routing(_policy_read(), ("tools/land.py",), "zai"),
         land.classify_routing(unreadable_policy, ("tools/worker.py",), "zai"),
         land.classify_routing(_policy_read(), None, "zai", "fatal: bad revision"),
     ]
@@ -410,7 +425,9 @@ def test_the_gate_exempts_the_lane_the_policy_names_rather_than_a_second_literal
     shipped = routing_policy.parse_policy(POLICY.read_text(encoding="utf-8"))
     renamed = shipped._replace(claude_lane="claude-anthropic")
     read = routing_policy.ReadResult(renamed)
-    gated = ("addons/main/ui.sqf",)
+    # A class-6 path since #326: class 5 was narrowed to a subagent rule and refuses no
+    # landing at all, so it can no longer separate an exempt lane from a judged one.
+    gated = ("tools/land.py",)
 
     # The policy's name is exempt, and it is not the constant.
     assert renamed.claude_lane != land.CLAUDE_LANE
@@ -546,19 +563,19 @@ def test_a_red_gate_leaves_origin_exactly_where_it_was(
     assert _tip(origin) == before
 
 
-def test_a_foreign_keep_class_diff_refuses_before_the_normal_gate_or_push(
+def test_a_routed_class_diff_refuses_before_the_normal_gate_or_push(
     repo: tuple[Path, Path, Path],
 ) -> None:
     origin, _main, here = repo
     before = _tip(origin)
-    _commit(here, "addons/main/ui.sqf", "in-world work\n")
+    _commit(here, ".claude/settings.json", "{}\n")
     gate = _Gate()
 
     report = land.land(_main, here, gate=gate, lane="zai")
 
     assert report.code == 1
     assert report.lines[0] == "refusal=routing_policy_gate"
-    assert "routing_class=5:in_world_landings" in report.lines
+    assert "routing_class=6:gates_themselves" in report.lines
     assert gate.calls == []
     assert _tip(origin) == before
 
@@ -758,7 +775,7 @@ def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
     """
     origin, main, here = repo
     before = _tip(origin)
-    _commit(here, "addons/main/ui.sqf", "in-world work\n")
+    _commit(here, ".claude/settings.json", "{}\n")
 
     report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai")
 
@@ -766,7 +783,7 @@ def test_a_dry_run_on_a_gated_surface_from_a_foreign_lane_does_not_plan_to_push(
     assert not _pushes_unqualified(report)
     assert any("routing=would_refuse" in line for line in report.lines)
     assert any("routing_policy_gate" in line for line in report.lines)
-    assert any("routing_class=5:in_world_landings" in line for line in report.lines)
+    assert any("routing_class=6:gates_themselves" in line for line in report.lines)
     # The caveat, on the refusal and not only on the pass — that was round 1 claim 5's
     # whole substance and nothing pinned it, so stripping it stayed green (round 2
     # claim 9).
@@ -883,7 +900,7 @@ def test_a_native_dry_run_says_the_routing_rung_does_not_apply_to_it(
 ) -> None:
     """A gated path on `claude-native` is not misrouted, and the plan must not imply it is."""
     _origin, main, here = repo
-    _commit(here, "addons/main/ui.sqf", "in-world work\n")
+    _commit(here, ".claude/settings.json", "{}\n")
 
     report = land.land(main, here, gate=_Gate(), dry_run=True)
 
@@ -904,7 +921,7 @@ def test_a_refusing_dry_run_still_prints_its_plan_on_stdout(
     (review round 2 claim 3).
     """
     _origin, _main, here = repo
-    _commit(here, "addons/main/ui.sqf", "in-world work\n")
+    _commit(here, ".claude/settings.json", "{}\n")
     monkeypatch.chdir(here)
     monkeypatch.setenv("CTI_DISPATCH_LANE", "zai")
 

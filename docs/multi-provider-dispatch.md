@@ -231,16 +231,20 @@ authors the exact replacement text as a proposal, and the orchestrator transcrib
 `tools/brief.py` says so in the brief when an issue names such a path, so the next dispatch
 learns it at composition time instead of spending itself finding out.
 
-**The routing policy has not caught up.** `config/dispatch-routing-policy.json` still carries
-`.claude/skills/`, `.claude/agents/`, `.claude/settings.json` and `.claude/hooks/` inside
-class 1, `gated_semantic_surfaces`, whose remedy reads *"Route invented wording and permission
-semantics to a Claude seat."* That is true and insufficient: a dispatched `claude-native`
-session **is** a Claude seat and is refused these paths anyway. The policy routes on provider
-where the constraint is dispatched-versus-interactive, so it sends the work to a lane that
-will refuse it. Class 2 already carries the mechanism that fixes this — `"seats":
-["orchestrator"]`. Splitting the four prefixes into their own class is proposed on #294 for
-the human's gate rather than landed here, because the policy file is class 6, the gates
-themselves.
+**The routing policy half-caught up, and the gap this section named is now two gaps.** This
+paragraph used to record that `config/dispatch-routing-policy.json` carried `.claude/skills/`,
+`.claude/agents/`, `.claude/settings.json` and `.claude/hooks/` inside class 1,
+`gated_semantic_surfaces`, whose remedy routed on provider where the constraint is
+dispatched-versus-interactive — so it sent the work to a lane that would refuse it. #326 killed
+class 1 outright: ADR-0071's re-founding table found its basis was provenance and its human
+sign-off gate was never this file. Two of the four prefixes survived the deletion by moving to
+class 6, because `.claude/settings.json` and `.claude/hooks/` are the permission allowlist and
+the denial layer, i.e. gates, and class 1's list was the only routing rule that named them. The
+other two, `.claude/skills/` and `.claude/agents/`, are named by no routing class at all now.
+That is not an oversight to fix here: both are human sign-off gated by CLAUDE.md already, and
+the wall this section documents refuses a dispatched write to either regardless of lane. What
+is lost is the *advisory* — an issue declaring one of those paths no longer learns at dispatch
+that it cannot land it, and learns instead from `tools/brief.py`'s composition-time note.
 
 **A subprocess is a way round the parser, and that is why a grant must be narrow.** The
 harness classifies the Bash *command*, not the writes a child process goes on to perform:

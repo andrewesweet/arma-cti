@@ -123,7 +123,7 @@ def test_a_policy_that_lost_the_in_world_class_cannot_govern_at_all() -> None:
 
 
 def test_the_authority_is_found_by_id_so_the_rows_own_name_is_not_load_bearing() -> None:
-    """The ids are already validated as the ordered 1..7, which makes them the stable handle."""
+    """The ids are validated as ascending and unique, which makes them the stable handle."""
     document = json.loads(POLICY.read_text(encoding="utf-8"))
     for rule in document["classes"]:
         if rule["id"] == routing_policy.IN_WORLD_CLASS_ID:

@@ -345,11 +345,18 @@ def classify_routing(
     lane: str,
     detail: str = "",
 ) -> Refusal | None:
-    """Enforce the keep-on-Claude policy against the real foreign-lane diff.
+    """Enforce the routing policy against the real non-exempt diff.
 
     This is the gate. Unlike dispatch's advisory issue-declaration read, an empty match
     here says something about the paths that will actually be pushed. An unreadable
     policy or diff refuses: a check that did not run is not a clearance (#41).
+
+    A clear read is **not** a statement that the diff was covered, and since #326 it says
+    so: the refusal carries the policy's own `coverage` line, so the incomplete coverage of
+    the class list is met by the reader the classes are being applied to rather than left
+    in a docstring. It rides on every routing refusal and not only class 6's, because a
+    reader refused under one class is exactly the reader forming a belief about what the
+    table checks.
     """
     if _exempt_lane(read, lane):
         return None
@@ -380,6 +387,7 @@ def classify_routing(
             f"class_label={match.rule.label}",
             *match.evidence,
             f"source={read.policy.source}",
+            f"coverage={read.policy.coverage}",
         ),
         f"{match.rule.remedy}{PUSHED_CLAUSE}",
     )

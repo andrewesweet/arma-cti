@@ -1,38 +1,9 @@
 {
   "version": 1,
-  "source": "human ruling on #258, 2026-08-06, amended by #217 item 9",
+  "source": "ADR-0071's re-founding table, 2026-08-11 (#326), superseding the human ruling on #258 as amended by #217 item 9",
+  "coverage": "This table is not a complete account of what needs routing. Class 6 asserts an invariant no refusal enforces, and its path list names a minority of the gates this project runs; classes 4 and 5 refuse no route at all. A surface this file does not name is uncovered, never cleared. Class ids 1 and 7 are retired by ADR-0071's re-founding table and are never reused, so an id is a stable historical handle rather than a position.",
   "claude_lane": "claude-native",
   "classes": [
-    {
-      "id": 1,
-      "name": "gated_semantic_surfaces",
-      "label": "Gated semantic surfaces",
-      "issue_path_prefixes": [
-        "CLAUDE.md",
-        "CONTEXT.md",
-        "docs/adr/",
-        "tests/specs/",
-        ".claude/skills/",
-        ".claude/agents/",
-        ".claude/settings.json",
-        ".claude/hooks/"
-      ],
-      "issue_phrases": [
-        "snapshot schema semantics",
-        "project skills"
-      ],
-      "landing_path_prefixes": [
-        "CLAUDE.md",
-        "CONTEXT.md",
-        "docs/adr/",
-        "tests/specs/",
-        ".claude/skills/",
-        ".claude/agents/",
-        ".claude/settings.json",
-        ".claude/hooks/"
-      ],
-      "remedy": "Route invented wording and permission semantics to a Claude seat. Pure transcription is eligible only when the issue declares `Routing-exception: pure-transcription`."
-    },
     {
       "id": 2,
       "name": "orchestration",
@@ -47,40 +18,39 @@
         "docs/agents/orchestration.md",
         "docs/orchestration-design.md"
       ],
-      "remedy": "Keep orchestration on its Claude seat under the standing ruling of 2026-08-06."
+      "remedy": "Keep orchestration on its Claude seat. This is the one provenance rule ADR-0071 ruling 1 left standing, and it is provisional: it says the seat deciding what everything else does should not move before a tested alternative exists, and it ends when the Codex orchestrator backup is built."
     },
     {
       "id": 3,
-      "name": "retros_and_adr_authorship",
-      "label": "Retros and ADR authorship",
-      "seats": [
-        "fable"
-      ],
+      "name": "adr_authorship",
+      "label": "ADR authorship",
       "issue_phrases": [
-        "Routing-class: retros-and-adr-authorship",
+        "Routing-class: adr-authorship",
         "ADR authorship"
       ],
       "landing_path_prefixes": [
-        "docs/process-log.md"
+        "docs/adr/"
       ],
-      "remedy": "Take retros and ADR authorship to a Claude fable seat; drafting slack does not make authorship foreign-eligible."
+      "remedy": "Route ADR authorship to the `planner` seat, whose ordered profile preferences carry it (ADR-0071 ruling 2). It enforces on `docs/adr/`, its own landing surface, rather than on issue phrases alone. The retro half of the class this row descends from is withdrawn by ruling 3 — a retro identifies and files and lands nothing, so it needs no routing rule and its `docs/process-log.md` path went with it."
     },
     {
       "id": 4,
       "name": "plausible_wrong_fix_goes_green",
       "label": "The #181 shape",
+      "refuses": false,
       "issue_phrases": [
         "Routing-class: #181-shape",
         "plausible wrong fix would also have gone green",
         "plausible wrong fix would also go green"
       ],
       "landing_path_prefixes": [],
-      "remedy": "Route this diagnosis to Claude: the mechanical gate cannot distinguish its plausible wrong fix."
+      "remedy": "No mechanical gate distinguishes this diagnosis's plausible wrong fix from the right one, so the remedy is capability rather than provenance: route it to the `planner` seat and escalate. ADR-0071 ruling 5's fourth transferring-escalation condition, `plausible_wrong_fix_goes_green`, fires on exactly this class and names the transfer; the condition and its remedy are data in `config/escalation-conditions.json` and reach an agent as an emission."
     },
     {
       "id": 5,
       "name": "in_world_landings",
       "label": "In-world landings",
+      "refuses": false,
       "issue_path_prefixes": [
         "addons/",
         "missions/",
@@ -108,22 +78,26 @@
         "src/cti_daemon/transport.py",
         "src/cti_daemon/manifest.py"
       ],
-      "remedy": "Use a Claude seat that can run the full `just regress` corpus, or wait for a human ruling that dispatched sessions may run it."
+      "remedy": "A subagent cannot hold the full `just regress` corpus's foreground wait — `.claude/hooks/deny-subagent-waits.py` denies it — so a seat reached as a subagent cannot gate its own in-world work and must not take it. That is the whole of the rule: `just dispatch` launches a top-level session, which the wait hook permits by returning 0 where there is no agent id, so this row refuses no dispatch route. Its two path lists remain the one authority for what an in-world surface is, read by `just land`'s corpus rung, `tools/admission.py` and `tools/brief.py` (#302)."
     },
     {
       "id": 6,
       "name": "gates_themselves",
-      "label": "The gates themselves",
+      "label": "Conflict of interest: the gates themselves",
+      "binds_every_instance": true,
       "issue_path_prefixes": [
         "config/dispatch-routing-policy.json",
         "tools/routing_policy.py",
         "tools/dispatch.py",
         "tools/land.py",
         "tools/mutation_smoke.py",
-        "tools/admission.py"
+        "tools/admission.py",
+        ".claude/settings.json",
+        ".claude/hooks/"
       ],
       "issue_phrases": [
         "Routing-class: gates-themselves",
+        "Routing-class: conflict-of-interest",
         "mutation floors",
         "hook wiring",
         "dispatch permissions",
@@ -135,70 +109,13 @@
         "tools/dispatch.py",
         "tools/land.py",
         "tools/mutation_smoke.py",
-        "tools/admission.py"
+        "tools/admission.py",
+        ".claude/settings.json",
+        ".claude/hooks/"
       ],
-      "remedy": "Keep changes to the judging mechanism on Claude; a foreign lane must not author the gate that judges it."
-    },
-    {
-      "id": 7,
-      "name": "anthropic_plan_meter",
-      "label": "The Anthropic plan meter",
-      "issue_path_prefixes": [
-        "tools/quota_tap.sh",
-        "tests/fixtures/claude-usage-poll.json"
-      ],
-      "issue_phrases": [
-        "Routing-class: anthropic-plan-meter",
-        "Anthropic plan meter"
-      ],
-      "landing_path_prefixes": [
-        "tools/quota_tap.sh",
-        "tests/fixtures/claude-usage-poll.json"
-      ],
-      "remedy": "Run work whose instrument is the Anthropic plan meter on Claude, where that instrument exists."
+      "remedy": "Conflict of interest: no instance authors the gate that judges it. This binds every instance, Claude's included, and is discharged by an independent review under ADR-0071 ruling 4 — which no refusal enforces until step 7's exemption list lands, so today the invariant is asserted and honoured by procedure. It carries no exception, and the withdrawn `Routing-exception: proposal-only` marker went with the framing: an instance that can except itself from the gate that judges it is precisely the shape this class forbids. `.claude/hooks/` and `.claude/settings.json` are here, not dropped: they are the denial layer and the permission allowlist, and the withdrawn gated-semantic-surfaces class was the only routing rule that named them. Coverage is incomplete and this refusal is not evidence otherwise: the list names six tools plus those two paths, and omits `tools/check_adr_form.py`, `tools/check_seat_config.py`, `tools/check_validated_markers.py`, `tools/check_conflict_markers.py`, `tools/check_source_symlink.py`, `tools/export_command_schema.py` and `tools/breaker.py`, along with every gate reached only through `just unit`, `just mutation`, `just land` and `just regress`. A diff touching a gate this list does not name is uncovered, never cleared."
     }
   ],
-  "issue_exceptions": [
-    {
-      "name": "pure_transcription",
-      "marker": "Routing-exception: pure-transcription",
-      "classes": [
-        1
-      ]
-    },
-    {
-      "name": "no_gated_landing",
-      "marker": "Routing-exception: no-gated-landing",
-      "classes": [
-        1
-      ]
-    },
-    {
-      "name": "proposal_only",
-      "marker": "Routing-exception: proposal-only",
-      "classes": [
-        6
-      ]
-    }
-  ],
-  "route_exceptions": [
-    {
-      "name": "standing_retro_allowance_codex_sol_xhigh",
-      "class": 3,
-      "lane": "codex",
-      "profile": "codex-sol-xhigh",
-      "seat": "fable",
-      "standing": true,
-      "source": "human ruling 2026-08-09 (#300), superseding #217, #270 and #299"
-    },
-    {
-      "name": "standing_retro_allowance_codex_sol_max",
-      "class": 3,
-      "lane": "codex",
-      "profile": "codex-sol-max",
-      "seat": "fable",
-      "standing": true,
-      "source": "human ruling 2026-08-09 (#300), superseding #217, #270 and #299"
-    }
-  ]
+  "issue_exceptions": [],
+  "route_exceptions": []
 }
