@@ -354,9 +354,9 @@ worktree *args:
 # `grep '^merge_command='`. A stale main checkout is where ADR-0042's stale-hook
 # window comes from (#130).
 #
-# A foreign dispatched session also meets the routing-policy gate here, after
-# the rebase and before `just fast`: the trusted policy comes from fetched
-# origin/main and the match comes from the real diff. `routing_policy_gate` is
+# A dispatched session on any lane but `claude-native` also meets the routing-policy
+# gate here, after the rebase and before `just fast`: the trusted policy comes from
+# fetched origin/main and the match comes from the real diff. `routing_policy_gate` is
 # therefore distinct from dispatch's issue-declaration advisory; an unreadable
 # policy or diff refuses closed and nothing is pushed (#266).
 #
@@ -433,9 +433,10 @@ discard path="" ruling="":
 # `--lane` picks the runner and the environment that reaches a provider;
 # `--profile` is one opaque `(lane, model, effort)` token, because effort
 # vocabularies do not commensurate across providers (ADR-0061 Decision 5), so
-# there is deliberately no `--model` and no `--effort` here. `--seat` carries
-# Decision 2's eligibility: a foreign lane refuses the seats no mechanical gate
-# covers. `--issue` is both the assignment and a telemetry attribute.
+# there is deliberately no `--model` and no `--effort` here. `--seat` names one of
+# the registry's seats; the carve-out is the one seat rule left — `orchestrator` is
+# refused off `claude-native` (ADR-0071 ruling 1) and every other seat dispatches on
+# every lane. `--issue` is both the assignment and a telemetry attribute.
 #
 # Options: `--worktree` (default `.claude/worktrees/issue-<N>`, which is what
 # `just worktree add` makes and which this recipe never creates for itself),
@@ -477,7 +478,7 @@ discard path="" ruling="":
 # ruling transcribed rather than a checklist, so it reports and never blocks.
 # The remedy on a refusal is an edit to the issue by a human or by triage; the
 # tool will not rewrite an issue it is judging, and there is no override flag.
-# The rung is lane-blind: a foreign lane meets exactly what `claude-native` does.
+# The rung is lane-blind: every lane meets exactly what `claude-native` does.
 #
 # The repository's routing class policy is a separate rung from queue state. It
 # is read from the main checkout per dispatch, never at process startup, and an
@@ -738,7 +739,7 @@ wip-trial *args:
 # (#224, ADR-0061 Decision 6). No Arma, no lock, no turn held open.
 #
 #   just admission bar                       the bar as ruled, printed
-#   just admission status                    every foreign route, and what it has accrued
+#   just admission status                    every off-Claude route, and what it has accrued
 #   just admission check --lane zai --profile zai-glm52-max --seat implementer
 #   just admission audit --issue N           compute what a close's Part A claims can be
 #   just admission record --lane … --seat … --issue N …   one issue's assessment
@@ -755,7 +756,7 @@ wip-trial *args:
 # derives a number, because a bar that moves once the numbers are in is not
 # pre-registered.
 #
-# **Every foreign route starts at zero.** The 131 issues behind the bar are Claude's
+# **Every off-Claude route starts at zero.** The 131 issues behind the bar are Claude's
 # history, the question Decision 6 asks is absolute rather than comparative, and
 # nothing is back-filled — `just admission status` says so until the first record.
 #
