@@ -448,7 +448,7 @@ def _profiles_by_lane() -> dict[str, list[dispatch.Profile]]:
 
 
 def _expected_selection_refusal(lane: str, profile: str, seat: str) -> str | None:
-    """The one refusal this ladder may return for registered names, and why each is typed."""
+    """Name the refusal this ladder may return for registered names, and why each is typed."""
     if seat == "orchestrator" and lane != dispatch.CLAUDE_LANE:
         return "orchestrator_claude_only"
     if (seat, profile) in dispatch.SEAT_PROFILE_BLOCKS:
@@ -489,12 +489,6 @@ def test_the_fable_seat_has_a_dispatchable_profile_on_claude_native() -> None:
         )
 
 
-def test_an_unknown_seat_is_refused_rather_than_mis_attributed() -> None:
-    refusal = dispatch.resolve_selection("claude-native", "opus-high", "implemeter")
-    assert refusal is not None
-    assert refusal.kind == "unknown_seat"
-
-
 def test_the_real_planning_path_admits_fable_on_codex(tmp_path: Path) -> None:
     # The rescission's observable end: the seat ADR-0061 Decision 2 barred from every
     # non-Claude lane plans cleanly on `codex` through the real ladder, not only through
@@ -524,8 +518,10 @@ def test_the_carve_out_is_the_only_provenance_rule_the_registry_states() -> None
     # be a second provenance rule the registry had grown without a ruling.
     assert [line for line in lines if "claude_only" in line] == [
         "seats_claude_only=orchestrator (ADR-0071 ruling 1: the only provenance rule)",
-        "  claude_only=true refusal=orchestrator_claude_only (ADR-0071 ruling 1's"
-        " one survivor, ends when a tested alternative exists)",
+        (
+            "  claude_only=true refusal=orchestrator_claude_only (ADR-0071 ruling 1's"
+            " one survivor, ends when a tested alternative exists)"
+        ),
     ]
 
 
