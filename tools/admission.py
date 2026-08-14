@@ -244,9 +244,10 @@ UNCLEAN_REASONS: Final = ("rework", "finding", "reopen")
 GATE_BAR: Final = "gate"
 CITATION_BAR: Final = "citations"
 
-# Which bar a seat is judged under. Seats absent from this map are the ones Decision 2
-# keeps off foreign lanes entirely; `just dispatch` refuses them before admission is
-# consulted, so naming a bar for them here would be a second copy of that rule.
+# Which bar a seat is judged under. A seat absent from this map is one the orchestrator
+# carve-out keeps on Claude (ADR-0071 ruling 1); `just dispatch` refuses it off Claude
+# before admission is consulted, so naming a bar for it here would be a second copy of
+# that rule.
 SEAT_BARS: Final[dict[str, str]] = {
     # ADR-0071 ruling 2's two new seats. Both are judged on citations rather than on a
     # gate, for `review`'s reason: a plan and a retro finding are claims, and no gate runs
@@ -257,6 +258,13 @@ SEAT_BARS: Final[dict[str, str]] = {
     "recon": CITATION_BAR,
     "review": CITATION_BAR,
     "retro": CITATION_BAR,
+    # The seat ADR-0061 Decision 2 used to keep off foreign lanes entirely, so it never
+    # needed a row of its own. #327 deleted that rule, and this row is what the deletion
+    # owes the bar: without it the seat dispatched off Claude accruing no record, a hole
+    # the old equality assertion had been loosened to hide (review round 1, claim 2).
+    # Judged on citations for the seats above's own reason — a ruling, an ADR paragraph
+    # and a schema reading are claims, and no gate runs over a claim.
+    "fable": CITATION_BAR,
 }
 
 # The ruling's first mechanical route: clearing this seat's bar admits the profile to the

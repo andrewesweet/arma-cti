@@ -317,11 +317,16 @@ def test_claude_native_is_exempt_because_nothing_leaves_claude_there(tmp_path: P
     assert not standing.admitted
 
 
-@pytest.mark.parametrize("seat", ["fable", "orchestrator"])
-def test_a_seat_decision_two_bars_has_no_admission_route(tmp_path: Path, seat: str) -> None:
-    standing = admission.standing_for(store(tmp_path), LANE, PROFILE, seat)
+def test_the_carve_out_seat_has_no_admission_route(tmp_path: Path) -> None:
+    # The orchestrator carve-out (ADR-0071 ruling 1) keeps that seat on Claude, so no
+    # admission bar reaches it and its off-Claude standing is `no_route`. The reason
+    # `standing_for` prints for that still cites ADR-0061 Decision 2 — a stale literal
+    # #328 retires with this module — so this test pins the route and deliberately not
+    # the wording. `fable` left here with the eligibility ladder #327 deleted: it
+    # carries the citation bar now, and the equality below is what keeps that visible.
+    standing = admission.standing_for(store(tmp_path), LANE, PROFILE, "orchestrator")
     assert standing.state == admission.NO_ROUTE
-    assert "Decision 2" in standing.reason
+    assert standing.bar == "none"
 
 
 # ------------------------------------------------------- the recon and review substitute
@@ -655,9 +660,10 @@ def test_the_bar_governs_exactly_the_registry_dispatch_carries() -> None:
     assert tuple(sorted(admission.FOREIGN_PROFILES)) == foreign_profiles
 
 
-def test_every_barred_seat_the_bar_names_exists_in_the_registry() -> None:
-    # The reverse containment survived #327 on purpose: the old test asserted equality
-    # against the seat-eligibility map ruling 1 deleted, so this half is re-founded on the
-    # roster alone — a bar naming a seat the dispatcher cannot dispatch is the drift this
-    # catches, and nothing about eligibility is needed to catch it.
-    assert set(admission.SEAT_BARS) <= set(dispatch.SEATS)
+def test_every_seat_the_carve_out_does_not_reach_has_a_bar() -> None:
+    # Equality, restored at review round 1 (claim 2): the round-1 replacement asserted
+    # only `SEAT_BARS ⊆ SEATS`, the containment that stayed green precisely because
+    # `fable` had no bar — the live hole the deleted equality had been keeping visible.
+    # The carve-out seat is named rather than derived from `claude_only`, so a second
+    # carve-out seat reds this test instead of being absorbed by it.
+    assert set(admission.SEAT_BARS) == set(dispatch.SEATS) - {"orchestrator"}

@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ADR-authorship half being re-founded on the **seat** — the class admits the whole route ADR-0071
   rulings 2 and 4 require between them (`planner` authors, `implementer` lands because the planner
   neither gates nor lands, `review` reviews that landing because no change lands alone), on any
-  lane including a foreign one, and refuses every other seat on every lane including Claude's,
+  lane including a non-Claude one, and refuses every other seat on every lane including Claude's,
   because ADR authorship rests on seats rather than on which provider answered; *the #181 shape*
   survives with a capability remedy — route to the planner seat and escalate — matched to the
   transferring-escalation condition of the same name, which fires on the class the same issue
@@ -83,6 +83,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   names its skipped routing and corpus rungs, because that run is the one that prints
   `ok=landed` and the one a lander quotes into an issue.
 
+- **The `foreign` concept is gone from the lane and seat model, and the eligibility ladder it
+  hung from is gone with it (#327, ADR-0071 ruling 1).** The seat table's `foreign_eligible`
+  column is replaced by `claude_only`, which exactly one seat carries: `orchestrator`, the
+  carve-out. Every other seat dispatches on every lane — `fable` included, which ADR-0061
+  Decision 2 had barred from every non-Claude lane — and the refusal a dispatcher meets for
+  the carve-out is now `orchestrator_claude_only` where it was `seat_not_eligible`. The
+  standing retro allowance of 2026-08-09 (#300) is deleted with the ladder it suspended:
+  ADR-0071's trailer supersedes that ruling, so `just dispatch --list` loses `foreign=`,
+  `seats_eligible_on_foreign_lanes=`, `seats_claude_native_only=`, `seat_allowance=` and
+  `retro_approved_profiles=`, and gains `seats_claude_only=`. `fable` joins the admission
+  bar under the citation bar, for the same reason `planner` and `retro` carry it — its
+  output is claims, and no gate runs over a claim — so a fable route off Claude accrues a
+  record and can spend its two attempts rather than running unjudged; the seat-bar test
+  asserts equality against the carve-out again, after review round 1 caught its replacement
+  asserting only the containment that hid the gap. One provenance refusal deliberately
+  survives outside the seat table — routing class 6's keep-on-Claude bridge, owned by #331
+  — and the prose that claimed no second rule existed now names it, its owner and what
+  retires it.
+
 ### Added
 
 - **Transferring-escalation conditions are data, emitted to an agent only when one fires.**
@@ -140,9 +159,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unreadable CONTEXT.md leaves the gate tier unchecked rather than guessed; an unreadable policy
   leaves the routing class the same; and a genuine absence — no labels, no class — is a checked
   stratum, the third value never collapsed with 'could not look'. The routing class is lane-blind:
-  `classify_issue` walks the policy's `issue_match` without the foreign-lane gate, so a
-  Claude-native dispatch carries the class a foreign one would, and a body that declares no class
-  is the empty string rather than a blank that hides a failure to look. A pre-#323 record reads
+  `classify_issue` walks the policy's `issue_match` without the lane gate that exempts
+  `claude-native`, so a Claude-native dispatch carries the class a dispatch on any other lane
+  would, and a body that declares no class is the empty string rather than a blank that hides a
+  failure to look. A pre-#323 record reads
   back honestly as nothing-recorded-nothing-checked rather than a guess dressed as a value.
 
 - **A review can no longer be dispatched onto the profile it is reviewing, and can no longer
