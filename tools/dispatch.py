@@ -17,10 +17,15 @@ Four ideas, and each is a ruling made mechanical:
   knows that one of them means `--effort high`. Effort vocabularies do not commensurate
   across providers, so the registry is the only place the mapping is allowed to exist.
 - **Seat** carries ADR-0071 ruling 1's one survivor: the orchestrator carve-out. Ruling 1
-  rescinds the graded authority ladder ADR-0061 built, so no seat is refused on
-  provenance grounds any more — every seat dispatches on every lane. The carve-out is the
-  exception and it is provisional: orchestration runs on Claude with a Claude model until
-  a tested alternative exists, which is the only provenance rule the project holds.
+  rescinds the graded authority ladder ADR-0061 built, so the seat table no longer
+  encodes provenance and no seat is refused on it at this registry — every seat
+  dispatches on every lane. The carve-out is the exception and it is provisional:
+  orchestration runs on Claude with a Claude model until a tested alternative exists.
+  One second provenance refusal survives outside the seat table: routing class 6's
+  #326 bridge refuses a dispatch whose issue names the gates themselves on every lane
+  but `claude-native`. #331 owns it — when that issue's never-alone exemption list
+  lands, the invariant the bridge stands in for is enforced and the bridge retires,
+  because deleting it first would leave the gates with neither rule.
 - **Identity** is `OTEL_RESOURCE_ATTRIBUTES`, which is what makes a dispatch's telemetry
   self-identifying downstream: `cti.dispatch_id`, `cti.lane`, `cti.profile`, `cti.seat`,
   `cti.issue`, `cti.base_sha`. Decision 1 wants fraction-of-cap for all three pools from
@@ -478,7 +483,10 @@ class Seat(NamedTuple):
     # It is a column on the table for the same reason `reviews` and `permission_mode`
     # are: "which seats the carve-out reaches" is a fact about the seat table, and the
     # table is where every other such fact lives. The ADR names it the only provenance
-    # rule the project holds, and it ends when a Codex orchestrator backup exists.
+    # rule the project holds, and it ends when a Codex orchestrator backup exists. That
+    # "every seat" is a statement about seats, not a promise that nothing else refuses:
+    # routing class 6's bridge still refuses a dispatch naming the gates themselves on
+    # every lane but `claude-native`, until #331's exemption list retires it.
     claude_only: bool
     # ADR-0071 ruling 2's preference column, head first. `resolve_seat` walks exactly this
     # and nothing else, so a seat gains a route by being written here.
@@ -553,9 +561,13 @@ SEATS: Final[dict[str, Seat]] = {
         reviews=True,
         permission_mode="plan",
     ),
-    # Ruling 3's own kind of work, on the human's enumerated retro list of 2026-08-09
-    # (#300). The named list — never "or above" — is the seat's own preference order
-    # written out; profiles are opaque tokens and no cross-provider ordering exists.
+    # Ruling 3's own kind of work: the retro seat, on the preference order the ADR's own
+    # table carries. That order is not the human's enumerated retro list of 2026-08-09
+    # (#300) written out — the list named nine profiles, this names three, and the ADR's
+    # trailer supersedes that ruling wholesale, which is why #327 could delete
+    # `RETRO_APPROVED_PROFILES` and its guards (review round 1, claim 5). Profiles are
+    # opaque tokens and no cross-provider ordering exists, so a profile joins by being
+    # named, never "or above".
     "retro": Seat(
         "retro",
         claude_only=False,
@@ -1384,9 +1396,13 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
 
     Three registry rungs — lane, profile, seat — then ADR-0071 ruling 1's one survivor:
     the orchestrator carve-out, which keeps orchestration on Claude until a tested
-    alternative exists. No other provenance rule remains (#327 deleted the eligibility
-    ladder ADR-0061 built and the retro allowance that suspended it), and the pair block
-    after it is a capability ceiling, not a provenance one.
+    alternative exists. #327 deleted the eligibility ladder ADR-0061 built and the retro
+    allowance that suspended it, but one further provenance refusal survives, outside
+    this function: routing class 6's keep-on-Claude bridge, which refuses a dispatch
+    whose issue names the gates themselves on every lane but `claude-native`. It is
+    #331's — retired when that issue's never-alone exemption list lands, because
+    deleting it first would leave the gates with neither rule (review round 1, claim 1).
+    The pair block after the carve-out is a capability ceiling, not a provenance one.
     """
     if lane_name not in LANES:
         return Refusal(
