@@ -1796,6 +1796,44 @@ def test_staging_refuses_before_the_rebase_can_move_the_tree(
     assert _git("rev-parse", "HEAD", cwd=here).strip() == before
 
 
+def test_staging_refuses_when_the_rebase_drops_every_commit_as_already_upstream(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """A branch that began ahead and ended level is still nothing to review.
+
+    The pre-rebase guard cannot see this tree: it begins one commit ahead, so the
+    only rung that can catch it is the recount after the replay. Round 3 removed
+    that recount's refusal for the Low above, which made `ok=staged commits=0`
+    reachable again against `origin/main`'s tip — a lander pointed at a SHA that is
+    not their work to have reviewed. Both guards stand, and this one speaks in
+    post-rebase words, because the rebase did run and did move HEAD.
+    """
+    origin, main, here = repo
+    _commit(here, "duplicate.txt", "same change\n")
+    before = _git("rev-parse", "HEAD", cwd=here).strip()
+    _git("fetch", "origin", cwd=here)
+    assert _git("rev-list", "--count", "origin/main..HEAD", cwd=here).strip() == "1"
+    # The same patch, landed by a sibling first: the replay drops it as empty. Its own
+    # subject differs so the two commits are distinct objects — an identical message over
+    # an identical tree produces the identical SHA, which is a fast-forward, not a drop.
+    (main / "duplicate.txt").write_text("same change\n", encoding="utf-8")
+    _git("add", "duplicate.txt", cwd=main)
+    _git("commit", "-m", "feat: the sibling's copy of the same patch", cwd=main)
+    _git("push", "origin", "main", cwd=main)
+    tip = _tip(origin)
+
+    report = land.stage(main, here)
+
+    assert report.lines[0] == "refusal=nothing_to_land"
+    assert report.code == 1
+    head = _git("rev-parse", "HEAD", cwd=here).strip()
+    assert head != before
+    assert head == tip
+    assert "commits=0" in report.lines
+    assert not any(line.startswith(("ok=staged", "next=review")) for line in report.lines)
+    assert _tip(origin) == tip
+
+
 def test_staging_and_landing_are_not_both_askable(capsys: pytest.CaptureFixture[str]) -> None:
     """One mode per invocation: `--stage` and `--dry-run` are mutually exclusive."""
     with pytest.raises(SystemExit):

@@ -926,7 +926,7 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     return _merge(root, here, pushed, lines)
 
 
-def stage(root: Path, here: Path) -> Report:
+def stage(root: Path, here: Path) -> Report:  # noqa: PLR0911 — a ladder of named refusals
     """Rebase onto `origin/main` and stop, printing the SHA a review must bind.
 
     The protocol's missing first step (#334 round 1 claim 6). A verdict binds the SHA
@@ -1006,6 +1006,32 @@ def stage(root: Path, here: Path) -> Report:
     # commit this line must not still claim.
     staged = counted(f"{BASE}..HEAD", cwd=here) or 0
     replayed = f"replayed onto {incoming} new commits" if incoming else "already_current"
+    # Both guards stand, and they catch different trees (#334, arbitration). The one above
+    # catches a branch that began with no commit of its own, before HEAD moves. This one
+    # catches a branch that had commits and lost every one of them to the replay, because
+    # each was already upstream — the tree the rebase leaves at `origin/main`'s tip. Round
+    # 3 removed this recount's refusal and made `ok=staged commits=0` reachable again,
+    # pointing a lander at a SHA that is not their work to have reviewed. Its words are
+    # post-rebase words: the rebase did run and did move HEAD, and saying otherwise would
+    # be the same false account of itself that Low 5 was about.
+    if not staged:
+        return Report.refused(
+            Refusal(
+                "nothing_to_land",
+                (
+                    f"worktree={here}",
+                    f"rebase={replayed}",
+                    f"head={head}",
+                    "commits=0",
+                ),
+                "Nothing was staged: the rebase completed and dropped every commit you"
+                f" submitted, because {BASE} already carries their contents. The SHA above"
+                " is that tip and not your work — do not review it. If you meant to stage"
+                " work, check what you committed is not already upstream"
+                " (`git log --oneline origin/main..HEAD`); if a landing is outstanding on"
+                " this tree, `just land` is what decides that, not staging.",
+            )
+        )
     return Report(
         (
             "ok=staged",
