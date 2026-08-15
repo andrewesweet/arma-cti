@@ -29,10 +29,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `just dispatch` rather than made permissive, and the dispatcher exposes no standing to read,
   no `admission_escalated` refusal and no `--admission-dir`. **What actually breaks at the
   parser, stated here because a landed commit message cannot be amended and `9afa5ff`'s
-  `BREAKING CHANGE` footer got it wrong twice:** of the bar's four verbs only `just admission
-  check` is gone as a spelling — `status`, `record` and `reset` are live verbs of `just trial`
-  meaning something else, so a caller typing them reaches a working command rather than an
-  error, which is the more dangerous half of the break. And the second break is
+  `BREAKING CHANGE` footer got it wrong twice:** the bar had **six** verbs — `bar`, `status`,
+  `check`, `audit`, `record` and `reset`, counted off that revision's own parser
+  (`9afa5ff^:tools/admission.py:2477-2489`) rather than off the footer. Only `just admission
+  check` is gone as a spelling. The other **five** are live verbs of `just trial` meaning
+  something else, so a caller typing any of them reaches a working command rather than an
+  error, which is the more dangerous half of the break — and the footer's "four" names only
+  three of those five, understating that half by `bar` and `audit`. And the second break is
   `just dispatch --admission-dir`, which that footer mentioned only in its body. The bar was
   pre-registered
   precisely so that observed lane behaviour could not move it, and it **never adjudicated once
@@ -42,10 +45,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pre-registration exists to prevent, taken knowingly on the human's ruling and written down as
   a departure rather than left to be discovered as a silence. Nothing upfront replaces it; what
   replaces it is retrospective (#336) and is not built, so a route's quality is now unchecked
-  before its work runs. **ADR-0061 Decision 6 still reads "built and live" and is knowingly
-  left standing**: ADRs are a human sign-off gate and the supersession trailer only points
-  forward, so the correction is proposed on #328 as an `Amended:` trailer rather than made
-  here. Until it lands, a reader arriving at that decision meets a claim this change falsified.
+  before its work runs. **ADR-0061 Decision 6 still reads "built and live", and ADR-0071's
+  ruling-6 rationale still carries two counts that have moved; both are knowingly left
+  standing**: ADRs are a human sign-off gate and the supersession trailer only points forward,
+  so the corrections are proposed as `Amended:` trailers and replacement passages, in full, at
+  <https://github.com/andrewesweet/arma-cti/issues/328#issuecomment-5304405904> — five blocks
+  over three sites, the third of which (ADR-0061's amendment index) was in no finding's list and
+  was found by grepping the tree for the counts. Until they land, a reader arriving at either
+  decision meets a claim this change falsified.
 
 ### Changed
 
