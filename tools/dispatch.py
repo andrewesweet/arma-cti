@@ -1767,7 +1767,7 @@ def _named_profile(document: dict[str, object]) -> str:
     return profile.strip() if isinstance(profile, str) else ""
 
 
-def _read_record(entry: Path, issue: int) -> _Read:
+def _read_record(entry: Path, issue: int, *, include_reviews: bool = False) -> _Read:
     """Classify one dispatch directory against the issue under review.
 
     Every way of failing to read it lands on `_UNREADABLE` rather than being passed over,
@@ -1788,6 +1788,13 @@ def _read_record(entry: Path, issue: int) -> _Read:
     strings and a name outside `PROFILES` simply matches no preference entry — and treating
     a retired profile as an unread record would make every later scan of that issue read as
     partial for a fact the record states perfectly well.
+
+    `include_reviews` is the arbiter's door (#333, #361). The default walk skips
+    review-seat records because a review is not authorship (#322), and a *review* seat's
+    candidate list must not exclude its own judges. The arbiter's question is the wider
+    one — *authored or reviewed* — so its scan opens that door: a review record's `profile`
+    names the profile that judged the work, which is exactly the name #361's criterion
+    removes from the arbiter walk, and which the authorship scan by design cannot carry.
     """
     document = _read_plan(entry)
     if document is None:
@@ -1798,9 +1805,10 @@ def _read_record(entry: Path, issue: int) -> _Read:
         return _UNREADABLE
     # Two conditions, one answer: a record about another issue and a record of a dispatch on
     # a seat that judges rather than does are both records this scan walks past, neither of
-    # them a gap in it.
+    # them a gap in it — the second only where the caller is asking who *authored*, which is
+    # every caller but the arbiter's scan.
     seat = SEATS.get(str(document.get("seat", "")))
-    if not same_issue or (seat is not None and seat.reviews):
+    if not same_issue or (seat is not None and seat.reviews and not include_reviews):
         return _NOT_THIS_ISSUE
     refused = _refused_before_running(entry)
     if refused:
@@ -1852,6 +1860,18 @@ def potential_authors(issue: int, dispatch_dir: Path) -> Authorship:
     that reads as an answer rather than as a gap, which is why `_read_record` states its case
     separately.
     """
+    return _scan_records(issue, dispatch_dir, include_reviews=False)
+
+
+def _scan_records(issue: int, dispatch_dir: Path, *, include_reviews: bool) -> Authorship:
+    """Walk the records both scans share, so the two cannot drift apart.
+
+    One directory iteration, one accumulation of the `why` states, one ordering — differing
+    only in the `include_reviews` door `_read_record` documents. `potential_authors` and
+    `potential_authors_and_reviewers` are two questions over one record format; giving each
+    its own loop would be a second copy of the #41 discipline where a drift between the
+    copies is exactly the defect (one scan marking a state partial the other reads clean).
+    """
     directory = dispatch_dir.expanduser()
     if not directory.is_dir():
         return Authorship(why="no_dispatch_records")
@@ -1863,7 +1883,7 @@ def potential_authors(issue: int, dispatch_dir: Path) -> Authorship:
             # Not a record at all. A stray file beside the records is not a record this scan
             # failed to read, so it does not make the read partial.
             continue
-        read = _read_record(entry, issue)
+        read = _read_record(entry, issue, include_reviews=include_reviews)
         unreadable += int(read.unreadable)
         if read.profile and read.profile not in found:
             found.append(read.profile)
@@ -1873,6 +1893,27 @@ def potential_authors(issue: int, dispatch_dir: Path) -> Authorship:
     if found:
         return Authorship(tuple(found), tuple(records))
     return Authorship(why="no_authoring_dispatch")
+
+
+def potential_authors_and_reviewers(issue: int, dispatch_dir: Path) -> Authorship:
+    """Read this issue's dispatch records for the profiles an arbiter must not be (#333, #361).
+
+    A sibling of `potential_authors`, not a change to it, because the two answer different
+    questions and each has callers that depend on its answer. The review seat asks *who may
+    have authored the work* and deliberately walks past review records — a review is not
+    authorship, and a reviewer excluded from its own candidate list would strand the seat
+    (#322). The arbiter asks #361's wider question — *who authored or reviewed the work* —
+    and a prior reviewer is precisely the instance the walk must not select: #318's real
+    `opus-xhigh` reviewer is on the records as a review dispatch and nowhere else, so a
+    resolver fed only the authorship scan cannot see the one profile its criterion exists
+    to exclude. That was #333 round 1's High 2: the production input could not carry a
+    reviewer, and the test injected one by hand through a seam production never takes.
+
+    Same states, same `records` spelling, same `why` vocabulary as the authorship scan, so
+    the arbiter's `unchecked` mark (every state that is not a complete read) reads off
+    `Authorship.complete` for both.
+    """
+    return _scan_records(issue, dispatch_dir, include_reviews=True)
 
 
 def review_authorship(seat: Seat, args: argparse.Namespace) -> Authorship:

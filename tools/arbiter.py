@@ -20,15 +20,20 @@ blanket `fable-high` default is struck (#361 ruling 4), the only empty columns l
 the two marked not-applicable (`recon`, the interlocutor), and **adding a seat now
 requires deciding its arbiter**.
 
-The exclusions are two facts this module does not derive, read as inputs:
+The exclusions are facts this module does not derive, read as inputs:
 
-- the issue's dispatch records, through `dispatch.potential_authors` — a
+- the issue's dispatch records, through `dispatch.potential_authors_and_reviewers` — a
   *potential*-author set, never proof, because nothing on a record names the commits a
   run produced. Over-excluding costs a resolution step; under-excluding costs an author
-  arbitrating its own work.
+  arbitrating its own work. The scan includes review records where the arbiter is
+  concerned (#361: a prior reviewer is exactly the profile the walk must not select, and
+  #318's real reviewer is on the records as a review dispatch and nowhere else).
 - routing refusals for the branch under review, caller-supplied as `profile -> reason` —
   the #326 leg, where the head was eligible by records and refused by the routing policy
   on the diff's own paths.
+- live dispatchability, through `resolve_dispatchable`: the same `(lane, profile, seat)`
+  rungs `just dispatch`'s ladder judges by, read through `dispatch.candidate_refusal`, so
+  a profile resolved here cannot be one the ladder refuses two lines later.
 
 Both properties carry over from `--reviewing` (#361 ruling 3): where a record could not
 be read, the resolution is still taken — everything read is excluded — but is marked
@@ -43,7 +48,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Callable, Mapping
+    from datetime import datetime
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -73,9 +79,15 @@ EXHAUSTED_DETAIL: Final = "every candidate in the walk was excluded — the excl
 RECORDS_EXCLUSION: Final = "records_place_on_work"
 ROUTING_EXCLUSION: Final = "routing_refused"
 UNREGISTERED_EXCLUSION: Final = "unregistered_profile"
+DISPATCH_EXCLUSION: Final = "dispatch_refused"
 
-# `dispatch.potential_authors` sets this `why` alongside the profiles it did read (#41's
+# `dispatch.Authorship` sets its `why` states alongside the profiles it did read (#41's
 # two halves: the incomplete read still excludes, and still must not read as checked).
+# Every state that is not a complete read — the directory absent, no dispatch on this
+# issue, a record that would not open — leaves the resolution taken but unchecked, which
+# is why `resolve` reads `Authorship.complete` rather than matching one `why` value:
+# `no_dispatch_records` and `no_authoring_dispatch` are gaps the same way
+# `records_unreadable` is (#333 round 1, High 3).
 RECORDS_UNREADABLE: Final = "records_unreadable"
 
 RESOLUTION_EVENT: Final = "cti.review.arbiter.resolved"
@@ -120,20 +132,21 @@ def _walk(seat: dispatch.Seat) -> tuple[str, ...]:
     return tuple(seen)
 
 
-def resolve(
+def _walk_first(
     seat: dispatch.Seat,
     authorship: dispatch.Authorship,
-    routing_refusals: Mapping[str, str] | None = None,
+    refusals: Mapping[str, str],
+    candidate: Callable[[str], dispatch.Refusal | None] | None,
 ) -> Resolution:
-    """Resolve one seat's arbiter: the walk's first profile nothing excludes.
+    """Walk one seat's candidates and return the first profile nothing excludes.
 
-    An empty escalation column refuses before any walk — the struck default's replacement
-    is a decision the registry now requires, not a fallback. Every exclusion is recorded
-    with its reason and its detail, whether the walk then answers or refuses.
+    The rungs, in order: the registry, the caller's routing refusals, the records, and —
+    where `candidate` is supplied — the live `(lane, profile, seat)` rungs of
+    `dispatch.candidate_refusal`. Every exclusion is recorded with its reason and its
+    detail, whether the walk then answers or refuses. `unchecked` reads
+    `Authorship.complete`, so every incomplete read — not only the unreadable one —
+    leaves the resolution taken but not verifiable.
     """
-    if not seat.escalation:
-        return Resolution(kind=REFUSED, refusal=NO_ENTRY_REFUSAL, detail=NO_ENTRY_DETAIL)
-    refusals = routing_refusals or {}
     passed_over: list[Exclusion] = []
     for profile in _walk(seat):
         if profile not in dispatch.PROFILES:
@@ -149,19 +162,103 @@ def resolve(
                 Exclusion(profile, RECORDS_EXCLUSION, f"records={','.join(authorship.records)}")
             )
             continue
+        if candidate is not None:
+            refusal = candidate(profile)
+            if refusal is not None:
+                passed_over.append(
+                    Exclusion(profile, DISPATCH_EXCLUSION, "; ".join(refusal.lines()))
+                )
+                continue
         return Resolution(
             kind=RESOLVED,
             arbiter=profile,
-            unchecked=authorship.why == RECORDS_UNREADABLE,
+            unchecked=not authorship.complete,
             passed_over=tuple(passed_over),
         )
     return Resolution(
         kind=REFUSED,
-        unchecked=authorship.why == RECORDS_UNREADABLE,
+        unchecked=not authorship.complete,
         passed_over=tuple(passed_over),
         refusal=EXHAUSTED_REFUSAL,
         detail=EXHAUSTED_DETAIL,
     )
+
+
+def _no_entry() -> Resolution:
+    return Resolution(kind=REFUSED, refusal=NO_ENTRY_REFUSAL, detail=NO_ENTRY_DETAIL)
+
+
+def resolve(
+    seat: dispatch.Seat,
+    authorship: dispatch.Authorship,
+    routing_refusals: Mapping[str, str] | None = None,
+) -> Resolution:
+    """Resolve one seat's arbiter over records and routing refusals alone.
+
+    An empty escalation column refuses before any walk — the struck default's replacement
+    is a decision the registry now requires, not a fallback. This is the seam tests and
+    callers that already hold an `Authorship` use; `resolve_for_issue` is the production
+    path that reads the records, and `resolve_dispatchable` is the one that also walks the
+    live dispatchability rungs.
+    """
+    if not seat.escalation:
+        return _no_entry()
+    return _walk_first(seat, authorship, routing_refusals or {}, None)
+
+
+def resolve_for_issue(
+    seat: dispatch.Seat,
+    issue: int,
+    dispatch_dir: Path,
+    routing_refusals: Mapping[str, str] | None = None,
+) -> Resolution:
+    """Resolve one seat's arbiter by reading the issue's own dispatch records.
+
+    The production path (#333 round 1, High 2): the records are where the reviewers
+    actually are. The scan is `dispatch.potential_authors_and_reviewers` — authors
+    **and** reviewers, #361's criterion — because #318's real reviewer reached the
+    records as a review dispatch and an authorship-only scan cannot see the one profile
+    its criterion exists to exclude. A test that injects a reviewer by hand exercises a
+    seam production never takes; this is the seam production takes.
+    """
+    authorship = dispatch.potential_authors_and_reviewers(issue, dispatch_dir)
+    return resolve(seat, authorship, routing_refusals)
+
+
+def resolve_dispatchable(  # noqa: PLR0913 — the parameters are the walk's own inputs: seat, records, the clock, and the three directories the live rungs read
+    seat: dispatch.Seat,
+    authorship: dispatch.Authorship,
+    now: datetime,
+    routing_refusals: Mapping[str, str] | None = None,
+    *,
+    admission_dir: str | None = None,
+    breaker_dir: str | None = None,
+    credentials: str | None = None,
+) -> Resolution:
+    """Resolve one seat's arbiter, walking the live dispatchability rungs as well.
+
+    #333 round 1, High 4: `resolve` walks a table, and a table cannot say whether a
+    profile is dispatchable *now*. This runs `dispatch.candidate_refusal` per candidate —
+    the same rungs `just dispatch`'s ladder judges by, called rather than restated, so a
+    second copy is not how a profile comes to be resolved here and refused by the ladder
+    two lines later. The directories default to whatever `dispatch.parse_args` resolves
+    on this box and are overridable, which is how a test points the rungs at scratch
+    records rather than at this box's live state.
+    """
+    if not seat.escalation:
+        return _no_entry()
+    args = dispatch.parse_args([])
+    if admission_dir is not None:
+        args.admission_dir = admission_dir
+    if breaker_dir is not None:
+        args.breaker_dir = breaker_dir
+    if credentials is not None:
+        args.credentials = credentials
+
+    def candidate(profile: str) -> dispatch.Refusal | None:
+        return dispatch.candidate_refusal(args, seat.name, profile, now)
+
+    return _walk_first(seat, authorship, routing_refusals or {}, candidate)
 
 
 def resolution_event(
@@ -173,8 +270,13 @@ def resolution_event(
     """Render the arbiter-invocation observable (ADR-0071 ruling 6): who, for what seat.
 
     Refusals are events too — a loop that escalates into a refusal is the #318 shape, and
-    the trace that says so is worth more than the one that says the walk worked.
+    the trace that says so is worth more than the one that says the walk worked. The
+    exclusions travel as `profile:reason` identities rather than a count (#333 round 1,
+    Medium 5): a count says a walk passed two profiles over, and only the identities say
+    which two or why — the distinction the terminus hands to post-landing review lives or
+    dies on.
     """
+    excluded = ",".join(f"{e.profile}:{e.reason}" for e in resolution.passed_over)
     return otel_event.Event(
         name=RESOLUTION_EVENT,
         at=at,
@@ -184,7 +286,7 @@ def resolution_event(
             "cti.review.arbiter": resolution.arbiter,
             "cti.review.arbiter.refusal": resolution.refusal,
             "cti.review.arbiter.unchecked": resolution.unchecked,
-            "cti.review.arbiter.excluded": len(resolution.passed_over),
+            "cti.review.arbiter.excluded": excluded,
         },
         resource={"service.name": "arma-cti-review-loop", "cti.issue": issue},
     )

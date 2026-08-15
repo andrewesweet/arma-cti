@@ -1,17 +1,20 @@
 """The never-alone decision surface: exemption, rounds, adjudication, escalation (#331, #333).
 
-Four layers. The exemption table first — the shipped file read in the caller's body, its
+Five layers. The exemption table first — the shipped file read in the caller's body, its
 shape asserted, its emptiness pinned as the state nothing has yet earned its way off. Then
 the decision, both directions and the third state: unlisted means covered, listed means
 exempt with its reason quotable, unreadable never exempts, and a diff touching the list
 itself is never exempt whatever the list says. Then the loop: round stamping, the four
-adjudication routes with the fourth's three restrictions, one-adjudication-per-finding, and
-the escalation bridge that turns a live loop into the two recorded wall facts — which
-lights condition one, while conditions two and three wait on a `prior` history and recorded
-`attempts` that no loop carries. Then #333's half over that state: the budget counts only
-findings *held across* rounds (introduced-by-the-round is #356's shape, held is #326's),
-the terminus computes what the pre-declared default owes, and every observable leaves its
-event.
+adjudication routes with the fourth's three restrictions and the arbiter routes'
+precondition — no arbiter exists until the escalation that produces one has fired —
+one-adjudication-per-finding, and the escalation bridge that turns a live loop into the two
+recorded wall facts — which lights condition one, while conditions two and three wait on a
+`prior` history and recorded `attempts` that no loop carries. Then #333's half over that
+state: the budget counts only findings *held across* rounds (introduced-by-the-round is
+#356's shape, held is #326's), the terminus computes what the pre-declared default owes,
+and every observable leaves its event. Then the durable half: the loop document that
+survives the turn that opened it, and the command surface that drives the whole loop from
+`open` to `terminus` — the production caller whose absence was round 1's High 5.
 """
 
 from __future__ import annotations
@@ -285,15 +288,79 @@ def test_a_re_review_refuses_a_finding_stamped_with_another_round() -> None:
 
 
 def test_each_of_the_four_routes_closes_a_finding() -> None:
-    for route in sorted(review_loop.ROUTES):
+    """The two review routes at round zero, the two arbiter routes at the wall they require."""
+    for route in (review_loop.FIXED, review_loop.ACCEPTED_AND_FILED):
         record = (
             adjud(review_loop.ACCEPTED_AND_FILED, "#99", "a future caller widens the input")
             if route == review_loop.ACCEPTED_AND_FILED
             else adjud(route)
         )
-        loop = review_loop.first_review((finding("F1"),))
+        loop = review_loop.first_review((finding("F1", review_loop.LOW),))
         closed = review_loop.adjudicate(loop, "F1", record)
         assert closed.findings[0].adjudication == record
+    for route in (review_loop.ARBITER_UPHELD, review_loop.ARBITER_DISMISSED):
+        loop = review_loop.Loop(3, (finding("F1", review_loop.HIGH, round_raised=1),))
+        closed = review_loop.adjudicate(loop, "F1", adjud(route))
+        assert closed.findings[0].adjudication == adjud(route)
+
+
+def test_a_round_zero_arbiter_verdict_is_refused() -> None:
+    """Round 1's Critical: no escalation has fired, so there is no arbiter to speak of.
+
+    Constructed, not inherited — the acceptance criterion's own ask. Both arbiter routes,
+    below the wall, at every round count short of it: the precondition is the escalation,
+    never the finding's severity.
+    """
+    for route in (review_loop.ARBITER_UPHELD, review_loop.ARBITER_DISMISSED):
+        for loop in (
+            review_loop.first_review((finding("F1", review_loop.CRITICAL),)),
+            review_loop.Loop(2, (finding("F1", review_loop.HIGH, round_raised=0),)),
+        ):
+            assert (
+                # Bound as defaults: the lambda runs inside the iteration that made it.
+                refused(
+                    lambda loop=loop, route=route: review_loop.adjudicate(loop, "F1", adjud(route))
+                )
+                == review_loop.ARBITER_UNAUTHORISED_ERROR
+            )
+
+
+def test_the_precondition_reads_the_wall_and_the_recorded_verdicts() -> None:
+    below = review_loop.Loop(2, (finding("F1", review_loop.HIGH),))
+    assert review_loop.escalation_fired(below) is False
+    wall = review_loop.Loop(3, (finding("F1", review_loop.HIGH, round_raised=1),))
+    assert review_loop.escalation_fired(wall) is True
+    # The strongest single fact here: after the wall's own verdict closes the finding the
+    # wall read, neither half of the wall holds any more — rounds are 3 but nothing above
+    # Low is held across — so the recorded verdict is the only reason this reads True.
+    adjudicated = review_loop.adjudicate(wall, "F1", adjud(review_loop.ARBITER_UPHELD))
+    assert review_loop.at_wall(adjudicated) is False
+    assert review_loop.escalation_fired(adjudicated) is True
+
+
+def test_the_second_verdict_of_one_arbitration_stays_admissible() -> None:
+    """One verdict consumes the held finding the wall reads, so the wall cannot gate the next.
+
+    `holding_above_low` counts open findings; one closed `arbiter_upheld` no longer holds,
+    so verdict order within one arbitration must not decide which verdicts are legal. The
+    recorded verdict stands in for the wall — the widen clause, pinned as the case that
+    would refuse without it.
+    """
+    loop = review_loop.Loop(
+        3,
+        (
+            finding("F1", review_loop.HIGH, round_raised=1),
+            finding("F2", review_loop.HIGH, round_raised=3),
+        ),
+    )
+    assert review_loop.at_wall(loop) is True
+    first = review_loop.adjudicate(loop, "F1", adjud(review_loop.ARBITER_UPHELD))
+    # F2 was raised by the round itself (#356's shape), so with F1 closed nothing is held
+    # across and the wall no longer reads True — the second verdict is admissible on the
+    # recorded verdict alone.
+    assert review_loop.at_wall(first) is False
+    second = review_loop.adjudicate(first, "F2", adjud(review_loop.ARBITER_DISMISSED))
+    assert second.findings[1].adjudication == adjud(review_loop.ARBITER_DISMISSED)
 
 
 def test_an_unknown_route_is_refused() -> None:
@@ -605,15 +672,27 @@ def test_the_fixed_and_the_accepted_and_filed_appear_in_neither_trace() -> None:
 
 
 def test_an_upheld_low_is_owed_its_filing_the_same_as_an_upheld_critical() -> None:
-    """Ruling 4's terminus sentence carries no severity qualifier, and neither does the filing."""
-    loop = review_loop.adjudicate(
-        review_loop.first_review((finding("F1", review_loop.LOW),)),
-        "F1",
-        adjud(review_loop.ARBITER_UPHELD),
+    """Ruling 4's terminus sentence carries no severity qualifier, and neither does the filing.
+
+    The Low cannot reach an arbiter on its own — it holds nothing above Low, so it cannot
+    fire the wall — which is itself the precondition's point: the arbitration that closes
+    it was authorised by the High beside it.
+    """
+    loop = review_loop.Loop(
+        3,
+        (
+            finding("F1", review_loop.HIGH, round_raised=1),
+            finding("F2", review_loop.LOW, round_raised=2),
+        ),
     )
+    loop = review_loop.adjudicate(loop, "F1", adjud(review_loop.ARBITER_UPHELD))
+    loop = review_loop.adjudicate(loop, "F2", adjud(review_loop.ARBITER_UPHELD))
     end = review_loop.terminus(loop)
     assert end.default_applies is True
-    assert end.filings == (review_loop.Filing("F1", review_loop.LOW, 0),)
+    assert end.filings == (
+        review_loop.Filing("F1", review_loop.HIGH, 1),
+        review_loop.Filing("F2", review_loop.LOW, 2),
+    )
 
 
 def test_an_open_finding_above_low_stops_the_default_with_an_answer_not_an_error() -> None:
@@ -656,7 +735,7 @@ def test_a_round_event_carries_the_observatorys_own_observables() -> None:
     assert attributes["cti.review.holding_above_low"] == {"boolValue": True}
 
 
-def test_an_escalation_event_carries_the_fired_conditions_and_the_arbiter() -> None:
+def test_an_escalation_event_carries_the_evaluation_kind_and_the_arbiter() -> None:
     loop = review_loop.Loop(3, (finding("F1", round_raised=2),))
     outcome = review_loop.evaluate_escalation(
         escalation.ReadResult(conditions()), loop, arbiter="opus-max"
@@ -664,11 +743,18 @@ def test_an_escalation_event_carries_the_fired_conditions_and_the_arbiter() -> N
     event = review_loop.escalation_event(outcome, "#348", at=3.0, arbiter="opus-max")
     attributes = rendered(event)
     assert event.name == review_loop.ESCALATION_EVENT
+    # The kind travels (#333 round 1, Medium 5): a count of events cannot tell a loop that
+    # confidently fired nothing from one whose condition table would not open.
+    assert attributes["cti.review.evaluation"] == {"stringValue": escalation.FIRING}
     assert attributes["cti.review.conditions"] == {"stringValue": "1"}
     assert attributes["cti.review.arbiter"] == {"stringValue": "opus-max"}
     # Silence and unreadable input are states the observatory must count, not read past.
     quiet = review_loop.escalation_event(escalation.NoFiring(), "#348", at=3.0)
-    assert rendered(quiet)["cti.review.conditions"] == {"stringValue": ""}
+    quiet_attributes = rendered(quiet)
+    assert quiet_attributes["cti.review.evaluation"] == {"stringValue": escalation.NO_FIRING}
+    assert quiet_attributes["cti.review.conditions"] == {"stringValue": ""}
+    blind = review_loop.escalation_event(escalation.Unreadable(("gone",)), "#348", at=3.0)
+    assert rendered(blind)["cti.review.evaluation"] == {"stringValue": escalation.UNREADABLE}
 
 
 def test_a_dispute_event_carries_the_finding_and_its_route() -> None:
@@ -686,14 +772,15 @@ def test_a_dispute_event_carries_the_finding_and_its_route() -> None:
     assert attributes["cti.review.route"] == {"stringValue": review_loop.ARBITER_UPHELD}
 
 
-def test_a_terminus_event_carries_the_default_and_both_trace_counts() -> None:
+def test_a_terminus_event_carries_the_default_and_both_trace_identities() -> None:
     end = review_loop.terminus(at_the_wall_arbitrated())
     event = review_loop.terminus_event(end, "#326", at=5.0)
     attributes = rendered(event)
     assert event.name == review_loop.TERMINUS_EVENT
     assert attributes["cti.review.default_applies"] == {"boolValue": True}
-    assert attributes["cti.review.filings"] == {"intValue": "1"}
-    assert attributes["cti.review.dismissals"] == {"intValue": "1"}
+    # Identities, not counts (#333 round 1, Medium 5): which finding, at what severity.
+    assert attributes["cti.review.filings"] == {"stringValue": f"F1:{review_loop.CRITICAL}"}
+    assert attributes["cti.review.dismissals"] == {"stringValue": f"F2:{review_loop.HIGH}"}
 
 
 def test_emission_journals_whether_or_not_the_collector_took_it(tmp_path: Path) -> None:
@@ -706,3 +793,307 @@ def test_emission_journals_whether_or_not_the_collector_took_it(tmp_path: Path) 
     # The journal line carries the export's own outcome — the durable half is written
     # whichever way the bounded attempt landed.
     assert "exported" in line
+
+
+# --------------------------------------------------------------------------- the durable loop
+
+
+def test_a_stored_loop_round_trips_through_its_document() -> None:
+    """Every route, every severity band, adjudications included: out and back, one loop."""
+    loop = at_the_wall_arbitrated()
+    assert review_loop.parse_loop(review_loop.render_loop(326, loop)) == loop
+
+
+def test_a_document_that_could_not_govern_silently_is_refused_on_read() -> None:
+    document = review_loop.render_loop(326, review_loop.first_review((finding("F1"),)))
+    assert (
+        refused(lambda: review_loop.parse_loop({**document, "version": 2}))
+        == review_loop.LOOP_VERSION_ERROR
+    )
+    assert (
+        refused(lambda: review_loop.parse_loop({**document, "review_rounds": "three"}))
+        == review_loop.LOOP_ROUNDS_ERROR
+    )
+    assert (
+        refused(lambda: review_loop.parse_loop({**document, "findings": "none"}))
+        == review_loop.LOOP_FINDINGS_ERROR
+    )
+    assert (
+        refused(
+            lambda: review_loop.parse_loop(
+                {**document, "findings": [{"id": "F1", "severity": "high", "round_raised": 1}]}
+            )
+        )
+        == review_loop.ROUND_RANGE_ERROR
+    )
+    # The precondition is deliberately absent from this list: storage does not re-derive
+    # it, because a loop carrying a pre-precondition verdict must still be readable.
+
+
+def test_the_store_refuses_a_document_naming_another_issue(tmp_path: Path) -> None:
+    root = tmp_path / "review"
+    review_loop.store_loop(root, 326, review_loop.first_review((finding("F1"),)))
+    assert review_loop.load_loop(root, 326).findings[0].id == "F1"
+    (root / "326" / review_loop.LOOP_FILE).write_text(
+        json.dumps(review_loop.render_loop(999, review_loop.first_review((finding("F1"),)))),
+        encoding="utf-8",
+    )
+    assert refused(
+        lambda: review_loop.load_loop(root, 326)
+    ) == review_loop.ISSUE_MISMATCH_ERROR.format(stored=999, asked=326)
+
+
+# --------------------------------------------------------------------------- the command surface
+
+
+def write_record(dispatch_dir: Path, name: str, *, issue: int, profile: str, seat: str) -> None:
+    """One dispatch record in the shape `dispatch._read_record` reads."""
+    entry = dispatch_dir / name
+    entry.mkdir(parents=True)
+    (entry / "dispatch.json").write_text(
+        json.dumps({"issue": issue, "profile": profile, "seat": seat, "dispatch_id": name}),
+        encoding="utf-8",
+    )
+
+
+def stepped_clock() -> Callable[[], float]:
+    """Build a clock the tests own: every call advances one second, off any wall clock."""
+    tick = [0.0]
+
+    def now() -> float:
+        tick[0] += 1.0
+        return tick[0]
+
+    return now
+
+
+def test_the_cli_refuses_the_round_zero_dismissal(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The round-1 Critical, driven through the production caller: refuse, exit 1, store nothing."""
+    root = tmp_path / "review"
+    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    assert (
+        review_loop.main(
+            ["open", "--issue", "326", *base, "--finding", "F1=critical"], now=stepped_clock()
+        )
+        == review_loop.OK
+    )
+    code = review_loop.main(
+        [
+            "adjudicate",
+            "--issue",
+            "326",
+            *base,
+            "--finding",
+            "F1",
+            "--route",
+            review_loop.ARBITER_DISMISSED,
+        ],
+        now=stepped_clock(),
+    )
+    assert code == review_loop.REFUSED
+    assert review_loop.ARBITER_UNAUTHORISED_ERROR in capsys.readouterr().err
+    # Refused before the store: the loop on disk still carries the finding open.
+    assert review_loop.load_loop(root, 326).findings[0].adjudication is None
+
+
+def test_the_command_surface_drives_one_loop_end_to_end(tmp_path: Path) -> None:
+    """Open, three rounds, escalate, adjudicate, terminus — one issue, all durable state real.
+
+    The escalation reads a dispatch directory the test writes (`resolve_dispatchable`'s
+    production inputs: records, scratch admission/breaker state, a key-less credentials
+    file), so the arbiter answered here is the one the walk would answer on the box — the
+    implementer seat's entry head, `codex-sol-high`, held clean by the scratch state the
+    test points the rungs at.
+    """
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    dispatch_dir = tmp_path / "dispatches"
+    write_record(dispatch_dir, "d1", issue=333, profile="opus-high", seat="implementer")
+    write_record(dispatch_dir, "d2", issue=333, profile="opus-xhigh", seat="review")
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("# no keys the walk reads\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    filings: list[tuple[str, str]] = []
+    comments: list[tuple[int, str]] = []
+
+    def create(title: str, body: str) -> int:
+        filings.append((title, body))
+        return 400 + len(filings)
+
+    def post(issue: int, body: str) -> None:
+        comments.append((issue, body))
+
+    clock = stepped_clock()
+    base = ["--root", str(root), "--journal", str(journal)]
+    kwargs = {"now": clock, "create_issue": create, "post_comment": post}
+    assert (
+        review_loop.main(["open", "--issue", "333", *base, "--finding", "F1=critical"], **kwargs)
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(["round", "--issue", "333", *base, "--finding", "F2=high"], **kwargs)
+        == review_loop.OK
+    )
+    assert review_loop.main(["round", "--issue", "333", *base], **kwargs) == review_loop.OK
+    assert review_loop.main(["round", "--issue", "333", *base], **kwargs) == review_loop.OK
+    assert review_loop.load_loop(root, 333).review_rounds == 3
+    assert (
+        review_loop.main(
+            [
+                "escalate",
+                "--issue",
+                "333",
+                *base,
+                "--seat",
+                "implementer",
+                "--dispatch-dir",
+                str(dispatch_dir),
+                "--admission-dir",
+                str(tmp_path / "admission"),
+                "--breaker-dir",
+                str(tmp_path / "breaker"),
+                "--credentials",
+                str(credentials),
+                "--conditions",
+                str(CONDITIONS),
+            ],
+            **kwargs,
+        )
+        == review_loop.OK
+    )
+    escalation_record = json.loads(
+        (root / "333" / review_loop.ESCALATION_FILE).read_text(encoding="utf-8")
+    )
+    assert escalation_record["evaluation"] == escalation.FIRING
+    assert escalation_record["arbiter"] == "codex-sol-high"
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "333",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.ARBITER_UPHELD,
+            ],
+            **kwargs,
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "333",
+                *base,
+                "--finding",
+                "F2",
+                "--route",
+                review_loop.ARBITER_DISMISSED,
+            ],
+            **kwargs,
+        )
+        == review_loop.OK
+    )
+    assert review_loop.main(["terminus", "--issue", "333", *base], **kwargs) == review_loop.OK
+    assert [title for title, _ in filings] == ["Arbiter-upheld finding F1 (critical) from #333"]
+    assert filings[0][1].startswith(f"{review_loop.FILING_MARKER} #333")
+    assert [issue for issue, _ in comments] == [333]
+    assert comments[0][1].startswith(f"{review_loop.DISMISSAL_MARKER} #333")
+    landing = json.loads((root / "333" / review_loop.LANDING_FILE).read_text(encoding="utf-8"))
+    assert landing["arbiter"] == "codex-sol-high"
+    assert landing["filings"] == [
+        {"finding": "F1", "severity": "critical", "round_raised": 0, "issue": 401}
+    ]
+    assert landing["dismissals"] == [{"finding": "F2", "severity": "high", "round_raised": 1}]
+    # The terminus is once: a second run would file every upheld finding twice.
+    assert review_loop.main(["terminus", "--issue", "333", *base], **kwargs) == review_loop.REFUSED
+    assert len(filings) == 1
+    events = [
+        json.loads(line)["event"] for line in journal.read_text(encoding="utf-8").splitlines()
+    ]
+    assert events == [
+        review_loop.ROUND_EVENT,
+        review_loop.ROUND_EVENT,
+        review_loop.ROUND_EVENT,
+        review_loop.ROUND_EVENT,
+        "cti.review.arbiter.resolved",
+        review_loop.ESCALATION_EVENT,
+        review_loop.DISPUTE_EVENT,
+        review_loop.DISPUTE_EVENT,
+        review_loop.TERMINUS_EVENT,
+    ]
+
+
+def test_the_cli_named_refusals(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    root = tmp_path / "review"
+    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    clock = stepped_clock()
+    # Acting before a loop exists, opening one twice, an unknown seat, a terminus the loop
+    # has not reached: each is a named refusal, exit 1, nothing written.
+    assert review_loop.main(["round", "--issue", "326", *base], now=clock) == review_loop.REFUSED
+    assert review_loop.NO_LOOP_ERROR.format(issue=326, root=root) in capsys.readouterr().err
+    assert (
+        review_loop.main(["open", "--issue", "326", *base, "--finding", "F1=high"], now=clock)
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(["open", "--issue", "326", *base, "--finding", "F1=high"], now=clock)
+        == review_loop.REFUSED
+    )
+    assert review_loop.LOOP_EXISTS_ERROR.format(issue=326, root=root) in capsys.readouterr().err
+    assert (
+        review_loop.main(["escalate", "--issue", "326", *base, "--seat", "no-such-seat"], now=clock)
+        == review_loop.REFUSED
+    )
+    assert review_loop.SEAT_UNKNOWN_ERROR.format(seat="no-such-seat") in capsys.readouterr().err
+    assert review_loop.main(["terminus", "--issue", "326", *base], now=clock) == review_loop.REFUSED
+    assert review_loop.TERMINUS_NOT_REACHED_ERROR in capsys.readouterr().err
+    assert not (root / "326" / review_loop.LANDING_FILE).exists()
+
+
+def test_a_dry_run_terminus_posts_and_writes_nothing(tmp_path: Path) -> None:
+    root = tmp_path / "review"
+    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    clock = stepped_clock()
+    filings: list[tuple[str, str]] = []
+    comments: list[tuple[int, str]] = []
+    assert (
+        review_loop.main(["open", "--issue", "326", *base, "--finding", "F1=low"], now=clock)
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "326",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.FIXED,
+            ],
+            now=clock,
+            create_issue=lambda title, body: filings.append((title, body)) or 0,
+            post_comment=lambda issue, body: comments.append((issue, body)),
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base, "--dry-run"],
+            now=clock,
+            create_issue=lambda title, body: filings.append((title, body)) or 0,
+            post_comment=lambda issue, body: comments.append((issue, body)),
+        )
+        == review_loop.OK
+    )
+    assert filings == []
+    assert comments == []
+    assert not (root / "326" / review_loop.LANDING_FILE).exists()
