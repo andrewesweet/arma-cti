@@ -1755,6 +1755,47 @@ def test_staging_refuses_a_dirty_tree_in_the_landings_own_words(
     assert report.lines[0] == "refusal=dirty_tree"
 
 
+def test_staging_a_tree_with_no_commit_of_its_own_refuses_by_name(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """`ok=staged commits=0` pointed a lander at `origin/main`'s tip; this is the refusal.
+
+    Round 2 landed the guard with no test over it — every staging test committed first, so
+    the branch was unreached and an inverted or deleted `if not ahead:` would have kept
+    `just unit` green while restoring exactly the regression the guard was for (round 2
+    re-review, Medium 3).
+    """
+    origin, main, here = repo
+    tip = _tip(origin)
+
+    report = land.stage(main, here)
+
+    assert report.lines[0] == "refusal=nothing_to_land"
+    assert f"ahead=0 commits over {land.BASE}" in report.lines
+    assert _tip(origin) == tip
+
+
+def test_staging_refuses_before_the_rebase_can_move_the_tree(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """The refusal says "Nothing was staged", so nothing may have been staged.
+
+    Decided after the rebase, it fired on a tree already fast-forwarded onto
+    `origin/main` while its own words asserted the tree had not moved (round 2 re-review,
+    Low 5). HEAD unmoved is the whole assertion, and only ordering can make it hold.
+    """
+    _origin, main, here = repo
+    _commit(main, "sibling.txt", "landed first\n")
+    _git("push", "origin", "main", cwd=main)
+    before = _git("rev-parse", "HEAD", cwd=here).strip()
+
+    report = land.stage(main, here)
+
+    assert report.lines[0] == "refusal=nothing_to_land"
+    assert f"head={before}" in report.lines
+    assert _git("rev-parse", "HEAD", cwd=here).strip() == before
+
+
 def test_staging_and_landing_are_not_both_askable(capsys: pytest.CaptureFixture[str]) -> None:
     """One mode per invocation: `--stage` and `--dry-run` are mutually exclusive."""
     with pytest.raises(SystemExit):

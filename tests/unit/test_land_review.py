@@ -147,6 +147,30 @@ def _authoring(profile: str) -> str:
     )
 
 
+ARBITER: Final = "opus-xhigh"
+
+
+def _escalation(
+    *,
+    arbiter: str = ARBITER,
+    evaluation: str = "firing",
+    unchecked: bool = False,
+    conditions: tuple[int, ...] = (1,),
+) -> str:
+    """One escalation record, the shape `just review-loop escalate` writes it."""
+    return json.dumps(
+        {
+            "version": 1,
+            "issue": ISSUE,
+            "evaluation": evaluation,
+            "conditions": list(conditions),
+            "arbiter": arbiter,
+            "unchecked": unchecked,
+            "passed_over": [],
+        }
+    )
+
+
 def _stage(  # noqa: PLR0913 — one parameter per record the rung reads
     tmp_path: Path,
     *,
@@ -154,6 +178,7 @@ def _stage(  # noqa: PLR0913 — one parameter per record the rung reads
     result: str | None = RESULT,
     verdict: str | None = _VERDICT_TEXT,
     loop: str | None = None,
+    escalation: str | None = None,
     author: str | None = AUTHOR,
     records: tuple[tuple[str, str, str], ...] = (),
 ) -> tuple[Path, Path]:
@@ -168,6 +193,10 @@ def _stage(  # noqa: PLR0913 — one parameter per record the rung reads
     clears without it: records naming no author at all satisfy criterion 2 only
     vacuously and refuse `authorship_unrecorded` (round 1 claim 1). `author=None`
     withholds it, which is the arrangement that refusal is asserted on.
+
+    `escalation` writes the record `just review-loop escalate` leaves beside the loop,
+    which is what authorises an arbiter route; it defaults to absent, because the
+    landings that carry no arbiter route never read it.
 
     `None` writes nothing, so a test names the record it withholds; `records` writes
     further dispatch directories beside the review's own — authoring records,
@@ -194,6 +223,10 @@ def _stage(  # noqa: PLR0913 — one parameter per record the rung reads
         target = review_root / str(ISSUE) / "loop.json"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(loop, encoding="utf-8")
+    if escalation is not None:
+        recorded = review_root / str(ISSUE) / review_loop.ESCALATION_FILE
+        recorded.parent.mkdir(parents=True, exist_ok=True)
+        recorded.write_text(escalation, encoding="utf-8")
     for name, filename, text in records:
         extra = dispatch_root / name
         extra.mkdir(parents=True, exist_ok=True)
@@ -683,9 +716,8 @@ def test_the_arbiter_routes_clear_the_landing(tmp_path: Path) -> None:
             _stage(
                 tmp_path,
                 verdict=_verdict(findings=(("f1", "critical"),)),
-                loop=_loop(
-                    findings=(_stored("f1", "critical", route=route, arbiter="opus-xhigh"),)
-                ),
+                loop=_loop(findings=(_stored("f1", "critical", route=route, arbiter=ARBITER),)),
+                escalation=_escalation(),
             )
         )
         assert outcome.refusal is None, route
@@ -895,18 +927,126 @@ def test_an_arbiter_route_naming_no_arbiter_refuses_the_landing(tmp_path: Path) 
 
 
 def test_an_arbiter_route_that_names_its_arbiter_clears(tmp_path: Path) -> None:
-    """The other side of the same check: the shape the writer produces is not refused."""
+    """The other side of the same check: the shape the writer produces is not refused.
+
+    Which is the escalation record *and* the name — round 2 asserted this arrangement
+    with no escalation record at all, and so pinned as correct exactly the state the
+    terminus over the same loop refuses (round 2 re-review, Medium 1).
+    """
     outcome = _rung(
         _stage(
             tmp_path,
             verdict=_verdict(findings=(("f1", "critical"),)),
             loop=_loop(
-                findings=(_stored("f1", "critical", route="arbiter_upheld", arbiter="opus-xhigh"),)
+                findings=(_stored("f1", "critical", route="arbiter_upheld", arbiter=ARBITER),)
             ),
+            escalation=_escalation(),
         )
     )
 
     assert outcome.refusal is None
+    assert f"arbiter={ARBITER} escalation=firing unchecked=false" in outcome.cleared
+
+
+def test_an_arbiter_route_no_escalation_record_authorised_refuses(tmp_path: Path) -> None:
+    """The route names a judge and nothing says a wall ever transferred to one.
+
+    Round 2 checked only that the route named an arbiter, so a hand-written
+    `arbiter_dismissed` on a Critical cleared `just land` printing `open_above_low=0`
+    while `just review-loop terminus` over the same loop refused it
+    `ARBITER_UNRESOLVED_ERROR` — one record, two consumers, and the landing was the
+    permissive one (round 2 re-review, Medium 1).
+    """
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            verdict=_verdict(findings=(("f1", "critical"),)),
+            loop=_loop(
+                findings=(_stored("f1", "critical", route="arbiter_dismissed", arbiter=ARBITER),)
+            ),
+        )
+    )
+
+    refusal = outcome.refusal
+    assert refusal.kind == "arbiter_unresolved"
+    assert "evaluation=no_record" in refusal.found
+    assert "finding=f1 route=arbiter_dismissed" in refusal.found
+
+
+def test_an_escalation_that_fired_nothing_authorises_no_arbiter_route(tmp_path: Path) -> None:
+    """A record that resolved a profile and fired nothing transferred to it (#333 High 2)."""
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            verdict=_verdict(findings=(("f1", "critical"),)),
+            loop=_loop(
+                findings=(_stored("f1", "critical", route="arbiter_upheld", arbiter=ARBITER),)
+            ),
+            escalation=_escalation(evaluation="no_firing", conditions=()),
+        )
+    )
+
+    refusal = outcome.refusal
+    assert refusal.kind == "arbiter_unresolved"
+    assert "evaluation=no_firing" in refusal.found
+
+
+def test_an_escalation_record_that_will_not_read_clears_nothing(tmp_path: Path) -> None:
+    """A record that could not be read is not a record that authorised (#41)."""
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            verdict=_verdict(findings=(("f1", "critical"),)),
+            loop=_loop(
+                findings=(_stored("f1", "critical", route="arbiter_upheld", arbiter=ARBITER),)
+            ),
+            escalation="{ nope",
+        )
+    )
+
+    assert _kind(outcome) == "escalation_unreadable"
+
+
+def test_an_arbiter_the_escalation_did_not_resolve_refuses_by_name(tmp_path: Path) -> None:
+    """`adjudicate` fills the name from the record, so the two disagree only by hand."""
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            verdict=_verdict(findings=(("f1", "critical"),)),
+            loop=_loop(
+                findings=(_stored("f1", "critical", route="arbiter_upheld", arbiter="fable-max"),)
+            ),
+            escalation=_escalation(),
+        )
+    )
+
+    refusal = outcome.refusal
+    assert refusal.kind == "arbiter_mismatch"
+    assert f"resolved={ARBITER}" in refusal.found
+    assert "finding=f1 arbiter=fable-max" in refusal.found
+
+
+def test_a_partial_resolution_is_named_on_the_clearance_it_authorises(tmp_path: Path) -> None:
+    """`unchecked` travels to the clearance a lander quotes (round 2 re-review, Low 7).
+
+    The resolution behind an arbiter can be made with a dispatch record it could not
+    open — the reason ruling 4's route is `reviewing_checked` and never
+    `reviewing_verified` — and a clearance that prints the name alone records a stronger
+    claim than the resolution made.
+    """
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            verdict=_verdict(findings=(("f1", "critical"),)),
+            loop=_loop(
+                findings=(_stored("f1", "critical", route="arbiter_upheld", arbiter=ARBITER),)
+            ),
+            escalation=_escalation(unchecked=True),
+        )
+    )
+
+    assert outcome.refusal is None
+    assert f"arbiter={ARBITER} escalation=firing unchecked=true" in outcome.cleared
 
 
 def test_a_low_closed_by_an_unnamed_arbiter_route_does_not_block(tmp_path: Path) -> None:

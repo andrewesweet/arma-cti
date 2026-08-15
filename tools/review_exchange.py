@@ -832,9 +832,24 @@ def verify(verdict: Verdict, dispatch_root: Path) -> Bound | Refusal:
     return forged if forged is not None else binding
 
 
+class BoundVerdict(NamedTuple):
+    """A verdict and the binding it was read through — the pair both callers need.
+
+    The return was `Verdict` alone while `review-loop sync` was its only caller, and
+    #334's landing rung went on inlining the same six steps because it also needs the
+    `Bound` — the dispatch, the profile and the lane it prints on the clearance (#334
+    round 2 re-review, Medium 2). Two copies of one derivation agree only until one of
+    them grows a check, so the return is widened to carry both rather than the landing
+    keeping a copy of how a verdict binds.
+    """
+
+    verdict: Verdict
+    binding: Bound
+
+
 def bound_verdict(  # noqa: PLR0911 — one return per way a record can fail to bind, as the landing's own ladder has
     issue: int, sha: str, dispatch_root: Path
-) -> Verdict | Refusal:
+) -> BoundVerdict | Refusal:
     """Read the verdict bound to one issue's commit, or the refusal that stops it.
 
     The whole derivation in one call, in the order the landing's rung climbs it: the
@@ -843,7 +858,9 @@ def bound_verdict(  # noqa: PLR0911 — one return per way a record can fail to 
     either caller because both #334's landing rung and #333's `review-loop sync` need the
     *same* verdict — a loop opened from anything else would be a record of findings no
     verdict is on the hook for, and a landing cleared against a different one would be a
-    landing cleared by a review of another commit.
+    landing cleared by a review of another commit. Both callers reach it: the landing rung
+    reads its `binding` for the identity it prints, which is the fact that used to keep a
+    second copy of these six steps alive in `land_review` (round 2 re-review, Medium 2).
     """
     binding = derive_binding(issue, sha, dispatch_root)
     if isinstance(binding, Refusal):
@@ -885,7 +902,7 @@ def bound_verdict(  # noqa: PLR0911 — one return per way a record can fail to 
     if mismatch is not None:
         return mismatch
     forged = identity_mismatch(verdict, binding)
-    return forged if forged is not None else verdict
+    return forged if forged is not None else BoundVerdict(verdict, binding)
 
 
 class Scanned(NamedTuple):

@@ -108,9 +108,9 @@ UNREADABLE: Final = "records_unreadable"
 # (round 1 claims 3 and 4).
 LOOP_RECORD_LIMIT: Final = (
     "limit=the loop record carries no dispatch and no SHA, so unlike the verdict beside it"
-    " its routes are not re-derived at read time — an arbiter route names the arbiter"
-    " `escalate` resolved and is refused without one, but the name is written by the same"
-    " user, not derived (ADR-0071 ruling 4's same-user limit)"
+    " its routes are not re-derived at read time — an arbiter route is refused without an"
+    " escalation record that fired and named the arbiter it carries, but both records are"
+    " written by the same user, not derived (ADR-0071 ruling 4's same-user limit)"
 )
 
 
@@ -195,6 +195,22 @@ def _unadjudicated_refusal(
     )
 
 
+NOTHING_PUSHED: Final = " Nothing was pushed."
+
+
+def _landing_refusal(refusal: Refusal) -> Refusal:
+    """Carry a shared refusal into the landing's own voice: it also says nothing was pushed.
+
+    `review_exchange`'s derivation is read by `review-loop sync` too, where nothing is
+    being pushed and the sentence would be a lie; the landing is where it is true, so the
+    landing adds it rather than the shared module carrying a caller's context. Idempotent,
+    so a refusal that already ends this way is not told twice.
+    """
+    if refusal.action.endswith(NOTHING_PUSHED):
+        return refusal
+    return refusal._replace(action=refusal.action + NOTHING_PUSHED)
+
+
 def _authorship_lines(authorship: dispatch.Authorship) -> tuple[str, ...]:
     """Render the one-line account of the authorship scan a clearance can carry.
 
@@ -209,6 +225,92 @@ def _authorship_lines(authorship: dispatch.Authorship) -> tuple[str, ...]:
 def _alternates_lines(binding: review_exchange.Bound) -> tuple[str, ...]:
     """Render the alternates a latest-first derivation skipped past, if it skipped any."""
     return (f"alternates={' '.join(binding.alternates)}",) if binding.alternates else ()
+
+
+def _arbiter_authorisation(
+    loop_file: Path, loop: review_loop.Loop, review_root: Path, issue: int
+) -> Refusal | tuple[str, ...]:
+    """Refuse an arbiter route no escalation record authorised; else the lines it clears with.
+
+    The other half of "a reader of a record must not assume its writer" (round 2 re-review,
+    Medium 1). Round 2 re-checked that an arbiter route *names* an arbiter and never that
+    the route was *authorised*: the writer refuses both — `ARBITER_UNAUTHORISED_ERROR` for a
+    route the escalation has not fired on, `ARBITER_UNNAMED_ERROR` for one that names no
+    judge — and the terminus over the same loop refuses arbiter verdicts with no firing
+    escalation record beside them. A hand-written `{"route": "arbiter_dismissed",
+    "arbiter": "opus-xhigh"}` therefore cleared `just land` printing `open_above_low=0`
+    while `just review-loop terminus` refused it `ARBITER_UNRESOLVED_ERROR` — one loop, two
+    consumers, opposite answers, and the landing was the permissive one.
+
+    The record decides it, through `review_loop.recorded_arbiter`, and the decision itself
+    is `ArbiterAuthorisation.authorises` so the terminus and this rung cannot drift apart on
+    what a record has to say: a name **and** a firing evaluation.
+
+    **`escalation_fires_on` is deliberately not re-derived here**, and that is not an
+    omission of the same kind. Its wall reads `open_above_low`, and the landing only reaches
+    this line once every finding above Low is closed — so the wall is false by construction
+    at landing time, and asking the predicate here would refuse every arbitrated landing.
+    It is a precondition on the *act*, true when `adjudicate` ran; the escalation record is
+    the durable trace that act left, and it is what a reader can honestly check.
+    """
+    arbitrated = tuple(
+        finding
+        for finding in loop.findings
+        if review_loop.above_low(finding.severity)
+        and finding.adjudication is not None
+        and finding.adjudication.route
+        in (review_loop.ARBITER_UPHELD, review_loop.ARBITER_DISMISSED)
+    )
+    if not arbitrated:
+        return ()
+    try:
+        recorded = review_loop.recorded_arbiter(review_root, issue)
+    except review_loop.ExternalError as error:
+        return Refusal(
+            "escalation_unreadable",
+            (f"loop={loop_file}", f"reason={error}"),
+            "A finding above Low is closed by an arbiter and the escalation record that"
+            " would say who the wall transferred to could not be read. Repair the record —"
+            " a check that could not run is not a check that passed (#41). Nothing was"
+            " pushed.",
+        )
+    if not recorded.authorises:
+        return Refusal(
+            "arbiter_unresolved",
+            (
+                f"loop={loop_file}",
+                f"escalation={review_root.expanduser() / str(issue) / review_loop.ESCALATION_FILE}",
+                f"arbiter={recorded.arbiter or 'none'}",
+                f"evaluation={recorded.evaluation or 'no_record'}",
+                *(f"finding={f.id} route={f.adjudication.route}" for f in arbitrated),
+            ),
+            "A finding above Low is closed through an arbiter route that no escalation"
+            " authorised: the record naming a firing condition and the profile it"
+            " transferred to is absent, or it fired nothing. A landing whose verdicts no"
+            " arbiter resolution chose is the same state `just review-loop terminus`"
+            " refuses. Run `just review-loop escalate --issue <n>` at the wall and"
+            " re-adjudicate. Nothing was pushed.",
+        )
+    disagreed = tuple(f for f in arbitrated if f.adjudication.arbiter != recorded.arbiter)
+    if disagreed:
+        return Refusal(
+            "arbiter_mismatch",
+            (
+                f"loop={loop_file}",
+                f"resolved={recorded.arbiter}",
+                *(f"finding={f.id} arbiter={f.adjudication.arbiter}" for f in disagreed),
+            ),
+            "The arbiter named on an adjudication is not the one the escalation record"
+            " resolved. `adjudicate` fills the name from that record, so the two disagree"
+            " only where one was edited — re-derive rather than reconcile by hand. Nothing"
+            " was pushed.",
+        )
+    return (
+        (
+            f"arbiter={recorded.arbiter} escalation={recorded.evaluation}"
+            f" unchecked={str(recorded.unchecked).lower()}"
+        ),
+    )
 
 
 def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the ladder keeps one rung per branch, one return per refusal and one input per fact the rung reads, so no way a record can refuse hides inside a helper
@@ -246,73 +348,18 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             ),
             (),
         )
-    binding = review_exchange.derive_binding(issue, sha, dispatch_root)
-    if not isinstance(binding, review_exchange.Bound):
-        return Outcome(binding, ())
-    try:
-        verdict_file = review_exchange.verdict_path(dispatch_root, binding.dispatch_id)
-    except review_exchange.ReviewExchangeError as error:
-        return Outcome(
-            Refusal(
-                UNREADABLE,
-                (f"dispatch={binding.dispatch_id}", f"reason={error}"),
-                "The reviewing dispatch's id cannot name its own verdict record, and"
-                " the record that would not open could be the binding one — so no"
-                " verdict is read (#41). Nothing was pushed.",
-            ),
-            (),
-        )
-    if not verdict_file.is_file():
-        return Outcome(
-            Refusal(
-                "no_verdict",
-                (f"dispatch={binding.dispatch_id}", f"expected={verdict_file}"),
-                "The review dispatch completed but no verdict record sits beside its"
-                " plan. Record the verdict (`just review record`) — a completed review"
-                " whose judgement no one can read clears nothing (#41). Nothing was"
-                " pushed.",
-            ),
-            (),
-        )
-    try:
-        verdict = review_exchange.parse_verdict(verdict_file.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as error:
-        return Outcome(
-            Refusal(
-                "verdict_unreadable",
-                (f"verdict={verdict_file}", f"reason={error}"),
-                "The verdict record exists but will not parse. Repair or re-record it"
-                " — a check that could not run is not a check that passed (#41)."
-                " Nothing was pushed.",
-            ),
-            (),
-        )
-    if verdict.issue != issue:
-        return Outcome(
-            Refusal(
-                "review_issue_mismatch",
-                (
-                    f"asked_issue={issue}",
-                    f"verdict_issue={verdict.issue}",
-                    f"verdict={verdict_file}",
-                ),
-                "This verdict judges another item's work. A verdict satisfies only the"
-                " item and the SHA it names (#332's binding, read at landing time), so"
-                " record one for this item's commit. Nothing was pushed.",
-            ),
-            (),
-        )
-    mismatch = review_exchange.satisfies(verdict, sha)
-    if mismatch is not None:
-        return Outcome(mismatch, ())
-    # `verify` would re-derive the binding from `(verdict.issue, verdict.reviewed_sha)`,
-    # and the two checks above have just proven that pair equal to `(issue, sha)` — the
-    # arguments `binding` came from. The comparison is the whole of what `verify` adds,
-    # so it is made against the derivation already in hand rather than by scanning every
-    # dispatch directory on the box a second time (round 1 claim 11).
-    forged = review_exchange.identity_mismatch(verdict, binding)
-    if forged is not None:
-        return Outcome(forged, ())
+    # One derivation, in `review_exchange`, for both readers of it (round 2 re-review,
+    # Medium 2). Round 2 inlined the same six steps this call makes — the binding, the
+    # record beside it, the item, the SHA, the identity re-derived rather than believed —
+    # in the same order, and the two agreed only for as long as neither grew a check: a
+    # check added to `bound_verdict` alone would have `review-loop sync` folding a loop
+    # from a verdict this landing accepts, and one added here alone would refuse a loop
+    # `sync` built. The obstacle was that this rung also needs the `Bound`, so the return
+    # was widened to carry it rather than the copy kept.
+    bound = review_exchange.bound_verdict(issue, sha, dispatch_root)
+    if not isinstance(bound, review_exchange.BoundVerdict):
+        return Outcome(_landing_refusal(bound), ())
+    verdict, binding = bound.verdict, bound.binding
     authorship = dispatch.potential_authors(issue, dispatch_root)
     if binding.profile in authorship.potential:
         authored = tuple(
@@ -527,10 +574,14 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             ),
             (),
         )
+    authorised = _arbiter_authorisation(loop_file, loop, review_root, issue)
+    if isinstance(authorised, Refusal):
+        return Outcome(authorised, ())
     return Outcome(
         None,
         (
             *_authorship_lines(authorship),
+            *authorised,
             f"review_dispatch={binding.dispatch_id} profile={binding.profile} lane={binding.lane}",
             f"verdict_sha={sha}",
             # Read off the loop rather than written as a literal: the count a lander

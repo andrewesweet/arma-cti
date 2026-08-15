@@ -439,12 +439,22 @@ class Adjudication(NamedTuple):
     be asked for, and a route that stands in for a ruling should name the judge that gave
     it. The CLI fills it from `escalation.json` rather than from a flag, so the name on the
     record is the one `escalate` resolved.
+
+    `unchecked` is that resolution's own qualification, carried rather than dropped
+    (round 2 re-review, Low 7): the exclusion scan behind the arbiter may have been
+    partial, which is why ruling 4's route is `reviewing_checked` and never
+    `reviewing_verified`, and a record naming the arbiter alone says something stronger
+    than the resolution did. Absent from a stored adjudication it reads as `False`,
+    which is safe in the direction that matters here and unlike the escalation record's
+    own `unchecked`: this field qualifies a name, where that one decides a gate — every
+    record carrying an arbiter at all was written by `adjudicate`, which writes both.
     """
 
     route: str
     issue: str = ""
     conditional_on: str = ""
     arbiter: str = ""
+    unchecked: bool = False
 
 
 class Loop(NamedTuple):
@@ -1005,14 +1015,18 @@ LOOP_UNREADABLE_ERROR: Final = (
 )
 
 
-def _render_adjudication(adjudication: Adjudication) -> dict[str, str]:
-    rendered = {"route": adjudication.route}
+def _render_adjudication(adjudication: Adjudication) -> dict[str, object]:
+    rendered: dict[str, object] = {"route": adjudication.route}
     if adjudication.issue:
         rendered["issue"] = adjudication.issue
     if adjudication.conditional_on:
         rendered["conditional_on"] = adjudication.conditional_on
     if adjudication.arbiter:
         rendered["arbiter"] = adjudication.arbiter
+        # Written whenever an arbiter is, including as `false`: the qualification is
+        # about the name beside it, so a record that carries the name and omits this
+        # would be the dropped `unchecked` again in the document rather than in the code.
+        rendered["arbiter_unchecked"] = adjudication.unchecked
     return rendered
 
 
@@ -1049,13 +1063,17 @@ def _parse_adjudication(raw: object) -> Adjudication | None:
     issue = raw.get("issue", "")
     conditional_on = raw.get("conditional_on", "")
     arbiter = raw.get("arbiter", "")
+    unchecked = raw.get("arbiter_unchecked", False)
     if (
         not isinstance(issue, str)
         or not isinstance(conditional_on, str)
         or not isinstance(arbiter, str)
+        # `bool` as itself, never `int`: `isinstance(True, int)` holds and the converse
+        # does not, so an int check would let `0`/`1` through as a qualification.
+        or not isinstance(unchecked, bool)
     ):
         raise ReviewLoopError(ADJUDICATION_SHAPE_ERROR)
-    return Adjudication(route, issue, conditional_on, arbiter)
+    return Adjudication(route, issue, conditional_on, arbiter, unchecked)
 
 
 def parse_loop(document: object) -> Loop:
@@ -1110,6 +1128,27 @@ def loop_path(root: Path, issue: int) -> Path:
     return Path(root).expanduser() / str(issue) / LOOP_FILE
 
 
+def _sync_directory(directory: Path) -> None:
+    """Fsync a directory so a completed rename survives a power loss, never a crash alone.
+
+    Separate from the write because the failure it covers is separate: `replace` makes the
+    rename atomic to any reader, and this makes it durable to the machine losing power
+    before the rename reaches the disk. A directory that cannot be opened `O_RDONLY` is
+    left alone rather than raised on — the record is already in place by then, and a
+    durability hint is not a reason to fail a write that succeeded.
+    """
+    try:
+        handle = os.open(directory, os.O_RDONLY)
+    except OSError:
+        return
+    try:
+        os.fsync(handle)
+    except OSError:
+        pass
+    finally:
+        os.close(handle)
+
+
 def store_loop(root: Path, issue: int, loop: Loop) -> Path:
     """Write the loop's document atomically, creating the issue's directory on first store.
 
@@ -1123,6 +1162,16 @@ def store_loop(root: Path, issue: int, loop: Loop) -> Path:
       interrupt mid-write cannot leave a truncated `loop.json` that the landing then refuses
       `review_loop_unreadable` with a remedy no tool performs. A reader sees the old loop or
       the new one.
+    - **Durable.** The staged file and the directory that holds it are both fsynced, which
+      is the parity with `review_exchange._write_verdict_once` the paragraph above claimed
+      and did not have (round 2 re-review, Low 6). `replace` covers the interrupt; it does
+      not cover a power loss between the write and its writeback, which on a filesystem
+      without ext4's `auto_da_alloc` leaves a zero-length `loop.json` — the same wedge the
+      atomicity closes, arriving by the other door.
+
+    Deliberately left: `mkstemp` creates at `0600` where the `write_text` this replaced took
+    the umask default. Single-user directory, no consumer affected, and reading the umask to
+    match it means setting it — a process-wide act this function has no business taking.
     """
     target = loop_path(root, issue)
     document = json.dumps(render_loop(issue, loop), indent=2, sort_keys=True) + "\n"
@@ -1134,7 +1183,10 @@ def store_loop(root: Path, issue: int, loop: Loop) -> Path:
         try:
             with os.fdopen(handle, "w", encoding="utf-8") as writing:
                 writing.write(document)
+                writing.flush()
+                os.fsync(writing.fileno())
             Path(staged).replace(target)
+            _sync_directory(target.parent)
         except OSError:
             Path(staged).unlink(missing_ok=True)
             raise
@@ -1473,12 +1525,12 @@ def _cmd_sync(
 
     root = Path(args.root)
     dispatch_root = Path(args.dispatch_dir) if args.dispatch_dir else review_exchange.DISPATCH_ROOT
-    verdict = review_exchange.bound_verdict(args.issue, args.reviewed_sha, dispatch_root)
-    if not isinstance(verdict, review_exchange.Verdict):
-        for line in verdict.lines():
+    bound = review_exchange.bound_verdict(args.issue, args.reviewed_sha, dispatch_root)
+    if not isinstance(bound, review_exchange.BoundVerdict):
+        for line in bound.lines():
             print(f"[review-loop] {line}")  # noqa: T201 — a CLI's refusal channel
         return REFUSED
-    reported = tuple(verdict.findings)
+    reported = tuple(bound.verdict.findings)
     try:
         loop = load_loop(root, args.issue)
     except FileNotFoundError:
@@ -1529,10 +1581,18 @@ def _cmd_adjudicate(
     # with no record behind it is refused by `_route_checks` rather than written unnamed
     # (#334 round 2, Medium 2).
     arbiter = ""
+    unchecked = False
     if args.route in (ARBITER_UPHELD, ARBITER_DISMISSED):
-        resolved, _unchecked, evaluation = _recorded_arbiter(root, args.issue)
-        arbiter = resolved if evaluation == escalation.FIRING else ""
-    adjudication = Adjudication(args.route, args.filed_issue, args.conditional_on, arbiter)
+        authorisation = recorded_arbiter(root, args.issue)
+        arbiter = authorisation.arbiter if authorisation.authorises else ""
+        # Carried onto the adjudication rather than dropped (round 2 re-review, Low 7):
+        # the resolution that named this arbiter may have been made with a dispatch
+        # record it could not open, and a loop that records only the name states a
+        # stronger fact than the resolution did.
+        unchecked = authorisation.unchecked if arbiter else False
+    adjudication = Adjudication(
+        args.route, args.filed_issue, args.conditional_on, arbiter, unchecked
+    )
     updated = adjudicate(loop, args.finding, adjudication)
     store_loop(root, args.issue, updated)
     closed = next(f for f in updated.findings if f.id == args.finding)
@@ -1540,6 +1600,7 @@ def _cmd_adjudicate(
     print(  # noqa: T201 — a CLI's output channel
         f"[review-loop] #{args.issue} finding {args.finding} closed as {args.route}"
         f"{f' by arbiter {arbiter}' if arbiter else ''}"
+        f"{' (resolution unchecked)' if unchecked else ''}"
     )
     return OK
 
@@ -1619,8 +1680,8 @@ def _cmd_terminus(  # the whole ending in one act: gate, filings, dismissals, re
     # arbiter routes' own gate is the wall, and `escalate` is the act that records who the
     # wall transferred to. A loop carrying arbiter verdicts with no firing record beside
     # them is exactly the landing `terminus()` must refuse to bless with `arbiter: null`.
-    arbiter, unchecked, evaluation = _recorded_arbiter(root, args.issue)
-    if (end.filings or end.dismissals) and not (arbiter and evaluation == escalation.FIRING):
+    authorisation = recorded_arbiter(root, args.issue)
+    if (end.filings or end.dismissals) and not authorisation.authorises:
         raise ReviewLoopError(ARBITER_UNRESOLVED_ERROR.format(issue=args.issue, root=root))
     landing = root / str(args.issue) / LANDING_FILE
     if landing.exists():
@@ -1661,7 +1722,12 @@ def _cmd_terminus(  # the whole ending in one act: gate, filings, dismissals, re
         record.write(
             json.dumps(
                 render_landing(
-                    args.issue, loop, end, arbiter=arbiter, unchecked=unchecked, filed_issues=filed
+                    args.issue,
+                    loop,
+                    end,
+                    arbiter=authorisation.arbiter,
+                    unchecked=authorisation.unchecked,
+                    filed_issues=filed,
                 ),
                 indent=2,
                 sort_keys=True,
@@ -1693,7 +1759,37 @@ def _read_loop(root: Path, issue: int) -> Loop:
         raise ReviewLoopError(NO_LOOP_ERROR.format(issue=issue, root=root)) from None
 
 
-def _recorded_arbiter(root: Path, issue: int) -> tuple[str, bool, str]:
+class ArbiterAuthorisation(NamedTuple):
+    """What the escalation record says about the arbiter routes it authorises.
+
+    Three fields and one decision over them, so the decision is made once rather than
+    by each consumer: the terminus, `adjudicate`, and #334's landing rung all ask "may
+    an arbiter route stand here", and the landing rung asking it a different way is how
+    a loop closed by an arbiter nobody's escalation chose reached `just land` while the
+    terminus over the same loop refused it (#334 round 2 re-review, Medium 1).
+
+    `unchecked` travels with the pair because the resolution it came from could be
+    partial — `Resolution.unchecked`, the reason ruling 4's route is `reviewing_checked`
+    and never `reviewing_verified` — and a consumer that drops it records a stronger
+    claim than the resolution made (round 2 re-review, Low 7).
+    """
+
+    arbiter: str
+    unchecked: bool
+    evaluation: str
+
+    @property
+    def authorises(self) -> bool:
+        """Whether an arbiter route is admissible on this record: a name **and** a firing.
+
+        The two only authorise together — a record that resolved a profile but fired
+        nothing transferred to it (#333 round 2, High 2). An unknown evaluation string
+        fails this comparison and so fails closed.
+        """
+        return bool(self.arbiter) and self.evaluation == escalation.FIRING
+
+
+def recorded_arbiter(root: Path, issue: int) -> ArbiterAuthorisation:
     """Read the arbiter `escalate` recorded, if it ran; absent is an answer, not a gap.
 
     A record that exists but will not read is not the same as no record — defaulting there
@@ -1727,7 +1823,7 @@ def _recorded_arbiter(root: Path, issue: int) -> tuple[str, bool, str]:
     try:
         record = json.loads((root / str(issue) / ESCALATION_FILE).read_text(encoding="utf-8"))
     except FileNotFoundError:
-        return "", False, ""
+        return ArbiterAuthorisation(arbiter="", unchecked=False, evaluation="")
     except (OSError, ValueError) as broken:
         message = f"the escalation record for #{issue} exists but will not read: {broken}"
         raise ExternalError(message) from broken
@@ -1750,7 +1846,7 @@ def _recorded_arbiter(root: Path, issue: int) -> tuple[str, bool, str]:
                 issue=issue, field=field, value=repr(record[field]), expected=described
             )
             raise ExternalError(message)
-    return record["arbiter"], record["unchecked"], record["evaluation"]
+    return ArbiterAuthorisation(record["arbiter"], record["unchecked"], record["evaluation"])
 
 
 def _claim_terminus_pending(path: Path, plan: str) -> bool:

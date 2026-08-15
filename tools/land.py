@@ -950,7 +950,10 @@ def stage(root: Path, here: Path) -> Report:
     there, which points a lander at a SHA that is not their work to have reviewed, and
     on the re-run after `merge_blocked_by_sandbox` hides an outstanding merge behind an
     `ok=`. Whether that merge is outstanding is `land`'s to say, not staging's, so this
-    refusal says only what staging knows: there is no commit here to review.
+    refusal says only what staging knows: there is no commit here to review. It is decided
+    **before** the rebase, beside the dirty tree and the rebase in progress: round 2 decided
+    it after, so it fired on a tree the rebase had already fast-forwarded while its own
+    words said nothing had happened (round 2 re-review, Low 5).
     """
     status = read_status(git("status", "--porcelain", cwd=here))
     blocked = classify_tree(here, status, rebasing=rebase_in_progress(here))
@@ -959,6 +962,29 @@ def stage(root: Path, here: Path) -> Report:
     git("fetch", REMOTE, cwd=here)
     base_before = git("merge-base", "HEAD", BASE, cwd=here).strip()
     incoming = counted(f"{base_before}..{BASE}", cwd=here) or 0
+    # Decided **before** the rebase, where `land`'s own `nothing_to_land` is decided, and
+    # where the refusal's own words are true (round 2 re-review, Low 5): computed after the
+    # rebase it fired on an already-moved HEAD while saying "Nothing was staged". Benign in
+    # effect — a tree with no commits of its own is fast-forwarded either way — and a
+    # refusal whose account of itself is wrong is still wrong.
+    ahead = counted(f"{BASE}..HEAD", cwd=here) or 0
+    if not ahead:
+        return Report.refused(
+            Refusal(
+                "nothing_to_land",
+                (
+                    f"worktree={here}",
+                    f"ahead=0 commits over {BASE}",
+                    f"head={git('rev-parse', 'HEAD', cwd=here).strip()}",
+                ),
+                "Nothing was staged, because there is nothing of yours to have reviewed:"
+                f" this tree carries no commit {BASE} does not already have, so the SHA a"
+                " verdict would bind would be origin/main's tip. If you meant to stage"
+                " work, check you committed it (`git log --oneline origin/main..HEAD`);"
+                " if a landing is outstanding on this tree, `just land` is what decides"
+                " that, not staging.",
+            )
+        )
     code, stderr = _run(["git", "rebase", BASE], cwd=here)
     if code is None:
         return Report.refused(
@@ -975,20 +1001,10 @@ def stage(root: Path, here: Path) -> Report:
     if poisoned is not None:
         return Report.refused(poisoned)
     head = git("rev-parse", "HEAD", cwd=here).strip()
-    ahead = counted(f"{BASE}..HEAD", cwd=here) or 0
-    if not ahead:
-        return Report.refused(
-            Refusal(
-                "nothing_to_land",
-                (f"worktree={here}", f"ahead=0 commits over {BASE}", f"head={head}"),
-                "Nothing was staged, because there is nothing of yours to have reviewed:"
-                f" this tree carries no commit {BASE} does not already have, so the SHA a"
-                " verdict would bind would be origin/main's tip. If you meant to stage"
-                " work, check you committed it (`git log --oneline origin/main..HEAD`);"
-                " if a landing is outstanding on this tree, `just land` is what decides"
-                " that, not staging.",
-            )
-        )
+    # Recounted after the replay: the refusal above is decided on the tree as it stood, and
+    # the report describes the tree as it now is — a commit the rebase dropped as empty is a
+    # commit this line must not still claim.
+    staged = counted(f"{BASE}..HEAD", cwd=here) or 0
     replayed = f"replayed onto {incoming} new commits" if incoming else "already_current"
     return Report(
         (
@@ -998,7 +1014,7 @@ def stage(root: Path, here: Path) -> Report:
             f"main_checkout={root}",
             f"rebase={replayed}",
             f"head={head}",
-            f"commits={ahead}",
+            f"commits={staged}",
             (
                 "next=review this SHA (`just review exchange <issue>`, then the review"
                 " dispatch and `just review record --reviewed-sha <the SHA above>`),"

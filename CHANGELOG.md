@@ -30,7 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   its own session — is exactly the one it would otherwise wave through. Every clearance
   carries both limits it is quoted under: the verdict's same-user limit, and the loop
   record's — it binds no dispatch, SHA or arbiter identity, so unlike the verdict beside it
-  its routes are not re-derived at read time.
+  its routes are not re-derived at read time. An arbiter route above Low must be *authorised*
+  as well as named: the escalation record `just review-loop escalate` wrote has to have fired
+  and to name the same arbiter the adjudication carries, so a landing and the terminus over
+  the same loop cannot give opposite answers — `arbiter_unresolved`, `arbiter_mismatch` and
+  `escalation_unreadable` are the three ways that record refuses, and the clearance prints the
+  arbiter, the evaluation and whether the resolution behind it was partial.
 
 - **`just review-loop sync` — the loop folded from the verdict the landing will read (#334,
   #333's command surface, ADR-0071 ruling 4).** `sync --issue <n> --reviewed-sha <sha>` takes
@@ -50,7 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   push on any path — and refuses a dirty tree, a conflict and a poisoned tree in the landing's
   own words. A `--dry-run` the rebase will reshape now plans the push as `would_not_run`
   instead of unqualified: with commits to replay, the review rung is not merely unconsultable
-  but certain to refuse.
+  but certain to refuse. A tree with no commit of its own refuses `nothing_to_land` before the
+  rebase runs — staging `origin/main`'s tip points a lander at a SHA that is not theirs to have
+  reviewed, and a refusal saying "Nothing was staged" is decided where that is still true.
 
 - **`just review` — the review branch exchange and the verdict record (#332, ADR-0071 ruling
   4).** Three actions. `exchange <issue>` pushes a clean tree's HEAD to `refs/heads/issue-<n>`
