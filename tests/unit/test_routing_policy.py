@@ -412,23 +412,23 @@ def test_the_class_2_admitted_set_is_structural_not_pinned_to_the_row() -> None:
     assert "no change lands alone" in orchestration.remedy
 
 
-def test_the_conflict_with_the_model_roles_paragraph_is_flagged_in_the_class_2_row() -> None:
-    """#327 re-review of round 3, claim 3: `AGENTS.md` sends process docs to a refused seat.
+def test_the_class_2_row_no_longer_contradicts_the_always_loaded_prefix() -> None:
+    """#329 closes the conflict #327's re-review of round 3, claim 3 flagged.
 
-    `docs/agents/orchestration.md` — the orchestration seat's operating rules, by
-    `AGENTS.md`'s own Orchestration seat section — is a process doc, which is the very
-    landing prefix the row's frozen pre-#326 half carried, and the `fable` seat its Model
-    roles paragraph routes process docs to is one of the two seats this row refuses. A
-    reader following `AGENTS.md` before dispatching meets a refusal whose remedy now names
-    the instruction it contradicts, as class 3's row already does for its own conflict.
+    The flag was that `AGENTS.md`'s Model roles paragraph sent "process docs" to a `fable`
+    seat, while `docs/agents/orchestration.md` — the orchestration seat's operating rules, by
+    `AGENTS.md`'s own Orchestration seat section — is a process doc this row refuses to route
+    there. #329 replaced that paragraph, so the assertion inverts: the instruction is **gone
+    from the file**, and the row's own note says so rather than describing a live conflict.
+
+    The refusal itself is unchanged and is asserted here too, because a resolved *conflict*
+    must not be read as a lifted *rule* — `fable` is still refused this class on every lane.
     """
     orchestration = next(rule for rule in policy().rules if rule.id == 2)
     assert "AGENTS.md" in orchestration.remedy
     assert "#329" in orchestration.remedy
-    # The conflict is live, not remembered: the instruction is in the file, and the route it
-    # prescribes is refused.
     roles = (REPO / "AGENTS.md").read_text(encoding="utf-8")
-    assert "process docs" in roles
+    assert "process docs" not in roles
     assert "docs/agents/orchestration.md" in roles
     fable_seat = routing_policy.Route("claude-native", "fable-high", "fable", NOW)
     assert routing_policy.advisory_match(policy(), "Routing-class: orchestration.", fable_seat)
@@ -594,22 +594,23 @@ def test_a_seat_that_authors_nothing_is_admitted_rather_than_barred() -> None:
     assert "not an enforced `permission_mode`" in authorship.remedy
 
 
-def test_the_conflict_with_the_model_roles_paragraph_is_flagged_in_the_row() -> None:
-    """#326 review round 3, claim 5: `AGENTS.md` is the file an agent reads before dispatching.
+def test_the_row_no_longer_contradicts_the_always_loaded_prefix() -> None:
+    """#329 closes the conflict #326's review round 3, claim 5 flagged.
 
-    Its Model roles paragraph still sends "anything touching ADRs" to a `fable` seat, which
-    this row refuses — a refusal that did not exist before this branch, against an instruction
-    in a human-gated file this branch does not amend. ADR-0071 ruling 2 supersedes that mapping
-    in substance, so the sentence is stale rather than the row wrong; CLAUDE.md's own rule is
-    to flag the conflict explicitly either way, and the row flags the `docs/adr/` one already.
+    The flag was that `AGENTS.md` — the file an agent reads before dispatching — sent
+    "anything touching ADRs" to a `fable` seat, which this row refuses, against an instruction
+    in a human-gated file #326 did not amend. #329 amended it, so the assertion inverts: the
+    instruction is **gone from the file**, and the row's note records the resolution instead
+    of a live conflict.
+
+    The refusal is asserted unchanged beside it, because a resolved *conflict* must not be
+    read as a lifted *rule* — `fable` is still refused ADR authorship on every lane.
     """
     authorship = next(rule for rule in policy().rules if rule.id == 3)
     assert "AGENTS.md" in authorship.remedy
     assert "#329" in authorship.remedy
-    # The conflict is live, not remembered: the instruction is in the file, and the route it
-    # prescribes is refused.
     roles = (REPO / "AGENTS.md").read_text(encoding="utf-8")
-    assert "anything touching ADRs" in roles
+    assert "anything touching ADRs" not in roles
     fable_seat = routing_policy.Route("claude-native", "fable-high", "fable", NOW)
     assert routing_policy.advisory_match(policy(), "ADR authorship for #999.", fable_seat)
 

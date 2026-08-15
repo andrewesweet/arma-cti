@@ -357,6 +357,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   review rounds); and `AGENTS.md` and the `justfile` listed `escalate`'s exclusion rungs without
   the registry rung.
 
+- **The three documents that still commanded the withdrawn rules are re-based on ADR-0071
+  (#329), after the mechanisms rather than before them.** The always-loaded file's *Model roles*
+  section — five `(model, effort)` bullets, a provenance eligibility list and #300's nine-profile
+  retro allowance, all superseded — becomes **Seats and profiles**: a dispatch names a seat, the
+  seat resolves a profile from its own ordered preference list, and the registry rather than a
+  paragraph is what a reader checks. What each seat is *for* stays, because a registry cannot say
+  it; no pair is written down, because `tools/generate_seats.py` writes those. Eligibility stops
+  being a property of provenance, and the two refusals that survive are named as what they are —
+  the provisional orchestrator carve-out, and routing class 6's keep-on-Claude bridge over the
+  gate paths, which is not retired and whose retirement would otherwise leave the gates with
+  neither rule. The no-further-verification rule is **amended rather than deleted**, with
+  never-alone and the post-landing review seat named as its two exceptions, so an agent reading
+  the always-loaded rules is no longer right to refuse the review loop; the rule itself is kept,
+  because without it "one more reviewer" is an argument available again next week. The exemption
+  constant is corrected to `NO_MUTABLE_SUBJECT`, the name the code has used since ADR-0067. The
+  orchestration runbook stops commanding a seat pair and stops calling #242's trial live — the
+  trial is closed as inconclusive, and closed rather than restarted, because the observatory
+  measures rework and sees none of its five orchestration-process criteria. The multi-provider
+  document stops calling the withdrawn decisions binding and withdraws its own
+  "measured or not registered" rule by name, since ruling 2 deliberately registers three profiles
+  that fail it and one of them, on `recon`, will never be checked by anything. The two
+  mechanisms ADR-0071 withdraws were removed by #328 immediately before this change landed —
+  the admission bar dropped, #242's trial closed, `tools/admission.py` renamed
+  `tools/trial.py` — so these documents now describe them as departed rather than as live,
+  and the records they left are history rather than a verdict.
+
 - **The routing policy is re-founded class by class on capability and conflict of interest, and
   is no longer the keep-on-Claude policy.** ADR-0071 ruling 1 withdrew provenance as a reason to
   route work, and its re-founding table separates what each class actually rested on. Two classes

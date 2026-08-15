@@ -17,8 +17,9 @@ two are deliberately separate: the study reasons about the mechanism; this docum
 states the operating rules. **Cite the study; do not restate it.** Deleting the study
 would not leave this runbook incoherent.
 
-The always-loaded surface — `CLAUDE.md` — already carries the rules every agent on
-every lane must hold (the working-style, model-roles, failure-class and command-table
+The always-loaded surface — `CLAUDE.md`, which is the committed symlink to `AGENTS.md`
+and not a second copy of it — already carries the rules every agent on every lane must
+hold (the working-style, seats-and-profiles, failure-class and command-table
 sections). This document carries the rules only the dispatching seat can act on, and
 it is read on demand, not resident. Where a rule here and a rule in `CLAUDE.md` say
 the same thing, `CLAUDE.md` is authoritative; this document points at it rather than
@@ -26,34 +27,35 @@ quoting it.
 
 ## The seat and its model
 
-The standing loop runs at **opus/high** per #242 ruling 1, which the human executed
-directly in `CLAUDE.md`'s Model-roles section: the line reading "the orchestration
-standing loop also runs here and dispatches fable for retros; ADR, `CONTEXT.md` and
-schema semantics; retro evidence banking; and the #181-shaped diagnosis call." Check
-that section as landed rather than this document — the human executed the seat change
-there, not here.
+The seat is a row in `tools/dispatch.py`'s `SEATS`, and that registry is what a reader
+should check rather than a pair written here (ADR-0071 ruling 2; `just dispatch --list`
+prints it). Two facts about the row are operating rules rather than registry trivia:
 
-The inversion this represents — run the loop at opus/high and **dispatch fable for the
-named episodic acts**, rather than holding the scarcest seat all day and delegating
-the loop out of it — is under a **pre-registered trial** whose criterion lives in the
-design study §6 and whose urgency was measured on #258: ten consecutive dispatch
-cycles from an opus/high orchestration seat, failing on any one of five clauses
-(a dispatch into a freeze or reservation the policy recorded; an `infra_unavailable`,
-`quota_exhausted`, `provider_refused` or `untyped_harness_failure` treated as a result;
-a landing recorded against an issue its dispatch could not have made; a gated surface
-edited without approval or an ADR-0013 record; a ruling with drafting slack transcribed
-onto a gated semantic surface from the seat rather than dispatched). Its recording
-surface was `just admission trial-report`, folded into `just watch-report` (#260); the
-recipe is now `just trial report` and it is silent, because **ADR-0071 ruling 2 closed
-that trial as inconclusive** (#328). Its cycles are kept as history, it is not
-restarted, and the observatory does not subsume it — the observatory measures rework and
-sees none of those five criteria, so they now go unmeasured. That is a loss rather than
-a substitution. `just trial bar` prints the five by name.
+- **The `orchestrator` row carries `claude_only`, and it is the only row that does.**
+  ADR-0071 ruling 1 rescinds provenance as a basis for eligibility and takes the word
+  *foreign* out of the vocabulary; the carve-out that survives is this one, on the
+  ground that the seat deciding what everything else does should not move before a
+  tested alternative exists. It is **provisional and carries an end condition** — it
+  ends when the Codex orchestrator backup is built — and the ADR records that the end
+  condition will be reached with no observation behind it, because this is the one seat
+  the observatory structurally cannot see: the seat's own turns carry no dispatch id and
+  reach no ledger row.
+- **The seat's escalation column is empty, so it arbitrates at `fable-high`** (ADR-0071
+  ruling 4). The orchestrator authors changes routinely, and without that default the
+  never-alone loop has no terminus for the seat that runs it.
 
-The orchestrator seat is **ineligible on every foreign lane** (ADR-0061 Decision 2).
-The standing retro allowance — the human's nine-profile ruling of 2026-08-09 on #300,
-which superseded #217's time-boxed widening before it lapsed at `2026-08-10T14:00Z` —
-covers only retros on the `codex` lane; it does not reach this seat.
+**#242's pre-registered trial is closed as inconclusive** (ADR-0071 ruling 2). Its
+criteria and records judged an orchestration seat at one pair and the seat map sets
+another, so the accrued records cannot validate the new one; they are kept as history.
+The trial is **not** replaced by the observatory, and saying so would be the third
+draft's withdrawn claim: it measured five orchestration-process criteria — among them
+honouring a freeze and refusing to treat `quota_exhausted` as a result — and the
+observatory measures rework and sees none of them. Those five go unmeasured, which is a
+loss rather than a substitution. The harness has moved to `tools/trial.py` and the
+recording surface folded into `just watch-report` (#260) is now `just trial report`,
+which is silent against a closed trial (#328); `just trial bar` prints the five criteria
+by name, so a reader meets the list rather than a count. A clean read from either now
+vouches for nothing.
 
 ## The duty cycle, and its arithmetic
 
@@ -104,19 +106,18 @@ worth naming: the loss while *awake* was 73 agent-minutes over 19 minutes of tur
    the **queue's underfill verdict** (#278) — `queue=underfilled …
    action=refill-before-landing` when eligible work can fill ruled capacity, silent
    when capacity is full or no candidate survives; then the **watcher findings**
-   (#198); then the **orchestration-seat trial** report (#260), one line when it has
-   failed, silent while clean. Silence is the clean read; a verdict, never a
-   dashboard of numbers (#209).
+   (#198); then the **orchestration-seat trial** report (#260), which is now silent
+   always, the trial being closed (#328). Silence is the clean read; a verdict, never
+   a dashboard of numbers (#209).
 2. **`just queue state`** then **`just queue next`** — the candidate with its
    derivation (the freeze, the WIP limit, the packages, the in-flight list), or a
    named refusal. The queue selects and prints; **it never dispatches** (ADR-0053).
    `next=` names a **selection, not a routing decision**: it may point at an issue
-   that is corpus-bound and so undispatchable to any foreign lane — `#18` was named
-   while in that state. The queue's job ends at pointing; routing onto a lane is the
-   seat's, behind the breaker and the human's off-peak rule. Nothing judges the
-   route's quality upfront: ADR-0071 ruling 6 dropped the admission bar and #328
-   removed it from `just dispatch`, and what replaces it is retrospective and not
-   built yet.
+   whose routing class refuses the seats or lanes otherwise available — `#18` was named
+   while corpus-bound. The queue's job ends at pointing; routing is the seat's, behind
+   the routing policy, the breaker and the off-peak rule. Nothing judges the route's
+   quality upfront: ADR-0071 ruling 6 dropped the admission bar and #328 removed it
+   from `just dispatch`, and what replaces it is retrospective and not built yet.
 3. **Judgement** — is that candidate the right next thing, given the human's live
    intent this session. This, and not the queue, is the step that decides.
 4. **`just brief N`**, then write the variable half — the task, the scope, the ground
@@ -186,21 +187,33 @@ turn.
 
 ## The review function
 
-Confirmed on #217 (2026-08-06) and stated in the design study §7: **the gates
-review**; the foreign lane is the **second lens** of one pass, not a second pass
-(ADR-0061 Decision 3); the orchestrator keeps **claim spot-checks only**. Three
-constraints:
+**Reviewing is a seat now, and it is not this one.** ADR-0071 ruling 4 lands no change
+alone: every landing is reviewed by an instance in a different session that did not
+author it, dispatched at `--seat review` with `--reviewing <profile>`, and the review
+seat's containment is forced rather than defaulted. That is not an added pass the seat
+may skip or absorb — it is one of the two exceptions `CLAUDE.md`'s no-further-
+verification rule now names, and the orchestrator is bound by it for the changes it
+authors itself like anyone else.
+
+What survives of #217's confirmation (2026-08-06, design study §7) is the *residue*
+after that seat exists: **the gates review**, a second provider over one diff is the
+**second lens** of one pass rather than a second pass, and the orchestrator keeps
+**claim spot-checks only**. ADR-0061 Decision 3 is withdrawn as a provenance rule and
+is no longer what licenses the second lens; provider diversity is (ADR-0071 ruling 4,
+and the review seat's own resolution rule, which prefers a different lane). Three
+constraints on the spot-check:
 
 - **Sampled, never standing.** A spot-check on every close is a standing second pass
-  wearing another name. CLAUDE.md bars added verification passes, and #220 re-based
+  wearing another name, and never-alone's review does not make one available. CLAUDE.md
+  bars added verification passes beyond its two named exceptions, and #220 re-based
   that from a quality rule to a first-order cost rule — an extra pass is pure
   generation, and generation is what this plan meters.
-- **Opus/high** — a judgement behind gates.
-- **It reviews claims, not code.** Architecture and design taste are the per-issue
-  review lens (#240) and the periodic deep pass (#139). The mechanical half of a
-  close — SHA on main, SHA inside the dispatch's window, corpus owed and quoted,
-  evidence path resolvable — is computed by `just trial close-audit`, not re-read by
-  hand.
+- **At the seat's own tier** — a judgement behind gates, and no reason to name a pair
+  the registry already holds.
+- **It reviews claims, not code.** Architecture and design taste are the review seat's
+  (#240) and the periodic deep pass's (#139). The mechanical half of a close — SHA on
+  main, SHA inside the dispatch's window, corpus owed and quoted, evidence path
+  resolvable — is computed by `just trial close-audit`, not re-read by hand.
 
 ## The tools, and when the seat reaches for each
 
@@ -215,6 +228,8 @@ do.
 | Recording a ruling | `just queue freeze/open/wip/package … --ruling "…"` | The freeze, WIP limit and carve-outs written to a file `just dispatch` reads per dispatch — never memory |
 | Before dispatch | `just brief N` | The invariant half composed from data; the seat writes the variable half |
 | Dispatching | `just dispatch --lane … --profile … --seat … --issue N` | Hand work to a lane, return at once with a dispatch id |
+| Dispatching the review | `just dispatch --seat review --reviewing <profile> …` | Never-alone's second instance. Resolution returns neither that profile nor any other the issue's dispatch records place on the work, prefers a different lane, and forces the read-only mode. Those records are a *potential*-author set, so the route is `reviewing_checked` and never `reviewing_verified` |
+| Handing the branch over | `just review exchange N` / `just review record …` / `just review show <id>` | The implementer pushes `refs/heads/issue-N`, the reviewer takes it with `just worktree restore --ref`, and the verdict is written beside the reviewing dispatch's record — its identity derived from those records, never declared (#332) |
 | Following a dispatch | `just dispatch-follow <id> [<id> …]` | The within-session completion edge — **the first** of the ids, never a loop over a cohort (#280, #295) |
 | Asking whether occupancy held | `just occupancy --since … --until … --limit N` | One window's agent-minutes: capacity, used, lost. `just queue state` counts what is in flight now and so cannot show a sawtooth (#295) |
 | At dispatch | `just watch <name> <worktree> [subject]` | Arm the detached stall watcher |
@@ -231,27 +246,42 @@ does by hand.
 
 - **Codex, under #265's confirmed ceiling, commits but cannot gate.** The orchestrator
   gates and lands its work by hand and states that in the close; twelve closes now say
-  so. ADR-0061 Decision 4 is the rule: a lane that has not proven its hooks gets
-  worktree and commit only; landing is done by another seat.
-- **z.ai commits, gates and lands unaided.** Its implementer route accrued clean
-  assessments against the admission bar and never reached that bar's `N`, so it was
-  never admitted and never failed; the frozen record is
-  `~/.arma-cti/admission/zai.zai-glm52-max.implementer.json`. That is history, not a
-  standing — the bar is dropped (ADR-0071 ruling 6, #328) and no route is judged before
-  it is dispatched.
-- **The corpus is a permanent Claude-seat obligation.** `just regress` appears in no
-  allowlist entry, and a foreign lane cannot run the gate its own change owes. Anything
-  touching `addons/`, `missions/`, `extension/`, the daemon's world-facing half or a
-  manifest needs a full-corpus run before landing — on this seat, not delegated (#258,
-  finding 2).
+  so. ADR-0061 Decision 4's graded ladder is withdrawn (ADR-0071 ruling 1), so this is
+  no longer a rule about proven hooks — it is a **measured ceiling**: no `writable_roots`
+  set lets a Codex dispatch both commit and run the gate, and the mechanism is isolated
+  in `docs/multi-provider-dispatch.md`. Under the binary rule that replaces the ladder,
+  a profile that cannot run its own gate is not an implementer, which is why lifting the
+  ceiling is a blocking prerequisite for the Codex head of that seat's list.
+- **z.ai commits, gates and lands unaided.** Its admission-bar standing is no longer the
+  thing that says so: ruling 6 withdraws the bar and #328 removed the mechanism. That
+  route accrued clean assessments and never reached the bar's `N`, so it was never
+  admitted and never failed; the frozen record at
+  `~/.arma-cti/admission/zai.zai-glm52-max.implementer.json` is history rather than a
+  standing, and no route is judged before it is dispatched.
+- **The corpus is a permanent Claude-seat obligation, and the reason is a subagent rule
+  rather than a lane rule.** `just regress` appears in no allowlist entry, and routing
+  class 5 is narrowed to what a *subagent* cannot do — it cannot hold the corpus's
+  foreground wait, so a seat reached that way cannot gate its own in-world work.
+  `just dispatch` launches a top-level session, which the wait hook permits, so the
+  class refuses no dispatch route. Anything touching `addons/`, `missions/`,
+  `extension/`, the daemon's world-facing half or a manifest still needs a full-corpus
+  run before landing (#258, finding 2), and that class's two path lists remain the one
+  authority for what an in-world surface is.
 
 ## What the seat must not do
 
+- **Land a change alone.** No single model instance may both propose a change and
+  produce the verdict that clears it (ADR-0071 ruling 4), and the seat holds no
+  exemption from that. The **lander** may be the proposer; the **reviewer** may not.
 - **Draft gated-surface work in its own tree while subagents are live.** ADR-0061
   reached `origin/main` unreviewed through the #105 worktree collision — the shape of
-  an unreviewed ADR draft sitting in a worktree that landed. Gated-surface drafting
-  (ADRs, `CLAUDE.md`, `CONTEXT.md`, schema semantics) dispatches to fable; the seat
-  does not hold it.
+  an unreviewed ADR draft sitting in a worktree that landed. Where that drafting goes
+  is no longer "to fable": ADR authorship is routing class 3, which appoints `planner`
+  to author, `implementer` to land and `review` to review, on any lane, and refuses
+  `orchestrator`, `fable` and `retro`; orchestration's own process docs — this file
+  among them, by `CLAUDE.md`'s Agent-skills section — are routing class 2, which admits
+  that same route plus `orchestrator` and refuses `retro` and `fable`. Either way the
+  seat does not hold the drafting.
 - **Never write a brief's task, scope or ground truth from the issue body alone.** Read the
   thread first, and name the comment each pre-derived decision comes from, so that a body
   the thread has superseded shows up in the brief rather than being resolved silently.
@@ -271,7 +301,10 @@ does by hand.
   exact quarantined test is the only red, quote its issue and re-run once; a second
   red, or any other red, is yours.
 - **Transcribe a ruling with drafting slack onto a gated semantic surface from the
-  seat itself.** Route to `cti-implementer` or above (#217 decision 4).
+  seat itself.** Dispatch it (#217 decision 4). "Or above" is not a comparison this
+  project makes — profiles are opaque tokens and no cross-provider effort scale exists
+  (ADR-0061 Decision 5, which survives ADR-0071) — so route it to the seat whose kind of
+  work it is and let that seat's preference list resolve the profile.
 - **Claim a criterion an agent reserved for the seat.** The close's criterion-by-
   criterion audit records what was done; a criterion an agent left for the orchestrator
   is claimed only when the orchestrator has actually done it.
@@ -298,12 +331,20 @@ been written.
 
 ## Consistency with AGENTS.md (acceptance criterion 2)
 
-Checked against `AGENTS.md`'s Working-style and Model-roles sections as landed at the
-time of writing (`04d6d55`): the seat (opus/high, fable dispatched for named acts), the
-hold-the-wait / end-don't-wait split, the single-shot shape, the no-added-pass review
-function, the breaker-wait and `infra_unavailable` rules, and the
-`ANTHROPIC_BASE_URL` prohibition all restate `AGENTS.md` rules and point at them rather
-than overriding them. No conflict found.
+Re-checked under #329 against `AGENTS.md`'s Working-style and Seats-and-profiles
+sections as this landing leaves them: the seat (a `claude_only` registry row and an
+empty escalation column, no pair restated here), the hold-the-wait / end-don't-wait
+split, the single-shot shape, never-alone and the residual spot-check, the breaker-wait
+and `infra_unavailable` rules, and the `ANTHROPIC_BASE_URL` prohibition all restate
+`AGENTS.md` rules and point at them rather than overriding them. No conflict found.
+
+**One inconsistency is stated rather than resolved**, because resolving it is not this
+document's to do. ADR-0071 rulings 2 and 6 close #242's trial and withdraw the admission
+bar, and both mechanisms are still live in `tools/admission.py` and still folded into
+`just watch-report`; #328 removes them. Until it lands, this runbook records the decision
+and the seat reads those outputs as history rather than as a verdict. That window is the
+"period of stated inconsistency" the ADR's own sequencing names, and it stops being a
+transition and becomes a defect if the sequence stalls part-way.
 
 One item this section originally carried as a **proposal for the sign-off gate**
 (acceptance criterion 5) — the pointer from `AGENTS.md` to this document — has since
@@ -326,5 +367,5 @@ from the text below, which stands only as the intent that was approved:
 > queue | No | Judging whether an occupancy intervention held, before and after |
 
 Refs #105, #198, #209, #217, #218, #219, #220, #240, #242, #250, #251, #252, #253,
-#258, #260, #265, #276, #278, #279, #280, #294, #295, ADR-0042, ADR-0053, ADR-0057,
-ADR-0061.
+#258, #260, #265, #276, #278, #279, #280, #294, #295, #320, #321, #322, #324, #325,
+#326, #327, #328, #329, #331, #332, ADR-0042, ADR-0053, ADR-0057, ADR-0061, ADR-0071.
