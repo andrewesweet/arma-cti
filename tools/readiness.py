@@ -4,7 +4,8 @@ Readiness existed only implicitly — a `ready-for-agent` label and whatever cri
 body happened to carry. Nothing checked that criteria exist, that they can be counted
 off, or that any of them names the evidence that would settle them. Vague criteria are
 where audit quality dies first, so this is the check, and `tools/dispatch.py` is the rung
-that reads it beside admission, the breaker and the off-peak rule.
+that reads it above the breaker and the off-peak rule. (The admission bar stood beside them
+until ADR-0071 ruling 6 dropped it; #328 removed it from the dispatcher.)
 
 **The remedy is always an issue edit, by a human or by triage.** Nothing here rewrites an
 issue, proposes replacement wording, or files anything. A tool that repaired the body it

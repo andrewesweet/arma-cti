@@ -27,9 +27,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **The pre-registered admission bar is dropped, and the departure is recorded as one (#328,
   ADR-0071 ruling 6).** No dispatch is refused by an admission verdict: the rung is gone from
   `just dispatch` rather than made permissive, and the dispatcher exposes no standing to read,
-  no `admission_escalated` refusal and no `--admission-dir`. The bar was pre-registered
+  no `admission_escalated` refusal and no `--admission-dir`. **What actually breaks at the
+  parser, stated here because a landed commit message cannot be amended and `9afa5ff`'s
+  `BREAKING CHANGE` footer got it wrong twice:** of the bar's four verbs only `just admission
+  check` is gone as a spelling — `status`, `record` and `reset` are live verbs of `just trial`
+  meaning something else, so a caller typing them reaches a working command rather than an
+  error, which is the more dangerous half of the break. And the second break is
+  `just dispatch --admission-dir`, which that footer mentioned only in its body. The bar was
+  pre-registered
   precisely so that observed lane behaviour could not move it, and it **never adjudicated once
-  across any of its 24 routes in 112 dispatches** before being dropped — the move
+  across any of its routes** — every one still on probation at the drop, none admitted and none
+  failed, four with any record at all and the fullest of those eight assessments against an `N`
+  of ten. Dropping it after the observations were in is the move
   pre-registration exists to prevent, taken knowingly on the human's ruling and written down as
   a departure rather than left to be discovered as a silence. Nothing upfront replaces it; what
   replaces it is retrospective (#336) and is not built, so a route's quality is now unchecked
@@ -49,7 +58,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   #252's six checks reachable, minus the one function that used to read two of their verdicts
   into criteria. The in-world surface list moved to `tools/gate.py`, which every reader of it now
   calls. The store stays `~/.arma-cti/admission/` under `CTI_ADMISSION_DIR`: the name is wrong
-  and is kept, because renaming it would orphan the records kept as history.
+  and is kept, because renaming it would orphan the records kept as history. The store's flag
+  follows the module: `--trial-dir` is the primary spelling and `--admission-dir` stays as an
+  alias, so the flag reads like the tool without adding a second CLI break.
+- **`just trial record` refuses a closed trial at the CLI, before it builds the cycle (#328).**
+  The library check inside `record_trial_cycle` fires only after the cycle is built, so against
+  a closed trial the command used to run a `gh` fetch and a git walk and then refuse
+  `trial_criteria_missing` — the wrong name for why nothing can accrue to it. It now refuses
+  `trial_closed` at the top, and the library check is kept, so the person and the caller get the
+  same answer.
 - **#242's orchestration-seat trial is closed as inconclusive (#328, ADR-0071 ruling 2).** Its
   cycles judge a seat at opus/high and the ruling sets that seat at opus/xhigh, so they cannot
   validate the new pair. The records are kept as history; `start`, `record` and `reset` all

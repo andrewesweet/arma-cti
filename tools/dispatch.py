@@ -82,7 +82,8 @@ there is no standing to consult, no `admission_escalated` refusal to hit, and no
 of records for a dispatcher to point at.
 
 That is a deliberate departure from a pre-registration rather than a conclusion its data
-reached — the bar never adjudicated once across its routes in 112 dispatches — and it is
+reached — the bar never adjudicated once across its routes, every one still on probation at
+the drop with none admitted and none failed — and it is
 recorded as one in `tools/trial.py`, which is what the module became. What replaces it is
 retrospective (#336's observatory), and it is not built yet, so for now a route is judged by
 nothing upfront at all.

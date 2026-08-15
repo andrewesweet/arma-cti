@@ -17,11 +17,14 @@ being resident, and a design study is not a rule at all.
 ## Status, as of 2026-08-09 (#242 closed)
 
 This is a study, not a live rule; read it for reasoning, and read the operating doc for what to do.
-Two things below have since moved, and the body's dated prose is left as written rather than
-rewritten: `just admission` is `just trial` (`audit` is `just trial close-audit`, `record` is
-`just trial record`), and the **admission bar is dropped** — ADR-0071 ruling 6, applied by #328 —
-so every mention of it as a live dispatch rung is history. No route is judged before it is
-dispatched, and what replaces the bar is retrospective (#336) and not built yet.
+Two things below have since moved. The first is swept in place, because a command name a reader
+might type is not something to leave wrong: every `just admission` in the body now reads
+`just trial` (`audit` became `just trial close-audit`, `record` became `just trial record`).
+The second cannot be swept, because it is the study's own premise: the **admission bar is
+dropped** — ADR-0071 ruling 6, applied by #328 — so every mention below of the bar as a live
+dispatch rung is history, and the reasoning is left as written rather than rewritten around its
+absence. No route is judged before it is dispatched, and what replaces the bar is retrospective
+(#336) and not built yet.
 Every proposal below was ruled by the human on 2026-08-06 (rulings and follow-ups on #242) and
 every ruling that created work has been executed, except where named:
 
@@ -31,7 +34,7 @@ every ruling that created work has been executed, except where named:
 | 3 | The computed close audit | `just trial close-audit` (#252; the recipe was `just admission audit` until #328) |
 | 4 | The runbook's two computable procedures | `just recover` (#253) |
 | 5 | Composed briefings | `just brief` (#251), which now also carries the single-shot contract (#279) |
-| 6 | The seat inverts to opus/high, fable dispatched | Ruled and in effect since 2026-08-06; ran as the pre-registered trial `cti.admission.orchestration-trial/242`, **1 of 10 cycles recorded**, and ADR-0071 ruling 2 then **closed that trial as inconclusive** (#328) — its cycles kept as history, its five criteria now unmeasured rather than measured elsewhere |
+| 6 | The seat inverts to opus/high, fable dispatched | Ruled and in effect since 2026-08-06; ran as the pre-registered trial `cti.admission.orchestration-trial/242`, which **never reached the ten cycles it pre-registered**, and ADR-0071 ruling 2 then **closed that trial as inconclusive** (#328) — its cycles kept as history, its five criteria now unmeasured rather than measured elsewhere |
 | 7 | The review function | Confirmed unchanged, not altered |
 | 8 | Context hygiene | `docs/agents/orchestration.md` (#267), which carries the one-line rule §8 yields |
 
@@ -247,13 +250,13 @@ right direction, since here the list *is* the evidence and the number is the sum
 
 ## 3. Claim verification: compute what the bar already asks
 
-`just admission record` today requires a choice on every Part A criterion with no default, and
+`just trial record` today requires a choice on every Part A criterion with no default, and
 cross-checks two of them against git in the refusing direction only: a landing that touched an
 in-world surface may not have its corpus criterion waived, and one that edited an acceptance spec
 or a generated file may not record the hooks as clean. Everything else is asserted by whoever runs
 it — which, for a Claude-lane issue, is the orchestrator reading a close against a landing.
 
-**`just admission audit --issue N`** computes what can be computed, as a subcommand of the tool
+**`just trial close-audit --issue N`** computes what can be computed, as a subcommand of the tool
 that already owns the criteria rather than as a new tool with a second copy of them:
 
 | Check | How | Verdict |
@@ -270,7 +273,7 @@ proof the gate ran green: the paste *is* the evidence, and a tool cannot re-run 
 changelog row reports `undecidable` rather than passing, because a check that could not run is not
 a check that passed (#41's shape, and the same reason `just prereqs` reports `unknown`).
 
-The output feeds `just admission record --from-audit`, which fills the criteria the audit
+The output feeds `just trial record --from-audit`, which fills the criteria the audit
 computed and still demands an explicit choice on the rest, so the bar's no-default discipline
 survives the automation.
 
@@ -363,7 +366,7 @@ A steady-state orchestrator turn, after the four halves above land:
 3. **judgement**: is that candidate the right next thing, given the human's live intent;
 4. `just brief N`, then write the variable half — **the real work of the turn**;
 5. dispatch;
-6. on completion: paste `just verdict`, run `just admission audit`, **judge the close**;
+6. on completion: paste `just verdict`, run `just trial close-audit`, **judge the close**;
 7. episodically: the retro, the rulings intake, the evidence banking.
 
 Steps 1, 2, 5 and the mechanical part of 6 are tool calls. Steps 3, 4 and the judgement in 6 are
@@ -477,7 +480,7 @@ Four implementation issues, filed `ready-for-agent` against #242. Build order:
    moving work: the freeze-propagation caveat has no mechanical answer without it.
 2. **`just brief`** — independent of the rest and the cheapest; its gate-line derivation is the
    piece with real defect-prevention value.
-3. **`just admission audit`** — depends on nothing new, reuses `tools/ledger.py`'s window tests.
+3. **`just trial close-audit`** — depends on nothing new, reuses `tools/ledger.py`'s window tests.
 4. **`just recover`** — two subcommands over one shared computation (worktree presence, HEAD,
    landed-ness), so one issue and one `tools/recovery.py`, not two of each.
 

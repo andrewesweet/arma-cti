@@ -233,9 +233,12 @@ does by hand.
   gates and lands its work by hand and states that in the close; twelve closes now say
   so. ADR-0061 Decision 4 is the rule: a lane that has not proven its hooks gets
   worktree and commit only; landing is done by another seat.
-- **z.ai commits, gates and lands unaided.** It stood at `assessed=4/10 unclean=0/1`
-  on the admission bar; that is history, not a standing — the bar is dropped
-  (ADR-0071 ruling 6, #328) and no route is judged before it is dispatched.
+- **z.ai commits, gates and lands unaided.** Its implementer route accrued clean
+  assessments against the admission bar and never reached that bar's `N`, so it was
+  never admitted and never failed; the frozen record is
+  `~/.arma-cti/admission/zai.zai-glm52-max.implementer.json`. That is history, not a
+  standing — the bar is dropped (ADR-0071 ruling 6, #328) and no route is judged before
+  it is dispatched.
 - **The corpus is a permanent Claude-seat obligation.** `just regress` appears in no
   allowlist entry, and a foreign lane cannot run the gate its own change owes. Anything
   touching `addons/`, `missions/`, `extension/`, the daemon's world-facing half or a
