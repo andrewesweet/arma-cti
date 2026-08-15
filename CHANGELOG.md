@@ -269,6 +269,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   rework, so those five now go unmeasured — a loss, not a substitution. `just trial bar` prints
   them by name rather than as a count, so a reader meets the list.
 
+- **ADR-0071 is amended twice: every dispatchable seat now names its arbiter, and the class 2
+  row describes the code (#361, #368).** *A1* fills ruling 2's escalation column — `retro` gets
+  `opus-max`, `fable-max`, `orchestrator` gets `opus-max`, `fable-xhigh`, and `recon` and the
+  interlocutor are marked not-applicable rather than left blank — and strikes ruling 4's blanket
+  *"a seat whose escalation column is empty arbitrates at `fable-high`"*. That default was not
+  missing when retro 30's loop escalated; it resolved to `fable-high`, **which had authored every
+  round**, so the orchestrator declined it and chose an arbiter by hand. In its place ruling 4
+  gains the conflict-of-interest exclusion it never had: where the tabled head is a profile the
+  work's own dispatch records place on it, the tool falls through the seat's preference list,
+  records what it excluded and why, and refuses by name when the list is exhausted. A seat added
+  with no escalation entry now refuses rather than defaulting — adding a seat means deciding its
+  arbiter. *A2* replaces the re-founding table's *"class 2 survives unchanged, provisional —
+  ruling 1's carve-out, and the only provenance rule left"*, false on both halves since #327: the
+  row carries no lane rule, is founded on the route's seats (`orchestrator`, `planner`,
+  `implementer`, `review`, `recon`) and refuses `retro` and `fable` on every lane including
+  Claude's. The carve-out it was confused with is `orchestrator_claude_only` in the seat table,
+  and the policy's surviving keep-on-Claude bar is class 6's. The ADR text moves; the code stays
+  as landed.
+
 - **The routing policy is re-founded class by class on capability and conflict of interest, and
   is no longer the keep-on-Claude policy.** ADR-0071 ruling 1 withdrew provenance as a reason to
   route work, and its re-founding table separates what each class actually rested on. Two classes
