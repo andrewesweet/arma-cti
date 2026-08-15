@@ -13,6 +13,21 @@ their behalf.
 Claimed: after `git fetch origin` (origin/main at `76d0309`, topping at
 ADR-0070) and a scan of all 47 open issues' bodies and comments for an ADR
 number at or above 0071, which returned nothing.
+Amended: 2026-08-15, after human review, on two rulings taken in the
+decision-clearing sessions indexed on #217 and signed off there on 2026-08-15
+("All approved as read", the third of four approvals). Two amendments, each
+marked inline at the passage it changes — **A1** (#361, human ruling
+2026-08-14) fills ruling 2's escalation column, strikes ruling 4's blanket
+`fable-high` fallback and adds the conflicted-head fall-through in its place;
+**A2** (#368, human ruling 2026-08-14, recorded in full on #327) re-founds the
+re-founding table's class 2 row on the route's seats, which is what #327 landed
+at `0c7063e`. A1 reverses one sentence of ruling 4 and fills four cells of
+ruling 2's table; A2 corrects a description of code that had already moved and
+reverses no decision. Both passages are human sign-off surfaces and both
+rulings are that sign-off, quoted on the issues named. Every profile id and
+seat list below was re-derived from `tools/dispatch.py`'s registry and every
+class-2 field from `config/dispatch-routing-policy.json` as this commit's tree
+carries them, never pasted from a ruling comment.
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
 Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
@@ -147,11 +162,42 @@ replaced by a preference list per seat, resolved at dispatch time.
 |---|---|---|
 | `planner` (new; absorbs `cti-implementer-xhigh`) | `codex-sol-xhigh`, `opus-xhigh` | `fable-high` |
 | `implementer` | `codex-luna-max`, `zai-glm52-max`, `opus-low` | `codex-sol-high`, `opus-high` |
-| `recon` (read-only) | `codex-luna-medium`, `haiku-medium` | — |
+| `recon` (read-only) | `codex-luna-medium`, `haiku-medium` | — never escalates (A1) |
 | `review` | the implementer's list, resolved to the first profile that is **not** the one being reviewed, preferring a different lane | the implementer's escalation head |
-| `retro` (ruling 3) | `fable-high`, `opus-xhigh`, `codex-sol-xhigh` | — |
-| `orchestrator` | `opus-xhigh`; Claude only, provisional per ruling 1 | — |
-| interlocutor — **not dispatched** | `opus-xhigh`, `codex-sol-xhigh` | — |
+| `retro` (ruling 3) | `fable-high`, `opus-xhigh`, `codex-sol-xhigh` | `opus-max`, `fable-max` (A1) |
+| `orchestrator` | `opus-xhigh`; Claude only, provisional per ruling 1 | `opus-max`, `fable-xhigh` (A1) |
+| interlocutor — **not dispatched** | `opus-xhigh`, `codex-sol-xhigh` | — not dispatched (A1) |
+
+*(Amendment A1, 2026-08-15, on the human's ruling of 2026-08-14 recorded at
+#361: the escalation column had four empty cells, and the question put was
+whether an arbiter should be **derived** with exclusions or **tabled**. The
+answer was to table it — "amend ruling 2's table, give every seat an entry" —
+data rather than logic, and the answer readable in one table rather than
+computed. Asked which cells, the human ruled "retro and orchestrator only".*
+
+*`retro`'s entry is drawn from the nine profiles the human approved for retros
+on 2026-08-09 (#300): arbitrating a retro is retro work, and taking the arbiter
+from outside that list would widen that allowance by the back door. It
+deliberately excludes `fable-high`, which is this seat's own preference head and
+therefore the profile most likely to be conflicted. `orchestrator`'s entry
+deliberately excludes `opus-xhigh`, which is the seat itself. Both entries hold
+two profiles, head first, matching ruling 4's "*Head*, because those entries
+hold two profiles".*
+
+*`recon` and the interlocutor are marked not-applicable rather than given
+profiles, because neither can produce the thing an arbiter adjudicates: `recon`
+is read-only and lands nothing, so no never-alone loop runs over its output, and
+this ruling states plainly that the interlocutor row is not a dispatch route.
+Marked, not left blank — after ruling 4's blanket fallback is struck below, an
+empty cell is a refusal, so "no entry" and "never needs one" had to stop looking
+the same.*
+
+*One seat `tools/dispatch.py` registers is deliberately absent from this table
+and stays absent: `fable`, whose preference is `fable-high` alone. Ruling 3
+hands retros to `retro` without deleting it, and closing that overlap is #329's
+and #330's, not this amendment's — so under the struck fallback the `fable` seat
+has no arbiter and an escalation from it refuses, which is the accepted
+consequence recorded in ruling 4 rather than an oversight here.)*
 
 `just dispatch --seat S` resolves the first dispatchable profile, reading the
 breaker and the off-peak rule as it already does, records which it chose and why,
@@ -331,17 +377,59 @@ implementer may dispute correctness and severity.
 landing refuses if the SHA it is asked to land is not the one the verdict names.
 Without that, an amended or rebased branch lands on an earlier approval.
 
-**The arbiter is the head of the implementer's seat's escalation entry** — a
+**The arbiter is the head of the implementing seat's escalation entry** — a
 function of the work, not of who happened to review it, using a column the seat
 table already has, and keeping arbitration proportional to the tier the work was
 done at. *Head*, because those entries hold two profiles and "the escalation
 entry" would have left the same ambiguity as "the escalation set" it replaced:
-two callers, two arbiters, one finding.
+two callers, two arbiters, one finding. *(Amendment A1, 2026-08-15: "the
+implementer's seat's" read as the `implementer` row specifically, which would
+have made every other row's entry unreachable — including the `retro` entry the
+same amendment adds, on the case that prompted it. The seat meant is whichever
+one did the work, which is what "a function of the work" already says.)*
 
-**A seat whose escalation column is empty arbitrates at `fable-high`.** The
-`orchestrator` and `recon` rows have no entry, and the orchestrator authors
-changes routinely — without this the loop has no terminus for the seat that runs
-it, which is the worst place for one to be missing.
+**Where the tabled head is a profile the work's own records place on it, the
+tool falls through the seat's preference list.** It walks that list to the first
+profile no dispatch record places on the work, **records what it excluded and
+why**, and **refuses by name** when the list is exhausted rather than defaulting
+to a profile nobody chose. Two properties carry over from `--reviewing`'s
+resolution and carry into the implementation with it: dispatch records are a
+*potential*-author set and never proof, since nothing on a record names the
+commits a run produced; and where a record could not be read, the route is
+marked unchecked while everything read is still excluded.
+
+**The blanket fallback is struck.** It read: *"A seat whose escalation column is
+empty arbitrates at `fable-high`."*
+
+*(Amendment A1, 2026-08-15, on the human's ruling of 2026-08-14 recorded at
+#361, which also fills ruling 2's table above. The struck sentence cited the
+`orchestrator` and `recon` rows as its motivating cases, and its stated worry —
+that the loop would have no terminus for the seat that runs it — is answered by
+the table now naming that seat's arbiter outright.*
+
+*What the sentence actually did on the case that exercised it is the reason it
+went. This issue was filed believing the retro seat had no head to take; it had
+one, because the rule was general and the retro row's column was empty. The real
+defect was worse: `fable-high` authored every round of retro 30, so the ADR's own
+default resolved to **the proposer**. The orchestrator silently declined a
+default that would have had the author arbitrate its own work and substituted
+`opus-max` by hand — an instance inventing a rule at the moment the rule was
+needed, on an escalation against the orchestrator's own instruction. So the gap
+was never a missing table cell; it was that arbitration carried no
+conflict-of-interest exclusion where `--reviewing` resolution already had one.
+The fall-through above is that exclusion. Applied to #318 it would have resolved
+the retro seat to `codex-sol-xhigh` — `fable-high` authored, `opus-xhigh`
+reviewed — rather than to the `opus-max` chosen by hand; neither is obviously
+right, and the point of the rule is that the choice stops being made in the
+moment by the party under review.*
+
+*With every dispatchable row filled, the sentence covered only cells marked
+not-applicable, and keeping it would have put two rules that can disagree in one
+document — a blanket `fable-high` beside a retro entry that deliberately avoids
+`fable-high`. **Consequence accepted at the time of ruling: a seat added later
+with no escalation entry resolves to nothing and refuses.** That is the correct
+failure under #361's own acceptance criterion, and it means adding a seat now
+requires deciding its arbiter.)*
 
 **And the reviewer must not be the reviewed profile.** The `review` seat resolves
 down the implementer's list to the first profile that is not the one under review,
@@ -646,18 +734,52 @@ on provenance, and separating them is the substance of this ADR.
 | class | disposition | why |
 |---|---|---|
 | 1 `gated_semantic_surfaces` | **dies as a routing rule, except two paths that move to class 6** | its basis was provenance, and the human sign-off gate on those surfaces is untouched — that gate was never this file. But `.claude/hooks/` and `.claude/settings.json` are the denial layer and the permission allowlist, i.e. **gates**, and class 1's list was the only routing rule naming them. Deleting the class outright would let an instance author the hook that judges it with nothing firing, so both paths move to class 6 rather than falling out |
-| 2 `orchestration` | **survives unchanged, provisional** | ruling 1's carve-out, and the only provenance rule left |
+| 2 `orchestration` | **survives, re-founded on the route's seats** *(Amendment A2)* | it carries no lane rule at all. Its `required_seats` are `orchestrator`, `planner`, `implementer`, `review` and `recon` — the route that finishes orchestration work — and it refuses `retro` and `fable` on **every** lane, Claude's included, where the row this table originally described refused every seat off Claude and no seat on it. **This row is not ruling 1's carve-out and not a provenance rule.** That carve-out is `orchestrator_claude_only` in `tools/dispatch.py`'s seat table; the policy's own surviving keep-on-Claude bar is class 6's, below. See the A2 note under this table for what forced the shape, and for the two alternatives the human declined |
 | 3 `retros_and_adr_authorship` | **splits, and the survivor needs a path it does not have** | the retro half dies with ruling 3. ADR authorship survives, bound to the planner's list rather than to Claude — but the class's only `landing_path_prefixes` entry is `docs/process-log.md`, which belongs to the half being killed, so the surviving half would enforce on issue phrases alone. It gains `docs/adr/` as its landing path, or it is a class that catches nothing |
 | 4 `plausible_wrong_fix_goes_green` | **survives, remedy restated** | gate coverage, not provenance. Remedy becomes route-to-planner-and-escalate, and ruling 5 carries the matching condition |
 | 5 `in_world_landings` | **narrowed to a subagent rule** | a *subagent* cannot hold the corpus's foreground wait, so a seat reached that way cannot gate its own in-world work. `just dispatch` already launches a **top-level** session, which the wait hook permits — it returns 0 where there is no `agent_id` — so the class does not restrict the dispatch route this ADR defines, and two drafts said it did. What remains is a real but much smaller rule about subagents |
 | 6 `gates_themselves` | **survives, reframed, and does not yet hold** | conflict of interest: *no instance authors the gate that judges it*. Now binds Claude too, and takes class 1's two gate paths. Enforcement is a hard-coded path list and its coverage is far worse than the third draft admitted: of the seven gate tools `just check` runs it names **one**, `tools/mutation_smoke.py`; it omits `tools/check_adr_form.py` — **which this commit adds and then uses to judge the ADR in the same commit** — along with `check_seat_config`, `check_validated_markers`, `check_conflict_markers`, `check_source_symlink`, `export_command_schema`, `tools/breaker.py`, and the exemption list step 7 creates. Deriving the list from `just check` alone would still miss gates under `just unit`, `just mutation`, `just land` and `just regress`, so that filed item is stated as insufficient rather than as the fix. **The class is aspirational: today it names six paths and the invariant it asserts is not enforced.** |
 | 7 `anthropic_plan_meter` | **deleted** | its basis does not hold. The class's own paths are `tools/quota_tap.sh` and a usage fixture, and the meter itself is read by `tools/breaker.py` over plain `urllib` at a fixed URL with no Claude session involved. `quota_tap.sh` is a Claude Code status-line integration, which is a reason to keep it working on Claude, not a routing rule about who may author it |
 
-Five classes survive. Four of them — ADR authorship, the #181 shape, in-world
-landings, and gates-themselves — would exist in a single-provider project. The
-fifth is the provisional orchestration carve-out. That is the test this
-re-founding was put to, stated as a count of what survives rather than of what
-was written down.
+*(Amendment A2, 2026-08-15, on the human's ruling of 2026-08-14 recorded in full
+at #327 and filed as #368. The question put was how the ADR and the code stop
+contradicting each other, against four resolutions. **Answer: amend the ADR; the
+code stays as landed.** Widening class 2 further, and deleting it outright, were
+both put and both declined — recorded here so the question is not re-litigated.*
+
+*The row's shape was forced by two of this ADR's own landed rulings rather than
+chosen by an implementer. **Ruling 2** puts the planner outside gating and
+landing; **ruling 4** requires a reviewing instance. Against those, the one-seat
+row #327's second round wrote left an orchestration issue plannable by nobody,
+landable by nobody and reviewable by nobody — the deadlock its third round hit,
+with **#331** the concrete casualty, since that issue's body carries
+`Routing-class: orchestration` and could have been dispatched only to the one
+seat that must not review its own landing. `recon` joined on the ground that a
+seat which authors, lands and reviews nothing cannot take the work, so refusing
+it protected nothing while barring a cheap read-only sweep.*
+
+*Two arguments were put to the human against keeping the row at all and were not
+taken; they belong here rather than being lost. The row's remaining selection is
+**thin** — it refuses `retro` and `fable` and nothing else — and the policy's own
+remedy says so. And it **conflicts with a live instruction**: `AGENTS.md`'s Model
+roles paragraph sends process docs to a `fable` seat, and
+`docs/agents/orchestration.md` is a process doc by `AGENTS.md`'s own Orchestration
+seat section, so this row refuses to route that file where that paragraph sends
+it. Closing that overlap is #329's and #330's; until one lands, the conflict
+stands on the record.*
+
+*What this costs the paragraph below: the original counted five survivors and
+called the fifth a provenance carve-out, which this row is no longer. The count
+is unchanged and its reading is not.)*
+
+Five classes survive, and **all five would exist in a single-provider project** —
+ADR authorship, the #181 shape, in-world landings, gates-themselves, and
+orchestration, now founded on which seats can finish the work rather than on
+which lane may take it. That is the test this re-founding was put to, stated as a
+count of what survives rather than of what was written down. The one lane-selected
+refusal the policy still carries is class 6's keep-on-Claude bar, which is a rule
+about the gates rather than a class resting on provenance, and it is kept only
+until #331's exemption list gives that row's invariant an enforcement of its own.
 
 ## What this costs, stated rather than discovered
 
