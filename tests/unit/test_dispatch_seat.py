@@ -553,13 +553,18 @@ def test_the_registry_listing_prints_each_seats_preference_and_marks_the_escalat
     assert dispatch.main(["--list"]) == 0
     printed = capsys.readouterr().out
     assert "preference=codex-luna-max zai-glm52-max opus-low" in printed
-    assert "escalation=codex-sol-high opus-high (not resolved into)" in printed
+    # The mark names *which* resolution passes the entry by (#361 review round 2, claim 3): a
+    # flat "not resolved into" was false from the moment `tools/arbiter.py`'s walk landed at
+    # `d351a3f`, since that walk starts at this very entry.
+    mark = "(not a dispatch route; walked first by the arbiter)"
+    assert f"escalation=codex-sol-high opus-high {mark}" in printed
     # `fable` and `recon` are the rows that still register none; #361 filled `retro`'s and
     # `orchestrator`'s, and the listing is the surface that said `none` while the ADR named a
     # profile. Both halves are asserted so a future fill cannot quietly empty this claim.
-    assert "escalation=none (not resolved into)" in printed
-    assert "escalation=opus-max fable-max (not resolved into)" in printed
-    assert "escalation=opus-max fable-xhigh (not resolved into)" in printed
+    assert f"escalation=none {mark}" in printed
+    assert f"escalation=opus-max fable-max {mark}" in printed
+    assert f"escalation=opus-max fable-xhigh {mark}" in printed
+    assert "not resolved into" not in printed
 
 
 def test_a_block_the_registry_carries_and_the_refusal_clears_is_raised_not_skipped(

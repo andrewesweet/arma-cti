@@ -209,12 +209,15 @@ would leave an entry's tail unreachable — the gap A1's second pass recorded.
 It is not the gap it appears to be, and the resolver landed before that pass
 was written: `tools/arbiter.py`'s `_walk` at `1a5a7fb` (lines 120–132) walks
 `(*seat.escalation, *seat.preference)` deduped — entry head, then entry tail,
-then the preference list — so `fable-max`, `fable-xhigh` and `opus-high` are
-candidates whenever the head is excluded. #326 is that walk's own cited proof:
-its dispatcher, meeting a routing-refused head, landed on the entry's second
-profile. Read the walk, not this table's prose, for the order (review round 1,
-claim 6; review round 2, claim 1's rule — checked at `tools/arbiter.py:120`,
-`1a5a7fb`).*
+then the preference list — so `retro`'s `fable-max` and `orchestrator`'s
+`fable-xhigh`, the two tails this paragraph is about, are candidates whenever
+their head is excluded. #326 is that walk's own cited proof, and it is a third
+entry's: the **implementer** seat's dispatcher, meeting a routing-refused head,
+landed on that entry's second profile `opus-high` — which neither of the two
+entries here carries, and which the implementer's preference list does not carry
+either (review round 2, claim 6). Read the walk, not this table's prose, for the
+order (review round 1, claim 6; review round 2, claim 1's rule — checked at
+`tools/arbiter.py:120`, `1a5a7fb`).*
 
 *The registry carries these entries as of this commit:
 `tools/dispatch.py`'s `SEATS` gives `retro` and `orchestrator` the escalation
@@ -222,8 +225,11 @@ tuples above, so `just dispatch --seat retro --list` prints them and
 `seat_list_exhausted` names them. When A1 first landed at `eaabf9f` it did not,
 and for one commit the ADR said what neither live surface said (review round 1,
 claim 1). Nothing mechanical compares this table to the registry; the only tool
-that reads this file is `tools/check_adr_form.py`, which checks form. A gate for
-that is #354's shape and is not built here.*
+that reads this file is `tools/check_adr_form.py`, which checks form. That gate
+is **#392's**, filed on review round 2's claim 5 and not built here. An earlier
+pass called it "#354's shape", which is wrong and is corrected rather than
+dropped: #354 is retro-proposal-versus-tree, a different pair of surfaces, and
+this pair is ADR prose versus `SEATS`.*
 
 *`recon` and the interlocutor are marked not-applicable rather than given
 profiles, because neither can produce the thing an arbiter adjudicates: `recon`
@@ -449,11 +455,12 @@ checked line by line at that SHA rather than recalled: `arbiter._walk`
 refusals, the issue's dispatch records and the live dispatchability rungs, and
 records every exclusion as `Exclusion(profile, reason, detail)`;
 `arbiter.NO_ENTRY_REFUSAL` / `arbiter.EXHAUSTED_REFUSAL`
-(`tools/arbiter.py:69`) are the two named refusals, neither carrying a failure
-class; and `Resolution.unchecked` (`tools/arbiter.py:104`) is the
-`--reviewing` property carried over, set from `Authorship.complete` so **every**
-incomplete read, not only the unreadable one, leaves the resolution taken and
-unverifiable. The production caller is `tools/review_loop.py:1374`, which calls
+(`tools/arbiter.py:69–70`, a line each) are the two named refusals, neither
+carrying a failure class; and `Resolution.unchecked` (the field at
+`tools/arbiter.py:114`, on the `Resolution` class declared at `:104`) is the
+`--reviewing` property carried over, set from `Authorship.complete` at `:175`
+and `:180` so **every** incomplete read, not only the unreadable one, leaves the
+resolution taken and unverifiable. The production caller is `tools/review_loop.py:1374`, which calls
 `arbiter.resolve_dispatchable` on `just review-loop escalate`, prints the
 refusal and each passed-over profile, and returns its refusal exit rather than
 naming a profile nobody chose. `dispatch.escalation_head` still returns the
@@ -477,15 +484,31 @@ policy is not read by either module — `candidate_refusal`'s docstring says so
 and gives the reason (a rung belongs to it only where it is a function of
 `(lane, profile, seat)` alone) — so the routing exclusions are as good as the
 caller's flags, and an escalation dispatched without them walks past a head the
-policy would refuse. Owner: #326, named in that docstring as the issue that
-folds the policy in (review round 1, claim 4; corrected on review round 2).*
+policy would refuse. **This rung is uncovered and, as of round 3, unowned.**
+Round 2 wrote "Owner: #326", and #326 closed on 2026-08-14 at 13:13Z, the day
+before that line was written — `candidate_refusal`'s docstring named the same
+closed issue. Naming a replacement owner is a decision rather than a repair, so
+round 3 states the gap and files **#391** for the ownership question instead of
+inventing one (review round 1, claim 4; review round 2, claim 2).*
 
-***Five copies of the arbiter rule exist and this amendment reversed one.*** *The
-in-repo four — `docs/agents/review-severity.md`, `config/escalation-conditions.json`,
+***Six copies of the arbiter rule exist and this amendment reversed one.*** *The
+in-repo five. Four — `docs/agents/review-severity.md`, `config/escalation-conditions.json`,
 `tools/escalation.py` and `tools/brief.py` — were swept to "the implementing
 seat's" in the same commit as this paragraph, and `tools/brief.py` now takes the
 arbiter from the briefed seat's entry rather than emitting the implementer's head
-for every seat. The fifth is off-tree: **#333's body**, which still carries the
+for every seat. The fifth is `dispatch.escalation_head`'s own docstring
+(`tools/dispatch.py:648`), which round 1 of this issue's review wrote and which
+sat **outside this enumeration** for two rounds while it claimed the fall-through
+was unbuilt and cited this very passage — the passage the previous pass had
+rewritten to say the opposite. It is corrected in round 3 and counted here, which
+is the arbitration of 2026-08-15 on this thread; the arbitration's own finding is
+that a hand-derived enumeration passes its blindness to the sweep that reads it,
+and deriving the set instead of counting it is **#390's**. This round derived it
+rather than recalling it: `git grep -n "escalation entry\|escalation head\|escalation_head"`
+and `git grep -n "implementing seat"` outside `tests/`, checked against
+`tools/arbiter.py` and `SEATS`. `tools/arbiter.py` is not on the list because it
+is the authoritative surface rather than a copy of it. The sixth is off-tree:
+**#333's body**, which still carries the
 struck blanket in a second form ("a seat whose escalation column is empty
 arbitrates at the escalation tier") and an acceptance criterion demanding a rule
 that yields a profile even for an empty column. #333 closed on 2026-08-15 at
@@ -527,8 +550,10 @@ is kept only because it is the human's own words.*** *Under the filled table
 `retro`'s head is `opus-max`, and #318's records place `fable-high` (author) and
 `opus-xhigh` (reviewer) on the work — not `opus-max`. The head is therefore
 unconflicted, the fall-through never fires, and the rule resolves to **the same
-`opus-max` the orchestrator chose by hand**. `codex-sol-xhigh` sits third in the
-walk `tools/arbiter.py:120` performs — entry head `opus-max`, entry tail
+`opus-max` the orchestrator chose by hand**. `codex-sol-xhigh` sits **fifth** in
+the walk `tools/arbiter.py:120` performs — third is its position in `retro`'s
+*preference list*, which is the exact confusion this paragraph exists to correct
+(review round 2, claim 4). The walk is entry head `opus-max`, entry tail
 `fable-max`, then the preference list `fable-high`, `opus-xhigh`,
 `codex-sol-xhigh` — so it is reachable, but only once the two tabled profiles
 and the two conflicted preference entries are all excluded, which #318's records
