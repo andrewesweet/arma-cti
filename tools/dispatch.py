@@ -665,8 +665,13 @@ def escalation_head(seat_name: str) -> str | None:
     What this does **not** do is ruling 4's conflicted-head fall-through: where the issue's own
     dispatch records place the head on the work, the rule walks the seat's preference list,
     records the exclusions and refuses by name when it is exhausted. That needs the records a
-    caller here does not hold, and it is unbuilt — #333's, with the ADR saying so at the
-    passage. This returns the tabled head, which is the input that walk starts from.
+    caller here does not hold. It is **built**, in `tools/arbiter.py` — `_walk_first` (`:135`)
+    is the walk with its exclusion rungs, `resolve_for_issue` (`:209`) reads the issue's own
+    dispatch records and `resolve_dispatchable` adds the live `(lane, profile, seat)` rungs —
+    landed at `d351a3f` under #333 and on `origin/main` at `1a5a7fb`. This function returns
+    the tabled head alone, which is that walk's input and `tools/brief.py`'s briefing field:
+    a briefing states who the table names, which is not the same act as resolving an arbiter
+    at an escalation (ADR-0071 ruling 4, amendment A1's third pass, closing sentence).
     """
     seat = SEATS.get(seat_name)
     if seat is None or not seat.escalation:
@@ -2354,9 +2359,11 @@ def candidate_refusal(
 
     Readiness and the queue policy are deliberately absent: each reads the *issue*, so each
     judges the dispatch rather than the candidate, and no change of profile could ever clear
-    one. The routing policy is a function of both and is #326's to fold in; leaving it out
-    means a resolved route can still be refused by the ladder below, which is the honest
-    outcome — the alternative is this resolver quietly re-deciding a policy question.
+    one. The routing policy is a function of both and is **uncovered and unowned**: it was
+    #326's to fold in, and #326 closed on 2026-08-14 without folding it in, so the question of
+    who owns it is #391's and no fix is appointed. Leaving it out means a resolved route can
+    still be refused by the ladder below, which is the honest outcome — the alternative is this
+    resolver quietly re-deciding a policy question.
 
     The lane's credential is here for the same reason the breaker is, and it is the one
     rung this resolver reads that `ladder_refusal` does not: a lane with no key on this box
@@ -3589,9 +3596,12 @@ def seat_listing(seat: Seat) -> tuple[str, ...]:
     """Render one seat for the registry: what `--seat S` alone resolves to, and its rules.
 
     ADR-0071 ruling 2's other half. The escalation entry is printed beside the preference
-    and marked, because it is registry data that resolution deliberately does not walk — a
+    and marked, because it is registry data *this* resolution deliberately does not walk — a
     reader who saw only the preference would have no way to tell whether an absent
-    escalation meant "none" or "not shown".
+    escalation meant "none" or "not shown". The mark says which resolution: `resolve_seat`
+    never walks the entry, and `tools/arbiter.py`'s walk starts at it (entry head, entry
+    tail, then the preference list). An earlier mark read "not resolved into" flat, which was
+    false the moment that walk landed at `d351a3f`.
 
     Ruling 4's two columns (#322) print only where they apply: a `reviews=false` line on
     every other seat would be noise, and a reader asking "which seat is the one that cannot
@@ -3605,7 +3615,10 @@ def seat_listing(seat: Seat) -> tuple[str, ...]:
     lines = [
         f"seat={seat.name}",
         f"  preference={' '.join(seat.preference)}",
-        f"  escalation={' '.join(seat.escalation) or 'none'} (not resolved into)",
+        (
+            f"  escalation={' '.join(seat.escalation) or 'none'}"
+            " (not a dispatch route; walked first by the arbiter)"
+        ),
     ]
     if seat.claude_only:
         lines.append(

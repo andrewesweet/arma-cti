@@ -321,6 +321,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   bar, whose retirement condition #331 spent ten hours before it was written down: #389 owns it,
   replacing an owner (#333) that had closed.
 
+- **The fifth copy of the arbiter rule is corrected and counted, and two false owners are
+  replaced by filed issues (#361, review round 3).** `dispatch.escalation_head`'s docstring said
+  the conflicted-head fall-through was unbuilt and cited the ADR passage for it — the same
+  passage round 2 had rewritten to say the rule is implemented, so the file cited as its
+  authority a passage that contradicted it. It is replaced by where the fall-through lives
+  (`tools/arbiter.py`, landed `d351a3f`), keeping the true half: this function returns the
+  tabled head alone, which is the walk's input and the briefing's field. The copy is added to
+  ADR-0071's enumeration, now six; deriving that set instead of counting it is #390's, on the
+  arbitration's own finding that a hand-derived enumeration passes its blindness to the sweep
+  that reads it. Two owners named a closed issue: the arbiter walk's uncovered routing-policy
+  rung was owned by #326, closed the day before the line was written and pointed at from
+  `candidate_refusal`'s docstring too — the rung is now stated as uncovered and unowned with
+  #391 filed for the ownership question, no owner invented; and the ADR-versus-registry gate
+  is #392's rather than an unowned assertion analogised to #354, a different pair of surfaces.
+  Three smaller corrections: `just dispatch --list` marked the escalation entry "not resolved
+  into" when the arbiter walk starts at it, and now says which resolution passes it by; the
+  ADR's only worked example put `codex-sol-xhigh` third in the walk where it is fifth (third is
+  its preference-list position, the confusion that paragraph exists to correct); and
+  `docs/agents/review-severity.md` and `config/escalation-conditions.json` each listed fewer
+  exclusion rungs than `_walk_first` runs — all four are named now.
+
 - **The routing policy is re-founded class by class on capability and conflict of interest, and
   is no longer the keep-on-Claude policy.** ADR-0071 ruling 1 withdrew provenance as a reason to
   route work, and its re-founding table separates what each class actually rested on. Two classes
