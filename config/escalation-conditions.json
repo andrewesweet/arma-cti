@@ -26,7 +26,7 @@
       "id": 4,
       "name": "plausible_wrong_fix_goes_green",
       "predicate": "routing_class_four",
-      "remedy": "This item declares the #181 shape (routing class 4): a diagnosis whose plausible wrong fix would also go green, which no mechanical gate distinguishes. Transfer it to a fable seat for diagnosis; ruling 5 permits this escalation precisely because the gate cannot catch the wrong answer (CLAUDE.md model roles; #181)."
+      "remedy": "This item declares the #181 shape (routing class 4): a diagnosis whose plausible wrong fix would also go green, which no mechanical gate distinguishes. Transfer it to a fable seat for diagnosis; ruling 5 permits this escalation precisely because the gate cannot catch the wrong answer (CLAUDE.md's Seats and profiles section; #181)."
     }
   ]
 }

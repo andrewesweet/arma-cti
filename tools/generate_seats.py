@@ -114,9 +114,11 @@ def _notations() -> tuple[re.Pattern[str], ...]:
 PAIR_NOTATIONS: Final = _notations()
 
 # The slash notation on its own, because it is the one shape that can only ever be a pair.
-# The other three are prose, so a surface that narrates tiers by hand — AGENTS.md's Model
-# roles section, which is #329's — states them legitimately, and a check over that surface
-# scopes itself by region rather than by notation.
+# The other three are prose, and a prose sentence can state a tier for a reason a detector
+# cannot judge, so a check over a prose surface is scoped by notation rather than asked to
+# read intent. The region carve-out this used to describe is gone with the section it carved
+# out: #329 replaced AGENTS.md's Model roles section with Seats and profiles, which names no
+# pair at all, so the exclusion was deleted rather than re-pointed.
 SLASH_PAIR: Final = PAIR_NOTATIONS[0]
 
 
