@@ -71,11 +71,15 @@ finding that survives four readings is still Low: it changed what no rule meant.
 - The **reviewer** assigns a severity to every finding it reports. It never withholds a
   finding on the grounds that it is minor.
 - The **implementer** may dispute a finding's correctness and its severity.
-- An **arbiter** — the head of the **implementing** seat's escalation entry, one rule with
-  one answer — rules once per finding, and that ruling binds. The seat meant is whichever
-  one did the work, not the `implementer` row for every seat (ADR-0071 ruling 4 as amended
-  by A1, #361), and a seat whose entry is empty has no arbiter and refuses: A1 struck the
-  blanket `fable-high` fallback that used to answer for it.
+- An **arbiter** — resolved from the **implementing** seat's escalation entry, head first,
+  one rule with one answer — rules once per finding, and that ruling binds. The seat meant
+  is whichever one did the work, not the `implementer` row for every seat (ADR-0071 ruling 4
+  as amended by A1, #361). The resolution is `tools/arbiter.py`, reached by
+  `just review-loop escalate`: it walks the entry head, then the entry tail, then the seat's
+  preference list, passing over the profiles the issue's own dispatch records place on the
+  work and recording each exclusion with its reason. A seat whose entry is empty has no
+  arbiter and refuses by name — A1 struck the blanket `fable-high` fallback that used to
+  answer for it — and so does a walk that reaches its end with everything excluded.
 - The loop's stop condition is that nothing above **Low** remains unadjudicated. Low
   findings do not block; they are recorded.
 

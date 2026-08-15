@@ -170,11 +170,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for every brief including a retro's. `docs/agents/review-severity.md`,
   `config/escalation-conditions.json` and `tools/escalation.py` are swept to the same wording. A
   seat with no entry resolves to no arbiter and condition 1 stays silent, which is the struck
-  fallback's accepted consequence. Three gaps the round records rather than closes, each with an
-  owner in the ADR: the fall-through itself is a rule no tool performs (#333); its trigger reaches
-  conflict of interest alone, not the routing-class refusal that actually occurred on #326; and
-  #333's open body still carries the struck blanket in a second form, so implementing it to its
-  own criteria would reinstate what A1 struck.
+  fallback's accepted consequence.
+
+- **ADR-0071 and four other surfaces are corrected to what the arbiter code actually does (#361,
+  review round 2).** Round 1 closed three findings by recording gaps that were already closed:
+  `tools/arbiter.py` had landed under #333 seven hours earlier, and the ADR went on to tell an
+  orchestrator meeting an escalation that no tool resolves the arbiter and a human carries the
+  exclusion by hand — the very act this issue exists to end, with `just review-loop escalate`
+  sitting there resolving it. The three notes are replaced by what is in the tree, cited by file
+  and line: the walk is `arbiter._walk`, entry head then entry **tail** then preference list — so
+  an entry's second profile is reachable and the "unreachable tail" gap never existed; routing
+  refusals are an exclusion rung of their own, fed by `just review-loop escalate
+  --routing-refusal`, and a tripped breaker, an exhausted quota and an off-peak window are covered
+  by `dispatch.candidate_refusal`, so the trigger is not conflict of interest alone; and #333
+  landed the refusal rather than the fallback its own stale criterion demanded. What is genuinely
+  not covered is stated instead: the routing policy is read by neither module, so those exclusions
+  are only as good as the caller's flags (#326 owns folding it in). Two docstrings that outlived
+  their sequencing — `tools/escalation.py` and `tools/brief.py` on "the review loop is sequenced
+  work, so rounds are not recorded" — now say where the facts live and why a *brief* still has
+  none. `docs/agents/review-severity.md` and `config/escalation-conditions.json` describe the
+  resolution rather than only its head. The one live decision left is the class 6 keep-on-Claude
+  bar, whose retirement condition #331 spent ten hours before it was written down: #389 owns it,
+  replacing an owner (#333) that had closed.
 
 - **The routing policy is re-founded class by class on capability and conflict of interest, and
   is no longer the keep-on-Claude policy.** ADR-0071 ruling 1 withdrew provenance as a reason to

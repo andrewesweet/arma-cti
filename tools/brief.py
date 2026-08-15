@@ -732,11 +732,15 @@ def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluati
     The escalation tool decides from facts in a `Context`; this assembles that context from the
     data a composition-time read actually has. `routing_class` is recorded — derived lane-blind
     from the body through `routing_policy.classify_issue` — so condition 4 fires for a #181-shape
-    item for real. `review_rounds`, `finding_above_low` and `attempts` are **not** recorded today
-    (the review loop, observatory and arbiter are sequenced: ADR-0071 rulings 4 and 6, #333), so
-    they are `None` and conditions 1, 2 and 3 stay silent until those land. The arbiter condition
-    1 would name is resolved here from **this brief's own seat**'s escalation head and supplied
-    anyway, so the emission is correct the moment its facts arrive.
+    item for real. `review_rounds`, `finding_above_low` and `attempts` are `None` here, and the
+    reason is the composition point rather than a missing mechanism: #333 landed the review loop,
+    so rounds and findings **are** recorded — in the per-issue state under `~/.arma-cti/review/`,
+    which `review_loop._cmd_escalate` reads and evaluates conditions 1 and 2 from — but a brief is
+    composed at dispatch, before any loop for that issue exists. Conditions 1, 2 and 3 therefore
+    stay silent in a *brief*, and fire where their facts live. The arbiter condition 1 would name
+    is resolved here from **this brief's own seat**'s escalation head and supplied anyway, so the
+    briefing states who the table names; the escalation path resolves the arbiter for real through
+    `arbiter.resolve_dispatchable`, which is a walk with exclusions and not this field.
 
     That seat, and not the `implementer` row, is what ADR-0071 ruling 4 means by "the implementing
     seat's escalation entry" as amendment A1 (#361) leaves it. Reading `IMPLEMENTER_ESCALATION[0]`
