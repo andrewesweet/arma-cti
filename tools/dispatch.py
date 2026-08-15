@@ -396,16 +396,24 @@ PROFILES: Final[dict[str, Profile]] = {
     "opus-max": Profile("opus-max", "claude-native", "opus", "max"),
     "sonnet-high": Profile("sonnet-high", "claude-native", "sonnet", "high"),
     "haiku-medium": Profile("haiku-medium", "claude-native", "haiku", "medium"),
-    # The fable seat's route to a fable session (#269). #242 ruling 1 keeps fable for named
-    # acts — retros; ADR, CONTEXT.md and schema semantics; retro evidence banking; the
-    # #181-shaped diagnosis call — and says they are *dispatched* rather than resident. While
-    # the orchestration seat was itself fable a subagent inherited it from its dispatcher,
-    # which is how the twenty-fifth retro ran unattended; the seat drop to opus/high removed
-    # that inheritance, and the ruling's "dispatched" had no `(model, effort)` token to
+    # The fable seat's route to a fable session (#269). #242 ruling 1's surviving half is that
+    # fable is *dispatched* rather than resident: while the orchestration seat was itself fable
+    # a subagent inherited it from its dispatcher, which is how the twenty-fifth retro ran
+    # unattended, and dropping the seat removed that inheritance without leaving anything to
     # dispatch through. The seat was always expressible (`SEATS` has `fable`, and since
-    # ADR-0071 ruling 1 no bar reaches it); only the profile was missing. Effort is `high`
-    # per the Model roles
-    # mapping, the effort fable acts run at; the model is `fable`, the alias the `claude`
+    # ADR-0071 ruling 1 no bar reaches it); only the profile was missing.
+    #
+    # **What the seat is for is not enumerated here** (#329 review round 2, F2). The list this
+    # comment used to carry — retros; ADR, CONTEXT.md and schema semantics; retro evidence
+    # banking — was the withdrawn mapping's scope, and it outlived it: live
+    # `config/dispatch-routing-policy.json` refuses `fable` on both the ADR-authorship class
+    # and the orchestration class, so the copy contradicted the policy in the very file the
+    # briefing composer names as its authority. The live scope is routing class 4 and
+    # `config/escalation-conditions.json`'s fourth condition, which orders the transfer; a
+    # second copy here would drift again.
+    #
+    # Four efforts and not one, because no effort is privileged: the profiles are named so a
+    # dispatcher can pick, not so a paragraph can. The model is `fable`, the alias the `claude`
     # runner documents for `--model` alongside `opus` and `sonnet` (verified against the
     # binary's own `--help`, not assumed from its siblings — `build_argv` passes `model`
     # straight through, so nothing else needed changing).

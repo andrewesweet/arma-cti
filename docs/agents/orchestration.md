@@ -282,11 +282,16 @@ does by hand.
   `orchestrator`, `fable` and `retro`; orchestration's own process docs — this file
   among them, by `CLAUDE.md`'s Agent-skills section — are routing class 2, which admits
   that same route plus `orchestrator` and refuses `retro` and `fable`. Either way the
-  seat does not hold the drafting. Both classes are **declared on the issue and never
-  inferred from the path**: neither row carries path prefixes, and the policy's own
-  coverage note says a seat-bound class is checked at dispatch only, since a landing has
-  no seat to check. So an issue that declares nothing is classified by nothing, and the
-  sentence above is an instruction to the seat rather than a claim that a refusal exists.
+  seat does not hold the drafting. **Neither class is inferred from the path** — neither
+  row carries path prefixes, and the policy's own coverage note says a seat-bound class is
+  checked at dispatch only, since a landing has no seat to check. It does **not** follow
+  that a class fires only when the issue declares it: both rows also carry `issue_phrases`,
+  and `tools/routing_policy.py` matches each as a plain casefolded substring of the issue
+  text, so an issue merely *mentioning* ADR authorship fires class 3 without declaring
+  anything (#329 review round 2, F7 — the earlier wording said "declared on the issue and
+  never inferred", which overstated it). What the paragraph above is, either way, is an
+  instruction to the seat rather than a claim that a refusal reliably exists: an issue that
+  neither declares a class nor happens to carry a matching phrase is classified by nothing.
 - **Never write a brief's task, scope or ground truth from the issue body alone.** Read the
   thread first, and name the comment each pre-derived decision comes from, so that a body
   the thread has superseded shows up in the brief rather than being resolved silently.
