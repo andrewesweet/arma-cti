@@ -2570,9 +2570,10 @@ def test_a_record_written_before_strata_reads_back_unchecked() -> None:
     # that — nothing recorded, nothing checked — rather than a guess dressed as a value.
     s = dispatch.read_strata({})
     assert s == dispatch.NO_STRATA
-    assert s.gate_tier == dispatch.Stratum.unknown("")
-    assert s.routing_class == dispatch.Stratum.unknown("")
-    assert s.labels == dispatch.Stratum.unknown("")
+    absent = dispatch.STRATUM_PRE_STRATA_ABSENT
+    assert s.gate_tier == dispatch.Stratum.unknown("", absent)
+    assert s.routing_class == dispatch.Stratum.unknown("", absent)
+    assert s.labels == dispatch.Stratum.unknown("", absent)
 
 
 # ---------------------------------------------- the findings from review round 1
@@ -2721,30 +2722,25 @@ def test_an_unchecked_stratum_cannot_be_built_with_a_value() -> None:
     # checked=False. The type refuses that shape now, so document() writes `value`
     # unconditionally without a boundary guard, and no future writer has to remember.
     with pytest.raises(ValueError, match="carries no value"):
-        dispatch.Stratum(value="fast", checked=False, unchecked_why="")
+        dispatch.Stratum(
+            value="fast",
+            checked=False,
+            unchecked_why="",
+            code=dispatch.STRATUM_SOURCE_UNAVAILABLE,
+        )
     # The two honest shapes still construct, including a checked empty value (an issue with no
     # labels) and an unchecked no-value (a signal that could not run).
+    checked = dispatch.STRATUM_CHECKED
+    unavailable = dispatch.STRATUM_SOURCE_UNAVAILABLE
     assert dispatch.Stratum.known("fast") == dispatch.Stratum(
-        "fast", checked=True, unchecked_why=""
+        "fast", checked=True, unchecked_why="", code=checked
     )
     assert dispatch.Stratum.unknown("why") == dispatch.Stratum(
-        None, checked=False, unchecked_why="why"
+        None, checked=False, unchecked_why="why", code=unavailable
     )
-    assert dispatch.Stratum.known(()) == dispatch.Stratum((), checked=True, unchecked_why="")
-
-
-def test_read_strata_names_a_value_beside_an_unchecked_flag() -> None:
-    # #323 review round 2 finding 2: a record carrying a value beside checked=False contradicts
-    # F1, which writes None for an unchecked signal. The reader returns unchecked — the right
-    # state — and says what it saw, so the contradiction leaves a trace rather than a silent
-    # empty reason.
-    s = dispatch.read_strata(
-        {"strata": {"gate_tier": "fast", "gate_tier_checked": False, "gate_tier_unchecked_why": ""}}
+    assert dispatch.Stratum.known(()) == dispatch.Stratum(
+        (), checked=True, unchecked_why="", code=checked
     )
-    assert s.gate_tier.checked is False
-    assert s.gate_tier.value is None
-    assert "'fast'" in s.gate_tier.unchecked_why
-    assert "unchecked" in s.gate_tier.unchecked_why
 
 
 @pytest.mark.parametrize("container", [[], None, "x", 7])
@@ -2838,56 +2834,240 @@ def test_the_gate_derivation_lives_in_a_module_that_imports_neither_dispatcher_n
 # reason alone.
 
 
-def test_read_strata_names_a_carried_value_even_when_the_reason_is_missing() -> None:
-    # #323 review round 3 finding 2: F2 was implemented for the well-formed-reason case only.
-    # A record carrying a value beside `checked: false` with a *missing* reason once hit the
-    # type guard first and returned the generic "was malformed", so the carried value — the
-    # very thing F2 exists to surface — was lost. The contradiction is read before the reason's
-    # type is inspected, so the value is named here too, not only when the reason is a string.
-    s = dispatch.read_strata({"strata": {"gate_tier": "fast", "gate_tier_checked": False}})
-    assert s.gate_tier.checked is False
-    assert s.gate_tier.value is None
-    assert "'fast'" in s.gate_tier.unchecked_why
-    # It is the contradiction reason, not the generic malformed one: a non-string reason beside
-    # a carried value does not collapse this state back into corruption.
-    assert "malformed" not in s.gate_tier.unchecked_why
-
-
-def test_read_strata_names_a_carried_value_when_the_reason_is_the_wrong_type() -> None:
-    # The same property as above, through a non-string reason rather than a missing one: a
-    # reason of the wrong type beside a carried value still names the value, because the
-    # contradiction is read first.
+@pytest.mark.parametrize(
+    ("reason_field", "case"),
+    [
+        ({}, "the reason is missing"),
+        ({"gate_tier_unchecked_why": 7}, "the reason is the wrong type"),
+        ({"gate_tier_unchecked_why": ""}, "the reason is empty"),
+        ({"gate_tier_unchecked_why": "vocabulary unreadable"}, "the reason is well formed"),
+    ],
+)
+def test_read_strata_names_a_carried_value_whatever_the_reason_is(
+    reason_field: dict[str, object], case: str
+) -> None:
+    # #323 review round 2 finding 2 and round 3 finding 2, as one parametrised test (#347's
+    # rider): a record carrying a value beside `checked: false` contradicts F1, which writes
+    # None for an unchecked signal. The reader returns unchecked — the right state — names what
+    # it saw, and classifies the state the same way whatever the reason field holds. The
+    # contradiction is read *before* the reason's type is inspected, so a missing or non-string
+    # reason does not collapse the state back into the generic "malformed", losing the carried
+    # value F2 exists to surface. Three near-identical tests repeating one setup and four
+    # assertions differing only in the reason input are one test over four inputs here.
     s = dispatch.read_strata(
-        {"strata": {"gate_tier": "fast", "gate_tier_checked": False, "gate_tier_unchecked_why": 7}}
+        {"strata": {"gate_tier": "fast", "gate_tier_checked": False, **reason_field}}
     )
-    assert s.gate_tier.checked is False
-    assert s.gate_tier.value is None
-    assert "'fast'" in s.gate_tier.unchecked_why
-    assert "malformed" not in s.gate_tier.unchecked_why
+    assert s.gate_tier.checked is False, case
+    assert s.gate_tier.value is None, case
+    assert s.gate_tier.code == dispatch.STRATUM_UNCHECKED_WITH_VALUE, case
+    assert "'fast'" in s.gate_tier.unchecked_why, case
+    assert "unchecked" in s.gate_tier.unchecked_why, case
+    assert "malformed" not in s.gate_tier.unchecked_why, case
 
 
-def test_read_strata_keeps_the_four_degradation_reasons_mechanically_apart() -> None:
-    # #323 review round 3 finding 2: #336 will tell the strata's degradation states apart by
-    # their reason alone, without reading English, so the four must never collide. Each is a
-    # distinct shape the reader meets — a value carried beside `checked: false`, a present
-    # non-mapping container, a record carrying none of the value fields this reader reads, and
-    # the plain pre-#323 absence — and their gate_tier reasons are four distinct strings.
-    carried = dispatch.read_strata({"strata": {"gate_tier": "fast", "gate_tier_checked": False}})
-    non_mapping = dispatch.read_strata({"strata": []})
-    no_value_fields = dispatch.read_strata(
-        {"strata": {"gate_tier_checked": True, "gate_tier_unchecked_why": ""}}
+# ---------------------------------------------- the typed degradation codes (#347)
+#
+# Round 3 left the degradation states apart only by their reasons, which is four examples that
+# happen not to collide rather than a contract: `Stratum.unknown("")` collided exactly with
+# pre-#323 absence, and the carried-value reason varied with `repr`. The code is the contract.
+# Every test below reads `code` and never the prose, and the ones that matter most are the
+# empty-reason case and the identical-prose case — the two shapes where a reason-keyed consumer
+# gets a confident wrong answer and a code-keyed one cannot.
+
+
+def test_every_degradation_state_carries_a_distinct_code() -> None:
+    # The four the ruling names, plus the ordinary states either side of them. Distinct codes,
+    # one per state, and the set is exactly as large as the number of states — a drift that
+    # merged two would shrink it.
+    states = {
+        "carried": dispatch.read_strata(
+            {"strata": {"gate_tier": "fast", "gate_tier_checked": False}}
+        ),
+        "non_mapping": dispatch.read_strata({"strata": []}),
+        "value_fields_absent": dispatch.read_strata(
+            {"strata": {"gate_tier_checked": True, "gate_tier_unchecked_why": ""}}
+        ),
+        "pre_strata": dispatch.read_strata({}),
+        "record_malformed": dispatch.read_strata({"strata": {"gate_tier_checked": "false"}}),
+        "value_malformed": dispatch.read_strata(
+            {"strata": {"gate_tier": 7, "gate_tier_checked": True, "gate_tier_unchecked_why": ""}}
+        ),
+        "source_unavailable": dispatch.read_strata(
+            {"strata": {"gate_tier_checked": False, "gate_tier_unchecked_why": "no CONTEXT.md"}}
+        ),
+        "checked": dispatch.read_strata(
+            {
+                "strata": {
+                    "gate_tier": "fast",
+                    "gate_tier_checked": True,
+                    "gate_tier_unchecked_why": "",
+                }
+            }
+        ),
+    }
+    codes = {name: s.gate_tier.code for name, s in states.items()}
+    assert len(set(codes.values())) == len(codes), codes
+    assert codes["carried"] == dispatch.STRATUM_UNCHECKED_WITH_VALUE
+    assert codes["non_mapping"] == dispatch.STRATUM_CONTAINER_NOT_MAPPING
+    assert codes["value_fields_absent"] == dispatch.STRATUM_VALUE_FIELDS_ABSENT
+    assert codes["pre_strata"] == dispatch.STRATUM_PRE_STRATA_ABSENT
+    assert codes["record_malformed"] == dispatch.STRATUM_RECORD_MALFORMED
+    assert codes["value_malformed"] == dispatch.STRATUM_VALUE_MALFORMED
+    assert codes["source_unavailable"] == dispatch.STRATUM_SOURCE_UNAVAILABLE
+    assert codes["checked"] == dispatch.STRATUM_CHECKED
+
+
+def test_an_empty_reason_does_not_collide_with_the_pre_strata_absence() -> None:
+    # The collision #347 was filed for. An ordinary unchecked signal whose reason is empty and
+    # a record predating the field are the same prose — the empty string — so a consumer keyed
+    # on `unchecked_why` cannot tell "the source was unavailable" from "nobody ever recorded
+    # anything". The codes differ, and that is the whole contract.
+    empty_reason = dispatch.read_strata(
+        {"strata": {"gate_tier_checked": False, "gate_tier_unchecked_why": ""}}
     )
     pre_strata = dispatch.read_strata({})
-    reasons = {
-        carried.gate_tier.unchecked_why,
-        non_mapping.gate_tier.unchecked_why,
-        no_value_fields.gate_tier.unchecked_why,
-        pre_strata.gate_tier.unchecked_why,
+    assert empty_reason.gate_tier.unchecked_why == pre_strata.gate_tier.unchecked_why == ""
+    assert empty_reason.gate_tier.code != pre_strata.gate_tier.code
+    assert empty_reason.gate_tier.code == dispatch.STRATUM_SOURCE_UNAVAILABLE
+    assert pre_strata.gate_tier.code == dispatch.STRATUM_PRE_STRATA_ABSENT
+
+
+@pytest.mark.parametrize("prose", ["", "vocabulary unreadable", "not a mapping", "malformed"])
+def test_classification_does_not_depend_on_the_recorded_prose(prose: str) -> None:
+    # The reason is diagnostic and never a grouping key: a record whose prose impersonates
+    # another state's — including the exact substrings the round-2 and round-3 tests match on —
+    # still classifies by structure. A reason-keyed consumer reads "not a mapping" here and
+    # gets the wrong stratum; a code-keyed one cannot.
+    s = dispatch.read_strata(
+        {"strata": {"gate_tier_checked": False, "gate_tier_unchecked_why": prose}}
+    )
+    assert s.gate_tier.code == dispatch.STRATUM_SOURCE_UNAVAILABLE
+    assert s.gate_tier.unchecked_why == prose
+
+
+@pytest.mark.parametrize("carried", ["fast", 7, ["fast"], {"tier": "fast"}, None])
+def test_the_carried_value_code_does_not_depend_on_repr(carried: object) -> None:
+    # The carried-value reason interpolates `{seen!r}`, so it varies with every value a broken
+    # record happens to hold — which is why it was never a key. The code is one string across
+    # every one of them. `None` is the control: it is not a carried value at all, so it is the
+    # ordinary unchecked state and must *not* take this code.
+    s = dispatch.read_strata(
+        {
+            "strata": {
+                "gate_tier": carried,
+                "gate_tier_checked": False,
+                "gate_tier_unchecked_why": "",
+            }
+        }
+    )
+    expected = (
+        dispatch.STRATUM_SOURCE_UNAVAILABLE
+        if carried is None
+        else dispatch.STRATUM_UNCHECKED_WITH_VALUE
+    )
+    assert s.gate_tier.code == expected
+
+
+@pytest.mark.parametrize(
+    ("signal", "row", "expected"),
+    [
+        (
+            "gate_tier",
+            {"gate_tier_checked": True, "gate_tier_unchecked_why": ""},
+            "value_fields_absent",
+        ),
+        (
+            "routing_class",
+            {"routing_class_checked": True, "routing_class_unchecked_why": ""},
+            "value_fields_absent",
+        ),
+        ("labels", {"labels_checked": True, "labels_unchecked_why": ""}, "value_fields_absent"),
+        ("gate_tier", {"gate_tier": 7, "gate_tier_checked": True}, "record_malformed"),
+        (
+            "routing_class",
+            {"routing_class_id": "5", "routing_class_checked": True, "routing_class_why": ""},
+            "record_malformed",
+        ),
+        (
+            "labels",
+            {"labels": "bug", "labels_checked": True, "labels_unchecked_why": ""},
+            "value_malformed",
+        ),
+    ],
+)
+def test_every_signal_carries_the_same_codes(
+    signal: str, row: dict[str, object], expected: str
+) -> None:
+    # All three signals go through one reader, so all three degrade into the same vocabulary.
+    # #336 stratifies on gate tier, routing class and labels alike and must not learn three.
+    s = dispatch.read_strata({"strata": row})
+    assert getattr(s, signal).code == expected
+
+
+def test_a_pre_existing_record_is_classified_without_being_rewritten() -> None:
+    # The ruling's third requirement: the code is *derived* from raw structure for records
+    # predating the field, and nothing rewrites them. The document handed in is compared byte
+    # for byte with itself afterwards — reading classifies, it does not migrate.
+    document: dict[str, object] = {
+        "strata": {
+            "routing_class": "5:in_world_landings",
+            "routing_class_checked": True,
+            "routing_class_unchecked_why": "",
+        }
     }
-    assert len(reasons) == 4
-    # Each is recognisable on its own, so a drift in one cannot hide behind another. The
-    # carried-state assertion is the one that reds without round 3's fix.
-    assert "'fast'" in carried.gate_tier.unchecked_why
-    assert "not a mapping" in non_mapping.gate_tier.unchecked_why
-    assert "none of the value fields" in no_value_fields.gate_tier.unchecked_why
-    assert pre_strata.gate_tier.unchecked_why == ""
+    before = json.dumps(document, sort_keys=True)
+    s = dispatch.read_strata(document)
+    assert s.routing_class.code == dispatch.STRATUM_VALUE_FIELDS_ABSENT
+    assert json.dumps(document, sort_keys=True) == before
+    # And the nine landed records that predate the field entirely: no `strata` key at all.
+    assert dispatch.read_strata({}).gate_tier.code == dispatch.STRATUM_PRE_STRATA_ABSENT
+
+
+def test_the_record_carries_the_code_for_every_signal() -> None:
+    # The discriminator goes on newly written records, so a consumer reading the raw JSON —
+    # rather than through `read_strata` — stratifies on the same key.
+    doc = dispatch.Strata(
+        gate_tier=dispatch.Stratum.known("fast"),
+        routing_class=dispatch.Stratum.unknown("policy unreadable"),
+        labels=dispatch.Stratum.unknown("body from --issue-body"),
+    ).document()
+    assert doc["gate_tier_code"] == dispatch.STRATUM_CHECKED
+    assert doc["routing_class_code"] == dispatch.STRATUM_SOURCE_UNAVAILABLE
+    assert doc["labels_code"] == dispatch.STRATUM_SOURCE_UNAVAILABLE
+
+
+def test_a_pre_strata_plan_round_trips_its_code_rather_than_flattening_to_unavailable() -> None:
+    # A plan carrying NO_STRATA writes an unchecked signal with an empty reason — structurally
+    # identical to an ordinary source-unavailable one. The recorded code is the only thing that
+    # tells them apart on the way back, which is why that one branch honours it.
+    doc = dispatch.NO_STRATA.document()
+    assert dispatch.read_strata({"strata": doc}) == dispatch.NO_STRATA
+
+
+def test_an_unrecognised_recorded_code_falls_back_to_the_derived_one() -> None:
+    # A code this recorder does not write is not trusted: the fallback is the derived state,
+    # never the reason's text. A record cannot name itself into a stratum.
+    for bogus in ("wat", "", 7, None, dispatch.STRATUM_CHECKED):
+        s = dispatch.read_strata(
+            {
+                "strata": {
+                    "gate_tier_checked": False,
+                    "gate_tier_unchecked_why": "",
+                    "gate_tier_code": bogus,
+                }
+            }
+        )
+        assert s.gate_tier.code == dispatch.STRATUM_SOURCE_UNAVAILABLE, bogus
+
+
+def test_a_stratum_refuses_a_code_its_flag_contradicts() -> None:
+    # The flag and the code cannot disagree, so no writer can produce a checked stratum coded
+    # as a degradation (or the reverse) for #336 to group on.
+    with pytest.raises(ValueError, match="contradicts checked"):
+        dispatch.Stratum(
+            value="fast", checked=True, unchecked_why="", code=dispatch.STRATUM_RECORD_MALFORMED
+        )
+    with pytest.raises(ValueError, match="contradicts checked"):
+        dispatch.Stratum(value=None, checked=False, unchecked_why="", code=dispatch.STRATUM_CHECKED)
+    with pytest.raises(ValueError, match="unknown Stratum code"):
+        dispatch.Stratum(value="fast", checked=True, unchecked_why="", code="wat")

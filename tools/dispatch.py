@@ -926,6 +926,43 @@ class RoutingClass(NamedTuple):
     name: str
 
 
+# --------------------------------------------------------- the strata degradation codes (#347)
+#
+# The typed discriminator #336 stratifies on. Plain module-level strings rather than an `Enum`,
+# for the reason `escalation.Evaluation` records: a module re-exec (the production `__main__`
+# shape beside a test's `load_tool` copy) gives two class objects, so an `Enum` member from one
+# copy compares unequal to the same member from the other, while `"pre_strata_absent"` is
+# `"pre_strata_absent"` in every copy. A consumer narrows on the string.
+#
+# Every degradation state gets its own code, and `unchecked_why` stays diagnostic prose — never a
+# grouping key. That is the whole of #347: #323 left the states apart only by their reasons, which
+# is four examples that happen not to collide rather than a contract, and `Stratum.unknown("")`
+# collided exactly with pre-#323 absence.
+STRATUM_CHECKED: Final = "checked"
+STRATUM_SOURCE_UNAVAILABLE: Final = "source_unavailable"
+STRATUM_PRE_STRATA_ABSENT: Final = "pre_strata_absent"
+STRATUM_CONTAINER_NOT_MAPPING: Final = "container_not_mapping"
+STRATUM_UNCHECKED_WITH_VALUE: Final = "unchecked_with_value"
+STRATUM_RECORD_MALFORMED: Final = "record_malformed"
+STRATUM_VALUE_FIELDS_ABSENT: Final = "value_fields_absent"
+STRATUM_VALUE_MALFORMED: Final = "value_malformed"
+
+# Every code this recorder writes, and the ones legal beside `checked=False`. `checked` is the
+# only code a checked stratum may carry, and it is the only one an unchecked stratum may not:
+# the flag and the code cannot disagree, because `__post_init__` refuses the pair.
+STRATUM_CODES: Final = (
+    STRATUM_CHECKED,
+    STRATUM_SOURCE_UNAVAILABLE,
+    STRATUM_PRE_STRATA_ABSENT,
+    STRATUM_CONTAINER_NOT_MAPPING,
+    STRATUM_UNCHECKED_WITH_VALUE,
+    STRATUM_RECORD_MALFORMED,
+    STRATUM_VALUE_FIELDS_ABSENT,
+    STRATUM_VALUE_MALFORMED,
+)
+STRATUM_UNCHECKED_CODES: Final = tuple(code for code in STRATUM_CODES if code != STRATUM_CHECKED)
+
+
 @dataclass(frozen=True)
 class Stratum:
     """One pre-work signal: its value, whether that value was checked, and why not if not.
@@ -941,9 +978,10 @@ class Stratum:
     value: object
     checked: bool
     unchecked_why: str
+    code: str
 
     def __post_init__(self) -> None:
-        """Refuse an unchecked stratum that carries a value — F1, made structural.
+        """Refuse an unchecked stratum that carries a value, or a code the flag contradicts.
 
         A signal that did not run carries no value, so an unchecked stratum cannot be built
         with one (#323 review round 2 finding 1). The record boundary does not have to
@@ -951,9 +989,20 @@ class Stratum:
         put a real value beside `checked=False`. A frozen dataclass refuses the bad shape at
         construction; `known`, `unknown` and the reader all build through this, so the
         invariant is the type's, not a guard's.
+
+        The code is held to the same standard (#347). It must be one this recorder writes, and
+        it must agree with the flag: `checked` exactly when `checked=True`, one of the
+        degradation codes exactly when `checked=False`. A discriminator a writer could set to
+        anything would be no better a grouping key than the prose it replaces.
         """
         if not self.checked and self.value is not None:
             message = "an unchecked Stratum carries no value (F1)"
+            raise ValueError(message)
+        if self.code not in STRATUM_CODES:
+            message = f"unknown Stratum code {self.code!r} (#347)"
+            raise ValueError(message)
+        if self.checked != (self.code == STRATUM_CHECKED):
+            message = f"Stratum code {self.code!r} contradicts checked={self.checked} (#347)"
             raise ValueError(message)
 
     @classmethod
@@ -963,12 +1012,17 @@ class Stratum:
         The empty value is a value, not an absence — an empty label tuple means the issue
         carries no labels, and is checked-True where 'could not look' is checked-False.
         """
-        return cls(value=value, checked=True, unchecked_why="")
+        return cls(value=value, checked=True, unchecked_why="", code=STRATUM_CHECKED)
 
     @classmethod
-    def unknown(cls, why: str) -> Stratum:
-        """Build the stratum for a signal that could not run: unchecked, value None, reason kept."""
-        return cls(value=None, checked=False, unchecked_why=why)
+    def unknown(cls, why: str, code: str = STRATUM_SOURCE_UNAVAILABLE) -> Stratum:
+        """Build the stratum for a signal that could not run: unchecked, value None, reason kept.
+
+        The code defaults to `source_unavailable`, which is what every capture-time unchecked
+        signal is: a source the check needed — CONTEXT.md, the routing policy, `gh` — could not
+        be read. The reader passes the degradation code it derived instead.
+        """
+        return cls(value=None, checked=False, unchecked_why=why, code=code)
 
 
 class Strata(NamedTuple):
@@ -1004,17 +1058,20 @@ class Strata(NamedTuple):
             "gate_tier": self.gate_tier.value,
             "gate_tier_checked": self.gate_tier.checked,
             "gate_tier_unchecked_why": self.gate_tier.unchecked_why,
+            "gate_tier_code": self.gate_tier.code,
             "routing_class_id": routing.rule_id if isinstance(routing, RoutingClass) else None,
             "routing_class_name": routing.name if isinstance(routing, RoutingClass) else None,
             "routing_class_checked": self.routing_class.checked,
             "routing_class_unchecked_why": self.routing_class.unchecked_why,
+            "routing_class_code": self.routing_class.code,
             "labels": list(labels) if isinstance(labels, tuple) else None,
             "labels_checked": self.labels.checked,
             "labels_unchecked_why": self.labels.unchecked_why,
+            "labels_code": self.labels.code,
         }
 
 
-def _valueless_stratum(why: str) -> Stratum:
+def _valueless_stratum(why: str, code: str) -> Stratum:
     """Build the value-less unchecked stratum without running the validator.
 
     `NO_STRATA`'s signals are unchecked by definition and carry no value, so the validator has
@@ -1022,13 +1079,14 @@ def _valueless_stratum(why: str) -> Stratum:
     a mutant that inverts `__post_init__`'s check raises while `NO_STRATA` is still being built,
     crashing collection before any test can score the mutant as a kill. This private path skips
     the validator. It takes no value, so it cannot build the shape F1 refuses; its fields are
-    identical to `Stratum.unknown(why)`. It bypasses `__init__` with `object.__new__` plus
+    identical to `Stratum.unknown(why, code)`. It bypasses `__init__` with `object.__new__` plus
     direct field setting because a frozen dataclass refuses ordinary assignment.
     """
     obj = object.__new__(Stratum)
     object.__setattr__(obj, "value", None)
     object.__setattr__(obj, "checked", False)
     object.__setattr__(obj, "unchecked_why", why)
+    object.__setattr__(obj, "code", code)
     return obj
 
 
@@ -1037,11 +1095,13 @@ def _valueless_stratum(why: str) -> Stratum:
 # check would raise inside `unknown` while this line ran — crashing collection before any test
 # could score the mutant. `_valueless_stratum` skips the validator (it takes no value, so it
 # cannot build the shape F1 refuses), so the module imports under every mutant and the
-# validator stays scoreable. Its fields are identical to `unknown("")`.
+# validator stays scoreable. Its fields are identical to `unknown("", STRATUM_PRE_STRATA_ABSENT)`,
+# and that code is what makes the pre-#323 absence tell itself apart from an ordinary unchecked
+# signal whose reason happens to be empty — the exact collision #347 was filed for.
 NO_STRATA: Final = Strata(
-    gate_tier=_valueless_stratum(""),
-    routing_class=_valueless_stratum(""),
-    labels=_valueless_stratum(""),
+    gate_tier=_valueless_stratum("", STRATUM_PRE_STRATA_ABSENT),
+    routing_class=_valueless_stratum("", STRATUM_PRE_STRATA_ABSENT),
+    labels=_valueless_stratum("", STRATUM_PRE_STRATA_ABSENT),
 )
 
 
@@ -1057,6 +1117,7 @@ def _read_signal(  # noqa: PLR0913 — keyword-only validator mirroring the per-
     value_keys: tuple[str, ...],
     checked_key: str,
     why_key: str,
+    code_key: str,
     decode_value: Callable[[tuple[object, ...]], object],
     label: str,
 ) -> Stratum:
@@ -1088,19 +1149,33 @@ def _read_signal(  # noqa: PLR0913 — keyword-only validator mirroring the per-
     # value. Name the carried value so the contradiction leaves a trace — and do it before the
     # reason's type is inspected: a record carrying a value beside `checked: false` with a
     # missing or non-string reason must still name what it saw, or the value F2 exists to
-    # surface is lost to a generic "malformed" (review round 3 finding 2). This is the one
-    # state whose reason carries the value, keeping the four degradation states — a value
-    # beside `checked: false`, a present non-mapping container, a record carrying none of the
-    # value fields, and the plain pre-#323 absence — mechanically apart, so #336 can tell them
-    # apart by reason without reading English.
+    # surface is lost to a generic "malformed" (review round 3 finding 2). The reason is now
+    # diagnostic only: what keeps this state apart from a present non-mapping container, a
+    # record carrying none of the value fields, and the plain pre-#323 absence is the typed
+    # `code`, not the English (#347). The value is still named because a reader debugging a
+    # contradicted record wants to see what was there.
     if checked is False and any(part is not None for part in raw_values):
         seen = raw_values[0] if len(raw_values) == 1 else raw_values
-        return Stratum.unknown(f"the recorded {label} stratum was unchecked but carried {seen!r}")
+        return Stratum.unknown(
+            f"the recorded {label} stratum was unchecked but carried {seen!r}",
+            STRATUM_UNCHECKED_WITH_VALUE,
+        )
     if not isinstance(checked, bool) or not isinstance(why, str):
-        return Stratum.unknown(f"the recorded {label} stratum was malformed")
+        return Stratum.unknown(
+            f"the recorded {label} stratum was malformed", STRATUM_RECORD_MALFORMED
+        )
     if not checked:
-        # F1 writes `None` for an unchecked value; the reason is the thing to keep.
-        return Stratum.unknown(why)
+        # F1 writes `None` for an unchecked value; the reason is the thing to keep — as prose,
+        # never as the key. The *code* is the key, and this is the one branch that takes it off
+        # the record rather than deriving it: an ordinary unchecked signal and a record written
+        # from `NO_STRATA` are structurally identical here (unchecked, no value, and a reason
+        # that may be empty on both), so the recorded discriminator is the only thing that tells
+        # them apart, and honouring it is what makes the record round-trip. A record predating
+        # the field, or carrying a code this recorder does not write, falls back to the derived
+        # `source_unavailable` — never to the reason's text (#347).
+        recorded = row.get(code_key)
+        code = recorded if recorded in STRATUM_UNCHECKED_CODES else STRATUM_SOURCE_UNAVAILABLE
+        return Stratum.unknown(why, str(code))
     decoded = decode_value(raw_values)
     if decoded is _MALFORMED:
         if all(key not in row for key in value_keys):
@@ -1109,10 +1184,12 @@ def _read_signal(  # noqa: PLR0913 — keyword-only validator mirroring the per-
             # the fields are absent, not that the record is broken — it was valid in the shape
             # it was written in (review round 2 finding 4).
             return Stratum.unknown(
-                f"the recorded {label} stratum carries none of the value fields this reader reads"
+                f"the recorded {label} stratum carries none of the value fields this reader reads",
+                STRATUM_VALUE_FIELDS_ABSENT,
             )
         return Stratum.unknown(
-            f"the recorded {label} stratum's value was not in the shape this reader expects"
+            f"the recorded {label} stratum's value was not in the shape this reader expects",
+            STRATUM_VALUE_MALFORMED,
         )
     return Stratum.known(decoded)
 
@@ -1140,6 +1217,12 @@ def _labels_value(raw: tuple[object, ...]) -> object:
 def read_strata(document: Mapping[str, object]) -> Strata:
     """Read the strata back off a record, so a reloaded plan is the plan that was written.
 
+    Every stratum this returns carries a typed `code` (#347): the discriminator #336 stratifies
+    on, distinct per degradation state and derived from the record's raw structure, so a record
+    predating the field classifies without being rewritten. `unchecked_why` is diagnostic prose
+    beside it and must never be a grouping key — #323 left the states apart only by their
+    reasons, and `Stratum.unknown("")` then collided exactly with pre-#323 absence.
+
     A record written before #323 carries none of these fields and reads back unchecked:
     nothing was recorded, so nothing was checked — the fact those dispatches carry about every
     field #323 added, rather than a guess dressed as one. A record that carries them in a shape
@@ -1159,9 +1242,9 @@ def read_strata(document: Mapping[str, object]) -> Strata:
         # recording was broken' (a present non-mapping) (review round 2 finding 3).
         reason = "the recorded strata object was present but not a mapping"
         return Strata(
-            gate_tier=Stratum.unknown(reason),
-            routing_class=Stratum.unknown(reason),
-            labels=Stratum.unknown(reason),
+            gate_tier=Stratum.unknown(reason, STRATUM_CONTAINER_NOT_MAPPING),
+            routing_class=Stratum.unknown(reason, STRATUM_CONTAINER_NOT_MAPPING),
+            labels=Stratum.unknown(reason, STRATUM_CONTAINER_NOT_MAPPING),
         )
     row = found
     return Strata(
@@ -1170,6 +1253,7 @@ def read_strata(document: Mapping[str, object]) -> Strata:
             value_keys=("gate_tier",),
             checked_key="gate_tier_checked",
             why_key="gate_tier_unchecked_why",
+            code_key="gate_tier_code",
             decode_value=_gate_tier_value,
             label="gate_tier",
         ),
@@ -1178,6 +1262,7 @@ def read_strata(document: Mapping[str, object]) -> Strata:
             value_keys=("routing_class_id", "routing_class_name"),
             checked_key="routing_class_checked",
             why_key="routing_class_unchecked_why",
+            code_key="routing_class_code",
             decode_value=_routing_class_value,
             label="routing_class",
         ),
@@ -1186,6 +1271,7 @@ def read_strata(document: Mapping[str, object]) -> Strata:
             value_keys=("labels",),
             checked_key="labels_checked",
             why_key="labels_unchecked_why",
+            code_key="labels_code",
             decode_value=_labels_value,
             label="labels",
         ),

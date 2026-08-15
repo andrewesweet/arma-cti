@@ -22,6 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Both `record` and `show` print the same-user limit beside the record: a convention with a
   mechanical floor, not a guarantee.
 
+- **A typed degradation code on every stratum, so the observatory need not parse prose (#347).**
+  `Stratum` carries a `code` beside its value and flag, and the record writes one per signal. The
+  eight states — `checked`, `source_unavailable`, `pre_strata_absent`, `container_not_mapping`,
+  `unchecked_with_value`, `record_malformed`, `value_fields_absent`, `value_malformed` — are
+  derived from a record's raw structure, so records predating the field classify without being
+  rewritten. `unchecked_why` stays diagnostic prose and is never a grouping key: #323 left the
+  states apart only by their reasons, and an empty one collided exactly with pre-#323 absence.
+  Plain strings rather than an `Enum`, for the reason `escalation.Evaluation` records — a module
+  re-exec gives two class objects and `Enum` members from the two compare unequal. The flag and
+  the code cannot disagree; the type refuses the pair.
+
 ### Changed
 
 - **The routing policy is re-founded class by class on capability and conflict of interest, and
