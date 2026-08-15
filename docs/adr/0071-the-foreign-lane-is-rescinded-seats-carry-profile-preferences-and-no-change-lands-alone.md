@@ -203,16 +203,18 @@ deliberately excludes `opus-xhigh`, which is the seat itself. Both entries hold
 two profiles, head first, matching ruling 4's "*Head*, because those entries
 hold two profiles".*
 
-***The second profile is, under the rules as this amendment leaves them,
-unreachable.*** *The arbiter is the head; a conflicted head falls through the
-seat's **preference** list, which is a different list, so no rule routes to an
-entry's tail. That is a gap the amendment records rather than closes, because
-closing it means choosing between two lists and that choice is the human's:
-#326's dispatcher, meeting an unusable head, reached for exactly this tail and
-cited "#361's ruling" for it, which no landed sentence authorises (review round
-1, claims 4 and 6). Owner: #333, which implements this rule, and which must not
-be implemented to the reading that reinstates the struck fallback — see the
-fall-through passage in ruling 4 below.*
+***The second profile is reachable, and the code is where to read the order.***
+*The prose of ruling 4 below names only the preference list, which read alone
+would leave an entry's tail unreachable — the gap A1's second pass recorded.
+It is not the gap it appears to be, and the resolver landed before that pass
+was written: `tools/arbiter.py`'s `_walk` at `1a5a7fb` (lines 120–132) walks
+`(*seat.escalation, *seat.preference)` deduped — entry head, then entry tail,
+then the preference list — so `fable-max`, `fable-xhigh` and `opus-high` are
+candidates whenever the head is excluded. #326 is that walk's own cited proof:
+its dispatcher, meeting a routing-refused head, landed on the entry's second
+profile. Read the walk, not this table's prose, for the order (review round 1,
+claim 6; review round 2, claim 1's rule — checked at `tools/arbiter.py:120`,
+`1a5a7fb`).*
 
 *The registry carries these entries as of this commit:
 `tools/dispatch.py`'s `SEATS` gives `retro` and `orchestrator` the escalation
@@ -437,45 +439,63 @@ resolution and carry into the implementation with it: dispatch records are a
 commits a run produced; and where a record could not be read, the route is
 marked unchecked while everything read is still excluded.
 
-*(Amendment A1, second pass, 2026-08-15 — **the paragraph above is a rule no
-tool performs.** It is written in the present indicative because that is how
-this document states rules, not as a description of code: `Seat.escalation` is
-registry data deliberately outside resolution, `dispatch.escalation_head`
-returns the **tabled head only**, and no code anywhere walks a preference list
-against an issue's dispatch records for arbitration. Owner: **#333**, which
-sequences the arbiter and is where this lands. Until it does, an escalation
-names the tabled head and a human or an orchestrator carries the exclusion by
-hand — which is what this issue exists to end, and the honest state of it
-(review round 1, claim 2).*
+*(Amendment A1, third pass, 2026-08-15 — **this rule is implemented; the
+present indicative is a description of code.** A1's second pass recorded it as
+unperformed, and that was already false when written: `tools/arbiter.py` landed
+at `d351a3f` under #333 and is on `origin/main` at `1a5a7fb`. Where to read it,
+checked line by line at that SHA rather than recalled: `arbiter._walk`
+(`tools/arbiter.py:120`) is the walk; `arbiter._walk_first`
+(`tools/arbiter.py:135`) excludes on the registry, the caller's routing
+refusals, the issue's dispatch records and the live dispatchability rungs, and
+records every exclusion as `Exclusion(profile, reason, detail)`;
+`arbiter.NO_ENTRY_REFUSAL` / `arbiter.EXHAUSTED_REFUSAL`
+(`tools/arbiter.py:69`) are the two named refusals, neither carrying a failure
+class; and `Resolution.unchecked` (`tools/arbiter.py:104`) is the
+`--reviewing` property carried over, set from `Authorship.complete` so **every**
+incomplete read, not only the unreadable one, leaves the resolution taken and
+unverifiable. The production caller is `tools/review_loop.py:1374`, which calls
+`arbiter.resolve_dispatchable` on `just review-loop escalate`, prints the
+refusal and each passed-over profile, and returns its refusal exit rather than
+naming a profile nobody chose. `dispatch.escalation_head` still returns the
+tabled head alone and is `tools/brief.py`'s briefing field — a briefing states
+who the table names, which is not the same act as resolving an arbiter at an
+escalation.*
 
-***And the trigger is narrower than the cases that occur.*** *It reaches
-conflict of interest alone. The one occasion a tabled head has actually been
-unusable was not a conflict: on #326 the head `codex-sol-high` was refused by
-**routing class 6** — the branch's own subject files — and the dispatcher fell
-through to the escalation entry's second profile, `opus-high`, citing "#361's
-ruling" for authority it does not carry. A head can equally be unusable for a
-tripped breaker, an exhausted quota or an off-peak window, and this rule reaches
-none of them; had the walk fired on #326 it would have gone down
-`IMPLEMENTER_PREFERENCE`, where `opus-low` authored and both foreign entries were
-class-6-refused on that branch, and refused by name — leaving the one case that
-has occurred with no arbiter. Recorded, not closed: widening the trigger is a
-decision, and after an amendment whose whole point is that arbitration stops
-being invented in the moment, inventing it here would be the same act. Owner:
-#333, and the widening is the human's to rule (review round 1, claim 4).*
+***The trigger is wider than conflict of interest, and where it stops is
+stated.*** *A1's second pass recorded the trigger as conflict alone and the
+#326 case as unreachable; the implementation covers both. Routing refusals are
+an exclusion rung in their own right — `arbiter._walk_first` takes a
+caller-supplied `profile -> reason` mapping, fed from `just review-loop
+escalate --routing-refusal` (`tools/review_loop.py:1266`), so #326's
+class-6-refused head is passed over with its reason recorded rather than
+resolved to. A tripped breaker, an exhausted quota and an off-peak window are
+covered by a different rung: `arbiter.resolve_dispatchable` calls
+`dispatch.candidate_refusal` (`tools/dispatch.py:2338` at `1a5a7fb`) per candidate, which is
+the ladder's own admission, breaker, off-peak and credential rungs called rather
+than restated. **What is not covered, stated rather than implied:** the routing
+policy is not read by either module — `candidate_refusal`'s docstring says so
+and gives the reason (a rung belongs to it only where it is a function of
+`(lane, profile, seat)` alone) — so the routing exclusions are as good as the
+caller's flags, and an escalation dispatched without them walks past a head the
+policy would refuse. Owner: #326, named in that docstring as the issue that
+folds the policy in (review round 1, claim 4; corrected on review round 2).*
 
 ***Five copies of the arbiter rule exist and this amendment reversed one.*** *The
 in-repo four — `docs/agents/review-severity.md`, `config/escalation-conditions.json`,
-`tools/escalation.py` and `tools/brief.py`, the last being the copy that actually
-fires — were swept to "the implementing seat's" in the same commit as this
-paragraph, and `tools/brief.py` now resolves the arbiter from the briefed seat's
-entry rather than emitting the implementer's head for every seat. The fifth is
-off-tree: **#333's open body** still carries the struck blanket in a second form
-("a seat whose escalation column is empty arbitrates at the escalation tier") and
-an acceptance criterion demanding a rule that yields a profile even for an empty
-column — which this amendment makes an explicit refusal. Implementing #333 to its
-own criteria as written would reinstate what A1 struck. Owner: whoever next takes
-#333, and the criterion needs correcting before the work, not during it (review
-round 1, claim 3).)*
+`tools/escalation.py` and `tools/brief.py` — were swept to "the implementing
+seat's" in the same commit as this paragraph, and `tools/brief.py` now takes the
+arbiter from the briefed seat's entry rather than emitting the implementer's head
+for every seat. The fifth is off-tree: **#333's body**, which still carries the
+struck blanket in a second form ("a seat whose escalation column is empty
+arbitrates at the escalation tier") and an acceptance criterion demanding a rule
+that yields a profile even for an empty column. #333 closed on 2026-08-15 at
+17:38Z, and the risk this paragraph's second pass named did not materialise: the
+implementation refuses instead, `arbiter.resolve` returning `arbiter_no_entry`
+before any walk on an empty column (`tools/arbiter.py:204`, `1a5a7fb`). The stale
+criterion survives on a closed issue, where nobody will implement to it; it is
+recorded here rather than given an owner, because editing a closed issue's body
+to match what its landing did is archaeology, not work (review round 1, claim 3;
+outcome recorded on review round 2).)*
 
 **The blanket fallback is struck.** It read: *"A seat whose escalation column is
 empty arbitrates at `fable-high`."*
@@ -507,15 +527,18 @@ is kept only because it is the human's own words.*** *Under the filled table
 `retro`'s head is `opus-max`, and #318's records place `fable-high` (author) and
 `opus-xhigh` (reviewer) on the work — not `opus-max`. The head is therefore
 unconflicted, the fall-through never fires, and the rule resolves to **the same
-`opus-max` the orchestrator chose by hand**. `codex-sol-xhigh` is reachable only
-by walking the preference list from its own head, which happens only once the
-tabled head is excluded — i.e. only under the blanket default this same
-amendment strikes. The rhetorical point survives intact: the choice stops being
-made in the moment. The stated outcome does not, and this is the document's only
-worked example of the new rule, so a reader calibrating on it would mis-predict
-every case where the escalation head sits outside the preference list — which is
-both filled rows. Correcting the ruling's own claim is the human's; flagged
-rather than rewritten (review round 1, claim 5).*
+`opus-max` the orchestrator chose by hand**. `codex-sol-xhigh` sits third in the
+walk `tools/arbiter.py:120` performs — entry head `opus-max`, entry tail
+`fable-max`, then the preference list `fable-high`, `opus-xhigh`,
+`codex-sol-xhigh` — so it is reachable, but only once the two tabled profiles
+and the two conflicted preference entries are all excluded, which #318's records
+do not do. The rhetorical point survives intact: the choice stops being made in
+the moment. The stated outcome does not, and this is the document's only worked
+example of the new rule, so a reader calibrating on it would mis-predict every
+case where the escalation head sits outside the preference list — which is both
+filled rows. Correcting the ruling's own claim is the human's; flagged rather
+than rewritten (review round 1, claim 5; the reachability half corrected against
+the landed walk on review round 2, where A1's second pass had it unreachable).*
 
 *With every dispatchable row filled, the sentence covered only cells marked
 not-applicable, and keeping it would have put two rules that can disagree in one
@@ -880,15 +903,18 @@ claim 10).
 The one lane-selected refusal the policy still carries is class 6's
 keep-on-Claude bar, which is a rule about the gates rather than a class resting
 on provenance. It was kept until #331's exemption list gave that row's invariant
-an enforcement of its own. *(Amendment A1, second pass, 2026-08-15: that
-condition is already spent and the bar is still here. #331 closed at 07:43 on
-2026-08-15 and `config/review-exemptions.json` landed three minutes later at
-`8e771e3` — some ten hours before `eaabf9f`, the commit that wrote the sentence
-above pointing forward at it. Whether the bar survives deliberately or was
-forgotten is undecided, and the answer is a decision rather than a reading.
-Owner: #333, alongside the rest of the escalation work, or a retro if it gets
-there first — recorded rather than left as a wait on something already
-happened (review round 1, claim 8).)*
+an enforcement of its own. *(Amendment A1, second pass, 2026-08-15, owner
+corrected on the third: that condition is already spent and the bar is still
+here. #331 closed at 07:43 on 2026-08-15 and `config/review-exemptions.json`
+landed three minutes later at `8e771e3` — some ten hours before `eaabf9f`, the
+commit that wrote the sentence above pointing forward at it. The same spent
+pointer is in the policy the code reads, not only in this paragraph: class 6's
+remedy at `config/dispatch-routing-policy.json:122` still says the invariant is
+enforced by no refusal "until #331's never-alone exemption list lands". Whether
+the bar survives deliberately or was forgotten is undecided, and the answer is a
+decision rather than a reading. **Owner: #389**, filed for it — the second pass
+named #333, which closed on 2026-08-15 at 17:38Z, so that owner was spent too
+(review round 1, claim 8).)*
 
 ## What this costs, stated rather than discovered
 

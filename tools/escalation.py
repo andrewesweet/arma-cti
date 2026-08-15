@@ -30,10 +30,11 @@ a `Context`, and each fact is either recorded or it is not:
 - `routing_class` is recorded on every dispatch record (#323), reachable from an issue body
   through `routing_policy.classify_issue`. A caller reading the body can supply it, and condition
   4 fires for real.
-- `review_rounds`, `finding_above_low` and `attempts` are **not** mechanically recorded today. The
-  review loop, the observatory and the arbiter are sequenced work (ADR-0071 rulings 4 and 6,
-  #333), so a caller that has none of these supplies `None`, and conditions 1, 2 and 3 do not
-  fire.
+- `review_rounds` and `finding_above_low` **are** recorded, since #333 landed the review loop:
+  they live in the per-issue state under `~/.arma-cti/review/`, and `review_loop._cmd_escalate`
+  supplies them from a stored loop, so conditions 1 and 2 fire for real on that path. `attempts`
+  is still not recorded anywhere, so condition 3 does not fire. A caller holding none of these —
+  `brief.escalation_for`, which composes before any loop exists — supplies `None` for all three.
 
 `None` is a third value. It is "this fact is not recorded", distinct from "this fact is recorded
 false", and a condition that lacks a fact it needs emits nothing rather than guessing. That is
