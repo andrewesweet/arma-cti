@@ -47,13 +47,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **The arbiter routes are admissible only where the escalation that produces an arbiter
-  has fired (#333).** `arbiter_upheld` and `arbiter_dismissed` were admissible at round
-  zero, before any escalation existed to produce an arbiter; the precondition is now the
-  escalation itself — the three-round wall, or a verdict the same arbitration already
-  recorded, so verdict order within one arbitration cannot decide which verdicts are
-  legal. Storage deliberately does not re-derive the precondition on read: it governs the
-  act, not records written before it existed.
+- **The arbiter routes are admissible only where the escalation has fired on the finding
+  itself (#333).** Round 1's precondition was a property of the loop — the three-round
+  wall, or any arbiter verdict already recorded — and round 2's Critical walked through
+  that door: once an arbiter closed the wall-held findings, a finding raised in a later
+  round inherited the historical verdict as its licence, which is the reopening #333's
+  own body forbids. The precondition is now decided **per finding** — the wall holds and
+  this finding is one of the held-across findings it read — so a later round's finding
+  earns an arbiter only through its own wall, a finding the round itself introduced
+  (#356's shape) takes another fix round, and a Low, which never blocks and never feeds
+  the wall, takes no arbiter route at all. Held-across siblings stay admissible in either
+  order without any sibling clause, because the finding under adjudication is itself open
+  and keeping the wall true. Storage still does not re-derive the precondition on read:
+  it governs the act, not records written before it existed.
+- **The terminus refuses verdicts no arbiter resolution chose (#333).** `adjudicate` at
+  the wall needs no `escalate` first, and the round-1 terminus read the missing escalation
+  record as an empty arbiter, letting the landing proceed with `arbiter: null`. A loop
+  carrying arbiter verdicts now reaches a terminus only through an escalation record whose
+  evaluation actually fired — a record that resolved a profile below the wall authorises
+  nothing, because nothing transferred to it.
+- **The terminus is once by construction, not by an exists-check two acts too early
+  (#333).** The landing record's side effects — issues filed on the originating item,
+  dismissal comments — plus two local writes are not a transaction: two concurrent
+  terminus calls could both pass the check-then-write, and a call that died mid-post would
+  repeat its filings on retry. The run now claims a `terminus.pending` marker with
+  `O_CREAT | O_EXCL` before its first side effect — exactly one concurrent caller wins —
+  and releases it once the landing record is written; a marker left behind names what the
+  run was about to post, and the retry refuses by name until it is accounted and cleared
+  by hand.
+- **The landing record carries every finding's final verdict (#333).** `fixed` findings
+  above Low were absent from `landing.json` — their only trace was the diff under review,
+  which post-landing review does not re-read — and a Low left open at the terminus was a
+  fact the record could not say. The record now lists each finding with its route (fixed,
+  filed, upheld, dismissed, or open), and the fourth route's issue and named condition.
+- **A stored loop that will not decode is a named refusal (#333).** A truncated or
+  malformed `loop.json` reached the command surface as an unclassified `JSONDecodeError`
+  traceback; it is now this module's own refusal, exit 1, like every other state that
+  cannot govern.
+- **An escalation event claims an arbiter only where a firing transferred to one
+  (#333).** A `no_firing` or `unreadable` evaluation carried the resolved profile's name
+  regardless — a count of arbitrations that never happened. Only a firing carries it now.
 - **The arbiter's exclusions read the production inputs (#333, #361).** The reviewer set
   comes from the issue's own dispatch records through the new
   `dispatch.potential_authors_and_reviewers` scan — authors *and* reviewers, because
@@ -86,8 +119,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   trace for every dismissal. Rounds, escalations, dispute outcomes, terminuses and arbiter
   resolutions now emit OTel events journaled under `~/.arma-cti/review/` — rounds leave no
   trace in a diff, so a loop shipped without them is a loop whose cost cannot be recovered.
-
-### Changed
 
 - **The routing policy is re-founded class by class on capability and conflict of interest, and
   is no longer the keep-on-Claude policy.** ADR-0071 ruling 1 withdrew provenance as a reason to

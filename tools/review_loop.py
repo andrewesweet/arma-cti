@@ -67,9 +67,14 @@ finding with a new id, never a reopening — the ruling's own move, which is why
 refuses an id an earlier round already carried. What bounds re-argument is this closure;
 what
 bounds the loop is the round budget above. And the two arbiter routes carry a
-**precondition**: an arbiter verdict is admissible only where the escalation that produces
-an arbiter has fired (`escalation_fired` — the wall, or a verdict the arbitration already
-recorded), because an arbiter nobody's escalation chose is a verdict with no judge.
+**precondition, decided per finding** (`escalation_fires_on`): an arbiter verdict on a
+finding is admissible only where the escalation that produces an arbiter has fired **on that
+finding** — the wall holds and this finding is one of the held-across findings it read —
+because an arbiter nobody's escalation chose is a verdict with no judge. Round 1 made the
+precondition a property of the loop, and round 2's Critical was exactly what that buys: once
+an arbiter closes the wall-held findings, a new finding raised in a later round inherited the
+historical verdict as its licence — the reopening the ticket forbids, arriving as a licence
+rather than as a re-raise.
 
 The **stop condition** — nothing above Low remains unadjudicated — is `stop_condition`.
 Low findings never block and are recorded; that is the severity document's rule, restated
@@ -104,6 +109,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -383,11 +389,12 @@ CONDITIONAL_ON_ERROR: Final = (
     " adjudicable (human ruling 2026-08-14, #334)"
 )
 ARBITER_UNAUTHORISED_ERROR: Final = (
-    "an arbiter route is admissible only where the escalation that produces an arbiter has"
-    " fired — at the three-round wall, or in a loop that already carries an arbiter verdict."
-    " A loop at any other point carries no arbiter, so there is nobody to uphold or dismiss:"
-    " the dispute is fixed, or filed, or it blocks the landing (ADR-0071 ruling 4; #333"
-    " round 1, the Critical)"
+    "an arbiter route on one finding is admissible only where the escalation that produces an"
+    " arbiter has fired on that finding — the three-round wall holding, and this finding one"
+    " of the held-across findings it read. A finding raised in a later round is a new item,"
+    " not a reopening: an earlier round's arbiter verdict is not its licence, and a Low is"
+    " never what the escalation fires on (ADR-0071 ruling 4; #333 rounds 1 and 2, the"
+    " Critical both times)"
 )
 
 
@@ -479,38 +486,41 @@ def next_round(loop: Loop, raised: tuple[Finding, ...]) -> Loop:
     return Loop(review_rounds=rounds, findings=(*loop.findings, *raised))
 
 
-def escalation_fired(loop: Loop) -> bool:
-    """Whether the escalation that produces an arbiter has fired for this loop.
+def escalation_fires_on(loop: Loop, finding: Finding) -> bool:
+    """Whether the escalation that produces an arbiter has fired **on this finding**.
 
-    An arbiter route is admissible only where the escalation that names an arbiter has
-    fired — a **precondition on the route, not a stricter enum**, because the route set is
-    the ruling's own four and does not move while the loop does (#333 round 1, the
-    Critical: a round-zero dismissal was a verdict nobody's escalation chose). Two ways to
-    read as fired, and the second is not the first restated:
+    A precondition on the route, not a stricter enum — the route set is the ruling's own
+    four and does not move while the loop does. Three conjuncts, all about this finding:
 
     - **The wall holds** — `at_wall(loop)`: three rounds with a finding above Low still
-      held. That is escalation's own fact, delegated to `escalation.at_three_round_wall`
-      rather than restated here.
-    - **An arbiter verdict is already recorded** — the loop carries an `arbiter_upheld` or
-      `arbiter_dismissed` adjudication. The first verdict at the wall consumes the held
-      finding the wall reads (`holding_above_low` counts *open* findings), so the second
-      verdict of the same arbitration would look at a loop the wall no longer recognises —
-      verdict order within one arbitration would decide legality. A recorded arbiter
-      verdict is the escalation's own trace, so it authorises its siblings rather than
-      un-authorising itself.
+      held across, delegated to `escalation.at_three_round_wall` rather than restated here.
+      The finding under adjudication is open at its own adjudication (`adjudicate` refuses
+      a closed one first), so when the two conjuncts below hold, this finding is itself one
+      of the findings keeping the wall true — verdict order within one arbitration cannot
+      decide which verdicts are legal, without any sibling clause.
+    - **This finding is above Low** — the escalation fires on the blocking band; a Low is
+      never what it fires on, and a Low never blocks, so there is no dispute for an arbiter
+      to settle on one.
+    - **This finding is held across** — raised at a round below the round count, the
+      budget's own distinction. A finding the current round introduced (#356's shape) is a
+      new item the escalation has not fired on: it takes another fix round, or its own wall.
+
+    Round 2's Critical, through the door round 1 left open: a loop-level precondition —
+    "the wall holds, *or any finding carries an arbiter verdict*" — let a new finding
+    raised after an arbitration inherit that historical verdict as its licence, which is the
+    reopening #333's own body forbids, arriving as a licence rather than as a re-raise. The
+    recorded verdict is a fact about the finding it closed, never about the loop.
     """
-    if at_wall(loop):
-        return True
-    return any(
-        finding.adjudication is not None
-        and finding.adjudication.route in (ARBITER_UPHELD, ARBITER_DISMISSED)
-        for finding in loop.findings
+    return (
+        at_wall(loop) and above_low(finding.severity) and finding.round_raised < loop.review_rounds
     )
 
 
 def _route_checks(loop: Loop, finding: Finding, adjudication: Adjudication) -> None:
     """Enforce the routes' own restrictions: the arbiter precondition, the fourth route's three."""
-    if adjudication.route in (ARBITER_UPHELD, ARBITER_DISMISSED) and not escalation_fired(loop):
+    if adjudication.route in (ARBITER_UPHELD, ARBITER_DISMISSED) and not escalation_fires_on(
+        loop, finding
+    ):
         raise ReviewLoopError(ARBITER_UNAUTHORISED_ERROR)
     if adjudication.route == ACCEPTED_AND_FILED:
         if SEVERITY_RANK[finding.severity] < SEVERITY_RANK[MEDIUM]:
@@ -526,7 +536,7 @@ def adjudicate(loop: Loop, finding_id: str, adjudication: Adjudication) -> Loop:
 
     Every refusal here is typed: an unknown id, a finding already closed (the
     one-verdict-then-closed rule), an unknown route, the arbiter precondition (an arbiter
-    route before the escalation that produces an arbiter has fired), and the fourth route's
+    route on a finding the escalation has not fired on), and the fourth route's
     three restrictions. The adjudication is terminal — the returned loop's finding can
     never be adjudicated again, which is what bounds re-argument; the round budget bounds
     the loop.
@@ -774,14 +784,21 @@ def escalation_event(
     A firing carries its condition ids and the arbiter it transfers to; the other two
     kinds carry empty ids, because an evaluation that could not answer is a state the
     observatory must count, not one it may read past (`no_firing`'s confident silence is
-    reserved for inputs that all read). The evaluation's own `kind` travels too (#333
-    round 1, Medium 5): a count of events cannot tell a loop that confidently fired
-    nothing from one whose condition table would not open, and the observatory's first
-    question of an escalation signal is which of the three states it was.
+    reserved for inputs that all read). The arbiter travels the same way (#333 round 2,
+    Medium 5): a resolved profile is an arbiter only where a firing transferred to it, so
+    a `no_firing` or `unreadable` event carries an empty one whatever the caller resolved —
+    the resolver's answer is who *would* arbitrate, and an event claiming that name without
+    a transfer is a count of arbitrations that never happened. The evaluation's own `kind`
+    travels too (#333 round 1, Medium 5): a count of events cannot tell a loop that
+    confidently fired nothing from one whose condition table would not open, and the
+    observatory's first question of an escalation signal is which of the three states it
+    was.
     """
     conditions = ""
+    attributed = ""
     if evaluation.kind == escalation.FIRING:
         conditions = ",".join(str(e.condition.id) for e in evaluation.emissions)
+        attributed = arbiter
     return otel_event.Event(
         name=ESCALATION_EVENT,
         at=at,
@@ -789,7 +806,7 @@ def escalation_event(
             "cti.issue": issue,
             "cti.review.evaluation": evaluation.kind,
             "cti.review.conditions": conditions,
-            "cti.review.arbiter": arbiter,
+            "cti.review.arbiter": attributed,
         },
         resource={"service.name": "arma-cti-review-loop", "cti.issue": issue},
     )
@@ -892,6 +909,13 @@ LOOP_VERSION: Final = 1
 LOOP_FILE: Final = "loop.json"
 ESCALATION_FILE: Final = "escalation.json"
 LANDING_FILE: Final = "landing.json"
+# The terminus's claim on the right to run: created `O_EXCL` before the first GitHub side
+# effect, removed once the landing record is written (#333 round 2, High 4). A terminus is
+# side effects on a remote plus two local writes, which is not a transaction — the claim is
+# what makes "once" true anyway: exactly one of two concurrent calls wins the create, and a
+# call that died mid-post leaves the marker behind naming what it was about to post, so the
+# retry refuses rather than filing every upheld finding twice.
+PENDING_FILE: Final = "terminus.pending"
 
 LOOP_VERSION_ERROR: Final = "a stored loop must be a version 1 object"
 LOOP_ISSUE_ERROR: Final = "a stored loop must name its issue as a positive integer"
@@ -909,6 +933,10 @@ ISSUE_MISMATCH_ERROR: Final = (
 ROUND_RANGE_ERROR: Final = (
     "a finding's round must lie between 0 and the loop's review_rounds — one raised at a"
     " round the loop has not reached is state this loop never recorded"
+)
+LOOP_UNREADABLE_ERROR: Final = (
+    "the stored loop for #{issue} under {root} will not read — {reason}. A loop that cannot"
+    " be read cannot govern an act: repair or re-record it before driving this loop"
 )
 
 
@@ -1022,9 +1050,20 @@ def load_loop(root: Path, issue: int) -> Loop:
     """Read the loop back, refusing a document that names another issue.
 
     `FileNotFoundError` is raised untouched — the CLI turns it into its own named refusal,
-    because "no loop here yet" and "a loop that will not parse" are different answers.
+    because "no loop here yet" and "a loop that will not parse" are different answers. A
+    document that exists but will not decode is the second of those as well (#333 round 2,
+    Medium 6): a truncated or malformed `loop.json` reaches the caller as this module's own
+    named refusal rather than a raw `JSONDecodeError` traceback the command surface never
+    classified.
     """
-    document = json.loads(loop_path(root, issue).read_text(encoding="utf-8"))
+    try:
+        document = json.loads(loop_path(root, issue).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        raise
+    except (OSError, ValueError) as broken:
+        raise ReviewLoopError(
+            LOOP_UNREADABLE_ERROR.format(issue=issue, root=root, reason=broken)
+        ) from broken
     if not isinstance(document, dict):
         raise ReviewLoopError(LOOP_VERSION_ERROR)
     stored = document.get("issue")
@@ -1049,7 +1088,11 @@ def render_landing(  # noqa: PLR0913 — the terminus record carries what the la
     `filed_issues` maps each upheld finding's id to the issue its filing created, so the
     record answers "where did that Critical land" rather than "a filing happened".
     Dismissals record the finding, severity and round — the trace ADR-0071 rules every
-    dismissal is owed, on the record the post-landing seat reads.
+    dismissal is owed, on the record the post-landing seat reads. `findings` carries every
+    finding of the loop with its final verdict — fixed, filed, upheld, dismissed, or open
+    (#333 round 2, High 3): `fixed` is the one route whose trace lives only in the diff
+    under review, which post-landing review does not re-read, and a Low left open at the
+    terminus is a fact that record must be able to say.
     """
     filed = filed_issues or {}
     return {
@@ -1059,6 +1102,25 @@ def render_landing(  # noqa: PLR0913 — the terminus record carries what the la
         "default_applies": end.default_applies,
         "arbiter": arbiter or None,
         "arbiter_unchecked": unchecked,
+        "findings": [
+            {
+                "finding": f.id,
+                "severity": f.severity,
+                "round_raised": f.round_raised,
+                "route": f.adjudication.route if f.adjudication else "open",
+                **(
+                    {"issue": f.adjudication.issue}
+                    if f.adjudication and f.adjudication.issue
+                    else {}
+                ),
+                **(
+                    {"conditional_on": f.adjudication.conditional_on}
+                    if f.adjudication and f.adjudication.conditional_on
+                    else {}
+                ),
+            }
+            for f in loop.findings
+        ],
         "filings": [
             {
                 "finding": f.finding,
@@ -1104,6 +1166,18 @@ TERMINUS_NOT_REACHED_ERROR: Final = (
 ALREADY_TERMINATED_ERROR: Final = (
     "a landing record for #{issue} already exists under {root} — the terminus is once, and"
     " re-running it would file every upheld finding twice"
+)
+TERMINUS_INCOMPLETE_ERROR: Final = (
+    "a terminus for #{issue} began and did not finish — a pending record under {root} names"
+    " what it was about to post. Check #{issue}'s thread for filings and dismissals already"
+    " made and clear the pending record by hand once accounted: a blind retry files every"
+    " upheld finding twice (#333 round 2, High 4)"
+)
+ARBITER_UNRESOLVED_ERROR: Final = (
+    "the loop for #{issue} carries arbiter verdicts but no escalation record under {root}"
+    " names a firing arbiter — run `escalate` at the wall before `terminus`. A landing whose"
+    " verdicts no arbiter resolution chose is the round-2 Critical through its second door"
+    " (#333 round 2, High 2)"
 )
 
 # The marker a filing opens with, so a reader can find every arbiter-upheld filing on an
@@ -1337,10 +1411,16 @@ def _cmd_terminus(  # the whole ending in one act: gate, filings, dismissals, re
     end = terminus(loop)
     if not end.default_applies:
         raise ReviewLoopError(TERMINUS_NOT_REACHED_ERROR)
+    # Verdicts nobody's resolution chose are not dischargeable (#333 round 2, High 2): the
+    # arbiter routes' own gate is the wall, and `escalate` is the act that records who the
+    # wall transferred to. A loop carrying arbiter verdicts with no firing record beside
+    # them is exactly the landing `terminus()` must refuse to bless with `arbiter: null`.
+    arbiter, unchecked, evaluation = _recorded_arbiter(root, args.issue)
+    if (end.filings or end.dismissals) and not (arbiter and evaluation == escalation.FIRING):
+        raise ReviewLoopError(ARBITER_UNRESOLVED_ERROR.format(issue=args.issue, root=root))
     landing = root / str(args.issue) / LANDING_FILE
     if landing.exists():
         raise ReviewLoopError(ALREADY_TERMINATED_ERROR.format(issue=args.issue, root=root))
-    arbiter, unchecked = _recorded_arbiter(root, args.issue)
     if args.dry_run:
         for filing in end.filings:
             print(f"[review-loop] would file {filing.finding} ({filing.severity}) on #{args.issue}")  # noqa: T201 — a CLI's output channel
@@ -1351,6 +1431,16 @@ def _cmd_terminus(  # the whole ending in one act: gate, filings, dismissals, re
             )
         print("[review-loop] dry run — nothing posted, nothing written")  # noqa: T201 — a CLI's output channel
         return OK
+    pending = root / str(args.issue) / PENDING_FILE
+    plan = json.dumps(
+        {
+            "issue": args.issue,
+            "filings": [f.finding for f in end.filings],
+            "dismissals": [d.finding for d in end.dismissals],
+        }
+    )
+    if not _claim_terminus_pending(pending, plan):
+        raise ReviewLoopError(TERMINUS_INCOMPLETE_ERROR.format(issue=args.issue, root=root))
     filed: dict[str, int] = {}
     for filing in end.filings:
         number = create(*_filing(args.issue, filing))
@@ -1368,6 +1458,7 @@ def _cmd_terminus(  # the whole ending in one act: gate, filings, dismissals, re
         )
         + "\n"
     )
+    pending.unlink(missing_ok=True)
     emit_terminus(end, str(args.issue), clock(), Path(args.journal))
     print(  # noqa: T201 — a CLI's output channel
         f"[review-loop] #{args.issue} terminus: {len(end.filings)} filed,"
@@ -1392,21 +1483,46 @@ def _read_loop(root: Path, issue: int) -> Loop:
         raise ReviewLoopError(NO_LOOP_ERROR.format(issue=issue, root=root)) from None
 
 
-def _recorded_arbiter(root: Path, issue: int) -> tuple[str, bool]:
+def _recorded_arbiter(root: Path, issue: int) -> tuple[str, bool, str]:
     """Read the arbiter `escalate` recorded, if it ran; absent is an answer, not a gap.
 
     A record that exists but will not read is not the same as no record — defaulting there
     would write a landing record that quietly forgets who arbitrated — so it is an
-    unperformable read, exit 3, rather than a silent empty arbiter.
+    unperformable read, exit 3, rather than a silent empty arbiter. The evaluation travels
+    with the arbiter because the two only authorise together: a record that resolved a
+    profile but fired nothing transferred to it (#333 round 2, High 2).
     """
     try:
         record = json.loads((root / str(issue) / ESCALATION_FILE).read_text(encoding="utf-8"))
     except FileNotFoundError:
-        return "", False
+        return "", False, ""
     except (OSError, ValueError) as broken:
         message = f"the escalation record for #{issue} exists but will not read: {broken}"
         raise ExternalError(message) from broken
-    return str(record.get("arbiter", "")), bool(record.get("unchecked", False))
+    return (
+        str(record.get("arbiter", "")),
+        bool(record.get("unchecked", False)),
+        str(record.get("evaluation", "")),
+    )
+
+
+def _claim_terminus_pending(path: Path, plan: str) -> bool:
+    """Atomically claim the terminus's right to run; exactly one concurrent caller wins.
+
+    `O_CREAT | O_EXCL` is the whole mechanism — the kernel refuses the second create, so
+    two terminus calls cannot both pass an exists-check that either could have raced. The
+    plan written under the claim names what the run was about to post, so a run that dies
+    mid-post leaves an auditable marker rather than an invitation to repeat the side
+    effects (#333 round 2, High 4).
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        handle = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    except FileExistsError:
+        return False
+    with os.fdopen(handle, "w", encoding="utf-8") as claimed:
+        claimed.write(plan + "\n")
+    return True
 
 
 def _filing(issue: int, filing: Filing) -> tuple[str, str]:
