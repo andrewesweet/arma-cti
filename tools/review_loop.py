@@ -1,11 +1,13 @@
-"""The never-alone decision surface in one module (ADR-0071 ruling 4, #331).
+"""The never-alone decision surface in one module (ADR-0071 ruling 4, #331, #333).
 
-Four things, and the issue that created this module asked for them **deep rather than split**:
-exemption evaluation, the round budget, per-finding adjudication state, and the
-escalation-condition evaluation #325 built. The alternative smears the loop's rules across
-the landing protocol, the routing-policy reader and a config parser, with no single place to
-test them — and the three consumers already sequenced (#333's arbiter and terminus, #334's
-landing refusal) all read this one module rather than each re-deriving a half of it.
+Five things, and the issue that created this module asked for them **deep rather than
+split**: exemption evaluation, the round budget, per-finding adjudication state, the
+escalation-condition evaluation #325 built, and — added by #333, over the state #331
+landed rather than beside it — the terminus and the loop's telemetry. The alternative
+smears the loop's rules across the landing protocol, the routing-policy reader and a
+config parser, with no single place to test them — and the consumers already sequenced
+(#333's arbiter in `tools/arbiter.py`, #334's landing refusal) all read this one module
+rather than each re-deriving a half of it.
 
 ## The exemption half, and why its scope is inverted
 
@@ -82,6 +84,17 @@ wait on more: 2 on a recorded `prior` history and 3 on recorded `attempts`, neit
 loop carries, so both still emit nothing until those facts are recorded (#348 banks that
 sequencing as open, not complete). The bridge delegates rather than restates: one wall
 constant, one condition table, one evaluation, all owned where they already lived.
+
+## The terminus and the telemetry (#333)
+
+The **terminus** is ruling 4's ending as one read: the pre-declared default's gate
+(`stop_condition` — nothing above Low unadjudicated), the filings every upheld finding is
+owed on the originating item, and the record of every dismissal — ADR-0071's own cost
+case being a real Critical an arbiter rejects landing with no trace, which is why a
+dismissal is a first-class shape and not an absence. The **telemetry** is ruling 6's
+observables as events — rounds, escalations, dispute outcomes, terminuses, the arbiter
+invocation homed in `tools/arbiter.py` — because rounds leave no trace in a diff, and a
+loop shipped without them is a loop whose cost cannot be recovered.
 """
 
 from __future__ import annotations
@@ -97,6 +110,7 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 sys.path.insert(0, str(Path(__file__).parent))
 
 import escalation
+import otel_event
 from routing_policy import path_matches
 
 if TYPE_CHECKING:
@@ -499,13 +513,26 @@ def open_above_low(loop: Loop) -> tuple[Finding, ...]:
 
 
 def holding_above_low(loop: Loop) -> bool:
-    """Whether a live finding above Low exists — escalation's `finding_above_low`, recorded.
+    """Whether a finding above Low is held across rounds — escalation's `finding_above_low`.
 
-    The fact #325's conditions could not fire without: `escalation.ItemState` holds it as
-    `bool | None`, `None` meaning not recorded, and this is the recorder — a loop that has
-    run a round has the fact, whichever way it points.
+    Held across, not merely open: `round_raised` below the round count, so the budget
+    counts rounds spent failing to close a finding rather than capping how many defects a
+    branch may reveal. Two live shapes fix the semantics (#333):
+
+    - **#326** — the claim was raised in round 2 and still open at round 3: held, and the
+      wall fires. #348 the same, escalated one round early by choice.
+    - **#356/#327** — round 3's re-review raised a finding of its own, everything earlier
+      closed: introduced by the round, not held across it, so no escalation and another
+      fix round is taken. The distinction is the whole of the budget: a wall that cannot
+      express it escalates work that should not escalate and vice versa.
+
+    The first review (round zero) holds nothing across by definition — no round has been
+    failed yet — and the wall's three-round floor makes that indistinguishable to
+    condition one either way. `stop_condition` is deliberately **not** narrowed to match:
+    a landing is blocked by any open finding above Low, whenever raised; only the
+    escalation budget counts held-across.
     """
-    return bool(open_above_low(loop))
+    return any(finding.round_raised < loop.review_rounds for finding in open_above_low(loop))
 
 
 def stop_condition(loop: Loop) -> bool:
@@ -575,3 +602,216 @@ def evaluate_escalation(  # noqa: PLR0913 — the six parameters are escalation.
             arbiter=arbiter,
         ),
     )
+
+
+# --------------------------------------------------------------------------- the terminus
+
+
+class Filing(NamedTuple):
+    """One finding the terminus owes a filed issue for, on the originating item.
+
+    The filing act itself is the caller's — this module names what is owed, never posts
+    it. The live practice it encodes: #326's arbiter ordered #365 filed with a date,
+    #348's ordered #374, and neither left the trace to memory.
+    """
+
+    finding: str
+    severity: str
+    round_raised: int
+
+
+class Dismissal(NamedTuple):
+    """One arbiter dismissal, carried to the record rather than left in the thread.
+
+    ADR-0071's own cost accounting is why dismissals are a first-class shape and not an
+    empty note: a real Critical the arbiter rejects is the one finding that lands with no
+    trace and nothing downstream firing, so every dismissal is recorded and the
+    post-landing seat reads them off the record.
+    """
+
+    finding: str
+    severity: str
+    round_raised: int
+
+
+class Terminus(NamedTuple):
+    """What the pre-declared default requires before it may apply (#333).
+
+    `default_applies` is `stop_condition` — nothing above Low unadjudicated — read here
+    as the default's own gate. `filings` and `dismissals` are what the landing owes: the
+    upheld filed, the dismissals recorded. `ACCEPTED_AND_FILED` findings do not appear in
+    either because their adjudication already names the issue they became; `fixed`
+    findings appear in neither because the diff under review is their trace.
+    """
+
+    default_applies: bool
+    filings: tuple[Filing, ...] = ()
+    dismissals: tuple[Dismissal, ...] = ()
+
+
+def terminus(loop: Loop) -> Terminus:
+    """Compute what the loop's end owes: the default's gate, the filings, the dismissals.
+
+    Ruling 4's terminus sentence — the change lands, every finding the arbiter upheld is
+    filed on the originating item, every dismissal recorded — as one read over the loop.
+    The same call answers the convergent case (everything fixed: the default applies
+    owing nothing) and the non-convergent one (the wall fired and an arbiter adjudicated
+    what remained: the default applies owing filings and dismissals). A `default_applies`
+    of False is an answer, not an error — an above-Low finding is still open, and #334's
+    landing refusal is the consumer that refuses on it.
+
+    Upheld findings are owed filings at any severity, the ruling's sentence carrying no
+    severity qualifier of its own: the trace an upheld Low deserves is the same trace an
+    upheld Critical gets, and the stop condition already treats the two differently where
+    difference belongs.
+    """
+    filings = tuple(
+        Filing(f.id, f.severity, f.round_raised)
+        for f in loop.findings
+        if f.adjudication is not None and f.adjudication.route == ARBITER_UPHELD
+    )
+    dismissals = tuple(
+        Dismissal(f.id, f.severity, f.round_raised)
+        for f in loop.findings
+        if f.adjudication is not None and f.adjudication.route == ARBITER_DISMISSED
+    )
+    return Terminus(
+        default_applies=stop_condition(loop),
+        filings=filings,
+        dismissals=dismissals,
+    )
+
+
+# --------------------------------------------------------------------------- telemetry
+
+# Rounds leave no trace in a diff, so a loop shipped without telemetry is a loop whose
+# cost cannot be recovered (#333). The observables are ADR-0071 ruling 6's own list —
+# review rounds, escalations, arbiter invocations, dispute outcomes, landings — with the
+# arbiter invocation homed in `tools/arbiter.py` beside the rule that resolves it. Events
+# are pure constructors over loop state (the clock arrives as `at`, from the caller); the
+# emitters wrap `otel_event.emit`, which never fails the caller and journals every event
+# whether or not the collector took it.
+JOURNAL: Final = Path.home() / ".arma-cti" / "review" / "journal.jsonl"
+
+ROUND_EVENT: Final = "cti.review.round"
+ESCALATION_EVENT: Final = "cti.review.escalation"
+DISPUTE_EVENT: Final = "cti.review.dispute"
+TERMINUS_EVENT: Final = "cti.review.terminus"
+
+
+def round_event(loop: Loop, issue: str, at: float) -> otel_event.Event:
+    """One review round recorded — the observable ruling 6 counts loops by."""
+    raised = sum(1 for f in loop.findings if f.round_raised == loop.review_rounds)
+    return otel_event.Event(
+        name=ROUND_EVENT,
+        at=at,
+        attributes={
+            "cti.issue": issue,
+            "cti.review.round": loop.review_rounds,
+            "cti.review.raised": raised,
+            "cti.review.open_above_low": len(open_above_low(loop)),
+            "cti.review.holding_above_low": holding_above_low(loop),
+        },
+        resource={"service.name": "arma-cti-review-loop", "cti.issue": issue},
+    )
+
+
+def escalation_event(
+    evaluation: escalation.Evaluation,
+    issue: str,
+    at: float,
+    arbiter: str = "",
+) -> otel_event.Event:
+    """One escalation evaluation recorded — firing, silence and unreadable input alike.
+
+    A firing carries its condition ids and the arbiter it transfers to; the other two
+    kinds carry empty ids, because an evaluation that could not answer is a state the
+    observatory must count, not one it may read past (`no_firing`'s confident silence is
+    reserved for inputs that all read).
+    """
+    conditions = ""
+    if evaluation.kind == escalation.FIRING:
+        conditions = ",".join(str(e.condition.id) for e in evaluation.emissions)
+    return otel_event.Event(
+        name=ESCALATION_EVENT,
+        at=at,
+        attributes={
+            "cti.issue": issue,
+            "cti.review.conditions": conditions,
+            "cti.review.arbiter": arbiter,
+        },
+        resource={"service.name": "arma-cti-review-loop", "cti.issue": issue},
+    )
+
+
+def dispute_event(
+    finding: Finding,
+    adjudication: Adjudication,
+    issue: str,
+    at: float,
+) -> otel_event.Event:
+    """One dispute outcome recorded — the per-finding trace arbitration leaves behind."""
+    return otel_event.Event(
+        name=DISPUTE_EVENT,
+        at=at,
+        attributes={
+            "cti.issue": issue,
+            "cti.review.finding": finding.id,
+            "cti.review.severity": finding.severity,
+            "cti.review.round_raised": finding.round_raised,
+            "cti.review.route": adjudication.route,
+        },
+        resource={"service.name": "arma-cti-review-loop", "cti.issue": issue},
+    )
+
+
+def terminus_event(end: Terminus, issue: str, at: float) -> otel_event.Event:
+    """One terminus recorded — ruling 6's landings-per-issue observable."""
+    return otel_event.Event(
+        name=TERMINUS_EVENT,
+        at=at,
+        attributes={
+            "cti.issue": issue,
+            "cti.review.default_applies": end.default_applies,
+            "cti.review.filings": len(end.filings),
+            "cti.review.dismissals": len(end.dismissals),
+        },
+        resource={"service.name": "arma-cti-review-loop", "cti.issue": issue},
+    )
+
+
+def _emit(event: otel_event.Event, journal: Path) -> bool:
+    """Emit one loop event — bounded, journaled, never failing the caller."""
+    return otel_event.emit(event, journal=journal)
+
+
+def emit_round(loop: Loop, issue: str, at: float, journal: Path = JOURNAL) -> bool:
+    """Emit one round event at the round's recording."""
+    return _emit(round_event(loop, issue, at), journal)
+
+
+def emit_escalation(
+    evaluation: escalation.Evaluation,
+    issue: str,
+    at: float,
+    arbiter: str = "",
+    journal: Path = JOURNAL,
+) -> bool:
+    """Emit one escalation event at the evaluation that produced it."""
+    return _emit(escalation_event(evaluation, issue, at, arbiter), journal)
+
+
+def emit_dispute(
+    finding: Finding,
+    adjudication: Adjudication,
+    issue: str,
+    at: float,
+    journal: Path = JOURNAL,
+) -> bool:
+    """Emit one dispute event at the adjudication that closed the finding."""
+    return _emit(dispute_event(finding, adjudication, issue, at), journal)
+
+
+def emit_terminus(end: Terminus, issue: str, at: float, journal: Path = JOURNAL) -> bool:
+    """Emit one terminus event at the landing decision."""
+    return _emit(terminus_event(end, issue, at), journal)
