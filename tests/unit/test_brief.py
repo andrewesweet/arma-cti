@@ -608,6 +608,49 @@ def test_the_live_wiring_emits_nothing_for_an_item_no_condition_decides() -> Non
     assert evaluation.kind == escalation.NO_FIRING
 
 
+def _arbiter_supplied_for(seat_name: str, monkeypatch: pytest.MonkeyPatch) -> str | None:
+    """Return the arbiter `escalation_for` puts in the context it evaluates, for `seat_name`.
+
+    Captured at the seam rather than read off an emission, because condition 1 also needs the
+    review facts the brief cannot record yet (`review_rounds`, `finding_above_low`), so no
+    firing names an arbiter today. The resolution is live now and the facts arrive later; this
+    asserts the half that exists rather than waiting for the half that does not.
+    """
+    captured: dict[str, str | None] = {}
+    real = brief.escalation.evaluate
+
+    def spy(conditions: object, context: object) -> object:
+        captured["arbiter"] = context.arbiter  # ty: ignore[unresolved-attribute]
+        return real(conditions, context)
+
+    monkeypatch.setattr(brief.escalation, "evaluate", spy)
+    brief.escalation_for("Implement a thing.\n", seat_name, REPO)
+    return captured["arbiter"]
+
+
+def test_the_arbiter_is_resolved_from_the_briefed_seat_not_the_implementer_row(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """#361, review round 1 claim 3: this emitted the implementer's head for every seat.
+
+    ADR-0071 ruling 4 as amendment A1 leaves it takes the head of the *implementing* seat's
+    escalation entry. A retro brief's arbiter is `opus-max`, and reading
+    `IMPLEMENTER_ESCALATION[0]` gave it `codex-sol-high` — a profile the retro row's entry
+    deliberately does not name, chosen by a constant rather than by the work.
+    """
+    assert _arbiter_supplied_for("retro", monkeypatch) == "opus-max"
+    assert _arbiter_supplied_for("implementer", monkeypatch) == "codex-sol-high"
+    assert _arbiter_supplied_for("orchestrator", monkeypatch) == "opus-max"
+
+
+def test_a_seat_with_no_escalation_entry_briefs_no_arbiter_rather_than_a_default(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A1 struck the blanket fallback, so condition 1 must stay silent rather than invent one."""
+    assert _arbiter_supplied_for("fable", monkeypatch) is None
+    assert _arbiter_supplied_for("recon", monkeypatch) is None
+
+
 def test_an_unreadable_input_surfaces_in_the_brief_rather_than_vanishing() -> None:
     """The third state reaches the agent under its own heading — never announced as a firing."""
     evaluation = escalation.Unreadable(("config/escalation-conditions.json: could not be read",))

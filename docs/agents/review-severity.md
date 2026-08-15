@@ -71,8 +71,11 @@ finding that survives four readings is still Low: it changed what no rule meant.
 - The **reviewer** assigns a severity to every finding it reports. It never withholds a
   finding on the grounds that it is minor.
 - The **implementer** may dispute a finding's correctness and its severity.
-- An **arbiter** — the implementer's seat's escalation entry, one rule with one answer —
-  rules once per finding, and that ruling binds.
+- An **arbiter** — the head of the **implementing** seat's escalation entry, one rule with
+  one answer — rules once per finding, and that ruling binds. The seat meant is whichever
+  one did the work, not the `implementer` row for every seat (ADR-0071 ruling 4 as amended
+  by A1, #361), and a seat whose entry is empty has no arbiter and refuses: A1 struck the
+  blanket `fable-high` fallback that used to answer for it.
 - The loop's stop condition is that nothing above **Low** remains unadjudicated. Low
   findings do not block; they are recorded.
 

@@ -188,6 +188,55 @@ def test_the_review_seat_shares_the_implementers_list_and_its_escalation_head() 
     assert dispatch.SEATS["review"].escalation == dispatch.SEATS["implementer"].escalation[:1]
 
 
+def test_the_retro_and_orchestrator_rows_carry_the_escalation_entries_the_adr_tables() -> None:
+    """#361: for one commit the ADR named these and the registry gave them none.
+
+    Ordered, and the order is the claim: ruling 4 takes the *head*, so a tuple that agreed as
+    a set and disagreed on order would resolve a different arbiter. `retro`'s head is not
+    `fable-high` and `orchestrator`'s is not `opus-xhigh` — each seat's own preference head,
+    and the profile most likely to have authored what the arbiter would adjudicate.
+    """
+    assert dispatch.SEATS["retro"].escalation == ("opus-max", "fable-max")
+    assert dispatch.SEATS["orchestrator"].escalation == ("opus-max", "fable-xhigh")
+    assert dispatch.SEATS["retro"].escalation[0] != dispatch.SEATS["retro"].preference[0]
+    assert (
+        dispatch.SEATS["orchestrator"].escalation[0] != dispatch.SEATS["orchestrator"].preference[0]
+    )
+
+
+def test_the_orchestrator_arbiters_stay_on_the_lane_its_carve_out_names() -> None:
+    """Ruling 1 keeps orchestration on Claude; an arbiter off it would be a way round that."""
+    seat = dispatch.SEATS["orchestrator"]
+    assert seat.claude_only
+    for name in seat.escalation:
+        assert dispatch.PROFILES[name].lane == "claude-native", name
+
+
+def test_the_arbiter_is_the_implementing_seats_head_and_never_the_implementers_for_all() -> None:
+    """ADR-0071 ruling 4 as A1 amends it: whichever seat did the work, not the `implementer` row.
+
+    The reading A1 reversed answered every seat with `codex-sol-high`, which is what
+    `tools/brief.py` emitted for a retro brief until #361.
+    """
+    assert dispatch.escalation_head("retro") == "opus-max"
+    assert dispatch.escalation_head("orchestrator") == "opus-max"
+    assert dispatch.escalation_head("implementer") == "codex-sol-high"
+    assert dispatch.escalation_head("planner") == "fable-high"
+
+
+def test_a_seat_with_no_escalation_entry_resolves_to_no_arbiter_rather_than_a_default() -> None:
+    """A1 struck the blanket `fable-high`, so an empty cell refuses rather than defaulting.
+
+    `recon` is empty because it never escalates and `fable` because it is absent from the
+    table; the registry spells both `()`, and neither may reach a profile nobody chose. An
+    unknown seat is the same answer for the same reason — deriving an arbiter for a name that
+    resolves to no row is the invention the amendment exists to stop.
+    """
+    assert dispatch.escalation_head("recon") is None
+    assert dispatch.escalation_head("fable") is None
+    assert dispatch.escalation_head("implemeter") is None
+
+
 def test_the_retired_mechanical_seat_is_gone_from_every_roster() -> None:
     """ADR-0071 ruling 2 retires it, and story 11 asks for gone rather than lingering."""
     ledger = load_tool("ledger")
@@ -505,7 +554,12 @@ def test_the_registry_listing_prints_each_seats_preference_and_marks_the_escalat
     printed = capsys.readouterr().out
     assert "preference=codex-luna-max zai-glm52-max opus-low" in printed
     assert "escalation=codex-sol-high opus-high (not resolved into)" in printed
+    # `fable` and `recon` are the rows that still register none; #361 filled `retro`'s and
+    # `orchestrator`'s, and the listing is the surface that said `none` while the ADR named a
+    # profile. Both halves are asserted so a future fill cannot quietly empty this claim.
     assert "escalation=none (not resolved into)" in printed
+    assert "escalation=opus-max fable-max (not resolved into)" in printed
+    assert "escalation=opus-max fable-xhigh (not resolved into)" in printed
 
 
 def test_a_block_the_registry_carries_and_the_refusal_clears_is_raised_not_skipped(

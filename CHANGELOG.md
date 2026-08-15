@@ -160,6 +160,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and the policy's surviving keep-on-Claude bar is class 6's. The ADR text moves; the code stays
   as landed.
 
+- **The seat registry carries A1's escalation entries, and the arbiter is resolved from the seat
+  that did the work (#361, review round 1).** For one commit the ADR named `retro`'s and
+  `orchestrator`'s arbiters and the registry gave them none, so `just dispatch --seat retro
+  --list` printed `escalation=none` while the ADR printed `opus-max`. `tools/dispatch.py` now
+  carries both entries, and a new `escalation_head(seat)` answers ruling 4's *implementing*
+  seat — whichever one did the work — where four copies of the rule said "the implementer's
+  seat's" and `tools/brief.py` emitted the implementer's head, `codex-sol-high`, as the arbiter
+  for every brief including a retro's. `docs/agents/review-severity.md`,
+  `config/escalation-conditions.json` and `tools/escalation.py` are swept to the same wording. A
+  seat with no entry resolves to no arbiter and condition 1 stays silent, which is the struck
+  fallback's accepted consequence. Three gaps the round records rather than closes, each with an
+  owner in the ADR: the fall-through itself is a rule no tool performs (#333); its trigger reaches
+  conflict of interest alone, not the routing-class refusal that actually occurred on #326; and
+  #333's open body still carries the struck blanket in a second form, so implementing it to its
+  own criteria would reinstate what A1 struck.
+
 - **The routing policy is re-founded class by class on capability and conflict of interest, and
   is no longer the keep-on-Claude policy.** ADR-0071 ruling 1 withdrew provenance as a reason to
   route work, and its re-founding table separates what each class actually rested on. Two classes

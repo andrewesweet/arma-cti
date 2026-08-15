@@ -735,8 +735,15 @@ def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluati
     item for real. `review_rounds`, `finding_above_low` and `attempts` are **not** recorded today
     (the review loop, observatory and arbiter are sequenced: ADR-0071 rulings 4 and 6, #333), so
     they are `None` and conditions 1, 2 and 3 stay silent until those land. The arbiter condition
-    1 would name is resolved here from the implementer seat's escalation head and supplied anyway,
-    so the emission is correct the moment its facts arrive.
+    1 would name is resolved here from **this brief's own seat**'s escalation head and supplied
+    anyway, so the emission is correct the moment its facts arrive.
+
+    That seat, and not the `implementer` row, is what ADR-0071 ruling 4 means by "the implementing
+    seat's escalation entry" as amendment A1 (#361) leaves it. Reading `IMPLEMENTER_ESCALATION[0]`
+    — which this did until #361 — emitted `codex-sol-high` as the arbiter for a retro brief, whose
+    tabled arbiter is `opus-max`, and made every other row's entry unreachable. A seat with no
+    entry resolves to `None` and condition 1 stays silent, which is the struck blanket fallback's
+    accepted consequence rather than a gap: it must not fire naming an arbiter nobody chose.
 
     Two inputs can fail to read — the routing policy, which alone decides condition 4's class,
     and the condition table — and each is the third state, not silence: an unreadable policy is
@@ -758,7 +765,7 @@ def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluati
     context = escalation.Context(
         item=escalation.ItemState(routing_class=routing_class),
         prior=None,
-        arbiter=dispatch.IMPLEMENTER_ESCALATION[0] if dispatch.IMPLEMENTER_ESCALATION else None,
+        arbiter=dispatch.escalation_head(seat_name),
     )
     outcome = escalation.evaluate(conditions_read, context)
     # The table's own unreadable reason is already inside `outcome` (evaluate returns Unreadable
