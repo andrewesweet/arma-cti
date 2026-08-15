@@ -33,7 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pre-registration exists to prevent, taken knowingly on the human's ruling and written down as
   a departure rather than left to be discovered as a silence. Nothing upfront replaces it; what
   replaces it is retrospective (#336) and is not built, so a route's quality is now unchecked
-  before its work runs.
+  before its work runs. **ADR-0061 Decision 6 still reads "built and live" and is knowingly
+  left standing**: ADRs are a human sign-off gate and the supersession trailer only points
+  forward, so the correction is proposed on #328 as an `Amended:` trailer rather than made
+  here. Until it lands, a reader arriving at that decision meets a claim this change falsified.
 
 ### Changed
 

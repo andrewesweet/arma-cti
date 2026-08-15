@@ -10,7 +10,8 @@ and this document carries why it is the rule.
 Binding decision: ADR-0061. Implementation: `tools/dispatch.py`, `tools/breaker.py`. The
 ledger that records what a dispatch cost is a separate document, `docs/telemetry-ledger.md`.
 The **review** seat has a shape of its own — what it is handed, the claims-cite-code contract
-it hands back, where those claims route, and how a confirmed one reaches the admission bar —
+it hands back, where those claims route, and what a confirmed one now reaches (nothing: the
+admission bar it used to reach is dropped, ADR-0071 ruling 6, #328) —
 and that is `docs/review-dispatch.md`.
 
 ## Lanes and profiles
@@ -376,7 +377,8 @@ the known-good commit baseline, the gate is a recorded ceiling, and a Codex disp
 finishes its work lands by a hand finish rather than unaided. Dispatch `d-20260806-172045-9a0a0e`
 is the end-to-end attempt under the four-root set: it committed its own work at `fb093fe` under
 the sandbox with no escalation, stopped on that red as it was told to, and did not land. The
-full finding and the consequence for the admission bar are in §10 of
+full finding, and the consequence it then had for the admission bar the project has since
+dropped (#328), are in §10 of
 `docs/research/codex-lane-live-findings.md`; this section implements #259's ruling and carries
 #265 as its recorded ceiling rather than stretching #259 to cover it.
 

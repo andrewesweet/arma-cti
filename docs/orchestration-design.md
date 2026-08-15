@@ -17,16 +17,21 @@ being resident, and a design study is not a rule at all.
 ## Status, as of 2026-08-09 (#242 closed)
 
 This is a study, not a live rule; read it for reasoning, and read the operating doc for what to do.
+Two things below have since moved, and the body's dated prose is left as written rather than
+rewritten: `just admission` is `just trial` (`audit` is `just trial close-audit`, `record` is
+`just trial record`), and the **admission bar is dropped** — ADR-0071 ruling 6, applied by #328 —
+so every mention of it as a live dispatch rung is history. No route is judged before it is
+dispatched, and what replaces the bar is retrospective (#336) and not built yet.
 Every proposal below was ruled by the human on 2026-08-06 (rulings and follow-ups on #242) and
 every ruling that created work has been executed, except where named:
 
 | §  | Proposal | Where it now lives |
 |---|---|---|
 | 2 | The queue as data, the freeze as a dispatch rung | `just queue` (#250); the routing policy generalised to a file `just dispatch` reads per dispatch (#266) |
-| 3 | The computed close audit | `just admission audit` (#252) |
+| 3 | The computed close audit | `just trial close-audit` (#252; the recipe was `just admission audit` until #328) |
 | 4 | The runbook's two computable procedures | `just recover` (#253) |
 | 5 | Composed briefings | `just brief` (#251), which now also carries the single-shot contract (#279) |
-| 6 | The seat inverts to opus/high, fable dispatched | Ruled and in effect since 2026-08-06; running as the pre-registered trial `cti.admission.orchestration-trial/242`, **1 of 10 cycles recorded** at the time of writing |
+| 6 | The seat inverts to opus/high, fable dispatched | Ruled and in effect since 2026-08-06; ran as the pre-registered trial `cti.admission.orchestration-trial/242`, **1 of 10 cycles recorded**, and ADR-0071 ruling 2 then **closed that trial as inconclusive** (#328) — its cycles kept as history, its five criteria now unmeasured rather than measured elsewhere |
 | 7 | The review function | Confirmed unchanged, not altered |
 | 8 | Context hygiene | `docs/agents/orchestration.md` (#267), which carries the one-line rule §8 yields |
 
@@ -41,7 +46,7 @@ Outstanding: #255, the human-interlocutor seat at opus/xhigh (ruling 2, filed an
 
 Four tool halves absorb what is today rule-based orchestration held in a fable context: a queue
 the scheduler reads (`just queue`), a composed dispatch briefing (`just brief`), a computed close
-audit (`just admission audit`), and the recovery runbook's two computable procedures
+audit (`just trial close-audit`), and the recovery runbook's two computable procedures
 (`just recover`). Together they take the freeze, the WIP limit, the in-flight set, the gate
 choice, the landing-to-issue join and the resumption briefing's first two reconstructions out of
 an orchestrator's head and into files that a session already running can read.
@@ -69,7 +74,7 @@ middle column is what already carries the role; the right column is what this de
 |---|---|---|
 | (a) Human interface — rulings intake, status, questions | Nothing mechanical. Continuity and judgement | Unchanged. Seat is the human's preference, not a mechanical question (§6) |
 | (b) Dispatch routing — queue scan, WIP and reservation enforcement, sequencing-by-surface, briefing composition | Orchestrator memory, `just dispatch`'s ladder (breaker, admission, off-peak), the worktree protocol | `just queue` (§2) and `just brief` (§5). The freeze and the WIP limit become dispatch rungs |
-| (c) Claim verification — closes against landings | `just verdict` and the paste rule, `just land`'s pasted output, `just admission record`, `just ledger-sync`'s landing join (7bc3f72) | `just admission audit` computes what `record` today asks an agent to assert (§3) |
+| (c) Claim verification — closes against landings | `just verdict` and the paste rule, `just land`'s pasted output, `just trial record`, `just ledger-sync`'s landing join (7bc3f72) | `just trial close-audit` computes what `record` today asks an agent to assert (§3) |
 | (d) Stall handling | `just watch`, `just watch-report`, ADR-0053's noticing/prodding split | `just recover check` for the BLIND by-hand look; the prod stays judgement (§4) |
 | (e) Retro evidence banking | Judgement. The retro is already a dispatched agent | Unchanged, and fable (§6) |
 | (f) Triage and same-session filing | Light judgement | Unchanged; mechanical or implementer seat |

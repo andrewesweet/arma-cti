@@ -636,8 +636,13 @@ watch-report *args:
     # argument: `{{ args }}` is the watchers' alone.
     uv run python tools/rc_health.py report
     # The orchestration trial (#260): one line when it has failed, silent otherwise — which
-    # since #328 closed it as inconclusive means silent, because a closed trial is a record
-    # rather than a live finding. Not a gate; reads `CTI_ADMISSION_DIR`, the records' seam.
+    # since #328 closed it as inconclusive means silent from **every** reachable state, not
+    # merely from today's. `report` prints only for `FAILED`, and the only route to a record
+    # under a different `bar_id` is `start`, which refuses `trial_closed`. The rung is kept
+    # anyway, with its cost stated rather than hidden: a `uv run` process start per
+    # orchestrator turn, paid so that the next pre-registration is read by this recipe the
+    # moment it opens rather than after someone remembers to re-add a line here.
+    # Not a gate; reads `CTI_ADMISSION_DIR`, the records' seam.
     uv run python tools/trial.py report
 
 # The recovery runbook's two computable procedures (#253, orchestration-design §4).
@@ -730,14 +735,14 @@ breaker *args:
 # live nowhere machine-readable today.
 #
 # **Every entry quotes the ruling it came from and a write without `--ruling` is
-# refused**, which is `just admission record`'s no-default discipline applied to the
+# refused**, which is `just trial record`'s no-default discipline applied to the
 # one surface whose scheduling rules have no provenance. The file is never
 # hand-edited: an unknown key, a missing ruling or a malformed entry refuses
 # `policy_invalid`, and an absent file refuses `policy_absent` rather than reading
 # as open — a policy nobody can read is not a policy that permits.
 #
 # `just dispatch` reads `check` before it plans anything, below the readiness
-# rung and above the admission bar, the breaker and the off-peak rule — readiness
+# rung and above the breaker and the off-peak rule — readiness
 # first because an unready issue can be made ready this minute, and a freeze is
 # the one refusal whose remedy only the human can start. That is the point of the
 # whole file: a
@@ -812,7 +817,8 @@ wip-trial *args:
 # because a criterion nobody passed is a criterion nobody checked — and `--from-audit`
 # fills only the three the artefacts decide, never the two a hand must assert.
 #
-# `audit` computes six checks over an issue's closing comment (#252): that it names a
+# `close-audit` computes six checks over an issue's closing comment (#252) — `audit` is
+# the trial's three mechanical criteria, of which this is the first step: that it names a
 # commit on `origin/main`; that the commit falls inside its dispatch's window, by
 # `tools/ledger.py`'s own tests rather than a second copy of them; whether the landing
 # touched an in-world surface and so owes a pool verdict; whether every evidence path it
@@ -926,7 +932,7 @@ handoff issue:
 # anything else is **undetermined** and says so. Undetermined never resolves to
 # the cheaper gate, because a briefing naming `just fast` for an in-world change
 # is the defect the table exists to prevent. The in-world list is
-# `tools/admission.py`'s, so this prediction and the landing-time audit cannot
+# `tools/gate.py`'s `IN_WORLD_PREFIXES`, so this prediction and the landing-time audit cannot
 # disagree about what in-world means. Measured on two vendored populations —
 # 14 issues that landed in-world, 20 that did not — at zero under-gates and zero
 # over-gates, with the whole error budget spent on saying "I cannot tell".

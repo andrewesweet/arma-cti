@@ -63,7 +63,7 @@ def run_git(repo: Path, *argv: str, when: str = "") -> str:
     if when:
         env = {"GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": when, "PATH": "/usr/bin:/bin"}
     # S603/S607: fixed literals and this test's own strings, and `git` resolves off PATH
-    # on purpose — the same reasoning `tools/harness.py` records for its own helper.
+    # on purpose — the same reasoning `tools/trial.py` records for its own helper.
     return subprocess.run(  # noqa: S603
         ["git", *argv],  # noqa: S607
         cwd=repo,
@@ -476,7 +476,7 @@ def test_the_audit_converts_no_verdict_into_a_criterion(tmp_path: Path) -> None:
 # --------------------------------------------------------------- called, never reimplemented
 
 # The strings a second implementation of the window tests would have to contain. Asserted
-# present in `ledger.py` as well as absent from `harness.py`, so a rename in the ledger
+# present in `ledger.py` as well as absent from `trial.py`, so a rename in the ledger
 # reds this guard rather than silently emptying it.
 LEDGER_ONLY = ("--ancestry-path", "planned_at", "started_at", "%H%x1f%cI%x1f%s%x1f%B%x1e")
 

@@ -617,6 +617,41 @@ def test_the_recorder_refuses_a_hand_assertion_that_contradicts_the_audit(
     assert "refusal=trial_audit_conflict" in capsys.readouterr().err
 
 
+def test_the_recorder_refuses_a_closed_trial_before_it_runs_the_audit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`trial_closed` is the CLI's answer too, and it costs no `gh` fetch and no git walk.
+
+    The library check inside `record_trial_cycle` fires only after the cycle is built, so
+    against a closed trial the audit would run first and an unsupplied criterion would refuse
+    `trial_criteria_missing` — the wrong name for why nothing can be recorded.
+    """
+    audited: list[object] = []
+
+    def spy(args: object) -> tuple[object, object]:
+        audited.append(args)
+        return None, None
+
+    monkeypatch.setattr(harness, "run_trial_audit_for", spy)
+    args = harness.parse_args(
+        [
+            "--trial-dir",
+            str(store(tmp_path).directory),
+            "record",
+            "--cycle",
+            "1",
+            "--issue",
+            "260",
+            "--from-audit",
+        ]
+    )
+    assert harness.run_trial_record(args) == harness.EXIT_REFUSED
+    assert not audited
+    assert "refusal=trial_closed" in capsys.readouterr().err
+
+
 def test_criterion_one_reads_freeze_not_met_where_the_policy_froze_the_issue(
     tmp_path: Path,
 ) -> None:

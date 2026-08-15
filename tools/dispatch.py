@@ -2806,8 +2806,9 @@ def queue_refusal(args: argparse.Namespace, root: Path) -> Refusal | None:
 
     **No override of any kind**, exactly as `off_peak_refusal` has none: no flag, no
     environment variable, no per-dispatch exemption. The two directory options this reads are
-    test seams for *where the state lives*, the same seams `CTI_BREAKER_DIR` and
-    `CTI_ADMISSION_DIR` already are, and neither can turn a recorded freeze into a dispatch.
+    test seams for *where the state lives*, the same seam `CTI_BREAKER_DIR` already is, and
+    neither can turn a recorded freeze into a dispatch. (`CTI_ADMISSION_DIR` was a third such
+    seam here until #328; it survives as `just trial`'s, and this file reads it no longer.)
 
     **No failure class**, and the reasoning is the off-peak rung's: CLAUDE.md's table types
     what a run *found*, and this found nothing about any provider, any lane or any code. This
