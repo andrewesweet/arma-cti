@@ -14,8 +14,12 @@ looking for the bar.
 The bar was pre-registered **precisely so that observed lane behaviour could not move it**.
 Every constant in it was quoted from the human's ruling of 2026-08-05T20:00Z and nothing in
 it was derived, on the reasoning that a number which moves once the numbers are in is not a
-pre-registration at all. It then **never adjudicated once across any of its routes**: all 24
-were on probation with none admitted, over 112 dispatches, when it was dropped.
+pre-registration at all. It then **never adjudicated once across any of its routes**: every
+route was still on probation when it was dropped, none admitted and none failed. Four routes
+had a record at all, the fullest of them eight assessments against an `N` of ten; the rest
+had none. No count of routes or of dispatches is quoted here on purpose — both moved
+throughout the bar's life, so any figure would need a date beside it to be true, and the
+durable fact does not.
 
 Dropping a pre-registration after the observations are in is the move pre-registration
 exists to prevent. It was taken knowingly, by the human's ruling, and it is written down as
@@ -205,10 +209,13 @@ AUDIT_PATH_MISSING: Final = "path_missing"
 AUDIT_RED: Final = "red"
 AUDIT_QUOTED: Final = "quoted"
 
-# The one verdict every check may reach: this check could not run. It is never a pass (#41):
-# `trial_policy_verdict`, `trial_window_verdict` and `trial_gated_verdict` each return `""`
-# rather than a verdict where the artefacts do not decide, so an undecidable check reaches no
-# criterion. (The reader that used to be named here, `criteria_from_audit`, went with the bar.)
+# The one verdict every check may reach: this check could not run. It is never a pass (#41).
+# Its sole non-test reader is `trial_window_verdict`, which asks the audit for
+# `dispatch_window` and returns `""` rather than a verdict on anything it does not recognise,
+# `undecidable` included. `trial_policy_verdict` and `trial_gated_verdict` read no `Audit` at
+# all, and reach the same `""` from their own artefacts — so no criterion is ever met by a
+# check that could not run, whichever of the three produced it. (The reader that used to be
+# named here, `criteria_from_audit`, went with the bar.)
 AUDIT_UNDECIDABLE: Final = "undecidable"
 
 AUDIT_REF: Final = "origin/main"
@@ -2065,7 +2072,7 @@ def _build_trial_cycle(
 
 
 def run_trial_record(args: argparse.Namespace) -> int:
-    """Add one cycle to the trial, refusing anything the bar will not invent.
+    """Add one cycle to the trial, refusing a criterion the harness will not invent.
 
     The closure is read **before** the cycle is built, not only inside `record_trial_cycle`:
     building it runs the full audit — a `gh` fetch and a git walk over the landing's commits

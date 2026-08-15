@@ -813,10 +813,12 @@ wip-trial *args:
 #
 # **This recipe was `just admission`, and the bar it ran is gone.** ADR-0071 ruling 6
 # dropped the pre-registered admission bar and withdrew ADR-0061 Decision 6, so no
-# dispatch is refused by an admission verdict any more and there is no bar to print.
-# The bar was pre-registered precisely so that observed lane behaviour could not move
-# it, and it never adjudicated once across its routes in 112 dispatches before being
-# dropped. That is a deliberate departure from a pre-registration, taken by the human's
+# dispatch is refused by an admission verdict any more, and the admission bar is not
+# among the things `bar` prints (it prints the *trial's* pre-registration, a different
+# object). The bar was pre-registered precisely so that observed lane behaviour could
+# not move it, and it never adjudicated once across its routes: every one was still on
+# probation at the drop, none admitted and none failed.
+# That is a deliberate departure from a pre-registration, taken by the human's
 # ruling, and it is written down as one — in `tools/trial.py`'s own header, in
 # ADR-0071, and here. What replaces it is retrospective (#336) and is not built yet.
 #
