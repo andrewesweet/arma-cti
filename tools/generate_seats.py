@@ -95,11 +95,14 @@ def _notations() -> tuple[re.Pattern[str], ...]:
 
     Four shapes, each one a human has actually written in this repository: `opus/xhigh`,
     `opus at xhigh effort` (which is what `describe` renders), `run at opus xhigh`, and
-    `opus[1m], effort xhigh` (`docs/adr/0009-process-backbone-and-retro-evolution.md`, the
-    oldest surviving instance — the AGENTS.md bullets that also used it went with the Model
-    roles section #329 replaced, and the shape outlived the section, which is why the pattern
-    stays). Every pattern captures the model and then the effort, so a caller reads a stated
-    pair without knowing the shape.
+    `opus[1m], effort xhigh`. The last two are attested historically rather than currently:
+    both were in AGENTS.md's Model roles section at merge-base `c066998` — "Human decision
+    sessions run at opus xhigh" and the "**opus[1m], effort xhigh**" bullet — and #329 removes
+    those instances from the tree. The patterns stay because the shapes outlived the section
+    that used them, not because either form still survives outside this docstring and the
+    positive controls in `tests/unit/test_generate_seats.py`, which are tests and not
+    provenance. Every pattern captures the model and then the effort, so a caller reads a
+    stated pair without knowing the shape.
     """
     native = [profile for profile in dispatch.PROFILES.values() if profile.lane == NATIVE_LANE]
     models = sorted({profile.model for profile in native}, key=len, reverse=True)
