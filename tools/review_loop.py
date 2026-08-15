@@ -75,11 +75,13 @@ as code because #334's landing refusal reads it from here.
 `tools/escalation.py`'s four transferring-escalation conditions fire only on facts a caller
 supplies, and its docstring records that `review_rounds` and `finding_above_low` were **not
 mechanically recorded** when it landed: conditions 1, 2 and 3 could not fire. This module is
-the recorder those conditions were waiting for — `item_state` derives both facts off a live
-loop, recorded rather than `None`. Supplying loop state to `evaluate_escalation` therefore
-makes conditions one to three fireable for the first time, which #348 banks in its
-sequencing. The bridge delegates rather than restates: one wall constant, one condition
-table, one evaluation, all owned where they already lived.
+the recorder of those two wall facts — `item_state` derives both off a live loop, recorded
+rather than `None` — and that is what makes **condition 1** fireable for the first time, the
+arbiter it names staying a caller-resolved fact. Conditions 2 and 3 read the same wall but
+wait on more: 2 on a recorded `prior` history and 3 on recorded `attempts`, neither fact a
+loop carries, so both still emit nothing until those facts are recorded (#348 banks that
+sequencing as open, not complete). The bridge delegates rather than restates: one wall
+constant, one condition table, one evaluation, all owned where they already lived.
 """
 
 from __future__ import annotations
@@ -535,11 +537,12 @@ def item_state(
     """Derive the escalation facts a live loop records.
 
     `review_rounds` and `finding_above_low` arrive as recorded facts rather than `None` —
-    which is the material change: conditions one to three of
-    `config/escalation-conditions.json` become fireable the moment a caller supplies loop
-    state. `routing_class` stays a caller-supplied fact (it is recorded on the dispatch
-    record, #323, not in the loop) and `attempts` stays `None` until the observatory
-    records it.
+    the two wall facts, which is what makes condition 1 of
+    `config/escalation-conditions.json` fireable for the first time. Conditions 2 and 3 read
+    the same wall but wait on facts a loop does not carry: condition 2 on the `prior` history
+    this function's caller supplies or does not, condition 3 on `attempts`, which stays
+    `None` until the observatory records it. `routing_class` stays a caller-supplied fact
+    (it is recorded on the dispatch record, #323, not in the loop).
     """
     return escalation.ItemState(
         routing_class=routing_class,

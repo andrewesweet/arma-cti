@@ -179,10 +179,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   diff its harm is conditional on, and files the issue before landing. Each finding takes
   exactly one adjudication; a finding raised in a later round is a new item with its own id,
   not a reopening. Rounds are stamped and validated, never rewritten. The escalation bridge is
-  a material change the sequencing banked on (#348): conditions one to three fire on recorded
-  facts — review rounds and a finding above Low — that nothing recorded until this module, so
-  what waited as `None` now arrives recorded and those conditions are fireable for the first
-  time.
+  a material change the sequencing banked on (#348): it records the two wall facts — review
+  rounds and a finding above Low — that nothing recorded until this module, and that is what
+  makes **condition one** fireable for the first time, its arbiter staying a caller-resolved
+  fact. Conditions two and three read the same wall but wait on more: two on a recorded
+  `prior` history, three on recorded `attempts` — neither fact a loop carries — so both still
+  emit nothing, and #348's sequencing of them remains open rather than complete.
 - **Transferring-escalation conditions are data, emitted to an agent only when one fires.**
   Escalation splits in two: *consultative* escalation borrows judgement and keeps control, so it
   needs no condition; *transferring* escalation hands the task to a higher profile and fires only
