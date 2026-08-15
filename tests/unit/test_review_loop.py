@@ -1432,6 +1432,183 @@ def test_a_terminus_that_died_mid_post_refuses_the_blind_retry(
     assert not pending.exists()
 
 
+def test_the_landing_record_is_the_claim_moved_not_a_second_fact_written_beside_it(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Round 3's mutator race: a marker plus a record is two facts that can disagree.
+
+    The old completion wrote `landing.json` under the claim and unlinked the marker after
+    it — a crash between the two writes left both files, and a crash inside the first left
+    a partial record that the retry's first check read as a completed terminus. The
+    structural fix is one file: the claim is rewritten with the record and moved onto
+    `landing.json` by a single atomic rename, so no reachable state carries both files and
+    the record is never partial. Dying at the rename leaves the marker alone — the
+    refusing answer, because the terminus is incomplete, not terminal.
+    """
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    dispatch_dir = tmp_path / "dispatches"
+    write_record(dispatch_dir, "d1", issue=333, profile="opus-high", seat="implementer")
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("# no keys the walk reads\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    base = ["--root", str(root), "--journal", str(journal)]
+    clock = stepped_clock()
+    assert (
+        review_loop.main(["open", "--issue", "326", *base, "--finding", "F1=critical"], now=clock)
+        == review_loop.OK
+    )
+    for _ in range(3):
+        assert review_loop.main(["round", "--issue", "326", *base], now=clock) == review_loop.OK
+    assert (
+        review_loop.main(
+            [
+                "escalate",
+                "--issue",
+                "326",
+                *base,
+                "--seat",
+                "implementer",
+                "--dispatch-dir",
+                str(dispatch_dir),
+                "--admission-dir",
+                str(tmp_path / "admission"),
+                "--breaker-dir",
+                str(tmp_path / "breaker"),
+                "--credentials",
+                str(credentials),
+                "--conditions",
+                str(CONDITIONS),
+            ],
+            now=clock,
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "326",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.ARBITER_UPHELD,
+            ],
+            now=clock,
+        )
+        == review_loop.OK
+    )
+    pending = root / "326" / review_loop.PENDING_FILE
+    landing = root / "326" / review_loop.LANDING_FILE
+    filings: list[tuple[str, str]] = []
+    observed: list[tuple[bool, bool]] = []
+
+    def filing(title: str, body: str) -> int:
+        # Mid-side-effect view of the durable state: the record is not there yet, the
+        # claim is — the only two files that ever exist before the rename.
+        observed.append((landing.exists(), pending.exists()))
+        filings.append((title, body))
+        return 401
+
+    def died_at_the_rename(self: object, target: object) -> None:
+        message = f"the disk died moving {self} to {target}"
+        raise OSError(message)
+
+    with pytest.MonkeyPatch.context() as patch:
+        # `Path.replace` is `os.replace` underneath; patching it on the class the module
+        # uses intercepts the one move the terminus makes without reaching pathlib itself.
+        patch.setattr(review_loop.Path, "replace", died_at_the_rename)
+        assert (
+            review_loop.main(
+                ["terminus", "--issue", "326", *base],
+                now=clock,
+                create_issue=filing,
+                post_comment=lambda _i, _b: None,
+            )
+            == review_loop.NO_RESULT
+        )
+    assert observed == [(False, True)]
+    assert not landing.exists()
+    assert pending.exists()
+    # The blind retry refuses on the marker and files nothing twice.
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base],
+            now=clock,
+            create_issue=filing,
+            post_comment=lambda _i, _b: None,
+        )
+        == review_loop.REFUSED
+    )
+    assert (
+        review_loop.TERMINUS_INCOMPLETE_ERROR.format(issue=326, root=root)
+        in capsys.readouterr().err
+    )
+    assert len(filings) == 1
+    # Accounted and cleared by hand, the retry runs to the rename and past it: the claim
+    # becomes the record, the two never coexist, and the record carries what was filed.
+    pending.unlink()
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base],
+            now=clock,
+            create_issue=filing,
+            post_comment=lambda _i, _b: None,
+        )
+        == review_loop.OK
+    )
+    assert len(filings) == 2
+    assert landing.exists()
+    assert not pending.exists()
+    assert json.loads(landing.read_text(encoding="utf-8"))["filings"][0]["issue"] == 401
+
+
+@pytest.mark.parametrize("broken", ["[]", "null", '"codex-sol-high"', "3"])
+def test_an_escalation_record_that_decodes_to_a_non_object_is_a_named_no_result(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], broken: str
+) -> None:
+    """Round 3's untyped traceback: `.get` on a record that is not an object.
+
+    A list, a bare string, a null and a number all decode as JSON but carry no arbiter,
+    and the old read raised `AttributeError` out of `main` — the one failure in this
+    module with no name. Exists-but-not-an-object is the same answer as
+    exists-but-unreadable: an unperformable read, exit 3, never a silent empty arbiter.
+    """
+    root = tmp_path / "review"
+    base = drive_to_the_wall(root, tmp_path / "journal.jsonl")
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "326",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.FIXED,
+            ],
+            now=stepped_clock(),
+        )
+        == review_loop.OK
+    )
+    (root / "326" / review_loop.ESCALATION_FILE).write_text(broken + "\n", encoding="utf-8")
+    filings: list[tuple[str, str]] = []
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base],
+            now=stepped_clock(),
+            create_issue=lambda title, body: filings.append((title, body)) or 1,
+            post_comment=lambda _issue, _body: None,
+        )
+        == review_loop.NO_RESULT
+    )
+    assert "the escalation record for #326 exists but is not an object" in capsys.readouterr().err
+    assert filings == []
+
+
 def test_the_landing_record_carries_every_findings_verdict(tmp_path: Path) -> None:
     """Round 2's High 3: the landing record must say every finding's verdict.
 

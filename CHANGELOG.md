@@ -46,9 +46,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   terminus calls could both pass the check-then-write, and a call that died mid-post would
   repeat its filings on retry. The run now claims a `terminus.pending` marker with
   `O_CREAT | O_EXCL` before its first side effect — exactly one concurrent caller wins —
-  and releases it once the landing record is written; a marker left behind names what the
+  and the claim file itself becomes the landing record; a marker left behind names what the
   run was about to post, and the retry refuses by name until it is accounted and cleared
   by hand.
+- **The landing record cannot disagree with the claim that wrote it (#333).** The
+  marker-plus-record pair left an uncovered mutator race: a crash between the record's
+  write and the marker's removal left both files, and a crash inside the write left a
+  partial record the retry's first check read as a completed terminus. The record is now
+  written into the claimed marker itself and moved onto `landing.json` by one atomic
+  rename — the terminal state is the rename, not two files kept in step, so the record is
+  never partial and no reachable state carries both files.
+- **A malformed escalation record is a named no-result (#333).** JSON that decodes to
+  something other than an object raised a bare `AttributeError` out of the command — the
+  one failure in the module with no name. It is now the same answer as a record that will
+  not decode: an unperformable read, exit 3, never a silent empty arbiter.
 - **The landing record carries every finding's final verdict (#333).** `fixed` findings
   above Low were absent from `landing.json` — their only trace was the diff under review,
   which post-landing review does not re-read — and a Low left open at the terminus was a

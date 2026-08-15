@@ -910,11 +910,16 @@ LOOP_FILE: Final = "loop.json"
 ESCALATION_FILE: Final = "escalation.json"
 LANDING_FILE: Final = "landing.json"
 # The terminus's claim on the right to run: created `O_EXCL` before the first GitHub side
-# effect, removed once the landing record is written (#333 round 2, High 4). A terminus is
-# side effects on a remote plus two local writes, which is not a transaction — the claim is
-# what makes "once" true anyway: exactly one of two concurrent calls wins the create, and a
-# call that died mid-post leaves the marker behind naming what it was about to post, so the
-# retry refuses rather than filing every upheld finding twice.
+# effect (#333 round 2, High 4). A terminus is side effects on a remote plus local writes,
+# which is not a transaction — the claim is what makes "once" true anyway: exactly one of
+# two concurrent calls wins the create, and a call that died mid-post leaves the marker
+# behind naming what it was about to post, so the retry refuses rather than filing every
+# upheld finding twice. The claim file is also the landing record's former name: completion
+# rewrites it in place and moves it onto `landing.json` with one atomic rename (#333 round 3),
+# so the terminal state is structural — the rename is the fact, never two files kept in step.
+# `landing.json` can appear only whole and only by that move, and no reachable state carries
+# both files: before it the loop is in flight, after it the terminus is done, and a crash at
+# any instant leaves the marker alone, which is the refusing answer.
 PENDING_FILE: Final = "terminus.pending"
 
 LOOP_VERSION_ERROR: Final = "a stored loop must be a version 1 object"
@@ -1448,17 +1453,23 @@ def _cmd_terminus(  # the whole ending in one act: gate, filings, dismissals, re
     for dismissal in end.dismissals:
         post(args.issue, _dismissal(args.issue, dismissal))
     landing.parent.mkdir(parents=True, exist_ok=True)
-    landing.write_text(
-        json.dumps(
-            render_landing(
-                args.issue, loop, end, arbiter=arbiter, unchecked=unchecked, filed_issues=filed
-            ),
-            indent=2,
-            sort_keys=True,
+    # The record is written into the claimed marker itself and moved into place by one
+    # atomic rename (#333 round 3): the marker and the record are one file at two points in
+    # its life, not two facts that can disagree. A crash before the rename leaves the marker
+    # — the refusing answer; the rename itself is the terminal state, so `landing.json` is
+    # never partial and never coexists with the marker.
+    with pending.open("w", encoding="utf-8") as record:
+        record.write(
+            json.dumps(
+                render_landing(
+                    args.issue, loop, end, arbiter=arbiter, unchecked=unchecked, filed_issues=filed
+                ),
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n"
         )
-        + "\n"
-    )
-    pending.unlink(missing_ok=True)
+    pending.replace(landing)
     emit_terminus(end, str(args.issue), clock(), Path(args.journal))
     print(  # noqa: T201 — a CLI's output channel
         f"[review-loop] #{args.issue} terminus: {len(end.filings)} filed,"
@@ -1499,6 +1510,13 @@ def _recorded_arbiter(root: Path, issue: int) -> tuple[str, bool, str]:
     except (OSError, ValueError) as broken:
         message = f"the escalation record for #{issue} exists but will not read: {broken}"
         raise ExternalError(message) from broken
+    # Decodable JSON that is not an object is the same answer as undecodable JSON (#333
+    # round 3): `.get` on a list would escape `main` as a bare `AttributeError` traceback,
+    # the one failure in this module with no name. The record cannot yield an arbiter, so
+    # it is an unperformable read like its siblings above, never a silent empty one.
+    if not isinstance(record, dict):
+        message = f"the escalation record for #{issue} exists but is not an object: {record!r}"
+        raise ExternalError(message)
     return (
         str(record.get("arbiter", "")),
         bool(record.get("unchecked", False)),
