@@ -258,13 +258,14 @@ does by hand.
   admitted and never failed; the frozen record at
   `~/.arma-cti/admission/zai.zai-glm52-max.implementer.json` is history rather than a
   standing, and no route is judged before it is dispatched.
-- **The corpus is a permanent Claude-seat obligation, and the reason is a subagent rule
-  rather than a lane rule.** `just regress` appears in no allowlist entry, and routing
-  class 5 is narrowed to what a *subagent* cannot do — it cannot hold the corpus's
-  foreground wait, so a seat reached that way cannot gate its own in-world work.
-  `just dispatch` launches a top-level session, which the wait hook permits, so the
-  class refuses no dispatch route. Anything touching `addons/`, `missions/`,
-  `extension/`, the daemon's world-facing half or a manifest still needs a full-corpus
+- **The corpus cannot be run from a subagent, on any lane.** This is a subagent rule and
+  not a lane rule, so it names no seat and refuses no dispatch route: routing class 5 is
+  narrowed to what a *subagent* cannot do — hold the corpus's foreground wait
+  (`.claude/hooks/deny-subagent-waits.py`) — so a seat reached that way cannot gate its own
+  in-world work. `just dispatch` launches a top-level session, which the wait hook permits,
+  so the class carries `"refuses": false` and bars nothing. The obligation the seat keeps
+  is therefore an obligation to *see the corpus run*, not to run it here. Anything
+  touching `addons/`, `missions/`, `extension/`, the daemon's world-facing half or a manifest still needs a full-corpus
   run before landing (#258, finding 2), and that class's two path lists remain the one
   authority for what an in-world surface is.
 
@@ -281,7 +282,11 @@ does by hand.
   `orchestrator`, `fable` and `retro`; orchestration's own process docs — this file
   among them, by `CLAUDE.md`'s Agent-skills section — are routing class 2, which admits
   that same route plus `orchestrator` and refuses `retro` and `fable`. Either way the
-  seat does not hold the drafting.
+  seat does not hold the drafting. Both classes are **declared on the issue and never
+  inferred from the path**: neither row carries path prefixes, and the policy's own
+  coverage note says a seat-bound class is checked at dispatch only, since a landing has
+  no seat to check. So an issue that declares nothing is classified by nothing, and the
+  sentence above is an instruction to the seat rather than a claim that a refusal exists.
 - **Never write a brief's task, scope or ground truth from the issue body alone.** Read the
   thread first, and name the comment each pre-derived decision comes from, so that a body
   the thread has superseded shows up in the brief rather than being resolved silently.

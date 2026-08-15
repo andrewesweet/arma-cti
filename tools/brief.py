@@ -452,20 +452,42 @@ def select_flakes(rows: Sequence[Mapping[str, object]]) -> tuple[Flake, ...]:
 
 # ----------------------------------------------------------------------- the seat, cited
 
-# CLAUDE.md's Model roles mapping, one reason per seat `tools/dispatch.py` registers.
-# Keyed off that registry rather than beside it: `test_brief.py` asserts the two agree, so
-# a seat cannot join the registry without a reason to state in a briefing.
+# What each seat is *for*, one reason per seat `tools/dispatch.py` registers. Keyed off that
+# registry rather than beside it: `test_brief.py` asserts the two agree, so a seat cannot join
+# the registry without a reason to state in a briefing.
+#
+# The source is ADR-0071's rulings as `SEATS` and `config/dispatch-routing-policy.json`
+# actually implement them, never the Model roles mapping these lines used to quote (#329
+# review round 1, claim 1). That mapping was ruling 2's own casualty, and every one of these
+# lines outlived it: a brief went on telling the `fable` seat it owned "process docs" that
+# routing class 2 refuses it, and the `review` seat that "a review lands nothing (ADR-0061
+# decision 3)" after ruling 1 rescinded that decision. A brief is the one surface every
+# dispatched agent reads first, and nothing here is asserted against the code, so the stale
+# instruction reached every dispatch in silence.
 SEAT_REASON: Final[dict[str, str]] = {
     "planner": "ADR-0071 ruling 2: works out what to do; neither gates nor lands.",
-    "implementer": "CLAUDE.md Model roles: implementation and day-to-day review.",
-    "recon": "CLAUDE.md Model roles: read-only reconnaissance; never edits or lands.",
-    "retro": "ADR-0071 ruling 3: finds, researches and files backlog items; lands nothing.",
-    "review": "CLAUDE.md Model roles: review; a review lands nothing (ADR-0061 decision 3).",
-    "fable": (
-        "CLAUDE.md Model roles: ADRs, CONTEXT.md, schema semantics and process docs — "
-        "anything no mechanical gate catches."
+    "implementer": (
+        "ADR-0071 ruling 2: carries the work out, runs its own gate and lands it — a profile "
+        "that cannot run its own gate is not an implementer."
     ),
-    "orchestrator": "CLAUDE.md Model roles: the dispatching seat itself.",
+    "recon": (
+        "ADR-0071 ruling 2: read-only search, triage sweeps and state checks. A recon claim "
+        "that decides a routing choice is cited; no gate reads recon output."
+    ),
+    "retro": "ADR-0071 ruling 3: finds, researches and files backlog items; lands nothing.",
+    "review": (
+        "ADR-0071 ruling 4: judges work another profile produced, never its own. Resolution "
+        "excludes that profile and the seat forces a read-only permission mode "
+        "(`reviews` and `permission_mode` in `tools/dispatch.py`'s `SEATS`)."
+    ),
+    "fable": (
+        "Routing class 4, the #181 shape: a diagnosis whose plausible wrong fix would also "
+        "have gone green, where no mechanical gate catches the wrong answer."
+    ),
+    "orchestrator": (
+        "The standing dispatch loop, and ADR-0071 ruling 1's one surviving provenance rule — "
+        "`claude_only` in `SEATS`, provisional until a tested alternative exists."
+    ),
 }
 
 DEFAULT_SEAT: Final = "implementer"

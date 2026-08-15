@@ -127,6 +127,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   was found by grepping the tree for the counts. Until they land, a reader arriving at either
   decision meets a claim this change falsified.
 
+### Fixed
+
+- **`just brief` stopped commanding the withdrawn Model roles mapping (#329, review round 1).**
+  Five of the seven seat reasons the brief composer prints were transcribed from that mapping and
+  outlived it: a `fable` brief claimed "process docs", which routing class 2 refuses that seat,
+  and every review brief said "a review lands nothing (ADR-0061 decision 3)" after ADR-0071
+  ruling 1 rescinded that decision. The reasons are rewritten off the rulings as `SEATS` and the
+  routing policy implement them, and a test now asserts no reason cites a withdrawn source —
+  until now only the *keys* were checked, which is why the text drifted in silence on the one
+  surface every dispatched agent reads first. The command table gains the `just review` row #332
+  owed it and the canonical `just dispatch` signature (a seat and an issue, and both of
+  `--lane`/`--profile` or neither); the always-loaded file now says which four seats have a
+  subagent surface and which are dispatch-only, instead of implying every seat has a file.
+
 ### Changed
 
 - **An arbiter route names the arbiter that ruled (#334, ADR-0071 ruling 4).** `arbiter_upheld`

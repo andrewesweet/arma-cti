@@ -468,6 +468,20 @@ def test_every_registered_seat_has_a_model_roles_reason() -> None:
     assert set(brief.SEAT_REASON) == set(dispatch.SEATS)
 
 
+def test_no_seat_reason_commands_a_withdrawn_rule() -> None:
+    """The reasons cite live rulings, not the mapping and decisions ADR-0071 withdrew.
+
+    Keys were the only thing asserted until #329's review round 1 claim 1, so the content
+    drifted in silence: `fable` was still sent "process docs" that routing class 2 refuses
+    it, and `review` still quoted ADR-0061 decision 3, which ruling 1 rescinds. A brief is
+    what every dispatched agent reads first, so a withdrawn rule here reaches every dispatch.
+    """
+    withdrawn = ("Model roles", "ADR-0061 decision", "ADR-0061 Decision", "foreign")
+    for seat, reason in brief.SEAT_REASON.items():
+        for phrase in withdrawn:
+            assert phrase not in reason, f"{seat}: {reason}"
+
+
 def test_the_default_seat_is_the_implementer_and_owes_no_further_reason() -> None:
     seat = brief.derive_seat("")
     assert seat.name == "implementer"

@@ -1,8 +1,10 @@
 # Dispatching work to another provider
 
 The design behind `just dispatch` and `just breaker`. `CLAUDE.md` carries the rules an
-agent must not get wrong in the moment — the eligible seats, the credential handling, the
-prohibition on exporting a lane variable, the prohibition on inventing a breaker's wait.
+agent must not get wrong in the moment — what each seat is for and the two refusals that
+survive ruling 1, the credential handling, the prohibition on exporting a lane variable, the
+prohibition on inventing a breaker's wait. Not *eligibility*: ruling 1 withdrew that word
+along with the ladder it graded, as the paragraph below records.
 Everything here is the reasoning under those rules, moved out of the always-loaded prefix
 by the human's ruling on #228 (2026-08-05, Decision 2) so that the prefix carries the rule
 and this document carries why it is the rule.
