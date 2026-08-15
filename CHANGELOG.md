@@ -33,6 +33,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   re-exec gives two class objects and `Enum` members from the two compare unequal. The flag and
   the code cannot disagree; the type refuses the pair.
 
+### Added
+
+- **The review loop's ending is now rules rather than judgement in the moment (#333).** The
+  round budget counts only findings *held across* rounds — a finding the re-review round
+  itself introduced (#356's shape) takes another fix round, while one an earlier round
+  raised and the third re-review still holds (#326's) fires the transferring escalation;
+  the stop condition that blocks a landing is deliberately not narrowed to match. A new
+  arbiter rule (`tools/arbiter.py`, per the human ruling on #361 of 2026-08-14) resolves
+  who arbitrates from the seat registry's escalation entry — head first, falling through
+  the entry tail (#326's routing-refused head) and on into the preference list (#318's
+  conflicted head), excluding the profiles the issue's own dispatch records place on the
+  work and any the routing policy refuses on the branch's paths, recording every exclusion,
+  and refusing by name when the walk is exhausted or the column is empty — the blanket
+  `fable-high` default is struck, and the `retro` and `orchestrator` cells the ruling
+  filled are transcribed into the registry. The terminus computes what the pre-declared
+  default owes before it may apply: the gate itself (nothing above Low unadjudicated), a
+  filing owed on the originating item for every finding an arbiter upheld, and a recorded
+  trace for every dismissal. Rounds, escalations, dispute outcomes, terminuses and arbiter
+  resolutions now emit OTel events journaled under `~/.arma-cti/review/` — rounds leave no
+  trace in a diff, so a loop shipped without them is a loop whose cost cannot be recovered.
+
 ### Changed
 
 - **The routing policy is re-founded class by class on capability and conflict of interest, and

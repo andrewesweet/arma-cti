@@ -378,14 +378,19 @@ def test_the_exhaustion_remedy_names_the_escalation_entry_beside_its_lane(
 def test_a_seat_with_no_escalation_entry_is_told_so_rather_than_offered_a_non_thing(
     tmp_path: Path,
 ) -> None:
-    """`retro` registers none, and the old text put `none registered` where a name goes."""
+    """`recon` registers none, and the old text put `none registered` where a name goes.
+
+    `retro` carried this pin until the human ruling on #361 (2026-08-14) filled its cell:
+    every seat that can run a review loop out of rounds now names its arbiter, and the
+    only empty columns left are the ones that ruling marked not-applicable.
+    """
     trip(tmp_path, "claude-native", breaker.GATE_FAILED, 3)
     trip(tmp_path, "codex", breaker.GATE_FAILED, 3)
-    _, _, refusal = plan_for(tmp_path, seat="retro")
+    _, _, refusal = plan_for(tmp_path, seat="recon")
     assert refusal is not None
     assert "escalation=none" in refusal.found
     assert "none registered" not in refusal.action
-    assert "The retro seat registers no escalation entry" in refusal.action
+    assert "The recon seat registers no escalation entry" in refusal.action
 
 
 def test_an_unknown_seat_is_refused_before_any_list_is_walked(tmp_path: Path) -> None:

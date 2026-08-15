@@ -1,6 +1,6 @@
-"""The never-alone decision surface: exemption, rounds, adjudication, escalation (#331).
+"""The never-alone decision surface: exemption, rounds, adjudication, escalation (#331, #333).
 
-Three layers. The exemption table first — the shipped file read in the caller's body, its
+Four layers. The exemption table first — the shipped file read in the caller's body, its
 shape asserted, its emptiness pinned as the state nothing has yet earned its way off. Then
 the decision, both directions and the third state: unlisted means covered, listed means
 exempt with its reason quotable, unreadable never exempts, and a diff touching the list
@@ -8,7 +8,10 @@ itself is never exempt whatever the list says. Then the loop: round stamping, th
 adjudication routes with the fourth's three restrictions, one-adjudication-per-finding, and
 the escalation bridge that turns a live loop into the two recorded wall facts — which
 lights condition one, while conditions two and three wait on a `prior` history and recorded
-`attempts` that no loop carries.
+`attempts` that no loop carries. Then #333's half over that state: the budget counts only
+findings *held across* rounds (introduced-by-the-round is #356's shape, held is #326's),
+the terminus computes what the pre-declared default owes, and every observable leaves its
+event.
 """
 
 from __future__ import annotations
@@ -376,7 +379,10 @@ def test_the_stop_condition_blocks_on_an_open_finding_above_low_and_nothing_else
         (finding("F1", review_loop.HIGH), finding("F2", review_loop.LOW))
     )
     assert review_loop.stop_condition(loop) is False
-    assert review_loop.holding_above_low(loop) is True
+    # Round zero holds nothing across by definition — no round has been failed yet — and
+    # the landing block and the escalation fact part ways here on purpose (#333): any
+    # open finding above Low blocks the landing, only held-across feeds the wall.
+    assert review_loop.holding_above_low(loop) is False
 
     fixed = review_loop.adjudicate(loop, "F1", adjud(review_loop.FIXED))
     assert review_loop.stop_condition(fixed) is True
@@ -486,3 +492,217 @@ def test_an_unreadable_condition_table_passes_through_as_unreadable() -> None:
         arbiter="codex-sol-high",
     )
     assert isinstance(outcome, escalation.Unreadable)
+
+
+# ------------------------------------------------- held across, or introduced by the round
+
+
+def test_a_finding_held_across_rounds_feeds_the_wall() -> None:
+    """#326's shape: raised in round 2, still open at round 3 — the wall fires."""
+    loop = review_loop.Loop(
+        3,
+        (finding("F1", review_loop.HIGH, round_raised=2),),
+    )
+    assert review_loop.holding_above_low(loop) is True
+    assert review_loop.at_wall(loop) is True
+    outcome = review_loop.evaluate_escalation(
+        escalation.ReadResult(conditions()), loop, arbiter="opus-max"
+    )
+    assert isinstance(outcome, escalation.Firing)
+    assert [emission.condition.id for emission in outcome.emissions] == [1]
+
+
+def test_a_finding_the_round_itself_introduced_does_not_feed_the_wall() -> None:
+    """#356/#327's shape: round 3 raised it, so another fix round is taken, not a transfer.
+
+    The budget counts rounds spent failing to close a finding; it is not a cap on how
+    many defects a branch may reveal. A wall that cannot tell the two apart escalates
+    work that should not escalate and vice versa.
+    """
+    loop = review_loop.Loop(
+        3,
+        (
+            finding(
+                "F1", review_loop.MEDIUM, round_raised=0, adjudication=adjud(review_loop.FIXED)
+            ),
+            finding("F2", review_loop.HIGH, round_raised=3),
+        ),
+    )
+    assert review_loop.holding_above_low(loop) is False
+    assert review_loop.at_wall(loop) is False
+    outcome = review_loop.evaluate_escalation(
+        escalation.ReadResult(conditions()), loop, arbiter="opus-max"
+    )
+    assert isinstance(outcome, escalation.NoFiring)
+
+
+def test_a_finding_introduced_in_round_three_becomes_held_in_round_four() -> None:
+    """The same finding, one round later, is held — the wall fires on the fourth re-review."""
+    loop = review_loop.Loop(
+        4,
+        (
+            finding(
+                "F1", review_loop.MEDIUM, round_raised=0, adjudication=adjud(review_loop.FIXED)
+            ),
+            finding("F2", review_loop.HIGH, round_raised=3),
+        ),
+    )
+    assert review_loop.holding_above_low(loop) is True
+    assert review_loop.at_wall(loop) is True
+
+
+# --------------------------------------------------------------------------- the terminus
+
+
+def at_the_wall_arbitrated() -> review_loop.Loop:
+    """Return a loop that reached the wall and was arbitrated: upheld, dismissed, fixed, filed."""
+    loop = review_loop.Loop(
+        3,
+        (
+            finding("F1", review_loop.CRITICAL, round_raised=1),
+            finding("F2", review_loop.HIGH, round_raised=2),
+            finding("F3", review_loop.MEDIUM, round_raised=0),
+            finding("F4", review_loop.LOW, round_raised=2),
+        ),
+    )
+    loop = review_loop.adjudicate(loop, "F1", adjud(review_loop.ARBITER_UPHELD))
+    loop = review_loop.adjudicate(loop, "F2", adjud(review_loop.ARBITER_DISMISSED))
+    loop = review_loop.adjudicate(loop, "F3", adjud(review_loop.FIXED))
+    return review_loop.adjudicate(
+        loop, "F4", adjud(review_loop.ACCEPTED_AND_FILED, "#99", "work X")
+    )
+
+
+def test_a_convergent_loop_lands_through_the_default_owing_nothing() -> None:
+    loop = review_loop.adjudicate(
+        review_loop.first_review((finding("F1", review_loop.HIGH),)),
+        "F1",
+        adjud(review_loop.FIXED),
+    )
+    end = review_loop.terminus(loop)
+    assert end.default_applies is True
+    assert end.filings == ()
+    assert end.dismissals == ()
+
+
+def test_an_arbitrated_loop_lands_through_the_default_owing_both_traces() -> None:
+    """Non-convergence to the default: the wall fired, the arbiter ruled, the default applies.
+
+    The upheld Critical is closed by the verdict and still owed its filing — not only the
+    unresolved are filed, because an upheld finding that vanished with its verdict is the
+    finding that most needs a trace. The dismissal is recorded for the post-landing seat.
+    """
+    end = review_loop.terminus(at_the_wall_arbitrated())
+    assert end.default_applies is True
+    assert end.filings == (review_loop.Filing("F1", review_loop.CRITICAL, 1),)
+    assert end.dismissals == (review_loop.Dismissal("F2", review_loop.HIGH, 2),)
+
+
+def test_the_fixed_and_the_accepted_and_filed_appear_in_neither_trace() -> None:
+    """A fix's trace is the diff; `accepted_and_filed` already names the issue it became."""
+    end = review_loop.terminus(at_the_wall_arbitrated())
+    assert [f.finding for f in end.filings + end.dismissals] == ["F1", "F2"]
+
+
+def test_an_upheld_low_is_owed_its_filing_the_same_as_an_upheld_critical() -> None:
+    """Ruling 4's terminus sentence carries no severity qualifier, and neither does the filing."""
+    loop = review_loop.adjudicate(
+        review_loop.first_review((finding("F1", review_loop.LOW),)),
+        "F1",
+        adjud(review_loop.ARBITER_UPHELD),
+    )
+    end = review_loop.terminus(loop)
+    assert end.default_applies is True
+    assert end.filings == (review_loop.Filing("F1", review_loop.LOW, 0),)
+
+
+def test_an_open_finding_above_low_stops_the_default_with_an_answer_not_an_error() -> None:
+    loop = review_loop.adjudicate(
+        review_loop.first_review(
+            (finding("F1", review_loop.HIGH), finding("F2", review_loop.MEDIUM))
+        ),
+        "F1",
+        adjud(review_loop.FIXED),
+    )
+    end = review_loop.terminus(loop)
+    assert end.default_applies is False
+    # The traces are still computed over what was adjudicated — #334's landing refusal is
+    # the consumer that refuses on `default_applies`, not on an exception.
+    assert end.filings == ()
+    assert end.dismissals == ()
+
+
+# --------------------------------------------------------------------------- telemetry
+
+
+def rendered(event: object) -> dict[str, object]:
+    document = review_loop.otel_event.log_record(event)
+    record = document["resourceLogs"][0]["scopeLogs"][0]["logRecords"][0]
+    return {a["key"]: a["value"] for a in record["attributes"]}
+
+
+def test_a_round_event_carries_the_observatorys_own_observables() -> None:
+    loop = review_loop.next_round(
+        review_loop.first_review((finding("F1", review_loop.HIGH),)),
+        (finding("F2", review_loop.MEDIUM, round_raised=1),),
+    )
+    event = review_loop.round_event(loop, "#326", at=2.0)
+    attributes = rendered(event)
+    assert event.name == review_loop.ROUND_EVENT
+    assert attributes["cti.issue"] == {"stringValue": "#326"}
+    assert attributes["cti.review.round"] == {"intValue": "1"}
+    assert attributes["cti.review.raised"] == {"intValue": "1"}
+    assert attributes["cti.review.open_above_low"] == {"intValue": "2"}
+    assert attributes["cti.review.holding_above_low"] == {"boolValue": True}
+
+
+def test_an_escalation_event_carries_the_fired_conditions_and_the_arbiter() -> None:
+    loop = review_loop.Loop(3, (finding("F1", round_raised=2),))
+    outcome = review_loop.evaluate_escalation(
+        escalation.ReadResult(conditions()), loop, arbiter="opus-max"
+    )
+    event = review_loop.escalation_event(outcome, "#348", at=3.0, arbiter="opus-max")
+    attributes = rendered(event)
+    assert event.name == review_loop.ESCALATION_EVENT
+    assert attributes["cti.review.conditions"] == {"stringValue": "1"}
+    assert attributes["cti.review.arbiter"] == {"stringValue": "opus-max"}
+    # Silence and unreadable input are states the observatory must count, not read past.
+    quiet = review_loop.escalation_event(escalation.NoFiring(), "#348", at=3.0)
+    assert rendered(quiet)["cti.review.conditions"] == {"stringValue": ""}
+
+
+def test_a_dispute_event_carries_the_finding_and_its_route() -> None:
+    event = review_loop.dispute_event(
+        finding("F1", review_loop.CRITICAL, round_raised=1),
+        adjud(review_loop.ARBITER_UPHELD),
+        "#326",
+        at=4.0,
+    )
+    attributes = rendered(event)
+    assert event.name == review_loop.DISPUTE_EVENT
+    assert attributes["cti.review.finding"] == {"stringValue": "F1"}
+    assert attributes["cti.review.severity"] == {"stringValue": review_loop.CRITICAL}
+    assert attributes["cti.review.round_raised"] == {"intValue": "1"}
+    assert attributes["cti.review.route"] == {"stringValue": review_loop.ARBITER_UPHELD}
+
+
+def test_a_terminus_event_carries_the_default_and_both_trace_counts() -> None:
+    end = review_loop.terminus(at_the_wall_arbitrated())
+    event = review_loop.terminus_event(end, "#326", at=5.0)
+    attributes = rendered(event)
+    assert event.name == review_loop.TERMINUS_EVENT
+    assert attributes["cti.review.default_applies"] == {"boolValue": True}
+    assert attributes["cti.review.filings"] == {"intValue": "1"}
+    assert attributes["cti.review.dismissals"] == {"intValue": "1"}
+
+
+def test_emission_journals_whether_or_not_the_collector_took_it(tmp_path: Path) -> None:
+    journal = tmp_path / "journal.jsonl"
+    loop = review_loop.first_review((finding("F1", review_loop.HIGH),))
+    review_loop.emit_round(loop, "#326", at=2.0, journal=journal)
+    line = json.loads(journal.read_text(encoding="utf-8").splitlines()[0])
+    assert line["event"] == review_loop.ROUND_EVENT
+    assert line["attributes"]["cti.issue"] == "#326"
+    # The journal line carries the export's own outcome — the durable half is written
+    # whichever way the bounded attempt landed.
+    assert "exported" in line

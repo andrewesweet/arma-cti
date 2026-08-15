@@ -499,13 +499,17 @@ class Seat(NamedTuple):
     # ADR-0071 ruling 2's preference column, head first. `resolve_seat` walks exactly this
     # and nothing else, so a seat gains a route by being written here.
     preference: tuple[str, ...]
-    # The ADR's escalation column, and deliberately **not** part of resolution. An
+    # The ADR's escalation column, and deliberately **not** part of seat resolution. An
     # escalation is a judgement that the work is harder than the seat's tier, not a
     # fallback for a head the breaker happens to be refusing; resolving into it would
     # answer "this seat is out of profiles" by silently spending a dearer one, and would
-    # make the exhaustion refusal unreachable for every seat that has an entry. It is
-    # registry data — printed by `--list`, and what #333's arbiter rule reads — and
-    # nothing resolves through it.
+    # make the exhaustion refusal unreachable for every seat that has an entry. So
+    # `resolve_seat` never walks it. What does read it is #333's arbiter walk
+    # (`tools/arbiter.py`), which takes the entry head as the arbiter and falls through on
+    # conflict — the human ruling on #361, 2026-08-14, which also filled the two cells that
+    # ruling had left empty and struck the blanket `fable-high` default: a seat whose
+    # column is empty has no arbiter and refuses, so **adding a seat now requires deciding
+    # its arbiter**.
     escalation: tuple[str, ...] = ()
     # ADR-0071 ruling 4 (#322): this seat judges work another profile produced, so its
     # resolution takes that profile as an input and never returns it. The column is on the
@@ -576,16 +580,31 @@ SEATS: Final[dict[str, Seat]] = {
     # `RETRO_APPROVED_PROFILES` and its guards (review round 1, claim 5). Profiles are
     # opaque tokens and no cross-provider ordering exists, so a profile joins by being
     # named, never "or above".
+    #
+    # The escalation cell is the human ruling on #361 (2026-08-14), amending ruling 2:
+    # arbitration is retro work, so the arbiter is drawn from #300's approved nine — and
+    # deliberately not `fable-high`, the seat's own preference head and therefore the
+    # profile most likely to have authored the rounds the arbiter would judge (#318: it
+    # authored every one).
     "retro": Seat(
         "retro",
         claude_only=False,
         preference=("fable-high", "opus-xhigh", "codex-sol-xhigh"),
+        escalation=("opus-max", "fable-max"),
     ),
     "fable": Seat("fable", claude_only=False, preference=("fable-high",)),
     # ADR-0071 ruling 1's one survivor, and the only `claude_only=True` row the table
     # carries: orchestration runs on Claude with a Claude model until a tested
     # alternative exists. The ADR calls it the only provenance rule the project holds.
-    "orchestrator": Seat("orchestrator", claude_only=True, preference=("opus-xhigh",)),
+    # The escalation cell is the human ruling on #361 (2026-08-14), amending ruling 2 —
+    # and is not `opus-xhigh`, which is the seat itself: an orchestrator must not
+    # arbitrate its own instruction, which is the #318 shape this cell exists to end.
+    "orchestrator": Seat(
+        "orchestrator",
+        claude_only=True,
+        preference=("opus-xhigh",),
+        escalation=("opus-max", "fable-xhigh"),
+    ),
 }
 
 # ADR-0071 ruling 2's last row, which is **not a dispatch route**. ADR-0068 makes the
