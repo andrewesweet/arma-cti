@@ -1,23 +1,25 @@
-"""`just admission audit`: the close audit the bar today asks an agent to assert (#252).
+"""`just trial audit`: the close audit, and what it refuses to conclude (#252, #328).
 
-`just admission record` demands a choice on every Part A criterion and cross-checks two of
-them against git in the refusing direction only. Everything else is asserted by whoever
-runs it. Most of that is computable, and this is the computation — so what these tests
-have to hold is not only that the sums are right but that the two refusals to overclaim
-survive:
+Six checks over an issue's closing comment, computed and printed for a person to read.
+It was the admission bar's evidence-gatherer; #328 dropped the bar, and the audit survives
+because the orchestration trial's third criterion is exactly its `dispatch_window` check.
 
-- a quoted gate block is `quoted` and never green. A test here asserts that no audit,
-  whatever it found, ever fills `fast_green`;
+What these tests have to hold is not only that the sums are right but that the refusals to
+overclaim survive:
+
+- a quoted gate block is `quoted` and never green. The audit reports what it found and
+  derives nothing further from it;
 - the changelog check is `undecidable` and no input makes it `ok`. Its function takes no
-  argument at all, and the sweep below holds that over whole audits rather than only over
-  the check, because a mutant that reached into `criteria_from_audit` would not be caught
-  by testing the check alone.
+  argument at all, which is the property under test;
+- and, since #328, that the audit converts none of its verdicts into criteria. That
+  conversion was the bar's, it was the one place a weak verdict could have hardened into a
+  judgement, and it is asserted absent rather than left to be noticed.
 
 And one structural claim, which is the issue's sixth criterion: the window tests — a
 commit descends from the dispatch's base and postdates its start — are `tools/ledger.py`'s
 from 7bc3f72 and are *called*. Two guards, one behavioural (the audit is spied on making
 the call) and one textual (the strings a second copy would have to contain are in
-`ledger.py` and not in `admission.py`), because either alone can be satisfied by a copy
+`ledger.py` and not in `trial.py`), because either alone can be satisfied by a copy
 that also delegates.
 
 Every repo here is a `tmp_path` of the test's own with its own `refs/remotes/origin/main`,
@@ -39,7 +41,7 @@ if TYPE_CHECKING:
     from pathlib import Path
     from types import ModuleType
 
-admission: ModuleType = load_tool("admission")
+harness: ModuleType = load_tool("trial")
 ledger: ModuleType = load_tool("ledger")
 
 # The real numbers from the row 7bc3f72 was written for: a review dispatch armed at
@@ -61,7 +63,7 @@ def run_git(repo: Path, *argv: str, when: str = "") -> str:
     if when:
         env = {"GIT_AUTHOR_DATE": when, "GIT_COMMITTER_DATE": when, "PATH": "/usr/bin:/bin"}
     # S603/S607: fixed literals and this test's own strings, and `git` resolves off PATH
-    # on purpose — the same reasoning `tools/admission.py` records for its own helper.
+    # on purpose — the same reasoning `tools/harness.py` records for its own helper.
     return subprocess.run(  # noqa: S603
         ["git", *argv],  # noqa: S607
         cwd=repo,
@@ -132,7 +134,7 @@ def audit_of(
 ) -> Any:  # noqa: ANN401 — a tools/ module loads dynamically, so its types are Unknown here
     """Audit one close, against a dispatch root that is empty unless the test wrote one."""
     root = dispatch_root if dispatch_root is not None else repo / "no-dispatches"
-    return admission.audit(repo, issue, close, dispatch_root=root, source="file=test")
+    return harness.audit(repo, issue, close, dispatch_root=root, source="file=test")
 
 
 def landed_setup(tmp_path: Path, *, issue: int = 92, when: str = COMMIT_AFTER_IT) -> Any:  # noqa: ANN401 — same
@@ -151,11 +153,10 @@ def landed_setup(tmp_path: Path, *, issue: int = 92, when: str = COMMIT_AFTER_IT
 def test_a_close_naming_its_dispatch_s_landing_audits_ok(tmp_path: Path) -> None:
     repo, _, landing, root = landed_setup(tmp_path)
     result = audit_of(repo, f"Landed at {landing[:7]}.", dispatch_root=root)
-    assert result.verdict_of("sha_on_main") == admission.AUDIT_OK
-    assert result.verdict_of("dispatch_window") == admission.AUDIT_OK
+    assert result.verdict_of("sha_on_main") == harness.AUDIT_OK
+    assert result.verdict_of("dispatch_window") == harness.AUDIT_OK
     assert result.sha == landing
     assert result.dispatch_id == "d-20260805-221743-8957c3"
-    assert ("close_names_sha", admission.MET) in admission.criteria_from_audit(result)
 
 
 def test_a_close_naming_no_commit_this_checkout_knows_audits_absent(tmp_path: Path) -> None:
@@ -164,9 +165,8 @@ def test_a_close_naming_no_commit_this_checkout_knows_audits_absent(tmp_path: Pa
     # close quotes one, so this is the live case rather than a contrived one.
     close = "byte-identical (md5 05dc2cff28a6b69aaf9ec54e49215942 both sides)"
     result = audit_of(repo, close, dispatch_root=root)
-    assert result.verdict_of("sha_on_main") == admission.AUDIT_ABSENT
+    assert result.verdict_of("sha_on_main") == harness.AUDIT_ABSENT
     assert result.sha == ""
-    assert ("close_names_sha", admission.NOT_MET) in admission.criteria_from_audit(result)
 
 
 def test_a_commit_that_is_not_on_the_branch_audits_not_on_main(tmp_path: Path) -> None:
@@ -176,13 +176,12 @@ def test_a_commit_that_is_not_on_the_branch_audits_not_on_main(tmp_path: Path) -
     # `commit` moved origin/main onto it, which is exactly what this test must undo.
     run_git(repo, "update-ref", "refs/remotes/origin/main", f"{aside}~1")
     result = audit_of(repo, f"Landed at {aside}.", dispatch_root=root)
-    assert result.verdict_of("sha_on_main") == admission.AUDIT_NOT_ON_MAIN
-    assert ("close_names_sha", admission.NOT_MET) in admission.criteria_from_audit(result)
+    assert result.verdict_of("sha_on_main") == harness.AUDIT_NOT_ON_MAIN
 
 
 def test_one_commit_spelt_twice_resolves_once(tmp_path: Path) -> None:
     repo, _, landing, _ = landed_setup(tmp_path)
-    resolved = admission.resolved_commits(repo, f"{landing[:7]} and again in full {landing}")
+    resolved = harness.resolved_commits(repo, f"{landing[:7]} and again in full {landing}")
     assert resolved == (landing,)
 
 
@@ -202,11 +201,10 @@ def test_the_7bc3f72_case_replayed_audits_outside_window(tmp_path: Path) -> None
     early = commit(repo, {"docs/b.md": "b\n"}, "docs: refs #227", when=COMMIT_BEFORE_IT)
     root = tmp_path / "dispatches"
     dispatch_record(root, "d-20260805-221743-8957c3", issue=227, base_sha=base)
-    result = admission.audit(repo, 227, f"Landed at {early}.", dispatch_root=root, source="t")
-    assert result.verdict_of("sha_on_main") == admission.AUDIT_OK
-    assert result.verdict_of("dispatch_window") == admission.AUDIT_OUTSIDE_WINDOW
+    result = harness.audit(repo, 227, f"Landed at {early}.", dispatch_root=root, source="t")
+    assert result.verdict_of("sha_on_main") == harness.AUDIT_OK
+    assert result.verdict_of("dispatch_window") == harness.AUDIT_OUTSIDE_WINDOW
     assert "predate this dispatch's start" in result.checks[1].detail
-    assert ("close_names_sha", admission.NOT_MET) in admission.criteria_from_audit(result)
 
 
 def test_the_real_case_s_review_seat_leaves_the_window_unbounded(tmp_path: Path) -> None:
@@ -222,18 +220,15 @@ def test_the_real_case_s_review_seat_leaves_the_window_unbounded(tmp_path: Path)
     early = commit(repo, {"docs/b.md": "b\n"}, "docs: refs #227", when=COMMIT_BEFORE_IT)
     root = tmp_path / "dispatches"
     dispatch_record(root, "d-20260805-221743-8957c3", issue=227, base_sha=base, seat="review")
-    result = admission.audit(repo, 227, f"Landed at {early}.", dispatch_root=root, source="t")
-    assert result.verdict_of("dispatch_window") == admission.AUDIT_UNBOUNDED
+    result = harness.audit(repo, 227, f"Landed at {early}.", dispatch_root=root, source="t")
+    assert result.verdict_of("dispatch_window") == harness.AUDIT_UNBOUNDED
     assert result.dispatch_id == ""
-    assert not [state for key, state in admission.criteria_from_audit(result) if key == "x"]
-    assert ("close_names_sha", admission.NOT_MET) not in admission.criteria_from_audit(result)
-    assert ("close_names_sha", admission.MET) not in admission.criteria_from_audit(result)
 
 
 def test_no_dispatch_record_at_all_leaves_the_window_unbounded(tmp_path: Path) -> None:
     repo, _, landing, _ = landed_setup(tmp_path)
     result = audit_of(repo, f"Landed at {landing}.")
-    assert result.verdict_of("dispatch_window") == admission.AUDIT_UNBOUNDED
+    assert result.verdict_of("dispatch_window") == harness.AUDIT_UNBOUNDED
     assert "no dispatch record" in result.checks[1].detail
 
 
@@ -243,7 +238,7 @@ def test_a_dispatch_carrying_no_start_leaves_the_window_unbounded(tmp_path: Path
     root = tmp_path / "startless"
     dispatch_record(root, "d-startless", issue=92, base_sha=base, planned_at="", started_at=None)
     result = audit_of(repo, f"Landed at {landing}.", dispatch_root=root)
-    assert result.verdict_of("dispatch_window") == admission.AUDIT_UNBOUNDED
+    assert result.verdict_of("dispatch_window") == harness.AUDIT_UNBOUNDED
     assert "no start time" in result.checks[1].detail
 
 
@@ -252,14 +247,14 @@ def test_a_dispatch_carrying_no_base_leaves_the_window_unbounded(tmp_path: Path)
     root = tmp_path / "baseless"
     dispatch_record(root, "d-baseless", issue=92, base_sha="")
     result = audit_of(repo, f"Landed at {landing}.", dispatch_root=root)
-    assert result.verdict_of("dispatch_window") == admission.AUDIT_UNBOUNDED
+    assert result.verdict_of("dispatch_window") == harness.AUDIT_UNBOUNDED
     assert "no base SHA" in result.checks[1].detail
 
 
 def test_a_close_with_no_sha_asks_no_window_question(tmp_path: Path) -> None:
     repo, _, _, root = landed_setup(tmp_path)
     result = audit_of(repo, "No SHA anywhere in this close.", dispatch_root=root)
-    assert result.verdict_of("dispatch_window") == admission.AUDIT_UNDECIDABLE
+    assert result.verdict_of("dispatch_window") == harness.AUDIT_UNDECIDABLE
 
 
 def test_the_latest_landing_dispatch_is_the_one_the_window_comes_from(tmp_path: Path) -> None:
@@ -281,7 +276,7 @@ def test_another_issue_s_dispatch_is_not_this_issue_s_window(tmp_path: Path) -> 
     root = tmp_path / "elsewhere"
     dispatch_record(root, "d-elsewhere", issue=93, base_sha=base)
     result = audit_of(repo, f"Landed at {landing}.", dispatch_root=root)
-    assert result.verdict_of("dispatch_window") == admission.AUDIT_UNBOUNDED
+    assert result.verdict_of("dispatch_window") == harness.AUDIT_UNBOUNDED
 
 
 # ------------------------------------------------------------------------- the corpus row
@@ -294,22 +289,22 @@ def test_an_in_world_landing_owes_a_corpus_verdict(tmp_path: Path) -> None:
     root = tmp_path / "dispatches"
     dispatch_record(root, "d-in-world", issue=92, base_sha=base)
     result = audit_of(repo, f"Landed at {landing}.", dispatch_root=root)
-    assert result.verdict_of("corpus_owed") == admission.AUDIT_OWED
+    assert result.verdict_of("corpus_owed") == harness.AUDIT_OWED
     assert "addons/main/fn_x.sqf" in result.checks[2].detail
 
 
 def test_a_landing_off_the_surface_list_owes_none(tmp_path: Path) -> None:
     repo, _, landing, root = landed_setup(tmp_path)
     result = audit_of(repo, f"Landed at {landing}.", dispatch_root=root)
-    assert result.verdict_of("corpus_owed") == admission.AUDIT_NOT_OWED
-    # And `not_owed` is never a waiver: that judgement stays the recorder's.
-    assert "corpus_verdict" not in dict(admission.criteria_from_audit(result))
+    assert result.verdict_of("corpus_owed") == harness.AUDIT_NOT_OWED
+    # And `not_owed` is never a waiver: nothing downstream reads it as one, because a list
+    # of paths cannot know what a change means. It is printed and left to a reader.
 
 
 def test_a_close_naming_no_landing_cannot_decide_what_it_touched(tmp_path: Path) -> None:
     repo, _, _, root = landed_setup(tmp_path)
     result = audit_of(repo, "Nothing resolvable here.", dispatch_root=root)
-    assert result.verdict_of("corpus_owed") == admission.AUDIT_UNDECIDABLE
+    assert result.verdict_of("corpus_owed") == harness.AUDIT_UNDECIDABLE
 
 
 # ----------------------------------------------------------------------- the evidence path
@@ -327,7 +322,7 @@ def test_a_quoted_evidence_path_that_does_not_resolve_audits_path_missing(tmp_pa
     repo, _, landing, root = landed_setup(tmp_path)
     absent = tmp_path / "runs" / ".arma-cti" / "runs" / "20260806T000000Z-pool"
     result = audit_of(repo, f"{landing} evidence {absent}", dispatch_root=root)
-    assert result.verdict_of("evidence") == admission.AUDIT_PATH_MISSING
+    assert result.verdict_of("evidence") == harness.AUDIT_PATH_MISSING
     assert "does not exist" in result.checks[3].detail
 
 
@@ -336,7 +331,7 @@ def test_a_quoted_directory_carrying_no_pool_json_audits_path_missing(tmp_path: 
     hollow = tmp_path / "h" / ".arma-cti" / "runs" / "20260806T000000Z-pool"
     hollow.mkdir(parents=True)
     result = audit_of(repo, f"{landing} evidence {hollow}", dispatch_root=root)
-    assert result.verdict_of("evidence") == admission.AUDIT_PATH_MISSING
+    assert result.verdict_of("evidence") == harness.AUDIT_PATH_MISSING
     assert "carries no pool.json" in result.checks[3].detail
 
 
@@ -346,14 +341,14 @@ def test_a_quoted_pool_that_is_not_json_audits_path_missing(tmp_path: Path) -> N
     broken.mkdir(parents=True)
     (broken / "pool.json").write_text("{not json", encoding="utf-8")
     result = audit_of(repo, f"{landing} evidence {broken}", dispatch_root=root)
-    assert result.verdict_of("evidence") == admission.AUDIT_PATH_MISSING
+    assert result.verdict_of("evidence") == harness.AUDIT_PATH_MISSING
 
 
 def test_a_quoted_green_pool_audits_ok(tmp_path: Path) -> None:
     repo, _, landing, root = landed_setup(tmp_path)
     green = pool(tmp_path / "g" / ".arma-cti" / "runs" / "20260806T000000Z-pool", "pass")
     result = audit_of(repo, f"{landing} evidence {green}", dispatch_root=root)
-    assert result.verdict_of("evidence") == admission.AUDIT_OK
+    assert result.verdict_of("evidence") == harness.AUDIT_OK
     assert "worst_class=pass" in result.checks[3].detail
 
 
@@ -361,7 +356,7 @@ def test_a_quoted_red_pool_audits_red(tmp_path: Path) -> None:
     repo, _, landing, root = landed_setup(tmp_path)
     red = pool(tmp_path / "r" / ".arma-cti" / "runs" / "20260806T000000Z-pool", "assertion_failed")
     result = audit_of(repo, f"{landing} evidence {red}", dispatch_root=root)
-    assert result.verdict_of("evidence") == admission.AUDIT_RED
+    assert result.verdict_of("evidence") == harness.AUDIT_RED
     assert "worst_class=assertion_failed" in result.checks[3].detail
 
 
@@ -370,23 +365,24 @@ def test_the_worst_of_several_quoted_pools_is_the_verdict(tmp_path: Path) -> Non
     green = pool(tmp_path / "g" / ".arma-cti" / "runs" / "20260806T000000Z-pool", "pass")
     red = pool(tmp_path / "r" / ".arma-cti" / "runs" / "20260806T010000Z-pool", "timeout")
     result = audit_of(repo, f"{landing} first {green} then {red}", dispatch_root=root)
-    assert result.verdict_of("evidence") == admission.AUDIT_RED
+    assert result.verdict_of("evidence") == harness.AUDIT_RED
 
 
 def test_a_close_quoting_no_run_directory_audits_absent(tmp_path: Path) -> None:
     repo, _, landing, root = landed_setup(tmp_path)
     result = audit_of(repo, f"Landed at {landing}.", dispatch_root=root)
-    assert result.verdict_of("evidence") == admission.AUDIT_ABSENT
+    assert result.verdict_of("evidence") == harness.AUDIT_ABSENT
 
 
-def test_an_owed_corpus_with_no_evidence_computes_not_met(tmp_path: Path) -> None:
+def test_an_owed_corpus_with_no_evidence_reads_owed_against_an_absent_pool(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     base = commit(repo, {"docs/a.md": "a\n"}, "docs: base", when=COMMIT_BEFORE_IT)
     landing = commit(repo, {"missions/cti/init.sqf": "// x\n"}, "feat: refs #92", COMMIT_AFTER_IT)
     root = tmp_path / "dispatches"
     dispatch_record(root, "d-owed", issue=92, base_sha=base)
     result = audit_of(repo, f"Landed at {landing}.", dispatch_root=root)
-    assert dict(admission.criteria_from_audit(result))["corpus_verdict"] == admission.NOT_MET
+    assert result.verdict_of("corpus_owed") == harness.AUDIT_OWED
+    assert result.verdict_of("evidence") == harness.AUDIT_ABSENT
 
 
 def test_an_owed_corpus_with_a_green_pool_is_still_the_recorder_s_call(tmp_path: Path) -> None:
@@ -398,8 +394,10 @@ def test_an_owed_corpus_with_a_green_pool_is_still_the_recorder_s_call(tmp_path:
     dispatch_record(root, "d-owed", issue=92, base_sha=base)
     green = pool(tmp_path / "g" / ".arma-cti" / "runs" / "20260806T000000Z-pool", "pass")
     result = audit_of(repo, f"{landing} evidence {green}", dispatch_root=root)
-    assert result.verdict_of("evidence") == admission.AUDIT_OK
-    assert "corpus_verdict" not in dict(admission.criteria_from_audit(result))
+    assert result.verdict_of("evidence") == harness.AUDIT_OK
+    # And a green pool is still only `ok` on the evidence check: nothing here promotes it
+    # into a claim that the *full* corpus ran, because `pool.json` records no filter.
+    assert result.verdict_of("corpus_owed") == harness.AUDIT_OWED
 
 
 def test_a_home_relative_run_path_is_read_against_home(
@@ -407,8 +405,8 @@ def test_a_home_relative_run_path_is_read_against_home(
 ) -> None:
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     pool(tmp_path / "home" / ".arma-cti" / "runs" / "20260806T000000Z-pool", "pass")
-    assert admission.evidence_check("evidence ~/.arma-cti/runs/20260806T000000Z-pool").verdict == (
-        admission.AUDIT_OK
+    assert harness.evidence_check("evidence ~/.arma-cti/runs/20260806T000000Z-pool").verdict == (
+        harness.AUDIT_OK
     )
 
 
@@ -419,16 +417,16 @@ def test_a_gate_block_is_quoted_and_never_green(tmp_path: Path) -> None:
     repo, _, landing, root = landed_setup(tmp_path)
     close = f"{landing}\n\ngate=green (just fast)\npushed={landing} origin/main\n"
     result = audit_of(repo, close, dispatch_root=root)
-    assert result.verdict_of("gate_quoted") == admission.AUDIT_QUOTED
-    assert admission.GATE_QUOTED_CAVEAT in result.checks[4].detail
-    # The whole point: the strongest possible gate paste still fills nothing.
-    assert "fast_green" not in dict(admission.criteria_from_audit(result))
+    assert result.verdict_of("gate_quoted") == harness.AUDIT_QUOTED
+    assert harness.GATE_QUOTED_CAVEAT in result.checks[4].detail
+    # The whole point: the strongest possible gate paste still yields only `quoted`.
+    assert result.verdict_of("gate_quoted") != harness.AUDIT_OK
 
 
 def test_a_close_quoting_no_gate_output_audits_absent(tmp_path: Path) -> None:
     repo, _, landing, root = landed_setup(tmp_path)
     result = audit_of(repo, f"Landed at {landing}, and that is all.", dispatch_root=root)
-    assert result.verdict_of("gate_quoted") == admission.AUDIT_ABSENT
+    assert result.verdict_of("gate_quoted") == harness.AUDIT_ABSENT
 
 
 CLOSES_THAT_MIGHT_TEMPT_A_CHANGELOG_PASS = (
@@ -444,32 +442,48 @@ CLOSES_THAT_MIGHT_TEMPT_A_CHANGELOG_PASS = (
 def test_no_close_makes_the_changelog_check_pass(tmp_path: Path, close: str) -> None:
     repo, _, landing, root = landed_setup(tmp_path)
     result = audit_of(repo, f"{landing}\n{close}", dispatch_root=root)
-    assert result.verdict_of("changelog") == admission.AUDIT_UNDECIDABLE
-    assert result.verdict_of("changelog") != admission.AUDIT_OK
-    assert admission.AUDIT_UNDECIDABLE not in admission.CRITERION_STATES
+    assert result.verdict_of("changelog") == harness.AUDIT_UNDECIDABLE
+    assert result.verdict_of("changelog") != harness.AUDIT_OK
 
 
 def test_the_changelog_check_takes_no_input_to_be_swayed_by() -> None:
     """Nullary by construction, which is why "no input makes it `ok`" needs no sweep."""
-    assert admission.changelog_check() == admission.changelog_check()
-    assert admission.changelog_check().verdict == admission.AUDIT_UNDECIDABLE
+    assert harness.changelog_check() == harness.changelog_check()
+    assert harness.changelog_check().verdict == harness.AUDIT_UNDECIDABLE
 
 
-def test_undecidable_is_never_one_of_part_a_s_passing_states() -> None:
-    assert admission.AUDIT_UNDECIDABLE not in (admission.MET, admission.NOT_APPLICABLE)
+def test_undecidable_is_never_one_of_the_passing_criterion_states() -> None:
+    assert harness.AUDIT_UNDECIDABLE not in (harness.MET, harness.NOT_MET)
+
+
+def test_the_audit_converts_no_verdict_into_a_criterion(tmp_path: Path) -> None:
+    """#328: the one place a weak verdict could have hardened into a judgement is gone.
+
+    `criteria_from_audit` read `quoted`, `owed` and `unbounded` into Part A states for the
+    admission bar. The bar was dropped, and the conversion went with it rather than being
+    left behind as a function nobody calls — a printed verdict is now the whole output, and
+    what to do with it is a reader's.
+    """
+    assert not hasattr(harness, "criteria_from_audit")
+    repo, _, landing, root = landed_setup(tmp_path)
+    result = audit_of(repo, f"{landing}\n\ngate=green (just fast)\n", dispatch_root=root)
+    assert all(
+        line.startswith(("issue=", "source=", "sha=", "dispatch=", "check="))
+        for line in result.lines()
+    )
 
 
 # --------------------------------------------------------------- called, never reimplemented
 
 # The strings a second implementation of the window tests would have to contain. Asserted
-# present in `ledger.py` as well as absent from `admission.py`, so a rename in the ledger
+# present in `ledger.py` as well as absent from `harness.py`, so a rename in the ledger
 # reds this guard rather than silently emptying it.
 LEDGER_ONLY = ("--ancestry-path", "planned_at", "started_at", "%H%x1f%cI%x1f%s%x1f%B%x1e")
 
 
 def test_the_window_tests_live_only_in_the_ledger() -> None:
-    ledger_source = (admission.Path(ledger.__file__)).read_text(encoding="utf-8")
-    audit_source = (admission.Path(admission.__file__)).read_text(encoding="utf-8")
+    ledger_source = (harness.Path(ledger.__file__)).read_text(encoding="utf-8")
+    audit_source = (harness.Path(harness.__file__)).read_text(encoding="utf-8")
     for marker in LEDGER_ONLY:
         assert marker in ledger_source, f"{marker} has moved: this guard now anchors on nothing"
         assert marker not in audit_source, f"{marker} is a second copy of the ledger's window"
@@ -480,8 +494,8 @@ def test_the_audit_calls_the_ledger_s_window_tests(
 ) -> None:
     repo, _, landing, root = landed_setup(tmp_path)
     called: list[str] = []
-    real_landed = admission.ledger.landed
-    real_start = admission.ledger.dispatch_start
+    real_landed = harness.ledger.landed
+    real_start = harness.ledger.dispatch_start
 
     def spy_landed(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401 — a pass-through spy
         called.append("landed")
@@ -491,19 +505,19 @@ def test_the_audit_calls_the_ledger_s_window_tests(
         called.append("dispatch_start")
         return real_start(*args, **kwargs)
 
-    monkeypatch.setattr(admission.ledger, "landed", spy_landed)
-    monkeypatch.setattr(admission.ledger, "dispatch_start", spy_start)
+    monkeypatch.setattr(harness.ledger, "landed", spy_landed)
+    monkeypatch.setattr(harness.ledger, "dispatch_start", spy_start)
     result = audit_of(repo, f"Landed at {landing}.", dispatch_root=root)
-    assert result.verdict_of("dispatch_window") == admission.AUDIT_OK
+    assert result.verdict_of("dispatch_window") == harness.AUDIT_OK
     assert called == ["dispatch_start", "landed"]
 
 
 def test_the_pool_reading_is_pool_merge_s(tmp_path: Path, monkeypatch: Any) -> None:  # noqa: ANN401 — same
     repo, _, landing, root = landed_setup(tmp_path)
     green = pool(tmp_path / "g" / ".arma-cti" / "runs" / "20260806T000000Z-pool", "pass")
-    monkeypatch.setattr(admission.pool_merge, "pool_reads_green", lambda _document: False)
+    monkeypatch.setattr(harness.pool_merge, "pool_reads_green", lambda _document: False)
     result = audit_of(repo, f"{landing} evidence {green}", dispatch_root=root)
-    assert result.verdict_of("evidence") == admission.AUDIT_RED
+    assert result.verdict_of("evidence") == harness.AUDIT_RED
 
 
 # ------------------------------------------------------------------ which close was audited
@@ -516,7 +530,7 @@ def test_a_review_posted_the_day_after_is_not_the_close() -> None:
         {"id": 2, "created_at": "2026-08-05T21:47:46Z", "body": "Closed."},
         {"id": 3, "created_at": "2026-08-06T03:17:17Z", "body": "a review, afterwards"},
     ]
-    comment, offset = admission.select_close(comments, "2026-08-05T21:47:46Z")
+    comment, offset = harness.select_close(comments, "2026-08-05T21:47:46Z")
     assert comment["id"] == 2
     assert offset == 0
 
@@ -528,19 +542,19 @@ def test_a_close_written_moments_after_the_close_event_is_still_the_close() -> N
     side. Taking only the earlier side refused #118 outright.
     """
     comments = [{"id": 1, "created_at": "2026-08-02T13:26:11Z", "body": "Landed."}]
-    comment, offset = admission.select_close(comments, "2026-08-02T13:23:24Z")
+    comment, offset = harness.select_close(comments, "2026-08-02T13:23:24Z")
     assert comment["id"] == 1
     assert offset == 167
 
 
 def test_an_open_issue_has_no_close_to_audit() -> None:
     comments = [{"id": 1, "created_at": "2026-08-02T23:16:20Z", "body": "a comment"}]
-    assert admission.select_close(comments, "") is None
+    assert harness.select_close(comments, "") is None
 
 
 def test_an_issue_whose_comments_carry_no_date_has_no_close() -> None:
     comments = [{"id": 1, "body": "undated"}, {"id": 2, "created_at": "not a time", "body": "x"}]
-    assert admission.select_close(comments, "2026-08-05T21:47:46Z") is None
+    assert harness.select_close(comments, "2026-08-05T21:47:46Z") is None
 
 
 def test_the_nearer_of_two_candidates_wins_whichever_side_it_is_on() -> None:
@@ -548,12 +562,12 @@ def test_the_nearer_of_two_candidates_wins_whichever_side_it_is_on() -> None:
         {"id": 1, "created_at": "2026-08-05T21:47:00Z", "body": "46s before"},
         {"id": 2, "created_at": "2026-08-05T21:47:56Z", "body": "10s after"},
     ]
-    comment, offset = admission.select_close(comments, "2026-08-05T21:47:46Z")
+    comment, offset = harness.select_close(comments, "2026-08-05T21:47:46Z")
     assert comment["id"] == 2
     assert offset == 10
 
 
-# --------------------------------------------------------------------- record --from-audit
+# ------------------------------------------------------------------------- the CLI verb
 
 
 def close_file(tmp_path: Path, body: str) -> Path:
@@ -563,105 +577,19 @@ def close_file(tmp_path: Path, body: str) -> Path:
     return path
 
 
-def record_argv(tmp_path: Path, repo: Path, root: Path, close: Path, *extra: str) -> list[str]:
-    """Build the argv for one `record --from-audit`, with the criteria left to the caller."""
-    return [
-        "--admission-dir",
-        str(tmp_path / "admission"),
-        "--otlp-endpoint",
-        DEAD_ENDPOINT,
-        "record",
-        "--lane",
-        LANE,
-        "--profile",
-        PROFILE,
-        "--seat",
-        "implementer",
-        "--issue",
-        "92",
-        "--repo",
-        str(repo),
-        "--dispatch-dir",
-        str(root),
-        "--close-file",
-        str(close),
-        "--from-audit",
-        *extra,
-    ]
+def test_the_bars_record_verbs_are_gone_rather_than_left_unreachable() -> None:
+    """#328: the surface a dispatcher or a recorder used to reach the bar through.
 
-
-def test_from_audit_still_demands_an_explicit_choice_on_the_rest(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    repo, _, landing, root = landed_setup(tmp_path)
-    close = close_file(tmp_path, f"Landed at {landing}. gate=green (just fast)")
-    code = admission.main(record_argv(tmp_path, repo, root, close))
-    printed = capsys.readouterr().err
-    assert code == admission.EXIT_REFUSED
-    assert "refusal=criteria_missing" in printed
-    # The audit computed one criterion; the two it cannot compute are still required.
-    assert "from_audit=close_names_sha=met" in printed
-    assert "fast_green" in printed
-    assert "hooks_clean" in printed
-    assert "close_names_sha" not in printed.split("missing=")[1]
-
-
-def test_from_audit_completes_once_the_rest_are_given(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    repo, _, landing, root = landed_setup(tmp_path)
-    close = close_file(tmp_path, f"Landed at {landing}. gate=green (just fast)")
-    code = admission.main(
-        record_argv(
-            tmp_path,
-            repo,
-            root,
-            close,
-            "--fast-green",
-            admission.MET,
-            "--hooks-clean",
-            admission.MET,
-            "--corpus-verdict",
-            admission.NOT_APPLICABLE,
-        )
-    )
-    printed = capsys.readouterr().out
-    assert code == 0
-    assert "from_audit=close_names_sha=met" in printed
-    assert f"from_audit=sha={landing}" in printed
-    assert "from_audit=dispatch=d-20260805-221743-8957c3" in printed
-    assert "assessed=1/10" in printed
-
-
-def test_from_audit_never_overrides_a_choice_the_recorder_made(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
-    repo, _, landing, root = landed_setup(tmp_path)
-    close = close_file(tmp_path, f"Landed at {landing}.")
-    code = admission.main(
-        record_argv(
-            tmp_path,
-            repo,
-            root,
-            close,
-            "--close-names-sha",
-            admission.NOT_MET,
-            "--fast-green",
-            admission.MET,
-            "--hooks-clean",
-            admission.MET,
-            "--corpus-verdict",
-            admission.NOT_APPLICABLE,
-        )
-    )
-    printed = capsys.readouterr().out
-    assert code == 0
-    assert "from_audit=close_names_sha" not in printed
-    record = json.loads(
-        (tmp_path / "admission" / f"{LANE}.{PROFILE}.implementer.json").read_text(encoding="utf-8")
-    )
-    criteria = record["attempts"][0]["assessments"][0]["criteria"]
-    assert criteria["close_names_sha"] == admission.NOT_MET
+    A verb left parsing but doing nothing is the shape this issue exists to avoid — an
+    absence a reader cannot tell from a permissive rung. These refuse at the parser.
+    """
+    for verb in ("check", "status", "reset"):
+        with pytest.raises(SystemExit):
+            harness.parse_args(
+                [verb, "--lane", LANE, "--profile", PROFILE, "--seat", "implementer"]
+            )
+    for gone in ("run_record", "run_check", "run_status", "append", "stand", "crosscheck"):
+        assert not hasattr(harness, gone)
 
 
 def test_a_close_nobody_could_read_refuses_rather_than_auditing(
@@ -669,9 +597,9 @@ def test_a_close_nobody_could_read_refuses_rather_than_auditing(
 ) -> None:
     repo, _, _, root = landed_setup(tmp_path)
     missing = tmp_path / "nowhere" / "close.md"
-    code = admission.main(
+    code = harness.main(
         [
-            "audit",
+            "close-audit",
             "--issue",
             "92",
             "--repo",
@@ -682,7 +610,7 @@ def test_a_close_nobody_could_read_refuses_rather_than_auditing(
             str(missing),
         ]
     )
-    assert code == admission.EXIT_REFUSED
+    assert code == harness.EXIT_REFUSED
     assert "refusal=close_unreadable" in capsys.readouterr().err
 
 
@@ -692,11 +620,11 @@ def test_the_audit_verb_prints_every_check_and_writes_nothing(
     repo, _, landing, root = landed_setup(tmp_path)
     close = close_file(tmp_path, f"Landed at {landing}. gate=green (just fast)")
     store = tmp_path / "admission"
-    code = admission.main(
+    code = harness.main(
         [
             "--admission-dir",
             str(store),
-            "audit",
+            "close-audit",
             "--issue",
             "92",
             "--repo",
@@ -709,10 +637,9 @@ def test_the_audit_verb_prints_every_check_and_writes_nothing(
     )
     printed = capsys.readouterr().out
     assert code == 0
-    for name in admission.AUDIT_CHECKS:
+    for name in harness.AUDIT_CHECKS:
         assert f"check={name} " in printed
-    assert "explicit=fast_green corpus_verdict hooks_clean" in printed
-    # An audit is evidence for a record, never a record: nothing on disk moved.
+    # An audit is evidence for a reader, never a record: nothing on disk moved.
     assert not store.exists()
 
 
@@ -722,9 +649,9 @@ def test_an_audit_that_found_a_defect_still_exits_zero(
     """A verdict is a finding to read, not a gate: an exit code would make it one."""
     repo, _, _, root = landed_setup(tmp_path)
     close = close_file(tmp_path, "Nothing here resolves to a commit.")
-    code = admission.main(
+    code = harness.main(
         [
-            "audit",
+            "close-audit",
             "--issue",
             "92",
             "--repo",
@@ -736,4 +663,4 @@ def test_an_audit_that_found_a_defect_still_exits_zero(
         ]
     )
     assert code == 0
-    assert f"check=sha_on_main verdict={admission.AUDIT_ABSENT}" in capsys.readouterr().out
+    assert f"check=sha_on_main verdict={harness.AUDIT_ABSENT}" in capsys.readouterr().out

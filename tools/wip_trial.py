@@ -19,14 +19,27 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import admission
 import queue_policy
+import trial
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Mapping, Sequence
 
 VERSION: Final = 1
 BAR_ID: Final = "cti.wip-trial/284/v1"
+
+# The admission bar's vocabulary, frozen here by #328, which dropped that bar and with it
+# `ADMISSION_BAR_ID` and `ADMISSION_PART_A`'s live definitions. These values are quoted into
+# every manifest this tool has ever pre-registered, so they cannot be dropped and cannot be
+# corrected: a pre-registration that silently re-spells its own provenance is no longer one.
+# They are a *record of what was quoted*, not a live rule — nothing enforces them any more.
+ADMISSION_BAR_ID: Final = "cti.admission/224"
+ADMISSION_PART_A: Final = ("close_names_sha", "fast_green", "corpus_verdict", "hooks_clean")
+
+# §3 of #230's derivation: the three things any one of which makes an issue unclean. This one
+# is still live — it is this trial's own classification vocabulary, and always was; it merely
+# used to be spelled in the module that carried the bar.
+UNCLEAN_REASONS: Final = ("rework", "finding", "reopen")
 ISSUES_PER_BLOCK: Final = 10
 BLOCKS_PER_STAGE: Final = 4
 MATERIAL_RATE_RATIO: Final = 1.15
@@ -207,11 +220,11 @@ def thresholds() -> dict[str, object]:
         "candidate_rework_not_above_safe": True,
         "candidate_conflicts_not_above_safe": True,
         "candidate_faster_in_each_adjacent_pair": True,
-        "admission_bar_id": admission.BAR_ID,
-        "admission_part_a": list(admission.PART_A_KEYS),
-        "unclean_reasons": list(admission.UNCLEAN_REASONS),
-        "orchestration_trial_bar_id": admission.TRIAL_BAR_ID,
-        "orchestration_trial_criteria": list(admission.TRIAL_CRITERION_KEYS),
+        "admission_bar_id": ADMISSION_BAR_ID,
+        "admission_part_a": list(ADMISSION_PART_A),
+        "unclean_reasons": list(UNCLEAN_REASONS),
+        "orchestration_trial_bar_id": trial.TRIAL_BAR_ID,
+        "orchestration_trial_criteria": list(trial.TRIAL_CRITERION_KEYS),
     }
 
 
@@ -677,13 +690,11 @@ def _validate_maturity(event: Mapping[str, object]) -> Refusal | None:
             "Audit clean close and seven-day unclean explicitly; absence is not a pass.",
         )
     reasons = event.get("unclean_reasons", [])
-    if not isinstance(reasons, list) or any(
-        reason not in admission.UNCLEAN_REASONS for reason in reasons
-    ):
+    if not isinstance(reasons, list) or any(reason not in UNCLEAN_REASONS for reason in reasons):
         return Refusal(
             "unclean_reason_unknown",
             (f"issue={issue}",),
-            f"Reuse admission's vocabulary: {' '.join(admission.UNCLEAN_REASONS)}.",
+            f"Reuse this trial's vocabulary: {' '.join(UNCLEAN_REASONS)}.",
         )
     if bool(reasons) != bool(event.get("unclean")):
         return Refusal(
@@ -1293,7 +1304,7 @@ def bar_lines() -> tuple[str, ...]:
         f"candidate_high_exposure={MIN_HIGH_EXPOSURE:.0%} of unfinished-cohort time",
         f"maturity={MATURITY_SECONDS // 86400} days",
         "quality=10/10 clean, zero critical failures, at most 1/10 unclean per block",
-        f"quality_sources={admission.BAR_ID} {admission.TRIAL_BAR_ID}",
+        f"quality_sources={ADMISSION_BAR_ID} {trial.TRIAL_BAR_ID}",
         "rework=candidate issue and conflict counts cannot exceed the safe control",
         "selection=lowest passing limit; a higher stage follows only a matured pass",
         "authority=reports only; never dispatches and never edits queue policy",

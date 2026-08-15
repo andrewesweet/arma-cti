@@ -84,7 +84,7 @@
         "src/cti_daemon/transport.py",
         "src/cti_daemon/manifest.py"
       ],
-      "remedy": "A subagent cannot hold the full `just regress` corpus's foreground wait — `.claude/hooks/deny-subagent-waits.py` denies it — so a seat reached as a subagent cannot gate its own in-world work and must not take it. That is the whole of the rule: `just dispatch` launches a top-level session, which the wait hook permits by returning 0 where there is no agent id, so this row refuses no dispatch route. Its two path lists remain the one authority for what an in-world surface is, read by `just land`'s corpus rung, `tools/admission.py` and `tools/brief.py` (#302)."
+      "remedy": "A subagent cannot hold the full `just regress` corpus's foreground wait — `.claude/hooks/deny-subagent-waits.py` denies it — so a seat reached as a subagent cannot gate its own in-world work and must not take it. That is the whole of the rule: `just dispatch` launches a top-level session, which the wait hook permits by returning 0 where there is no agent id, so this row refuses no dispatch route. Its two path lists remain the one authority for what an in-world surface is, read by `just land`'s corpus rung and by `tools/gate.py`, which since #328 is where the derived list lives and which `tools/brief.py` and `tools/trial.py` both call (#302)."
     },
     {
       "id": 6,
@@ -97,7 +97,6 @@
         "tools/dispatch.py",
         "tools/land.py",
         "tools/mutation_smoke.py",
-        "tools/admission.py",
         ".claude/settings.json",
         ".claude/hooks/"
       ],
@@ -106,8 +105,7 @@
         "Routing-class: conflict-of-interest",
         "mutation floors",
         "hook wiring",
-        "dispatch permissions",
-        "admission bar"
+        "dispatch permissions"
       ],
       "landing_path_prefixes": [
         "config/dispatch-routing-policy.json",
@@ -115,11 +113,10 @@
         "tools/dispatch.py",
         "tools/land.py",
         "tools/mutation_smoke.py",
-        "tools/admission.py",
         ".claude/settings.json",
         ".claude/hooks/"
       ],
-      "remedy": "Two rules live on this row and they are not the same rule, so read which one refused you. The **invariant** is the conflict of interest — no instance authors the gate that judges it — and it binds every instance, Claude's included; it is discharged by an independent review under ADR-0071 ruling 4, and **no refusal enforces it** until #331's never-alone exemption list lands — the ADR's sequencing step 7 — so today it is asserted and honoured by procedure. The **refusal** you have actually met is the older keep-on-Claude bar, still selected by lane: a non-Claude lane is refused these paths and the Claude lane is exempt. It is kept, and the label kept with it, because retiring it before the exemption list exists would leave the gates with neither rule; it is not evidence that the invariant was checked, and a Claude landing here has cleared nothing. The half of the invariant that is enforceable today is enforced: this class carries no exception, and the withdrawn `Routing-exception: proposal-only` marker went with the framing, because an instance that can except itself from the gate that judges it is precisely the shape being forbidden. `.claude/hooks/` and `.claude/settings.json` are here, not dropped: they are the denial layer and the permission allowlist, and the withdrawn gated-semantic-surfaces class was the only routing rule that named them. Coverage is incomplete: the list names six tools plus those two paths, and omits `tools/check_adr_form.py`, `tools/check_seat_config.py`, `tools/check_validated_markers.py`, `tools/check_conflict_markers.py`, `tools/check_source_symlink.py`, `tools/check_sqf_bans.py`, `tools/generate_seats.py` and `tools/export_command_schema.py` — the eight `just check` reaches — and `tools/breaker.py`, which no `check-*` recipe runs and which `just breaker` and `just watch-report` reach instead (review round 2 claim 4, correcting both this clause and ADR-0071's own row 6, which made the same slip) — along with every gate reached only through `just unit`, `just mutation`, `just land` and `just regress`. A diff touching a gate this list does not name is uncovered, never cleared."
+      "remedy": "Two rules live on this row and they are not the same rule, so read which one refused you. The **invariant** is the conflict of interest — no instance authors the gate that judges it — and it binds every instance, Claude's included; it is discharged by an independent review under ADR-0071 ruling 4, and **no refusal enforces it** until #331's never-alone exemption list lands — the ADR's sequencing step 7 — so today it is asserted and honoured by procedure. The **refusal** you have actually met is the older keep-on-Claude bar, still selected by lane: a non-Claude lane is refused these paths and the Claude lane is exempt. It is kept, and the label kept with it, because retiring it before the exemption list exists would leave the gates with neither rule; it is not evidence that the invariant was checked, and a Claude landing here has cleared nothing. The half of the invariant that is enforceable today is enforced: this class carries no exception, and the withdrawn `Routing-exception: proposal-only` marker went with the framing, because an instance that can except itself from the gate that judges it is precisely the shape being forbidden. `.claude/hooks/` and `.claude/settings.json` are here, not dropped: they are the denial layer and the permission allowlist, and the withdrawn gated-semantic-surfaces class was the only routing rule that named them. Coverage is incomplete: the list names five tools plus those two paths, and omits `tools/check_adr_form.py`, `tools/check_seat_config.py`, `tools/check_validated_markers.py`, `tools/check_conflict_markers.py`, `tools/check_source_symlink.py`, `tools/check_sqf_bans.py`, `tools/generate_seats.py` and `tools/export_command_schema.py` — the eight `just check` reaches — and `tools/breaker.py`, which no `check-*` recipe runs and which `just breaker` and `just watch-report` reach instead (review round 2 claim 4, correcting both this clause and ADR-0071's own row 6, which made the same slip), and `tools/trial.py`, which was on this list as `tools/admission.py` and left it with the bar #328 dropped — it gates nothing now and `just watch-report` is the only recipe that reaches it, which is `tools/breaker.py`'s position exactly — along with every gate reached only through `just unit`, `just mutation`, `just land` and `just regress`. A diff touching a gate this list does not name is uncovered, never cleared."
     }
   ],
   "routing_issue_exceptions": [],

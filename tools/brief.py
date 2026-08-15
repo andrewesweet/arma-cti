@@ -45,9 +45,8 @@ second home for a rule, and two homes can disagree.
 CLAUDE.md's `just regress` row owes the full corpus to any change reaching an in-world
 surface, and a briefing that names `just fast` for an in-world change is the defect this
 table exists to prevent. The in-world list is **not restated here**: it is
-`tools/admission.py`'s `IN_WORLD_PREFIXES`, which the landing-time cross-check already
-uses, so the composition-time prediction and the landing-time audit cannot disagree about
-what "in-world" means.
+`tools/gate.py`'s `IN_WORLD_PREFIXES`, which every other reader of that list also calls, so
+no two of them can disagree about what "in-world" means.
 
 Two signals, both read off the issue body:
 
@@ -107,7 +106,7 @@ pre-registered. The three undetermined negatives are two bodies naming no path a
 one (#228) using the word `Command` in its ordinary English sense.
 
 **What it cannot see.** A body's paths are what its author expected to touch, and an
-implementation discovers more. This is a prediction; `just admission audit`'s cross-check
+implementation discovers more. This is a prediction; `just trial close-audit`'s corpus check
 against the landed commit is the ground truth, and it runs later on the same list.
 
 ## The reserved-surface section, and why it is a section rather than a refusal
@@ -159,7 +158,6 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 sys.path.insert(0, str(Path(__file__).parent))
 
 # The path insert above is what makes these importable.
-import admission
 import dispatch
 import escalation
 import handoff_fetch
@@ -237,7 +235,10 @@ def reserved_surfaces(paths: Sequence[str]) -> tuple[str, ...]:
 
 # ---------------------------------------------------- prior work already on origin/main
 
-PRIOR_WORK_REF: Final = admission.AUDIT_REF
+# The branch a landing has to be on to count as prior work. Spelled here rather than
+# imported since #328: it used to come from the admission module's `AUDIT_REF`, and that
+# module is now the trial harness, which this one has no other reason to load.
+PRIOR_WORK_REF: Final = "origin/main"
 PRIOR_WORK_RULE: Final = (
     "This report states what commit messages on `origin/main` reference; it does not decide whether"
 )

@@ -607,7 +607,7 @@ def test_corrective_rework_requires_a_sourced_ready_point() -> None:
     assert refusal.kind == "rework_before_ready"
 
 
-def test_unclean_reuses_admissions_vocabulary_without_a_default() -> None:
+def test_unclean_uses_the_frozen_vocabulary_without_a_default() -> None:
     trial = manifest()
     order = trial["block_order"]
     assert isinstance(order, list)

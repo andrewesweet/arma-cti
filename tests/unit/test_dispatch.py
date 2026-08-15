@@ -47,7 +47,6 @@ if TYPE_CHECKING:
 
 dispatch = load_tool("dispatch")
 breaker = load_tool("breaker")
-admission = load_tool("admission")
 brief = load_tool("brief")
 readiness = load_tool("readiness")
 routing_policy = load_tool("routing_policy")
@@ -152,9 +151,6 @@ def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
     # test's own: a run whose result depended on what this box's lanes were doing would
     # be a test of the machine rather than of the dispatcher (#226).
     env["CTI_BREAKER_DIR"] = str(tmp_path / "breaker")
-    # Same reason for the admission records (#224): a seam run must not read, and must
-    # not write, this box's real standing for a profile on another lane.
-    env["CTI_ADMISSION_DIR"] = str(tmp_path / "admission")
     # And the same reason again for the issue body (#241): a forked seam must not reach
     # GitHub to find out whether #223 is ready, or the whole suite would be a test of this
     # box's network. `--issue-body` is the surface triage uses on a draft; here it is the
@@ -252,7 +248,6 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "dispatch_dir": str(tmp_path / "dispatches"),
         "credentials": str(tmp_path / "credentials.env"),
         "breaker_dir": str(tmp_path / "breaker"),
-        "admission_dir": str(tmp_path / "admission"),
         "issue_body": str(ROUTING_ELIGIBLE_BODY),
         "queue_dir": str(open_policy(tmp_path)),
         "queue_root": str(tmp_path / "queue-root"),
@@ -1074,7 +1069,6 @@ def test_the_default_worktree_is_the_one_just_worktree_add_makes(tmp_path: Path)
         dispatch_dir=str(tmp_path / "d"),
         credentials=str(tmp_path / "c.env"),
         breaker_dir=str(tmp_path / "breaker"),
-        admission_dir=str(tmp_path / "admission"),
         issue_body=str(ROUTING_ELIGIBLE_BODY),
         queue_dir=str(open_policy(tmp_path)),
         queue_root=str(tmp_path / "queue-root"),
@@ -1386,7 +1380,7 @@ def test_the_peak_refusal_carries_no_failure_class(tmp_path: Path) -> None:
     # CLAUDE.md's table types what a run found, and this one found nothing: the provider
     # is up, the credential is good, and this project chose not to spend on the lane now.
     # `infra_unavailable` would assert an outage that is not happening, and a wrong class
-    # is a harness bug by that table's own rule. `admission_escalated` carries none for
+    # is a harness bug by that table's own rule. The readiness refusal carries none for
     # the same reason.
     _, refusal = zai_at(tmp_path, PEAK)
     assert refusal is not None
@@ -1505,7 +1499,7 @@ def test_the_readiness_refusal_carries_no_failure_class(tmp_path: Path) -> None:
     """A readiness refusal is not a verdict about any code.
 
     The provider is up, the lane is reachable, and the table types what a run found. This
-    found nothing about any code under test — `admission_refusal`'s reasoning exactly.
+    found nothing about any code under test — `off_peak_refusal`'s reasoning exactly.
     """
     _, _, refusal = plan_for(tmp_path, issue_body=unready(tmp_path))
     assert refusal is not None
@@ -1568,26 +1562,14 @@ def test_an_empty_body_file_is_unreadable_rather_than_unready(tmp_path: Path) ->
     assert refusal.kind == "issue_unreadable"
 
 
-def test_readiness_outranks_admission_the_breaker_and_the_window(tmp_path: Path) -> None:
+def test_readiness_outranks_the_breaker_and_the_window(tmp_path: Path) -> None:
     """The ladder's ordering: no clock and no provider will ever clear an unready issue.
 
-    Every rung below this one is arranged to refuse as well — the profile has spent both
-    admission attempts, the lane's breaker is tripped, and the clock is inside the peak
-    band — and the answer is still the one whose remedy a person can start on now.
+    Every rung below this one is arranged to refuse as well — the lane's breaker is tripped
+    and the clock is inside the peak band — and the answer is still the one whose remedy a
+    person can start on now. The admission rung was arranged here too until #328 dropped
+    the bar; there is no longer a rung between readiness and the breaker.
     """
-    state = admission.Store(directory=tmp_path / "admission")
-    for issue in (1, 2):
-        admission.append(
-            state,
-            "zai",
-            "zai-glm52-max",
-            "review",
-            admission.Assessment(
-                issue=issue,
-                dispatch_id=f"d-test-{issue}",
-                criteria=(("close_names_sha", "met"), ("fast_green", "not_met")),
-            ),
-        )
     trip(tmp_path, "zai", breaker.GATE_FAILED, 3)
     _, _, refusal = plan_for(
         tmp_path,
@@ -1688,7 +1670,7 @@ def test_no_option_on_this_surface_moves_the_clock_or_waives_the_rule() -> None:
     """#238's no-override requirement, asserted where an override would have to appear.
 
     The rule is the human's, so the dispatcher exposes nothing that could set it aside.
-    `--breaker-dir` and `--admission-dir` exist because a forked seam test needs its own
+    `--breaker-dir` exists because a forked seam test needs its own
     state; a clock does not have that problem, and a flag that moved it would be the
     override this issue forbids under a duller name.
     """
@@ -2355,50 +2337,19 @@ def test_the_seam_refuses_a_tripped_lane_before_it_forks_anything(tmp_path: Path
     assert not capture.exists(), "and the runner was never reached"
 
 
-def test_the_seam_refuses_a_profile_that_has_spent_both_admission_attempts(
-    tmp_path: Path,
-) -> None:
-    """End to end through the real seam: #224's far end, and `CTI_ADMISSION_DIR` reaching it."""
-    state = admission.Store(directory=tmp_path / "admission")
-    for issue in (1, 2):
-        admission.append(
-            state,
-            "zai",
-            "zai-glm52-max",
-            "implementer",
-            admission.Assessment(
-                issue=issue,
-                dispatch_id=f"d-test-{issue}",
-                criteria=(("close_names_sha", "met"), ("fast_green", "not_met")),
-            ),
-        )
-    assert not admission.standing_for(state, "zai", "zai-glm52-max", "implementer").dispatchable
+def test_no_dispatch_is_refused_by_an_admission_verdict(tmp_path: Path) -> None:
+    """#328's first criterion, asserted where it can be seen: the rung is gone, not permissive.
 
-    capture = tmp_path / "capture.txt"
-    done = run_seam(
-        [
-            "--lane",
-            "zai",
-            "--profile",
-            "zai-glm52-max",
-            "--seat",
-            "implementer",
-            "--issue",
-            "224",
-            "--worktree",
-            str(git_worktree(tmp_path)),
-            "--dispatch-dir",
-            str(tmp_path / "dispatches"),
-            "--credentials",
-            str(credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")),
-        ],
-        seam_env(tmp_path, capture),
-    )
-    assert done.returncode == 1
-    assert "refusal=admission_escalated" in done.stderr
-    assert "state=escalated" not in done.stdout
-    assert not (tmp_path / "dispatches").exists(), "nothing was written for a run that never was"
-    assert not capture.exists(), "and the runner was never reached"
+    A permissive rung and an absent one look the same from a green dispatch, so this asserts
+    the absence directly — the dispatcher exposes no admission refusal, names no admission
+    store, and offers no flag pointing at one. The bar was pre-registered so that observed
+    behaviour could not move it and was then dropped without ever adjudicating, which is a
+    departure recorded in ADR-0071 ruling 6 and in `tools/trial.py`'s header.
+    """
+    assert not hasattr(dispatch, "admission_refusal")
+    assert not hasattr(dispatch, "admission")
+    with pytest.raises(SystemExit):
+        dispatch.parse_args(["--admission-dir", str(tmp_path), "--lane", "zai"])
 
 
 # -------------------------------------------------------------------- the pre-work strata (#323)

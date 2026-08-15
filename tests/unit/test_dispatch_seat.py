@@ -110,7 +110,6 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         "dispatch_dir": str(tmp_path / "dispatches"),
         "credentials": str(tmp_path / "credentials.env"),
         "breaker_dir": str(tmp_path / "breaker"),
-        "admission_dir": str(tmp_path / "admission"),
         "issue_body": str(READY_BODY),
         "queue_dir": str(open_policy(tmp_path)),
         "queue_root": str(tmp_path / "queue-root"),
@@ -149,8 +148,6 @@ def seat_only_argv(tmp_path: Path, worktree: Path, *extra: str) -> list[str]:
         str(tmp_path / "credentials.env"),
         "--breaker-dir",
         str(tmp_path / "breaker"),
-        "--admission-dir",
-        str(tmp_path / "admission"),
         "--queue-dir",
         str(open_policy(tmp_path)),
         "--queue-root",
@@ -191,10 +188,11 @@ def test_the_review_seat_shares_the_implementers_list_and_its_escalation_head() 
 def test_the_retired_mechanical_seat_is_gone_from_every_roster() -> None:
     """ADR-0071 ruling 2 retires it, and story 11 asks for gone rather than lingering."""
     ledger = load_tool("ledger")
-    admission = load_tool("admission")
     assert "mechanical" not in dispatch.SEATS
     assert "mechanical" not in ledger.SEAT_LANDS
-    assert "mechanical" not in admission.SEAT_BARS
+    # The admission bar's `SEAT_BARS` was the third roster this asserted against. #328
+    # dropped that bar, so the roster is gone rather than the seat merely absent from it.
+    assert not hasattr(load_tool("trial"), "SEAT_BARS")
 
 
 # --------------------------------------------------------------- resolution, criterion 1

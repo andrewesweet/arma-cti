@@ -92,7 +92,7 @@ once no worktree predating that landing is still in flight.
 
 Since #302 the document carries a second job. Class 5's `landing_path_prefixes` is the
 **one authority** for what an in-world surface is: `just land`'s corpus rung, the
-admission cross-check in `tools/admission.py` and the gate prediction in `tools/brief.py`
+derived list in `tools/gate.py` and the gate prediction in `tools/brief.py`
 all read it from here rather than each holding a list. It lives in data rather than in
 Python because `just land` reads it out of fetched `origin/main` — a candidate diff must
 not be able to widen the list that judges it — and because three copies of a path list

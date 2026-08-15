@@ -3,8 +3,9 @@
 Two claims are worth more than the rest here.
 
 **The prefix list has one authority.** `config/dispatch-routing-policy.json`'s class 5
-is it; the routing gate, `tools/admission.py`'s cross-check and this rung all read that
-row, and the tests below assert they agree rather than that each is individually right.
+is it; the routing gate, `tools/gate.py`'s list (which `just brief` and `tools/trial.py`'s
+corpus check both call) and this rung all read that row, and the tests below assert they
+agree rather than that each is individually right.
 #302 exists because a list with three copies is a list that rots.
 
 **A run that does not cover the landing is still owed, not red.** Coverage and verdict are
@@ -34,7 +35,7 @@ pool_merge = load_tool("pool_merge")
 pool_comment = load_tool("pool_comment")
 routing_policy = load_tool("routing_policy")
 corpus_gate = load_tool("corpus_gate")
-admission = load_tool("admission")
+gate = load_tool("gate")
 
 POLICY = REPO / routing_policy.POLICY_RELATIVE
 REGRESS = REPO / "spike" / "regress.sh"
@@ -102,9 +103,9 @@ def test_the_landing_check_and_the_routing_policy_read_the_same_prefixes() -> No
     assert routing_policy.in_world_prefixes(policy) == class_five.landing_path_prefixes
 
 
-def test_the_admission_crosscheck_reads_that_same_authority() -> None:
-    """`tools/brief.py`'s gate prediction reads this constant too, so all three agree."""
-    assert routing_policy.in_world_prefixes(_policy()) == admission.IN_WORLD_PREFIXES
+def test_the_gate_modules_list_reads_that_same_authority() -> None:
+    """`tools/brief.py`'s prediction and `tools/trial.py`'s corpus check both call it."""
+    assert routing_policy.in_world_prefixes(_policy()) == gate.IN_WORLD_PREFIXES
 
 
 def test_the_rows_two_halves_agree_so_a_dispatch_and_a_landing_mean_the_same_thing() -> None:
@@ -129,7 +130,7 @@ def test_the_authority_is_found_by_id_so_the_rows_own_name_is_not_load_bearing()
         if rule["id"] == routing_policy.IN_WORLD_CLASS_ID:
             rule["name"] = "world_landings"
     policy = routing_policy.parse_policy(json.dumps(document))
-    assert routing_policy.in_world_prefixes(policy) == admission.IN_WORLD_PREFIXES
+    assert routing_policy.in_world_prefixes(policy) == gate.IN_WORLD_PREFIXES
 
 
 @pytest.mark.parametrize(

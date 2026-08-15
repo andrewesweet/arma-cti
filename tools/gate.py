@@ -9,6 +9,11 @@ would close that ring and load a second dispatcher under the production `__main_
 so the functions were lifted to this owner, which imports neither (#323 review finding 3).
 Nothing here depends on a lane, a profile, a seat or an outcome — only on a body and a
 repository root.
+
+**The in-world surface list lives here too, since #328.** It was `tools/admission.py`'s,
+and that module's bar was dropped; the list is a property of what an in-world surface *is*
+rather than of the bar that once read it, and the gate derivation is its heaviest reader.
+`tools/trial.py`'s corpus check reads it from here rather than keeping a second copy.
 """
 
 from __future__ import annotations
@@ -23,15 +28,48 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 sys.path.insert(0, str(Path(__file__).parent))
 
 # The path insert above is what makes this importable.
-import admission
+import routing_policy
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Iterable, Sequence
 
 # The checkout this script is running out of, which is where CONTEXT.md lives. A worktree's
 # own copy is the right one to read: a session is governed by the tree it is working in
 # (ADR-0042's stale-hook lesson, applied to the documents).
 REPO: Final = Path(__file__).resolve().parents[1]
+
+# ------------------------------------------------------------- the in-world surface list
+
+# The in-world surfaces, from CLAUDE.md's `just regress` row and docs/regression-tier.md's
+# cost-control section. The daemon's world-facing half is named there as "anything that
+# builds, validates, serialises or hands over what crosses the extension wire — the port's
+# dispatch and refusals, the outbox, the command/effect codec", which is those modules.
+#
+# **Read, not written.** The list itself is class 5 of the routing policy since #302,
+# because `just land`'s corpus rung needs the same answer out of fetched `origin/main` —
+# where only data can be read. An unreadable policy raises rather than defaults: a reader
+# would otherwise compute "nothing is in-world" and waive the very gate the list protects.
+#
+# It is used in one direction only: to say that a surface *is* in-world. It is never read
+# as "this landing touched nothing, so the corpus was not needed" — that judgement stays a
+# person's, because a list of paths cannot know what a change means.
+
+
+def _in_world_prefixes() -> tuple[str, ...]:
+    """Read the one authority once, at import, and fail loudly rather than guess."""
+    read = routing_policy.read_policy(REPO / routing_policy.POLICY_RELATIVE)
+    if read.policy is None:
+        raise routing_policy.PolicyError(read.error)
+    return routing_policy.in_world_prefixes(read.policy)
+
+
+IN_WORLD_PREFIXES: Final = _in_world_prefixes()
+
+
+def touches_in_world(paths: Iterable[str]) -> tuple[str, ...]:
+    """Name the in-world surfaces a landing touched, empty when it touched none."""
+    return tuple(path for path in paths if path.startswith(IN_WORLD_PREFIXES))
+
 
 # ------------------------------------------------------------------ the gate derivation
 
@@ -95,8 +133,8 @@ def named_paths(body: str) -> tuple[str, ...]:
 
 
 def in_world(paths: Sequence[str]) -> tuple[str, ...]:
-    """Name the in-world surfaces among these paths, using admission's list and no other."""
-    return tuple(path for path in paths if path.startswith(admission.IN_WORLD_PREFIXES))
+    """Name the in-world surfaces among these paths, using this module's list and no other."""
+    return touches_in_world(paths)
 
 
 def domain_mentions(body: str, vocabulary: Sequence[str]) -> tuple[str, ...]:

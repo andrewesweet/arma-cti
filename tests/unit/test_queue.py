@@ -1169,8 +1169,6 @@ def dry_run(
             str(tmp_path / "credentials.env"),
             "--breaker-dir",
             str(tmp_path / "breaker"),
-            "--admission-dir",
-            str(tmp_path / "admission"),
             "--queue-dir",
             str(queue_dir),
             "--queue-root",
@@ -1212,7 +1210,7 @@ def test_a_dry_run_for_a_carved_out_issue_is_planned_normally(
     assert not (tmp_path / "dispatches").exists(), "a dry run still writes no record"
 
 
-def test_the_queue_rung_is_climbed_before_the_admission_and_breaker_rungs(
+def test_the_queue_rung_is_climbed_before_the_breaker_rung(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """No change of lane, profile or seat clears a freeze, so it is heard first."""
@@ -1239,8 +1237,6 @@ def test_the_queue_rung_is_climbed_before_the_admission_and_breaker_rungs(
             str(tmp_path / "credentials.env"),
             "--breaker-dir",
             str(breaker_dir),
-            "--admission-dir",
-            str(tmp_path / "admission"),
             "--queue-dir",
             str(store.directory),
             "--queue-root",
@@ -1287,8 +1283,6 @@ def test_readiness_is_heard_before_the_freeze_because_its_remedy_can_start_now(
             str(tmp_path / "credentials.env"),
             "--breaker-dir",
             str(tmp_path / "breaker"),
-            "--admission-dir",
-            str(tmp_path / "admission"),
             "--queue-dir",
             str(store.directory),
             "--queue-root",

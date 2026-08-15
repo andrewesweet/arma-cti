@@ -613,7 +613,6 @@ def plan_over(tmp_path: Path, worktree: Path) -> tuple[Any, str, Any]:
         "dispatch_dir": str(tmp_path / "dispatches"),
         "credentials": str(tmp_path / "credentials.env"),
         "breaker_dir": str(tmp_path / "breaker"),
-        "admission_dir": str(tmp_path / "admission"),
         "issue_body": str(REPO / "tests" / "fixtures" / "routing-eligible.md"),
         "queue_dir": str(open_policy(tmp_path)),
         "queue_root": str(tmp_path / "queue-root"),

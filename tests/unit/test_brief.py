@@ -40,7 +40,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 brief = load_tool("brief")
-admission = load_tool("admission")
+gate = load_tool("gate")
 dispatch = load_tool("dispatch")
 # A *separate* load of escalation from the one `brief` imports. `load_tool` re-execs the module on
 # every call, so this is a different module object than `brief.escalation`, and its `Firing` /
@@ -187,11 +187,11 @@ def test_named_paths_are_deduplicated_and_sorted() -> None:
     assert brief.named_paths("b/two a/one b/two") == ("a/one", "b/two")
 
 
-def test_in_world_reads_admissions_list_and_not_a_second_copy() -> None:
+def test_in_world_reads_the_one_list_and_not_a_second_copy() -> None:
     assert brief.in_world(("addons/main/x.sqf", "tools/y.py")) == ("addons/main/x.sqf",)
     assert brief.in_world(("src/cti_daemon/port.py",)) == ("src/cti_daemon/port.py",)
     assert brief.in_world(("src/cti_daemon/planner.py",)) == ()
-    for prefix in admission.IN_WORLD_PREFIXES:
+    for prefix in gate.IN_WORLD_PREFIXES:
         assert brief.in_world((f"{prefix}whatever",)) == (f"{prefix}whatever",)
 
 
