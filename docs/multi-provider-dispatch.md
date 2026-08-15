@@ -7,24 +7,46 @@ Everything here is the reasoning under those rules, moved out of the always-load
 by the human's ruling on #228 (2026-08-05, Decision 2) so that the prefix carries the rule
 and this document carries why it is the rule.
 
-Binding decision: ADR-0061. Implementation: `tools/dispatch.py`, `tools/breaker.py`. The
-ledger that records what a dispatch cost is a separate document, `docs/telemetry-ledger.md`.
-The **review** seat has a shape of its own — what it is handed, the claims-cite-code contract
-it hands back, where those claims route, and what a confirmed one now reaches (nothing: the
-admission bar it used to reach is dropped, ADR-0071 ruling 6, #328) —
-and that is `docs/review-dispatch.md`.
+Binding decisions: **ADR-0071**, and what it leaves of ADR-0061. Ruling 1 rescinds
+ADR-0061 decisions 2, 3 and 4 and decision 1's quality-floor clause, and ruling 6 withdraws
+decision 6's admission bar; what survives and governs this document is **decision 5** — a
+profile is an opaque token and no cross-provider effort scale exists — together with
+decision 1's metering requirement and decisions 7 and 8, which the breaker below implements.
+Implementation: `tools/dispatch.py`, `tools/breaker.py`. The ledger that records what a
+dispatch cost is a separate document, `docs/telemetry-ledger.md`. The **review** seat has a
+shape of its own — what it is handed and the claims-cite-code contract it hands back — and
+that is `docs/review-dispatch.md`. Ruling 6 rehomes where a confirmed claim then goes, from
+the withdrawn bar onto the observatory; #328 has already removed the bar from the code, and
+the observatory it is to be rehomed onto is #335's rather than built, so a confirmed claim
+currently reaches nothing.
 
 ## Lanes and profiles
 
 A **lane** is a provider and the environment that reaches it. A **profile** is one opaque
-`(lane, model, effort)` token in `tools/dispatch.py`'s registry. Week one registers
-`claude-native` and `zai`.
+`(lane, model, effort)` token in `tools/dispatch.py`'s registry, which now carries
+`claude-native`, `zai` and `codex`. Read the registry — `just dispatch --list` — rather than
+a count in a document.
 
 The recipe has no `--model` and no `--effort`, and that absence is the design (ADR-0061
-Decision 5). Effort vocabularies do not commensurate across providers: GLM Max and Opus
-high are not the same quantity, and the mapping between them is not monotonic, so a
-dispatcher offered both dimensions separately would be inviting an agent to compose a
-pair no one has ever measured. A profile is measured or it is not registered.
+Decision 5, which ADR-0071 ruling 1 strengthens by removing its neighbours: with provenance
+gone, decision 5 is the only thing standing between this project and an invented ranking of
+providers). Effort vocabularies do not commensurate across providers: GLM Max and Opus high
+are not the same quantity, and the mapping between them is not monotonic, so a dispatcher
+offered both dimensions separately would be inviting an agent to compose a pair no one has
+ever measured. A level joins a preference list by being named, never by an ordering inferred
+in code.
+
+**Registration on measurement was withdrawn as a rule, by name.** This document used to say
+"a profile is measured or it is not registered". ADR-0071 ruling 2 registers three profiles
+that fail that test — Luna at maximum effort, Luna at its published default, and Opus at low
+effort — with Luna entering **on publication rather than measurement**, at the human's
+ruling, and the ADR records it as a named exception to `AGENTS.md`'s validated
+measure-before-building rule rather than presenting it as consistent with one. The upfront
+bar that would otherwise have judged the new entrants is withdrawn with it, so a new profile
+now enters on judgement and the retrospective observatory is what may later contradict that
+judgement. On the `recon` seat the exception has **no expiry** and the ADR says so: no gate
+reads that seat's output, it lands nothing, and nothing in the design will ever check it —
+which is why a recon claim that decides a routing choice is cited.
 
 The z.ai lane made the argument concrete rather than abstract (#225). Claude Code's five
 effort levels differ only in the `thinking.budget_tokens` they send, and that endpoint
@@ -135,7 +157,7 @@ it is not re-litigated at the next breaker change.
 ## What a dispatched session may do, stated per lane
 
 The human ruled on 2026-08-06 (#221 decision 1 and 2, implemented as #259) that a
-dispatched session gets the gate and the commit, so that a foreign lane stops needing a
+dispatched session gets the gate and the commit, so that a lane stops needing a
 Claude-side finisher to turn its work into a landing. The ruling was taken with an explicit
 caution attached, and this section exists to honour it: **the two lanes are widened by
 different mechanisms of different granularity, and nothing here claims they are equivalent.**
@@ -377,10 +399,16 @@ the known-good commit baseline, the gate is a recorded ceiling, and a Codex disp
 finishes its work lands by a hand finish rather than unaided. Dispatch `d-20260806-172045-9a0a0e`
 is the end-to-end attempt under the four-root set: it committed its own work at `fb093fe` under
 the sandbox with no escalation, stopped on that red as it was told to, and did not land. The
-full finding, and the consequence it then had for the admission bar the project has since
-dropped (#328), are in §10 of
-`docs/research/codex-lane-live-findings.md`; this section implements #259's ruling and carries
-#265 as its recorded ceiling rather than stretching #259 to cover it.
+full finding is §10 of `docs/research/codex-lane-live-findings.md`, whose consequence is
+recorded there against the admission bar that ADR-0071 ruling 6 withdrew and #328 dropped
+from the code; what the
+ceiling now blocks is stated by the ADR instead — under ruling 1's binary rule a profile that
+cannot run its own gate is not an implementer, so **lifting this ceiling is a blocking
+prerequisite** for `codex-luna-max` heading the implementer seat's preference list, and until
+it lifts that list resolves past it. Gating Codex's output elsewhere was considered and
+rejected: "capable of implementing but not of gating" is precisely the ladder ruling 1
+withdrew, arrived at quietly. This section implements #259's ruling and carries #265 as its
+recorded ceiling rather than stretching #259 to cover it.
 
 ### Where they are not comparable
 
@@ -413,8 +441,8 @@ behind a seat's ordered preference list (#320, #321), so the surfaces are writte
 **A Claude seat file declares the first `claude-native` profile in the seat's preference
 list**, and that lane filter is the whole of the derivation. A `.claude/agents/` definition
 cannot pin a lane — it names a Claude-vocabulary model, and which provider that reaches is
-a property of the session that spawns the subagent — so a foreign head has no expression
-here. `zai-glm52-max` is the trap rather than `codex-luna-max`: its Claude vocabulary is
+a property of the session that spawns the subagent — so a head on another lane has no
+expression here. `zai-glm52-max` is the trap rather than `codex-luna-max`: its Claude vocabulary is
 `opus`/`max`, which a native session would read as a native pair the registry never chose.
 
 **The check matters more here than for the schema export, because both declaration surfaces

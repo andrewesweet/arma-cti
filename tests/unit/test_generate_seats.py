@@ -30,20 +30,6 @@ check_seat_config = load_tool("check_seat_config")
 SKILL = ".claude/skills/interlocutor/SKILL.md"
 JUSTFILE = REPO / "justfile"
 
-MODEL_ROLES = "## Model roles"
-
-
-def model_roles_section(prefix: str) -> str:
-    """AGENTS.md's ratified mapping, from its heading to the next one.
-
-    The one region of the always-loaded prefix that narrates tiers by hand on purpose. It is
-    #329's surface; excising it is how the pair check over the rest of the file can be as
-    wide as the notations a human writes without this issue reaching into that section.
-    """
-    start = prefix.index(MODEL_ROLES)
-    end = prefix.index("\n## ", start + len(MODEL_ROLES))
-    return prefix[start:end]
-
 
 @pytest.fixture
 def root(tmp_path: Path) -> Path:
@@ -445,23 +431,19 @@ def test_no_seat_pair_is_maintained_by_hand_in_the_always_loaded_prefix() -> Non
     (#324, review round 1, claim 3). The vocabulary is the registry's own native pairs, so
     a profile added there widens the check without anyone remembering to.
 
-    Scoped by region, not by notation (#324, review round 2, claim 3). The slash notation is
-    checked over the whole file, because it can only ever be a pair. The three prose
-    notations are checked everywhere *except* the Model roles section, which narrates the
-    ratified mapping by hand — `opus[1m], effort xhigh`, `/model opus`, `run at opus
-    xhigh` — and is #329's surface, not this issue's. Excluding the section rather than the
-    notations is what keeps "cti-implementer uses opus at low effort" a red anywhere else in
-    the file.
+    **The region carve-out is gone (#329).** #324 scoped the three prose notations to
+    everywhere *except* the Model roles section, because that section narrated the ratified
+    mapping by hand — `opus[1m], effort xhigh`, `/model opus`, `run at opus xhigh` — and
+    rewriting it was #329's, not #324's. #329 replaced that section with *Seats and profiles*,
+    which states what each seat is *for* and names no pair at all, so every notation is now
+    checked over the whole file and the exclusion that let one region drift is deleted rather
+    than re-pointed at a new heading.
     """
     prefix = (REPO / "AGENTS.md").read_text(encoding="utf-8")
     assert "tools/generate_seats.py" in prefix
     assert generate_seats.SLASH_PAIR.findall(prefix) == []
-    narrated = model_roles_section(prefix)
-    assert generate_seats.stated_pairs(narrated) != []
-    assert generate_seats.SESSION_COMMAND.findall(narrated) != []
-    elsewhere = prefix.replace(narrated, "")
-    assert generate_seats.stated_pairs(elsewhere) == []
-    assert generate_seats.SESSION_COMMAND.findall(elsewhere) == []
+    assert generate_seats.stated_pairs(prefix) == []
+    assert generate_seats.SESSION_COMMAND.findall(prefix) == []
 
 
 def test_no_hand_written_pair_in_a_skill_survives_a_registry_move_unreported() -> None:

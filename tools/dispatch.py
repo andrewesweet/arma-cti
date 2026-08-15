@@ -545,7 +545,9 @@ IMPLEMENTER_ESCALATION: Final = ("codex-sol-high", "opus-high")
 # and is absent rather than kept for compatibility: it named a cheaper tier rather than a
 # different job, and two names for one choice is what the retirement removes. `fable`
 # survives the table because it is not in it — ADR-0071's ruling 3 hands retros to `retro`
-# without deleting it; closing that overlap is #329's and #330's.
+# without deleting it. #329 closed the documentation half of that overlap: `AGENTS.md`'s
+# Seats and profiles section gives `fable` the #181 shape and nothing wider, and gives
+# retros to `retro`. The `/retro` skill's own half is #330's.
 SEATS: Final[dict[str, Seat]] = {
     # New in ruling 2, absorbing `cti-implementer-xhigh`'s tier and not its contract: a
     # planner works out what to do and neither gates nor lands. A Codex profile heads its
