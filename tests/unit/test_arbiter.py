@@ -5,13 +5,16 @@ escalation with the seat's own authors on the records — the head still answers
 the table names the arbiter and the walk does not start at the preference list) and #326
 (the implementer's entry head refused by routing on the branch's own files — fell through
 to the entry tail, exclusion recorded). Around them: the registry's transcription of the
-ruling's cells, the exhausted and no-entry refusals, the unchecked mark an unreadable
-record leaves, and the event that makes an invocation countable.
+ruling's cells, the exhausted and no-entry refusals, the unchecked mark every incomplete
+read leaves, the records read `resolve_for_issue` drives (reviewers included, #361's
+criterion), the live dispatchability rungs `resolve_dispatchable` walks, and the event
+that makes an invocation countable.
 """
 
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from conftest import load_tool
@@ -20,10 +23,12 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 arbiter = load_tool("arbiter")
-# The copies arbiter itself imported — the re-exec identity discipline both modules
-# document: narrow on values, never on classes a second exec would re-create.
+# A second exec of review_loop, not the copy arbiter imported: two copies hold different
+# module objects, which is exactly what the journal-constant test needs to compare — the
+# re-exec identity discipline both modules document, narrowed on values.
+review_loop = load_tool("review_loop")
+# The copies arbiter itself imported, for the same discipline's reasons.
 dispatch = arbiter.dispatch
-review_loop = arbiter.review_loop
 
 
 def authorship(
@@ -32,6 +37,37 @@ def authorship(
     why: str = "",
 ) -> dispatch.Authorship:
     return dispatch.Authorship(potential, records, why)
+
+
+def complete_read(*profiles: str) -> dispatch.Authorship:
+    """Build an authorship every record of which read: the only `unchecked=False` state.
+
+    The records are named `d1..dN` in order, the shape `dispatch.potential_authors` builds
+    from dispatch directories it could read in full.
+    """
+    return authorship(profiles, tuple(f"d{i}" for i in range(1, len(profiles) + 1)))
+
+
+def record(
+    dispatch_dir: Path,
+    name: str,
+    *,
+    issue: int,
+    profile: str,
+    seat: str,
+) -> None:
+    """Write one dispatch record in the shape `_read_record` reads: `dispatch.json`."""
+    entry = dispatch_dir / name
+    entry.mkdir(parents=True)
+    (entry / "dispatch.json").write_text(
+        json.dumps({"issue": issue, "profile": profile, "seat": seat, "dispatch_id": name}),
+        encoding="utf-8",
+    )
+
+
+# A Sunday midday UTC: outside z.ai's Mon-Fri 14:00-18:00 SGT peak band, so the off-peak
+# rung is a fact the test states rather than a coin the wall clock flips.
+SUNDAY = datetime(2026, 8, 9, 12, 0, tzinfo=UTC)
 
 
 # --------------------------------------------------------------------------- the registry cells
@@ -50,7 +86,7 @@ def test_the_ruled_cells_are_transcribed_head_first() -> None:
 
 
 def test_the_entry_head_answers_when_nothing_excludes_it() -> None:
-    resolution = arbiter.resolve(dispatch.SEATS["retro"], authorship())
+    resolution = arbiter.resolve(dispatch.SEATS["retro"], complete_read("zai-glm52-max"))
     assert resolution.kind == arbiter.RESOLVED
     assert resolution.arbiter == "opus-max"
     assert resolution.unchecked is False
@@ -197,6 +233,138 @@ def test_an_unreadable_record_leaves_the_resolution_unchecked_but_taken() -> Non
     assert [e.profile for e in resolution.passed_over] == ["opus-max"]
 
 
+def test_every_incomplete_read_leaves_the_resolution_unchecked() -> None:
+    """#333 round 1, High 3: `records_unreadable` was never the only incomplete state.
+
+    A dispatch directory that is absent and an issue no dispatch ever worked on are gaps
+    the same way a record that would not open is — `Authorship.complete` is false for all
+    three, and a read that could not establish the author set cannot verify the walk
+    against it (#41: a check that could not run is not a check that passed).
+    """
+    for read in (
+        authorship(("opus-max",), ("d1",), why=arbiter.RECORDS_UNREADABLE),
+        authorship(why="no_dispatch_records"),
+        authorship(why="no_authoring_dispatch"),
+    ):
+        resolution = arbiter.resolve(dispatch.SEATS["retro"], read)
+        assert resolution.kind == arbiter.RESOLVED
+        assert resolution.unchecked is True
+
+
+# --------------------------------------------------------------------------- the records read
+
+
+def test_the_production_read_sees_reviewers_and_excludes_them(tmp_path: Path) -> None:
+    """#333 round 1, High 2: the reviewers are on the dispatch records, not in a parameter.
+
+    #318's arrangement, read the way production reads it: `fable-high` authored the issue,
+    `opus-max` reviewed it — the review record is where the reviewer actually is, and it
+    holds the walk's head. The arbiter scan must see the reviewer, exclude it, and answer
+    `fable-max`; the authorship-only scan the review seat uses walks past the same record,
+    which would read `opus-max` as free and hand the walk its own reviewer.
+    """
+    dispatch_dir = tmp_path / "dispatches"
+    record(dispatch_dir, "d1", issue=318, profile="fable-high", seat="retro")
+    record(dispatch_dir, "d2", issue=318, profile="opus-max", seat="review")
+    resolution = arbiter.resolve_for_issue(dispatch.SEATS["retro"], 318, dispatch_dir)
+    assert resolution.kind == arbiter.RESOLVED
+    assert resolution.arbiter == "fable-max"
+    assert resolution.unchecked is False
+    assert [(e.profile, e.reason) for e in resolution.passed_over] == [
+        ("opus-max", arbiter.RECORDS_EXCLUSION)
+    ]
+    # The contrast: the author scan the review seat uses still walks past the review
+    # record, because a reviewer is not an author (#322 vs #361 — two questions, two scans).
+    assert dispatch.potential_authors(318, dispatch_dir).potential == ("fable-high",)
+
+
+def test_the_production_read_walks_past_a_refused_review_record(tmp_path: Path) -> None:
+    """A review dispatch that ended in refusal authored nothing, whichever scan reads it.
+
+    The refusal walked the reviewer's record past both scans, so `opus-max` is free to
+    arbitrate — the retro walk's head, taken with nothing excluded.
+    """
+    dispatch_dir = tmp_path / "dispatches"
+    record(dispatch_dir, "d1", issue=318, profile="fable-high", seat="retro")
+    refused = dispatch_dir / "d2"
+    refused.mkdir()
+    (refused / "dispatch.json").write_text(
+        json.dumps({"issue": 318, "profile": "opus-max", "seat": "review"}),
+        encoding="utf-8",
+    )
+    (refused / "result.json").write_text(json.dumps({"refusal": "lane_off_peak"}), encoding="utf-8")
+    resolution = arbiter.resolve_for_issue(dispatch.SEATS["retro"], 318, dispatch_dir)
+    assert resolution.arbiter == "opus-max"
+    assert resolution.passed_over == ()
+
+
+# --------------------------------------------------------------------------- live dispatchability
+
+
+def test_a_profile_the_ladder_would_refuse_is_excluded(tmp_path: Path) -> None:
+    """#333 round 1, High 4: a table cannot say whether a profile is dispatchable now.
+
+    The implementer walk: `codex-sol-high` and `opus-high` on the records; then
+    `codex-luna-max`, refused by the `(implementer, codex-luna-max)` pair block — #265's
+    measured gate ceiling, a fact of the registry, not of this box; then `zai-glm52-max`,
+    whose lane wants a key this credentials file does not carry. Each refusal the ladder
+    would give is the exclusion's reason, and the walk lands on `opus-low`.
+    """
+    dispatch_dir = tmp_path / "scratch-dispatches"
+    record(dispatch_dir, "d1", issue=333, profile="codex-sol-high", seat="implementer")
+    record(dispatch_dir, "d2", issue=333, profile="opus-high", seat="review")
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("# no z.ai key here\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    resolution = arbiter.resolve_dispatchable(
+        dispatch.SEATS["implementer"],
+        dispatch.potential_authors_and_reviewers(333, dispatch_dir),
+        SUNDAY,
+        routing_refusals={},
+        admission_dir=str(tmp_path / "admission"),
+        breaker_dir=str(tmp_path / "breaker"),
+        credentials=str(credentials),
+    )
+    assert resolution.kind == arbiter.RESOLVED
+    assert resolution.arbiter == "opus-low"
+    assert resolution.unchecked is False
+    by_profile = {e.profile: e for e in resolution.passed_over}
+    assert set(by_profile) == {"codex-sol-high", "opus-high", "codex-luna-max", "zai-glm52-max"}
+    assert by_profile["codex-sol-high"].reason == arbiter.RECORDS_EXCLUSION
+    assert by_profile["opus-high"].reason == arbiter.RECORDS_EXCLUSION
+    assert by_profile["codex-luna-max"].reason == arbiter.DISPATCH_EXCLUSION
+    assert by_profile["zai-glm52-max"].reason == arbiter.DISPATCH_EXCLUSION
+    assert "credential_absent" in by_profile["zai-glm52-max"].detail
+
+
+def test_a_dispatchable_profile_is_answered_not_excluded(tmp_path: Path) -> None:
+    """The same walk with the key present and the clock off-peak: z.ai answers."""
+    dispatch_dir = tmp_path / "scratch-dispatches"
+    record(dispatch_dir, "d1", issue=333, profile="codex-sol-high", seat="implementer")
+    record(dispatch_dir, "d2", issue=333, profile="opus-high", seat="review")
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("ZAI_API_KEY=test-key\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    resolution = arbiter.resolve_dispatchable(
+        dispatch.SEATS["implementer"],
+        dispatch.potential_authors_and_reviewers(333, dispatch_dir),
+        SUNDAY,
+        routing_refusals={},
+        admission_dir=str(tmp_path / "admission"),
+        breaker_dir=str(tmp_path / "breaker"),
+        credentials=str(credentials),
+    )
+    assert resolution.kind == arbiter.RESOLVED
+    assert resolution.arbiter == "zai-glm52-max"
+    # `codex-luna-max` stays excluded — the pair block is the registry's, not the box's —
+    # and `opus-low` behind z.ai is never reached.
+    assert [e.profile for e in resolution.passed_over] == [
+        "codex-sol-high",
+        "opus-high",
+        "codex-luna-max",
+    ]
+
+
 def test_an_unregistered_candidate_is_excluded_and_the_walk_continues() -> None:
     seat = dispatch.Seat(
         "synthetic",
@@ -229,7 +397,10 @@ def test_a_resolution_renders_the_invocation_observable() -> None:
     assert rendered["event.name"] == {"stringValue": arbiter.RESOLUTION_EVENT}
     assert rendered["cti.issue"] == {"stringValue": "#318"}
     assert rendered["cti.review.arbiter"] == {"stringValue": "fable-max"}
-    assert rendered["cti.review.arbiter.excluded"] == {"intValue": "1"}
+    # Identities, not a count (#333 round 1, Medium 6): which profile, and why.
+    assert rendered["cti.review.arbiter.excluded"] == {
+        "stringValue": "opus-max:records_place_on_work"
+    }
     assert rendered["cti.review.arbiter.unchecked"] == {"boolValue": False}
 
 

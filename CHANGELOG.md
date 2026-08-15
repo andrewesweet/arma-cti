@@ -9,6 +9,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just review-loop` drives the never-alone loop end to end (#333, ADR-0072).** One
+  command per act — `open`, `round`, `adjudicate`, `escalate`, `terminus`, `show` — over
+  durable per-issue state under `~/.arma-cti/review/`, so a loop survives the turn that
+  opened it and the terminus runs exactly once: it files every arbiter-upheld finding on
+  the originating item and records every dismissal on the issue thread, and refuses its
+  own second run by name rather than filing twice. Every act refuses by name rather than
+  defaulting — an arbiter route before any escalation has fired one, a second `open`, an
+  unregistered seat, a terminus the loop has not reached — with exit 1 for a named refusal
+  and exit 3 for an act that could not be performed.
+
+### Changed
+
+- **The arbiter routes are admissible only where the escalation that produces an arbiter
+  has fired (#333).** `arbiter_upheld` and `arbiter_dismissed` were admissible at round
+  zero, before any escalation existed to produce an arbiter; the precondition is now the
+  escalation itself — the three-round wall, or a verdict the same arbitration already
+  recorded, so verdict order within one arbitration cannot decide which verdicts are
+  legal. Storage deliberately does not re-derive the precondition on read: it governs the
+  act, not records written before it existed.
+- **The arbiter's exclusions read the production inputs (#333, #361).** The reviewer set
+  comes from the issue's own dispatch records through the new
+  `dispatch.potential_authors_and_reviewers` scan — authors *and* reviewers, because
+  #318's real reviewer reached the records as a review dispatch and nowhere else — and
+  `arbiter.resolve_dispatchable` walks the live `(lane, profile, seat)` rungs
+  `just dispatch`'s ladder judges by, so a profile resolved here cannot be one the ladder
+  refuses two lines later. Every incomplete read (an absent dispatch directory, an issue
+  no dispatch worked on, an unreadable record) now leaves the resolution `unchecked`, not
+  only the unreadable one.
+- **The loop's telemetry carries identities, not counts (#333).** An escalation event
+  carries its evaluation kind — firing, silence, unreadable — and terminus events carry
+  `finding:severity` identities for every filing and dismissal, so the observatory can
+  tell which finding was upheld and which state an escalation was in, not only how many.
+
 - **The review loop's ending is now rules rather than judgement in the moment (#333).** The
   round budget counts only findings *held across* rounds — a finding the re-review round
   itself introduced (#356's shape) takes another fix round, while one an earlier round

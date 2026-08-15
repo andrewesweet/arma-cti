@@ -66,7 +66,10 @@ One adjudication per finding is terminal: a finding the next round re-reports is
 finding with a new id, never a reopening — the ruling's own move, which is why `next_round`
 refuses an id an earlier round already carried. What bounds re-argument is this closure;
 what
-bounds the loop is the round budget above.
+bounds the loop is the round budget above. And the two arbiter routes carry a
+**precondition**: an arbiter verdict is admissible only where the escalation that produces
+an arbiter has fired (`escalation_fired` — the wall, or a verdict the arbitration already
+recorded), because an arbiter nobody's escalation chose is a verdict with no judge.
 
 The **stop condition** — nothing above Low remains unadjudicated — is `stop_condition`.
 Low findings never block and are recorded; that is the severity document's rule, restated
@@ -99,8 +102,12 @@ loop shipped without them is a loop whose cost cannot be recovered.
 
 from __future__ import annotations
 
+import argparse
 import json
+import subprocess
 import sys
+import time
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
@@ -114,7 +121,7 @@ import otel_event
 from routing_policy import path_matches
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable, Mapping
 
 EXEMPTIONS_RELATIVE: Final = Path("config/review-exemptions.json")
 
@@ -375,6 +382,13 @@ CONDITIONAL_ON_ERROR: Final = (
     " 'it only bites if someone later does X' is the test, and X must be nameable to be"
     " adjudicable (human ruling 2026-08-14, #334)"
 )
+ARBITER_UNAUTHORISED_ERROR: Final = (
+    "an arbiter route is admissible only where the escalation that produces an arbiter has"
+    " fired — at the three-round wall, or in a loop that already carries an arbiter verdict."
+    " A loop at any other point carries no arbiter, so there is nobody to uphold or dismiss:"
+    " the dispute is fixed, or filed, or it blocks the landing (ADR-0071 ruling 4; #333"
+    " round 1, the Critical)"
+)
 
 
 def above_low(severity: str) -> bool:
@@ -465,8 +479,39 @@ def next_round(loop: Loop, raised: tuple[Finding, ...]) -> Loop:
     return Loop(review_rounds=rounds, findings=(*loop.findings, *raised))
 
 
-def _route_checks(finding: Finding, adjudication: Adjudication) -> None:
-    """Enforce the fourth route's restrictions, which are the ruling's own words."""
+def escalation_fired(loop: Loop) -> bool:
+    """Whether the escalation that produces an arbiter has fired for this loop.
+
+    An arbiter route is admissible only where the escalation that names an arbiter has
+    fired — a **precondition on the route, not a stricter enum**, because the route set is
+    the ruling's own four and does not move while the loop does (#333 round 1, the
+    Critical: a round-zero dismissal was a verdict nobody's escalation chose). Two ways to
+    read as fired, and the second is not the first restated:
+
+    - **The wall holds** — `at_wall(loop)`: three rounds with a finding above Low still
+      held. That is escalation's own fact, delegated to `escalation.at_three_round_wall`
+      rather than restated here.
+    - **An arbiter verdict is already recorded** — the loop carries an `arbiter_upheld` or
+      `arbiter_dismissed` adjudication. The first verdict at the wall consumes the held
+      finding the wall reads (`holding_above_low` counts *open* findings), so the second
+      verdict of the same arbitration would look at a loop the wall no longer recognises —
+      verdict order within one arbitration would decide legality. A recorded arbiter
+      verdict is the escalation's own trace, so it authorises its siblings rather than
+      un-authorising itself.
+    """
+    if at_wall(loop):
+        return True
+    return any(
+        finding.adjudication is not None
+        and finding.adjudication.route in (ARBITER_UPHELD, ARBITER_DISMISSED)
+        for finding in loop.findings
+    )
+
+
+def _route_checks(loop: Loop, finding: Finding, adjudication: Adjudication) -> None:
+    """Enforce the routes' own restrictions: the arbiter precondition, the fourth route's three."""
+    if adjudication.route in (ARBITER_UPHELD, ARBITER_DISMISSED) and not escalation_fired(loop):
+        raise ReviewLoopError(ARBITER_UNAUTHORISED_ERROR)
     if adjudication.route == ACCEPTED_AND_FILED:
         if SEVERITY_RANK[finding.severity] < SEVERITY_RANK[MEDIUM]:
             raise ReviewLoopError(ROUTE_SEVERITY_ERROR)
@@ -480,9 +525,11 @@ def adjudicate(loop: Loop, finding_id: str, adjudication: Adjudication) -> Loop:
     """Close one finding with its one adjudication, returning the loop that carries it.
 
     Every refusal here is typed: an unknown id, a finding already closed (the
-    one-verdict-then-closed rule), an unknown route, and the fourth route's three
-    restrictions. The adjudication is terminal — the returned loop's finding can never be
-    adjudicated again, which is what bounds re-argument; the round budget bounds the loop.
+    one-verdict-then-closed rule), an unknown route, the arbiter precondition (an arbiter
+    route before the escalation that produces an arbiter has fired), and the fourth route's
+    three restrictions. The adjudication is terminal — the returned loop's finding can
+    never be adjudicated again, which is what bounds re-argument; the round budget bounds
+    the loop.
     """
     if adjudication.route not in ROUTES:
         raise ReviewLoopError(ROUTE_ERROR)
@@ -494,7 +541,7 @@ def adjudicate(loop: Loop, finding_id: str, adjudication: Adjudication) -> Loop:
             continue
         if finding.adjudication is not None:
             raise ReviewLoopError(CLOSED_FINDING_ERROR)
-        _route_checks(finding, adjudication)
+        _route_checks(loop, finding, adjudication)
         updated.append(finding._replace(adjudication=adjudication))
         found = True
     if not found:
@@ -727,7 +774,10 @@ def escalation_event(
     A firing carries its condition ids and the arbiter it transfers to; the other two
     kinds carry empty ids, because an evaluation that could not answer is a state the
     observatory must count, not one it may read past (`no_firing`'s confident silence is
-    reserved for inputs that all read).
+    reserved for inputs that all read). The evaluation's own `kind` travels too (#333
+    round 1, Medium 5): a count of events cannot tell a loop that confidently fired
+    nothing from one whose condition table would not open, and the observatory's first
+    question of an escalation signal is which of the three states it was.
     """
     conditions = ""
     if evaluation.kind == escalation.FIRING:
@@ -737,6 +787,7 @@ def escalation_event(
         at=at,
         attributes={
             "cti.issue": issue,
+            "cti.review.evaluation": evaluation.kind,
             "cti.review.conditions": conditions,
             "cti.review.arbiter": arbiter,
         },
@@ -766,15 +817,24 @@ def dispute_event(
 
 
 def terminus_event(end: Terminus, issue: str, at: float) -> otel_event.Event:
-    """One terminus recorded — ruling 6's landings-per-issue observable."""
+    """One terminus recorded — ruling 6's landings-per-issue observable.
+
+    The filings and dismissals travel as `id:severity` identities rather than counts
+    (#333 round 1, Medium 5): the terminus exists so that nothing lands with no trace,
+    and a count is exactly the shape that says *a* Critical was dismissed while naming
+    neither which finding nor at what severity. The identities are also what
+    post-landing review reads back against the issue thread.
+    """
+    filings = ",".join(f"{f.finding}:{f.severity}" for f in end.filings)
+    dismissals = ",".join(f"{d.finding}:{d.severity}" for d in end.dismissals)
     return otel_event.Event(
         name=TERMINUS_EVENT,
         at=at,
         attributes={
             "cti.issue": issue,
             "cti.review.default_applies": end.default_applies,
-            "cti.review.filings": len(end.filings),
-            "cti.review.dismissals": len(end.dismissals),
+            "cti.review.filings": filings,
+            "cti.review.dismissals": dismissals,
         },
         resource={"service.name": "arma-cti-review-loop", "cti.issue": issue},
     )
@@ -815,3 +875,626 @@ def emit_dispute(
 def emit_terminus(end: Terminus, issue: str, at: float, journal: Path = JOURNAL) -> bool:
     """Emit one terminus event at the landing decision."""
     return _emit(terminus_event(end, issue, at), journal)
+
+
+# --------------------------------------------------------------------------- the durable loop
+#
+# #333 round 1, High 5: the module shipped as a library whose `emit_*` helpers nothing
+# called — a loop that lived only inside one process's memory could not survive the turn
+# that opened it, let alone reach post-landing review. The durable half is one directory
+# per issue under `REVIEW_ROOT` (outside every worktree, beside the journal), holding
+# `loop.json` while the loop runs, `escalation.json` once an arbiter is resolved, and
+# `landing.json` once the terminus has run. The command surface below is the production
+# caller that drives all of it — every `emit_*` helper's first production caller.
+
+REVIEW_ROOT: Final = Path.home() / ".arma-cti" / "review"
+LOOP_VERSION: Final = 1
+LOOP_FILE: Final = "loop.json"
+ESCALATION_FILE: Final = "escalation.json"
+LANDING_FILE: Final = "landing.json"
+
+LOOP_VERSION_ERROR: Final = "a stored loop must be a version 1 object"
+LOOP_ISSUE_ERROR: Final = "a stored loop must name its issue as a positive integer"
+LOOP_ROUNDS_ERROR: Final = "a stored loop's review_rounds must be a non-negative integer"
+LOOP_FINDINGS_ERROR: Final = "a stored loop's findings must be a list of finding objects"
+FINDING_FIELDS_ERROR: Final = "each finding must carry a non-empty id, a severity and a round"
+ADJUDICATION_SHAPE_ERROR: Final = (
+    "a stored adjudication must be an object naming one of the four routes, with issue and"
+    " conditional_on as strings when present"
+)
+ISSUE_MISMATCH_ERROR: Final = (
+    "the stored loop names issue {stored} but was read as #{asked} — the wrong directory's"
+    " state, never a loop to act on"
+)
+ROUND_RANGE_ERROR: Final = (
+    "a finding's round must lie between 0 and the loop's review_rounds — one raised at a"
+    " round the loop has not reached is state this loop never recorded"
+)
+
+
+def _render_adjudication(adjudication: Adjudication) -> dict[str, str]:
+    rendered = {"route": adjudication.route}
+    if adjudication.issue:
+        rendered["issue"] = adjudication.issue
+    if adjudication.conditional_on:
+        rendered["conditional_on"] = adjudication.conditional_on
+    return rendered
+
+
+def render_loop(issue: int, loop: Loop) -> dict[str, object]:
+    """Render one loop as the document `loop.json` carries between turns."""
+    return {
+        "version": LOOP_VERSION,
+        "issue": issue,
+        "review_rounds": loop.review_rounds,
+        "findings": [
+            {
+                "id": finding.id,
+                "severity": finding.severity,
+                "round_raised": finding.round_raised,
+                **(
+                    {"adjudication": _render_adjudication(finding.adjudication)}
+                    if finding.adjudication is not None
+                    else {}
+                ),
+            }
+            for finding in loop.findings
+        ],
+    }
+
+
+def _parse_adjudication(raw: object) -> Adjudication | None:
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise ReviewLoopError(ADJUDICATION_SHAPE_ERROR)
+    route = str(raw.get("route", ""))
+    if route not in ROUTES:
+        raise ReviewLoopError(ROUTE_ERROR)
+    issue = raw.get("issue", "")
+    conditional_on = raw.get("conditional_on", "")
+    if not isinstance(issue, str) or not isinstance(conditional_on, str):
+        raise ReviewLoopError(ADJUDICATION_SHAPE_ERROR)
+    return Adjudication(route, issue, conditional_on)
+
+
+def parse_loop(document: object) -> Loop:
+    """Rebuild one loop from its stored document, refusing any state that could not govern.
+
+    Validates everything the constructors validate — severities, route names, unique ids —
+    plus the facts only storage adds: the round count is a non-negative integer, the round
+    a finding was raised lies within the rounds the loop has recorded, and the
+    adjudication shape round-trips. The arbiter
+    precondition is deliberately **not** re-derived here: it governs the act of
+    adjudicating, and a loop that carries a verdict written before this precondition
+    existed must still be readable — the precondition refuses new acts, it does not
+    repudiate recorded ones.
+    """
+    if not isinstance(document, dict) or document.get("version") != LOOP_VERSION:
+        raise ReviewLoopError(LOOP_VERSION_ERROR)
+    review_rounds = document.get("review_rounds")
+    if not isinstance(review_rounds, int) or isinstance(review_rounds, bool) or review_rounds < 0:
+        raise ReviewLoopError(LOOP_ROUNDS_ERROR)
+    raw_findings = document.get("findings")
+    if not isinstance(raw_findings, list):
+        raise ReviewLoopError(LOOP_FINDINGS_ERROR)
+    findings: list[Finding] = []
+    for raw in raw_findings:
+        if not isinstance(raw, dict):
+            raise ReviewLoopError(LOOP_FINDINGS_ERROR)
+        identifier = raw.get("id")
+        severity = raw.get("severity")
+        round_raised = raw.get("round_raised")
+        if (
+            not isinstance(identifier, str)
+            or not identifier
+            or not isinstance(severity, str)
+            or not isinstance(round_raised, int)
+            or isinstance(round_raised, bool)
+        ):
+            raise ReviewLoopError(FINDING_FIELDS_ERROR)
+        if round_raised < 0 or round_raised > review_rounds:
+            raise ReviewLoopError(ROUND_RANGE_ERROR)
+        findings.append(
+            Finding(
+                identifier, severity, round_raised, _parse_adjudication(raw.get("adjudication"))
+            )
+        )
+    _check_severities(tuple(findings))
+    _check_ids((), tuple(findings))
+    return Loop(review_rounds=review_rounds, findings=tuple(findings))
+
+
+def loop_path(root: Path, issue: int) -> Path:
+    """One issue's loop file under the review root."""
+    return Path(root).expanduser() / str(issue) / LOOP_FILE
+
+
+def store_loop(root: Path, issue: int, loop: Loop) -> Path:
+    """Write the loop's document, creating the issue's directory on first store."""
+    target = loop_path(root, issue)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(render_loop(issue, loop), indent=2, sort_keys=True) + "\n")
+    return target
+
+
+def load_loop(root: Path, issue: int) -> Loop:
+    """Read the loop back, refusing a document that names another issue.
+
+    `FileNotFoundError` is raised untouched — the CLI turns it into its own named refusal,
+    because "no loop here yet" and "a loop that will not parse" are different answers.
+    """
+    document = json.loads(loop_path(root, issue).read_text(encoding="utf-8"))
+    if not isinstance(document, dict):
+        raise ReviewLoopError(LOOP_VERSION_ERROR)
+    stored = document.get("issue")
+    if not isinstance(stored, int) or isinstance(stored, bool) or stored <= 0:
+        raise ReviewLoopError(LOOP_ISSUE_ERROR)
+    if stored != issue:
+        raise ReviewLoopError(ISSUE_MISMATCH_ERROR.format(stored=stored, asked=issue))
+    return parse_loop(document)
+
+
+def render_landing(  # noqa: PLR0913 — the terminus record carries what the landing owed and what it discharged, each part read by a different later seat
+    issue: int,
+    loop: Loop,
+    end: Terminus,
+    *,
+    arbiter: str = "",
+    unchecked: bool = False,
+    filed_issues: Mapping[str, int] | None = None,
+) -> dict[str, object]:
+    """Render the landing record: what the pre-declared default discharged, by name.
+
+    `filed_issues` maps each upheld finding's id to the issue its filing created, so the
+    record answers "where did that Critical land" rather than "a filing happened".
+    Dismissals record the finding, severity and round — the trace ADR-0071 rules every
+    dismissal is owed, on the record the post-landing seat reads.
+    """
+    filed = filed_issues or {}
+    return {
+        "version": LOOP_VERSION,
+        "issue": issue,
+        "review_rounds": loop.review_rounds,
+        "default_applies": end.default_applies,
+        "arbiter": arbiter or None,
+        "arbiter_unchecked": unchecked,
+        "filings": [
+            {
+                "finding": f.finding,
+                "severity": f.severity,
+                "round_raised": f.round_raised,
+                "issue": filed.get(f.finding),
+            }
+            for f in end.filings
+        ],
+        "dismissals": [
+            {"finding": d.finding, "severity": d.severity, "round_raised": d.round_raised}
+            for d in end.dismissals
+        ],
+    }
+
+
+# --------------------------------------------------------------------------- the command surface
+#
+# The production caller (#333 round 1, High 5): `open`, `round`, `adjudicate`, `escalate`,
+# `terminus`, `show`. Refusals are typed and named, exit 1; a GitHub or filesystem act
+# that could not be performed is exit 3, "could not look", the handoff tool's split — a
+# negative result and no result are different answers. `escalate` lazy-imports `arbiter`
+# and `dispatch` because `arbiter` imports this module: the import is a handler-local
+# fact, and making it module-level would be a cycle.
+
+OK: Final = 0
+REFUSED: Final = 1
+NO_RESULT: Final = 3
+
+GH_TIMEOUT: Final = 60
+
+FINDING_SPEC_ERROR: Final = "a finding is id=severity, severity one of critical, high, medium, low"
+REFUSAL_SPEC_ERROR: Final = "a routing refusal is profile=reason"
+SEAT_UNKNOWN_ERROR: Final = "the registry carries no seat named {seat}"
+LOOP_EXISTS_ERROR: Final = (
+    "a loop for #{issue} already exists under {root} — `round` advances it; `open` is once"
+)
+NO_LOOP_ERROR: Final = "no loop for #{issue} under {root} — `open` records the first review"
+TERMINUS_NOT_REACHED_ERROR: Final = (
+    "the pre-declared default does not apply: findings above Low remain unadjudicated —"
+    " #334's landing refusal is the consumer that refuses on this same fact"
+)
+ALREADY_TERMINATED_ERROR: Final = (
+    "a landing record for #{issue} already exists under {root} — the terminus is once, and"
+    " re-running it would file every upheld finding twice"
+)
+
+# The marker a filing opens with, so a reader can find every arbiter-upheld filing on an
+# originating item the way `Handoff-for:` is found (#210's device, this domain's use).
+FILING_MARKER: Final = "Upheld-filing-for:"
+DISMISSAL_MARKER: Final = "Dismissal-for:"
+
+
+class ExternalError(RuntimeError):
+    """A GitHub or filesystem act the terminus could not perform — not a result."""
+
+
+def _issue_number(raw: str) -> int:
+    text = raw.strip().removeprefix("#")
+    if not text.isdigit() or int(text) <= 0:
+        message = f"not an issue number: {raw!r}"
+        raise argparse.ArgumentTypeError(message)
+    return int(text)
+
+
+def _finding_spec(raw: str) -> tuple[str, str]:
+    identifier, separator, severity = raw.partition("=")
+    if not separator or not identifier or severity not in SEVERITY_RANK:
+        raise argparse.ArgumentTypeError(FINDING_SPEC_ERROR)
+    return identifier, severity
+
+
+def _refusal_spec(raw: str) -> tuple[str, str]:
+    profile, separator, reason = raw.partition("=")
+    if not separator or not profile or not reason:
+        raise argparse.ArgumentTypeError(REFUSAL_SPEC_ERROR)
+    return profile, reason
+
+
+def parse_args(argv: list[str] | None) -> argparse.Namespace:
+    """One door: the loop act to perform, the issue it belongs to."""
+    parser = argparse.ArgumentParser(
+        prog="review-loop", description="Drive one issue's never-alone review loop."
+    )
+    commands = parser.add_subparsers(dest="command", required=True)
+
+    opened = commands.add_parser("open", help="record an issue's first review (round zero)")
+    _loop_arguments(opened, findings=True)
+    opened.set_defaults(handler=_cmd_open)
+
+    turned = commands.add_parser("round", help="record one fix-and-re-review cycle")
+    _loop_arguments(turned, findings=True)
+    turned.set_defaults(handler=_cmd_round)
+
+    judged = commands.add_parser("adjudicate", help="close one finding with its one adjudication")
+    _loop_arguments(judged)
+    judged.add_argument("--finding", required=True, help="the finding id to close")
+    judged.add_argument("--route", required=True, choices=sorted(ROUTES))
+    judged.add_argument("--filed-issue", default="", help="issue it became (accepted_and_filed)")
+    judged.add_argument(
+        "--conditional-on",
+        default="",
+        help="the named work outside the diff the harm is conditional on (accepted_and_filed)",
+    )
+    judged.set_defaults(handler=_cmd_adjudicate)
+
+    escalated = commands.add_parser("escalate", help="resolve the arbiter and evaluate the wall")
+    _loop_arguments(escalated)
+    escalated.add_argument("--seat", default="implementer", help="the seat whose arbiter resolves")
+    escalated.add_argument(
+        "--dispatch-dir", default="", help="the dispatch records; default is this box's own"
+    )
+    escalated.add_argument(
+        "--routing-refusal",
+        action="append",
+        default=[],
+        type=_refusal_spec,
+        metavar="PROFILE=REASON",
+        help="a profile the routing policy refused on the diff's own paths",
+    )
+    escalated.add_argument("--admission-dir", default="")
+    escalated.add_argument("--breaker-dir", default="")
+    escalated.add_argument("--credentials", default="")
+    escalated.add_argument(
+        "--conditions",
+        default=str(Path(__file__).resolve().parent.parent / escalation.CONDITIONS_RELATIVE),
+        help="the escalation condition table to evaluate",
+    )
+    escalated.set_defaults(handler=_cmd_escalate)
+
+    ended = commands.add_parser("terminus", help="discharge the pre-declared default's debts")
+    _loop_arguments(ended)
+    ended.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="print what the terminus owes; post and write nothing",
+    )
+    ended.set_defaults(handler=_cmd_terminus)
+
+    shown = commands.add_parser("show", help="print an issue's stored loop state")
+    shown.add_argument("--issue", required=True, type=_issue_number)
+    shown.add_argument("--root", default=str(REVIEW_ROOT))
+    shown.set_defaults(handler=_cmd_show)
+
+    return parser.parse_args(argv)
+
+
+def _loop_arguments(command: argparse.ArgumentParser, *, findings: bool = False) -> None:
+    command.add_argument("--issue", required=True, type=_issue_number)
+    command.add_argument("--root", default=str(REVIEW_ROOT), help="the review state directory")
+    command.add_argument("--journal", default=str(JOURNAL), help="the telemetry journal")
+    if findings:
+        command.add_argument(
+            "--finding",
+            action="append",
+            default=[],
+            type=_finding_spec,
+            metavar="ID=SEVERITY",
+            help="one raised finding; repeatable",
+        )
+
+
+def _cmd_open(
+    args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    root = Path(args.root)
+    if loop_path(root, args.issue).exists():
+        raise ReviewLoopError(LOOP_EXISTS_ERROR.format(issue=args.issue, root=root))
+    loop = first_review(tuple(Finding(i, s, 0) for i, s in args.finding))
+    store_loop(root, args.issue, loop)
+    emit_round(loop, str(args.issue), clock(), Path(args.journal))
+    print(f"[review-loop] #{args.issue} round 0 opened with {len(loop.findings)} finding(s)")  # noqa: T201 — a CLI's output channel
+    return OK
+
+
+def _cmd_round(
+    args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    root = Path(args.root)
+    loop = _read_loop(root, args.issue)
+    raised = tuple(Finding(i, s, loop.review_rounds + 1) for i, s in args.finding)
+    loop = next_round(loop, raised)
+    store_loop(root, args.issue, loop)
+    emit_round(loop, str(args.issue), clock(), Path(args.journal))
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{args.issue} round {loop.review_rounds} recorded with"
+        f" {len(raised)} new finding(s), {len(open_above_low(loop))} above Low open"
+    )
+    return OK
+
+
+def _cmd_adjudicate(
+    args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    root = Path(args.root)
+    loop = _read_loop(root, args.issue)
+    adjudication = Adjudication(args.route, args.filed_issue, args.conditional_on)
+    updated = adjudicate(loop, args.finding, adjudication)
+    store_loop(root, args.issue, updated)
+    closed = next(f for f in updated.findings if f.id == args.finding)
+    emit_dispute(closed, adjudication, str(args.issue), clock(), Path(args.journal))
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{args.issue} finding {args.finding} closed as {args.route}"
+    )
+    return OK
+
+
+def _cmd_escalate(
+    args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    # Handler-local, and necessarily so: `arbiter` imports this module, so a module-level
+    # import here is a cycle.
+    import arbiter  # noqa: PLC0415 — the cycle is real; see the comment above
+    import dispatch  # noqa: PLC0415 — same cycle, same reason
+
+    root = Path(args.root)
+    loop = _read_loop(root, args.issue)
+    seat = dispatch.SEATS.get(args.seat)
+    if seat is None:
+        raise ReviewLoopError(SEAT_UNKNOWN_ERROR.format(seat=args.seat))
+    dispatch_dir = Path(args.dispatch_dir) if args.dispatch_dir else dispatch.DISPATCH_ROOT
+    resolution = arbiter.resolve_dispatchable(
+        seat,
+        dispatch.potential_authors_and_reviewers(args.issue, dispatch_dir),
+        # The one clock the CLI owns, so a test fixes the wall it escalates against: an
+        # off-peak rung is a function of the hour, and a test that cannot pin the hour
+        # cannot state which profiles the walk may resolve to.
+        datetime.fromtimestamp(clock()).astimezone(),
+        dict(args.routing_refusal),
+        admission_dir=args.admission_dir or None,
+        breaker_dir=args.breaker_dir or None,
+        credentials=args.credentials or None,
+    )
+    arbiter.emit_resolution(resolution, seat, str(args.issue), clock(), Path(args.journal))
+    if resolution.kind == arbiter.REFUSED:
+        print(f"[review-loop] arbiter_refused={resolution.refusal}: {resolution.detail}")  # noqa: T201 — a CLI's refusal channel
+        for exclusion in resolution.passed_over:
+            print(f"[review-loop]   passed over {exclusion.profile}: {exclusion.reason}")  # noqa: T201 — a CLI's refusal channel
+        return REFUSED
+    read = escalation.read_conditions(Path(args.conditions))
+    evaluation = evaluate_escalation(read, loop, arbiter=resolution.arbiter)
+    emit_escalation(evaluation, str(args.issue), clock(), resolution.arbiter, Path(args.journal))
+    conditions = []
+    if evaluation.kind == escalation.FIRING:
+        conditions = [e.condition.id for e in evaluation.emissions]
+    record = {
+        "version": LOOP_VERSION,
+        "issue": args.issue,
+        "evaluation": evaluation.kind,
+        "conditions": conditions,
+        "arbiter": resolution.arbiter,
+        "unchecked": resolution.unchecked,
+        "passed_over": [
+            {"profile": e.profile, "reason": e.reason, "detail": e.detail}
+            for e in resolution.passed_over
+        ],
+    }
+    target = root / str(args.issue) / ESCALATION_FILE
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{args.issue} escalation={evaluation.kind} arbiter={resolution.arbiter}"
+        f" unchecked={resolution.unchecked}"
+    )
+    return OK
+
+
+def _cmd_terminus(  # the whole ending in one act: gate, filings, dismissals, record, event
+    args: argparse.Namespace,
+    clock: Callable[[], float],
+    create: Callable[[str, str], int],
+    post: Callable[[int, str], object],
+) -> int:
+    root = Path(args.root)
+    loop = _read_loop(root, args.issue)
+    end = terminus(loop)
+    if not end.default_applies:
+        raise ReviewLoopError(TERMINUS_NOT_REACHED_ERROR)
+    landing = root / str(args.issue) / LANDING_FILE
+    if landing.exists():
+        raise ReviewLoopError(ALREADY_TERMINATED_ERROR.format(issue=args.issue, root=root))
+    arbiter, unchecked = _recorded_arbiter(root, args.issue)
+    if args.dry_run:
+        for filing in end.filings:
+            print(f"[review-loop] would file {filing.finding} ({filing.severity}) on #{args.issue}")  # noqa: T201 — a CLI's output channel
+        for dismissal in end.dismissals:
+            print(  # noqa: T201 — a CLI's output channel
+                f"[review-loop] would record dismissal {dismissal.finding}"
+                f" ({dismissal.severity}) on #{args.issue}"
+            )
+        print("[review-loop] dry run — nothing posted, nothing written")  # noqa: T201 — a CLI's output channel
+        return OK
+    filed: dict[str, int] = {}
+    for filing in end.filings:
+        number = create(*_filing(args.issue, filing))
+        filed[filing.finding] = number
+    for dismissal in end.dismissals:
+        post(args.issue, _dismissal(args.issue, dismissal))
+    landing.parent.mkdir(parents=True, exist_ok=True)
+    landing.write_text(
+        json.dumps(
+            render_landing(
+                args.issue, loop, end, arbiter=arbiter, unchecked=unchecked, filed_issues=filed
+            ),
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    emit_terminus(end, str(args.issue), clock(), Path(args.journal))
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{args.issue} terminus: {len(end.filings)} filed,"
+        f" {len(end.dismissals)} dismissal(s) recorded, landing record written"
+    )
+    return OK
+
+
+def _cmd_show(
+    args: argparse.Namespace, _clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    root = Path(args.root)
+    loop = _read_loop(root, args.issue)
+    print(json.dumps(render_loop(args.issue, loop), indent=2, sort_keys=True))  # noqa: T201 — this command's output IS the loop
+    return OK
+
+
+def _read_loop(root: Path, issue: int) -> Loop:
+    try:
+        return load_loop(root, issue)
+    except FileNotFoundError:
+        raise ReviewLoopError(NO_LOOP_ERROR.format(issue=issue, root=root)) from None
+
+
+def _recorded_arbiter(root: Path, issue: int) -> tuple[str, bool]:
+    """Read the arbiter `escalate` recorded, if it ran; absent is an answer, not a gap.
+
+    A record that exists but will not read is not the same as no record — defaulting there
+    would write a landing record that quietly forgets who arbitrated — so it is an
+    unperformable read, exit 3, rather than a silent empty arbiter.
+    """
+    try:
+        record = json.loads((root / str(issue) / ESCALATION_FILE).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return "", False
+    except (OSError, ValueError) as broken:
+        message = f"the escalation record for #{issue} exists but will not read: {broken}"
+        raise ExternalError(message) from broken
+    return str(record.get("arbiter", "")), bool(record.get("unchecked", False))
+
+
+def _filing(issue: int, filing: Filing) -> tuple[str, str]:
+    title = f"Arbiter-upheld finding {filing.finding} ({filing.severity}) from #{issue}"
+    body = (
+        f"{FILING_MARKER} #{issue}\n\n"
+        f"Finding `{filing.finding}` ({filing.severity}, raised round {filing.round_raised}) was"
+        f" upheld by the arbiter at the three-round wall on #{issue} and is owed its filing here"
+        " (ADR-0071 ruling 4): the change lands, every upheld finding is filed as an issue on"
+        " the originating item. This issue is that filing."
+    )
+    return title, body
+
+
+def _dismissal(issue: int, dismissal: Dismissal) -> str:
+    return (
+        f"{DISMISSAL_MARKER} #{issue}\n\n"
+        f"Finding `{dismissal.finding}` ({dismissal.severity}, raised round"
+        f" {dismissal.round_raised}) was dismissed by the arbiter on #{issue}. Dismissals stay"
+        " on the issue thread rather than becoming issues, are recorded in the landing record,"
+        " and are handed to post-landing review (ADR-0071 ruling 4)."
+    )
+
+
+def _gh(argv: list[str], *, issue_input: str) -> str:
+    """Run one bounded `gh` call with the body on stdin — never on argv, never unbounded."""
+    try:
+        completed = subprocess.run(  # noqa: S603 — fixed argv, no shell, no interpolation of the body
+            argv,
+            input=issue_input,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=GH_TIMEOUT,
+        )
+    except FileNotFoundError as missing:
+        message = "`gh` is not on PATH, so the terminus could not post."
+        raise ExternalError(message) from missing
+    except subprocess.TimeoutExpired as slow:
+        message = f"`gh` did not answer within {GH_TIMEOUT}s."
+        raise ExternalError(message) from slow
+    if completed.returncode != 0:
+        detail = completed.stderr.strip() or f"exit {completed.returncode}"
+        message = f"`gh` refused: {detail}"
+        raise ExternalError(message)
+    return completed.stdout
+
+
+def gh_create_issue(title: str, body: str) -> int:
+    """File one upheld finding on the originating item, returning the issue it became."""
+    output = _gh(["gh", "issue", "create", "--title", title, "--body-file", "-"], issue_input=body)
+    # Every gh release prints the created issue's URL; the trailing integer is the number,
+    # so the number is parsed from the one line gh has always emitted rather than from a
+    # `--json` projection whose availability varies by version.
+    tail = output.strip().rstrip("/").rsplit("/", 1)[-1]
+    if not tail.isdigit():
+        message = f"gh answered without an issue URL: {output.strip()!r}"
+        raise ExternalError(message)
+    return int(tail)
+
+
+def gh_post_comment(issue: int, body: str) -> None:
+    """Record one dismissal on the issue thread, where dismissals stay."""
+    _gh(["gh", "issue", "comment", str(issue), "--body-file", "-"], issue_input=body)
+
+
+def main(
+    argv: list[str] | None = None,
+    *,
+    now: Callable[[], float] | None = None,
+    create_issue: Callable[[str, str], int] = gh_create_issue,
+    post_comment: Callable[[int, str], object] = gh_post_comment,
+) -> int:
+    """Drive one loop act. Named refusals exit 1; an unperformable act exits 3."""
+    args = parse_args(argv)
+    clock = now or time.time
+    try:
+        return args.handler(args, clock, create_issue, post_comment)
+    except ReviewLoopError as refusal:
+        print(f"[review-loop] {refusal}", file=sys.stderr)  # noqa: T201 — a CLI's refusal channel
+        return REFUSED
+    except ExternalError as failure:
+        print(f"[review-loop] {failure}", file=sys.stderr)  # noqa: T201 — a CLI's refusal channel
+        return NO_RESULT
+    except OSError as failure:
+        print(f"[review-loop] could not write review state: {failure}", file=sys.stderr)  # noqa: T201 — a CLI's refusal channel
+        return NO_RESULT
+
+
+if __name__ == "__main__":
+    sys.exit(main())

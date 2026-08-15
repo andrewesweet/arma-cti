@@ -991,3 +991,28 @@ prereqs action="check" *args:
 # never interpreted.
 verdict *args:
     uv run python tools/pool_comment.py {{ args }}
+
+# Drive one issue's never-alone review loop: open, round, adjudicate, escalate,
+# terminus, show (#333, ADR-0071 ruling 4). One command per act, one durable
+# state directory per issue under `~/.arma-cti/review/`, so a loop survives the
+# turn that opened it — `show` reads it back, `round` advances it, and the
+# terminus is once: it files every arbiter-upheld finding on the originating
+# item and records every dismissal on the issue thread, so running it twice
+# would file twice, which is why it refuses its own second run by name.
+#
+# Every act is refused by name rather than defaulted: `open` refuses a loop
+# that already exists, `adjudicate` refuses an arbiter route before any
+# escalation has fired one (there is no arbiter to speak of), `escalate`
+# refuses an unregistered seat, and the terminus refuses a loop whose findings
+# above Low are still open — #334's landing refusal is the consumer of that
+# same fact. Exit 1 is a named refusal; exit 3 is an act that could not be
+# performed (`gh` unreachable, state unwritable), which is not a result and
+# never a green.
+#
+# `escalate` resolves the arbiter live — the issue's dispatch records, the
+# routing refusals you pass, and the same dispatchability rungs `just
+# dispatch`'s ladder judges by — and records what it excluded and why. The
+# clock it escalates against is the box's own; the off-peak rule it may meet
+# is the human's and has no override on this surface either.
+review-loop *args:
+    uv run python tools/review_loop.py {{ args }}
