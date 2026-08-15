@@ -343,6 +343,15 @@ worktree *args:
 #                                refusals decided before it. Only a real landing's
 #                                refusal goes to stderr (#344)
 #
+# `just land --stage` is the protocol's first step, and it lands nothing: it
+# rebases onto fetched origin/main, stops, and prints the SHA a review must bind.
+# It exists because a verdict binds a SHA the rebase rewrites, so a branch behind
+# origin/main previously had no way to obtain the commit to review except by
+# running the landing and being refused (#334). Stage, review that SHA, then land —
+# and without a long gap, because anything landing in the interval moves it again.
+# It runs strictly less than a landing: the rebase and nothing after it, no push
+# on any path, and every pre-rebase refusal in the same words.
+#
 # Three things it does that prose could not. The refspec is a constant no
 # argument reaches, so `git push origin main` — which pushes the local `main`
 # branch a detached worktree is not on — cannot be typed here. The gate is
@@ -421,6 +430,39 @@ land *args:
 # carries is #333's; the landing refusal that reads this derivation is #334's.
 review *args:
     uv run python tools/review_exchange.py {{ args }}
+
+# One issue's review loop: the record `just land` reads before it clears anything
+# (ADR-0071 ruling 4, #333's format, #334's enforcement). No Arma, no lock.
+#
+#   just review-loop sync --issue 334 --reviewed-sha <sha>
+#                                  fold the verdict recorded for that commit into
+#                                  the loop — the findings and their severities come
+#                                  from the verdict record, never from a flag, so the
+#                                  seat under review cannot re-grade its own review on
+#                                  the way in. The first call opens the loop at round
+#                                  zero; a later call carrying ids the loop does not
+#                                  hold records the next round with exactly those
+#   just review-loop adjudicate --issue 334 --finding f1 --route fixed
+#                                  close one finding through its one route: fixed,
+#                                  arbiter_upheld, arbiter_dismissed, or
+#                                  accepted_and_filed — the fourth Medium or below and
+#                                  only with --filed-issue and --conditional-on, the
+#                                  human's ruling of 2026-08-14 on #334. An
+#                                  adjudication is terminal: a closed finding refuses
+#                                  a second one
+#   just review-loop show --issue 334
+#                                  print the loop as it stands, every finding open and
+#                                  closed, and whether the stop condition is met
+#
+# Refusals are named: no_review_dispatch, no_verdict, verdict_unreadable,
+# sha_mismatch, identity_mismatch, review_issue_mismatch, records_unreadable,
+# no_review_loop, review_loop_unreadable, loop_refused, adjudication_refused. The
+# record it writes lives under ~/.arma-cti/review/<issue>/, outside every worktree,
+# and it carries no dispatch, SHA or arbiter identity — so unlike the verdict beside
+# it, its routes are not re-derived at read time. Ruling 4's same-user limit, stated
+# on every line this prints.
+review-loop *args:
+    uv run python tools/land_review.py {{ args }}
 
 # Discard one named file's unstaged working-tree change, and nothing else
 # (#287, the human's ruling of 2026-08-08 on #248). No Arma, no lock.

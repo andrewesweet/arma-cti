@@ -780,6 +780,39 @@ def satisfies(verdict: Verdict, sha: str) -> Refusal | None:
     )
 
 
+def identity_mismatch(verdict: Verdict, binding: Bound) -> Refusal | None:
+    """Whether a verdict's claimed identity is the one derived — `None` when it is.
+
+    The comparison half of `verify`, named on its own for the caller that has already
+    derived the binding over the same issue and SHA: re-deriving it there is a second
+    full scan of every dispatch directory for an answer already in hand (#334 round 1
+    claim 11). Every identity field is checked, not only the dispatch id — the profile
+    and the lane are as much the derivation's to say, and a hand-edit of either is the
+    same forged identity wearing two of its three names correctly.
+    """
+    if (binding.dispatch_id, binding.profile, binding.lane) == (
+        verdict.review_dispatch,
+        verdict.reviewer_profile,
+        verdict.reviewer_lane,
+    ):
+        return None
+    return Refusal(
+        "identity_mismatch",
+        (
+            (
+                f"claimed={verdict.review_dispatch}"
+                f" profile={verdict.reviewer_profile} lane={verdict.reviewer_lane}"
+            ),
+            f"derived={binding.dispatch_id} profile={binding.profile} lane={binding.lane}",
+            f"reviewed_sha={verdict.reviewed_sha}",
+        ),
+        "The dispatch records do not place this verdict's claimed reviewing"
+        " identity on this commit — the dispatch, the profile and the lane are"
+        " the derivation's to say. A verdict is taken on the records, never on"
+        " its own word — re-derive before trusting it.",
+    )
+
+
 def verify(verdict: Verdict, dispatch_root: Path) -> Bound | Refusal:
     """Re-derive a verdict's reviewing identity from the dispatch records, now.
 
@@ -795,27 +828,8 @@ def verify(verdict: Verdict, dispatch_root: Path) -> Bound | Refusal:
     binding = derive_binding(verdict.issue, verdict.reviewed_sha, dispatch_root)
     if isinstance(binding, Refusal):
         return binding
-    if (binding.dispatch_id, binding.profile, binding.lane) != (
-        verdict.review_dispatch,
-        verdict.reviewer_profile,
-        verdict.reviewer_lane,
-    ):
-        return Refusal(
-            "identity_mismatch",
-            (
-                (
-                    f"claimed={verdict.review_dispatch}"
-                    f" profile={verdict.reviewer_profile} lane={verdict.reviewer_lane}"
-                ),
-                f"derived={binding.dispatch_id} profile={binding.profile} lane={binding.lane}",
-                f"reviewed_sha={verdict.reviewed_sha}",
-            ),
-            "The dispatch records do not place this verdict's claimed reviewing"
-            " identity on this commit — the dispatch, the profile and the lane are"
-            " the derivation's to say. A verdict is taken on the records, never on"
-            " its own word — re-derive before trusting it.",
-        )
-    return binding
+    forged = identity_mismatch(verdict, binding)
+    return forged if forged is not None else binding
 
 
 class Scanned(NamedTuple):

@@ -26,12 +26,14 @@ if TYPE_CHECKING:
 
 land_review = load_tool("land_review")
 review_loop = load_tool("review_loop")
+review_exchange = load_tool("review_exchange")
 
 SHA: Final = "a" * 40
 OTHER_SHA: Final = "b" * 40
 STAMP: Final = "20260815T0000Z"
 ISSUE: Final = 334
 REVIEWER: Final = "codex-luna-max"
+AUTHOR: Final = "opus-high"
 
 # The trusted table's text as a landing reads it off `origin/main`: a docs prefix
 # and one exact file, both with their reasons. Nothing here exempts itself, because
@@ -132,6 +134,13 @@ _PLAN_TEXT: Final = _plan()
 _VERDICT_TEXT: Final = _verdict()
 
 
+def _authoring(profile: str) -> str:
+    """One implementing dispatch record on this issue, the shape the scan reads it."""
+    return json.dumps(
+        {"seat": "implementer", "issue": ISSUE, "profile": profile, "dispatch_id": "d-author-1"}
+    )
+
+
 def _stage(  # noqa: PLR0913 — one parameter per record the rung reads
     tmp_path: Path,
     *,
@@ -139,21 +148,33 @@ def _stage(  # noqa: PLR0913 — one parameter per record the rung reads
     result: str | None = RESULT,
     verdict: str | None = _VERDICT_TEXT,
     loop: str | None = None,
+    author: str | None = AUTHOR,
     records: tuple[tuple[str, str, str], ...] = (),
 ) -> tuple[Path, Path]:
     """Stage the dispatch and review roots a rung reads.
 
-    Defaults to a bound, completed, clean review: the plan given (a review seat on
-    this issue bound to `SHA`), its completed result, and the verdict given (clean,
-    identity matching).
+    Defaults to a bound, completed, clean review over authored work: the plan given
+    (a review seat on this issue bound to `SHA`), its completed result, the verdict
+    given (clean, identity matching), and one implementing dispatch on this issue by
+    a profile that is not the reviewer's.
+
+    That last record is a default rather than a per-test extra because no landing
+    clears without it: records naming no author at all satisfy criterion 2 only
+    vacuously and refuse `authorship_unrecorded` (round 1 claim 1). `author=None`
+    withholds it, which is the arrangement that refusal is asserted on.
 
     `None` writes nothing, so a test names the record it withholds; `records` writes
     further dispatch directories beside the review's own — authoring records,
-    alternates, the unreadable.
+    alternates, the unreadable — and is applied last, so a test may overwrite the
+    default authoring record by naming `d-author-1` itself.
     """
     dispatch_root = tmp_path / "dispatches"
     review_root = tmp_path / "review"
     dispatch_root.mkdir(parents=True, exist_ok=True)
+    if author is not None:
+        authored = dispatch_root / "d-author-1"
+        authored.mkdir(parents=True, exist_ok=True)
+        (authored / "dispatch.json").write_text(_authoring(author), encoding="utf-8")
     record = dispatch_root / "d-review-1"
     if plan is not None or result is not None or verdict is not None:
         record.mkdir(parents=True, exist_ok=True)
@@ -362,39 +383,77 @@ def test_an_authorship_scan_that_could_not_read_every_record_refuses(tmp_path: P
     assert "why=records_unreadable" in refusal.found
 
 
-def test_the_clearance_names_what_the_authorship_scan_did_and_did_not_read(
-    tmp_path: Path,
-) -> None:
-    """`checked` beside the profiles the records place on the work.
+def test_the_clearance_names_the_profiles_the_authorship_scan_read(tmp_path: Path) -> None:
+    """`checked` beside the profiles the records place on the work — the one clearing state."""
+    checked = _rung(_stage(tmp_path))
 
-    And `none_recorded` where the issue's records carry no authoring dispatch at
-    all — an honest line in both states rather than a bare clearance.
+    assert checked.refusal is None
+    assert "authorship=checked potential=opus-high" in checked.cleared
+
+
+def test_records_naming_no_author_at_all_clear_nothing(tmp_path: Path) -> None:
+    """An empty potential set is not the separation; it is the absence of the check.
+
+    The arrangement is live rather than hypothetical: an agent writes the change in
+    its own session — the orchestrator's own fixes, a retro's docs work, work #294
+    bars a dispatched session from — then dispatches `--seat review --reviewing X`.
+    Round 1 read `binding.profile in ()` as false and cleared, with the reviewing
+    profile free to be the authoring one, and `just dispatch` does not catch it
+    either: `review_subject_contradicted` fires only on a complete read (claim 1).
     """
-    checked = _rung(
+    outcome = _rung(_stage(tmp_path, author=None))
+
+    refusal = outcome.refusal
+    assert refusal.kind == "authorship_unrecorded"
+    assert "why=no_authoring_dispatch" in refusal.found
+    assert "reviewer_profile=codex-luna-max" in refusal.found
+
+
+def test_an_issue_with_no_dispatch_records_at_all_clears_nothing(tmp_path: Path) -> None:
+    """The other empty read — records exist, none of them on this issue — refuses alike."""
+    outcome = _rung(
         _stage(
-            tmp_path / "a",
+            tmp_path,
+            author=None,
             records=(
                 (
-                    "d-author-1",
+                    "d-elsewhere",
                     "dispatch.json",
                     json.dumps(
                         {
                             "seat": "implementer",
-                            "issue": ISSUE,
+                            "issue": ISSUE + 1,
                             "profile": "opus-high",
-                            "dispatch_id": "d-author-1",
+                            "dispatch_id": "d-elsewhere",
                         }
                     ),
                 ),
             ),
         )
     )
-    assert checked.refusal is None
-    assert "authorship=checked potential=opus-high" in checked.cleared
 
-    vacuous = _rung(_stage(tmp_path / "b"))
-    assert vacuous.refusal is None
-    assert "authorship=none_recorded reason=no_authoring_dispatch" in vacuous.cleared
+    assert _kind(outcome) == "authorship_unrecorded"
+
+
+def test_an_unreadable_scan_keeps_its_own_kind_with_nothing_read(tmp_path: Path) -> None:
+    """Unreadable outranks empty: the two refusals stay one fact apiece.
+
+    A scan that read no profile *and* could not read a record is `records_unreadable`,
+    not `authorship_unrecorded` — "the records would not open" and "the records say
+    nothing" are different things to go and do.
+    """
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            author=None,
+            records=(
+                ("d-author-2", "dispatch.json", _authoring("opus-high").replace("opus-high", "")),
+                ("d-author-2", "result.json", "not json"),
+            ),
+        )
+    )
+
+    assert _kind(outcome) == "records_unreadable"
 
 
 # --------------------------------------------------------------- the adjudications
@@ -790,3 +849,200 @@ def test_a_multiround_loop_rebuilds_in_order() -> None:
 
     assert loop.review_rounds == 2
     assert tuple(finding.id for finding in review_loop.open_findings(loop)) == ("f2",)
+
+
+# ------------------------------------------------------- the drift, in both directions
+
+
+def test_a_loop_severity_above_a_verdicts_low_is_still_drift(tmp_path: Path) -> None:
+    """The disagreement is checked over every finding, not only the verdict's above-Low set.
+
+    Round 1 compared the loop against `above`, so drift in this direction — the verdict
+    rates a finding Low, the loop rates it Critical — left the mismatch check with
+    nothing to compare, cleared, and printed `above_low=0` while the loop's own record
+    of the same finding was Critical (round 1 claim 7).
+    """
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            verdict=_verdict(findings=(("f1", "low"),)),
+            loop=_loop(findings=(_stored("f1", "critical", route="fixed"),)),
+        )
+    )
+
+    refusal = outcome.refusal
+    assert refusal.kind == "review_finding_mismatch"
+    assert "finding=f1 verdict=low loop=critical" in refusal.found
+
+
+def test_the_clearance_carries_both_limits_it_is_quoted_under(tmp_path: Path) -> None:
+    """A lander quotes these lines into an issue, so the qualifications travel with them.
+
+    `SAME_USER_LIMIT` is `review_exchange`'s, printed beside every recorded verdict and
+    round 1 dropped from the clearance; `LOOP_RECORD_LIMIT` is this module's, and states
+    the asymmetry the docstring derives — the verdict's identity is re-derived at read
+    time and the loop's routes are not (round 1 claims 3 and 4).
+    """
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            verdict=_verdict(findings=(("f1", "high"),)),
+            loop=_loop(findings=(_stored("f1", "high", route="fixed"),)),
+        )
+    )
+
+    assert outcome.refusal is None
+    assert review_exchange.SAME_USER_LIMIT in outcome.cleared
+    assert land_review.LOOP_RECORD_LIMIT in outcome.cleared
+
+
+def test_a_clean_clearance_carries_the_same_user_limit(tmp_path: Path) -> None:
+    """The loop-less clearance is quoted the same way and carries the same qualification."""
+    outcome = _rung(_stage(tmp_path))
+
+    assert outcome.refusal is None
+    assert review_exchange.SAME_USER_LIMIT in outcome.cleared
+
+
+# ------------------------------------------------------------------ the loop's writer
+
+
+def _loop_root(tmp_path: Path) -> Path:
+    return tmp_path / "review"
+
+
+def test_sync_opens_the_loop_from_the_verdicts_own_findings(tmp_path: Path) -> None:
+    """The severities are the reviewer's: `sync` copies the record, never a flag."""
+    dispatch_root, review_root = _stage(
+        tmp_path, verdict=_verdict(findings=(("f1", "high"), ("f2", "low")))
+    )
+
+    report = land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+
+    assert report.code == 0
+    assert "ok=opened" in report.lines
+    loop = land_review.load_loop(review_root, ISSUE)
+    assert [(f.id, f.severity, f.round_raised) for f in loop.findings] == [
+        ("f1", "high", 0),
+        ("f2", "low", 0),
+    ]
+    assert loop.review_rounds == 0
+
+
+def test_sync_is_a_no_op_where_the_verdict_holds_nothing_new(tmp_path: Path) -> None:
+    """Re-running against the same verdict records no round — nothing new was raised."""
+    dispatch_root, review_root = _stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)))
+    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+
+    again = land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+
+    assert again.code == 0
+    assert "ok=loop_unchanged" in again.lines
+    assert land_review.load_loop(review_root, ISSUE).review_rounds == 0
+
+
+def test_sync_records_a_round_for_the_ids_the_loop_does_not_hold(tmp_path: Path) -> None:
+    """A later verdict's new findings are a new round, stamped by `review_loop` itself."""
+    dispatch_root, review_root = _stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)))
+    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+    (dispatch_root / "d-review-1" / "verdict.json").write_text(
+        _verdict(findings=(("f1", "high"), ("f2", "medium"))), encoding="utf-8"
+    )
+
+    report = land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+
+    assert "ok=round_recorded" in report.lines
+    loop = land_review.load_loop(review_root, ISSUE)
+    assert loop.review_rounds == 1
+    assert [(f.id, f.round_raised) for f in loop.findings] == [("f1", 0), ("f2", 1)]
+
+
+def test_sync_refuses_a_verdict_bound_to_another_commit(tmp_path: Path) -> None:
+    """The loop is opened from the verdict the landing will read, or from nothing."""
+    dispatch_root, review_root = _stage(tmp_path)
+
+    report = land_review.sync(ISSUE, OTHER_SHA, dispatch_root, review_root)
+
+    assert report.code != 0
+    assert not land_review.loop_path(review_root, ISSUE).exists()
+
+
+def test_adjudicate_closes_one_finding_and_the_rung_then_clears(tmp_path: Path) -> None:
+    """The writer's record is the reader's: what `adjudicate` writes, `just land` reads."""
+    roots = _stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)))
+    dispatch_root, review_root = roots
+    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+    assert _kind(_rung(roots)) == "finding_unadjudicated"
+
+    report = land_review.adjudicate(ISSUE, "f1", "fixed", "", "", review_root)
+
+    assert report.code == 0
+    assert "ok=adjudicated" in report.lines
+    assert _rung(roots).refusal is None
+
+
+def test_adjudicate_refuses_a_second_verdict_on_one_finding(tmp_path: Path) -> None:
+    """Terminal is terminal — `review_loop`'s one-verdict-then-closed rule, unduplicated."""
+    dispatch_root, review_root = _stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)))
+    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+    land_review.adjudicate(ISSUE, "f1", "fixed", "", "", review_root)
+
+    report = land_review.adjudicate(ISSUE, "f1", "arbiter_dismissed", "", "", review_root)
+
+    assert report.code != 0
+    assert any(line.startswith("refusal=adjudication_refused") for line in report.lines)
+    assert land_review.load_loop(review_root, ISSUE).findings[0].adjudication.route == "fixed"
+
+
+def test_adjudicate_refuses_the_fourth_route_above_medium(tmp_path: Path) -> None:
+    """The restrictions are the ruling's, decided in `review_loop` and not re-stated here."""
+    dispatch_root, review_root = _stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)))
+    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+
+    report = land_review.adjudicate(ISSUE, "f1", "accepted_and_filed", "999", "later", review_root)
+
+    assert report.code != 0
+    assert land_review.load_loop(review_root, ISSUE).findings[0].adjudication is None
+
+
+def test_adjudicate_without_a_loop_names_how_to_open_one(tmp_path: Path) -> None:
+    """The refusal a seat meets first, and the remedy it names is a command that exists."""
+    report = land_review.adjudicate(ISSUE, "f1", "fixed", "", "", _loop_root(tmp_path))
+
+    assert report.code != 0
+    assert any("just review-loop sync" in line for line in report.lines)
+
+
+def test_show_reads_the_loop_without_writing_to_it(tmp_path: Path) -> None:
+    """A read is a read: every finding, the open count, and the stop condition's verdict."""
+    dispatch_root, review_root = _stage(
+        tmp_path, verdict=_verdict(findings=(("f1", "high"), ("f2", "low")))
+    )
+    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+    before = land_review.loop_path(review_root, ISSUE).read_text(encoding="utf-8")
+
+    report = land_review.show(ISSUE, review_root)
+
+    assert report.code == 0
+    assert "finding=f1 severity=high round=0 adjudication=open" in report.lines
+    assert "open_above_low=1" in report.lines
+    assert "stop_condition=not_met" in report.lines
+    assert land_review.loop_path(review_root, ISSUE).read_text(encoding="utf-8") == before
+
+
+def test_a_written_loop_reads_back_through_the_readers_own_gates(tmp_path: Path) -> None:
+    """The round trip is the contract: whatever the writer writes, `load_loop` accepts."""
+    dispatch_root, review_root = _stage(
+        tmp_path, verdict=_verdict(findings=(("f1", "medium"), ("f2", "critical")))
+    )
+    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+    land_review.adjudicate(
+        ISSUE, "f1", "accepted_and_filed", "999", "the later caller", review_root
+    )
+    land_review.adjudicate(ISSUE, "f2", "arbiter_upheld", "", "", review_root)
+
+    loop = land_review.load_loop(review_root, ISSUE)
+
+    assert review_loop.stop_condition(loop)
+    assert loop.findings[0].adjudication.issue == "999"
+    assert loop.findings[0].adjudication.conditional_on == "the later caller"

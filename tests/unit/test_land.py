@@ -636,11 +636,43 @@ def _reviewed(
         ),
         encoding="utf-8",
     )
+    # One implementing dispatch on the same issue, by a profile that is not the
+    # reviewer's. Not decoration: records naming no author at all satisfy ruling 4's
+    # second criterion only vacuously and refuse `authorship_unrecorded`, so a staged
+    # landing without this record never reaches the rungs these tests are about
+    # (#334 round 1 claim 1).
+    author = dispatch_root / "d-author-1"
+    author.mkdir(parents=True, exist_ok=True)
+    (author / "dispatch.json").write_text(
+        json.dumps(
+            {
+                "seat": "implementer",
+                "issue": 213,
+                "profile": "opus-high",
+                "dispatch_id": "d-author-1",
+            }
+        ),
+        encoding="utf-8",
+    )
     if loop is not None:
         target = review_root / "213" / "loop.json"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(json.dumps(loop), encoding="utf-8")
     return land.ReviewInputs(213, dispatch_root, review_root)
+
+
+@pytest.fixture(autouse=True)
+def _never_the_real_records(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Point the review rung's default record roots at empty directories, always.
+
+    Every review-bearing test passes `review=` explicitly, and the ten calls that omit
+    it all refuse before the rung today — but "today" is the whole of the guarantee,
+    and the failure it guards against is a test added later passing or failing
+    according to what is in the author's `~/.arma-cti` (#334 round 1 claim 9). The
+    roots are set rather than deleted so a read finds an absence, not an error.
+    """
+    monkeypatch.setattr(land.review_exchange, "DISPATCH_ROOT", tmp_path / "no-dispatches")
+    monkeypatch.setattr(land.land_review, "REVIEW_ROOT", tmp_path / "no-review")
 
 
 def test_a_landing_pushes_the_work_and_fast_forwards_the_main_checkout(
@@ -1030,9 +1062,41 @@ def test_a_sibling_landing_a_gated_path_does_not_make_this_ungated_diff_refuse(
 
     report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai")
 
-    assert report.code == 0
-    assert _pushes_unqualified(report)
     assert f"routing=would_pass lane=zai {_CAVEAT}" in report.lines
+    # The push is planned as blocked, and by the review rung rather than by routing:
+    # a sibling has landed, so the rebase will rewrite this branch's SHAs and no
+    # verdict can bind the commit the replay has not produced yet (round 1 claim 5).
+    assert not _pushes_unqualified(report)
+    assert any(
+        line.startswith("would_not_run=") and "reason=review_sha_will_move" in line
+        for line in report.lines
+    )
+
+
+def test_a_dry_run_the_rebase_will_reshape_does_not_plan_an_unqualified_push(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """Unconsultable and certain to refuse are not the same as "no verdict yet".
+
+    With commits to replay the review rung cannot be consulted — the SHA a verdict
+    would bind does not exist until the rebase produces it — and the landing that
+    follows refuses `no_review_dispatch` every time, not sometimes. Round 1 printed an
+    unqualified `would_run=git push origin HEAD:main` for exactly that case, and the
+    `would_run=` line is what a reader acts on (#344's precedent, round 1 claim 5).
+    """
+    _origin, main, here = repo
+    _commit(here, "docs/telemetry-ledger.md", "ungated work\n")
+    _commit(main, "docs/regression-tier.md", "a sibling's prose\n")
+    _git("push", "origin", "main", cwd=main)
+
+    report = land.land(main, here, gate=_Gate(), dry_run=True)
+
+    assert report.code == land.EXIT_REFUSED
+    assert "review=would_refuse reason=review_sha_will_move" in " ".join(report.lines)
+    assert not _pushes_unqualified(report)
+    assert any(
+        line.startswith(f"would_not_run={' '.join(land.push_argv())}") for line in report.lines
+    )
 
 
 def test_a_dry_run_with_nothing_to_push_mirrors_the_landing_and_consults_no_gate(
@@ -1573,3 +1637,140 @@ def test_a_dry_run_says_whether_the_corpus_is_owed_before_anything_is_spent(
     assert report.code == 0
     assert any(line.startswith("corpus=owed") for line in report.lines)
     assert any("would_clear=no" in line for line in report.lines)
+
+
+# --------------------------------------------------- the seam between CLI and rung
+
+
+def test_a_worktree_named_for_its_issue_reads_that_issues_review(tmp_path: Path) -> None:
+    """`_issue_from` is the whole seam a real `just land` crosses, and it had no test.
+
+    Every review-bearing test injects `ReviewInputs` explicitly, so the production
+    expression `review or ReviewInputs(_issue_from(here))` never ran under pytest: a
+    drift in this one regex would send every landing to the wrong issue's records, or
+    to none, with `just unit` green (#334 round 1 claim 9).
+    """
+    assert land._issue_from(tmp_path / "issue-334") == 334  # noqa: SLF001
+    assert land._issue_from(tmp_path / "issue-1") == 1  # noqa: SLF001
+
+
+@pytest.mark.parametrize(
+    "name",
+    ["repo", "issue-", "issue-334-fix", "issue_334", "334", "Issue-334", "issue-33a"],
+)
+def test_a_tree_not_named_for_an_issue_names_none(name: str, tmp_path: Path) -> None:
+    """No guessing: a name that is not `issue-<n>` reads as absence, which the rung refuses."""
+    assert land._issue_from(tmp_path / name) is None  # noqa: SLF001
+
+
+def test_a_landing_with_no_review_inputs_reads_the_issue_off_the_worktree_name(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """The default path, exercised: the rung runs on the roots the CLI would read.
+
+    `repo`'s worktree is `issue-213`, so `_issue_from` names 213 and the rung reads
+    the record roots the defaults point at — here the autouse fixture's empty ones,
+    which refuse `no_dispatch_records`. Before this, `review or ReviewInputs(...)` had
+    no test at all and the roots were whatever was in the runner's home directory.
+    """
+    _origin, main, here = repo
+    _commit(here, "tools/worker.py", "work\n")
+
+    report = land.land(main, here, gate=_Gate())
+
+    assert report.lines[0] == "refusal=no_dispatch_records"
+
+
+def test_a_landing_from_a_tree_that_names_no_issue_refuses_rather_than_guesses(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """A hand-named tree has no item, and a landing without an item is the breach."""
+    _origin, main, here = repo
+    renamed = here.parent / "hand-named"
+    _git("worktree", "move", str(here), str(renamed), cwd=main)
+    _commit(renamed, "tools/worker.py", "work\n")
+
+    report = land.land(main, renamed, gate=_Gate())
+
+    assert report.lines[0] == "refusal=review_issue_unknown"
+
+
+# ---------------------------------------------------------------- staging for review
+
+
+def test_staging_rebases_and_stops_at_the_sha_a_review_must_bind(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """The protocol's first step: the commit to review exists, and nothing was landed.
+
+    Before this, a branch behind `origin/main` could obtain that SHA only by running
+    the landing and being refused, which made the refusal a step of the happy path and
+    did not converge under concurrency (#334 round 1 claim 6).
+    """
+    origin, main, here = repo
+    _commit(main, "sibling.txt", "landed first\n")
+    _git("push", "origin", "main", cwd=main)
+    _commit(here, "feature.txt", "work\n")
+    before = _git("rev-parse", "HEAD", cwd=here).strip()
+    tip = _tip(origin)
+
+    report = land.stage(main, here)
+
+    assert report.code == 0
+    assert report.lines[0] == "ok=staged"
+    head = _git("rev-parse", "HEAD", cwd=here).strip()
+    assert head != before
+    assert f"head={head}" in report.lines
+    assert "rebase=replayed onto 1 new commits" in report.lines
+    # Nothing landed: origin is where it was, and the gate never ran.
+    assert _tip(origin) == tip
+
+
+def test_staging_a_current_branch_says_so_and_still_names_the_sha(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """Nothing to replay is not nothing to do: the SHA to review is still the answer."""
+    origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    tip = _tip(origin)
+
+    report = land.stage(main, here)
+
+    assert report.code == 0
+    assert "rebase=already_current" in report.lines
+    assert f"head={_git('rev-parse', 'HEAD', cwd=here).strip()}" in report.lines
+    assert _tip(origin) == tip
+
+
+def test_staging_refuses_a_dirty_tree_in_the_landings_own_words(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """Every refusal `land` decides before its own rebase is decided here identically."""
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    (here / "stray.txt").write_text("uncommitted\n", encoding="utf-8")
+
+    report = land.stage(main, here)
+
+    assert report.lines[0] == "refusal=dirty_tree"
+
+
+def test_staging_and_landing_are_not_both_askable(capsys: pytest.CaptureFixture[str]) -> None:
+    """One mode per invocation: `--stage` and `--dry-run` are mutually exclusive."""
+    with pytest.raises(SystemExit):
+        land.parse_args(["--stage", "--dry-run"])
+
+    assert "not allowed with" in capsys.readouterr().err
+
+
+def test_staging_runs_no_gate_and_pushes_nothing(repo: tuple[Path, Path, Path]) -> None:
+    """There is no path through `--stage` that reaches the push, so there is none to skip."""
+    origin, main, here = repo
+    _commit(here, "addons/main/ui.sqf", "in-world work\n")
+    tip = _tip(origin)
+
+    report = land.stage(main, here)
+
+    assert report.code == 0
+    assert not any(line.startswith(("pushed=", "gate=", "merge=")) for line in report.lines)
+    assert _tip(origin) == tip

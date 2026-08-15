@@ -13,9 +13,15 @@ is the ladder that reads them off records other tools wrote:
 2. **That review's identity absent from the dispatches that authored the work** —
    `dispatch.potential_authors` (#322), read as the potential-author superset it
    is: the reviewer's profile inside it refuses (`review_same_profile`, the same
-   name dispatch gives the same fact at dispatch time), and an incomplete scan
-   refuses rather than reads as checked — #41's rule, with the profiles the scan
-   did read still stated beside the refusal.
+   name dispatch gives the same fact at dispatch time), and any scan that is not
+   `Authorship.complete` refuses rather than reads as checked — #41's rule, with
+   the profiles the scan did read still stated beside the refusal. **An empty set
+   is not a clearance.** Records that name no author at all — the change written
+   in an agent's own session rather than through `just dispatch`, or an issue with
+   no records — satisfy "absent from the authoring dispatches" only vacuously, and
+   the one arrangement this criterion exists to catch is the one it would then
+   wave through: the same instance that wrote the diff dispatching its own review
+   (round 1 claim 1, on `2149b69`).
 3. **Every finding above Low carrying its one adjudication** — the four routes of
    ruling 4 (`fixed`, `arbiter_upheld`, `arbiter_dismissed`, `accepted_and_filed`),
    the fourth added by the human's ruling of 2026-08-14 on #334: Medium or below,
@@ -29,7 +35,7 @@ diff that reaches a clearance without consulting a record is one whose every pat
 matched a listed entry — and that clearance says `review=exempt` with the reasons
 it matched, quotable from the decision that granted it.
 
-## The loop record, and whose reader this is
+## The loop record, and whose reader and writer these are
 
 `<review_root>/<issue>/loop.json` is #333's format at `ab76974`: a version 1
 object of `issue`, `review_rounds` and `findings`, each finding an id, a severity,
@@ -45,16 +51,42 @@ one is deleted in favour of it — a deliberate follow-up, never silent drift. T
 version constant gates that day: a stored loop this reader does not recognise
 refuses as unreadable rather than guessing.
 
+`just review-loop` is this module's own CLI, and it exists because round 1 landed
+the enforcement without the thing it enforces against: nothing in the repository
+wrote `loop.json`, so the `no_review_loop` refusal named a remedy no one could run
+and every landing whose review found anything above Low was unlandable except by
+hand-authoring JSON into a home directory (round 1 claim 2, CLAUDE.md's "land a
+convention together with its first applied instance"). `sync` folds the recorded
+verdict's findings in — from the verdict record, never from what a caller types —
+and `adjudicate` closes one finding through `review_loop.adjudicate`, so the four
+routes and the fourth's three restrictions decide there as everywhere else.
+
+**The loop record is not identity-bound, and the verdict is.** A verdict names a
+dispatch, a profile and a lane, and `verify` re-derives all three from the records
+at read time, so a hand-edit is caught. A loop record carries no dispatch, no SHA
+and no arbiter identity: `route` is a string, and a hand-written
+`arbiter_dismissed` clears as readily as an arbiter's. ADR-0071 ruling 4 concedes
+the same-user limit — every dispatch runs as one user, so these records protect
+against the accident and the shortcut, not against a deceptive agent — and the
+asymmetry is stated here because this is where a reader meets it, and printed on
+the clearance because that is what a lander quotes (round 1 claims 3 and 4).
+
 ## What this rung never does
 
-It writes nothing, dispatches nothing and adjudicates nothing — the verdict is
-#332's exchange, the dispatch the dispatcher's, the adjudication #333's loop. And
-nothing here reads as approval by absence: no verdict, an unreadable verdict, a
-verdict for another commit or another item each refuse by name.
+`review_finding` — the rung `just land` climbs — writes nothing, dispatches
+nothing and adjudicates nothing: the verdict is #332's exchange, the dispatch the
+dispatcher's, and every adjudication decision `review_loop`'s. The CLI below is a
+separate entry point, run by a seat between reviews and never by the landing, and
+it grades nothing either: `sync` copies the recorded verdict's own severities and
+`adjudicate` routes through the loop module's gates. And nothing here reads as
+approval by absence: no verdict, an unreadable verdict, a verdict for another
+commit or another item, and records that name no author at all each refuse by
+name.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -68,7 +100,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import dispatch
 import review_exchange
 import review_loop
-from worktree import Refusal
+from worktree import Refusal, Report
 
 REVIEW_ROOT: Final = Path.home() / ".arma-cti" / "review"
 LOOP_FILE: Final = "loop.json"
@@ -84,6 +116,16 @@ HOW_MANY_EXEMPT: Final = 10
 
 NO_AUTHORSHIP: Final = "no_authoring_dispatch"
 UNREADABLE: Final = "records_unreadable"
+
+# Printed beside every clearance that read a loop, for the reason `review_exchange`
+# prints `SAME_USER_LIMIT` beside every recorded verdict: the clearance is the durable
+# record, and a qualification two tools upstream is not in the bytes anyone quotes
+# (round 1 claims 3 and 4).
+LOOP_RECORD_LIMIT: Final = (
+    "limit=the loop record carries no dispatch, SHA or arbiter identity, so unlike the"
+    " verdict beside it its routes are not re-derived at read time — a hand-written"
+    " adjudication reads as an adjudication (ADR-0071 ruling 4's same-user limit)"
+)
 
 
 class LoopStateError(ValueError):
@@ -211,6 +253,43 @@ def parse_stored_loop(document: object, issue: int) -> review_loop.Loop:
     return loop
 
 
+def loop_document(issue: int, loop: review_loop.Loop) -> dict[str, object]:
+    """Render a loop as the version 1 document `parse_stored_loop` reads back."""
+    findings: list[dict[str, object]] = []
+    for finding in loop.findings:
+        record: dict[str, object] = {
+            "id": finding.id,
+            "severity": finding.severity,
+            "round_raised": finding.round_raised,
+        }
+        if finding.adjudication is not None:
+            record["adjudication"] = {
+                "route": finding.adjudication.route,
+                "issue": finding.adjudication.issue,
+                "conditional_on": finding.adjudication.conditional_on,
+            }
+        findings.append(record)
+    return {
+        "version": LOOP_VERSION,
+        "issue": issue,
+        "review_rounds": loop.review_rounds,
+        "findings": findings,
+    }
+
+
+def write_loop(root: Path, issue: int, loop: review_loop.Loop) -> Path:
+    """Write one issue's loop state, creating its directory, and return the path.
+
+    Outside every worktree by construction — `REVIEW_ROOT` is under `~/.arma-cti` —
+    for the reason every other record this protocol writes lives there: a landing's
+    evidence must not be part of the diff it clears.
+    """
+    path = loop_path(root, issue)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(loop_document(issue, loop), indent=2) + "\n", encoding="utf-8")
+    return path
+
+
 def load_loop(root: Path, issue: int) -> review_loop.Loop:
     """Read one issue's stored loop, refusing anything that cannot safely govern.
 
@@ -288,20 +367,19 @@ def _unadjudicated_refusal(
         " arbiter_upheld, arbiter_dismissed, or accepted_and_filed at Medium or below"
         " naming the issue it became and the work outside the diff its harm is"
         " conditional on (ADR-0071 ruling 4; the fourth route, human ruling"
-        " 2026-08-14, #334) — then land again. Nothing was pushed.",
+        " 2026-08-14, #334) — with `just review-loop adjudicate --issue <n> --finding"
+        " <id> --route <route>`, then land again. Nothing was pushed.",
     )
 
 
 def _authorship_lines(authorship: dispatch.Authorship) -> tuple[str, ...]:
-    """Render the honest one-line account of the authorship scan: checked, or why not.
+    """Render the one-line account of the authorship scan a clearance can carry.
 
-    Called only past the states that refuse, so the first arm is the defensive
-    restatement of a state the ladder never reaches rather than a fourth outcome.
+    There is exactly one: `Authorship.complete`. Every other state now refuses —
+    unreadable as `records_unreadable`, empty as `authorship_unrecorded` — so a
+    clearance never says "unchecked" or "none recorded" again, and this helper has
+    no arm for a state the ladder cannot reach (round 1 claim 1).
     """
-    if authorship.why == UNREADABLE:
-        return ("authorship=unchecked reason=records_unreadable",)
-    if not authorship.potential:
-        return (f"authorship=none_recorded reason={authorship.why or NO_AUTHORSHIP}",)
     return (f"authorship=checked potential={' '.join(authorship.potential)}",)
 
 
@@ -404,9 +482,14 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     mismatch = review_exchange.satisfies(verdict, sha)
     if mismatch is not None:
         return Outcome(mismatch, ())
-    checked = review_exchange.verify(verdict, dispatch_root)
-    if not isinstance(checked, review_exchange.Bound):
-        return Outcome(checked, ())
+    # `verify` would re-derive the binding from `(verdict.issue, verdict.reviewed_sha)`,
+    # and the two checks above have just proven that pair equal to `(issue, sha)` — the
+    # arguments `binding` came from. The comparison is the whole of what `verify` adds,
+    # so it is made against the derivation already in hand rather than by scanning every
+    # dispatch directory on the box a second time (round 1 claim 11).
+    forged = review_exchange.identity_mismatch(verdict, binding)
+    if forged is not None:
+        return Outcome(forged, ())
     authorship = dispatch.potential_authors(issue, dispatch_root)
     if binding.profile in authorship.potential:
         authored = tuple(
@@ -429,6 +512,31 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
                 " profile that did not author (`just dispatch --seat review"
                 " --reviewing <profile>`), record its verdict, and land again."
                 " Nothing was pushed.",
+            ),
+            (),
+        )
+    # An unreadable scan keeps its own kind whether or not it read a profile first, so
+    # the two refusals stay one fact apiece: "the records say nothing" and "the records
+    # would not open".
+    if not authorship.potential and authorship.why != UNREADABLE:
+        return Outcome(
+            Refusal(
+                "authorship_unrecorded",
+                (
+                    f"issue={issue}",
+                    f"dispatch_root={dispatch_root.expanduser()}",
+                    f"reviewer_profile={binding.profile}",
+                    f"why={authorship.why or NO_AUTHORSHIP}",
+                ),
+                "No dispatch record places any profile on this issue's work, so the"
+                " separation between this verdict's reviewer and the work's authors is"
+                " not an answer the records can give — and the arrangement the criterion"
+                " exists to catch, an instance reviewing the diff it wrote in its own"
+                " session, is exactly the one an empty set clears. Dispatch the"
+                " implementing work through `just dispatch --issue <n>` so a record"
+                " exists to check the reviewer against, then re-review this commit and"
+                " land again. A check that could not run is not a check that passed"
+                " (#41, ADR-0071 ruling 4). Nothing was pushed.",
             ),
             (),
         )
@@ -466,9 +574,12 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
                         *(f"finding={f.id}:{f.severity}" for f in above),
                     ),
                     "The verdict reports findings above Low and no loop state"
-                    " adjudicates them. Run the adjudication (`just review-loop`)"
-                    " — every above-Low finding owes its one route before this"
-                    " lands (ADR-0071 ruling 4). Nothing was pushed.",
+                    " adjudicates them. Open the loop from the recorded verdict"
+                    " (`just review-loop sync --issue <n> --reviewed-sha <sha>`), then"
+                    " close each finding through its one route (`just review-loop"
+                    " adjudicate --issue <n> --finding <id> --route <route>`) — every"
+                    " above-Low finding owes one before this lands (ADR-0071 ruling 4)."
+                    " Nothing was pushed.",
                 ),
                 (),
             )
@@ -484,6 +595,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
                 f"findings={len(verdict.findings)} above_low={len(above)} open_above_low=0",
                 "loop=not_needed reason=no_finding_above_low",
                 *_alternates_lines(binding),
+                review_exchange.SAME_USER_LIMIT,
             ),
         )
     try:
@@ -500,9 +612,15 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             (),
         )
     recorded = {finding.id: finding for finding in loop.findings}
+    # Over every finding the verdict reports, not only the ones it rates above Low.
+    # Round 1 compared `above` against the loop and so read the drift in one direction
+    # only: a finding the verdict calls Low and the loop calls Critical left `above`
+    # empty, cleared with `above_low=0`, and never printed the severity the loop holds
+    # (round 1 claim 7). The check is "have these two records drifted", and that
+    # question has no band.
     disagreed = tuple(
         finding
-        for finding in above
+        for finding in verdict.findings
         if finding.id in recorded and recorded[finding.id].severity != finding.severity
     )
     if disagreed:
@@ -539,8 +657,316 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             *_authorship_lines(authorship),
             f"review_dispatch={binding.dispatch_id} profile={binding.profile} lane={binding.lane}",
             f"verdict_sha={sha}",
-            f"findings={len(verdict.findings)} above_low={len(above)} open_above_low=0",
+            # Read off the loop rather than written as a literal: the count a lander
+            # quotes is a reading of the record, and `stop_condition` having just held
+            # is what makes it zero (round 1 claim 7).
+            (
+                f"findings={len(verdict.findings)} above_low={len(above)}"
+                f" open_above_low={len(review_loop.open_above_low(loop))}"
+            ),
             f"loop={loop_file}",
+            LOOP_RECORD_LIMIT,
             *_alternates_lines(binding),
+            review_exchange.SAME_USER_LIMIT,
         ),
     )
+
+
+# ------------------------------------------------------------------ invocation
+
+
+def _verdict_for(  # noqa: PLR0911 — one return per way the record can fail to bind, as the rung does
+    issue: int, sha: str, dispatch_root: Path
+) -> review_exchange.Verdict | Refusal:
+    """Read the verdict bound to this issue's commit, or the refusal that stops it.
+
+    The same derivation the rung climbs, and deliberately the same order: the binding
+    from the dispatch records, the record beside it, the SHA it names, and the identity
+    re-derived rather than believed. A loop opened from anything else would be a record
+    of findings no verdict is on the hook for.
+    """
+    binding = review_exchange.derive_binding(issue, sha, dispatch_root)
+    if not isinstance(binding, review_exchange.Bound):
+        return binding
+    try:
+        path = review_exchange.verdict_path(dispatch_root, binding.dispatch_id)
+    except review_exchange.ReviewExchangeError as error:
+        return Refusal(
+            UNREADABLE,
+            (f"dispatch={binding.dispatch_id}", f"reason={error}"),
+            "The reviewing dispatch's id cannot name its own verdict record (#41).",
+        )
+    if not path.is_file():
+        return Refusal(
+            "no_verdict",
+            (f"dispatch={binding.dispatch_id}", f"expected={path}"),
+            "The review dispatch completed but no verdict sits beside its plan."
+            " Record it with `just review record` before opening a loop on it.",
+        )
+    try:
+        verdict = review_exchange.parse_verdict(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as error:
+        return Refusal(
+            "verdict_unreadable",
+            (f"verdict={path}", f"reason={error}"),
+            "The verdict record exists but will not parse. Repair or re-record it (#41).",
+        )
+    if verdict.issue != issue:
+        return Refusal(
+            "review_issue_mismatch",
+            (f"asked_issue={issue}", f"verdict_issue={verdict.issue}", f"verdict={path}"),
+            "That verdict judges another item's work.",
+        )
+    mismatch = review_exchange.satisfies(verdict, sha)
+    if mismatch is not None:
+        return mismatch
+    forged = review_exchange.identity_mismatch(verdict, binding)
+    return forged if forged is not None else verdict
+
+
+def _loop_refused(issue: int, error: Exception) -> Report:
+    """Render `review_loop`'s own refusal of a fold, in its own words."""
+    return Report.refused(
+        Refusal("loop_refused", (f"issue={issue}", f"reason={error}"), f"{error}. Nothing written.")
+    )
+
+
+def _unreadable_loop(review_root: Path, issue: int, error: Exception) -> Report:
+    """Render a stored loop that cannot govern — the same fact the rung refuses on."""
+    return Report.refused(
+        Refusal(
+            "review_loop_unreadable",
+            (f"loop={loop_path(review_root, issue)}", f"reason={error}"),
+            "The stored loop cannot be read as a version 1 loop. Repair it (#41).",
+        )
+    )
+
+
+def sync(issue: int, sha: str, dispatch_root: Path, review_root: Path) -> Report:
+    """Fold the verdict recorded for this commit into the issue's loop state.
+
+    The findings come from the verdict record, never from what a caller types: the id
+    and the severity a loop holds are the reviewer's, and a writer that accepted them
+    on the command line would let a proposer re-grade its own review on the way into
+    the record the landing reads. The first call opens the loop at round zero; a later
+    call carrying ids the loop does not hold records the next round with exactly those,
+    which is `review_loop.next_round`'s own no-reopening rule doing the deciding. A
+    verdict with nothing new is a no-op that says so.
+    """
+    verdict = _verdict_for(issue, sha, dispatch_root)
+    if isinstance(verdict, Refusal):
+        return Report.refused(verdict)
+    reported = tuple(verdict.findings)
+    try:
+        loop = load_loop(review_root, issue)
+    except FileNotFoundError:
+        try:
+            loop = review_loop.first_review(
+                tuple(review_loop.Finding(f.id, f.severity, 0) for f in reported)
+            )
+        except review_loop.ReviewLoopError as error:
+            return _loop_refused(issue, error)
+        folded = "opened"
+    except (OSError, ValueError) as error:
+        return _unreadable_loop(review_root, issue, error)
+    else:
+        held = {finding.id for finding in loop.findings}
+        fresh = tuple(f for f in reported if f.id not in held)
+        if not fresh:
+            return Report(
+                (
+                    "ok=loop_unchanged",
+                    f"issue={issue}",
+                    f"review_rounds={loop.review_rounds}",
+                    f"findings={len(loop.findings)}",
+                    f"loop={loop_path(review_root, issue)}",
+                ),
+                0,
+            )
+        number = loop.review_rounds + 1
+        try:
+            loop = review_loop.next_round(
+                loop, tuple(review_loop.Finding(f.id, f.severity, number) for f in fresh)
+            )
+        except review_loop.ReviewLoopError as error:
+            return _loop_refused(issue, error)
+        folded = "round_recorded"
+    path = write_loop(review_root, issue, loop)
+    return Report(
+        (
+            f"ok={folded}",
+            f"issue={issue}",
+            f"reviewed_sha={sha}",
+            f"review_rounds={loop.review_rounds}",
+            f"findings={len(loop.findings)}",
+            f"open_above_low={len(review_loop.open_above_low(loop))}",
+            f"loop={path}",
+            LOOP_RECORD_LIMIT,
+        ),
+        0,
+    )
+
+
+def adjudicate(  # noqa: PLR0913, PLR0917 — one parameter per fact the record carries
+    issue: int,
+    finding_id: str,
+    route: str,
+    filed_issue: str,
+    conditional_on: str,
+    review_root: Path,
+) -> Report:
+    """Close one finding through its one route, refusing in `review_loop`'s own words.
+
+    Every semantic decision is that module's: the route vocabulary, the
+    one-verdict-then-closed rule, and the fourth route's three restrictions — Medium or
+    below, the issue it was filed as, and the work outside the diff its harm is
+    conditional on.
+    """
+    try:
+        loop = load_loop(review_root, issue)
+    except FileNotFoundError:
+        return Report.refused(
+            Refusal(
+                "no_review_loop",
+                (f"issue={issue}", f"loop={loop_path(review_root, issue)}"),
+                "No loop state holds this issue's findings yet. Open it from the"
+                " recorded verdict first (`just review-loop sync --issue <n>"
+                " --reviewed-sha <sha>`).",
+            )
+        )
+    except (OSError, ValueError) as error:
+        return _unreadable_loop(review_root, issue, error)
+    try:
+        closed = review_loop.adjudicate(
+            loop, finding_id, review_loop.Adjudication(route, filed_issue, conditional_on)
+        )
+    except review_loop.ReviewLoopError as error:
+        return Report.refused(
+            Refusal(
+                "adjudication_refused",
+                (f"issue={issue}", f"finding={finding_id}", f"route={route}"),
+                f"{error}. Nothing was written.",
+            )
+        )
+    path = write_loop(review_root, issue, closed)
+    return Report(
+        (
+            "ok=adjudicated",
+            f"issue={issue}",
+            f"finding={finding_id}",
+            f"route={route}",
+            *((f"filed_issue={filed_issue}",) if filed_issue else ()),
+            *((f"conditional_on={conditional_on}",) if conditional_on else ()),
+            f"open_above_low={len(review_loop.open_above_low(closed))}",
+            f"loop={path}",
+            LOOP_RECORD_LIMIT,
+        ),
+        0,
+    )
+
+
+def show(issue: int, review_root: Path) -> Report:
+    """Print one issue's loop as it stands: every finding, open and closed."""
+    try:
+        loop = load_loop(review_root, issue)
+    except FileNotFoundError:
+        return Report.refused(
+            Refusal(
+                "no_review_loop",
+                (f"issue={issue}", f"loop={loop_path(review_root, issue)}"),
+                "No loop state holds this issue's findings yet.",
+            )
+        )
+    except (OSError, ValueError) as error:
+        return _unreadable_loop(review_root, issue, error)
+    return Report(
+        (
+            "ok=loop",
+            f"issue={issue}",
+            f"review_rounds={loop.review_rounds}",
+            *(
+                f"finding={f.id} severity={f.severity} round={f.round_raised}"
+                f" adjudication={f.adjudication.route if f.adjudication else 'open'}"
+                for f in loop.findings
+            ),
+            f"open_above_low={len(review_loop.open_above_low(loop))}",
+            f"stop_condition={'met' if review_loop.stop_condition(loop) else 'not_met'}",
+            f"loop={loop_path(review_root, issue)}",
+            LOOP_RECORD_LIMIT,
+        ),
+        0,
+    )
+
+
+def parse_args(argv: list[str] | None) -> argparse.Namespace:
+    """Three actions over one issue's loop: fold a verdict in, close a finding, read it.
+
+    There is no `--severity` and no `--finding-id` on `sync`, deliberately: what the
+    loop holds is the verdict's, and a flag that let a caller name either would put the
+    grading of a review in the hands of the seat the review judges.
+    """
+    parser = argparse.ArgumentParser(
+        prog="just review-loop",
+        description="Record and read one issue's review loop (ADR-0071 ruling 4).",
+    )
+    actions = parser.add_subparsers(dest="action", required=True)
+
+    fold = actions.add_parser("sync", help="fold the recorded verdict's findings into the loop")
+    fold.add_argument("--issue", required=True, type=int, help="the issue reviewed")
+    fold.add_argument(
+        "--reviewed-sha", required=True, help="the reviewed commit, full 40-character SHA"
+    )
+    fold.add_argument("--dispatch-dir", default=None, help="the dispatch records' root")
+    fold.add_argument("--review-dir", default=None, help="the review records' root")
+
+    close = actions.add_parser("adjudicate", help="close one finding through one of the routes")
+    close.add_argument("--issue", required=True, type=int, help="the issue reviewed")
+    close.add_argument("--finding", required=True, help="the finding id the verdict gave it")
+    close.add_argument(
+        "--route", required=True, choices=sorted(review_loop.ROUTES), help="its one disposition"
+    )
+    close.add_argument(
+        "--filed-issue", default="", help="accepted_and_filed: the issue the finding became"
+    )
+    close.add_argument(
+        "--conditional-on",
+        default="",
+        help="accepted_and_filed: the work outside this diff its harm is conditional on",
+    )
+    close.add_argument("--review-dir", default=None, help="the review records' root")
+
+    read = actions.add_parser("show", help="print the loop as it stands")
+    read.add_argument("--issue", required=True, type=int, help="the issue reviewed")
+    read.add_argument("--review-dir", default=None, help="the review records' root")
+
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Run one action, print its lines, exit what it decided."""
+    args = parse_args(argv)
+    review_root = Path(args.review_dir) if args.review_dir else REVIEW_ROOT
+    if args.action == "sync":
+        dispatch_root = (
+            Path(args.dispatch_dir) if args.dispatch_dir else review_exchange.DISPATCH_ROOT
+        )
+        report = sync(args.issue, args.reviewed_sha, dispatch_root, review_root)
+    elif args.action == "adjudicate":
+        report = adjudicate(
+            args.issue,
+            args.finding,
+            args.route,
+            args.filed_issue,
+            args.conditional_on,
+            review_root,
+        )
+    else:
+        report = show(args.issue, review_root)
+    stream = sys.stdout if report.code == 0 else sys.stderr
+    for line in report.lines:
+        print(line, file=stream)
+    return report.code
+
+
+if __name__ == "__main__":
+    sys.exit(main())

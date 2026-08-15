@@ -926,6 +926,73 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     return _merge(root, here, pushed, lines)
 
 
+def stage(root: Path, here: Path) -> Report:
+    """Rebase onto `origin/main` and stop, printing the SHA a review must bind.
+
+    The protocol's missing first step (#334 round 1 claim 6). A verdict binds the SHA
+    it judged and `just land` rebases before it reads one, so a branch behind
+    `origin/main` had no supported way to obtain the commit to review: the only way to
+    produce it was to run the landing, be refused `no_review_dispatch`, and review what
+    the refused run left behind. That worked, but it made the refusal a step of the
+    happy path — and under concurrency it does not converge, because anything landing
+    in the interval moves the SHA again and orphans the fresh verdict.
+
+    It stops before the gate, the push and the merge on purpose. Nothing here can land
+    anything: the rebase is the one act, and every refusal `land` decides before its
+    own rebase — a dirty tree, a rebase already in progress, a conflict, a poisoned
+    tree — is decided here in the same words. `root` is unused by the work and taken
+    all the same, so the two entry points have one signature shape and a later step
+    that needs the main checkout does not change the CLI.
+    """
+    status = read_status(git("status", "--porcelain", cwd=here))
+    blocked = classify_tree(here, status, rebasing=rebase_in_progress(here))
+    if blocked is not None:
+        return Report.refused(blocked)
+    git("fetch", REMOTE, cwd=here)
+    base_before = git("merge-base", "HEAD", BASE, cwd=here).strip()
+    incoming = counted(f"{base_before}..{BASE}", cwd=here) or 0
+    code, stderr = _run(["git", "rebase", BASE], cwd=here)
+    if code is None:
+        return Report.refused(
+            Refusal(
+                "git_failed",
+                (f"worktree={here}", f"command=git rebase {BASE}", f"detail={stderr}"),
+                "The rebase could not be run at all. Nothing was staged.",
+            )
+        )
+    stopped = classify_rebase(here, code, conflicted_paths(here), stderr)
+    if stopped is not None:
+        return Report.refused(stopped)
+    poisoned = classify_conflict_markers(here, find_in_tree(here))
+    if poisoned is not None:
+        return Report.refused(poisoned)
+    head = git("rev-parse", "HEAD", cwd=here).strip()
+    ahead = counted(f"{BASE}..HEAD", cwd=here) or 0
+    replayed = f"replayed onto {incoming} new commits" if incoming else "already_current"
+    return Report(
+        (
+            "ok=staged",
+            "landed=no",
+            f"worktree={here}",
+            f"main_checkout={root}",
+            f"rebase={replayed}",
+            f"head={head}",
+            f"commits={ahead}",
+            (
+                "next=review this SHA (`just review exchange <issue>`, then the review"
+                " dispatch and `just review record --reviewed-sha <the SHA above>`),"
+                " then `just land`"
+            ),
+            (
+                "note=anything landing on origin/main before you do moves this SHA again"
+                " and orphans the verdict bound to it; stage, review and land without a"
+                " long gap between them."
+            ),
+        ),
+        0,
+    )
+
+
 def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return, one input apiece
     here: Path,
     incoming: int,
@@ -1044,11 +1111,27 @@ def _review_plan(
     The second half of the return is the refusal's kind where the rung would
     refuse, `None` where it would clear — the dry run's exit and its
     `would_not_run` lines read both from it.
+
+    **A rung that cannot be consulted here still blocks the plan.** With commits to
+    replay, the rebase rewrites every SHA on the branch, so the verdict the landing
+    will look for is a verdict for a commit that does not exist yet: the rung is
+    unconsultable *and* certain to refuse. Round 1 returned `None` for the kind and
+    the plan printed an unqualified `would_run=git push origin HEAD:main` for the one
+    landing guaranteed to refuse — the `would_run=` line being what a reader acts on,
+    which is #344's own precedent (round 1 claim 5). The kind names the condition
+    rather than the refusal the landing will emit, because the refusal is the rung's
+    to name and this is a plan.
     """
     if incoming:
         return (
-            ("review=not_consulted reason=the rebase will move the SHA a verdict binds",),
-            None,
+            (
+                "review=not_consulted reason=the rebase will move the SHA a verdict binds",
+                (
+                    "review=would_refuse reason=review_sha_will_move"
+                    " (no verdict can bind a commit the replay has not produced)"
+                ),
+            ),
+            "review_sha_will_move",
         )
     outcome = _review_rung(here, review, paths)
     if outcome.refusal is not None:
@@ -1269,10 +1352,21 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     and there is no `--no-corpus` to reach for instead (#302).
     """
     parser = argparse.ArgumentParser(prog="just land", description="Land this worktree on main.")
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
         "--dry-run",
         action="store_true",
         help="print the plan and run nothing at all",
+    )
+    # `--stage` is not an exception to the paragraph above either: it runs strictly
+    # less than a landing — the rebase and nothing after it — and there is no path
+    # through it that pushes. What it buys is the SHA a review must bind, which the
+    # protocol otherwise produced only as the by-product of a refused landing (#334
+    # round 1 claim 6).
+    mode.add_argument(
+        "--stage",
+        action="store_true",
+        help="rebase onto origin/main and stop, printing the SHA to have reviewed",
     )
     parser.add_argument(
         "--corpus",
@@ -1290,12 +1384,16 @@ def main(argv: list[str] | None = None) -> int:
     try:
         here = Path(git("rev-parse", "--show-toplevel", cwd=Path.cwd()).strip()).resolve()
         root = main_checkout(here).resolve()
-        report = land(
-            root,
-            here,
-            dry_run=args.dry_run,
-            lane=os.environ.get("CTI_DISPATCH_LANE", CLAUDE_LANE),
-            corpus=args.corpus,
+        report = (
+            stage(root, here)
+            if args.stage
+            else land(
+                root,
+                here,
+                dry_run=args.dry_run,
+                lane=os.environ.get("CTI_DISPATCH_LANE", CLAUDE_LANE),
+                corpus=args.corpus,
+            )
         )
     except GitError as failure:
         report = Report.refused(

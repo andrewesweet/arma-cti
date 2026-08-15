@@ -24,7 +24,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   governing — and a clearance states what was read: the dispatch, the identity, what the
   authorship scan did and did not read, and the loop's counts. A diff the trusted exemption
   table lists in full clears on the table alone, with its reasons; a table that will not read
-  exempts nothing.
+  exempts nothing. Records that name no author at all refuse `authorship_unrecorded` rather
+  than clearing: an empty set satisfies "the reviewer is not an author" only vacuously, and
+  the arrangement the criterion exists to catch — an instance reviewing the diff it wrote in
+  its own session — is exactly the one it would otherwise wave through. Every clearance
+  carries both limits it is quoted under: the verdict's same-user limit, and the loop
+  record's — it binds no dispatch, SHA or arbiter identity, so unlike the verdict beside it
+  its routes are not re-derived at read time.
+
+- **`just review-loop` — the record `just land` reads before it clears anything (#334, #333's
+  format, ADR-0071 ruling 4).** `sync --issue <n> --reviewed-sha <sha>` folds the recorded
+  verdict's findings into the issue's loop — severities from the verdict record and never from
+  a flag, so the seat under review cannot re-grade its own review on the way in; the first call
+  opens round zero, a later one carrying ids the loop does not hold records the next round.
+  `adjudicate` closes one finding through its one route, with the fourth route's three
+  restrictions decided by `review_loop` rather than restated. `show` prints the loop as it
+  stands and whether the stop condition is met. The enforcement previously named a remedy that
+  did not exist, so a landing whose review found anything above Low was unlandable except by
+  hand-authoring JSON into a home directory.
+
+- **`just land --stage` — rebase onto `origin/main` and stop, printing the SHA a review must
+  bind (#334).** A verdict binds the SHA it judged and the landing rebases before it reads one,
+  so a branch behind `origin/main` previously obtained that commit only as the by-product of a
+  refused landing. It runs strictly less than a landing — the rebase and nothing after it, no
+  push on any path — and refuses a dirty tree, a conflict and a poisoned tree in the landing's
+  own words. A `--dry-run` the rebase will reshape now plans the push as `would_not_run`
+  instead of unqualified: with commits to replay, the review rung is not merely unconsultable
+  but certain to refuse.
 
 - **`just review` — the review branch exchange and the verdict record (#332, ADR-0071 ruling
   4).** Three actions. `exchange <issue>` pushes a clean tree's HEAD to `refs/heads/issue-<n>`
