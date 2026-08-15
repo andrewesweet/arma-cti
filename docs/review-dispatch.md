@@ -1,17 +1,20 @@
 # Dispatching a review
 
 The shape of the review seat: what a review dispatch is handed, what it must hand back, where
-its claims go, and how a confirmed claim reaches the admission bar. Binding decisions:
-ADR-0061 Decision 3 (review is eligible on a foreign lane, and provider diversity is the
-point), the human's ruling on #228 (a review lands nothing — its output is claims, each
-checkable against the code it cites), and the admission bar in `tools/admission.py`.
+its claims go, and what now happens to a confirmed claim. Binding decisions: ADR-0061
+Decision 3 (review is eligible on a foreign lane, and provider diversity is the point), the
+human's ruling on #228 (a review lands nothing — its output is claims, each checkable
+against the code it cites), and, until #328, the admission bar.
 
 **ADR-0071 supersedes the first and third of those**, and this document has not yet been
-re-based on it: ruling 1 rescinds the foreign-lane concept Decision 3 rests on, and ruling 6
-withdraws the admission bar, rehoming the closing section's two live operations onto the
-observatory. That rehoming is a sequenced work item, not this issue's. What ruling 4 *has*
-changed here is the permission-mode paragraph and the resolution rule below it, both of which
-are now mechanism rather than instruction (#322).
+fully re-based on it: ruling 1 rescinds the foreign-lane concept Decision 3 rests on. Ruling
+6 withdrew the admission bar, and #328 dropped it: the two operations this document's closing
+section used to route into it — a confirmed post-close finding marking the reviewed issue
+unclean, and a reviewer's citations counted against its own seat's bar — **now have no home
+at all**, and the sections below say so where they used to say where. Their intended home is
+the observatory (#336), which is not built. What ruling 4 *has* changed here is the
+permission-mode paragraph and the resolution rule below it, both of which are now mechanism
+rather than instruction (#322).
 
 The lane and profile machinery is `docs/multi-provider-dispatch.md`; nothing here restates it.
 
@@ -157,20 +160,21 @@ retyping produced a plausible evidence path that resolved to nothing, which is w
 none. A review is nothing *but* paths, line numbers and SHAs, so every one of them is pasted
 from `git show`, `rg -n` or a `Read`, never retyped from memory of what was read.
 
-### Citations are counted, which is what makes the seat's bar real
+### Citations are countable, and since #328 nobody counts them
 
 A citation **resolves** when the quoted text is present at `file:line` at the named SHA. That
-is a mechanical check, one `git show <sha>:<path>` per claim, and it is the whole of what
-`tools/admission.py`'s citation bar measures for this seat: at least 90% of a lane's review and
-recon citations resolve, pooled over ten dispatches (`CITATION_FLOOR`). 90% and not 100%
-because a citation can go stale under a concurrent landing through no fault of the reviewer.
+is a mechanical check, one `git show <sha>:<path>` per claim, and it was the whole of what the
+admission bar's citation floor measured for this seat: at least 90% of a lane's review and
+recon citations resolving, pooled over ten dispatches. 90% and not 100% because a citation can
+go stale under a concurrent landing through no fault of the reviewer.
 
-So a review report must be **countable**: the orchestrator checks each claim's citation and
-feeds the two numbers to `just admission record --citations-resolved N --citations-total M`.
-A claim with no `file:line`, or with a quote nobody can find, counts as a citation that did
-not resolve — not as a claim that was never made. The known weakness is inherited and stated
-rather than fixed: this measures the citations a reviewer gave, and is silent about the
-findings it failed to raise.
+**That bar is dropped, and no tool takes the two numbers.** The requirement on the report is
+unchanged and is worth keeping for its own sake — every claim carries a `file:line` and a
+quote, so a reader can check it in one command — but there is no longer a record it accrues
+into, no floor it is held against, and nothing that notices a lane whose citations stop
+resolving. The known weakness was already stated rather than fixed (this measures the
+citations a reviewer gave and is silent about the findings it failed to raise); what is new is
+that even the half it did measure is now unmeasured.
 
 ## Scope: grain and structure, not taste
 
@@ -212,14 +216,18 @@ The orchestrator receives the report and routes each claim:
 Either route may be taken by the reviewer itself where its permissions allow it. Neither is
 assumed: the seat's contract is the report, and the filing is the orchestrator's by default.
 
-## How a confirmed claim reaches the admission bar
+## What a confirmed claim now reaches: nothing
 
-`tools/admission.py` needs no change for this, and that is the finding rather than an
-omission. Part B's `unclean` is §3 of #230's derivation, carried verbatim as
-`UNCLEAN_REASONS = ("rework", "finding", "reopen")` — and **"a post-close finding raised on
-the issue" is this**. A review dispatched after a landing produces exactly that object.
+This section used to say how a confirmed post-close finding reached the admission bar's Part
+B, whose `unclean` vocabulary — `("rework", "finding", "reopen")`, §3 of #230's derivation —
+had "a post-close finding raised on the issue" in it, so a review dispatched after a landing
+produced exactly that object with no change needed anywhere.
 
-Four qualifications, which are what the alignment actually consists of:
+**#328 dropped that bar, so the object is produced and nothing receives it.** A confirmed
+defect is still filed, and it is still worth filing; it simply marks no record. The four
+qualifications below are kept because they are how the finding is *judged*, which is a
+reader's question whether or not anything counts it, and because #336's observatory will need
+exactly these distinctions rather than have to re-derive them:
 
 - **Only a confirmed defect counts.** A claim is confirmed when its citation resolves *and*
   the orchestrator upholds the scenario. An unconfirmed or withdrawn claim is not an unclean
@@ -233,22 +241,28 @@ Four qualifications, which are what the alignment actually consists of:
 - **A claim about code the reviewed landing did not touch is not that landing's finding.**
   It is a finding about the repo, and it routes as an ordinary issue against nobody's record.
 
-The window is the bar's own: within seven days of the close (`tools/admission.py`'s module
-docstring, "Part B needs seven days of rework history"). A review dispatched promptly after a
-landing sits inside it by construction; one dispatched later produces a real issue and no
-unclean mark, and the record should say which.
+The window was the bar's own: within seven days of the close, because Part B needed seven days
+of rework history. A review dispatched promptly after a landing sat inside it by construction;
+one dispatched later produced a real issue and no unclean mark. The window survives only as a
+distinction worth keeping, not as a rule anything enforces.
 
-The reviewer's own dispatch is accounted **separately**, against the review seat's citation
-bar on the reviewer's lane and profile. One dispatch therefore touches two records that must
-not be confused: the reviewed lane's Part B, and the reviewing lane's citation count.
+The reviewer's own dispatch was accounted **separately**, against the review seat's citation
+bar on the reviewer's lane and profile. One dispatch touched two records that must not be
+confused: the reviewed lane's Part B, and the reviewing lane's citation count. Neither record
+exists now; the distinction is recorded here so that whoever builds the observatory does not
+collapse them.
 
-**The gap, stated rather than papered over.** Part B counts findings raised; it cannot
-distinguish an issue that was reviewed and found clean from an issue nobody reviewed. That is
-the #41 shape — a check that could not run is not a check that passed — and Part A avoids it
-by making an unrun criterion `UNKNOWN`. Part B has no equivalent, and creating one would mean
-making a review mandatory per issue, which is a policy the human has not ruled and this seat
-does not assume. Recorded here so that a lane admitted without ever having been reviewed is
-known to have cleared a weaker bar than one that was.
+**The gap, stated rather than papered over — and now wider.** Part B counted findings raised;
+it could not distinguish an issue reviewed and found clean from an issue nobody reviewed. That
+is the #41 shape — a check that could not run is not a check that passed — and Part A avoided
+it by making an unrun criterion `UNKNOWN`. Part B had no equivalent, and creating one would
+have meant making a review mandatory per issue, a policy the human had not ruled.
+
+Since #328 the gap is not that a lane could be admitted on a weaker signal than it appeared
+to have. It is that **there is no signal and no admission**. A route's quality is unchecked
+before its work runs, and read afterwards only by whoever chooses to look, until #336 exists.
+Ruling 4's never-alone review is what stands in that place today, and it is a different kind
+of thing: it checks a change, not a profile.
 
 ## The brief template
 

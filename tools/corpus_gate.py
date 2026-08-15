@@ -17,7 +17,8 @@ The **landing diff against `origin/main`**, never the issue body: a body predict
 surface and a diff is one. The surface list is class 5 of the routing policy, read from
 fetched `origin/main` rather than from the tree being landed — the candidate diff must
 not be able to widen the list that judges it — and it is the same row the routing gate,
-`tools/admission.py`'s cross-check and `tools/brief.py`'s prediction read.
+`tools/gate.py`'s list — which `tools/brief.py`'s prediction and `tools/trial.py`'s
+corpus check both call — read.
 
 ## What clears it, and what does not
 

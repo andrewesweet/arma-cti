@@ -27,7 +27,7 @@ per-dispatch exemption. The freeze is the human's and only they amend it.
 
 ## Why every entry quotes a ruling
 
-`tools/admission.py` requires a choice on every Part A criterion with no default, because a
+`tools/trial.py` requires a choice on every trial criterion with no default, because a
 criterion nobody passed is a criterion nobody checked. The same discipline, applied to the one
 surface whose scheduling rules have no provenance at all today: **a write without `--ruling` is
 refused, and a read that finds an entry without one refuses `policy_invalid`.** The human's own
@@ -46,7 +46,8 @@ rather than from a default nobody chose.
 ## What this does not decide
 
 Readiness is #241's rung and this consumes its verdict rather than inventing a second one. Lane
-and profile belong to the breaker and the admission bar. Semantic dependency order is judgement:
+and profile belong to the breaker, which is the only pre-dispatch judgement of a route left
+since #328 dropped the admission bar. Semantic dependency order is judgement:
 an optional `Blocked-by: #N` body line is read where it exists and its absence is reported. And
 **the scheduler selects and prints; it never dispatches** — ADR-0053's split, the same reason
 `just watch` never messages the agent it watched.

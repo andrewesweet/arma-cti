@@ -95,6 +95,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unregistered seat, a terminus the loop has not reached — with exit 1 for a named refusal
   and exit 3 for an act that could not be performed.
 
+### Removed
+
+- **The pre-registered admission bar is dropped, and the departure is recorded as one (#328,
+  ADR-0071 ruling 6).** No dispatch is refused by an admission verdict: the rung is gone from
+  `just dispatch` rather than made permissive, and the dispatcher exposes no standing to read,
+  no `admission_escalated` refusal and no `--admission-dir`. The bar was pre-registered
+  precisely so that observed lane behaviour could not move it, and it **never adjudicated once
+  across any of its 24 routes in 112 dispatches** before being dropped — the move
+  pre-registration exists to prevent, taken knowingly on the human's ruling and written down as
+  a departure rather than left to be discovered as a silence. Nothing upfront replaces it; what
+  replaces it is retrospective (#336) and is not built, so a route's quality is now unchecked
+  before its work runs.
+
 ### Changed
 
 - **An arbiter route names the arbiter that ruled (#334, ADR-0071 ruling 4).** `arbiter_upheld`
@@ -210,6 +223,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   trace for every dismissal. Rounds, escalations, dispute outcomes, terminuses and arbiter
   resolutions now emit OTel events journaled under `~/.arma-cti/review/` — rounds leave no
   trace in a diff, so a loop shipped without them is a loop whose cost cannot be recovered.
+
+- **`just admission` is `just trial`, carrying the pre-registration harness and the close audit
+  that outlived the bar (#328).** `tools/admission.py` became `tools/trial.py`: verbs are
+  `bar`, `status`, `report`, `start`, `audit`, `close-audit`, `record` and `reset`. The bar is a
+  judgement about a profile and the harness is a mechanism with no opinion about what is
+  trialled, so the harness stays — clock started by an explicit act, criteria immutable once the
+  first assessment lands, an unrun check never rendering as a pass — and `close-audit` keeps
+  #252's six checks reachable, minus the one function that used to read two of their verdicts
+  into criteria. The in-world surface list moved to `tools/gate.py`, which every reader of it now
+  calls. The store stays `~/.arma-cti/admission/` under `CTI_ADMISSION_DIR`: the name is wrong
+  and is kept, because renaming it would orphan the records kept as history.
+- **#242's orchestration-seat trial is closed as inconclusive (#328, ADR-0071 ruling 2).** Its
+  cycles judge a seat at opus/high and the ruling sets that seat at opus/xhigh, so they cannot
+  validate the new pair. The records are kept as history; `start`, `record` and `reset` all
+  refuse a closed trial by name, so it is closed rather than restarted. The observatory does not
+  subsume it: the trial measured five orchestration-process criteria and the observatory measures
+  rework, so those five now go unmeasured — a loss, not a substitution. `just trial bar` prints
+  them by name rather than as a count, so a reader meets the list.
 
 - **The routing policy is re-founded class by class on capability and conflict of interest, and
   is no longer the keep-on-Claude policy.** ADR-0071 ruling 1 withdrew provenance as a reason to

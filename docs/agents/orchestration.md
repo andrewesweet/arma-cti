@@ -42,9 +42,13 @@ cycles from an opus/high orchestration seat, failing on any one of five clauses
 `quota_exhausted`, `provider_refused` or `untyped_harness_failure` treated as a result;
 a landing recorded against an issue its dispatch could not have made; a gated surface
 edited without approval or an ADR-0013 record; a ruling with drafting slack transcribed
-onto a gated semantic surface from the seat rather than dispatched). The trial's
-recording surface is `just admission trial-report`, folded into `just watch-report`
-(#260).
+onto a gated semantic surface from the seat rather than dispatched). Its recording
+surface was `just admission trial-report`, folded into `just watch-report` (#260); the
+recipe is now `just trial report` and it is silent, because **ADR-0071 ruling 2 closed
+that trial as inconclusive** (#328). Its cycles are kept as history, it is not
+restarted, and the observatory does not subsume it — the observatory measures rework and
+sees none of those five criteria, so they now go unmeasured. That is a loss rather than
+a substitution. `just trial bar` prints the five by name.
 
 The orchestrator seat is **ineligible on every foreign lane** (ADR-0061 Decision 2).
 The standing retro allowance — the human's nine-profile ruling of 2026-08-09 on #300,
@@ -123,7 +127,7 @@ worth naming: the loss while *awake* was 73 agent-minutes over 19 minutes of tur
    loss, and the same four days' briefs are what stopped #256 flipping ADR-0064's
    approval and licensed #246 to conclude "not worth it".
 5. **Dispatch.**
-6. On completion: paste `just verdict`, run `just admission audit`, **judge the close**.
+6. On completion: paste `just verdict`, run `just trial close-audit`, **judge the close**.
 7. Episodically: the retro, the rulings intake, the evidence banking.
 
 ## What the seat holds, and what it dispatches
@@ -192,7 +196,7 @@ constraints:
 - **It reviews claims, not code.** Architecture and design taste are the per-issue
   review lens (#240) and the periodic deep pass (#139). The mechanical half of a
   close — SHA on main, SHA inside the dispatch's window, corpus owed and quoted,
-  evidence path resolvable — is computed by `just admission audit`, not re-read by
+  evidence path resolvable — is computed by `just trial close-audit`, not re-read by
   hand.
 
 ## The tools, and when the seat reaches for each
@@ -212,8 +216,7 @@ do.
 | Asking whether occupancy held | `just occupancy --since … --until … --limit N` | One window's agent-minutes: capacity, used, lost. `just queue state` counts what is in flight now and so cannot show a sawtooth (#295) |
 | At dispatch | `just watch <name> <worktree> [subject]` | Arm the detached stall watcher |
 | On a finished pool | `just verdict [pool-dir]` | The record a close quotes — **paste verbatim, never retype the SHA or evidence path** (#219) |
-| Judging a close | `just admission audit --issue N` | The checkable Part A claims, computed and cited |
-| Recording an assessment | `just admission record …` | One issue's assessment; `--from-audit` fills what the audit computed, every other criterion still a required choice |
+| Judging a close | `just trial close-audit --issue N` | The six checkable claims over a close, computed and cited. It concludes nothing further: the bar that read two of them into criteria was dropped by #328 |
 | Quoting spend | `just ledger-sync show --dispatch <id>` | The per-dispatch row, in `cap_fraction`, before quoting a dispatch's cost |
 | Recovering | `just recover check <name>` / `just recover brief <issue\|worktree>` | The runbook's two computable procedures (#253) |
 | Landing | `just land` | The landing protocol — **paste its output verbatim, never retype it** |

@@ -653,9 +653,10 @@ watch-report *args:
     # cost fifteen hours. Reads `CTI_RC_HEALTH_DIR`, the seam #249 landed, and takes no
     # argument: `{{ args }}` is the watchers' alone.
     uv run python tools/rc_health.py report
-    # The orchestration-seat trial (#260): one line when it has failed, silent while clean.
-    # Not a gate — it reports — and it reads `CTI_ADMISSION_DIR`, the same seam the records use.
-    uv run python tools/admission.py trial-report
+    # The orchestration trial (#260): one line when it has failed, silent otherwise — which
+    # since #328 closed it as inconclusive means silent, because a closed trial is a record
+    # rather than a live finding. Not a gate; reads `CTI_ADMISSION_DIR`, the records' seam.
+    uv run python tools/trial.py report
 
 # The recovery runbook's two computable procedures (#253, orchestration-design §4).
 # No Arma, no lock, no turn held open; both verbs are reads and neither writes
@@ -793,60 +794,60 @@ queue *args:
 wip-trial *args:
     uv run python tools/wip_trial.py "$@"
 
-# The pre-registered admission bar, as the thing that decides rather than as prose
-# (#224, ADR-0061 Decision 6). No Arma, no lock, no turn held open.
+# The pre-registration trial harness, and the close audit it reads (#260, #328).
+# No Arma, no lock, no turn held open.
 #
-#   just admission bar                       the bar as ruled, printed
-#   just admission status                    every off-Claude route, and what it has accrued
-#   just admission check --lane zai --profile zai-glm52-max --seat implementer
-#   just admission audit --issue N           compute what a close's Part A claims can be
-#   just admission record --lane … --seat … --issue N …   one issue's assessment
-#   just admission reset --lane … --seat … --force        the human act after an escalation
+#   just trial bar                    the pre-registration, its closure, its five criteria
+#   just trial status                 the standing and every cycle recorded
+#   just trial report                 one line when a trial has failed; silent otherwise
+#   just trial start --date YYYY-MM-DD    the explicit clock-start act
+#   just trial audit --issue N        the three mechanical criteria, computed
+#   just trial close-audit --issue N  the six checks over one close, on their own
+#   just trial record --cycle N --issue N --from-audit …   one cycle
+#   just trial reset --force          the human act after a failure
 #
-# The bar is the human's ruling of 2026-08-05T20:00Z on #224, over #230's derivation
-# from the 131 eligible closed issues in this repo's own history. **Part A**: four
-# process criteria, every issue, ten out of ten, no allowance. **Part B**: at most one
-# unclean issue in ten, where unclean is a corrective rework commit within seven days,
-# a post-close finding, or a reopen. **N = 10**, and one re-run — attempts do not pool,
-# and a second failure is a human's call. Recon and review are judged instead on the
-# ruling's substitute: at least 90% of their findings' file-and-line citations resolve,
-# pooled over ten dispatches. `just admission bar` prints all of it; nothing here
-# derives a number, because a bar that moves once the numbers are in is not
-# pre-registered.
+# **This recipe was `just admission`, and the bar it ran is gone.** ADR-0071 ruling 6
+# dropped the pre-registered admission bar and withdrew ADR-0061 Decision 6, so no
+# dispatch is refused by an admission verdict any more and there is no bar to print.
+# The bar was pre-registered precisely so that observed lane behaviour could not move
+# it, and it never adjudicated once across its routes in 112 dispatches before being
+# dropped. That is a deliberate departure from a pre-registration, taken by the human's
+# ruling, and it is written down as one — in `tools/trial.py`'s own header, in
+# ADR-0071, and here. What replaces it is retrospective (#336) and is not built yet.
 #
-# **Every off-Claude route starts at zero.** The 131 issues behind the bar are Claude's
-# history, the question Decision 6 asks is absolute rather than comparative, and
-# nothing is back-filled — `just admission status` says so until the first record.
+# **#242's orchestration trial is closed as inconclusive**, its cycles kept as history.
+# It is not restarted: `start`, `record` and `reset` all refuse a closed trial by name.
+# The observatory does not subsume it — the trial measured five orchestration-process
+# criteria and the observatory measures rework, so those five now go unmeasured. That
+# is a loss rather than a substitution, and `just trial bar` prints the five by name so
+# a reader meets the list rather than a count.
 #
-# `record` invents nothing. Every Part A criterion is a required choice with no
-# default, because a criterion nobody passed is a criterion nobody checked, and two of
-# them are cross-checked against git in the refusing direction only: a landing that
-# touched an in-world surface may not have its corpus criterion waived, and one that
-# edited an acceptance spec or a generated file may not record the hooks as clean.
+# What survives is the harness, which has no opinion about what is trialled: a bar
+# settled in advance, cycles accruing one at a time, a clock that starts at an explicit
+# act rather than at the tool's existence, criteria immutable once the first assessment
+# lands, and a verdict that is a finding for the human and never a dispatch gate.
+# `record` invents nothing — every criterion is a required choice with no default,
+# because a criterion nobody passed is a criterion nobody checked — and `--from-audit`
+# fills only the three the artefacts decide, never the two a hand must assert.
 #
-# `audit` computes what the rest of that assertion can be (#252). Six checks over the
-# issue's closing comment — that it names a commit on `origin/main`; that the commit
-# falls inside its dispatch's window, by `tools/ledger.py`'s own tests rather than a
-# second copy of them; whether the landing touched an in-world surface and so owes a
-# pool verdict; whether every evidence path it quotes exists and reads green; whether a
-# gate block is quoted at all; and the changelog, which it refuses to decide. It reads
-# the close off `gh`, or off `--close-file`. It computes, prints and cites; it records
-# nothing, and it exits zero whatever it found, because a verdict here is a finding to
-# read rather than a gate. Two of its answers are deliberately weak: a quoted gate block
-# is `quoted` and never proof the gate ran green, since the paste is the evidence and no
-# tool can re-run history; and the changelog is `undecidable` and has no input that makes
+# `audit` computes six checks over an issue's closing comment (#252): that it names a
+# commit on `origin/main`; that the commit falls inside its dispatch's window, by
+# `tools/ledger.py`'s own tests rather than a second copy of them; whether the landing
+# touched an in-world surface and so owes a pool verdict; whether every evidence path it
+# quotes exists and reads green; whether a gate block is quoted at all; and the
+# changelog, which it refuses to decide. It reads the close off `gh`, or off
+# `--close-file`. It computes, prints and cites; it records nothing, and it exits zero
+# whatever it found. Two of its answers are deliberately weak: a quoted gate block is
+# `quoted` and never proof the gate ran green, since the paste is the evidence and no
+# tool can re-run history; and the changelog is `undecidable` with no input that makes
 # it `ok`, because a check that could not run is not a check that passed.
 #
-# `record --from-audit` runs that audit and fills the two criteria it computes, leaving
-# every other one a required choice with no default — so the discipline above survives
-# the automation rather than being replaced by it.
-#
-# `just dispatch` reads the standing before it plans anything, and refuses only the
-# ruling's far end: a profile that has spent both attempts. Probation dispatches
-# normally, or the record could never accrue. Every state change goes to OTel and to
-# `~/.arma-cti/admission/transitions.jsonl`.
-admission *args:
-    uv run python tools/admission.py {{ args }}
+# The store is still `~/.arma-cti/admission/`, still reached through
+# `CTI_ADMISSION_DIR`, and every transition still goes to OTel and to that directory's
+# `transitions.jsonl`. Those names are wrong for what this is now and are kept anyway:
+# the trial's cycles are kept as history, and renaming their home would orphan them.
+trial *args:
+    uv run python tools/trial.py {{ args }}
 
 # Materialise the per-dispatch ledger from the OTel bus (#227, ADR-0061). No
 # Arma, no lock, no turn held open.

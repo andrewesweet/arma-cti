@@ -458,7 +458,7 @@ class Landing(NamedTuple):
     `shas` is every commit that cleared all three tests, newest first, where `sha` is
     only the newest of them. The row names the tip because that is what a reader wants
     to `git show`; the list exists for a caller asking *membership* rather than "which
-    one" — `just admission audit` holds a SHA quoted in a close against this window, and
+    one" — `just trial close-audit` holds a SHA quoted in a close against this window, and
     a caller that had only the tip would have to re-derive the window to answer it
     (#252). Deliberately absent from `document()`: the row's schema names the tip and
     the count, and widening it here would change the ledger's shape for a question the

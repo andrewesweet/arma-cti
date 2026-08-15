@@ -1355,9 +1355,9 @@ def test_the_recipe_folds_the_breaker_into_the_read_at_the_top_of_a_turn() -> No
     assert "tools/breaker.py report" in body
     assert "tools/queue_policy.py report" in body
     assert "tools/stall_watch.py report" in body
-    assert "tools/admission.py trial-report" in body
+    assert "tools/trial.py report" in body
     assert body.index("breaker.py") < body.index("stall_watch.py"), "the verdicts read first"
     assert body.index("breaker.py") < body.index("queue_policy.py")
     assert body.index("queue_policy.py") < body.index("stall_watch.py")
-    assert body.index("stall_watch.py") < body.index("admission.py")
+    assert body.index("stall_watch.py") < body.index("trial.py")
     assert "\nbreaker *args:\n" in justfile

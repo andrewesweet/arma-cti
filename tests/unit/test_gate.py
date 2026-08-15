@@ -15,7 +15,7 @@ from pathlib import Path
 from conftest import REPO, load_tool
 
 gate = load_tool("gate")
-admission = load_tool("admission")
+routing_policy = load_tool("routing_policy")
 
 
 # ---------------------------------------------------------------------- the readers
@@ -37,14 +37,24 @@ def test_named_paths_keeps_multi_segment_paths_whole() -> None:
 
 
 def test_in_world_keeps_only_surfaces_the_policy_names() -> None:
-    # `in_world` defers entirely to admission's list — the one authority — so the test builds a
-    # known in-world path from that list rather than naming a prefix of its own.
-    prefixes = admission.IN_WORLD_PREFIXES
+    # `in_world` defers entirely to this module's own list, which is read from the routing
+    # policy and is the one authority, so the test builds a known in-world path from that list
+    # rather than naming a prefix of its own.
+    prefixes = gate.IN_WORLD_PREFIXES
     assert prefixes, "the policy must name at least one in-world prefix"
     first = prefixes[0]
     in_world_path = (first + "sub/file.sqf") if first.endswith("/") else (first + "/file.sqf")
     assert gate.in_world((in_world_path, "tools/dispatch.py", "README.md")) == (in_world_path,)
     assert gate.in_world(("tools/dispatch.py", "README.md")) == ()
+
+
+def test_the_in_world_list_is_read_from_the_routing_policy_and_not_written_here() -> None:
+    # #328 moved the list here from the admission module, which the same issue emptied. It is
+    # still read rather than written: this asserts the shipped policy's own answer, so a prefix
+    # spelled into this module would be a red rather than a second copy nobody noticed.
+    read = routing_policy.read_policy(REPO / routing_policy.POLICY_RELATIVE)
+    assert read.policy is not None
+    assert routing_policy.in_world_prefixes(read.policy) == gate.IN_WORLD_PREFIXES
 
 
 def test_domain_vocabulary_reads_terms_longest_first_with_the_engine_words() -> None:

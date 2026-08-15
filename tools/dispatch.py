@@ -74,15 +74,18 @@ lane** — it only rewrites a `cache_control` TTL that measurably decides nothin
 even a real token saving would not be a plan saving under a prompt meter — and the five
 Claude Code effort levels collapse to one profile per model rather than five.
 
-**The profile's admission standing is read before anything is planned** (#224). ADR-0061
-Decision 6 admits a profile to a seat on a bar pre-registered against the Claude history,
-and the human ruled that bar on 2026-08-05T20:00Z; `tools/admission.py` is the ruling. What
-reaches this file is its far end only: a profile whose second attempt at the bar has failed
-is refused here, because the ruling allows one re-run and no more and a third attempt is
-otherwise an improvisation nobody would notice. A profile still *on* probation dispatches
-normally — the record the bar judges accrues only as the lane runs, so refusing probation
-would make the bar unclearable — and `claude-native` is exempt throughout, since nothing is
-leaving Claude there.
+**No admission standing is read, and nothing here refuses on one** (#328). ADR-0061
+Decision 6 pre-registered a bar that admitted a profile to a seat against the Claude
+history, and this file used to read its far end before it planned anything. ADR-0071 ruling
+6 dropped that bar and withdrew Decision 6. The rung is gone rather than made permissive:
+there is no standing to consult, no `admission_escalated` refusal to hit, and no directory
+of records for a dispatcher to point at.
+
+That is a deliberate departure from a pre-registration rather than a conclusion its data
+reached — the bar never adjudicated once across its routes in 112 dispatches — and it is
+recorded as one in `tools/trial.py`, which is what the module became. What replaces it is
+retrospective (#336's observatory), and it is not built yet, so for now a route is judged by
+nothing upfront at all.
 
 **The `zai` lane dispatches only in off-peak hours** (#238). The human ruled that on
 2026-08-05 as a hard rule, so it is a rung here rather than guidance: outside z.ai's
@@ -138,8 +141,8 @@ anyone still working in it".
 **A seat resolves its own profile, and the record says which and why** (#321, ADR-0071
 ruling 2). Naming a seat is the ordinary way to dispatch: each seat carries an ordered
 preference over profiles, head first, and `resolve_seat` walks it to the first entry that
-is dispatchable *right now* — reading the `(profile, seat)` block, the profile's admission
-standing, the lane's breaker, the human's off-peak rule and the lane's credential, each by
+is dispatchable *right now* — reading the `(profile, seat)` block, the lane's breaker, the
+human's off-peak rule and the lane's credential, each by
 calling the same function the ladder calls rather than by keeping a second copy of it. The
 resolved route is written into the request, so every rung below climbs a complete one and
 none of them can tell how it was arrived at, which is the ruling's point that a refusal
@@ -213,7 +216,6 @@ from urllib.parse import quote
 sys.path.insert(0, str(Path(__file__).parent))
 
 # The path insert above is what makes these importable.
-import admission
 import breaker
 import dispatch_stop
 import gate
@@ -2152,7 +2154,7 @@ def readiness_refusal(issue: int, found: Readiness) -> Refusal | None:
     and enumerability — 15% overall, 67% of ruling executions — does not, because a ruling
     execution's criteria *are* the ruling and enumerating them would mean paraphrasing it.
 
-    **No failure class**, for `admission_refusal`'s and `off_peak_refusal`'s reason exactly:
+    **No failure class**, for `off_peak_refusal`'s reason exactly:
     CLAUDE.md's table types what a run *found*, and this found nothing about any code. The
     provider is up, the lane is reachable, and the issue is not ready to be worked. An
     unreadable body is different and does carry one — `infra_unavailable` — because a check
@@ -2196,40 +2198,6 @@ def readiness_advisories(issue: int, found: Readiness) -> tuple[str, ...]:
     return tuple(
         f"advisory={finding.kind} issue={issue} {finding.detail}"
         for finding in found.assessment.advisory
-    )
-
-
-def admission_refusal(
-    lane_name: str, profile_name: str, seat: str, admission_dir: Path
-) -> Refusal | None:
-    """Read the profile's admission standing before anything is planned (#224, ADR-0061 D6).
-
-    Only the ruling's far end refuses here. A profile on probation is dispatchable, because
-    the ten-issue record the bar judges accrues only as the lane runs; a profile whose
-    second attempt failed is not, because the ruling allows exactly one re-run and the
-    whole point of pre-registering an operating characteristic is that unlimited retries
-    silently multiply it.
-
-    No failure class. A refusal here says nothing about a provider or about the code under
-    test — it is this project declining to spend a seat on a profile it has twice judged —
-    so borrowing `infra_unavailable` or `provider_refused` would put a wrong class in
-    CLAUDE.md's table, which that table makes a harness bug by definition.
-    """
-    found = admission.dispatch_refusal(
-        admission.Store(directory=admission_dir), lane_name, profile_name, seat
-    )
-    if found is None:
-        return None
-    return Refusal(
-        "admission_escalated",
-        found,
-        (
-            "The pre-registered admission bar (#224, human ruling 2026-08-05T20:00Z) allows "
-            f"{admission.MAX_ATTEMPTS} attempts and this profile has spent both on this "
-            "seat. Nothing was dispatched. Escalate to the human; `just admission reset "
-            f"--lane {lane_name} --profile {profile_name} --seat {seat} --force` is theirs "
-            "to run, not yours. Re-dispatch on claude-native meanwhile."
-        ),
     )
 
 
@@ -2287,7 +2255,7 @@ def off_peak_refusal(lane: Lane, at: datetime) -> Refusal | None:
     `tools/breaker.py` — the same object `plan_charge` prices the dispatch with — so the
     band this refuses against and the band a dispatch records cannot disagree.
 
-    **No failure class**, and the reasoning is `admission_refusal`'s exactly. CLAUDE.md's
+    **No failure class**, and the reasoning is `readiness_refusal`'s exactly. CLAUDE.md's
     table types what a run *found*, and this refusal found nothing: the provider is up,
     the credential is good, the lane is reachable, and this project chose not to spend on
     it now. `infra_unavailable` would assert an outage that is not happening,
@@ -2342,10 +2310,11 @@ def candidate_refusal(
 
     Which rungs, and the rule that decides: **a rung belongs here when it is a function of
     `(lane, profile, seat)` and of nothing else.** Those are the registry, the carve-out,
-    the `(profile, seat)` block, the profile's admission standing, the lane's breaker
-    and the human's off-peak rule — each one the ladder's own function, called here rather
-    than restated, because a second copy is how a profile comes to be dispatchable to a
-    resolver and refused by the ladder two lines later.
+    the `(profile, seat)` block, the lane's breaker and the human's off-peak rule — each
+    one the ladder's own function, called here rather than restated, because a second copy
+    is how a profile comes to be dispatchable to a resolver and refused by the ladder two
+    lines later. The profile's admission standing was one of these until #328 dropped the
+    bar; nothing replaced it here, and a route is now judged by nothing upfront.
 
     Readiness and the queue policy are deliberately absent: each reads the *issue*, so each
     judges the dispatch rather than the candidate, and no change of profile could ever clear
@@ -2364,11 +2333,6 @@ def candidate_refusal(
     profile = PROFILES[profile_name]
     lane = LANES[profile.lane]
     refusal = resolve_selection(lane.name, profile_name, seat)
-    if refusal is not None:
-        return refusal
-    refusal = admission_refusal(
-        lane.name, profile_name, seat, Path(args.admission_dir).expanduser()
-    )
     if refusal is not None:
         return refusal
     refusal = breaker_refusal(lane.name, Path(args.breaker_dir).expanduser(), now.timestamp())
@@ -2808,8 +2772,8 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
     satisfies both, and `--dangerously-bypass-approvals-and-sandbox` was declined on #221.
     So this four-root set, both git directories named directly, stands as the known-good
     commit baseline, and the gate half of #265 is a recorded ceiling rather than an open
-    question. The consequence — a hand-finished landing and no admission assessment for any
-    Codex route — is stated once in `docs/multi-provider-dispatch.md` and §10 of
+    question. The consequence — a hand-finished landing for any Codex route — is stated
+    once in `docs/multi-provider-dispatch.md` and §10 of
     `docs/research/codex-lane-live-findings.md`.
 
     **This is not parity with the `zai` lane and must not be described as one.** That lane's
@@ -3239,9 +3203,9 @@ def ladder_refusal(
     seat can clear — a dispatcher told to pick another lane and then met by a freeze has been
     sent on an errand that could not have worked. It sits *below* readiness on readiness's
     own criterion rather than above it: an unready issue can be made ready this minute, and a
-    freeze is the one refusal here whose remedy nobody but the human can start. Then
-    admission, which reopens only when a human decides it should; then the breaker,
-    which reopens on a published window boundary or on evidence; then the off-peak rule,
+    freeze is the one refusal here whose remedy nobody but the human can start. Then the
+    breaker, which reopens on a published window boundary or on evidence; then the off-peak
+    rule,
     which reopens on a clock within four hours with nothing for anyone to do meanwhile.
     Told about the clock first, a dispatcher would come back when the band lifted to meet
     a trip it was never told about.
@@ -3271,11 +3235,6 @@ def _state_refusal(
     if refusal is not None:
         return refusal
     refusal = routing_refusal(args, found, root, now)
-    if refusal is not None:
-        return refusal
-    refusal = admission_refusal(
-        args.lane, args.profile, args.seat, Path(args.admission_dir).expanduser()
-    )
     if refusal is not None:
         return refusal
     refusal = breaker_refusal(args.lane, Path(args.breaker_dir).expanduser(), now.timestamp())
@@ -3746,13 +3705,6 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser.add_argument(
         "--breaker-dir",
         default=os.environ.get("CTI_BREAKER_DIR", str(breaker.DEFAULT_BREAKER_DIR)),
-    )
-    # `CTI_ADMISSION_DIR` is `CTI_BREAKER_DIR`'s twin and exists for the same reason: the
-    # real seam forks a fresh process, which no in-process patch reaches, so a test needs
-    # the recipe pointed at its own admission records rather than at this box's.
-    parser.add_argument(
-        "--admission-dir",
-        default=os.environ.get("CTI_ADMISSION_DIR", str(admission.DEFAULT_ADMISSION_DIR)),
     )
     # Where the readiness rung reads the issue from when GitHub is not the answer: a draft
     # body triage wants checked before filing, or a box `gh` cannot reach. `CTI_READINESS_
