@@ -1098,9 +1098,9 @@ verdict *args:
 # performed (`gh` unreachable, state unwritable), which is not a result and
 # never a green.
 #
-# `escalate` resolves the arbiter live — the issue's dispatch records, the
-# routing refusals you pass, and the same dispatchability rungs `just
-# dispatch`'s ladder judges by — and records what it excluded and why. The
+# `escalate` resolves the arbiter live — the registry, the issue's dispatch
+# records, the routing refusals you pass, and the same dispatchability rungs
+# `just dispatch`'s ladder judges by — and records what it excluded and why. The
 # clock it escalates against is the box's own; the off-peak rule it may meet
 # is the human's and has no override on this surface either.
 review-loop *args:

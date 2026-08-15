@@ -342,6 +342,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `docs/agents/review-severity.md` and `config/escalation-conditions.json` each listed fewer
   exclusion rungs than `_walk_first` runs — all four are named now.
 
+- **ADR-0071 stops claiming its arbiter-copy enumeration was derived, and four smaller copies are
+  corrected (#361, the human's ruling of 2026-08-15).** Round 3's paragraph justified a
+  **site**-level enumeration with two **file**-level `git grep` invocations — a claim stronger
+  than its method, and the evidence is a sixth in-repo site 140 lines above the fifth in the same
+  file. The claim is deleted rather than repaired, and the paragraph no longer asserts the set is
+  complete: it is what successive passes recalled, and deriving it instead of counting it stays
+  **#390's**. The count is deliberately not corrected here, because a corrected count is the same
+  unsupported act one number along. Alongside it: `docs/agents/review-severity.md` had an orphan
+  `A` leaving a sentence fragment; `just dispatch --list` told a seat that registers no escalation
+  entry that its entry is "walked first by the arbiter", and now says that seat has no arbiter and
+  escalation refuses by name; `dispatch.escalation_head`'s docstring described the fall-through as
+  walking the preference list, where the code walks the entry **tail** first (held across all three
+  review rounds); and `AGENTS.md` and the `justfile` listed `escalate`'s exclusion rungs without
+  the registry rung.
+
 - **The routing policy is re-founded class by class on capability and conflict of interest, and
   is no longer the keep-on-Claude policy.** ADR-0071 ruling 1 withdrew provenance as a reason to
   route work, and its re-founding table separates what each class actually rested on. Two classes

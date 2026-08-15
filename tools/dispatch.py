@@ -663,8 +663,9 @@ def escalation_head(seat_name: str) -> str | None:
     is the act the amendment exists to stop.
 
     What this does **not** do is ruling 4's conflicted-head fall-through: where the issue's own
-    dispatch records place the head on the work, the rule walks the seat's preference list,
-    records the exclusions and refuses by name when it is exhausted. That needs the records a
+    dispatch records place the head on the work, the rule walks the rest of the seat's escalation
+    entry and then its preference list, records the exclusions and refuses by name when it is
+    exhausted. That needs the records a
     caller here does not hold. It is **built**, in `tools/arbiter.py` — `_walk_first` (`:135`)
     is the walk with its exclusion rungs, `resolve_for_issue` (`:209`) reads the issue's own
     dispatch records and `resolve_dispatchable` adds the live `(lane, profile, seat)` rungs —
@@ -3616,8 +3617,10 @@ def seat_listing(seat: Seat) -> tuple[str, ...]:
         f"seat={seat.name}",
         f"  preference={' '.join(seat.preference)}",
         (
-            f"  escalation={' '.join(seat.escalation) or 'none'}"
+            f"  escalation={' '.join(seat.escalation)}"
             " (not a dispatch route; walked first by the arbiter)"
+            if seat.escalation
+            else "  escalation=none (no arbiter; escalation refuses by name)"
         ),
     ]
     if seat.claude_only:

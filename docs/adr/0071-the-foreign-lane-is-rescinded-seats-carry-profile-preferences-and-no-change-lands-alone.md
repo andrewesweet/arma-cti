@@ -491,8 +491,8 @@ closed issue. Naming a replacement owner is a decision rather than a repair, so
 round 3 states the gap and files **#391** for the ownership question instead of
 inventing one (review round 1, claim 4; review round 2, claim 2).*
 
-***Six copies of the arbiter rule exist and this amendment reversed one.*** *The
-in-repo five. Four — `docs/agents/review-severity.md`, `config/escalation-conditions.json`,
+***Copies of the arbiter rule are scattered, and this amendment reversed one.***
+*The in-repo ones known to this pass. Four — `docs/agents/review-severity.md`, `config/escalation-conditions.json`,
 `tools/escalation.py` and `tools/brief.py` — were swept to "the implementing
 seat's" in the same commit as this paragraph, and `tools/brief.py` now takes the
 arbiter from the briefed seat's entry rather than emitting the implementer's head
@@ -503,11 +503,10 @@ was unbuilt and cited this very passage — the passage the previous pass had
 rewritten to say the opposite. It is corrected in round 3 and counted here, which
 is the arbitration of 2026-08-15 on this thread; the arbitration's own finding is
 that a hand-derived enumeration passes its blindness to the sweep that reads it,
-and deriving the set instead of counting it is **#390's**. This round derived it
-rather than recalling it: `git grep -n "escalation entry\|escalation head\|escalation_head"`
-and `git grep -n "implementing seat"` outside `tests/`, checked against
-`tools/arbiter.py` and `SEATS`. `tools/arbiter.py` is not on the list because it
-is the authoritative surface rather than a copy of it. The sixth is off-tree:
+and deriving the set instead of counting it is **#390's**. Until #390 lands that
+derivation, this list is what successive passes have recalled, and nothing here
+establishes it as the whole set. `tools/arbiter.py` is not on the list because it
+is the authoritative surface rather than a copy of it. Also off-tree:
 **#333's body**, which still carries the
 struck blanket in a second form ("a seat whose escalation column is empty
 arbitrates at the escalation tier") and an acceptance criterion demanding a rule
