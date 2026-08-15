@@ -205,8 +205,10 @@ AUDIT_PATH_MISSING: Final = "path_missing"
 AUDIT_RED: Final = "red"
 AUDIT_QUOTED: Final = "quoted"
 
-# The one verdict every check may reach: this check could not run. It is never a pass and
-# nothing in `criteria_from_audit` reads it as one (#41).
+# The one verdict every check may reach: this check could not run. It is never a pass (#41):
+# `trial_policy_verdict`, `trial_window_verdict` and `trial_gated_verdict` each return `""`
+# rather than a verdict where the artefacts do not decide, so an undecidable check reaches no
+# criterion. (The reader that used to be named here, `criteria_from_audit`, went with the bar.)
 AUDIT_UNDECIDABLE: Final = "undecidable"
 
 AUDIT_REF: Final = "origin/main"
@@ -1698,8 +1700,12 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     """Parse the trial's verbs. There are no others: the route bar's went with the bar."""
     parser = argparse.ArgumentParser(prog="trial", description=__doc__)
     # `CTI_ADMISSION_DIR` lets a test exercise the recipe without writing to this box's
-    # real records. The variable keeps its name for the reason `DEFAULT_TRIAL_DIR` does.
+    # real records. The *variable* and the *store path* keep their names for the reason
+    # `DEFAULT_TRIAL_DIR` records — existing records read them, so renaming orphans history.
+    # A flag is read by nobody but its caller, so it is renamed to match the module and
+    # `--admission-dir` stays only as an alias, which keeps this rename off the break list.
     parser.add_argument(
+        "--trial-dir",
         "--admission-dir",
         dest="trial_dir",
         type=Path,
@@ -2059,11 +2065,26 @@ def _build_trial_cycle(
 
 
 def run_trial_record(args: argparse.Namespace) -> int:
-    """Add one cycle to the trial, refusing anything the bar will not invent."""
+    """Add one cycle to the trial, refusing anything the bar will not invent.
+
+    The closure is read **before** the cycle is built, not only inside `record_trial_cycle`:
+    building it runs the full audit — a `gh` fetch and a git walk over the landing's commits
+    — and where a criterion is unsupplied it refuses `trial_criteria_missing`. Against a
+    closed trial that is both wasted work and the wrong refusal, since nothing can accrue to
+    it either way. The library keeps its own check; this one is the CLI's, so the person and
+    the caller get the same `trial_closed` answer.
+    """
+    store = _store(args)
+    closed = _closure_refusal(
+        trial_standing(read_trial(store.directory), closure_in_force()),
+        "recording a cycle against it",
+    )
+    if closed is not None:
+        return emit_lines(closed.lines(), EXIT_REFUSED)
     assessment, filled, refusal = _build_trial_cycle(args, _now(args))
     if refusal is not None or assessment is None:
         return emit_lines((*filled, *(refusal.lines() if refusal else ())), EXIT_REFUSED)
-    before, after, refusal = record_trial_cycle(_store(args), assessment, closure_in_force())
+    before, after, refusal = record_trial_cycle(store, assessment, closure_in_force())
     if refusal is not None:
         return emit_lines((*filled, *(refusal.lines() if refusal else ())), EXIT_REFUSED)
     lines = [*filled, *assessment.lines(), after.line()]

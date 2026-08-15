@@ -113,7 +113,10 @@ worth naming: the loss while *awake* was 73 agent-minutes over 19 minutes of tur
    `next=` names a **selection, not a routing decision**: it may point at an issue
    that is corpus-bound and so undispatchable to any foreign lane — `#18` was named
    while in that state. The queue's job ends at pointing; routing onto a lane is the
-   seat's, behind the breaker and the admission bar.
+   seat's, behind the breaker and the human's off-peak rule. Nothing judges the
+   route's quality upfront: ADR-0071 ruling 6 dropped the admission bar and #328
+   removed it from `just dispatch`, and what replaces it is retrospective and not
+   built yet.
 3. **Judgement** — is that candidate the right next thing, given the human's live
    intent this session. This, and not the queue, is the step that decides.
 4. **`just brief N`**, then write the variable half — the task, the scope, the ground
@@ -230,8 +233,9 @@ does by hand.
   gates and lands its work by hand and states that in the close; twelve closes now say
   so. ADR-0061 Decision 4 is the rule: a lane that has not proven its hooks gets
   worktree and commit only; landing is done by another seat.
-- **z.ai commits, gates and lands unaided**, and stands at `assessed=4/10 unclean=0/1`
-  on the admission bar.
+- **z.ai commits, gates and lands unaided.** It stood at `assessed=4/10 unclean=0/1`
+  on the admission bar; that is history, not a standing — the bar is dropped
+  (ADR-0071 ruling 6, #328) and no route is judged before it is dispatched.
 - **The corpus is a permanent Claude-seat obligation.** `just regress` appears in no
   allowlist entry, and a foreign lane cannot run the gate its own change owes. Anything
   touching `addons/`, `missions/`, `extension/`, the daemon's world-facing half or a

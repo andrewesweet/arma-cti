@@ -32,7 +32,7 @@ def dispatch() -> Any:  # noqa: ANN401 — load_tool returns a runtime module ty
     """Load `tools/dispatch.py` on demand rather than at collection.
 
     Deliberately not a module-scope `load_tool`. Importing `dispatch` reaches
-    `tools/admission.py`, which parses the shipped policy at *its* import and raises when it
+    `tools/gate.py`, which parses the shipped policy at *its* import and raises when it
     cannot — so a mutation-smoke mutant that breaks `parse_policy` would make this whole
     module uncollectable, and the run comes back "could not run" rather than "the mutant was
     killed". Loading inside the three tests that need it turns that same mutant into the
@@ -259,7 +259,7 @@ def test_a_parser_reads_one_document_whole_and_never_mixes_the_two() -> None:
 def test_the_frozen_half_still_says_what_an_in_world_surface_is() -> None:
     """The one authority (#302) cannot depend on the vintage of the parser that read it.
 
-    Class 5's landing prefixes are read by `just land`'s corpus rung, `tools/admission.py` and
+    Class 5's landing prefixes are read by `just land`'s corpus rung, `tools/gate.py` and
     `tools/brief.py`. A frozen half whose list had drifted would make "is this diff in-world"
     answerable two ways in one window, which is the defect #302 was filed about wearing the
     compatibility fix's clothes.
