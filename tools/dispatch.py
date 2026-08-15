@@ -563,6 +563,11 @@ SEATS: Final[dict[str, Seat]] = {
         preference=IMPLEMENTER_PREFERENCE,
         escalation=IMPLEMENTER_ESCALATION,
     ),
+    # No escalation entry, and ADR-0071 ruling 2 as A1 amends it means that as *never
+    # applicable* rather than *not yet decided*: `recon` is read-only and lands nothing, so no
+    # never-alone loop runs over its output and there is nothing for an arbiter to adjudicate.
+    # The registry spells both states `()`, which is why the ADR marks the cell rather than
+    # leaving it blank; a reader who needs the distinction reads it there.
     "recon": Seat("recon", claude_only=False, preference=("codex-luna-medium", "haiku-medium")),
     # ADR-0071 ruling 4 (#322) adds the two columns that make never-alone real. `reviews`
     # is what makes this seat's resolution take the profile under review as an input and
@@ -595,6 +600,10 @@ SEATS: Final[dict[str, Seat]] = {
         preference=("fable-high", "opus-xhigh", "codex-sol-xhigh"),
         escalation=("opus-max", "fable-max"),
     ),
+    # Absent from ADR-0071 ruling 2's table and therefore carrying no escalation entry, which
+    # after A1 struck the blanket `fable-high` fallback means an escalation from this seat
+    # resolves to nothing and refuses. That is the consequence the human accepted at the time
+    # of ruling, not an oversight; closing the `fable`/`retro` overlap is #329's and #330's.
     "fable": Seat("fable", claude_only=False, preference=("fable-high",)),
     # ADR-0071 ruling 1's one survivor, and the only `claude_only=True` row the table
     # carries: orchestration runs on Claude with a Claude model until a tested
@@ -637,6 +646,32 @@ DECLARED_ONLY_SEATS: Final[dict[str, Seat]] = {
 # consults an allowance once no bar exists to suspend, so the constant, its source line
 # and its predicate are deleted here rather than kept as data nothing reads. The
 # fable/`retro` seat overlap that ruling 3 leaves behind is #329's and #330's.
+
+
+def escalation_head(seat_name: str) -> str | None:
+    """Return the arbiter ADR-0071 ruling 4 names for work done at `seat_name`, or `None`.
+
+    Ruling 4 as amendment A1 leaves it: *the head of the **implementing** seat's escalation
+    entry* — whichever seat did the work, not the `implementer` row specifically. Callers that
+    need an arbiter ask here rather than reading `IMPLEMENTER_ESCALATION[0]`, which was the
+    reading A1 reversed and which answers every seat with the implementer's head.
+
+    `None` where the seat registers no entry, and deliberately no fallback: A1 struck the
+    blanket `fable-high` default, so a seat with no entry resolves to nothing and refuses
+    rather than reaching a profile nobody chose. `None` is also the answer for an unknown seat
+    — a name that resolves to no row cannot have an arbiter derived for it, and inventing one
+    is the act the amendment exists to stop.
+
+    What this does **not** do is ruling 4's conflicted-head fall-through: where the issue's own
+    dispatch records place the head on the work, the rule walks the seat's preference list,
+    records the exclusions and refuses by name when it is exhausted. That needs the records a
+    caller here does not hold, and it is unbuilt — #333's, with the ADR saying so at the
+    passage. This returns the tabled head, which is the input that walk starts from.
+    """
+    seat = SEATS.get(seat_name)
+    if seat is None or not seat.escalation:
+        return None
+    return seat.escalation[0]
 
 
 def plan_charge(lane: Lane, at: datetime) -> dict[str, object] | None:

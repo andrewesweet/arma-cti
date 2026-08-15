@@ -279,11 +279,14 @@ def at_three_round_wall(item: ItemState) -> bool:
 def _three_round_wall(context: Context) -> tuple[str, ...] | None:
     """Condition 1: a review cycle holding a finding above Low after three fix rounds.
 
-    The arbiter is the implementer seat's escalation head (ADR-0071 ruling 4) — the profile the
-    transfer reaches, and a fact this condition needs: its remedy orders a transfer to "the
-    arbiter named in the emission", so a caller that resolved none must not fire, the same way a
-    missing wall fact must not. The arbiter is recorded in the seat table and reaches a real
-    dispatch resolved, so this guards the unresolvable case rather than a common one.
+    The arbiter is the *implementing* seat's escalation head (ADR-0071 ruling 4 as amended by
+    A1, #361) — whichever seat did the work, never the `implementer` row for every seat — the
+    profile the transfer reaches, and a fact this condition needs: its remedy orders a transfer
+    to "the arbiter named in the emission", so a caller that resolved none must not fire, the
+    same way a missing wall fact must not. The arbiter is recorded in the seat table and reaches
+    a real dispatch resolved, so this guards the unresolvable case rather than a common one —
+    with one seat it now really guards, since A1 struck the blanket fallback and a seat with no
+    escalation entry resolves to nothing rather than to `fable-high`.
     """
     item = context.item
     if not at_three_round_wall(item):
