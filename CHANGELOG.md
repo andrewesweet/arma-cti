@@ -160,6 +160,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The never-alone decision surface is one module, and the exemption list is inverted: every
+  landing is reviewed except what a named list exempts (#331, ADR-0071 ruling 4).**
+  `tools/review_loop.py` owns the whole surface — exemption evaluation, the round budget,
+  per-finding adjudication — and bridges into `tools/escalation.py` for the transferring
+  conditions built earlier. The list ships empty in `config/review-exemptions.json`, because
+  nothing has earned off it: what may grow it is ruling 6's pre-registered question, and that
+  answer arrives as evidence at a retro, never as an agent's convenience in the moment. A diff
+  touching the list is never exempt under it, whatever the list says — and the refusal is
+  proven the way the issue demanded, by constructing the touching diff with a live entry
+  covering its other paths and watching the refusal fire, not by reading the guard; a list
+  entry naming the list itself is refused at parse. The same refusal settles which copy judges
+  a landing: a diff not touching the list sees identical copies in a worktree and on
+  `origin/main`, and one touching it is exempt under neither, so the choice cannot change a
+  verdict. The loop models four adjudication routes — fixed, arbiter upheld, arbiter
+  dismissed, and the human ruling of 2026-08-14's *accepted and filed*, available at Medium
+  and below only, where the implementer agrees the finding is real, names the work outside the
+  diff its harm is conditional on, and files the issue before landing. Each finding takes
+  exactly one adjudication; a finding raised in a later round is a new item with its own id,
+  not a reopening. Rounds are stamped and validated, never rewritten. The escalation bridge is
+  a material change the sequencing banked on (#348): conditions one to three fire on recorded
+  facts — review rounds and a finding above Low — that nothing recorded until this module, so
+  what waited as `None` now arrives recorded and those conditions are fireable for the first
+  time.
 - **Transferring-escalation conditions are data, emitted to an agent only when one fires.**
   Escalation splits in two: *consultative* escalation borrows judgement and keeps control, so it
   needs no condition; *transferring* escalation hands the task to a higher profile and fires only

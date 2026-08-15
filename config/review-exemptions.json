@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "source": "ADR-0071 ruling 4, 2026-08-11; module landed by #331",
+  "growth": "Every landing is reviewed except the surfaces named here, so the list ships empty: nothing has earned an exemption. What may grow it is the pre-registered question of ADR-0071 ruling 6 — whether pre-landing review of gated work finds defects the gates and post-landing review would not — and the answer 'no' arrives as evidence at a retro, never as an agent's convenience in the moment. Each entry names the evidence beside its reason. A diff touching this file is never exempt under it, whatever it says: the list is a gate.",
+  "coverage": "A surface this file does not name is reviewed, never cleared.",
+  "entries": []
+}
