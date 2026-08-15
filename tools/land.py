@@ -44,6 +44,20 @@ the pool's own record, so pointing it at the wrong run refuses. It sits *after*
 twenty minutes of it, and nobody should be sent there over a tree that fails
 ruff.
 
+**The third gate is review, and it runs before the gate** (#334, ADR-0071
+ruling 4, `tools/land_review.py`). No change lands alone: a landing needs a
+review verdict bound to the SHA being pushed, produced by a profile the issue's
+own dispatch records do not place on the work, with every finding above Low
+carrying its one adjudication. The rung reads what other tools wrote — #332's
+verdict exchange, #322's potential authors, #333's loop state — and refuses by
+name on every way those facts cannot be shown, including by absence: no
+verdict, an unreadable one, a verdict for another commit or item, an
+unadjudicated finding. Like the gate, there is no flag that skips it; the
+exemption table is the only diff that reaches a clearance without consulting a
+record, and it is inverted so unlisted means covered. It sits *before*
+`just fast` because it costs a handful of file reads and an unreviewed landing
+should not burn a gate first.
+
 Refusals are this recipe's own vocabulary, not the harness failure-class table:
 a landing is not a corpus verdict and must not borrow its class names. What it
 borrows is the discipline — a named, actionable refusal rather than an opaque
@@ -68,6 +82,28 @@ exit code.
                             full-corpus run over this tree was named (#302)
     corpus_not_pass         one was, and its worst class is not `pass`
     corpus_check_unreadable the corpus rung could not run; fail closed
+    review_issue_unknown    the tree is not an `issue-<n>` worktree, so the rung
+                            cannot know whose review to read (#334)
+    review_issue_mismatch   the verdict names another item than the one landing
+    no_dispatch_records / records_unreadable / no_review_dispatch
+                            #332's derivation refuses: no records, unreadable
+                            ones, or none that review this commit — enforced
+                            here, never re-derived
+    no_verdict / verdict_unreadable
+                            the review completed but no readable verdict record
+                            sits beside its plan
+    sha_mismatch            the verdict names another commit than the one landing
+    identity_mismatch       the verdict's claimed reviewer no longer derives from
+                            the records as they stand
+    review_same_profile     the reviewing profile is one the issue's own records
+                            place on the work — the proposer approving itself
+    no_review_loop / review_loop_unreadable
+                            findings above Low exist but no readable loop state
+                            (#333's format) adjudicates them
+    finding_unadjudicated   an above-Low finding carries no adjudication, or the
+                            loop still holds one open from any round
+    review_finding_mismatch the loop's record of a finding disagrees with the
+                            verdict that reported it
     not_fast_forward        the remote moved under the push
     merge_blocked_by_sandbox    the push landed, the ff-only merge did not run
     merge_not_fast_forward      the push landed, the main checkout cannot
@@ -97,6 +133,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -109,6 +146,9 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 sys.path.insert(0, str(Path(__file__).parent))
 
 import corpus_gate
+import land_review
+import review_exchange
+import review_loop
 import routing_policy
 from check_conflict_markers import Finding, find_in_tree
 from worktree import BASE, GitError, Preflight, Refusal, git, main_checkout, read_status
@@ -154,8 +194,9 @@ CLAUDE_LANE: Final = "claude-native"
 # defect pointing the other way.
 NOT_CHECKED: Final = (
     "the rebase itself, conflict markers in the rebased tree, `just fast`, the push race, "
-    "whether the push and the ff-only merge can be run at all, and whether the main "
-    "checkout carries commits of its own"
+    "whether the push and the ff-only merge can be run at all, whether the main "
+    "checkout carries commits of its own, and the reviewed-commit rung where the "
+    "rebase has commits to replay — a verdict binds the SHA the rebase produces"
 )
 NOT_CHECKED_MERGE_ONLY: Final = (
     "whether the ff-only merge into the main checkout can be run at all, and whether that "
@@ -173,6 +214,21 @@ class GateResult(NamedTuple):
 
     code: int | None
     detail: str
+
+
+class ReviewInputs(NamedTuple):
+    """The review rung's inputs beyond the tree: the issue, and the two record roots.
+
+    On the gate's own terms — a parameter rather than a flag or an environment
+    variable, so tests point it at temporary record roots and nothing on argv
+    can. The CLI never passes one: it derives the issue from the worktree's
+    `issue-<n>` name and reads the real roots, which is why there is no
+    `--no-review` for a landing to reach for (#334, on #213's criterion 2).
+    """
+
+    issue: int | None
+    dispatch_root: Path | None = None
+    review_root: Path | None = None
 
 
 class Report(NamedTuple):
@@ -662,6 +718,52 @@ def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, .
     return read, paths, ""
 
 
+def _issue_from(here: Path) -> int | None:
+    """Return the issue this worktree serves, read from its `issue-<n>` name.
+
+    `just worktree add issue-334` names the tree after the issue, so the name is
+    the protocol's own record of what this work serves — the same fact a
+    dispatch's `--issue` carries. The main checkout and any hand-named tree parse
+    to `None`, which the review rung refuses by name rather than guessing an
+    issue to read.
+    """
+    match = re.fullmatch(r"issue-(\d+)", here.name)
+    return int(match.group(1)) if match else None
+
+
+def _exemptions_text(here: Path) -> str | None:
+    """Read the trusted exemption table from fetched `origin/main`, or return `None`.
+
+    The worktree's own copy is the diff under judgement, for `_routing_inputs`'
+    reason. A table that cannot be read exempts nothing: `None` reads as
+    `Unreadable` in the decision, which requires review.
+    """
+    try:
+        return git("show", f"{BASE}:{review_loop.EXEMPTIONS_RELATIVE.as_posix()}", cwd=here)
+    except GitError:
+        return None
+
+
+def _review_rung(
+    here: Path, review: ReviewInputs, paths: tuple[str, ...] | None
+) -> land_review.Outcome:
+    """Run the never-alone rung over this tree's HEAD, through the inputs given.
+
+    The one seam between the protocol and `tools/land_review.py`: this side owns
+    the SHA (the tree's HEAD at the moment of the call — post-rebase in a
+    landing) and the trusted table's text; the rung owns every decision past
+    them.
+    """
+    return land_review.review_finding(
+        review.issue,
+        git("rev-parse", "HEAD", cwd=here).strip(),
+        paths,
+        _exemptions_text(here),
+        review.dispatch_root or review_exchange.DISPATCH_ROOT,
+        review.review_root or land_review.REVIEW_ROOT,
+    )
+
+
 def _commit_known(path: Path, sha: str) -> bool:
     """Whether that commit resolves here at all, so a claim about it can be checked."""
     if not sha:
@@ -767,6 +869,7 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     dry_run: bool = False,
     lane: str = CLAUDE_LANE,
     corpus: Path | None = None,
+    review: ReviewInputs | None = None,
 ) -> Report:
     """Run the whole protocol, or refuse by name at the first rung that says no."""
     status = read_status(git("status", "--porcelain", cwd=here))
@@ -787,12 +890,13 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     if idle is not None:
         return Report.refused(idle)
 
+    review_inputs = review or ReviewInputs(_issue_from(here))
     if dry_run:
-        return _dry_run(root, here, ahead, incoming, corpus, lane)
+        return _dry_run(root, here, ahead, incoming, corpus, lane, review_inputs)
 
     lines = [f"worktree={here}", f"commits={ahead}"]
     if ahead:
-        moved = _rebase_and_gate(here, incoming, gate, lines, lane, corpus)
+        moved = _rebase_and_gate(here, incoming, gate, lines, lane, corpus, review_inputs)
         if moved is not None:
             return moved
     else:
@@ -800,18 +904,19 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
         # not skipped by a flag — there is simply nothing new being landed, and
         # the outstanding step is the merge the last run could not make.
         #
-        # The routing and corpus rungs are named here as skipped, in the same words the
-        # dry run's `_nothing_to_push_plan` uses, because this is the run that prints
-        # `ok=landed` (#326 review round 3 claim 8). The exit-2 refusal it follows carried a
-        # routing verdict; without these lines the one output a reader quotes into an
-        # issue as the successful landing is the one output with no routing line at all,
-        # and an omission reads as a clearance for exactly the reason `not_checked=`
-        # exists.
+        # The routing, review and corpus rungs are named here as skipped, in the same
+        # words the dry run's `_nothing_to_push_plan` uses, because this is the run that
+        # prints `ok=landed` (#326 review round 3 claim 8). The exit-2 refusal it
+        # followed carried a routing verdict; without these lines the one output a
+        # reader quotes into an issue as the successful landing is the one output with
+        # no routing line at all, and an omission reads as a clearance for exactly the
+        # reason `not_checked=` exists.
         why = "reason=nothing_to_push"
         lines += [
             "rebase=not_attempted",
             f"gate=not_run {why}",
             f"routing=not_consulted {why}",
+            f"review=not_consulted {why}",
             f"corpus=not_consulted {why}",
         ]
 
@@ -822,7 +927,13 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
 
 
 def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return, one input apiece
-    here: Path, incoming: int, gate: Gate, lines: list[str], lane: str, corpus: Path | None
+    here: Path,
+    incoming: int,
+    gate: Gate,
+    lines: list[str],
+    lane: str,
+    corpus: Path | None,
+    review: ReviewInputs,
 ) -> Report | None:
     """Rebase onto `origin/main`, then gate the result. Any rung may refuse."""
     code, stderr = _run(["git", "rebase", BASE], cwd=here)
@@ -852,6 +963,14 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
     if misrouted is not None:
         return Report.refused(misrouted)
     lines.extend(routing_clearance(policy, lane))
+
+    # Before the gate on purpose: the review rung reads a handful of records while
+    # `just fast` costs a minute, so an unreviewed landing does not burn a gate
+    # first (#334, on #302's cost-ordering).
+    reviewed = _review_rung(here, review, paths)
+    if reviewed.refusal is not None:
+        return Report.refused(reviewed.refusal)
+    lines.extend(reviewed.cleared)
 
     red = classify_gate(here, gate(here))
     if red is not None:
@@ -911,8 +1030,44 @@ def _merge(root: Path, here: Path, pushed: str, lines: list[str]) -> Report:
     return Report((("ok=landed"), *lines), 0)
 
 
+def _review_plan(
+    here: Path, incoming: int, review: ReviewInputs, paths: tuple[str, ...] | None
+) -> tuple[tuple[str, ...], str | None]:
+    """Return the reviewed-commit rung's verdict on the plan, where one is honest.
+
+    Consulted only where `incoming == 0`: the rung binds a verdict to a SHA, and a
+    rebase with commits to replay rewrites the SHAs a pre-rebase verdict was bound
+    to, so consulting there would always read `sha_mismatch` — a verdict about a
+    commit the landing will not produce. Where it cannot consult, `NOT_CHECKED`
+    names the rung and the condition.
+
+    The second half of the return is the refusal's kind where the rung would
+    refuse, `None` where it would clear — the dry run's exit and its
+    `would_not_run` lines read both from it.
+    """
+    if incoming:
+        return (
+            ("review=not_consulted reason=the rebase will move the SHA a verdict binds",),
+            None,
+        )
+    outcome = _review_rung(here, review, paths)
+    if outcome.refusal is not None:
+        lines = (f"review=would_refuse reason={outcome.refusal.kind}",)
+        remedy = outcome.refusal.action
+        if remedy.endswith("Nothing was pushed."):
+            remedy = remedy[: -len("Nothing was pushed.")].rstrip()
+        return (*lines, *outcome.refusal.found, f"action={remedy}"), outcome.refusal.kind
+    return ("review=would_clear", *outcome.cleared), None
+
+
 def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter apiece
-    root: Path, here: Path, ahead: int, incoming: int, corpus: Path | None, lane: str
+    root: Path,
+    here: Path,
+    ahead: int,
+    incoming: int,
+    corpus: Path | None,
+    lane: str,
+    review: ReviewInputs,
 ) -> Report:
     """Print the plan and change nothing. Not a landing, and it says so.
 
@@ -923,7 +1078,10 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
     than a limit (#344). What a dry run genuinely cannot reach — the rebase's own
     result, the markers in the rebased tree, `just fast`, whether the push and the merge
     can be run at all — it names, so its silence stops reading as a clearance (#41's
-    line, applied to a plan).
+    line, applied to a plan). The reviewed-commit rung joins the consulted set under
+    the same rule, with one condition of its own: a verdict binds a SHA the rebase
+    would rewrite, so it is consulted only where the rebase has nothing to replay
+    (`_review_plan`).
 
     **It mirrors the landing's own control flow, including where that flow skips the
     gate.** With nothing to push, `land` skips `_rebase_and_gate` entirely and finishes
@@ -935,7 +1093,8 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
     the body is the only other channel there is: 0 where no rung it could consult
     refused, `EXIT_REFUSED` where the routing gate would (review round 1 claim 7). It is
     not a routing-only channel — the rungs `land` decides before this branch exit 1 as
-    well, so 1 means "some refusal, read which" (round 2 claim 5).
+    well, and the review rung's consultation exits the same way, so 1 means "some
+    refusal, read which" (round 2 claim 5).
     """
     merge_command = " ".join(merge_argv(root))
     merge_step = merge_command if _merge_needed(here, root) else None
@@ -955,22 +1114,31 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
 
     read, paths, detail = _routing_inputs(here)
     misrouted = classify_routing(read, paths, lane, detail)
+    if misrouted is None:
+        review_lines, review_kind = _review_plan(here, incoming, review, paths)
+    else:
+        # The landing's own control flow: routing refuses before the review rung
+        # reads anything, and a plan that consulted past a refusal would be a
+        # verdict about a rung that will not run.
+        review_lines, review_kind = ("review=not_consulted reason=routing refused the plan",), None
     onward = [" ".join(push_argv()), merge_step or "(merge not needed)"]
     plan = [f"would_run={step}" for step in (f"git rebase {BASE}", " ".join(GATE))]
-    if misrouted is None:
+    blocked = misrouted.kind if misrouted is not None else review_kind
+    if blocked is None:
         plan += [f"would_run={step}" for step in onward]
     else:
-        plan += [f"would_not_run={step} reason={misrouted.kind}" for step in onward]
+        plan += [f"would_not_run={step} reason={blocked}" for step in onward]
     return Report(
         (
             *head,
             *plan,
             *_routing_plan(read, misrouted, lane),
+            *review_lines,
             *_corpus_plan(here, read, paths, detail, corpus),
             f"not_checked={NOT_CHECKED}",
             ran_nothing,
         ),
-        EXIT_REFUSED if misrouted is not None else 0,
+        EXIT_REFUSED if blocked is not None else 0,
     )
 
 
@@ -979,11 +1147,11 @@ def _nothing_to_push_plan(merge_step: str) -> tuple[str, ...]:
 
     `ahead == 0` past `classify_nothing_to_land` is the re-run after
     `merge_blocked_by_sandbox`: the work is already on `origin/main`, so the landing
-    skips the rebase, the markers, the routing gate, `just fast` and the corpus alike,
-    pushes nothing, and finishes the merge the last run could not make. Each skipped
-    rung is named with the reason the landing itself gives, rather than left out — an
-    omission here would read as a clearance for exactly the reason `not_checked=` exists
-    (#344, review round 1 claim 2).
+    skips the rebase, the markers, the routing gate, the review rung, `just fast` and
+    the corpus alike, pushes nothing, and finishes the merge the last run could not
+    make. Each skipped rung is named with the reason the landing itself gives, rather
+    than left out — an omission here would read as a clearance for exactly the reason
+    `not_checked=` exists (#344, review round 1 claim 2).
 
     The merge step is a `str` and not an optional one, because reaching here at all
     implies it exists: `ahead == 0` survives `classify_nothing_to_land` only when the
@@ -997,6 +1165,7 @@ def _nothing_to_push_plan(merge_step: str) -> tuple[str, ...]:
         f"would_skip={' '.join(GATE)} {why}",
         f"would_skip={' '.join(push_argv())} reason=already_on_origin/main",
         f"routing=not_consulted {why}",
+        f"review=not_consulted {why}",
         f"corpus=not_consulted {why}",
         f"would_run={merge_step}",
     )

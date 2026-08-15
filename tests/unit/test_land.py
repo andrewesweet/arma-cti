@@ -581,14 +581,78 @@ class _Gate:
         return land.GateResult(self.code, "")
 
 
+def _reviewed(
+    here: Path,
+    at: Path,
+    *,
+    findings: tuple[dict[str, object], ...] = (),
+    loop: dict[str, object] | None = None,
+) -> land.ReviewInputs:
+    """Stage the records a reviewed landing reads, and return the inputs that name them.
+
+    The shape `review_exchange` derives a binding from (#332): a completed review
+    dispatch bound to this tree's HEAD, its verdict beside its plan, and — where the
+    caller passes one — the loop state that adjudicates what the verdict found. All
+    of it lands under a temporary dispatch and review root, because the alternative
+    is the real `~/.arma-cti/dispatches` on this box, whose contents no test may
+    depend on and no test may write to.
+    """
+    dispatch_root = at / "dispatches"
+    review_root = at / "review"
+    sha = _git("rev-parse", "HEAD", cwd=here).strip()
+    record = dispatch_root / "d-review-1"
+    record.mkdir(parents=True, exist_ok=True)
+    (record / "dispatch.json").write_text(
+        json.dumps(
+            {
+                "seat": "review",
+                "issue": 213,
+                "base_sha": sha,
+                "profile": "codex-luna-max",
+                "lane": "codex",
+                "planned_at": "20260815T0000Z",
+                "dispatch_id": "d-review-1",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (record / "result.json").write_text(
+        json.dumps({"returncode": 0, "outcome": "ok", "ended_at": "20260815T0100Z"}),
+        encoding="utf-8",
+    )
+    (record / "verdict.json").write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "issue": 213,
+                "reviewed_sha": sha,
+                "review_dispatch": "d-review-1",
+                "reviewer_profile": "codex-luna-max",
+                "reviewer_lane": "codex",
+                "findings": list(findings),
+                "recorded_at": "20260815T0100Z",
+                "alternates": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    if loop is not None:
+        target = review_root / "213" / "loop.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(loop), encoding="utf-8")
+    return land.ReviewInputs(213, dispatch_root, review_root)
+
+
 def test_a_landing_pushes_the_work_and_fast_forwards_the_main_checkout(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
     origin, main, here = repo
     _commit(here, "feature.txt", "work\n")
     gate = _Gate()
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=gate)
+    report = land.land(main, here, gate=gate, review=review)
 
     assert report.code == 0
     assert report.lines[0] == "ok=landed"
@@ -599,32 +663,53 @@ def test_a_landing_pushes_the_work_and_fast_forwards_the_main_checkout(
 
 def test_the_gate_runs_on_the_rebased_tree_not_the_tree_as_it_was(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
-    """The whole of the re-gate-on-movement answer: it runs, and it runs after the rebase."""
+    """The whole of the re-gate-on-movement answer: it runs, and it runs after the rebase.
+
+    Two landings, because the sibling's commit moves this one's SHA and a verdict binds
+    the SHA it names: the first rebase orphans the staged review with it — the dispatch
+    record binds the pre-rebase SHA, so the rung finds no review bound to the commit
+    being landed — and the second, re-reviewed at the SHA the replay produced, is the
+    run that reaches the gate at all (#332's binding, enforced here rather than
+    re-derived).
+    """
     _origin, main, here = repo
     _commit(main, "sibling.txt", "landed first\n")
     _git("push", "origin", "main", cwd=main)
     _commit(here, "feature.txt", "work\n")
     gate = _Gate()
 
-    report = land.land(main, here, gate=gate)
+    moved = land.land(main, here, gate=gate, review=_reviewed(here, tmp_path))
+
+    assert moved.code == 1
+    assert moved.lines[0] == "refusal=no_review_dispatch"
+    # No rebase line beside it: a mid-ladder refusal keeps only its own lines
+    # (`_merge`'s docstring records the convention), and the replay is proven
+    # below instead — by the second run already being current and its gate
+    # seeing the replayed commit.
+    assert gate.calls == []
+
+    report = land.land(main, here, gate=gate, review=_reviewed(here, tmp_path))
 
     assert report.code == 0
     assert len(gate.calls) == 1
     # The tree the gate saw carries our commit replayed on top of the sibling's.
     assert gate.calls == ["feat: feature.txt"]
     assert "sibling.txt" in _git("show", "--name-only", "--format=", "HEAD~1", cwd=here)
-    assert "rebase=replayed onto 1 new commits" in report.lines
+    assert "rebase=already_current" in report.lines
 
 
 def test_a_red_gate_leaves_origin_exactly_where_it_was(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
     origin, main, here = repo
     before = _tip(origin)
     _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(code=1))
+    report = land.land(main, here, gate=_Gate(code=1), review=review)
 
     assert report.code == 1
     assert report.lines[0] == "refusal=gate_red"
@@ -650,12 +735,14 @@ def test_a_routed_class_diff_refuses_before_the_normal_gate_or_push(
 
 def test_a_non_exempt_diff_outside_every_class_lands_unimpeded(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
     origin, main, here = repo
     _commit(here, "tools/worker.py", "eligible work\n")
     gate = _Gate()
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=gate, lane="zai")
+    report = land.land(main, here, gate=gate, lane="zai", review=review)
 
     assert report.code == 0
     assert gate.calls == ["feat: tools/worker.py"]
@@ -722,6 +809,7 @@ def test_a_rerun_after_a_blocked_merge_finishes_the_merge_and_pushes_nothing(
 
 def test_a_diverged_main_checkout_reports_the_work_landed_and_the_merge_owed(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
     """And it keeps the lines the landing earned — round 2 claim 8.
 
@@ -733,8 +821,9 @@ def test_a_diverged_main_checkout_reports_the_work_landed_and_the_merge_owed(
     origin, main, here = repo
     _commit(main, "local-only.txt", "never pushed\n")
     _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate())
+    report = land.land(main, here, gate=_Gate(), review=review)
 
     assert report.code == land.EXIT_LANDED_INCOMPLETE
     assert "refusal=merge_not_fast_forward" in report.lines
@@ -818,19 +907,26 @@ def test_a_marker_inherited_from_origin_refuses_this_landing_too(
     assert _tip(origin) == before
 
 
-def test_a_dry_run_runs_nothing_and_says_so(repo: tuple[Path, Path, Path]) -> None:
+def test_a_dry_run_runs_nothing_and_says_so(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
     origin, main, here = repo
     before = _tip(origin)
     _commit(here, "feature.txt", "work\n")
     gate = _Gate()
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=gate, dry_run=True)
+    report = land.land(main, here, gate=gate, dry_run=True, review=review)
 
     assert report.code == 0
     assert "landed=no" in report.lines
     assert gate.calls == []
     assert _tip(origin) == before
     assert any(line == "would_run=git push origin HEAD:main" for line in report.lines)
+    # The review rung is among the consulted set: a plan that said nothing about it
+    # would read as a clearance it never gave (#334).
+    assert any(line.startswith("review=would_clear") for line in report.lines)
     # Whatever it could not consult, it names.
     assert any(line.startswith("not_checked=") for line in report.lines)
 
@@ -894,12 +990,14 @@ def test_a_dry_run_on_a_gated_surface_from_a_non_exempt_lane_does_not_plan_to_pu
 
 def test_a_dry_run_on_an_ungated_surface_from_a_non_exempt_lane_still_plans_the_push(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
     """The other half: the rung ran and cleared, and the plan says which it was."""
     _origin, main, here = repo
     _commit(here, "tools/worker.py", "eligible work\n")
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai")
+    report = land.land(main, here, gate=_Gate(), dry_run=True, lane="zai", review=review)
 
     assert report.code == 0
     assert _pushes_unqualified(report)
@@ -967,6 +1065,7 @@ def test_a_dry_run_with_nothing_to_push_mirrors_the_landing_and_consults_no_gate
 
 def test_a_dry_run_from_the_main_checkout_itself_says_the_merge_is_not_needed(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
     """The onward pair's second step where there is no second checkout to fast-forward.
 
@@ -982,8 +1081,11 @@ def test_a_dry_run_from_the_main_checkout_itself_says_the_merge_is_not_needed(
     # is #105's own refusal condition; this arrangement is the one without it.
     _git("worktree", "remove", str(here), cwd=main)
     _commit(main, "tools/worker.py", "eligible work\n")
+    # The main checkout's name is not an issue's, so the inputs name the issue here
+    # rather than leave the rung to read it off a name this tree has not got.
+    review = _reviewed(main, tmp_path)
 
-    report = land.land(main, main, gate=_Gate(), dry_run=True, lane="zai")
+    report = land.land(main, main, gate=_Gate(), dry_run=True, lane="zai", review=review)
 
     assert report.code == 0
     assert _pushes_unqualified(report)
@@ -992,15 +1094,47 @@ def test_a_dry_run_from_the_main_checkout_itself_says_the_merge_is_not_needed(
 
 def test_a_native_dry_run_says_the_routing_rung_does_not_apply_to_it(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
     """A gated path on `claude-native` is not misrouted, and the plan must not imply it is."""
     _origin, main, here = repo
     _commit(here, ".claude/settings.json", "{}\n")
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(), dry_run=True)
+    report = land.land(main, here, gate=_Gate(), dry_run=True, review=review)
 
     assert _pushes_unqualified(report)
     assert "routing=not_applicable lane=claude-native" in report.lines
+
+
+def test_a_dry_run_with_no_review_bound_says_it_would_refuse(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
+    """The plan's half of the rung: consulted, and its refusal withholds the push.
+
+    A dry run that consulted no review rung would plan a push the landing refuses
+    — the #344 shape on the newest rung, so the review verdict joins routing in
+    both the consulted set and the exit code.
+    """
+    _origin, main, here = repo
+    _commit(here, "tools/worker.py", "eligible work\n")
+    dispatch_root = tmp_path / "dispatches"
+    dispatch_root.mkdir()
+
+    report = land.land(
+        main,
+        here,
+        gate=_Gate(),
+        dry_run=True,
+        review=land.ReviewInputs(213, dispatch_root, tmp_path),
+    )
+
+    assert report.code == land.EXIT_REFUSED
+    assert any(
+        line.startswith("review=would_refuse reason=no_review_dispatch") for line in report.lines
+    )
+    assert not _pushes_unqualified(report)
 
 
 def test_a_refusing_dry_run_still_prints_its_plan_on_stdout(
@@ -1082,6 +1216,136 @@ def test_a_dry_runs_refusal_decided_before_the_plan_is_on_stdout_too(
     assert captured.err == ""
 
 
+# -------------------------------------- the review rung, against staged records
+
+
+def test_an_unreviewed_landing_refuses_by_name_before_the_gate_and_pushes_nothing(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
+    """#334, ADR-0071 ruling 4: no change lands alone, and this is the rung that says so.
+
+    The dispatch directory exists and is empty — a tree with work to land and no
+    review bound to its HEAD. The refusal fires before the gate, on purpose: the
+    rung reads a handful of records while the gate costs a minute (#302's
+    cost-ordering), so an unreviewed landing burns nothing on its way to refusal.
+    """
+    origin, main, here = repo
+    before = _tip(origin)
+    _commit(here, "tools/worker.py", "eligible work\n")
+    dispatch_root = tmp_path / "dispatches"
+    dispatch_root.mkdir()
+    gate = _Gate()
+
+    report = land.land(
+        main, here, gate=gate, review=land.ReviewInputs(213, dispatch_root, tmp_path)
+    )
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=no_review_dispatch"
+    assert gate.calls == []
+    assert _tip(origin) == before
+
+
+def test_a_landing_quotes_the_review_that_cleared_it(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
+    """The clearance is a record a reader can check, not a bare assertion that one exists.
+
+    `authorship=checked potential=opus-high` is the never-alone floor's own wording:
+    the issue's dispatch records place `opus-high` on the work, the verdict's
+    reviewer is another profile, and the clearance names both facts beside the
+    dispatch and the SHA it read (#322, #334).
+    """
+    _origin, main, here = repo
+    _commit(here, "tools/worker.py", "eligible work\n")
+    author = tmp_path / "dispatches" / "d-author-1"
+    author.mkdir(parents=True)
+    (author / "dispatch.json").write_text(
+        json.dumps(
+            {
+                "seat": "implementer",
+                "issue": 213,
+                "profile": "opus-high",
+                "dispatch_id": "d-author-1",
+            }
+        ),
+        encoding="utf-8",
+    )
+    review = _reviewed(here, tmp_path)
+
+    report = land.land(main, here, gate=_Gate(), review=review)
+
+    assert report.code == 0
+    assert "authorship=checked potential=opus-high" in report.lines
+    assert "review_dispatch=d-review-1 profile=codex-luna-max lane=codex" in report.lines
+    assert f"verdict_sha={_git('rev-parse', 'HEAD', cwd=here).strip()}" in report.lines
+    assert "findings=0 above_low=0 open_above_low=0" in report.lines
+    assert "loop=not_needed reason=no_finding_above_low" in report.lines
+
+
+def test_an_above_low_finding_without_its_loop_refuses_the_landing(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
+    """A review that found something is not a clearance until every finding owes its route.
+
+    The verdict reports one HIGH finding and no loop state adjudicates it — ruling
+    4's third criterion, the one the four routes exist to satisfy.
+    """
+    origin, main, here = repo
+    before = _tip(origin)
+    _commit(here, "tools/worker.py", "eligible work\n")
+    review = _reviewed(here, tmp_path, findings=({"id": "f1", "severity": "high"},))
+    gate = _Gate()
+
+    report = land.land(main, here, gate=gate, review=review)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=no_review_loop"
+    assert "finding=f1:high" in report.lines
+    assert gate.calls == []
+    assert _tip(origin) == before
+
+
+def test_an_adjudicated_finding_clears_the_landing(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
+    """The same verdict and finding, closed through one of the four routes.
+
+    `fixed` is the plainest route: the finding's remedy went in, the loop records
+    it, and the landing quotes the loop it read the adjudication from.
+    """
+    _origin, main, here = repo
+    _commit(here, "tools/worker.py", "eligible work\n")
+    review = _reviewed(
+        here,
+        tmp_path,
+        findings=({"id": "f1", "severity": "high"},),
+        loop={
+            "version": 1,
+            "issue": 213,
+            "review_rounds": 1,
+            "findings": [
+                {
+                    "id": "f1",
+                    "severity": "high",
+                    "round_raised": 0,
+                    "adjudication": {"route": "fixed"},
+                }
+            ],
+        },
+    )
+
+    report = land.land(main, here, gate=_Gate(), review=review)
+
+    assert report.code == 0
+    assert "findings=1 above_low=1 open_above_low=0" in report.lines
+    assert str(review.review_root / "213" / "loop.json") in "\n".join(report.lines)
+
+
 # ------------------------------------------ the corpus rung, against a real repository
 
 
@@ -1115,14 +1379,16 @@ def _write_pool(
 
 def test_an_in_world_landing_with_no_corpus_run_refuses_by_name_and_pushes_nothing(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
     """#302's incident, at the rung that now stands in front of it."""
     origin, main, here = repo
     before = _tip(origin)
     _commit(here, "src/cti_daemon/transport.py", "181 changed lines\n")
     gate = _Gate()
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=gate)
+    report = land.land(main, here, gate=gate, review=review)
 
     assert report.code == 1
     assert report.lines[0] == "refusal=corpus_owed"
@@ -1134,11 +1400,13 @@ def test_an_in_world_landing_with_no_corpus_run_refuses_by_name_and_pushes_nothi
 
 def test_a_landing_that_reaches_no_in_world_surface_does_not_owe_the_corpus(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
     origin, main, here = repo
     _commit(here, "tools/worker.py", "tooling\n")
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate())
+    report = land.land(main, here, gate=_Gate(), review=review)
 
     assert report.code == 0
     assert "corpus=not_owed reason=no_in_world_path" in report.lines
@@ -1151,8 +1419,9 @@ def test_a_whole_green_run_over_this_head_clears_the_in_world_landing(
     origin, main, here = repo
     _commit(here, "addons/main/functions/fn_effectApply.sqf", "in-world work\n")
     pool = _write_pool(tmp_path, sha=_git("rev-parse", "HEAD", cwd=here).strip())
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(), corpus=pool)
+    report = land.land(main, here, gate=_Gate(), corpus=pool, review=review)
 
     assert report.code == 0
     assert any(line.startswith("corpus=cleared") for line in report.lines)
@@ -1167,8 +1436,9 @@ def test_a_run_naming_a_commit_this_repository_has_never_seen_leaves_it_owed(
     before = _tip(origin)
     _commit(here, "addons/main/functions/fn_effectApply.sqf", "in-world work\n")
     pool = _write_pool(tmp_path, sha="0" * 40)
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(), corpus=pool)
+    report = land.land(main, here, gate=_Gate(), corpus=pool, review=review)
 
     assert report.code == 1
     assert report.lines[0] == "refusal=corpus_owed"
@@ -1191,10 +1461,19 @@ def test_a_rebase_over_a_sibling_that_touched_nothing_in_world_keeps_the_run_val
     _commit(main, "tools/sibling.py", "somebody else's tooling\n")
     _git("push", "origin", "main", cwd=main)
 
-    report = land.land(main, here, gate=_Gate(), corpus=pool)
+    # The rebase orphans the staged review along with the corpus's commit — the
+    # dispatch record binds the pre-rebase SHA — and the second call, re-reviewed at
+    # the SHA the replay produced, is the run this test has always been about.
+    moved = land.land(main, here, gate=_Gate(), corpus=pool, review=_reviewed(here, tmp_path))
+    assert moved.lines[0] == "refusal=no_review_dispatch"
+    # The refusal carries no rebase line — a mid-ladder refusal keeps only its
+    # own lines — so the replay is proven by the second run being already
+    # current over a corpus verdict the replay orphaned.
+
+    report = land.land(main, here, gate=_Gate(), corpus=pool, review=_reviewed(here, tmp_path))
 
     assert report.code == 0
-    assert "rebase=replayed onto 1 new commits" in report.lines
+    assert "rebase=already_current" in report.lines
     assert any(line.startswith("corpus=cleared") for line in report.lines)
     assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
 
@@ -1206,8 +1485,9 @@ def test_a_filtered_run_leaves_the_corpus_owed_against_the_trees_own_probe_list(
     before = _tip(origin)
     _commit(here, "missions/cti.Stratis/init.sqf", "in-world work\n")
     pool = _write_pool(tmp_path, sha=_git("rev-parse", "HEAD", cwd=here).strip(), probes=("alpha",))
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(), corpus=pool)
+    report = land.land(main, here, gate=_Gate(), corpus=pool, review=review)
 
     assert report.code == 1
     assert report.lines[0] == "refusal=corpus_owed"
@@ -1227,8 +1507,9 @@ def test_a_red_run_over_this_head_refuses_apart_from_a_missing_one(
         worst="assertion_failed",
         class_="assertion_failed",
     )
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(), corpus=pool)
+    report = land.land(main, here, gate=_Gate(), corpus=pool, review=review)
 
     assert report.code == 1
     assert report.lines[0] == "refusal=corpus_not_pass"
@@ -1247,7 +1528,13 @@ def test_a_run_superseded_by_someone_elses_in_world_commit_no_longer_clears(
     _commit(main, "src/cti_daemon/outbox.py", "somebody else's in-world change\n")
     _git("push", "origin", "main", cwd=main)
 
-    report = land.land(main, here, gate=_Gate(), corpus=pool)
+    # The sibling's commit orphans the staged review with the corpus's commit — the
+    # dispatch record binds the pre-rebase SHA — and the re-review at the replayed
+    # SHA is the second call, whose refusal is the superseded corpus.
+    moved = land.land(main, here, gate=_Gate(), corpus=pool, review=_reviewed(here, tmp_path))
+    assert moved.lines[0] == "refusal=no_review_dispatch"
+
+    report = land.land(main, here, gate=_Gate(), corpus=pool, review=_reviewed(here, tmp_path))
 
     assert report.code == 1
     assert report.lines[0] == "refusal=corpus_owed"
@@ -1264,8 +1551,9 @@ def test_a_pool_directory_that_never_got_its_merge_is_not_a_result(
     _commit(here, "addons/main/functions/fn_effectApply.sqf", "in-world work\n")
     dead = tmp_path / "20260809T101500Z-pool"
     dead.mkdir()
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(), corpus=dead)
+    report = land.land(main, here, gate=_Gate(), corpus=dead, review=review)
 
     assert report.code == 1
     assert report.lines[0] == "refusal=corpus_owed"
@@ -1274,11 +1562,13 @@ def test_a_pool_directory_that_never_got_its_merge_is_not_a_result(
 
 def test_a_dry_run_says_whether_the_corpus_is_owed_before_anything_is_spent(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
     _origin, main, here = repo
     _commit(here, "src/cti_daemon/protocol.py", "in-world work\n")
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(main, here, gate=_Gate(), dry_run=True, corpus=None)
+    report = land.land(main, here, gate=_Gate(), dry_run=True, corpus=None, review=review)
 
     assert report.code == 0
     assert any(line.startswith("corpus=owed") for line in report.lines)
