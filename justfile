@@ -998,14 +998,22 @@ verdict *args:
 # turn that opened it — `show` reads it back, `round` advances it, and the
 # terminus is once: it files every arbiter-upheld finding on the originating
 # item and records every dismissal on the issue thread, so running it twice
-# would file twice, which is why it refuses its own second run by name.
+# would file twice, which is why it refuses its own second run by name — and
+# claims a `terminus.pending` marker with the kernel's own O_EXCL before its
+# first side effect, so two concurrent runs cannot both file and a run that
+# died mid-post leaves the marker naming what it was about to post for the
+# retry to refuse on.
 #
 # Every act is refused by name rather than defaulted: `open` refuses a loop
-# that already exists, `adjudicate` refuses an arbiter route before any
-# escalation has fired one (there is no arbiter to speak of), `escalate`
+# that already exists, `adjudicate` refuses an arbiter route without its own
+# escalation — decided per finding, the three-round wall holding with this
+# finding among what it read, so a finding raised in a later round inherits
+# no earlier verdict (there is no arbiter to speak of), `escalate`
 # refuses an unregistered seat, and the terminus refuses a loop whose findings
-# above Low are still open — #334's landing refusal is the consumer of that
-# same fact. Exit 1 is a named refusal; exit 3 is an act that could not be
+# above Low are still open, verdicts no arbiter resolution chose, and a
+# pending run it must not blindly repeat — #334's landing refusal is the
+# consumer of that first fact. Exit 1 is a named refusal; exit 3 is an act
+# that could not be
 # performed (`gh` unreachable, state unwritable), which is not a result and
 # never a green.
 #

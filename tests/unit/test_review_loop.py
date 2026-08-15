@@ -6,7 +6,8 @@ the decision, both directions and the third state: unlisted means covered, liste
 exempt with its reason quotable, unreadable never exempts, and a diff touching the list
 itself is never exempt whatever the list says. Then the loop: round stamping, the four
 adjudication routes with the fourth's three restrictions and the arbiter routes'
-precondition — no arbiter exists until the escalation that produces one has fired —
+precondition — decided per finding, the escalation must have fired on the finding itself,
+so a verdict in a later round inherits nothing from an earlier one —
 one-adjudication-per-finding, and the escalation bridge that turns a live loop into the two
 recorded wall facts — which lights condition one, while conditions two and three wait on a
 `prior` history and recorded `attempts` that no loop carries. Then #333's half over that
@@ -325,26 +326,110 @@ def test_a_round_zero_arbiter_verdict_is_refused() -> None:
             )
 
 
-def test_the_precondition_reads_the_wall_and_the_recorded_verdicts() -> None:
-    below = review_loop.Loop(2, (finding("F1", review_loop.HIGH),))
-    assert review_loop.escalation_fired(below) is False
-    wall = review_loop.Loop(3, (finding("F1", review_loop.HIGH, round_raised=1),))
-    assert review_loop.escalation_fired(wall) is True
-    # The strongest single fact here: after the wall's own verdict closes the finding the
-    # wall read, neither half of the wall holds any more — rounds are 3 but nothing above
-    # Low is held across — so the recorded verdict is the only reason this reads True.
-    adjudicated = review_loop.adjudicate(wall, "F1", adjud(review_loop.ARBITER_UPHELD))
+def test_the_precondition_reads_the_wall_and_this_finding_not_the_loop() -> None:
+    """Per finding, round 2's Critical: the escalation must have fired *on this finding*.
+
+    The round-1 loop-level form — the wall, or any recorded arbiter verdict — let a new
+    finding inherit an earlier verdict as its licence. The three conjuncts are each pinned
+    by the case that drops it: below the wall, below Low, introduced by the round itself.
+    """
+    held = finding("F1", review_loop.HIGH, round_raised=1)
+    assert review_loop.escalation_fires_on(review_loop.Loop(3, (held,)), held) is True
+    # Below the wall: the escalation has not fired at all.
+    assert (
+        review_loop.escalation_fires_on(
+            review_loop.Loop(2, (finding("F1", review_loop.HIGH, round_raised=1),)), held
+        )
+        is False
+    )
+    # At the wall, but this finding is a Low — never what the escalation fires on.
+    low = finding("F2", review_loop.LOW, round_raised=1)
+    assert (
+        review_loop.escalation_fires_on(
+            review_loop.Loop(3, (finding("F1", review_loop.HIGH, round_raised=1), low)), low
+        )
+        is False
+    )
+    # At the wall via a held finding, but this finding the round itself introduced (#356).
+    introduced = finding("F3", review_loop.HIGH, round_raised=3)
+    assert (
+        review_loop.escalation_fires_on(
+            review_loop.Loop(3, (finding("F1", review_loop.HIGH, round_raised=1), introduced)),
+            introduced,
+        )
+        is False
+    )
+    # The recorded verdict is a fact about the finding it closed, never about the loop:
+    # once the wall's own verdict closes the held finding, nothing fires on anything.
+    adjudicated = review_loop.adjudicate(
+        review_loop.Loop(3, (held,)), "F1", adjud(review_loop.ARBITER_UPHELD)
+    )
     assert review_loop.at_wall(adjudicated) is False
-    assert review_loop.escalation_fired(adjudicated) is True
+    assert all(
+        review_loop.escalation_fires_on(adjudicated, f) is False for f in adjudicated.findings
+    )
 
 
-def test_the_second_verdict_of_one_arbitration_stays_admissible() -> None:
-    """One verdict consumes the held finding the wall reads, so the wall cannot gate the next.
+def test_a_new_finding_in_a_later_round_inherits_no_historical_verdict() -> None:
+    """Round 2's Critical, constructed as the adjudication asked — no hand-built loop.
 
-    `holding_above_low` counts open findings; one closed `arbiter_upheld` no longer holds,
-    so verdict order within one arbitration must not decide which verdicts are legal. The
-    recorded verdict stands in for the wall — the widen clause, pinned as the case that
-    would refuse without it.
+    The arbiter closes the wall-held findings, a later round raises a new finding, and its
+    dismissal must refuse: #333's own body says a finding raised in a later round is a new
+    item, not a reopening, and the round-1 loop-level precondition let the old verdict
+    authorise the new item as its licence.
+    """
+    loop = review_loop.first_review((finding("F1", review_loop.HIGH),))
+    loop = review_loop.next_round(loop, ())
+    loop = review_loop.next_round(loop, ())
+    loop = review_loop.next_round(loop, ())  # the wall: round 3, F1 held across
+    assert review_loop.at_wall(loop) is True
+    loop = review_loop.adjudicate(loop, "F1", adjud(review_loop.ARBITER_DISMISSED))
+    loop = review_loop.next_round(loop, (finding("F2", review_loop.HIGH, round_raised=4),))
+    assert review_loop.at_wall(loop) is False
+    assert (
+        refused(lambda: review_loop.adjudicate(loop, "F2", adjud(review_loop.ARBITER_DISMISSED)))
+        == review_loop.ARBITER_UNAUTHORISED_ERROR
+    )
+    # F2 earns its own arbiter only through its own wall: held across at round 5, the
+    # escalation fires on it and a fresh `escalate`/`adjudicate` pair is admissible again.
+    loop = review_loop.next_round(loop, ())
+    assert review_loop.at_wall(loop) is True
+    closed = review_loop.adjudicate(loop, "F2", adjud(review_loop.ARBITER_UPHELD))
+    assert closed.findings[1].adjudication == adjud(review_loop.ARBITER_UPHELD)
+
+
+def test_held_across_siblings_stay_admissible_in_either_order() -> None:
+    """What the round-1 widen clause was for, answered per finding instead.
+
+    `holding_above_low` counts open findings, and the finding under adjudication is open at
+    its own adjudication — so each held-across sibling is itself among what the wall reads,
+    and verdict order within one arbitration cannot decide which verdicts are legal.
+    """
+    both = review_loop.Loop(
+        3,
+        (
+            finding("F1", review_loop.HIGH, round_raised=1),
+            finding("F2", review_loop.CRITICAL, round_raised=1),
+        ),
+    )
+    forward = review_loop.adjudicate(
+        review_loop.adjudicate(both, "F1", adjud(review_loop.ARBITER_UPHELD)),
+        "F2",
+        adjud(review_loop.ARBITER_DISMISSED),
+    )
+    backward = review_loop.adjudicate(
+        review_loop.adjudicate(both, "F2", adjud(review_loop.ARBITER_DISMISSED)),
+        "F1",
+        adjud(review_loop.ARBITER_UPHELD),
+    )
+    assert forward == backward
+
+
+def test_a_round_introduced_finding_takes_no_verdict_from_the_walls_arbitration() -> None:
+    """#356's shape at the wall.
+
+    The round's own finding is a new item, whatever the arbiter does to the
+    held one beside it.
     """
     loop = review_loop.Loop(
         3,
@@ -354,13 +439,16 @@ def test_the_second_verdict_of_one_arbitration_stays_admissible() -> None:
         ),
     )
     assert review_loop.at_wall(loop) is True
+    assert (
+        refused(lambda: review_loop.adjudicate(loop, "F2", adjud(review_loop.ARBITER_DISMISSED)))
+        == review_loop.ARBITER_UNAUTHORISED_ERROR
+    )
     first = review_loop.adjudicate(loop, "F1", adjud(review_loop.ARBITER_UPHELD))
-    # F2 was raised by the round itself (#356's shape), so with F1 closed nothing is held
-    # across and the wall no longer reads True — the second verdict is admissible on the
-    # recorded verdict alone.
     assert review_loop.at_wall(first) is False
-    second = review_loop.adjudicate(first, "F2", adjud(review_loop.ARBITER_DISMISSED))
-    assert second.findings[1].adjudication == adjud(review_loop.ARBITER_DISMISSED)
+    assert (
+        refused(lambda: review_loop.adjudicate(first, "F2", adjud(review_loop.ARBITER_UPHELD)))
+        == review_loop.ARBITER_UNAUTHORISED_ERROR
+    )
 
 
 def test_an_unknown_route_is_refused() -> None:
@@ -674,9 +762,43 @@ def test_the_fixed_and_the_accepted_and_filed_appear_in_neither_trace() -> None:
 def test_an_upheld_low_is_owed_its_filing_the_same_as_an_upheld_critical() -> None:
     """Ruling 4's terminus sentence carries no severity qualifier, and neither does the filing.
 
-    The Low cannot reach an arbiter on its own — it holds nothing above Low, so it cannot
-    fire the wall — which is itself the precondition's point: the arbitration that closes
-    it was authorised by the High beside it.
+    The recorded state is built directly because an upheld Low is no longer *reachable*
+    through `adjudicate` — a Low is never what the escalation fires on, so its arbiter route
+    refuses (the test below pins that). The terminus reads recorded verdicts without
+    re-deriving the precondition, the same rule that keeps a pre-precondition verdict
+    readable, and this is the severity-blindness of that read.
+    """
+    loop = review_loop.Loop(
+        3,
+        (
+            finding(
+                "F1",
+                review_loop.HIGH,
+                round_raised=1,
+                adjudication=adjud(review_loop.ARBITER_UPHELD),
+            ),
+            finding(
+                "F2",
+                review_loop.LOW,
+                round_raised=2,
+                adjudication=adjud(review_loop.ARBITER_UPHELD),
+            ),
+        ),
+    )
+    end = review_loop.terminus(loop)
+    assert end.default_applies is True
+    assert end.filings == (
+        review_loop.Filing("F1", review_loop.HIGH, 1),
+        review_loop.Filing("F2", review_loop.LOW, 2),
+    )
+
+
+def test_a_low_takes_no_arbiter_route_even_at_the_wall() -> None:
+    """A Low never blocks and never feeds the wall, so no arbiter settles one.
+
+    Fix it, file it, or leave it open — the round-1 sibling clause that let a
+    beside-it High authorise the Low's verdict was the related-fact-as-the-fact
+    shape.
     """
     loop = review_loop.Loop(
         3,
@@ -685,14 +807,14 @@ def test_an_upheld_low_is_owed_its_filing_the_same_as_an_upheld_critical() -> No
             finding("F2", review_loop.LOW, round_raised=2),
         ),
     )
-    loop = review_loop.adjudicate(loop, "F1", adjud(review_loop.ARBITER_UPHELD))
-    loop = review_loop.adjudicate(loop, "F2", adjud(review_loop.ARBITER_UPHELD))
-    end = review_loop.terminus(loop)
-    assert end.default_applies is True
-    assert end.filings == (
-        review_loop.Filing("F1", review_loop.HIGH, 1),
-        review_loop.Filing("F2", review_loop.LOW, 2),
+    assert review_loop.at_wall(loop) is True
+    assert (
+        refused(lambda: review_loop.adjudicate(loop, "F2", adjud(review_loop.ARBITER_DISMISSED)))
+        == review_loop.ARBITER_UNAUTHORISED_ERROR
     )
+    # The wall's own finding still closes: the refusal is about the Low, not the wall.
+    closed = review_loop.adjudicate(loop, "F1", adjud(review_loop.ARBITER_UPHELD))
+    assert closed.findings[0].adjudication == adjud(review_loop.ARBITER_UPHELD)
 
 
 def test_an_open_finding_above_low_stops_the_default_with_an_answer_not_an_error() -> None:
@@ -748,13 +870,20 @@ def test_an_escalation_event_carries_the_evaluation_kind_and_the_arbiter() -> No
     assert attributes["cti.review.evaluation"] == {"stringValue": escalation.FIRING}
     assert attributes["cti.review.conditions"] == {"stringValue": "1"}
     assert attributes["cti.review.arbiter"] == {"stringValue": "opus-max"}
-    # Silence and unreadable input are states the observatory must count, not read past.
-    quiet = review_loop.escalation_event(escalation.NoFiring(), "#348", at=3.0)
+    # Silence and unreadable input are states the observatory must count, not read past —
+    # and neither carries an arbiter, whatever the caller resolved (#333 round 2, Medium 5):
+    # a profile is an arbiter only where a firing transferred to it.
+    quiet = review_loop.escalation_event(escalation.NoFiring(), "#348", at=3.0, arbiter="opus-max")
     quiet_attributes = rendered(quiet)
     assert quiet_attributes["cti.review.evaluation"] == {"stringValue": escalation.NO_FIRING}
     assert quiet_attributes["cti.review.conditions"] == {"stringValue": ""}
-    blind = review_loop.escalation_event(escalation.Unreadable(("gone",)), "#348", at=3.0)
-    assert rendered(blind)["cti.review.evaluation"] == {"stringValue": escalation.UNREADABLE}
+    assert quiet_attributes["cti.review.arbiter"] == {"stringValue": ""}
+    blind = review_loop.escalation_event(
+        escalation.Unreadable(("gone",)), "#348", at=3.0, arbiter="opus-max"
+    )
+    blind_attributes = rendered(blind)
+    assert blind_attributes["cti.review.evaluation"] == {"stringValue": escalation.UNREADABLE}
+    assert blind_attributes["cti.review.arbiter"] == {"stringValue": ""}
 
 
 def test_a_dispute_event_carries_the_finding_and_its_route() -> None:
@@ -1007,10 +1136,26 @@ def test_the_command_surface_drives_one_loop_end_to_end(tmp_path: Path) -> None:
     assert comments[0][1].startswith(f"{review_loop.DISMISSAL_MARKER} #333")
     landing = json.loads((root / "333" / review_loop.LANDING_FILE).read_text(encoding="utf-8"))
     assert landing["arbiter"] == "codex-sol-high"
+    assert landing["findings"] == [
+        {
+            "finding": "F1",
+            "severity": "critical",
+            "round_raised": 0,
+            "route": review_loop.ARBITER_UPHELD,
+        },
+        {
+            "finding": "F2",
+            "severity": "high",
+            "round_raised": 1,
+            "route": review_loop.ARBITER_DISMISSED,
+        },
+    ]
     assert landing["filings"] == [
         {"finding": "F1", "severity": "critical", "round_raised": 0, "issue": 401}
     ]
     assert landing["dismissals"] == [{"finding": "F2", "severity": "high", "round_raised": 1}]
+    # The claim on the right to run is released once the landing record is written.
+    assert not (root / "333" / review_loop.PENDING_FILE).exists()
     # The terminus is once: a second run would file every upheld finding twice.
     assert review_loop.main(["terminus", "--issue", "333", *base], **kwargs) == review_loop.REFUSED
     assert len(filings) == 1
@@ -1028,6 +1173,377 @@ def test_the_command_surface_drives_one_loop_end_to_end(tmp_path: Path) -> None:
         review_loop.DISPUTE_EVENT,
         review_loop.TERMINUS_EVENT,
     ]
+
+
+def drive_to_the_wall(root: Path, journal: Path, *, issue: int = 326) -> list[str]:
+    """Open at round zero and advance to the three-round wall, no escalation run."""
+    base = ["--root", str(root), "--journal", str(journal)]
+    clock = stepped_clock()
+    assert (
+        review_loop.main(["open", "--issue", str(issue), *base, "--finding", "F1=high"], now=clock)
+        == review_loop.OK
+    )
+    for _ in range(3):
+        assert (
+            review_loop.main(["round", "--issue", str(issue), *base], now=clock) == review_loop.OK
+        )
+    return base
+
+
+def test_a_terminus_refuses_verdicts_no_escalation_record_chose(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Round 2's High 2: the terminus needs an escalation record.
+
+    `adjudicate` at the wall needs no `escalate` first, so the terminus must —
+    verdicts no arbiter resolution chose are not dischargeable, and the missing
+    record must not read as an empty arbiter that lets the landing proceed.
+    """
+    root = tmp_path / "review"
+    base = drive_to_the_wall(root, tmp_path / "journal.jsonl")
+    clock = stepped_clock()
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "326",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.ARBITER_DISMISSED,
+            ],
+            now=clock,
+        )
+        == review_loop.OK
+    )
+    filings: list[tuple[str, str]] = []
+    comments: list[tuple[int, str]] = []
+    code = review_loop.main(
+        ["terminus", "--issue", "326", *base],
+        now=clock,
+        create_issue=lambda title, body: filings.append((title, body)) or 0,
+        post_comment=lambda issue, body: comments.append((issue, body)),
+    )
+    assert code == review_loop.REFUSED
+    assert (
+        review_loop.ARBITER_UNRESOLVED_ERROR.format(issue=326, root=root) in capsys.readouterr().err
+    )
+    assert filings == []
+    assert comments == []
+    assert not (root / "326" / review_loop.LANDING_FILE).exists()
+
+
+def test_a_non_firing_escalation_record_does_not_authorise_the_terminus(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A record that resolved a profile but fired nothing transferred to it.
+
+    `escalate` below the wall writes its record — arbiter resolved, evaluation `no_firing`.
+    The wall can still fire rounds later and `adjudicate` with it, and the round-1 terminus
+    would have blessed those verdicts with a recorded arbiter name that never transferred.
+    """
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    base = ["--root", str(root), "--journal", str(journal)]
+    dispatch_dir = tmp_path / "dispatches"
+    write_record(dispatch_dir, "d1", issue=333, profile="opus-high", seat="implementer")
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("# no keys the walk reads\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    clock = stepped_clock()
+    kwargs: dict[str, object] = {"now": clock}
+    assert (
+        review_loop.main(["open", "--issue", "326", *base, "--finding", "F1=high"], **kwargs)
+        == review_loop.OK
+    )
+    assert review_loop.main(["round", "--issue", "326", *base], **kwargs) == review_loop.OK
+    assert review_loop.main(["round", "--issue", "326", *base], **kwargs) == review_loop.OK
+    assert (
+        review_loop.main(
+            [
+                "escalate",
+                "--issue",
+                "326",
+                *base,
+                "--seat",
+                "implementer",
+                "--dispatch-dir",
+                str(dispatch_dir),
+                "--admission-dir",
+                str(tmp_path / "admission"),
+                "--breaker-dir",
+                str(tmp_path / "breaker"),
+                "--credentials",
+                str(credentials),
+                "--conditions",
+                str(CONDITIONS),
+            ],
+            **kwargs,
+        )
+        == review_loop.OK
+    )
+    record = json.loads((root / "326" / review_loop.ESCALATION_FILE).read_text(encoding="utf-8"))
+    assert record["evaluation"] == escalation.NO_FIRING
+    assert record["arbiter"] == "codex-sol-high"
+    assert review_loop.main(["round", "--issue", "326", *base], **kwargs) == review_loop.OK
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "326",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.ARBITER_DISMISSED,
+            ],
+            **kwargs,
+        )
+        == review_loop.OK
+    )
+    filings: list[tuple[str, str]] = []
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base],
+            now=clock,
+            create_issue=lambda title, body: filings.append((title, body)) or 0,
+            post_comment=lambda _issue, _body: None,
+        )
+        == review_loop.REFUSED
+    )
+    assert (
+        review_loop.ARBITER_UNRESOLVED_ERROR.format(issue=326, root=root) in capsys.readouterr().err
+    )
+    assert filings == []
+
+
+def test_a_terminus_that_died_mid_post_refuses_the_blind_retry(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Round 2's High 4: side effects on GitHub plus two local writes is not a transaction.
+
+    The pending claim is what makes "once" true anyway — a run that dies mid-post leaves the
+    marker naming what it was about to post, the retry refuses rather than filing twice, and
+    the marker is cleared by hand once the thread is accounted (then the retry proceeds).
+    Two concurrent calls are the same mechanism: `O_CREAT | O_EXCL` is decided by the kernel,
+    so exactly one of them wins the create.
+    """
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    dispatch_dir = tmp_path / "dispatches"
+    write_record(dispatch_dir, "d1", issue=333, profile="opus-high", seat="implementer")
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("# no keys the walk reads\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    base = ["--root", str(root), "--journal", str(journal)]
+    clock = stepped_clock()
+    assert (
+        review_loop.main(["open", "--issue", "326", *base, "--finding", "F1=critical"], now=clock)
+        == review_loop.OK
+    )
+    for _ in range(3):
+        assert review_loop.main(["round", "--issue", "326", *base], now=clock) == review_loop.OK
+    escalate_args = [
+        "escalate",
+        "--issue",
+        "326",
+        *base,
+        "--seat",
+        "implementer",
+        "--dispatch-dir",
+        str(dispatch_dir),
+        "--admission-dir",
+        str(tmp_path / "admission"),
+        "--breaker-dir",
+        str(tmp_path / "breaker"),
+        "--credentials",
+        str(credentials),
+        "--conditions",
+        str(CONDITIONS),
+    ]
+    assert review_loop.main(escalate_args, now=clock) == review_loop.OK
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "326",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.ARBITER_UPHELD,
+            ],
+            now=clock,
+        )
+        == review_loop.OK
+    )
+
+    def broken(_title: str, _body: str) -> int:
+        message = "`gh` refused: rate limited"
+        raise review_loop.ExternalError(message)
+
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base],
+            now=clock,
+            create_issue=broken,
+            post_comment=lambda _i, _b: None,
+        )
+        == review_loop.NO_RESULT
+    )
+    pending = root / "326" / review_loop.PENDING_FILE
+    assert pending.exists()
+    assert json.loads(pending.read_text(encoding="utf-8"))["filings"] == ["F1"]
+    assert not (root / "326" / review_loop.LANDING_FILE).exists()
+    # The blind retry files nothing: the marker is the refusal, and what it names is the
+    # audit trail for what a hand must account on the thread first.
+    filings: list[tuple[str, str]] = []
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base],
+            now=clock,
+            create_issue=lambda title, body: filings.append((title, body)) or 0,
+            post_comment=lambda _issue, _body: None,
+        )
+        == review_loop.REFUSED
+    )
+    assert (
+        review_loop.TERMINUS_INCOMPLETE_ERROR.format(issue=326, root=root)
+        in capsys.readouterr().err
+    )
+    assert filings == []
+    # Cleared by hand once accounted, the retry proceeds and completes its own claim.
+    pending.unlink()
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base],
+            now=clock,
+            create_issue=lambda title, body: filings.append((title, body)) or 401,
+            post_comment=lambda _issue, _body: None,
+        )
+        == review_loop.OK
+    )
+    assert len(filings) == 1
+    assert (root / "326" / review_loop.LANDING_FILE).exists()
+    assert not pending.exists()
+
+
+def test_the_landing_record_carries_every_findings_verdict(tmp_path: Path) -> None:
+    """Round 2's High 3: the landing record must say every finding's verdict.
+
+    `fixed` has no trace but the diff, and a Low left open at the terminus is a
+    fact the record must be able to say — post-landing review reads the
+    per-finding verdicts here, not the diff.
+    """
+    root = tmp_path / "review"
+    base = drive_to_the_wall(root, tmp_path / "journal.jsonl", issue=328)
+    clock = stepped_clock()
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "328",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.FIXED,
+            ],
+            now=clock,
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "round",
+                "--issue",
+                "328",
+                *base,
+                "--finding",
+                "F2=low",
+            ],
+            now=clock,
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "328",
+                *base,
+                "--finding",
+                "F2",
+                "--route",
+                review_loop.ACCEPTED_AND_FILED,
+                "--filed-issue",
+                "#376",
+                "--conditional-on",
+                "work X widens the input",
+            ],
+            now=clock,
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "328", *base],
+            now=clock,
+            create_issue=lambda _title, _body: 0,
+            post_comment=lambda _issue, _body: None,
+        )
+        == review_loop.OK
+    )
+    landing = json.loads((root / "328" / review_loop.LANDING_FILE).read_text(encoding="utf-8"))
+    assert landing["findings"] == [
+        {
+            "finding": "F1",
+            "severity": "high",
+            "round_raised": 0,
+            "route": review_loop.FIXED,
+        },
+        {
+            "finding": "F2",
+            "severity": "low",
+            "round_raised": 4,
+            "route": review_loop.ACCEPTED_AND_FILED,
+            "issue": "#376",
+            "conditional_on": "work X widens the input",
+        },
+    ]
+
+
+def test_a_stored_loop_that_will_not_decode_is_a_named_refusal(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Round 2's Medium 6: an unreadable loop is a named refusal.
+
+    A truncated `loop.json` is a state the tool looked at and refused, never an
+    unclassified traceback on the command surface.
+    """
+    root = tmp_path / "review"
+    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    assert (
+        review_loop.main(
+            ["open", "--issue", "326", *base, "--finding", "F1=high"], now=stepped_clock()
+        )
+        == review_loop.OK
+    )
+    (root / "326" / review_loop.LOOP_FILE).write_text('{"version": 1, "iss', encoding="utf-8")
+    assert (
+        review_loop.main(["show", "--issue", "326", "--root", str(root)], now=stepped_clock())
+        == review_loop.REFUSED
+    )
+    err = capsys.readouterr().err
+    assert f"the stored loop for #326 under {root} will not read —" in err
+    assert "Traceback" not in err  # a refusal line, never an unclassified traceback
 
 
 def test_the_cli_named_refusals(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -1097,3 +1613,4 @@ def test_a_dry_run_terminus_posts_and_writes_nothing(tmp_path: Path) -> None:
     assert filings == []
     assert comments == []
     assert not (root / "326" / review_loop.LANDING_FILE).exists()
+    assert not (root / "326" / review_loop.PENDING_FILE).exists()  # a dry run claims nothing

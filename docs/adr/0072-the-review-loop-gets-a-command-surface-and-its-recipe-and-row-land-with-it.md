@@ -14,9 +14,12 @@ sign-off gate rather than lagging silently)
 Reviewed-by-human: pending
 Claimed: 0072, after `git fetch origin` (`docs/adr/` on `origin/main` topping at 0071) and a
 scan of #333's own thread, whose findings carry no ADR claim; `gh` and `rtk proxy` were both
-permission-blocked to this session, so the wider open-issue scan could not be re-run at
-write time — the last full scan (pre-round-1) also topped at 0071, and the landing rebase is
-the prescribed backstop
+permission-blocked to this session at first write, so the wider open-issue scan could not be
+run then — round 2 (2026-08-15, claim 7) ran it: every open issue's comments scanned (91
+issues), the highest ADR number mentioned anywhere is 0071 (on thirteen issues) and nothing
+above it, and `origin/main` still tops at 0071, so 0072 holds. The scan was reproduced by a
+subagent through `gh` reads after every interpreter route was permission-blocked; its
+per-issue results are quoted on #333's thread at fix round 2
 
 ## What happened
 
