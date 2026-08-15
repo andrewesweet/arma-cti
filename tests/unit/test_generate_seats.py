@@ -399,12 +399,15 @@ def test_the_surfaces_the_repository_ships_are_the_registrys() -> None:
 def test_the_pair_vocabulary_reads_every_notation_this_repository_writes() -> None:
     """#324, review round 2, claim 3: a property that sees one notation is a substring check.
 
-    So the notations are enumerated, each one taken from prose that exists here — the slash
-    pair, `describe`'s own rendering, the bare form after "run at", and the comma form
-    `docs/adr/0009-*.md` leads with. The positive controls come first, because an assertion
-    that finds nothing is worth what its pattern is worth. The last two used to be attributed
-    to AGENTS.md's Model roles bullets, which #329 deleted while the shapes outlived them
-    (#329 review round 2, F1 — the same stale attribution as `generate_seats.py`'s).
+    So the notations are enumerated, each one taken from prose that has existed here — the
+    slash pair, `describe`'s own rendering, the bare form after "run at", and the comma form.
+    The last two are attested historically: both were in AGENTS.md's Model roles section at
+    merge-base `c066998` ("Human decision sessions run at opus xhigh" and the "**opus[1m],
+    effort xhigh**" bullet), and #329 removes those instances from the tree. The shapes
+    outlived the section, which is why the patterns stay; neither form survives in the current
+    tree outside the generator's own docstring and the positive controls below, and a positive
+    control is a test rather than provenance. The controls come first, because an assertion
+    that finds nothing is worth what its pattern is worth.
 
     The limit is stated rather than implied, and it is a real one: this reads notations, not
     meanings. `opus-xhigh` is a profile name and legitimate; "the top effort on opus" is a

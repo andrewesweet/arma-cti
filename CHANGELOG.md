@@ -129,6 +129,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **AGENTS.md no longer enumerates which seats hold a declaration surface (#329, arbitration).**
+  The *Seats and profiles* mechanism paragraph listed the four seats with an `.claude/agents/`
+  file and the four without — two hand-maintained membership copies this branch itself added,
+  in the same paragraph that forbids keeping a pair by hand. The durable facts stay without the
+  copies: `AGENT_SURFACES` and `SKILL_SURFACES` in `tools/generate_seats.py` decide the
+  declaration surfaces, the generated files show the result, a seat without one is reached
+  through the separate-process `just dispatch --seat` route, and adding a surface is an explicit
+  edit to the relevant generator tuple.
+
 - **The withdrawn mapping's last live copies are gone, and the guard now walks the file it cites
   (#329, review round 2).** Round 1 rewrote the brief composer's seat reasons and guarded them —
   and the widest live copy of the `fable` scope it deleted went on sitting ten lines from the
@@ -138,7 +147,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   class 4 and `config/escalation-conditions.json`'s fourth condition, and the guard now asserts the
   registry carries no copy either. `just brief`'s own recipe comment stopped describing itself as
   composing "the Model roles line", and `tools/generate_seats.py`'s pair vocabulary is re-attributed
-  to ADR-0009, the oldest surviving instance, rather than to bullets round 1 deleted. Two narrower
+  to its true historical source: its third and fourth notations — `run at opus xhigh` and
+  `opus[1m], effort xhigh` — were both in AGENTS.md's Model roles section at merge-base `c066998`,
+  and #329 removes those instances from the tree. Neither form survives in the current tree outside
+  the detector's own documentation and its positive controls, which are tests rather than
+  provenance. Two narrower
   corrections: the `fable` seat reason now names the escalation condition that actually orders the
   transfer, since routing class 4 routes to `planner`; and the orchestration runbook no longer says
   both drafting classes are "declared on the issue and never inferred" — neither is inferred from a
