@@ -382,6 +382,45 @@ worktree *args:
 land *args:
     uv run python tools/land.py {{ args }}
 
+# The never-alone handover: a review branch instead of a shared tree, and the
+# verdict that review becomes (#332, ADR-0071 ruling 4). No Arma, no lock.
+#
+#   just review exchange 332        push this tree's HEAD to refs/heads/issue-332,
+#                                  force-moving the ref, then verify the remote
+#                                  resolves it to this exact SHA — the implementer's
+#                                  half of the handover; the reviewer's half is
+#                                  `just worktree restore <name> --ref <ref>`, so
+#                                  no two instances ever share a directory (#105)
+#   just review record --issue 332 --reviewed-sha <sha> --findings findings.json
+#                                  derive the reviewing dispatch from the records
+#                                  the dispatcher wrote (seat=review, this issue,
+#                                  base_sha=this SHA, completed) and write
+#                                  verdict.json beside it, outside every worktree.
+#                                  The identity is derived, never declared — the
+#                                  #322 reasoning one layer over — and the caller
+#                                  supplies only the issue, the SHA, the findings
+#   just review show <dispatch-id> [--satisfies <sha>]
+#                                  read one verdict, re-derive its identity from
+#                                  the records as they now stand, and answer
+#                                  whether it satisfies a named commit
+#
+# Refusals are named, each says what was found and what to do: invalid_issue,
+# invalid_sha, invalid_findings, dirty_tree, not_on_remote, ref_mismatch,
+# git_failed, no_dispatch_records, no_review_dispatch, records_unreadable,
+# verdict_exists, verdict_unreadable, no_verdict, unknown_dispatch,
+# sha_mismatch, identity_mismatch. Two carry the issue's own weight: a verdict
+# satisfies only the SHA it names (`sha_mismatch` names both commits, so an
+# amended or rebased branch rides no earlier approval), and any dispatch record
+# the binding scan cannot read refuses the whole derivation
+# (`records_unreadable`), because the record that would not open could be the
+# binding one — an exclusion scan may continue on a partial read (#322), an
+# answer may not. record and show both print the same-user limit beside the
+# record: every dispatch runs as the same user, so this is a convention with a
+# mechanical floor, not a guarantee. Adjudication of the findings a verdict
+# carries is #333's; the landing refusal that reads this derivation is #334's.
+review *args:
+    uv run python tools/review_exchange.py {{ args }}
+
 # Discard one named file's unstaged working-tree change, and nothing else
 # (#287, the human's ruling of 2026-08-08 on #248). No Arma, no lock.
 #

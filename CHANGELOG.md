@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`just review` — the review branch exchange and the verdict record (#332, ADR-0071 ruling
+  4).** Three actions. `exchange <issue>` pushes a clean tree's HEAD to `refs/heads/issue-<n>`
+  (force-moving the ref each round) and verifies the remote resolves it to that exact SHA, so an
+  implementer hands a reviewer a branch and the two never share a worktree — the collision #105
+  paid for. `record` derives the reviewing identity from the dispatch records the dispatcher
+  wrote (seat=review, this issue, `base_sha` = the reviewed SHA, completed end state) and writes
+  `verdict.json` beside that dispatch, outside every worktree: the identity is derived, never
+  declared, the #322 reasoning one layer over, and it fails closed on any record the scan cannot
+  read. `show <dispatch-id> [--satisfies <sha>]` re-derives the identity at read time and refuses
+  `sha_mismatch` (naming both commits) rather than letting one commit's verdict satisfy another.
+  Both `record` and `show` print the same-user limit beside the record: a convention with a
+  mechanical floor, not a guarantee.
+
 ### Changed
 
 - **The routing policy is re-founded class by class on capability and conflict of interest, and
