@@ -189,6 +189,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   recovery named, and a failed write leaves nothing behind (`verdict_unwritten`). The recipe's
   refusal vocabulary now lists every class the tool emits.
 
+- **`just review` round 2: two review findings on the verdict machinery (#332).** Recording a
+  verdict into a dispatch directory that is unwritable, or that was removed between the binding
+  read and the write, now refuses `verdict_unwritten` like every other write failure instead of
+  escaping as a traceback — staging is the first act that needs the directory writable, and it now
+  sits inside the failure boundary. The clean-tree fix carries the test it lacked: a corrupted
+  index makes the real `git status --porcelain` fail with empty stdout, and the test is proven by
+  reverting the fix and watching it red — the exchange force-pushing on the strength of a failed
+  status it had read as a clean tree — where the first test's stub passed against both.
+
 ### Added
 
 - **The never-alone decision surface is one module, and the exemption list is inverted: every

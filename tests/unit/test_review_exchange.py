@@ -15,6 +15,7 @@ the same pattern `test_worktree.py` uses for its end-to-end actions.
 from __future__ import annotations
 
 import json
+import shutil
 from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING
 
@@ -364,6 +365,49 @@ def test_record_that_fails_mid_write_leaves_no_partial_behind(
     ]
 
 
+def test_record_refuses_an_unwritable_dispatch_directory(tmp_path: Path) -> None:
+    # Medium 1, round 2: the staged write is the first act that needs the
+    # dispatch directory to be writable — the binding derivation only reads it —
+    # so an unwritable one is a verdict-write failure like any other:
+    # `verdict_unwritten`, never an escaping traceback, and nothing left behind.
+    root = tmp_path / "dispatches"
+    entry = dispatch_dir(root, "d-1")
+    entry.chmod(0o500)
+    try:
+        outcome = review_exchange.record_verdict(332, SHA, "[]", root)
+        assert outcome.kind == "verdict_unwritten"
+        assert sorted(item.name for item in entry.iterdir()) == [
+            "dispatch.json",
+            "result.json",
+        ]
+    finally:
+        # Restored so pytest's own cleanup can remove the directory.
+        entry.chmod(0o700)
+
+
+def test_record_refuses_a_dispatch_directory_removed_under_the_write(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The race the unwritable case cannot reach: the directory was there when
+    # the binding read it and is gone when the write stages. The removal is
+    # driven for real (`shutil.rmtree`), between the derivation and the
+    # staging, through the one seam they share — so `mkstemp` meets a genuinely
+    # missing directory, refuses `verdict_unwritten`, and recreates nothing.
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1")
+    real_verdict_path = review_exchange.verdict_path
+
+    def path_then_remove(dispatch_root: Path, dispatch_id: str) -> Path:
+        verdict_file = real_verdict_path(dispatch_root, dispatch_id)
+        shutil.rmtree(dispatch_root / dispatch_id)
+        return verdict_file
+
+    monkeypatch.setattr(review_exchange, "verdict_path", path_then_remove)
+    outcome = review_exchange.record_verdict(332, SHA, "[]", root)
+    assert outcome.kind == "verdict_unwritten"
+    assert not (root / "d-1").exists()
+
+
 def test_record_without_a_binding_writes_nothing(tmp_path: Path) -> None:
     root = tmp_path / "dispatches"
     dispatch_dir(root, "d-1", result=None)
@@ -564,26 +608,24 @@ def test_exchange_refuses_a_non_repository(tmp_path: Path) -> None:
     assert report.lines[0] == "refusal=git_failed"
 
 
-def test_exchange_refuses_when_status_cannot_run_and_pushes_nothing(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+def test_exchange_refuses_when_status_fails_for_real_and_pushes_nothing(
+    tmp_path: Path,
 ) -> None:
-    # High 2, round 1: a status command that fails and prints nothing is an
-    # unestablished clean tree, not a clean one — the manufactured absence #105's
-    # invariant and CLAUDE.md's rtk rule both name — so the exchange refuses and
-    # pushes nothing, rather than reporting success it never earned.
+    # High 2, round 1 — re-pinned round 2 after review: the stub the first pin
+    # used raised for every caller of `worktree.git`, so it passed against the
+    # pre-fix `check=False` code as readily as against the fix. This one drives
+    # a genuinely failing command: a corrupted index makes the real `git status
+    # --porcelain` exit non-zero with empty stdout while `rev-parse HEAD` still
+    # answers, and the failure travels through `worktree.git`'s own check
+    # handling — the exact code the fix changed. A status that fails and prints
+    # nothing is an unestablished clean tree, not a clean one (#105's invariant:
+    # a manufactured absence must never read as absence of dirt), so the
+    # exchange refuses `git_failed` and pushes nothing.
     repo = init_repo(tmp_path)
-    real_git = review_exchange.worktree.git
-
-    def git_except_status(*args: str, cwd: Path, check: bool = True) -> str:
-        if args[0] == "status":
-            raise review_exchange.worktree.GitError(args, "status refused")
-        return real_git(*args, cwd=cwd, check=check)
-
-    monkeypatch.setattr(review_exchange.worktree, "git", git_except_status)
+    (repo / ".git" / "index").write_bytes(b"not an index file")
     report = review_exchange.exchange(repo, 332)
     assert report.code == 1
     assert report.lines[0] == "refusal=git_failed"
-    assert "status refused" in " ".join(report.lines)
     assert worktree.remote_ref_sha(repo, "refs/heads/issue-332") is None
 
 

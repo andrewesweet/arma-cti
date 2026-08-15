@@ -629,6 +629,17 @@ class Recorded(NamedTuple):
     path: Path
 
 
+def _unwritten(path: Path, failure: OSError) -> Refusal:
+    """Return the one refusal every way of failing to write this verdict becomes."""
+    return Refusal(
+        "verdict_unwritten",
+        (f"verdict={path}", f"found={type(failure).__name__}: {failure}"),
+        "The verdict could not be written, and nothing was left behind. Read the"
+        " error above — a full disk is the box's to fix, not the record's — then"
+        " re-record.",
+    )
+
+
 def _write_verdict_once(path: Path, document: dict[str, object]) -> Refusal | None:
     """Publish the verdict's file atomically, so that writing is once under concurrency too.
 
@@ -643,12 +654,21 @@ def _write_verdict_once(path: Path, document: dict[str, object]) -> Refusal | No
     record (`verdict_exists`), and one that does not is a corruption
     (`verdict_unreadable`), refused with its recovery named rather than as an
     unwritable slot. Nothing is ever overwritten; a write of this call's own
-    that fails anywhere short of the link leaves only its staged file, removed.
+    that fails anywhere — before the staging even opens, a dispatch directory
+    missing, unwritable or removed under the write, or anywhere short of the
+    link — is the same `verdict_unwritten`, and leaves at most its staged file,
+    removed.
     """
     text = json.dumps(document, indent=2) + "\n"
-    staged_fd, staged_name = tempfile.mkstemp(
-        prefix=f"{path.name}.", suffix=".staged", dir=path.parent
-    )
+    try:
+        staged_fd, staged_name = tempfile.mkstemp(
+            prefix=f"{path.name}.", suffix=".staged", dir=path.parent
+        )
+    except OSError as failure:
+        # Staging is the first act that needs the directory to be there and
+        # writable — the binding derivation only reads it — so this is where a
+        # missing, unwritable or concurrently removed dispatch directory lands.
+        return _unwritten(path, failure)
     staged = Path(staged_name)
     try:
         try:
@@ -677,13 +697,7 @@ def _write_verdict_once(path: Path, document: dict[str, object]) -> Refusal | No
                 " verdict is the swap this refusal exists to prevent.",
             )
         except OSError as failure:
-            return Refusal(
-                "verdict_unwritten",
-                (f"verdict={path}", f"found={type(failure).__name__}: {failure}"),
-                "The verdict could not be written, and nothing was left behind. Read the"
-                " error above — a full disk is the box's to fix, not the record's — then"
-                " re-record.",
-            )
+            return _unwritten(path, failure)
         return None
     finally:
         # On success the link holds the same inode, so removing the staged name
