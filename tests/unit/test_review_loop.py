@@ -6,8 +6,9 @@ the decision, both directions and the third state: unlisted means covered, liste
 exempt with its reason quotable, unreadable never exempts, and a diff touching the list
 itself is never exempt whatever the list says. Then the loop: round stamping, the four
 adjudication routes with the fourth's three restrictions, one-adjudication-per-finding, and
-the escalation bridge that turns a live loop into the recorded facts conditions one to
-three were waiting for.
+the escalation bridge that turns a live loop into the two recorded wall facts — which
+lights condition one, while conditions two and three wait on a `prior` history and recorded
+`attempts` that no loop carries.
 """
 
 from __future__ import annotations
@@ -389,7 +390,7 @@ def test_the_stop_condition_blocks_on_an_open_finding_above_low_and_nothing_else
 # --------------------------------------------------------------------------- the escalation bridge
 
 
-def test_item_state_records_the_facts_conditions_one_to_three_waited_for() -> None:
+def test_item_state_records_the_two_wall_facts_condition_one_fires_on() -> None:
     """The material change, pinned: rounds and the open finding arrive recorded, not None."""
     loop = review_loop.next_round(
         review_loop.first_review((finding("F1"),)),
@@ -428,6 +429,44 @@ def test_a_loop_below_the_wall_fires_nothing() -> None:
         escalation.ReadResult(conditions()), loop, arbiter="codex-sol-high"
     )
     assert isinstance(outcome, escalation.NoFiring)
+
+
+def test_a_two_item_wall_history_fires_condition_two_through_the_bridge() -> None:
+    """`prior` passes through the wrapper — dropped, condition two emits nothing.
+
+    The round-1 review's pin: a bridge shown firing conditions 1 and 4 only proves two of
+    its four inputs, so a regression that stops carrying `prior` would read green until the
+    history is recorded for real. The prior items are built through `item_state` too, so the
+    wall facts they fire on are the bridge's own recording rather than a hand-built state.
+    """
+    at_wall = review_loop.Loop(review_rounds=3, findings=(finding("F1"),))
+    history = (
+        review_loop.item_state(at_wall, routing_class=5),
+        review_loop.item_state(at_wall, routing_class=5),
+    )
+    outcome = review_loop.evaluate_escalation(
+        escalation.ReadResult(conditions()), at_wall, routing_class=5, prior=history
+    )
+    assert isinstance(outcome, escalation.Firing)
+    assert [emission.condition.id for emission in outcome.emissions] == [2]
+
+
+def test_a_clean_base_retry_fires_condition_three_through_the_bridge() -> None:
+    """`attempts` passes through the wrapper — dropped, condition three emits nothing.
+
+    Recorded attempts are the observatory's sequenced work, so this seam is what keeps the
+    pass-through honest until a real attempt history exists to exercise it.
+    """
+    at_wall = review_loop.Loop(review_rounds=3, findings=(finding("F1"),))
+    attempts = (
+        escalation.Attempt("opus-high", None),
+        escalation.Attempt("codex-sol-high", clean_base=True),
+    )
+    outcome = review_loop.evaluate_escalation(
+        escalation.ReadResult(conditions()), at_wall, attempts=attempts
+    )
+    assert isinstance(outcome, escalation.Firing)
+    assert [emission.condition.id for emission in outcome.emissions] == [3]
 
 
 def test_a_class_four_item_fires_condition_four_through_the_bridge() -> None:
