@@ -1184,6 +1184,18 @@ ARBITER_UNRESOLVED_ERROR: Final = (
     " verdicts no arbiter resolution chose is the round-2 Critical through its second door"
     " (#333 round 2, High 2)"
 )
+ESCALATION_FIELD_ABSENT_ERROR: Final = (
+    "the escalation record for #{issue} carries no {field} — a record that never said"
+    " {field} must not be read as its default. `unchecked` absent would default to False,"
+    " which reads an unperformable check as a check that passed, the exact inversion of"
+    " #41's mark (#333 arbiter's ruling)"
+)
+ESCALATION_FIELD_TYPE_ERROR: Final = (
+    "the escalation record for #{issue} carries {field}={value}, which is not {expected} —"
+    " a record that authorises the terminus is validated, never coerced: `str(None)` is"
+    " 'None' and truthy, so every coerced value of `arbiter` authorised (#333 arbiter's"
+    " ruling)"
+)
 
 # The marker a filing opens with, so a reader can find every arbiter-upheld filing on an
 # originating item the way `Handoff-for:` is found (#210's device, this domain's use).
@@ -1502,6 +1514,28 @@ def _recorded_arbiter(root: Path, issue: int) -> tuple[str, bool, str]:
     unperformable read, exit 3, rather than a silent empty arbiter. The evaluation travels
     with the arbiter because the two only authorise together: a record that resolved a
     profile but fired nothing transferred to it (#333 round 2, High 2).
+
+    The three fields are **validated, never coerced** (#333, the arbiter's ruling). The
+    old read was `str(...)`/`bool(...)` over `.get` defaults, and every malformed value of
+    the deciding field opened the gate: `str(None)` is `"None"`, which is truthy, so a
+    record naming no arbiter at all authorised the terminus and the landing record then
+    carried `"arbiter": "None"`. `unchecked` failed open in the #41 direction — `bool(None)`
+    and an absent key both read as *checked*, inverting the one property
+    `Resolution.unchecked` exists to carry. Keys must be **present**: `arbiter` missing
+    fails closed, `unchecked` missing does not, and the fix cannot depend on which.
+    `bool` is checked as itself, so `0`/`1` are refused — `isinstance(True, int)` is true
+    and the converse is not, so an `int` check would let them through.
+
+    Deliberately not validated: `arbiter` against `dispatch.PROFILES` (a profile retired
+    between `escalate` and `terminus` would block a legitimate landing on a fact that is
+    not about this record's integrity), and `evaluation` against the known kinds (an
+    unknown string already fails the `== FIRING` comparison and fails closed).
+
+    The finding this closes was graded Medium on **reachability**, not on the check: today
+    only `_cmd_escalate` writes this file, and it writes a `str` and a `bool`. It becomes
+    High the moment a second writer of `escalation.json` exists, or `escalate` learns to
+    write `null` into `arbiter` for consistency with `render_landing`'s `arbiter or None`
+    — either an ordinary change nobody would file a finding against.
     """
     try:
         record = json.loads((root / str(issue) / ESCALATION_FILE).read_text(encoding="utf-8"))
@@ -1517,11 +1551,19 @@ def _recorded_arbiter(root: Path, issue: int) -> tuple[str, bool, str]:
     if not isinstance(record, dict):
         message = f"the escalation record for #{issue} exists but is not an object: {record!r}"
         raise ExternalError(message)
-    return (
-        str(record.get("arbiter", "")),
-        bool(record.get("unchecked", False)),
-        str(record.get("evaluation", "")),
-    )
+    for field, expected, described in (
+        ("arbiter", str, "a string"),
+        ("unchecked", bool, "a boolean"),
+        ("evaluation", str, "a string"),
+    ):
+        if field not in record:
+            raise ExternalError(ESCALATION_FIELD_ABSENT_ERROR.format(issue=issue, field=field))
+        if not isinstance(record[field], expected):
+            message = ESCALATION_FIELD_TYPE_ERROR.format(
+                issue=issue, field=field, value=repr(record[field]), expected=described
+            )
+            raise ExternalError(message)
+    return record["arbiter"], record["unchecked"], record["evaluation"]
 
 
 def _claim_terminus_pending(path: Path, plan: str) -> bool:

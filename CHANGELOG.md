@@ -86,6 +86,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   something other than an object raised a bare `AttributeError` out of the command — the
   one failure in the module with no name. It is now the same answer as a record that will
   not decode: an unperformable read, exit 3, never a silent empty arbiter.
+- **The record that authorises the terminus is validated, never coerced (#333, the
+  arbiter's ruling).** The three deciding fields were read through `str()`/`bool()` over
+  `.get` defaults, and there was no malformed `arbiter` the read rejected: `str(None)` is
+  `"None"`, which is truthy, so a record naming no arbiter at all authorised the terminus
+  and the landing record then carried `"arbiter": "None"` for a later reader to mistake for
+  an absence marker. `unchecked` failed open in the same read — an absent key or a JSON
+  null both read as *checked*, inverting the one property that field exists to carry. All
+  three fields must now be present and exactly the right type — `unchecked` a boolean, so
+  `0`/`1` are refused — and anything else is an unperformable read, exit 3, naming the
+  field and its value so the file can be repaired.
 - **The landing record carries every finding's final verdict (#333).** `fixed` findings
   above Low were absent from `landing.json` — their only trace was the diff under review,
   which post-landing review does not re-read — and a Low left open at the terminus was a

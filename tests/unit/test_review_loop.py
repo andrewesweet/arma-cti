@@ -1609,6 +1609,164 @@ def test_an_escalation_record_that_decodes_to_a_non_object_is_a_named_no_result(
     assert filings == []
 
 
+def absent(field: str) -> str:
+    return review_loop.ESCALATION_FIELD_ABSENT_ERROR.format(issue=326, field=field)
+
+
+def wrong(field: str, value: object, expected: str) -> str:
+    return review_loop.ESCALATION_FIELD_TYPE_ERROR.format(
+        issue=326, field=field, value=repr(value), expected=expected
+    )
+
+
+@pytest.mark.parametrize(
+    ("record", "message"),
+    [
+        # The arbiter's own four, reproduced against the fixed read. Each coerced to a
+        # truthy arbiter and a boolean `unchecked` under the old `str()`/`bool()` read,
+        # and each opened the gate.
+        (
+            {"arbiter": ["opus-high"], "unchecked": "false", "evaluation": escalation.FIRING},
+            wrong("arbiter", ["opus-high"], "a string"),
+        ),
+        (
+            # `str(None)` is "None", which is truthy: a record naming no arbiter at all
+            # authorised the terminus, and the landing record then carried "arbiter":
+            # "None" for a post-landing reader to mistake for an absence marker.
+            {"arbiter": None, "unchecked": None, "evaluation": escalation.FIRING},
+            wrong("arbiter", None, "a string"),
+        ),
+        (
+            {"arbiter": 0, "unchecked": 1, "evaluation": escalation.FIRING},
+            wrong("arbiter", 0, "a string"),
+        ),
+        (
+            # The unsafe direction of the `unchecked` bug: absent defaulted to False, so a
+            # record that never said whether the resolution was checked read as checked.
+            {"arbiter": "opus-high", "evaluation": escalation.FIRING},
+            absent("unchecked"),
+        ),
+        (
+            # The reported case, and the safe direction of the same bug.
+            {"arbiter": "opus-high", "unchecked": "false", "evaluation": escalation.FIRING},
+            wrong("unchecked", "false", "a boolean"),
+        ),
+        (
+            # `isinstance(True, int)` is true and the converse is not, so a bool checked as
+            # itself refuses 1 — an int check would have read it as unchecked.
+            {"arbiter": "opus-high", "unchecked": 1, "evaluation": escalation.FIRING},
+            wrong("unchecked", 1, "a boolean"),
+        ),
+        ({"unchecked": False, "evaluation": escalation.FIRING}, absent("arbiter")),
+        ({"arbiter": "opus-high", "unchecked": False}, absent("evaluation")),
+        (
+            {"arbiter": "opus-high", "unchecked": False, "evaluation": 3},
+            wrong("evaluation", 3, "a string"),
+        ),
+    ],
+)
+def test_a_malformed_escalation_record_never_authorises_the_terminus(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    record: dict[str, object],
+    message: str,
+) -> None:
+    """The arbiter's ruling on #333: validate the authorising record, never coerce it.
+
+    `_recorded_arbiter` read the three fields through `str()`/`bool()` over `.get`
+    defaults, and there was no malformed `arbiter` it rejected — every value of the
+    deciding field was truthy, `None` included. The gate is put in the position of
+    *opening*: the finding is adjudicated `arbiter_upheld`, so `end.filings` is non-empty
+    and a good record here would file an issue and write the landing record. Each
+    malformed record must instead be an unperformable read — exit 3, the field and its
+    value named so the file can be repaired — with nothing filed, nothing posted, no
+    claim, and no landing record.
+    """
+    root = tmp_path / "review"
+    base = drive_to_the_wall(root, tmp_path / "journal.jsonl")
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "326",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.ARBITER_UPHELD,
+            ],
+            now=stepped_clock(),
+        )
+        == review_loop.OK
+    )
+    (root / "326" / review_loop.ESCALATION_FILE).write_text(
+        json.dumps(record) + "\n", encoding="utf-8"
+    )
+    filings: list[tuple[str, str]] = []
+    comments: list[tuple[int, str]] = []
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base],
+            now=stepped_clock(),
+            create_issue=lambda title, body: filings.append((title, body)) or 1,
+            post_comment=lambda issue, body: comments.append((issue, body)),
+        )
+        == review_loop.NO_RESULT
+    )
+    assert message in capsys.readouterr().err
+    assert filings == []
+    assert comments == []
+    assert not (root / "326" / review_loop.LANDING_FILE).exists()
+    assert not (root / "326" / review_loop.PENDING_FILE).exists()
+
+
+def test_a_well_formed_escalation_record_still_opens_the_gate(tmp_path: Path) -> None:
+    """The validation's other side: the shape `escalate` writes is not refused.
+
+    Without this, every test above passes on a read that refuses everything — the
+    parametrised cases prove the gate closes, and only this one proves it still opens on
+    the exact record production emits.
+    """
+    root = tmp_path / "review"
+    base = drive_to_the_wall(root, tmp_path / "journal.jsonl")
+    assert (
+        review_loop.main(
+            [
+                "adjudicate",
+                "--issue",
+                "326",
+                *base,
+                "--finding",
+                "F1",
+                "--route",
+                review_loop.ARBITER_UPHELD,
+            ],
+            now=stepped_clock(),
+        )
+        == review_loop.OK
+    )
+    (root / "326" / review_loop.ESCALATION_FILE).write_text(
+        json.dumps({"arbiter": "opus-high", "unchecked": False, "evaluation": escalation.FIRING})
+        + "\n",
+        encoding="utf-8",
+    )
+    filings: list[tuple[str, str]] = []
+    assert (
+        review_loop.main(
+            ["terminus", "--issue", "326", *base],
+            now=stepped_clock(),
+            create_issue=lambda title, body: filings.append((title, body)) or 402,
+            post_comment=lambda _issue, _body: None,
+        )
+        == review_loop.OK
+    )
+    assert len(filings) == 1
+    landing = json.loads((root / "326" / review_loop.LANDING_FILE).read_text(encoding="utf-8"))
+    assert landing["arbiter"] == "opus-high"
+    assert landing["arbiter_unchecked"] is False
+
+
 def test_the_landing_record_carries_every_findings_verdict(tmp_path: Path) -> None:
     """Round 2's High 3: the landing record must say every finding's verdict.
 
