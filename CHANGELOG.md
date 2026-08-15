@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just land` refuses an unreviewed or unadjudicated landing, by name (#334, ADR-0071 ruling
+  4).** A review rung between routing and the gate enforces the ruling's three criteria: a
+  completed review dispatch record bound to the landed SHA (the derivation and the binding
+  #332 landed, enforced here rather than re-derived), a reviewer identity the dispatch records
+  derive rather than one the verdict claims for itself, and every finding above Low closed
+  through one of the four adjudication routes — `fixed`, `arbiter_upheld`, `arbiter_dismissed`
+  and `accepted_and_filed` (Medium and below, naming its filed issue and the later work its
+  harm is conditional on; human ruling 2026-08-14). Every absence refuses by its own kind —
+  no dispatch records, an unreadable plan or result, no completed review bound to this SHA, no
+  verdict, an unparseable verdict, a verdict for another issue or commit, a claimed identity
+  the records do not derive, the reviewer the records place on the work, an authorship scan
+  that could not read every record, and every shape a loop state can be in rather than
+  governing — and a clearance states what was read: the dispatch, the identity, what the
+  authorship scan did and did not read, and the loop's counts. A diff the trusted exemption
+  table lists in full clears on the table alone, with its reasons; a table that will not read
+  exempts nothing.
+
 - **`just review` — the review branch exchange and the verdict record (#332, ADR-0071 ruling
   4).** Three actions. `exchange <issue>` pushes a clean tree's HEAD to `refs/heads/issue-<n>`
   (force-moving the ref each round) and verifies the remote resolves it to that exact SHA, so an
