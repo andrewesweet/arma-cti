@@ -832,6 +832,62 @@ def verify(verdict: Verdict, dispatch_root: Path) -> Bound | Refusal:
     return forged if forged is not None else binding
 
 
+def bound_verdict(  # noqa: PLR0911 — one return per way a record can fail to bind, as the landing's own ladder has
+    issue: int, sha: str, dispatch_root: Path
+) -> Verdict | Refusal:
+    """Read the verdict bound to one issue's commit, or the refusal that stops it.
+
+    The whole derivation in one call, in the order the landing's rung climbs it: the
+    binding from the dispatch records, the record beside it, the item and the SHA it names,
+    and the identity re-derived rather than believed. It lives here rather than beside
+    either caller because both #334's landing rung and #333's `review-loop sync` need the
+    *same* verdict — a loop opened from anything else would be a record of findings no
+    verdict is on the hook for, and a landing cleared against a different one would be a
+    landing cleared by a review of another commit.
+    """
+    binding = derive_binding(issue, sha, dispatch_root)
+    if isinstance(binding, Refusal):
+        return binding
+    try:
+        path = verdict_path(dispatch_root, binding.dispatch_id)
+    except ReviewExchangeError as error:
+        return Refusal(
+            "records_unreadable",
+            (f"dispatch={binding.dispatch_id}", f"reason={error}"),
+            "The reviewing dispatch's id cannot name its own verdict record, and the record"
+            " that would not open could be the binding one — so no verdict is read (#41).",
+        )
+    if not path.is_file():
+        return Refusal(
+            "no_verdict",
+            (f"dispatch={binding.dispatch_id}", f"expected={path}"),
+            "The review dispatch completed but no verdict record sits beside its plan."
+            " Record the verdict (`just review record`) — a completed review whose judgement"
+            " no one can read clears nothing (#41).",
+        )
+    try:
+        verdict = parse_verdict(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as error:
+        return Refusal(
+            "verdict_unreadable",
+            (f"verdict={path}", f"reason={error}"),
+            "The verdict record exists but will not parse. Repair or re-record it — a check"
+            " that could not run is not a check that passed (#41).",
+        )
+    if verdict.issue != issue:
+        return Refusal(
+            "review_issue_mismatch",
+            (f"asked_issue={issue}", f"verdict_issue={verdict.issue}", f"verdict={path}"),
+            "This verdict judges another item's work. A verdict satisfies only the item and"
+            " the SHA it names, so record one for this item's commit.",
+        )
+    mismatch = satisfies(verdict, sha)
+    if mismatch is not None:
+        return mismatch
+    forged = identity_mismatch(verdict, binding)
+    return forged if forged is not None else verdict
+
+
 class Scanned(NamedTuple):
     """Every verdict record under a dispatch root, parseable and otherwise.
 

@@ -938,11 +938,19 @@ def stage(root: Path, here: Path) -> Report:
     in the interval moves the SHA again and orphans the fresh verdict.
 
     It stops before the gate, the push and the merge on purpose. Nothing here can land
-    anything: the rebase is the one act, and every refusal `land` decides before its
-    own rebase — a dirty tree, a rebase already in progress, a conflict, a poisoned
-    tree — is decided here in the same words. `root` is unused by the work and taken
-    all the same, so the two entry points have one signature shape and a later step
-    that needs the main checkout does not change the CLI.
+    anything: the rebase is the one act. The refusals it shares with `land` are the
+    dirty tree and the rebase already in progress (both decided before the rebase),
+    and the conflict and the poisoned tree (both decided by it) — each in the same
+    words. `root` is unused by the work and taken all the same, so the two entry points
+    have one signature shape and a later step that needs the main checkout does not
+    change the CLI.
+
+    A tree with nothing of its own to replay refuses `nothing_to_land` rather than
+    staging `origin/main`'s tip (#334 round 2). Round 1 printed `ok=staged commits=0`
+    there, which points a lander at a SHA that is not their work to have reviewed, and
+    on the re-run after `merge_blocked_by_sandbox` hides an outstanding merge behind an
+    `ok=`. Whether that merge is outstanding is `land`'s to say, not staging's, so this
+    refusal says only what staging knows: there is no commit here to review.
     """
     status = read_status(git("status", "--porcelain", cwd=here))
     blocked = classify_tree(here, status, rebasing=rebase_in_progress(here))
@@ -968,6 +976,19 @@ def stage(root: Path, here: Path) -> Report:
         return Report.refused(poisoned)
     head = git("rev-parse", "HEAD", cwd=here).strip()
     ahead = counted(f"{BASE}..HEAD", cwd=here) or 0
+    if not ahead:
+        return Report.refused(
+            Refusal(
+                "nothing_to_land",
+                (f"worktree={here}", f"ahead=0 commits over {BASE}", f"head={head}"),
+                "Nothing was staged, because there is nothing of yours to have reviewed:"
+                f" this tree carries no commit {BASE} does not already have, so the SHA a"
+                " verdict would bind would be origin/main's tip. If you meant to stage"
+                " work, check you committed it (`git log --oneline origin/main..HEAD`);"
+                " if a landing is outstanding on this tree, `just land` is what decides"
+                " that, not staging.",
+            )
+        )
     replayed = f"replayed onto {incoming} new commits" if incoming else "already_current"
     return Report(
         (

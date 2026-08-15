@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import json
 import shutil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import pytest
 from conftest import REPO, load_tool
@@ -74,12 +74,26 @@ def finding(
     return review_loop.Finding(identifier, severity, round_raised, adjudication)
 
 
+ARBITER: Final = "opus-xhigh"
+
+
 def adjud(
     route: str,
     issue: str = "",
     conditional_on: str = "",
+    arbiter: str | None = None,
 ) -> review_loop.Adjudication:
-    return review_loop.Adjudication(route, issue, conditional_on)
+    """One adjudication, with an arbiter named wherever the route stands in for a ruling.
+
+    The default is the arrangement the writer produces: `_cmd_adjudicate` fills the name
+    from the escalation record, and an arbiter route without one is refused (#334 round 2,
+    Medium 2). `arbiter=""` is the way a test asks for the refused shape.
+    """
+    if arbiter is None:
+        arbiter = (
+            ARBITER if route in (review_loop.ARBITER_UPHELD, review_loop.ARBITER_DISMISSED) else ""
+        )
+    return review_loop.Adjudication(route, issue, conditional_on, arbiter)
 
 
 def refused(call: Callable[[], object]) -> str:
@@ -1175,8 +1189,17 @@ def test_the_command_surface_drives_one_loop_end_to_end(tmp_path: Path) -> None:
     ]
 
 
-def drive_to_the_wall(root: Path, journal: Path, *, issue: int = 326) -> list[str]:
-    """Open at round zero and advance to the three-round wall, no escalation run."""
+def drive_to_the_wall(
+    root: Path, journal: Path, *, issue: int = 326, escalated: bool = True
+) -> list[str]:
+    """Open at round zero and advance to the three-round wall.
+
+    `escalated` writes the record `escalate` would have written — a firing evaluation
+    naming an arbiter — because `adjudicate` now refuses an arbiter route that names no
+    arbiter (#334 round 2, Medium 2) and reads the name from this record rather than from
+    a flag. `escalated=False` is the arrangement of a loop nobody's resolution chose, which
+    the terminus refuses on its own account.
+    """
     base = ["--root", str(root), "--journal", str(journal)]
     clock = stepped_clock()
     assert (
@@ -1187,7 +1210,41 @@ def drive_to_the_wall(root: Path, journal: Path, *, issue: int = 326) -> list[st
         assert (
             review_loop.main(["round", "--issue", str(issue), *base], now=clock) == review_loop.OK
         )
+    if escalated:
+        record = root / str(issue) / review_loop.ESCALATION_FILE
+        record.parent.mkdir(parents=True, exist_ok=True)
+        record.write_text(
+            json.dumps(
+                {"arbiter": "opus-high", "unchecked": False, "evaluation": escalation.FIRING}
+            )
+            + "\n",
+            encoding="utf-8",
+        )
     return base
+
+
+def close_by_hand(root: Path, issue: int, finding_id: str, route: str, arbiter: str = "") -> None:
+    """Write an adjudication straight into the stored loop, past every writer's gate.
+
+    For the tests whose subject is a *later* gate's independence: the terminus refuses
+    arbiter verdicts no escalation record chose, and that guard must hold against a record
+    the command surface would not have written — which, since #334 round 2, is the only way
+    such a record comes to exist.
+    """
+    loop = review_loop.load_loop(root, issue)
+    review_loop.store_loop(
+        root,
+        issue,
+        review_loop.Loop(
+            loop.review_rounds,
+            tuple(
+                found._replace(adjudication=review_loop.Adjudication(route, "", "", arbiter))
+                if found.id == finding_id
+                else found
+                for found in loop.findings
+            ),
+        ),
+    )
 
 
 def test_a_terminus_refuses_verdicts_no_escalation_record_chose(
@@ -1195,29 +1252,16 @@ def test_a_terminus_refuses_verdicts_no_escalation_record_chose(
 ) -> None:
     """Round 2's High 2: the terminus needs an escalation record.
 
-    `adjudicate` at the wall needs no `escalate` first, so the terminus must —
-    verdicts no arbiter resolution chose are not dischargeable, and the missing
-    record must not read as an empty arbiter that lets the landing proceed.
+    Verdicts no arbiter resolution chose are not dischargeable, and the missing record
+    must not read as an empty arbiter that lets the landing proceed. Since #334 round 2
+    the command surface refuses to *write* such a verdict, so the record is staged past
+    it — which is the whole point of the guard: it holds against a loop file the writer
+    would not have produced.
     """
     root = tmp_path / "review"
-    base = drive_to_the_wall(root, tmp_path / "journal.jsonl")
+    base = drive_to_the_wall(root, tmp_path / "journal.jsonl", escalated=False)
     clock = stepped_clock()
-    assert (
-        review_loop.main(
-            [
-                "adjudicate",
-                "--issue",
-                "326",
-                *base,
-                "--finding",
-                "F1",
-                "--route",
-                review_loop.ARBITER_DISMISSED,
-            ],
-            now=clock,
-        )
-        == review_loop.OK
-    )
+    close_by_hand(root, 326, "F1", review_loop.ARBITER_DISMISSED)
     filings: list[tuple[str, str]] = []
     comments: list[tuple[int, str]] = []
     code = review_loop.main(
@@ -1288,22 +1332,10 @@ def test_a_non_firing_escalation_record_does_not_authorise_the_terminus(
     assert record["evaluation"] == escalation.NO_FIRING
     assert record["arbiter"] == "codex-sol-high"
     assert review_loop.main(["round", "--issue", "326", *base], **kwargs) == review_loop.OK
-    assert (
-        review_loop.main(
-            [
-                "adjudicate",
-                "--issue",
-                "326",
-                *base,
-                "--finding",
-                "F1",
-                "--route",
-                review_loop.ARBITER_DISMISSED,
-            ],
-            **kwargs,
-        )
-        == review_loop.OK
-    )
+    # Staged past the writer, which since #334 round 2 fills the arbiter from a *firing*
+    # record and so refuses this route here: the subject is the terminus's own refusal to
+    # bless a verdict that a resolution which fired nothing would otherwise have named.
+    close_by_hand(root, 326, "F1", review_loop.ARBITER_DISMISSED, arbiter="codex-sol-high")
     filings: list[tuple[str, str]] = []
     assert (
         review_loop.main(
@@ -1949,3 +1981,228 @@ def test_a_dry_run_terminus_posts_and_writes_nothing(tmp_path: Path) -> None:
     assert comments == []
     assert not (root / "326" / review_loop.LANDING_FILE).exists()
     assert not (root / "326" / review_loop.PENDING_FILE).exists()  # a dry run claims nothing
+
+
+# ------------------------------------------------- the fold from the verdict (#334)
+
+
+SYNC_SHA: Final = "c" * 40
+
+
+def stage_verdict(
+    tmp_path: Path, *, issue: int = 334, findings: tuple[tuple[str, str], ...] = (("F1", "high"),)
+) -> Path:
+    """One dispatch root carrying a bound, completed review and its verdict for `SYNC_SHA`."""
+    dispatch_root = tmp_path / "dispatches"
+    record = dispatch_root / "d-review-1"
+    record.mkdir(parents=True, exist_ok=True)
+    (record / "dispatch.json").write_text(
+        json.dumps(
+            {
+                "seat": "review",
+                "issue": issue,
+                "base_sha": SYNC_SHA,
+                "profile": "codex-luna-max",
+                "lane": "codex",
+                "planned_at": "20260815T0000Z",
+                "dispatch_id": "d-review-1",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (record / "result.json").write_text(
+        json.dumps({"returncode": 0, "outcome": "ok", "ended_at": "20260815T0000Z"}),
+        encoding="utf-8",
+    )
+    (record / "verdict.json").write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "issue": issue,
+                "reviewed_sha": SYNC_SHA,
+                "review_dispatch": "d-review-1",
+                "reviewer_profile": "codex-luna-max",
+                "reviewer_lane": "codex",
+                "findings": [{"id": name, "severity": sev} for name, sev in findings],
+                "recorded_at": "20260815T0000Z",
+                "alternates": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return dispatch_root
+
+
+def sync_args(root: Path, journal: Path, dispatch_root: Path, issue: int = 334) -> list[str]:
+    return [
+        "sync",
+        "--issue",
+        str(issue),
+        "--root",
+        str(root),
+        "--journal",
+        str(journal),
+        "--reviewed-sha",
+        SYNC_SHA,
+        "--dispatch-dir",
+        str(dispatch_root),
+    ]
+
+
+def test_sync_opens_the_loop_from_the_verdicts_own_severities(tmp_path: Path) -> None:
+    """The severities are the reviewer's: the fold copies the record, never a flag.
+
+    The distinction from `open`, whose `--finding id=severity` a caller types: the seat
+    under review cannot re-grade its own review on the way into the record the landing
+    reads.
+    """
+    root = tmp_path / "review"
+    dispatch_root = stage_verdict(tmp_path, findings=(("F1", "high"), ("F2", "low")))
+
+    assert (
+        review_loop.main(sync_args(root, tmp_path / "journal.jsonl", dispatch_root))
+        == review_loop.OK
+    )
+
+    loop = review_loop.load_loop(root, 334)
+    assert [(f.id, f.severity, f.round_raised) for f in loop.findings] == [
+        ("F1", "high", 0),
+        ("F2", "low", 0),
+    ]
+    assert loop.review_rounds == 0
+
+
+def test_sync_records_a_round_for_the_ids_the_loop_does_not_hold(tmp_path: Path) -> None:
+    """A later verdict's new findings are the next round, stamped by `next_round` itself."""
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    dispatch_root = stage_verdict(tmp_path)
+    assert review_loop.main(sync_args(root, journal, dispatch_root)) == review_loop.OK
+    stage_verdict(tmp_path, findings=(("F1", "high"), ("F2", "medium")))
+
+    assert review_loop.main(sync_args(root, journal, dispatch_root)) == review_loop.OK
+
+    loop = review_loop.load_loop(root, 334)
+    assert loop.review_rounds == 1
+    assert [(f.id, f.round_raised) for f in loop.findings] == [("F1", 0), ("F2", 1)]
+
+
+def test_sync_is_a_no_op_where_the_verdict_raises_nothing_new(tmp_path: Path) -> None:
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    dispatch_root = stage_verdict(tmp_path)
+    assert review_loop.main(sync_args(root, journal, dispatch_root)) == review_loop.OK
+
+    assert review_loop.main(sync_args(root, journal, dispatch_root)) == review_loop.OK
+
+    assert review_loop.load_loop(root, 334).review_rounds == 0
+
+
+def test_sync_refuses_a_verdict_that_regrades_a_finding_the_loop_holds(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#334 round 2, Medium 3: the drift is named by the tool that reads both records.
+
+    The fold used to report `loop_unchanged` — a success — over the exact disagreement the
+    landing then refuses `review_finding_mismatch` on, with a remedy no command performed:
+    the fold had declined it, `next_round` refuses a duplicate id by rule, and the landing
+    was wedged short of hand-editing the record the refusal says not to hand-edit.
+    """
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    dispatch_root = stage_verdict(tmp_path)
+    assert review_loop.main(sync_args(root, journal, dispatch_root)) == review_loop.OK
+    stage_verdict(tmp_path, findings=(("F1", "critical"),))
+
+    assert review_loop.main(sync_args(root, journal, dispatch_root)) == review_loop.REFUSED
+
+    assert "F1 loop=high verdict=critical" in capsys.readouterr().err
+    assert review_loop.load_loop(root, 334).findings[0].severity == "high"
+
+
+def test_sync_refuses_a_verdict_bound_to_another_commit(tmp_path: Path) -> None:
+    """The loop is opened from the verdict the landing will read, or from nothing."""
+    root = tmp_path / "review"
+    dispatch_root = stage_verdict(tmp_path)
+    argv = sync_args(root, tmp_path / "journal.jsonl", dispatch_root)
+    argv[argv.index("--reviewed-sha") + 1] = "d" * 40
+
+    assert review_loop.main(argv) == review_loop.REFUSED
+
+    assert not review_loop.loop_path(root, 334).exists()
+
+
+# ------------------------------------------------- the arbiter a route has to name (#334)
+
+
+def test_an_arbiter_route_is_refused_without_an_arbiter() -> None:
+    """The route stands in for a ruling, so the record names the judge that gave it."""
+    loop = review_loop.Loop(3, (finding("F1", review_loop.HIGH, round_raised=1),))
+    for route in (review_loop.ARBITER_UPHELD, review_loop.ARBITER_DISMISSED):
+        assert (
+            refused(
+                lambda route=route: review_loop.adjudicate(loop, "F1", adjud(route, arbiter=""))
+            )
+            == review_loop.ARBITER_UNNAMED_ERROR
+        )
+
+
+def test_the_writer_takes_the_arbiter_from_the_record_and_not_from_a_flag(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`--arbiter` does not exist: the name written is the one `escalate` resolved.
+
+    Both directions in one arrangement — at the wall with no firing record the route is
+    refused, and with the record `escalate` writes the same command closes the finding and
+    the name lands on the record a lander quotes.
+    """
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    base = drive_to_the_wall(root, journal, escalated=False)
+    close = ["adjudicate", "--issue", "326", *base, "--finding", "F1", "--route"]
+
+    assert review_loop.main([*close, review_loop.ARBITER_UPHELD]) == review_loop.REFUSED
+    assert review_loop.ARBITER_UNNAMED_ERROR in capsys.readouterr().err
+
+    (root / "326" / review_loop.ESCALATION_FILE).write_text(
+        json.dumps({"arbiter": "opus-high", "unchecked": False, "evaluation": escalation.FIRING})
+        + "\n",
+        encoding="utf-8",
+    )
+    assert review_loop.main([*close, review_loop.ARBITER_UPHELD]) == review_loop.OK
+    assert review_loop.load_loop(root, 326).findings[0].adjudication.arbiter == "opus-high"
+
+
+# ------------------------------------------------- the store, guarded and atomic (#334)
+
+
+def test_an_unwritable_review_root_is_a_named_refusal_not_a_traceback(tmp_path: Path) -> None:
+    """Round 2, Medium 4: the write sits inside the failure boundary, as the verdict's does."""
+    root = tmp_path / "review"
+    root.mkdir()
+    root.chmod(0o500)
+    try:
+        message = refused(
+            lambda: review_loop.store_loop(root, 334, review_loop.first_review((finding("F1"),)))
+        )
+    finally:
+        root.chmod(0o700)
+
+    assert "could not be written" in message
+
+
+def test_a_failed_store_leaves_the_loop_as_it_stood(tmp_path: Path) -> None:
+    """Atomic: a reader sees the old loop or the new one, never a truncated one."""
+    root = tmp_path / "review"
+    first = review_loop.first_review((finding("F1", review_loop.HIGH),))
+    review_loop.store_loop(root, 334, first)
+    before = review_loop.loop_path(root, 334).read_text(encoding="utf-8")
+    (root / "334").chmod(0o500)
+    try:
+        with pytest.raises(review_loop.ReviewLoopError):
+            review_loop.store_loop(root, 334, review_loop.next_round(first, ()))
+    finally:
+        (root / "334").chmod(0o700)
+
+    assert review_loop.loop_path(root, 334).read_text(encoding="utf-8") == before
+    assert list((root / "334").iterdir()) == [review_loop.loop_path(root, 334)]

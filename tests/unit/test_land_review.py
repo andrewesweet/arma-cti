@@ -9,8 +9,9 @@ records the owning tools write, so each refusal is asserted by its own kind and 
 own words — the same two-layer shape `test_land.py` gives the protocol's other
 rungs (#83's precedent: a classification bug should be a red `just unit`).
 
-The loop state read here is #333's `loop.json` format as it stood at `ab76974`; the
-swap to that issue's own reader is the follow-up `land_review`'s docstring records.
+The loop state read here is #333's `loop.json`, read through #333's own reader: round 1's
+local copy of that parser is deleted, and the round trip across the two tools is asserted
+rather than assumed (round 2).
 """
 
 from __future__ import annotations
@@ -18,7 +19,6 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Final
 
-import pytest
 from conftest import load_tool
 
 if TYPE_CHECKING:
@@ -106,6 +106,7 @@ def _stored(  # noqa: PLR0913, PLR0917 — one parameter per field of the record
     route: str | None = None,
     issue: str = "",
     conditional_on: str = "",
+    arbiter: str = "",
 ) -> dict[str, object]:
     """One stored loop finding, open unless a route closes it."""
     finding: dict[str, object] = {
@@ -114,7 +115,12 @@ def _stored(  # noqa: PLR0913, PLR0917 — one parameter per field of the record
         "round_raised": round_raised,
     }
     if route is not None:
-        finding["adjudication"] = {"route": route, "issue": issue, "conditional_on": conditional_on}
+        finding["adjudication"] = {
+            "route": route,
+            "issue": issue,
+            "conditional_on": conditional_on,
+            "arbiter": arbiter,
+        }
     return finding
 
 
@@ -550,8 +556,11 @@ def test_a_loop_finding_a_clean_verdict_never_reported_still_owes_its_route(
 def test_the_fourth_route_above_medium_does_not_govern_the_landing(tmp_path: Path) -> None:
     """Above Medium, `accepted_and_filed` is not an adjudication at all.
 
-    The rebuild refuses the whole loop rather than the one finding (human ruling
-    2026-08-14, #334).
+    The read refuses the whole loop rather than the one finding (human ruling 2026-08-14,
+    #334). The canonical parser leaves the routes' preconditions to the act of
+    adjudicating, so this rung asks `stored_route_violations` for the fourth route's three
+    restrictions, which are about what the disposition means rather than about when it may
+    be given (round 2).
     """
     outcome = _rung(
         _stage(
@@ -564,7 +573,7 @@ def test_the_fourth_route_above_medium_does_not_govern_the_landing(tmp_path: Pat
     refusal = outcome.refusal
     assert refusal.kind == "review_loop_unreadable"
     assert "medium and below only" in str(
-        next(line for line in refusal.found if str(line).startswith("reason="))
+        next(line for line in refusal.found if str(line).startswith("invalid="))
     )
 
 
@@ -586,7 +595,7 @@ def test_the_fourth_route_without_its_named_issue_does_not_govern(tmp_path: Path
     refusal = outcome.refusal
     assert refusal.kind == "review_loop_unreadable"
     assert "must name the issue" in str(
-        next(line for line in refusal.found if str(line).startswith("reason="))
+        next(line for line in refusal.found if str(line).startswith("invalid="))
     )
 
 
@@ -604,7 +613,7 @@ def test_the_fourth_route_without_its_named_condition_does_not_govern(tmp_path: 
     refusal = outcome.refusal
     assert refusal.kind == "review_loop_unreadable"
     assert "must name the work outside the diff" in str(
-        next(line for line in refusal.found if str(line).startswith("reason="))
+        next(line for line in refusal.found if str(line).startswith("invalid="))
     )
 
 
@@ -664,13 +673,19 @@ def test_a_fixed_finding_clears_the_landing(tmp_path: Path) -> None:
 
 
 def test_the_arbiter_routes_clear_the_landing(tmp_path: Path) -> None:
-    """Upheld and dismissed alike: the arbiter's is a terminal route (#333's terminus)."""
+    """Upheld and dismissed alike: the arbiter's is a terminal route (#333's terminus).
+
+    Each naming the arbiter that ruled, which is what the route means and what the writer
+    records (round 2, Medium 2); the unnamed shape has its own refusal below.
+    """
     for route in ("arbiter_upheld", "arbiter_dismissed"):
         outcome = _rung(
             _stage(
                 tmp_path,
                 verdict=_verdict(findings=(("f1", "critical"),)),
-                loop=_loop(findings=(_stored("f1", "critical", route=route),)),
+                loop=_loop(
+                    findings=(_stored("f1", "critical", route=route, arbiter="opus-xhigh"),)
+                ),
             )
         )
         assert outcome.refusal is None, route
@@ -802,55 +817,6 @@ def test_a_decision_with_no_paths_is_not_vacuously_exempt(tmp_path: Path) -> Non
     assert _kind(outcome) == "no_dispatch_records"
 
 
-# --------------------------------------------------- the stored loop, read directly
-
-
-def test_a_round_stamp_beyond_the_rounds_recorded_refuses() -> None:
-    """A finding stamped at a round the loop never reached cannot have been written."""
-    with pytest.raises(ValueError, match="round"):
-        land_review.parse_stored_loop(
-            json.loads(_loop(rounds=1, findings=(_stored("f1", "high", round_raised=2),))),
-            ISSUE,
-        )
-
-
-def test_a_finding_id_may_not_appear_in_two_rounds() -> None:
-    """The reopening ruling 4 forbids, wearing the id it re-opened."""
-    with pytest.raises(ValueError, match="one round only"):
-        land_review.parse_stored_loop(
-            json.loads(
-                _loop(
-                    rounds=2,
-                    findings=(_stored("f1", "high", 0), _stored("f1", "high", 1)),
-                )
-            ),
-            ISSUE,
-        )
-
-
-def test_a_multiround_loop_rebuilds_in_order() -> None:
-    """Round zero's finding closed through `fixed`, round one's left open.
-
-    The rebuild carries both, and the stop condition reads every round — the loop
-    owes its route.
-    """
-    loop = land_review.parse_stored_loop(
-        json.loads(
-            _loop(
-                rounds=2,
-                findings=(
-                    _stored("f1", "high", 0, route="fixed"),
-                    _stored("f2", "medium", 1),
-                ),
-            )
-        ),
-        ISSUE,
-    )
-
-    assert loop.review_rounds == 2
-    assert tuple(finding.id for finding in review_loop.open_findings(loop)) == ("f2",)
-
-
 # ------------------------------------------------------- the drift, in both directions
 
 
@@ -904,145 +870,79 @@ def test_a_clean_clearance_carries_the_same_user_limit(tmp_path: Path) -> None:
     assert review_exchange.SAME_USER_LIMIT in outcome.cleared
 
 
-# ------------------------------------------------------------------ the loop's writer
+# ------------------------------------------------- the arbiter the record has to name
 
 
-def _loop_root(tmp_path: Path) -> Path:
-    return tmp_path / "review"
+def test_an_arbiter_route_naming_no_arbiter_refuses_the_landing(tmp_path: Path) -> None:
+    """A route standing in for a ruling, with no judge on the record (round 2, Medium 2).
 
-
-def test_sync_opens_the_loop_from_the_verdicts_own_findings(tmp_path: Path) -> None:
-    """The severities are the reviewer's: `sync` copies the record, never a flag."""
-    dispatch_root, review_root = _stage(
-        tmp_path, verdict=_verdict(findings=(("f1", "high"), ("f2", "low")))
+    `just review-loop adjudicate` will not write this — it fills the name from the
+    escalation record and refuses without one — so what reaches the landing this way is a
+    hand-edited loop, which is the reader's business rather than the writer's: a reader of
+    a record must not assume its writer.
+    """
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            verdict=_verdict(findings=(("f1", "critical"),)),
+            loop=_loop(findings=(_stored("f1", "critical", route="arbiter_dismissed"),)),
+        )
     )
 
-    report = land_review.sync(ISSUE, SHA, dispatch_root, review_root)
-
-    assert report.code == 0
-    assert "ok=opened" in report.lines
-    loop = land_review.load_loop(review_root, ISSUE)
-    assert [(f.id, f.severity, f.round_raised) for f in loop.findings] == [
-        ("f1", "high", 0),
-        ("f2", "low", 0),
-    ]
-    assert loop.review_rounds == 0
+    refusal = outcome.refusal
+    assert refusal.kind == "arbiter_unnamed"
+    assert "finding=f1 severity=critical route=arbiter_dismissed" in refusal.found
 
 
-def test_sync_is_a_no_op_where_the_verdict_holds_nothing_new(tmp_path: Path) -> None:
-    """Re-running against the same verdict records no round — nothing new was raised."""
+def test_an_arbiter_route_that_names_its_arbiter_clears(tmp_path: Path) -> None:
+    """The other side of the same check: the shape the writer produces is not refused."""
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            verdict=_verdict(findings=(("f1", "critical"),)),
+            loop=_loop(
+                findings=(_stored("f1", "critical", route="arbiter_upheld", arbiter="opus-xhigh"),)
+            ),
+        )
+    )
+
+    assert outcome.refusal is None
+
+
+def test_a_low_closed_by_an_unnamed_arbiter_route_does_not_block(tmp_path: Path) -> None:
+    """A Low never blocks a landing, so its route decides nothing here either."""
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            verdict=_verdict(findings=(("f1", "low"),)),
+            loop=_loop(findings=(_stored("f1", "low", route="arbiter_dismissed"),)),
+        )
+    )
+
+    assert outcome.refusal is None
+
+
+# ------------------------------------------- one record, one reader (#333's, not a copy)
+
+
+def test_the_rung_reads_the_loop_the_loops_own_writer_wrote(tmp_path: Path) -> None:
+    """The round trip across the two tools, which is what deleting the local reader buys.
+
+    Round 1 carried its own parser for `loop.json`; #333 landed the canonical one at
+    `1a5a7fb` and this rung now calls it. The contract under test is that what
+    `review_loop.store_loop` writes, `review_finding` reads — path, version and all — so a
+    format change cannot land in one of the two and leave the landing reading the other.
+    """
     dispatch_root, review_root = _stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)))
-    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
-
-    again = land_review.sync(ISSUE, SHA, dispatch_root, review_root)
-
-    assert again.code == 0
-    assert "ok=loop_unchanged" in again.lines
-    assert land_review.load_loop(review_root, ISSUE).review_rounds == 0
-
-
-def test_sync_records_a_round_for_the_ids_the_loop_does_not_hold(tmp_path: Path) -> None:
-    """A later verdict's new findings are a new round, stamped by `review_loop` itself."""
-    dispatch_root, review_root = _stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)))
-    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
-    (dispatch_root / "d-review-1" / "verdict.json").write_text(
-        _verdict(findings=(("f1", "high"), ("f2", "medium"))), encoding="utf-8"
+    loop = review_loop.adjudicate(
+        review_loop.first_review((review_loop.Finding("f1", "high", 0),)),
+        "f1",
+        review_loop.Adjudication("fixed"),
     )
+    written = review_loop.store_loop(review_root, ISSUE, loop)
 
-    report = land_review.sync(ISSUE, SHA, dispatch_root, review_root)
+    outcome = _rung((dispatch_root, review_root))
 
-    assert "ok=round_recorded" in report.lines
-    loop = land_review.load_loop(review_root, ISSUE)
-    assert loop.review_rounds == 1
-    assert [(f.id, f.round_raised) for f in loop.findings] == [("f1", 0), ("f2", 1)]
-
-
-def test_sync_refuses_a_verdict_bound_to_another_commit(tmp_path: Path) -> None:
-    """The loop is opened from the verdict the landing will read, or from nothing."""
-    dispatch_root, review_root = _stage(tmp_path)
-
-    report = land_review.sync(ISSUE, OTHER_SHA, dispatch_root, review_root)
-
-    assert report.code != 0
-    assert not land_review.loop_path(review_root, ISSUE).exists()
-
-
-def test_adjudicate_closes_one_finding_and_the_rung_then_clears(tmp_path: Path) -> None:
-    """The writer's record is the reader's: what `adjudicate` writes, `just land` reads."""
-    roots = _stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)))
-    dispatch_root, review_root = roots
-    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
-    assert _kind(_rung(roots)) == "finding_unadjudicated"
-
-    report = land_review.adjudicate(ISSUE, "f1", "fixed", "", "", review_root)
-
-    assert report.code == 0
-    assert "ok=adjudicated" in report.lines
-    assert _rung(roots).refusal is None
-
-
-def test_adjudicate_refuses_a_second_verdict_on_one_finding(tmp_path: Path) -> None:
-    """Terminal is terminal — `review_loop`'s one-verdict-then-closed rule, unduplicated."""
-    dispatch_root, review_root = _stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)))
-    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
-    land_review.adjudicate(ISSUE, "f1", "fixed", "", "", review_root)
-
-    report = land_review.adjudicate(ISSUE, "f1", "arbiter_dismissed", "", "", review_root)
-
-    assert report.code != 0
-    assert any(line.startswith("refusal=adjudication_refused") for line in report.lines)
-    assert land_review.load_loop(review_root, ISSUE).findings[0].adjudication.route == "fixed"
-
-
-def test_adjudicate_refuses_the_fourth_route_above_medium(tmp_path: Path) -> None:
-    """The restrictions are the ruling's, decided in `review_loop` and not re-stated here."""
-    dispatch_root, review_root = _stage(tmp_path, verdict=_verdict(findings=(("f1", "high"),)))
-    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
-
-    report = land_review.adjudicate(ISSUE, "f1", "accepted_and_filed", "999", "later", review_root)
-
-    assert report.code != 0
-    assert land_review.load_loop(review_root, ISSUE).findings[0].adjudication is None
-
-
-def test_adjudicate_without_a_loop_names_how_to_open_one(tmp_path: Path) -> None:
-    """The refusal a seat meets first, and the remedy it names is a command that exists."""
-    report = land_review.adjudicate(ISSUE, "f1", "fixed", "", "", _loop_root(tmp_path))
-
-    assert report.code != 0
-    assert any("just review-loop sync" in line for line in report.lines)
-
-
-def test_show_reads_the_loop_without_writing_to_it(tmp_path: Path) -> None:
-    """A read is a read: every finding, the open count, and the stop condition's verdict."""
-    dispatch_root, review_root = _stage(
-        tmp_path, verdict=_verdict(findings=(("f1", "high"), ("f2", "low")))
-    )
-    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
-    before = land_review.loop_path(review_root, ISSUE).read_text(encoding="utf-8")
-
-    report = land_review.show(ISSUE, review_root)
-
-    assert report.code == 0
-    assert "finding=f1 severity=high round=0 adjudication=open" in report.lines
-    assert "open_above_low=1" in report.lines
-    assert "stop_condition=not_met" in report.lines
-    assert land_review.loop_path(review_root, ISSUE).read_text(encoding="utf-8") == before
-
-
-def test_a_written_loop_reads_back_through_the_readers_own_gates(tmp_path: Path) -> None:
-    """The round trip is the contract: whatever the writer writes, `load_loop` accepts."""
-    dispatch_root, review_root = _stage(
-        tmp_path, verdict=_verdict(findings=(("f1", "medium"), ("f2", "critical")))
-    )
-    land_review.sync(ISSUE, SHA, dispatch_root, review_root)
-    land_review.adjudicate(
-        ISSUE, "f1", "accepted_and_filed", "999", "the later caller", review_root
-    )
-    land_review.adjudicate(ISSUE, "f2", "arbiter_upheld", "", "", review_root)
-
-    loop = land_review.load_loop(review_root, ISSUE)
-
-    assert review_loop.stop_condition(loop)
-    assert loop.findings[0].adjudication.issue == "999"
-    assert loop.findings[0].adjudication.conditional_on == "the later caller"
+    assert written == review_loop.loop_path(review_root, ISSUE)
+    assert outcome.refusal is None
+    assert f"loop={written}" in outcome.cleared

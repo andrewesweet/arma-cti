@@ -32,16 +32,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   record's — it binds no dispatch, SHA or arbiter identity, so unlike the verdict beside it
   its routes are not re-derived at read time.
 
-- **`just review-loop` — the record `just land` reads before it clears anything (#334, #333's
-  format, ADR-0071 ruling 4).** `sync --issue <n> --reviewed-sha <sha>` folds the recorded
-  verdict's findings into the issue's loop — severities from the verdict record and never from
-  a flag, so the seat under review cannot re-grade its own review on the way in; the first call
-  opens round zero, a later one carrying ids the loop does not hold records the next round.
-  `adjudicate` closes one finding through its one route, with the fourth route's three
-  restrictions decided by `review_loop` rather than restated. `show` prints the loop as it
-  stands and whether the stop condition is met. The enforcement previously named a remedy that
-  did not exist, so a landing whose review found anything above Low was unlandable except by
-  hand-authoring JSON into a home directory.
+- **`just review-loop sync` — the loop folded from the verdict the landing will read (#334,
+  #333's command surface, ADR-0071 ruling 4).** `sync --issue <n> --reviewed-sha <sha>` takes
+  the verdict `just review record` wrote for that commit — same binding, same identity
+  re-derived — and folds its findings into the issue's loop: severities from the record and
+  never from a flag, so the seat under review cannot re-grade its own review on the way in,
+  which is the one thing `open` and `round` cannot promise. The first call opens round zero, a
+  later one carrying ids the loop does not hold records the next round, and a verdict that
+  re-grades a finding the loop already holds is refused by name rather than reported as
+  unchanged — that drift is what the landing refuses as `review_finding_mismatch`, and
+  reporting it as a success left the landing wedged behind a remedy no command performed.
 
 - **`just land --stage` — rebase onto `origin/main` and stop, printing the SHA a review must
   bind (#334).** A verdict binds the SHA it judged and the landing rebases before it reads one,
@@ -89,6 +89,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and exit 3 for an act that could not be performed.
 
 ### Changed
+
+- **An arbiter route names the arbiter that ruled (#334, ADR-0071 ruling 4).** `arbiter_upheld`
+  and `arbiter_dismissed` carry the profile the escalation transferred to, read from the
+  escalation record rather than from a flag, and both the writer and `just land` refuse a route
+  that names none. The same-user limit is unchanged and unclaimed — the name is written by the
+  same user, not derived — but an unarbitrated dismissal is now distinguishable from an
+  arbitrated one on the record a lander quotes.
+
+- **One loop record, one reader (#334, #333).** The landing rung read `loop.json` through a
+  local parser it carried while #333 was unlanded, and a local `just review-loop` beside
+  #333's own. Both are deleted: the rung calls `review_loop.load_loop`, and the loop's acts are
+  #333's command surface throughout. The loop's store is now guarded and atomic — an unwritable
+  review root leaves as a named refusal rather than a traceback, and an interrupted write leaves
+  the loop as it stood rather than a truncated record the landing would then refuse. The
+  landing still checks the fourth route's three restrictions on read, which the canonical
+  parser deliberately leaves to the act of adjudicating.
+
+- **`just land --stage` refuses a tree with nothing of its own to replay (#334).** Staging
+  `origin/main`'s tip offered a lander a SHA that is not their work to have reviewed, and hid
+  an outstanding merge behind an `ok=` on the re-run after `merge_blocked_by_sandbox`.
 
 - **The arbiter routes are admissible only where the escalation has fired on the finding
   itself (#333).** Round 1's precondition was a property of the loop — the three-round

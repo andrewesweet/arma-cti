@@ -112,6 +112,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime
 from pathlib import Path
@@ -361,6 +362,12 @@ ROUTE_ERROR: Final = (
     f"an adjudication must name one of {', '.join(sorted(ROUTES))} — the four routes of"
     " ADR-0071 ruling 4, the fourth added by the human ruling of 2026-08-14 on #334"
 )
+ARBITER_UNNAMED_ERROR: Final = (
+    "an arbiter route must name the arbiter that ruled — the profile the escalation"
+    " transferred to, read from the escalation record rather than typed, so an unarbitrated"
+    " dismissal is distinguishable from an arbitrated one on the record a landing quotes"
+    " (#334 round 2)"
+)
 UNKNOWN_FINDING_ERROR: Final = "no open finding carries that id in this loop"
 CLOSED_FINDING_ERROR: Final = (
     "that finding already carries its one adjudication and is closed — a finding the next"
@@ -423,11 +430,21 @@ class Adjudication(NamedTuple):
     `issue` and `conditional_on` are required by `ACCEPTED_AND_FILED` and unused by the
     other three routes: an arbiter verdict needs no issue named (the terminus files what it
     upholds, #333's work) and a fix is in the diff under review.
+
+    `arbiter` names the profile the escalation transferred to, and the two arbiter routes
+    are refused without it (`ARBITER_UNNAMED_ERROR`). It is the one field that makes an
+    arbitrated dismissal *distinguishable on the record* from an unarbitrated one — the
+    same-user limit means it is not forgery-proof and nothing here pretends otherwise, but
+    round 2 of #334's review was right that the writer is the surface where the field could
+    be asked for, and a route that stands in for a ruling should name the judge that gave
+    it. The CLI fills it from `escalation.json` rather than from a flag, so the name on the
+    record is the one `escalate` resolved.
     """
 
     route: str
     issue: str = ""
     conditional_on: str = ""
+    arbiter: str = ""
 
 
 class Loop(NamedTuple):
@@ -518,10 +535,11 @@ def escalation_fires_on(loop: Loop, finding: Finding) -> bool:
 
 def _route_checks(loop: Loop, finding: Finding, adjudication: Adjudication) -> None:
     """Enforce the routes' own restrictions: the arbiter precondition, the fourth route's three."""
-    if adjudication.route in (ARBITER_UPHELD, ARBITER_DISMISSED) and not escalation_fires_on(
-        loop, finding
-    ):
-        raise ReviewLoopError(ARBITER_UNAUTHORISED_ERROR)
+    if adjudication.route in (ARBITER_UPHELD, ARBITER_DISMISSED):
+        if not escalation_fires_on(loop, finding):
+            raise ReviewLoopError(ARBITER_UNAUTHORISED_ERROR)
+        if not adjudication.arbiter:
+            raise ReviewLoopError(ARBITER_UNNAMED_ERROR)
     if adjudication.route == ACCEPTED_AND_FILED:
         if SEVERITY_RANK[finding.severity] < SEVERITY_RANK[MEDIUM]:
             raise ReviewLoopError(ROUTE_SEVERITY_ERROR)
@@ -557,6 +575,36 @@ def adjudicate(loop: Loop, finding_id: str, adjudication: Adjudication) -> Loop:
     if not found:
         raise ReviewLoopError(UNKNOWN_FINDING_ERROR)
     return Loop(loop.review_rounds, tuple(updated))
+
+
+def stored_route_violations(loop: Loop) -> tuple[str, ...]:
+    """Name every closed finding whose adjudication could not have been written.
+
+    `parse_loop` validates the shape and leaves the *route's* preconditions alone, and its
+    docstring says why for the arbiter one: it governs the act of adjudicating, and a
+    verdict recorded before the precondition existed must still be readable. The fourth
+    route's three restrictions are not like that — they are the ruling's own words about
+    what the disposition *means*, so a record carrying `accepted_and_filed` on a Critical,
+    or without the issue it became, or without the work its harm is conditional on, is a
+    record no writer would have produced.
+
+    A reader that needs to act on those restrictions asks here rather than re-deriving
+    them: #334's landing rung is the reader, and round 1 got the answer by rebuilding the
+    whole loop through `adjudicate`, which is not available to a reader once the canonical
+    parser is the one that (rightly) does not repudiate recorded verdicts.
+    """
+    violations: list[str] = []
+    for finding in loop.findings:
+        adjudication = finding.adjudication
+        if adjudication is None or adjudication.route != ACCEPTED_AND_FILED:
+            continue
+        if SEVERITY_RANK[finding.severity] < SEVERITY_RANK[MEDIUM]:
+            violations.append(f"{finding.id}: {ROUTE_SEVERITY_ERROR}")
+        if not adjudication.issue:
+            violations.append(f"{finding.id}: {FILED_ISSUE_ERROR}")
+        if not adjudication.conditional_on:
+            violations.append(f"{finding.id}: {CONDITIONAL_ON_ERROR}")
+    return tuple(violations)
 
 
 def open_findings(loop: Loop) -> tuple[Finding, ...]:
@@ -939,6 +987,18 @@ ROUND_RANGE_ERROR: Final = (
     "a finding's round must lie between 0 and the loop's review_rounds — one raised at a"
     " round the loop has not reached is state this loop never recorded"
 )
+REGRADE_ERROR: Final = (
+    "the verdict re-grades a finding #{issue}'s loop already holds ({findings}) — a"
+    " severity is the reviewer's and an id is the finding's, so the two records have"
+    " drifted or a later round reused an id. A re-report is a new finding with a new id"
+    " (ADR-0071 ruling 4's no-reopening rule); nothing was written, and the landing would"
+    " refuse this same disagreement as review_finding_mismatch"
+)
+LOOP_UNWRITTEN_ERROR: Final = (
+    "the loop for #{issue} could not be written to {target} — {reason}. Nothing was"
+    " changed: the document is staged beside its target and renamed onto it, so a failed"
+    " write leaves the loop as it stood"
+)
 LOOP_UNREADABLE_ERROR: Final = (
     "the stored loop for #{issue} under {root} will not read — {reason}. A loop that cannot"
     " be read cannot govern an act: repair or re-record it before driving this loop"
@@ -951,6 +1011,8 @@ def _render_adjudication(adjudication: Adjudication) -> dict[str, str]:
         rendered["issue"] = adjudication.issue
     if adjudication.conditional_on:
         rendered["conditional_on"] = adjudication.conditional_on
+    if adjudication.arbiter:
+        rendered["arbiter"] = adjudication.arbiter
     return rendered
 
 
@@ -986,9 +1048,14 @@ def _parse_adjudication(raw: object) -> Adjudication | None:
         raise ReviewLoopError(ROUTE_ERROR)
     issue = raw.get("issue", "")
     conditional_on = raw.get("conditional_on", "")
-    if not isinstance(issue, str) or not isinstance(conditional_on, str):
+    arbiter = raw.get("arbiter", "")
+    if (
+        not isinstance(issue, str)
+        or not isinstance(conditional_on, str)
+        or not isinstance(arbiter, str)
+    ):
         raise ReviewLoopError(ADJUDICATION_SHAPE_ERROR)
-    return Adjudication(route, issue, conditional_on)
+    return Adjudication(route, issue, conditional_on, arbiter)
 
 
 def parse_loop(document: object) -> Loop:
@@ -1044,10 +1111,37 @@ def loop_path(root: Path, issue: int) -> Path:
 
 
 def store_loop(root: Path, issue: int, loop: Loop) -> Path:
-    """Write the loop's document, creating the issue's directory on first store."""
+    """Write the loop's document atomically, creating the issue's directory on first store.
+
+    Two properties the plain `write_text` this replaced did not have (#334 round 2, Medium
+    4), and `review_exchange`'s verdict writer already had:
+
+    - **Guarded.** An unwritable or removed review root leaves as this module's own named
+      error rather than as a `PermissionError` traceback out of `mkdir` — a failure with no
+      class is the `untyped_harness_failure` the table exists to prevent.
+    - **Atomic.** The document is staged beside the target and renamed onto it, so an
+      interrupt mid-write cannot leave a truncated `loop.json` that the landing then refuses
+      `review_loop_unreadable` with a remedy no tool performs. A reader sees the old loop or
+      the new one.
+    """
     target = loop_path(root, issue)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_text(json.dumps(render_loop(issue, loop), indent=2, sort_keys=True) + "\n")
+    document = json.dumps(render_loop(issue, loop), indent=2, sort_keys=True) + "\n"
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        handle, staged = tempfile.mkstemp(
+            prefix=f"{target.name}.", suffix=".staged", dir=target.parent
+        )
+        try:
+            with os.fdopen(handle, "w", encoding="utf-8") as writing:
+                writing.write(document)
+            Path(staged).replace(target)
+        except OSError:
+            Path(staged).unlink(missing_ok=True)
+            raise
+    except OSError as unwritable:
+        raise ReviewLoopError(
+            LOOP_UNWRITTEN_ERROR.format(issue=issue, target=target, reason=unwritable)
+        ) from unwritable
     return target
 
 
@@ -1244,6 +1338,18 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     _loop_arguments(turned, findings=True)
     turned.set_defaults(handler=_cmd_round)
 
+    folded = commands.add_parser(
+        "sync", help="fold the verdict recorded for a commit into the loop (#334)"
+    )
+    _loop_arguments(folded)
+    folded.add_argument(
+        "--reviewed-sha", required=True, help="the reviewed commit, full 40-character SHA"
+    )
+    folded.add_argument(
+        "--dispatch-dir", default="", help="the dispatch records; default is this box's own"
+    )
+    folded.set_defaults(handler=_cmd_sync)
+
     judged = commands.add_parser("adjudicate", help="close one finding with its one adjudication")
     _loop_arguments(judged)
     judged.add_argument("--finding", required=True, help="the finding id to close")
@@ -1341,18 +1447,99 @@ def _cmd_round(
     return OK
 
 
+def _cmd_sync(
+    args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    """Fold the verdict recorded for one commit into the issue's loop.
+
+    The findings and their severities come from the verdict record, never from a flag — the
+    distinction from `open`/`round`, whose `--finding id=severity` puts the grading of a
+    review in the hands of a caller the review judges. The verdict is the one the landing
+    will read: same derivation, same binding, same identity re-derived rather than believed.
+
+    Three answers, and the third is #334 round 2's Medium 3. A loop that does not exist is
+    opened at round zero; ids the loop does not hold are the next round; and a verdict that
+    re-grades a finding the loop already holds is **refused** rather than reported as
+    `loop_unchanged`. That case used to print a success over the exact drift the landing
+    would then refuse `review_finding_mismatch` on, naming a remedy — re-derive the loop —
+    that no command performed: the fold had already declined it, `next_round` refuses a
+    duplicate id by rule, and the landing was wedged short of hand-editing the record the
+    refusal tells you not to hand-edit. The tool that reads both records first is the one
+    that should say so.
+    """
+    # Handler-local for the reason `_cmd_escalate`'s are: `review_exchange` reaches
+    # `dispatch`, and the landing rung that reads this loop imports both.
+    import review_exchange  # noqa: PLC0415 — see the comment above
+
+    root = Path(args.root)
+    dispatch_root = Path(args.dispatch_dir) if args.dispatch_dir else review_exchange.DISPATCH_ROOT
+    verdict = review_exchange.bound_verdict(args.issue, args.reviewed_sha, dispatch_root)
+    if not isinstance(verdict, review_exchange.Verdict):
+        for line in verdict.lines():
+            print(f"[review-loop] {line}")  # noqa: T201 — a CLI's refusal channel
+        return REFUSED
+    reported = tuple(verdict.findings)
+    try:
+        loop = load_loop(root, args.issue)
+    except FileNotFoundError:
+        loop = first_review(tuple(Finding(f.id, f.severity, 0) for f in reported))
+        store_loop(root, args.issue, loop)
+        emit_round(loop, str(args.issue), clock(), Path(args.journal))
+        print(  # noqa: T201 — a CLI's output channel
+            f"[review-loop] #{args.issue} round 0 opened from the verdict for"
+            f" {args.reviewed_sha} with {len(loop.findings)} finding(s)"
+        )
+        return OK
+    held = {finding.id: finding for finding in loop.findings}
+    regraded = tuple(f for f in reported if f.id in held and held[f.id].severity != f.severity)
+    if regraded:
+        raise ReviewLoopError(
+            REGRADE_ERROR.format(
+                issue=args.issue,
+                findings=", ".join(
+                    f"{f.id} loop={held[f.id].severity} verdict={f.severity}" for f in regraded
+                ),
+            )
+        )
+    fresh = tuple(f for f in reported if f.id not in held)
+    if not fresh:
+        print(  # noqa: T201 — a CLI's output channel
+            f"[review-loop] #{args.issue} loop unchanged — the verdict for"
+            f" {args.reviewed_sha} raises nothing this loop does not hold"
+        )
+        return OK
+    loop = next_round(loop, tuple(Finding(f.id, f.severity, loop.review_rounds + 1) for f in fresh))
+    store_loop(root, args.issue, loop)
+    emit_round(loop, str(args.issue), clock(), Path(args.journal))
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{args.issue} round {loop.review_rounds} recorded from the verdict"
+        f" for {args.reviewed_sha} with {len(fresh)} new finding(s),"
+        f" {len(open_above_low(loop))} above Low open"
+    )
+    return OK
+
+
 def _cmd_adjudicate(
     args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
 ) -> int:
     root = Path(args.root)
     loop = _read_loop(root, args.issue)
-    adjudication = Adjudication(args.route, args.filed_issue, args.conditional_on)
+    # The arbiter is read off the escalation record, never taken from a flag: the name on an
+    # arbiter route is the profile `escalate` resolved, and a route standing in for a ruling
+    # with no record behind it is refused by `_route_checks` rather than written unnamed
+    # (#334 round 2, Medium 2).
+    arbiter = ""
+    if args.route in (ARBITER_UPHELD, ARBITER_DISMISSED):
+        resolved, _unchecked, evaluation = _recorded_arbiter(root, args.issue)
+        arbiter = resolved if evaluation == escalation.FIRING else ""
+    adjudication = Adjudication(args.route, args.filed_issue, args.conditional_on, arbiter)
     updated = adjudicate(loop, args.finding, adjudication)
     store_loop(root, args.issue, updated)
     closed = next(f for f in updated.findings if f.id == args.finding)
     emit_dispute(closed, adjudication, str(args.issue), clock(), Path(args.journal))
     print(  # noqa: T201 — a CLI's output channel
         f"[review-loop] #{args.issue} finding {args.finding} closed as {args.route}"
+        f"{f' by arbiter {arbiter}' if arbiter else ''}"
     )
     return OK
 

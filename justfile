@@ -350,7 +350,16 @@ worktree *args:
 # running the landing and being refused (#334). Stage, review that SHA, then land —
 # and without a long gap, because anything landing in the interval moves it again.
 # It runs strictly less than a landing: the rebase and nothing after it, no push
-# on any path, and every pre-rebase refusal in the same words.
+# on any path, and the dirty tree, the rebase in progress, the conflict and the
+# poisoned tree refused in the same words. A tree carrying no commit of its own
+# refuses `nothing_to_land` rather than offering origin/main's tip as a SHA to
+# have reviewed.
+#
+# `--dry-run`'s plan qualifies the push whenever the rebase will move the SHA a
+# verdict binds: `would_not_run=... reason=review_sha_will_move`. That reason is a
+# plan's word for a certainty, not a refusal any landing emits — no verdict can
+# bind a commit the replay has not produced, so that landing will refuse
+# `no_review_dispatch` once the rebase has produced it.
 #
 # Three things it does that prose could not. The refspec is a constant no
 # argument reaches, so `git push origin main` — which pushes the local `main`
@@ -430,39 +439,6 @@ land *args:
 # carries is #333's; the landing refusal that reads this derivation is #334's.
 review *args:
     uv run python tools/review_exchange.py {{ args }}
-
-# One issue's review loop: the record `just land` reads before it clears anything
-# (ADR-0071 ruling 4, #333's format, #334's enforcement). No Arma, no lock.
-#
-#   just review-loop sync --issue 334 --reviewed-sha <sha>
-#                                  fold the verdict recorded for that commit into
-#                                  the loop — the findings and their severities come
-#                                  from the verdict record, never from a flag, so the
-#                                  seat under review cannot re-grade its own review on
-#                                  the way in. The first call opens the loop at round
-#                                  zero; a later call carrying ids the loop does not
-#                                  hold records the next round with exactly those
-#   just review-loop adjudicate --issue 334 --finding f1 --route fixed
-#                                  close one finding through its one route: fixed,
-#                                  arbiter_upheld, arbiter_dismissed, or
-#                                  accepted_and_filed — the fourth Medium or below and
-#                                  only with --filed-issue and --conditional-on, the
-#                                  human's ruling of 2026-08-14 on #334. An
-#                                  adjudication is terminal: a closed finding refuses
-#                                  a second one
-#   just review-loop show --issue 334
-#                                  print the loop as it stands, every finding open and
-#                                  closed, and whether the stop condition is met
-#
-# Refusals are named: no_review_dispatch, no_verdict, verdict_unreadable,
-# sha_mismatch, identity_mismatch, review_issue_mismatch, records_unreadable,
-# no_review_loop, review_loop_unreadable, loop_refused, adjudication_refused. The
-# record it writes lives under ~/.arma-cti/review/<issue>/, outside every worktree,
-# and it carries no dispatch, SHA or arbiter identity — so unlike the verdict beside
-# it, its routes are not re-derived at read time. Ruling 4's same-user limit, stated
-# on every line this prints.
-review-loop *args:
-    uv run python tools/land_review.py {{ args }}
 
 # Discard one named file's unstaged working-tree change, and nothing else
 # (#287, the human's ruling of 2026-08-08 on #248). No Arma, no lock.
@@ -1074,8 +1050,8 @@ prereqs action="check" *args:
 verdict *args:
     uv run python tools/pool_comment.py {{ args }}
 
-# Drive one issue's never-alone review loop: open, round, adjudicate, escalate,
-# terminus, show (#333, ADR-0071 ruling 4). One command per act, one durable
+# Drive one issue's never-alone review loop: open, round, sync, adjudicate,
+# escalate, terminus, show (#333, ADR-0071 ruling 4). One command per act, one durable
 # state directory per issue under `~/.arma-cti/review/`, so a loop survives the
 # turn that opened it — `show` reads it back, `round` advances it, and the
 # terminus is once: it files every arbiter-upheld finding on the originating
@@ -1086,12 +1062,26 @@ verdict *args:
 # died mid-post leaves the marker naming what it was about to post for the
 # retry to refuse on.
 #
+# `sync` is the fold #334 added: it takes the verdict `just review record`
+# wrote for one commit — the same verdict the landing will read, bound to the
+# same SHA and its identity re-derived — and folds its findings into the loop,
+# opening it at round zero or recording the next round. The severities come
+# from the record and never from a flag, so the seat under review cannot
+# re-grade its own review on the way in, which is the one thing `open` and
+# `round` cannot promise. A verdict that re-grades a finding the loop already
+# holds is refused rather than reported unchanged: that drift is what the
+# landing refuses as `review_finding_mismatch`, and the tool that reads both
+# records is the one that should say so.
+#
 # Every act is refused by name rather than defaulted: `open` refuses a loop
 # that already exists, `adjudicate` refuses an arbiter route without its own
 # escalation — decided per finding, the three-round wall holding with this
 # finding among what it read, so a finding raised in a later round inherits
 # no earlier verdict (there is no arbiter to speak of), `escalate`
-# refuses an unregistered seat, and the terminus refuses a loop whose findings
+# refuses an unregistered seat — and refuses an arbiter route that names no
+# arbiter, the name being read from the escalation record rather than typed, so
+# an unarbitrated dismissal is distinguishable on the record a lander quotes —
+# and the terminus refuses a loop whose findings
 # above Low are still open, verdicts no arbiter resolution chose, and a
 # pending run it must not blindly repeat — #334's landing refusal is the
 # consumer of that first fact. Exit 1 is a named refusal; exit 3 is an act
