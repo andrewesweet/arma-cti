@@ -560,8 +560,11 @@ def test_the_registry_listing_prints_each_seats_preference_and_marks_the_escalat
     assert f"escalation=codex-sol-high opus-high {mark}" in printed
     # `fable` and `recon` are the rows that still register none; #361 filled `retro`'s and
     # `orchestrator`'s, and the listing is the surface that said `none` while the ADR named a
-    # profile. Both halves are asserted so a future fill cannot quietly empty this claim.
-    assert f"escalation=none {mark}" in printed
+    # profile. Both halves are asserted so a future fill cannot quietly empty this claim. An
+    # empty row takes the *other* mark: there is nothing for the arbiter to walk first, so the
+    # row that says so would be asserting a walk it does not get (#361, round 4).
+    assert "escalation=none (no arbiter; escalation refuses by name)" in printed
+    assert f"escalation=none {mark}" not in printed
     assert f"escalation=opus-max fable-max {mark}" in printed
     assert f"escalation=opus-max fable-xhigh {mark}" in printed
     assert "not resolved into" not in printed

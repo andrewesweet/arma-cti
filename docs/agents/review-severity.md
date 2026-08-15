@@ -79,7 +79,7 @@ finding that survives four readings is still Low: it changed what no rule meant.
   preference list, and excludes on four rungs in order — the registry (a profile it does not
   carry), the routing refusals its caller passes, the profiles the issue's own dispatch
   records place on the work, and the profiles the dispatch ladder would refuse now
-  (admission, breaker, off-peak, credential) — recording each exclusion with its reason. A
+  (admission, breaker, off-peak, credential) — recording each exclusion with its reason.
   Until round 3 of #361 this listed the records rung alone. A seat whose entry is empty has no
   arbiter and refuses by name — A1 struck the blanket `fable-high` fallback that used to
   answer for it — and so does a walk that reaches its end with everything excluded.
