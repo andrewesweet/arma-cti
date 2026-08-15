@@ -129,6 +129,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The withdrawn mapping's last live copies are gone, and the guard now walks the file it cites
+  (#329, review round 2).** Round 1 rewrote the brief composer's seat reasons and guarded them —
+  and the widest live copy of the `fable` scope it deleted went on sitting ten lines from the
+  profiles it registers, in `tools/dispatch.py`, the file the new guard's own comment names as its
+  authority: a comment claiming fable for "retros; ADR, `CONTEXT.md` and schema semantics" that the
+  live routing policy refuses that seat on both classes. It is replaced by a pointer to routing
+  class 4 and `config/escalation-conditions.json`'s fourth condition, and the guard now asserts the
+  registry carries no copy either. `just brief`'s own recipe comment stopped describing itself as
+  composing "the Model roles line", and `tools/generate_seats.py`'s pair vocabulary is re-attributed
+  to ADR-0009, the oldest surviving instance, rather than to bullets round 1 deleted. Two narrower
+  corrections: the `fable` seat reason now names the escalation condition that actually orders the
+  transfer, since routing class 4 routes to `planner`; and the orchestration runbook no longer says
+  both drafting classes are "declared on the issue and never inferred" — neither is inferred from a
+  *path*, but both carry `issue_phrases` matched as a plain substring, so an issue merely mentioning
+  ADR authorship fires the class. The withdrawn-rule guard is casefolded and gained *eligibility*,
+  the other word ADR-0071 ruling 1 withdrew.
+
 - **`just brief` stopped commanding the withdrawn Model roles mapping (#329, review round 1).**
   Five of the seven seat reasons the brief composer prints were transcribed from that mapping and
   outlived it: a `fable` brief claimed "process docs", which routing class 2 refuses that seat,

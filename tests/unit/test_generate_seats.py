@@ -400,9 +400,11 @@ def test_the_pair_vocabulary_reads_every_notation_this_repository_writes() -> No
     """#324, review round 2, claim 3: a property that sees one notation is a substring check.
 
     So the notations are enumerated, each one taken from prose that exists here — the slash
-    pair, `describe`'s own rendering, the bare form the Model roles bullets use after "run
-    at", and the comma form those bullets lead with. The positive controls come first,
-    because an assertion that finds nothing is worth what its pattern is worth.
+    pair, `describe`'s own rendering, the bare form after "run at", and the comma form
+    `docs/adr/0009-*.md` leads with. The positive controls come first, because an assertion
+    that finds nothing is worth what its pattern is worth. The last two used to be attributed
+    to AGENTS.md's Model roles bullets, which #329 deleted while the shapes outlived them
+    (#329 review round 2, F1 — the same stale attribution as `generate_seats.py`'s).
 
     The limit is stated rather than implied, and it is a real one: this reads notations, not
     meanings. `opus-xhigh` is a profile name and legitimate; "the top effort on opus" is a

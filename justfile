@@ -942,7 +942,10 @@ handoff issue:
 # profile name itself is not validated here — `tools/dispatch.py` owns what a
 # legal subject is, and a second copy of that list would drift.
 #
-# What it composes: the seat and the Model roles line behind it, the worktree
+# What it composes: the seat and the reason behind it — `tools/brief.py`'s
+# `SEAT_REASON`, one line per seat `tools/dispatch.py` registers, citing ADR-0071's
+# rulings as `SEATS` and the routing policy implement them, never a pair and never
+# the withdrawn mapping (#329) — the worktree
 # protocol as the two calls it now is, the landing protocol, the live flake
 # lines read from open issues, the verdict paste rule where the gate produces a
 # verdict — and **the gate line, derived rather than chosen**. An issue whose

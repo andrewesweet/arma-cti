@@ -468,6 +468,13 @@ def test_every_registered_seat_has_a_model_roles_reason() -> None:
     assert set(brief.SEAT_REASON) == set(dispatch.SEATS)
 
 
+# What ADR-0071 withdrew, casefolded, so a reason cannot slip one through in another case.
+# `eligib` is here because ruling 1 withdrew *eligibility* as a graded property along with
+# the word `foreign`, and round 1's list caught the latter and not the former (#329 review
+# round 2, F5: the list was also case-sensitive, so "model roles" passed it).
+WITHDRAWN = ("model roles", "adr-0061 decision", "foreign", "eligib")
+
+
 def test_no_seat_reason_commands_a_withdrawn_rule() -> None:
     """The reasons cite live rulings, not the mapping and decisions ADR-0071 withdrew.
 
@@ -476,10 +483,27 @@ def test_no_seat_reason_commands_a_withdrawn_rule() -> None:
     it, and `review` still quoted ADR-0061 decision 3, which ruling 1 rescinds. A brief is
     what every dispatched agent reads first, so a withdrawn rule here reaches every dispatch.
     """
-    withdrawn = ("Model roles", "ADR-0061 decision", "ADR-0061 Decision", "foreign")
     for seat, reason in brief.SEAT_REASON.items():
-        for phrase in withdrawn:
-            assert phrase not in reason, f"{seat}: {reason}"
+        for phrase in WITHDRAWN:
+            assert phrase not in reason.casefold(), f"{seat}: {reason}"
+
+
+def test_the_registry_the_reasons_cite_carries_no_copy_of_the_withdrawn_rule() -> None:
+    """The authority a reason names is walked too, not only the reason (#329 round 2, F2).
+
+    Round 1 fixed `SEAT_REASON` and guarded it with keys-plus-content, and the widest live
+    copy of the withdrawn `fable` scope went on sitting in `tools/dispatch.py` — the file the
+    `SEAT_REASON` comment names as its authority, ten lines from the profiles it registers.
+    A test that guards one enumeration while the contradicting text sits in the cited file is
+    the defect the round diagnosed, applied one scroll further out.
+
+    Scoped to the withdrawn *mapping*'s name, which has no live use anywhere: `foreign` and
+    `eligible` do have ordinary English uses in this file (a foreign uncommitted file in a
+    worktree), so banning them over a whole module would fail on prose that is not a copy.
+    The ban that can be mechanical is mechanical; the rest stays with the reasons above.
+    """
+    source = (REPO / "tools" / "dispatch.py").read_text(encoding="utf-8").casefold()
+    assert "model roles" not in source
 
 
 def test_the_default_seat_is_the_implementer_and_owes_no_further_reason() -> None:

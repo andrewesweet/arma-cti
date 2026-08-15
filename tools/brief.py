@@ -481,8 +481,11 @@ SEAT_REASON: Final[dict[str, str]] = {
         "(`reviews` and `permission_mode` in `tools/dispatch.py`'s `SEATS`)."
     ),
     "fable": (
-        "Routing class 4, the #181 shape: a diagnosis whose plausible wrong fix would also "
-        "have gone green, where no mechanical gate catches the wrong answer."
+        "The #181 shape: a diagnosis whose plausible wrong fix would also have gone green, "
+        "where no mechanical gate catches the wrong answer. Routing class 4 declares that "
+        "shape and routes it to `planner`; `config/escalation-conditions.json`'s fourth "
+        "condition is what orders the transfer here (#329 review round 2, F6 — the class "
+        "alone does not route to this seat)."
     ),
     "orchestrator": (
         "The standing dispatch loop, and ADR-0071 ruling 1's one surviving provenance rule — "
