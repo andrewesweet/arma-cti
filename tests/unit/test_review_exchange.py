@@ -15,6 +15,7 @@ the same pattern `test_worktree.py` uses for its end-to-end actions.
 from __future__ import annotations
 
 import json
+from concurrent.futures import ThreadPoolExecutor
 from typing import TYPE_CHECKING
 
 import pytest
@@ -28,8 +29,16 @@ worktree = load_tool("worktree")
 
 SHA = "a" * 40
 OTHER_SHA = "b" * 40
-COMPLETED = {"returncode": 0, "ended_at": "2026-08-15T09:00:00+00:00"}
-REFUSED = {"refusal": "quota_exhausted", "failure_class": "quota_exhausted", "ended_at": "..."}
+# `write_result`'s two shapes, field for field: a run that ran is typed by its
+# outcome (`classify_run` ties `ok` to a zero exit), and a dispatch that never
+# reached a lane carries its refusal and no returncode at all.
+COMPLETED = {
+    "returncode": 0,
+    "outcome": "ok",
+    "started_at": "2026-08-15T09:00:00+00:00",
+    "ended_at": "2026-08-15T09:05:00+00:00",
+}
+REFUSED = {"refusal": "infra_unavailable", "failure_class": "infra_unavailable", "ended_at": "..."}
 
 
 def dispatch_dir(  # noqa: PLR0913 — one parameter per field of the record under test
@@ -43,7 +52,7 @@ def dispatch_dir(  # noqa: PLR0913 — one parameter per field of the record und
     lane: str = "claude-native",
     planned_at: str = "2026-08-15T09:00:00+00:00",
     plan: bool = True,
-    result: str | None = "completed",
+    result: str | dict[str, object] | None = "completed",
 ) -> Path:
     """Write one dispatch directory; `plan=False` or odd `result` shapes corrupt it on purpose."""
     entry = root / dispatch_id
@@ -187,6 +196,35 @@ def test_refused_result_is_not_completed(tmp_path: Path) -> None:
     assert refused_binding(root) == "no_review_dispatch"
 
 
+@pytest.mark.parametrize(
+    "outcome", ["quota_exhausted", "provider_error", "provider_refused", "unclassified"]
+)
+def test_a_run_that_ended_in_a_typed_non_result_is_not_completed(
+    tmp_path: Path, outcome: str
+) -> None:
+    # High 1, round 1: a refused run still carries a returncode and an `ended_at`,
+    # so timestamps cannot mean completion. The dispatcher types every finished
+    # run, and only `outcome=ok` completed — the failure-class table's own line,
+    # read here rather than re-derived from exit codes.
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1", result={**COMPLETED, "returncode": 1, "outcome": outcome})
+    assert refused_binding(root) == "no_review_dispatch"
+
+
+def test_a_ran_result_without_a_typed_outcome_refuses_closed(tmp_path: Path) -> None:
+    # Not a shape `write_result` produces beside a returncode, so not a fact this
+    # scan reads — the binding one could be it, and an answer cannot degrade.
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1", result={"returncode": 0, "ended_at": "2026-08-15T09:05:00+00:00"})
+    assert refused_binding(root) == "records_unreadable"
+
+
+def test_an_ok_outcome_without_an_end_refuses_closed(tmp_path: Path) -> None:
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1", result={"returncode": 0, "outcome": "ok"})
+    assert refused_binding(root) == "records_unreadable"
+
+
 def test_live_run_without_result_is_not_completed(tmp_path: Path) -> None:
     root = tmp_path / "dispatches"
     dispatch_dir(root, "d-1", result=None)
@@ -260,6 +298,70 @@ def test_a_second_record_of_the_same_dispatch_refuses_and_swaps_nothing(
     # The existing record is untouched — the findings were not swapped.
     again = json.loads(first.path.read_text(encoding="utf-8"))
     assert again["findings"] == [{"id": "f1", "severity": "low"}]
+
+
+def test_concurrent_records_cannot_both_write_the_one_slot(tmp_path: Path) -> None:
+    # Medium 4, round 1: the existence check and the write are one atomic act, so
+    # two records racing on one dispatch leave one verdict and one `verdict_exists`
+    # — never one verdict quietly overwritten by the other's findings.
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1")
+    payloads = (
+        json.dumps([{"id": "first", "severity": "low"}]),
+        json.dumps([{"id": "second", "severity": "low"}]),
+    )
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        outcomes = list(
+            pool.map(
+                lambda findings: review_exchange.record_verdict(332, SHA, findings, root),
+                payloads,
+            )
+        )
+    written = [outcome for outcome in outcomes if not isinstance(outcome, review_exchange.Refusal)]
+    refused = [outcome for outcome in outcomes if isinstance(outcome, review_exchange.Refusal)]
+    assert len(written) == 1
+    assert len(refused) == 1
+    assert refused[0].kind == "verdict_exists"
+    # Whichever won, the file holds that one's findings and parses as a verdict.
+    recorded = json.loads(written[0].path.read_text(encoding="utf-8"))
+    assert recorded["findings"] in (
+        [{"id": "first", "severity": "low"}],
+        [{"id": "second", "severity": "low"}],
+    )
+
+
+def test_record_refuses_a_partial_file_in_the_slot_and_overwrites_nothing(
+    tmp_path: Path,
+) -> None:
+    # The other way to be occupied: an interrupted write leaves a partial, and the
+    # recovery is named rather than the slot being declared unwritable.
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1")
+    path = root / "d-1" / review_exchange.VERDICT_NAME
+    path.write_text('{"version": 1, "revie', encoding="utf-8")
+    outcome = review_exchange.record_verdict(332, SHA, "[]", root)
+    assert outcome.kind == "verdict_unreadable"
+    assert path.read_text(encoding="utf-8") == '{"version": 1, "revie'
+
+
+def test_record_that_fails_mid_write_leaves_no_partial_behind(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1")
+
+    def failing_fsync(_fileno: int) -> None:
+        failure = OSError("no space left on device")
+        raise failure
+
+    monkeypatch.setattr(review_exchange.os, "fsync", failing_fsync)
+    outcome = review_exchange.record_verdict(332, SHA, "[]", root)
+    assert outcome.kind == "verdict_unwritten"
+    # Neither a verdict nor the staged attempt is left behind.
+    assert sorted(entry.name for entry in (root / "d-1").iterdir()) == [
+        "dispatch.json",
+        "result.json",
+    ]
 
 
 def test_record_without_a_binding_writes_nothing(tmp_path: Path) -> None:
@@ -371,6 +473,25 @@ def test_verify_refuses_a_hand_written_identity_claim(tmp_path: Path) -> None:
     assert refusal.kind == "identity_mismatch"
 
 
+def test_verify_refuses_a_hand_edited_profile(tmp_path: Path) -> None:
+    # Medium 3, round 1: the dispatch id is one of three identity fields the
+    # derivation owns. A profile the records never derived is the same forgery
+    # wearing two of its three names correctly, and `show` must not print it.
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1", profile="opus-high")
+    forged = verdict(reviewer_profile="codex-sol-max")
+    refusal = review_exchange.verify(forged, root)
+    assert refusal.kind == "identity_mismatch"
+
+
+def test_verify_refuses_a_hand_edited_lane(tmp_path: Path) -> None:
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1", lane="claude-native")
+    forged = verdict(reviewer_lane="zai")
+    refusal = review_exchange.verify(forged, root)
+    assert refusal.kind == "identity_mismatch"
+
+
 def test_scan_collects_verdicts_and_names_the_unreadable(tmp_path: Path) -> None:
     root = tmp_path / "dispatches"
     dispatch_dir(root, "d-1")
@@ -441,6 +562,29 @@ def test_exchange_refuses_a_non_repository(tmp_path: Path) -> None:
     report = review_exchange.exchange(empty, 332)
     assert report.code == 1
     assert report.lines[0] == "refusal=git_failed"
+
+
+def test_exchange_refuses_when_status_cannot_run_and_pushes_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # High 2, round 1: a status command that fails and prints nothing is an
+    # unestablished clean tree, not a clean one — the manufactured absence #105's
+    # invariant and CLAUDE.md's rtk rule both name — so the exchange refuses and
+    # pushes nothing, rather than reporting success it never earned.
+    repo = init_repo(tmp_path)
+    real_git = review_exchange.worktree.git
+
+    def git_except_status(*args: str, cwd: Path, check: bool = True) -> str:
+        if args[0] == "status":
+            raise review_exchange.worktree.GitError(args, "status refused")
+        return real_git(*args, cwd=cwd, check=check)
+
+    monkeypatch.setattr(review_exchange.worktree, "git", git_except_status)
+    report = review_exchange.exchange(repo, 332)
+    assert report.code == 1
+    assert report.lines[0] == "refusal=git_failed"
+    assert "status refused" in " ".join(report.lines)
+    assert worktree.remote_ref_sha(repo, "refs/heads/issue-332") is None
 
 
 def test_exchange_refuses_a_non_positive_issue_before_git(tmp_path: Path) -> None:

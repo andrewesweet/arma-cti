@@ -80,8 +80,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
+import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Final, NamedTuple
@@ -105,6 +107,10 @@ DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 # A commit is named in full or not at all: a shortened SHA names several commits, and a
 # binding that could mean two commits satisfies neither.
 FULL_SHA: Final = re.compile(r"\A[0-9a-f]{40}\Z")
+# `breaker.OK`, mirrored rather than imported so the completion ladder stays a local
+# decision over the records it reads (`tools/breaker.py` owns the vocabulary, and
+# `classify_run` is what ties `ok` to a zero exit behind `write_result`).
+OUTCOME_OK: Final = "ok"
 SHA_ERROR: Final = "a commit is named by its full 40-character SHA, never a shortened form"
 ISSUE_ERROR: Final = "the issue is named by its number, greater than zero"
 VERSION_ERROR: Final = "a verdict must be a version 1 object"
@@ -179,7 +185,12 @@ def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole
         )
     try:
         head = worktree.git("rev-parse", "HEAD", cwd=cwd).strip()
-        status = worktree.read_status(worktree.git("status", "--porcelain", cwd=cwd, check=False))
+        # `check` stays on: a status command that fails and prints nothing must
+        # refuse as `git_failed`, never read as an empty — that is, clean — tree.
+        # A filter or a crash that removes every line turns presence into absence
+        # (#105's invariant, the rtk rule's), and this path exists to stop two
+        # agents sharing one tree, so an unestablished clean is a refusal.
+        status = worktree.read_status(worktree.git("status", "--porcelain", cwd=cwd))
     except worktree.GitError as failure:
         return _git_failed(cwd, failure)
     if not status.clean:
@@ -403,11 +414,15 @@ class _Result(NamedTuple):
 def _binding_result(entry: Path) -> _Result | str:  # noqa: PLR0911 — the end-state ladder, one return per state
     """Read one candidate's `result.json`, or the reason it could not be read.
 
-    Completed is `write_result`'s completed shape — a returncode and an end, and no
-    refusal — because a run's exit code is a fact about the run, not a verdict on the
-    review, and `tools/dispatch.py` deliberately records no more. A result that
-    carries a `refusal` is a dispatch that never reached a lane; no result at all is
-    a dispatch still live or stopped without one; both are named facts, not gaps.
+    Completed is read from the **outcome**, never from the timestamps a refusal
+    also carries: `write_result` types every finished run, and only `outcome=ok`
+    completed. A run that ended quota-dead, provider-dead or unclassified did end
+    — it carries a returncode and an `ended_at` like any other — and it is
+    explicitly not a result, which is the failure-class table's own line; reading
+    its timestamps as completion is how a verdict gets recorded against a review
+    that never happened. A result that carries a `refusal` is a dispatch that
+    never reached a lane; no result at all is a dispatch still live or stopped
+    without one; both are named facts, not gaps.
     """
 
     def result(state: str, *, completed: bool = False) -> _Result:
@@ -425,13 +440,20 @@ def _binding_result(entry: Path) -> _Result | str:  # noqa: PLR0911 — the end-
     refused = "refusal" in read
     ended = isinstance(read.get("ended_at"), str) and bool(read["ended_at"])
     ran = "returncode" in read
+    outcome = read.get("outcome")
     if refused and ran:
         return "unreadable"
     if refused:
         return result("result=refusal")
-    if ran and ended:
-        return result(completed=True, state="result=completed")
-    return "unreadable"
+    if not ran or not isinstance(outcome, str) or not outcome:
+        # A result beside a returncode carries a typed outcome, always — this is
+        # not a shape `write_result` produces, so it is not a fact this scan reads.
+        return "unreadable"
+    if outcome != OUTCOME_OK:
+        return result(f"result=not_a_result:{outcome}")
+    if not ended:
+        return "unreadable"
+    return result(completed=True, state="result=completed")
 
 
 def derive_binding(issue: int, reviewed_sha: str, dispatch_root: Path) -> Bound | Refusal:
@@ -607,6 +629,68 @@ class Recorded(NamedTuple):
     path: Path
 
 
+def _write_verdict_once(path: Path, document: dict[str, object]) -> Refusal | None:
+    """Publish the verdict's file atomically, so that writing is once under concurrency too.
+
+    The record is written to a private staged file and then moved into place by
+    `os.link`, which is atomic and refuses a name that already exists: two
+    concurrent `record` calls cannot both pass a check-then-write window and
+    overwrite each other's findings, and the loser loses against a file that is
+    already whole — the target name never resolves to a half-written verdict, so
+    a concurrent reader (`show`) never meets a partial either. A file that does
+    occupy the slot is read back before it is answered, because the two ways to
+    be occupied want different hands: a verdict that parses is the once-written
+    record (`verdict_exists`), and one that does not is a corruption
+    (`verdict_unreadable`), refused with its recovery named rather than as an
+    unwritable slot. Nothing is ever overwritten; a write of this call's own
+    that fails anywhere short of the link leaves only its staged file, removed.
+    """
+    text = json.dumps(document, indent=2) + "\n"
+    staged_fd, staged_name = tempfile.mkstemp(
+        prefix=f"{path.name}.", suffix=".staged", dir=path.parent
+    )
+    staged = Path(staged_name)
+    try:
+        try:
+            with os.fdopen(staged_fd, "w", encoding="utf-8") as handle:
+                handle.write(text)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.link(staged, path)
+        except FileExistsError:
+            try:
+                parse_verdict(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError, json.JSONDecodeError):
+                return Refusal(
+                    "verdict_unreadable",
+                    (f"verdict={path}",),
+                    "The file occupying this verdict's place does not read back as one —"
+                    " a corruption, not a recorded verdict. Nothing was overwritten."
+                    " Read it; if it is no verdict of this dispatch's, remove it by"
+                    " hand and re-record from the dispatch records.",
+                )
+            return Refusal(
+                "verdict_exists",
+                (f"verdict={path}", f"reviewed_sha={document['reviewed_sha']}"),
+                "A verdict already exists for this dispatch. A re-review of the same SHA"
+                " is a new dispatch with its own record; editing findings into an existing"
+                " verdict is the swap this refusal exists to prevent.",
+            )
+        except OSError as failure:
+            return Refusal(
+                "verdict_unwritten",
+                (f"verdict={path}", f"found={type(failure).__name__}: {failure}"),
+                "The verdict could not be written, and nothing was left behind. Read the"
+                " error above — a full disk is the box's to fix, not the record's — then"
+                " re-record.",
+            )
+        return None
+    finally:
+        # On success the link holds the same inode, so removing the staged name
+        # removes only the staging; on every failure it removes the attempt.
+        staged.unlink(missing_ok=True)
+
+
 def record_verdict(
     issue: int,
     reviewed_sha: str,
@@ -620,9 +704,10 @@ def record_verdict(
     The caller supplies the three things it owns — the issue, the reviewed SHA, the
     findings — and nothing about who reviewed. The identity comes from
     `derive_binding`, the same derivation `show` re-runs later, so a verdict never
-    carries an identity some caller typed. Writing is once: a verdict that already
-    exists where this one would land refuses `verdict_exists`, because the finding
-    list is the one field a re-record could quietly swap.
+    carries an identity some caller typed. Writing is once, atomically: the file is
+    created exclusively (`_write_verdict_once`), so a verdict that already exists
+    where this one would land refuses `verdict_exists`, because the finding list is
+    the one field a re-record could quietly swap.
     """
     if issue <= 0:
         return Refusal(
@@ -646,15 +731,6 @@ def record_verdict(
     binding = derive_binding(issue, reviewed_sha, dispatch_root)
     if isinstance(binding, Refusal):
         return binding
-    path = verdict_path(dispatch_root, binding.dispatch_id)
-    if path.is_file():
-        return Refusal(
-            "verdict_exists",
-            (f"verdict={path}", f"reviewed_sha={reviewed_sha}"),
-            "A verdict already exists for this dispatch. A re-review of the same SHA"
-            " is a new dispatch with its own record; editing findings into an existing"
-            " verdict is the swap this refusal exists to prevent.",
-        )
     verdict = Verdict(
         issue=issue,
         reviewed_sha=reviewed_sha,
@@ -665,7 +741,10 @@ def record_verdict(
         recorded_at=now or datetime.now(tz=UTC).isoformat(),
         alternates=binding.alternates,
     )
-    path.write_text(json.dumps(verdict_document(verdict), indent=2) + "\n", encoding="utf-8")
+    path = verdict_path(dispatch_root, binding.dispatch_id)
+    written = _write_verdict_once(path, verdict_document(verdict))
+    if written is not None:
+        return written
     return Recorded(verdict, path)
 
 
@@ -692,23 +771,34 @@ def verify(verdict: Verdict, dispatch_root: Path) -> Bound | Refusal:
 
     The check that makes criterion three mechanical rather than declared: the record
     may claim any dispatch, and what settles the claim is the same derivation that
-    wrote it, run again at read time over the records as they stand. A verdict whose
-    named dispatch no longer derives — because the records changed, or because the
-    name was never derived — refuses `identity_mismatch`.
+    wrote it, run again at read time over the records as they stand. Every identity
+    field is checked, not only the dispatch id — the profile and the lane are as
+    much the derivation's to say, and a hand-edit of either is the same forged
+    identity wearing two of its three names correctly. A verdict whose named
+    identity no longer derives — because the records changed, or because the name
+    was never derived — refuses `identity_mismatch`.
     """
     binding = derive_binding(verdict.issue, verdict.reviewed_sha, dispatch_root)
     if isinstance(binding, Refusal):
         return binding
-    if binding.dispatch_id != verdict.review_dispatch:
+    if (binding.dispatch_id, binding.profile, binding.lane) != (
+        verdict.review_dispatch,
+        verdict.reviewer_profile,
+        verdict.reviewer_lane,
+    ):
         return Refusal(
             "identity_mismatch",
             (
-                f"claimed={verdict.review_dispatch}",
-                f"derived={binding.dispatch_id}",
+                (
+                    f"claimed={verdict.review_dispatch}"
+                    f" profile={verdict.reviewer_profile} lane={verdict.reviewer_lane}"
+                ),
+                f"derived={binding.dispatch_id} profile={binding.profile} lane={binding.lane}",
                 f"reviewed_sha={verdict.reviewed_sha}",
             ),
             "The dispatch records do not place this verdict's claimed reviewing"
-            " dispatch on this commit. A verdict is taken on the records, never on"
+            " identity on this commit — the dispatch, the profile and the lane are"
+            " the derivation's to say. A verdict is taken on the records, never on"
             " its own word — re-derive before trusting it.",
         )
     return binding

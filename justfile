@@ -405,10 +405,11 @@ land *args:
 #                                  whether it satisfies a named commit
 #
 # Refusals are named, each says what was found and what to do: invalid_issue,
-# invalid_sha, invalid_findings, dirty_tree, not_on_remote, ref_mismatch,
-# git_failed, no_dispatch_records, no_review_dispatch, records_unreadable,
-# verdict_exists, verdict_unreadable, no_verdict, unknown_dispatch,
-# sha_mismatch, identity_mismatch. Two carry the issue's own weight: a verdict
+# invalid_sha, invalid_findings, input_unreadable, dirty_tree, not_on_remote,
+# ref_mismatch, git_failed, no_dispatch_records, no_review_dispatch,
+# records_unreadable, verdict_exists, verdict_unreadable, verdict_unwritten,
+# no_verdict, unknown_dispatch, sha_mismatch, identity_mismatch. Two carry the
+# issue's own weight: a verdict
 # satisfies only the SHA it names (`sha_mismatch` names both commits, so an
 # amended or rebased branch rides no earlier approval), and any dispatch record
 # the binding scan cannot read refuses the whole derivation

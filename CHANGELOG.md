@@ -173,6 +173,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   difference that measures it; and the measurement test's `noqa` is bare with its
   justification above the line, where the length gate can still read it.
 
+### Fixed
+
+- **`just review` round 1: five review findings on the verdict machinery (#332).** Completion of
+  a reviewing dispatch is now read from the dispatcher's own typed outcome — only `outcome=ok`
+  completed — because a refused run (`quota_exhausted`, `provider_error`, an unclassified crash)
+  still carries a returncode and an `ended_at`, and reading those as completion let a verdict be
+  recorded against a review that never happened. The exchange's clean-tree check fails closed: a
+  `git status` that fails and prints nothing now refuses as `git_failed` instead of reading as an
+  empty — clean — tree and force-pushing on the strength of an absence it manufactured itself.
+  `show`'s identity re-derivation checks the profile and the lane as well as the dispatch id, so
+  a hand-edited identity field refuses `identity_mismatch` instead of being printed. Writing a
+  verdict is one atomic act (`O_EXCL`), so concurrent `record` calls cannot overwrite each
+  other's findings; a partial file occupying the slot refuses `verdict_unreadable` with its
+  recovery named, and a failed write leaves nothing behind (`verdict_unwritten`). The recipe's
+  refusal vocabulary now lists every class the tool emits.
+
 ### Added
 
 - **The never-alone decision surface is one module, and the exemption list is inverted: every
