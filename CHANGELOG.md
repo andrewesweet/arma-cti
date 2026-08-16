@@ -113,6 +113,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   The file's `compat` key went with the data it described, and its account of the window moved
   into `source`, which no longer promises a half the file does not hold.
 
+  **The `seats` field goes in the same landing, by the human's ruling of 2026-08-14 on #366.**
+  It was staged behind this deletion rather than taken earlier because the frozen half was its
+  last reader. `seats` listed the seats a row *matched*: it appended one evidence term and never
+  filtered, so it could only widen a class's match and never narrow one — a row author writing
+  `seats: ["orchestrator"]` as scoping landed no scoping at all, in a human sign-off file that
+  exists to be read before approval. No live row carried the key, so no routing decision moves.
+  `Rule.seats`, its parse and `issue_match`'s `if seat in rule.seats` branch are gone, and with
+  them the seat argument of `issue_match`, `classify_issue` and `dispatch.capture_strata`:
+  classification is on the declaration alone, and the seat decides only whether a matched row
+  *admits* the route, which is `required_seats`. A `seats` key written into the policy today is
+  ignored rather than refused — the parser tolerates unknown keys — which the class-2 test now
+  pins from both sides, the key absent from the document and the attribute absent from `Rule`.
+
 - **The pre-registered admission bar is dropped, and the departure is recorded as one (#328,
   ADR-0071 ruling 6).** No dispatch is refused by an admission verdict: the rung is gone from
   `just dispatch` rather than made permissive, and the dispatcher exposes no standing to read,
@@ -569,8 +582,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   still sends "anything touching ADRs" to a `fable` seat this class refuses; ADR-0071 ruling 2
   supersedes that mapping in substance, and closing the overlap is #329's and #330's.
 
-  **The policy file carries the pre-#326 document beside the new one for one transition
-  window.** A parser is imported by a running process, so an in-flight worktree's `just land`
+  **The policy file carried the pre-#326 document beside the new one for one transition
+  window** (that window closed with #365's deletion above, 2026-08-16). A parser is imported by a running process, so an in-flight worktree's `just land`
   reads the fetched policy with the module it started with — and the pre-#326 parser demanded
   the ordered class table 1..7, which retiring two ids breaks. Shipping only the new table would
   have refused every in-flight landing and dispatch until each worktree rebased, on a remedy
@@ -579,7 +592,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   unprefixed `classes`, `issue_exceptions` and `route_exceptions` keep the pre-#326 document
   frozen, and a parser reads one set whole and never mixes them: an old process is governed
   exactly as it was, and a new parser handed `origin/main`'s older copy still reads it.
-  Deleting the frozen half is owned by #365, not before 2026-08-21; the condition that stood
+  Deleting the frozen half was owned by #365, not before 2026-08-21 — a floor the human's
+  ruling of 2026-08-14 shortened, and #365 deleted the half on 2026-08-16; the condition that stood
   here before — "once no worktree predating this landing is in flight" — was withdrawn on
   arbitration because it is not computable, `just worktree list` sweeping registrations and
   this box carrying over 150 of them, most long abandoned.
@@ -626,7 +640,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   half refuses a dispatch naming the gates, its landing half refuses a non-Claude `just
   land` touching them — #331 is named in the remedy a refused reader actually sees, the
   withdrawn word is retired from the live remedies that print on every refusal (the frozen
-  pre-#326 half keeps its copy until #365 deletes it), and `fable`'s citation bar is
+  pre-#326 half kept its copy until #365 deleted it), and `fable`'s citation bar is
   recorded as an interval measure for the window between this issue and #328, which deletes
   the module — not a decision about how the seat is judged in perpetuity.
 

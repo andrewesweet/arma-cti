@@ -435,9 +435,11 @@ def classify_routing(
             ("check=enforcing actual diff", f"policy={read.error}"),
             "The trusted routing policy could not be read, so the routing gate cannot clear "
             "this landing. A parser predating #326 cannot read the re-founded document at "
-            "all, and in that case the policy is not broken: take a fresh `just worktree "
-            "add` first, and repair the policy on Claude only if a current worktree still "
-            f"cannot read it.{PUSHED_CLAUSE}",
+            "all, and in that case the policy is not broken: rebase this worktree onto "
+            f"{BASE} — which `just land` itself does before its own gate, so a plain "
+            "`just land` is the whole recovery from a `--dry-run` that refused here — or "
+            "take a fresh `just worktree add` where that is not available, and repair the "
+            f"policy on Claude only if a current worktree still cannot read it.{PUSHED_CLAUSE}",
         )
     if paths is None:
         return Refusal(

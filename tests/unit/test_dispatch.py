@@ -2373,7 +2373,7 @@ NO_PATH_BODY = "A change to the README prose only, naming no path.\n"
 
 
 def test_strata_records_an_in_world_issue_as_regress_with_its_class() -> None:
-    s = dispatch.capture_strata(IN_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
+    s = dispatch.capture_strata(IN_WORLD_BODY, 323, REPO, body_from_file=True)
     assert s.gate_tier == dispatch.Stratum.known("regress")
     # Lane-blind: a Claude-native dispatch carries the same class any other lane would. The
     # stable id and the mutable name are kept as two fields, not one `id:name` string.
@@ -2383,7 +2383,7 @@ def test_strata_records_an_in_world_issue_as_regress_with_its_class() -> None:
 
 
 def test_strata_records_a_non_world_issue_as_fast() -> None:
-    s = dispatch.capture_strata(NON_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
+    s = dispatch.capture_strata(NON_WORLD_BODY, 323, REPO, body_from_file=True)
     assert s.gate_tier == dispatch.Stratum.known("fast")
     # Non-world is about the gate tier, not the routing class: this body is fast *and*
     # carries a class, which is the combination that proves the two signals are independent.
@@ -2393,7 +2393,7 @@ def test_strata_records_a_non_world_issue_as_fast() -> None:
 
 
 def test_strata_records_no_routing_class_as_a_checked_absence() -> None:
-    s = dispatch.capture_strata(NO_CLASS_BODY, 323, "implementer", REPO, body_from_file=True)
+    s = dispatch.capture_strata(NO_CLASS_BODY, 323, REPO, body_from_file=True)
     # No class is RoutingClass("", "") and it is checked: we looked, and the issue declares
     # none. That is the third value #323 names, never collapsed with "could not look".
     assert s.routing_class == dispatch.Stratum.known(dispatch.RoutingClass("", ""))
@@ -2403,7 +2403,7 @@ def test_strata_labels_are_unchecked_when_the_body_came_from_issue_body() -> Non
     # `--issue-body` arms a dispatch where `gh` cannot reach GitHub, so labels are not
     # fetched — not "no labels". The value is None (no answer), and the distinction is the
     # one the observatory depends on.
-    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=True)
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, REPO, body_from_file=True)
     assert s.labels == dispatch.Stratum.unknown(s.labels.unchecked_why)
     assert s.labels.value is None
     assert s.labels.unchecked_why
@@ -2413,7 +2413,7 @@ def test_strata_labels_are_checked_when_gh_is_reachable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(dispatch.readiness, "fetch_labels", lambda *_: (("bug", "ui"), ""))
-    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=False)
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, REPO, body_from_file=False)
     assert s.labels == dispatch.Stratum.known(("bug", "ui"))
 
 
@@ -2423,7 +2423,7 @@ def test_strata_treats_an_empty_label_list_as_a_checked_absence(
     # An issue that carries no labels is checked-True with an empty tuple — the absence the
     # observatory must not mistake for "could not look", and distinct from None.
     monkeypatch.setattr(dispatch.readiness, "fetch_labels", lambda *_: ((), ""))
-    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=False)
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, REPO, body_from_file=False)
     assert s.labels == dispatch.Stratum.known(())
     assert s.labels.value == ()
 
@@ -2434,7 +2434,7 @@ def test_strata_labels_are_unchecked_when_gh_fails(
     monkeypatch.setattr(
         dispatch.readiness, "fetch_labels", lambda *_: ((), "gh did not answer within 30s")
     )
-    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=False)
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, REPO, body_from_file=False)
     assert s.labels == dispatch.Stratum.unknown("gh did not answer within 30s")
 
 
@@ -2445,7 +2445,7 @@ def test_strata_gate_is_unchecked_when_the_vocabulary_could_not_be_read(
     # the check could not run, which is the unchecked state — not a genuine undetermined.
     # Patched on `gate`, which is where capture_strata now reads it (not `brief`).
     monkeypatch.setattr(dispatch.gate, "read_vocabulary", lambda *_: ())
-    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=True)
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, REPO, body_from_file=True)
     assert s.gate_tier == dispatch.Stratum.unknown(s.gate_tier.unchecked_why)
     assert s.gate_tier.value is None
     assert s.gate_tier.unchecked_why
@@ -2454,7 +2454,7 @@ def test_strata_gate_is_unchecked_when_the_vocabulary_could_not_be_read(
 def test_strata_gate_undetermined_is_checked_when_the_vocabulary_was_readable() -> None:
     # A genuine undetermined (readable vocabulary, no paths) is a stratum, not a failure:
     # the two undetermined-states must not collapse into one.
-    s = dispatch.capture_strata(NO_PATH_BODY, 323, "implementer", REPO, body_from_file=True)
+    s = dispatch.capture_strata(NO_PATH_BODY, 323, REPO, body_from_file=True)
     assert s.gate_tier == dispatch.Stratum.known("undetermined")
 
 
@@ -2466,7 +2466,7 @@ def test_strata_routing_class_is_unchecked_when_the_policy_could_not_be_read(
         "read_policy",
         lambda *_: routing_policy.ReadResult(None, "policy unreadable"),
     )
-    s = dispatch.capture_strata(IN_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
+    s = dispatch.capture_strata(IN_WORLD_BODY, 323, REPO, body_from_file=True)
     assert s.routing_class == dispatch.Stratum.unknown("policy unreadable")
     assert s.routing_class.value is None
 
@@ -2558,7 +2558,7 @@ def test_the_routing_class_records_its_stable_id_separately_from_its_mutable_nam
     # #323 review finding 6: a class rename must not fragment the history the observatory
     # reads, so the stable id and the mutable name are two fields — and the flattened
     # `routing_class` string is gone.
-    s = dispatch.capture_strata(IN_WORLD_BODY, 323, "implementer", REPO, body_from_file=True)
+    s = dispatch.capture_strata(IN_WORLD_BODY, 323, REPO, body_from_file=True)
     assert s.routing_class.value == dispatch.RoutingClass("5", "in_world_landings")
     doc = s.document()
     assert doc["routing_class_id"] == "5"

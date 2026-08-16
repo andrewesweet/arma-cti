@@ -193,18 +193,16 @@ class Rule(NamedTuple):
     exception**, and that is its whole live effect; the field a row uses to reach the Claude
     lane is `required_seats`, and only that (review round 2 claim 2).
 
-    `seats` and `required_seats` are opposites and are deliberately not one field. `seats`
-    lists the seats a row **matches** — it appends one evidence term and never filters, so it
-    can only widen a match and never narrow one; #366 files the semantic, and since #327's
-    second round no row in this document carries the field. The frozen pre-#326 half did, and
-    was this parser's last reader of it until #365 deleted that half; the field is left here
-    because #366 owns the semantic and dropping it is that issue's call, not this deletion's.
     `required_seats` lists the seats a row **admits**: the match is on the declaration, and
-    the refusal fires for every seat that is not on the list, lane-blind. One is "this seat
-    is the problem", the other is "only this seat is the answer", and collapsing them would
-    have made class 3 unwritable without a lane bar — which is also why class 2's
-    `seats: ["orchestrator"]`, read as scoping and never scoping, was replaced by
-    `required_seats` in #327's second round rather than trusted.
+    the refusal fires for every seat that is not on the list, lane-blind. It is the only seat
+    field there is. The `seats` field that stood beside it is gone (#366, ruled 2026-08-14 and
+    staged behind #365's deletion of the frozen half, which was its last reader): `seats`
+    listed the seats a row **matched**, appending one evidence term and never filtering, so it
+    could only widen a match and never narrow one — a row author writing `seats:
+    ["orchestrator"]` as scoping got no scoping at all, which is what #327's second round found
+    on class 2 and replaced with `required_seats`. A parser that still carries the field is
+    pre-#365; a document carrying the key is read as if it did not, which is one reason the key
+    is absent from every row here.
     """
 
     id: int
@@ -212,7 +210,6 @@ class Rule(NamedTuple):
     label: str
     issue_path_prefixes: tuple[str, ...]
     issue_phrases: tuple[str, ...]
-    seats: tuple[str, ...]
     landing_path_prefixes: tuple[str, ...]
     remedy: str
     refuses: bool = True
@@ -363,7 +360,6 @@ def _rule(document: object) -> Rule:
         label=str(document["label"]),
         issue_path_prefixes=_strings(document.get("issue_path_prefixes"), "issue_path_prefixes"),
         issue_phrases=_strings(document.get("issue_phrases"), "issue_phrases"),
-        seats=_strings(document.get("seats"), "seats"),
         landing_path_prefixes=_strings(
             document.get("landing_path_prefixes"), "landing_path_prefixes"
         ),
@@ -524,11 +520,14 @@ def in_world_paths(policy: Policy, paths: Iterable[str]) -> tuple[str, ...]:
     return tuple(path for path in paths if any(path_matches(path, p) for p in prefixes))
 
 
-def issue_match(rule: Rule, body: str, seat: str) -> Match | None:
-    """Match one data row against the issue's declared surface and kind."""
+def issue_match(rule: Rule, body: str) -> Match | None:
+    """Match one data row against the issue's declared surface and kind.
+
+    No seat reaches this: with `seats` deleted (#366) the declaration is the whole of what a
+    row matches on, and the seat decides only whether a matched row *admits* the route, which
+    is `_appoints`'s question and is asked one rung up.
+    """
     evidence: list[str] = []
-    if seat in rule.seats:
-        evidence.append(f"seat={seat}")
     lowered = body.casefold()
     evidence.extend(
         f"phrase={phrase}" for phrase in rule.issue_phrases if phrase.casefold() in lowered
@@ -614,13 +613,10 @@ def _seat_evidence(rule: Rule, match: Match, route: Route) -> Match:
     if not rule.required_seats:
         return match
     appointed = " ".join(rule.required_seats)
-    # `issue_match` already appends `seat=` when the row *matches* on the seat, so a
-    # future row carrying both `seats` and `required_seats` would otherwise print it
-    # twice to the refused reader (review round 2 claim 11). No shipped row does today;
-    # the de-duplication is by rule rather than by nobody having written that row yet.
-    seat = f"seat={route.seat}"
-    evidence = match.evidence if seat in match.evidence else (*match.evidence, seat)
-    return Match(rule, (*evidence, f"required_seats={appointed}"))
+    # One `seat=` term, and since #366 deleted `seats` there is only one place it can come
+    # from — this one. The de-duplication round 2 claim 11 asked for guarded against a row
+    # matching on a seat *and* appointing one; no row can match on a seat now.
+    return Match(rule, (*match.evidence, f"seat={route.seat}", f"required_seats={appointed}"))
 
 
 def advisory_read(policy: Policy, body: str, route: Route) -> Advisory:
@@ -644,7 +640,7 @@ def advisory_read(policy: Policy, body: str, route: Route) -> Advisory:
     for rule in _refusing_rules(policy, route.lane):
         if _appoints(rule, route.seat):
             continue
-        found = issue_match(rule, body, route.seat)
+        found = issue_match(rule, body)
         if found is None:
             continue
         match = _seat_evidence(rule, found, route)
@@ -660,8 +656,13 @@ def advisory_match(policy: Policy, body: str, route: Route) -> Match | None:
     return advisory_read(policy, body, route).refusal
 
 
-def classify_issue(policy: Policy, body: str, seat: str) -> Match | None:
+def classify_issue(policy: Policy, body: str) -> Match | None:
     """Return the routing class an issue's declaration puts it in, lane-blind (#323).
+
+    Seat-blind too, and now visibly so: the seat this took until #366 deleted `seats` could
+    only ever have *added* a class the body did not declare, which is the opposite of the
+    stable signal a stratification wants. Nothing is lost by its going, because no shipped row
+    ever carried the field.
 
     `advisory_match` answers the enforcement question — may this *non-exempt* route
     take this class — and so returns `None` on the Claude lane before it looks. The
@@ -681,7 +682,7 @@ def classify_issue(policy: Policy, body: str, seat: str) -> Match | None:
     trap) would bucket both as blank.
     """
     for rule in policy.rules:
-        match = issue_match(rule, body, seat)
+        match = issue_match(rule, body)
         if match is not None:
             return match
     return None

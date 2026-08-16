@@ -788,7 +788,7 @@ def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluati
     policy_read = routing_policy.read_policy(repo / routing_policy.POLICY_RELATIVE)
     routing_class: int | None = None
     if policy_read.policy is not None:
-        match = routing_policy.classify_issue(policy_read.policy, body, seat_name)
+        match = routing_policy.classify_issue(policy_read.policy, body)
         if match is not None:
             routing_class = match.rule.id
     conditions_read = escalation.read_conditions(repo / escalation.CONDITIONS_RELATIVE)

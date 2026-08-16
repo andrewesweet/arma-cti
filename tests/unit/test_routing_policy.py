@@ -243,17 +243,20 @@ def test_class_2_is_founded_on_its_route_rather_than_on_a_lane() -> None:
     assert routing_policy.advisory_match(policy(), body, taken_properly) is None
     orchestration = next(rule for rule in policy().rules if rule.id == 2)
     assert orchestration.required_seats == ORCHESTRATION_ADMITTED
-    assert orchestration.seats == ()
     assert orchestration.landing_path_prefixes == ()
-    # The document no longer carries the field that reads as scoping and is not. The frozen
-    # pre-#326 half did, and #365 deleted it along with the rest of that half; the `seats`
-    # field itself survives in the parser, and #366 owns whether it should.
+    # Neither the document nor the parser carries the field that reads as scoping and is not:
+    # the frozen pre-#326 half was its last reader, and #366's ruled deletion rode #365's
+    # removal of that half. The row must not regrow the key, and the parser must not regrow
+    # the attribute — a `seats` key written today is ignored, which is only safe while no row
+    # writes one.
     live_class_2 = next(
         row
         for row in json.loads(POLICY.read_text(encoding="utf-8"))[LIVE.classes]
         if row["id"] == 2
     )
     assert "seats" not in live_class_2
+    assert not hasattr(orchestration, "seats")
+    assert "seats" not in routing_policy.Rule._fields
 
 
 def test_class_2_carries_no_landing_half_because_a_landing_has_no_seat() -> None:
@@ -633,7 +636,7 @@ def test_class_4_is_declaration_only_and_refuses_no_route() -> None:
     assert shape.refuses is False
     declared = "Routing-class: #181-shape"
     assert routing_policy.advisory_match(policy(), declared, route()) is None
-    assert routing_policy.classify_issue(policy(), declared, "implementer").rule.id == 4
+    assert routing_policy.classify_issue(policy(), declared).rule.id == 4
 
 
 def test_class_4s_remedy_is_the_escalation_condition_that_actually_fires() -> None:
@@ -645,7 +648,7 @@ def test_class_4s_remedy_is_the_escalation_condition_that_actually_fires() -> No
     that fires is named by the same class.
     """
     declared = "Routing-class: #181-shape"
-    match = routing_policy.classify_issue(policy(), declared, "implementer")
+    match = routing_policy.classify_issue(policy(), declared)
     assert match is not None
     outcome = escalation.evaluate(
         escalation.read_conditions(CONDITIONS),
@@ -742,25 +745,18 @@ def test_binds_every_instance_does_not_reach_the_claude_lane_and_required_seats_
 
 
 def test_a_seat_bound_rows_evidence_names_the_seat_once() -> None:
-    """Round 2 claim 11: a row matching on a seat *and* appointing one printed `seat=` twice.
+    """Round 2 claim 11's `seat=` duplicate, now unreachable rather than de-duplicated.
 
-    No shipped row carries both `seats` and `required_seats`, so this plants the shape rather
-    than waiting for someone to write it — the de-duplication is by rule, not by absence.
+    The duplicate needed a row matching on a seat *and* appointing one, and #366's deletion of
+    `seats` removed the only field a row could match a seat on: `_seat_evidence` is the sole
+    source of a `seat=` term. Pinned on the refused reader's evidence rather than on the
+    helper, so the claim stays checked without the planted shape that can no longer exist.
     """
-    parsed = policy()
-    both = parsed._replace(
-        rules=tuple(
-            rule._replace(seats=("implementer",), required_seats=("planner",))
-            if rule.id == 3
-            else rule
-            for rule in parsed.rules
-        )
-    )
-    route_taken = routing_policy.Route("zai", "zai-glm52-max", "implementer", NOW)
-    match = routing_policy.advisory_match(both, "ADR authorship for #999.", route_taken)
+    route_taken = routing_policy.Route("zai", "zai-glm52-max", "retro", NOW)
+    match = routing_policy.advisory_match(policy(), "ADR authorship for #999.", route_taken)
     assert match is not None
-    assert match.evidence.count("seat=implementer") == 1
-    assert "required_seats=planner" in match.evidence
+    assert match.evidence.count("seat=retro") == 1
+    assert "required_seats=planner implementer review recon" in match.evidence
 
 
 def test_a_route_exception_cannot_except_the_class_that_binds_every_instance() -> None:
@@ -1065,7 +1061,7 @@ def test_work_outside_every_class_dispatches_unimpeded() -> None:
 def test_the_live_map_ui_example_still_classifies_as_the_in_world_class() -> None:
     """It no longer refuses, but it must still classify — the observatory reads this."""
     body = "Build the client map UI through the mode=1 remoteExec whitelist."
-    match = routing_policy.classify_issue(policy(), body, "implementer")
+    match = routing_policy.classify_issue(policy(), body)
     assert match is not None
     assert match.rule.id == 5
 

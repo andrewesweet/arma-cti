@@ -3072,7 +3072,7 @@ def _read_routing_policy(root: Path) -> routing_policy.ReadResult:
     return routing_policy.read_policy(_policy_path(root))
 
 
-def capture_strata(body: str, issue: int, seat: str, root: Path, *, body_from_file: bool) -> Strata:
+def capture_strata(body: str, issue: int, root: Path, *, body_from_file: bool) -> Strata:
     """Compute the three pre-work strata at dispatch time (#323).
 
     Pure of the request's mutable state: nothing here depends on the lane, the profile or
@@ -3086,10 +3086,11 @@ def capture_strata(body: str, issue: int, seat: str, root: Path, *, body_from_fi
     readable vocabulary decides everything else — including a genuine `undetermined`, which
     is a stratum and not a failure.
 
-    Routing class: lane-blind `classify_issue`, so a Claude-native dispatch carries the
-    class any other lane would. A body that declares no class is the empty string and is
-    distinct from an unreadable policy, which is the unchecked state — the third value
-    #323 names, never collapsed with 'no class'.
+    Routing class: lane-blind `classify_issue`, and seat-blind since #366 deleted `seats` —
+    the seat this took could only have added a class the body never declared — so a
+    Claude-native dispatch carries the class any other lane would. A body that declares no
+    class is the empty string and is distinct from an unreadable policy, which is the
+    unchecked state — the third value #323 names, never collapsed with 'no class'.
 
     Labels: skipped when the body came from `--issue-body`, because that mode arms a
     dispatch where `gh` cannot reach GitHub — there are no labels to fetch, not 'no
@@ -3115,7 +3116,7 @@ def capture_strata(body: str, issue: int, seat: str, root: Path, *, body_from_fi
     if read.policy is None:
         routing_class = Stratum.unknown(read.error)
     else:
-        match = routing_policy.classify_issue(read.policy, body, seat)
+        match = routing_policy.classify_issue(read.policy, body)
         # The stable id and the mutable name are recorded as two fields, not an `id:name`
         # string, so renaming a class cannot fragment the history the observatory reads
         # (#323 review finding 6). No match is `RoutingClass("", "")` — a checked absence.
@@ -3398,9 +3399,7 @@ def plan_dispatch(
         breaker_dir=breaker_dir,
         advisories=readiness_advisories(args.issue, found),
         routing=routing_clearance(args, root, found, now),
-        strata=capture_strata(
-            found.body, args.issue, route.seat, root, body_from_file=bool(args.issue_body)
-        ),
+        strata=capture_strata(found.body, args.issue, root, body_from_file=bool(args.issue_body)),
     )
     return plan, brief, None
 
