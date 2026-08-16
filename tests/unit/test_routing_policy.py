@@ -9,7 +9,6 @@ the two classes the re-founding deleted refuse nothing.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 import shutil
@@ -52,16 +51,10 @@ NOW = datetime(2026, 8, 8, 12, 0, tzinfo=UTC)
 # carried one again would be reviving a rule the record killed under its own old number.
 RETIRED = (1, 7)
 
-# The keys the live document lives under. Named rather than spelled, because the file also
-# carries the pre-#326 document under the unprefixed keys for the transition window, and a
-# test that mutated `classes` would be editing the half no parser of this vintage reads.
+# The keys the document lives under. Named rather than spelled: until #365 the file also
+# carried the pre-#326 document under the unprefixed keys, and a test that mutated `classes`
+# would have been editing the half no parser of this vintage reads.
 LIVE: Final = routing_policy.REFOUNDED
-LEGACY: Final = routing_policy.LEGACY
-
-# `sha256` over the frozen half as the landed file carries it, computed from that file. The
-# half is value-identical to `bbb6ade`, so this is the digest of the intended content rather
-# than of drift that had already happened.
-FROZEN_HALF_DIGEST: Final = "7169d99bfdd08321c8bf4eda46ae51f1f68713ae346314160fdc019b8e246b67"
 
 # The body both halves of the seam pair share: ready-shaped, with a scope naming
 # `tools/dispatch.py` so the gates row's dispatch half refuses it on any lane. Read from the
@@ -125,164 +118,78 @@ def test_a_table_that_dropped_a_class_another_module_addresses_cannot_govern() -
             routing_policy.parse_policy(json.dumps(document))
 
 
-# --- the pre-#326 document, frozen for the transition window --------------------------------
+# --- one document, since the transition window closed (#365) --------------------------------
 
 
-def pre_326_read(document: dict[str, Any]) -> list[dict[str, Any]]:
-    """Read a policy the way `tools/routing_policy.py` did before this branch, and refuse alike.
+def test_the_file_carries_one_document_and_the_frozen_half_is_gone() -> None:
+    """#365: the pre-#326 half is deleted, and nothing may write a class table back beside it.
 
-    A transcription of `_rules` and `_rule` as `origin/main` carried them at `bbb6ade`, not an
-    import of them: a test that loaded the historical blob would red on a shallow clone and
-    would pin this project's gate to a git object's continued existence. What it transcribes is
-    the whole of what that parser demanded of the document — the ordered table 1..7, unique
-    names, a remedy on every row, the in-world row found *by position*, and the four keys
-    `_rule` indexes without a default.
-
-    It exists for one measurement: the older parser is the one an in-flight worktree's running
-    `just land` imported, and it is handed this branch's policy the moment this lands (#326
-    review round 3, claim 1). Deleted with the frozen half of the document it reads.
-    """
-    classes = document["classes"]
-    assert isinstance(classes, list), "classes must be a list"
-    for row in classes:
-        for key in ("id", "name", "label", "remedy"):
-            assert key in row, f"pre-#326 `_rule` indexes {key} without a default"
-        assert row["remedy"], "every class must name its remedy"
-    assert tuple(row["id"] for row in classes) == tuple(range(1, 8)), (
-        "classes must be the ordered table 1..7"
-    )
-    assert len({row["name"] for row in classes}) == len(classes), "class names must be unique"
-    # By index, which is what made the ids a position rather than a handle.
-    in_world = classes[routing_policy.IN_WORLD_CLASS_ID - 1]
-    assert in_world["landing_path_prefixes"], "class 5 must carry landing_path_prefixes"
-    for raw in document.get("route_exceptions", []):
-        assert (raw.get("standing") is True) != ("expires_at" in raw), "standing xor expires_at"
-    return classes
-
-
-def test_the_landed_policy_is_still_readable_by_a_parser_that_predates_this_branch() -> None:
-    """#326 review round 3, claim 1: the direction round 2 did not check.
-
-    A parser is imported by a running process. `just land` in a worktree branched before this
-    landing reads the policy out of fetched `origin/main` with the module that process started
-    with, and the rebase brings the new one into the tree but not into the process. Shipping
-    only the re-founded table made that read fail — `PolicyError: classes must be the ordered
-    table 1..7` — and its remedy tells the reader to repair a policy that is not broken, on a
-    class-6 gated file. So the pre-#326 document stays under the unprefixed keys until no such
-    worktree is in flight, and this is the measurement that says it is readable.
-    """
-    legacy = pre_326_read(json.loads(POLICY.read_text(encoding="utf-8")))
-    assert [row["id"] for row in legacy] == [1, 2, 3, 4, 5, 6, 7]
-
-
-def test_the_source_string_is_true_under_both_readings_of_this_file() -> None:
-    """`source` is the one key both parser vintages read, so it must serve both readers.
-
-    A process predating #326 is refused under the frozen half's class 1 and is shown that
-    half's remedy beside this string. Told the authority is a table that does not contain the
-    class it was just refused by, that reader may conclude the gate file is corrupt and go and
-    edit it — the induced wrong repair the compatibility half exists to prevent, arriving at
-    the same class-6 gated file by a different door. The frozen row's `remedy` must stay
-    frozen and the old parser reads `document["source"]` by a name it cannot be told to
-    change, so this string is the only channel that reaches that reader.
-
-    Substring assertions are weak proof and are not pretended otherwise: their purpose is
-    drift detection on a string that has no other guard, so that a later tidy-up cannot
-    silently reintroduce the single-reading wording. Deleted with the frozen half (#365).
-    """
-    source = json.loads(POLICY.read_text(encoding="utf-8"))["source"]
-    assert "#326" in source, "the re-founded half's authority must be named"
-    assert "#258" in source, "the frozen half's authority must be named, and still in force"
-    assert "#217" in source
-    assert LIVE.classes in source, "the re-founded half must be identified by key"
-    assert LEGACY.classes in source, "the frozen half must be identified by key"
-    assert "superseding" not in source, "#258 governs the frozen half rather than being past"
-    assert "the policy is not broken" in source, (
-        "the reader refused by an id the live table does not carry must be told where that "
-        "refusal came from and that the file is not broken"
-    )
-
-
-def test_the_frozen_half_is_pinned_against_a_silent_edit() -> None:
-    """No parser of this vintage reads the frozen half, so an edit into it is a silent no-op.
-
-    That is the hazard of carrying two tables: a grant written into `classes` by habit raises
-    no error and no warning — it simply does not exist. This digest makes such an edit loud.
-    A pinned digest rather than a git object, because a shallow clone carries no history to
-    compare against. Deleted with the frozen half (#365).
+    The hazard this replaces is the one the frozen half's digest guarded: two class tables in
+    one file, where an edit into the wrong one raises no error and simply does not exist. The
+    guard now is that there is only one, and the unprefixed keys are free for nothing.
     """
     document = json.loads(POLICY.read_text(encoding="utf-8"))
-    frozen = json.dumps(
-        {key: document[key] for key in LEGACY}, sort_keys=True, separators=(",", ":")
-    )
-    assert hashlib.sha256(frozen.encode("utf-8")).hexdigest() == FROZEN_HALF_DIGEST
+    for key in ("classes", "issue_exceptions", "route_exceptions", "compat"):
+        assert key not in document, f"the frozen half's `{key}` was deleted by #365"
 
 
-def test_this_parser_still_reads_a_copy_that_carries_only_the_pre_326_document() -> None:
-    """The other diagonal: `origin/main`'s copy, read by this branch's parser.
+def test_a_parser_reads_the_refounded_document_whole() -> None:
+    """One view, read together or not at all: the table and the exceptions written against it.
 
-    `just land` reads the *trusted* policy out of fetched `origin/main`, so between this
-    landing and the next fetch a new parser is handed an old document. It takes the legacy view
-    whole — seven rows, and the exceptions that belong to them — because a document with no
-    re-founded table is a pre-#326 document and not a re-founded one missing its exceptions.
-    """
-    document = json.loads(POLICY.read_text(encoding="utf-8"))
-    for key in (LIVE.classes, LIVE.issue_exceptions, LIVE.route_exceptions):
-        document.pop(key)
-    parsed = routing_policy.parse_policy(json.dumps(document))
-    assert [rule.id for rule in parsed.rules] == [1, 2, 3, 4, 5, 6, 7]
-    assert len(parsed.issue_exceptions) == 3
-    assert {entry.profile for entry in parsed.route_exceptions} == {
-        "codex-sol-xhigh",
-        "codex-sol-max",
-    }
-
-
-def test_a_parser_reads_one_document_whole_and_never_mixes_the_two() -> None:
-    """The failure the `View` shape forbids, asserted on both halves of the mix.
-
-    Reading the re-founded classes beside the legacy exceptions would hand a class-1 allowance
-    to a table with no class 1 — which `parse_policy` refuses outright — and reading the legacy
-    classes beside the empty re-founded exceptions would silently withdraw #300's standing
-    retro allowance from a document that still carries it.
+    While two vintages lived here this asserted that neither half's exceptions could be read
+    beside the other half's table. One is left, so what it asserts is that the live read is the
+    re-founded one — five rows and no exceptions — rather than a partial mixture of keys.
     """
     parsed = policy()
     assert [rule.id for rule in parsed.rules] == [2, 3, 4, 5, 6]
     assert parsed.issue_exceptions == ()
     assert parsed.route_exceptions == ()
-    # The legacy exceptions are still in the file, and are not what this parser read.
-    document = json.loads(POLICY.read_text(encoding="utf-8"))
-    assert len(document[LEGACY.issue_exceptions]) == 3
-    assert len(document[LEGACY.route_exceptions]) == 2
 
 
-def test_the_frozen_half_still_says_what_an_in_world_surface_is() -> None:
-    """The one authority (#302) cannot depend on the vintage of the parser that read it.
+def test_a_document_carrying_only_the_pre_326_keys_is_refused_rather_than_read() -> None:
+    """The direction the deleted `LEGACY` view used to serve, now a refusal.
 
-    Class 5's landing prefixes are read by `just land`'s corpus rung, `tools/gate.py` and
-    `tools/brief.py`. A frozen half whose list had drifted would make "is this diff in-world"
-    answerable two ways in one window, which is the defect #302 was filed about wearing the
-    compatibility fix's clothes.
+    `just land` reads the trusted policy out of fetched `origin/main`, which has carried the
+    re-founded keys since #326 landed, so no live read can be handed a pre-#326 document any
+    more. One renamed to the unprefixed keys must therefore fail closed rather than be read
+    under the old view — and the failure is the missing table, not a silently empty one.
     """
     document = json.loads(POLICY.read_text(encoding="utf-8"))
-    frozen = next(row for row in document[LEGACY.classes] if row["id"] == 5)
-    assert tuple(frozen["landing_path_prefixes"]) == routing_policy.in_world_prefixes(policy())
-    assert tuple(frozen["issue_path_prefixes"]) == tuple(
-        next(rule for rule in policy().rules if rule.id == 5).issue_path_prefixes
-    )
+    renamed = {"classes" if key == LIVE.classes else key: value for key, value in document.items()}
+    renamed.pop(LIVE.issue_exceptions)
+    renamed.pop(LIVE.route_exceptions)
+    with pytest.raises(routing_policy.PolicyError):
+        routing_policy.parse_policy(json.dumps(renamed))
 
 
-def test_the_file_says_which_half_is_frozen_and_when_it_goes() -> None:
-    """A reader meeting two class tables is told why there are two, in the file itself."""
+def test_the_source_string_records_the_window_that_closed() -> None:
+    """`source` was the one key both parser vintages read; now it is the record of why.
+
+    Substring assertions are weak proof and are not pretended otherwise: their purpose is
+    drift detection on a string that has no other guard, so that a later tidy-up cannot
+    silently drop the account of what this file used to carry and on whose ruling it stopped.
+    """
+    source = json.loads(POLICY.read_text(encoding="utf-8"))["source"]
+    assert "#326" in source, "the re-founded table's authority must be named"
+    assert "#258" in source, "the table #326 re-founded must still be traceable"
+    assert "#217" in source
+    assert "#365" in source, "the deletion must name the issue that owns it"
+    assert "2026-08-14" in source, "the human's ruling closing the window must be dated"
+    assert LIVE.classes in source, "the live document must be identified by key"
+
+
+def test_the_in_world_authority_is_the_live_class_five_alone() -> None:
+    """The one authority (#302), with no second copy left that could answer differently.
+
+    Class 5's landing prefixes are read by `just land`'s corpus rung, `tools/gate.py` and
+    `tools/brief.py`. What made this checkable twice was the frozen half carrying its own
+    class 5; with that gone, the check is that the readers' authority is this row and that the
+    file holds no other list under that id.
+    """
     document = json.loads(POLICY.read_text(encoding="utf-8"))
-    compat = document["compat"]
-    assert LIVE.classes in compat
-    assert LEGACY.classes in compat
-    # An owner and a date rather than a condition nothing evaluates: the elapsed-time phrasing
-    # this replaces told every reader that no one need act (#365).
-    assert "#365" in compat
-    assert "not before 2026-08-21" in compat
-    assert "not computable" in compat
+    rows = [row for row in document[LIVE.classes] if row["id"] == routing_policy.IN_WORLD_CLASS_ID]
+    assert len(rows) == 1
+    assert tuple(rows[0]["landing_path_prefixes"]) == routing_policy.in_world_prefixes(policy())
 
 
 # --- one landing under each surviving class ------------------------------------------------
@@ -338,9 +245,9 @@ def test_class_2_is_founded_on_its_route_rather_than_on_a_lane() -> None:
     assert orchestration.required_seats == ORCHESTRATION_ADMITTED
     assert orchestration.seats == ()
     assert orchestration.landing_path_prefixes == ()
-    # The live document no longer carries the field that reads as scoping and is not; the
-    # frozen pre-#326 half still does, and is #365's to delete rather than this test's to
-    # tolerate silently.
+    # The document no longer carries the field that reads as scoping and is not. The frozen
+    # pre-#326 half did, and #365 deleted it along with the rest of that half; the `seats`
+    # field itself survives in the parser, and #366 owns whether it should.
     live_class_2 = next(
         row
         for row in json.loads(POLICY.read_text(encoding="utf-8"))[LIVE.classes]

@@ -97,6 +97,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **The frozen pre-#326 half of the routing policy is deleted, and the compatibility machinery
+  that read it with it (#365).** `config/dispatch-routing-policy.json` carried two class tables
+  for one transition window — the live `routing_classes` re-founded by #326, and the pre-#326
+  `classes`, `issue_exceptions` and `route_exceptions` frozen verbatim so that an in-flight
+  worktree's already-running `just land` or `just dispatch` could still read a document its
+  parser understood. The arbiter set the deletion at 2026-08-21 as a decision rather than a
+  measurement, and the human shortened it to 2026-08-16 by ruling of 2026-08-14. Every routing
+  decision is unchanged: nothing read the frozen half to decide anything, and the live table,
+  its exceptions and class 5's in-world authority are untouched. `routing_policy.LEGACY` and
+  `_view` are gone with the data, derived rather than assumed — `_view` returned the legacy
+  keys only for a document lacking `routing_classes`, and this parser's only two sources are
+  the working tree's copy and `origin/main`'s, both of which have carried the re-founded keys
+  since #326 landed. A document spelling the unprefixed keys is now refused rather than read.
+  The file's `compat` key went with the data it described, and its account of the window moved
+  into `source`, which no longer promises a half the file does not hold.
+
 - **The pre-registered admission bar is dropped, and the departure is recorded as one (#328,
   ADR-0071 ruling 6).** No dispatch is refused by an admission verdict: the rung is gone from
   `just dispatch` rather than made permissive, and the dispatcher exposes no standing to read,
