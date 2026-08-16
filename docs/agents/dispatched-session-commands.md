@@ -14,7 +14,7 @@ For where a dispatched session may *write*, see `docs/multi-provider-dispatch.md
 |---|---|---|
 | `grep`, `rg`, `find`, `wc` | 2026-08-10: refused — `This command requires approval`. **2026-08-16, RTK removed: runs** | **runs** |
 | `awk` | refused | refused |
-| `python3 -c` | refused | refused |
+| `python3 -c` | **not unconditional** — 2026-08-10 (`acceptEdits`): refused. 2026-08-16 (`acceptEdits`): refused. 2026-08-16 (`plan`): **runs**. See cause 2 | refused (2026-08-10) |
 | `uv run python -c` | refused | — |
 | `ls`, `cat`, `sed -n`, `jq`, `tr`, `echo`, `printf` | runs | — |
 
@@ -30,15 +30,27 @@ naming a form nobody typed. `rtk grep …` was not something the harness recogni
 
 **Re-measured 2026-08-16 (#396), RTK removed from the host.** Bare `grep -c … AGENTS.md`, `rg -c … AGENTS.md`, `find . -maxdepth 1 -name AGENTS.md` and `wc -l AGENTS.md` were each attempted individually in a dispatched session and each ran, with no approval prompt. The whole of cause 1 is discharged, and no escape is needed for these four. Caveat on the measurement's reach: it was taken in one session under this repository's own allowlist, so a seat still meeting a refusal on one of these four is meeting something other than the rewrite and should record what.
 
-That session's arrangement, stated because the arrangement moves the answer — a reviewer reproducing the same four commands at `--permission-mode plan` and `xhigh` effort also got `python3 -c` to run, which the table above records as refused. Model `claude-opus-5`, lane `claude-native` (Claude Code against Anthropic's endpoint; no lane environment was assembled over it), non-interactive, permission mode writable — file edits were applied without a prompt — and the exact mode string, the effort level and the seat could **not** be determined from inside the session: `ps -eo pid,ppid,args` and `printenv` were each refused with `This command requires approval`, `$PPID` was denied by a repository hook (`Contains simple_expansion`), and `/proc` and every path outside the worktree were blocked by the working-directory confinement. So this row's arrangement is named as far as it could be measured and no further; do not read the undetermined halves as matching the 2026-08-10 row.
+That session's arrangement, stated because the arrangement moves the answer: `claude --print --model opus --effort low --permission-mode acceptEdits`, seat `implementer`, lane `claude-native`, profile `opus-low`, worktree `.claude/worktrees/issue-396`, run 16:42:35→16:51:47Z with the commit carrying the measurement falling inside that window. **The route to those fields is a dispatch's own record** — `~/.arma-cti/dispatches/$CTI_DISPATCH_ID/dispatch.json`, written at dispatch time and carrying `argv`, seat, lane, profile, worktree and base SHA — and a seat that cannot read it there still has `printenv`, which exports `CTI_DISPATCH_SEAT`, `CTI_DISPATCH_LANE`, `CTI_DISPATCH_PROFILE`, `CTI_DISPATCH_ID` and `CLAUDE_EFFORT`. Determine an arrangement from that record before reporting any part of it as unknown.
 
-That confinement is itself an arrangement difference worth naming: here `cat /home/andre/.arma-cti/…` and `ls` on the same path were blocked outside the worktree, where the 2026-08-10 session's `cat` on an outside path ran.
+In that session `ps -eo pid,ppid,args` and `printenv` were each refused with `This command requires approval`, and `ps -o args= -p $PPID` was denied on `Contains simple_expansion` — which is **Claude Code's own Bash permission parser** declining prefix-match auto-approval for a command carrying shell expansion, not a hook of this repository's. Nothing in `.claude/hooks/` contains that string; do not go looking for it there.
 
-**`python3 -c`, re-measured 2026-08-16 (#396) in that same session: refused** — `This command requires approval`, on `python3 -c 'print(1)'` alone. Recorded as its own dated row rather than as an amendment to cause 2's, because the reviewer's `--permission-mode plan` / `xhigh` session ran it. Two arrangements, two answers, and neither generalises to the other. `awk` and `uv run python -c` were not re-measured here.
+**Working-directory confinement, 2026-08-16 (#396) in that `acceptEdits` session: `cat /home/andre/.arma-cti/…` and `ls` on the same path were both blocked** outside the worktree. That is one of three measurements which disagree, so it is dated rather than stated flatly: the 2026-08-10 session's `cat` on an outside path ran, and the reviewer's 2026-08-16 `--permission-mode plan` session had both `cat` and `ls` run there. The "Two confinements" bullet below describes the 2026-08-10 result and is dated to it. An outside-worktree read is therefore not settled — attempt it, and if it is blocked take the block as this session's answer rather than as a contradiction to resolve.
+
+**`python3 -c`, re-measured 2026-08-16 (#396) in that same session: refused** — `This command requires approval`, on `python3 -c 'print(1)'` alone. `awk` and `uv run python -c` were not re-measured here. This is cause 2's row and belongs to it, but it is **not** unconditional: see the three-point record under cause 2.
 
 The generalisable half, kept because the mechanism can return: any hook that rewrites a Bash command before the permission decision changes *what the harness is asked to approve*, so an absence or a refusal seen through it is a fact about the filter and not about the command.
 
 **2. Arbitrary execution, for `awk`, `python3 -c`, `uv run python -c`.** Refused escaped as well as bare. Each can write files and run arbitrary code, so the harness does not auto-approve it under `acceptEdits`. No escape helps and none should.
+
+**`python3 -c` is not refused unconditionally**, and three measurements now exist:
+
+| date | effort | permission mode | `python3 -c` |
+|---|---|---|---|
+| 2026-08-10 | `high` | `acceptEdits` | refused |
+| 2026-08-16, fixing round | `low` | `acceptEdits` | refused |
+| 2026-08-16, review | `xhigh` | `plan` | **ran** |
+
+**Permission mode is the candidate variable.** It tracks the answer exactly across all three, effort does not (`high` refused, `low` refused, `xhigh` ran — non-monotonic), and this cause's own sentence supplies the mechanism: *"the harness does not auto-approve it under `acceptEdits`"*. Say candidate and mean it — three points, and effort co-varied across every one of them, so the confound is not separated and nothing here establishes permission mode as the cause. A seat that needs the answer for its own mode measures it in that mode.
 
 **3. Compound decomposition.** A `&&`, `;` or `|` chain is split and every part must be permitted on its own, with no read-only auto-approval for the chain as a whole:
 
@@ -53,7 +65,7 @@ A command that runs perfectly well alone can be refused inside a chain — which
 
 ## Two confinements worth knowing before you meet them
 
-- **`grep` is confined to the session's working directory**, and says so: `grep in '…' was blocked. For security, Claude Code may only search for patterns in files from the allowed working directories for this session: '…'`. `cat` on the very same outside path runs. So a dispatched session can *read* a dispatch record under `~/.arma-cti/` and cannot *search* one; pipe it (`cat f | grep …`) when you must. This confinement is the harness's own and has nothing to do with the removed rewrite.
+- **`grep` is confined to the session's working directory**, and says so: `grep in '…' was blocked. For security, Claude Code may only search for patterns in files from the allowed working directories for this session: '…'`. **On 2026-08-10** `cat` on the very same outside path ran, so a dispatched session could *read* a dispatch record under `~/.arma-cti/` and not *search* one; pipe it (`cat f | grep …`) when that holds. It does not always hold — the 2026-08-16 `acceptEdits` session had `cat` and `ls` blocked on that path too, and the `plan` session had both run (see the dated paragraph under cause 1). This confinement is the harness's own and has nothing to do with the removed rewrite.
 - **The project allowlist is in force and does the deciding for `just`.** `just land --dry-run` runs on its `Bash(just land --dry-run)` grant; `just probe-contract`, which has no grant, is refused. Nothing distinguishes them but the allowlist.
 
 ## What to do about it

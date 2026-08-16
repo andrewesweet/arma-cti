@@ -280,7 +280,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   record and re-tenses it, and carries a new one: `grep`, `rg`, `find` and `wc` were each
   attempted individually in a dispatched session on 2026-08-16 and each ran with no approval
   prompt, so the `\grep` escape buys nothing now. `awk`, `python3 -c` and `uv run python -c`
-  were refused on their own merits, are unaffected, and were deliberately not re-measured.
+  were refused on their own merits and are unaffected by the removal; `awk` and
+  `uv run python -c` were deliberately not re-measured, while `python3 -c` since has been,
+  twice, and is **not** unconditionally refused — it ran under `--permission-mode plan` and was
+  refused under `acceptEdits`, which the table and cause 2 now record with permission mode
+  named as the candidate variable and the effort confound stated.
   `docs/multi-provider-dispatch.md`'s pointer to that finding is re-tensed with it, and
   `tools/review_exchange.py`'s presence-into-absence comment cites #105's invariant alone —
   the rule it also credited is gone, the invariant is not. The dated narrations in the
