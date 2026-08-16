@@ -188,7 +188,7 @@ def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole
         # `check` stays on: a status command that fails and prints nothing must
         # refuse as `git_failed`, never read as an empty — that is, clean — tree.
         # A filter or a crash that removes every line turns presence into absence
-        # (#105's invariant, the rtk rule's), and this path exists to stop two
+        # (#105's invariant), and this path exists to stop two
         # agents sharing one tree, so an unestablished clean is a refusal.
         status = worktree.read_status(worktree.git("status", "--porcelain", cwd=cwd))
     except worktree.GitError as failure:

@@ -322,9 +322,10 @@ and nothing here recommends that mode for a dispatch.
 
 **Its sibling constraint is what a dispatched session may *run*.** That is measured
 separately in `docs/agents/dispatched-session-commands.md`, and it is the larger of the two
-in day-to-day cost: four of the seven commands #294 recorded as refused are refused only
-because RTK rewrites them before the permission decision is taken, and `\grep` works where
-`grep` does not.
+in day-to-day cost. Four of the seven commands #294 recorded as refused on 2026-08-10 were
+refused only because RTK rewrote them before the permission decision was taken; RTK was
+removed from this host on 2026-08-16 and those four re-measured as clearing bare. The other
+three were refused on their own merits and are unaffected.
 
 ### `zai` — a list of named commands
 

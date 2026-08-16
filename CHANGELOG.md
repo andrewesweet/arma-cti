@@ -273,6 +273,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Nothing in this repository relies on `rtk` any more, and the four commands its rewrite
+  refused now run bare (#396).** RTK was removed from this host on 2026-08-16, so the largest
+  of the three causes behind a dispatched session's refused-command list is gone.
+  `docs/agents/dispatched-session-commands.md` keeps #294's 2026-08-10 measurement as a dated
+  record and re-tenses it, and carries a new one: `grep`, `rg`, `find` and `wc` were each
+  attempted individually in a dispatched session on 2026-08-16 and each ran with no approval
+  prompt, so the `\grep` escape buys nothing now. `awk`, `python3 -c` and `uv run python -c`
+  were refused on their own merits, are unaffected, and were deliberately not re-measured.
+  `docs/multi-provider-dispatch.md`'s pointer to that finding is re-tensed with it, and
+  `tools/review_exchange.py`'s presence-into-absence comment cites #105's invariant alone —
+  the rule it also credited is gone, the invariant is not. The dated narrations in the
+  changelog, `docs/process-log.md`, `docs/research/**` and ADR-0072 are left exactly as
+  written: they remain true of the time they describe.
+
 - **An arbiter route names the arbiter that ruled (#334, ADR-0071 ruling 4).** `arbiter_upheld`
   and `arbiter_dismissed` carry the profile the escalation transferred to, read from the
   escalation record rather than from a flag, and both the writer and `just land` refuse a route
