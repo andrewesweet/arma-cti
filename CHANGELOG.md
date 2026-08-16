@@ -583,7 +583,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   supersedes that mapping in substance, and closing the overlap is #329's and #330's.
 
   **The policy file carried the pre-#326 document beside the new one for one transition
-  window** (that window closed with #365's deletion above, 2026-08-16). A parser is imported by a running process, so an in-flight worktree's `just land`
+  window** (that window closed with #365's deletion above, 2026-08-16). A parser is imported
+  by a running process, so an in-flight worktree's `just land`
   reads the fetched policy with the module it started with — and the pre-#326 parser demanded
   the ordered class table 1..7, which retiring two ids breaks. Shipping only the new table would
   have refused every in-flight landing and dispatch until each worktree rebased, on a remedy
@@ -593,8 +594,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   frozen, and a parser reads one set whole and never mixes them: an old process is governed
   exactly as it was, and a new parser handed `origin/main`'s older copy still reads it.
   Deleting the frozen half was owned by #365, not before 2026-08-21 — a floor the human's
-  ruling of 2026-08-14 shortened, and #365 deleted the half on 2026-08-16; the condition that stood
-  here before — "once no worktree predating this landing is in flight" — was withdrawn on
+  ruling of 2026-08-14 shortened, and #365 deleted the half on 2026-08-16; the condition
+  that stood here before — "once no worktree predating this landing is in flight" — was withdrawn on
   arbitration because it is not computable, `just worktree list` sweeping registrations and
   this box carrying over 150 of them, most long abandoned.
 
@@ -628,15 +629,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   seat table; two did. Routing class 2 `orchestration` was lane-selected by the identical
   mechanism as class 6's bridge — no `required_seats`, so it refused every seat on every
   non-Claude lane for an issue declaring `Routing-class: orchestration` and cleared the same
-  declaration on Claude — because its `seats: ["orchestrator"]` reads as scoping and `seats`
-  is one evidence term, never a filter (#366 files the semantic; the fix here does not wait
-  on it). Class 2 was re-founded on its seat: from that landing it refused an orchestration
+  declaration on Claude — because the row's seat list read as scoping when the field only
+  ever appended one evidence term and never filtered (#366 filed that semantic, and the fix
+  here did not wait on it). Class 2 was re-founded on its seat: from that landing it
+  refused an orchestration
   declaration taken by any seat but `orchestrator` **on every lane including Claude's**,
   admitted the orchestrator seat itself, and — being seat-bound — carried no landing
   prefixes, so an orchestration-docs diff was no longer refused at `just land` off Claude;
   the keep-on-Claude half of the rule was the seat table's carve-out, unchanged. A test
   walked the table and pinned class 6 as the one lane-selected refusing row, so the count
-  was measured rather than asserted in prose. Class 6's bridge is also described whole for the first time — its issue
+  was measured rather than asserted in prose. Class 6's bridge is also described whole for
+  the first time — its issue
   half refuses a dispatch naming the gates, its landing half refuses a non-Claude `just
   land` touching them — #331 is named in the remedy a refused reader actually sees, the
   withdrawn word is retired from the live remedies that print on every refusal (the frozen
