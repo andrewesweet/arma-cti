@@ -35,6 +35,18 @@ into the record it attaches to, and `--report` reads that back:
   actionable *now* and repetition is the only pressure available.
 * `wake_undelivered` — the run finished and nothing was listening. Printing it
   **is** the delivery, so it is stamped and printed once.
+
+Attachment is a claim about *now*, and it was first written as a permanent one:
+a record carrying `followed_at` was owed nothing forever, so a follower that
+returned on the first of a cohort, or died, or was killed, exempted the rest of
+that cohort from the report for good. Two facts settle it and they are not the
+same fact. Whether anything is listening is `followed_at` plus a live
+`follower_pid`, read with `os.kill(pid, 0)`; whether a wake was *delivered* is
+`delivered_at`, written by the follower for the dispatch it actually reported
+on. Liveness alone cannot stand in for the second — a follower that delivered
+its wake and exited leaves the same dead pid as one that was killed before the
+run ended — so the pid check answers the first question only, and a completion
+is owed a wake until one is recorded against it.
 * `dispatch_abandoned` — no result and the runner's pipe is at EOF, so the
   record is stale rather than in flight. Six days of one 2026-08-10 record
   counting as in-flight is what this names; stamped and printed once.
@@ -42,7 +54,8 @@ into the record it attaches to, and `--report` reads that back:
 Stamping on print is not ADR-0053's judgement being automated. `just watch`'s
 findings are stamped by a human's `--ack` because acting on a stall is a
 judgement; these two are a wake, and a wake that has been delivered is not news
-a second time. `--all` re-prints the stamped ones.
+a second time. `--all` re-prints the stamped ones, and `--backfill` stamps the
+lot at once for a box whose backlog predates the mechanism.
 """
 
 from __future__ import annotations
@@ -76,6 +89,13 @@ RUNNER_UNKNOWN: Final = "unknown"
 # top of an orchestrator's turn. The remainder is named rather than dropped, and
 # the stamp means the backlog drains a read at a time.
 REPORT_LIMIT: Final = 10
+
+# The most *standing* findings one read prints, out of that limit. A standing finding is
+# never stamped, so a read filled with them drains nothing and the once-only backlog behind
+# it would wait for the running dispatches to end. Half the read keeps both visible; the WIP
+# limit of three makes the cap unreachable today, and it is here so the report cannot be
+# jammed by a condition that is merely true a lot.
+STANDING_LIMIT: Final = REPORT_LIMIT // 2
 
 
 @dataclass(frozen=True)
@@ -173,10 +193,40 @@ def note_attachment(record: Path, pid: int, now: float) -> None:
     report asks is "is anything listening to this dispatch", and a follower that is still
     waiting is the whole of the answer being yes. Merged into whatever is already there so
     a second follower over the same id does not discard the first's stamp.
+
+    The pid is written for the reader, and now it is read: it is what turns this from a
+    permanent claim into a claim about the process that made it.
     """
     document = _follow_document(record)
     document.update({"follower_pid": pid, "followed_at": now})
-    (record / "follow.json").write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+    _write_follow(record, document)
+
+
+def note_delivery(record: Path, now: float) -> None:
+    """Record that this dispatch's wake was actually delivered to somebody.
+
+    The separate fact from attachment, and the one `wake_undelivered` turns on. A follower
+    that attached says something *was* listening; only the follower that returned on this
+    dispatch says its ending was told to anyone, and after either the process is gone and
+    its pid is dead in both cases.
+    """
+    document = _follow_document(record)
+    document["delivered_at"] = now
+    _write_follow(record, document)
+
+
+def clear_attachment(record: Path) -> None:
+    """Drop the claim that a follower is listening, keeping whatever else the file holds.
+
+    Written by the follower over the cohort members it is *not* reporting on, and over
+    every target of a refused follow. Pid liveness would eventually answer the same way,
+    but only eventually and only until a pid is reused; the follower knows it stopped
+    listening, so it says so rather than leaving that to be inferred.
+    """
+    document = _follow_document(record)
+    document.pop("follower_pid", None)
+    document.pop("followed_at", None)
+    _write_follow(record, document)
 
 
 def wait_for_first(targets: Sequence[FollowTarget]) -> FollowTarget:
@@ -265,16 +315,25 @@ def finding_lines(target: FollowTarget, pending: Sequence[str] = ()) -> tuple[st
     )
 
 
-def follow_first(targets: Sequence[FollowTarget]) -> tuple[int, tuple[str, ...]]:
-    """Follow every target to whichever ends first, naming the rest as pending."""
+def first_ending(targets: Sequence[FollowTarget]) -> FollowTarget:
+    """Name whichever target has already ended, or wait for the first that does."""
     for target in targets:
         if target.result_path.is_file():
-            return 0, completion_lines(target, pending_ids(targets, target))
-    first = wait_for_first(targets)
-    pending = pending_ids(targets, first)
+            return target
+    return wait_for_first(targets)
+
+
+def result_lines(first: FollowTarget, pending: Sequence[str] = ()) -> tuple[int, tuple[str, ...]]:
+    """Render one ended target as a completion or an ADR-0022 disappeared-runner finding."""
     if first.result_path.is_file():
         return 0, completion_lines(first, pending)
     return EXIT_FINDING, finding_lines(first, pending)
+
+
+def follow_first(targets: Sequence[FollowTarget]) -> tuple[int, tuple[str, ...]]:
+    """Follow every target to whichever ends first, naming the rest as pending."""
+    first = first_ending(targets)
+    return result_lines(first, pending_ids(targets, first))
 
 
 def follow(target: FollowTarget) -> tuple[int, tuple[str, ...]]:
@@ -306,16 +365,66 @@ def _follow_document(record: Path) -> dict[str, Any]:
     return loaded if isinstance(loaded, dict) else {}
 
 
-def _followed(record: Path) -> bool:
-    """Whether a follower ever attached — the key, never the file's existence.
+def _write_follow(record: Path, document: dict[str, Any]) -> None:
+    """Write `follow.json`, or remove it once nothing is left to say.
 
-    The two live in one file and mean opposite things: `followed_at` says a wake was
-    delivered and `reported_at` says one was *not*, and stamping the second writes the
-    file. Reading the file's existence as attachment therefore made a stamped
-    `wake_undelivered` finding vanish from `--report --all`, which is the one read that
-    exists to show what was already delivered.
+    Nothing here may raise into its caller. `--report` is chained ahead of the stall
+    watchers in `just watch-report`, so an unwritable record — removed between the survey
+    and the stamp, a read-only mount — would otherwise take out the very read that catches
+    what this one misses. A write that did not happen costs a finding repeated next read,
+    which is the direction that keeps saying something.
     """
-    return bool(_follow_document(record).get("followed_at"))
+    path = record / "follow.json"
+    try:
+        if document:
+            path.write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+        else:
+            path.unlink(missing_ok=True)
+    except OSError:
+        return
+
+
+def _follower_alive(document: dict[str, Any]) -> bool:
+    """Whether the process that claimed to be listening still exists.
+
+    `os.kill(pid, 0)` is the whole check: a pid that is not ours to signal is a pid that
+    exists, and only `ProcessLookupError` says the follower is gone. A recorded attachment
+    with no pid — a `follow.json` written before this was read back — answers no, which
+    reports a wake rather than assuming one was delivered.
+
+    Pid reuse is the known ceiling and it is not defended against: the follower clears its
+    own attachment on the way out, so reuse would have to land inside the window between a
+    follower dying uncleanly and the next read.
+    """
+    pid = document.get("follower_pid")
+    if not isinstance(pid, int) or isinstance(pid, bool) or pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        return False
+    return True
+
+
+def _listening(record: Path) -> bool:
+    """Whether a follower is attached to this record *and* still alive to hear it.
+
+    The key and the pid, never the file's existence. `followed_at` and `reported_at` live
+    in one file and mean opposite things — the second is written by the stamp — so reading
+    the file's existence as attachment once made a stamped `wake_undelivered` vanish from
+    `--report --all`, the one read that exists to show what was already delivered.
+    """
+    document = _follow_document(record)
+    return bool(document.get("followed_at")) and _follower_alive(document)
+
+
+def _delivered(record: Path) -> bool:
+    """Whether this dispatch's ending was reported to somebody by a follower."""
+    return bool(_follow_document(record).get("delivered_at"))
 
 
 def _stamped(record: Path) -> bool:
@@ -327,20 +436,24 @@ def stamp(record: Path, now: float) -> None:
     """Mark a once-only finding delivered, keeping whatever the follower wrote."""
     document = _follow_document(record)
     document["reported_at"] = now
-    (record / "follow.json").write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+    _write_follow(record, document)
 
 
 def finding_for(record: Path) -> Finding | None:
     """Judge one record's delivery, or `None` where nothing is owed.
 
-    Nothing is owed by a run somebody followed and by a run still going with a follower
-    attached; `unknown` is owed nothing either, because a record whose pipe cannot be read
-    is not evidence that a wake was lost.
+    Nothing is owed by a run whose wake a follower delivered, nor by a run still going
+    with a live follower attached; `unknown` is owed nothing either, because a record
+    whose pipe cannot be read is not evidence that a wake was lost.
+
+    A finished run with a follower still attached is the ordinary window between the
+    result landing and the follower printing it, so it is owed nothing yet — and it is
+    owed a wake again the moment that follower is gone without having recorded one.
     """
     dispatch_id = record.name
-    followed = _followed(record)
+    listening = _listening(record)
     state = runner_state(record)
-    if state == RUNNER_RUNNING and not followed:
+    if state == RUNNER_RUNNING and not listening:
         return Finding(
             "wake_unarmed",
             record,
@@ -352,7 +465,7 @@ def finding_for(record: Path) -> Finding | None:
             ),
             once=False,
         )
-    if state == RUNNER_FINISHED and not followed:
+    if state == RUNNER_FINISHED and not (_delivered(record) or listening):
         return Finding(
             "wake_undelivered",
             record,
@@ -373,7 +486,15 @@ def finding_for(record: Path) -> Finding | None:
                 "finding=dispatch_abandoned",
                 f"dispatch={dispatch_id}",
                 f"record={record}",
-                "detail=the runner is gone and wrote no result; stale, not in flight",
+                # A fact about the runner and about nothing else. #105's sixth instance is
+                # exactly a dead runner whose session worked on in the tree for half an
+                # hour, so "stale" here must not read as "the tree is free": the record is
+                # what is stale, and `just dispatch --stop` still owns the tree's answer.
+                (
+                    "detail=the runner is gone and wrote no result, so this record is"
+                    " stale; it says nothing about whether work is still going on in"
+                    " its worktree"
+                ),
                 "action=inspect the dispatch log; just watch keeps the stall judgement",
             ),
             once=True,
@@ -394,15 +515,69 @@ def survey(dispatch_dir: Path, *, include_stamped: bool = False) -> tuple[Findin
     return tuple(found)
 
 
-def report_lines(findings: Sequence[Finding], limit: int = REPORT_LIMIT) -> tuple[str, ...]:
-    """Render the report, naming the remainder rather than truncating in silence."""
-    shown = findings[:limit]
+def shown_findings(
+    findings: Sequence[Finding],
+    limit: int = REPORT_LIMIT,
+    standing_limit: int = STANDING_LIMIT,
+) -> tuple[Finding, ...]:
+    """Choose what one read prints, so what is stamped is exactly what was printed."""
+    shown: list[Finding] = []
+    standing = 0
+    for finding in findings:
+        if len(shown) >= limit:
+            break
+        if not finding.once:
+            if standing >= standing_limit:
+                continue
+            standing += 1
+        shown.append(finding)
+    return tuple(shown)
+
+
+def report_lines(
+    findings: Sequence[Finding],
+    limit: int = REPORT_LIMIT,
+    standing_limit: int = STANDING_LIMIT,
+) -> tuple[str, ...]:
+    """Render the report, naming the remainder rather than truncating in silence.
+
+    Standing findings take at most half the read. They are never stamped, so enough of
+    them at once would fill every read for as long as they lasted and the once-only
+    backlog behind them would never drain — the report would keep saying the same true
+    thing and stop saying the new ones. A standing finding dropped from a read is true
+    again on the next one, which is the cheapest thing here to lose.
+    """
+    shown = shown_findings(findings, limit, standing_limit)
     lines = [line for finding in shown for line in finding.lines]
     if len(findings) > len(shown):
         lines.append(
             f"more={len(findings) - len(shown)} detail=re-run just watch-report to read on"
         )
     return tuple(lines)
+
+
+def run_backfill(args: argparse.Namespace) -> int:
+    """Stamp every once-only finding owed right now, and print only how many.
+
+    The first read on a box that has been dispatching since before `follow.json` existed
+    owes a `wake_undelivered` for every completion it ever made: 341 of them on 2026-08-16,
+    about 34 reads at the top of 34 orchestrator turns to drain a backlog of wakes whose
+    dispatches ended days ago. This is the one deliberate act that says so — a human or the
+    orchestrator running it once, in the open, with the count printed. It stamps rather than
+    deletes, so `--report --all` still shows every one of them.
+    """
+    findings = survey(args.dispatch_dir)
+    now = time.time()
+    stamped = [finding for finding in findings if finding.once]
+    for finding in stamped:
+        stamp(finding.record, now)
+    return emit(
+        (
+            f"backfilled={len(stamped)}",
+            "detail=once-only findings stamped as delivered; read them with --report --all",
+        ),
+        0,
+    )
 
 
 def run_report(args: argparse.Namespace) -> int:
@@ -415,7 +590,7 @@ def run_report(args: argparse.Namespace) -> int:
     code = emit(report_lines(findings), 0)
     if not args.all:
         now = time.time()
-        for finding in findings[:REPORT_LIMIT]:
+        for finding in shown_findings(findings):
             if finding.once:
                 stamp(finding.record, now)
     return code
@@ -442,6 +617,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--all",
         action="store_true",
         help="with --report, re-print the findings already delivered",
+    )
+    parser.add_argument(
+        "--backfill",
+        action="store_true",
+        help="stamp every once-only finding owed now, printing the count and nothing else",
     )
     return parser.parse_args(argv)
 
@@ -494,15 +674,23 @@ def follow_from_args(args: argparse.Namespace) -> int:
                 ),
                 EXIT_REFUSED,
             )
+    records = {
+        target.dispatch_id: args.dispatch_dir.expanduser() / target.dispatch_id
+        for target in targets
+    }
     # After the last target reads back, so a refused follow leaves no claim that anything
     # was listening, and before the wait, because a follower is attached while it waits.
     for target in targets:
-        note_attachment(
-            args.dispatch_dir.expanduser() / target.dispatch_id, os.getpid(), time.time()
-        )
+        note_attachment(records[target.dispatch_id], os.getpid(), time.time())
     try:
-        code, lines = follow_first(targets)
+        first = first_ending(targets)
     except OSError as error:
+        # The second refusal path, and it refuses having observed nothing — so it owes the
+        # same emptiness the first one leaves. Attachment is already written by here, and a
+        # refusal that left it standing was a check that did not run reading as one that
+        # passed: every one of these records would have been exempt from `--report`.
+        for record in records.values():
+            clear_attachment(record)
         return emit(
             (
                 "refusal=runner_unobservable",
@@ -511,14 +699,26 @@ def follow_from_args(args: argparse.Namespace) -> int:
             ),
             EXIT_REFUSED,
         )
+    now = time.time()
+    note_delivery(records[first.dispatch_id], now)
+    # This process ends on the first of them, so nothing is listening to the rest from the
+    # moment it returns. Leaving the attachment behind is what made the cohort mechanism —
+    # built to shorten the wake — the thing that silenced the report for everyone it did
+    # not wake (#295's `pending=` list, exempt from `--report` for good).
+    for dispatch_id, record in records.items():
+        if dispatch_id != first.dispatch_id:
+            clear_attachment(record)
+    code, lines = result_lines(first, pending_ids(targets, first))
     return emit(lines, code)
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Arm a record internally, report undelivered wakes, or follow named dispatches."""
+    """Arm a record, backfill or report undelivered wakes, or follow named dispatches."""
     args = parse_args(argv)
     if args.arm_record is not None:
         return arm_from_args(args)
+    if args.backfill:
+        return run_backfill(args)
     return run_report(args) if args.report else follow_from_args(args)
 
 

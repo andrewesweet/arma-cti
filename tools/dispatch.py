@@ -3514,6 +3514,20 @@ def worktree_changes(worktree: Path) -> tuple[str, ...] | None:
     return tuple(line for line in done.stdout.splitlines() if line.strip())
 
 
+# The stall watcher's two process forms. `just watch` is armed *by the protocol*, from
+# inside the tree, and `setsid nohup` hands the loop the arming shell's cwd — so a seat that
+# did exactly what CLAUDE.md's working style requires (commit, arm the watcher, end) left a
+# process in its own tree and recorded `left_running` for it. The watcher is not work in the
+# tree and outliving the run is its whole job. Nothing else is excluded: a gate, an editor,
+# an MCP server not yet reaped are all still named, and the reader is meant to look.
+WATCHER_COMMANDS: Final = ("stall-watch.sh", "stall_watch.py")
+
+
+def _is_watcher(command: str) -> bool:
+    """Whether this process is the protocol's own detached stall watcher."""
+    return any(marker in command for marker in WATCHER_COMMANDS)
+
+
 def terminal_state(worktree: Path) -> dict[str, object]:
     """Say how the seat left its assigned tree, as facts plus the worst of them (#359).
 
@@ -3539,6 +3553,7 @@ def terminal_state(worktree: Path) -> dict[str, object]:
     running = tuple(
         f"{process.pid} {process.command}"
         for process in dispatch_stop.scan(worktree, dispatch_stop.Machine()).matched
+        if not _is_watcher(process.command)
     )
     if changes is None:
         state = "worktree_unreadable"

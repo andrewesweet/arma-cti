@@ -1826,11 +1826,14 @@ def test_a_dirty_assigned_tree_at_exit_is_not_a_committed_ending(tmp_path: Path)
     worktree = git_worktree(tmp_path)
     # A tracked file modified and never committed, which is the shape both instances took.
     (worktree / "README.md").write_text("the edit that never reached a commit\n", encoding="utf-8")
+    # And a file never added at all, which `git status` reports and `git diff HEAD` does
+    # not — the exact hazard in reaching for the cheaper command later.
+    (worktree / "notes.md").write_text("work that was never even tracked\n", encoding="utf-8")
 
     state = dispatch.terminal_state(worktree)
 
     assert state["terminal_state"] == "uncommitted"
-    assert state["uncommitted"] == [" M README.md"]
+    assert state["uncommitted"] == [" M README.md", "?? notes.md"]
 
 
 def test_a_tree_git_cannot_answer_for_is_never_read_as_clean(tmp_path: Path) -> None:
@@ -1857,6 +1860,47 @@ def test_a_process_still_working_in_the_tree_at_exit_is_named_rather_than_commit
 
     assert state["terminal_state"] == "left_running"
     assert state["left_running"] == ["4321 just fast"]
+
+
+def test_the_stall_watcher_a_seat_armed_is_not_a_process_it_left_running(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Commit, arm `just watch`, end — the working style's own shape must read committed.
+
+    `setsid nohup` hands the watcher the arming shell's cwd, so a seat that followed the
+    protocol left a process inside its own tree and recorded `left_running` for it (#359).
+    Outliving the run is the watcher's whole job; everything else in the tree is still named.
+    """
+    worktree = git_worktree(tmp_path)
+    # Built from the constant rather than typed: a literal here would read to
+    # `test_no_unit_test_reads_the_boxs_own_watch_tree` as a module driving the watcher
+    # without injecting a watch directory. The test below pins the constant to real files.
+    shell, assess = (f"tools/{name}" for name in dispatch.WATCHER_COMMANDS)
+    watcher = dispatch.dispatch_stop.Process(11, f"bash {shell} loop --name issue-359")
+    assessor = dispatch.dispatch_stop.Process(12, f"python {assess} assess --name issue-359")
+    monkeypatch.setattr(
+        dispatch.dispatch_stop,
+        "scan",
+        lambda _worktree, _machine: dispatch.dispatch_stop.Scan((watcher, assessor), (), 0),
+    )
+
+    state = dispatch.terminal_state(worktree)
+
+    assert state["terminal_state"] == "committed"
+    assert state["left_running"] == []
+
+
+def test_the_excluded_watcher_commands_name_files_that_exist() -> None:
+    """An exclusion list matching nothing would quietly stop excluding anything (#359).
+
+    The other half of the test above, which builds its process commands from this list
+    rather than typing them: a renamed watcher must red here rather than pass there.
+    """
+    assert dispatch.WATCHER_COMMANDS
+    for name in dispatch.WATCHER_COMMANDS:
+        assert (REPO / "tools" / name).is_file(), name
+    # And nothing else in the tree is waved through.
+    assert not dispatch._is_watcher("uv run pytest")  # noqa: SLF001 - the exclusion itself
 
 
 def test_uncommitted_work_outranks_a_process_left_running(
@@ -1971,6 +2015,11 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     assert elapsed < 10
 
     record = Path(printed["record"])
+    # The runner pipe is renamed into place once the seam holds it open, so a reader never
+    # meets one without a writer and never reads a starting dispatch as an abandoned record
+    # (#359). The arming name is gone by the time the recipe has returned.
+    assert (record / "runner.pipe").is_fifo()
+    assert not (record / "runner.pipe.arming").exists()
     assert await_file(record / "result.json"), (record / "dispatch.log").read_text(encoding="utf-8")
     result = json.loads((record / "result.json").read_text(encoding="utf-8"))
     assert result["returncode"] == 0

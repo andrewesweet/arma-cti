@@ -58,8 +58,14 @@ printf '%s\n' "$planned"
 log="$record/dispatch.log"
 cd "$REPO"
 completion_pipe="$record/runner.pipe"
-mkfifo "$completion_pipe"
-exec {completion_fd}<>"$completion_pipe"
+# Created under another name and renamed into place once this shell holds it open (#359).
+# A reader that finds `runner.pipe` finds a pipe with a writer already attached; between
+# the `mkfifo` and the open it would have found one at EOF and read a starting dispatch as
+# an abandoned record — stamped once, and once is enough for a false wake. The rename is
+# atomic within the record, and the fd follows the inode rather than the name.
+mkfifo "$completion_pipe.arming"
+exec {completion_fd}<>"$completion_pipe.arming"
+mv "$completion_pipe.arming" "$completion_pipe"
 setsid nohup uv run --quiet python "$TOOL" --run "$record" >>"$log" 2>&1 </dev/null &
 child=$!
 exec {completion_fd}>&-

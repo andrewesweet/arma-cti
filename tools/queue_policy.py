@@ -515,10 +515,11 @@ def derive_in_flight(
 ) -> InFlight:
     """Union the two sources that name an issue, then drop the ones GitHub reports closed.
 
-    `dispatches` is `(issue, dispatch_id, finished)` per record: a record carrying an issue
-    and having no `result.json` is in flight. `closed` answers for a set of issue numbers and
-    says how the tracker read — an unreadable tracker keeps every issue in the count, which is
-    the refusing direction, and says so rather than silently shrinking the set.
+    `dispatches` is `(issue, dispatch_id, finished)` per record, and `finished` is decided by
+    `dispatch_records` below rather than here — a record is in flight while it carries an issue
+    and its runner is neither finished nor gone. `closed` answers for a set of issue numbers
+    and says how the tracker read — an unreadable tracker keeps every issue in the count, which
+    is the refusing direction, and says so rather than silently shrinking the set.
     """
     sources: dict[int, list[str]] = {}
     trees: dict[int, Path] = {}

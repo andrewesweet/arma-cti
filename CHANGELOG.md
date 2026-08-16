@@ -23,6 +23,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to (`wake_unarmed`, standing until a follower attaches, with the exact arming command),
   every completion that woke nobody (`wake_undelivered`, printed once because printing it is
   the delivery), and every record whose runner is gone without a result (`dispatch_abandoned`).
+  An attachment is a claim about a running process rather than a permanent fact: it is
+  checked against the follower's own pid, cleared over the cohort members a follow returned
+  without waking, and cleared again by a refusal that observed nothing — and a wake is owed
+  until a follower records having delivered one, so a cohort's `pending=` remainder and a
+  follower that was killed are both named rather than silently exempt. `--backfill` stamps a
+  box's pre-existing backlog in one deliberate act, printing the count, since a box dispatching
+  since before the mechanism existed owes a finding for every completion it ever made.
   That last is read from the runner's own pipe rather than from `result.json` alone, so a
   stale record is distinguishable from a live one and leaves the in-flight count `just queue`
   derives — a 2026-08-10 dispatch had held a slot in that number for six days. `just dispatch`
