@@ -129,9 +129,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The arbiter's fourth rung stops naming a rung that no longer exists, and `AGENTS.md`'s rung
+  list is in `_walk_first`'s order (#329, review round 5).** `config/escalation-conditions.json`
+  and `docs/agents/review-severity.md` both spelled `dispatch.candidate_refusal`'s rungs
+  "(admission, breaker, off-peak, credential)" after #328 dropped the admission bar; the function
+  calls `resolve_selection`, `breaker_refusal`, `off_peak_refusal` and `lane_credential`, and its
+  own docstring says the admission standing was a rung "until #328 dropped the bar". Both now say
+  `selection`. `AGENTS.md`'s `just review-loop` row listed the walk's exclusions with the records
+  and the routing refusals the wrong way round; it now gives `_walk_first`'s own order and says
+  that is what it is giving. The quantity that stood in the `candidate_refusal` citation entry
+  below is struck rather than corrected: the claim that the citation was stale is checkable from
+  the tree, and a number in a changelog entry has to be maintained to stay true.
+
+- **ADR-0071's two stale `fable`/`retro` paragraphs are proposed to the human, not landed (#329,
+  review round 5).** `docs/adr/**` is a human sign-off gate, so the replacement text for the notes
+  at the class-2 row (`:909`) and at the seat table (`:244`) — both still reading as though the
+  overlap were open, when this branch closed the documentation half — is
+  [posted in full on #329](https://github.com/andrewesweet/arma-cti/issues/329#issuecomment-5307559864)
+  for a ruling. A commit message is not a proposal surface, which is what the round-4 message
+  treated it as.
+
 - **AGENTS.md's new `candidate_refusal` citation points at the function (#329, review round 4).**
   The line it named, `tools/dispatch.py:2392`, was not the function in the commit that wrote it —
-  the same commit moved that file by eleven lines. Re-derived here rather than recalled: the
+  the same commit moved that file. Re-derived here rather than recalled: the
   definition is at `tools/dispatch.py:2365` in this tree, and the sibling citation
   `tools/arbiter.py:135` was re-checked and is right. A citation written stale is worse than one
   that rotted, because nothing moved underneath it.
@@ -191,7 +211,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **The withdrawn mapping's last live copies are gone, and the guard now walks the file it cites
   (#329, review round 2).** Round 1 rewrote the brief composer's seat reasons and guarded them —
-  and the widest live copy of the `fable` scope it deleted went on sitting ten lines from the
+  and the widest live copy of the `fable` scope it deleted went on sitting among the
   profiles it registers, in `tools/dispatch.py`, the file the new guard's own comment names as its
   authority: a comment claiming fable for "retros; ADR, `CONTEXT.md` and schema semantics" that the
   live routing policy refuses that seat on both classes. It is replaced by a pointer to routing
