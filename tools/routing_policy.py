@@ -73,22 +73,18 @@ therefore enforceable only where a seat exists, which is dispatch: `just land` h
 and never will, so such a row carries no `landing_path_prefixes` and `parse_policy` refuses
 one that does, rather than letting the landing rung silently re-derive the lane bar.
 
-**The document carries the pre-#326 one beside it for one transition window, and that is
-#326 review round 3's claim 1.** A parser is imported by a *running process*: `just land` in an
-in-flight worktree reads the policy out of fetched `origin/main` with whatever
-`tools/routing_policy.py` that process started with, and the rebase brings the new module
-into the tree but not into the process. The pre-#326 parser demanded the ordered table
-1..7, so a file carrying only the re-founded table is unreadable to it — measured, all four
-ways — and every in-flight landing and dispatch would refuse until its worktree rebased, on
-a remedy telling the reader to repair a policy that is not broken, which sends them at a
-class-6 gated file. That is `COVERAGE_UNSTATED`'s own argument, which this module already
-made about a newly-mandatory field and did not apply to the id shape. So the re-founded
-document lives under `routing_classes`, `routing_issue_exceptions` and
-`routing_route_exceptions`, and `classes`, `issue_exceptions` and `route_exceptions` keep
-the pre-#326 document frozen for the older parser. A parser reads **one** view whole: this
-one takes the re-founded keys when the table is there and the legacy keys otherwise, which
-is also how it goes on reading `origin/main`'s pre-#326 copy. The frozen half is deleted
-once no worktree predating that landing is still in flight.
+**The transition window is closed, and the document is one document again (#365).** For one
+window the file carried the pre-#326 table frozen beside the re-founded one, under `classes`,
+`issue_exceptions` and `route_exceptions`, because a parser is imported by a *running
+process*: `just land` in an in-flight worktree reads the policy out of fetched `origin/main`
+with whatever `tools/routing_policy.py` that process started with, and a rebase brings the new
+module into the tree but not into the process. The pre-#326 parser demanded the ordered table
+1..7 and could not read the re-founded one (#326 review round 3, claim 1). The human closed
+that window on 2026-08-14 and #365 deleted the frozen half on 2026-08-16, so the re-founded
+document under `routing_classes`, `routing_issue_exceptions` and `routing_route_exceptions`
+is the only one here. The `View`/`LEGACY` machinery that chose between the two halves went
+with the data: this parser's only remaining sources are the working tree's copy and
+`origin/main`'s, and both have carried the re-founded keys since #326 landed.
 
 Since #302 the document carries a second job. Class 5's `landing_path_prefixes` is the
 **one authority** for what an in-world surface is: `just land`'s corpus rung, the
@@ -161,13 +157,11 @@ REQUIRED_CLASSES: Final[frozenset[int]] = frozenset(
 
 
 class View(NamedTuple):
-    """The three document keys one parser vintage reads, taken together or not at all.
+    """The three document keys this parser reads, taken together or not at all.
 
-    Mixing them is the failure this shape forbids: reading the re-founded classes beside the
-    legacy exceptions would hand a class-1 allowance to a table with no class 1, and reading
-    the legacy classes beside the empty re-founded exceptions would silently withdraw #300's
-    standing retro allowance from a document that still carries it. A view is chosen once,
-    on the presence of the re-founded table, and everything below reads that view.
+    Until #365 there were two vintages of these three keys and the shape existed to stop a
+    reader mixing them. One vintage is left, so what the shape carries now is only that the
+    three keys are one document: a table and the exceptions written against its class ids.
     """
 
     classes: str
@@ -175,11 +169,8 @@ class View(NamedTuple):
     route_exceptions: str
 
 
-# The re-founded document (#326) and the pre-#326 one it is landing beside. The legacy names
-# are the unprefixed keys because they are the ones the older parser reads by name and cannot
-# be told to read anything else — the compatibility is entirely on this side of the fence.
+# The re-founded document (#326), and since #365 the only one this file carries.
 REFOUNDED: Final = View("routing_classes", "routing_issue_exceptions", "routing_route_exceptions")
-LEGACY: Final = View("classes", "issue_exceptions", "route_exceptions")
 
 
 class Route(NamedTuple):
@@ -205,8 +196,9 @@ class Rule(NamedTuple):
     `seats` and `required_seats` are opposites and are deliberately not one field. `seats`
     lists the seats a row **matches** — it appends one evidence term and never filters, so it
     can only widen a match and never narrow one; #366 files the semantic, and since #327's
-    second round no row in the live document carries the field (the frozen pre-#326 half
-    still does, and this parser reads that view too, which is why the field survives here).
+    second round no row in this document carries the field. The frozen pre-#326 half did, and
+    was this parser's last reader of it until #365 deleted that half; the field is left here
+    because #366 owns the semantic and dropping it is that issue's call, not this deletion's.
     `required_seats` lists the seats a row **admits**: the match is on the declaration, and
     the refusal fires for every seat that is not on the list, lane-blind. One is "this seat
     is the problem", the other is "only this seat is the answer", and collapsing them would
@@ -396,17 +388,6 @@ def _timestamp(value: object) -> datetime:
     return parsed
 
 
-def _view(document: dict[object, object]) -> View:
-    """Pick the document this parser reads, and read only that one.
-
-    Presence of the re-founded table is the whole test. A copy that carries it is a #326 or
-    later document and its exceptions are the re-founded ones — empty today; a copy that does
-    not is `origin/main`'s pre-#326 document, which this parser still reads whole, because
-    that is what a landing fetching a policy older than its own tree is handed.
-    """
-    return REFOUNDED if REFOUNDED.classes in document else LEGACY
-
-
 def _rules(document: dict[object, object], view: View) -> tuple[Rule, ...]:
     raw_classes = document.get(view.classes)
     if not isinstance(raw_classes, list):
@@ -493,7 +474,10 @@ def parse_policy(text: str) -> Policy:
     if not isinstance(document, dict) or document.get("version") != 1:
         raise PolicyError(VERSION_ERROR)
     coverage = str(document.get("coverage") or COVERAGE_UNSTATED)
-    view = _view(document)
+    # One vintage of keys since #365, so there is nothing to choose between: the read is
+    # `REFOUNDED` or it is a `PolicyError` from `_rules`, which is the right answer for a
+    # document that does not carry the re-founded table.
+    view = REFOUNDED
     rules = _rules(document, view)
     return Policy(
         source=str(document["source"]),
