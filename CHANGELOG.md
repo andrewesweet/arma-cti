@@ -129,6 +129,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **AGENTS.md's new `candidate_refusal` citation points at the function (#329, review round 4).**
+  The line it named, `tools/dispatch.py:2392`, was not the function in the commit that wrote it —
+  the same commit moved that file by eleven lines. Re-derived here rather than recalled: the
+  definition is at `tools/dispatch.py:2365` in this tree, and the sibling citation
+  `tools/arbiter.py:135` was re-checked and is right. A citation written stale is worse than one
+  that rotted, because nothing moved underneath it.
+
+- **`config/dispatch-routing-policy.json`'s class-2 remedy stops asking for a decision that was
+  taken (#329, review round 4).** Two clauses put open questions to the human that ADR-0071
+  amendment A2 (`ec369b3`, human ruling 2026-08-14, recorded on #327 and filed as #368) had
+  already answered: whether the row should be widened further or deleted outright — both put and
+  declined — and whether the ADR should be amended or an ADR-0013 record cover the departure —
+  answered by amending the ADR, which now reads "survives, re-founded on the route's seats". The
+  remedy records the ruling and its two declined alternatives, so neither is re-litigated by a
+  reader who takes the old text at face value.
+
+- **`tools/dispatch.py`'s escalation-column comment stops calling the arbiter's fall-through
+  conflict-only (#329, review round 4).** It described the arbiter walk as taking the entry head
+  and falling through "on conflict", while `arbiter._walk_first`'s fourth rung is
+  `dispatch.candidate_refusal` — the breaker, the off-peak rule and the lane's credential among
+  the things that exclude a head. The comment now names all four rungs and scopes its "not a
+  fallback for a head the breaker happens to be refusing" clause to `resolve_seat`, which is the
+  only resolution it was ever true of.
+
 - **AGENTS.md now says what an escalation entry actually resolves through (#329, review round 3).**
   The *Seats and profiles* paragraph closed with "registry data that nothing resolves through …
   not a fallback for a head the breaker happens to be refusing". Both halves were false against

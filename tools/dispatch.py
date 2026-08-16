@@ -511,16 +511,21 @@ class Seat(NamedTuple):
     # and nothing else, so a seat gains a route by being written here.
     preference: tuple[str, ...]
     # The ADR's escalation column, and deliberately **not** part of seat resolution. An
-    # escalation is a judgement that the work is harder than the seat's tier, not a
-    # fallback for a head the breaker happens to be refusing; resolving into it would
-    # answer "this seat is out of profiles" by silently spending a dearer one, and would
-    # make the exhaustion refusal unreachable for every seat that has an entry. So
-    # `resolve_seat` never walks it. What does read it is #333's arbiter walk
-    # (`tools/arbiter.py`), which takes the entry head as the arbiter and falls through on
-    # conflict — the human ruling on #361, 2026-08-14, which also filled the two cells that
-    # ruling had left empty and struck the blanket `fable-high` default: a seat whose
-    # column is empty has no arbiter and refuses, so **adding a seat now requires deciding
-    # its arbiter**.
+    # escalation is a judgement that the work is harder than the seat's tier, so for
+    # `resolve_seat` it is not a fallback for a head the breaker happens to be refusing;
+    # resolving into it would answer "this seat is out of profiles" by silently spending a
+    # dearer one, and would make the exhaustion refusal unreachable for every seat that has
+    # an entry. So `resolve_seat` never walks it. What does read it is #333's arbiter walk
+    # (`tools/arbiter.py`), which takes the entry head as the arbiter and falls through when
+    # any of `_walk_first`'s rungs excludes it — the registry, the caller's routing
+    # refusals, the issue's dispatch records, and the live `(lane, profile, seat)` rungs of
+    # `candidate_refusal`, the breaker among them. So the clause above is scoped to
+    # `resolve_seat` and never states a property of the escalation column itself: a
+    # breaker-refused head **does** fall through to the entry tail in the arbiter walk.
+    # The fall-through is the human ruling on #361, 2026-08-14, which also filled the two
+    # cells that ruling had left empty and struck the blanket `fable-high` default: a seat
+    # whose column is empty has no arbiter and refuses, so **adding a seat now requires
+    # deciding its arbiter**.
     escalation: tuple[str, ...] = ()
     # ADR-0071 ruling 4 (#322): this seat judges work another profile produced, so its
     # resolution takes that profile as an input and never returns it. The column is on the
