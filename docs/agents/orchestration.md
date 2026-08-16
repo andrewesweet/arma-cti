@@ -40,9 +40,18 @@ prints it). Two facts about the row are operating rules rather than registry tri
   condition will be reached with no observation behind it, because this is the one seat
   the observatory structurally cannot see: the seat's own turns carry no dispatch id and
   reach no ledger row.
-- **The seat's escalation column is empty, so it arbitrates at `fable-high`** (ADR-0071
-  ruling 4). The orchestrator authors changes routinely, and without that default the
-  never-alone loop has no terminus for the seat that runs it.
+- **The seat's escalation column is filled, and deliberately not with the seat's own
+  profile.** `tools/dispatch.py`'s `orchestrator` row carries
+  `escalation=("opus-max", "fable-xhigh")`, the human's ruling on #361 (2026-08-14)
+  amending ADR-0071 ruling 2. The orchestrator authors changes routinely, so the
+  never-alone loop needs a terminus for the seat that runs it — and the terminus is not
+  `opus-xhigh`, which *is* the seat, because an orchestrator must not arbitrate its own
+  instruction. There is no longer a default underneath it to fall back on: the blanket
+  `fable-high` was struck (`tools/arbiter.py:18-19`), and an empty escalation column now
+  refuses outright rather than defaulting (`tools/arbiter.py:204`, returning
+  `arbiter_no_entry`). The exclusions are the mechanism, not a formality — on #361 the
+  walk refused by name with `arbiter_excluded` for exactly this reason, which is the
+  rule working rather than failing.
 
 **#242's pre-registered trial is closed as inconclusive** (ADR-0071 ruling 2). Its
 criteria and records judged an orchestration seat at one pair and the seat map sets
@@ -265,9 +274,9 @@ does by hand.
   in-world work. `just dispatch` launches a top-level session, which the wait hook permits,
   so the class carries `"refuses": false` and bars nothing. The obligation the seat keeps
   is therefore an obligation to *see the corpus run*, not to run it here. Anything
-  touching `addons/`, `missions/`, `extension/`, the daemon's world-facing half or a manifest still needs a full-corpus
-  run before landing (#258, finding 2), and that class's two path lists remain the one
-  authority for what an in-world surface is.
+  touching `addons/`, `missions/`, `extension/`, the daemon's world-facing half or a
+  manifest still needs a full-corpus run before landing (#258, finding 2), and that
+  class's two path lists remain the one authority for what an in-world surface is.
 
 ## What the seat must not do
 
@@ -342,19 +351,21 @@ been written.
 ## Consistency with AGENTS.md (acceptance criterion 2)
 
 Re-checked under #329 against `AGENTS.md`'s Working-style and Seats-and-profiles
-sections as this landing leaves them: the seat (a `claude_only` registry row and an
-empty escalation column, no pair restated here), the hold-the-wait / end-don't-wait
+sections as this landing leaves them: the seat (a `claude_only` registry row and a
+filled escalation column, no pair restated here), the hold-the-wait / end-don't-wait
 split, the single-shot shape, never-alone and the residual spot-check, the breaker-wait
 and `infra_unavailable` rules, and the `ANTHROPIC_BASE_URL` prohibition all restate
 `AGENTS.md` rules and point at them rather than overriding them. No conflict found.
 
-**One inconsistency is stated rather than resolved**, because resolving it is not this
-document's to do. ADR-0071 rulings 2 and 6 close #242's trial and withdraw the admission
-bar, and both mechanisms are still live in `tools/admission.py` and still folded into
-`just watch-report`; #328 removes them. Until it lands, this runbook records the decision
-and the seat reads those outputs as history rather than as a verdict. That window is the
-"period of stated inconsistency" the ADR's own sequencing names, and it stops being a
-transition and becomes a defect if the sequence stalls part-way.
+**The inconsistency this section once stated rather than resolved is closed.** ADR-0071
+rulings 2 and 6 close #242's trial and withdraw the admission bar, and #328 — the base
+this branch sits on — carried both out in the code: there is no `tools/admission.py`, the
+harness is `tools/trial.py`, no dispatch is refused by an admission verdict, and the
+recording surface once folded into `just watch-report` is now `just trial report`, silent
+against a closed trial. This runbook therefore records a **departure that has happened**,
+not a pending change: the seat reads the surviving trial outputs as history rather than as
+a verdict, and there is no window left in which a stalled sequence could turn the
+transition into a defect.
 
 One item this section originally carried as a **proposal for the sign-off gate**
 (acceptance criterion 5) — the pointer from `AGENTS.md` to this document — has since

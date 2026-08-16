@@ -19,8 +19,8 @@ dispatch cost is a separate document, `docs/telemetry-ledger.md`. The **review**
 shape of its own — what it is handed and the claims-cite-code contract it hands back — and
 that is `docs/review-dispatch.md`. Ruling 6 rehomes where a confirmed claim then goes, from
 the withdrawn bar onto the observatory; #328 has already removed the bar from the code, and
-the observatory it is to be rehomed onto is #335's rather than built, so a confirmed claim
-currently reaches nothing.
+that rehoming is #335's rather than done — the observatory itself is #336 and is not built —
+so a confirmed claim currently reaches nothing.
 
 ## Lanes and profiles
 
