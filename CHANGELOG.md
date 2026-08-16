@@ -143,7 +143,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **ADR-0071's two stale `fable`/`retro` paragraphs are proposed to the human, not landed (#329,
   review round 5).** `docs/adr/**` is a human sign-off gate, so the replacement text for the notes
-  at the class-2 row (`:909`) and at the seat table (`:244`) — both still reading as though the
+  at the class-2 row and at the seat table — both still reading as though the
   overlap were open, when this branch closed the documentation half — is
   [posted in full on #329](https://github.com/andrewesweet/arma-cti/issues/329#issuecomment-5307559864)
   for a ruling. A commit message is not a proposal surface, which is what the round-4 message

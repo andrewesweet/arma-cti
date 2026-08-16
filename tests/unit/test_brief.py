@@ -493,7 +493,7 @@ def test_the_registry_the_reasons_cite_carries_no_copy_of_the_withdrawn_rule() -
 
     Round 1 fixed `SEAT_REASON` and guarded it with keys-plus-content, and the widest live
     copy of the withdrawn `fable` scope went on sitting in `tools/dispatch.py` — the file the
-    `SEAT_REASON` comment names as its authority, ten lines from the profiles it registers.
+    `SEAT_REASON` comment names as its authority.
     A test that guards one enumeration while the contradicting text sits in the cited file is
     the defect the round diagnosed, applied one scroll further out.
 
