@@ -434,8 +434,10 @@ def classify_routing(
             "routing_policy_gate_unreadable",
             ("check=enforcing actual diff", f"policy={read.error}"),
             "The trusted routing policy could not be read, so the routing gate cannot clear "
-            "this landing. Repair the policy on Claude and run `just land` "
-            f"again.{PUSHED_CLAUSE}",
+            "this landing. A parser predating #326 cannot read the re-founded document at "
+            "all, and in that case the policy is not broken: take a fresh `just worktree "
+            "add` first, and repair the policy on Claude only if a current worktree still "
+            f"cannot read it.{PUSHED_CLAUSE}",
         )
     if paths is None:
         return Refusal(
