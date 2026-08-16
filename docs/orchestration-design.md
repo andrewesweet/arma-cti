@@ -343,7 +343,9 @@ dispatch because no mechanism carries it.*
   the `flake_quarantine` row's required response;
 - the paste rule, when the dispatch will read a verdict (CLAUDE.md carries it, and #219's ruling
   says to carry it into any briefing that dispatches a verdict reader);
-- the seat and its reason, from the Model roles mapping.
+- the seat and its reason, from the seat registry (`tools/dispatch.py`'s `SEATS`) — ADR-0071
+  ruling 2 replaced the Model roles mapping this line used to name, and `tools/brief.py` quotes
+  the registry.
 
 What stays the orchestrator's, and is the actual work: the task statement, the scope boundary, the
 ground truth to read, and the reason for a non-default seat. Output is markdown on stdout, or a

@@ -129,6 +129,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **AGENTS.md now says what an escalation entry actually resolves through (#329, review round 3).**
+  The *Seats and profiles* paragraph closed with "registry data that nothing resolves through …
+  not a fallback for a head the breaker happens to be refusing". Both halves were false against
+  this base: `tools/arbiter.py`'s `_walk_first` walks the entry head, then the entry tail, then
+  the preference list, and its fourth rung reads the breaker through `dispatch.candidate_refusal`,
+  so a breaker-refused head falls through to the entry tail. The tree already carried the
+  correction — `seat_listing`'s docstring records that the flat phrasing "was false the moment
+  that walk landed at `d351a3f`", and `test_dispatch_seat.py` asserts the flat form is absent from
+  the registry printout — and only `AGENTS.md`, the file read before every dispatch, had missed
+  it. The half that was true is kept: an escalation entry is a judgement that the work is harder
+  than the seat's tier, and `just dispatch`'s own resolution still never spends one for you.
+  The same flat claim in `exhausted_refusal`'s remedy text is scoped to that resolution rather
+  than left standing over both.
+
+- **`tools/dispatch.py` no longer contradicts itself on the `fable`/`retro` overlap (#329, review
+  round 3).** One comment recorded #329 as having closed the documentation half; two others still
+  read "closing the `fable`/`retro` overlap is #329's and #330's", as though nothing had. All
+  three now say the same thing: #329 closed the documentation half, and the `/retro` skill's half
+  is #330's.
+
+- **`docs/orchestration-design.md` stops sourcing a briefing's seat from the withdrawn mapping
+  (#329, review round 3).** The composer's input list still read "the seat and its reason, from
+  the Model roles mapping" — an untouched sibling of the copies round 2 deleted, and the last
+  live instruction pointing at a mapping ADR-0071 ruling 2 replaced. It names the seat registry
+  the composer actually reads. Every other surviving mention of that mapping is a historical
+  record (the ADRs, `docs/process-log.md`, `docs/research/`) and is left as one.
+
 - **AGENTS.md no longer enumerates which seats hold a declaration surface (#329, arbitration).**
   The *Seats and profiles* mechanism paragraph listed the four seats with an `.claude/agents/`
   file and the four without — two hand-maintained membership copies this branch itself added,

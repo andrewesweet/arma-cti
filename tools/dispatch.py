@@ -613,7 +613,8 @@ SEATS: Final[dict[str, Seat]] = {
     # Absent from ADR-0071 ruling 2's table and therefore carrying no escalation entry, which
     # after A1 struck the blanket `fable-high` fallback means an escalation from this seat
     # resolves to nothing and refuses. That is the consequence the human accepted at the time
-    # of ruling, not an oversight; closing the `fable`/`retro` overlap is #329's and #330's.
+    # of ruling, not an oversight. The documentation half of the `fable`/`retro` overlap is
+    # closed above by #329; the `/retro` skill's half is #330's.
     "fable": Seat("fable", claude_only=False, preference=("fable-high",)),
     # ADR-0071 ruling 1's one survivor, and the only `claude_only=True` row the table
     # carries: orchestration runs on Claude with a Claude model until a tested
@@ -654,8 +655,9 @@ DECLARED_ONLY_SEATS: Final[dict[str, Seat]] = {
 # ruling 1 rescinds that bar, and its trailer supersedes #300's ruling outright — #326
 # already deleted the policy half (the two standing `route_exceptions`). Nothing
 # consults an allowance once no bar exists to suspend, so the constant, its source line
-# and its predicate are deleted here rather than kept as data nothing reads. The
-# fable/`retro` seat overlap that ruling 3 leaves behind is #329's and #330's.
+# and its predicate are deleted here rather than kept as data nothing reads. Of the
+# `fable`/`retro` seat overlap that ruling 3 leaves behind, #329 closed the documentation
+# half and #330 owns the `/retro` skill's.
 
 
 def escalation_head(seat_name: str) -> str | None:
@@ -2437,7 +2439,8 @@ def exhausted_refusal(
         alternative = (
             f"This seat's escalation entry is {escalation}, reached the same way "
             f"(--lane {PROFILES[head].lane} --profile {head}); spending one is a judgement "
-            "about the work and is deliberately not resolved into automatically."
+            "about the work and is deliberately not resolved into automatically *here*. "
+            "`tools/arbiter.py`'s walk is a different resolution and starts at this entry."
         )
     else:
         alternative = (
