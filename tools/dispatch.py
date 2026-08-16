@@ -2692,6 +2692,52 @@ def default_brief(identity: Identity, worktree: Path) -> str:
     )
 
 
+def arrangement_block(plan: Plan) -> str:
+    """State the conditions this dispatch runs under, inside the brief (#359).
+
+    The dispatcher knows all of it at compose time and writes it to
+    `~/.arma-cti/dispatches/<id>/dispatch.json`, which is outside every worktree by
+    design — so on 2026-08-16 an `implementer` seat asked to record the arrangement of its
+    own measurement was **blocked** reading its own record, correctly reported that it
+    could not determine three fields, and a reviewer with wider reach read that as an
+    unchecked claim, which the orchestrator then published. A `review` seat on `plan` mode
+    the same afternoon read the identical file without trouble, so the gap is not a
+    property of the record but of which seat is asking.
+
+    The brief is the fix because the brief is already inside the confinement: it arrives
+    on the seat's stdin. Nothing is relaxed, no permission widened, and the record keeps
+    the same values for everyone outside. It is appended to *every* brief, including one
+    composed by `just brief` and passed with `--brief-file`, because the seat that could
+    not answer had been given exactly such a file — a block only the default brief carried
+    would have missed the case it exists for.
+
+    The credential is absent, as it is from `argv` and from the record: lane credentials
+    reach a child by environment only, and this block is not the place that changes.
+    """
+    fields = (
+        ("dispatch_id", plan.identity.dispatch_id),
+        ("seat", plan.identity.seat),
+        ("lane", plan.identity.lane),
+        ("profile", plan.identity.profile),
+        ("permission_mode", plan.permission_mode),
+        ("issue", f"#{plan.identity.issue}"),
+        ("worktree", str(plan.worktree)),
+        ("base_sha", plan.identity.base_sha),
+        ("planned_at", plan.planned_at.isoformat()),
+        ("record", str(plan.record)),
+        ("argv", " ".join(plan.argv)),
+    )
+    rows = "\n".join(f"{key}={value}" for key, value in fields)
+    return (
+        "\n## Your arrangement\n\n"
+        "The dispatcher recorded these when it composed this brief. Quote them verbatim "
+        "when anything asks what conditions you ran under, and never guess at a field or "
+        "report one as undeterminable — `record=` below is outside your worktree and you "
+        "will be blocked reading it, which is why the same values are here.\n\n"
+        f"```\n{rows}\n```\n"
+    )
+
+
 def git(*args: str, cwd: Path) -> str:
     """Run one git command and return its stdout, or the empty string if it gave no answer.
 
@@ -3382,11 +3428,6 @@ def plan_dispatch(
         issue=args.issue,
         base_sha=base_sha,
     )
-    brief = (
-        Path(args.brief_file).expanduser().read_text(encoding="utf-8")
-        if args.brief_file
-        else default_brief(identity, worktree)
-    )
     plan = Plan(
         identity=identity,
         worktree=worktree,
@@ -3401,7 +3442,12 @@ def plan_dispatch(
         routing=routing_clearance(args, root, found, now),
         strata=capture_strata(found.body, args.issue, root, body_from_file=bool(args.issue_body)),
     )
-    return plan, brief, None
+    base = (
+        Path(args.brief_file).expanduser().read_text(encoding="utf-8")
+        if args.brief_file
+        else default_brief(identity, worktree)
+    )
+    return plan, base + arrangement_block(plan), None
 
 
 def write_record(plan: Plan, brief: str) -> None:
@@ -3443,6 +3489,73 @@ def load_record(record: Path) -> Plan:
         routing=tuple(str(line) for line in document.get("routing_clearance", ())),
         strata=read_strata(document),
     )
+
+
+def worktree_changes(worktree: Path) -> tuple[str, ...] | None:
+    """Return the assigned tree's porcelain lines, or `None` where git could not answer.
+
+    Deliberately not `git()` above, which collapses "git refused" and "git said nothing"
+    into the same empty string. Every other caller here can act on that; this one cannot,
+    because the two answers are "the tree is clean" and "I do not know", and #375 is the
+    live instance of the second being read as the first.
+    """
+    try:
+        done = subprocess.run(
+            ["git", "status", "--porcelain"],  # noqa: S607 - the checkout's toolchain
+            cwd=worktree,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except OSError:
+        return None
+    if done.returncode != 0:
+        return None
+    return tuple(line for line in done.stdout.splitlines() if line.strip())
+
+
+def terminal_state(worktree: Path) -> dict[str, object]:
+    """Say how the seat left its assigned tree, as facts plus the worst of them (#359).
+
+    A dispatch used to end with `outcome` and a returncode, and both are about the *run*:
+    twice on 2026-08-16 a seat finished its work, wrote its report, exited `ok`, and left
+    the edit uncommitted — one of them explicitly "holding for the completion
+    notification" that never came. Nothing in the record said so, and the only thing that
+    ever noticed was the orchestrator running `git status` in the tree before the next
+    dispatch, which is a convention resting on the attentiveness #359 exists to stop
+    depending on.
+
+    `outcome` is left exactly as it was and is not overwritten here, because it is the
+    breaker's input and the breaker judges *lanes*. A seat forgetting to commit is not a
+    lane refusing, and folding the two would trip a provider on a seat's mistake. This is
+    an added signal beside it, which is also what the issue asked for.
+
+    `left_running` is the mechanical form of "exited while waiting": processes whose cwd
+    is still inside the assigned tree once the runner has returned. `tools/dispatch_stop`
+    already owns that scan and its own-chain exclusions, so it answers rather than a
+    second reading of `/proc` here.
+    """
+    changes = worktree_changes(worktree)
+    running = tuple(
+        f"{process.pid} {process.command}"
+        for process in dispatch_stop.scan(worktree, dispatch_stop.Machine()).matched
+    )
+    if changes is None:
+        state = "worktree_unreadable"
+    elif changes:
+        # Ranked above `left_running` because it is the one that risks the *work*:
+        # #149 sat ninety minutes on five uncommitted addon files, and a tree left dirty
+        # is what the next dispatch into it either trips over or resets (#105).
+        state = "uncommitted"
+    elif running:
+        state = "left_running"
+    else:
+        state = "committed"
+    return {
+        "terminal_state": state,
+        "uncommitted": list(changes or ()),
+        "left_running": list(running),
+    }
 
 
 def write_result(record: Path, **fields: object) -> None:
@@ -3586,6 +3699,7 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         outcome=outcome,
         started_at=started.isoformat(),
         ended_at=datetime.now(tz=UTC).isoformat(),
+        **terminal_state(plan.worktree),
     )
     return done.returncode, (f"dispatch={plan.identity.dispatch_id}", f"exit={done.returncode}")
 

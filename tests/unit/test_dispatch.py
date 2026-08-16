@@ -911,6 +911,51 @@ def test_a_plan_carries_the_profiles_flags_and_no_secret(tmp_path: Path) -> None
     assert f"#{plan.identity.issue}" in brief
 
 
+def test_every_brief_states_the_arrangement_the_seat_cannot_read_for_itself(
+    tmp_path: Path,
+) -> None:
+    """#396's block, both sides: the record is outside the tree the seat is confined to."""
+    plan, brief, _ = plan_for(tmp_path)
+    assert plan is not None
+
+    assert "## Your arrangement" in brief
+    for expected in (
+        f"dispatch_id={plan.identity.dispatch_id}",
+        "seat=implementer",
+        "lane=claude-native",
+        "profile=opus-high",
+        "permission_mode=acceptEdits",
+        f"worktree={plan.worktree}",
+        f"base_sha={plan.identity.base_sha}",
+        f"record={plan.record}",
+    ):
+        assert expected in brief
+    assert f"argv={' '.join(plan.argv)}" in brief
+
+
+def test_a_supplied_brief_file_gets_the_arrangement_too(tmp_path: Path) -> None:
+    """The seat that could not answer had been handed a `just brief` file (#359).
+
+    A block only the default brief carried would miss exactly the case it exists for.
+    """
+    composed = tmp_path / "brief.md"
+    composed.write_text("Composed elsewhere, and kept verbatim.\n", encoding="utf-8")
+
+    plan, brief, _ = plan_for(tmp_path, brief_file=str(composed))
+
+    assert plan is not None
+    assert brief.startswith("Composed elsewhere, and kept verbatim.\n")
+    assert f"dispatch_id={plan.identity.dispatch_id}" in brief
+
+
+def test_the_arrangement_names_the_credential_nowhere(tmp_path: Path) -> None:
+    """Credentials reach a child by environment only, and this block does not change that."""
+    plan, brief, _ = plan_for(tmp_path)
+    assert plan is not None
+
+    assert "credential" not in brief.split("## Your arrangement", maxsplit=1)[1]
+
+
 def test_the_default_root_is_the_main_checkout_even_from_inside_a_worktree(
     tmp_path: Path,
 ) -> None:
@@ -1762,6 +1807,78 @@ def test_the_child_refuses_a_worktree_that_has_been_removed(tmp_path: Path) -> N
     assert "returncode" not in result
 
 
+def test_a_clean_tree_with_nothing_left_running_is_the_only_committed_ending(
+    tmp_path: Path,
+) -> None:
+    """The state a dispatch is supposed to end in, and the only one that reads as done."""
+    state = dispatch.terminal_state(git_worktree(tmp_path))
+
+    assert state["terminal_state"] == "committed"
+    assert state["uncommitted"] == []
+
+
+def test_a_dirty_assigned_tree_at_exit_is_not_a_committed_ending(tmp_path: Path) -> None:
+    """Twice on 2026-08-16 a seat finished, reported, exited `ok`, and committed nothing.
+
+    The record said nothing about it, and the only thing that ever noticed was the
+    orchestrator running `git status` in the tree before the next dispatch (#359).
+    """
+    worktree = git_worktree(tmp_path)
+    # A tracked file modified and never committed, which is the shape both instances took.
+    (worktree / "README.md").write_text("the edit that never reached a commit\n", encoding="utf-8")
+
+    state = dispatch.terminal_state(worktree)
+
+    assert state["terminal_state"] == "uncommitted"
+    assert state["uncommitted"] == [" M README.md"]
+
+
+def test_a_tree_git_cannot_answer_for_is_never_read_as_clean(tmp_path: Path) -> None:
+    """#375's shape: an unanswerable `git status` presented as a clean tree."""
+    state = dispatch.terminal_state(tmp_path / "never-created")
+
+    assert state["terminal_state"] == "worktree_unreadable"
+    assert state["uncommitted"] == []
+
+
+def test_a_process_still_working_in_the_tree_at_exit_is_named_rather_than_committed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A gate still running, held for a notification that never came, then the exit (#359)."""
+    worktree = git_worktree(tmp_path)
+    left = dispatch.dispatch_stop.Process(4321, "just fast")
+    monkeypatch.setattr(
+        dispatch.dispatch_stop,
+        "scan",
+        lambda _worktree, _machine: dispatch.dispatch_stop.Scan((left,), (), 0),
+    )
+
+    state = dispatch.terminal_state(worktree)
+
+    assert state["terminal_state"] == "left_running"
+    assert state["left_running"] == ["4321 just fast"]
+
+
+def test_uncommitted_work_outranks_a_process_left_running(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Both at once ranks by what is at risk: #149 sat 90 minutes on five uncommitted files."""
+    worktree = git_worktree(tmp_path)
+    (worktree / "README.md").write_text("// work\n", encoding="utf-8")
+    monkeypatch.setattr(
+        dispatch.dispatch_stop,
+        "scan",
+        lambda _worktree, _machine: dispatch.dispatch_stop.Scan(
+            (dispatch.dispatch_stop.Process(99, "just fast"),), (), 0
+        ),
+    )
+
+    state = dispatch.terminal_state(worktree)
+
+    assert state["terminal_state"] == "uncommitted"
+    assert state["left_running"] == ["99 just fast"]
+
+
 def test_git_answers_nothing_when_it_cannot_be_run_at_all(tmp_path: Path) -> None:
     """An absent `cwd` is git giving no answer, not an exception for a caller to catch.
 
@@ -1858,6 +1975,16 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     result = json.loads((record / "result.json").read_text(encoding="utf-8"))
     assert result["returncode"] == 0
     assert result["dispatch_id"] == printed["dispatch"]
+    # The terminal state travels with the run's own ending rather than being reconstructed
+    # by whoever reads it next (#359). The fake runner writes nothing into the tree, so
+    # this is the committed ending; `outcome` is untouched beside it, because it is the
+    # breaker's input and a seat forgetting to commit is not a lane refusing.
+    assert result["terminal_state"] == "committed"
+    assert result["outcome"] == "ok"
+    # The exact form that delivers this dispatch's completion, printed rather than
+    # reconstructed: on 2026-08-16 the arming was attempted four times in a form that
+    # notified nothing, which looks identical to a correct one.
+    assert printed["follow"] == f"just dispatch-follow {printed['dispatch']}"
 
     ran = read_lines(capture.read_text(encoding="utf-8"))
     assert ran["cwd"] == str(worktree.resolve())

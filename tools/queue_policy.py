@@ -77,6 +77,7 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import dispatch_follow  # for `runner_state`, which owns the runner-pipe reading (#359)
 import otel_event  # the path insert above is what makes this importable
 
 if TYPE_CHECKING:
@@ -826,7 +827,20 @@ def worktree_paths(root: Path) -> tuple[Path, ...]:
 
 
 def dispatch_records(directory: Path) -> tuple[tuple[int, str, bool], ...]:
-    """Read `(issue, dispatch_id, finished)` from every dispatch record on this box."""
+    """Read `(issue, dispatch_id, finished)` from every dispatch record on this box.
+
+    `finished` used to be "`result.json` exists", which counted a runner that died without
+    writing one as in flight for as long as the record survived — a 2026-08-10 dispatch
+    held a slot in this number for six days, and every count taken from this directory was
+    inflated by it (#359). A record whose runner's pipe is at EOF with no result is stale,
+    and stale is not in flight.
+
+    Only `abandoned` is added to the count's exit. `unknown` — a record predating the pipe
+    entirely, or one this cannot open — stays in flight, which is the refusing direction
+    and the same one an unreadable tracker takes in `closed_issues`. Nothing here reports
+    the stale records it drops; `just dispatch-follow --report` names each one once, so a
+    record leaving this count is visible somewhere rather than merely absent.
+    """
     if not directory.is_dir():
         return ()
     records: list[tuple[int, str, bool]] = []
@@ -841,7 +855,9 @@ def dispatch_records(directory: Path) -> tuple[tuple[int, str, bool], ...]:
         issue = document.get("issue", 0) if isinstance(document, dict) else 0
         if not isinstance(issue, int) or isinstance(issue, bool):
             continue
-        records.append((issue, record.name, (record / "result.json").is_file()))
+        state = dispatch_follow.runner_state(record)
+        finished = state in {dispatch_follow.RUNNER_FINISHED, dispatch_follow.RUNNER_ABANDONED}
+        records.append((issue, record.name, finished))
     return tuple(records)
 
 

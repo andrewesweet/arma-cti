@@ -82,3 +82,11 @@ timeout "$UV_TIMEOUT" uv run --quiet python tools/dispatch_follow.py --arm-recor
 printf 'log=%s\n' "$log"
 printf 'dispatched=%s\n' "$dispatch"
 printf 'stop=just dispatch --stop %s\n' "$dispatch"
+# The exact form that delivers this dispatch's completion, printed so it is copied rather
+# than reconstructed (#359, and #219's paste rule applied to a tool's own output). Nothing
+# in this repository can arm it — the follower has to be started by the tool harness, or
+# its exit wakes nobody — and on 2026-08-16 the arming was attempted four times in a form
+# that produced no notification at all, which looks identical to a correct one. Run it as
+# a harness-tracked background task; `just watch-report` names every dispatch nothing is
+# listening to.
+printf 'follow=just dispatch-follow %s\n' "$dispatch"

@@ -71,10 +71,17 @@ import json
 import os
 import re
 import signal
+import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
+
+# tools/ holds standalone scripts rather than an importable package, so a sibling import
+# needs the script's own directory on the path.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import dispatch_follow  # for `runner_state`; it imports nothing of this module's (#359)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -581,8 +588,15 @@ def occupancy_refusal(worktree: Path, dispatch_dir: Path) -> Refusal | None:
         "worktree_occupied_by_dispatch",
         (
             f"worktree={worktree}",
+            # `runner=` is the half `result=absent` cannot say (#359). A holder whose
+            # runner is alive is a dispatch to wait for; one whose pipe is at EOF is a
+            # record that died without recording its ending, and the reader could not
+            # previously tell which without reasoning about a pid this deliberately does
+            # not publish. It changes nothing about the refusal — both still refuse — only
+            # what the reader is told they are looking at.
             *(
                 f"holder={record.dispatch_id} record={record.directory} result=absent"
+                f" runner={dispatch_follow.runner_state(record.directory)}"
                 for record in occupied
             ),
         ),

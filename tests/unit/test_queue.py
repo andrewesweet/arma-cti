@@ -1132,6 +1132,31 @@ def test_the_derivation_reads_this_boxs_real_dispatch_records(tmp_path: Path) ->
     assert queue.dispatch_records(tmp_path / "absent") == ()
 
 
+def test_a_record_whose_runner_is_gone_leaves_the_in_flight_count(tmp_path: Path) -> None:
+    """A 2026-08-10 dispatch held a slot in this number for six days (#359).
+
+    "No `result.json`" alone cannot tell a run still going from a runner that died without
+    recording an ending, and every count taken from this directory was inflated by the
+    difference. A record predating the pipe is `unknown` and stays in flight, which is the
+    refusing direction.
+    """
+    root = tmp_path / "dispatches"
+    for name in ("d-stale", "d-live", "d-old"):
+        (root / name).mkdir(parents=True)
+        (root / name / "dispatch.json").write_text(json.dumps({"issue": 359}), encoding="utf-8")
+    os.mkfifo(root / "d-stale" / "runner.pipe")
+    os.mkfifo(root / "d-live" / "runner.pipe")
+    held = os.open(root / "d-live" / "runner.pipe", os.O_RDWR)
+    try:
+        assert queue.dispatch_records(root) == (
+            (359, "d-live", False),
+            (359, "d-old", False),
+            (359, "d-stale", True),
+        )
+    finally:
+        os.close(held)
+
+
 def test_a_dispatch_record_that_cannot_be_read_is_skipped_rather_than_guessed(
     tmp_path: Path,
 ) -> None:

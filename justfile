@@ -598,6 +598,14 @@ dispatch *args:
 # and the seat sleeps through every slot the faster members free. Measured at 292
 # agent-minutes of delayed wake over four days, once 115 minutes on one cohort
 # (#295, docs/research/dispatch-cost-and-occupancy.md).
+#
+# `--report` is the read rather than the wait, and `just watch-report` already
+# chains it, so it rarely needs typing. It names every dispatch nothing is
+# listening to (`wake_unarmed`, standing until a follower attaches), every
+# completion that woke nobody (`wake_undelivered`, printed once because printing
+# it is the delivery), and every record whose runner is gone without a result
+# (`dispatch_abandoned`, stale rather than in flight). `--all` re-prints what has
+# already been delivered (#359).
 dispatch-follow *args:
     uv run python tools/dispatch_follow.py {{ args }}
 
@@ -644,6 +652,13 @@ watch name worktree subject="pool" *args:
 watch-report *args:
     uv run python tools/breaker.py report
     uv run python tools/queue_policy.py report
+    # A dispatch nothing is listening to, a completion that woke nobody, and a record
+    # whose runner died without a result (#359). Ahead of the watchers because it is
+    # the one read that can say a *completed* dispatch is sitting unread — the shape
+    # that cost seven hours on 2026-08-13 and left two commits unmade on 2026-08-16.
+    # Silent when every dispatch has a follower. Takes no argument: `{{ args }}` is the
+    # watchers' alone.
+    uv run python tools/dispatch_follow.py --report
     uv run python tools/stall_watch.py report {{ args }}
     # A Remote Control session the bridge killed (#343): the RC servers spawn every
     # worktree session this project runs from a phone, and when one dies for a token

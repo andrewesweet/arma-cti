@@ -9,6 +9,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **A dispatch's terminal state is on its record, and a wake nothing delivered is visible
+  (#359).** Three failures of one shape, all measured on 2026-08-16. `result.json` now carries
+  `terminal_state` beside the run's outcome, distinguishing a run that ended on a clean tree
+  (`committed`) from one that left uncommitted work in its assigned worktree (`uncommitted`,
+  twice that day, once explicitly "holding for the completion notification" that never came),
+  from one that exited with a process still working there (`left_running`), from a tree git
+  could not answer for (`worktree_unreadable`, which is never read as clean). `outcome` is
+  untouched beside it, because it is the breaker's input and a seat forgetting to commit is
+  not a lane refusing. `just dispatch-follow` writes its attachment onto the record it
+  follows, quotes the terminal state in the line that wakes the orchestrator, and gains
+  `--report` — chained into `just watch-report` — naming every dispatch nothing is listening
+  to (`wake_unarmed`, standing until a follower attaches, with the exact arming command),
+  every completion that woke nobody (`wake_undelivered`, printed once because printing it is
+  the delivery), and every record whose runner is gone without a result (`dispatch_abandoned`).
+  That last is read from the runner's own pipe rather than from `result.json` alone, so a
+  stale record is distinguishable from a live one and leaves the in-flight count `just queue`
+  derives — a 2026-08-10 dispatch had held a slot in that number for six days. `just dispatch`
+  now prints the exact `follow=` form alongside `stop=`, because the arming was attempted four
+  times that day in a form that produced no notification and looked identical to a correct one.
+  Every brief, including one composed by `just brief` and passed with `--brief-file`, ends with
+  the arrangement the dispatcher knew at compose time — dispatch id, seat, lane, profile,
+  permission mode, worktree, base SHA, record path and argv — so a seat can quote the
+  conditions it ran under without reaching for `~/.arma-cti/dispatches/`, which sits outside
+  its confinement by design and which an `implementer` seat was measurably blocked from
+  reading. No permission is widened and no confinement relaxed to achieve it.
+
 - **`just land` refuses an unreviewed or unadjudicated landing, by name (#334, ADR-0071 ruling
   4).** A review rung between routing and the gate enforces the ruling's three criteria: a
   completed review dispatch record bound to the landed SHA (the derivation and the binding

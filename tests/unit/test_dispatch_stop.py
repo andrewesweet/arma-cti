@@ -18,6 +18,7 @@ under test is the kernel's and an arranged one could agree with a wrong reading 
 from __future__ import annotations
 
 import json
+import os
 import signal
 import subprocess
 import sys
@@ -515,6 +516,31 @@ def test_a_tree_holding_a_result_less_dispatch_refuses_a_second_one_by_name(
     # No failure class: nothing was found about any provider, lane or code.
     assert refusal.failure_class == ""
     assert "just dispatch --stop" in refusal.action
+
+
+def test_a_holder_says_whether_its_runner_is_alive_or_merely_left_behind(
+    tmp_path: Path,
+) -> None:
+    """`result=absent` cannot tell "wait for it" from "this record is stale" (#359).
+
+    Both still refuse — a tree carrying either is not free — but the reader could not
+    previously tell which without reasoning about a pid this deliberately does not publish.
+    """
+    _, target, _, _ = trees(tmp_path)
+    holder = record(tmp_path, target)
+    os.mkfifo(holder.directory / "runner.pipe")
+
+    stale = dispatch_stop.occupancy_refusal(target, tmp_path / "dispatches")
+    assert stale is not None
+    assert any("runner=abandoned" in line for line in stale.found)
+
+    held = os.open(holder.directory / "runner.pipe", os.O_RDWR)
+    try:
+        live = dispatch_stop.occupancy_refusal(target, tmp_path / "dispatches")
+    finally:
+        os.close(held)
+    assert live is not None
+    assert any("runner=running" in line for line in live.found)
 
 
 def test_a_predecessor_that_recorded_an_ending_does_not_occupy_its_tree(tmp_path: Path) -> None:
