@@ -16,7 +16,7 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-seats check-sqf check-secrets check-python check-machine-b check-rust
+check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-doc-paths check-seats check-sqf check-secrets check-python check-machine-b check-rust
 
 # Static validation for the repository-managed Machine B playbooks. The live
 # inventory is deliberately absent here: syntax and lint must be available to
@@ -71,6 +71,18 @@ check-markers:
 # `tools/land.py` refuses on the same finding by name, before the gate runs.
 check-conflicts:
     uv run python tools/check_conflict_markers.py
+
+# Every backticked path in `docs/**` and `AGENTS.md` resolves in the tree, or the
+# document says it names history (#395). The defect: a passage that merged
+# *cleanly* through a rebase and was made false by what landed underneath it —
+# a resolver reads conflicts, and nothing read this. Marking a departed path on
+# purpose is `<!-- historical -->`: on a line it exempts that line, alone on a
+# line it exempts the rest of the file, which is how a dated record says so once.
+# This is the mechanical half only. It cannot see a true sentence about a
+# mechanism that changed underneath it — #395's own second instance had no path
+# name wrong at all — so a green here is not "the prose matches the tree".
+check-doc-paths:
+    uv run python tools/check_doc_paths.py
 
 # Every seat declares its (model, effort) pair, and declares it validly (#255).
 # Both declaration surfaces fail open — a misspelled key or a level that does not

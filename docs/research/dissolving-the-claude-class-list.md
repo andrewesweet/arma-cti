@@ -1,5 +1,10 @@
 # Dissolving the keep-on-Claude class list: gate obstacles, competence obstacles, and the third kind
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Researched**: 2026-08-09
 **Question** (#262, commissioned by the human on 2026-08-06 in the guided decision session, against the class rule ruled the same day on #258): separate the obstacles that keep work on Claude into the ones a gate dissolves and the ones only model-competence evidence dissolves, answer E1 outright, and design each remaining experiment well enough to file as its own issue.
 

@@ -41,7 +41,7 @@ Applied at the same retro, under the same standing authorisation:
 
 - **CLAUDE.md, command surface**: the `just`-only rule binds work that lands and its
   verification; exploration scaffolding kept off main may run bare, and landing it means
-  landing its recipe and table row in the same commit. Evidence: #40 ran `spike/sp-run.sh`
+  landing its recipe and table row in the same commit. Evidence: #40 ran `spike/sp-run.sh` <!-- absent-path: #40's throwaway spike script, deliberately never landed -->
   directly, deliberately and flagged, because a recipe for throwaway scaffolding would
   have cost a sign-off-gated command-table row; #27's contrasting case (bare invocation of
   a *landed* tier) stays a defect.

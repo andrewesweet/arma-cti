@@ -1,5 +1,10 @@
 # Time acceleration for in-world tests
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Recommendation: do not build an accelerated tier.** Multiplayer has no simulation-acceleration lever at all, single player has one that works, and the price of reaching it — the human's GPU machine, a second topology, and a measured loss of simulation fidelity — is more than the sixteen minutes a full regression pass currently costs. One case is deliberately left open at the end: rules with long `time`-based clocks, which have no probe today and no other way to get one.
 
 Issue #40. Measured 2026-08-01 against Arma 3 **2.20.152984**, the same build on both sides. Exploration scaffolding — the probe and the single-player runner — is on the `explore/40-time-acceleration` branch and not on `main`; this document is the result, and the branch is how to re-run it.

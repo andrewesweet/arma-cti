@@ -1,5 +1,10 @@
 # Getting a client into a running Arma 3 mission without a human — role selection, headless clients, and slot assignment
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Research date:** 2026-07-30
 **Question:** A real Windows client launched with `-connect/-port/-password` reaches the multiplayer **role selection** screen and stops there until a human clicks a slot and presses OK. A Linux headless client (`arma3server -client -connect=…`) connects, is logged as `Player headlessclient connected (id=HC<pid>)`, and then does nothing: no `init.sqf`, no `onPlayerConnected`, empty `allPlayers`. How does an unattended client get past role selection into a running mission? What do real headless-client deployments do? Is there a server-side SQF route to force a slot? What is `Server error: Player without identity`? Does an HC need a Steam session?
 

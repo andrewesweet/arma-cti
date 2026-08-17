@@ -1,5 +1,10 @@
 # Autonomous continuous improvement of the system of work
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 Research date: 2026-08-14
 
 **Status:** Background research informing

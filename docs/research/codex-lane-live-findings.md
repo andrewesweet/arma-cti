@@ -1,5 +1,10 @@
 # The Codex lane, measured against the live CLI
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Question.** #243 asks four things, of which the first is a decision ADR-0061 deferred:
 which substrate the Codex lane runs on — OpenAI's native `codex` CLI or `opencode` — with
 the hook-parity suite of Decision 4 gating whichever gets authority. The other three are

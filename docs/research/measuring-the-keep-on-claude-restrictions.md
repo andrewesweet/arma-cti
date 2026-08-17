@@ -1,5 +1,10 @@
 # Measuring the keep-on-Claude restrictions: the zai second lens
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 - Issue: [#296](https://github.com/andrewesweet/arma-cti/issues/296)
 - Base: `780c309`
 - Lane/profile/seat: `zai` / `zai-glm52-max` / `implementer`

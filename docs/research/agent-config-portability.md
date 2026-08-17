@@ -1,5 +1,10 @@
 # Porting this project's instructions and enforcement to Codex and opencode
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Explored**: 2026-08-05, research dispatch R4. APM 0.28.0 at `dcbaf65`, rulesync 16.7.0 at `2249ab5`, opencode clone at `/home/andre/code/github.com/anomalyco/opencode`, both compilers installed and run against scratch projects.
 **Outcome**: **ruling 7 does not survive as stated.** `apm compile` emits no hook configuration for any target — not Codex, not opencode, not Claude Code. APM does emit `.claude/settings.json` and `.codex/hooks.json`, but from `apm install`, as a *dependency-package* primitive, and it emits **nothing at all** for opencode, which its own targets matrix records as unsupported. A second compiler, **rulesync**, does emit both `.codex/hooks.json` and an opencode plugin module — but the opencode module it generates does not work for hooks shaped like ours, for two reasons demonstrated below.
 

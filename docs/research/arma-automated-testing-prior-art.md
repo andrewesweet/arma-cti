@@ -1,5 +1,10 @@
 # Prior art: automated testing against a live Arma 3 process
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Researched**: 2026-07-30
 **Question**: Which Arma 3 projects run genuine automated tests against a *running* game or server process, and how do they get a verdict out? Not "who lints" — `docs/research/arma-toolchain.md` §5 already established that ACE3, CBA_A3, ACRE2 and ZEN run HEMTT lints plus Python validators in CI and that none of them runs SQF-VM.
 

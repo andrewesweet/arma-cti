@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just check` refuses a document naming a repository path the tree does not carry, and a
+  rebase now names what merged cleanly underneath it (#395).** Two halves of one defect: a
+  passage can merge *without conflicting* and be made false by what landed beneath it, and a
+  conflict resolver reads only conflicts. The mechanical half is `tools/check_doc_paths.py`,
+  in `just check`: every backticked path in `docs/**` and `AGENTS.md` whose first segment is a
+  tracked top-level entry must resolve against `git ls-files`, or the document must say the
+  absence is meant — `<!-- absent-path -->` on a line exempts that line, alone on a line it
+  exempts the whole file, and either form may carry its reason. Paths git ignores and paths
+  under `~/` are not judged, being runtime and host state rather than claims about this tree.
+  The load-bearing half is in `just land` and `just stage`: after a rebase that replayed onto
+  new commits they print `base_commits=` (how many, and the range to read), `replayed_clean=`
+  (the files the replay touched with no conflict raised over them, truncated with its own
+  count) and a `reread=` line saying what that pair is for, so a review brief can name those
+  passages instead of a reviewer reconstructing them by hand. Neither half sees a true
+  sentence about a mechanism that changed underneath it — #395's own second instance had no
+  path name wrong at all — so a green from the checker is not "the prose matches the tree".
+
 - **`just land` refuses an unreviewed or unadjudicated landing, by name (#334, ADR-0071 ruling
   4).** A review rung between routing and the gate enforces the ruling's three criteria: a
   completed review dispatch record bound to the landed SHA (the derivation and the binding

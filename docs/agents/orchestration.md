@@ -359,7 +359,7 @@ and `infra_unavailable` rules, and the `ANTHROPIC_BASE_URL` prohibition all rest
 
 **The inconsistency this section once stated rather than resolved is closed.** ADR-0071
 rulings 2 and 6 close #242's trial and withdraw the admission bar, and #328 — the base
-this branch sits on — carried both out in the code: there is no `tools/admission.py`, the
+this branch sits on — carried both out in the code: there is no `tools/admission.py`, the <!-- absent-path -->
 harness is `tools/trial.py`, no dispatch is refused by an admission verdict, and the
 recording surface once folded into `just watch-report` is now `just trial report`, silent
 against a closed trial. This runbook therefore records a **departure that has happened**,

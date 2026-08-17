@@ -1742,6 +1742,94 @@ def test_staging_a_current_branch_says_so_and_still_names_the_sha(
     assert _tip(origin) == tip
 
 
+# ------------------------------------------ the clean-merge blind spot (#395)
+#
+# A resolver reads conflicts. Nothing read the passages that merged cleanly and
+# were made false by what landed underneath them — #329's runbook went on naming
+# `tools/admission.py` while the rebase base was the commit that renamed it away.
+# These pin the two facts the reviewer who caught it reconstructed by hand.
+
+
+def test_staging_names_the_commits_the_new_base_contributed(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    origin, main, here = repo
+    base_before = _tip(origin)
+    _commit(main, "sibling.txt", "landed first\n")
+    _commit(main, "second.txt", "landed second\n")
+    _git("push", "origin", "main", cwd=main)
+    _commit(here, "feature.txt", "work\n")
+
+    report = land.stage(main, here)
+
+    was = _git("rev-parse", "--short", base_before, cwd=here).strip()
+    now = _git("rev-parse", "--short", "origin/main", cwd=here).strip()
+    assert f"base_commits=2 ({was}..{now})" in report.lines
+
+
+def test_staging_names_the_files_the_replay_touched_without_conflicting(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """The branch's own files, none of which raised a conflict — so none were read."""
+    _origin, main, here = repo
+    _commit(main, "sibling.txt", "landed first\n")
+    _git("push", "origin", "main", cwd=main)
+    _commit(here, "docs/runbook.md", "prose about the base\n")
+
+    report = land.stage(main, here)
+
+    assert "replayed_clean=docs/runbook.md" in report.lines
+    assert any(line.startswith("reread=") for line in report.lines)
+
+
+def test_a_current_branch_reports_no_clean_replay(repo: tuple[Path, Path, Path]) -> None:
+    """Nothing landed underneath, so nothing can have been made false by it."""
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+
+    report = land.stage(main, here)
+
+    assert "rebase=already_current" in report.lines
+    assert not [line for line in report.lines if line.startswith(("base_commits=", "reread="))]
+
+
+def test_a_landing_reports_the_clean_replay_too(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
+    """`just land` rebases unconditionally, so it is the other place the fact exists."""
+    _origin, main, here = repo
+    _commit(main, "sibling.txt", "landed first\n")
+    _git("push", "origin", "main", cwd=main)
+    _commit(here, "docs/runbook.md", "prose about the base\n")
+    review = _reviewed(here, tmp_path)
+
+    report = land.land(main, here, gate=_Gate(), review=review)
+
+    assert report.code == 0
+    assert "base_commits=1" in " ".join(report.lines)
+    assert "replayed_clean=docs/runbook.md" in report.lines
+
+
+def test_a_long_clean_replay_names_what_it_did_not_print(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """No silent cap: a truncated list says how many it dropped."""
+    _origin, main, here = repo
+    _commit(main, "sibling.txt", "landed first\n")
+    _git("push", "origin", "main", cwd=main)
+    for index in range(land.HOW_MANY_SHOWN + 2):
+        (here / f"file-{index:02d}.txt").write_text("work\n", encoding="utf-8")
+    _git("add", "-A", cwd=here)
+    _git("commit", "-m", "feat: many", cwd=here)
+
+    report = land.stage(main, here)
+
+    listed = next(line for line in report.lines if line.startswith("replayed_clean="))
+    assert listed.endswith(" and 2 more")
+    assert len(listed.removeprefix("replayed_clean=").split()) == land.HOW_MANY_SHOWN + 3
+
+
 def test_staging_refuses_a_dirty_tree_in_the_landings_own_words(
     repo: tuple[Path, Path, Path],
 ) -> None:

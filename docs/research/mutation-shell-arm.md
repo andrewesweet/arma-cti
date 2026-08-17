@@ -1,5 +1,10 @@
 # The mutation gate beyond Python: a shell arm, a Rust rung, and no SQF arm
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Measured**: 2026-08-09 (#246), against the tree at `576eead`, on this box.
 **Question**: can `just mutation` ask of `spike/*.sh` and of the Rust shim what #239 taught it to ask of `src/` and `tools/`, and what should it do about SQF?
 **Answer in one line**: **yes for both, and no for SQF on economics rather than difficulty** — the shell arm gates seven of the eleven modules that used to sit on the escape list, the Rust rung costs nothing on 98.6% of landings and reds a gutted shim test, and a per-mutant SQF verdict is a fresh Arma world, which is hours per module on a machine the human also plays on.

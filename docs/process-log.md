@@ -1,5 +1,10 @@
 # Process log
 
+<!-- absent-path -->
+<!-- The audit trail: every entry is dated, and the repository paths it cites are the tree
+     as it stood at that entry's date. Correcting them would falsify the record, which is
+     what the marker above tells `just check-doc-paths`. -->
+
 Audit trail of how the development process evolved. One entry per retro. See ADR-0009.
 
 ## 2026-07-30 — bootstrap (not a retro)

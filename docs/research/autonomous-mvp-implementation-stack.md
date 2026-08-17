@@ -1,5 +1,10 @@
 # Implementation stack for the autonomous system-of-work MVP
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Research date:** 2026-08-15  
 **Scope:** the breadth-first walking skeleton: initiative planning, deterministic outer
 coordination, the post-#317 work-item loop, initiative audit, and one primitive autonomous

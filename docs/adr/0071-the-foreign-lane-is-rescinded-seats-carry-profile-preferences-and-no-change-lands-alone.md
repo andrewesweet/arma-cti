@@ -684,7 +684,7 @@ re-dispatch, at the cost re-dispatch carries.
 
 ### 6. Judgement moves from an upfront bar to a retrospective observatory
 
-`tools/admission.py`'s pre-registered bar is **dropped**, withdrawing ADR-0061
+`tools/admission.py`'s pre-registered bar is **dropped**, withdrawing ADR-0061 <!-- absent-path: the module's name when this ruling was written; #328 renamed it to tools/trial.py -->
 Decision 6. Its trial pre-registration harness is kept — but it is not
 opinion-free, and the first draft said it was. It hard-codes
 `TRIAL_BAR_ID = "cti.admission.orchestration-trial/242"`, `TRIAL_N = 10` and

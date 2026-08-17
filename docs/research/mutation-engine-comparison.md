@@ -1,5 +1,10 @@
 # Cosmic Ray and mutmut against the bespoke mutation-smoke gate
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Measured**: 2026-08-09 (#281), against the tree at `2bd3e8f`, on this box.
 **Question**: can Cosmic Ray 8.4.6 or mutmut 3.6.0 give the same bounded, deterministic, fail-closed changed-test gate as `tools/mutation_smoke.py`, with materially less repository-owned code and acceptable runtime?
 **Answer in one line**: **no arm qualifies** — Cosmic Ray clears the public-API bar and fails the code-size bar and the no-false-red bar; mutmut fails the public-API bar outright on its operator set and fails the same two; the decision returns to the human, and that is not automatic ratification of ADR-0064.

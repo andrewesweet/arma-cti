@@ -13,7 +13,7 @@ SQF outside `spike/desync-load.sqf`, the #8 headless-client desync investigation
 whose groups are throwaway load traffic and never Squads.
 
 *(Path amended 2026-08-02 by ADR-0045, #128: the tool was
-`addons/main/functions/fn_desyncLoad.sqf` when this was written and is now staged by the
+`addons/main/functions/fn_desyncLoad.sqf` when this was written and is now staged by the <!-- absent-path: the pre-ADR-0045 path, named here because the amendment is about the move -->
 harness rather than shipped in the addon. The exemption is the same one and follows the
 file; the decision above is untouched.)*
 

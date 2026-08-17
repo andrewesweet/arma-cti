@@ -1,5 +1,10 @@
 # Multiplexing the Arma tier: two missions in one server, and two probes in one world
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Explored**: 2026-08-01, on issue #45. Arma 2.20.152984, WSL2, ports 2402–2406 throughout; 2302–2306 untouched.
 **Outcome**: sequential multiplexing **works and is measured**; concurrent multiplexing is **declined on the corpus we have**. Neither changes the tier now. No ADR — the tier's architecture is unchanged, so this is the research doc ADR-0016's convention asks for, and ADR-0029 is released back to the pool.
 

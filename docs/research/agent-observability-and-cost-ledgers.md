@@ -1,5 +1,10 @@
 # Agent observability and cost ledgers: is the dispatch ledger a solved problem?
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Explored**: 2026-08-05, research dispatch R2, against the grilling session's rulings 10 and 11. Box as it stands: `otelcol-contrib` 0.157.0, Claude Code 2.1.222, `opencode` at `c9d967443`.
 **Outcome**: **no existing tool replaces the ledger, but almost none of it needs writing either.** Every candidate fails on the same axis — they are analytics surfaces over a database, not durable per-dispatch evidence files, and the two that could hold an external key want ClickHouse or Postgres running permanently on a laptop that is already hosting an Arma server. What replaces the *writing* half is the collector itself: `fileexporter`'s `group_by` splits records into one file per `cti.dispatch_id` with no code at all. That is tested on this box, not inferred.
 

@@ -361,6 +361,50 @@ def classify_conflict_markers(path: Path, findings: Sequence[Finding]) -> Refusa
     )
 
 
+def rebase_report(path: Path, base_before: str, incoming: int) -> list[str]:
+    """Name what the replay merged cleanly, and what it merged cleanly *onto* (#395).
+
+    A rebase conflict resolver reads **conflicts**. Nothing reads the passages that
+    merged cleanly and were made false by what landed underneath them: on #329's
+    rebase a runbook went on saying two mechanisms were "still live in
+    `tools/admission.py`" while the rebase base *was* the commit that renamed that
+    file away, and it slipped because the region never conflicted, so it was never
+    one of the nine the resolver read.
+
+    Both halves of that are here because the reviewer who caught it reconstructed
+    both by hand — reading the commits the new base contributed, then checking the
+    branch's claims against them. Scoping that is work a machine can do; judging it
+    is not, so this reports and says nothing about what it found.
+
+    Nothing here is filtered to what "looks like prose". A claim about the tree can
+    sit in a docstring, a comment or a test's name as easily as in Markdown, and a
+    list a tool has already pre-judged is a list its reader stops checking.
+
+    **Only when the rebase replayed onto something.** With `incoming` zero there is
+    no new base and nothing to have been made false. The case this cannot reach is
+    the resolver who rebased by hand and *then* ran `just land`: their merge-base is
+    already `origin/main`'s tip, the contribution is spent, and the record of it is
+    in their own terminal. `tools/check_doc_paths.py` catches one mechanical family
+    of the same defect on every gate run whether or not anything rebased.
+    """
+    if not incoming:
+        return []
+    was = git("rev-parse", "--short", base_before, cwd=path).strip()
+    now = git("rev-parse", "--short", BASE, cwd=path).strip()
+    replayed = git("diff", "--name-only", BASE, "HEAD", cwd=path).splitlines()
+    named = " ".join(replayed[:HOW_MANY_SHOWN])
+    if len(replayed) > HOW_MANY_SHOWN:
+        named += f" and {len(replayed) - HOW_MANY_SHOWN} more"
+    return [
+        f"base_commits={incoming} ({was}..{now})",
+        f"replayed_clean={named}",
+        (
+            "reread=no conflict was raised over the files above, so no resolver read them"
+            " against the commits above; a review brief names them as passages to re-check"
+        ),
+    ]
+
+
 # The past-tense half of the routing refusal's remedy. A landing really did decline to
 # push and needs it; a dry run pushed nothing whatever it found, and printing it two
 # lines under "This ran nothing." describes an act that was never in prospect. Named once
@@ -900,7 +944,9 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
 
     lines = [f"worktree={here}", f"commits={ahead}"]
     if ahead:
-        moved = _rebase_and_gate(here, incoming, gate, lines, lane, corpus, review_inputs)
+        moved = _rebase_and_gate(
+            here, base_before, incoming, gate, lines, lane, corpus, review_inputs
+        )
         if moved is not None:
             return moved
     else:
@@ -1043,6 +1089,7 @@ def stage(root: Path, here: Path) -> Report:  # noqa: PLR0911 — a ladder of na
             f"worktree={here}",
             f"main_checkout={root}",
             f"rebase={replayed}",
+            *rebase_report(here, base_before, incoming),
             f"head={head}",
             f"commits={staged}",
             (
@@ -1062,6 +1109,7 @@ def stage(root: Path, here: Path) -> Report:  # noqa: PLR0911 — a ladder of na
 
 def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return, one input apiece
     here: Path,
+    base_before: str,
     incoming: int,
     gate: Gate,
     lines: list[str],
@@ -1085,6 +1133,7 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
     lines.append(
         f"rebase=replayed onto {incoming} new commits" if incoming else "rebase=already_current"
     )
+    lines.extend(rebase_report(here, base_before, incoming))
 
     poisoned = classify_conflict_markers(here, find_in_tree(here))
     if poisoned is not None:

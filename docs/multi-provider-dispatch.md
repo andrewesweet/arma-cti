@@ -175,20 +175,25 @@ lane, so it is stated once here rather than twice below.
 Measured on `claude-native` on 2026-08-10 (#294), from a dispatched session in its own
 worktree, reproducing the two refusals #273's Codex dispatch reported three days earlier:
 
+Every probe target below is a path this tree does not carry, and that is the point of a
+probe: the write was attempted precisely where nothing was. The `<!-- absent-path -->`
+markers on those rows say so to `just check-doc-paths` (#395), which otherwise reads a
+backticked path as a claim that the tree holds it.
+
 | Attempt | Result |
 |---|---|
-| `Write` to `.claude/hooks/PERMISSION-PROBE.md` | refused — *"which is a sensitive file"* |
-| `Write` to `.claude/notes/PERMISSION-PROBE.md` | refused — *"which is a sensitive file"* |
-| `Write` to `.claude/skills/retro/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"* |
-| `Write` to `.claude/agents/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"* |
-| `printf … > .claude/skills/retro/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"*, naming the path |
-| `cp docs/…  .claude/skills/retro/PERMISSION-PROBE.md` | refused — the same, naming the destination |
+| `Write` to `.claude/hooks/PERMISSION-PROBE.md` | refused — *"which is a sensitive file"* <!-- absent-path --> |
+| `Write` to `.claude/notes/PERMISSION-PROBE.md` | refused — *"which is a sensitive file"* <!-- absent-path --> |
+| `Write` to `.claude/skills/retro/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"* <!-- absent-path --> |
+| `Write` to `.claude/agents/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"* <!-- absent-path --> |
+| `printf … > .claude/skills/retro/PERMISSION-PROBE.md` | refused — *"you haven't granted it yet"*, naming the path <!-- absent-path --> |
+| `cp docs/…  .claude/skills/retro/PERMISSION-PROBE.md` | refused — the same, naming the destination <!-- absent-path --> |
 | `printf … >> .claude/skills/retro/…` | refused — the same, naming the path |
 | `printf … \| tee .claude/skills/retro/…` | refused — as a compound part: *"the following part requires approval: tee …"* |
 | `Write` to `.claude/settings.local.json` | refused — *"you haven't granted it yet"* |
-| `Write` to `.claude/commands/…` (directory does not exist) | refused — *"you haven't granted it yet"* |
+| `Write` to `.claude/commands/…` (directory does not exist) | refused — *"you haven't granted it yet"* <!-- absent-path --> |
 | **`Edit`** of the existing `.claude/skills/playtest-ingest/SKILL.md` | refused — *"you haven't granted it yet"* |
-| `Write` to `docs/PERMISSION-PROBE.md` | written |
+| `Write` to `docs/PERMISSION-PROBE.md` | written, then removed <!-- absent-path --> |
 | `Write` to an unlisted path at the worktree root | written |
 
 The last six rows were added by a second `claude-native` dispatch the same day; the first
@@ -197,9 +202,9 @@ eight reproduced exactly.
 Five readings, in the order they matter:
 
 - **The two refusals are two mechanisms, and the split is not the one the allowlist
-  predicts.** `.claude/hooks/` and an invented `.claude/notes/` are classified sensitive;
-  `.claude/skills/`, `.claude/agents/`, `.claude/commands/` and `.claude/settings.local.json`
-  are not, and fall to an ordinary permission ask. `.claude/commands/` refines the earlier
+  predicts.** `.claude/hooks/` and an invented `.claude/notes/` are classified sensitive; <!-- absent-path -->
+  `.claude/skills/`, `.claude/agents/`, `.claude/commands/` and `.claude/settings.local.json` <!-- absent-path -->
+  are not, and fall to an ordinary permission ask. `.claude/commands/` refines the earlier <!-- absent-path -->
   reading that the sensitive class is the directory's *default*: it did not exist in the
   tree and was still only asked for, so the exemption tracks paths the harness knows —
   the content and configuration ones — while `hooks/`, which it also knows, is classified

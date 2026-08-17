@@ -1,5 +1,10 @@
 # Arma 3 toolchain research: HEMTT, SQF-VM, CBA_A3, just
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Researched**: 2026-07-30
 **Scope**: Verify the toolchain assumptions in this project's notes against primary sources for a script-only HEMTT addon with a CBA dependency, tested out-of-game with SQF-VM on Linux/WSL2.
 

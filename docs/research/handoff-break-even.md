@@ -1,5 +1,10 @@
 # The handoff break-even, five days after adoption
 
+<!-- absent-path -->
+<!-- A dated research record: the repository paths it cites are the tree as it stood when
+     the research was done, and some belong to other projects entirely. Neither is a claim
+     about this tree today, which is what the marker above tells `just check-doc-paths`. -->
+
 **Researched**: 2026-08-10
 **Question** (#212): #208 priced the structured handoff as a break-even — it pays for itself if it displaces 56% of a successor's first-ten-turn state reconstruction — and promised the falsification once continuations had run off handoffs. Run it, then weigh `SubagentStart` context injection on the result.
 **Answer in one line**: **the measurement cannot be run, and the reason is not sampling noise** — in the five days since the convention landed, **five handoff events were written, three were read by a successor, and none was read by the cold-start dispatched subagent the 56% is defined over** — and separately, the 56% is denominated in input-equivalents, a currency #218/#220/#232 inverted on the same day #208 landed, so even at adequate N the measurement as specified would answer a question about the wrong currency.
