@@ -357,7 +357,47 @@ terms of the backlog item rather than the retro commit: step 5's same-edit rule
 and the rule that a convention lands with its first applied instance. Both assumed
 the retro lands.
 
-Never-alone does not apply to retros, because nothing lands.
+**The choice deferred above is made, and the last sentence of this ruling is
+struck.** It read: *"Never-alone does not apply to retros, because nothing
+lands."*
+
+The retro journal is the single named exception to "lands nothing", and
+never-alone applies to it. One artefact per retro — the entry appended to
+`docs/process-log.md` — lands under ruling 4 like any other change: a reviewing
+instance in a different session, and a lander who may be the proposer.
+Everything else a retro produces is a filed item.
+
+*(Amendment A3, proposed on #397, 2026-08-17. It takes effect by landing: this
+file is a human sign-off gate, so the sign-off that lands it is the ruling, and
+until then the text sits on a branch rather than in the tree. #330's skill
+rewrite settled the exception where this ruling said it belonged; what #397
+found is that the three surfaces read **before** that skill — `AGENTS.md`'s
+retro bullet, routing class 3's remedy and this sentence — still stated the
+prohibition flat, so an agent met the old rule first and the new one only if it
+got as far as the skill. They carry the exception now.)*
+
+*The alternative was put and declined: exempt the journal from review, which
+#330 named beside this one. It is cheaper per cycle, and it makes an exception
+to never-alone rather than to lands-nothing. Three grounds against it.
+`config/review-exemptions.json` states what may grow it — ruling 6's
+pre-registered question, answered on evidence at a retro, "never as an agent's
+convenience in the moment" — and a first entry added because a review round
+looks expensive is that shape exactly. The journal is a **self-report**: the one
+artefact written by the party with the strongest interest in how it reads, and
+the only durable in-tree trace that the retro ran, so it is where an independent
+read is worth most rather than least. And it is not narration —
+`docs/process-log.md` is the archive of record for the exemplar prune (#201),
+where reasoning cut from the always-loaded prefix survives in no other copy, so
+a wrong or truncated entry loses it silently. One exception is also cheaper than
+two: this makes one, to "lands nothing", and reuses the review that already runs
+on every landing.*
+
+*What it costs, stated rather than discovered: one review round per retro cycle,
+over a diff of one terse appended entry, and a second dispatch where the retro
+was itself dispatched. What it does not do: it does not make the retro an
+implementer. It lands one path, `docs/process-log.md`, and only its own entry.
+#294's bar on a dispatched session writing under `.claude/` does not reach it,
+because the journal is not there.*
 
 ### 4. No change lands alone
 
@@ -708,7 +748,9 @@ The key is defined only where its denominator exists: it ranks **profiles in the
 `implementer` seat**, the only seat this map leaves that reaches `just land`
 — `mechanical` is retired by ruling 2 and naming it here was a leftover. A
 profile with no landings has no ranking, not a ranking of infinity, and `review`,
-`recon`, `planner` and `retro` land nothing by contract. Their rework is reported,
+`recon`, `planner` and `retro` land nothing by contract — `retro`'s journal
+aside, one entry per cycle under A3, which is not an implementer's denominator
+and is not ranked here either. Their rework is reported,
 never ranked. An implementer whose work never lands is a zero denominator too, and
 shows as an unranked row with its rounds visible rather than as a division.
 

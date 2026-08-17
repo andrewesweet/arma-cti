@@ -474,7 +474,11 @@ SEAT_REASON: Final[dict[str, str]] = {
         "ADR-0071 ruling 2: read-only search, triage sweeps and state checks. A recon claim "
         "that decides a routing choice is cited; no gate reads recon output."
     ),
-    "retro": "ADR-0071 ruling 3: finds, researches and files backlog items; lands nothing.",
+    "retro": (
+        "ADR-0071 ruling 3 as amended by A3: finds, researches and files backlog items; "
+        "lands nothing but its own journal entry in `docs/process-log.md`, which is "
+        "reviewed under ruling 4 like any other landing."
+    ),
     "review": (
         "ADR-0071 ruling 4: judges work another profile produced, never its own. Resolution "
         "excludes that profile and the seat forces a read-only permission mode "

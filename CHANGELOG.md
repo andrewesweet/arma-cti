@@ -61,6 +61,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   at all — the endpoint answers it with `glm-5.3` — so this rename makes the record true of
   what was already running rather than changing which model answers.
 
+
+- **What a retro lands is one rule on every surface again, and the journal is reviewed
+  rather than exempted (#397, ADR-0071 amendment A3 — proposed, pending the human's
+  sign-off that lands it).** #330 made the retro journal the single named exception to "a
+  retro lands nothing" and flagged the conflict it created rather than resolving it by
+  assertion: three surfaces an agent reads **before** that skill still stated the
+  prohibition flat — `AGENTS.md`'s retro bullet, routing class 3's remedy naming the exact
+  `docs/process-log.md` path the exception re-establishes, and ADR-0071 ruling 3's closing
+  *"never-alone does not apply to retros, because nothing lands"*. All three carry the
+  exception now, and `tools/brief.py`'s retro seat line — a fourth surface, composed into
+  every dispatch briefing, that the issue did not name — with them. The exception stands
+  and never-alone applies to exactly one artefact per cycle: the alternative remedy #330
+  named, exempting the journal from review, was put and declined, because
+  `config/review-exemptions.json` says its entries grow from ruling 6's pre-registered
+  question answered on evidence at a retro and "never as an agent's convenience in the
+  moment"; because the journal is a self-report, where an independent read is worth most
+  rather than least; and because `docs/process-log.md` is the exemplar prune's archive of
+  record, so a truncated entry loses reasoning that survives in no other copy. Costs
+  stated: one review round per retro cycle over one terse appended entry. The routing
+  policy's own rung is unchanged either way — that class refuses `retro` from authoring an
+  ADR, never from journalling, and a seat-bound row carries no landing prefixes at all.
+
 ### Added
 
 - **`just review-loop author` — the authorship record for interactive work, and the route out
