@@ -223,6 +223,7 @@ import gate
 import hook_parity
 import queue_policy
 import readiness
+import review_findings
 import routing_policy
 
 if TYPE_CHECKING:
@@ -3587,7 +3588,20 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         started_at=started.isoformat(),
         ended_at=datetime.now(tz=UTC).isoformat(),
     )
-    return done.returncode, (f"dispatch={plan.identity.dispatch_id}", f"exit={done.returncode}")
+    # The review seat's verbatim return channel (#393). It runs here, in the detached
+    # child, because the lateness half of that issue is the turn between a review ending
+    # and somebody reading its transcript: three reports were posted late on 2026-08-15
+    # and one round could not proceed because the report lived only in `dispatch.log`.
+    # Its outcome never touches this dispatch's exit code — a comment that could not be
+    # posted says nothing about the code under test, and `review_findings` keeps the
+    # rendered body beside the record for `just review findings … --post` either way.
+    seat = SEATS.get(plan.identity.seat)
+    channel = review_findings.publish_for_seat(record, reviews=seat is not None and seat.reviews)
+    return done.returncode, (
+        f"dispatch={plan.identity.dispatch_id}",
+        f"exit={done.returncode}",
+        *channel.lines,
+    )
 
 
 def classify_finished_run(record: Path, returncode: int) -> tuple[str, float | None]:

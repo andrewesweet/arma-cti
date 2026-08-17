@@ -160,6 +160,90 @@ retyping produced a plausible evidence path that resolved to nothing, which is w
 none. A review is nothing *but* paths, line numbers and SHAs, so every one of them is pasted
 from `git show`, `rg -n` or a `Read`, never retyped from memory of what was read.
 
+### The verbatim return channel: how the report reaches the issue (#393)
+
+**The reviewer's report goes to the issue as the reviewer's own bytes, and the dispatch
+machinery posts it.** The human ruled that on 2026-08-15 — *"the review seat writes its
+findings to a known path, and the dispatch machinery posts them verbatim"* — over the two
+alternatives of widening the seat's permissions and of keeping the orchestrator relay, on the
+reasoning that **the defect is the composition step, not the write bar**.
+
+What it replaces: on 2026-08-15 every review ended with a complete report and no way to
+publish it, so the orchestrator read the transcript, composed a comment and posted it — the
+seat that dispatched the round being judged holding the reviewer's voice. Four dispatches
+provoked the issue — `d-20260815-200723-4f5b78` (#328's re-review),
+`d-20260815-193957-77c841` (#334 round 3), `d-20260815-203651-520173` (#334's compliance
+check), `d-20260815-203712-0fe148` (#329's re-review) — and the relay cost three late reports
+and two truncated ones, one of them late enough that the fix round it fed had to be
+re-dispatched because the report *"lived only in
+`~/.arma-cti/dispatches/…/dispatch.log`"*.
+
+**The known path is the seat's own output.** The reviewer emits its report between two
+sentinel lines as the last thing it writes:
+
+    <<<CTI-REVIEW-FINDINGS
+    …the claims above, exactly as this document specifies them…
+    CTI-REVIEW-FINDINGS>>>
+
+`claude --print` writes its final message to stdout and `tools/dispatch.sh` redirects the
+runner's stdout into `<record>/dispatch.log`, so those bytes are already in a file the
+machinery owns. `tools/review_findings.py` extracts them and posts them, and the seam calls it
+from the detached child the moment the run ends — no turn in between, which is the lateness
+half of the defect. It grants the seat nothing: no write outside its tree, no `gh`, no gate,
+and the forced `plan` mode above is untouched. It also needs nothing lane-specific, because
+`codex exec`'s stdout reaches the same log; what a lane's sandbox permits *outside* the
+worktree is measured as unsettled (`docs/agents/dispatched-session-commands.md`), and a
+channel that depended on it would be a channel that works on one lane.
+
+Extraction takes the **last** complete pair — a second block is a corrected block — and a
+trailing unterminated sentinel refuses (`findings_block_unterminated`) rather than falling
+back to an earlier pair, because a run that died mid-report must not be published as a
+finished one. The only composed text is the machinery's own header, which names the dispatch,
+the profile, the lane, the reviewed commit and the log it read, so the transcription is
+checkable — option 3's one virtue, kept for free. `just review findings <dispatch-id>` prints
+what would be posted and `--post` is the retry after a `gh` that could not.
+
+### The gate: attributed, not run here — and #353 is where that was ruled
+
+**Gate evidence does not travel back through this channel, because the reviewer produces
+none.** #353 is the same problem from the other side and was ruled first: on 2026-08-14 the
+human reversed that issue's own earlier ruling and settled it — *"the review seat gets no
+executable mode. It reads the implementer's pasted gate output; it does not check out, does not
+run a gate, does not mutate."* #393's ruling left the gate question open inside itself; it is
+answered by carrying #353's ruling in rather than re-deciding it.
+
+The split between the two issues, so neither quietly describes the other's job: **#393 owns
+the return channel** — the sentinels, the extraction, the posting and the attribution line
+below. **#353 owns what a review is asked for**: that the implementer's paste must carry
+`just mutation`'s output alongside `just check` and `just unit` and must state whether a
+quoted kill rate was sampled or exhaustive, and that no brief asks a review for a gate run.
+The second of those is now done in `tools/brief.py` — a review briefing renders the return
+channel where every other seat's renders the landing protocol, and says in as many words that
+the seat runs no gate. The contract half of #353 is still open there.
+
+**What the record must name is who ran it.** Every findings block carries exactly one line:
+
+    gate_ran_by=implementer sha=<40-char sha>      the ruled shape: the reviewer read a paste
+    gate_ran_by=orchestrator sha=<40-char sha>     the eleven runs of 2026-08-15
+    gate_ran_by=not_run reason=<why>               the honest third answer
+
+A block without it is refused `gate_attribution_missing` and **not posted**; two disagreeing
+lines are refused `gate_attribution_repeated`; `implementer` and `orchestrator` without a full
+SHA are refused `gate_attribution_malformed`. That is deliberately a hard refusal rather than
+an encouragement, because a gate figure whose runner is unrecorded is this codebase's
+most-repeated defect — a check that did not run reading as one that passed — and its sharper
+form is a count taken on a different commit, which is what a bare `sha=` requirement catches.
+The rendered header states whether that SHA is the reviewed one
+(`gate_sha_matches_reviewed=yes|no`); a disagreement is **printed, not refused on**, because
+refusing would strand a real finding on a mistyped SHA.
+
+What remains unchecked, said plainly: the reviewer's verdict is judgement on the diff plus
+trust in a paste, and the only independent re-execution is `just land`'s re-gate of the
+rebased tree — after the verdict rather than before it, run by the party that wrote the brief.
+That is #353's ruling stated as the gap it leaves rather than as a closure. The `codex` lane's
+sandbox ceiling (#265) is moot for reviews under it rather than solved: nothing on any lane
+runs a gate in this seat.
+
 ### Citations are countable, and since #328 nobody counts them
 
 A citation **resolves** when the quoted text is present at `file:line` at the named SHA. That
@@ -280,6 +364,15 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     final message. Your permission mode is `plan`, which enforces this; the rule is
     stated as well because a mechanism you understand is one you do not fight.
 
+    You run no gate. You read the gate output the implementer pasted and attribute
+    it; you do not check out, do not run `just fast`, `just unit` or `just mutation`,
+    and do not mutate (the human's ruling of 2026-08-14 on #353).
+
+    You do not post your findings and nobody composes them for you. Emit them
+    between `<<<CTI-REVIEW-FINDINGS` and `CTI-REVIEW-FINDINGS>>>`, each sentinel on
+    its own line, as the last thing you output; `tools/review_findings.py` posts
+    those exact bytes to the issue when this dispatch ends (#393).
+
     Read, in this order: CLAUDE.md in your worktree; `gh issue view <N>` including
     every comment, and its close audit in particular; `git show <SHA>`; then the
     files the diff touches, whole, where the hunk is not enough. Read the ADRs the
@@ -314,6 +407,11 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     A plausible citation that resolves to nothing is worse than no citation: your
     claims are counted, and a quote nobody can find at that file and line counts
     against your lane's record whether or not the point behind it was right.
+
+    Inside the block, exactly one line names who ran the gate you are judging:
+    `gate_ran_by=implementer sha=<40-char SHA>`, `gate_ran_by=orchestrator
+    sha=<40-char SHA>`, or `gate_ran_by=not_run reason=<why>`. A block without it is
+    refused and never posted, and a short SHA is refused — it names many commits.
 
     Open with one header block: reviewed=<SHA> issue=<N> tree=<head sha of your
     worktree> read=<what you read> claims=<count>. Close with a scope statement

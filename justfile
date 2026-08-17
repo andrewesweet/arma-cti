@@ -417,13 +417,27 @@ land *args:
 #                                  The identity is derived, never declared — the
 #                                  #322 reasoning one layer over — and the caller
 #                                  supplies only the issue, the SHA, the findings
+#   just review findings <dispatch-id> [--post]
+#                                  the review seat's verbatim return channel
+#                                  (#393): extract the bytes the reviewer wrote
+#                                  between its sentinels in the dispatch's own
+#                                  log, and print them, or with --post give those
+#                                  exact bytes to `gh` for the dispatch's issue.
+#                                  The channel already runs by itself when a
+#                                  review dispatch ends, so this is the read and
+#                                  the retry after a `gh` that could not. It
+#                                  composes nothing, and refuses a block with no
+#                                  `gate_ran_by=` line naming who ran the gate
 #   just review show <dispatch-id> [--satisfies <sha>]
 #                                  read one verdict, re-derive its identity from
 #                                  the records as they now stand, and answer
 #                                  whether it satisfies a named commit
 #
 # Refusals are named, each says what was found and what to do: invalid_issue,
-# invalid_sha, invalid_findings, input_unreadable, dirty_tree, not_on_remote,
+# invalid_sha, invalid_findings, findings_block_absent,
+# findings_block_unterminated, findings_block_empty, gate_attribution_missing,
+# gate_attribution_malformed, gate_attribution_repeated, record_unreadable,
+# post_failed, input_unreadable, dirty_tree, not_on_remote,
 # ref_mismatch, git_failed, no_dispatch_records, no_review_dispatch,
 # records_unreadable, verdict_exists, verdict_unreadable, verdict_unwritten,
 # no_verdict, unknown_dispatch, sha_mismatch, identity_mismatch. Two carry the

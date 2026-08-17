@@ -93,6 +93,7 @@ from typing import Final, NamedTuple
 # `review_loop.py` all use.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import review_findings
 import review_loop
 import worktree
 from worktree import Refusal, Report
@@ -1029,7 +1030,7 @@ def _issue_arg(text: str) -> int | None:
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """One of three actions: the implementer's push, the orchestrator's record, the read."""
+    """Four actions: the implementer's push, the record, the returned findings, the read."""
     parser = argparse.ArgumentParser(
         prog="just review",
         description=__doc__,
@@ -1049,6 +1050,19 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         "--findings", required=True, help="a JSON file of findings, each an id and a severity"
     )
     write.add_argument(
+        "--dispatch-dir", default=str(DISPATCH_ROOT), help="the dispatch records' root"
+    )
+
+    # #393's verbatim return channel, reached through this group because it is the same
+    # handover: `exchange` hands the branch over, `findings` hands the verdict's prose back.
+    # The channel normally runs by itself when a review dispatch ends; this verb is the read
+    # and the retry — what would be posted, and a second attempt after a `gh` that could not.
+    channel = actions.add_parser("findings", help="read or re-post a review's returned findings")
+    channel.add_argument("dispatch_id", help="the review dispatch whose findings to read")
+    channel.add_argument(
+        "--post", action="store_true", help="post the rendered body to the dispatch's issue"
+    )
+    channel.add_argument(
         "--dispatch-dir", default=str(DISPATCH_ROOT), help="the dispatch records' root"
     )
 
@@ -1099,6 +1113,11 @@ def main(argv: list[str] | None = None) -> int:
                         Path(args.dispatch_dir),
                     )
                 )
+        elif args.action == "findings":
+            outcome = review_findings.publish(
+                Path(args.dispatch_dir) / args.dispatch_id, dry_run=not args.post
+            )
+            report = Report(outcome.lines, outcome.code)
         elif not args.dispatch_id:
             report = Report.refused(
                 Refusal(

@@ -163,6 +163,7 @@ import escalation
 import handoff_fetch
 import ledger
 import readiness
+import review_findings
 import routing_policy
 
 # The gate derivation lives in `gate`, the owner neither this module nor the dispatcher imports
@@ -698,6 +699,24 @@ REVIEW_SUBJECT_PLACEHOLDER: Final = (
     "Which profile's work this review judges. Compose with `--reviewing <profile>` and pass"
     " the same one to `just dispatch`; a review that declares none is refused."
 )
+# #393's verbatim return channel and #353's ruling of 2026-08-14, which together decide
+# what a review briefing may ask for: the findings come back through the channel, and the
+# gate is somebody else's act that this seat attributes rather than performs. Both used to
+# be absent, so every review brief asked a `plan`-mode seat to run `just fast` and land —
+# the orchestrator asking for the impossible and then absorbing the shortfall.
+REVIEW_GATE_RULE: Final = (
+    "**You run no gate.** A review reads the implementer's pasted gate output and triggers no"
+    " test (the human's ruling of 2026-08-14 on #353); the gate above is the one whose figures"
+    " you are judging, not one to execute. Say whose hands ran it in the"
+    " `gate_ran_by=` line your findings block must carry, and say `not_run` where nobody did."
+    " `just land` re-runs `just fast` on the rebased tree after your verdict, which is the"
+    " independent re-execution this seat does not provide."
+)
+REVIEW_LANDING_RULE: Final = (
+    "**You land nothing** (ADR-0071 ruling 4): no commit, no push, no `just land`, and you do"
+    " not close the issue. Your whole output is the findings block below, and the dispatch"
+    " machinery posts it."
+)
 FLAKE_RESPONSE: Final = (
     "`flake_quarantine`: do not act. If one of those exact tests is your only red, quote its"
     " issue number and re-run once; a second red, or any other red, is yours."
@@ -892,6 +911,7 @@ def compose(briefing: Briefing) -> str:
         "",
         f"## Gate: {gate.line}",
         *gate.because,
+        *((REVIEW_GATE_RULE,) if seat.reviews else ()),
         "",
         f"## Open flakes ({len(briefing.flakes)}, read live at composition)",
     ]
@@ -900,13 +920,22 @@ def compose(briefing: Briefing) -> str:
         lines.append(FLAKE_RESPONSE)
     else:
         lines.append("None open. Any red is yours.")
-    lines += [
-        "",
-        "## Landing",
-        f"Conventional Commits, `refs #{issue}`, commit early.",
-        "Land via `just land` and paste its output verbatim — never retype it.",
-        f"Close #{issue} with a criterion-by-criterion audit.",
-    ]
+    lines += (
+        [
+            "",
+            "## Findings return",
+            REVIEW_LANDING_RULE,
+            *review_findings.BRIEF_CONTRACT,
+        ]
+        if seat.reviews
+        else [
+            "",
+            "## Landing",
+            f"Conventional Commits, `refs #{issue}`, commit early.",
+            "Land via `just land` and paste its output verbatim — never retype it.",
+            f"Close #{issue} with a criterion-by-criterion audit.",
+        ]
+    )
     if gate.reads_a_verdict:
         lines += ["", "## Paste rule", PASTE_RULE]
     findings = ",".join(found.kind for found in briefing.assessment.findings) or "none"

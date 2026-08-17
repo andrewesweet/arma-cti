@@ -1033,6 +1033,34 @@ def test_a_review_briefing_composed_without_a_subject_opens_a_placeholder_for_it
     assert "Reviewing: `" not in rendered
 
 
+def test_a_review_briefing_asks_for_the_return_channel_and_not_for_a_landing() -> None:
+    """#393: every review brief used to ask a `plan`-mode seat to run a gate and land.
+
+    The orchestrator was asking for the impossible and then absorbing the shortfall — it
+    ran eleven gates on 2026-08-15 and posted every verdict itself. What a review brief
+    asks for now is the sentinel block and the gate's attribution.
+    """
+    rendered = composed(seat=brief.derive_seat("review", "opus-high"))
+
+    assert "## Findings return" in rendered
+    assert brief.review_findings.OPEN_SENTINEL in rendered
+    assert "gate_ran_by=" in rendered
+    assert "**You run no gate.**" in rendered
+    assert "## Landing" not in rendered
+    assert "`just land`" not in rendered.split("## Gate")[0]
+    assert "Conventional Commits" not in rendered
+
+
+def test_every_other_seat_still_gets_the_landing_protocol() -> None:
+    """The channel is the review seat's, and the registry's `reviews` column decides."""
+    for name, seat in dispatch.SEATS.items():
+        if seat.reviews:
+            continue
+        rendered = composed(seat=brief.derive_seat(name))
+        assert "## Landing" in rendered, name
+        assert brief.review_findings.OPEN_SENTINEL not in rendered, name
+
+
 def test_no_other_seat_is_told_to_declare_a_subject() -> None:
     """The section follows the registry's `reviews` column, not a name this module tests for."""
     for name, seat in dispatch.SEATS.items():
