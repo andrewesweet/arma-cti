@@ -112,6 +112,25 @@ Each of the following was a choice:
   would not open could be the one naming it. Deciding *which* of several profiles a
   multi-dispatch branch should be reviewed past is #333's adjudication and is not done here.
 
+  **The dispatch records are not the only source of authors** (#398). A change under
+  `.claude/` is authored interactively by construction — #294 bars a dispatched session from
+  writing there — so the scan reads no record at all and the landing rung's empty-set refusal
+  (`authorship_unrecorded`) had no route out: #330 sat reviewed and green at `c380689` with
+  nowhere to go. An interactive session declares its authorship with `just review-loop author
+  --issue <n> --profile <p>`, which writes `authorship.json` beside that issue's loop, and the
+  landing rung merges those profiles into the scan's before it checks the reviewer against
+  them. The merge only ever *adds*, so nothing about the check above is loosened: it clears
+  `no_dispatch_records` and `no_authoring_dispatch` because the set is no longer empty and
+  nothing went unread, it never clears `records_unreadable`, and a declared record that will
+  not parse refuses `authorship_unreadable` rather than reading as no declaration. The
+  declaration is a *declaration*: nothing in an interactive session's environment says which
+  model is reading it, so the profile is the session's own word, every entry carries
+  `source=declared`, and the clearance prints it with that limit beside it — ADR-0071 ruling
+  4's same-user limit, arriving by one more door. What it does not do is claim a dispatch: it
+  is its own file in the review root, never a record among the dispatch records, because a
+  record of a run that never ran would be a worse answer than the deadlock and every reader of
+  that root would meet it.
+
   The profile-less plan is the one that does not look like a gap: it parses, it carries the
   issue, and it answers a different question from the one being asked. Beside one good record
   a scan that accepted it would report itself complete while that dispatch's profile —

@@ -793,6 +793,49 @@ class Authorship(NamedTuple):
 # repeated at four signatures.
 NO_AUTHORSHIP: Final = Authorship()
 
+# The three states a scan of the records can leave behind, named because a second module now
+# reads them (#398). The first two mean "no record placed anybody on this work"; the third
+# means a record would not open, which is a different fact and stays a refusal wherever it
+# appears — a declared author adds to what was read and never repairs what could not be.
+NO_DISPATCH_RECORDS: Final = "no_dispatch_records"
+NO_AUTHORING_DISPATCH: Final = "no_authoring_dispatch"
+RECORDS_UNREADABLE: Final = "records_unreadable"
+
+
+def with_declared_authors(
+    authorship: Authorship, declared: tuple[str, ...], record: str
+) -> Authorship:
+    """Add the authors an interactive session declared to what the dispatch records said (#398).
+
+    **Why there is a second source at all.** #294 bars a dispatched session from writing
+    under `.claude/`, so a change there can only be authored interactively — and an
+    interactive session writes no dispatch record, so `potential_authors` returned an empty
+    set for every one of them and the landing's never-alone rung refused it
+    (`authorship_unrecorded`, correctly: an empty set clears the very arrangement the
+    criterion exists to catch). The rung's logic is unchanged. What this supplies is the
+    non-empty set for the one case the records genuinely cannot speak to.
+
+    **It asserts less than a dispatch record, and the difference is carried rather than
+    erased.** A dispatch record's profile is what the dispatcher resolved and exported into
+    the child's environment; a declared one is the recording session's own word. So the
+    merge only ever *adds* names — every added name is one more profile a reviewer may not
+    be — and the caller prints the declared ones as declared beside the clearance.
+
+    **`why` is cleared for the two empty states and never for the unreadable one.** With a
+    declared author the set is no longer empty and nothing went unread, so the scan is
+    complete; a record that would not open is still a record that would not open, and #41's
+    rule holds over it whatever anybody declares.
+    """
+    added = tuple(profile for profile in declared if profile not in authorship.potential)
+    if not added:
+        return authorship
+    empty = authorship.why in (NO_DISPATCH_RECORDS, NO_AUTHORING_DISPATCH)
+    return Authorship(
+        potential=authorship.potential + added,
+        records=authorship.records + tuple(record for _ in added),
+        why="" if empty else authorship.why,
+    )
+
 
 class Resolution(NamedTuple):
     """Which profile this dispatch runs on, and why that one (ADR-0071 ruling 2, #321).
@@ -1935,7 +1978,7 @@ def _scan_records(issue: int, dispatch_dir: Path, *, include_reviews: bool) -> A
     """
     directory = dispatch_dir.expanduser()
     if not directory.is_dir():
-        return Authorship(why="no_dispatch_records")
+        return Authorship(why=NO_DISPATCH_RECORDS)
     found: list[str] = []
     records: list[str] = []
     unreadable = 0
@@ -1950,10 +1993,10 @@ def _scan_records(issue: int, dispatch_dir: Path, *, include_reviews: bool) -> A
             found.append(read.profile)
             records.append(read.record)
     if unreadable:
-        return Authorship(tuple(found), tuple(records), why="records_unreadable")
+        return Authorship(tuple(found), tuple(records), why=RECORDS_UNREADABLE)
     if found:
         return Authorship(tuple(found), tuple(records))
-    return Authorship(why="no_authoring_dispatch")
+    return Authorship(why=NO_AUTHORING_DISPATCH)
 
 
 def potential_authors_and_reviewers(issue: int, dispatch_dir: Path) -> Authorship:

@@ -1176,25 +1176,35 @@ def store_loop(root: Path, issue: int, loop: Loop) -> Path:
     target = loop_path(root, issue)
     document = json.dumps(render_loop(issue, loop), indent=2, sort_keys=True) + "\n"
     try:
-        target.parent.mkdir(parents=True, exist_ok=True)
-        handle, staged = tempfile.mkstemp(
-            prefix=f"{target.name}.", suffix=".staged", dir=target.parent
-        )
-        try:
-            with os.fdopen(handle, "w", encoding="utf-8") as writing:
-                writing.write(document)
-                writing.flush()
-                os.fsync(writing.fileno())
-            Path(staged).replace(target)
-            _sync_directory(target.parent)
-        except OSError:
-            Path(staged).unlink(missing_ok=True)
-            raise
+        _write_atomically(target, document)
     except OSError as unwritable:
         raise ReviewLoopError(
             LOOP_UNWRITTEN_ERROR.format(issue=issue, target=target, reason=unwritable)
         ) from unwritable
     return target
+
+
+def _write_atomically(target: Path, document: str) -> None:
+    """Stage a document beside its target and rename onto it, guarded, atomic and durable.
+
+    The three properties `store_loop` documents above, in one place because the authorship
+    record beside it owes the same three (#398) — a second copy of the staging dance is a
+    second place for the `replace` to become a `write_text` under a later edit. `OSError`
+    leaves as itself: each caller names its own record in its own refusal, which is the half
+    that must not be shared.
+    """
+    target.parent.mkdir(parents=True, exist_ok=True)
+    handle, staged = tempfile.mkstemp(prefix=f"{target.name}.", suffix=".staged", dir=target.parent)
+    try:
+        with os.fdopen(handle, "w", encoding="utf-8") as writing:
+            writing.write(document)
+            writing.flush()
+            os.fsync(writing.fileno())
+        Path(staged).replace(target)
+        _sync_directory(target.parent)
+    except OSError:
+        Path(staged).unlink(missing_ok=True)
+        raise
 
 
 def load_loop(root: Path, issue: int) -> Loop:
@@ -1447,6 +1457,17 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     )
     ended.set_defaults(handler=_cmd_terminus)
 
+    authored = commands.add_parser(
+        "author", help="declare that an interactive session authored this issue's change"
+    )
+    authored.add_argument("--issue", required=True, type=_issue_number)
+    authored.add_argument("--root", default=str(REVIEW_ROOT), help="the review state directory")
+    authored.add_argument("--profile", required=True, help="the profile that authored the change")
+    authored.add_argument(
+        "--sha", default="", help="the commit in hand when the declaration was recorded"
+    )
+    authored.set_defaults(handler=_cmd_author)
+
     shown = commands.add_parser("show", help="print an issue's stored loop state")
     shown.add_argument("--issue", required=True, type=_issue_number)
     shown.add_argument("--root", default=str(REVIEW_ROOT))
@@ -1621,7 +1642,15 @@ def _cmd_escalate(
     dispatch_dir = Path(args.dispatch_dir) if args.dispatch_dir else dispatch.DISPATCH_ROOT
     resolution = arbiter.resolve_dispatchable(
         seat,
-        dispatch.potential_authors_and_reviewers(args.issue, dispatch_dir),
+        # An interactively declared author is an author the arbiter must not be either
+        # (#398). The walk's third rung excludes the profiles the records place on the work,
+        # and on a `.claude/` change the records place nobody — so without this the arbiter
+        # of an interactively authored issue could resolve to the profile that wrote it.
+        dispatch.with_declared_authors(
+            dispatch.potential_authors_and_reviewers(args.issue, dispatch_dir),
+            recorded_authors(root, args.issue),
+            str(authorship_path(root, args.issue)),
+        ),
         # The one clock the CLI owns, so a test fixes the wall it escalates against: an
         # off-peak rung is a function of the hour, and a test that cannot pin the hour
         # cannot state which profiles the walk may resolve to.
@@ -1743,6 +1772,47 @@ def _cmd_terminus(  # the whole ending in one act: gate, filings, dismissals, re
     return OK
 
 
+def _cmd_author(
+    args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    """Record the one declaration an interactive session can honestly make (#398).
+
+    Two refusals, and each is a fact this command can actually check. A session carrying
+    `CTI_DISPATCH_ID` is dispatched, so its profile is already on a record and the work it
+    is declaring is work #294 says it must not have done. A profile outside the registry is
+    a typo, and a typo here is worse than a refusal: it names an author no reviewer could
+    ever be, so the never-alone check would run against a set that excludes nobody.
+
+    What it cannot check is whether the declared profile is the declaring session's own —
+    nothing in an interactive session's environment says which model is reading this — so
+    the record says `declared` and the landing prints it that way.
+    """
+    import dispatch  # noqa: PLC0415 — the same cycle `_cmd_escalate` documents, same reason
+
+    dispatched = os.environ.get("CTI_DISPATCH_ID", "").strip()
+    if dispatched:
+        raise ReviewLoopError(AUTHORSHIP_DISPATCHED_ERROR.format(dispatch_id=dispatched))
+    if args.profile not in dispatch.PROFILES:
+        raise ReviewLoopError(
+            AUTHORSHIP_PROFILE_ERROR.format(
+                profile=args.profile, known=" ".join(sorted(dispatch.PROFILES))
+            )
+        )
+    added = store_authorship(
+        Path(args.root),
+        args.issue,
+        args.profile,
+        args.sha,
+        datetime.fromtimestamp(clock()).astimezone().isoformat(),
+    )
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{args.issue} authorship {'recorded' if added else 'already recorded'}"
+        f" profile={args.profile} source={DECLARED}"
+        f" record={authorship_path(Path(args.root), args.issue)}"
+    )
+    return OK
+
+
 def _cmd_show(
     args: argparse.Namespace, _clock: Callable[[], float], _create: object, _post: object
 ) -> int:
@@ -1847,6 +1917,173 @@ def recorded_arbiter(root: Path, issue: int) -> ArbiterAuthorisation:
             )
             raise ExternalError(message)
     return ArbiterAuthorisation(record["arbiter"], record["unchecked"], record["evaluation"])
+
+
+# ------------------------------------------------------ the interactive authorship record (#398)
+#
+# The deadlock this closes: #294 bars a dispatched session from writing under `.claude/`, so
+# such a change is authored interactively by construction — and an interactive session leaves
+# no dispatch record, so `just land`'s never-alone rung read an empty author set and refused
+# (`authorship_unrecorded`). Both halves were right, and together they left no route: #330 sat
+# reviewed, adjudicated and green at `c380689` with nowhere to go.
+#
+# **What this record is.** One declaration per profile, in this issue's own review directory,
+# saying that an interactive session on that profile authored this issue's change. It feeds
+# the one set the rung checks the reviewer against, and it can only ever *add* a profile the
+# reviewer may not be — the check is not loosened, it is given something to run against.
+#
+# **What it deliberately is not.** It is not a dispatch record and is not written among them:
+# a record claiming a dispatch that never happened would be a worse answer than the deadlock,
+# and every reader of the dispatch root (`ledger`, `dispatch_stop`, `review_exchange`) would
+# meet a run that never ran. Its own file, its own vocabulary, its own root.
+#
+# **What it asserts.** Strictly less than a dispatch record: the profile is *declared* by the
+# session writing it, never resolved by a dispatcher into a child's environment, so `declared`
+# travels with it onto the landing's clearance. That is ADR-0071 ruling 4's same-user limit
+# arriving by one more door — this protects against the accident and the shortcut, never
+# against a session that lies about which profile it is. The one thing it can check, it does:
+# a session with `CTI_DISPATCH_ID` in its environment is dispatched, and is refused.
+
+AUTHORSHIP_FILE: Final = "authorship.json"
+AUTHORSHIP_VERSION: Final = 1
+# The provenance every entry carries, and the word the landing's clearance prints: this
+# profile is the recording session's own declaration, not a value read off a dispatch.
+DECLARED: Final = "declared"
+
+AUTHORSHIP_UNREADABLE_ERROR: Final = (
+    "the authorship record for #{issue} exists but will not read: {reason}. A record that"
+    " cannot be read cannot name an author, so nothing is taken from it — repair or"
+    " re-record it (#41: a check that could not run is not a check that passed)"
+)
+AUTHORSHIP_SHAPE_ERROR: Final = (
+    "the authorship record for #{issue} is not one this tool wrote: {detail}. It must be a"
+    " version {version} object naming this issue and a non-empty authors list whose every"
+    " entry names a non-empty profile"
+)
+AUTHORSHIP_DISPATCHED_ERROR: Final = (
+    "this session is dispatched as {dispatch_id}, and a dispatched session's profile is"
+    " already on its own dispatch record. The interactive record exists for the work no"
+    " dispatch could have done — a `.claude/` change, which #294 bars a dispatched session"
+    " from writing — so writing one from inside a dispatch would declare an author the"
+    " records cannot corroborate. Nothing was written"
+)
+AUTHORSHIP_PROFILE_ERROR: Final = (
+    "{profile} is not a registered profile. The declared author is checked against the"
+    " registry rather than taken as a string, because a typo names a profile no reviewer"
+    " could ever be and so clears the never-alone check this record exists to feed. Known:"
+    " {known}. Nothing was written"
+)
+AUTHORSHIP_UNWRITTEN_ERROR: Final = (
+    "the authorship record for #{issue} could not be written to {target} — {reason}. Nothing"
+    " was changed: the document is staged beside its target and renamed onto it, so a failed"
+    " write leaves the record as it stood"
+)
+
+
+def authorship_path(root: Path, issue: int) -> Path:
+    """One issue's interactive authorship record, beside its loop."""
+    return Path(root).expanduser() / str(issue) / AUTHORSHIP_FILE
+
+
+def _authorship_fault(record: object, issue: int) -> str:
+    """Say how a stored authorship record is malformed, or nothing where it is not.
+
+    Validated rather than coerced, `recorded_arbiter`'s reason: this record decides whether
+    a landing has an author set at all, and `str(record.get("profile"))` over a missing key
+    would put the string `None` into that set — a profile no reviewer can be, clearing the
+    check by supplying an author who does not exist.
+    """
+    if not isinstance(record, dict):
+        return f"the record is not an object: {record!r}"
+    if record.get("version") != AUTHORSHIP_VERSION:
+        return f"version={record.get('version')!r}"
+    stored = record.get("issue")
+    if not isinstance(stored, int) or isinstance(stored, bool) or stored != issue:
+        return f"the record names issue {stored!r}"
+    authors = record.get("authors")
+    if not isinstance(authors, list) or not authors:
+        return f"authors={authors!r}"
+    return _authors_fault(authors)
+
+
+def _authors_fault(authors: list[object]) -> str:
+    """Say how one of a record's author entries is malformed, or nothing where none is."""
+    for entry in authors:
+        if not isinstance(entry, dict):
+            return f"an entry is not an object: {entry!r}"
+        profile = entry.get("profile")
+        if not isinstance(profile, str) or not profile.strip():
+            return f"an entry names profile={profile!r}"
+    return ""
+
+
+def _authorship_entries(root: Path, issue: int) -> tuple[dict[str, object], ...]:
+    """Read this issue's declared authorship entries, validated; absent is `()`.
+
+    Absent is an answer — most issues are authored through a dispatch and have no such
+    record — and unreadable is not: a record that exists and will not parse leaves as an
+    unperformable read, exit 3 at the CLI and a named refusal at the landing, because the
+    entry that would not open could be the reviewer's own.
+    """
+    try:
+        record = json.loads(authorship_path(root, issue).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return ()
+    except (OSError, ValueError) as broken:
+        message = AUTHORSHIP_UNREADABLE_ERROR.format(issue=issue, reason=broken)
+        raise ExternalError(message) from broken
+    fault = _authorship_fault(record, issue)
+    if fault:
+        raise ExternalError(
+            AUTHORSHIP_SHAPE_ERROR.format(issue=issue, detail=fault, version=AUTHORSHIP_VERSION)
+        )
+    return tuple(record["authors"])
+
+
+def recorded_authors(root: Path, issue: int) -> tuple[str, ...]:
+    """Return the profiles an interactive session declared as this issue's authors, in order."""
+    seen: list[str] = []
+    for entry in _authorship_entries(root, issue):
+        profile = str(entry["profile"]).strip()
+        if profile not in seen:
+            seen.append(profile)
+    return tuple(seen)
+
+
+def store_authorship(root: Path, issue: int, profile: str, sha: str, recorded_at: str) -> bool:
+    """Declare that an interactive session on `profile` authored this issue's change.
+
+    Returns whether this call added an entry. Recording the same profile twice is the same
+    claim, so it is idempotent rather than a refusal or a second row — a session that
+    records again after a rebase should meet its own earlier declaration, not a duplicate.
+
+    `sha` is the commit the recording session had in hand and is written only when given: it
+    is an audit trail for a later reader, never a claim about which commits that profile
+    wrote, which is exactly what a dispatch record cannot say either.
+    """
+    entries = list(_authorship_entries(root, issue))
+    if any(str(entry["profile"]).strip() == profile for entry in entries):
+        return False
+    entry: dict[str, object] = {"profile": profile, "recorded_at": recorded_at, "source": DECLARED}
+    if sha:
+        entry["sha"] = sha
+    entries.append(entry)
+    document = (
+        json.dumps(
+            {"version": AUTHORSHIP_VERSION, "issue": issue, "authors": entries},
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
+    target = authorship_path(root, issue)
+    try:
+        _write_atomically(target, document)
+    except OSError as unwritable:
+        raise ReviewLoopError(
+            AUTHORSHIP_UNWRITTEN_ERROR.format(issue=issue, target=target, reason=unwritable)
+        ) from unwritable
+    return True
 
 
 def _claim_terminus_pending(path: Path, plan: str) -> bool:

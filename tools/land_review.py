@@ -21,7 +21,14 @@ is the ladder that reads them off records other tools wrote:
    no records — satisfy "absent from the authoring dispatches" only vacuously, and
    the one arrangement this criterion exists to catch is the one it would then
    wave through: the same instance that wrote the diff dispatching its own review
-   (round 1 claim 1, on `2149b69`).
+   (round 1 claim 1, on `2149b69`). **The set has a second source** (#398): an
+   interactive session declares its authorship through `just review-loop author`,
+   because #294 bars a dispatched session from writing under `.claude/` and so
+   leaves such a change with no dispatch record to read at all — the deadlock #330
+   sat in, reviewed and green with nowhere to go. The rung's logic is unchanged:
+   the declaration only ever adds a profile the reviewer may not be, an empty set
+   still refuses, and the clearance prints a declared author as `declared` because
+   nothing derived it.
 3. **Every finding above Low carrying its one adjudication** — the four routes of
    ruling 4 (`fixed`, `arbiter_upheld`, `arbiter_dismissed`, `accepted_and_filed`),
    the fourth added by the human's ruling of 2026-08-14 on #334: Medium or below,
@@ -106,6 +113,15 @@ UNREADABLE: Final = "records_unreadable"
 # prints `SAME_USER_LIMIT` beside every recorded verdict: the clearance is the durable
 # record, and a qualification two tools upstream is not in the bytes anyone quotes
 # (round 1 claims 3 and 4).
+# Printed beside every clearance that read a declared author (#398), for the same reason:
+# the clearance is the durable record, and this one carries a fact about how its author set
+# was arrived at that no other line says.
+DECLARED_AUTHOR_LIMIT: Final = (
+    "limit=a declared author is the recording session's own word, not a profile a dispatcher"
+    " resolved into a child's environment — it excludes a reviewer as firmly as a dispatch"
+    " record does and is corroborated by nothing (ADR-0071 ruling 4's same-user limit)"
+)
+
 LOOP_RECORD_LIMIT: Final = (
     "limit=the loop record carries no dispatch and no SHA, so unlike the verdict beside it"
     " its routes are not re-derived at read time — an arbiter route is refused without an"
@@ -211,15 +227,25 @@ def _landing_refusal(refusal: Refusal) -> Refusal:
     return refusal._replace(action=refusal.action + NOTHING_PUSHED)
 
 
-def _authorship_lines(authorship: dispatch.Authorship) -> tuple[str, ...]:
+def _authorship_lines(
+    authorship: dispatch.Authorship, declared: tuple[str, ...]
+) -> tuple[str, ...]:
     """Render the one-line account of the authorship scan a clearance can carry.
 
     There is exactly one: `Authorship.complete`. Every other state now refuses —
     unreadable as `records_unreadable`, empty as `authorship_unrecorded` — so a
     clearance never says "unchecked" or "none recorded" again, and this helper has
     no arm for a state the ladder cannot reach (round 1 claim 1).
+
+    A declared author is named as declared, with the limit beside it (#398): it excluded
+    this reviewer as firmly as a dispatch record would, and unlike a dispatch record
+    nothing derived it. A lander quotes these bytes, so the qualification travels in them
+    rather than living two tools upstream — `LOOP_RECORD_LIMIT`'s reason.
     """
-    return (f"authorship=checked potential={' '.join(authorship.potential)}",)
+    line = f"authorship=checked potential={' '.join(authorship.potential)}"
+    if not declared:
+        return (line,)
+    return (f"{line} declared={' '.join(declared)}", DECLARED_AUTHOR_LIMIT)
 
 
 def _alternates_lines(binding: review_exchange.Bound) -> tuple[str, ...]:
@@ -361,6 +387,29 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
         return Outcome(_landing_refusal(bound), ())
     verdict, binding = bound.verdict, bound.binding
     authorship = dispatch.potential_authors(issue, dispatch_root)
+    # The second source of authors, read before the reviewer is checked against the set so a
+    # declared author excludes a reviewer exactly as a dispatched one does (#398). It exists
+    # because #294 bars a dispatched session from writing under `.claude/`, which makes such
+    # a change interactively authored by construction and so invisible to the scan above —
+    # and this rung's empty-set refusal, rightly, does not clear on invisibility.
+    declared_record = review_loop.authorship_path(review_root, issue)
+    try:
+        declared = review_loop.recorded_authors(review_root, issue)
+    except review_loop.ExternalError as error:
+        return Outcome(
+            Refusal(
+                "authorship_unreadable",
+                (f"issue={issue}", f"record={declared_record}", f"reason={error}"),
+                "An interactive authorship record for this issue exists and could not be"
+                " read, so who authored this change is not an answer any record can give"
+                " — and the entry that would not open could be this reviewer's own. Repair"
+                " the record at the path above, or remove it and re-declare with `just"
+                " review-loop author --issue <n> --profile <profile>`. A check that could"
+                " not run is not a check that passed (#41). Nothing was pushed.",
+            ),
+            (),
+        )
+    authorship = dispatch.with_declared_authors(authorship, declared, str(declared_record))
     if binding.profile in authorship.potential:
         authored = tuple(
             record
@@ -398,15 +447,20 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
                     f"reviewer_profile={binding.profile}",
                     f"why={authorship.why or NO_AUTHORSHIP}",
                 ),
-                "No dispatch record places any profile on this issue's work, so the"
-                " separation between this verdict's reviewer and the work's authors is"
-                " not an answer the records can give — and the arrangement the criterion"
-                " exists to catch, an instance reviewing the diff it wrote in its own"
-                " session, is exactly the one an empty set clears. Dispatch the"
-                " implementing work through `just dispatch --issue <n>` so a record"
-                " exists to check the reviewer against, then re-review this commit and"
-                " land again. A check that could not run is not a check that passed"
-                " (#41, ADR-0071 ruling 4). Nothing was pushed.",
+                "No record places any profile on this issue's work, so the separation"
+                " between this verdict's reviewer and the work's authors is not an answer"
+                " the records can give — and the arrangement the criterion exists to"
+                " catch, an instance reviewing the diff it wrote in its own session, is"
+                " exactly the one an empty set clears. Two routes, and which one applies"
+                " is a fact about how this change was written. **Dispatched work:**"
+                " dispatch the implementing work through `just dispatch --issue <n>` so a"
+                " record exists to check the reviewer against, then re-review this commit."
+                " **Interactive work** — which a `.claude/` change must be, since #294"
+                " bars a dispatched session from writing there: declare it with `just"
+                " review-loop author --issue <n> --profile <profile>`, naming the profile"
+                " that wrote it, which must not be the profile that reviewed it. Then land"
+                " again. A check that could not run is not a check that passed (#41,"
+                " ADR-0071 ruling 4). Nothing was pushed.",
             ),
             (),
         )
@@ -456,7 +510,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
         return Outcome(
             None,
             (
-                *_authorship_lines(authorship),
+                *_authorship_lines(authorship, declared),
                 (
                     f"review_dispatch={binding.dispatch_id} profile={binding.profile}"
                     f" lane={binding.lane}"
@@ -580,7 +634,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     return Outcome(
         None,
         (
-            *_authorship_lines(authorship),
+            *_authorship_lines(authorship, declared),
             *authorised,
             f"review_dispatch={binding.dispatch_id} profile={binding.profile} lane={binding.lane}",
             f"verdict_sha={sha}",

@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`just review-loop author` — the authorship record for interactive work, and the route out
+  of an unlandable `.claude/` change (#398).** #294 bars a dispatched session from writing
+  under `.claude/`, so such a change is authored interactively by construction; an interactive
+  session writes no dispatch record; and `just land`'s never-alone rung refuses
+  `authorship_unrecorded` when no record places any profile on the work. All three were right
+  and together they left no route — #330 sat reviewed, adjudicated and green at `c380689` with
+  nowhere to go. An interactive session now declares its authorship into the issue's own
+  review directory, and the rung reads that beside the dispatch records. The check is not
+  weakened: a declaration only ever **adds** a profile the reviewer may not be, an issue with
+  neither a dispatch record nor a declaration still refuses, an instance that authors and
+  reviews on one profile still meets `review_same_profile`, and a declared record that will
+  not read refuses `authorship_unreadable` rather than reading as empty. The record asserts
+  less than a dispatch record does and says so: the profile is the recording session's own
+  word rather than one a dispatcher resolved into a child's environment, so every entry
+  carries `source=declared`, the clearance prints it as `declared` with that limit beside it,
+  and the record is kept in its own file and its own vocabulary rather than among the dispatch
+  records, where it would have claimed a run that never ran. The command refuses a session
+  carrying `CTI_DISPATCH_ID` — a dispatched session's profile is already on its own record,
+  and the work this exists for is work #294 says it must not have done — and refuses a profile
+  outside the registry, since a typo names an author no reviewer could ever be. The arbiter's
+  walk excludes a declared author too, and the rung's refusal now names both routes out of it
+  rather than only the dispatch one #294 forbids for the case that actually hits it.
+
 - **`just land` refuses an unreviewed or unadjudicated landing, by name (#334, ADR-0071 ruling
   4).** A review rung between routing and the gate enforces the ruling's three criteria: a
   completed review dispatch record bound to the landed SHA (the derivation and the binding
