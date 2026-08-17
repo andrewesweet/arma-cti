@@ -275,10 +275,10 @@ def test_a_different_lane_is_preferred_against_the_real_registry(tmp_path: Path)
     assert plan is not None
     assert plan.identity.profile == "opus-low"
     assert plan.identity.lane == "claude-native"
-    assert "route_preference=zai-glm52-max opus-low codex-luna-max" in plan.route.lines()
+    assert "route_preference=zai-glm53-max opus-low codex-luna-max" in plan.route.lines()
     # The Codex head was never reached, rather than reached and refused: only the z.ai entry
     # ahead of the answer was walked past, which is what the reordering did.
-    assert [entry.profile for entry in plan.route.passed_over] == ["zai-glm52-max"]
+    assert [entry.profile for entry in plan.route.passed_over] == ["zai-glm53-max"]
 
 
 def test_the_lane_preference_is_an_ordering_and_never_a_filter(
@@ -623,7 +623,7 @@ def test_the_exclusion_reaches_the_real_registry_rather_than_a_substituted_seat(
 ) -> None:
     """The same claim with nothing substituted, where the exclusion costs the whole list.
 
-    The registered preference is `codex-luna-max zai-glm52-max opus-low`. With both Codex and
+    The registered preference is `codex-luna-max zai-glm53-max opus-low`. With both Codex and
     native entries on the issue's records, only the z.ai entry survives the exclusion, and
     this arrangement withholds its key — so the honest answer is the exhaustion refusal, and
     the refusal prints what was removed. Excluding the declared subject alone would have
@@ -636,7 +636,7 @@ def test_the_exclusion_reaches_the_real_registry_rather_than_a_substituted_seat(
     assert refusal is not None
     assert refusal.kind == "seat_list_exhausted"
     assert "excluded=codex-luna-max opus-low" in refusal.found
-    assert "walked=zai-glm52-max" in refusal.found
+    assert "walked=zai-glm53-max" in refusal.found
 
 
 def test_naming_a_profile_the_records_carry_is_refused_even_when_it_is_not_the_subject(
@@ -1030,8 +1030,8 @@ def test_the_exhaustion_refusal_distinguishes_the_registered_list_from_the_walke
         trip(tmp_path, lane)
     _, _, refusal = plan_for(tmp_path, reviewing="codex-luna-max")
     assert refusal is not None
-    assert "preference=codex-luna-max zai-glm52-max opus-low" in refusal.found
-    assert "walked=zai-glm52-max opus-low" in refusal.found
+    assert "preference=codex-luna-max zai-glm53-max opus-low" in refusal.found
+    assert "walked=zai-glm53-max opus-low" in refusal.found
 
 
 # ------------------------------------------------ the command line, the record, the listing
@@ -1073,7 +1073,7 @@ def test_the_subject_reaches_the_dispatcher_from_the_command_line(
     assert "route_permission_mode=plan forced_by_seat=review" in printed.out
     assert "route_chosen=opus-low lane=claude-native" in printed.out
     # The list the dispatch actually walked, with the subject gone from it.
-    assert "route_preference=zai-glm52-max opus-low" in printed.out
+    assert "route_preference=zai-glm53-max opus-low" in printed.out
     assert "--permission-mode plan" in printed.out
 
 

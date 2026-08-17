@@ -418,7 +418,7 @@ def test_condition_three_does_not_fire_on_a_third_attempt() -> None:
             attempts=(
                 escalation.Attempt(profile="opus-low", clean_base=False),
                 escalation.Attempt(profile="codex-luna-max", clean_base=True),
-                escalation.Attempt(profile="zai-glm52-max", clean_base=True),
+                escalation.Attempt(profile="zai-glm53-max", clean_base=True),
             ),
         )
     )

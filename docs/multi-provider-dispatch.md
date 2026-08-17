@@ -457,7 +457,7 @@ behind a seat's ordered preference list (#320, #321), so the surfaces are writte
 list**, and that lane filter is the whole of the derivation. A `.claude/agents/` definition
 cannot pin a lane — it names a Claude-vocabulary model, and which provider that reaches is
 a property of the session that spawns the subagent — so a head on another lane has no
-expression here. `zai-glm52-max` is the trap rather than `codex-luna-max`: its Claude vocabulary is
+expression here. `zai-glm53-max` is the trap rather than `codex-luna-max`: its Claude vocabulary is
 `opus`/`max`, which a native session would read as a native pair the registry never chose.
 
 **The check matters more here than for the schema export, because both declaration surfaces

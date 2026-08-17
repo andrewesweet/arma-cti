@@ -13,7 +13,7 @@ Four ideas, and each is a ruling made mechanical:
   `zai`, the permitted mirror — the same binary pointed at a non-Anthropic endpoint,
   consuming no Anthropic quota, credential or traffic.
 - **Profile** is one opaque token, not three commensurable dimensions (Decision 5).
-  `opus-high` and `zai-glm52-max` are names in a registry; nothing outside the registry
+  `opus-high` and `zai-glm53-max` are names in a registry; nothing outside the registry
   knows that one of them means `--effort high`. Effort vocabularies do not commensurate
   across providers, so the registry is the only place the mapping is allowed to exist.
 - **Seat** carries ADR-0071 ruling 1's one survivor: the orchestrator carve-out. Ruling 1
@@ -357,8 +357,8 @@ LANES: Final[dict[str, Lane]] = {
         base_url="https://api.z.ai/api/anthropic",
         credential="ZAI_API_KEY",
         model_slots=(
-            ("ANTHROPIC_DEFAULT_OPUS_MODEL", "glm-5.2"),
-            ("ANTHROPIC_DEFAULT_SONNET_MODEL", "glm-5.2"),
+            ("ANTHROPIC_DEFAULT_OPUS_MODEL", "glm-5.3"),
+            ("ANTHROPIC_DEFAULT_SONNET_MODEL", "glm-5.3"),
             ("ANTHROPIC_DEFAULT_HAIKU_MODEL", "glm-4.7"),
         ),
         note=(
@@ -367,7 +367,7 @@ LANES: Final[dict[str, Lane]] = {
             "base URL and the three model-slot variables are z.ai's own published "
             "integration (docs.z.ai/devpack/tool/claude). Needs ZAI_API_KEY in "
             "~/.arma-cti/credentials.env, which is #229's human item. Both slots that "
-            "resolve to glm-5.2 are deliberate: the endpoint's live model list carries "
+            "resolve to glm-5.3 are deliberate: the endpoint's live model list carries "
             "eight GLMs and only two of them are worth reaching from here, so the sonnet "
             "slot is the opus slot's synonym rather than a third arm nothing distinguishes."
         ),
@@ -440,8 +440,8 @@ PROFILES: Final[dict[str, Profile]] = {
     #
     # What remains genuinely distinct is the *model*, so the two profiles are the two
     # models worth reaching, named for the model and selected through the lane's slots:
-    # `--model opus` resolves to glm-5.2 and `--model haiku` to glm-4.7.
-    "zai-glm52-max": Profile("zai-glm52-max", "zai", "opus", "max"),
+    # `--model opus` resolves to glm-5.3 and `--model haiku` to glm-4.7.
+    "zai-glm53-max": Profile("zai-glm53-max", "zai", "opus", "max"),
     "zai-glm47-max": Profile("zai-glm47-max", "zai", "haiku", "max"),
     # Four profiles on this lane, and the reason they are not one is the exact inverse of
     # z.ai's. There, effort collapsed: two thinking budgets a factor of thirty apart were
@@ -575,7 +575,7 @@ class Seat(NamedTuple):
 # #322's and lives in `review_candidates`, which reorders this list rather than holding a
 # second one: the seat still prefers exactly these profiles in exactly this order, and what
 # the reviewed profile changes is which of them are reachable and which goes first.
-IMPLEMENTER_PREFERENCE: Final = ("codex-luna-max", "zai-glm52-max", "opus-low")
+IMPLEMENTER_PREFERENCE: Final = ("codex-luna-max", "zai-glm53-max", "opus-low")
 IMPLEMENTER_ESCALATION: Final = ("codex-sol-high", "opus-high")
 
 # ADR-0071 ruling 2's seat table, transcribed. `mechanical` is **retired** by that ruling

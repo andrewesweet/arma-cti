@@ -48,6 +48,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   owns — and #389, which asked whether the bar survived deliberately or was forgotten, is
   answered.
 
+
+- **The `zai` lane reaches GLM 5.3 (#399).** The opus and sonnet model slots move from
+  `glm-5.2` to `glm-5.3` — same cost per token, measured lower cost per task, higher
+  intelligence (human, 2026-08-17) — and the profile is renamed with them, from
+  `zai-glm52-max` to `zai-glm53-max`, because a profile name encodes its model and
+  #328's removal of the admission bar leaves no per-name record for a rename to lose. A
+  rename rather than a parallel entry: GLM 5.2 is judged strictly worse, so a second
+  routing surface would be permanent cost for a model nothing should choose. The haiku
+  slot stays at `glm-4.7`, verified against the endpoint on 2026-08-18: a request for
+  `glm-4.7` is served by `glm-4.7`. The same probe found that `glm-5.2` is no longer served
+  at all — the endpoint answers it with `glm-5.3` — so this rename makes the record true of
+  what was already running rather than changing which model answers.
+
 ### Added
 
 - **`just review-loop author` — the authorship record for interactive work, and the route out

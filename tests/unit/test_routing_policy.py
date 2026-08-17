@@ -69,7 +69,7 @@ GATES_BODY: Final = (REPO / "tests/fixtures/routing-eligible-gates.md").read_tex
 
 
 def route(*, seat: str = "implementer") -> object:
-    return routing_policy.Route("zai", "zai-glm52-max", seat, NOW)
+    return routing_policy.Route("zai", "zai-glm53-max", seat, NOW)
 
 
 def policy() -> Any:  # noqa: ANN401 — load_tool returns a runtime module type
@@ -755,7 +755,7 @@ def test_binds_every_instance_does_not_reach_the_claude_lane_and_required_seats_
     # `enforcing_match` skips such a row by rule, because a landing has no seat.
     seat_bound = planted(binds_every_instance=False, required_seats=("planner",))
     body = "Change `tools/mutation_smoke.py`."
-    for lane, profile in (("claude-native", "opus-low"), ("zai", "zai-glm52-max")):
+    for lane, profile in (("claude-native", "opus-low"), ("zai", "zai-glm53-max")):
         unadmitted = routing_policy.Route(lane, profile, "implementer", NOW)
         assert routing_policy.advisory_match(seat_bound, body, unadmitted) is not None, lane
         admitted = routing_policy.Route(lane, profile, "planner", NOW)
@@ -770,7 +770,7 @@ def test_a_seat_bound_rows_evidence_names_the_seat_once() -> None:
     source of a `seat=` term. Pinned on the refused reader's evidence rather than on the
     helper, so the claim stays checked without the planted shape that can no longer exist.
     """
-    route_taken = routing_policy.Route("zai", "zai-glm52-max", "retro", NOW)
+    route_taken = routing_policy.Route("zai", "zai-glm53-max", "retro", NOW)
     match = routing_policy.advisory_match(policy(), "ADR authorship for #999.", route_taken)
     assert match is not None
     assert match.evidence.count("seat=retro") == 1
@@ -893,7 +893,7 @@ def test_the_advisory_refusal_carries_the_coverage_line_a_reader_meets() -> None
     that used to reach a refusal here now clears, and a coverage line asserted on a refusal
     needs a row that still issues one.
     """
-    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "retro"})()
+    args = type("Args", (), {"lane": "zai", "profile": "zai-glm53-max", "seat": "retro"})()
     found = dispatch().Readiness(None, body="Routing-class: adr-authorship")
     refusal = dispatch().routing_refusal(args, found, REPO, NOW)
     assert refusal is not None
@@ -1059,7 +1059,7 @@ def test_every_refusing_class_row_refuses_by_name(class_id: int, body: str, seat
     them — `test_no_row_of_the_live_table_is_lane_selected_any_more` is what holds that
     nothing else has quietly rejoined.
     """
-    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": seat})()
+    args = type("Args", (), {"lane": "zai", "profile": "zai-glm53-max", "seat": seat})()
     found = dispatch().Readiness(None, body=body)
     refusal = dispatch().routing_refusal(args, found, REPO, NOW)
     assert refusal is not None
@@ -1083,7 +1083,7 @@ def test_the_seams_own_arrangement_refuses_the_same_way_against_this_branchs_pol
     seam test carries the durability reasoning for each move, and it stands on the record
     rather than in a commit message, which is class 3's own remedy's rule.
     """
-    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "retro"})()
+    args = type("Args", (), {"lane": "zai", "profile": "zai-glm53-max", "seat": "retro"})()
     found = dispatch().Readiness(None, body=ADR_BODY)
     refusal = dispatch().routing_refusal(args, found, REPO, NOW)
     assert refusal is not None
@@ -1093,7 +1093,7 @@ def test_the_seams_own_arrangement_refuses_the_same_way_against_this_branchs_pol
 
 @pytest.mark.parametrize(
     ("lane", "profile"),
-    [("zai", "zai-glm52-max"), ("codex", "codex-sol-high"), ("claude-native", "opus-low")],
+    [("zai", "zai-glm53-max"), ("codex", "codex-sol-high"), ("claude-native", "opus-low")],
 )
 def test_a_gate_declaring_issue_is_admitted_on_every_lane(lane: str, profile: str) -> None:
     """ADR-0073 acceptance criterion 4, as a test rather than as two pasted transcripts (#406).
@@ -1144,7 +1144,7 @@ def test_dispatch_reads_the_file_again_for_each_call(tmp_path: Path) -> None:
     policy_path = tmp_path / routing_policy.POLICY_RELATIVE
     policy_path.parent.mkdir(parents=True)
     shutil.copyfile(POLICY, policy_path)
-    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "retro"})()
+    args = type("Args", (), {"lane": "zai", "profile": "zai-glm53-max", "seat": "retro"})()
     found = dispatch().Readiness(None, body="Routing-class: adr-authorship")
 
     first = dispatch().routing_refusal(args, found, tmp_path, NOW)

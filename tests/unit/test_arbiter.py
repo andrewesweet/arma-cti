@@ -86,7 +86,7 @@ def test_the_ruled_cells_are_transcribed_head_first() -> None:
 
 
 def test_the_entry_head_answers_when_nothing_excludes_it() -> None:
-    resolution = arbiter.resolve(dispatch.SEATS["retro"], complete_read("zai-glm52-max"))
+    resolution = arbiter.resolve(dispatch.SEATS["retro"], complete_read("zai-glm53-max"))
     assert resolution.kind == arbiter.RESOLVED
     assert resolution.arbiter == "opus-max"
     assert resolution.unchecked is False
@@ -184,7 +184,7 @@ def test_an_exhausted_walk_refuses_by_name_with_every_exclusion_attached() -> No
         authorship(("codex-sol-high", "opus-high"), ("d1", "d2")),
         {
             "codex-luna-max": "out of profile",
-            "zai-glm52-max": "out of profile",
+            "zai-glm53-max": "out of profile",
             "opus-low": "out of profile",
         },
     )
@@ -195,7 +195,7 @@ def test_an_exhausted_walk_refuses_by_name_with_every_exclusion_attached() -> No
         "codex-sol-high",
         "opus-high",
         "codex-luna-max",
-        "zai-glm52-max",
+        "zai-glm53-max",
         "opus-low",
     ]
 
@@ -306,7 +306,7 @@ def test_a_profile_the_ladder_would_refuse_is_excluded(tmp_path: Path) -> None:
 
     The implementer walk: `codex-sol-high` and `opus-high` on the records; then
     `codex-luna-max`, refused by the `(implementer, codex-luna-max)` pair block — #265's
-    measured gate ceiling, a fact of the registry, not of this box; then `zai-glm52-max`,
+    measured gate ceiling, a fact of the registry, not of this box; then `zai-glm53-max`,
     whose lane wants a key this credentials file does not carry. Each refusal the ladder
     would give is the exclusion's reason, and the walk lands on `opus-low`.
     """
@@ -329,12 +329,12 @@ def test_a_profile_the_ladder_would_refuse_is_excluded(tmp_path: Path) -> None:
     assert resolution.arbiter == "opus-low"
     assert resolution.unchecked is False
     by_profile = {e.profile: e for e in resolution.passed_over}
-    assert set(by_profile) == {"codex-sol-high", "opus-high", "codex-luna-max", "zai-glm52-max"}
+    assert set(by_profile) == {"codex-sol-high", "opus-high", "codex-luna-max", "zai-glm53-max"}
     assert by_profile["codex-sol-high"].reason == arbiter.RECORDS_EXCLUSION
     assert by_profile["opus-high"].reason == arbiter.RECORDS_EXCLUSION
     assert by_profile["codex-luna-max"].reason == arbiter.DISPATCH_EXCLUSION
-    assert by_profile["zai-glm52-max"].reason == arbiter.DISPATCH_EXCLUSION
-    assert "credential_absent" in by_profile["zai-glm52-max"].detail
+    assert by_profile["zai-glm53-max"].reason == arbiter.DISPATCH_EXCLUSION
+    assert "credential_absent" in by_profile["zai-glm53-max"].detail
 
 
 def test_a_dispatchable_profile_is_answered_not_excluded(tmp_path: Path) -> None:
@@ -355,7 +355,7 @@ def test_a_dispatchable_profile_is_answered_not_excluded(tmp_path: Path) -> None
         credentials=str(credentials),
     )
     assert resolution.kind == arbiter.RESOLVED
-    assert resolution.arbiter == "zai-glm52-max"
+    assert resolution.arbiter == "zai-glm53-max"
     # `codex-luna-max` stays excluded — the pair block is the registry's, not the box's —
     # and `opus-low` behind z.ai is never reached.
     assert [e.profile for e in resolution.passed_over] == [

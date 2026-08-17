@@ -284,7 +284,7 @@ def test_the_registry_carries_every_landed_lane_and_a_named_profile_from_each() 
     # here and never an accident somewhere else. `codex` joined in #243.
     assert set(dispatch.LANES) == {"claude-native", "zai", "codex"}
     assert "opus-high" in dispatch.PROFILES
-    assert "zai-glm52-max" in dispatch.PROFILES
+    assert "zai-glm53-max" in dispatch.PROFILES
     assert "codex-sol-xhigh" in dispatch.PROFILES
 
 
@@ -294,8 +294,8 @@ def test_the_zai_lane_carries_z_ais_published_mirror_configuration() -> None:
     assert lane.base_url == "https://api.z.ai/api/anthropic"
     assert lane.credential == "ZAI_API_KEY"
     assert dict(lane.model_slots) == {
-        "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.2",
-        "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.2",
+        "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.3",
+        "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-5.3",
         "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-4.7",
     }
 
@@ -314,7 +314,7 @@ def test_the_zai_lane_registers_one_arm_per_model_and_never_one_per_effort() -> 
         for profile in dispatch.PROFILES.values()
         if profile.lane == "zai"
     ]
-    assert sorted(resolved) == ["glm-4.7", "glm-5.2"]
+    assert sorted(resolved) == ["glm-4.7", "glm-5.3"]
     assert len(resolved) == len(set(resolved))
 
 
@@ -365,7 +365,7 @@ def test_an_unknown_profile_is_refused_by_name() -> None:
 
 
 def test_a_profile_dispatched_on_another_lane_is_refused() -> None:
-    refusal = dispatch.resolve_selection("claude-native", "zai-glm52-max", "implementer")
+    refusal = dispatch.resolve_selection("claude-native", "zai-glm53-max", "implementer")
     assert refusal is not None
     assert refusal.kind == "profile_lane_mismatch"
     assert "profile_lane=zai" in refusal.found
@@ -373,7 +373,7 @@ def test_a_profile_dispatched_on_another_lane_is_refused() -> None:
 
 def test_a_registered_selection_is_not_refused() -> None:
     assert dispatch.resolve_selection("claude-native", "opus-high", "implementer") is None
-    assert dispatch.resolve_selection("zai", "zai-glm52-max", "review") is None
+    assert dispatch.resolve_selection("zai", "zai-glm53-max", "review") is None
 
 
 # ------------------------------------- ADR-0071 ruling 1: the carve-out, and nothing else
@@ -399,7 +399,7 @@ def test_the_orchestrator_carve_out_refuses_on_every_other_lane(lane: str) -> No
     # until a tested alternative exists. Of this ladder's refusals it is the only
     # provenance-shaped one; the routing rung holds the other lane-selected refusal, class
     # 6's bridge, one rung up and pinned in test_routing_policy.py.
-    profile = "codex-sol-xhigh" if lane == "codex" else "zai-glm52-max"
+    profile = "codex-sol-xhigh" if lane == "codex" else "zai-glm53-max"
     refusal = dispatch.resolve_selection(lane, profile, "orchestrator")
     assert refusal is not None
     assert refusal.kind == "orchestrator_claude_only"
@@ -656,7 +656,7 @@ def identity(**overrides: object) -> object:
     fields = {
         "dispatch_id": "d-20260805-183001-a1b2c3",
         "lane": "zai",
-        "profile": "zai-glm52-max",
+        "profile": "zai-glm53-max",
         "seat": "review",
         "issue": 223,
         "base_sha": "22b985e",
@@ -704,10 +704,10 @@ def assembled(lane: str, profile: str, parent: dict[str, str], token: str = "") 
 
 
 def test_the_zai_lane_reaches_z_ai_and_carries_its_token_in_the_environment() -> None:
-    child = assembled("zai", "zai-glm52-max", {"HOME": "/home/t"}, FAKE_TOKEN)
+    child = assembled("zai", "zai-glm53-max", {"HOME": "/home/t"}, FAKE_TOKEN)
     assert child["ANTHROPIC_BASE_URL"] == "https://api.z.ai/api/anthropic"
     assert child["ANTHROPIC_AUTH_TOKEN"] == FAKE_TOKEN
-    assert child["ANTHROPIC_DEFAULT_OPUS_MODEL"] == "glm-5.2"
+    assert child["ANTHROPIC_DEFAULT_OPUS_MODEL"] == "glm-5.3"
 
 
 def test_the_cheap_zai_profile_reaches_the_other_glm_through_the_haiku_slot() -> None:
@@ -717,7 +717,7 @@ def test_the_cheap_zai_profile_reaches_the_other_glm_through_the_haiku_slot() ->
 
 
 @pytest.mark.parametrize(
-    ("lane", "profile"), [("zai", "zai-glm52-max"), ("claude-native", "opus-high")]
+    ("lane", "profile"), [("zai", "zai-glm53-max"), ("claude-native", "opus-high")]
 )
 def test_no_lane_inherits_a_cache_ttl_switch_from_the_shell(lane: str, profile: str) -> None:
     # `ENABLE_PROMPT_CACHING_1H` changes what the child asks a provider for, so it is
@@ -758,7 +758,7 @@ def test_a_lane_with_no_time_of_day_term_records_no_multiplier_at_all() -> None:
 def test_a_zai_dispatch_with_no_token_exports_no_empty_one() -> None:
     # An empty `ANTHROPIC_AUTH_TOKEN` outranks the subscription OAuth in Claude Code's
     # credential ladder, so exporting a blank one is worse than exporting none.
-    child = assembled("zai", "zai-glm52-max", {"HOME": "/home/t"}, "")
+    child = assembled("zai", "zai-glm53-max", {"HOME": "/home/t"}, "")
     assert "ANTHROPIC_AUTH_TOKEN" not in child
 
 
@@ -773,7 +773,7 @@ def test_a_poisoned_parent_cannot_reach_a_native_child() -> None:
         "HOME": "/home/t",
         "ANTHROPIC_BASE_URL": "https://poisoned.invalid",
         "ANTHROPIC_AUTH_TOKEN": "leaked",
-        "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.2",
+        "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-5.3",
     }
     child = assembled("claude-native", "opus-high", parent)
     for key in ("ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_DEFAULT_OPUS_MODEL"):
@@ -789,7 +789,7 @@ def test_every_lane_owned_variable_is_stripped_before_the_lane_adds_its_own() ->
 def test_assembly_never_mutates_the_parent_and_a_sibling_lane_comes_up_clean() -> None:
     parent = {"HOME": "/home/t"}
     before = dict(parent)
-    zai = assembled("zai", "zai-glm52-max", parent, FAKE_TOKEN)
+    zai = assembled("zai", "zai-glm53-max", parent, FAKE_TOKEN)
     native = assembled("claude-native", "opus-high", parent)
     assert parent == before
     assert zai["ANTHROPIC_BASE_URL"] == "https://api.z.ai/api/anthropic"
@@ -798,14 +798,14 @@ def test_assembly_never_mutates_the_parent_and_a_sibling_lane_comes_up_clean() -
 
 
 def test_the_child_carries_its_assignment_for_anything_downstream_to_re_assert() -> None:
-    child = assembled("zai", "zai-glm52-max", {"HOME": "/home/t"}, FAKE_TOKEN)
+    child = assembled("zai", "zai-glm53-max", {"HOME": "/home/t"}, FAKE_TOKEN)
     assert child["CTI_DISPATCH_LANE"] == "zai"
     assert child["CTI_DISPATCH_SEAT"] == "review"
     assert child["CTI_DISPATCH_ISSUE"] == "223"
 
 
 def test_redaction_replaces_the_token_and_leaves_everything_else_verbatim() -> None:
-    child = assembled("zai", "zai-glm52-max", {"HOME": "/home/t"}, FAKE_TOKEN)
+    child = assembled("zai", "zai-glm53-max", {"HOME": "/home/t"}, FAKE_TOKEN)
     shown = dispatch.redacted(child, FAKE_TOKEN)
     assert shown["ANTHROPIC_AUTH_TOKEN"] == "<redacted>"  # noqa: S105 — that is the point
     assert shown["HOME"] == "/home/t"
@@ -1088,7 +1088,7 @@ def test_the_record_names_the_credential_key_and_never_its_value(tmp_path: Path)
     plan, brief, refusal = plan_for(
         tmp_path,
         lane="zai",
-        profile="zai-glm52-max",
+        profile="zai-glm53-max",
         seat="review",
         reviewing=REVIEWED,
         now=OFF_PEAK,
@@ -1112,7 +1112,7 @@ def test_a_zai_record_carries_the_plan_charge_block_the_estimator_will_read(
     plan, brief, refusal = plan_for(
         tmp_path,
         lane="zai",
-        profile="zai-glm52-max",
+        profile="zai-glm53-max",
         seat="review",
         reviewing=REVIEWED,
         now=OFF_PEAK,
@@ -1182,7 +1182,7 @@ def test_the_plan_charge_prices_the_carried_instant(
     plan, brief, refusal = plan_for(
         tmp_path,
         lane="zai",
-        profile="zai-glm52-max",
+        profile="zai-glm53-max",
         seat="review",
         reviewing=REVIEWED,
         now=OFF_PEAK,
@@ -1331,7 +1331,7 @@ def test_the_registry_listing_names_both_lanes_and_the_carve_out(
     printed = capsys.readouterr().out
     assert "lane=claude-native" in printed
     assert "lane=zai" in printed
-    assert "profile=zai-glm52-max" in printed
+    assert "profile=zai-glm53-max" in printed
     assert "seats_claude_only=orchestrator" in printed
     assert "off_peak_only=true" in printed
 
@@ -1349,7 +1349,7 @@ def zai_at(tmp_path: Path, now: datetime) -> tuple[Any, Any]:
     plan, _, refusal = plan_for(
         tmp_path,
         lane="zai",
-        profile="zai-glm52-max",
+        profile="zai-glm53-max",
         seat="review",
         reviewing=REVIEWED,
         now=now,
@@ -1439,7 +1439,7 @@ def test_every_profile_on_a_ruled_lane_is_refused_and_not_merely_the_named_one(
     # The ruling is the human's on the lane; a second profile is not a second opinion.
     credentials_file(tmp_path, f"ZAI_API_KEY={FAKE_TOKEN}\n")
     worktree = git_worktree(tmp_path)
-    for profile in ("zai-glm52-max", "zai-glm47-max"):
+    for profile in ("zai-glm53-max", "zai-glm47-max"):
         _, _, refusal = plan_for(
             tmp_path,
             lane="zai",
@@ -1458,7 +1458,7 @@ def test_the_window_is_read_before_the_worktree_and_the_credentials_are(tmp_path
     _, _, refusal = plan_for(
         tmp_path,
         lane="zai",
-        profile="zai-glm52-max",
+        profile="zai-glm53-max",
         seat="review",
         reviewing=REVIEWED,
         worktree=str(tmp_path / "no-such-tree"),
@@ -1578,7 +1578,7 @@ def test_readiness_outranks_the_breaker_and_the_window(tmp_path: Path) -> None:
     _, _, refusal = plan_for(
         tmp_path,
         lane="zai",
-        profile="zai-glm52-max",
+        profile="zai-glm53-max",
         seat="review",
         reviewing=REVIEWED,
         issue_body=unready(tmp_path),
@@ -1699,7 +1699,7 @@ def test_the_clock_the_rule_is_judged_against_is_the_real_one(
             "--lane",
             "zai",
             "--profile",
-            "zai-glm52-max",
+            "zai-glm53-max",
             "--seat",
             "review",
             "--reviewing",
@@ -1783,7 +1783,7 @@ def test_the_zai_lane_refuses_at_the_recipe_while_its_key_does_not_exist(
     plan, _, refusal = plan_for(
         tmp_path,
         lane="zai",
-        profile="zai-glm52-max",
+        profile="zai-glm53-max",
         seat="review",
         reviewing=REVIEWED,
         credentials=str(tmp_path / "absent.env"),
@@ -1801,7 +1801,7 @@ def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: P
     plan, brief, _ = plan_for(
         tmp_path,
         lane="zai",
-        profile="zai-glm52-max",
+        profile="zai-glm53-max",
         seat="review",
         reviewing=REVIEWED,
         now=OFF_PEAK,
@@ -1906,7 +1906,7 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
     ]
     before_band = breaker.zai_is_peak(time.time())
     zai_run = run_seam(
-        ["--lane", "zai", "--profile", "zai-glm52-max", *common],
+        ["--lane", "zai", "--profile", "zai-glm53-max", *common],
         parent,
     )
     if before_band != breaker.zai_is_peak(time.time()):
@@ -1926,7 +1926,7 @@ def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
     zai_env = read_lines((tmp_path / "zai-ran.txt").read_text(encoding="utf-8"))
     assert zai_env["ANTHROPIC_BASE_URL"] == "https://api.z.ai/api/anthropic"
     assert zai_env["ANTHROPIC_AUTH_TOKEN"] == FAKE_TOKEN
-    assert zai_env["ANTHROPIC_DEFAULT_OPUS_MODEL"] == "glm-5.2"
+    assert zai_env["ANTHROPIC_DEFAULT_OPUS_MODEL"] == "glm-5.3"
 
     # The parent mapping this test handed the seam is untouched, and so is this
     # process's own environment: nothing was exported anywhere.
@@ -1970,7 +1970,7 @@ def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
             "--lane",
             "zai",
             "--profile",
-            "zai-glm52-max",
+            "zai-glm53-max",
             "--seat",
             "review",
             "--reviewing",
@@ -2044,7 +2044,7 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
             "--lane",
             "zai",
             "--profile",
-            "zai-glm52-max",
+            "zai-glm53-max",
             "--seat",
             "retro",
             "--issue",
@@ -2065,7 +2065,7 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
 
 
 def _routing_args(*, lane: str = "zai", seat: str = "implementer") -> Any:  # noqa: ANN401
-    return SimpleNamespace(lane=lane, profile="zai-glm52-max", seat=seat)
+    return SimpleNamespace(lane=lane, profile="zai-glm53-max", seat=seat)
 
 
 def test_the_cleared_dispatcher_is_told_what_the_clear_read_did_not_check() -> None:
@@ -2268,7 +2268,7 @@ def test_the_breaker_is_read_before_the_worktree_and_the_credentials_are(tmp_pat
     _, _, refusal = plan_for(
         tmp_path,
         lane="zai",
-        profile="zai-glm52-max",
+        profile="zai-glm53-max",
         worktree=str(tmp_path / "no-such-tree"),
         credentials=str(tmp_path / "absent.env"),
     )

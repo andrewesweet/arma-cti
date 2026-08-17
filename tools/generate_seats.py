@@ -17,7 +17,7 @@ preference list**, and the lane filter is the whole of the judgement. A `.claude
 definition cannot pin a lane: it declares a Claude-vocabulary model, and which provider
 that reaches is a property of the session that spawns the subagent, not of the file. So
 preference entries on other lanes have no expression here — `codex-luna-max` is not a
-model the Claude harness can be handed — and neither does `zai-glm52-max`, whose Claude
+model the Claude harness can be handed — and neither does `zai-glm53-max`, whose Claude
 vocabulary (`opus`, `max`) would be read by a native session as a native pair the registry
 never chose. The native entry is the one that is true wherever the file is read.
 

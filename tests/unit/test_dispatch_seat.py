@@ -172,7 +172,7 @@ def test_the_implementer_list_is_the_adrs_order_head_first() -> None:
     # it in exactly that order, so the sequence is the claim.
     assert dispatch.SEATS["implementer"].preference == (
         "codex-luna-max",
-        "zai-glm52-max",
+        "zai-glm53-max",
         "opus-low",
     )
     assert dispatch.SEATS["implementer"].escalation == ("codex-sol-high", "opus-high")
@@ -273,7 +273,7 @@ def test_the_dry_run_prints_the_resolved_profile_and_why_that_one(
     assert "route_chosen=opus-low lane=claude-native" in printed
     # The reason is which entries were passed over and on what — not a bare "chosen".
     assert "route_passed_over=codex-luna-max refusal=profile_blocked_for_seat" in printed
-    assert "route_passed_over=zai-glm52-max refusal=credentials_missing" in printed
+    assert "route_passed_over=zai-glm53-max refusal=credentials_missing" in printed
 
 
 def test_the_blocked_head_is_stepped_past_rather_than_dispatched(tmp_path: Path) -> None:
@@ -340,7 +340,7 @@ def test_the_off_peak_rule_walks_the_zai_entry_past_rather_than_overriding_it(
     assert refusal is None
     assert plan is not None
     assert plan.identity.profile == "opus-low", "the z.ai entry is skipped inside the peak band"
-    assert ("zai-glm52-max", "lane_peak_hours") in walked_past(plan.route.passed_over)
+    assert ("zai-glm53-max", "lane_peak_hours") in walked_past(plan.route.passed_over)
 
 
 # ------------------------------------------------------------- exhaustion, criterion 3
@@ -514,7 +514,7 @@ def test_the_record_names_the_chosen_profile_and_what_it_walked_past(tmp_path: P
     assert document["route"]["chosen"] == "opus-low"
     assert [entry["profile"] for entry in document["route"]["passed_over"]] == [
         "codex-luna-max",
-        "zai-glm52-max",
+        "zai-glm53-max",
     ]
 
 
@@ -550,7 +550,7 @@ def test_the_registry_listing_prints_each_seats_preference_and_marks_the_escalat
 ) -> None:
     assert dispatch.main(["--list"]) == 0
     printed = capsys.readouterr().out
-    assert "preference=codex-luna-max zai-glm52-max opus-low" in printed
+    assert "preference=codex-luna-max zai-glm53-max opus-low" in printed
     # The mark names *which* resolution passes the entry by (#361 review round 2, claim 3): a
     # flat "not resolved into" was false from the moment `tools/arbiter.py`'s walk landed at
     # `d351a3f`, since that walk starts at this very entry.
