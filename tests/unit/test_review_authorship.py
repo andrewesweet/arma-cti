@@ -22,11 +22,13 @@ weakening of the rung it unblocks:
 
 from __future__ import annotations
 
+import contextlib
 import json
+import threading
 from typing import TYPE_CHECKING, Final
 
 import pytest
-from conftest import load_tool
+from conftest import REPO, load_tool
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -86,6 +88,56 @@ def test_a_second_profile_joins_the_first(tmp_path: Path) -> None:
     _author(tmp_path, "opus-xhigh")
 
     assert review_loop.recorded_authors(tmp_path, ISSUE) == (AUTHOR, "opus-xhigh")
+
+
+def test_a_re_declaration_at_a_new_commit_keeps_both(tmp_path: Path) -> None:
+    """A rebase is the ordinary second declaration, and appending is the only true answer.
+
+    Dropping it leaves the trail naming a commit that is not the one landed; overwriting
+    erases a declaration that was made. The claim is the `(profile, sha)` pair, so a new
+    commit is a new claim — and it costs the check nothing, because the set a reviewer is
+    excluded against deduplicates on profile.
+    """
+    rebased = "d" * 40
+    assert _author(tmp_path) is True
+    assert review_loop.store_authorship(tmp_path, ISSUE, AUTHOR, rebased, STAMP) is True
+
+    stored = json.loads(review_loop.authorship_path(tmp_path, ISSUE).read_text(encoding="utf-8"))
+    assert [entry["sha"] for entry in stored["authors"]] == [SHA, rebased]
+    assert review_loop.recorded_authors(tmp_path, ISSUE) == (AUTHOR,)
+
+
+def test_two_declarations_racing_on_one_issue_lose_neither(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A lost entry is a profile the never-alone check stops excluding — the one bad direction.
+
+    The read, the append and the write are one locked act, and the lock is what this
+    asserts: both writers are held at the barrier the instant they have read, so without it
+    both append to the same empty record and the second `replace` wins with the first
+    author gone. With it, only one writer ever reaches the barrier, which breaks on its own
+    timeout and lets the pair through in series.
+    """
+    gate = threading.Barrier(2, timeout=0.2)
+    read = review_loop._authorship_entries  # noqa: SLF001 — the interleave under test is inside it
+
+    def read_then_meet(root: Path, issue: int) -> tuple[dict[str, object], ...]:
+        entries = read(root, issue)
+        with contextlib.suppress(threading.BrokenBarrierError):
+            gate.wait()
+        return entries
+
+    monkeypatch.setattr(review_loop, "_authorship_entries", read_then_meet)
+    racing = [
+        threading.Thread(target=_author, args=(tmp_path, profile))
+        for profile in (AUTHOR, "opus-xhigh")
+    ]
+    for thread in racing:
+        thread.start()
+    for thread in racing:
+        thread.join(timeout=10)
+
+    assert sorted(review_loop.recorded_authors(tmp_path, ISSUE)) == [AUTHOR, "opus-xhigh"]
 
 
 def test_a_declaration_carries_its_provenance_and_its_commit(tmp_path: Path) -> None:
@@ -334,6 +386,58 @@ def test_the_declared_author_reviewing_its_own_diff_is_still_refused(tmp_path: P
 
     assert refusal.kind == "review_same_profile"
     assert f"reviewer_profile={AUTHOR}" in refusal.found
+
+
+# ------------------------------------------------------------------ the arbiter's walk
+
+
+def _escalate(tmp_path: Path, issue: int) -> dict[str, object]:
+    """Open a loop and resolve its arbiter, returning the record `escalate` wrote."""
+    root = tmp_path / "review"
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("# no keys the walk reads\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    clock = iter(range(1, 100))
+    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    assert (
+        review_loop.main(
+            ["open", "--issue", str(issue), *base, "--finding", "F1=critical"],
+            now=lambda: float(next(clock)),
+        )
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                *["escalate", "--issue", str(issue), *base],
+                *["--seat", "implementer", "--dispatch-dir", str(tmp_path / "dispatches")],
+                *["--admission-dir", str(tmp_path / "admission")],
+                *["--breaker-dir", str(tmp_path / "breaker")],
+                *["--credentials", str(credentials)],
+                *["--conditions", str(REPO / "config/escalation-conditions.json")],
+            ],
+            now=lambda: float(next(clock)),
+        )
+        == review_loop.OK
+    )
+    return json.loads((root / str(issue) / review_loop.ESCALATION_FILE).read_text(encoding="utf-8"))
+
+
+def test_the_arbiter_walk_will_not_resolve_to_a_declared_author(tmp_path: Path) -> None:
+    """An arbiter that authored the work is the proposer approving itself by another door.
+
+    The walk's own rung excludes the profiles the *records* place on the work, and on an
+    interactively authored issue the records place nobody — so this is the only thing
+    keeping the arbiter of such an issue off the profile that wrote it. Asserted by
+    declaring the profile the walk would otherwise have chosen and watching it choose
+    another (#398 round 1: the claim was made in three documents and asserted nowhere).
+    """
+    unconstrained = str(_escalate(tmp_path, ISSUE)["arbiter"])
+    assert unconstrained  # the walk resolves something to exclude in the first place
+
+    review_loop.store_authorship(tmp_path / "review", ISSUE + 1, unconstrained, SHA, STAMP)
+
+    assert _escalate(tmp_path, ISSUE + 1)["arbiter"] != unconstrained
 
 
 def test_a_declaration_that_will_not_read_refuses_the_landing_by_name(tmp_path: Path) -> None:

@@ -768,9 +768,12 @@ class Authorship(NamedTuple):
     records and could not read a fifth still excludes those four, and still must not report
     itself as checked (#41 — a check that could not run is not a check that passed).
 
-    `records` names the dispatch ids the profiles came from, in the order they were read, so
-    a reader shown `potential_authors=` can go and look at the same records rather than take
-    this scan's word for it.
+    `records` names where each profile was read, in the order they were read, so a reader
+    shown `potential_authors=` can go and look at the same records rather than take this
+    scan's word for it. An entry is a dispatch id for a profile the dispatch records placed
+    on the work, and the path of an issue's `authorship.json` for one an interactive session
+    declared (#398) — the two sources assert different things, and the entry beside the
+    profile is what says which one this name came from.
     """
 
     potential: tuple[str, ...] = ()

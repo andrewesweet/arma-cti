@@ -131,6 +131,22 @@ Each of the following was a choice:
   record of a run that never ran would be a worse answer than the deadlock and every reader of
   that root would meet it.
 
+  Three properties of the record follow from the one direction it must not fail in — an author
+  it loses is a reviewer the check stops refusing. **Declaring is one locked act**: the read,
+  the append and the write are serialised on the issue's own `flock`, because two sessions
+  racing would each write what they read and the loser's author would simply be gone from a
+  set whose whole job is exclusion. **The claim is the `(profile, sha)` pair**, so re-running
+  the identical command is idempotent and a re-declaration after a rebase is *appended* rather
+  than dropped or overwritten — dropping it leaves the trail naming a commit that is not the
+  one landed, overwriting erases a declaration that was made, and appending costs the check
+  nothing because the set deduplicates on profile. And **the `CTI_DISPATCH_ID` refusal is not
+  a barrier**: it reads one environment variable, and a dispatched session running the command
+  under `env -u` writes the record — constructed and confirmed on #398's first review round.
+  That is recorded at the guard rather than chased, because detecting a session that edits its
+  own environment is an arms race and winning a round of it would imply a guarantee this
+  cannot give. The limit is ruling 4's own: the accident and the shortcut, not a deceptive
+  agent.
+
   The profile-less plan is the one that does not look like a gap: it parses, it carries the
   issue, and it answers a different question from the one being asked. Beside one good record
   a scan that accepted it would report itself complete while that dispatch's profile —

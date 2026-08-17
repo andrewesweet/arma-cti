@@ -29,8 +29,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   carrying `CTI_DISPATCH_ID` — a dispatched session's profile is already on its own record,
   and the work this exists for is work #294 says it must not have done — and refuses a profile
   outside the registry, since a typo names an author no reviewer could ever be. The arbiter's
-  walk excludes a declared author too, and the rung's refusal now names both routes out of it
-  rather than only the dispatch one #294 forbids for the case that actually hits it.
+  walk excludes a declared author too — asserted by declaring the profile the walk would
+  otherwise have chosen and watching it choose another — and the rung's refusal now names both
+  routes out of it rather than only the dispatch one #294 forbids for the case that actually
+  hits it. Declaring is one locked act, so two sessions racing on one issue lose neither
+  author; the claim recorded is the `(profile, sha)` pair, so a re-declaration after a rebase
+  is appended rather than leaving the trail naming a commit that is not the one landed; and
+  the `CTI_DISPATCH_ID` refusal is documented at the guard as what it is — one environment
+  variable, which a dispatched session can strip, so a convention with a mechanical floor
+  rather than a barrier.
 
 - **`just land` refuses an unreviewed or unadjudicated landing, by name (#334, ADR-0071 ruling
   4).** A review rung between routing and the gate enforces the ruling's three criteria: a

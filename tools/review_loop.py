@@ -108,12 +108,14 @@ loop shipped without them is a loop whose cost cannot be recovered.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import subprocess
 import sys
 import tempfile
 import time
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
@@ -128,7 +130,7 @@ import otel_event
 from routing_policy import path_matches
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Mapping
+    from collections.abc import Callable, Iterable, Iterator, Mapping
 
 EXEMPTIONS_RELATIVE: Final = Path("config/review-exemptions.json")
 
@@ -1786,6 +1788,16 @@ def _cmd_author(
     What it cannot check is whether the declared profile is the declaring session's own —
     nothing in an interactive session's environment says which model is reading this — so
     the record says `declared` and the landing prints it that way.
+
+    **Nor is the dispatch refusal a barrier.** It reads one environment variable, and a
+    dispatched session that runs this command under `env -u CTI_DISPATCH_ID` writes the
+    record; that was constructed and confirmed on #398's first review round. It is written
+    down here so a later reader does not mistake the guard for something stronger than it
+    is, and it is deliberately not chased: detecting a session that edits its own
+    environment is an arms race, and winning a round of it would imply a guarantee this
+    cannot give. The limit is the one ADR-0071 ruling 4 already states for the landing rung
+    — this protects against the accident and the shortcut, not against a deceptive agent; a
+    convention with a mechanical floor, not a guarantee.
     """
     import dispatch  # noqa: PLC0415 — the same cycle `_cmd_escalate` documents, same reason
 
@@ -1945,6 +1957,7 @@ def recorded_arbiter(root: Path, issue: int) -> ArbiterAuthorisation:
 # a session with `CTI_DISPATCH_ID` in its environment is dispatched, and is refused.
 
 AUTHORSHIP_FILE: Final = "authorship.json"
+AUTHORSHIP_LOCK: Final = "authorship.lock"
 AUTHORSHIP_VERSION: Final = 1
 # The provenance every entry carries, and the word the landing's clearance prints: this
 # profile is the recording session's own declaration, not a value read off a dispatch.
@@ -1983,6 +1996,31 @@ AUTHORSHIP_UNWRITTEN_ERROR: Final = (
 def authorship_path(root: Path, issue: int) -> Path:
     """One issue's interactive authorship record, beside its loop."""
     return Path(root).expanduser() / str(issue) / AUTHORSHIP_FILE
+
+
+@contextmanager
+def _authorship_lock(root: Path, issue: int) -> Iterator[None]:
+    """Hold one issue's declaration lock across a whole read-append-write.
+
+    `_write_atomically` makes the *write* atomic and that is not the property this needs:
+    two declarations racing each read the record, each append their own author to what
+    they read, and the second `replace` wins with the first author gone. A lost entry is a
+    profile the never-alone check no longer excludes — a smaller exclusion set clears a
+    reviewer it should refuse, which is the one direction this record must not fail in
+    (#41's rule, on the rung #334 needed an arbitration to get right).
+
+    `flock` rather than `_claim_terminus_pending`'s `O_EXCL` because these callers must
+    queue and proceed rather than refuse, and because the kernel frees it on holder death
+    (ADR-0022): a session killed mid-declaration leaves no lock for the next one to clear.
+    """
+    lock = authorship_path(root, issue).with_name(AUTHORSHIP_LOCK)
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    handle = os.open(lock, os.O_CREAT | os.O_WRONLY, 0o600)
+    try:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        yield
+    finally:
+        os.close(handle)
 
 
 def _authorship_fault(record: object, issue: int) -> str:
@@ -2053,37 +2091,56 @@ def recorded_authors(root: Path, issue: int) -> tuple[str, ...]:
 def store_authorship(root: Path, issue: int, profile: str, sha: str, recorded_at: str) -> bool:
     """Declare that an interactive session on `profile` authored this issue's change.
 
-    Returns whether this call added an entry. Recording the same profile twice is the same
-    claim, so it is idempotent rather than a refusal or a second row — a session that
-    records again after a rebase should meet its own earlier declaration, not a duplicate.
+    Returns whether this call added an entry. **The claim is the pair `(profile, sha)`, and
+    that is what is deduplicated.** The same pair twice is the same claim, so re-running the
+    identical command is idempotent rather than a refusal or a second row; the same profile
+    at a *different* commit is a different claim, and it is **appended** rather than
+    dropped or overwritten (#398 round 1). A rebase or an amend is the ordinary way a
+    second declaration happens, and of the three answers appending is the only one that
+    keeps the record true: dropping it leaves the audit trail naming a commit that is not
+    the one landed, and overwriting it erases a declaration that was made. Appending costs
+    the check nothing, because `recorded_authors` deduplicates on profile — a second entry
+    for one profile is one more line of trail and not one more excluded reviewer.
 
     `sha` is the commit the recording session had in hand and is written only when given: it
     is an audit trail for a later reader, never a claim about which commits that profile
     wrote, which is exactly what a dispatch record cannot say either.
+
+    The read, the append and the write are one locked act. Two sessions declaring on one
+    issue would otherwise each write what they read, and the loser's author would be gone
+    from a set whose whole job is to exclude reviewers — see `_authorship_lock`.
     """
-    entries = list(_authorship_entries(root, issue))
-    if any(str(entry["profile"]).strip() == profile for entry in entries):
-        return False
-    entry: dict[str, object] = {"profile": profile, "recorded_at": recorded_at, "source": DECLARED}
-    if sha:
-        entry["sha"] = sha
-    entries.append(entry)
-    document = (
-        json.dumps(
-            {"version": AUTHORSHIP_VERSION, "issue": issue, "authors": entries},
-            indent=2,
-            sort_keys=True,
+    with _authorship_lock(root, issue):
+        entries = list(_authorship_entries(root, issue))
+        if any(
+            str(entry["profile"]).strip() == profile and str(entry.get("sha", "")) == sha
+            for entry in entries
+        ):
+            return False
+        entry: dict[str, object] = {
+            "profile": profile,
+            "recorded_at": recorded_at,
+            "source": DECLARED,
+        }
+        if sha:
+            entry["sha"] = sha
+        entries.append(entry)
+        document = (
+            json.dumps(
+                {"version": AUTHORSHIP_VERSION, "issue": issue, "authors": entries},
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n"
         )
-        + "\n"
-    )
-    target = authorship_path(root, issue)
-    try:
-        _write_atomically(target, document)
-    except OSError as unwritable:
-        raise ReviewLoopError(
-            AUTHORSHIP_UNWRITTEN_ERROR.format(issue=issue, target=target, reason=unwritable)
-        ) from unwritable
-    return True
+        target = authorship_path(root, issue)
+        try:
+            _write_atomically(target, document)
+        except OSError as unwritable:
+            raise ReviewLoopError(
+                AUTHORSHIP_UNWRITTEN_ERROR.format(issue=issue, target=target, reason=unwritable)
+            ) from unwritable
+        return True
 
 
 def _claim_terminus_pending(path: Path, plan: str) -> bool:
