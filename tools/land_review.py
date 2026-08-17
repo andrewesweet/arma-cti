@@ -409,7 +409,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             ),
             (),
         )
-    # M1 MUTATION: the merge dropped
+    authorship = dispatch.with_declared_authors(authorship, declared, str(declared_record))
     if binding.profile in authorship.potential:
         authored = tuple(
             record
