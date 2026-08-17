@@ -1642,6 +1642,15 @@ def _cmd_escalate(
     if seat is None:
         raise ReviewLoopError(SEAT_UNKNOWN_ERROR.format(seat=args.seat))
     dispatch_dir = Path(args.dispatch_dir) if args.dispatch_dir else dispatch.DISPATCH_ROOT
+    # The landing rung is not the only reader that takes an absent record for an answer
+    # (#398 round 2). The walk below excludes the profiles the records place on the work, a
+    # declared author among them — so a declaration whose record has gone leaves the author
+    # of an interactively written change eligible to arbitrate it, which is the same silent
+    # narrowing the landing refuses, one door over.
+    if declaration_lost(root, args.issue):
+        raise ExternalError(
+            AUTHORSHIP_LOST_ERROR.format(issue=args.issue, target=authorship_path(root, args.issue))
+        )
     resolution = arbiter.resolve_dispatchable(
         seat,
         # An interactively declared author is an author the arbiter must not be either
@@ -1991,6 +2000,13 @@ AUTHORSHIP_UNWRITTEN_ERROR: Final = (
     " was changed: the document is staged beside its target and renamed onto it, so a failed"
     " write leaves the record as it stood"
 )
+AUTHORSHIP_LOST_ERROR: Final = (
+    "a declaration was written for #{issue} and its record is gone from {target}, so the"
+    " authors it named cannot be read back. An absent record is an answer — most issues are"
+    " authored through a dispatch and have none — but not beside the lock a declaration"
+    " leaves, and the profile the lost record named is one this walk would otherwise resolve"
+    " to. Re-declare with `just review-loop author --issue <n> --profile <profile>`"
+)
 
 
 def authorship_path(root: Path, issue: int) -> Path:
@@ -2086,6 +2102,37 @@ def recorded_authors(root: Path, issue: int) -> tuple[str, ...]:
         if profile not in seen:
             seen.append(profile)
     return tuple(seen)
+
+
+def declaration_lost(root: Path, issue: int) -> bool:
+    """Whether a declaration was written for this issue and its record is no longer there.
+
+    **Absence is an answer, and a *lost* record is not the same absence.** `recorded_authors`
+    reads a missing file as `()` because most issues are authored through a dispatch and have
+    no declaration at all. That reading is right there and wrong here: where a record was
+    written and has since gone, the profiles it named are silently out of the set whose whole
+    job is to exclude reviewers — a check that did not run reading as one that passed (#41),
+    which is the direction this record must never fail in. Round 1 closed that hole for a
+    *corrupted* record and left it open for a removed one; the landing's own
+    `authorship_unreadable` remedy invites the removal in as many words ("remove it and
+    re-declare"), so the accident is one the tool itself opens the door to.
+
+    **The lock beside the record is the evidence, because the writer is the only thing that
+    creates it.** `_authorship_lock` runs on the declaration path and nowhere else — every
+    reader here is lock-free, deliberately, since a read that took the lock would create the
+    file and destroy the very signal. So the lock present with the record absent says a
+    declaration reached the writer and its result is gone.
+
+    **Two limits, both stated rather than engineered around.** A declaration in flight holds
+    the lock with the record not yet renamed into place, so a landing racing a declaration on
+    one issue can read this as a loss; it refuses, which is the safe direction, and the
+    remedy is to run the landing again. And removing the issue's whole review directory takes
+    the lock with the record, leaving nothing to detect — the same class of limit as the
+    `env -u CTI_DISPATCH_ID` bypass `_cmd_author` records and for the same reason: this
+    catches the accident and the shortcut, never a session determined to defeat it.
+    """
+    record = authorship_path(root, issue)
+    return not record.exists() and record.with_name(AUTHORSHIP_LOCK).is_file()
 
 
 def store_authorship(root: Path, issue: int, profile: str, sha: str, recorded_at: str) -> bool:

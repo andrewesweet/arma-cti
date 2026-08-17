@@ -147,6 +147,25 @@ Each of the following was a choice:
   cannot give. The limit is ruling 4's own: the accident and the shortcut, not a deceptive
   agent.
 
+  A record can stop answering in three ways, and only two of them were closed above. Bytes
+  that will not parse and a document of the wrong shape both refuse `authorship_unreadable`
+  and name the fault. A record **removed** does not: an absent record is a legitimate answer,
+  because most issues are authored through a dispatch and declare nothing. That reading is
+  right in general and wrong where a declaration was made — the profiles it named drop out of
+  the exclusion set with no trace, which is the same author-losing failure one door along.
+  Where nothing else places a profile on the work, `authorship_unrecorded` still fires and
+  already names the repair; where the dispatch records *do* name somebody, that refusal cannot
+  fire and the landing cleared with the declared author simply missing, measured on #398's
+  second round. It now refuses `authorship_lost`, and `just review-loop escalate` refuses the
+  arbiter's walk on the same fact, because that walk takes the same absence for an answer. The
+  evidence is the `authorship.lock` beside the missing record: only the writer creates it,
+  every reader here is deliberately lock-free, so lock-without-record says a declaration
+  reached the writer and its result is gone. Two limits stated rather than engineered around —
+  a landing racing a live declaration reads the in-flight window as a loss and refuses, which
+  is the safe direction and is cured by running it again; and removing the issue's whole
+  review directory takes the lock with the record, leaving nothing to detect, which is the
+  `env -u` limit above in another costume and is declined for the same reason.
+
   The profile-less plan is the one that does not look like a gap: it parses, it carries the
   issue, and it answers a different question from the one being asked. Beside one good record
   a scan that accepted it would report itself complete while that dispatch's profile —

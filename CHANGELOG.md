@@ -37,7 +37,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is appended rather than leaving the trail naming a commit that is not the one landed; and
   the `CTI_DISPATCH_ID` refusal is documented at the guard as what it is — one environment
   variable, which a dispatched session can strip, so a convention with a mechanical floor
-  rather than a barrier.
+  rather than a barrier. A record can stop answering in three ways and the third refuses too:
+  bytes that will not parse and a document of the wrong shape each refuse
+  `authorship_unreadable` naming the fault, and a record **removed** after a declaration now
+  refuses `authorship_lost` at the landing and stops `just review-loop escalate`'s arbiter
+  walk, because an absent record is otherwise a legitimate answer and the profiles it named
+  would drop out of the exclusion set unremarked. Where nothing else places a profile on the
+  work `authorship_unrecorded` still fires and already names the repair; where the dispatch
+  records do name somebody it cannot, and that is the arrangement measured clearing with the
+  declared author missing from the set.
 
 - **`just land` refuses an unreviewed or unadjudicated landing, by name (#334, ADR-0071 ruling
   4).** A review rung between routing and the gate enforces the ruling's three criteria: a

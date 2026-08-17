@@ -24,6 +24,9 @@ from __future__ import annotations
 
 import contextlib
 import json
+import os
+import subprocess
+import sys
 import threading
 from typing import TYPE_CHECKING, Final
 
@@ -294,12 +297,17 @@ def test_no_declaration_leaves_the_scan_exactly_as_it_stood() -> None:
 # ------------------------------------------------------------------ the landing rung, both ends
 
 
-def _stage(tmp_path: Path, *, reviewer: str = REVIEWER) -> tuple[Path, Path]:
+def _stage(tmp_path: Path, *, reviewer: str = REVIEWER, authoring: str = "") -> tuple[Path, Path]:
     """Stage a bound, completed, clean review over work no dispatch record claims.
 
     The #330 arrangement exactly: the review is dispatched and on the record, and the
     implementing work is not, because it was written under `.claude/` in an interactive
     session.
+
+    `authoring` puts an implementing dispatch record beside the review's, which is the one
+    variation that changes what a *lost* declaration does: with the set non-empty the
+    landing's empty-set refusal cannot fire, so the loss has nothing else to catch it (#398
+    round 2).
     """
     dispatch_root = tmp_path / "dispatches"
     review_root = tmp_path / "review"
@@ -338,6 +346,26 @@ def _stage(tmp_path: Path, *, reviewer: str = REVIEWER) -> tuple[Path, Path]:
         ),
         encoding="utf-8",
     )
+    if authoring:
+        implementing = dispatch_root / "d-implement-1"
+        implementing.mkdir(parents=True, exist_ok=True)
+        (implementing / "dispatch.json").write_text(
+            json.dumps(
+                {
+                    "seat": "implementer",
+                    "issue": ISSUE,
+                    "base_sha": SHA,
+                    "profile": authoring,
+                    "lane": "zai",
+                    "planned_at": STAMP,
+                    "dispatch_id": "d-implement-1",
+                }
+            ),
+            encoding="utf-8",
+        )
+        (implementing / "result.json").write_text(
+            json.dumps({"returncode": 0, "outcome": "ok", "ended_at": STAMP}), encoding="utf-8"
+        )
     return dispatch_root, review_root
 
 
@@ -393,6 +421,17 @@ def test_the_declared_author_reviewing_its_own_diff_is_still_refused(tmp_path: P
 
 def _escalate(tmp_path: Path, issue: int) -> dict[str, object]:
     """Open a loop and resolve its arbiter, returning the record `escalate` wrote."""
+    assert _escalate_run(tmp_path, issue) == review_loop.OK
+    root = tmp_path / "review"
+    return json.loads((root / str(issue) / review_loop.ESCALATION_FILE).read_text(encoding="utf-8"))
+
+
+def _escalate_run(tmp_path: Path, issue: int) -> int:
+    """Open a loop and run the arbiter's walk, returning `escalate`'s own exit code.
+
+    Split from `_escalate` so a refusal is a case this suite can state rather than an
+    assertion failure inside a helper (#398 round 2).
+    """
     root = tmp_path / "review"
     credentials = tmp_path / "credentials.env"
     credentials.write_text("# no keys the walk reads\n", encoding="utf-8")
@@ -406,21 +445,17 @@ def _escalate(tmp_path: Path, issue: int) -> dict[str, object]:
         )
         == review_loop.OK
     )
-    assert (
-        review_loop.main(
-            [
-                *["escalate", "--issue", str(issue), *base],
-                *["--seat", "implementer", "--dispatch-dir", str(tmp_path / "dispatches")],
-                *["--admission-dir", str(tmp_path / "admission")],
-                *["--breaker-dir", str(tmp_path / "breaker")],
-                *["--credentials", str(credentials)],
-                *["--conditions", str(REPO / "config/escalation-conditions.json")],
-            ],
-            now=lambda: float(next(clock)),
-        )
-        == review_loop.OK
+    return review_loop.main(
+        [
+            *["escalate", "--issue", str(issue), *base],
+            *["--seat", "implementer", "--dispatch-dir", str(tmp_path / "dispatches")],
+            *["--admission-dir", str(tmp_path / "admission")],
+            *["--breaker-dir", str(tmp_path / "breaker")],
+            *["--credentials", str(credentials)],
+            *["--conditions", str(REPO / "config/escalation-conditions.json")],
+        ],
+        now=lambda: float(next(clock)),
     )
-    return json.loads((root / str(issue) / review_loop.ESCALATION_FILE).read_text(encoding="utf-8"))
 
 
 def test_the_arbiter_walk_will_not_resolve_to_a_declared_author(tmp_path: Path) -> None:
@@ -449,3 +484,195 @@ def test_a_declaration_that_will_not_read_refuses_the_landing_by_name(tmp_path: 
 
     assert refusal.kind == "authorship_unreadable"
     assert f"record={review_loop.authorship_path(roots[1], ISSUE)}" in refusal.found
+
+
+# --------------------------------------- the three ways a record stops answering (round 2)
+#
+# Round 1's subject was "an author the record loses is a reviewer the check stops refusing",
+# and it closed the case where the record is *corrupted* — a lost entry under a concurrent
+# write, and a document that will not parse. Constructed against the real rung, the third way
+# was still open: a record **removed** beside dispatch records that name somebody else clears
+# the landing with the declared author simply absent from the set, which is the same silent
+# narrowing one door along. These three arrangements are one table on purpose, so a later
+# reader meets what each returns rather than the one that happened to be found last.
+
+
+def _declared_then_removed(tmp_path: Path, **staging: str) -> tuple[Path, Path]:
+    """Declare an interactive author, then remove the record the declaration wrote."""
+    roots = _stage(tmp_path, **staging)
+    _author(roots[1])
+    review_loop.authorship_path(roots[1], ISSUE).unlink()
+    return roots
+
+
+def test_a_record_truncated_mid_write_refuses_the_landing_by_name(tmp_path: Path) -> None:
+    """Arrangement one: bytes that are not JSON.
+
+    The entry that will not open could be this reviewer's own, so nothing is taken from the
+    record and nothing clears.
+    """
+    roots = _stage(tmp_path)
+    _author(roots[1])
+    record = review_loop.authorship_path(roots[1], ISSUE)
+    record.write_text(record.read_text(encoding="utf-8")[:40], encoding="utf-8")
+
+    refusal = _rung(roots).refusal
+
+    assert refusal.kind == "authorship_unreadable"
+    assert any("will not read" in line for line in refusal.found)
+
+
+def test_a_record_of_the_wrong_shape_refuses_the_landing_and_names_the_fault(
+    tmp_path: Path,
+) -> None:
+    """Arrangement two: valid JSON this tool did not write.
+
+    Validated rather than coerced, so the refusal says which part of the document failed
+    rather than only that one did.
+    """
+    roots = _stage(tmp_path)
+    _record(roots[1], ISSUE, {"version": 1, "issue": ISSUE, "authors": [{"recorded_at": STAMP}]})
+
+    refusal = _rung(roots).refusal
+
+    assert refusal.kind == "authorship_unreadable"
+    assert any("an entry names profile=None" in line for line in refusal.found)
+
+
+def test_a_removed_record_over_work_no_dispatch_claims_still_refuses_unrecorded(
+    tmp_path: Path,
+) -> None:
+    """Arrangement three, first half: nothing else places a profile on the work.
+
+    The empty-set refusal fires and already names this loss's repair. Kept as its own case
+    because the loss must not *change* the answer where the answer was already right.
+    """
+    refusal = _rung(_declared_then_removed(tmp_path)).refusal
+
+    assert refusal.kind == "authorship_unrecorded"
+    assert "just review-loop author" in refusal.action
+
+
+def test_a_removed_record_beside_a_dispatch_record_refuses_rather_than_narrowing(
+    tmp_path: Path,
+) -> None:
+    """Arrangement three, second half — the hole round 1 left open.
+
+    A dispatch record names `glm-max`, so the set is not empty and `authorship_unrecorded`
+    cannot fire. Before this refusal the rung cleared with `potential=glm-max` and the
+    declared author nowhere in it: a reviewer running on the declared profile would have
+    been cleared by a check that never saw the author it was supposed to exclude.
+    """
+    roots = _declared_then_removed(tmp_path, authoring="glm-max")
+
+    refusal = _rung(roots).refusal
+
+    assert refusal.kind == "authorship_lost"
+    assert f"record={review_loop.authorship_path(roots[1], ISSUE)}" in refusal.found
+    assert "potential=glm-max" in refusal.found
+    assert "just review-loop author" in refusal.action
+
+
+def test_a_landing_that_never_had_a_declaration_is_not_read_as_a_lost_one(
+    tmp_path: Path,
+) -> None:
+    """The control the refusal above is worthless without: an absent record is still an answer.
+
+    Most issues are authored through a dispatch and never declare, and a guard that refused
+    those would refuse nearly every landing in the repository.
+    """
+    outcome = _rung(_stage(tmp_path, authoring="glm-max"))
+
+    assert outcome.refusal is None
+    assert "authorship=checked potential=glm-max" in outcome.cleared
+
+
+def test_the_arbiter_walk_refuses_where_a_declaration_has_been_lost(tmp_path: Path) -> None:
+    """The same absence, at the other reader that takes it for an answer.
+
+    `escalate` excludes the profiles the records place on the work, a declared author among
+    them. A lost record leaves the author of an interactively written change eligible to
+    arbitrate its own findings, so the walk refuses to run rather than resolving against a
+    set it cannot trust — exit 3, an act that could not be performed, not a verdict.
+    """
+    root = tmp_path / "review"
+    review_loop.store_authorship(root, ISSUE, AUTHOR, SHA, STAMP)
+    review_loop.authorship_path(root, ISSUE).unlink()
+
+    assert review_loop.declaration_lost(root, ISSUE)
+    assert _escalate_run(tmp_path, ISSUE) == review_loop.NO_RESULT
+    assert not (root / str(ISSUE) / review_loop.ESCALATION_FILE).exists()
+
+
+# ------------------------------- the declaration and the refusal, in one composition (#398)
+#
+# Round 2's finding 8: the property below was named by a test that never exercised it.
+# `test_the_declared_author_reviewing_its_own_diff_is_still_refused` declares through
+# `store_authorship` and asserts the refusal, and the two halves were never joined — so the
+# one composition that decides whether the mechanism works, `--profile P` on the command line
+# and then the landing rung, was untested. These two drive the real CLI in its own process,
+# which is also the only arrangement in which the command's interactive-session refusal is
+# genuinely absent rather than monkeypatched away.
+
+
+def _declare_through_the_command_line(review_root: Path, profile: str) -> str:
+    """Declare through `review_loop.py author` as a subprocess, as a human would."""
+    environment = {k: v for k, v in os.environ.items() if k != "CTI_DISPATCH_ID"}
+    done = subprocess.run(  # noqa: S603 — a fixed argv, this repository's own CLI
+        [
+            sys.executable,
+            str(REPO / "tools" / "review_loop.py"),
+            "author",
+            "--issue",
+            str(ISSUE),
+            "--root",
+            str(review_root),
+            "--profile",
+            profile,
+            "--sha",
+            SHA,
+        ],
+        capture_output=True,
+        text=True,
+        env=environment,
+        check=False,
+        timeout=60,
+    )
+    assert done.returncode == review_loop.OK, done.stderr
+    assert f"profile={profile} source={review_loop.DECLARED}" in done.stdout
+    return done.stdout
+
+
+def test_a_command_line_declaration_refuses_the_reviewer_it_names(tmp_path: Path) -> None:
+    """The composition, refusing: one instance authors and reviews on one profile.
+
+    Declared through the CLI, checked at the landing rung, and the two joined in one test
+    — the arrangement ruling 4 exists to catch, meeting `review_same_profile` by the only
+    route an interactively authored change has.
+    """
+    roots = _stage(tmp_path, reviewer=AUTHOR)
+    _declare_through_the_command_line(roots[1], AUTHOR)
+
+    refusal = _rung(roots).refusal
+
+    assert refusal.kind == "review_same_profile"
+    assert f"reviewer_profile={AUTHOR}" in refusal.found
+    assert f"authored_by={review_loop.authorship_path(roots[1], ISSUE)}" in refusal.found
+
+
+def test_a_command_line_declaration_clears_a_reviewer_it_does_not_name(tmp_path: Path) -> None:
+    """The composition, clearing — and the half that makes the other half mean anything.
+
+    Same declaration, same rung, one profile different, and the landing clears. A guard
+    that refused both would refuse everything, which is not a guard; what this asserts is
+    that the refusal above **discriminates** on the profile it was given. The clearance
+    carries `declared=` and the limit beside it, because nothing derived that name.
+    """
+    roots = _stage(tmp_path, reviewer=REVIEWER)
+    _declare_through_the_command_line(roots[1], AUTHOR)
+
+    outcome = _rung(roots)
+
+    assert outcome.refusal is None
+    assert f"authorship=checked potential={AUTHOR} declared={AUTHOR}" in outcome.cleared
+    assert land_review.DECLARED_AUTHOR_LIMIT in outcome.cleared

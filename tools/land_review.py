@@ -464,6 +464,39 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             ),
             (),
         )
+    # Below `authorship_unrecorded` on purpose, and the order is the finding rather than a
+    # convenience (#398 round 2). Where no record places anybody on the work, the refusal
+    # above already states the true fact and already names this one's repair — "declare it
+    # with `just review-loop author`" — so a lost record changes nothing a lander must do.
+    # Where the dispatch records *do* place somebody, that refusal cannot fire, and the loss
+    # of a declaration is then the only thing separating this arrangement from a legitimately
+    # dispatched one: the declared author drops out of the set, and a reviewer that profile
+    # would have been refused for clears instead. Constructed and measured on round 2 — the
+    # rung cleared with `potential=` naming the dispatched profile alone and the declared one
+    # nowhere in it.
+    if review_loop.declaration_lost(review_root, issue):
+        return Outcome(
+            Refusal(
+                "authorship_lost",
+                (
+                    f"issue={issue}",
+                    f"record={declared_record}",
+                    f"lock={declared_record.with_name(review_loop.AUTHORSHIP_LOCK)}",
+                    f"potential={' '.join(authorship.potential) or 'none'}",
+                    f"reviewer_profile={binding.profile}",
+                ),
+                "A declaration was written for this issue and its record is gone, so the"
+                " profiles it named are absent from the set this reviewer was checked"
+                " against — and one of them could be this reviewer. The lock beside the"
+                " missing record is what says a declaration reached the writer; only the"
+                " writer creates it. Re-declare every interactive author with `just"
+                " review-loop author --issue <n> --profile <profile>` and land again. If"
+                " this landing ran while a declaration was being written, the record is"
+                " there now and re-running is the whole remedy. A check that could not run"
+                " is not a check that passed (#41, ADR-0071 ruling 4). Nothing was pushed.",
+            ),
+            (),
+        )
     if authorship.why == UNREADABLE:
         return Outcome(
             Refusal(
