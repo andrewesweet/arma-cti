@@ -8,13 +8,15 @@ against the code it cites), and, until #328, the admission bar.
 
 **ADR-0071 supersedes the first and third of those**, and this document has not yet been
 fully re-based on it: ruling 1 rescinds the foreign-lane concept Decision 3 rests on. Ruling
-6 withdrew the admission bar, and #328 dropped it: the two operations this document's closing
+6 withdrew the admission bar, and #328 dropped it. The two operations this document's closing
 section used to route into it — a confirmed post-close finding marking the reviewed issue
-unclean, and a reviewer's citations counted against its own seat's bar — **now have no home
-at all**, and the sections below say so where they used to say where. Their intended home is
-the observatory (#336), which is not built. What ruling 4 *has* changed here is the
-permission-mode paragraph and the resolution rule below it, both of which are now mechanism
-rather than instruction (#322).
+unclean, and a reviewer's citations counted against its own seat's bar — are **rehomed since
+#335**: both are recorded by `just review-loop post-landing`, on two named subjects, and the
+observatory (#336) is the reader that ranks and reports them. It is not built, so today they
+are recorded and unread — which is a different state from #328's, where they were produced
+and received by nothing. What ruling 4 *has* changed here is the permission-mode paragraph
+and the resolution rule below it, both of which are now mechanism rather than instruction
+(#322), and the dismissal list the seat is handed (#335).
 
 The lane and profile machinery is `docs/multi-provider-dispatch.md`; nothing here restates it.
 
@@ -32,7 +34,7 @@ diversity ADR-0061 Decision 3 wants, because one model family's blind spots are 
 
 ## What the seat is handed
 
-Five things, and the dispatch record carries four of them by construction:
+Six things, and the dispatch record carries four of them by construction:
 
 - **the landed SHA** — `--base-sha <sha>`, which lands in `cti.base_sha` on the run's
   telemetry, so the review's ledger row names the commit it reviewed;
@@ -48,7 +50,24 @@ Five things, and the dispatch record carries four of them by construction:
   only check the code against itself;
 - **a worktree at `origin/main`** — `just worktree add issue-<n>`. The reviewed SHA is reached
   with `git show`, and the tree's own head is recorded, because a citation into a landing that
-  a later commit has moved is stale rather than wrong and the two must be distinguishable.
+  a later commit has moved is stale rather than wrong and the two must be distinguishable;
+- **the dismissal list**, on a **post-landing** dispatch — the findings this issue's
+  never-alone loop raised and an arbiter set aside. `just brief <n> --seat review` composes it
+  from `~/.arma-cti/review/<n>/landing.json`, which `just review-loop terminus` wrote, so the
+  seat meets the list under its own heading rather than having to notice `Dismissal-for:`
+  comments among a thread. **The record's existence is what makes a review post-landing**:
+  there is no landing record before the terminus, so a review dispatched inside the loop
+  composes no such section and nothing has to be flagged as one kind or the other.
+
+  This is the input ADR-0071 ruling 4 promised and did not deliver. The ADR names post-landing
+  review the arbiter's only appeal path and concedes in the same paragraph that the claim was
+  **empty**, "because that seat reviews a diff and had no way to learn what had been
+  dismissed". #333 recorded the dismissals; #335 gave the record a reader. An arbiter wrongly
+  dismissing a real Critical is a plausible wrong answer that went green with nothing
+  downstream firing — routing class 4's own definition — and this list is the only thing that
+  catches it. A record that exists and cannot be read composes as **unknown**, never as an
+  empty list: reading the second as the first is the failure the list exists to prevent,
+  moved one seat along.
 
 The permission mode is **`plan`**, and since #322 the seat forces it rather than asking the
 caller for it. That is the mechanical face of "a review lands nothing": read-only tools and
@@ -160,7 +179,7 @@ retyping produced a plausible evidence path that resolved to nothing, which is w
 none. A review is nothing *but* paths, line numbers and SHAs, so every one of them is pasted
 from `git show`, `rg -n` or a `Read`, never retyped from memory of what was read.
 
-### Citations are countable, and since #328 nobody counts them
+### Citations are countable, and since #335 the count is recorded against no floor
 
 A citation **resolves** when the quoted text is present at `file:line` at the named SHA. That
 is a mechanical check, one `git show <sha>:<path>` per claim, and it was the whole of what the
@@ -168,13 +187,21 @@ admission bar's citation floor measured for this seat: at least 90% of a lane's 
 recon citations resolving, pooled over ten dispatches. 90% and not 100% because a citation can
 go stale under a concurrent landing through no fault of the reviewer.
 
-**That bar is dropped, and no tool takes the two numbers.** The requirement on the report is
-unchanged and is worth keeping for its own sake — every claim carries a `file:line` and a
-quote, so a reader can check it in one command — but there is no longer a record it accrues
-into, no floor it is held against, and nothing that notices a lane whose citations stop
-resolving. The known weakness was already stated rather than fixed (this measures the
-citations a reviewer gave and is silent about the findings it failed to raise); what is new is
-that even the half it did measure is now unmeasured.
+**The bar is dropped and the floor with it.** What ruling 6 rehomed is the *column*, not the
+threshold: `just review-loop post-landing --citations <resolved>/<total>` records the two
+numbers against the **reviewing** profile, and nothing compares them to anything. There is no
+value at which a route is refused, no standing accrued and no breaker tripped — the action on
+a bad column is a human ruling at a retro, which is #336's own governing sentence. A tool that
+reintroduced 90% here would be the dropped bar under a new name.
+
+Both halves are counted, the unresolved included. A claim checked and not upheld stays in the
+denominator, because dropping it flatters the reviewer in exactly the direction the count
+exists to expose.
+
+The known weakness is unchanged and is not fixed by recording it: this measures the citations
+a reviewer gave and is silent about the findings it failed to raise. What #328 additionally
+lost — that even the half it did measure went unmeasured — is what #335 restores, one record
+at a time and with no verdict attached to it.
 
 ## Scope: grain and structure, not taste
 

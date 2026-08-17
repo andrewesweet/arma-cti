@@ -163,6 +163,7 @@ import escalation
 import handoff_fetch
 import ledger
 import readiness
+import review_loop
 import routing_policy
 
 # The gate derivation lives in `gate`, the owner neither this module nor the dispatcher imports
@@ -698,6 +699,68 @@ REVIEW_SUBJECT_PLACEHOLDER: Final = (
     "Which profile's work this review judges. Compose with `--reviewing <profile>` and pass"
     " the same one to `just dispatch`; a review that declares none is refused."
 )
+# ADR-0071 ruling 4 (#335). The ADR names post-landing review the arbiter's only appeal path
+# and concedes in the same paragraph that the claim was **empty**, because that seat reviews a
+# diff and had no way to learn what the loop had set aside. `just review-loop terminus` has
+# recorded every dismissal since #333; this is the first reader of that record, and the seat
+# meets the list here rather than having to notice `Dismissal-for:` comments in a thread.
+DISMISSAL_RULE: Final = (
+    "Each of these was raised in this issue's never-alone review and closed by an **arbiter"
+    " dismissal** — judged not to block that landing, and neither fixed nor filed. ADR-0071"
+    " ruling 4 makes this seat their only appeal path: read each one against the landed diff"
+    " and say whether the dismissal holds. An arbiter wrongly dismissing a real Critical is a"
+    " plausible wrong answer that went green with nothing downstream firing, which is the"
+    " shape nothing else in this project catches. A dismissal you do not overturn needs no"
+    " claim; one you do is an ordinary claim citing the code, like any other."
+)
+DISMISSALS_NONE: Final = (
+    "None. The loop reached its terminus with no finding set aside by an arbiter, so this"
+    " seat's appeal path is empty for this landing — which is a read of the record, not the"
+    " absence of one."
+)
+DISMISSALS_UNREADABLE_RULE: Final = (
+    "The landing record for this issue exists and could not be read, so what the loop set"
+    " aside is **unknown rather than empty**. Do not review as though nothing was dismissed:"
+    " a check that could not run is not a check that passed (#41). Repair the record, or say"
+    " in your scope statement that the appeal path went unread."
+)
+
+
+def render_dismissals(read: review_loop.LandingRead) -> list[str]:
+    """Render the dismissal list a post-landing review is handed, or nothing before there is one.
+
+    Absence renders nothing and that is correct rather than convenient: a landing record
+    exists only once `just review-loop terminus` has run, so every review dispatched *inside*
+    the loop composes past this section, and the record's own existence is what makes a review
+    post-landing. The other two states both render — an unreadable record under its own
+    heading, never in the empty list's place, because those are the two facts this section
+    exists to keep apart.
+
+    Narrows on `state` by value rather than `isinstance`, for the reason `_escalation_lines`
+    documents. An unrecognised state raises rather than falling through to silence.
+    """
+    if read.state == review_loop.LANDING_ABSENT:
+        return []
+    if read.state == review_loop.LANDING_UNREADABLE:
+        return ["", "## Dismissals — UNREADABLE", DISMISSALS_UNREADABLE_RULE, f"`{read.detail}`"]
+    if read.state == review_loop.LANDING_RECORDED:
+        heading = f"## Dismissals handed to this review ({len(read.dismissals)})"
+        if not read.dismissals:
+            return ["", heading, DISMISSALS_NONE]
+        return [
+            "",
+            heading,
+            DISMISSAL_RULE,
+            *(
+                f"- `{dismissal.finding}` ({dismissal.severity}, raised round"
+                f" {dismissal.round_raised})"
+                for dismissal in read.dismissals
+            ),
+        ]
+    message = f"a landing record read has no state named {read.state!r}"
+    raise review_loop.ReviewLoopError(message)
+
+
 FLAKE_RESPONSE: Final = (
     "`flake_quarantine`: do not act. If one of those exact tests is your only red, quote its"
     " issue number and re-run once; a second red, or any other red, is yours."
@@ -750,6 +813,10 @@ class Briefing(NamedTuple):
     # one outcome that renders no section; `Firing` renders the firing and `Unreadable` renders the
     # gap, each under its own heading.
     escalation: escalation.Evaluation = escalation.NoFiring()
+    # What this issue's review loop set aside, for the seat ADR-0071 ruling 4 makes their only
+    # appeal path (#335). Defaulted to the clean absence for the same reason the four above
+    # are: a brief composed about an item whose loop has not ended opens no section.
+    dismissals: review_loop.LandingRead = review_loop.LandingRead(review_loop.LANDING_ABSENT)
 
 
 def escalation_for(body: str, seat_name: str, repo: Path) -> escalation.Evaluation:
@@ -864,6 +931,10 @@ def compose(briefing: Briefing) -> str:
             if seat.reviewing
             else _placeholder(REVIEW_SUBJECT_PLACEHOLDER)
         )
+        # Only a seat that reviews is handed them: the dismissals are an input to a judgement
+        # about this issue's own review, and on any other seat they are noise about a decision
+        # that seat does not make.
+        lines += render_dismissals(briefing.dismissals)
     # The single-shot contract, verbatim from `dispatch.SINGLE_SHOT_CONTRACT` — one home,
     # shared with `default_brief`, so the composed brief and the default brief cannot
     # disagree. A detached session has no second turn, which is the one fact a briefing
@@ -1008,6 +1079,9 @@ def parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
         help="the base SHA `just worktree add` printed, when it is not this box's",
     )
     parser.add_argument("--repo", default=REPO_SLUG, help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--review-root", default=str(review_loop.REVIEW_ROOT), help=argparse.SUPPRESS
+    )
     args = parser.parse_args(argv)
     refusal = reviewing_refusal(args.seat or DEFAULT_SEAT, args.reviewing)
     if refusal is not None:
@@ -1061,6 +1135,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
     gate = derive_gate(body, read_vocabulary(repo))
     handoff = read_handoff(args.issue)
     seat = derive_seat(args.seat, args.reviewing)
+    dismissals = review_loop.read_landing(Path(args.review_root), args.issue)
     rendered = compose(
         Briefing(
             issue=args.issue,
@@ -1074,6 +1149,7 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
             prior_work=work,
             handoff=handoff,
             escalation=escalation_for(body, seat.name, repo),
+            dismissals=dismissals,
         )
     )
     if str(document.get("state") or "").upper() == "CLOSED":
@@ -1091,6 +1167,12 @@ def main(  # noqa: PLR0913 — one keyword seam per external read, each injected
         print(  # noqa: T201 — a CLI's refusal channel
             f"[brief] handoff=unavailable for #{args.issue}: {handoff.detail}"
             " The brief says so; it does not render the absence.",
+            file=sys.stderr,
+        )
+    if seat.reviews and dismissals.state == review_loop.LANDING_UNREADABLE:
+        print(  # noqa: T201 — a CLI's refusal channel
+            f"[brief] dismissals=unreadable for #{args.issue}: {dismissals.detail}."
+            " The brief says so; it does not render an empty appeal path.",
             file=sys.stderr,
         )
     if args.out:

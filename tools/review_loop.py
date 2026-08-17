@@ -812,6 +812,7 @@ ROUND_EVENT: Final = "cti.review.round"
 ESCALATION_EVENT: Final = "cti.review.escalation"
 DISPUTE_EVENT: Final = "cti.review.dispute"
 TERMINUS_EVENT: Final = "cti.review.terminus"
+POST_LANDING_EVENT: Final = "cti.review.post_landing"
 
 
 def round_event(loop: Loop, issue: str, at: float) -> otel_event.Event:
@@ -915,6 +916,73 @@ def terminus_event(end: Terminus, issue: str, at: float) -> otel_event.Event:
     )
 
 
+class PostLanding(NamedTuple):
+    """One post-landing review's outcome, as the two observations it is made of (#335).
+
+    ADR-0071 ruling 6 rehomed both operations `docs/review-dispatch.md` used to route into
+    the withdrawn admission bar, and they land on **different profiles**:
+
+    - a confirmed finding is a **rework** observation on the *reviewed* profile;
+    - the citations are a **reported column** on the *reviewing* one.
+
+    That document's own warning is why they are two named fields of one record and never a
+    single subject: "one dispatch touched two records that must not be confused … the
+    distinction is recorded here so that whoever builds the observatory does not collapse
+    them" (#336 is that observatory, and it reads this).
+
+    Every identity here is read off the dispatch record the *dispatcher* wrote, never
+    declared by the caller — the same discipline `just review record` runs under. `confirmed`
+    carries the issue numbers the confirmed defects were filed as rather than a count,
+    because ADR-0071's terminus rule already settled that a count is the shape which says
+    *a* finding was found while naming none.
+
+    **No floor, and none is coming back.** The 90% citation bar was the admission bar's and
+    ruling 6 dropped it; this record carries the two numbers and nothing compares them to
+    anything. A route that reintroduced a threshold here would be the dropped bar under a
+    new name.
+    """
+
+    issue: int
+    reviewed_sha: str
+    reviewed_profile: str
+    reviewing_dispatch: str
+    reviewing_profile: str
+    reviewing_lane: str
+    confirmed: tuple[int, ...] = ()
+    citations_resolved: int = 0
+    citations_total: int = 0
+
+
+def post_landing_event(observed: PostLanding, at: float) -> otel_event.Event:
+    """One post-landing review recorded — ruling 6's two rehomed observations as one event.
+
+    A review that confirmed nothing is recorded too, and that is the point rather than an
+    edge case: `docs/review-dispatch.md` states the gap the dropped bar left — "it could not
+    distinguish an issue reviewed and found clean from an issue nobody reviewed", the #41
+    shape — and an event emitted only where something was found would rebuild it. An empty
+    `confirmed` is a clean post-landing review, on the record, distinguishable from silence.
+    """
+    issue = str(observed.issue)
+    return otel_event.Event(
+        name=POST_LANDING_EVENT,
+        at=at,
+        attributes={
+            "cti.issue": issue,
+            "cti.review.reviewed_sha": observed.reviewed_sha,
+            # The rework observation's subject (ADR-0071 ruling 6).
+            "cti.review.reviewed_profile": observed.reviewed_profile,
+            "cti.review.confirmed": ",".join(f"#{number}" for number in observed.confirmed),
+            # The citation column's subject — a different profile, deliberately named apart.
+            "cti.review.reviewing_dispatch": observed.reviewing_dispatch,
+            "cti.review.reviewing_profile": observed.reviewing_profile,
+            "cti.review.reviewing_lane": observed.reviewing_lane,
+            "cti.review.citations_resolved": observed.citations_resolved,
+            "cti.review.citations_total": observed.citations_total,
+        },
+        resource={"service.name": "arma-cti-review-loop", "cti.issue": issue},
+    )
+
+
 def _emit(event: otel_event.Event, journal: Path) -> bool:
     """Emit one loop event — bounded, journaled, never failing the caller."""
     return otel_event.emit(event, journal=journal)
@@ -950,6 +1018,47 @@ def emit_dispute(
 def emit_terminus(end: Terminus, issue: str, at: float, journal: Path = JOURNAL) -> bool:
     """Emit one terminus event at the landing decision."""
     return _emit(terminus_event(end, issue, at), journal)
+
+
+def emit_post_landing(observed: PostLanding, at: float, journal: Path = JOURNAL) -> bool:
+    """Emit one post-landing review's observations at the act that routed its claims."""
+    return _emit(post_landing_event(observed, at), journal)
+
+
+def post_landing_recorded(journal: Path, dispatch_id: str) -> bool:
+    """Whether this journal already carries a post-landing record for that review dispatch.
+
+    One post-landing review is one observation, and a second emission of the same dispatch
+    would double the rework it books against the reviewed profile — a wrong number, not a
+    duplicate line. The reviewing dispatch id is the natural key: two lenses over one diff
+    are two dispatches and two records, which is right.
+
+    A line that is not JSON was not written by `otel_event.journal_line`, so it is not a
+    record this scan is looking for and is walked past. A journal that will not **open** is
+    a different fact and is raised, because "no record found" read off a file nobody could
+    read is the absence-as-clearance shape (#41).
+    """
+    try:
+        text = journal.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return False
+    except OSError as unreadable:
+        message = f"the telemetry journal could not be read: {unreadable}"
+        raise ExternalError(message) from unreadable
+    for line in text.splitlines():
+        try:
+            record = json.loads(line)
+        except ValueError:
+            continue
+        if not isinstance(record, dict) or record.get("event") != POST_LANDING_EVENT:
+            continue
+        attributes = record.get("attributes")
+        if (
+            isinstance(attributes, dict)
+            and attributes.get("cti.review.reviewing_dispatch") == dispatch_id
+        ):
+            return True
+    return False
 
 
 # --------------------------------------------------------------------------- the durable loop
@@ -1288,6 +1397,97 @@ def render_landing(  # noqa: PLR0913 — the terminus record carries what the la
     }
 
 
+# ------------------------------------------------------------------ reading the landing record
+#
+# #335: `render_landing` shipped with a writer and no reader at all, so the dismissals it
+# recorded reached nobody. ADR-0071 ruling 4 makes post-landing review the arbiter's only
+# appeal path and the ADR says so twice — the claim was empty for exactly as long as this
+# record had no reader. `tools/brief.py` is the first one.
+
+LANDING_RECORDED: Final = "recorded"
+LANDING_ABSENT: Final = "absent"
+LANDING_UNREADABLE: Final = "unreadable"
+
+LANDING_VERSION_ERROR: Final = "a stored landing record must be a version 1 object"
+LANDING_ISSUE_ERROR: Final = "a stored landing record names issue {stored}, not #{asked}"
+LANDING_DISMISSALS_ERROR: Final = (
+    "a stored landing record's dismissals are objects carrying a finding, a severity and a"
+    " round_raised"
+)
+
+
+class LandingRead(NamedTuple):
+    """What a reader of `landing.json` found: the dismissals, or why it has none to show.
+
+    **Three states, never two.** An absent record is the ordinary pre-terminus case — every
+    review round before the loop ends is this, and it renders nothing. An unreadable one is
+    a check that could not run, which is not a check that passed (#41). Collapsing the two
+    is precisely the shape this record exists to prevent: a post-landing review handed an
+    empty dismissal list reads it as "the arbiter set nothing aside", and a real Critical
+    dismissed without trace is ADR-0071's own stated cost case.
+
+    Consumers narrow on `state` by value rather than `isinstance`, for the re-exec reason
+    this module's exemption decision documents.
+    """
+
+    state: str
+    dismissals: tuple[Dismissal, ...] = ()
+    detail: str = ""
+
+
+def _stored_dismissal(raw: object) -> Dismissal:
+    """Read one dismissal off the stored record, or refuse the shape."""
+    if not isinstance(raw, dict):
+        raise ReviewLoopError(LANDING_DISMISSALS_ERROR)
+    finding, severity, round_raised = (
+        raw.get("finding"),
+        raw.get("severity"),
+        raw.get("round_raised"),
+    )
+    if not isinstance(finding, str) or not finding:
+        raise ReviewLoopError(LANDING_DISMISSALS_ERROR)
+    if severity not in SEVERITIES:
+        raise ReviewLoopError(SEVERITY_ERROR)
+    if not isinstance(round_raised, int) or isinstance(round_raised, bool) or round_raised < 0:
+        raise ReviewLoopError(LANDING_DISMISSALS_ERROR)
+    return Dismissal(finding, str(severity), round_raised)
+
+
+def parse_landing(document: object, issue: int) -> tuple[Dismissal, ...]:
+    """Validate a stored landing record and return the dismissals it carries.
+
+    Only the dismissals: they are the one part of the record a later seat is owed, and a
+    parser that returned the whole document would invite a reader to act on `filings` and
+    `findings` that `render_landing` writes for the issue thread rather than for this seat.
+    """
+    if not isinstance(document, dict) or document.get("version") != LOOP_VERSION:
+        raise ReviewLoopError(LANDING_VERSION_ERROR)
+    stored = document.get("issue")
+    if not isinstance(stored, int) or isinstance(stored, bool) or stored <= 0:
+        raise ReviewLoopError(LANDING_VERSION_ERROR)
+    if stored != issue:
+        raise ReviewLoopError(LANDING_ISSUE_ERROR.format(stored=stored, asked=issue))
+    raw = document.get("dismissals")
+    if not isinstance(raw, list):
+        raise ReviewLoopError(LANDING_DISMISSALS_ERROR)
+    return tuple(_stored_dismissal(entry) for entry in raw)
+
+
+def read_landing(root: Path, issue: int) -> LandingRead:
+    """Read one issue's landing record, keeping absence and unreadability apart."""
+    path = root.expanduser() / str(issue) / LANDING_FILE
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return LandingRead(LANDING_ABSENT, detail=f"{path} does not exist")
+    except (OSError, ValueError) as broken:
+        return LandingRead(LANDING_UNREADABLE, detail=f"{path}: {broken}")
+    try:
+        return LandingRead(LANDING_RECORDED, parse_landing(document, issue))
+    except ReviewLoopError as broken:
+        return LandingRead(LANDING_UNREADABLE, detail=f"{path}: {broken}")
+
+
 # --------------------------------------------------------------------------- the command surface
 #
 # The production caller (#333 round 1, High 5): `open`, `round`, `adjudicate`, `escalate`,
@@ -1343,6 +1543,35 @@ ESCALATION_FIELD_TYPE_ERROR: Final = (
     " ruling)"
 )
 
+CITATIONS_SPEC_ERROR: Final = (
+    "citations are resolved/total — two non-negative integers, resolved no greater than total."
+    " Both halves are counted, the unresolved included: a claim dropped from the denominator"
+    " flatters the reviewer in exactly the direction the count exists to expose"
+)
+NOT_A_REVIEW_DISPATCH_ERROR: Final = (
+    "dispatch {dispatch} was a {seat} dispatch, so it produced no review to record. Name the"
+    " post-landing review's own dispatch id"
+)
+NO_REVIEWED_PROFILE_ERROR: Final = (
+    "dispatch {dispatch} names no reviewed profile, so there is no profile to book the rework"
+    " against — a record written before #322, or a review dispatched without `--reviewing`."
+    " Booking it against nobody is not the cheaper answer, it is the wrong one"
+)
+NO_REVIEWED_SHA_ERROR: Final = (
+    "dispatch {dispatch} names no base_sha, so it reviewed no identified commit"
+)
+DISPATCH_UNREADABLE_ERROR: Final = (
+    "the dispatch record at {plan} could not be read as a plan: {reason}. Every identity in a"
+    " post-landing record is read off what the dispatcher wrote, never off what the caller"
+    " typed, so an unreadable record is an act that cannot be performed rather than one to"
+    " perform on the caller's word"
+)
+POST_LANDING_RECORDED_ERROR: Final = (
+    "the journal at {journal} already carries a post-landing record for dispatch {dispatch}."
+    " One review is one observation; a second emission doubles the rework booked against the"
+    " reviewed profile, which is a wrong number rather than a duplicate line"
+)
+
 # The marker a filing opens with, so a reader can find every arbiter-upheld filing on an
 # originating item the way `Handoff-for:` is found (#210's device, this domain's use).
 FILING_MARKER: Final = "Upheld-filing-for:"
@@ -1373,6 +1602,15 @@ def _refusal_spec(raw: str) -> tuple[str, str]:
     if not separator or not profile or not reason:
         raise argparse.ArgumentTypeError(REFUSAL_SPEC_ERROR)
     return profile, reason
+
+
+def _citations(raw: str) -> tuple[int, int]:
+    resolved, separator, total = raw.partition("/")
+    if not separator or not resolved.isdigit() or not total.isdigit():
+        raise argparse.ArgumentTypeError(CITATIONS_SPEC_ERROR)
+    if int(resolved) > int(total):
+        raise argparse.ArgumentTypeError(CITATIONS_SPEC_ERROR)
+    return int(resolved), int(total)
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -1446,6 +1684,41 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help="print what the terminus owes; post and write nothing",
     )
     ended.set_defaults(handler=_cmd_terminus)
+
+    # The one act that is after the loop rather than in it (#335). It takes no `--issue`:
+    # the issue, the commit and both profiles are read off the review dispatch's own record,
+    # so the caller cannot book an observation against a profile the dispatcher never chose.
+    observed = commands.add_parser(
+        "post-landing",
+        help="record one post-landing review's rework and citation observations (#335)",
+    )
+    observed.add_argument(
+        "--dispatch", required=True, help="the post-landing review's own dispatch id"
+    )
+    observed.add_argument(
+        "--dispatch-dir", default="", help="the dispatch records; default is this box's own"
+    )
+    observed.add_argument("--journal", default=str(JOURNAL), help="the telemetry journal")
+    observed.add_argument(
+        "--confirmed",
+        action="append",
+        default=[],
+        type=_issue_number,
+        metavar="ISSUE",
+        help=(
+            "an issue a confirmed defect of this review was filed as; repeatable. Only claims"
+            " about code the reviewed landing touched — a claim about the rest of the repo is"
+            " an ordinary issue against nobody's record"
+        ),
+    )
+    observed.add_argument(
+        "--citations",
+        required=True,
+        type=_citations,
+        metavar="RESOLVED/TOTAL",
+        help="how many of the review's citations resolve at the reviewed SHA, over how many",
+    )
+    observed.set_defaults(handler=_cmd_post_landing)
 
     shown = commands.add_parser("show", help="print an issue's stored loop state")
     shown.add_argument("--issue", required=True, type=_issue_number)
@@ -1739,6 +2012,95 @@ def _cmd_terminus(  # the whole ending in one act: gate, filings, dismissals, re
     print(  # noqa: T201 — a CLI's output channel
         f"[review-loop] #{args.issue} terminus: {len(end.filings)} filed,"
         f" {len(end.dismissals)} dismissal(s) recorded, landing record written"
+    )
+    return OK
+
+
+def _review_dispatch(dispatch_dir: str, dispatch_id: str) -> PostLanding:
+    """Read a post-landing review's own dispatch record into the observation it supports.
+
+    Every identity is the dispatcher's — `route.reviewing` for the profile whose work was
+    reviewed, `route.chosen` and `route.lane` for the one that reviewed it, `base_sha` for
+    the commit. The caller supplies only what a record cannot know: which claims the
+    orchestrator confirmed, and how many citations resolved.
+
+    Three refusals, one per fact a record can fail to carry, and none of them defaults: a
+    dispatch on another seat produced no review, a record naming no reviewed profile has no
+    subject to book rework against, and one naming no commit reviewed nothing identified.
+    An unreadable record is an act that could not be performed (exit 3), never a refusal to
+    perform it — the same split `just handoff` makes.
+    """
+    # Lazy for `_cmd_escalate`'s reason: `arbiter` imports this module, and `dispatch` is on
+    # that side of the cycle.
+    import dispatch  # noqa: PLC0415 — handler-local by design; a module-level import is a cycle
+
+    root = Path(dispatch_dir).expanduser() if dispatch_dir else dispatch.DISPATCH_ROOT
+    plan = root.expanduser() / dispatch_id / "dispatch.json"
+    try:
+        document = json.loads(plan.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as broken:
+        raise ExternalError(DISPATCH_UNREADABLE_ERROR.format(plan=plan, reason=broken)) from broken
+    if not isinstance(document, dict):
+        raise ExternalError(DISPATCH_UNREADABLE_ERROR.format(plan=plan, reason="not a JSON object"))
+    try:
+        route = dispatch.read_route(document)
+        issue = int(str(document["issue"]))
+    except (KeyError, ValueError, TypeError) as broken:
+        raise ExternalError(DISPATCH_UNREADABLE_ERROR.format(plan=plan, reason=broken)) from broken
+    # The registry's own answer, never a string comparison against "review": `reviews` is the
+    # property `just dispatch` resolves the seat on and the property `just brief` renders it
+    # by, so a seat that starts reviewing joins all three at once.
+    seat = dispatch.SEATS.get(route.seat)
+    if seat is None or not seat.reviews:
+        raise ReviewLoopError(
+            NOT_A_REVIEW_DISPATCH_ERROR.format(dispatch=dispatch_id, seat=route.seat or "unknown")
+        )
+    if not route.reviewed:
+        raise ReviewLoopError(NO_REVIEWED_PROFILE_ERROR.format(dispatch=dispatch_id))
+    reviewed_sha = document.get("base_sha")
+    if not isinstance(reviewed_sha, str) or not reviewed_sha:
+        raise ReviewLoopError(NO_REVIEWED_SHA_ERROR.format(dispatch=dispatch_id))
+    return PostLanding(
+        issue=issue,
+        reviewed_sha=reviewed_sha,
+        reviewed_profile=route.reviewed,
+        reviewing_dispatch=dispatch_id,
+        reviewing_profile=route.profile,
+        reviewing_lane=route.lane,
+    )
+
+
+def _cmd_post_landing(
+    args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
+) -> int:
+    """Record one post-landing review's two observations, each against its own profile."""
+    journal = Path(args.journal)
+    if post_landing_recorded(journal, args.dispatch):
+        raise ReviewLoopError(
+            POST_LANDING_RECORDED_ERROR.format(journal=journal, dispatch=args.dispatch)
+        )
+    resolved, total = args.citations
+    observed = _review_dispatch(args.dispatch_dir, args.dispatch)._replace(
+        confirmed=tuple(args.confirmed),
+        citations_resolved=resolved,
+        citations_total=total,
+    )
+    emit_post_landing(observed, clock(), journal)
+    filed = " ".join(f"#{number}" for number in observed.confirmed) or "none"
+    # Two lines, one per subject. `docs/review-dispatch.md` warns that one dispatch touches
+    # two records that must not be confused, so the surface a reader quotes keeps them apart
+    # rather than leaving a rollup to notice the difference.
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{observed.issue} post-landing rework:"
+        f" reviewed_profile={observed.reviewed_profile} sha={observed.reviewed_sha}"
+        f" confirmed={len(observed.confirmed)} filed={filed}"
+    )
+    print(  # noqa: T201 — a CLI's output channel
+        f"[review-loop] #{observed.issue} post-landing citations:"
+        f" reviewing_profile={observed.reviewing_profile} lane={observed.reviewing_lane}"
+        f" dispatch={observed.reviewing_dispatch}"
+        f" resolved={observed.citations_resolved}/{observed.citations_total}"
+        " (reported, never a floor — ADR-0071 ruling 6 dropped the bar that held one)"
     )
     return OK
 
