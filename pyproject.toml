@@ -90,7 +90,7 @@ testpaths = ["tests"]
 # `tmp_path` with no shared fixture between them. Serial for a debugging session
 # is `-n0` on the command line, which overrides this; the mutation smoke passes
 # `-n0` for the same reason, once per mutant (#239, ADR-0064).
-addopts = "-q --strict-markers --strict-config -n auto"
+addopts = "-q --strict-markers --strict-config -n auto -x"
 xfail_strict = true
 
 [tool.coverage.run]
