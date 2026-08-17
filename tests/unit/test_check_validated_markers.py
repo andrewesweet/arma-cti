@@ -13,7 +13,12 @@ and it is the only form of this test that a future marker edit can fail.
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from conftest import REPO, load_tool
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 check_validated_markers = load_tool("check_validated_markers")
 
@@ -188,6 +193,22 @@ def test_the_vendored_wiki_is_not_scanned() -> None:
         path.relative_to(REPO).as_posix() for path in check_validated_markers.marker_files(REPO)
     }
     assert not any(path.startswith("docs/reference/") for path in scanned)
+
+
+def test_gitignored_handoffs_are_not_scanned(tmp_path: Path) -> None:
+    # docs/handoffs/ is gitignored, so a local note holding an ordinary
+    # sentence about a marker is not something a clone would even have.
+    handoffs = tmp_path / "docs" / "handoffs"
+    handoffs.mkdir(parents=True)
+    (handoffs / "note.md").write_text("the skill is `validated ×3`\n", encoding="utf-8")
+    tracked = tmp_path / "docs" / "tracked.md"
+    tracked.write_text("nothing here\n", encoding="utf-8")
+
+    scanned = {
+        path.relative_to(tmp_path).as_posix()
+        for path in check_validated_markers.marker_files(tmp_path)
+    }
+    assert scanned == {"docs/tracked.md"}
 
 
 def test_the_narrating_records_are_not_scanned() -> None:

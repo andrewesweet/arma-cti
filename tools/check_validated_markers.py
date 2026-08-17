@@ -298,7 +298,9 @@ def marker_files(root: Path) -> list[Path]:
     comment (#209) that cites CLAUDE.md's own `validated ×9` and `validated
     ×7` counts by digit as evidence in its analysis — a citation, not a
     marker this file carries — so it is excluded by exact path rather than
-    edited to fit a shape this gate recognises.
+    edited to fit a shape this gate recognises.  `docs/handoffs/` is
+    gitignored, so nothing under it is part of the repository and no clone
+    would have it: a developer's local note is not a marker this tree carries.
     """
     excluded = {
         root / "docs" / "process-log.md",
@@ -310,6 +312,7 @@ def marker_files(root: Path) -> list[Path]:
         for path in sorted((root / "docs").rglob("*.md"))
         if not path.is_relative_to(root / "docs" / "reference")
         and not path.is_relative_to(root / "docs" / "adr")
+        and not path.is_relative_to(root / "docs" / "handoffs")
         and path not in excluded
     )
     return [path for path in files if path.is_file()]
