@@ -15,8 +15,16 @@ limit is three in flight, any lane, not zero (#217); A3 review added to Decision
 seats (Decision 3 admits it); A4 the bar falls on authorship, not the path (#258); A5 a #258
 drafting widening to `2026-08-10T14:00Z` is referenced, not embedded; A6 portability re-decided as
 a symlink, not an import (#221; implementation #264); A7 the admission bar is built and live
-(`just admission`). Reasoning lives at #263, so no fact carries its full argument twice and only
-one document can go stale; each passage is marked inline
+(`just admission`) — superseded by A8, which records that ADR-0071 ruling 6 dropped it and #328
+removed it from the tree, so A7 states what was true on 2026-08-06 and nothing that runs now.
+Reasoning lives at #263, so no fact carries its full argument twice and only one document can go
+stale; each passage is marked inline
+Amended: 2026-08-15, after human review, on corrections of fact raised in #328's review rounds
+(no decision reversed) — A8 Decision 6 is superseded by ADR-0071 ruling 6 and the pre-registered
+admission bar is dropped (#328), so A7's "built and live" and Decision 6's closing paragraph are
+put in the past tense at both sites, and A7's route count is removed for the durable fact that
+does not move: every route was still on probation when the bar was dropped, none admitted and
+none failed
 Reviewed-by-human: 2026-08-06
 
 The project is building infrastructure to dispatch logical subagents onto non-Anthropic coding
@@ -168,12 +176,16 @@ by process changes over the period, which is why pre-registration is load-bearin
 lane's numbers first would turn the confounding into a licence to move the bar. And the signal
 remains silent about a wrong landing that passed every gate.
 
-The mechanism this decision specifies is built and live: `just admission` judges 24 foreign-lane
-routes — each foreign profile against each eligible seat — all on probation, none yet admitted;
-assessments accrue as the lanes run. *(Amendment A7, 2026-08-06: recorded so the decision's "build
-the bar" is verifiably done; the decision itself is unchanged. The issue's "23 at assessed=0/10"
-was already stale on the tree — the implementer and review seats on `zai-glm52-max` have since
-accrued assessments — so the durable fact is recorded rather than a count that moves daily.)*
+The mechanism this decision specified was built and ran: `just admission` judged one route per
+foreign profile per eligible seat, all on probation, none ever admitted; assessments accrued as the
+lanes ran. It is **dropped** — ADR-0071 ruling 6, applied by #328 — and no dispatch is refused by an
+admission verdict. Across its whole life it never adjudicated once: every route was still on
+probation when it was dropped, none admitted and none failed. *(Amendment A7, 2026-08-06: recorded
+so the decision's "build the bar" is verifiably done; the decision itself unchanged. The issue's "23
+at assessed=0/10" was already stale on the tree — the implementer and review seats on
+`zai-glm52-max` had by then accrued assessments — so the durable fact was to be recorded rather than
+a count that moves daily. A7 then recorded a count anyway; Amendment A8, 2026-08-15, removes it and
+puts this paragraph in the past tense, the tense being the other thing that moved.)*
 
 Recorded because it constrains everything downstream: arm count, not sample size, is the binding
 constraint on what is measurable here. No published router beats a static policy at *n* in the

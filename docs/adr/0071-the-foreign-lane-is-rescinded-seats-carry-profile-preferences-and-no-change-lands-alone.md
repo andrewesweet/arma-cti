@@ -37,6 +37,10 @@ passage the sign-off covers by implication rather than in words. Every profile i
 seat list below was re-derived from `tools/dispatch.py`'s registry and every
 class-2 field from `config/dispatch-routing-policy.json` as this commit's tree
 carries them, never pasted from a ruling comment.
+Amended: 2026-08-15, after human review, on a correction of fact raised in #328's review rounds —
+ruling 6's rationale paragraph carried two counts, the routes on probation and the dispatches
+before the drop. Both are removed for the durable fact that does not move: every route was still
+on probation when the bar was dropped, none admitted and none failed. No ruling changes
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
 Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
@@ -104,10 +108,11 @@ the ruling is scoped to what the evidence supports:
 
 **The admission bar is abandoned deliberately, and this is the departure.**
 ADR-0061 Decision 6 pre-registered that bar so that observed lane behaviour could
-not move it, and its own amendment A7 records all 24 routes on probation with none
-admitted — **the bar never adjudicated once**. Dropping it after 112 dispatches is
-the move pre-registration exists to prevent, taken knowingly by the human's ruling
-rather than arrived at without noticing. What is being traded is an ex-ante check
+not move it, and its own amendment A7 records its routes on probation with none
+admitted — **the bar never adjudicated once**: every route was still on probation
+when it was dropped, none admitted and none failed. Dropping it once the
+observations were in is the move pre-registration exists to prevent, taken
+knowingly by the human's ruling rather than arrived at without noticing. What is being traded is an ex-ante check
 that never ran for a retrospective one that cannot run yet.
 
 ## The decision

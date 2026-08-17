@@ -158,6 +158,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The ADR amendments #328 proposed and the human signed off are applied (#394).** ADR-0061 and
+  ADR-0071 no longer carry counts that #328's own landed commit calls false. All five approved
+  blocks are applied verbatim from the proposal at
+  <https://github.com/andrewesweet/arma-cti/issues/328#issuecomment-5304405904>, signed off at
+  <https://github.com/andrewesweet/arma-cti/issues/328#issuecomment-5304607746>: ADR-0061's `A8`
+  trailer, its amendment index (`A7` marked superseded rather than rewritten), Decision 6's
+  closing paragraph in the past tense with the `24`-route count replaced by the fact that does not
+  move; ADR-0071's own `Amended:` trailer and the ruling-6 rationale, which loses both `24` and
+  `112`. **The ADR-0071 trailer's placement was under-determined and the choice is recorded here**:
+  the proposal said "after the `Reviewed-by-human:` block, above the `Supersedes:` lines", which
+  brackets a region also holding `Claimed:` and the existing `Amended:` block. It goes last in that
+  region, immediately above `Supersedes:` — amendments stay contiguous and in date order, and
+  `Claimed:` keeps its place with the write-time metadata it belongs to. **ADR-0071's other `112`
+  keeps its count**, as #328's re-review judged: the same sentence breaks it down as
+  `claude-native` 48, `zai` 32, `codex` 32, so the number is pinned by arithmetic in its own line
+  and is dated history that correcting would make wrong. **Two things are flagged rather than
+  absorbed**, because the sign-off covers the text it was given and nothing else: ADR-0061's
+  Decision 6 reversal-trigger bullet, which still speaks of the bar in the live voice and for which
+  no approved replacement exists (#328's Low 3), and any in-ADR sentence citing the sign-off
+  comment or stating the `112` exclusion, which would be new wording in a gated file. Both are put
+  to the human on #394. #390 owns deriving the copy set mechanically; this change applied the known
+  corrections and did not enumerate.
+
 - **The arbiter's fourth rung stops naming a rung that no longer exists, and `AGENTS.md`'s rung
   list is in `_walk_first`'s order (#329, review round 5).** `config/escalation-conditions.json`
   and `docs/agents/review-severity.md` both spelled `dispatch.candidate_refusal`'s rungs
