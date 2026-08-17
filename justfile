@@ -1064,3 +1064,29 @@ verdict *args:
 # is the human's and has no override on this surface either.
 review-loop *args:
     uv run python tools/review_loop.py {{ args }}
+
+# The retrospective observatory (ADR-0071 ruling 6, #336). It replaces the
+# admission bar #328 dropped, and replaces it from the other end: nothing here
+# is checked before the work runs, and everything is read after it.
+#
+# It reports and never routes. No profile is excluded, no work rerouted, no
+# breaker tripped — the action on a bad ranking is a human ruling at a retro,
+# and a threshold that acted by itself would be the upfront bar rebuilt with
+# extra steps.
+#
+# One ranking key, fix rounds per landing, over profiles dispatched in the
+# implementer seat and no others: the seats that land nothing by contract have
+# their rework reported and never ranked, and a profile with no landings is an
+# unranked row with its rounds visible rather than a division. Spend is per
+# lane and never summed — three meters that do not convert into one another.
+# Stratification is on the pre-work signals alone, grouped by #347's typed
+# code. There is no containment column: a bypassed commit hook leaves no
+# durable record, and an empty column would be misread as evidence that
+# bypasses did not occur.
+#
+# It reads `~/.arma-cti/dispatches/` and `~/.arma-cti/review/`, both outside
+# every worktree, so a **dispatched seat cannot run it** (#294's confinement).
+# A root this process cannot see is `state_unreachable` at exit 3 — an act that
+# could not be performed, never an empty rollup at exit 0.
+observatory *args:
+    uv run python tools/observatory.py {{ args }}
