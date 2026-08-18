@@ -64,6 +64,17 @@ ignores the field — a hard prompt at budget 1,024 and at budget 32,000 both th
 nine thousand tokens and both stopped on `max_tokens`. So on that lane all five efforts
 are one configuration, and there is one profile per model rather than five.
 
+**A rename retires a name, and the retired name stays readable (#413).** The registry above
+is what a dispatch may take; `RETIRED_PROFILES`, beside it, is what a dispatch *record* may
+carry — old name, replacing profile, date. #399 renamed `zai-glm52-max` to `zai-glm53-max`
+and every branch authored before that moment kept records the registry no longer resolves,
+which stranded them: `--reviewing` refused the old name against the registry and the new
+name against the records, with no third answer. The one resolution is read-only — the
+review subject check, the candidate ordering and the never-alone exclusion set place a
+retired name through its successor — while `--profile` reads `PROFILES` alone and still
+refuses the dead name. The successor joins the exclusion set beside the name it replaced,
+which is the conservative side of that set's own trade.
+
 ## The environment is assembled per invocation
 
 `ANTHROPIC_BASE_URL` in a shell profile, in a `~/.claude/settings.json`, or exported into

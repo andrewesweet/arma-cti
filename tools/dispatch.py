@@ -498,6 +498,34 @@ PROFILES: Final[dict[str, Profile]] = {
 }
 
 
+class RetiredProfile(NamedTuple):
+    """One retired profile name: the profile a rename replaced it with, and when (#413)."""
+
+    successor: str
+    retired_on: str
+
+
+# A renamed profile's old name (#413). `PROFILES` above is what a dispatch may take; this
+# table is what a dispatch *record* may carry — two tables, because the distinction is the
+# whole fix. #399's rename argument was that no per-name record exists for a rename to
+# lose, which was true of the admission bar #328 dropped and false of the dispatch
+# records, which name `zai-glm52-max` for as long as they are read: `--reviewing` checked
+# the declaration against the registry and the records against the declaration, and after
+# a rename those two never agree — `unknown_reviewed_profile` for the old name,
+# `review_subject_contradicted` for the new one, and no third answer to give. Resolving a
+# retired name through `resolved_profile` reads its successor's lane, and
+# `excluded_from_review` resolves the successor into the set a review must not run on —
+# the conservative side of that function's own trade, a resolution step against the
+# invariant. Naming a retired name in `--profile` still refuses `unknown_profile`,
+# because `resolve_selection` reads `PROFILES` and never this table.
+RETIRED_PROFILES: Final[dict[str, RetiredProfile]] = {
+    # #399, landed 2026-08-18: the zai endpoint moved glm-5.2 to glm-5.3 at the same cost
+    # per token, so the profile was renamed rather than paralleled. The retired date is
+    # `e19410e`'s, the rename's own commit.
+    "zai-glm52-max": RetiredProfile("zai-glm53-max", "2026-08-18"),
+}
+
+
 class Seat(NamedTuple):
     """One seat: which profiles it prefers, and the one provenance rule that reaches it."""
 
@@ -1792,6 +1820,12 @@ def reviewed_profile_refusal(seat_name: str, reviewed: str) -> Refusal | None:
     The flag is refused on a seat that does not review, because an option that silently
     decides nothing is one a caller will believe did something.
 
+    **A retired name passes here and only here** (#413). The check resolves through
+    `resolved_profile`, so a name a rename left still names a subject while never naming a
+    route: after #399 the records for already-authored work carry `zai-glm52-max` forever,
+    and a review of that work has no other subject to declare. The name is still refused
+    by `--profile`, which reads `PROFILES` and never the retirement table.
+
     No failure class, for `pair_block`'s reason: nothing was found about a provider, a lane
     or the code under test. This is an incomplete or contradictory request.
     """
@@ -1819,7 +1853,7 @@ def reviewed_profile_refusal(seat_name: str, reviewed: str) -> Refusal | None:
                 f"took. {NEVER_ALONE} Nothing was dispatched."
             ),
         )
-    if reviewed not in PROFILES:
+    if resolved_profile(reviewed) is None:
         return Refusal(
             "unknown_reviewed_profile",
             (f"reviewing={reviewed}", f"known={' '.join(sorted(PROFILES))}"),
@@ -2106,6 +2140,50 @@ def contradicted_refusal(seat: Seat, reviewed: str, issue: int, authorship: Auth
     )
 
 
+def retired_names(name: str) -> tuple[str, ...]:
+    """Return the name and every successor a rename chain replaced it with, newest last (#413).
+
+    One entry is all the table has ever carried; the walk is for the second rename of the
+    same profile, which a single hop would resolve one step short of the live name. A cycle
+    in the table is a registry bug, and it stops the walk rather than looping on it.
+    """
+    chain = [name]
+    while chain[-1] in RETIRED_PROFILES:
+        successor = RETIRED_PROFILES[chain[-1]].successor
+        if successor in chain:
+            break
+        chain.append(successor)
+    return tuple(chain)
+
+
+def resolved_profile(name: str) -> Profile | None:
+    """Return the registry entry a name resolves to for reading records (#413).
+
+    The name itself where it is registered, else the successor a rename left.
+
+    Reading is the only direction. `--profile` and every seat's preference list read
+    `PROFILES` directly and never resolve through here, so a retired name names a review's
+    subject and never a route — the distinction criterion 2 asks the mechanism to make. A
+    name whose chain resolves to nothing registered returns `None`, which every caller
+    treats as unplaceable rather than as empty.
+    """
+    for candidate in reversed(retired_names(name)):
+        if candidate in PROFILES:
+            return PROFILES[candidate]
+    return None
+
+
+def never_alone_exclusions(authorship: Authorship) -> frozenset[str]:
+    """Every profile name a reviewer must not be, taken from the authorship set alone (#413).
+
+    `excluded_from_review` minus the declared subject, which the landing does not have —
+    the verdict's own dispatch already refused that route. Both read `retired_names`, so a
+    rename cannot make dispatch refuse a reviewer the landing then clears, which is the
+    disagreement the retired name would otherwise open between the two rungs.
+    """
+    return frozenset(name for profile in authorship.potential for name in retired_names(profile))
+
+
 def excluded_from_review(reviewed: str, authorship: Authorship) -> frozenset[str]:
     """Every profile a review must not run on: the declared subject and every potential author.
 
@@ -2118,12 +2196,16 @@ def excluded_from_review(reviewed: str, authorship: Authorship) -> frozenset[str
     The set is deliberately a **superset** of the profiles that actually wrote commits,
     because the record cannot narrow it further (`potential_authors` states why). Excluding
     too much costs a resolution step down the seat's list; excluding too little costs the
-    invariant. Those prices are not comparable, so the conservative side is the only one.
+    invariant. Those prices are not comparable, so the conservative side is the only one —
+    and since #413 that includes each retired name's successor, resolved through
+    `retired_names` rather than left as a string no preference list carries.
 
     One home, so that resolution, the refusal text and the printed route cannot disagree
     about which profiles this dispatch was never going to take.
     """
-    return frozenset({reviewed, *authorship.potential})
+    return frozenset(
+        name for source in (reviewed, *authorship.potential) for name in retired_names(source)
+    )
 
 
 def review_candidates(
@@ -2154,13 +2236,14 @@ def review_candidates(
     """
     if not seat.reviews:
         return seat.preference
-    subject = PROFILES.get(reviewed)
+    subject = resolved_profile(reviewed)
     if subject is None:
         # `reviewed_profile_refusal` refuses an absent or unregistered subject above every
         # resolution, so this is the rendering path only: a dispatch record read back off
         # disk can name a profile the registry has since dropped, and printing what that
         # dispatch could walk must not raise. Empty is also the fail-closed answer if this
-        # were ever reached while deciding — no candidate resolves.
+        # were ever reached while deciding — no candidate resolves. A retired name resolves
+        # through the successor (#413), so the lane the ordering prefers is the live one.
         return ()
     excluded = excluded_from_review(reviewed, authorship)
     other_lane = tuple(

@@ -138,6 +138,26 @@ def test_a_records_placed_head_falls_through_the_same_way() -> None:
     )
 
 
+def test_a_retired_authors_successor_is_excluded_like_the_author() -> None:
+    """#413: the records carry `zai-glm52-max`, and the successor must not judge what it replaced.
+
+    The records rung asks who an arbiter must not be, and a name no registry walk can
+    select — the retired one — still excludes the profile that took its place.
+    """
+    seat = dispatch.Seat(
+        "synthetic",
+        claude_only=False,
+        preference=("opus-low",),
+        escalation=("zai-glm53-max", "opus-max"),
+    )
+    resolution = arbiter.resolve(seat, authorship(("zai-glm52-max",), ("d7",)))
+    assert resolution.kind == arbiter.RESOLVED
+    assert resolution.arbiter == "opus-max"
+    assert resolution.passed_over == (
+        arbiter.Exclusion("zai-glm53-max", arbiter.RECORDS_EXCLUSION, "records=d7"),
+    )
+
+
 def test_an_exhausted_entry_walks_the_preference_list() -> None:
     """The ruling's own #318 note: both tabled profiles conflicted, the walk goes on.
 

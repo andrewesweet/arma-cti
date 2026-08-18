@@ -329,7 +329,10 @@ def _cross_lane_refusal(
     registry entry for a profile a record named. Either unplaceable and the comparison cannot
     be made, so the rung refuses rather than clearing on an inequality between a known lane
     and an unknown one, which would pass by accident exactly where the records are worst
-    (#41).
+    (#41). A retired name places through the successor a rename left (#413,
+    `dispatch.resolved_profile`) — re-registering the dead name is the one remedy the old
+    refusal named that a rename exists to make impossible — and a name whose chain resolves
+    nowhere still refuses here.
 
     The author set is `Authorship.potential`, which is a *potential*-author set: over-excluding
     costs a resolution step and under-excluding costs the invariant, the trade `dispatch`
@@ -337,7 +340,7 @@ def _cross_lane_refusal(
     """
     reviewer_lane = binding.lane
     unplaceable = tuple(
-        profile for profile in authorship.potential if profile not in dispatch.PROFILES
+        profile for profile in authorship.potential if dispatch.resolved_profile(profile) is None
     )
     if unplaceable or reviewer_lane not in dispatch.LANES:
         return Refusal(
@@ -355,12 +358,14 @@ def _cross_lane_refusal(
             " the profile or the lane, or re-derive the record that names it; a check that"
             " could not run is not a check that passed (#41, ADR-0073). Nothing was pushed.",
         )
-    author_lanes = tuple(dict.fromkeys(dispatch.PROFILES[p].lane for p in authorship.potential))
+    author_lanes = tuple(
+        dict.fromkeys(dispatch.resolved_profile(profile).lane for profile in authorship.potential)
+    )
     if reviewer_lane in author_lanes:
         shared = tuple(
             profile
             for profile in authorship.potential
-            if dispatch.PROFILES[profile].lane == reviewer_lane
+            if dispatch.resolved_profile(profile).lane == reviewer_lane
         )
         return Refusal(
             "review_same_lane",
@@ -572,11 +577,16 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             (),
         )
     authorship = dispatch.with_declared_authors(authorship, declared, str(declared_record))
-    if binding.profile in authorship.potential:
+    # Resolved through `retired_names`, not plain membership (#413): a reviewer that is the
+    # successor of a retired author is the one arrangement dispatch refuses and a plain
+    # string comparison would clear, because the records carry the old name and the verdict
+    # carries the new one. Same set `excluded_from_review` builds at dispatch time, minus
+    # the declared subject the landing does not have.
+    if binding.profile in dispatch.never_alone_exclusions(authorship):
         authored = tuple(
             record
             for profile, record in zip(authorship.potential, authorship.records, strict=True)
-            if profile == binding.profile
+            if binding.profile in dispatch.retired_names(profile)
         )
         return Outcome(
             Refusal(

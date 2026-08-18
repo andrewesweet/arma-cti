@@ -38,6 +38,14 @@ dispatched here today.
 Arrangements are **clock-free** for `test_dispatch_seat.py`'s reason: entries are walked past
 by tripping a breaker or withholding a lane credential, both of which hold at any hour, where
 staging z.ai's published band would make the suite's answer depend on when it ran.
+
+**A renamed profile's old name is a subject and never a route** (#413). The dispatch records
+carry the name the work ran under, forever; after #399 renamed `zai-glm52-max` there is no
+answer `--reviewing` could give that both resolves and matches the records. The retirement
+table in `tools/dispatch.py` resolves the old name for reading — the subject check, the
+candidate ordering, the exclusion set — while `--profile` keeps reading `PROFILES` alone and
+refusing the dead name. The claims are in that vocabulary: a retired name is *carried by the
+records*, and its successor is *excluded like the author it replaced*.
 """
 
 from __future__ import annotations
@@ -119,6 +127,7 @@ def dispatch_record(  # noqa: PLR0913 — one keyword per field of the record th
     seat: str = "implementer",
     profile: str = "opus-high",
     refusal: str = "",
+    lane: str = "",
 ) -> Path:
     """Plant a dispatch record of the shape `just dispatch` writes, for the scan to read.
 
@@ -128,6 +137,10 @@ def dispatch_record(  # noqa: PLR0913 — one keyword per field of the record th
     The worktree is deliberately not the review's own. An implementer works in `issue-<n>`
     and a review in a tree of its own, and pointing both at one path would trip the occupancy
     rung (#308) rather than exercise the scan.
+
+    `lane` is for a profile the registry no longer carries (#413): a retired name has no
+    `PROFILES` entry to derive a lane from, and the record still states the lane it ran on —
+    the scan reads only the profile, but the record stays the shape the writer writes.
     """
     directory = tmp_path / "dispatches" / dispatch_id
     directory.mkdir(parents=True, exist_ok=True)
@@ -135,7 +148,7 @@ def dispatch_record(  # noqa: PLR0913 — one keyword per field of the record th
         json.dumps(
             {
                 "dispatch_id": dispatch_id,
-                "lane": dispatch.PROFILES[profile].lane,
+                "lane": lane or dispatch.PROFILES[profile].lane,
                 "profile": profile,
                 "seat": seat,
                 "issue": issue,
@@ -1141,3 +1154,96 @@ def test_the_review_seat_is_the_only_one_that_reviews_and_not_the_only_one_conta
         "recon",
         "review",
     ]
+
+
+# ------------------ #413: a renamed profile's old name resolves for reading, never for routing
+
+
+def test_the_retirement_table_resolves_into_the_live_registry() -> None:
+    """The map's own ground: every successor is live, and no retired name still is.
+
+    A retired name left in `PROFILES` would be dispatchable by `--profile`, which is
+    criterion 2's refusal gone; a successor missing from it would make every read of the
+    retired name unplaceable, which is the strand criterion 1 exists to close.
+    """
+    assert dispatch.RETIRED_PROFILES
+    for retired, entry in dispatch.RETIRED_PROFILES.items():
+        assert retired not in dispatch.PROFILES
+        assert entry.successor in dispatch.PROFILES
+        assert entry.retired_on
+
+
+def test_the_chain_walk_resolves_a_rename_and_stops_at_the_live_name() -> None:
+    """`retired_names` states the lineage one function, because three rungs read it."""
+    assert dispatch.retired_names("opus-high") == ("opus-high",)
+    assert dispatch.retired_names("zai-glm52-max") == ("zai-glm52-max", "zai-glm53-max")
+    assert dispatch.resolved_profile("zai-glm52-max") == dispatch.PROFILES["zai-glm53-max"]
+    assert dispatch.resolved_profile("zai-glm54-max") is None
+
+
+def test_a_retired_name_is_a_subject_a_review_may_declare_and_not_a_route_it_may_take(
+    tmp_path: Path,
+) -> None:
+    """Criterion 4's pair (#413): the records may carry the name, a dispatch may not.
+
+    This is #404's arrangement exactly — work authored under `zai-glm52-max`, the rename
+    landed after, the review owed. The old name declares the subject the records carry;
+    the ladder still refuses it as a route, because `resolve_selection` reads `PROFILES`
+    and never the retirement table.
+    """
+    dispatch_record(tmp_path, profile="zai-glm52-max", lane="zai")
+    tree = str(git_worktree(tmp_path))
+    plan, _, refusal = plan_for(tmp_path, reviewing="zai-glm52-max", worktree=tree)
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.reviewed == "zai-glm52-max"
+    assert plan.route.profile == "codex-luna-max"
+    # The old name never dispatches: on the ladder it is an unknown profile, not a retired
+    # one, because the distinction between the two tables is the whole mechanism.
+    _, _, named = plan_for(
+        tmp_path,
+        seat="implementer",
+        lane="zai",
+        profile="zai-glm52-max",
+        reviewing="",
+        worktree=tree,
+    )
+    assert named is not None
+    assert named.kind == "unknown_profile"
+
+
+def test_the_successor_a_rename_left_is_excluded_like_the_author_it_replaced(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The conservative side of `excluded_from_review`'s trade, resolved through the chain.
+
+    The records carry `zai-glm52-max`; the candidate list carries `zai-glm53-max`. A plain
+    string comparison between the two sets never meets, so the successor would review its
+    predecessor's work unrefused. Removal from the list is asserted as an absence from
+    `passed_over` rather than as a skipped head, because a credential-withheld skip and an
+    exclusion both end the walk one entry later.
+    """
+    dispatch_record(tmp_path, profile="zai-glm52-max", lane="zai")
+    substitute_review_seat(monkeypatch, "zai-glm53-max", "opus-low")
+    plan, _, refusal = plan_for(tmp_path, reviewing="zai-glm52-max")
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.profile == "opus-low"
+    assert plan.route.passed_over == ()
+
+
+def test_a_subject_declared_in_the_new_name_still_contradicts_old_name_records(
+    tmp_path: Path,
+) -> None:
+    """The strict half, stated as a test so it reads as a choice and not an oversight.
+
+    The retirement map makes the old name readable; it does not rewrite what the records
+    say. A caller declaring `zai-glm53-max` over `zai-glm52-max` records controls the half
+    the refusal names, and has a valid alternative: the name the records carry.
+    """
+    dispatch_record(tmp_path, profile="zai-glm52-max", lane="zai")
+    plan, _, refusal = plan_for(tmp_path, reviewing="zai-glm53-max")
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "review_subject_contradicted"
+    assert "potential_authors=zai-glm52-max" in refusal.found

@@ -157,7 +157,10 @@ def _walk_first(
         if profile in refusals:
             passed_over.append(Exclusion(profile, ROUTING_EXCLUSION, refusals[profile]))
             continue
-        if profile in authorship.potential:
+        if profile in dispatch.never_alone_exclusions(authorship):
+            # Resolved through `retired_names` (#413): the records rung asks who an arbiter
+            # must not be, and a retired author's successor is as much an answer to that as
+            # the author's own name — which no registry walk can select once renamed away.
             passed_over.append(
                 Exclusion(profile, RECORDS_EXCLUSION, f"records={','.join(authorship.records)}")
             )

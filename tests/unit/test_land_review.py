@@ -59,6 +59,7 @@ def _plan(  # noqa: PLR0913 — one parameter per field of the record under test
     profile: str = REVIEWER,
     planned_at: str = STAMP,
     dispatch_id: str = "d-review-1",
+    lane: str = "codex",
 ) -> str:
     """One dispatch record, written the shape `tools/dispatch.py` writes it."""
     return json.dumps(
@@ -67,7 +68,7 @@ def _plan(  # noqa: PLR0913 — one parameter per field of the record under test
             "issue": issue,
             "base_sha": base_sha,
             "profile": profile,
-            "lane": "codex",
+            "lane": lane,
             "planned_at": planned_at,
             "dispatch_id": dispatch_id,
         }
@@ -82,6 +83,7 @@ def _verdict(  # noqa: PLR0913 — one parameter per field of the record under t
     profile: str = REVIEWER,
     findings: tuple[tuple[str, str], ...] = (),
     alternates: tuple[str, ...] = (),
+    lane: str = "codex",
 ) -> str:
     """One verdict record, written the shape `review_exchange.record_verdict` writes it."""
     return json.dumps(
@@ -91,7 +93,7 @@ def _verdict(  # noqa: PLR0913 — one parameter per field of the record under t
             "reviewed_sha": sha,
             "review_dispatch": dispatch,
             "reviewer_profile": profile,
-            "reviewer_lane": "codex",
+            "reviewer_lane": lane,
             "findings": [{"id": name, "severity": severity} for name, severity in findings],
             "recorded_at": STAMP,
             "alternates": list(alternates),
@@ -1217,6 +1219,72 @@ def test_a_reviewer_lane_the_registry_cannot_place_refuses_the_same_way(tmp_path
 
     assert _kind(outcome) == "review_lane_unknown"
     assert "reviewer_lane_known=false" in _text(outcome)
+
+
+# ------------------ #413: a renamed profile's old name, on the rung that reads the records
+
+
+def test_a_reviewer_that_is_a_retired_authors_successor_cannot_clear_it(
+    tmp_path: Path,
+) -> None:
+    """The records carry the old name, the verdict the new one, and the rung meets both.
+
+    A plain membership test on `Authorship.potential` clears this — `zai-glm53-max` is not
+    the string `zai-glm52-max` — while the dispatcher refuses the same reviewer over the
+    same records. That disagreement is the trap criterion 5 names, and the fix is the same
+    resolution both rungs read rather than a second rule on one side.
+    """
+    outcome = _rung(
+        _stage(
+            tmp_path,
+            author="zai-glm52-max",
+            plan=_plan(profile="zai-glm53-max", lane="zai"),
+            verdict=_verdict(profile="zai-glm53-max", lane="zai"),
+        )
+    )
+
+    assert _kind(outcome) == "review_same_profile"
+    found = _text(outcome)
+    assert "reviewer_profile=zai-glm53-max" in found
+    assert "authored_by=d-author-1" in found
+
+
+def test_a_retired_authors_gate_landing_places_its_lane_through_the_successor(
+    tmp_path: Path,
+) -> None:
+    """`review_lane_unknown` no longer strands a renamed author's gate landing (#413).
+
+    The remedy that refusal used to name — register the profile — is the one act a rename
+    exists to make impossible, so before the retirement table there was no answer here
+    either. The author's lane is the successor's lane, and a zai reviewer of zai-authored
+    gate work refuses `review_same_lane` rather than clearing by unplaceability.
+    """
+    outcome = _gate_rung(
+        _stage(tmp_path, author="zai-glm52-max"),
+        reviewer="zai-glm47-max",
+        reviewer_lane="zai",
+    )
+
+    assert _kind(outcome) == "review_same_lane"
+    found = _text(outcome)
+    assert "author_lanes=zai" in found
+    assert "same_lane_authors=zai-glm52-max" in found
+
+
+def test_a_retired_authors_gate_landing_clears_from_another_lane(tmp_path: Path) -> None:
+    """The other half: the strand is closed in both directions, not traded for a refusal.
+
+    #404's shape — the diff touches no gate path, but the arrangement that would have
+    refused on one now clears with the author's lane placed through the successor and the
+    cross-lane line stating it.
+    """
+    outcome = _gate_rung(_stage(tmp_path, author="zai-glm52-max"))
+
+    assert outcome.refusal is None
+    assert (
+        f"gate_review=cross_lane reviewer_lane=codex author_lanes=zai"
+        f" gate_paths={GATE_PATH}" in outcome.cleared
+    )
 
 
 def test_a_diff_that_cannot_be_placed_inside_or_outside_the_gate_paths_refuses(

@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A renamed profile's old name resolves for reading dispatch records, and still never
+  dispatches (#413).** Renaming a profile used to strand every branch authored under the old
+  name: `--reviewing <old name>` refused `unknown_reviewed_profile` against the registry,
+  `--reviewing <new name>` refused `review_subject_contradicted` against the records, and no
+  third answer existed — #404's completed, gated, rebased work had no review that could be
+  dispatched at all. `tools/dispatch.py` now carries a retirement table (`RETIRED_PROFILES`),
+  old name to replacing profile with the date, read by exactly one resolution:
+  `resolved_profile` places a retired name's lane through its successor for the subject
+  check and the candidate ordering, `excluded_from_review` resolves the successor into the
+  set a review must not run on, and the landing's never-alone rung and the arbiter's records
+  rung read the same set through `never_alone_exclusions` — so a successor reviewing its
+  predecessor's work is refused at dispatch time and at landing time alike, and a retired
+  author's gate landing places its lane instead of refusing `review_lane_unknown` with a
+  remedy the rename exists to make impossible. Naming the old name in `--profile` still
+  refuses `unknown_profile`, because the ladder reads `PROFILES` and never the retirement
+  table: a name the records may carry is not a name a dispatch may take.
+
 - **A gate landing is now reviewed from another lane (#406, ADR-0073).** The enforcement half
   of the entry below, and the second of that issue's two commits. The invariant routing class
   6 asserts — no instance authors the gate that judges it — is enforced as one predicate on
