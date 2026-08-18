@@ -2228,7 +2228,7 @@ def review_candidates(
 
     Being explicit about the case the ADR's one word leaves open: **when the only
     non-matching entries share the lane, they are used.** Making the lane a filter would
-    refuse a genuinely different model — GLM-5.2 reviewing Luna's work is a different
+    refuse a genuinely different model — GLM-5.3 reviewing Luna's work is a different
     instance of a different family, and z.ai and Codex are separate providers anyway — and
     it would confuse ruling 4's invariant, which is about the *instance* producing the
     verdict, with the provider it is reached through. Provider diversity is preferred
