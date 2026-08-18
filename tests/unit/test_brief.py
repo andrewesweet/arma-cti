@@ -1031,6 +1031,22 @@ def test_the_default_seat_opens_only_the_one_placeholder() -> None:
     assert composed().count(brief.PLACEHOLDER) == 1
 
 
+def test_a_retro_brief_requires_verdicts_for_every_filed_issue() -> None:
+    rendered = composed(seat=brief.derive_seat("retro"))
+    assert "## Fix-round report" in rendered
+    assert "every issue this pass filed" in rendered
+    assert "`unchanged` or `corrected`" in rendered
+    assert "never inherit a prior report wholesale" in rendered
+    # The 2026-08-18 ruling on #217 is why the sweep matters: one review round, medium-and-below
+    # filed, so the filed issues are the product (#374's correction to the recon's wording).
+    assert "the main product of a review" in rendered
+    assert "missing from this list is a defect in that product" in rendered
+
+
+def test_non_retro_brief_has_no_fix_round_report_rule() -> None:
+    assert "## Fix-round report" not in composed()
+
+
 def test_the_review_seat_still_opens_the_placeholder_for_its_own_reason() -> None:
     """Restored coverage for the seat the assertion above used to be made on (#322 claim 4).
 

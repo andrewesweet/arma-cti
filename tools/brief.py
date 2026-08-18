@@ -709,6 +709,23 @@ REVIEW_SUBJECT_PLACEHOLDER: Final = (
     "Which profile's work this review judges. Compose with `--reviewing <profile>` and pass"
     " the same one to `just dispatch`; a review that declares none is refused."
 )
+# #374: a retro's fix round sweeps the issues its own pass filed, and the report carries a
+# per-issue verdict so an unswept issue is visible rather than silent. The home is the
+# composer rather than the skill file, because #345/#349's evidence is that composed tool
+# text beats contrary prose and the skill surface is human sign-off gated — the choice and
+# its reason are recorded on #374. The 2026-08-18 ruling on #217 belongs in the text because
+# it changes the sweep's weight, not its shape: one review round per landing, findings
+# `medium` and below filed rather than fixed, so the issues a pass files are the main
+# product of a review and this list is the check on that product.
+FIX_ROUND_RULE: Final = (
+    "Fix-round report: list every issue this pass filed with one verdict — `unchanged` or"
+    " `corrected`; state what changed for `corrected`, or why `unchanged`. Derive each verdict"
+    " from this round's own sweep, or transcribe a deriver's with attribution; never inherit"
+    " a prior report wholesale. A landing takes one review round, and findings `medium` and"
+    " below are filed rather than fixed (ruled 2026-08-18, #217) — so the issues this pass"
+    " filed are the main product of a review, and an issue missing from this list is a"
+    " defect in that product, not leftover tidying."
+)
 FLAKE_RESPONSE: Final = (
     "`flake_quarantine`: do not act. If one of those exact tests is your only red, quote its"
     " issue number and re-run once; a second red, or a red in any other test, is yours unless"
@@ -922,6 +939,8 @@ def compose(briefing: Briefing) -> str:
     ]
     if seat.owes_reason:
         lines.append(_placeholder(SEAT_PLACEHOLDER))
+    if seat.name == "retro":
+        lines += ["", "## Fix-round report", FIX_ROUND_RULE]
     if seat.reviews:
         lines.append(REVIEW_SUBJECT_RULE)
         lines.append(

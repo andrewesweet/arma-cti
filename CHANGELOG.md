@@ -285,6 +285,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **The fix-round report rule, composed into every retro seat dispatch brief (#374).** A
+  retro's fix round must list every issue its own pass filed with one verdict — `unchanged`
+  or `corrected`, stating what changed or why not — so an unswept issue is visible rather
+  than silent. Each verdict is derived from the round's own sweep or transcribed from a
+  deriver with attribution, never inherited wholesale. The rule lives in `tools/brief.py`'s
+  composer rather than the retro skill file: #345/#349's evidence is that composed tool text
+  beats contrary prose, and the skill surface is human sign-off gated — the choice and its
+  reason are recorded on #374. The text carries the human's 2026-08-18 ruling on #217 (one
+  review round per landing, findings `medium` and below filed rather than fixed) as its
+  reason the sweep matters: the issues a pass files are the main product of a review, so an
+  issue missing from the list is a defect in that product, not leftover tidying.
 - **`just review-loop author` — the authorship record for interactive work, and the route out
   of an unlandable `.claude/` change (#398).** #294 bars a dispatched session from writing
   under `.claude/`, so such a change is authored interactively by construction; an interactive
