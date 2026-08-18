@@ -503,10 +503,12 @@ def test_a_seat_that_authors_nothing_is_admitted_rather_than_barred() -> None:
     for lane, profile in (("claude-native", "opus-low"), ("codex", "codex-luna-max")):
         sweeping = routing_policy.Route(lane, profile, "recon", NOW)
         assert routing_policy.advisory_match(policy(), "ADR authorship for #999.", sweeping) is None
-    # The admission rests on what the seat is for, not on an enforced containment, and the
-    # remedy says so rather than implying a mechanism the registry does not carry.
-    assert dispatch().SEATS["recon"].permission_mode == ""
-    assert "not an enforced `permission_mode`" in authorship.remedy
+    # The admission rests on what the seat is for, and since #407 the registry enforces that
+    # rather than describing it: the row's ground is now backed by a forced read-only mode,
+    # which is the state the remedy's own last clause says would need this row revisited if
+    # it were lost.
+    assert dispatch().SEATS["recon"].permission_mode == "plan"
+    assert "the seat now forces `plan` in `SEATS`" in authorship.remedy
 
 
 def test_the_row_no_longer_contradicts_the_always_loaded_prefix() -> None:

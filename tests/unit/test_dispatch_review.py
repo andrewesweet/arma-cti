@@ -1128,7 +1128,16 @@ def test_the_registry_listing_states_both_halves_of_the_rule(
     )
 
 
-def test_the_review_seat_is_the_only_one_carrying_either_column() -> None:
-    """Both columns are ADR-0071 ruling 4's and #322 landed them for the seat that ruling names."""
+def test_the_review_seat_is_the_only_one_that_reviews_and_not_the_only_one_contained() -> None:
+    """`reviews` is ruling 4's and stays this seat's; `permission_mode` was never only this seat's.
+
+    #322 landed both columns together for the seat ruling 4 names, and this claim used to read
+    them as one thing. #407 separated them: `recon` is read-only in ADR-0071's own table and in
+    the reasoning that admits it cheaply, so it forces the same mode, and a claim that the
+    review seat is the only contained one would now be a claim that the recon gap is still open.
+    """
     assert [name for name, seat in dispatch.SEATS.items() if seat.reviews] == ["review"]
-    assert [name for name, seat in dispatch.SEATS.items() if seat.permission_mode] == ["review"]
+    assert sorted(name for name, seat in dispatch.SEATS.items() if seat.permission_mode) == [
+        "recon",
+        "review",
+    ]

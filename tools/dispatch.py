@@ -183,6 +183,13 @@ writable on both runner families, so a review dispatched at the default could ed
 now *forces* `plan` in `routed`, which `build_argv` renders as `--permission-mode plan` on
 the `claude` family and `--sandbox read-only` on `codex`.
 
+**`recon` forces the same mode, for a reason of its own** (#407). ADR-0071 does not merely
+describe that seat as read-only; it reasons from the property — the unranked profile head, the
+routing class 2 admission and the absent escalation entry are all founded on a seat that
+authors, lands and reviews nothing. The registry did not hold it, and a dispatched `recon`
+session edited `tools/` and its tests. So the same one-column mechanism carries it, and the
+seat that most needed the guarantee stops being the one seat without it.
+
 **The routing class policy is a separate, per-dispatch read** (#266). Queue policy answers
 whether work may start now; `config/dispatch-routing-policy.json` answers which class the
 declared work is in and what that class asks for. It was the keep-on-Claude policy until
@@ -541,10 +548,23 @@ class Seat(NamedTuple):
     # seat's containment must be forced, not defaulted — `--permission-mode` defaults to
     # `acceptEdits`, which is writable, so a review dispatched at the default could edit.
     #
-    # `recon` is read-only by description and deliberately does **not** carry a mode here.
-    # #322 is the review seat's ticket, and forcing a mode on a seat nobody asked about
-    # would be a behaviour change nothing in this issue's criteria covers. The column is
-    # what makes joining a one-line edit when somebody does ask.
+    # `recon` joined the column on #407, which is the "somebody does ask" this comment used
+    # to anticipate. It was left off on #322 on the ground that forcing a mode on a seat
+    # nobody had asked about was a behaviour change outside that issue's criteria; what #407
+    # found is that the ground was wrong in the other direction. ADR-0071 states `recon` is
+    # read-only in its ruling-2 table and *reasons from* that property — the unranked profile
+    # head, the class-2 admission, the absent escalation entry all rest on a seat that
+    # authors, lands and reviews nothing — while the registry left it inheriting the writable
+    # default. Dispatch `d-20260818-080132-cc45d2` (`codex-luna-medium`, seat `recon`, #374)
+    # then wrote `tools/brief.py` and its tests with nothing refusing it. A property an ADR
+    # reasons from is not a description, so the seat forces the mode.
+    #
+    # **Overridden rather than refused**, on both seats that carry the column. A refusal
+    # would be a second mechanism for one property, and it would refuse the ordinary
+    # dispatch besides: `--permission-mode` *defaults* to `acceptEdits`, so every caller
+    # who types nothing arrives here carrying a writable mode, and "refuse a caller who
+    # passed one" cannot tell that caller from one who typed it. Overriding contains both
+    # and is never silent — `Resolution.containment_lines` names the seat that forced it.
     permission_mode: str = ""
 
 
@@ -587,7 +607,19 @@ SEATS: Final[dict[str, Seat]] = {
     # never-alone loop runs over its output and there is nothing for an arbiter to adjudicate.
     # The registry spells both states `()`, which is why the ADR marks the cell rather than
     # leaving it blank; a reader who needs the distinction reads it there.
-    "recon": Seat("recon", claude_only=False, preference=("codex-luna-medium", "haiku-medium")),
+    #
+    # `permission_mode` is #407's: the ADR says read-only in the table and reasons from
+    # read-only in the body, so the harness was the half that was wrong. It renders
+    # `--permission-mode plan` on the `claude` family and `--sandbox read-only` on `codex`,
+    # where the read-only branch of `_codex_sandbox_argv` grants neither `writable_roots`
+    # nor `network_access`. #392 — nothing compares the ADR's seat table to this registry —
+    # is the check that would have caught the gap; this is its first live instance.
+    "recon": Seat(
+        "recon",
+        claude_only=False,
+        preference=("codex-luna-medium", "haiku-medium"),
+        permission_mode="plan",
+    ),
     # ADR-0071 ruling 4 (#322) adds the two columns that make never-alone real. `reviews`
     # is what makes this seat's resolution take the profile under review as an input and
     # never return it; `permission_mode` forces the containment `--permission-mode`'s
@@ -2895,9 +2927,11 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
     ADR-0061 decision 5's non-commensurability point is the reason the two are stated
     separately in `docs/multi-provider-dispatch.md` rather than claimed equal.
 
-    Read-only modes are left exactly as they were. A review seat has nothing to commit and
-    nothing to land, so neither override has anything to buy there, and a sandbox that stays
-    narrow when nothing needs it wider is the point of mapping per mode at all.
+    Read-only modes are left exactly as they were, which is the branch #407's `recon` seat
+    now takes. A review or recon seat has nothing to commit and nothing to land, so neither
+    override has anything to buy there — no `writable_roots`, no `network_access` — and a
+    sandbox that stays narrow when nothing needs it wider is the point of mapping per mode
+    at all.
     """
     flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
     if flags != CODEX_SANDBOX["acceptEdits"]:

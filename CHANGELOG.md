@@ -237,6 +237,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The `recon` seat is read-only in the harness as well as in the ADR (#407).** ADR-0071 does
+  not merely describe that seat as read-only; it reasons from the property — the unranked
+  profile head, the routing class 2 admission and the absent escalation entry all rest on a
+  seat that authors, lands and reviews nothing. The registry held none of it, so a recon
+  dispatch inherited the writable `--permission-mode` default: `acceptEdits` on the Claude
+  family, and on Codex the widened `workspace-write` sandbox with `writable_roots` and
+  `network_access=true`. A dispatched recon session then wrote `tools/brief.py` and its tests
+  and ran the gate, with nothing refusing it. The seat now forces `plan` through the same
+  one-column mechanism `review` uses, which renders `--permission-mode plan` on the `claude`
+  family and `--sandbox read-only` on `codex`, where the read-only branch grants neither
+  writable root nor network. A caller who passes `--permission-mode` is **overridden rather
+  than refused**, and the code says why: the flag defaults to a writable value, so a refusal
+  could not tell a caller who typed one from one who typed nothing. The override is never
+  silent — the route line names the seat that forced it. The routing policy's ADR-authorship
+  row, which admitted `recon` on the express ground that its read-only standing was a
+  description and not an enforced `permission_mode`, is rewritten to say the ground now holds
+  mechanically. #392 — nothing compares ADR-0071's seat table to the registry — is the check
+  that would have caught this, and this is its first live instance.
+
 - **The arbiter's fourth rung stops naming a rung that no longer exists, and `AGENTS.md`'s rung
   list is in `_walk_first`'s order (#329, review round 5).** `config/escalation-conditions.json`
   and `docs/agents/review-severity.md` both spelled `dispatch.candidate_refusal`'s rungs
