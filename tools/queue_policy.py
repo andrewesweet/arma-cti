@@ -668,7 +668,11 @@ def surface_refusal(
 
 
 def check_refusal(
-    policy: Policy, issue: int, in_flight: InFlight, surfaces: Mapping[int, Sequence[str]]
+    policy: Policy,
+    issue: int,
+    in_flight: InFlight,
+    surfaces: Mapping[int, Sequence[str]],
+    candidate: Sequence[str] | None = None,
 ) -> Refusal | None:
     """Climb the queue's rungs for one issue and stop at the first that refuses.
 
@@ -676,6 +680,14 @@ def check_refusal(
     is the one worth hearing.** A freeze lifts only when the human says so; the WIP limit clears
     when something lands, which is hours; a surface conflict clears when the holder lands, which
     is sooner still and is advice about sequencing rather than about permission.
+
+    `candidate` overrides what the surface rung reads as this dispatch's own surface, and the
+    one caller that passes it is `tools/dispatch.py`, which knows a seat that forces a read-only
+    mode writes nothing (#339): its surface is empty **by derivation** rather than by reading a
+    tree, where the default reads the tree registered under the issue — the implementer's, which
+    is the work a review dispatch is going to read and never the writes it would make. A
+    seat-less read (`just queue check`) passes nothing and keeps that default, which is the
+    conservative direction: it cannot know which seat is asking.
     """
     refusal = freeze_refusal(policy, issue)
     if refusal is not None:
@@ -683,7 +695,8 @@ def check_refusal(
     refusal = wip_refusal(policy, issue, in_flight)
     if refusal is not None:
         return refusal
-    return surface_refusal(issue, surfaces.get(issue, ()), surfaces)
+    mine = surfaces.get(issue, ()) if candidate is None else candidate
+    return surface_refusal(issue, mine, surfaces)
 
 
 # ------------------------------------------------------------------------------ selection

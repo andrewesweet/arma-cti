@@ -489,6 +489,25 @@ def test_a_candidate_that_has_written_nothing_yet_cannot_be_seen_to_conflict() -
     assert queue.surface_refusal(250, [], {241: ["justfile"]}) is None
 
 
+def test_a_dispatch_that_writes_nothing_brings_its_own_empty_candidate() -> None:
+    """#339: a read-only dispatch is refused for the implementer's tree unless it says so.
+
+    The default candidate is the tree registered under the issue, which for a review dispatch
+    is the implementer's — the work being read. `candidate=()` is the derivation a seat that
+    forces a read-only mode earns, and it clears the rung the observed refusal fired on.
+    """
+    surfaces = {250: ["tools/dispatch.py"], 241: ["tools/dispatch.py"]}
+    refusal = queue.check_refusal(parsed(state="open", limit=3), 250, in_flight_of(241), surfaces)
+    assert refusal is not None
+    assert refusal.kind == "surface_conflict"
+    assert (
+        queue.check_refusal(
+            parsed(state="open", limit=3), 250, in_flight_of(241), surfaces, candidate=()
+        )
+        is None
+    )
+
+
 # ---------------------------------------------------------------------------- the whole rung
 
 

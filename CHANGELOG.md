@@ -311,6 +311,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A read-only dispatch is no longer refused for the surface it was sent to read (#339).**
+  `just dispatch`'s surface-conflict rung keyed the candidate's surface on the issue rather
+  than on the dispatch, so a review of one of two implementations writing the same paths was
+  refused with `surface_conflict` for the implementer's tree — exactly the arrangement
+  never-alone (ADR-0071 ruling 4) most needs to work, since every landing is now reviewed.
+  A seat whose registry row forces a read-only permission mode — `review` and `recon` —
+  writes nothing, and that is now derived rather than declared: the rung reads such a
+  dispatch's surface as empty instead of reading the tree registered under the issue. The
+  seat-less `just queue check` keeps reading the issue's tree, the conservative direction,
+  and two implementers writing the same paths are still sequenced exactly as before.
+
 - **The `recon` seat is read-only in the harness as well as in the ADR (#407).** ADR-0071 does
   not merely describe that seat as read-only; it reasons from the property — the unranked
   profile head, the routing class 2 admission and the absent escalation entry all rest on a

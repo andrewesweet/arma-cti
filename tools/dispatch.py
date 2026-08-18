@@ -3195,9 +3195,19 @@ def queue_refusal(args: argparse.Namespace, root: Path) -> Refusal | None:
         return _as_refusal(refusal)
     scan_root = Path(args.queue_root).expanduser() if args.queue_root else root
     in_flight = queue_policy.gather(scan_root, Path(args.dispatch_dir).expanduser())
+    # #339: a seat that forces a read-only mode writes nothing, so the surface rung reads
+    # its surface as empty by derivation rather than from the tree registered under the
+    # issue — which is the implementer's, and was refusing a review dispatch for the very
+    # work it had been sent to read. The registry column is the containment `routed` forces
+    # (#322, #407), so "this dispatch writes nothing" is derived, never declared here.
+    writes_nothing = SEATS[args.seat].permission_mode == "plan"
     return _as_refusal(
         queue_policy.check_refusal(
-            policy, args.issue, in_flight, queue_policy.surfaces_of(in_flight)
+            policy,
+            args.issue,
+            in_flight,
+            queue_policy.surfaces_of(in_flight),
+            candidate=() if writes_nothing else None,
         )
     )
 
