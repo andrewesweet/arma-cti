@@ -845,6 +845,30 @@ def test_a_landing_handed_to_a_non_landing_seat_is_still_not_read_as_a_landing()
     assert outcome == "lands_nothing"
 
 
+def test_a_retro_dispatch_that_landed_its_journal_reads_landed() -> None:
+    # A3 strikes ruling 3's closing sentence: the journal entry in docs/process-log.md is
+    # the single named exception to "lands nothing", so a retro whose journal reached
+    # origin/main is a landing like any other and the outcome says so (#404).
+    outcome = ledger.gate_outcome(
+        ledger.Landing("abc", 1, "referenced"),
+        {"returncode": 0},
+        ledger.EndState("ok", ""),
+        "retro",
+    )
+    assert outcome == "landed"
+
+
+def test_a_retro_dispatch_that_landed_no_journal_still_reads_lands_nothing() -> None:
+    # The other half of A3: everything else a retro produces is a filed item, so a
+    # completed run that landed nothing is the seat's normal shape rather than a gate it
+    # missed. The bare boolean flip #404 weighed first would read it `not_landed`, which
+    # is the #245 category error wearing the new rule.
+    outcome = ledger.gate_outcome(
+        ledger.Landing(None, 0, "x"), {"returncode": 0}, ledger.EndState("ok", ""), "retro"
+    )
+    assert outcome == "lands_nothing"
+
+
 def test_a_review_dispatch_still_going_is_running_rather_than_lands_nothing() -> None:
     outcome = ledger.gate_outcome(
         ledger.Landing(None, 0, "x"), None, ledger.EndState("unknown", ""), "review"
@@ -920,6 +944,70 @@ def test_a_review_dispatch_s_row_says_the_seat_lands_nothing_rather_than_naming_
         "commits": 0,
         "reason": "the review seat lands nothing",
     }
+
+
+def test_a_retro_dispatch_s_row_attributes_its_journal_commit_and_reads_landed(
+    tmp_path: Path, repo: Path
+) -> None:
+    # Criterion 1 of #404, through the action that produces it: a retro dispatched
+    # against a numbered issue lands its journal on origin/main, and the row must name
+    # that commit rather than short-circuiting on a seat rule A3 has struck. The staged
+    # commit is a journal entry in shape as well as message, because the join reads only
+    # the message — the ledger is a view, not a second enforcement of the one-path rule.
+    base = head(repo)
+    journal = land(repo, "docs(retro): the cycle's journal entry\n\nrefs #227")
+    record = stage_record(
+        tmp_path / "dispatches",
+        base_sha=base,
+        seat="retro",
+        result={
+            "returncode": 0,
+            "started_at": "2026-08-05T22:17:43.750396+00:00",
+            "ended_at": "2026-08-05T22:24:54.480704+00:00",
+        },
+    )
+    write_jsonl(
+        tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl",
+        [log_batch("claude_code.api_request", {"model": "opus"})],
+    )
+    _, code = ledger.sync(options(tmp_path, repo=repo), NOW)
+
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert code == 0
+    assert row["seat"] == "retro"
+    assert row["gate"]["outcome"] == "landed"
+    assert row["gate"]["landed"]["sha"] == journal
+    assert row["gate"]["landed"]["commits"] == 1
+
+
+def test_a_retro_dispatch_s_row_still_reads_lands_nothing_when_nothing_landed(
+    tmp_path: Path, repo: Path
+) -> None:
+    # Criterion 2 of #404: the seat rule no longer stands between the row and the join,
+    # so the absence of a landing is stated by git's own answer rather than by the seat —
+    # but the vocabulary stays `lands_nothing`, because a retro whose filings went to the
+    # tracker did the job it was dispatched for.
+    base = head(repo)
+    record = stage_record(
+        tmp_path / "dispatches",
+        base_sha=base,
+        seat="retro",
+        result={
+            "returncode": 0,
+            "started_at": "2026-08-05T22:17:43.750396+00:00",
+            "ended_at": "2026-08-05T22:24:54.480704+00:00",
+        },
+    )
+    write_jsonl(
+        tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl",
+        [log_batch("claude_code.api_request", {"model": "opus"})],
+    )
+    _, code = ledger.sync(options(tmp_path, repo=repo), NOW)
+
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert code == 0
+    assert row["gate"]["outcome"] == "lands_nothing"
+    assert row["gate"]["landed"]["sha"] is None
 
 
 def test_a_row_never_names_a_commit_that_predates_its_own_dispatch(

@@ -210,7 +210,12 @@ that admits everything.
 `lands_nothing` is the outcome for a seat that lands nothing by construction. ADR-0061
 Decision 3 admits `review` to a foreign lane precisely because its output is claims, and
 `recon` is read-only; for both, `not_landed` would read as a gate the dispatch was running
-for and did not clear. Those rows name no commit and say the seat lands nothing.
+for and did not clear. Those rows name no commit and say the seat lands nothing. The retro
+keeps the same vocabulary for its empty half (#404): ADR-0071 ruling 3 as Amendment A3
+strikes "lands nothing" down to one exception, the journal entry in `docs/process-log.md`,
+so a retro that landed its journal reads `landed` with the commit named, and a retro that
+landed nothing — its filings are the product — still reads `lands_nothing` rather than the
+`not_landed` of a missed gate.
 `running` and `not_a_result` still win over it — they are facts about the dispatch, where
 the seat rule is a fact about the seat. `tools/dispatch.py`'s `SEATS` is the roster, and a
 unit test holds the two tables in step so a new seat cannot arrive unclassified.

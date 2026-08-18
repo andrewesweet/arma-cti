@@ -26,6 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   refuses `unknown_profile`, because the ladder reads `PROFILES` and never the retirement
   table: a name the records may carry is not a name a dispatch may take.
 
+
+- **The ledger books a retro's journal landing (#404).** ADR-0071 ruling 3 as Amendment A3
+  makes the journal entry in `docs/process-log.md` the single named exception to the retro
+  seat's "lands nothing", and `tools/ledger.py` still classified the seat as landing nothing
+  by construction — so the journal commit was never attributed to the dispatch that produced
+  it, and a journal-landing retro read `lands_nothing`, the outcome that says the opposite of
+  what happened. The seat table now names what each seat lands — nothing, its journal, or the
+  work — and a retro dispatch materialises with its journal commit attributed and an outcome
+  of `landed`; a retro that landed nothing keeps `lands_nothing`, because its filings are the
+  product and not a missed gate.
+
 - **A gate landing is now reviewed from another lane (#406, ADR-0073).** The enforcement half
   of the entry below, and the second of that issue's two commits. The invariant routing class
   6 asserts — no instance authors the gate that judges it — is enforced as one predicate on

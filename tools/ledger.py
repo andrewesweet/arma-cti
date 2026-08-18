@@ -979,31 +979,42 @@ def landed(
 
 # A review seat's output is claims, which land nothing on their own — the reason
 # ADR-0071 ruling 2 gives it a preference list at all — and `recon` is read-only by
-# construction. For
-# those two seats `landed` is not a weak answer but a category error, so the row says the
-# seat lands nothing and names no commit at all (#245). A seat this table does not know
-# is assumed to land: the view reads what the record carries and does not invent a claim
-# about a seat it has never met. `tools/dispatch.py`'s `SEATS` is the roster, and a unit
-# test holds the two in step so a new seat cannot arrive here unclassified.
-SEAT_LANDS: Final[dict[str, bool]] = {
+# construction. For those seats `landed` is not a weak answer but a category error, so
+# the row says the seat lands nothing and names no commit at all (#245). The retro sits
+# between the poles (#404): it lands its journal and nothing else, so a completed run
+# that landed nothing reads `lands_nothing` there too, because filing items is the
+# seat's shape and not a gate it missed. A seat this table does not know is assumed to
+# land: the view reads what the record carries and does not invent a claim about a seat
+# it has never met. `tools/dispatch.py`'s `SEATS` is the roster, and a unit test holds
+# the two in step so a new seat cannot arrive here unclassified.
+SEAT_LANDS: Final[dict[str, str]] = {
     # ADR-0071 ruling 2 says it in as many words: the planner works out what to do and
     # neither gates nor lands, so `landed` is the same category error here as on `review`.
-    "planner": False,
-    "implementer": True,
-    "recon": False,
-    "review": False,
-    # Ruling 3: a retro identifies, researches and files backlog items, and lands nothing.
-    "retro": False,
-    "fable": True,
-    "orchestrator": True,
+    "planner": "nothing",
+    "implementer": "work",
+    "recon": "nothing",
+    "review": "nothing",
+    # Ruling 3 as Amendment A3 strikes its closing sentence (#397): a retro identifies,
+    # researches and files backlog items, and lands one artefact — the journal entry in
+    # docs/process-log.md, under ruling 4 like any other change. Everything else it
+    # produces is a filed item, so a retro that landed no journal keeps `lands_nothing`
+    # rather than the `not_landed` of a missed gate (#404).
+    "retro": "journal",
+    "fable": "work",
+    "orchestrator": "work",
 }
+
+
+def seat_shape(seat: object) -> str:
+    """Name what this seat lands: nothing, its journal, or the work itself."""
+    if not isinstance(seat, str):
+        return "work"
+    return SEAT_LANDS.get(seat, "work")
 
 
 def seat_lands(seat: object) -> bool:
     """Say whether this seat can land a commit at all."""
-    if not isinstance(seat, str):
-        return True
-    return SEAT_LANDS.get(seat, True)
+    return seat_shape(seat) != "nothing"
 
 
 def gate_outcome(
@@ -1019,18 +1030,20 @@ def gate_outcome(
 
     A seat that lands nothing by construction gets `lands_nothing` where an implementer
     would get `not_landed`, because `not_landed` reads as a gate this dispatch was
-    running for and did not clear. The typings that say the run was never a result, or is
-    not over, still win — they are facts about this dispatch, and the seat rule is a fact
-    about the seat.
+    running for and did not clear. The retro keeps that vocabulary for its empty half —
+    its filings are the product, so an unlanded journal is no failed gate — while a
+    journal that did land reads `landed` (#404). The typings that say the run was never a
+    result, or is not over, still win — they are facts about this dispatch, and the seat
+    rule is a fact about the seat.
     """
-    lands = seat_lands(seat)
-    if landing.sha and lands:
+    shape = seat_shape(seat)
+    if landing.sha and shape != "nothing":
         return "landed"
     if result is None:
         return "running"
     if end_state.class_ in ("provider_refused", "quota_exhausted", "infra_unavailable"):
         return "not_a_result"
-    if not lands:
+    if shape != "work":
         return "lands_nothing"
     return "not_landed"
 
