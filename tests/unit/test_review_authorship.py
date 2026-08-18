@@ -42,6 +42,7 @@ land_review = load_tool("land_review")
 
 ISSUE: Final = 398
 SHA: Final = "c" * 40
+DIFF_ID: Final = "c" * 64
 STAMP: Final = "20260817T0000Z"
 AUTHOR: Final = "opus-high"
 REVIEWER: Final = "codex-luna-max"
@@ -336,7 +337,7 @@ def _stage(tmp_path: Path, *, reviewer: str = REVIEWER, authoring: str = "") -> 
                 "version": 1,
                 "issue": ISSUE,
                 "reviewed_sha": SHA,
-                "patch_id": "c" * 40,
+                "diff_id": DIFF_ID,
                 "review_dispatch": "d-review-1",
                 "reviewer_profile": reviewer,
                 "reviewer_lane": "codex",

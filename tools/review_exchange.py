@@ -38,7 +38,7 @@ than `verified`. Here, the half a reviewed agent controls is any field it might
 write into a verdict, so `derive_binding` reads the records the **dispatcher**
 wrote: a binding dispatch is one whose record carries `seat=review`, this issue and
 this reviewed SHA as its `base_sha` — which on the review seat is the reviewed
-commit (`docs/agents/review-dispatch.md`), and which defaults to the reviewer
+commit (`docs/review-dispatch.md`), and which defaults to the reviewer
 worktree's own HEAD, so the dispatcher records it without trusting anyone's
 transcription. What the derivation supports is that a review dispatch was bound to
 this commit and completed; it is not evidence the reviewer examined the code well,
@@ -50,18 +50,29 @@ excludes. A binding cannot borrow that move: it must be *the* answer, and a reco
 that would not open could be the binding one, so any unreadable record refuses
 (`records_unreadable`) rather than degrading to the records that happened to parse.
 
-**A verdict satisfies the commit it names, or a diff identical to it (#417).** The
-record carries the full reviewed SHA **and** the `git patch-id --stable` of the diff
-it was recorded over — merge-base relative to `origin/main`, the same range `just
-land` lands — so `satisfies` clears the named SHA first and, where the SHA has moved
-(a rebase rewrites every SHA), the patch-id second. A clean rebase reproduces the
-diff and keeps its review; a rebase whose conflicts a hand resolved changes the diff
-and forces a re-review, which is exactly the case where someone put content into the
-branch the reviewer never saw. Where neither half matches, `sha_mismatch` names both
-failures; where the patch-id could not be read on either side,
-`patch_id_unreadable` refuses rather than passes (#41). The patch-id proves the diff
-is unchanged, not that its meaning survived the move onto the new base — the gate's
-tests at landing are what catch that difference, and they still run.
+**A verdict satisfies the commit it names, or a rebase the tooling ran clean over a
+diff the record identifies exactly (#417, reworked).** The record carries the full
+reviewed SHA **and** the exact diff identity of the diff it was recorded over —
+merge-base relative to `origin/main`, the same range `just land` lands, hashed with
+`--unified=0` so no context line enters it and with hunk offsets normalised away, so
+whitespace is exact and an upstream edit beside the branch's own lines moves neither
+half. `satisfies` clears the named SHA first; where the SHA has moved, the verdict
+carries **only** when two independent facts both hold: the move is a chain of clean
+rebases this project's tools ran and recorded (`just land --stage` and `just land`
+write each one as a link under the review state, so a rebase a hand resolved —
+conflicts or not — is unproven by construction), **and** the landing diff's identity
+equals the recorded one. Either alone is insufficient, and that is the lesson of the
+review that disproved the first build: `git patch-id --stable` strips whitespace, so
+a resolution the reviewer never saw could hash equal, and hashing an output can
+never prove whether conflict resolution occurred at all — only the rebase's own
+record can, because only it knows whether a hand touched the replay. Where the SHA
+and the diff both fail, `sha_mismatch` names both; where the recorded or the landing
+identity could not be read, `diff_id_unreadable` refuses rather than passes (#41);
+where no recorded clean-rebase chain connects the reviewed commit to the landing
+one, `rebase_unproven` refuses and a fresh review is owed. The identity and the
+provenance together prove the diff is unchanged and mechanically replayed, not that
+its meaning survived the move onto the new base — the gate's tests at landing are
+what catch that difference, and they still run.
 `show --satisfies` re-derives the identity as well, refusing `identity_mismatch`
 where the record the verdict names is not the one the dispatch records support, so a
 verdict is never taken on its own word.
@@ -87,10 +98,10 @@ unique within the verdict.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
-import subprocess
 import sys
 import tempfile
 from datetime import UTC, datetime
@@ -116,15 +127,15 @@ DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 # A commit is named in full or not at all: a shortened SHA names several commits, and a
 # binding that could mean two commits satisfies neither.
 FULL_SHA: Final = re.compile(r"\A[0-9a-f]{40}\Z")
-# `git patch-id` prints 40 lowercase hex, the same width a SHA has, so the binding's
-# second half is spelled as strictly as its first.
-PATCH_ID: Final = re.compile(r"\A[0-9a-f]{40}\Z")
+# The diff identity is a sha256 hexdigest (64 lowercase hex), so the binding's second
+# half is spelled as strictly as its first.
+DIFF_ID: Final = re.compile(r"\A[0-9a-f]{64}\Z")
 # `breaker.OK`, mirrored rather than imported so the completion ladder stays a local
 # decision over the records it reads (`tools/breaker.py` owns the vocabulary, and
 # `classify_run` is what ties `ok` to a zero exit behind `write_result`).
 OUTCOME_OK: Final = "ok"
 SHA_ERROR: Final = "a commit is named by its full 40-character SHA, never a shortened form"
-PATCH_ID_ERROR: Final = "a verdict carries git's 40-hex stable patch-id of the reviewed diff"
+DIFF_ID_ERROR: Final = "a verdict carries the 64-hex exact diff identity of the reviewed diff"
 ISSUE_ERROR: Final = "the issue is named by its number, greater than zero"
 VERSION_ERROR: Final = "a verdict must be a version 1 object"
 WALK_WITHOUT_REFUSAL_ERROR: Final = "the candidate walk ended without a refusal or a verdict"
@@ -135,14 +146,15 @@ SAME_USER_LIMIT: Final = (
     " mechanical floor, not a guarantee (ADR-0071 ruling 4)"
 )
 SHA_BINDING_NOTE: Final = (
-    "binding=this verdict satisfies the SHA it names or a diff whose stable patch-id"
-    " matches the one it records — a clean rebase keeps its review; a conflict a hand"
-    " resolved changes the patch and needs a new one"
+    "binding=this verdict satisfies the SHA it names, or a moved SHA where the move"
+    " is a chain of clean rebases the tools recorded and the diff's exact identity"
+    " still matches — a hand-resolved replay is unproven and needs a new review"
 )
-PATCH_ID_LIMIT: Final = (
-    "limit=patch-id equality proves the diff is unchanged, not that its meaning"
-    " survived the move onto the new base — the gate's tests at landing are what catch"
-    " that difference, and they still run (#417)"
+DIFF_ID_LIMIT: Final = (
+    "limit=matching identity plus recorded clean rebases proves the diff is unchanged"
+    " and mechanically replayed, not that its meaning survived the move onto the new"
+    " base — the gate's tests at landing are what catch that difference, and they"
+    " still run (#417)"
 )
 
 
@@ -277,63 +289,213 @@ def _exchange_found(status: worktree.Preflight) -> tuple[str, ...]:
     return tuple(found)
 
 
-# ------------------------------------------------------------------- the patch-id
+# ------------------------------------------------------------------ the diff identity
+
+# Two line shapes inside a unified diff name the base rather than the change, so both
+# are normalised away before hashing: a hunk header (`@@ -12,3 +14,3 @@ …`) carries
+# line offsets that a clean rebase shifts whenever a sibling lands above the change,
+# and an `index` line carries the base-side blob hash, which any sibling edit of the
+# same file rewrites. Everything else — content lines with their whitespace exact,
+# file order, hunk order, mode lines — is hashed byte for byte.
+HUNK_HEADER: Final = re.compile(r"\A@@ [^\n]*")
+INDEX_LINE: Final = re.compile(r"\Aindex [^\n]*")
 
 
-def patch_id_of(cwd: Path, sha: str) -> str | Refusal:
-    """Return the stable patch-id of `origin/main...<sha>` — the range `just land` lands.
+def _normalised_diff(diff: str) -> str:
+    """Return the diff with base-naming lines flattened, keeping content byte-exact."""
+    lines = []
+    for line in diff.splitlines(keepends=True):
+        if HUNK_HEADER.match(line):
+            lines.append("@@\n")
+        elif INDEX_LINE.match(line):
+            lines.append("index\n")
+        else:
+            lines.append(line)
+    return "".join(lines)
 
-    The one home of the range, so the record at `record` time and the comparison at
-    landing cannot each keep a version of it: merge-base relative, like the landing's
-    own path and gate inputs, so a candidate diff cannot widen what is hashed, and
-    `--stable`, so a diff split or reordered by the rebase still hashes equal. A clean
-    rebase reproduces this diff byte for byte and the patch-id with it; a rebase whose
-    conflicts a hand resolved does not, which is the whole discrimination #417 asked
-    for. The limit is `PATCH_ID_LIMIT`'s and is printed wherever a clearance rides it:
-    patch-id equality proves the diff is unchanged, not that its meaning survived the
-    move onto the new base — the gate's tests at landing are what catch that
-    difference, and they still run.
 
-    Fail-closed on every way this could not run: git's own failure, and an empty
-    patch-id (an empty diff feeds `git patch-id` nothing, and it answers nothing) are
-    the one `patch_id_unreadable`, because a check that could not run is not a check
-    that passed (#41).
+def diff_id_of(cwd: Path, sha: str) -> str | Refusal:
+    """Return the exact diff identity of `origin/main...<sha>` — the range `just land` lands.
+
+    The one home of the range and of the normalisation, so the record at `record`
+    time and the comparison at landing cannot each keep a version of either:
+    merge-base relative, like the landing's own path and gate inputs, so a candidate
+    diff cannot widen what is hashed; `--unified=0`, so no context line enters it and
+    an upstream edit beside the branch's own lines cannot change the identity — the
+    disproof of the first #417 build, whose stable patch-id hashed context and so
+    re-reviewed every branch a sibling had landed near; and sha256 of the exact
+    bytes, so whitespace is significant — the other disproof, where `git patch-id
+    --stable` stripped trailing whitespace and a resolution the reviewer never saw
+    hashed equal to the reviewed diff. Hunk offsets and `index` lines are normalised
+    away (`_normalised_diff`) because they name the base, and a clean rebase moves
+    the base by construction. A diff identity is a claim about the change, never
+    about whether the rebase that produced it was clean — that half is the recorded
+    links' (`carried_by_clean_rebase`), and the two are checked together. The limit
+    is `DIFF_ID_LIMIT`'s and is printed wherever a clearance rides it.
+
+    Fail-closed on the one way this could not run — git's own failure — as
+    `diff_id_unreadable`, because a check that could not run is not a check that
+    passed (#41).
     """
     try:
-        diff = worktree.git("diff", f"{worktree.BASE}...{sha}", cwd=cwd)
+        diff = worktree.git("diff", "--unified=0", f"{worktree.BASE}...{sha}", cwd=cwd)
     except worktree.GitError as failure:
         return Refusal(
-            "patch_id_unreadable",
+            "diff_id_unreadable",
             (
                 f"worktree={cwd}",
                 f"command=git {' '.join(failure.args_run)}",
                 f"stderr={failure.stderr}",
             ),
-            "The diff this patch-id would hash could not be read. Read git's words"
+            "The diff this identity would hash could not be read. Read git's words"
             " above — a commit this tree does not hold arrives with `git fetch origin"
             " refs/heads/issue-<n>` — and a check that could not run is not a check"
             " that passed (#41).",
         )
-    # S603/S607: fixed literals, `git` off PATH on purpose — the same trust `worktree.git`
-    # records. The diff is fed over stdin because `git patch-id` reads a patch, not a range.
-    done = subprocess.run(
-        ["git", "patch-id", "--stable"],  # noqa: S607
-        cwd=cwd,
-        input=diff,
-        capture_output=True,
-        text=True,
-        check=False,
+    return hashlib.sha256(_normalised_diff(diff).encode("utf-8")).hexdigest()
+
+
+# ------------------------------------------------------------- the clean-rebase links
+
+
+class RebaseLink(NamedTuple):
+    """One clean rebase this project's tooling ran: from `before` onto `base`, giving `after`.
+
+    The provenance half of #417's binding. `just land --stage` and `just land` write
+    one after each rebase they run to completion without conflict, because the rebase
+    is the only party that knows its own outcome: hashing the output — patch-id,
+    diff identity, anything — cannot prove whether conflict resolution occurred, and
+    the record at the source can. A rebase a hand ran, however faithfully, leaves no
+    link, and a verdict therefore never carries across it.
+    """
+
+    before: str
+    after: str
+    base: str
+    at: str
+
+
+REBASES_FILE: Final = "rebases.json"
+REBASES_ERROR: Final = "a rebase link carries full SHAs as before, after and base, and an instant"
+
+
+def rebase_links_path(review_root: Path, issue: int) -> Path:
+    """Return where an issue's recorded clean rebases live — per issue, beside the loop state."""
+    return review_root.expanduser() / str(issue) / REBASES_FILE
+
+
+def _rebase_link(raw: object) -> RebaseLink:
+    """Validate one link record, refusing any shape a walk could misread."""
+    if not isinstance(raw, dict):
+        raise ReviewExchangeError(REBASES_ERROR)
+    link = RebaseLink(
+        before=str(raw.get("before", "")),
+        after=str(raw.get("after", "")),
+        base=str(raw.get("base", "")),
+        at=str(raw.get("at", "")),
     )
-    token = done.stdout.split()[0] if done.stdout.split() else ""
-    if done.returncode != 0 or not PATCH_ID.fullmatch(token):
+    if not all(FULL_SHA.fullmatch(sha) for sha in (link.before, link.after, link.base)):
+        raise ReviewExchangeError(REBASES_ERROR)
+    if not link.at:
+        raise ReviewExchangeError(REBASES_ERROR)
+    return link
+
+
+def _parsed_rebases(text: str) -> tuple[RebaseLink, ...]:
+    """Parse a whole links document, raising on any shape a walk could misread."""
+    document = json.loads(text)
+    if not isinstance(document, list):
+        raise ReviewExchangeError(REBASES_ERROR)
+    return tuple(_rebase_link(item) for item in document)
+
+
+def read_rebases(review_root: Path, issue: int) -> tuple[RebaseLink, ...] | Refusal:
+    """Read an issue's recorded clean rebases; absent is no links, unreadable refuses.
+
+    The absent file is the common case — no tooling rebase has run for this issue —
+    and answers an empty tuple, not a refusal: emptiness is a fact the walk turns
+    into "unproven" only where a carry would have ridden it. A file that exists and
+    will not parse is the one `rebase_unproven` with the reason on it, because the
+    link that would prove the carry could be the entry that will not open (#41).
+    """
+    path = rebase_links_path(review_root, issue)
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return ()
+    except OSError as failure:
         return Refusal(
-            "patch_id_unreadable",
-            (f"worktree={cwd}", f"returncode={done.returncode}", f"stderr={done.stderr.strip()}"),
-            "git patch-id answered nothing this binding can use — an empty diff feeds"
-            " it nothing, and it says so by saying nothing. A check that could not run"
-            " is not a check that passed (#41).",
+            "rebase_unproven",
+            (f"links={path}", f"reason={type(failure).__name__}: {failure}"),
+            "The recorded clean rebases could not be read, so the provenance a verdict"
+            " would carry across on is not an answer any record can give. A check that"
+            " could not run is not a check that passed (#41).",
         )
-    return token
+    try:
+        return _parsed_rebases(text)
+    except (ValueError, ReviewExchangeError) as failure:
+        return Refusal(
+            "rebase_unproven",
+            (f"links={path}", f"reason={type(failure).__name__}: {failure}"),
+            "The recorded clean rebases will not parse, so the provenance a verdict"
+            " would carry across on is not an answer any record can give. Repair the"
+            " record or re-stage — a check that could not run is not a check that"
+            " passed (#41).",
+        )
+
+
+def record_rebase(
+    review_root: Path,
+    issue: int,
+    link: RebaseLink,
+) -> None:
+    """Append one clean-rebase link, atomically. Raises `OSError` where it cannot write.
+
+    The caller is the rebase that just ran clean (`just land --stage`, `just land`);
+    the link states what it replayed, onto what, and what that produced. Nothing is
+    derived here — the tool that ran the rebase is the only writer there can be, and
+    `at` is the instant it records. A write that fails leaves the chain unproven, and
+    the landing's rung refuses the carry on its own; the caller prints why.
+    """
+    path = rebase_links_path(review_root, issue)
+    read = read_rebases(review_root, issue)
+    if isinstance(read, Refusal):
+        # An unreadable links file is never appended to silently: writing over it
+        # would replace provenance the walk might have needed. Refuse by raising the
+        # same fact the walk will raise; the caller turns it into a printed line.
+        message = f"{path}: {read.action}"
+        raise OSError(message)
+    existing = read
+    document = [*existing, link]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    staged = path.with_name(f"{REBASES_FILE}.staging")
+    payload = [
+        {"before": item.before, "after": item.after, "base": item.base, "at": item.at}
+        for item in document
+    ]
+    staged.write_text(json.dumps(payload), encoding="utf-8")
+    staged.replace(path)
+
+
+def carried_by_clean_rebase(links: tuple[RebaseLink, ...], from_sha: str, to_sha: str) -> bool:
+    """Whether recorded clean rebases connect `from_sha` to `to_sha`, by any chain of them.
+
+    Reachability, not a single link: a branch can be staged, land-refused, and
+    re-rebased by the next `just land`, and the verdict binds the first of those
+    commits — every hop the tooling ran clean must count, and every hop anything else
+    produced (a hand's rebase, a new commit, an amend) breaks the chain by leaving no
+    link with its `after` to walk through. `from_sha == to_sha` needs no link: that
+    is the SHA match `satisfies` has already cleared on.
+    """
+    reached = {from_sha}
+    grew = True
+    while grew:
+        grew = False
+        for link in links:
+            if link.before in reached and link.after not in reached:
+                reached.add(link.after)
+                grew = True
+    return to_sha in reached
 
 
 # --------------------------------------------------------------------- the findings
@@ -443,7 +605,7 @@ def _binding_plan(  # noqa: PLR0911 — one return per way a record can be read,
     `"past"` for a record this scan walks past — another seat, another issue, and
     another SHA where one was named — and a `_Record` for a candidate.
     `reviewed_sha=None` widens the scan to every review this issue has had, which is
-    what the patch-id half of #417 needs: the binding dispatch of a carried verdict
+    what the carry half of #417 needs: the binding dispatch of a carried verdict
     names the pre-rebase SHA, not the one landing. Every way of not being able to
     read a review-seat record on this issue returns `"unreadable"` instead, because
     the record that would not open could be the binding one: an exclusion can
@@ -540,15 +702,14 @@ def _binding_result(entry: Path) -> _Result | str:  # noqa: PLR0911 — the end-
 
 def _completed_candidates(
     dispatch_root: Path, issue: int, reviewed_sha: str | None
-) -> tuple[tuple[_Record, ...], Path] | Refusal:
+) -> tuple[_Record, ...] | Refusal:
     """Every completed review dispatch on this issue, in latest-first order.
 
     The scan half of `derive_binding` and of `bound_verdict`, so the two readers
     cannot grow different ideas of what a candidate is. `reviewed_sha` narrows the
     candidates to the reviews of one commit; `None` takes the issue's reviews whole,
     which is what a landing whose SHA moved needs (#417). Ordered latest-first by
-    plan time (ties by id, so the order is one order), and the root comes back with
-    the candidates because every refusal over them names it.
+    plan time (ties by id, so the order is one order).
     """
     root = dispatch_root.expanduser()
     if not root.is_dir():
@@ -586,10 +747,9 @@ def _completed_candidates(
             )
         if outcome.completed:
             candidates.append(plan)
-    ordered = tuple(
+    return tuple(
         sorted(candidates, key=lambda record: (record.planned_at, record.dispatch_id), reverse=True)
     )
-    return ordered, root
 
 
 def derive_binding(issue: int, reviewed_sha: str, dispatch_root: Path) -> Bound | Refusal:
@@ -610,7 +770,7 @@ def derive_binding(issue: int, reviewed_sha: str, dispatch_root: Path) -> Bound 
     scanned = _completed_candidates(dispatch_root, issue, reviewed_sha)
     if isinstance(scanned, Refusal):
         return scanned
-    candidates, _root = scanned
+    candidates = scanned
     if not candidates:
         return Refusal(
             "no_review_dispatch",
@@ -644,7 +804,7 @@ class Verdict(NamedTuple):
 
     issue: int
     reviewed_sha: str
-    patch_id: str
+    diff_id: str
     review_dispatch: str
     reviewer_profile: str
     reviewer_lane: str
@@ -659,7 +819,7 @@ def verdict_document(verdict: Verdict) -> dict[str, object]:
         "version": 1,
         "issue": verdict.issue,
         "reviewed_sha": verdict.reviewed_sha,
-        "patch_id": verdict.patch_id,
+        "diff_id": verdict.diff_id,
         "review_dispatch": verdict.review_dispatch,
         "reviewer_profile": verdict.reviewer_profile,
         "reviewer_lane": verdict.reviewer_lane,
@@ -684,7 +844,7 @@ def parse_verdict(text: str) -> Verdict:
         raise ReviewExchangeError(VERSION_ERROR)
     issue = document.get("issue")
     reviewed_sha = document.get("reviewed_sha")
-    patch_id = document.get("patch_id")
+    diff_id = document.get("diff_id")
     dispatch = document.get("review_dispatch")
     profile = document.get("reviewer_profile")
     lane = document.get("reviewer_lane")
@@ -693,8 +853,8 @@ def parse_verdict(text: str) -> Verdict:
         raise ReviewExchangeError(ISSUE_ERROR)
     if not isinstance(reviewed_sha, str) or not FULL_SHA.fullmatch(reviewed_sha):
         raise ReviewExchangeError(SHA_ERROR)
-    if not isinstance(patch_id, str) or not PATCH_ID.fullmatch(patch_id):
-        raise ReviewExchangeError(PATCH_ID_ERROR)
+    if not isinstance(diff_id, str) or not DIFF_ID.fullmatch(diff_id):
+        raise ReviewExchangeError(DIFF_ID_ERROR)
     if not isinstance(dispatch, str) or not dispatch:
         raise ReviewExchangeError(DISPATCH_NAMED_ERROR)
     if not isinstance(profile, str) or not profile:
@@ -710,13 +870,35 @@ def parse_verdict(text: str) -> Verdict:
     return Verdict(
         issue=issue,
         reviewed_sha=reviewed_sha,
-        patch_id=patch_id,
+        diff_id=diff_id,
         review_dispatch=dispatch,
         reviewer_profile=profile,
         reviewer_lane=lane,
         findings=findings,
         recorded_at=recorded_at,
         alternates=tuple(alternates),
+    )
+
+
+def _lacks_diff_id(path: Path) -> bool:
+    """Whether a verdict that failed to parse is a version-1 record with no diff identity.
+
+    The migration discriminator: a record the rework predates carries a `patch_id`
+    (the first #417 build) or no identity field at all, and either is the one-time
+    `diff_id_unreadable` re-review rather than the generic corrupt-record refusal —
+    so the reader is told to re-review under the rule that now governs instead of
+    hunting a corruption that is not there. Anything that is not that shape — a
+    broken JSON document, another missing field — answers `False` and keeps the
+    `verdict_unreadable` it deserves.
+    """
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    if not isinstance(document, dict) or document.get("version") != 1:
+        return False
+    return not isinstance(document.get("diff_id"), str) or not DIFF_ID.fullmatch(
+        document["diff_id"]
     )
 
 
@@ -822,17 +1004,17 @@ def record_verdict(  # noqa: PLR0911, PLR0913 — one refusal per way a record c
     findings_text: str,
     dispatch_root: Path,
     *,
-    patch_id: str,
+    diff_id: str,
     now: str | None = None,
 ) -> Recorded | Refusal:
     """Derive the reviewing identity and write the verdict beside that dispatch.
 
     The caller supplies the four things it owns — the issue, the reviewed SHA, the
-    findings, the patch-id of the reviewed diff as `patch_id_of` computes it — and
+    findings, the diff identity of the reviewed diff as `diff_id_of` computes it — and
     nothing about who reviewed. The identity comes from `derive_binding`, the same
     derivation `show` re-runs later, so a verdict never carries an identity some
-    caller typed. The patch-id is caller-supplied at this seam and forgeable, and
-    that buys nothing: the landing computes its own patch-id from its own tree and
+    caller typed. The diff identity is caller-supplied at this seam and forgeable, and
+    that buys nothing: the landing computes its own identity from its own tree and
     compares, so a forged record only ever fails the comparison. Writing is once,
     atomically: the file is created exclusively (`_write_verdict_once`), so a verdict
     that already exists where this one would land refuses `verdict_exists`, because
@@ -848,11 +1030,11 @@ def record_verdict(  # noqa: PLR0911, PLR0913 — one refusal per way a record c
             (f"reviewed_sha={reviewed_sha}", SHA_ERROR),
             f"Name the reviewed commit in full — {SHA_ERROR}.",
         )
-    if not isinstance(patch_id, str) or not PATCH_ID.fullmatch(patch_id):
+    if not isinstance(diff_id, str) or not DIFF_ID.fullmatch(diff_id):
         return Refusal(
-            "invalid_patch_id",
-            (f"patch_id={patch_id!r}", PATCH_ID_ERROR),
-            f"Record the patch-id `patch_id_of` returns — {PATCH_ID_ERROR}. A verdict"
+            "invalid_diff_id",
+            (f"diff_id={diff_id!r}", DIFF_ID_ERROR),
+            f"Record the diff identity `diff_id_of` returns — {DIFF_ID_ERROR}. A verdict"
             " without one can never carry across a rebase, and an unreadable one is a"
             " refusal, never a pass (#41).",
         )
@@ -871,7 +1053,7 @@ def record_verdict(  # noqa: PLR0911, PLR0913 — one refusal per way a record c
     verdict = Verdict(
         issue=issue,
         reviewed_sha=reviewed_sha,
-        patch_id=patch_id,
+        diff_id=diff_id,
         review_dispatch=binding.dispatch_id,
         reviewer_profile=binding.profile,
         reviewer_lane=binding.lane,
@@ -886,52 +1068,106 @@ def record_verdict(  # noqa: PLR0911, PLR0913 — one refusal per way a record c
     return Recorded(verdict, path)
 
 
-def satisfies(verdict: Verdict, sha: str, patch_id: str | None = None) -> Refusal | None:
+def satisfies(  # noqa: PLR0911 — one return per way a binding can fail, so no refusal hides inside another
+    verdict: Verdict,
+    sha: str,
+    diff_id: str | Refusal | None = None,
+    *,
+    clean_rebase: bool | Refusal | None = None,
+) -> Refusal | None:
     """Whether this verdict binds the commit asked about — `None` when it does.
 
-    Two halves, in the order they are cheap (#417): the SHA first — a verdict always
-    satisfies the commit it names — and, where the SHA has moved, the patch-id of the
-    diff being landed against the one the record carries. A clean rebase reproduces
-    the diff and keeps its review; a rebase whose conflicts a hand resolved changes
-    the patch and refuses. The refusal names which half failed rather than returning
-    a bare false, because the caller that needs it is a landing gate: "not this one"
-    must say which one it is before anyone re-reviews, and a quiet miss is how an
-    amended branch rides an earlier approval. A patch-id that is absent, blank or
-    malformed on either side is the third answer, `patch_id_unreadable` — the
-    comparison could not run, so it did not pass (#41).
+    The SHA first — a verdict always satisfies the commit it names — and where the
+    SHA has moved, two facts that must **both** hold (#417, reworked): the move is a
+    chain of clean rebases the tooling recorded (`clean_rebase`, the walk's answer
+    over the recorded links, or the `Refusal` that says the links could not be
+    read), and the landing diff's identity equals the recorded one (`diff_id`, the
+    landing's own computation, or the `Refusal` that says it could not run). Either
+    alone is insufficient: an identical diff reached by a hand-resolved rebase is
+    unproven, and a tool-run clean rebase can still drop a commit as already
+    upstream. The refusal names which half failed rather than returning a bare
+    false, because the caller that needs it is a landing gate: "not this one" must
+    say which one it is before anyone re-reviews, and a quiet miss is how an amended
+    branch rides an earlier approval.
+
+    **The record's own identity is validated before the SHA clears** (review round
+    on the first build, Medium): a verdict whose `diff_id` is absent or malformed
+    used to clear on the exact-SHA path without the field ever being read, so a
+    missing identity passed. It refuses `diff_id_unreadable` whatever the SHA — the
+    record is corrupt, and a verdict recorded before #417's rework (which carries a
+    `patch_id`, or nothing) meets this refusal too: that is the one-time migration,
+    a fail-closed re-review of every verdict the rework predates. An identity that
+    could not be computed on the landing side is the same refusal, consulted only
+    where the SHA has moved and it would have carried (#41).
     """
+    if not isinstance(verdict.diff_id, str) or not DIFF_ID.fullmatch(verdict.diff_id):
+        return Refusal(
+            "diff_id_unreadable",
+            (
+                f"asked={sha}",
+                f"reviewed={verdict.reviewed_sha}",
+                f"dispatch={verdict.review_dispatch}",
+                f"recorded_diff_id={verdict.diff_id!r}",
+            ),
+            "The verdict's diff identity is not an identity at all — "
+            f"{DIFF_ID_ERROR}. A verdict recorded before #417's rework (a `patch_id`"
+            " field, or none) meets this refusal: its one-time migration is a"
+            " fail-closed re-review. Repair the record by re-recording the verdict;"
+            " a check that could not run is not a check that passed (#41).",
+        )
     if verdict.reviewed_sha == sha:
         return None
-    if not isinstance(verdict.patch_id, str) or not PATCH_ID.fullmatch(verdict.patch_id):
+    if isinstance(diff_id, Refusal):
         return Refusal(
-            "patch_id_unreadable",
+            "diff_id_unreadable",
             (
                 f"asked={sha}",
                 f"reviewed={verdict.reviewed_sha}",
                 f"dispatch={verdict.review_dispatch}",
-                f"recorded_patch_id={verdict.patch_id!r}",
+                *diff_id.found,
             ),
-            "The SHA has moved and the patch-id the review would carry across on is"
-            f" not a patch-id at all — {PATCH_ID_ERROR}. Repair the record by"
-            " re-recording the verdict; a check that could not run is not a check"
-            " that passed (#41).",
+            "The SHA has moved and the landing diff's identity could not be computed,"
+            " so the half of the binding that carries a review across a rebase could"
+            " not run. "
+            + diff_id.action
+            + " A check that could not run is not a check that passed (#41).",
         )
-    if patch_id is None or not PATCH_ID.fullmatch(patch_id):
+    if not isinstance(diff_id, str) or not DIFF_ID.fullmatch(diff_id):
         return Refusal(
-            "patch_id_unreadable",
+            "diff_id_unreadable",
             (
                 f"asked={sha}",
                 f"reviewed={verdict.reviewed_sha}",
                 f"dispatch={verdict.review_dispatch}",
-                f"landing_patch_id={patch_id!r}",
+                f"landing_diff_id={diff_id!r}",
             ),
-            "The SHA has moved and the landing diff's patch-id was not supplied, so"
+            "The SHA has moved and the landing diff's identity was not supplied, so"
             " the half of the binding that carries a review across a rebase could not"
-            " run. Compute it where the landing tree is (`patch_id_of`:"
-            " `git diff origin/main...HEAD | git patch-id --stable`) — a check that"
+            " run. Compute it where the landing tree is (`diff_id_of`) — a check that"
             " could not run is not a check that passed (#41).",
         )
-    if patch_id == verdict.patch_id:
+    if isinstance(clean_rebase, Refusal):
+        return clean_rebase
+    if clean_rebase is not True:
+        return Refusal(
+            "rebase_unproven",
+            (
+                f"asked={sha}",
+                f"reviewed={verdict.reviewed_sha}",
+                f"dispatch={verdict.review_dispatch}",
+                (
+                    f"diff_id={'match' if diff_id == verdict.diff_id else 'mismatch'}"
+                    f" asked={diff_id} reviewed={verdict.diff_id}"
+                ),
+                "clean_rebase=no recorded chain connects the reviewed commit to this one",
+            ),
+            "The diff may be the diff reviewed, but nothing records that this"
+            " commit reached here by rebases the tooling ran clean — and the rebase"
+            " is the only party that knows whether a hand resolved anything, which is"
+            " why the fact is recorded at the source and never inferred from the"
+            " diff. Re-review what is being landed. " + SHA_BINDING_NOTE + ".",
+        )
+    if diff_id == verdict.diff_id:
         return None
     return Refusal(
         "sha_mismatch",
@@ -940,10 +1176,14 @@ def satisfies(verdict: Verdict, sha: str, patch_id: str | None = None) -> Refusa
             f"reviewed={verdict.reviewed_sha}",
             f"dispatch={verdict.review_dispatch}",
             "sha=mismatch",
-            f"patch_id=mismatch asked={patch_id} reviewed={verdict.patch_id}",
+            f"diff_id=mismatch asked={diff_id} reviewed={verdict.diff_id}",
+            (
+                "clean_rebase=recorded (the diff changed under it — a commit dropped as"
+                " already upstream, or content the replay reshaped)"
+            ),
         ),
-        "Neither half of the binding holds: the commit is not the one reviewed, and"
-        " the diff is not the diff reviewed. "
+        "The commit is not the one reviewed and the diff is not the diff reviewed,"
+        " though the rebases between them ran clean. "
         + SHA_BINDING_NOTE
         + ". Re-review what is being landed.",
     )
@@ -1009,32 +1249,41 @@ class BoundVerdict(NamedTuple):
     `Bound` — the dispatch, the profile and the lane it prints on the clearance (#334
     round 2 re-review, Medium 2). Two copies of one derivation agree only until one of
     them grows a check, so the return is widened to carry both rather than the landing
-    keeping a copy of how a verdict binds. `carried_by_patch_id` names which half of
+    keeping a copy of how a verdict binds. `carried_by_diff` names which half of
     #417's binding cleared — `False` for the SHA the verdict names, `True` where the
-    SHA had moved and the diff's patch-id carried the review across — so a clearance
-    prints the patch-id limit exactly where it applied and a SHA-matched one prints
-    nothing it does not owe.
+    SHA had moved and the recorded clean rebases plus the diff's identity carried the
+    review across — so a clearance prints the identity limit exactly where it applied
+    and a SHA-matched one prints nothing it does not owe.
     """
 
     verdict: Verdict
     binding: Bound
-    carried_by_patch_id: bool
+    carried_by_diff: bool
 
 
-def bound_verdict(  # noqa: C901, PLR0911 — one return per way a record can fail to bind, as the landing's own ladder has
-    issue: int, sha: str, dispatch_root: Path, patch_id: str | None = None
+def bound_verdict(  # noqa: C901, PLR0911, PLR0912 — one branch and one return per way a record can fail to bind, as the landing's own ladder has
+    issue: int,
+    sha: str,
+    dispatch_root: Path,
+    diff_id: str | Refusal | None = None,
+    rebase_links: tuple[RebaseLink, ...] | Refusal | None = None,
 ) -> BoundVerdict | Refusal:
     """Read the verdict that binds one issue's commit, or the refusal that stops it.
 
     The whole derivation in one call, in the order the landing's rung climbs it: the
     candidates from the dispatch records, the record beside each, the item it names,
-    the SHA or patch-id it satisfies (#417), and the identity re-derived rather than
-    believed. The candidates are this issue's completed reviews, latest first, not
-    only the ones bound to `sha` — a landing whose rebase moved the SHA is bound to
-    the review of the pre-rebase commit, and the patch-id is what carries it — and
-    the first verdict that satisfies wins, so the newest review that judged either
-    this commit or this diff is the one that clears. It lives here rather than beside
-    either caller because both #334's landing rung and #333's `review-loop sync` need
+    the SHA or the diff-plus-provenance that satisfies it (#417), and the identity
+    re-derived rather than believed. The candidates are this issue's completed
+    reviews, latest first, not only the ones bound to `sha` — a landing whose rebase
+    moved the SHA is bound to the review of the pre-rebase commit, and the recorded
+    clean rebases plus the diff identity are what carry it — and the first verdict
+    that satisfies wins, so the newest review that judged either this commit or this
+    diff is the one that clears. `rebase_links` is the caller's read of the issue's
+    recorded links (`read_rebases`), or the `Refusal` that says they could not be
+    read; `None` — the `review-loop sync` shape — walks no chain, and a moved SHA
+    therefore refuses `rebase_unproven` there, which is correct: a loop folds from
+    the verdict's own commit or not at all. It lives here rather than beside either
+    caller because both #334's landing rung and #333's `review-loop sync` need
     the *same* verdict — a loop opened from anything else would be a record of
     findings no verdict is on the hook for, and a landing cleared against a different
     one would be a landing cleared by a review of another commit.
@@ -1042,7 +1291,7 @@ def bound_verdict(  # noqa: C901, PLR0911 — one return per way a record can fa
     scanned = _completed_candidates(dispatch_root, issue, None)
     if isinstance(scanned, Refusal):
         return scanned
-    candidates, _root = scanned
+    candidates = scanned
     if not candidates:
         return Refusal(
             "no_review_dispatch",
@@ -1071,9 +1320,22 @@ def bound_verdict(  # noqa: C901, PLR0911 — one return per way a record can fa
                 " Record the verdict (`just review record`) — a completed review whose"
                 " judgement no one can read clears nothing (#41).",
             )
+        provenance: bool | Refusal | None = None
         try:
             verdict = parse_verdict(path.read_text(encoding="utf-8"))
         except (OSError, ValueError) as error:
+            # A version-1 record whose identity field predates #417's rework — a
+            # `patch_id`, or nothing — is named as what it is rather than folded into
+            # "will not parse": the one-time migration, a fail-closed re-review.
+            if isinstance(error, ReviewExchangeError) and _lacks_diff_id(path):
+                return Refusal(
+                    "diff_id_unreadable",
+                    (f"verdict={path}", f"reason={error}"),
+                    "The verdict record carries no diff identity — it predates #417's"
+                    " rework (a `patch_id` field, or none), and its one-time migration"
+                    " is a fail-closed re-review of the diff under the rule that now"
+                    " governs (#41).",
+                )
             return Refusal(
                 "verdict_unreadable",
                 (f"verdict={path}", f"reason={error}"),
@@ -1087,7 +1349,11 @@ def bound_verdict(  # noqa: C901, PLR0911 — one return per way a record can fa
                 "This verdict judges another item's work. A verdict satisfies only the item"
                 " and the diff it names, so record one for this item's commit.",
             )
-        mismatch = satisfies(verdict, sha, patch_id)
+        if isinstance(rebase_links, tuple):
+            provenance = carried_by_clean_rebase(rebase_links, verdict.reviewed_sha, sha)
+        else:
+            provenance = rebase_links
+        mismatch = satisfies(verdict, sha, diff_id, clean_rebase=provenance)
         if mismatch is None:
             # The identity is derived against the verdict's own commit, never the
             # landing's moved one: the dispatch records name what was reviewed, and
@@ -1098,7 +1364,7 @@ def bound_verdict(  # noqa: C901, PLR0911 — one return per way a record can fa
             forged = identity_mismatch(verdict, binding)
             if forged is not None:
                 return forged
-            return BoundVerdict(verdict, binding, carried_by_patch_id=verdict.reviewed_sha != sha)
+            return BoundVerdict(verdict, binding, carried_by_diff=verdict.reviewed_sha != sha)
     if mismatch is None:
         # Unreachable in a walk that had candidates: every iteration either returns
         # or sets `mismatch`, and the empty-candidates case returned above. Stated as
@@ -1153,12 +1419,12 @@ def _record_report(outcome: Recorded | Refusal) -> Report:
             f"reviewer_lane={verdict.reviewer_lane}",
             f"issue={verdict.issue}",
             f"reviewed_sha={verdict.reviewed_sha}",
-            f"patch_id={verdict.patch_id}",
+            f"diff_id={verdict.diff_id}",
             f"findings={len(verdict.findings)}",
             f"alternates={' '.join(verdict.alternates) or 'none'}",
             f"verdict={path}",
             SHA_BINDING_NOTE,
-            PATCH_ID_LIMIT,
+            DIFF_ID_LIMIT,
             SAME_USER_LIMIT,
         ),
         0,
@@ -1166,14 +1432,19 @@ def _record_report(outcome: Recorded | Refusal) -> Report:
 
 
 def _show(  # noqa: PLR0911 — one return per refusal, so each stays a whole thought
-    dispatch_id: str, dispatch_root: Path, satisfies_sha: str, patch_id: str | None
+    dispatch_id: str,
+    dispatch_root: Path,
+    review_root: Path,
+    satisfies_sha: str,
+    diff_id: str | None,
 ) -> Report:
     """Read one verdict, re-derive its identity, and answer any satisfaction question.
 
-    `patch_id` is the asking side's own diff as `patch_id_of` computes it, and it is
-    what lets `--satisfies` answer `yes` for a commit the rebase produced — without
-    it, a moved SHA refuses `patch_id_unreadable`, the honest "this comparison could
-    not run".
+    `diff_id` is the asking side's own diff as `diff_id_of` computes it, and the
+    recorded clean rebases are read from `review_root` — together they are what let
+    `--satisfies` answer `yes` for a commit a rebase produced; without either, a
+    moved SHA refuses (`diff_id_unreadable`, `rebase_unproven`), the honest "this
+    comparison could not run" and "this move is not proven" respectively.
     """
     try:
         path = verdict_path(dispatch_root, dispatch_id)
@@ -1191,6 +1462,16 @@ def _show(  # noqa: PLR0911 — one return per refusal, so each stays a whole th
     try:
         verdict = parse_verdict(path.read_text(encoding="utf-8"))
     except (OSError, ValueError, json.JSONDecodeError) as error:
+        if isinstance(error, ReviewExchangeError) and _lacks_diff_id(path):
+            return Report.refused(
+                Refusal(
+                    "diff_id_unreadable",
+                    (f"verdict={path}", f"found={type(error).__name__}: {error}"),
+                    "The verdict record carries no diff identity — it predates #417's"
+                    " rework (a `patch_id` field, or none), and its one-time migration"
+                    " is a fail-closed re-review (#41).",
+                )
+            )
         return Report.refused(
             Refusal(
                 "verdict_unreadable",
@@ -1209,7 +1490,7 @@ def _show(  # noqa: PLR0911 — one return per refusal, so each stays a whole th
         f"reviewer_lane={verdict.reviewer_lane}",
         f"issue={verdict.issue}",
         f"reviewed_sha={verdict.reviewed_sha}",
-        f"patch_id={verdict.patch_id}",
+        f"diff_id={verdict.diff_id}",
         f"findings={len(verdict.findings)}",
         f"alternates={' '.join(verdict.alternates) or 'none'}",
         f"derived=yes identity_checked-not-verified records={binding.dispatch_id}",
@@ -1223,12 +1504,18 @@ def _show(  # noqa: PLR0911 — one return per refusal, so each stays a whole th
             return Report.refused(
                 Refusal("invalid_sha", (f"asked={satisfies_sha}",), SHA_ERROR + ".")
             )
-        mismatch = satisfies(verdict, satisfies_sha, patch_id)
+        links = read_rebases(review_root, verdict.issue)
+        clean = (
+            links
+            if isinstance(links, Refusal)
+            else carried_by_clean_rebase(links, verdict.reviewed_sha, satisfies_sha)
+        )
+        mismatch = satisfies(verdict, satisfies_sha, diff_id, clean_rebase=clean)
         if mismatch is not None:
             return Report.refused(mismatch)
-        if patch_id is not None and verdict.reviewed_sha != satisfies_sha:
-            lines.append(f"satisfies={satisfies_sha} yes carried_by=patch_id")
-            lines.append(PATCH_ID_LIMIT)
+        if verdict.reviewed_sha != satisfies_sha:
+            lines.append(f"satisfies={satisfies_sha} yes carried_by=diff_id")
+            lines.append(DIFF_ID_LIMIT)
         else:
             lines.append(f"satisfies={satisfies_sha} yes")
     return Report(tuple(lines), 0)
@@ -1276,10 +1563,15 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     read.add_argument("dispatch_id", help="the review dispatch id")
     read.add_argument("--satisfies", metavar="SHA", help="ask whether it satisfies this commit")
     read.add_argument(
-        "--patch-id",
+        "--diff-id",
         metavar="ID",
-        help="the asked commit's diff as `git patch-id --stable` prints it, so a moved"
+        help="the asked commit's diff identity as `diff_id_of` computes it, so a moved"
         " SHA can answer through the diff it shares with the review",
+    )
+    read.add_argument(
+        "--review-root",
+        default=str(review_loop.REVIEW_ROOT),
+        help="the review state directory holding the recorded clean rebases",
     )
     read.add_argument(
         "--dispatch-dir", default=str(DISPATCH_ROOT), help="the dispatch records' root"
@@ -1317,18 +1609,19 @@ def main(argv: list[str] | None = None) -> int:
                     )
                 )
             else:
-                # The patch-id is computed here rather than passed in, because a flag is
-                # a hand that retypes what git can say — the same mistype #319 paid for.
-                # The fetch is what makes the range honest: without it a stale
-                # `origin/main` puts main's own commits inside the merge-base-relative
-                # diff and the record would bind a patch nobody reviewed.
+                # The diff identity is computed here rather than passed in, because a
+                # flag is a hand that retypes what git can say — the same mistype #319
+                # paid for. The fetch is what makes the range honest: without it a
+                # stale `origin/main` puts main's own commits inside the
+                # merge-base-relative diff and the record would bind a diff nobody
+                # reviewed.
                 repo = Path(args.repo)
                 try:
                     worktree.git("fetch", "origin", cwd=repo)
                 except worktree.GitError as failure:
                     report = _git_failed(repo, failure)
                 else:
-                    patch = patch_id_of(repo, args.reviewed_sha)
+                    identity = diff_id_of(repo, args.reviewed_sha)
                     report = (
                         _record_report(
                             record_verdict(
@@ -1336,11 +1629,11 @@ def main(argv: list[str] | None = None) -> int:
                                 args.reviewed_sha,
                                 Path(args.findings).read_text(encoding="utf-8"),
                                 Path(args.dispatch_dir),
-                                patch_id=patch,
+                                diff_id=identity,
                             )
                         )
-                        if isinstance(patch, str)
-                        else Report.refused(patch)
+                        if isinstance(identity, str)
+                        else Report.refused(identity)
                     )
         elif not args.dispatch_id:
             report = Report.refused(
@@ -1351,7 +1644,13 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
         else:
-            report = _show(args.dispatch_id, Path(args.dispatch_dir), args.satisfies, args.patch_id)
+            report = _show(
+                args.dispatch_id,
+                Path(args.dispatch_dir),
+                Path(args.review_root),
+                args.satisfies,
+                args.diff_id,
+            )
     except (OSError, ValueError) as failure:
         report = Report.refused(
             Refusal(

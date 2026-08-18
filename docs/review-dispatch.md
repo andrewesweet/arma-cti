@@ -214,15 +214,35 @@ retyping produced a plausible evidence path that resolved to nothing, which is w
 none. A review is nothing *but* paths, line numbers and SHAs, so every one of them is pasted
 from `git show`, `rg -n` or a `Read`, never retyped from memory of what was read.
 
-### The verdict binds the patch, not only the commit
+### The verdict binds the diff, not only the commit
 
-The verdict record beside the review's dispatch names the commit it judged and the stable
-patch-id of the diff it judged (#417), so a landing whose clean rebase moved the SHA carries
-the review across on the patch-id — a clean rebase reproduces the diff byte for byte — while a
-rebase whose conflicts a hand resolved changes the diff, fails the patch-id, and owes a fresh
-review. The limit, stated once here and in the landing rung's own prose: patch-id equality
-proves the diff is unchanged, not that its meaning survived the move onto the new base — the
-gate's tests at landing are what catch that difference, and they still run.
+The verdict record beside the review's dispatch names the commit it judged and the exact
+identity of the diff it judged (#417): a SHA-256 over `git diff --unified=0 origin/main...<sha>`
+with the hunk-header and `index` lines normalised away, so line offsets a sibling's landing
+shifts and base-side blob hashes cannot move it, while every added and removed byte still does.
+A landing whose rebase moved the SHA carries the review across only where **both** halves hold:
+
+1. **the rebase's own outcome, recorded as a fact.** Only the tool that ran the rebase knows
+   whether a hand resolved anything, and hashing the result cannot recover that — a conflict
+   resolved with trailing whitespace the reviewer never saw hashed identical under the first
+   build's `git patch-id`, which is why #417 was reworked. `just land --stage` and `just land`
+   append what they ran to `<review-root>/<issue>/rebases.json` when the replay is clean and
+   moved HEAD, and the carry is a reachability walk over those links: any hand-run rebase, any
+   commit or amend after a recorded one, breaks the chain and owes a fresh review
+   (`rebase_unproven`).
+2. **the exact diff identity, matching on both sides** — computed the same way at `just review
+   record` over the reviewed commit and at the landing rung over the rebased tree.
+
+The limit, stated once here and in the landing rung's own prose: a matching identity plus
+recorded clean rebases proves the diff is unchanged and was mechanically replayed, not that its
+meaning survived the move onto the new base — the gate's tests at landing are what catch that
+difference, and they still run.
+
+**Verdicts recorded before the rework carry no identity and take a one-time re-review.** The
+first build recorded a `patch_id` (or nothing); such a verdict parses to no valid `diff_id` and
+the rung refuses `diff_id_unreadable` rather than passing on a hash the rework has retired.
+Nothing is migrated — re-run the review dispatch over the same branch and `just review record`
+writes a verdict that carries the identity.
 
 ### Citations are countable, and since #328 nobody counts them
 

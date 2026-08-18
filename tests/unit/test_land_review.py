@@ -30,8 +30,9 @@ review_exchange = load_tool("review_exchange")
 
 SHA: Final = "a" * 40
 OTHER_SHA: Final = "b" * 40
-PATCH: Final = "c" * 40
-OTHER_PATCH: Final = "d" * 40
+BASE_SHA: Final = "e" * 40
+DIFF_ID: Final = "c" * 64
+OTHER_DIFF_ID: Final = "d" * 64
 STAMP: Final = "20260815T0000Z"
 ISSUE: Final = 334
 REVIEWER: Final = "codex-luna-max"
@@ -81,7 +82,7 @@ def _verdict(  # noqa: PLR0913 — one parameter per field of the record under t
     *,
     issue: int = ISSUE,
     sha: str = SHA,
-    patch_id: str = PATCH,
+    diff_id: str = DIFF_ID,
     dispatch: str = "d-review-1",
     profile: str = REVIEWER,
     findings: tuple[tuple[str, str], ...] = (),
@@ -94,7 +95,7 @@ def _verdict(  # noqa: PLR0913 — one parameter per field of the record under t
             "version": 1,
             "issue": issue,
             "reviewed_sha": sha,
-            "patch_id": patch_id,
+            "diff_id": diff_id,
             "review_dispatch": dispatch,
             "reviewer_profile": profile,
             "reviewer_lane": lane,
@@ -187,6 +188,7 @@ def _stage(  # noqa: PLR0913 — one parameter per record the rung reads
     escalation: str | None = None,
     author: str | None = AUTHOR,
     records: tuple[tuple[str, str, str], ...] = (),
+    rebases: tuple[tuple[str, str], ...] = ((SHA, OTHER_SHA),),
 ) -> tuple[Path, Path]:
     """Stage the dispatch and review roots a rung reads.
 
@@ -208,6 +210,12 @@ def _stage(  # noqa: PLR0913 — one parameter per record the rung reads
     further dispatch directories beside the review's own — authoring records,
     alternates, the unreadable — and is applied last, so a test may overwrite the
     default authoring record by naming `d-author-1` itself.
+
+    `rebases` writes the clean-rebase links `just land` records (#417), one
+    `(before, after)` per replay it ran to completion without conflict. The default
+    records the reviewed `SHA` reaching `OTHER_SHA`, so the tests that move the SHA
+    exercise the identity half against a provenance half that holds; `rebases=()`
+    withholds every link, which is the arrangement `rebase_unproven` is asserted on.
     """
     dispatch_root = tmp_path / "dispatches"
     review_root = tmp_path / "review"
@@ -233,6 +241,12 @@ def _stage(  # noqa: PLR0913 — one parameter per record the rung reads
         recorded = review_root / str(ISSUE) / review_loop.ESCALATION_FILE
         recorded.parent.mkdir(parents=True, exist_ok=True)
         recorded.write_text(escalation, encoding="utf-8")
+    for before, after in rebases:
+        review_exchange.record_rebase(
+            review_root,
+            ISSUE,
+            review_exchange.RebaseLink(before=before, after=after, base=BASE_SHA, at=STAMP),
+        )
     for name, filename, text in records:
         extra = dispatch_root / name
         extra.mkdir(parents=True, exist_ok=True)
@@ -245,7 +259,7 @@ def _rung(  # noqa: PLR0913 — one keyword per input the rung reads, as the run
     *,
     issue: int | None = ISSUE,
     sha: str = SHA,
-    patch_id: str | None = None,
+    diff_id: str | None = None,
     paths: tuple[str, ...] | None = ("tools/worker.py",),
     gate_paths: tuple[str, ...] | None = (),
     exemptions: str | None = None,
@@ -261,12 +275,13 @@ def _rung(  # noqa: PLR0913 — one keyword per input the rung reads, as the run
     cross-lane predicate does not apply and every rung below it is what it was. The
     cross-lane tests name their own gate paths.
 
-    `patch_id=None` is the landing that cannot state its own diff's hash; the tests
-    that clear over a moved SHA (#417) name the patch-id the verdict carries.
+    `diff_id=None` is the landing that cannot state its own diff's identity; the tests
+    that clear over a moved SHA (#417) name the identity the verdict carries, which the
+    rung reads together with the clean-rebase links `_stage` recorded.
     """
     dispatch_root, review_root = roots
     return land_review.review_finding(
-        issue, sha, paths, gate_paths, exemptions, dispatch_root, review_root, patch_id
+        issue, sha, paths, gate_paths, exemptions, dispatch_root, review_root, diff_id
     )
 
 
@@ -362,51 +377,103 @@ def test_a_verdict_for_another_issue_does_not_clear_this_landing(tmp_path: Path)
 
 
 def test_a_verdict_for_another_commit_does_not_clear_this_one(tmp_path: Path) -> None:
-    """#332's binding as #417 widened it: both SHAs and both patch-ids named."""
-    outcome = _rung(_stage(tmp_path, verdict=_verdict(sha=OTHER_SHA)), patch_id=OTHER_PATCH)
+    """#332's binding as #417 reworked it: both SHAs and both identities named.
+
+    The links run the other way here — the reviewed commit is `OTHER_SHA` and the
+    landing asks about `SHA` — so the provenance half holds and the refusal is the
+    identity's, which is the one that names what the reviewer did not see.
+    """
+    outcome = _rung(
+        _stage(tmp_path, verdict=_verdict(sha=OTHER_SHA), rebases=((OTHER_SHA, SHA),)),
+        diff_id=OTHER_DIFF_ID,
+    )
 
     refusal = outcome.refusal
     assert refusal.kind == "sha_mismatch"
     assert f"asked={SHA}" in refusal.found
     assert f"reviewed={OTHER_SHA}" in refusal.found
-    assert f"patch_id=mismatch asked={OTHER_PATCH} reviewed={PATCH}" in refusal.found
+    assert f"diff_id=mismatch asked={OTHER_DIFF_ID} reviewed={DIFF_ID}" in refusal.found
 
 
-def test_a_clean_rebase_carries_the_verdict_across_on_the_patch_id(tmp_path: Path) -> None:
-    """#417's clearance: the SHA moved and the diff did not, so the review rides.
+def test_a_recorded_clean_rebase_and_a_matching_identity_carry_the_verdict(
+    tmp_path: Path,
+) -> None:
+    """#417's clearance, reworked: both halves hold, so the review rides.
 
     The plan and verdict both name the reviewed SHA; the landing names the SHA the
-    rebase produced and the patch-id of the diff it still is. The identity derives
-    against the verdict's own SHA, never the landing's, so the reviewer of record is
-    the one who reviewed the diff — not whoever the landing would rather name.
+    rebase produced, the identity of the diff it still is, and the links `just land`
+    recorded when it replayed that rebase clean. The reviewer identity derives against
+    the verdict's own SHA, never the landing's, so the reviewer of record is the one
+    who reviewed the diff — not whoever the landing would rather name.
     """
-    outcome = _rung(_stage(tmp_path), sha=OTHER_SHA, patch_id=PATCH)
+    outcome = _rung(_stage(tmp_path), sha=OTHER_SHA, diff_id=DIFF_ID)
 
     assert outcome.refusal is None
     cleared = "\n".join(outcome.cleared)
-    assert f"carried_by=patch_id {PATCH}" in cleared
-    assert review_exchange.PATCH_ID_LIMIT in cleared
+    assert f"carried_by=diff_id {DIFF_ID}" in cleared
+    assert "provenance=clean_rebase_recorded" in cleared
+    assert review_exchange.DIFF_ID_LIMIT in cleared
 
 
-def test_a_conflict_resolved_rebase_changes_the_patch_and_forces_re_review(
+def test_a_conflict_resolved_rebase_changes_the_identity_and_forces_re_review(
     tmp_path: Path,
 ) -> None:
-    """A hand that resolved a conflict changed the diff, and patch-id equality notices."""
-    outcome = _rung(_stage(tmp_path), sha=OTHER_SHA, patch_id=OTHER_PATCH)
+    """A hand that resolved a conflict changed the diff, and exact identity notices.
+
+    The links are staged, so this is the residue the provenance half cannot catch —
+    a replay the tooling ran clean that still reshaped the diff, by dropping a commit
+    as already upstream. Only the identity half sees it, which is why both are read.
+    """
+    outcome = _rung(_stage(tmp_path), sha=OTHER_SHA, diff_id=OTHER_DIFF_ID)
 
     refusal = outcome.refusal
     assert refusal.kind == "sha_mismatch"
-    assert f"patch_id=mismatch asked={OTHER_PATCH} reviewed={PATCH}" in refusal.found
+    assert f"diff_id=mismatch asked={OTHER_DIFF_ID} reviewed={DIFF_ID}" in refusal.found
 
 
-def test_a_moved_sha_with_no_landing_patch_id_refuses_rather_than_guess(
+def test_a_moved_sha_with_no_recorded_rebase_refuses_however_the_diff_hashes(
+    tmp_path: Path,
+) -> None:
+    """The rework's whole lesson: an identical diff is not proof the replay was clean.
+
+    Nothing recorded this commit reaching here, so a hand may have resolved a conflict
+    into it — and hashing the output cannot tell. The identity matches exactly and the
+    landing still refuses.
+    """
+    outcome = _rung(_stage(tmp_path, rebases=()), sha=OTHER_SHA, diff_id=DIFF_ID)
+
+    assert _kind(outcome) == "rebase_unproven"
+    assert "clean_rebase=no recorded chain connects the reviewed commit to this one" in _text(
+        outcome
+    )
+
+
+def test_a_moved_sha_with_no_landing_identity_refuses_rather_than_guess(
     tmp_path: Path,
 ) -> None:
     """The half that carries across a rebase could not run, so it did not pass (#41)."""
     outcome = _rung(_stage(tmp_path), sha=OTHER_SHA)
 
-    assert _kind(outcome) == "patch_id_unreadable"
-    assert f"landing_patch_id={None!r}" in outcome.refusal.found
+    assert _kind(outcome) == "diff_id_unreadable"
+    assert f"landing_diff_id={None!r}" in outcome.refusal.found
+
+
+def test_a_pre_rework_verdict_refuses_by_its_own_name_not_as_unreadable(
+    tmp_path: Path,
+) -> None:
+    """The one-time migration (#417 round 1, Medium): a `patch_id` record is named as one.
+
+    A verdict recorded before the rework parses no further than its missing identity,
+    and folding that into `verdict_unreadable` would send a reader to repair a record
+    that is not corrupt. It re-reviews instead, and the refusal says so.
+    """
+    stale = json.loads(_verdict())
+    del stale["diff_id"]
+    stale["patch_id"] = "c" * 40
+    outcome = _rung(_stage(tmp_path, verdict=json.dumps(stale)))
+
+    assert _kind(outcome) == "diff_id_unreadable"
+    assert "predates #417's rework" in outcome.refusal.action
 
 
 def test_a_verdict_claiming_an_identity_the_records_do_not_derive(tmp_path: Path) -> None:

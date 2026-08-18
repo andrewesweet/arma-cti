@@ -6,14 +6,17 @@ is the ladder that reads them off records other tools wrote:
 1. **A review dispatch record for the commit being landed** — `seat=review`, on
    this issue, whose `base_sha` is this SHA, completed. `review_exchange`'s
    derivation decides it (#332), and this rung enforces rather than re-derives:
-   a verdict satisfies the SHA it names or a diff whose stable patch-id matches
-   the one it records (`satisfies`, #417), and its claimed identity is re-derived
-   at read time (`verify`), so an amended branch cannot ride an earlier approval
-   and a hand-edited record cannot forge the identity the dispatcher wrote. The
-   patch-id half is what keeps a **clean** rebase's review alive — the rebase
-   reproduces the diff, so the verdict still binds it — while a rebase whose
-   conflicts a hand resolved changes the diff and re-reviews. Patch-id equality
-   proves the diff is unchanged, not that its meaning survived the move onto the
+   a verdict satisfies the SHA it names, or a moved SHA where two facts both
+   hold (`satisfies`, #417 reworked) — the move is a chain of clean rebases the
+   tooling recorded, and the landing diff's exact identity matches the recorded
+   one — and its claimed identity is re-derived at read time (`verify`), so an
+   amended branch cannot ride an earlier approval and a hand-edited record
+   cannot forge the identity the dispatcher wrote. The pair is what keeps a
+   **clean** rebase's review alive while a rebase a hand resolved re-reviews,
+   however faithfully it reproduced the diff: identity alone can never prove
+   whether conflict resolution occurred, and only the rebase's own record can.
+   Matching identity plus recorded clean rebases proves the diff is unchanged
+   and mechanically replayed, not that its meaning survived the move onto the
    new base; the gate's tests at landing are what catch that difference, and
    they still run.
 2. **That review's identity absent from the dispatches that authored the work** —
@@ -408,19 +411,21 @@ def _alternates_lines(binding: review_exchange.Bound) -> tuple[str, ...]:
 
 
 def _binding_lines(bound: review_exchange.BoundVerdict) -> tuple[str, ...]:
-    """Name which half of #417's binding cleared, and its limit where the patch-id carried.
+    """Name which half of #417's binding cleared, and its limit where the diff carried.
 
     A clearance that rode the SHA prints nothing extra — the SHA is the whole proof the
-    record ever offered. One that rode the patch-id says so and states the limit beside
-    it, at the reader: patch-id equality proves the diff is unchanged, not that its
-    meaning survived the move onto the new base — the gate's tests at landing are what
-    catch that difference, and they still run.
+    record ever offered. One that rode a moved SHA says so and states the limit beside
+    it, at the reader: matching identity plus recorded clean rebases proves the diff is
+    unchanged and mechanically replayed, not that its meaning survived the move onto
+    the new base — the gate's tests at landing are what catch that difference, and
+    they still run.
     """
-    if not bound.carried_by_patch_id:
+    if not bound.carried_by_diff:
         return ()
     return (
-        f"carried_by=patch_id {bound.verdict.patch_id}",
-        review_exchange.PATCH_ID_LIMIT,
+        f"carried_by=diff_id {bound.verdict.diff_id}",
+        "provenance=clean_rebase_recorded",
+        review_exchange.DIFF_ID_LIMIT,
     )
 
 
@@ -518,7 +523,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     exemptions_text: str | None,
     dispatch_root: Path,
     review_root: Path,
-    patch_id: str | None = None,
+    diff_id: str | Refusal | None = None,
 ) -> Outcome:
     """Decide the never-alone rung for one landing: a typed refusal, or the clearance.
 
@@ -541,12 +546,17 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     rule: the one authority for what a gate path is stays in `routing_policy`, and this
     module never learns how a prefix matches.
 
-    `patch_id` is the landing diff's own stable patch-id, the caller's computation of
-    `review_exchange.patch_id_of` over this tree — the second half of #417's binding,
-    which carries a verdict across a rebase that moved the SHA but reproduced the diff.
-    `None` is "could not be computed", and it refuses only where it would have been
-    needed: a verdict for the exact SHA clears without one, and a moved SHA refuses
-    `patch_id_unreadable` rather than reading the miss as a mismatch.
+    `diff_id` is the landing diff's own exact identity, the caller's computation of
+    `review_exchange.diff_id_of` over this tree — one half of #417's binding, which
+    carries a verdict across a rebase that moved the SHA. The other half this rung
+    reads for itself, from `review_root`: the issue's recorded clean-rebase links,
+    because the rebase is the only party that knows whether a hand resolved anything
+    and identity alone can never prove it (#417's rework, on the review that
+    disproved the patch-id build). `None` is "could not be computed" and a `Refusal`
+    is "computed and refused" — both refuse only where they would have been needed:
+    a verdict for the exact SHA clears without either, and a moved SHA refuses
+    (`diff_id_unreadable`, `rebase_unproven`) rather than reading the miss as a
+    mismatch.
     """
     if gate_paths is None or paths is None:
         return Outcome(_undetermined_gate_refusal(), ())
@@ -579,9 +589,12 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     # check added to `bound_verdict` alone would have `review-loop sync` folding a loop
     # from a verdict this landing accepts, and one added here alone would refuse a loop
     # `sync` built. The obstacle was that this rung also needs the `Bound`, so the return
-    # was widened to carry it rather than the copy kept. The patch-id rides the same call
-    # for the same reason: #417's second half is part of the binding, not of this rung.
-    bound = review_exchange.bound_verdict(issue, sha, dispatch_root, patch_id)
+    # was widened to carry it rather than the copy kept. The diff identity and the
+    # recorded clean-rebase links ride the same call for the same reason: both halves of
+    # #417's binding are part of the binding, not of this rung.
+    bound = review_exchange.bound_verdict(
+        issue, sha, dispatch_root, diff_id, review_exchange.read_rebases(review_root, issue)
+    )
     if not isinstance(bound, review_exchange.BoundVerdict):
         return Outcome(_landing_refusal(bound), ())
     verdict, binding = bound.verdict, bound.binding

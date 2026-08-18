@@ -104,12 +104,18 @@ exit code.
                             the review completed but no readable verdict record
                             sits beside its plan
     sha_mismatch            neither half of the verdict's binding holds: the commit
-                            is not the one reviewed and the diff's patch-id is not
+                            is not the one reviewed and the diff's identity is not
                             the one recorded (#417) — the refusal names both
-    patch_id_unreadable     the SHA moved and the patch-id that would carry the
-                            review across the rebase could not be read on one side
-                            or the other; a check that could not run is not a check
-                            that passed (#41)
+    diff_id_unreadable      the verdict's own diff identity is missing or invalid,
+                            or the landing's identity could not be computed; a
+                            check that could not run is not a check that passed
+                            (#41). A verdict recorded before #417's rework carries
+                            no identity at all, so it refuses here and takes the
+                            one-time re-review
+    rebase_unproven         the SHA moved and no chain of tool-recorded clean
+                            rebases connects the reviewed commit to the one
+                            landing — an identity match alone cannot prove whether
+                            a conflict was resolved by hand (#417)
     identity_mismatch       the verdict's claimed reviewer no longer derives from
                             the records as they stand
     review_same_profile     the reviewing profile is one the issue's own records
@@ -161,6 +167,7 @@ import os
 import re
 import subprocess
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
@@ -222,8 +229,8 @@ NOT_CHECKED: Final = (
     "whether the push and the ff-only merge can be run at all, whether the main "
     "checkout carries commits of its own, and the reviewed-commit rung where the "
     "rebase has commits to replay — the SHA a verdict names is not the one the replay "
-    "produces, and whether the diff's patch-id carries the review across is what the "
-    "landing itself checks (#417)"
+    "produces, and whether a recorded clean rebase plus a matching diff identity "
+    "carries the review across is what the landing itself checks (#417)"
 )
 NOT_CHECKED_MERGE_ONLY: Final = (
     "whether the ff-only merge into the main checkout can be run at all, and whether that "
@@ -762,6 +769,41 @@ def _issue_from(here: Path) -> int | None:
     return int(match.group(1)) if match else None
 
 
+def _record_clean_rebase(
+    here: Path, review: ReviewInputs, before: str, after: str, lines: list[str]
+) -> None:
+    """Append this rebase's outcome to the review root's link store (#417).
+
+    Only the tool that ran the rebase knows whether a hand resolved anything, so
+    only it can attest that the replay was clean — the verdict-carrying half of
+    the binding cannot be recovered by hashing the result, which is the lesson
+    the rework was filed over. A rebase that did not move HEAD records nothing:
+    a self-link connects no SHAs. A tree whose issue cannot be named, or a links
+    file that cannot be written, records nothing and says so — the landing fails
+    closed on the missing link (`rebase_unproven`), and the rebase itself has
+    already succeeded either way.
+    """
+    if before == after:
+        return
+    if review.issue is None:
+        lines.append("clean_rebase=unrecorded reason=issue_unknown")
+        return
+    link = review_exchange.RebaseLink(
+        before=before,
+        after=after,
+        base=git("rev-parse", BASE, cwd=here).strip(),
+        at=datetime.now(tz=UTC).isoformat(),
+    )
+    try:
+        review_exchange.record_rebase(
+            review.review_root or land_review.REVIEW_ROOT, review.issue, link
+        )
+    except OSError as failure:
+        lines.append(f"clean_rebase=unrecorded reason={failure}")
+        return
+    lines.append(f"clean_rebase=recorded {before[:12]}..{after[:12]}")
+
+
 def _exemptions_text(here: Path) -> str | None:
     """Read the trusted exemption table from fetched `origin/main`, or return `None`.
 
@@ -809,14 +851,16 @@ def _review_rung(
     hold it from `_routing_inputs` — one read of `origin/main`, one answer, so the
     routing rung and the never-alone rung cannot be judging different policies.
 
-    Since #417 the seam carries the landing diff's patch-id too, computed here over
+    Since #417 the seam carries the landing diff's identity too, computed here over
     this tree post-rebase — the same range the push pushes, the same hash the verdict
-    record carries. `None` where git could not produce it: the rung refuses on it only
-    where the SHA has moved and the patch-id was the half that would have carried the
-    review across, which is `satisfies`' own ordering, not this caller's guess.
+    record carries. A `Refusal` where git could not produce it, passed through
+    untouched rather than flattened to `None`: a `None` here would read as "no
+    identity was asked for", and the rung must refuse on the unreadable half instead
+    (#417's fail-closed ordering). The clean-rebase half the rung reads itself, from
+    the links this tool records under the review root.
     """
     head = git("rev-parse", "HEAD", cwd=here).strip()
-    patch = review_exchange.patch_id_of(here, head)
+    identity = review_exchange.diff_id_of(here, head)
     return land_review.review_finding(
         review.issue,
         head,
@@ -825,7 +869,7 @@ def _review_rung(
         _exemptions_text(here),
         review.dispatch_root or review_exchange.DISPATCH_ROOT,
         review.review_root or land_review.REVIEW_ROOT,
-        patch_id=patch if isinstance(patch, str) else None,
+        diff_id=identity,
     )
 
 
@@ -991,7 +1035,7 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     return _merge(root, here, pushed, lines)
 
 
-def stage(root: Path, here: Path) -> Report:  # noqa: PLR0911 — a ladder of named refusals
+def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:  # noqa: PLR0911 — a ladder of named refusals
     """Rebase onto `origin/main` and stop, printing the SHA a review must bind.
 
     The protocol's missing first step (#334 round 1 claim 6). A verdict binds the SHA
@@ -1009,6 +1053,10 @@ def stage(root: Path, here: Path) -> Report:  # noqa: PLR0911 — a ladder of na
     words. `root` is unused by the work and taken all the same, so the two entry points
     have one signature shape and a later step that needs the main checkout does not
     change the CLI.
+
+    Since #417 the rebase it runs is also the one act that can record the replay's
+    outcome as a fact (`_record_clean_rebase`), because a verdict bound to the
+    pre-rebase SHA can carry across the move only over a recorded clean rebase.
 
     A tree with nothing of its own to replay refuses `nothing_to_land` rather than
     staging `origin/main`'s tip (#334 round 2). Round 1 printed `ok=staged commits=0`
@@ -1050,6 +1098,7 @@ def stage(root: Path, here: Path) -> Report:  # noqa: PLR0911 — a ladder of na
                 " that, not staging.",
             )
         )
+    before_head = git("rev-parse", "HEAD", cwd=here).strip()
     code, stderr = _run(["git", "rebase", BASE], cwd=here)
     if code is None:
         return Report.refused(
@@ -1066,6 +1115,7 @@ def stage(root: Path, here: Path) -> Report:  # noqa: PLR0911 — a ladder of na
     if poisoned is not None:
         return Report.refused(poisoned)
     head = git("rev-parse", "HEAD", cwd=here).strip()
+    replay_lines: list[str] = []
     # Recounted after the replay: the refusal above is decided on the tree as it stood, and
     # the report describes the tree as it now is — a commit the rebase dropped as empty is a
     # commit this line must not still claim.
@@ -1097,6 +1147,11 @@ def stage(root: Path, here: Path) -> Report:  # noqa: PLR0911 — a ladder of na
                 " this tree, `just land` is what decides that, not staging.",
             )
         )
+    # Recorded only on the branch that carries work: the dropped-empty tree above has
+    # nothing a verdict could bind, so a link there would attest a carry nothing rides.
+    _record_clean_rebase(
+        here, review or ReviewInputs(_issue_from(here)), before_head, head, replay_lines
+    )
     return Report(
         (
             "ok=staged",
@@ -1104,6 +1159,7 @@ def stage(root: Path, here: Path) -> Report:  # noqa: PLR0911 — a ladder of na
             f"worktree={here}",
             f"main_checkout={root}",
             f"rebase={replayed}",
+            *replay_lines,
             f"head={head}",
             f"commits={staged}",
             (
@@ -1131,6 +1187,7 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
     review: ReviewInputs,
 ) -> Report | None:
     """Rebase onto `origin/main`, then gate the result. Any rung may refuse."""
+    before_head = git("rev-parse", "HEAD", cwd=here).strip()
     code, stderr = _run(["git", "rebase", BASE], cwd=here)
     if code is None:
         return Report.refused(
@@ -1145,6 +1202,13 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
         return Report.refused(stopped)
     lines.append(
         f"rebase=replayed onto {incoming} new commits" if incoming else "rebase=already_current"
+    )
+    _record_clean_rebase(
+        here,
+        review,
+        before_head,
+        git("rev-parse", "HEAD", cwd=here).strip(),
+        lines,
     )
 
     poisoned = classify_conflict_markers(here, find_in_tree(here))
@@ -1235,11 +1299,11 @@ def _review_plan(
     """Return the reviewed-commit rung's verdict on the plan, where one is honest.
 
     Consulted only where `incoming == 0`: the rung binds a verdict to a SHA or to the
-    patch-id of the diff the rebase will produce (#417), and the pre-rebase tree can
-    answer the first but only predict the second — a clean rebase reproduces the diff
-    and carries the review, one whose conflicts a hand resolved does not, and which
-    of the two this rebase is exists only after it runs. Where it cannot consult,
-    `NOT_CHECKED` names the rung and the condition.
+    identity of the diff the rebase will produce over a recorded clean replay (#417),
+    and the pre-rebase tree can answer the first but only predict the second — a clean
+    rebase reproduces the diff and carries the review, one whose conflicts a hand
+    resolved does not, and which of the two this rebase is exists only after it runs.
+    Where it cannot consult, `NOT_CHECKED` names the rung and the condition.
 
     The second half of the return is the refusal's kind where the rung would
     refuse, `None` where it would clear — the dry run's exit and its
@@ -1254,9 +1318,10 @@ def _review_plan(
     which is #344's own precedent (round 1 claim 5). The kind names the condition
     rather than the refusal the landing will emit, because the refusal is the rung's
     to name and this is a plan. Since #417 the certainty is about the SHA alone: a
-    verdict may yet carry across on the patch-id, the landing decides which, and a
-    plan that said `would_clear` on a rebase that then conflicted would have promised
-    something no pre-rebase diff can know.
+    verdict may yet carry across on a recorded clean rebase plus a matching diff
+    identity, the landing decides which, and a plan that said `would_clear` on a
+    rebase that then conflicted would have promised something no pre-rebase diff can
+    know.
     """
     if incoming:
         return (
@@ -1264,9 +1329,9 @@ def _review_plan(
                 "review=not_consulted reason=the rebase will move the SHA a verdict binds",
                 (
                     "review=would_refuse reason=review_sha_will_move"
-                    " (the landing carries the review across on the diff's patch-id"
-                    " only where the rebase replays clean, and that is the landing's"
-                    " own check, not a plan's)"
+                    " (the landing carries the review across on a recorded clean"
+                    " rebase plus a matching diff identity, and whether the rebase"
+                    " replays clean is the landing's own check, not a plan's)"
                 ),
             ),
             "review_sha_will_move",

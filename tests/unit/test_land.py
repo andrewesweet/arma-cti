@@ -636,7 +636,7 @@ def _reviewed(  # noqa: PLR0913 — one parameter per field of the record under 
     findings: tuple[dict[str, object], ...] = (),
     loop: dict[str, object] | None = None,
     reviewer: tuple[str, str] = ("codex-luna-max", "codex"),
-    patch_id: str | None = None,
+    diff_id: str | None = None,
 ) -> land.ReviewInputs:
     """Stage the records a reviewed landing reads, and return the inputs that name them.
 
@@ -653,8 +653,8 @@ def _reviewed(  # noqa: PLR0913 — one parameter per field of the record under 
     naming it. A caller passing a `claude-native` reviewer is arranging the same-lane
     refusal (#406).
 
-    `patch_id` defaults to the one git computes for this tree's own diff (#417), so a
-    staged review is the review a real `just review record` would have written; the
+    `diff_id` defaults to the exact identity git gives this tree's own diff (#417), so
+    a staged review is the review a real `just review record` would have written; the
     landings that never move the SHA never consult it, and a caller may still name a
     shape-only value for the tests that refuse.
     """
@@ -662,10 +662,10 @@ def _reviewed(  # noqa: PLR0913 — one parameter per field of the record under 
     review_root = at / "review"
     reviewer_profile, reviewer_lane = reviewer
     sha = _git("rev-parse", "HEAD", cwd=here).strip()
-    if patch_id is None:
-        computed = review_exchange.patch_id_of(here, sha)
+    if diff_id is None:
+        computed = review_exchange.diff_id_of(here, sha)
         assert isinstance(computed, str), f"staging a review needs a diff to review: {computed}"
-        patch_id = computed
+        diff_id = computed
     record = dispatch_root / "d-review-1"
     record.mkdir(parents=True, exist_ok=True)
     (record / "dispatch.json").write_text(
@@ -692,7 +692,7 @@ def _reviewed(  # noqa: PLR0913 — one parameter per field of the record under 
                 "version": 1,
                 "issue": 213,
                 "reviewed_sha": sha,
-                "patch_id": patch_id,
+                "diff_id": diff_id,
                 "review_dispatch": "d-review-1",
                 "reviewer_profile": reviewer_profile,
                 "reviewer_lane": reviewer_lane,
@@ -767,11 +767,11 @@ def test_the_gate_runs_on_the_rebased_tree_not_the_tree_as_it_was(
     """The whole of the re-gate-on-movement answer: it runs, and it runs after the rebase.
 
     One landing now, because #417 carries the review across the clean replay: the
-    verdict records the pre-rebase SHA and the diff's patch-id, the rebase over the
-    sibling reproduces the diff byte for byte, and the rung clears on the patch-id —
-    so the run that reaches the gate is the run over the replayed tree. The re-review
-    the SHA-only binding demanded is owed only where the rebase changes the diff,
-    which is the test after this one.
+    verdict records the pre-rebase SHA and the diff's exact identity, `just land`'s own
+    rebase over the sibling reproduces that diff and records the link saying it replayed
+    clean, and the rung clears on both halves — so the run that reaches the gate is the
+    run over the replayed tree. The re-review the SHA-only binding demanded is owed
+    where either half fails, which is the test after this one.
     """
     _origin, main, here = repo
     _commit(main, "sibling.txt", "landed first\n")
@@ -787,17 +787,25 @@ def test_the_gate_runs_on_the_rebased_tree_not_the_tree_as_it_was(
     assert gate.calls == ["feat: feature.txt"]
     assert "sibling.txt" in _git("show", "--name-only", "--format=", "HEAD~1", cwd=here)
     assert "rebase=replayed onto 1 new commits" in report.lines
-    # And the review that cleared it is the pre-rebase one, carried on the patch-id.
-    assert any(line.startswith("carried_by=patch_id") for line in report.lines)
+    # And the review that cleared it is the pre-rebase one, carried on both halves.
+    assert any(line.startswith("carried_by=diff_id") for line in report.lines)
+    assert "provenance=clean_rebase_recorded" in report.lines
+    assert any(line.startswith("clean_rebase=recorded") for line in report.lines)
 
 
-def test_a_rebase_that_changed_the_diff_needs_a_new_review(
+def test_a_hand_resolved_rebase_needs_a_new_review(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,
 ) -> None:
-    """#417's far side: a conflict a hand resolved changed the diff, and the patch-id notices.
+    """#417's far side, and the rework's whole lesson end to end.
 
-    The carried review is refused and the landing owes a fresh one.
+    A hand resolved a conflict out-of-band, putting content into the branch the
+    reviewer never saw. Nothing hashed over the result can prove that happened —
+    the first build tried, and a whitespace-only resolution defeated it — so what
+    refuses here is the missing provenance: no tool recorded this commit reaching
+    here by a clean replay, because no tool ran the replay. `just land`'s own rebase
+    is a no-op by then and records no link, which is correct: a self-link connects
+    no SHAs and would attest to a rebase this tool did not run.
     """
     _origin, main, here = repo
     _commit(here, "feature.txt", "work\n")
@@ -830,8 +838,10 @@ def test_a_rebase_that_changed_the_diff_needs_a_new_review(
     report = land.land(main, here, gate=_Gate(), review=review)
 
     assert report.code == 1
-    assert report.lines[0] == "refusal=sha_mismatch"
-    assert "patch_id=mismatch" in "\n".join(report.lines)
+    assert report.lines[0] == "refusal=rebase_unproven"
+    assert "clean_rebase=no recorded chain connects the reviewed commit to this one" in "\n".join(
+        report.lines
+    )
 
 
 def test_a_red_gate_leaves_origin_exactly_where_it_was(

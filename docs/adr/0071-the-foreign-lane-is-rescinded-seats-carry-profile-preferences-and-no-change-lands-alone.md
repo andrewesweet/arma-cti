@@ -51,6 +51,18 @@ nothing", with never-alone applying to that one artefact per cycle. It reverses
 no other decision and adds no rule beyond the exception it names. The
 `Reviewed-by-human:` line above covers the version at the 2026-08-15 sign-off
 and does not reach A4; A4's human review is pending, tracked on ADR-0074.
+Amended: 2026-08-18, on the human's instruction of that date recorded on #417.
+One amendment, marked inline at the passage it changes — **A5** (#417) narrows
+ruling 4's own binding rule: a verdict that names a moved SHA carries across a
+rebase only where a tool-recorded clean rebase connects the two commits and the
+diff's exact identity matches, replacing the first #417 build's patch-id carry,
+which a review of that build disproved on both halves. It reverses no decision
+— the verdict still names the commit it reviewed, and an amended branch still
+rides no earlier approval; it makes the carry provable rather than assumed.
+Applied by #417's rework in the same change as every operational surface that
+states the rule, enumerated at the amended passage itself — #397 took an extra
+round for stating a rule in the ADR and leaving an operational copy behind, and
+a count here would be one more place for that to happen.
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
 Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
@@ -491,6 +503,27 @@ implementer may dispute correctness and severity.
 **The verdict names the commit it reviewed.** It records the reviewed SHA, and the
 landing refuses if the SHA it is asked to land is not the one the verdict names.
 Without that, an amended or rebased branch lands on an earlier approval.
+*(Amendment A5, 2026-08-18, on the human's instruction of that date recorded on
+#417, whose first build was reviewed Critical and reworked: the refusal is
+not absolute over a moved SHA. A verdict also records the exact identity of the diff
+it judged — a SHA-256 over `git diff --unified=0 origin/main...<sha>` with hunk-header
+and `index` lines normalised away — and a landing carries the review across a rebase
+only where **both** hold: the rebase's own outcome was recorded as clean by the tool
+that ran it (`<review-root>/<issue>/rebases.json`, written by `just land --stage` and
+`just land`), and the identity computed over the rebased tree equals the recorded one.
+The first #417 build carried the review on `git patch-id --stable` alone and both
+halves of that were disproved: patch-id strips whitespace, so a conflict resolved with
+trailing whitespace the reviewer never saw cleared as "unchanged"; and patch-id hashes
+context, so an upstream edit inside the surrounding lines refused the very carry the
+mechanism existed to grant. Hashing the output cannot prove whether conflict resolution
+occurred at all — only the rebase knows that, which is why its own record is one of the
+two halves. A moved SHA with no recorded clean-rebase chain refuses `rebase_unproven`;
+a verdict whose identity is missing or unreadable refuses `diff_id_unreadable`, which
+is also the one-time re-review verdicts recorded before this amendment take. The rule
+is stated in `docs/review-dispatch.md`, `tools/review_exchange.py`,
+`tools/land_review.py`, `tools/land.py`, the `justfile`'s `review` recipe, the `just
+review` row of `AGENTS.md` and the `CHANGELOG.md` entry — the whole list, because #397
+took an extra round for amending the ADR and leaving an operational copy behind.)*
 
 **The arbiter is the head of the implementing seat's escalation entry** — a
 function of the work, not of who happened to review it, using a column the seat

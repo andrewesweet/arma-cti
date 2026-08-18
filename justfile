@@ -358,10 +358,11 @@ worktree *args:
 # `--dry-run`'s plan qualifies the push whenever the rebase will move the SHA a
 # verdict binds: `would_not_run=... reason=review_sha_will_move`. That reason is a
 # plan's word for a condition, not a refusal any landing emits — since #417 a
-# verdict carries across a clean rebase on the diff's patch-id, and whether this
+# verdict carries across a clean rebase only where the rebase itself recorded the
+# replay as clean and the diff's exact identity still matches, and whether this
 # rebase replays clean is a fact only the landing has. A conflicted replay
-# changes the patch and the landing re-reviews; a clean one keeps the review and
-# clears.
+# changes the diff and the landing re-reviews; a recorded clean one keeps the
+# review and clears.
 #
 # Three things it does that prose could not. The refspec is a constant no
 # argument reaches, so `git push origin main` — which pushes the local `main`
@@ -419,39 +420,48 @@ land *args:
 #                                  The identity is derived, never declared — the
 #                                  #322 reasoning one layer over — and the caller
 #                                  supplies only the issue, the SHA, the findings;
-#                                  the patch-id of the reviewed diff (#417) is
-#                                  computed here, never typed — `--repo` names a
-#                                  git repository holding the reviewed commit and
-#                                  `origin` (default: this directory), fetched
-#                                  before the hash so a stale base cannot widen
-#                                  the diff it covers
-#   just review show <dispatch-id> [--satisfies <sha>] [--patch-id <id>]
+#                                  the exact diff identity of the reviewed diff
+#                                  (#417) is computed here, never typed — `--repo`
+#                                  names a git repository holding the reviewed
+#                                  commit and `origin` (default: this directory),
+#                                  fetched before the hash so a stale base cannot
+#                                  widen the diff it covers
+#   just review show <dispatch-id> [--satisfies <sha>] [--diff-id <id>]
+#                                  [--review-root <dir>]
 #                                  read one verdict, re-derive its identity from
 #                                  the records as they now stand, and answer
 #                                  whether it satisfies a named commit — by the
-#                                  SHA, or, where the SHA moved and `--patch-id`
-#                                  carries the asked diff's own hash, by the diff
-#                                  (#417)
+#                                  SHA, or, where the SHA moved and `--diff-id`
+#                                  carries the asked diff's own hash, by a
+#                                  recorded clean rebase plus that identity
+#                                  (#417). `--review-root` names the root whose
+#                                  rebases.json carries those recordings
+#                                  (default: the loop's own root)
 #
 # Refusals are named, each says what was found and what to do: invalid_issue,
-# invalid_sha, invalid_patch_id, invalid_findings, input_unreadable, dirty_tree,
+# invalid_sha, invalid_diff_id, invalid_findings, input_unreadable, dirty_tree,
 # not_on_remote, ref_mismatch, git_failed, no_dispatch_records,
 # no_review_dispatch, records_unreadable, verdict_exists, verdict_unreadable,
 # verdict_unwritten, no_verdict, unknown_dispatch, sha_mismatch,
-# patch_id_unreadable, identity_mismatch. Three carry the
+# diff_id_unreadable, rebase_unproven, identity_mismatch. Four carry the
 # issue's own weight: a verdict
-# satisfies the SHA it names or a diff whose stable patch-id matches the one it
-# records (`sha_mismatch` names which half failed, so an amended branch rides no
-# earlier approval while a clean rebase keeps its), an unreadable patch-id is a
-# refusal and never a pass (`patch_id_unreadable`, #41), and any dispatch record
+# satisfies the SHA it names, or a moved SHA only where a chain of tool-recorded
+# clean rebases connects the two commits and the diff's exact identity matches
+# the one it records (`sha_mismatch` names which half failed, so an amended
+# branch rides no earlier approval while a recorded clean rebase keeps its), an
+# unreadable diff identity is a refusal and never a pass (`diff_id_unreadable`,
+# #41), a moved SHA with no recorded clean-rebase chain is
+# `rebase_unproven` — an identity match alone cannot prove whether a conflict
+# was resolved by hand — and any dispatch record
 # the binding scan cannot read refuses the whole derivation
 # (`records_unreadable`), because the record that would not open could be the
 # binding one — an exclusion scan may continue on a partial read (#322), an
 # answer may not. record and show both print the same-user limit beside the
 # record: every dispatch runs as the same user, so this is a convention with a
-# mechanical floor, not a guarantee. Both also print the patch-id limit: it
-# proves the diff is unchanged, not that its meaning survived the move onto the
-# new base — the gate's tests at landing are what catch that difference, and
+# mechanical floor, not a guarantee. Both also print the carry limit: a matching
+# identity plus recorded clean rebases proves the diff is unchanged and was
+# mechanically replayed, not that its meaning survived the move onto the new
+# base — the gate's tests at landing are what catch that difference, and
 # they still run. Adjudication of the findings a verdict
 # carries is #333's; the landing refusal that reads this derivation is #334's.
 review *args:

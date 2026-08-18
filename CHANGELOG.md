@@ -9,18 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **A review verdict binds the patch it reviewed, not only the commit, so a clean rebase no
-  longer orphans it (#417).** `just review record` now writes the stable `git patch-id` of the
-  reviewed diff into the verdict — computed from the same merge-base-relative range `just land`
-  will land, fetched first, never typed — and the landing's never-alone rung accepts a verdict
-  whose SHA has moved where that patch-id still matches: a clean rebase reproduces the diff
-  byte for byte and keeps its review, while a rebase whose conflicts a hand resolved changes
-  the diff, fails the patch-id, and owes a fresh re-review. The refusal names which half of
-  the binding failed, an absent or malformed patch-id on either side is `patch_id_unreadable`
-  and never a pass (#41), and the limit is stated in the docs and the rung's own prose:
-  patch-id equality proves the diff is unchanged, not that its meaning survived the move onto
-  the new base — the gate's tests at landing are what catch that difference, and they still
-  run.
+- **A review verdict binds the diff it reviewed, not only the commit, so a clean rebase no
+  longer orphans it (#417).** `just review record` now writes the exact identity of the
+  reviewed diff into the verdict — a SHA-256 over `git diff --unified=0` of the same
+  merge-base-relative range `just land` will land, with hunk-header and `index` lines
+  normalised away so a sibling's landing cannot move it, fetched first, never typed — and the
+  landing's never-alone rung accepts a verdict whose SHA has moved only where **both** halves
+  hold: the rebase was recorded as clean by the tool that ran it (`just land` and `just land
+  --stage` append to `rebases.json` under the review root), and the identity computed over the
+  rebased tree still matches. The first build carried the review on `git patch-id` alone, and
+  its own review disproved both halves of that: patch-id strips whitespace, so a conflict
+  resolved with trailing whitespace the reviewer never saw cleared as "unchanged"; and
+  patch-id hashes context, so an upstream edit inside the surrounding lines refused the very
+  carry the mechanism existed to grant. Hashing the output cannot prove whether conflict
+  resolution occurred at all — only the rebase knows that, which is why its own record is one
+  of the two halves. A moved SHA with no recorded clean-rebase chain refuses `rebase_unproven`,
+  an absent or malformed identity on either side is `diff_id_unreadable` and never a pass
+  (#41) — which is also the one-time re-review a verdict recorded before this change takes —
+  and the limit is stated in the docs and the rung's own prose: a matching identity plus
+  recorded clean rebases proves the diff is unchanged and was mechanically replayed, not that
+  its meaning survived the move onto the new base — the gate's tests at landing are what catch
+  that difference, and they still run.
 
 - **A renamed profile's old name resolves for reading dispatch records, and still never
   dispatches (#413).** Renaming a profile used to strand every branch authored under the old
