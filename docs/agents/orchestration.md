@@ -253,14 +253,20 @@ do.
 Landing is most of the seat's real work, and the lane decides how much of it the seat
 does by hand.
 
-- **Codex, under #265's confirmed ceiling, commits but cannot gate.** The orchestrator
-  gates and lands its work by hand and states that in the close; twelve closes now say
-  so. ADR-0061 Decision 4's graded ladder is withdrawn (ADR-0071 ruling 1), so this is
-  no longer a rule about proven hooks — it is a **measured ceiling**: no `writable_roots`
-  set lets a Codex dispatch both commit and run the gate, and the mechanism is isolated
-  in `docs/multi-provider-dispatch.md`. Under the binary rule that replaces the ladder,
-  a profile that cannot run its own gate is not an implementer, which is why lifting the
-  ceiling is a blocking prerequisite for the Codex head of that seat's list.
+- **Codex gates its own work; its commit is the harness's act, and the landing is still
+  the seat's.** #265's ceiling — commits but cannot gate, hand-finished in twelve closes —
+  is lifted by #405, and the correction is worth knowing rather than just the outcome: the
+  sandbox holds a repository's git directory read-only *deliberately*, so naming one buys
+  the commit and breaks `cog check`, and not naming one runs the gate. So the session
+  gates and `tools/dispatch.py`'s `harness_finish` commits and pushes after it exits,
+  reading the message the session left at `.dispatch-commit-message`. Nothing about that
+  is the orchestrator's to do by hand, and a close should no longer say it was. What
+  remains the orchestrator's is the **landing**: `just land` writes the git directory and
+  the main checkout, and neither is reachable from inside the sandbox. Two things to watch
+  for, since no dispatch has yet carried the shape end to end: a run that refuses
+  `commit_message_absent` has left its edits uncommitted in the tree and needs a message
+  written and committed by hand, and a `harness_finish` line in `result.json` is where the
+  commit and push either happened or said why not.
 - **z.ai commits, gates and lands unaided.** Its admission-bar standing is no longer the
   thing that says so: ruling 6 withdraws the bar and #328 removed the mechanism. That
   route accrued clean assessments and never reached the bar's `N`, so it was never

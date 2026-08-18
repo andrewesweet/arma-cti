@@ -21,11 +21,12 @@ import time
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
-import pytest
 from conftest import REPO, load_tool
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    import pytest
 
 dispatch = load_tool("dispatch")
 breaker = load_tool("breaker")
@@ -90,10 +91,13 @@ def trip(tmp_path: Path, lane: str, outcome: str, count: int) -> None:
 def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     """Plan a dispatch that names a seat and no profile, over a real worktree.
 
-    The credentials file is deliberately absent by default. That is what makes the
-    `implementer` list deterministic here: its Codex head is blocked for the seat and its
-    z.ai entry cannot be reached without a key, so the native tail is what a box with no
-    z.ai credential resolves to at any hour.
+    The credentials file is deliberately absent by default, which makes the `implementer`
+    list deterministic from its z.ai entry down: that entry cannot be reached without a
+    key, so a box with no z.ai credential walks it past at any hour. The Codex head
+    resolves unless an arrangement stages it away — it needs no credential from this file,
+    Codex reading its own `~/.codex/auth.json` — and since #405 nothing else holds it back,
+    so a test that wants the list *walked* trips the codex breaker rather than relying on a
+    block that no longer exists.
     """
     injected = overrides.pop("now", None)
     now = datetime.now(tz=UTC) if injected is None else injected
@@ -248,12 +252,16 @@ def test_the_retired_mechanical_seat_is_gone_from_every_roster() -> None:
 
 
 def test_naming_only_a_seat_resolves_a_profile_and_plans_the_dispatch(tmp_path: Path) -> None:
+    # The head, since #405 lifted the ceiling that held it: ADR-0071 ruling 2's table has
+    # always named `codex-luna-max` first, and this is the first arrangement in which
+    # naming the seat alone actually reaches it.
     plan, _, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
-    assert plan.identity.profile == "opus-low"
-    assert plan.identity.lane == "claude-native"
+    assert plan.identity.profile == "codex-luna-max"
+    assert plan.identity.lane == "codex"
     assert plan.route.named is False
+    assert walked_past(plan.route.passed_over) == []
 
 
 def test_the_dry_run_prints_the_resolved_profile_and_why_that_one(
@@ -263,21 +271,33 @@ def test_the_dry_run_prints_the_resolved_profile_and_why_that_one(
 
     The instant is injected for the module docstring's reason: the z.ai entry must be
     walked past on its absent credential, and inside the published peak band it would be
-    walked past on the hour instead, which is a different claim (#341).
+    walked past on the hour instead, which is a different claim (#341). The codex head is
+    tripped so that the list is walked at all — since #405 it resolves, and a criterion
+    about *which entries were passed over and why* needs a list with something in front of
+    the answer.
     """
     worktree = git_worktree(tmp_path)
+    trip(tmp_path, "codex", breaker.GATE_FAILED, 3)
     code = dispatch.main(seat_only_argv(tmp_path, worktree, "--dry-run"), now=OFF_PEAK)
     printed = capsys.readouterr().out
     assert code == 0, printed
     assert "route=seat seat=implementer" in printed
     assert "route_chosen=opus-low lane=claude-native" in printed
     # The reason is which entries were passed over and on what — not a bare "chosen".
-    assert "route_passed_over=codex-luna-max refusal=profile_blocked_for_seat" in printed
+    assert "route_passed_over=codex-luna-max refusal=lane_breaker_open" in printed
     assert "route_passed_over=zai-glm53-max refusal=credentials_missing" in printed
 
 
-def test_the_blocked_head_is_stepped_past_rather_than_dispatched(tmp_path: Path) -> None:
-    """The pair block is a skip for a resolver and a refusal for a caller who names it."""
+def test_a_blocked_head_is_stepped_past_rather_than_dispatched(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The pair block is a skip for a resolver and a refusal for a caller who names it.
+
+    Staged, because the list ships empty since #405 — the mechanism is ADR-0071 ruling 2's
+    and outlives the one entry it was built for, so the claim is made against an entry this
+    test supplies rather than dropped with the ceiling that supplied the last one.
+    """
+    monkeypatch.setattr(dispatch, "SEAT_PROFILE_BLOCKS", {("implementer", "codex-luna-max"): "#1"})
     plan, _, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
@@ -287,9 +307,8 @@ def test_the_blocked_head_is_stepped_past_rather_than_dispatched(tmp_path: Path)
 def test_a_seat_whose_head_is_live_resolves_to_it_and_passes_nothing_over(
     tmp_path: Path,
 ) -> None:
-    # `recon` is read-only, so #265's gate ceiling does not reach it and Luna heads the
-    # list unimpeded. The same profile, a different seat, a different answer — which is
-    # ADR-0071 ruling 2's point about the block attaching to the pair.
+    # Luna heads the `recon` list and nothing stands in front of it, so a seat's head is
+    # what a bare `--seat` resolves to when the world is not staged against it.
     plan, _, refusal = plan_for(tmp_path, seat="recon")
     assert refusal is None
     assert plan is not None
@@ -336,6 +355,7 @@ def test_the_off_peak_rule_walks_the_zai_entry_past_rather_than_overriding_it(
     """The human's hard rule of 2026-08-05 is a rung here too, and resolution never lifts it."""
     (tmp_path / "credentials.env").write_text(f"ZAI_API_KEY={FAKE_TOKEN}\n", encoding="utf-8")
     (tmp_path / "credentials.env").chmod(0o600)
+    trip(tmp_path, "codex", breaker.GATE_FAILED, 3)
     plan, _, refusal = plan_for(tmp_path, now=PEAK)
     assert refusal is None
     assert plan is not None
@@ -461,13 +481,56 @@ def test_naming_a_profile_still_dispatches_and_is_recorded_as_the_callers_choice
 
 
 def test_naming_a_blocked_profile_is_refused_rather_than_resolved_around(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """`--profile` is a way of choosing, never a way around a `(profile, seat)` block."""
+    """`--profile` is a way of choosing, never a way around a `(profile, seat)` block.
+
+    Staged like its sibling above, for the same reason: the list ships empty since #405 and
+    the rule it enforces is the ADR's rather than that one entry's.
+    """
+    monkeypatch.setattr(dispatch, "SEAT_PROFILE_BLOCKS", {("implementer", "codex-luna-max"): "#1"})
     plan, _, refusal = plan_for(tmp_path, lane="codex", profile="codex-luna-max")
     assert plan is None
     assert refusal is not None
     assert refusal.kind == "profile_blocked_for_seat"
+
+
+def test_naming_the_codex_head_for_the_implementer_seat_now_dispatches(tmp_path: Path) -> None:
+    """#405: the pair that was the block list's only entry is an ordinary dispatch now.
+
+    And its brief carries the seam the sandbox forces — the session gates, the harness
+    commits, and the path between them is named once in code. Claimed here rather than
+    beside `harness_finish` because reaching it means planning a whole dispatch, which is
+    what this module is for. A session told to commit would spend its run against a sandbox
+    that refuses; a session told nothing would leave a tree the harness refuses.
+    """
+    plan, brief, refusal = plan_for(tmp_path, lane="codex", profile="codex-luna-max")
+    assert refusal is None
+    assert plan is not None
+    assert plan.identity.profile == "codex-luna-max"
+    assert plan.route.named is True
+    assert dispatch.CODEX_COMMIT_MESSAGE in brief
+    assert "you gate, the harness commits" in brief
+
+
+def test_a_brief_for_a_session_that_can_commit_says_none_of_the_seam(tmp_path: Path) -> None:
+    """The protocol is a property of one sandbox, not of this project.
+
+    Both halves are asserted — the writable Codex mode carries it above, and neither a
+    Claude-family dispatch nor a read-only Codex seat does — because a brief that carried it
+    everywhere would tell sessions that commit their own work not to.
+    """
+    worktree = git_worktree(tmp_path)
+    _plan, claude_brief, refusal = plan_for(
+        tmp_path, worktree=worktree, lane="claude-native", profile="opus-low"
+    )
+    assert refusal is None
+    assert dispatch.CODEX_COMMIT_MESSAGE not in claude_brief
+    _plan, recon_brief, refusal = plan_for(
+        tmp_path, worktree=worktree, lane="codex", profile="codex-luna-medium", seat="recon"
+    )
+    assert refusal is None
+    assert dispatch.CODEX_COMMIT_MESSAGE not in recon_brief
 
 
 def test_naming_a_profile_without_its_lane_is_refused_rather_than_completed(
@@ -503,6 +566,9 @@ def test_a_request_with_neither_lane_nor_profile_is_complete(
 
 
 def test_the_record_names_the_chosen_profile_and_what_it_walked_past(tmp_path: Path) -> None:
+    # Tripped so the walk has something to record: the record's claim is about entries that
+    # were passed over, which needs a list that was actually walked (#405).
+    trip(tmp_path, "codex", breaker.GATE_FAILED, 3)
     plan, brief, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
@@ -568,17 +634,21 @@ def test_the_registry_listing_prints_each_seats_preference_and_marks_the_escalat
     assert "not resolved into" not in printed
 
 
-def test_a_block_the_registry_carries_and_the_refusal_clears_is_raised_not_skipped(
+def test_a_blocked_pair_reaches_the_listing_from_the_same_entry_the_refusal_reads(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """#320's recorded finding: the branch failed open where its assertion had failed loudly.
+    """#320's finding, answered by shape rather than by a guard (#405).
 
-    The divergence cannot be staged through the block set alone — `pair_block` reads the
-    same constant, so patching it keeps the two halves in agreement, which is exactly why
-    the branch is unreachable in the real registry. Staged through the refusal instead: a
-    `pair_block` that clears a member is precisely the disagreement the branch exists for,
-    and the listing must say so rather than print a registry with the block missing.
+    The disagreement that finding was about — a listed block the refusal clears — was
+    possible while the ceiling was a string inside `pair_block` and the membership a set
+    beside it, so the branch that raised on it earned its place. An entry now *is* its
+    ceiling, so the listing and the refusal read the same value out of the same mapping and
+    there is nothing left for the two halves to disagree about. The claim that replaces the
+    guard is this: whatever the entry says, both surfaces say.
     """
-    monkeypatch.setattr(dispatch, "pair_block", lambda _seat, _profile: None)
-    with pytest.raises(ValueError, match="pair_block cleared it"):
-        dispatch.registry_lines()
+    monkeypatch.setattr(dispatch, "SEAT_PROFILE_BLOCKS", {("implementer", "opus-low"): "#77"})
+    listed = [line for line in dispatch.registry_lines() if line.startswith("seat_profile_block=")]
+    refusal = dispatch.pair_block("implementer", "opus-low")
+    assert refusal is not None
+    assert listed == ["seat_profile_block=adr0071 seat=implementer profile=opus-low ceiling=#77"]
+    assert "ceiling=#77" in refusal.found
