@@ -477,8 +477,10 @@ def test_the_admitted_set_is_a_whole_route_and_names_the_ruling_each_seat_comes_
     """Author, land, review — the three ruling 2 and ruling 4 require between them.
 
     The planner is deliberately not alone and the row's remedy says why. `retro` is deliberately
-    absent: ruling 3 hands retros their own seat and that seat files and lands nothing, which is
-    the half of this class ruling 3 withdrew along with its `docs/process-log.md` path.
+    absent: ruling 3 hands retros their own seat and that seat files rather than authors, which
+    is the half of this class ruling 3 withdrew. Its `docs/process-log.md` path went with it and
+    A3 (#397) re-establishes exactly that path — but as the retro's one *landing*, reviewed under
+    ruling 4, never as an ADR-authoring route, so the admitted set below is unmoved by it.
     """
     authorship = next(rule for rule in policy().rules if rule.id == 3)
     assert authorship.required_seats == ADMITTED
@@ -1209,8 +1211,9 @@ def test_a_route_exception_carries_exactly_one_of_expiry_or_standing() -> None:
 def test_the_shipped_policy_carries_no_route_exception_for_a_dead_retro_rule() -> None:
     """The standing retro allowance excepted the half ruling 3 killed, so it excepts nothing.
 
-    ADR-0071 ruling 3: a retro identifies, researches and files, and lands nothing. With no
-    retro routing rule left there is nothing for a retro allowance to widen past, and leaving
-    it would read as a live human allowance against a rule that no longer exists.
+    ADR-0071 ruling 3: a retro identifies, researches and files, and lands nothing but its own
+    journal entry under A3 (#397). With no retro routing rule left there is nothing for a retro
+    allowance to widen past — the journal is a landing and this file's rules select dispatches —
+    and leaving it would read as a live human allowance against a rule that no longer exists.
     """
     assert policy().route_exceptions == ()

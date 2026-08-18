@@ -15,13 +15,14 @@ ADR-0070) and a scan of all 47 open issues' bodies and comments for an ADR
 number at or above 0071, which returned nothing.
 Amended: 2026-08-15, after human review, on two rulings taken in the
 decision-clearing sessions indexed on #217 and signed off there on 2026-08-15
-("All approved as read", the third of four approvals). Two amendments, each
-marked inline at the passage it changes — **A1** (#361, human ruling
-2026-08-14) fills ruling 2's escalation column, strikes ruling 4's blanket
-`fable-high` fallback and adds the conflicted-head fall-through in its place;
-**A2** (#368, human ruling 2026-08-14, recorded in full on #327) re-founds the
-re-founding table's class 2 row on the route's seats, which is what #327 landed
-at `0c7063e`. A1 changes **two** sentences of ruling 4 — it strikes the blanket
+("All approved as read", the third of four approvals). Two amendments under
+this sign-off, each marked inline at the passage it changes — **A1** (#361,
+human ruling 2026-08-14) fills ruling 2's escalation column, strikes ruling
+4's blanket `fable-high` fallback and adds the conflicted-head fall-through in
+its place; **A2** (#368, human ruling 2026-08-14, recorded in full on #327)
+re-founds the re-founding table's class 2 row on the route's seats, which is
+what #327 landed at `0c7063e`. A1 changes **two** sentences of ruling 4 — it
+strikes the blanket
 `fable-high` fallback, and it rewrites the arbiter's seat from "the
 implementer's seat's" to "the implementing seat's" — adds a third paragraph
 that is new rule rather than reversal (the conflicted-head fall-through), and
@@ -37,6 +38,19 @@ passage the sign-off covers by implication rather than in words. Every profile i
 seat list below was re-derived from `tools/dispatch.py`'s registry and every
 class-2 field from `config/dispatch-routing-policy.json` as this commit's tree
 carries them, never pasted from a ruling comment.
+Amended: 2026-08-17, not by a human ruling but under the human's standing
+authorisation of that date — *"resolve all decisions and rulings on my behalf
+in consultation with a fable/high advisor according to your collective best
+judgement"* — exercised by the orchestrator seat on #397 after consulting a
+`fable`/high advisor, and recorded as a delegated decision in ADR-0073 under
+ADR-0013. One amendment, marked inline at the passage it changes — **A3**
+(#397, orchestrator ruling 2026-08-17) strikes ruling 3's closing sentence,
+*"Never-alone does not apply to retros, because nothing lands"*, and makes the
+retro journal in `docs/process-log.md` the single named exception to "lands
+nothing", with never-alone applying to that one artefact per cycle. It reverses
+no other decision and adds no rule beyond the exception it names. The
+`Reviewed-by-human:` line above covers the version at the 2026-08-15 sign-off
+and does not reach A3; A3's human review is pending, tracked on ADR-0073.
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
 Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
@@ -398,6 +412,20 @@ was itself dispatched. What it does not do: it does not make the retro an
 implementer. It lands one path, `docs/process-log.md`, and only its own entry.
 #294's bar on a dispatched session writing under `.claude/` does not reach it,
 because the journal is not there.*
+
+***The undispatched case is not a smaller cost, it is a refusal, and the rule
+that follows is stated here rather than left to be met at the gate: the journal
+lands only from a retro dispatched against a numbered issue.*** *`just land`'s
+never-alone rung (#334, `tools/land_review.py`) refuses a tree that is not an
+`issue-<n>` worktree by name — `review_issue_unknown`, "the rung cannot know
+whose review to read" — and refuses an issue whose dispatch records place no
+profile on the work as `authorship_unrecorded`; no flag skips either rung, and
+`config/review-exemptions.json` is empty. An attended retro run in the human's
+own session has neither a numbered tree nor a dispatch record, and the
+sixteenth and twenty-first were attended, so this is a shape that has occurred
+rather than a hypothetical. Its findings still file as normal; its journal entry
+reaches `docs/process-log.md` through a dispatch against the retro's own issue,
+or not at all.*
 
 ### 4. No change lands alone
 

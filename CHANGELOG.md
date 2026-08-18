@@ -63,8 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 - **What a retro lands is one rule on every surface again, and the journal is reviewed
-  rather than exempted (#397, ADR-0071 amendment A3 — proposed, pending the human's
-  sign-off that lands it).** #330 made the retro journal the single named exception to "a
+  rather than exempted (#397, ADR-0071 amendment A3, recorded as a delegated decision in
+  ADR-0073).** #330 made the retro journal the single named exception to "a
   retro lands nothing" and flagged the conflict it created rather than resolving it by
   assertion: three surfaces an agent reads **before** that skill still stated the
   prohibition flat — `AGENTS.md`'s retro bullet, routing class 3's remedy naming the exact
@@ -78,10 +78,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   question answered on evidence at a retro and "never as an agent's convenience in the
   moment"; because the journal is a self-report, where an independent read is worth most
   rather than least; and because `docs/process-log.md` is the exemplar prune's archive of
-  record, so a truncated entry loses reasoning that survives in no other copy. Costs
-  stated: one review round per retro cycle over one terse appended entry. The routing
-  policy's own rung is unchanged either way — that class refuses `retro` from authoring an
-  ADR, never from journalling, and a seat-bound row carries no landing prefixes at all.
+  record, so a truncated entry loses reasoning that survives in no other copy. The
+  exemption route was also never the cheaper half of a trade: ruling 3's stated reason for
+  exempting retros is that nothing lands, which is false under either remedy, so exempting
+  the journal needs this same amendment *plus* a first entry on a list whose own text says
+  it ships empty. Costs stated: one review round per retro cycle over one terse appended
+  entry, and — stated as a rule rather than left to be met at the gate — **the journal
+  lands only from a retro dispatched against a numbered issue**, because `just land`'s
+  never-alone rung refuses an unnumbered worktree (`review_issue_unknown`) and an issue
+  with no dispatch records (`authorship_unrecorded`), and an attended retro has neither.
+  The routing policy's own rung is unchanged either way — that class refuses `retro` from
+  authoring an ADR, never from journalling, and a seat-bound row carries no landing
+  prefixes at all. Two residues are filed rather than fixed here: the `/retro` skill's
+  step 4 still tells its reader the conflict is open (#403; `.claude/` is off limits to a
+  dispatched session under #294), and `tools/ledger.py` still books the `retro` seat as
+  landing nothing, which under-reports by one commit per cycle (#404).
 
 ### Added
 
