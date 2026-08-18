@@ -484,6 +484,30 @@ def test_disjoint_surfaces_do_not_conflict() -> None:
     assert queue.surface_refusal(250, ["a.py"], {241: ["b.py"]}) is None
 
 
+def test_two_branches_recording_changelog_entries_no_longer_contend() -> None:
+    """#358's own criterion: the one shared file every branch edited is now a path per issue.
+
+    Two in-flight trees each carrying their own `changelog.d/<issue>-<slug>.md` write
+    disjoint paths and clear the rung — where the single `CHANGELOG.md` edit both would
+    have made refused `surface_conflict` and capped concurrent implementation at two
+    trees total (#355 recommendation 8's audit of the cap).
+    """
+    fragments = {
+        358: ["tools/land.py", "changelog.d/358-fold.md"],
+        241: ["src/cti_daemon/other.py", "changelog.d/241-sibling.md"],
+    }
+    assert queue.surface_refusal(358, fragments[358], fragments) is None
+    # The counterfactual the fragments replace: the shared edit refused.
+    shared = {
+        358: ["tools/land.py", "CHANGELOG.md"],
+        241: ["src/cti_daemon/other.py", "CHANGELOG.md"],
+    }
+    refusal = queue.surface_refusal(358, shared[358], shared)
+    assert refusal is not None
+    assert refusal.kind == "surface_conflict"
+    assert "paths=CHANGELOG.md" in refusal.found
+
+
 def test_a_candidate_that_has_written_nothing_yet_cannot_be_seen_to_conflict() -> None:
     """The stated limit: a fresh worktree has touched nothing, so this rung sees nothing."""
     assert queue.surface_refusal(250, [], {241: ["justfile"]}) is None

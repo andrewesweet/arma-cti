@@ -978,9 +978,10 @@ def test_the_remedys_just_check_clause_is_true_of_every_tool_it_scopes() -> None
 
     Round 1's remedy said nine tools were "all nine reached by `just check`". Eight were;
     `tools/breaker.py` is reached by `just breaker` and folded into `just watch-report`, and
-    ADR-0071's own row 6 made the same slip (review round 2 claim 4). #390 adds a ninth
-    `just check` tool; the clause scopes those nine and names `tools/breaker.py` separately,
-    so this asserts both halves against the justfile rather than against the sentence.
+    ADR-0071's own row 6 made the same slip (review round 2 claim 4). #390 added a ninth
+    `just check` tool and #358 a tenth, `tools/check_changelog.py`; the clause scopes those
+    ten and names `tools/breaker.py` separately, so this asserts both halves against the
+    justfile rather than against the sentence.
     """
     conflict = next(rule for rule in policy().rules if rule.id == 6)
     reached = just_check_tools()
@@ -989,11 +990,13 @@ def test_the_remedys_just_check_clause_is_true_of_every_tool_it_scopes() -> None
     # and the rung — and a regex over the whole prefix would read those as claimed omissions.
     _, _, listed = conflict.remedy.partition("and omits ")
     assert listed, "the remedy no longer enumerates its omissions"
-    scoped, _, rest = listed.partition("— the nine `just check` reaches —")
+    scoped, _, rest = listed.partition("— the ten `just check` reaches —")
     assert rest, "the remedy no longer scopes its `just check` clause"
     omissions = set(re.findall(r"tools/[a-z0-9_]+\.py", scoped))
     assert omissions <= reached, sorted(omissions - reached)
-    assert len(omissions) == 9
+    assert len(omissions) == 10
+    assert "tools/check_changelog.py" in omissions
+    assert "tools/check_arbiter_copies.py" in omissions
     assert "tools/breaker.py" not in reached
     assert "tools/breaker.py" in rest
 

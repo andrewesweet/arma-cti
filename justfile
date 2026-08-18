@@ -16,7 +16,7 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-seats check-arbiter check-sqf check-secrets check-python check-machine-b check-rust
+check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-changelog check-seats check-arbiter check-sqf check-secrets check-python check-machine-b check-rust
 
 # Static validation for the repository-managed Machine B playbooks. The live
 # inventory is deliberately absent here: syntax and lint must be available to
@@ -71,6 +71,14 @@ check-markers:
 # `tools/land.py` refuses on the same finding by name, before the gate runs.
 check-conflicts:
     uv run python tools/check_conflict_markers.py
+
+# A user-visible commit carries a changelog entry, now as a branch-owned
+# fragment rather than a shared-file edit (#358): `feat`, `fix` and any `!`
+# over origin/main owe either a `changelog.d/<issue>-<slug>.md` fragment or a
+# `CHANGELOG.md` change, and every fragment parses — the same standard the
+# landing's fold enforces, red here before a gate or review is spent on it.
+check-changelog:
+    uv run python tools/check_changelog.py
 
 # Every seat declares its (model, effort) pair, and declares it validly (#255).
 # Both declaration surfaces fail open — a misspelled key or a level that does not
