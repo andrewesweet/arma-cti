@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **A worktree status command that fails no longer reads as a clean tree (#375).**
+  `tools/worktree.py`'s `gather` read `git status --porcelain` with `check=False`, so a status
+  that failed printed nothing, and nothing parsed as a clean `Preflight` — `just worktree check`
+  then answered `ok=preflight_clean` and exit 0 without having established anything, which is
+  the one unsafe answer to the question the pre-flight exists to ask (#105). The read now lives
+  in `read_preflight`, which returns `None` where the command itself failed: `check` refuses
+  `unverified` naming `status=unreadable` rather than the tree's contents, `done` and `archive`
+  reach their existing `git_failed` rung, and `just worktree list` prints `unreadable` for that
+  tree instead of a dirt count it never read. The remaining `check=False` reads in the module are
+  named where they sit, each with why its absence decides nothing.
+
 ### Changed
 
 - **A review verdict binds the diff it reviewed, not only the commit, so a clean rebase no

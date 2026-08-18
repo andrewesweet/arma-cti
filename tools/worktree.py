@@ -20,7 +20,9 @@ Six actions, one refusal vocabulary:
 - ``check [name]`` the pre-flight alone: non-destructive, safe mid-run, and the
   answer to "is this tree still provably only mine?" — which only a clean tree
   answers yes, so a dirty one comes back ``unverified`` with the files listed
-  and the judgement left where it belongs.
+  and the judgement left where it belongs. A tree whose status could not be read
+  answers ``unverified`` as well, naming the read rather than the contents: an
+  unread tree is not a clean one (#375).
 - ``list``         the hygiene sweep: every registration, its state, whether its
   HEAD is landed, and which registrations are stale.
 - ``done <name>``  verify clean and landed, then remove. Never ``--force``.
@@ -465,6 +467,22 @@ def main_checkout(cwd: Path) -> Path:
     return registrations[0].path
 
 
+def read_preflight(path: Path) -> Preflight | None:
+    """Read one tree's `git status --porcelain`, or `None` where the read itself failed.
+
+    A failing status command prints nothing, and nothing parses as a *clean*
+    tree — so reading it with `check=False` manufactures the very absence the
+    pre-flight exists to establish, and hands `check`, `done` and `archive` an
+    exclusivity nobody proved (#375, the `tools/review_exchange.py` defect
+    #332's round 1 closed on the push path). Failure is `None`, which every
+    ladder above already reads as unproven rather than as clean.
+    """
+    try:
+        return read_status(git("status", "--porcelain", cwd=path))
+    except GitError:
+        return None
+
+
 def gather(root: Path, path: Path, registrations: tuple[Registration, ...]) -> Holder:
     """Read everything the ladders need about one path, in one place."""
     registration = next((r for r in registrations if r.path == path), None)
@@ -474,9 +492,11 @@ def gather(root: Path, path: Path, registrations: tuple[Registration, ...]) -> H
     unlanded: int | None = None
     entries: tuple[str, ...] = ()
     if registration is not None and registration.head:
+        # `check=False`: the subject is a display line beside the head SHA, and a
+        # missing one hides nothing — no rung reads it.
         subject = git("log", "-1", "--format=%s", registration.head, cwd=root, check=False).strip()
     if exists and registration is not None:
-        status = read_status(git("status", "--porcelain", cwd=path, check=False))
+        status = read_preflight(path)
         unlanded = count_unlanded(path)
     elif exists:
         entries = tuple(sorted(p.name for p in path.iterdir())[:HOW_MANY_SHOWN])
@@ -484,7 +504,12 @@ def gather(root: Path, path: Path, registrations: tuple[Registration, ...]) -> H
 
 
 def count_unlanded(path: Path) -> int | None:
-    """How many commits this worktree's HEAD carries that `origin/main` does not."""
+    """How many commits this worktree's HEAD carries that `origin/main` does not.
+
+    `check=False`, but no absence is manufactured: a failed count prints nothing,
+    nothing is not a digit, and `None` refuses at `_classify_landed` as
+    ``git_failed`` — the opposite of an empty status parsing as clean (#375).
+    """
     counted = git("rev-list", "--count", f"{BASE}..HEAD", cwd=path, check=False).strip()
     return int(counted) if counted.isdigit() else None
 
@@ -581,13 +606,25 @@ def check(root: Path, name: str) -> Report:
                 "`just worktree list` shows what is registered.",
             )
         )
-    if not holder.exists or holder.status is None:
+    if not holder.exists:
         return Report.refused(
             Refusal(
                 "stale_registration",
                 (f"worktree={path}", "registered=yes", "directory=missing"),
                 "Run `git worktree prune` yourself once you are sure nothing is using it — "
                 "this recipe never prunes for you.",
+            )
+        )
+    if holder.status is None:
+        # Unproven for a different reason than a dirty tree is, so it says which:
+        # nothing was found in the tree, because nothing could be read from it.
+        return Report.refused(
+            Refusal(
+                "unverified",
+                (f"worktree={path}", "registered=yes", "status=unreadable"),
+                "The status read itself failed, so exclusivity is unproven — this is not a "
+                "report about what the tree contains. Run `git status` there yourself and "
+                "read git's own error. An unread tree is never a clean one (#375).",
             )
         )
     unproven = classify_exclusivity(path, holder.status)
@@ -622,6 +659,8 @@ def sweep(root: Path) -> Report:
     last saw, and the header names that SHA so the reading is honest.
     """
     registrations = parse_registrations(git("worktree", "list", "--porcelain", cwd=root))
+    # `check=False`: the sweep gates nothing, and a base it could not resolve
+    # prints as `(unknown)` rather than as a SHA nobody read.
     base = git("rev-parse", "--short", BASE, cwd=root, check=False).strip() or "(unknown)"
     lines = [f"base={base} {BASE} (local ref, not fetched)", f"registrations={len(registrations)}"]
     stale = 0
@@ -632,8 +671,11 @@ def sweep(root: Path) -> Report:
             lines.append(f"stale {registration.path} (directory missing)")
             continue
         status = holder.status
-        dirty = "clean" if status is not None and status.clean else "DIRTY"
-        if status is not None and not status.clean:
+        if status is None:
+            dirty = "unreadable"
+        elif status.clean:
+            dirty = "clean"
+        else:
             dirty = f"DIRTY({len(status.tracked) + len(status.untracked)})"
         unlanded = "?" if holder.unlanded is None else str(holder.unlanded)
         lines.append(
@@ -654,6 +696,8 @@ def done(root: Path, name: str) -> Report:
     if bad_name is not None:
         return Report.refused(bad_name)
     path = root / WORKTREES / name
+    # `check=False`: a fetch that fails leaves an older `origin/main`, against
+    # which unlanded commits can only over-count — the refusing direction.
     git("fetch", "origin", cwd=root, check=False)
     registrations = parse_registrations(git("worktree", "list", "--porcelain", cwd=root))
     holder = gather(root, path, registrations)
@@ -733,6 +777,8 @@ def restore(root: Path, name: str, ref: str) -> Report:
     dirty = classify_preflight(path, read_status(git("status", "--porcelain", cwd=path)))
     if dirty is not None:
         return Report.refused(dirty)
+    # `check=False`: as in `gather`, the subject is display beside a SHA already
+    # verified on the remote, and its absence decides nothing.
     subject = git("log", "-1", "--format=%s", sha, cwd=root, check=False).strip()
     return Report(
         (

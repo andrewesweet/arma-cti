@@ -457,6 +457,48 @@ def test_check_passes_a_fresh_worktree_and_leaves_a_dirty_one_unverified(
     assert foreign.exists()
 
 
+def break_the_gitdir(created: Path) -> None:
+    """Point a live worktree's `.git` file at nothing, so `git status` there fails.
+
+    A registration git still lists, over a directory git can no longer read: the
+    arrangement where an empty status is a failure rather than a clean tree.
+    """
+    (created / ".git").write_text("gitdir: /nonexistent\n", encoding="utf-8")
+
+
+def test_a_status_that_could_not_be_read_is_not_a_clean_tree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#375: a failing status prints nothing, and nothing must never parse as clean."""
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")
+    created = repo / ".claude" / "worktrees" / "issue-1"
+    break_the_gitdir(created)
+    capsys.readouterr()
+
+    code = run(monkeypatch, repo, "check", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=unverified"
+    assert "status=unreadable" in printed
+    assert not any(line.startswith(("tracked=", "untracked=")) for line in printed)
+
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=git_failed"
+    assert "status=unreadable" in printed
+    assert created.exists()
+
+    run(monkeypatch, repo, "list")
+    assert any("unreadable" in line for line in lines_of(capsys) if line.startswith("live "))
+
+
+def test_an_unreadable_status_reads_as_none_rather_than_as_an_empty_one(tmp_path: Path) -> None:
+    """The read itself, where the ladders above it cannot mistake the answer."""
+    assert worktree.read_preflight(tmp_path) is None
+
+
 def test_check_without_a_name_reads_the_tree_the_caller_is_in(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
