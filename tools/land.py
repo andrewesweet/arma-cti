@@ -103,7 +103,13 @@ exit code.
     no_verdict / verdict_unreadable
                             the review completed but no readable verdict record
                             sits beside its plan
-    sha_mismatch            the verdict names another commit than the one landing
+    sha_mismatch            neither half of the verdict's binding holds: the commit
+                            is not the one reviewed and the diff's patch-id is not
+                            the one recorded (#417) — the refusal names both
+    patch_id_unreadable     the SHA moved and the patch-id that would carry the
+                            review across the rebase could not be read on one side
+                            or the other; a check that could not run is not a check
+                            that passed (#41)
     identity_mismatch       the verdict's claimed reviewer no longer derives from
                             the records as they stand
     review_same_profile     the reviewing profile is one the issue's own records
@@ -215,7 +221,9 @@ NOT_CHECKED: Final = (
     "the rebase itself, conflict markers in the rebased tree, `just fast`, the push race, "
     "whether the push and the ff-only merge can be run at all, whether the main "
     "checkout carries commits of its own, and the reviewed-commit rung where the "
-    "rebase has commits to replay — a verdict binds the SHA the rebase produces"
+    "rebase has commits to replay — the SHA a verdict names is not the one the replay "
+    "produces, and whether the diff's patch-id carries the review across is what the "
+    "landing itself checks (#417)"
 )
 NOT_CHECKED_MERGE_ONLY: Final = (
     "whether the ff-only merge into the main checkout can be run at all, and whether that "
@@ -800,15 +808,24 @@ def _review_rung(
     The policy arrives here rather than being re-read because both callers already
     hold it from `_routing_inputs` — one read of `origin/main`, one answer, so the
     routing rung and the never-alone rung cannot be judging different policies.
+
+    Since #417 the seam carries the landing diff's patch-id too, computed here over
+    this tree post-rebase — the same range the push pushes, the same hash the verdict
+    record carries. `None` where git could not produce it: the rung refuses on it only
+    where the SHA has moved and the patch-id was the half that would have carried the
+    review across, which is `satisfies`' own ordering, not this caller's guess.
     """
+    head = git("rev-parse", "HEAD", cwd=here).strip()
+    patch = review_exchange.patch_id_of(here, head)
     return land_review.review_finding(
         review.issue,
-        git("rev-parse", "HEAD", cwd=here).strip(),
+        head,
         paths,
         _gate_paths(read, paths),
         _exemptions_text(here),
         review.dispatch_root or review_exchange.DISPATCH_ROOT,
         review.review_root or land_review.REVIEW_ROOT,
+        patch_id=patch if isinstance(patch, str) else None,
     )
 
 
@@ -1217,11 +1234,12 @@ def _review_plan(
 ) -> tuple[tuple[str, ...], str | None]:
     """Return the reviewed-commit rung's verdict on the plan, where one is honest.
 
-    Consulted only where `incoming == 0`: the rung binds a verdict to a SHA, and a
-    rebase with commits to replay rewrites the SHAs a pre-rebase verdict was bound
-    to, so consulting there would always read `sha_mismatch` — a verdict about a
-    commit the landing will not produce. Where it cannot consult, `NOT_CHECKED`
-    names the rung and the condition.
+    Consulted only where `incoming == 0`: the rung binds a verdict to a SHA or to the
+    patch-id of the diff the rebase will produce (#417), and the pre-rebase tree can
+    answer the first but only predict the second — a clean rebase reproduces the diff
+    and carries the review, one whose conflicts a hand resolved does not, and which
+    of the two this rebase is exists only after it runs. Where it cannot consult,
+    `NOT_CHECKED` names the rung and the condition.
 
     The second half of the return is the refusal's kind where the rung would
     refuse, `None` where it would clear — the dry run's exit and its
@@ -1235,7 +1253,10 @@ def _review_plan(
     landing guaranteed to refuse — the `would_run=` line being what a reader acts on,
     which is #344's own precedent (round 1 claim 5). The kind names the condition
     rather than the refusal the landing will emit, because the refusal is the rung's
-    to name and this is a plan.
+    to name and this is a plan. Since #417 the certainty is about the SHA alone: a
+    verdict may yet carry across on the patch-id, the landing decides which, and a
+    plan that said `would_clear` on a rebase that then conflicted would have promised
+    something no pre-rebase diff can know.
     """
     if incoming:
         return (
@@ -1243,7 +1264,9 @@ def _review_plan(
                 "review=not_consulted reason=the rebase will move the SHA a verdict binds",
                 (
                     "review=would_refuse reason=review_sha_will_move"
-                    " (no verdict can bind a commit the replay has not produced)"
+                    " (the landing carries the review across on the diff's patch-id"
+                    " only where the rebase replays clean, and that is the landing's"
+                    " own check, not a plan's)"
                 ),
             ),
             "review_sha_will_move",

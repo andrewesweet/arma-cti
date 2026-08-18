@@ -2020,6 +2020,7 @@ def stage_verdict(
                 "version": 1,
                 "issue": issue,
                 "reviewed_sha": SYNC_SHA,
+                "patch_id": "d" * 40,
                 "review_dispatch": "d-review-1",
                 "reviewer_profile": "codex-luna-max",
                 "reviewer_lane": "codex",

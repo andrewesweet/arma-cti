@@ -6,10 +6,16 @@ is the ladder that reads them off records other tools wrote:
 1. **A review dispatch record for the commit being landed** — `seat=review`, on
    this issue, whose `base_sha` is this SHA, completed. `review_exchange`'s
    derivation decides it (#332), and this rung enforces rather than re-derives:
-   a verdict satisfies only the SHA it names (`satisfies`), and its claimed
-   identity is re-derived at read time (`verify`), so an amended or rebased
-   branch cannot ride an earlier approval and a hand-edited record cannot forge
-   the identity the dispatcher wrote.
+   a verdict satisfies the SHA it names or a diff whose stable patch-id matches
+   the one it records (`satisfies`, #417), and its claimed identity is re-derived
+   at read time (`verify`), so an amended branch cannot ride an earlier approval
+   and a hand-edited record cannot forge the identity the dispatcher wrote. The
+   patch-id half is what keeps a **clean** rebase's review alive — the rebase
+   reproduces the diff, so the verdict still binds it — while a rebase whose
+   conflicts a hand resolved changes the diff and re-reviews. Patch-id equality
+   proves the diff is unchanged, not that its meaning survived the move onto the
+   new base; the gate's tests at landing are what catch that difference, and
+   they still run.
 2. **That review's identity absent from the dispatches that authored the work** —
    `dispatch.potential_authors` (#322), read as the potential-author superset it
    is: the reviewer's profile inside it refuses (`review_same_profile`, the same
@@ -401,6 +407,23 @@ def _alternates_lines(binding: review_exchange.Bound) -> tuple[str, ...]:
     return (f"alternates={' '.join(binding.alternates)}",) if binding.alternates else ()
 
 
+def _binding_lines(bound: review_exchange.BoundVerdict) -> tuple[str, ...]:
+    """Name which half of #417's binding cleared, and its limit where the patch-id carried.
+
+    A clearance that rode the SHA prints nothing extra — the SHA is the whole proof the
+    record ever offered. One that rode the patch-id says so and states the limit beside
+    it, at the reader: patch-id equality proves the diff is unchanged, not that its
+    meaning survived the move onto the new base — the gate's tests at landing are what
+    catch that difference, and they still run.
+    """
+    if not bound.carried_by_patch_id:
+        return ()
+    return (
+        f"carried_by=patch_id {bound.verdict.patch_id}",
+        review_exchange.PATCH_ID_LIMIT,
+    )
+
+
 def _arbiter_authorisation(
     loop_file: Path, loop: review_loop.Loop, review_root: Path, issue: int
 ) -> Refusal | tuple[str, ...]:
@@ -495,6 +518,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     exemptions_text: str | None,
     dispatch_root: Path,
     review_root: Path,
+    patch_id: str | None = None,
 ) -> Outcome:
     """Decide the never-alone rung for one landing: a typed refusal, or the clearance.
 
@@ -516,6 +540,13 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     arrives filtered rather than as prefixes so the seam carries a fact rather than a
     rule: the one authority for what a gate path is stays in `routing_policy`, and this
     module never learns how a prefix matches.
+
+    `patch_id` is the landing diff's own stable patch-id, the caller's computation of
+    `review_exchange.patch_id_of` over this tree — the second half of #417's binding,
+    which carries a verdict across a rebase that moved the SHA but reproduced the diff.
+    `None` is "could not be computed", and it refuses only where it would have been
+    needed: a verdict for the exact SHA clears without one, and a moved SHA refuses
+    `patch_id_unreadable` rather than reading the miss as a mismatch.
     """
     if gate_paths is None or paths is None:
         return Outcome(_undetermined_gate_refusal(), ())
@@ -548,8 +579,9 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     # check added to `bound_verdict` alone would have `review-loop sync` folding a loop
     # from a verdict this landing accepts, and one added here alone would refuse a loop
     # `sync` built. The obstacle was that this rung also needs the `Bound`, so the return
-    # was widened to carry it rather than the copy kept.
-    bound = review_exchange.bound_verdict(issue, sha, dispatch_root)
+    # was widened to carry it rather than the copy kept. The patch-id rides the same call
+    # for the same reason: #417's second half is part of the binding, not of this rung.
+    bound = review_exchange.bound_verdict(issue, sha, dispatch_root, patch_id)
     if not isinstance(bound, review_exchange.BoundVerdict):
         return Outcome(_landing_refusal(bound), ())
     verdict, binding = bound.verdict, bound.binding
@@ -731,6 +763,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
                     f" lane={binding.lane}"
                 ),
                 f"verdict_sha={sha}",
+                *_binding_lines(bound),
                 f"findings={len(verdict.findings)} above_low={len(above)} open_above_low=0",
                 "loop=not_needed reason=no_finding_above_low",
                 *_alternates_lines(binding),
@@ -854,6 +887,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             *authorised,
             f"review_dispatch={binding.dispatch_id} profile={binding.profile} lane={binding.lane}",
             f"verdict_sha={sha}",
+            *_binding_lines(bound),
             # Read off the loop rather than written as a literal: the count a lander
             # quotes is a reading of the record, and `stop_condition` having just held
             # is what makes it zero (round 1 claim 7).

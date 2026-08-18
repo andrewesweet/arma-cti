@@ -336,6 +336,7 @@ def _stage(tmp_path: Path, *, reviewer: str = REVIEWER, authoring: str = "") -> 
                 "version": 1,
                 "issue": ISSUE,
                 "reviewed_sha": SHA,
+                "patch_id": "c" * 40,
                 "review_dispatch": "d-review-1",
                 "reviewer_profile": reviewer,
                 "reviewer_lane": "codex",

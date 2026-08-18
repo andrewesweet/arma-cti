@@ -214,6 +214,16 @@ retyping produced a plausible evidence path that resolved to nothing, which is w
 none. A review is nothing *but* paths, line numbers and SHAs, so every one of them is pasted
 from `git show`, `rg -n` or a `Read`, never retyped from memory of what was read.
 
+### The verdict binds the patch, not only the commit
+
+The verdict record beside the review's dispatch names the commit it judged and the stable
+patch-id of the diff it judged (#417), so a landing whose clean rebase moved the SHA carries
+the review across on the patch-id — a clean rebase reproduces the diff byte for byte — while a
+rebase whose conflicts a hand resolved changes the diff, fails the patch-id, and owes a fresh
+review. The limit, stated once here and in the landing rung's own prose: patch-id equality
+proves the diff is unchanged, not that its meaning survived the move onto the new base — the
+gate's tests at landing are what catch that difference, and they still run.
+
 ### Citations are countable, and since #328 nobody counts them
 
 A citation **resolves** when the quoted text is present at `file:line` at the named SHA. That

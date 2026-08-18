@@ -36,6 +36,7 @@ pool_merge = load_tool("pool_merge")
 pool_comment = load_tool("pool_comment")
 corpus_gate = load_tool("corpus_gate")
 land = load_tool("land")
+review_exchange = load_tool("review_exchange")
 routing_policy = load_tool("routing_policy")
 
 POLICY = REPO / routing_policy.POLICY_RELATIVE
@@ -628,13 +629,14 @@ class _Gate:
         return land.GateResult(self.code, "")
 
 
-def _reviewed(
+def _reviewed(  # noqa: PLR0913 — one parameter per field of the record under test
     here: Path,
     at: Path,
     *,
     findings: tuple[dict[str, object], ...] = (),
     loop: dict[str, object] | None = None,
     reviewer: tuple[str, str] = ("codex-luna-max", "codex"),
+    patch_id: str | None = None,
 ) -> land.ReviewInputs:
     """Stage the records a reviewed landing reads, and return the inputs that name them.
 
@@ -650,11 +652,20 @@ def _reviewed(
     staged landing satisfies ADR-0073's gate-path requirement without every caller
     naming it. A caller passing a `claude-native` reviewer is arranging the same-lane
     refusal (#406).
+
+    `patch_id` defaults to the one git computes for this tree's own diff (#417), so a
+    staged review is the review a real `just review record` would have written; the
+    landings that never move the SHA never consult it, and a caller may still name a
+    shape-only value for the tests that refuse.
     """
     dispatch_root = at / "dispatches"
     review_root = at / "review"
     reviewer_profile, reviewer_lane = reviewer
     sha = _git("rev-parse", "HEAD", cwd=here).strip()
+    if patch_id is None:
+        computed = review_exchange.patch_id_of(here, sha)
+        assert isinstance(computed, str), f"staging a review needs a diff to review: {computed}"
+        patch_id = computed
     record = dispatch_root / "d-review-1"
     record.mkdir(parents=True, exist_ok=True)
     (record / "dispatch.json").write_text(
@@ -681,6 +692,7 @@ def _reviewed(
                 "version": 1,
                 "issue": 213,
                 "reviewed_sha": sha,
+                "patch_id": patch_id,
                 "review_dispatch": "d-review-1",
                 "reviewer_profile": reviewer_profile,
                 "reviewer_lane": reviewer_lane,
@@ -754,28 +766,18 @@ def test_the_gate_runs_on_the_rebased_tree_not_the_tree_as_it_was(
 ) -> None:
     """The whole of the re-gate-on-movement answer: it runs, and it runs after the rebase.
 
-    Two landings, because the sibling's commit moves this one's SHA and a verdict binds
-    the SHA it names: the first rebase orphans the staged review with it — the dispatch
-    record binds the pre-rebase SHA, so the rung finds no review bound to the commit
-    being landed — and the second, re-reviewed at the SHA the replay produced, is the
-    run that reaches the gate at all (#332's binding, enforced here rather than
-    re-derived).
+    One landing now, because #417 carries the review across the clean replay: the
+    verdict records the pre-rebase SHA and the diff's patch-id, the rebase over the
+    sibling reproduces the diff byte for byte, and the rung clears on the patch-id —
+    so the run that reaches the gate is the run over the replayed tree. The re-review
+    the SHA-only binding demanded is owed only where the rebase changes the diff,
+    which is the test after this one.
     """
     _origin, main, here = repo
     _commit(main, "sibling.txt", "landed first\n")
     _git("push", "origin", "main", cwd=main)
     _commit(here, "feature.txt", "work\n")
     gate = _Gate()
-
-    moved = land.land(main, here, gate=gate, review=_reviewed(here, tmp_path))
-
-    assert moved.code == 1
-    assert moved.lines[0] == "refusal=no_review_dispatch"
-    # No rebase line beside it: a mid-ladder refusal keeps only its own lines
-    # (`_merge`'s docstring records the convention), and the replay is proven
-    # below instead — by the second run already being current and its gate
-    # seeing the replayed commit.
-    assert gate.calls == []
 
     report = land.land(main, here, gate=gate, review=_reviewed(here, tmp_path))
 
@@ -784,7 +786,52 @@ def test_the_gate_runs_on_the_rebased_tree_not_the_tree_as_it_was(
     # The tree the gate saw carries our commit replayed on top of the sibling's.
     assert gate.calls == ["feat: feature.txt"]
     assert "sibling.txt" in _git("show", "--name-only", "--format=", "HEAD~1", cwd=here)
-    assert "rebase=already_current" in report.lines
+    assert "rebase=replayed onto 1 new commits" in report.lines
+    # And the review that cleared it is the pre-rebase one, carried on the patch-id.
+    assert any(line.startswith("carried_by=patch_id") for line in report.lines)
+
+
+def test_a_rebase_that_changed_the_diff_needs_a_new_review(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
+    """#417's far side: a conflict a hand resolved changed the diff, and the patch-id notices.
+
+    The carried review is refused and the landing owes a fresh one.
+    """
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+    # `main` takes the same file, the rebase conflicts, and a hand resolves it
+    # out-of-band — before `just land`, to content neither side wrote.
+    _commit(main, "feature.txt", "main's own words\n")
+    _git("push", "origin", "main", cwd=main)
+    _git("fetch", "origin", cwd=here)
+    subprocess.run(
+        ["git", "rebase", "origin/main"],  # noqa: S607 — the conflict is the point
+        cwd=here,
+        capture_output=True,
+        check=False,
+    )
+    (here / "feature.txt").write_text("a hand resolved it\n", encoding="utf-8")
+    _git("add", "feature.txt", cwd=here)
+    _git(
+        "-c",
+        "user.email=t@example",
+        "-c",
+        "user.name=t",
+        "-c",
+        "core.editor=true",
+        "rebase",
+        "--continue",
+        cwd=here,
+    )
+
+    report = land.land(main, here, gate=_Gate(), review=review)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=sha_mismatch"
+    assert "patch_id=mismatch" in "\n".join(report.lines)
 
 
 def test_a_red_gate_leaves_origin_exactly_where_it_was(
@@ -1622,19 +1669,14 @@ def test_a_rebase_over_a_sibling_that_touched_nothing_in_world_keeps_the_run_val
     _commit(main, "tools/sibling.py", "somebody else's tooling\n")
     _git("push", "origin", "main", cwd=main)
 
-    # The rebase orphans the staged review along with the corpus's commit — the
-    # dispatch record binds the pre-rebase SHA — and the second call, re-reviewed at
-    # the SHA the replay produced, is the run this test has always been about.
-    moved = land.land(main, here, gate=_Gate(), corpus=pool, review=_reviewed(here, tmp_path))
-    assert moved.lines[0] == "refusal=no_review_dispatch"
-    # The refusal carries no rebase line — a mid-ladder refusal keeps only its
-    # own lines — so the replay is proven by the second run being already
-    # current over a corpus verdict the replay orphaned.
-
+    # #417 carries the staged review across the clean replay, so one call lands:
+    # the rebase orphans the corpus's commit along with the SHA the verdict named,
+    # and the corpus clears anyway — coverage is a tree comparison, which is the
+    # whole claim of this test.
     report = land.land(main, here, gate=_Gate(), corpus=pool, review=_reviewed(here, tmp_path))
 
     assert report.code == 0
-    assert "rebase=already_current" in report.lines
+    assert "rebase=replayed onto 1 new commits" in report.lines
     assert any(line.startswith("corpus=cleared") for line in report.lines)
     assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
 
@@ -1689,12 +1731,10 @@ def test_a_run_superseded_by_someone_elses_in_world_commit_no_longer_clears(
     _commit(main, "src/cti_daemon/outbox.py", "somebody else's in-world change\n")
     _git("push", "origin", "main", cwd=main)
 
-    # The sibling's commit orphans the staged review with the corpus's commit — the
-    # dispatch record binds the pre-rebase SHA — and the re-review at the replayed
-    # SHA is the second call, whose refusal is the superseded corpus.
-    moved = land.land(main, here, gate=_Gate(), corpus=pool, review=_reviewed(here, tmp_path))
-    assert moved.lines[0] == "refusal=no_review_dispatch"
-
+    # #417 carries the staged review across the clean replay, so the refusal this
+    # test is about arrives on the first call: the corpus's commit is orphaned
+    # with the SHA the verdict named, and the sibling's in-world change makes the
+    # replay a world the pool never measured.
     report = land.land(main, here, gate=_Gate(), corpus=pool, review=_reviewed(here, tmp_path))
 
     assert report.code == 1

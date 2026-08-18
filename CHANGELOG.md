@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A review verdict binds the patch it reviewed, not only the commit, so a clean rebase no
+  longer orphans it (#417).** `just review record` now writes the stable `git patch-id` of the
+  reviewed diff into the verdict — computed from the same merge-base-relative range `just land`
+  will land, fetched first, never typed — and the landing's never-alone rung accepts a verdict
+  whose SHA has moved where that patch-id still matches: a clean rebase reproduces the diff
+  byte for byte and keeps its review, while a rebase whose conflicts a hand resolved changes
+  the diff, fails the patch-id, and owes a fresh re-review. The refusal names which half of
+  the binding failed, an absent or malformed patch-id on either side is `patch_id_unreadable`
+  and never a pass (#41), and the limit is stated in the docs and the rung's own prose:
+  patch-id equality proves the diff is unchanged, not that its meaning survived the move onto
+  the new base — the gate's tests at landing are what catch that difference, and they still
+  run.
+
 - **A renamed profile's old name resolves for reading dispatch records, and still never
   dispatches (#413).** Renaming a profile used to strand every branch authored under the old
   name: `--reviewing <old name>` refused `unknown_reviewed_profile` against the registry,

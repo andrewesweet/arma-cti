@@ -30,6 +30,9 @@ worktree = load_tool("worktree")
 
 SHA = "a" * 40
 OTHER_SHA = "b" * 40
+THIRD_SHA = "e" * 40
+PATCH = "c" * 40
+OTHER_PATCH = "d" * 40
 # `write_result`'s two shapes, field for field: a run that ran is typed by its
 # outcome (`classify_run` ties `ok` to a zero exit), and a dispatch that never
 # reached a lane carries its refusal and no returncode at all.
@@ -112,6 +115,20 @@ def commit(repo: Path, name: str, content: str, message: str) -> None:
 def head_of(repo: Path) -> str:
     """Return the full HEAD of a repository, the string the exchange reports and binds."""
     return worktree.git("rev-parse", "HEAD", cwd=repo).strip()
+
+
+def ahead_repo(tmp_path: Path) -> tuple[Path, str]:
+    """Build a repository whose HEAD is one work commit ahead of its own `origin/main`.
+
+    The state `patch_id_of` hashes (#417): a base pushed to `origin/main`, then the
+    reviewed work on top of it, so `git diff origin/main...HEAD` is the diff a
+    landing lands and never the empty diff a fresh clone would give.
+    """
+    repo = init_repo(tmp_path)
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    commit(repo, "README", "two", "work")
+    return repo, head_of(repo)
 
 
 # ------------------------------------------------------------------------ the ref
@@ -273,7 +290,7 @@ def test_record_writes_the_derived_identity_beside_the_dispatch(tmp_path: Path) 
     root = tmp_path / "dispatches"
     dispatch_dir(root, "d-1", profile="opus-xhigh")
     outcome = review_exchange.record_verdict(
-        332, SHA, json.dumps([{"id": "f1", "severity": "high"}]), root
+        332, SHA, json.dumps([{"id": "f1", "severity": "high"}]), root, patch_id=PATCH
     )
     assert outcome.verdict.review_dispatch == "d-1"
     assert outcome.verdict.reviewer_profile == "opus-xhigh"
@@ -281,6 +298,7 @@ def test_record_writes_the_derived_identity_beside_the_dispatch(tmp_path: Path) 
     recorded = json.loads(outcome.path.read_text(encoding="utf-8"))
     assert recorded["review_dispatch"] == "d-1"
     assert recorded["reviewed_sha"] == SHA
+    assert recorded["patch_id"] == PATCH
     assert recorded["findings"] == [{"id": "f1", "severity": "high"}]
 
 
@@ -290,10 +308,10 @@ def test_a_second_record_of_the_same_dispatch_refuses_and_swaps_nothing(
     root = tmp_path / "dispatches"
     dispatch_dir(root, "d-1")
     first = review_exchange.record_verdict(
-        332, SHA, json.dumps([{"id": "f1", "severity": "low"}]), root
+        332, SHA, json.dumps([{"id": "f1", "severity": "low"}]), root, patch_id=PATCH
     )
     second = review_exchange.record_verdict(
-        332, SHA, json.dumps([{"id": "f2", "severity": "low"}]), root
+        332, SHA, json.dumps([{"id": "f2", "severity": "low"}]), root, patch_id=PATCH
     )
     assert second.kind == "verdict_exists"
     # The existing record is untouched — the findings were not swapped.
@@ -314,7 +332,9 @@ def test_concurrent_records_cannot_both_write_the_one_slot(tmp_path: Path) -> No
     with ThreadPoolExecutor(max_workers=2) as pool:
         outcomes = list(
             pool.map(
-                lambda findings: review_exchange.record_verdict(332, SHA, findings, root),
+                lambda findings: review_exchange.record_verdict(
+                    332, SHA, findings, root, patch_id=PATCH
+                ),
                 payloads,
             )
         )
@@ -340,7 +360,7 @@ def test_record_refuses_a_partial_file_in_the_slot_and_overwrites_nothing(
     dispatch_dir(root, "d-1")
     path = root / "d-1" / review_exchange.VERDICT_NAME
     path.write_text('{"version": 1, "revie', encoding="utf-8")
-    outcome = review_exchange.record_verdict(332, SHA, "[]", root)
+    outcome = review_exchange.record_verdict(332, SHA, "[]", root, patch_id=PATCH)
     assert outcome.kind == "verdict_unreadable"
     assert path.read_text(encoding="utf-8") == '{"version": 1, "revie'
 
@@ -356,7 +376,7 @@ def test_record_that_fails_mid_write_leaves_no_partial_behind(
         raise failure
 
     monkeypatch.setattr(review_exchange.os, "fsync", failing_fsync)
-    outcome = review_exchange.record_verdict(332, SHA, "[]", root)
+    outcome = review_exchange.record_verdict(332, SHA, "[]", root, patch_id=PATCH)
     assert outcome.kind == "verdict_unwritten"
     # Neither a verdict nor the staged attempt is left behind.
     assert sorted(entry.name for entry in (root / "d-1").iterdir()) == [
@@ -374,7 +394,7 @@ def test_record_refuses_an_unwritable_dispatch_directory(tmp_path: Path) -> None
     entry = dispatch_dir(root, "d-1")
     entry.chmod(0o500)
     try:
-        outcome = review_exchange.record_verdict(332, SHA, "[]", root)
+        outcome = review_exchange.record_verdict(332, SHA, "[]", root, patch_id=PATCH)
         assert outcome.kind == "verdict_unwritten"
         assert sorted(item.name for item in entry.iterdir()) == [
             "dispatch.json",
@@ -403,7 +423,7 @@ def test_record_refuses_a_dispatch_directory_removed_under_the_write(
         return verdict_file
 
     monkeypatch.setattr(review_exchange, "verdict_path", path_then_remove)
-    outcome = review_exchange.record_verdict(332, SHA, "[]", root)
+    outcome = review_exchange.record_verdict(332, SHA, "[]", root, patch_id=PATCH)
     assert outcome.kind == "verdict_unwritten"
     assert not (root / "d-1").exists()
 
@@ -411,7 +431,7 @@ def test_record_refuses_a_dispatch_directory_removed_under_the_write(
 def test_record_without_a_binding_writes_nothing(tmp_path: Path) -> None:
     root = tmp_path / "dispatches"
     dispatch_dir(root, "d-1", result=None)
-    outcome = review_exchange.record_verdict(332, SHA, "[]", root)
+    outcome = review_exchange.record_verdict(332, SHA, "[]", root, patch_id=PATCH)
     assert outcome.kind == "no_review_dispatch"
     assert not (root / "d-1" / review_exchange.VERDICT_NAME).is_file()
 
@@ -419,8 +439,18 @@ def test_record_without_a_binding_writes_nothing(tmp_path: Path) -> None:
 def test_record_refuses_a_short_sha_and_writes_nothing(tmp_path: Path) -> None:
     root = tmp_path / "dispatches"
     dispatch_dir(root, "d-1")
-    outcome = review_exchange.record_verdict(332, "abc123", "[]", root)
+    outcome = review_exchange.record_verdict(332, "abc123", "[]", root, patch_id=PATCH)
     assert outcome.kind == "invalid_sha"
+    assert not (root / "d-1" / review_exchange.VERDICT_NAME).is_file()
+
+
+def test_record_refuses_a_shapeless_patch_id_and_writes_nothing(tmp_path: Path) -> None:
+    # #417's floor at the write side too: a record without a patch-id can never
+    # carry across a rebase, and an unreadable one is a refusal, never a pass.
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1")
+    outcome = review_exchange.record_verdict(332, SHA, "[]", root, patch_id="nope")
+    assert outcome.kind == "invalid_patch_id"
     assert not (root / "d-1" / review_exchange.VERDICT_NAME).is_file()
 
 
@@ -432,6 +462,7 @@ def verdict(**overrides: object) -> review_exchange.Verdict:
     fields: dict[str, object] = {
         "issue": 332,
         "reviewed_sha": SHA,
+        "patch_id": PATCH,
         "review_dispatch": "d-1",
         "reviewer_profile": "opus-high",
         "reviewer_lane": "claude-native",
@@ -452,6 +483,8 @@ def test_verdict_document_roundtrips() -> None:
     [
         {"reviewed_sha": "abc"},  # a short SHA names several commits
         {"reviewed_sha": OTHER_SHA.upper()},  # uppercase is not the form git prints
+        {"patch_id": "c" * 39},  # a short patch-id is not one git printed
+        {"patch_id": ""},  # nor is an empty one — #417's floor is 40 lowercase hex
         {"issue": 0},
         {"review_dispatch": ""},
         {"reviewer_profile": ""},
@@ -489,19 +522,39 @@ def test_satisfies_the_named_commit() -> None:
     assert review_exchange.satisfies(verdict(), SHA) is None
 
 
-def test_satisfies_another_commit_refuses_and_names_both() -> None:
-    mismatch = review_exchange.satisfies(verdict(), OTHER_SHA)
+def test_satisfies_a_moved_sha_on_an_identical_diff() -> None:
+    """#417's carry: the SHA the rebase produced, the diff the review judged."""
+    assert review_exchange.satisfies(verdict(), OTHER_SHA, PATCH) is None
+
+
+def test_satisfies_a_moved_sha_on_another_diff_refuses_and_names_both_halves() -> None:
+    mismatch = review_exchange.satisfies(verdict(), OTHER_SHA, OTHER_PATCH)
     assert mismatch is not None
     assert mismatch.kind == "sha_mismatch"
     found = " ".join(mismatch.found)
     assert OTHER_SHA in found
     assert SHA in found
+    assert f"patch_id=mismatch asked={OTHER_PATCH} reviewed={PATCH}" in mismatch.found
+
+
+def test_satisfies_a_moved_sha_without_a_landing_patch_id_never_clears() -> None:
+    # The half of the binding that carries across a rebase could not run, so it
+    # did not pass — #41, in #417's own shape.
+    unreadable = review_exchange.satisfies(verdict(), OTHER_SHA)
+    assert unreadable is not None
+    assert unreadable.kind == "patch_id_unreadable"
+
+
+def test_satisfies_a_moved_sha_over_an_unreadable_recorded_patch_id() -> None:
+    unreadable = review_exchange.satisfies(verdict(patch_id="nope"), OTHER_SHA, PATCH)
+    assert unreadable is not None
+    assert unreadable.kind == "patch_id_unreadable"
 
 
 def test_verify_re_derives_a_recorded_verdict(tmp_path: Path) -> None:
     root = tmp_path / "dispatches"
     dispatch_dir(root, "d-1")
-    outcome = review_exchange.record_verdict(332, SHA, "[]", root)
+    outcome = review_exchange.record_verdict(332, SHA, "[]", root, patch_id=PATCH)
     binding = review_exchange.verify(outcome.verdict, root)
     assert binding.kind == "bound"
     assert binding.dispatch_id == "d-1"
@@ -536,11 +589,75 @@ def test_verify_refuses_a_hand_edited_lane(tmp_path: Path) -> None:
     assert refusal.kind == "identity_mismatch"
 
 
+def test_bound_verdict_carries_a_review_across_a_moved_sha(tmp_path: Path) -> None:
+    """The landing's ladder (#417): a rebase that moved the SHA keeps its review.
+
+    The dispatch record binds the pre-rebase commit — that is what the reviewer
+    was dispatched at — and the landing asks about the commit the rebase produced,
+    carrying the diff's patch-id with it. The identity derives against the
+    verdict's own SHA, so the reviewer of record is the one who reviewed the diff.
+    """
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1", base_sha=OTHER_SHA)
+    recorded = review_exchange.record_verdict(332, OTHER_SHA, "[]", root, patch_id=PATCH)
+    assert not isinstance(recorded, review_exchange.Refusal)
+
+    bound = review_exchange.bound_verdict(332, SHA, root, PATCH)
+
+    assert isinstance(bound, review_exchange.BoundVerdict)
+    assert bound.verdict == recorded.verdict
+    assert bound.binding.dispatch_id == "d-1"
+    assert bound.carried_by_patch_id is True
+
+
+def test_bound_verdict_walks_past_a_newer_verdict_that_does_not_satisfy(
+    tmp_path: Path,
+) -> None:
+    """Latest-first, but satisfaction decides: an older review of this diff clears.
+
+    The newer dispatch reviewed another commit — the re-review a conflict-resolved
+    rebase owes, say — and its verdict satisfies neither half for the diff being
+    landed. The older one judged this diff and is the one that carries, identity
+    and all, derived against the SHA it actually reviewed.
+    """
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1", base_sha=SHA, planned_at="2026-08-15T08:00:00+00:00")
+    older = review_exchange.record_verdict(
+        332, SHA, "[]", root, patch_id=PATCH, now="2026-08-15T08:30:00+00:00"
+    )
+    dispatch_dir(root, "d-2", base_sha=OTHER_SHA, planned_at="2026-08-15T09:00:00+00:00")
+    newer = review_exchange.record_verdict(
+        332, OTHER_SHA, "[]", root, patch_id=OTHER_PATCH, now="2026-08-15T09:30:00+00:00"
+    )
+    assert not isinstance(older, review_exchange.Refusal)
+    assert not isinstance(newer, review_exchange.Refusal)
+
+    bound = review_exchange.bound_verdict(332, THIRD_SHA, root, PATCH)
+
+    assert isinstance(bound, review_exchange.BoundVerdict)
+    assert bound.verdict.review_dispatch == "d-1"
+    assert bound.carried_by_patch_id is True
+
+
+def test_bound_verdict_where_no_candidate_satisfies_returns_the_mismatch(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1", base_sha=OTHER_SHA)
+    recorded = review_exchange.record_verdict(332, OTHER_SHA, "[]", root, patch_id=OTHER_PATCH)
+    assert not isinstance(recorded, review_exchange.Refusal)
+
+    mismatch = review_exchange.bound_verdict(332, SHA, root, PATCH)
+
+    assert isinstance(mismatch, review_exchange.Refusal)
+    assert mismatch.kind == "sha_mismatch"
+
+
 def test_scan_collects_verdicts_and_names_the_unreadable(tmp_path: Path) -> None:
     root = tmp_path / "dispatches"
     dispatch_dir(root, "d-1")
     dispatch_dir(root, "d-2", result=None)
-    review_exchange.record_verdict(332, SHA, "[]", root)
+    review_exchange.record_verdict(332, SHA, "[]", root, patch_id=PATCH)
     (root / "d-2" / review_exchange.VERDICT_NAME).write_text("{broken", encoding="utf-8")
     scanned = review_exchange.scan_verdicts(root)
     assert [dispatch for dispatch, _ in scanned.verdicts] == ["d-1"]
@@ -636,11 +753,114 @@ def test_exchange_refuses_a_non_positive_issue_before_git(tmp_path: Path) -> Non
     assert report.lines[0] == "refusal=invalid_issue"
 
 
+# ------------------------------------------------------------------- the patch-id
+
+
+def test_patch_id_of_hashes_the_range_a_landing_lands(tmp_path: Path) -> None:
+    repo, head = ahead_repo(tmp_path)
+    patch = review_exchange.patch_id_of(repo, head)
+    assert isinstance(patch, str)
+    assert review_exchange.PATCH_ID.fullmatch(patch)
+
+
+def test_patch_id_of_refuses_what_git_cannot_reach(tmp_path: Path) -> None:
+    repo, _head = ahead_repo(tmp_path)
+    unknown = review_exchange.patch_id_of(repo, "9" * 40)
+    assert isinstance(unknown, review_exchange.Refusal)
+    assert unknown.kind == "patch_id_unreadable"
+
+
+def test_a_clean_rebase_keeps_the_patch_id(tmp_path: Path) -> None:
+    """#417's ground: the range hashed is the range landed, and a clean replay is byte-equal.
+
+    A clean rebase reproduces the diff byte for byte, so the SHA moves and the
+    patch-id does not — which is the half that carries a review across.
+    """
+    repo = init_repo(tmp_path)
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    worktree.git("checkout", "-q", "-b", "work", cwd=repo)
+    commit(repo, "README", "two", "work")
+    reviewed = head_of(repo)
+    reviewed_patch = review_exchange.patch_id_of(repo, reviewed)
+    assert isinstance(reviewed_patch, str)
+
+    # `origin/main` moves on a file the work never touches, and the rebase replays.
+    worktree.git("checkout", "-q", "-b", "main-ahead", "origin/main", cwd=repo)
+    commit(repo, "elsewhere", "unrelated", "main moves on")
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    worktree.git("checkout", "-q", "work", cwd=repo)
+    worktree.git(
+        "-c", "user.email=t@example", "-c", "user.name=t", "rebase", "origin/main", cwd=repo
+    )
+
+    rebased = head_of(repo)
+    assert rebased != reviewed  # the SHA moved...
+    assert review_exchange.patch_id_of(repo, rebased) == reviewed_patch  # ...the diff did not
+
+
+def test_a_conflict_resolved_rebase_changes_the_patch_id(tmp_path: Path) -> None:
+    """A hand that resolved a conflict changed the diff, and the binding notices.
+
+    The one rebase that must force a re-review rather than carry one across.
+    """
+    repo = init_repo(tmp_path)
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    worktree.git("checkout", "-q", "-b", "work", cwd=repo)
+    commit(repo, "README", "two", "work")
+    reviewed = head_of(repo)
+    reviewed_patch = review_exchange.patch_id_of(repo, reviewed)
+    assert isinstance(reviewed_patch, str)
+
+    # `origin/main` takes the same line, the rebase conflicts, a hand resolves it.
+    worktree.git("checkout", "-q", "-b", "main-ahead", "origin/main", cwd=repo)
+    commit(repo, "README", "three", "main takes the line")
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    worktree.git("checkout", "-q", "work", cwd=repo)
+    worktree.git(
+        "-c",
+        "user.email=t@example",
+        "-c",
+        "user.name=t",
+        "rebase",
+        "origin/main",
+        cwd=repo,
+        check=False,
+    )  # conflicts, as staged
+    (repo / "README").write_text("a hand resolved it", encoding="utf-8")
+    worktree.git("add", ".", cwd=repo)
+    worktree.git(
+        "-c",
+        "user.email=t@example",
+        "-c",
+        "user.name=t",
+        "-c",
+        "core.editor=true",
+        "rebase",
+        "--continue",
+        cwd=repo,
+    )
+
+    resolved = head_of(repo)
+    assert resolved != reviewed
+    changed = review_exchange.patch_id_of(repo, resolved)
+    assert isinstance(changed, str)
+    assert changed != reviewed_patch
+
+
 # ------------------------------------------------------------------ invocation
 
 
 def cli_record(tmp_path: Path, root: Path, sha: str = SHA) -> int:
-    """Record one verdict through the CLI, as the orchestrator would."""
+    """Record one verdict through the CLI, as the orchestrator would.
+
+    `record` computes the patch-id itself from `--repo` (#417), so every CLI test
+    drives it against a throwaway repository whose `origin/main` exists — never
+    this checkout, whose fetch would reach the real remote.
+    """
     findings = tmp_path / "findings.json"
     findings.write_text(json.dumps([{"id": "f1", "severity": "medium"}]), encoding="utf-8")
     return review_exchange.main(
@@ -652,37 +872,82 @@ def cli_record(tmp_path: Path, root: Path, sha: str = SHA) -> int:
             sha,
             "--findings",
             str(findings),
+            "--repo",
+            str(tmp_path / "repo"),
             "--dispatch-dir",
             str(root),
         ]
     )
 
 
+def cli_stage(tmp_path: Path) -> tuple[Path, Path, str]:
+    """Build the repository and records a CLI record needs: a real reviewed commit."""
+    repo, head = ahead_repo(tmp_path)
+    root = tmp_path / "dispatches"
+    dispatch_dir(root, "d-1", base_sha=head)
+    return repo, root, head
+
+
 def test_cli_records_shows_and_prints_the_limit(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    root = tmp_path / "dispatches"
-    dispatch_dir(root, "d-1")
-    assert cli_record(tmp_path, root) == 0
+    _repo, root, head = cli_stage(tmp_path)
+    assert cli_record(tmp_path, root, sha=head) == 0
     assert review_exchange.SAME_USER_LIMIT in capsys.readouterr().out
+    # The patch-id on the record is the one git computed, never a typed value.
+    recorded = json.loads((root / "d-1" / "verdict.json").read_text(encoding="utf-8"))
+    assert review_exchange.PATCH_ID.fullmatch(recorded["patch_id"])
     shown_ok = review_exchange.main(
-        ["show", "d-1", "--satisfies", SHA, "--dispatch-dir", str(root)]
+        ["show", "d-1", "--satisfies", head, "--dispatch-dir", str(root)]
     )
     assert shown_ok == 0
     shown = capsys.readouterr().out
-    assert f"satisfies={SHA} yes" in shown
+    assert f"satisfies={head} yes" in shown
     assert review_exchange.SAME_USER_LIMIT in shown
+
+
+def test_cli_show_carries_a_moved_sha_on_the_patch_id(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _repo, root, head = cli_stage(tmp_path)
+    assert cli_record(tmp_path, root, sha=head) == 0
+    recorded = json.loads((root / "d-1" / "verdict.json").read_text(encoding="utf-8"))
+    capsys.readouterr()
+    code = review_exchange.main(
+        [
+            "show",
+            "d-1",
+            "--satisfies",
+            OTHER_SHA,
+            "--patch-id",
+            recorded["patch_id"],
+            "--dispatch-dir",
+            str(root),
+        ]
+    )
+    assert code == 0
+    shown = capsys.readouterr().out
+    assert f"satisfies={OTHER_SHA} yes carried_by=patch_id" in shown
+    assert review_exchange.PATCH_ID_LIMIT in shown
 
 
 def test_cli_show_of_a_mismatched_sha_exits_one(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    root = tmp_path / "dispatches"
-    dispatch_dir(root, "d-1")
-    assert cli_record(tmp_path, root) == 0
+    _repo, root, head = cli_stage(tmp_path)
+    assert cli_record(tmp_path, root, sha=head) == 0
     capsys.readouterr()
     code = review_exchange.main(
-        ["show", "d-1", "--satisfies", OTHER_SHA, "--dispatch-dir", str(root)]
+        [
+            "show",
+            "d-1",
+            "--satisfies",
+            OTHER_SHA,
+            "--patch-id",
+            OTHER_PATCH,
+            "--dispatch-dir",
+            str(root),
+        ]
     )
     assert code == 1
     assert "refusal=sha_mismatch" in capsys.readouterr().err
@@ -707,8 +972,9 @@ def test_cli_show_refuses_a_path_like_dispatch_id(
 def test_cli_record_without_a_binding_writes_nothing(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
+    _repo, head = ahead_repo(tmp_path)
     root = tmp_path / "dispatches"
     root.mkdir()
-    assert cli_record(tmp_path, root) == 1
+    assert cli_record(tmp_path, root, sha=head) == 1
     assert "refusal=no_review_dispatch" in capsys.readouterr().err
     assert list(root.iterdir()) == []

@@ -30,6 +30,8 @@ review_exchange = load_tool("review_exchange")
 
 SHA: Final = "a" * 40
 OTHER_SHA: Final = "b" * 40
+PATCH: Final = "c" * 40
+OTHER_PATCH: Final = "d" * 40
 STAMP: Final = "20260815T0000Z"
 ISSUE: Final = 334
 REVIEWER: Final = "codex-luna-max"
@@ -79,6 +81,7 @@ def _verdict(  # noqa: PLR0913 — one parameter per field of the record under t
     *,
     issue: int = ISSUE,
     sha: str = SHA,
+    patch_id: str = PATCH,
     dispatch: str = "d-review-1",
     profile: str = REVIEWER,
     findings: tuple[tuple[str, str], ...] = (),
@@ -91,6 +94,7 @@ def _verdict(  # noqa: PLR0913 — one parameter per field of the record under t
             "version": 1,
             "issue": issue,
             "reviewed_sha": sha,
+            "patch_id": patch_id,
             "review_dispatch": dispatch,
             "reviewer_profile": profile,
             "reviewer_lane": lane,
@@ -241,6 +245,7 @@ def _rung(  # noqa: PLR0913 — one keyword per input the rung reads, as the run
     *,
     issue: int | None = ISSUE,
     sha: str = SHA,
+    patch_id: str | None = None,
     paths: tuple[str, ...] | None = ("tools/worker.py",),
     gate_paths: tuple[str, ...] | None = (),
     exemptions: str | None = None,
@@ -255,10 +260,13 @@ def _rung(  # noqa: PLR0913 — one keyword per input the rung reads, as the run
     default is the ordinary landing: `tools/worker.py` is not a gate, so ADR-0073's
     cross-lane predicate does not apply and every rung below it is what it was. The
     cross-lane tests name their own gate paths.
+
+    `patch_id=None` is the landing that cannot state its own diff's hash; the tests
+    that clear over a moved SHA (#417) name the patch-id the verdict carries.
     """
     dispatch_root, review_root = roots
     return land_review.review_finding(
-        issue, sha, paths, gate_paths, exemptions, dispatch_root, review_root
+        issue, sha, paths, gate_paths, exemptions, dispatch_root, review_root, patch_id
     )
 
 
@@ -354,13 +362,51 @@ def test_a_verdict_for_another_issue_does_not_clear_this_landing(tmp_path: Path)
 
 
 def test_a_verdict_for_another_commit_does_not_clear_this_one(tmp_path: Path) -> None:
-    """#332's binding, enforced here rather than re-derived: both SHAs named."""
-    outcome = _rung(_stage(tmp_path, verdict=_verdict(sha=OTHER_SHA)))
+    """#332's binding as #417 widened it: both SHAs and both patch-ids named."""
+    outcome = _rung(_stage(tmp_path, verdict=_verdict(sha=OTHER_SHA)), patch_id=OTHER_PATCH)
 
     refusal = outcome.refusal
     assert refusal.kind == "sha_mismatch"
     assert f"asked={SHA}" in refusal.found
     assert f"reviewed={OTHER_SHA}" in refusal.found
+    assert f"patch_id=mismatch asked={OTHER_PATCH} reviewed={PATCH}" in refusal.found
+
+
+def test_a_clean_rebase_carries_the_verdict_across_on_the_patch_id(tmp_path: Path) -> None:
+    """#417's clearance: the SHA moved and the diff did not, so the review rides.
+
+    The plan and verdict both name the reviewed SHA; the landing names the SHA the
+    rebase produced and the patch-id of the diff it still is. The identity derives
+    against the verdict's own SHA, never the landing's, so the reviewer of record is
+    the one who reviewed the diff — not whoever the landing would rather name.
+    """
+    outcome = _rung(_stage(tmp_path), sha=OTHER_SHA, patch_id=PATCH)
+
+    assert outcome.refusal is None
+    cleared = "\n".join(outcome.cleared)
+    assert f"carried_by=patch_id {PATCH}" in cleared
+    assert review_exchange.PATCH_ID_LIMIT in cleared
+
+
+def test_a_conflict_resolved_rebase_changes_the_patch_and_forces_re_review(
+    tmp_path: Path,
+) -> None:
+    """A hand that resolved a conflict changed the diff, and patch-id equality notices."""
+    outcome = _rung(_stage(tmp_path), sha=OTHER_SHA, patch_id=OTHER_PATCH)
+
+    refusal = outcome.refusal
+    assert refusal.kind == "sha_mismatch"
+    assert f"patch_id=mismatch asked={OTHER_PATCH} reviewed={PATCH}" in refusal.found
+
+
+def test_a_moved_sha_with_no_landing_patch_id_refuses_rather_than_guess(
+    tmp_path: Path,
+) -> None:
+    """The half that carries across a rebase could not run, so it did not pass (#41)."""
+    outcome = _rung(_stage(tmp_path), sha=OTHER_SHA)
+
+    assert _kind(outcome) == "patch_id_unreadable"
+    assert f"landing_patch_id={None!r}" in outcome.refusal.found
 
 
 def test_a_verdict_claiming_an_identity_the_records_do_not_derive(tmp_path: Path) -> None:
