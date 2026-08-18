@@ -639,9 +639,10 @@ SEATS: Final[dict[str, Seat]] = {
     # `permission_mode` is #407's: the ADR says read-only in the table and reasons from
     # read-only in the body, so the harness was the half that was wrong. It renders
     # `--permission-mode plan` on the `claude` family and `--sandbox read-only` on `codex`,
-    # where the read-only branch of `_codex_sandbox_argv` grants neither `writable_roots`
-    # nor `network_access`. #392 — nothing compares the ADR's seat table to this registry —
-    # is the check that would have caught the gap; this is its first live instance.
+    # where the read-only branch of `_codex_sandbox_argv` grants one writable root — the
+    # uv cache, #415 — and no `network_access`. #392 — nothing compares the ADR's seat
+    # table to this registry — is the check that would have caught the gap; this is its
+    # first live instance.
     "recon": Seat(
         "recon",
         claude_only=False,
@@ -1781,8 +1782,10 @@ def pair_block(seat: str, profile_name: str) -> Refusal | None:
             "per-worktree git directory named directly and the gate needs that same directory "
             "not named (see `_codex_sandbox_argv`), and an implementer that cannot run its "
             "own gate is not an implementer under the binary capability rule. The same "
-            "profile on a read-only seat dispatches normally, because a read-only seat needs "
-            "neither commit nor gate. What would clear it: #265 — a Codex discovery path "
+            "profile on a read-only seat dispatches normally, because a read-only seat "
+            "commits nothing and gates on #415's uv-cache root, which names no git "
+            "directory for the injected `.git` to come from. What would clear it: #265 — "
+            "a Codex discovery path "
             "that lets the gate run under the same roots that let the commit through. "
             "Nothing was dispatched."
         ),
@@ -3010,15 +3013,30 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
     ADR-0061 decision 5's non-commensurability point is the reason the two are stated
     separately in `docs/multi-provider-dispatch.md` rather than claimed equal.
 
-    Read-only modes are left exactly as they were, which is the branch #407's `recon` seat
-    now takes. A review or recon seat has nothing to commit and nothing to land, so neither
-    override has anything to buy there — no `writable_roots`, no `network_access` — and a
-    sandbox that stays narrow when nothing needs it wider is the point of mapping per mode
-    at all.
+    Read-only modes keep `--sandbox read-only`, keep `network_access` off, and carry
+    exactly one writable root: the uv cache (#415). Five dispatches of 2026-08-18 — review
+    on #406B, #413, #404 and #339, plus recon on #358 — died at ``Could not create
+    temporary file … Read-only file system`` under `~/.cache/uv` before a single test ran,
+    because `uv` locks its cache ahead of any test, and the review seat's whole job is to
+    run `just fast` against work it did not write. Read-only is the mode that protects the
+    project's files and git state, and the uv cache is neither: a tool cache outside every
+    worktree, which is why "read-only" acquiring one writable root is a grant of the gate
+    and not a hole in the containment. It does not meet #265's ceiling, either — the
+    injected `.git` mount point that defeats `cog check` comes from naming the per-worktree
+    git directory, a root this branch never names — so the read-only root list is the uv
+    cache and nothing else, `network_access` stays off (a reviewer needs the cache, not the
+    network), and the bypass flag's mapping is untouched.
     """
     flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
-    if flags != CODEX_SANDBOX["acceptEdits"]:
+    if flags == CODEX_SANDBOX["bypassPermissions"]:
         return flags
+    if flags != CODEX_SANDBOX["acceptEdits"]:
+        uv_root = hook_parity.toml_string(str(_uv_cache_root()))
+        return (
+            "--config",
+            f"sandbox_workspace_write.writable_roots=[{uv_root}]",
+            *flags,
+        )
     roots = ", ".join(
         hook_parity.toml_string(str(path)) for path in _codex_writable_roots(project_dir)
     )
@@ -3029,6 +3047,18 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
         "sandbox_workspace_write.network_access=true",
         *flags,
     )
+
+
+def _uv_cache_root() -> Path:
+    """Return `uv`'s cache directory, read from the environment the way `uv` reads it.
+
+    One derivation for the two branches that need it: the commit branch as one root of its
+    measured set, and the read-only branch as its only root (#415). `uv` honours
+    `UV_CACHE_DIR` first and `XDG_CACHE_HOME` second, and a sandbox naming a path `uv` was
+    not using would buy nothing.
+    """
+    cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
+    return Path(os.environ.get("UV_CACHE_DIR") or cache / "uv")
 
 
 def _codex_writable_roots(project_dir: Path) -> tuple[Path, ...]:
@@ -3062,18 +3092,17 @@ def _codex_writable_roots(project_dir: Path) -> tuple[Path, ...]:
     it was asked about. A tree git cannot read yields neither, and the caller is left with
     the roots it can still name — a dispatch into a non-repository has no commit to make.
 
-    `uv`'s cache is read from the environment the way `uv` reads it, so a box that relocates
-    it does not silently lose the gate. A root that does not exist is not an error: Codex
-    logs it and carries on, which is the right shape for a path that follows a convention
-    rather than a fact.
+    `uv`'s cache is read by `_uv_cache_root` from the environment the way `uv` reads it, so
+    a box that relocates it does not silently lose the gate. A root that does not exist is
+    not an error: Codex logs it and carries on, which is the right shape for a path that
+    follows a convention rather than a fact.
     """
     roots = [main_checkout(project_dir)]
     for spelling in ("--absolute-git-dir", "--git-common-dir"):
         answer = git("rev-parse", spelling, cwd=project_dir)
         if answer:
             roots.append(Path(answer) if Path(answer).is_absolute() else project_dir / answer)
-    cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
-    roots.append(Path(os.environ.get("UV_CACHE_DIR") or cache / "uv"))
+    roots.append(_uv_cache_root())
     return tuple(dict.fromkeys(roots))
 
 

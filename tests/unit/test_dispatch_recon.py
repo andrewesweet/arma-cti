@@ -14,7 +14,8 @@ The claims are made through `plan_dispatch` and `main`, following `test_dispatch
 rule: what a caller gets is a plan or a refusal, and a registry column that read back correctly
 while `build_argv` rendered something else would satisfy an internal test and none of the
 criteria. So every containment claim below is about the **rendered argv**, on both runner
-families, and the Codex ones name the two grants a read-only sandbox must not carry.
+families, and the Codex ones name what a read-only sandbox may and may not carry: the uv
+cache as its one writable root (#415), and network access never.
 
 Arrangements are clock-free for that module's reason, and its `plan_for` is reused rather than
 copied: the criterion is about the seat, and a second copy of the request shape is a second
@@ -113,17 +114,24 @@ def test_a_codex_lane_recon_runs_read_only_without_the_caller_passing_anything(
     assert plan.argv[plan.argv.index("--sandbox") + 1] == "read-only"
 
 
-def test_a_codex_lane_recon_is_granted_no_writable_root_and_no_network(tmp_path: Path) -> None:
-    """The read-only branch of `_codex_sandbox_argv`, unchanged: neither override is bought here.
+def test_a_codex_lane_recon_is_granted_the_uv_cache_and_nothing_wider(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The read-only branch of `_codex_sandbox_argv` as #415 leaves it: one root, no network.
 
-    Named as two absences rather than one, because they are two grants and the widening that
-    let #374's recon dispatch edit `tools/` carried both — `writable_roots` reaching the main
-    checkout and both git directories, and `network_access=true`.
+    #407's two absences were the right shape for 2026-08-18's morning and wrong by its
+    evening: five read-only dispatches died at the uv cache lock before any test ran, so
+    the one grant read-only now carries is that cache. What it must never carry is the
+    other half — `network_access=true`, and `writable_roots` reaching the main checkout or
+    either git directory, which is the widening that let #374's recon dispatch edit
+    `tools/`.
     """
+    monkeypatch.setenv("UV_CACHE_DIR", "/locked/uv")
     plan, _, refusal = recon_plan(tmp_path)
     assert refusal is None, refusal
     assert plan is not None
-    assert not [part for part in plan.argv if part.startswith("sandbox_workspace_write.")]
+    roots = [part for part in plan.argv if part.startswith("sandbox_workspace_write.")]
+    assert roots == ['sandbox_workspace_write.writable_roots=["/locked/uv"]']
     assert "workspace-write" not in plan.argv
     assert "--dangerously-bypass-approvals-and-sandbox" not in plan.argv
 
@@ -191,18 +199,21 @@ def test_the_forcing_is_recorded_rather_than_silent(tmp_path: Path) -> None:
 
 
 def test_the_dry_run_shows_the_read_only_flag_in_the_argv_it_would_launch(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Criterion 4's substance, made a check rather than a transcript.
 
     A pasted dry run records what the command printed on one day; this asserts the same
     printed line every run, so a later edit that quietly widened the recon sandbox reds here
-    instead of being caught by whoever next re-reads an old issue comment.
+    instead of being caught by whoever next re-reads an old issue comment. The uv cache is
+    #415's one grant and appears by name; `network_access` never does.
     """
+    monkeypatch.setenv("UV_CACHE_DIR", "/locked/uv")
     assert dispatch.main(recon_dry_run_argv(tmp_path)) == 0
     line = dry_run_argv_line(capsys)
     assert "--sandbox read-only" in line
-    assert "sandbox_workspace_write." not in line
+    assert 'sandbox_workspace_write.writable_roots=["/locked/uv"]' in line
+    assert "network_access" not in line
     assert "--dangerously-bypass-approvals-and-sandbox" not in line
 
 

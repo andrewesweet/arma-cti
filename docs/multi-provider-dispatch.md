@@ -54,9 +54,10 @@ which is why a recon claim that decides a routing choice is cited.
 before it. `SEATS` forced a read-only `permission_mode` on `review` and nothing on `recon`, so
 a recon dispatch inherited the writable default and one of them edited `tools/` and its tests
 with nothing refusing it. The row now forces `plan` the way `review`'s does — rendered
-`--permission-mode plan` on the `claude` family and `--sandbox read-only` on `codex`, with no
-writable root and no network access — because an argument that rests on a seat writing nothing
-needs the seat to be unable to write, not merely described as not doing so.
+`--permission-mode plan` on the `claude` family and `--sandbox read-only` on `codex`, whose
+one writable root is the uv cache and whose network access is off — because an argument
+that rests on a seat writing nothing needs the seat to be unable to write, not merely
+described as not doing so.
 
 The z.ai lane made the argument concrete rather than abstract (#225). Claude Code's five
 effort levels differ only in the `thinking.budget_tokens` they send, and that endpoint
@@ -372,9 +373,15 @@ runs are worth keeping:
 ### `codex` — a filesystem and network policy
 
 The lane does not read `.claude/settings.json`'s allowlist at all. `tools/dispatch.py` maps
-the permission mode to a sandbox policy, and `acceptEdits` is `--sandbox workspace-write`
-plus, on that mode only, three writable roots and network access. Every command the session
-runs inherits all of it; there is no per-command list to consult.
+the permission mode to a sandbox policy, per mode:
+
+| permission mode | sandbox | writable roots | network |
+|---|---|---|---|
+| `acceptEdits` | `workspace-write` | the main checkout, both git directories, the uv cache | on |
+| `plan` / `default` | `read-only` | the uv cache, and nothing else | off |
+| `bypassPermissions` | `--dangerously-bypass-approvals-and-sandbox`, declined on #221 and unused | — | — |
+
+Every command the session runs inherits all of it; there is no per-command list to consult.
 
 What that buys, measured rather than inferred, over four dispatches and three probes:
 
@@ -390,8 +397,14 @@ What that buys, measured rather than inferred, over four dispatches and three pr
   `~/.cargo` looked as likely and was measured unnecessary, so it is not granted.
 - `network_access` defaults off and `just land` fetches and pushes, so it is enabled.
 
-Read-only seats keep the sandbox they always had, and
-`--dangerously-bypass-approvals-and-sandbox` was put to the human, declined, and is unused.
+Read-only seats — `review` and `recon`, since #407 — carry the uv cache as their one
+writable root (#415). `uv` locks its cache ahead of any test, and the review seat's whole
+job is to run `just fast` against work it did not write; five read-only dispatches of
+2026-08-18 died at that lock before a single test ran. The cache is a tool cache outside
+every worktree, so the grant buys the gate without touching the files or git state that
+read-only exists to protect, and it names no git directory — so #265's injected-`.git`
+ceiling, which comes from naming the per-worktree git directory, is not met and the gate
+runs. Network access stays off: a reviewer needs the cache, not the network.
 
 **The lane does not reach a landing, and the reason is a recorded ceiling rather than a fix
 still owed.** The two capabilities the ruling asked for are exclusive on this lane, isolated

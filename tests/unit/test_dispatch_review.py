@@ -353,9 +353,10 @@ def test_a_claude_lane_review_runs_read_only_without_the_caller_passing_anything
 
 
 def test_a_codex_lane_review_runs_read_only_without_the_caller_passing_anything(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """The other runner family, whose vocabulary for the same thing is a sandbox policy."""
+    monkeypatch.setenv("UV_CACHE_DIR", "/locked/uv")
     plan, _, refusal = plan_for(tmp_path, reviewing="opus-low")
     assert refusal is None, refusal
     assert plan is not None
@@ -363,8 +364,11 @@ def test_a_codex_lane_review_runs_read_only_without_the_caller_passing_anything(
     assert plan.permission_mode == "plan"
     assert "--sandbox" in plan.argv
     assert plan.argv[plan.argv.index("--sandbox") + 1] == "read-only"
-    # `workspace-write`'s widening is what a committing seat gets; a review buys none of it.
-    assert not [part for part in plan.argv if part.startswith("sandbox_workspace_write.")]
+    # `workspace-write`'s widening is what a committing seat gets; a review buys none of
+    # it. #415 buys one root and only one — the uv cache the gate locks — so the line a
+    # reviewer needs to run reaches its first test.
+    roots = [part for part in plan.argv if part.startswith("sandbox_workspace_write.")]
+    assert roots == ['sandbox_workspace_write.writable_roots=["/locked/uv"]']
     assert "--dangerously-bypass-approvals-and-sandbox" not in plan.argv
 
 

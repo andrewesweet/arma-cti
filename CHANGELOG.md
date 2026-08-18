@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **A read-only Codex dispatch can run its gate (#415).** Five dispatches of 2026-08-18 —
+  review on #406B, #413, #404 and #339, plus recon on #358 — died at `Could not create
+  temporary file … Read-only file system` under `~/.cache/uv` before a single test ran,
+  because `uv` locks its cache ahead of any test and the read-only branch of
+  `_codex_sandbox_argv` granted no writable root at all. That branch now grants exactly
+  one: the uv cache, derived the way `uv` derives it (`_uv_cache_root`, shared with the
+  commit branch so the two cannot drift). The cache is a tool cache outside every
+  worktree, so the grant buys the gate without touching the files or git state read-only
+  exists to protect; `network_access` stays off, no other root is added, and #265's
+  ceiling is untouched because the branch still names no git directory. `just fast` under
+  the changed sandbox is proven by #415's criterion 3, the live review dispatch.
+
 ### Changed
 
 - **A renamed profile's old name resolves for reading dispatch records, and still never

@@ -1039,14 +1039,38 @@ def test_a_codex_workspace_write_session_can_reach_the_network_just_land_needs(
 
 
 @pytest.mark.parametrize("mode", ["plan", "default", "somethingUnmapped"])
-def test_a_read_only_codex_seat_is_widened_by_neither_override(tmp_path: Path, mode: str) -> None:
-    # A review seat has nothing to commit and nothing to land, so neither override buys
-    # it anything, and a mode-by-mode mapping that widened every mode would be no mapping.
-    # The unmapped mode is here because it falls through to `default`, and a fall-through
-    # that landed on the wide branch would be the quietest possible way to widen every seat.
+def test_a_read_only_codex_seat_gets_the_uv_cache_no_network_nothing_else(
+    tmp_path: Path, mode: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # #415: a review seat's whole job is to run `just fast`, and `uv` locks its cache ahead
+    # of any test — five read-only dispatches of 2026-08-18 died there before a single
+    # test ran. The one root read-only carries is that cache: no project file, no git
+    # state, no network. The unmapped mode is here because it falls through to `default`,
+    # and a fall-through that landed on the wide branch would be the quietest possible way
+    # to widen every seat.
+    monkeypatch.setenv("UV_CACHE_DIR", "/locked/uv")
     argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, mode)
     assert argv[argv.index("--sandbox") + 1] == "read-only"
-    assert not [part for part in argv if part.startswith("sandbox_workspace_write.")]
+    assert _writable_roots(argv) == 'sandbox_workspace_write.writable_roots=["/locked/uv"]'
+    assert not [part for part in argv if part.startswith("sandbox_workspace_write.network_access")]
+
+
+def test_the_writable_root_list_is_exact_per_mode(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # #415 criterion 1: not membership but the exact list, per mode, so a root added to
+    # one branch cannot ride along with the other. The commit branch's set is the four
+    # measured roots in `_codex_writable_roots`' own order; the read-only branch's is the
+    # uv cache alone.
+    monkeypatch.setenv("UV_CACHE_DIR", "/locked/uv")
+    argv, root, linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
+    assert _writable_roots(argv) == (
+        "sandbox_workspace_write.writable_roots="
+        f'["{root}", "{root / ".git" / "worktrees" / linked.name}", "{root / ".git"}", '
+        '"/locked/uv"]'
+    )
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "plan", "second")
+    assert _writable_roots(argv) == 'sandbox_workspace_write.writable_roots=["/locked/uv"]'
 
 
 def test_the_declined_bypass_flag_gains_nothing_from_the_widening(tmp_path: Path) -> None:
