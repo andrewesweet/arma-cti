@@ -50,6 +50,14 @@ judgement. On the `recon` seat the exception has **no expiry** and the ADR says 
 reads that seat's output, it lands nothing, and nothing in the design will ever check it —
 which is why a recon claim that decides a routing choice is cited.
 
+"It lands nothing" is a property of the harness since #407 and was a sentence about the seat
+before it. `SEATS` forced a read-only `permission_mode` on `review` and nothing on `recon`, so
+a recon dispatch inherited the writable default and one of them edited `tools/` and its tests
+with nothing refusing it. The row now forces `plan` the way `review`'s does — rendered
+`--permission-mode plan` on the `claude` family and `--sandbox read-only` on `codex`, with no
+writable root and no network access — because an argument that rests on a seat writing nothing
+needs the seat to be unable to write, not merely described as not doing so.
+
 The z.ai lane made the argument concrete rather than abstract (#225). Claude Code's five
 effort levels differ only in the `thinking.budget_tokens` they send, and that endpoint
 ignores the field — a hard prompt at budget 1,024 and at budget 32,000 both thought past
