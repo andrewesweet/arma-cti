@@ -561,6 +561,16 @@ discard path="" ruling="":
 # A lane that cannot be reached — no credentials file, no key, no worktree — is
 # `infra_unavailable` and is not a result.
 #
+# The dispatcher also runs the worktree pre-flight itself on the assigned tree
+# (#373): a tree that already exists — reuse, retry, resumption — once entered
+# with no cleanliness check at all, because `add`'s pre-flight only covers a tree
+# it has just made. A dirty tree refuses `dirty_tree` with the files named, and a
+# git that cannot answer refuses `preflight_unreadable`, fail-closed; a clean one
+# passes and the brief states the result and that the dispatcher ran it. The
+# check lives here rather than in the seat because its availability inside a
+# tree is a per-dispatch permission fact — retro 31 had it sandbox-refused — so
+# no seat-side convention can be the guarantee.
+#
 # A tree that already carries a dispatch with no `result.json` refuses a second
 # one — `worktree_occupied_by_dispatch`, naming the holder (#308, from #105's
 # sixth instance). The record directory is the authority: no result means live,

@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A dispatch that reuses an existing worktree no longer skips the pre-flight: the
+  dispatcher runs it (#373).** `just worktree add` pre-flights a new tree, but a dispatch
+  into a tree that already exists — reuse after a killed attempt, a retry, a resumed run —
+  entered it with no cleanliness check at all, and #325's round-3 retry dispatched over five
+  files of a failed attempt's uncommitted work because a filtered read of `just worktree
+  check` looked like nothing to report. The enforcement point is the dispatcher, not the
+  dispatched seat: retro 31 measured `just worktree check` being sandbox-refused inside the
+  tree it was to assert, so a check whose availability varies by dispatch cannot be the
+  protocol's guarantee. `tools/dispatch.py` now runs the pre-flight on the assigned tree
+  before planning anything further and refuses `dirty_tree`, files listed verbatim, with no
+  failure class — the project declining to put a second agent over a previous run's files,
+  not a finding about any provider or any code. A git that cannot answer refuses
+  `preflight_unreadable` as `infra_unavailable`, fail-closed: an unreadable tree is not a
+  clean one. A clean tree passes and the brief the seat receives states the result and
+  where it ran — stamped by the dispatcher onto both the default and the file-sourced
+  brief, since it is the only place that knows the result.
+
 - **A renamed profile's old name resolves for reading dispatch records, and still never
   dispatches (#413).** Renaming a profile used to strand every branch authored under the old
   name: `--reviewing <old name>` refused `unknown_reviewed_profile` against the registry,

@@ -901,6 +901,78 @@ def test_a_dispatch_whose_worktree_does_not_exist_is_refused_before_planning(
     assert "just worktree add issue-223" in refusal.action
 
 
+# ------------------------------------------- the dispatcher's pre-flight (#373)
+#
+# Reuse was a path into a tree that bypassed the only mechanical check the protocol
+# runs: `add` pre-flights a new tree, a dispatch into an existing one ran nothing, and
+# #325's round-3 retry dispatched over five files of a killed attempt's uncommitted work.
+# The rung lives in the dispatcher because the check inside the tree is a per-dispatch
+# permission fact — retro 31's seat had `just worktree check` sandbox-refused — so no
+# seat-side convention could be the guarantee.
+
+
+def test_a_reused_worktree_with_untracked_files_is_refused(tmp_path: Path) -> None:
+    # #325's exact shape: a killed attempt's uncommitted work, still in the tree the
+    # re-dispatch was about to enter.
+    root = git_worktree(tmp_path)
+    (root / "leftover.sqf").write_text("// a killed attempt's uncommitted work\n")
+    plan, brief, refusal = plan_for(tmp_path, worktree=root)
+    assert plan is None
+    assert brief == ""
+    assert refusal is not None
+    assert refusal.kind == "dirty_tree"
+    assert "untracked=?? leftover.sqf" in refusal.found
+    assert refusal.failure_class == ""
+    assert "#373" in refusal.action
+
+
+def test_a_reused_worktree_with_tracked_changes_is_refused_too(tmp_path: Path) -> None:
+    root = git_worktree(tmp_path)
+    (root / "README.md").write_text("changed by an earlier run\n", encoding="utf-8")
+    plan, _, refusal = plan_for(tmp_path, worktree=root)
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "dirty_tree"
+    assert any(line.startswith("tracked=") for line in refusal.found)
+
+
+def test_a_clean_reused_worktree_passes_and_the_brief_says_who_checked_it(
+    tmp_path: Path,
+) -> None:
+    root = git_worktree(tmp_path)
+    plan, brief, refusal = plan_for(tmp_path, worktree=root)
+    assert refusal is None
+    assert plan is not None
+    assert "Worktree pre-flight: clean" in brief
+    assert "run by the dispatcher" in brief
+    assert plan.identity.dispatch_id in brief
+
+
+def test_a_file_sourced_brief_carries_the_preflight_line_too(tmp_path: Path) -> None:
+    # The orchestrator composes briefs with `just brief --out` and passes them by file;
+    # the pre-flight line must reach that path as well, from the same stamp.
+    brief_file = tmp_path / "brief.md"
+    brief_file.write_text("A caller-composed brief.\n", encoding="utf-8")
+    plan, brief, refusal = plan_for(tmp_path, brief_file=str(brief_file))
+    assert refusal is None
+    assert plan is not None
+    assert brief.startswith("A caller-composed brief.")
+    assert "Worktree pre-flight: clean" in brief
+    assert plan.identity.dispatch_id in brief
+
+
+def test_a_tree_git_cannot_read_refuses_rather_than_reading_clean(tmp_path: Path) -> None:
+    # Fail-closed: #325's misread was an output filter standing where a verdict should
+    # have been, and "git gave no answer" must not read as "clean".
+    plain = tmp_path / "not-a-repository"
+    plain.mkdir()
+    plan, _, refusal = plan_for(tmp_path, worktree=plain)
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "preflight_unreadable"
+    assert refusal.failure_class == "infra_unavailable"
+
+
 # ------------------------------------------------------------------ plan and record
 
 

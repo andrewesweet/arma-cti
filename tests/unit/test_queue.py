@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 from conftest import REPO, load_tool
+from test_dispatch_seat import git_worktree
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -1167,8 +1168,13 @@ def test_a_dispatch_record_that_cannot_be_read_is_skipped_rather_than_guessed(
 def dry_run(
     tmp_path: Path, queue_dir: Path, issue: int = 249, worktree: Path | None = None
 ) -> tuple[int, str, str]:
-    """Plan a dispatch through `main`, exactly as `just dispatch --dry-run` does."""
-    tree = worktree or REPO
+    """Plan a dispatch through `main`, exactly as `just dispatch --dry-run` does.
+
+    The default tree is a clean throwaway repository rather than this checkout, because
+    the dispatcher's pre-flight refuses a dirty one (#373) and `REPO` mid-landing always
+    is one. The queue rungs this module tests fire before that rung either way.
+    """
+    tree = worktree or git_worktree(tmp_path)
     code = dispatch.main(
         [
             "--dry-run",

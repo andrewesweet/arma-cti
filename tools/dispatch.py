@@ -233,6 +233,11 @@ import queue_policy
 import readiness
 import routing_policy
 
+# Aliased because `worktree` is the local name for the assigned `Path` throughout this
+# module's plan builders; the classifier itself stays in one home (`tools/worktree.py`)
+# so the `dirty_tree` vocabulary cannot drift between the protocol and the dispatcher.
+import worktree as worktree_protocol
+
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Mapping
 
@@ -2821,6 +2826,72 @@ def assert_worktree(assigned: Path, observed: str) -> Refusal | None:
     return None
 
 
+REUSE_DIRTY_ACTION: Final = (
+    "The dispatcher ran the pre-flight and refused: these files were in the tree before "
+    "the seat started, so they are a previous run's work, never this one's. Decide them "
+    "before dispatching — commit and land them if they are wanted, or clear them as "
+    "stale infrastructure if their run is dead (ADR-0022). Never dispatch a second agent "
+    "over them, and never reset them away (#105, #373)."
+)
+
+
+def reuse_preflight_refusal(tree: Path) -> Refusal | None:
+    """Run CLAUDE.md's pre-flight from the dispatcher, on the tree it is about to assign (#373).
+
+    Every dispatch enters an *existing* tree — `just worktree add` made it or an earlier
+    run left it — and reuse skipped the only mechanical check the protocol runs. #325's
+    round-3 retry dispatched over five files of a killed attempt's uncommitted work
+    because a line-removing pipe over `just worktree check` read as nothing to report;
+    retro 31 then measured the deeper problem from the other side, a dispatched seat the
+    sandbox refused `just worktree check` in. A check whose availability varies by
+    dispatch cannot be the protocol's guarantee, so the dispatcher — the one caller that
+    always can run it — runs it, and the verdict is the typed refusal, never a grep of
+    any check's output.
+
+    The classification is `tools/worktree.py`'s, imported rather than restated, so the
+    `dirty_tree` vocabulary and the file listing have one home; the action text is this
+    module's, because what to do with another run's leftovers is the dispatcher's
+    question, not `add`'s. A git that cannot answer refuses `preflight_unreadable`
+    fail-closed: an unreadable tree is not a clean one, and #325's misread was exactly an
+    output filter standing where a verdict should have been.
+    """
+    try:
+        porcelain = worktree_protocol.git("status", "--porcelain", cwd=tree)
+    except worktree_protocol.GitError as failure:
+        return Refusal(
+            "preflight_unreadable",
+            (f"worktree={tree}", f"git={failure}"),
+            (
+                "The dispatcher could not read the tree's status, so the pre-flight "
+                "reached no verdict and nothing was dispatched. Inspect the tree "
+                "yourself; never treat an unreadable check as a clean one (#373)."
+            ),
+            failure_class="infra_unavailable",
+        )
+    found = worktree_protocol.classify_preflight(
+        tree, worktree_protocol.read_status(porcelain), REUSE_DIRTY_ACTION
+    )
+    if found is None:
+        return None
+    # No failure class, for `occupancy_refusal`'s reason: this found nothing about any
+    # provider, any lane or any code — it is the project declining to put a second agent
+    # over files a previous run left.
+    return Refusal(found.kind, found.found, found.action)
+
+
+def preflight_assertion(identity: Identity) -> str:
+    """The line every dispatched brief carries once the dispatcher has run the pre-flight.
+
+    #373's second criterion: the seat must know the tree's state was asserted and by
+    whom, because a seat that believes its tree unchecked re-runs the check itself — and
+    the check inside the tree is a per-dispatch permission fact the seat may not hold.
+    """
+    return (
+        f"Worktree pre-flight: clean, run by the dispatcher ({identity.dispatch_id}) at "
+        "dispatch, before this seat started (#373)."
+    )
+
+
 # The single-shot contract every dispatch carries (#279). A detached session gets no
 # second turn: a background completion's notification wakes nobody (the #279 dispatch that
 # armed its gate in the background ended uncommitted, and `just land` refused `dirty_tree`),
@@ -3538,6 +3609,15 @@ def plan_dispatch(
     if refusal is not None:
         return None, "", refusal
 
+    # #373: the pre-flight the seat could not be relied on to run — or, in some trees, to
+    # be allowed to run. `reuse_preflight_refusal` carries the reasoning; the rung sits
+    # with the other tree-state rungs because it is a property of the assigned tree
+    # rather than of the request, and below occupancy because a live holder is the more
+    # actionable of two findings about the same tree.
+    refusal = reuse_preflight_refusal(worktree)
+    if refusal is not None:
+        return None, "", refusal
+
     # The credential is checked here as well as in the child, and the order matters: a
     # dispatch that cannot start should refuse at the recipe rather than hand back an id
     # for a run that will die three seconds later somewhere the caller is not looking.
@@ -3566,6 +3646,11 @@ def plan_dispatch(
         if args.brief_file
         else default_brief(identity, worktree)
     )
+    # Stamped here rather than in `default_brief` or `tools/brief.py`, because the
+    # dispatcher is the only place that knows the result: it has just run the pre-flight.
+    # Stamping at this one point sends the same line down both brief paths, so a
+    # caller-composed brief and the default cannot drift (#373).
+    brief = f"{brief.rstrip()}\n\n{preflight_assertion(identity)}\n"
     plan = Plan(
         identity=identity,
         worktree=worktree,

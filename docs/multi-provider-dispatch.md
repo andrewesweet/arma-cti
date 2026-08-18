@@ -123,6 +123,26 @@ processes*: the pid the seam knows is the launcher, and the session reparents aw
 It verifies by re-scanning, and reports what it killed. `tools/dispatch_stop.py` carries the
 predicate, its exclusions and its refusals; `docs/agents/recovery.md` carries the procedure.
 
+**A third rung answers "is the tree clean": the dispatcher runs the pre-flight itself (#373).**
+Every dispatch enters an *existing* tree — `just worktree add` made it, or an earlier run
+left it — and reuse used to skip the only mechanical check the protocol runs, which is what
+#325's round-3 retry cost: a re-dispatch over five files of a killed attempt's uncommitted
+work, misread from a line-removing pipe over `just worktree check`'s output. The check
+cannot move into the dispatched seat instead, because retro 31 measured it being
+sandbox-refused there — a per-dispatch permission fact, not a property of the seat, so a
+check whose availability varies by dispatch cannot be the protocol's guarantee. The
+dispatcher, the one caller that always can run it, runs `git status --porcelain` on the
+assigned tree before planning anything further and refuses `dirty_tree` — the classifier is
+`tools/worktree.py`'s, so the vocabulary and the file listing have one home — with no
+failure class, for the occupancy rung's reason: it is the project declining to put a second
+agent over files a previous run left, not a finding about any provider or any code. A git
+that cannot answer at all refuses `preflight_unreadable` fail-closed, because an unreadable
+tree is not a clean one and #325's misread was exactly an output filter standing where a
+verdict should have been. A clean tree passes, and the brief the seat receives states the
+result and where it ran — `Worktree pre-flight: clean, run by the dispatcher (<id>) at
+dispatch` — stamped by the dispatcher onto both brief paths, since it is the only place
+that knows the result.
+
 ## The breaker, and why it never invents a wait
 
 `just breaker` carries two trip families, and the whole design falls out of their
