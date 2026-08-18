@@ -25,12 +25,10 @@ Four ideas, and each is a ruling made mechanical:
   #326 bridge was the second — it refused a dispatch naming the gates themselves on
   every lane but `claude-native`, and a `just land` on any lane but this one whose diff
   touched them — and ADR-0073 retired it on the human's instruction of 2026-08-18
-  (#406). What enforces that row's invariant is `tools/land_review.py`'s never-alone
-  rung — a landing touching those paths needs a review verdict from a different **lane**
-  than the author's, which is a rule about the review rather than about who may dispatch
-  — and that rung is #406's second commit, which the retirement precedes so the rung does
-  not refuse the landing that brings it in. Either way, nothing in this module refuses a
-  gate path any more. Routing class 2, orchestration, is not a
+  (#406). What enforces that row's invariant now is `tools/land_review.py`'s never-alone
+  rung: a landing touching those paths needs a review verdict from a different **lane**
+  than the author's, which is a rule about the review rather than about who may dispatch.
+  Nothing in this module refuses a gate path any more. Routing class 2, orchestration, is not a
   second one: #327 re-founded it on its seats, so it refuses an orchestration declaration
   taken by any seat outside the route that finishes that work — `orchestrator` to perform
   it, `planner`, `implementer` and `review` to plan, land and review it, `recon` to
@@ -509,9 +507,9 @@ class Seat(NamedTuple):
     # class 6's bridge refused a dispatch naming the gates themselves on every lane but
     # `claude-native`, and a `just land` on the same row's paths off it, and the human
     # retired both halves on 2026-08-18. That row's invariant is enforced at the landing
-    # instead, by that issue's second commit, as a requirement on the review rather than a
-    # bar on a route: a gate landing's verdict must come from a different lane than the
-    # author's (`tools/land_review.py`).
+    # instead, as a requirement on the review rather than a bar on a route: a gate
+    # landing's verdict must come from a different lane than the author's
+    # (`tools/land_review.py`).
     claude_only: bool
     # ADR-0071 ruling 2's preference column, head first. `resolve_seat` walks exactly this
     # and nothing else, so a seat gains a route by being written here.
@@ -1627,8 +1625,8 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
     refusal that outlived them — routing class 6's keep-on-Claude bridge, which refused a
     dispatch whose issue named the gates themselves on every lane but `claude-native`, and
     a non-Claude `just land` whose diff touched them. That row's invariant is enforced at
-    the landing instead, by #406's second commit, as a requirement on the review rather than
-    a bar on a route, so the carve-out below is the only provenance refusal left anywhere.
+    the landing now, as a requirement on the review rather than a bar on a route, so the
+    carve-out below is the only provenance refusal left anywhere.
     Routing class 2 was a second until #327 re-founded it on its seats (#327 review round
     2, claim 1; widened from the one seat to the whole route in #327 review round 3, claim
     1): an
@@ -3255,8 +3253,7 @@ def routing_clearance(
     — since ADR-0073 (#406) — 6 refusing no route, class 6 naming a minority of the gates, or
     the landing rung not re-checking any of it. Class 6 is the one whose silence here means
     most: it refuses no dispatch at all now, and what it asks for lands on `just land`'s
-    never-alone rung — in #406's second commit — as a cross-lane review the dispatcher has
-    not been told about.
+    never-alone rung as a cross-lane review the dispatcher has not been told about.
 
     **The unreadable-policy fallback is stated rather than silent (#326 round 2, claim 7).** The
     Claude lane dispatches on an unreadable policy so the policy can be repaired on Claude,

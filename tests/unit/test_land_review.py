@@ -234,12 +234,13 @@ def _stage(  # noqa: PLR0913 — one parameter per record the rung reads
     return dispatch_root, review_root
 
 
-def _rung(
+def _rung(  # noqa: PLR0913 — one keyword per input the rung reads, as the rung has
     roots: tuple[Path, Path],
     *,
     issue: int | None = ISSUE,
     sha: str = SHA,
-    paths: tuple[str, ...] = ("tools/worker.py",),
+    paths: tuple[str, ...] | None = ("tools/worker.py",),
+    gate_paths: tuple[str, ...] | None = (),
     exemptions: str | None = None,
 ) -> land_review.Outcome:
     """Call the rung over staged roots.
@@ -247,9 +248,16 @@ def _rung(
     `exemptions=None` is the unreadable table — the state a landing is in wherever
     `origin/main` carries no table, which exempts nothing and so falls into the
     ladder every default here exercises.
+
+    `gate_paths=()` is the caller's read of routing class 6 against this diff, and the
+    default is the ordinary landing: `tools/worker.py` is not a gate, so ADR-0073's
+    cross-lane predicate does not apply and every rung below it is what it was. The
+    cross-lane tests name their own gate paths.
     """
     dispatch_root, review_root = roots
-    return land_review.review_finding(issue, sha, paths, exemptions, dispatch_root, review_root)
+    return land_review.review_finding(
+        issue, sha, paths, gate_paths, exemptions, dispatch_root, review_root
+    )
 
 
 def _kind(outcome: land_review.Outcome) -> str:
@@ -257,6 +265,12 @@ def _kind(outcome: land_review.Outcome) -> str:
     refusal = outcome.refusal
     assert refusal is not None
     return refusal.kind
+
+
+def _text(outcome: land_review.Outcome) -> str:
+    """Join the refusal's evidence lines, so a test can assert a term is among them."""
+    assert outcome.refusal is not None
+    return "\n".join(outcome.refusal.found)
 
 
 # ------------------------------------------------------ the binding and the verdict
@@ -1086,3 +1100,157 @@ def test_the_rung_reads_the_loop_the_loops_own_writer_wrote(tmp_path: Path) -> N
     assert written == review_loop.loop_path(review_root, ISSUE)
     assert outcome.refusal is None
     assert f"loop={written}" in outcome.cleared
+
+
+# ------------------------------------- the gate paths: a cross-lane review (ADR-0073, #406)
+#
+# Routing class 6's keep-on-Claude bar retired on the human's instruction of 2026-08-18, and
+# what replaced it is one predicate on this rung: for a landing whose diff touches a gate
+# path, ruling 4's "not the same profile" becomes "not the same lane". The staging default is
+# already cross-lane — `REVIEWER` is `codex-luna-max` on `codex` and `AUTHOR` is `opus-high`
+# on `claude-native` — so these tests move the reviewer rather than the author, and the gate
+# paths arrive as `gate_paths`, the caller's read of that row against the diff.
+
+GATE_PATH: Final = "tools/land.py"
+CLAUDE_REVIEWER: Final = "opus-xhigh"
+
+
+def _gate_rung(
+    roots: tuple[Path, Path],
+    *,
+    reviewer: str = REVIEWER,
+    reviewer_lane: str = "codex",
+    gate_paths: tuple[str, ...] | None = (GATE_PATH,),
+    paths: tuple[str, ...] | None = (GATE_PATH,),
+) -> land_review.Outcome:
+    """Call the rung over a gate landing, with the reviewing dispatch's lane named."""
+    dispatch_root, review_root = roots
+    record = dispatch_root / "d-review-1"
+    for name, text in (
+        ("dispatch.json", _plan(profile=reviewer)),
+        ("verdict.json", _verdict(profile=reviewer)),
+    ):
+        document = json.loads(text)
+        document["lane" if name == "dispatch.json" else "reviewer_lane"] = reviewer_lane
+        (record / name).write_text(json.dumps(document), encoding="utf-8")
+    return land_review.review_finding(
+        ISSUE, SHA, paths, gate_paths, None, dispatch_root, review_root
+    )
+
+
+def test_a_gate_landing_reviewed_from_the_authors_own_lane_refuses_by_name(
+    tmp_path: Path,
+) -> None:
+    """The invariant the retired bar stood in for: no instance authors the gate that judges it.
+
+    `AUTHOR` is `opus-high`, a `claude-native` profile, so a `claude-native` reviewer is on
+    the author's lane even though it is a different profile — which is exactly the
+    arrangement `review_same_profile` clears and this refusal does not.
+    """
+    outcome = _gate_rung(_stage(tmp_path), reviewer=CLAUDE_REVIEWER, reviewer_lane="claude-native")
+
+    assert _kind(outcome) == "review_same_lane"
+    found = _text(outcome)
+    assert "reviewer_lane=claude-native" in found
+    assert f"same_lane_authors={AUTHOR}" in found
+    assert f"gate_path={GATE_PATH}" in found
+    # The remedy names a cross-lane review and the command that produces one (criterion 2).
+    assert "--seat review" in outcome.refusal.action
+    assert "--lane <lane>" in outcome.refusal.action
+
+
+def test_a_gate_landing_reviewed_from_another_lane_clears_and_says_which(tmp_path: Path) -> None:
+    """The other half: `codex` reviewing `claude-native`'s gate change lands, and prints why."""
+    outcome = _gate_rung(_stage(tmp_path))
+
+    assert outcome.refusal is None
+    assert (
+        f"gate_review=cross_lane reviewer_lane=codex author_lanes=claude-native"
+        f" gate_paths={GATE_PATH}" in outcome.cleared
+    )
+    assert land_review.CROSS_LANE_LIMIT in outcome.cleared
+
+
+def test_a_landing_outside_the_gate_paths_is_unaffected_by_the_cross_lane_rule(
+    tmp_path: Path,
+) -> None:
+    """Same-lane review, no gate path: cleared, and no cross-lane line claiming a check ran.
+
+    The rule is scoped to routing class 6 rather than to every landing, so this is the
+    arrangement that proves the scope — identical to the refusing one but for `gate_paths`.
+    """
+    outcome = _gate_rung(
+        _stage(tmp_path),
+        reviewer=CLAUDE_REVIEWER,
+        reviewer_lane="claude-native",
+        gate_paths=(),
+        paths=("tools/worker.py",),
+    )
+
+    assert outcome.refusal is None
+    assert not any(line.startswith("gate_review=") for line in outcome.cleared)
+
+
+def test_an_author_profile_the_registry_cannot_place_refuses_rather_than_clearing(
+    tmp_path: Path,
+) -> None:
+    """#41 on this rung: a lane that cannot be derived is not a lane that differs.
+
+    An unregistered author profile has no lane, so the comparison cannot be made — and the
+    fail-open reading, "it is not equal to the reviewer's, so clear", would pass by accident
+    exactly where the records are worst.
+    """
+    outcome = _gate_rung(
+        _stage(tmp_path, author="retired-profile-name"),
+        reviewer=CLAUDE_REVIEWER,
+        reviewer_lane="claude-native",
+    )
+
+    assert _kind(outcome) == "review_lane_unknown"
+    assert "unplaceable_authors=retired-profile-name" in _text(outcome)
+    assert "#41" in outcome.refusal.action
+
+
+def test_a_reviewer_lane_the_registry_cannot_place_refuses_the_same_way(tmp_path: Path) -> None:
+    """The other end of the same comparison: `parse_verdict` requires a string, not a lane."""
+    outcome = _gate_rung(_stage(tmp_path), reviewer_lane="anthropic-direct")
+
+    assert _kind(outcome) == "review_lane_unknown"
+    assert "reviewer_lane_known=false" in _text(outcome)
+
+
+def test_a_diff_that_cannot_be_placed_inside_or_outside_the_gate_paths_refuses(
+    tmp_path: Path,
+) -> None:
+    """Neither `None` reads as "not a gate landing", because that is the fail-open answer."""
+    for paths, gate_paths in (((GATE_PATH,), None), (None, (GATE_PATH,))):
+        outcome = _gate_rung(_stage(tmp_path), paths=paths, gate_paths=gate_paths)
+
+        assert _kind(outcome) == "gate_class_undetermined"
+        assert "#41" in outcome.refusal.action
+
+
+def test_a_gate_landing_is_not_exemptible_by_the_review_exemption_table(tmp_path: Path) -> None:
+    """`binds_every_instance` forbids a routing exception; this forbids the other table's.
+
+    `config/review-exemptions.json` is a different table, so nothing in the routing policy
+    reaches it — and an entry there covering a gate path would clear a gate change with no
+    review at all, which is worse than the same-lane review this rule was filed about. The
+    table ships empty, so today this changes nothing; the order is what stops filling it from
+    reopening the hole.
+    """
+    exempting = json.dumps(
+        {
+            "version": 1,
+            "source": "test",
+            "entries": [{"surface": "tools/", "reason": "planted for this test only"}],
+        }
+    )
+    dispatch_root, review_root = _stage(tmp_path)
+    outcome = land_review.review_finding(
+        ISSUE, SHA, (GATE_PATH,), (GATE_PATH,), exempting, dispatch_root, review_root
+    )
+
+    assert outcome.refusal is None
+    assert "review=exempt" not in outcome.cleared
+    assert any(line.startswith("gate_review=cross_lane") for line in outcome.cleared)

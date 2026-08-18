@@ -693,14 +693,11 @@ def test_class_6_took_the_two_gate_paths_the_deleted_class_1_held() -> None:
     it with nothing firing, so both paths move to class 6 rather than falling out."
 
     Read off the row rather than off a refusal since ADR-0073 (#406): the row refuses nothing
-    now, so `enforcing_match` answers `None` on every path and would have made this test
-    vacuous. The claim was always about which class holds the paths, so the reader changes and
-    the claim does not — and it changes again in #406's second commit, to the accessor the
-    never-alone rung reads this list through.
+    now, and its path list is the authority the never-alone rung reads. The claim was always
+    about which class holds the paths, so the reader changes and the claim does not.
     """
-    prefixes = next(rule for rule in policy().rules if rule.id == 6).landing_path_prefixes
     for path in (".claude/hooks/deny-subagent-waits.py", ".claude/settings.json"):
-        assert any(routing_policy.path_matches(path, prefix) for prefix in prefixes), path
+        assert routing_policy.conflict_of_interest_paths(policy(), (path,)) == (path,)
 
 
 def test_class_6_binds_every_instance_and_therefore_carries_no_exception() -> None:

@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A gate landing is now reviewed from another lane (#406, ADR-0073).** The enforcement half
+  of the entry below, and the second of that issue's two commits. The invariant routing class
+  6 asserts — no instance authors the gate that judges it — is enforced as one predicate on
+  the never-alone rung ADR-0071 ruling 4 already runs at every landing: where a diff touches a
+  class-6 path, the verdict clearing it must come from a different **lane** than the author's,
+  not merely a different profile. `review_same_lane` refuses a same-lane review and names the
+  cross-lane dispatch that produces one; `review_lane_unknown` refuses where either lane is
+  not in the registry, because a lane that cannot be derived is not a lane that differs;
+  `gate_class_undetermined` refuses where the trusted policy or the diff could not be read,
+  since neither reads as "not a gate landing". Two fail-closed consequences ride with it:
+  class 6's path list is now the one authority for what a gate path is, so a row that emptied
+  it no longer parses, and a gate diff is not exemptible by `config/review-exemptions.json` —
+  that table ships empty, and the ordering is what stops filling it from clearing a gate
+  change with no review at all. `tools/land_review.py` joins the class-6 path list, because a
+  row that names its own enforcement and leaves it outside its coverage is the self-exemption
+  the class forbids. Costs, stated rather than discovered: some gate landings now need three
+  instances rather than two, the author set the rung compares against over-excludes by
+  construction, and a breaker trip on the one remaining lane can block gate work.
+
 - **Routing class 6's keep-on-Claude bar is retired: every lane is a peer on the gate paths
   (#406, ADR-0073).** On the human's instruction of 2026-08-18 — a non-Claude lane restricted
   to read-only work on the gate paths "was definitely not my intent" — the last lane-selected

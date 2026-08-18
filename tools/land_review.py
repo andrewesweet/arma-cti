@@ -42,6 +42,29 @@ diff that reaches a clearance without consulting a record is one whose every pat
 matched a listed entry — and that clearance says `review=exempt` with the reasons
 it matched, quotable from the decision that granted it.
 
+## The fourth fact, and the one class that has it (ADR-0073, #406)
+
+Ruling 4's three criteria bind every landing. A landing whose diff touches routing
+class 6 — **the gates themselves** — owes one more, and it is criterion 2 tightened
+rather than a fourth criterion beside it: the verdict's reviewer must be on a
+different **lane** than the author's, not merely a different profile. The gate-path
+list is data, read from `config/dispatch-routing-policy.json` on fetched
+`origin/main` by whoever calls this rung and handed in already filtered, so the one
+authority for what a gate path is stays in `routing_policy` (`gate_paths`; `None`
+is "could not be read" and refuses, `gate_class_undetermined`).
+
+What this replaces is the keep-on-Claude bar that row used to carry, which the human
+retired on 2026-08-18 as not their intent — it refused every non-Claude lane the gate
+paths and exempted the Claude lane, which is the lane that authors nearly every gate
+change, so the surface most at risk was the one the rule cleared. The invariant it
+stood in for is the one enforced here: no instance authors the gate that judges it.
+Same-provider models share failure modes, which is ruling 4's own argument for
+never-alone; on the gates it is worth one more predicate. Two refusals carry it —
+`review_same_lane` and `review_lane_unknown`, the second for a lane the registry
+cannot place at either end — and a gate landing is also **not** exemptible by
+`config/review-exemptions.json`, which is why `gate_paths` is decided before the
+exemption table is consulted rather than after.
+
 ## The loop record, and whose reader and writer these are
 
 `<review_root>/<issue>/loop.json` is #333's format and #333's reader: this module
@@ -108,6 +131,17 @@ HOW_MANY_EXEMPT: Final = 10
 
 NO_AUTHORSHIP: Final = "no_authoring_dispatch"
 UNREADABLE: Final = "records_unreadable"
+
+# The evidence line every clearance of a gate landing carries, and the reason it names the
+# author lanes rather than only the reviewer's: a lander quoting this must be able to see
+# the set the reviewer was checked against, the same way `authorship=checked potential=`
+# shows the profile set (ADR-0073, #406).
+CROSS_LANE_LIMIT: Final = (
+    "limit=the author lanes are the lanes of the *potential* author set — every profile a"
+    " dispatch record or a declaration places on this issue, whether or not that run wrote a"
+    " line — so this rung over-excludes by construction and a cleared cross-lane review is"
+    " not evidence that the excluded lanes authored anything"
+)
 
 # Printed beside every clearance that read a loop, for the reason `review_exchange`
 # prints `SAME_USER_LIMIT` beside every recorded verdict: the clearance is the durable
@@ -248,6 +282,115 @@ def _authorship_lines(
     return (f"{line} declared={' '.join(declared)}", DECLARED_AUTHOR_LIMIT)
 
 
+def _undetermined_gate_refusal() -> Refusal:
+    """Refuse a landing that cannot be placed inside or outside routing class 6 (ADR-0073).
+
+    Two inputs decide it and the caller hands both as one: the trusted policy off fetched
+    `origin/main`, which carries the gate-path list, and this branch's own diff. Either
+    unreadable and the rung cannot say whether a cross-lane review is owed — so it says so,
+    rather than reading the absence as "not a gate landing", which is the fail-open answer
+    and the one an unreadable record always tempts (#41).
+
+    Deliberately one kind for both causes. The lander's routing lines, printed a rung
+    earlier, already name which of the two failed, and splitting the kind would have a
+    reader choosing between two remedies that are the same remedy.
+    """
+    return Refusal(
+        "gate_class_undetermined",
+        ("check=routing class 6 gate paths", "gate_paths=undetermined"),
+        "Either the routing policy on fetched `origin/main` or this branch's own diff could"
+        " not be read, so whether this landing touches the gates themselves is not an answer"
+        " the records can give — and the invariant that rides on that answer is the one no"
+        " instance may author the gate that judges it (ADR-0071 ruling 4, ADR-0073). Rebase"
+        " this worktree onto origin/main — which `just land` itself does before its own gate"
+        " — or repair the repository state, then land again. A check that could not run is"
+        " not a check that passed (#41). Nothing was pushed.",
+    )
+
+
+def _cross_lane_refusal(
+    gate_paths: tuple[str, ...],
+    binding: review_exchange.Bound,
+    authorship: dispatch.Authorship,
+) -> Refusal | tuple[str, ...]:
+    """Refuse a gate landing reviewed from the author's own lane; else the line it clears with.
+
+    ADR-0073, on the human's instruction of 2026-08-18. Routing class 6's keep-on-Claude bar
+    selected on provenance and exempted the lane that authors nearly every gate change, so
+    the surface most at risk was the one the rule cleared. What replaces it is the invariant
+    the bar stood in for, spent as one predicate on the rung that already runs: for a landing
+    whose diff touches a class-6 path, ruling 4's "not the same profile" becomes "not the same
+    **lane**". Same-provider models share failure modes, which is ruling 4's own argument for
+    never-alone; on the gates themselves it is worth one more predicate.
+
+    **Both lanes are placed against `tools/dispatch.py`'s registry, and a lane it cannot place
+    refuses.** The reviewer's lane is a string on a record — `parse_verdict` requires it to be
+    a string and not to be a registered one — and an author's lane is derived from the
+    registry entry for a profile a record named. Either unplaceable and the comparison cannot
+    be made, so the rung refuses rather than clearing on an inequality between a known lane
+    and an unknown one, which would pass by accident exactly where the records are worst
+    (#41).
+
+    The author set is `Authorship.potential`, which is a *potential*-author set: over-excluding
+    costs a resolution step and under-excluding costs the invariant, the trade `dispatch`
+    already made for the profile check one rung up.
+    """
+    reviewer_lane = binding.lane
+    unplaceable = tuple(
+        profile for profile in authorship.potential if profile not in dispatch.PROFILES
+    )
+    if unplaceable or reviewer_lane not in dispatch.LANES:
+        return Refusal(
+            "review_lane_unknown",
+            (
+                f"reviewer_lane={reviewer_lane or 'none'}",
+                f"reviewer_lane_known={str(reviewer_lane in dispatch.LANES).lower()}",
+                f"unplaceable_authors={' '.join(unplaceable) or 'none'}",
+                f"potential={' '.join(authorship.potential)}",
+                *(f"gate_path={path}" for path in gate_paths),
+            ),
+            "This landing touches the gates themselves, so the review clearing it must come"
+            " from a different lane than the author's — and a lane above is not one"
+            " `tools/dispatch.py`'s registry carries, so the two cannot be compared. Register"
+            " the profile or the lane, or re-derive the record that names it; a check that"
+            " could not run is not a check that passed (#41, ADR-0073). Nothing was pushed.",
+        )
+    author_lanes = tuple(dict.fromkeys(dispatch.PROFILES[p].lane for p in authorship.potential))
+    if reviewer_lane in author_lanes:
+        shared = tuple(
+            profile
+            for profile in authorship.potential
+            if dispatch.PROFILES[profile].lane == reviewer_lane
+        )
+        return Refusal(
+            "review_same_lane",
+            (
+                f"reviewer_profile={binding.profile}",
+                f"reviewer_lane={reviewer_lane}",
+                f"author_lanes={' '.join(author_lanes)}",
+                f"same_lane_authors={' '.join(shared)}",
+                f"review_dispatch={binding.dispatch_id}",
+                *(f"gate_path={path}" for path in gate_paths),
+            ),
+            "This landing touches the gates themselves, and the verdict clearing it was"
+            " produced on the same lane as a profile the records place on the work. A"
+            " different profile is not enough here: same-provider models share failure"
+            " modes, which is ruling 4's own argument for never-alone, and on the gate paths"
+            " the invariant is that no instance authors the gate that judges it (ADR-0073,"
+            " the human's instruction of 2026-08-18). Dispatch the review on another lane —"
+            " `just dispatch --seat review --reviewing <profile> --lane <lane> --profile"
+            " <profile>`, naming a lane none of the authors above is on — record its verdict,"
+            " and land again. Nothing was pushed.",
+        )
+    return (
+        (
+            f"gate_review=cross_lane reviewer_lane={reviewer_lane}"
+            f" author_lanes={' '.join(author_lanes)} gate_paths={' '.join(gate_paths)}"
+        ),
+        CROSS_LANE_LIMIT,
+    )
+
+
 def _alternates_lines(binding: review_exchange.Bound) -> tuple[str, ...]:
     """Render the alternates a latest-first derivation skipped past, if it skipped any."""
     return (f"alternates={' '.join(binding.alternates)}",) if binding.alternates else ()
@@ -343,23 +486,42 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     issue: int | None,
     sha: str,
     paths: tuple[str, ...] | None,
+    gate_paths: tuple[str, ...] | None,
     exemptions_text: str | None,
     dispatch_root: Path,
     review_root: Path,
 ) -> Outcome:
     """Decide the never-alone rung for one landing: a typed refusal, or the clearance.
 
-    The ladder, in the order the module docstring derives it. The exemption table
-    first, because a diff the inverted table covers is the one landing that consults
-    no record at all; then the three criteria of ruling 4, each enforced by the tool
-    that owns it — `review_exchange` for the verdict and its binding, `dispatch` for
-    the potential authors, `review_loop` for the adjudications. The two `isinstance`
-    narrowings are against classes of modules this module itself imported, so the
-    objects and the class always come from the one module object and the re-exec
-    duplicate trap the kind-value contracts document cannot arise here.
+    The ladder, in the order the module docstring derives it. The gate-path question
+    first since ADR-0073, because its answer decides whether the exemption table may
+    short-circuit at all; then the exemption table, because a diff the inverted table
+    covers is the one landing that consults no record; then the three criteria of ruling
+    4, each enforced by the tool that owns it — `review_exchange` for the verdict and its
+    binding, `dispatch` for the potential authors, `review_loop` for the adjudications —
+    with the cross-lane predicate riding on the second of them, since it is a statement
+    about the same reviewer and the same author set. The two `isinstance` narrowings are
+    against classes of modules this module itself imported, so the objects and the class
+    always come from the one module object and the re-exec duplicate trap the kind-value
+    contracts document cannot arise here.
+
+    `gate_paths` is the caller's read of routing class 6's path list against this diff —
+    `routing_policy.conflict_of_interest_paths`, computed where the trusted policy is
+    read — and `None` is "the policy or the diff could not be read", which refuses. It
+    arrives filtered rather than as prefixes so the seam carries a fact rather than a
+    rule: the one authority for what a gate path is stays in `routing_policy`, and this
+    module never learns how a prefix matches.
     """
-    decision = review_loop.exemption_decision(_exemptions_read(exemptions_text), paths or ())
-    if isinstance(decision, review_loop.Exempt):
+    if gate_paths is None or paths is None:
+        return Outcome(_undetermined_gate_refusal(), ())
+    decision = review_loop.exemption_decision(_exemptions_read(exemptions_text), paths)
+    # A gate landing is not exemptible, and the order is what makes that true rather than a
+    # sentence (ADR-0073). `config/review-exemptions.json` is a different table from the
+    # routing policy's own exceptions, so `binds_every_instance` does not reach it — and an
+    # entry there covering a class-6 path would clear a gate change with no review at all,
+    # which is worse than the same-lane review this issue was filed about. The table ships
+    # empty, so today this changes nothing; it is here so that filling it cannot.
+    if isinstance(decision, review_loop.Exempt) and not gate_paths:
         return _exempt(decision)
     if issue is None:
         return Outcome(
@@ -516,6 +678,15 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             ),
             (),
         )
+    # Below the three authorship refusals on purpose: this predicate reads the same author
+    # set they guard, so asking it above them would compare a reviewer against a set the
+    # rung has not yet established it may trust (ADR-0073).
+    cross_lane: tuple[str, ...] = ()
+    if gate_paths:
+        crossed = _cross_lane_refusal(gate_paths, binding, authorship)
+        if isinstance(crossed, Refusal):
+            return Outcome(crossed, ())
+        cross_lane = crossed
     above = tuple(
         finding for finding in verdict.findings if review_loop.above_low(finding.severity)
     )
@@ -544,6 +715,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             None,
             (
                 *_authorship_lines(authorship, declared),
+                *cross_lane,
                 (
                     f"review_dispatch={binding.dispatch_id} profile={binding.profile}"
                     f" lane={binding.lane}"
@@ -668,6 +840,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
         None,
         (
             *_authorship_lines(authorship, declared),
+            *cross_lane,
             *authorised,
             f"review_dispatch={binding.dispatch_id} profile={binding.profile} lane={binding.lane}",
             f"verdict_sha={sha}",

@@ -21,24 +21,23 @@ exhaustive open-issue scan CLAUDE.md prescribes could not be run from this sessi
 `gh search issues` was permission-blocked; the rebase backstop is what covers the gap, and a
 collision found there is renumbered on the rebase as prescribed
 
-## How this lands, because it lands in two pieces
+## How this landed, because it landed in two pieces
 
-**This decision reaches `origin/main` as two commits, minutes apart, and this record lands
-with the first of them.** The first retires the bar — the policy row, this record, and the
-prose on every surface that describes the row. The second adds the enforcement: the
-cross-lane predicate on `tools/land_review.py`'s never-alone rung, and the tests that hold
-it. **A reader who has this record but not that commit has a tree where the bar is off and
-the rung is not yet in**, and the paragraphs below are written in the present tense of the
-finished pair rather than of that window.
+**This decision reached `origin/main` as two commits, minutes apart.** The first retired the
+bar — the policy row, this record, and the prose on every surface that describes the row —
+and the second added the enforcement: the cross-lane predicate on `tools/land_review.py`'s
+never-alone rung, `tools/land.py`'s wiring of it, and the tests that hold both. Everything
+below is true of the pair, and was written in that tense while only the first was landed;
+each surface said so in its own words for the length of the window.
 
-The order is forced rather than chosen, and #364 is why: `just land` reads the routing
+The order was forced rather than chosen, and #364 is why: `just land` reads the routing
 policy from `origin/main`, never from the branch it is landing. A single commit carrying
-both halves would run its own new rung against the pre-#406 policy, which still refuses a
-non-Claude lane the gate paths — so the rung would demand a cross-lane review that the
-policy it is judged by will not let anyone dispatch. The human ruled the split on
-2026-08-18, accepting the window: never-alone (ADR-0071 ruling 4) is enforced throughout it,
-and what is briefly absent is only this class's cross-lane requirement, which nothing
-enforced before this decision either.
+both halves would have run its own new rung against the pre-#406 policy, which still refused
+a non-Claude lane the gate paths — so the rung would have demanded a cross-lane review that
+the policy judging it would not let anyone dispatch. The human ruled the split on 2026-08-18
+and accepted the window: never-alone (ADR-0071 ruling 4) was enforced throughout it, and what
+was briefly absent was only this class's cross-lane requirement, which nothing enforced
+before this decision either.
 
 ## The decision
 
@@ -54,8 +53,7 @@ From today the row refuses nothing. `config/dispatch-routing-policy.json` class 
 `refuses: false`, so a `codex` or `zai` dispatch naming those paths is admitted exactly as a
 `claude-native` one is, and so is a `just land` from any lane. What enforces the invariant is
 one predicate added to the never-alone rung ADR-0071 ruling 4 already runs at every landing
-(`tools/land_review.py`, in the second of the two commits above): **for a landing whose diff
-touches a class-6 path, the review
+(`tools/land_review.py`): **for a landing whose diff touches a class-6 path, the review
 verdict clearing it must come from a different lane than the author's**, not merely a
 different profile.
 

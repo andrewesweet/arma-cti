@@ -58,15 +58,14 @@ record, and it is inverted so unlisted means covered. It sits *before*
 `just fast` because it costs a handful of file reads and an unreviewed landing
 should not burn a gate first.
 
-Since ADR-0073 (#406) routing class 6's keep-on-Claude bar is retired, which
-leaves **no routing class refusing a landing at all**: `routing_policy_gate` is
-unreachable against the live policy, and the routing rung's remaining job is to
-refuse a policy or a diff it could not read. Both are kept rather than deleted —
-a refusing row is one table edit away. The invariant that row asserts, no
-instance authors the gate that judges it, is enforced by a cross-lane
-requirement on the review rung above, which lands as this issue's second commit;
-until it does, the invariant is honoured by procedure rather than by a refusal
-here.
+Since ADR-0073 (#406) that rung also carries routing class 6's invariant, which
+the routing gate above used to stand in for with a keep-on-Claude bar: a landing
+touching **the gates themselves** needs its verdict from a different *lane* than
+the author's, and its diff is not exemptible. The gate-path list is the trusted
+policy's own, read here and handed in (`_gate_paths`); the decision is the rung's.
+With that bar retired no routing class refuses a landing at all, so
+`routing_policy_gate` is unreachable against the live policy and the routing rung's
+remaining job is to refuse a policy or a diff it could not read.
 
 Refusals are this recipe's own vocabulary, not the harness failure-class table:
 a landing is not a corpus verdict and must not borrow its class names. What it
@@ -109,6 +108,14 @@ exit code.
                             the records as they stand
     review_same_profile     the reviewing profile is one the issue's own records
                             place on the work — the proposer approving itself
+    gate_class_undetermined the trusted policy or the diff could not be read, so
+                            whether this landing touches the gates themselves is
+                            unknown; fail closed (ADR-0073)
+    review_same_lane        it does touch them, and the verdict came from the
+                            author's own lane — a different profile is not enough
+                            on the gates (ADR-0073)
+    review_lane_unknown     it does touch them, and a lane at one end is not one
+                            the registry carries, so the two cannot be compared
     no_review_loop / review_loop_unreadable
                             findings above Low exist but no readable loop state
                             (#333's format) adjudicates them
@@ -760,20 +767,45 @@ def _exemptions_text(here: Path) -> str | None:
         return None
 
 
+def _gate_paths(
+    read: routing_policy.ReadResult, paths: tuple[str, ...] | None
+) -> tuple[str, ...] | None:
+    """Which routing class 6 paths this diff touches, or `None` where that cannot be read.
+
+    The gate-path half of `_routing_inputs`' trust argument, and it rides on the same
+    two reads: the policy off fetched `origin/main`, so a candidate diff cannot widen the
+    list that judges it, and this branch's own merge-base-relative paths. `None` is the
+    honest third value — the policy would not parse, or git could not name the diff — and
+    the rung refuses on it rather than reading it as "not a gate landing" (#41, ADR-0073).
+    """
+    if read.policy is None or paths is None:
+        return None
+    return routing_policy.conflict_of_interest_paths(read.policy, paths)
+
+
 def _review_rung(
-    here: Path, review: ReviewInputs, paths: tuple[str, ...] | None
+    here: Path,
+    review: ReviewInputs,
+    paths: tuple[str, ...] | None,
+    read: routing_policy.ReadResult,
 ) -> land_review.Outcome:
     """Run the never-alone rung over this tree's HEAD, through the inputs given.
 
     The one seam between the protocol and `tools/land_review.py`: this side owns
     the SHA (the tree's HEAD at the moment of the call — post-rebase in a
-    landing) and the trusted table's text; the rung owns every decision past
-    them.
+    landing), the trusted table's text and, since ADR-0073, the trusted policy's
+    reading of which gate paths this diff touches; the rung owns every decision
+    past them.
+
+    The policy arrives here rather than being re-read because both callers already
+    hold it from `_routing_inputs` — one read of `origin/main`, one answer, so the
+    routing rung and the never-alone rung cannot be judging different policies.
     """
     return land_review.review_finding(
         review.issue,
         git("rev-parse", "HEAD", cwd=here).strip(),
         paths,
+        _gate_paths(read, paths),
         _exemptions_text(here),
         review.dispatch_root or review_exchange.DISPATCH_ROOT,
         review.review_root or land_review.REVIEW_ROOT,
@@ -1113,7 +1145,7 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
     # Before the gate on purpose: the review rung reads a handful of records while
     # `just fast` costs a minute, so an unreviewed landing does not burn a gate
     # first (#334, on #302's cost-ordering).
-    reviewed = _review_rung(here, review, paths)
+    reviewed = _review_rung(here, review, paths, policy)
     if reviewed.refusal is not None:
         return Report.refused(reviewed.refusal)
     lines.extend(reviewed.cleared)
@@ -1177,7 +1209,11 @@ def _merge(root: Path, here: Path, pushed: str, lines: list[str]) -> Report:
 
 
 def _review_plan(
-    here: Path, incoming: int, review: ReviewInputs, paths: tuple[str, ...] | None
+    here: Path,
+    incoming: int,
+    review: ReviewInputs,
+    paths: tuple[str, ...] | None,
+    read: routing_policy.ReadResult,
 ) -> tuple[tuple[str, ...], str | None]:
     """Return the reviewed-commit rung's verdict on the plan, where one is honest.
 
@@ -1212,7 +1248,7 @@ def _review_plan(
             ),
             "review_sha_will_move",
         )
-    outcome = _review_rung(here, review, paths)
+    outcome = _review_rung(here, review, paths, read)
     if outcome.refusal is not None:
         lines = (f"review=would_refuse reason={outcome.refusal.kind}",)
         remedy = outcome.refusal.action
@@ -1277,7 +1313,7 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
     read, paths, detail = _routing_inputs(here)
     misrouted = classify_routing(read, paths, lane, detail)
     if misrouted is None:
-        review_lines, review_kind = _review_plan(here, incoming, review, paths)
+        review_lines, review_kind = _review_plan(here, incoming, review, paths, read)
     else:
         # The landing's own control flow: routing refuses before the review rung
         # reads anything, and a plan that consulted past a refusal would be a

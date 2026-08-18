@@ -38,10 +38,9 @@ is corrected rather than softened (#326, review round 2 claim 2).
 The human instructed on 2026-08-18 that the non-Claude lanes be full peers on the gate
 paths, which retired class 6's keep-on-Claude bar — the last lane-selected refusal this
 table held, and the last row with `landing_path_prefixes` that could refuse. What refuses
-at dispatch is seating (classes 2 and 3, on every lane); what will enforce class 6's
-invariant is the landing's never-alone rung, reading this row's paths as **data** and
-refusing a review verdict from the author's own lane — the second commit of #406, which
-this one deliberately precedes so that the rung does not gate its own arrival. So
+at dispatch is seating (classes 2 and 3, on every lane); what enforces class 6's invariant
+is the landing's never-alone rung, which reads this row's paths as **data** through
+`conflict_of_interest_paths` and refuses a review verdict from the author's own lane. So
 `enforcing_match` can now only ever return `None`, and `just land`'s routing rung refuses
 only an unreadable policy or an unreadable diff. Neither is deleted: a table whose rows can
 refuse again is one row away, and the machinery is what makes adding it an edit rather than
@@ -134,8 +133,8 @@ IN_WORLD_CLASS: Final = "in_world_landings"
 # binds every instance, because `tests/unit/test_routing_policy.py` asserts that the
 # gate paths the withdrawn class 1 held arrived here rather than falling out, and — since
 # ADR-0073 (#406) — because this row's `landing_path_prefixes` is the **one authority** for
-# what a gate path is, the position class 5's list holds for in-world surfaces. #406's second
-# commit is what reads it in that position, from the landing's never-alone rung.
+# what a gate path is, the position class 5's list holds for in-world surfaces. The landing's
+# never-alone rung reads it through `conflict_of_interest_paths` below.
 CONFLICT_OF_INTEREST_CLASS_ID: Final = 6
 
 # The orchestration class. Named for `REQUIRED_CLASSES` on class 3's ground rather than
@@ -152,9 +151,8 @@ ADR_AUTHORSHIP_CLASS_ID: Final = 3
 # The rows that cannot leave silently, on either of two grounds. **Addressed by id
 # elsewhere**: class 4 is `tools/escalation.py`'s `CLASS_FOUR`, deliberately a decoupled
 # copy; class 5 is the in-world authority three readers depend on; class 6 is the gate-path
-# authority #406's second commit has the landing's never-alone rung read (ADR-0073), and was
-# already required here as the conflict-of-interest rule ADR-0071 ruling 4 is bound by.
-# **Load-bearing by
+# authority the landing's never-alone rung reads (ADR-0073), and was already required here
+# as the conflict-of-interest rule ADR-0071 ruling 4 is bound by. **Load-bearing by
 # absence**: since ADR-0073 classes 2 and 3 are the only rows that refuse anything at all, so
 # a table dropping either would not merely stop enforcing one class, and a table dropping
 # both would leave a routing document that refuses no route on any lane, which is further
@@ -349,6 +347,12 @@ IN_WORLD_ERROR: Final = (
     f"class {IN_WORLD_CLASS_ID} must carry landing_path_prefixes — it is the one authority"
     " for what an in-world surface is, and three readers depend on it (#302)"
 )
+CONFLICT_OF_INTEREST_ERROR: Final = (
+    f"class {CONFLICT_OF_INTEREST_CLASS_ID} must carry landing_path_prefixes — since ADR-0073"
+    " it is the one authority for what a gate path is, and the landing's never-alone rung"
+    " reads it to decide which landings owe a cross-lane review. A row that emptied would"
+    " compute `nothing is a gate` and clear every same-lane review in silence (#406)"
+)
 SEAT_BOUND_LANDING_ERROR: Final = (
     "a class bound to required_seats may carry no landing_path_prefixes — a seat-bound class is"
     " enforceable only where a seat exists, and `just land` has no seat, so landing prefixes on"
@@ -432,6 +436,13 @@ def _rules(document: dict[object, object], view: View) -> tuple[Rule, ...]:
     # the fix's clothes. The row is present because `REQUIRED_CLASSES` just proved it.
     if not _by_id(rules, IN_WORLD_CLASS_ID).landing_path_prefixes:
         raise PolicyError(IN_WORLD_ERROR)
+    # The same guard on the same ground, one class along (ADR-0073, #406). Class 6 stopped
+    # refusing anything when the keep-on-Claude bar retired, so its path list is no longer
+    # incidentally load-bearing through `enforcing_match` — it is load-bearing on its own,
+    # as the list the never-alone rung reads to decide which landings owe a cross-lane
+    # review. An emptied row would parse and govern silently in the fail-open direction.
+    if not _by_id(rules, CONFLICT_OF_INTEREST_CLASS_ID).landing_path_prefixes:
+        raise PolicyError(CONFLICT_OF_INTEREST_ERROR)
     return rules
 
 
@@ -539,6 +550,29 @@ def in_world_paths(policy: Policy, paths: Iterable[str]) -> tuple[str, ...]:
     return tuple(path for path in paths if any(path_matches(path, p) for p in prefixes))
 
 
+def conflict_of_interest_prefixes(policy: Policy) -> tuple[str, ...]:
+    """Return the gate surfaces, off the one class that carries them (ADR-0073, #406).
+
+    Class 6's `landing_path_prefixes` in the position class 5's holds for in-world work:
+    the one authority for what a gate path is. `parse_policy` has already proven the row
+    exists and is not empty, so this cannot hand back a list that would read as "nothing
+    is a gate" — the fail-open answer, since the rung that reads it refuses only where a
+    path matches.
+    """
+    return _by_id(policy.rules, CONFLICT_OF_INTEREST_CLASS_ID).landing_path_prefixes
+
+
+def conflict_of_interest_paths(policy: Policy, paths: Iterable[str]) -> tuple[str, ...]:
+    """Name every gate surface these paths reach, empty when they reach none.
+
+    The filtering half of that authority, and `in_world_paths`' twin down to the shared
+    `path_matches`, so the routing gate's old reading of this row and the never-alone
+    rung's new one cannot disagree about what a prefix means.
+    """
+    prefixes = conflict_of_interest_prefixes(policy)
+    return tuple(path for path in paths if any(path_matches(path, p) for p in prefixes))
+
+
 def issue_match(rule: Rule, body: str) -> Match | None:
     """Match one data row against the issue's declared surface and kind.
 
@@ -607,11 +641,9 @@ def _refusing_rules(policy: Policy, lane: str) -> tuple[Rule, ...]:
     authors the gate that judges it — binds Claude too, and enforcing it *here* would refuse
     every landing that touches a gate, this project's own maintenance of its gates included:
     a bar on all gate work rather than a conflict-of-interest rule. What enforces it is the
-    landing's never-alone rung (`tools/land_review.py`), reading this row's paths and refusing
-    a verdict whose reviewer lane equals the author's — #406's second commit, which this one
-    precedes so that the rung does not gate its own arrival, and until it lands the invariant
-    is honoured by procedure. What the field enforces here is what it always did: a class that
-    binds every
+    landing's never-alone rung (`tools/land_review.py`), which reads this row's paths through
+    `conflict_of_interest_paths` and refuses a verdict whose reviewer lane equals the
+    author's. What the field enforces here is what it always did: a class that binds every
     instance may carry no exception, because an instance that can except itself from the gate
     that judges it is exactly the shape being forbidden.
     """

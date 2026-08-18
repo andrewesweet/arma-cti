@@ -370,9 +370,16 @@ def _stage(tmp_path: Path, *, reviewer: str = REVIEWER, authoring: str = "") -> 
 
 
 def _rung(roots: tuple[Path, Path]) -> land_review.Outcome:
+    """Call the rung over a `.claude/` skill change — interactive by #294, and not a gate.
+
+    `gate_paths=()` is the honest read for this diff: routing class 6 names `.claude/hooks/`
+    and `.claude/settings.json`, and a skill file is neither, so ADR-0073's cross-lane
+    predicate has nothing to say about these landings and the declaration rungs below are
+    what they were.
+    """
     dispatch_root, review_root = roots
     return land_review.review_finding(
-        ISSUE, SHA, (".claude/skills/retro/SKILL.md",), None, dispatch_root, review_root
+        ISSUE, SHA, (".claude/skills/retro/SKILL.md",), (), None, dispatch_root, review_root
     )
 
 

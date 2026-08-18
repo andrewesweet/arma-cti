@@ -634,6 +634,7 @@ def _reviewed(
     *,
     findings: tuple[dict[str, object], ...] = (),
     loop: dict[str, object] | None = None,
+    reviewer: tuple[str, str] = ("codex-luna-max", "codex"),
 ) -> land.ReviewInputs:
     """Stage the records a reviewed landing reads, and return the inputs that name them.
 
@@ -643,9 +644,16 @@ def _reviewed(
     of it lands under a temporary dispatch and review root, because the alternative
     is the real `~/.arma-cti/dispatches` on this box, whose contents no test may
     depend on and no test may write to.
+
+    `reviewer` is the reviewing dispatch's `(profile, lane)` pair and defaults to a
+    `codex` one over the `claude-native` author below — a cross-lane review, so a
+    staged landing satisfies ADR-0073's gate-path requirement without every caller
+    naming it. A caller passing a `claude-native` reviewer is arranging the same-lane
+    refusal (#406).
     """
     dispatch_root = at / "dispatches"
     review_root = at / "review"
+    reviewer_profile, reviewer_lane = reviewer
     sha = _git("rev-parse", "HEAD", cwd=here).strip()
     record = dispatch_root / "d-review-1"
     record.mkdir(parents=True, exist_ok=True)
@@ -655,8 +663,8 @@ def _reviewed(
                 "seat": "review",
                 "issue": 213,
                 "base_sha": sha,
-                "profile": "codex-luna-max",
-                "lane": "codex",
+                "profile": reviewer_profile,
+                "lane": reviewer_lane,
                 "planned_at": "20260815T0000Z",
                 "dispatch_id": "d-review-1",
             }
@@ -674,8 +682,8 @@ def _reviewed(
                 "issue": 213,
                 "reviewed_sha": sha,
                 "review_dispatch": "d-review-1",
-                "reviewer_profile": "codex-luna-max",
-                "reviewer_lane": "codex",
+                "reviewer_profile": reviewer_profile,
+                "reviewer_lane": reviewer_lane,
                 "findings": list(findings),
                 "recorded_at": "20260815T0100Z",
                 "alternates": [],
@@ -795,18 +803,16 @@ def test_a_red_gate_leaves_origin_exactly_where_it_was(
     assert _tip(origin) == before
 
 
-def test_a_gate_path_lands_from_a_non_claude_lane(
+def test_a_gate_path_lands_from_a_non_claude_lane_under_a_cross_lane_review(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,
 ) -> None:
     """ADR-0073's headline, end to end: `zai` is a peer on the gate paths (#406).
 
     This landing used to be refused `routing_policy_gate` before the gate ran, on the
-    keep-on-Claude bar the human retired on 2026-08-18. What replaces it is a requirement
-    on the review rather than a bar on the lane, and it arrives in this issue's second
-    commit; the reviewer `_reviewed` stages is on `codex` over a `claude-native` author,
-    so this landing satisfies that requirement already and will keep passing when the rung
-    is in.
+    keep-on-Claude bar the human retired on 2026-08-18. `_reviewed` stages a `codex`
+    reviewer over a `claude-native` author, so the cross-lane requirement that replaced
+    the bar is satisfied and the diff lands.
     """
     origin, main, here = repo
     _commit(here, ".claude/settings.json", "{}\n")
@@ -817,7 +823,34 @@ def test_a_gate_path_lands_from_a_non_claude_lane(
 
     assert report.code == 0, report.lines
     assert not any(line.startswith("refusal=") for line in report.lines)
+    assert any(line.startswith("gate_review=cross_lane") for line in report.lines)
     assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
+
+
+def test_a_gate_path_reviewed_on_the_authors_lane_refuses_before_the_gate_or_push(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
+    """The refusal that replaced the lane bar, in the place the lane bar used to fire.
+
+    Same diff, same lane, and the only thing changed is the reviewing dispatch's lane: the
+    review is now on `claude-native`, which is the author's. It refuses before `just fast`
+    runs and before anything is pushed, which is where the retired bar sat (#406).
+    """
+    origin, main, here = repo
+    before = _tip(origin)
+    _commit(here, ".claude/settings.json", "{}\n")
+    gate = _Gate()
+    review = _reviewed(here, tmp_path, reviewer=("opus-xhigh", "claude-native"))
+
+    report = land.land(main, here, gate=gate, lane="zai", review=review)
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=review_same_lane"
+    assert "reviewer_lane=claude-native" in report.lines
+    assert "gate_path=.claude/settings.json" in report.lines
+    assert gate.calls == []
+    assert _tip(origin) == before
 
 
 def test_a_non_exempt_diff_outside_every_class_lands_unimpeded(
