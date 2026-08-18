@@ -2988,11 +2988,11 @@ def _codex_sandbox_argv(permission_mode: str) -> tuple[str, ...]:
 
     What is granted, and why each:
 
-    - **`~/.cache/uv`**, because `uv` acquires a lock there before any test runs: without it
-      `just check`, `just unit` and `just fast` all died at `check-generated` on
-      ``Could not create temporary file … Read-only file system``. `~/.cargo` was measured
-      *not* necessary — the gate ran green without it — though that was against a warm cargo
-      registry, and a cold one may want writing.
+    - **The three tool caches `_codex_writable_roots` returns** — `~/.cache/uv`,
+      `~/.ansible/tmp` and `~/.cache/ansible-lint` — each measured red or derived from the
+      tool's own source, and each carrying the walk that found it there. `~/.cargo` stays
+      ungranted: measured unnecessary on 2026-08-06 against a warm registry, unchanged
+      since, and the proving dispatch never reached `check-rust` to re-ask the question.
     - **`network_access`**, which defaults off while the gate reads `gh` and `uv` may fetch.
       Proven reachable at `NET_HTTP_200` under the 2026-08-06 probe.
 
@@ -3029,7 +3029,12 @@ def _codex_sandbox_argv(permission_mode: str) -> tuple[str, ...]:
 
 
 def _codex_writable_roots() -> tuple[Path, ...]:
-    """Return the directories a Codex session must write to run the gate — never a git one.
+    """Return the tool caches a Codex session must write to run the gate — never a git one.
+
+    The grant principle, in one sentence: a tool cache or temp directory outside every
+    worktree, writing no project file and no git state, is granted; a git directory never
+    is. The second half is #405's finding and the three probes that established it — the
+    first half is why everything here is a cache.
 
     The session's own worktree is already writable and so is not listed — Codex's
     `workspace-write` grants cwd, and `writable_roots` is documented as "additional folders
@@ -3044,17 +3049,49 @@ def _codex_writable_roots() -> tuple[Path, ...]:
     measured and refuted. With no git directory named, the gate runs; the commit is
     `harness_finish`'s, on the unsandboxed side.
 
+    The list is a walk of every stage `just check` and `just fast` shell out to, each entry
+    measured red or derived from the tool's own source:
+
+    - **`~/.cache/uv`** — `uv` locks there before any test runs; measured red
+      `d-20260806-164224-c3591c`, green since granted.
+    - **`~/.ansible/tmp`** — `ansible-playbook --syntax-check` (`check-machine-b`) creates
+      its per-run directory there; measured red `d-20260818-185929-ae5491`,
+      ``[Errno 30] Read-only file system: '/home/andre/.ansible/tmp/ansible-local-…'``.
+      The stage joined `just check` on 2026-08-13 (`178bef4`), a week *after* the
+      2026-08-06 measurement that set the uv root — which is why the gate could grow a
+      need the root list had already been measured without.
+    - **`~/.cache/ansible-lint`** — `ansible-lint --strict` writes `latest.json` there
+      whenever the copy on the box is over 24 h old, and creates the directory when absent
+      (`ansiblelint/config.py`'s version check). Derived from source rather than measured
+      in-sandbox — the proving dispatch died one line earlier — and granted anyway,
+      because a gate that is green only while a cache is fresh is a flake with a calendar.
+
+    What the walk found **not** to need a grant: `cog`, `hemtt`, `gitleaks`, `ruff` and `ty`
+    all ran green in-sandbox on `d-20260818-185929-ae5491` with the uv root alone; pytest,
+    hypothesis and the mutation smoke ran green in-sandbox on `d-20260806-164858-905eb2`
+    (hypothesis tolerates a read-only example database, coverage writes cwd, pytest's
+    temporaries live in TMPDIR, which `workspace-write` grants); and `~/.cargo` stays
+    ungranted — measured unnecessary on 2026-08-06 against a warm registry, and nothing has
+    changed cargo's writes since. That last one is the one entry whose re-proof is still
+    outstanding: the proving dispatch died before `check-rust`, so the next writable
+    dispatch that reaches it carries the re-measurement.
+
     Nothing here is derived from the tree any more, which is why this function takes no
     argument: the two roots it used to ask git for were the two it must never name, and a
     parameter that exists only to be discarded invites a future edit to name them again.
 
-    `uv`'s cache is read from the environment the way `uv` reads it, so a box that relocates
-    it does not silently lose the gate. A root that does not exist is not an error: Codex
-    logs it and carries on, which is the right shape for a path that follows a convention
-    rather than a fact.
+    Each cache is read from the environment the way its tool reads it, so a box that
+    relocates it does not silently lose the gate. A root that does not exist is not an
+    error: Codex logs it and carries on, which is the right shape for a path that follows a
+    convention rather than a fact.
     """
     cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
-    return (Path(os.environ.get("UV_CACHE_DIR") or cache / "uv"),)
+    ansible_home = Path(os.environ.get("ANSIBLE_HOME") or Path.home() / ".ansible")
+    return (
+        Path(os.environ.get("UV_CACHE_DIR") or cache / "uv"),
+        Path(os.environ.get("ANSIBLE_LOCAL_TEMP") or ansible_home / "tmp"),
+        cache / "ansible-lint",
+    )
 
 
 # The seam between a session that cannot commit and a harness that can (#405). Named once

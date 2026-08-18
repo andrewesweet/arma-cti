@@ -1004,6 +1004,71 @@ def test_a_codex_workspace_write_session_can_write_the_cache_the_gate_locks(
     assert '"/xdg/cache/uv"' in _writable_roots(argv)
 
 
+def test_a_codex_session_can_write_the_directories_the_gate_grew(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # `check-machine-b` joined `just check` on 2026-08-13, a week after the root set was
+    # measured, and its two ansible halves each want a home-directory write: the syntax
+    # check died on `[Errno 30] Read-only file system: '…/.ansible/tmp/ansible-local-…'`
+    # (d-20260818-185929-ae5491), and ansible-lint rewrites `latest.json` whenever the
+    # copy on the box is over 24 h old. Both read the environment the way their tool
+    # reads it, for the same reason the uv root does.
+    monkeypatch.setenv("ANSIBLE_LOCAL_TEMP", "/somewhere/else/ansible-tmp")
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
+    assert '"/somewhere/else/ansible-tmp"' in _writable_roots(argv)
+
+    monkeypatch.delenv("ANSIBLE_LOCAL_TEMP")
+    monkeypatch.setenv("ANSIBLE_HOME", "/ansible/home")
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits", "second")
+    assert '"/ansible/home/tmp"' in _writable_roots(argv)
+
+    monkeypatch.delenv("ANSIBLE_HOME")
+    monkeypatch.setenv("XDG_CACHE_HOME", "/xdg/cache")
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits", "third")
+    assert '"/xdg/cache/ansible-lint"' in _writable_roots(argv)
+
+
+def test_the_writable_roots_are_exactly_the_tool_caches_the_walk_found(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The root list is an assertion surface, not a discovery: every entry is a tool cache
+    # a gate stage was measured or derived to need, so a future gate stage — or a future
+    # removal — changes this line and shows in the diff. The whole override block is
+    # asserted, not just the roots, so a grant arriving here without a root (or a root
+    # without its reason landing in `dispatch.py`) is the same visible diff.
+    for variable in ("UV_CACHE_DIR", "XDG_CACHE_HOME", "ANSIBLE_LOCAL_TEMP", "ANSIBLE_HOME"):
+        monkeypatch.delenv(variable, raising=False)
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
+    home = Path.home()
+    roots = (
+        "sandbox_workspace_write.writable_roots="
+        f'["{home / ".cache" / "uv"}", '
+        f'"{home / ".ansible" / "tmp"}", '
+        f'"{home / ".cache" / "ansible-lint"}"]'
+    )
+    assert argv[-6:] == (
+        "--config",
+        roots,
+        "--config",
+        "sandbox_workspace_write.network_access=true",
+        "--sandbox",
+        "workspace-write",
+    )
+
+
+@pytest.mark.parametrize("mode", ["plan", "default", "somethingUnmapped"])
+def test_a_read_only_codex_seat_names_no_writable_root_and_nothing_else(
+    tmp_path: Path, mode: str
+) -> None:
+    # The read-only branch's exact answer, not just its missing roots: #415's half of the
+    # gap is which caches a read-only seat is granted, and whatever that answer lands on,
+    # `network_access` must not arrive with it — a reviewer needs the cache, not the
+    # network. The sandbox flags are `build_argv`'s tail, so an exact tail is an exact
+    # answer, and any addition here is a visible diff too.
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, mode)
+    assert argv[-2:] == ("--sandbox", "read-only")
+
+
 def test_the_codex_grant_stops_at_what_was_measured_necessary(tmp_path: Path) -> None:
     # `~/.cargo` is deliberately absent: the gate ran green without it, so it goes
     # ungranted however plausible it looked. `$HOME` and `/` are the two roots that would
