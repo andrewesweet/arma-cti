@@ -43,9 +43,11 @@ the list rather than the count.
 
 ## What the harness is, and what it still refuses
 
-The harness itself has no opinion about what is trialled. It holds three properties, and
-each was a design constraint of the ruling that created it — they survive the closure
-because they belong to pre-registration rather than to the orchestration seat:
+This is one closed trial's harness, with its bar id and criteria as code constants by
+design, kept because its records are history. The harness itself has no opinion about
+profiles or verdicts. It holds three properties, and each was a design constraint of the
+ruling that created it — they survive the closure because they belong to pre-registration
+rather than to the orchestration seat:
 
 - **A failed trial never auto-reverts anything and never carries a failure class.** It is a
   finding for the human. `just dispatch` does not consult this module at all, so nothing
@@ -70,6 +72,11 @@ the telemetry is still `cti.admission.trial.*` on `arma-cti-admission`. Those na
 wrong for what this module now is, and they are kept anyway: the trial's records are history
 and renaming their home would orphan them, which is the one thing "kept as history" must not
 mean. The wart is cheaper than the loss.
+
+Generality is declined too, not deferred. A generic harness would parameterise the criteria,
+contradicting the immutable code constants above, and no second consumer exists:
+`tools/wip_trial.py` chose its own bar id, criteria, store and verdicts. Copying the pattern
+again is the accepted cost; do not extract this closed trial's harness without a new ruling.
 
 ## The audit (#252)
 
