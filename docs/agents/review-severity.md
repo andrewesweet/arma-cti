@@ -71,6 +71,22 @@ finding that survives four readings is still Low: it changed what no rule meant.
 - The **reviewer** assigns a severity to every finding it reports. It never withholds a
   finding on the grounds that it is minor.
 - The **implementer** may dispute a finding's correctness and its severity.
+- The **implementer** may also adjudicate a finding at **Medium or below**
+  **accepted and filed**: agree it is real, state why the fix does not belong in
+  this diff, and file it as an issue on the originating item **before** landing.
+  The landing record carries it like any other adjudication, naming the issue it
+  became. Not available above Medium, and not available where the defect is in
+  the diff under review rather than conditional on work outside it — "it only
+  bites if someone later does X" is the test, and X must be named. Conditional
+  harm does not re-grade the finding to Low: these levels anchor on blast radius
+  and silence, not likelihood, and a latent design defect graded Low would
+  understate it permanently in the landing record (human ruling of 2026-08-14 on
+  #334, amending ADR-0071 ruling 4; written by `just review-loop adjudicate
+  --route accepted_and_filed`).
+
+  **Worked example.** A review finds that a helper will misbehave if a future
+  caller passes a value no current caller passes. Real, worth fixing, and
+  nothing in this diff can trigger it. Accepted and filed — not a fix round.
 - An **arbiter** — resolved from the **implementing** seat's escalation entry, head first,
   one rule with one answer — rules once per finding, and that ruling binds. The seat meant
   is whichever one did the work, not the `implementer` row for every seat (ADR-0071 ruling 4

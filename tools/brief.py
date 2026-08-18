@@ -738,6 +738,19 @@ PASTE_RULE: Final = (
     "Quote `just verdict`'s rendered body verbatim; never retype the SHA or the evidence"
     " path (CLAUDE.md; #219's A/B — all four failures were retyping)."
 )
+# ADR-0071 ruling 4 as amended by A7 (human ruling of 2026-08-14 on #334). Inlined
+# rather than cited because it is an imperative: an implementer must be able to
+# close its findings having read only the brief, and the fourth route is the one a
+# brief never mentioned — `just land`'s `finding_unadjudicated` refusal names all
+# four, at the point where re-reading this document costs another round.
+ADJUDICATION_RULE: Final = (
+    "A review finding above Low closes through exactly one route before `just land`"
+    " accepts the branch: `fixed`; `arbiter_upheld` or `arbiter_dismissed`; or"
+    " `accepted_and_filed` — Medium or below, harm conditional on named work outside"
+    " the diff, filed as an issue on the originating item first. Each route is"
+    " recorded by `just review-loop adjudicate` (ADR-0071 ruling 4; the fourth route"
+    " is the human ruling of 2026-08-14 on #334)."
+)
 RESERVED_RULE: Final = (
     "You cannot write these, and neither can any dispatched session on any lane: `.claude/`"
     " is reserved by the harness above the project allowlist, through the tool call and"
@@ -963,6 +976,7 @@ def compose(briefing: Briefing) -> str:
             "## Landing",
             f"Conventional Commits, `refs #{issue}`, commit early.",
             "Land via `just land` and paste its output verbatim — never retype it.",
+            ADJUDICATION_RULE,
             (
                 f"Close #{issue} with a criterion-by-criterion audit quoting the gate's output"
                 " — `just check`, `just unit`, `just mutation` — and stating whether any quoted"

@@ -583,6 +583,22 @@ def test_the_brief_carries_the_landing_protocol_and_the_commit_trailer() -> None
     assert "paste its output verbatim" in rendered
 
 
+def test_the_brief_enumerates_all_four_adjudication_routes() -> None:
+    """The fourth route reaches the implementer before `just land` names it (#372).
+
+    ADR-0071 ruling 4 as amended by A7: a finding at Medium or below may close
+    `accepted_and_filed`. The brief is the one surface a dispatched agent reads
+    first, so the enumeration is inlined there rather than left to the
+    `finding_unadjudicated` refusal.
+    """
+    rendered = composed()
+    assert "`fixed`" in rendered
+    assert "`arbiter_upheld` or `arbiter_dismissed`" in rendered
+    assert "`accepted_and_filed`" in rendered
+    assert "Medium or below" in rendered
+    assert "filed as an issue on the originating item first" in rendered
+
+
 def test_prior_work_is_loud_and_states_without_interpreting() -> None:
     work = (
         brief.PriorWork(

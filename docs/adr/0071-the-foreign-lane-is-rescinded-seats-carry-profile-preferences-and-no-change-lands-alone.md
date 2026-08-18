@@ -63,6 +63,19 @@ Applied by #417's rework in the same change as every operational surface that
 states the rule, enumerated at the amended passage itself — #397 took an extra
 round for stating a rule in the ADR and leaving an operational copy behind, and
 a count here would be one more place for that to happen.
+Amended: 2026-08-18, on the human's ruling of 2026-08-14 recorded in full on
+#334, which states its own standing — *"this amends ADR-0071 ruling 4, a human
+sign-off gate; this ruling is that sign-off."* One amendment, marked inline at
+the passage it changes — **A7** (#372) adds the fourth adjudication route to
+ruling 4: a finding at Medium or below may be adjudicated **accepted and filed**,
+with the restrictions the ruling states. It adds a route and reverses no
+decision; the three alternatives the ruling weighed and declined are recorded
+with it. The ruling asked for this to ride the merged ADR-0071 landing of A1 and
+A2 (#372's sequencing note); that landing went in on 2026-08-15, before the
+ruling was filed as #372, so A7 opens the file again rather than riding it —
+recorded here rather than hidden. The enforcement and the loop writer already
+carried the route when A7 landed (#334 and #333), so this amendment brings the
+decision record level with the code.
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
 Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
@@ -484,13 +497,47 @@ seat is `review` and whose recorded end state is a completed run; that its id is
 absent from the dispatches that authored the branch; and — the part the fourth
 review found missing — that **every finding that run reported above Low carries an
 adjudication**, whether the implementer's accepted fix, a dispute the arbiter
-ruled on, or an arbiter dismissal. The record is written by the dispatcher, not by
+ruled on, an arbiter dismissal, or an **accepted and filed** finding (amendment
+A7 below). The record is written by the dispatcher, not by
 the reviewed agent.
 
 Without that last clause the refusal asked only whether a review *happened*. A
 proposer could dispatch a review, receive a Critical, do nothing, and land — no
 forgery, every check satisfied, and the stop condition "nothing above Low remains
 unadjudicated" enforced nowhere.
+
+*(Amendment A7, 2026-08-18, on the human's ruling of 2026-08-14 recorded in full
+on #334, which states its own standing: "this amends ADR-0071 ruling 4, a human
+sign-off gate; this ruling is that sign-off." The list above held three routes,
+and that left an implementer who **agreed** with a finding above Low two legal
+moves only: fix it — another round — or dispute it, an arbiter only after three
+fix rounds. Deferring was not a disposition at all, and #356 paid for that shape:
+every finding in all four of its rounds was accepted, none disputed, and its
+round-3 adjudication had to argue in prose why a Medium introduced by round 3 was
+not an escalation, with four landings queued behind the branch. The ruling adds
+the fourth route, transcribed: a finding at **Medium or below** may be adjudicated
+**accepted and filed** — the implementer agrees the finding is real, states why
+the fix does not belong in this diff, and files it as an issue on the originating
+item **before** landing; the landing record carries it like any other
+adjudication, naming the issue it became. Not available above Medium, and not
+available where the defect is in the diff under review rather than conditional on
+work outside it — "it only bites if someone later does X" is the test, and X must
+be named. The alternatives were put and declined, so the choice is not
+re-litigated: re-grading conditional harm as Low would make one level mean two
+unrelated things, since the severity anchors ride blast radius and silence rather
+than likelihood; raising the stop condition to "nothing above Medium" would land
+#157's class of defect unfixed by default, a larger change than a scheduling
+frustration should buy; and no change leaves round-3 prose explaining why the
+escalation condition did not fire. The ruling asked for this amendment to ride
+the merged ADR-0071 landing of A1 and A2 (#372's sequencing note); that landing
+went in on 2026-08-15, before the ruling was filed as #372, so this amendment
+opens the file again rather than riding it — recorded rather than hidden. The
+route is enforced where the list above
+is, #334's fourth criterion in `tools/land_review.py`, and written by `just
+review-loop adjudicate --route accepted_and_filed` with the named condition and
+the filed issue (#333); both landed carrying it, the ruling having been noted on
+#334's thread before that check was built, so this amendment brings the decision
+record level with the code that already enforces it.)*
 
 **What this cannot do, stated plainly.** Every dispatch runs as the same user, so
 an agent determined to forge an evidence directory can. This is the same limit the
@@ -722,8 +769,9 @@ closed by the arbiter's verdict, so a rule that filed only the unresolved would
 lose exactly the finding that most needs a trace.
 
 **And every dismissal is recorded and handed to post-landing review.** The
-landing's record carries each finding above Low with its verdict — fixed, upheld
-or dismissed — and the dismissals go to the post-landing seat as an input beside
+landing's record carries each finding above Low with its verdict — fixed,
+accepted and filed naming the issue it became *(A7)*, upheld or dismissed — and
+the dismissals go to the post-landing seat as an input beside
 the SHA and the close audit. Dismissals stay on the issue thread rather than
 becoming issues, so this adds no tracker noise and no pass.
 

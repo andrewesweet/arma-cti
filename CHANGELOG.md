@@ -164,6 +164,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stays the orchestrator's on this lane, and the end-to-end dispatch #405 asks for as evidence
   has not been recorded yet.
 
+- **The fourth adjudication route, accepted and filed, reaches the surfaces a seat
+  reads (#372, ADR-0071 ruling 4 amendment A7).** The human ruled on 2026-08-14 (#334) that a
+  finding at Medium or below may be adjudicated **accepted and filed** — the implementer
+  agrees it is real, states why the fix does not belong in this diff, and files it as an
+  issue on the originating item before landing — not available above Medium and not where the
+  defect is in the diff under review rather than conditional on named work outside it. The
+  ruling named four surfaces; `just land`'s refusal and `just review-loop`'s writer already
+  carried the route (#334, #333). This lands the other two and reaches a third: ADR-0071
+  ruling 4's adjudication list gains the route with its restrictions and the Medium ceiling,
+  `docs/agents/review-severity.md` carries the rule and its worked example, and the dispatch
+  brief's landing section now enumerates all four routes, so an implementer meets the fourth
+  before the `finding_unadjudicated` refusal names it at `just land`.
+
 - **A gate landing is now reviewed from another lane (#406, ADR-0073).** The enforcement half
   of the entry below, and the second of that issue's two commits. The invariant routing class
   6 asserts — no instance authors the gate that judges it — is enforced as one predicate on
