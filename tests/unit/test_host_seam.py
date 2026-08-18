@@ -329,6 +329,139 @@ if [[ "$*" == *appmanifest_233780.acf* ]]; then printf '123\n'; fi
     assert "\t--host\tbravo\t--slots\t2\tclient-port" in main_call
 
 
+def git_repo(path: Path) -> Path:
+    """Return a committed, clean repository — the state the dirty flag reads as clean."""
+    path.mkdir(parents=True)
+    for args in (
+        ("init", "-q", "-b", "main"),
+        ("config", "user.email", "t@example.invalid"),
+        ("config", "user.name", "t"),
+    ):
+        subprocess.run(["git", *args], cwd=path, check=True, capture_output=True)  # noqa: S603, S607
+    (path / "README.md").write_text("t\n", encoding="utf-8")
+    for args in (("add", "-A"), ("commit", "-qm", "t")):
+        subprocess.run(["git", *args], cwd=path, check=True, capture_output=True)  # noqa: S603, S607
+    return path
+
+
+def remote_pass_env(tmp_path: Path) -> tuple[dict[str, str], Path]:
+    """Stage one whole remote pass over stubs, exit status under the test's hand.
+
+    Same shape as `test_remote_whole_pass_preserves_the_callers_selection`'s
+    arrangement, factored because two more tests drive it: an `ssh` that answers
+    the build probe, records every call, and exits `$CTI_TEST_SSH_MAIN_EXIT`
+    when the call is the pass itself (`regress.sh`), and an `rsync` that always
+    succeeds so a dead main channel is the only failure in the arrangement.
+    """
+    home = tmp_path / "home"
+    manifest = home / "arma3server" / "steamapps" / "appmanifest_233780.acf"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text('"buildid" "123"\n', encoding="utf-8")
+    calls = tmp_path / "ssh-calls"
+    bin_dir = tmp_path / "bin"
+    executable(
+        bin_dir / "ssh",
+        """#!/usr/bin/env bash
+printf 'CALL' >>"$CTI_TEST_SSH_CALLS"
+printf '\\t%s' "$@" >>"$CTI_TEST_SSH_CALLS"
+printf '\\n' >>"$CTI_TEST_SSH_CALLS"
+if [[ "$*" == *appmanifest_233780.acf* ]]; then printf '123\\n'; fi
+if [[ "$*" == *regress.sh* ]]; then exit "${CTI_TEST_SSH_MAIN_EXIT:-0}"; fi
+""",
+    )
+    executable(bin_dir / "rsync", "#!/usr/bin/env bash\nexit 0\n")
+    return (
+        {
+            "CTI_HOSTS_FILE": str(registry(tmp_path)),
+            "CTI_TEST_SSH_CALLS": str(calls),
+            "HOME": str(home),
+            "PATH": f"{bin_dir}:{os.environ['PATH']}",
+        },
+        calls,
+    )
+
+
+def main_ssh_call(calls: Path) -> str:
+    """Return the newest recorded call that was the pass itself.
+
+    Newest, not first, because the dirty-flag test drives the pass twice over
+    one shared call log and asserts on each run's own transmission.
+    """
+    return [
+        line for line in calls.read_text(encoding="utf-8").splitlines() if "regress.sh" in line
+    ][-1]
+
+
+def test_a_dead_ssh_channel_is_infra_unavailable_not_a_verdict(tmp_path: Path) -> None:
+    """SSH's own failure code is never a verdict on the code under test (#363).
+
+    OpenSSH exits 255 when it cannot reach, authenticate to, or hold a channel
+    to the remote host — the transport died, not the pass. That is
+    `((status == 255)) && return "$CTI_EXIT_INFRA_UNAVAILABLE"` in
+    `cti_host_remote_regress`, and until #363 nothing tested it: move the
+    constant and a dead channel returns SSH's own 255 to a caller that reads it
+    as the exit status of `regress.sh` — exactly the misreading the
+    failure-class table exists to prevent, on a classification with no test on
+    it.
+
+    Which refusal this is, is asserted rather than assumed: the function has
+    three other `infra_unavailable` stops with words of their own (unbounded
+    target, build disagreement, evidence pull-back), so their absence is pinned
+    alongside the exit status. And from the other side, a status that is *not*
+    255 passes through unmapped — the mapping is of one code, not a blanket,
+    and a remote pass's own verdict must arrive as itself.
+    """
+    env, calls = remote_pass_env(tmp_path)
+    dead = hosts_sh(
+        f'cti_host_remote_regress bravo "{REPO}" --host bravo --slots 2 client-port',
+        env={**env, "CTI_TEST_SSH_MAIN_EXIT": "255"},
+    )
+    assert "regress.sh" in calls.read_text(encoding="utf-8"), (
+        "the pass never reached its main channel"
+    )
+    assert dead.returncode == EXIT_INFRA_UNAVAILABLE, dead.stderr
+    for other_stop in ("no bounded SSH target", "engine build disagreement", "evidence copy"):
+        assert other_stop not in dead.stderr, (
+            f"the refusal was {other_stop!r}, not the dead channel"
+        )
+
+    verdict = hosts_sh(
+        f'cti_host_remote_regress bravo "{REPO}" --host bravo --slots 2 client-port',
+        env={**env, "CTI_TEST_SSH_MAIN_EXIT": "3"},
+    )
+    assert verdict.returncode == 3, verdict.stderr
+
+
+def test_the_remote_pass_carries_the_worktrees_dirty_flag(tmp_path: Path) -> None:
+    """The dirty flag is a decision the pass transmits, so it is tested (#363).
+
+    `cti_host_remote_regress` reads `git status --porcelain` of the tree it is
+    shipping and forwards the answer as `CTI_REMOTE_GIT_DIRTY`, which
+    `regress.sh` adopts as the run's own `GIT_DIRTY` — the provenance a remote
+    verdict carries, answered on the machine that owns the repository rather
+    than guessed on the one that runs the pass. Until #363 nothing asserted
+    either direction: flipping the `[[ -n … ]]` inverts the flag and the pass
+    ships clean trees as dirty and dirty trees as clean, unrecorded by any
+    assertion. Both directions are pinned here, on a repository the test built
+    for the purpose — never the worktree this test runs in, whose dirt is
+    whichever agent's, and whose state no test may assert on.
+    """
+    repo = git_repo(tmp_path / "repo")
+    env, calls = remote_pass_env(tmp_path)
+    clean = hosts_sh(
+        f'cti_host_remote_regress bravo "{repo}" --host bravo --slots 2 client-port', env=env
+    )
+    assert clean.returncode == 0, clean.stderr
+    assert "\tCTI_REMOTE_GIT_DIRTY=false" in main_ssh_call(calls)
+
+    (repo / "uncommitted").write_text("dirty\n", encoding="utf-8")
+    dirty = hosts_sh(
+        f'cti_host_remote_regress bravo "{repo}" --host bravo --slots 2 client-port', env=env
+    )
+    assert dirty.returncode == 0, dirty.stderr
+    assert "\tCTI_REMOTE_GIT_DIRTY=true" in main_ssh_call(calls)
+
+
 # -------------------------------------------------------------------- the guard
 
 

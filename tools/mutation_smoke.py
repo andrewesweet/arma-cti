@@ -169,6 +169,17 @@ RESTORE: Final = ".mutation-smoke-restore.json"
 # below its own recorded rate rather than below `FLOOR` alone. Ships empty: no
 # row is populated by landing the mechanism, so no floor moves and a first red is
 # a mechanism failure rather than a threshold one. Populated by `--record`.
+#
+# Still empty, and not by drift (#363 is the first reader to ask). `--record`
+# is a deliberate act outside `just fast` — the gate never writes — and no
+# session has performed it for any module, so until one does the only floors
+# enforced are `FLOOR` and `SHELL_FLOOR`, and a module's measured rate lives in
+# the landing's gate output rather than here: a rate can fall to the floor
+# without a red. A row is one `just mutation --record --paths <module>` away
+# for any session whose allowlist reaches that recipe; #363's dispatch had no
+# such allowlist, which is why this comment and not a row for
+# `tests/unit/test_host_seam.py` (measured 10/10 against `spike/hosts.sh`
+# there) is the close.
 BASELINE: Final = "tools/mutation-baseline.json"
 
 # Mutants planted per test module. Bounded on purpose: this is a smoke, not a
