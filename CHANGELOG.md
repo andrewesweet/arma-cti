@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A Codex implementer runs its own gate: the session gates, the harness commits (#405).**
+  Three probes replaced the cause recorded as #265. Codex enforces `<root>/.git` as a
+  read-only path inside every writable root — deliberate policy, protecting git history from
+  the agent — so where the named root *is* a git directory the sandbox creates the `.git` it
+  means to protect and libgit2 opens that instead of the real layout. Six arrangements are
+  measured and refuted, and the list is closed. The half that is green settles the design: a
+  session whose git directory is not a writable root returns `No errored commits` and runs
+  `just fast`. So `_codex_writable_roots` names no git directory and no checkout containing
+  one — `~/.cache/uv` alone — the session writes its Conventional Commits message to
+  `.dispatch-commit-message` in its worktree, and after it exits the unsandboxed dispatcher
+  commits with that message and pushes the branch to the issue's review ref. A tree edited
+  with no message file refuses `commit_message_absent` and is left untouched; the commit meets
+  the repository's `commit-msg` hook like any other; authorship is unchanged, the box's
+  identity on the commit and the dispatch record for the profile. With the ceiling lifted,
+  `SEAT_PROFILE_BLOCKS` ships empty and `codex-luna-max` heads the implementer seat's
+  preference list for real — `just dispatch --seat implementer` now resolves to it. Landing
+  stays the orchestrator's on this lane, and the end-to-end dispatch #405 asks for as evidence
+  has not been recorded yet.
+
 - **A gate landing is now reviewed from another lane (#406, ADR-0073).** The enforcement half
   of the entry below, and the second of that issue's two commits. The invariant routing class
   6 asserts — no instance authors the gate that judges it — is enforced as one predicate on

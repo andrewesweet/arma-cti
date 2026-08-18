@@ -31,12 +31,26 @@ review_loop = load_tool("review_loop")
 dispatch = arbiter.dispatch
 
 
+breaker = load_tool("breaker")
+
+
 def authorship(
     potential: tuple[str, ...] = (),
     records: tuple[str, ...] = (),
     why: str = "",
 ) -> dispatch.Authorship:
     return dispatch.Authorship(potential, records, why)
+
+
+def trip(tmp_path: Path, lane: str) -> None:
+    """Open a lane's breaker in this test's own store, never in the box's.
+
+    Three gate failures is the quality trip, which is `test_dispatch_seat.trip`'s shape; the
+    instant is stepped so each outcome is its own, and no clock of this box's is read.
+    """
+    store = breaker.Store(directory=tmp_path / "breaker", endpoint="http://127.0.0.1:2999/v1/logs")
+    for step in range(3):
+        breaker.record_outcome(store, lane, breaker.Outcome(breaker.GATE_FAILED), 1.0 + step)
 
 
 def complete_read(*profiles: str) -> dispatch.Authorship:
@@ -305,14 +319,18 @@ def test_a_profile_the_ladder_would_refuse_is_excluded(tmp_path: Path) -> None:
     """#333 round 1, High 4: a table cannot say whether a profile is dispatchable now.
 
     The implementer walk: `codex-sol-high` and `opus-high` on the records; then
-    `codex-luna-max`, refused by the `(implementer, codex-luna-max)` pair block — #265's
-    measured gate ceiling, a fact of the registry, not of this box; then `zai-glm52-max`,
-    whose lane wants a key this credentials file does not carry. Each refusal the ladder
-    would give is the exclusion's reason, and the walk lands on `opus-low`.
+    `codex-luna-max`, whose lane's breaker is open on this box; then `zai-glm52-max`, whose
+    lane wants a key this credentials file does not carry. Each refusal the ladder would
+    give is the exclusion's reason, and the walk lands on `opus-low`.
+
+    Both live exclusions are facts of *this box* since #405 lifted the ceiling that used to
+    hold `codex-luna-max` below the seat from the registry — which suits the claim better
+    than the block did, since what this test is about is state no table can hold.
     """
     dispatch_dir = tmp_path / "scratch-dispatches"
     record(dispatch_dir, "d1", issue=333, profile="codex-sol-high", seat="implementer")
     record(dispatch_dir, "d2", issue=333, profile="opus-high", seat="review")
+    trip(tmp_path, "codex")
     credentials = tmp_path / "credentials.env"
     credentials.write_text("# no z.ai key here\n", encoding="utf-8")
     credentials.chmod(0o600)
@@ -342,6 +360,7 @@ def test_a_dispatchable_profile_is_answered_not_excluded(tmp_path: Path) -> None
     dispatch_dir = tmp_path / "scratch-dispatches"
     record(dispatch_dir, "d1", issue=333, profile="codex-sol-high", seat="implementer")
     record(dispatch_dir, "d2", issue=333, profile="opus-high", seat="review")
+    trip(tmp_path, "codex")
     credentials = tmp_path / "credentials.env"
     credentials.write_text("ZAI_API_KEY=test-key\n", encoding="utf-8")
     credentials.chmod(0o600)
@@ -356,8 +375,8 @@ def test_a_dispatchable_profile_is_answered_not_excluded(tmp_path: Path) -> None
     )
     assert resolution.kind == arbiter.RESOLVED
     assert resolution.arbiter == "zai-glm52-max"
-    # `codex-luna-max` stays excluded — the pair block is the registry's, not the box's —
-    # and `opus-low` behind z.ai is never reached.
+    # `codex-luna-max` stays excluded on its open breaker, and `opus-low` behind z.ai is
+    # never reached.
     assert [e.profile for e in resolution.passed_over] == [
         "codex-sol-high",
         "opus-high",

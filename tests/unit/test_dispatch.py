@@ -538,9 +538,9 @@ def test_the_carve_out_is_the_only_provenance_rule_the_registry_states() -> None
 
 # ---------------------------------------------- ADR-0071: new profiles and the pair block
 # Luna enters on publication — a named exception to the measure-before-building rule — and
-# its implementer head is blocked by #265's measured gate ceiling. The block attaches to
-# the (profile, seat) pair, so a read-only seat keeps the profile and the implementer seat
-# does not. See `SEAT_PROFILE_BLOCKS` and `pair_block` in tools/dispatch.py.
+# heads the implementer preference list. #265's gate ceiling held that pair below the seat
+# until #405 lifted it, so the block list now ships empty and the mechanism is exercised
+# against a staged entry. See `SEAT_PROFILE_BLOCKS` and `pair_block` in tools/dispatch.py.
 
 
 def test_the_three_new_profiles_join_the_registry_under_adr_0071() -> None:
@@ -580,66 +580,60 @@ def test_the_three_new_profiles_appear_in_the_dispatch_registry() -> None:
     assert "effort=medium" in rendered["codex-luna-medium"]
 
 
-def test_codex_luna_max_blocked_for_implementer_names_the_gate_ceiling() -> None:
-    refusal = dispatch.resolve_selection("codex", "codex-luna-max", "implementer")
-    assert refusal is not None
-    assert refusal.kind == "profile_blocked_for_seat"
-    # A refusal, not a failure class — nothing was found about a provider or about code.
-    assert refusal.failure_class == ""
-    assert not any(line.startswith("class=") for line in refusal.lines())
-    # The pair and the ceiling it waits on are machine-visible in `found`.
-    assert "profile=codex-luna-max" in refusal.found
-    assert "seat=implementer" in refusal.found
-    assert "ceiling=#265" in refusal.found
-    # The action names the ceiling so a reader knows what would clear it.
-    assert "#265" in refusal.action
-    assert "writable_roots" in refusal.action
-    assert "gate" in refusal.action
-
-
-def test_the_pair_block_is_the_one_home_a_seat_resolver_will_share() -> None:
-    # ADR-0071 ruling 2: the refusal attaches to the pair, not to how the profile was
-    # chosen. `resolve_selection` (the `--profile` path) and `pair_block` (the function a
-    # future seat resolver calls, #321) are the same check, so a resolver consults this and
-    # not a second copy of the list.
-    direct = dispatch.pair_block("implementer", "codex-luna-max")
-    via_selection = dispatch.resolve_selection("codex", "codex-luna-max", "implementer")
-    assert direct is not None
-    assert via_selection is not None
-    assert direct == via_selection
-
-
-def test_codex_luna_max_dispatches_normally_on_the_read_only_recon_seat(tmp_path: Path) -> None:
-    # The pair matters: a profile blocked for a seat that must commit and gate is not
-    # thereby blocked for a read-only seat that does neither. Selection clears it ...
-    assert dispatch.resolve_selection("codex", "codex-luna-max", "recon") is None
-    # ... and so does the full planning ladder. The codex lane is not off-peak-ruled, the
-    # profile is on probation (which dispatches), and recon is Decision-2-eligible.
+def test_codex_luna_max_takes_the_implementer_seat_now_the_ceiling_is_gone(
+    tmp_path: Path,
+) -> None:
+    # #405: the ceiling that held this pair was #265's — a Codex session could commit or
+    # gate, never both — and the division of labour lifts it, because the session runs its
+    # own gate and the harness makes the commit. So the block goes, and with it the last
+    # entry in the list. Asserted through selection *and* the whole planning ladder,
+    # because a pair that clears one and not the other is not dispatchable in practice.
+    assert dispatch.SEAT_PROFILE_BLOCKS == {}
+    assert dispatch.resolve_selection("codex", "codex-luna-max", "implementer") is None
+    assert dispatch.pair_block("implementer", "codex-luna-max") is None
     plan, _, refusal = plan_for(
         tmp_path,
         lane="codex",
         profile="codex-luna-max",
-        seat="recon",
+        seat="implementer",
     )
     assert refusal is None
     assert plan is not None
 
 
-def test_the_pair_blocks_are_visible_in_the_dispatch_registry() -> None:
-    # ADR-0071 ruling 2: a (profile, seat) pair held below a seat's contract is stated
-    # wherever the registry is read, so `codex-luna-max` and `implementer` do not read as
-    # available together — a reader sees the block without attempting the dispatch. The
-    # ceiling is taken from `pair_block` rather than named a second time, so the registry's
-    # ceiling must match the refusal's.
-    lines = dispatch.registry_lines()
-    blocks = [line for line in lines if line.startswith("seat_profile_block=")]
-    assert len(blocks) == len(dispatch.SEAT_PROFILE_BLOCKS)
-    luna = next(line for line in blocks if "profile=codex-luna-max" in line)
-    assert "seat=implementer" in luna
-    refusal = dispatch.pair_block("implementer", "codex-luna-max")
+def test_a_blocked_pair_still_refuses_and_still_reaches_the_registry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The mechanism is ADR-0071 ruling 2's and outlives its entries, so it is tested with
+    # one rather than left uncovered while the list ships empty. An entry carries its own
+    # ceiling: `pair_block` states what is holding the pair, and the registry line says the
+    # same thing, from the same place, so the two cannot drift apart.
+    monkeypatch.setattr(dispatch, "SEAT_PROFILE_BLOCKS", {("implementer", "haiku-medium"): "#999"})
+    refusal = dispatch.resolve_selection("claude-native", "haiku-medium", "implementer")
     assert refusal is not None
-    ceiling = next(found for found in refusal.found if found.startswith("ceiling="))
-    assert ceiling in luna
+    assert refusal.kind == "profile_blocked_for_seat"
+    # A refusal, not a failure class — nothing was found about a provider or about code.
+    assert refusal.failure_class == ""
+    assert not any(line.startswith("class=") for line in refusal.lines())
+    assert "profile=haiku-medium" in refusal.found
+    assert "seat=implementer" in refusal.found
+    assert "ceiling=#999" in refusal.found
+    assert "#999" in refusal.action
+    # `resolve_selection` (the `--profile` path) and `pair_block` (what a seat resolver
+    # calls, #321) are the same check, so a resolver consults this and not a second copy.
+    assert dispatch.pair_block("implementer", "haiku-medium") == refusal
+    # And the pair is stated wherever the registry is read, so a reader who paired the two
+    # sees the block without attempting the dispatch.
+    blocks = [line for line in dispatch.registry_lines() if line.startswith("seat_profile_block=")]
+    assert blocks == [
+        "seat_profile_block=adr0071 seat=implementer profile=haiku-medium ceiling=#999"
+    ]
+
+
+def test_the_block_list_ships_empty_so_the_registry_states_no_block() -> None:
+    # The other half of the pair above: with no entry, the registry says nothing rather
+    # than saying something stale about a ceiling that has been lifted.
+    assert not any(line.startswith("seat_profile_block=") for line in dispatch.registry_lines())
 
 
 # ---------------------------------------------------------------------- identity/OTel
@@ -963,41 +957,34 @@ def _writable_roots(argv: tuple[str, ...]) -> str:
     return found[0]
 
 
-def test_a_codex_workspace_write_session_can_write_the_repositorys_git_metadata(
-    tmp_path: Path,
-) -> None:
-    # #259: under plain `--sandbox workspace-write` the first `git add` died on
-    # "Unable to create '<main>/.git/worktrees/issue-259-codex/index.lock': Read-only
-    # file system", so the commit half of the human's ruling was unreachable. The main
-    # checkout is a root because `just land`'s ff-only merge writes it — and `.git` is a
-    # root **of its own**, because Codex holds `.git` read-only even when its parent is
-    # writable: probe `d-20260806-164858-905eb2` wrote a file beside `.git` and was
-    # refused inside it, in one command. Naming the repository alone is not enough, and
-    # this test is what stops that regressing back to the version that measured red.
+def test_no_git_directory_is_ever_a_codex_writable_root(tmp_path: Path) -> None:
+    # #405's finding, and the one assertion that stops it regressing. Codex enforces
+    # `<root>/.git` read-only inside every writable root to protect git history from the
+    # agent; where the named root *is* a git directory it creates the `.git` it means to
+    # protect, and libgit2 opens that empty directory instead of the real layout — which is
+    # `cog check` dying on `could not find repository` and the whole of #265. Six
+    # arrangements were measured and every one that named a git directory lost the gate, so
+    # none is named: not the per-worktree directory, not the common one, not the main
+    # checkout that contains one.
     argv, root, linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
     roots = _writable_roots(argv)
-    assert f'"{root}"' in roots
-    assert f'"{root / ".git"}"' in roots
-    # And the linked worktree's *own* git directory, which is the one that actually
-    # carries its index, HEAD and FETCH_HEAD. Naming the common directory alone was
-    # measured insufficient: `.git/topA` was created while
-    # `.git/worktrees/issue-259-codex/subB` was refused in the same command.
-    assert f'"{root / ".git" / "worktrees" / linked.name}"' in roots
+    assert ".git" not in roots
+    assert f'"{root}"' not in roots
+    assert f'"{root / ".git" / "worktrees" / linked.name}"' not in roots
     # The session's own worktree is cwd, which `workspace-write` already grants; a root
     # naming it would be noise claiming to be a grant.
     assert f'"{linked}"' not in roots
     assert argv[argv.index("--sandbox") + 1] == "workspace-write"
 
 
-def test_a_plain_checkout_names_its_one_git_directory_once(tmp_path: Path) -> None:
-    # `--absolute-git-dir` and `--git-common-dir` coincide outside a linked worktree, and a
-    # root repeated is a reader wondering which of the two is doing the work.
+def test_a_plain_checkout_names_no_git_directory_either(tmp_path: Path) -> None:
+    # The layout is not the variable — `d-20260818-080724-50f2be` ran the same failure in a
+    # standalone clone — so a plain checkout gets the same answer as a linked worktree.
     root = git_worktree(tmp_path, name="plain")
     argv = dispatch.build_argv(
         dispatch.LANES["codex"], dispatch.PROFILES["codex-sol-high"], "acceptEdits", root
     )
-    roots = _writable_roots(argv)
-    assert roots.count(f'"{root / ".git"}"') == 1
+    assert ".git" not in _writable_roots(argv)
 
 
 def test_a_codex_workspace_write_session_can_write_the_cache_the_gate_locks(
@@ -1028,11 +1015,11 @@ def test_the_codex_grant_stops_at_what_was_measured_necessary(tmp_path: Path) ->
     assert '"/"' not in roots
 
 
-def test_a_codex_workspace_write_session_can_reach_the_network_just_land_needs(
+def test_a_codex_workspace_write_session_can_reach_the_network_the_gate_needs(
     tmp_path: Path,
 ) -> None:
-    # `sandbox_workspace_write.network_access` defaults to disabled and `just land`
-    # fetches and pushes. This is the override with no counterpart on the `zai` lane,
+    # `sandbox_workspace_write.network_access` defaults to disabled while the gate reads
+    # `gh` and `uv` may fetch. This is the override with no counterpart on the `zai` lane,
     # where only the allowlisted `just land` and `gh` reach the network at all.
     argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
     assert "sandbox_workspace_write.network_access=true" in argv

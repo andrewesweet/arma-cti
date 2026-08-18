@@ -231,7 +231,13 @@ import gate
 import hook_parity
 import queue_policy
 import readiness
+
+# `review_exchange` is imported for its push half alone (#405): a harness-side commit is
+# handed over on exactly the ref the review loop already reads, rather than on a second
+# convention. It reads no dispatch record and imports nothing from here, so there is no cycle.
+import review_exchange
 import routing_policy
+import worktree as worktree_tool
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Mapping
@@ -1716,15 +1722,15 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
 # home. A resolver that hits a blocked pair skips to its next preference rather than failing
 # the dispatch, which is why `pair_block` is the function a resolver calls and not a private
 # branch of `resolve_selection`.
-SEAT_PROFILE_BLOCKS: Final = frozenset(
-    {
-        # `codex-luna-max` heads the implementer preference list in the ADR but cannot take
-        # the seat: #265's measured gate ceiling holds it below the binary capability rule.
-        # `pair_block` states the ceiling in full; the measurement lives in
-        # `_codex_sandbox_argv`.
-        ("implementer", "codex-luna-max"),
-    }
-)
+#
+# **It ships empty**, on `config/review-exemptions.json`'s shape: the mechanism is the
+# ruling's and the entries are evidence's. Its one entry — `("implementer",
+# "codex-luna-max")`, held below the seat by #265's gate ceiling — is gone with the ceiling
+# (#405, the human's instruction of 2026-08-18): a Codex session runs its own gate, so the
+# binary capability rule no longer holds any Codex profile below the implementer seat.
+# An entry carries its own ceiling rather than the refusal naming one, because the entry is
+# the only thing that knows which measurement is holding it.
+SEAT_PROFILE_BLOCKS: Final[Mapping[tuple[str, str], str]] = {}
 
 
 def pair_block(seat: str, profile_name: str) -> Refusal | None:
@@ -1732,31 +1738,31 @@ def pair_block(seat: str, profile_name: str) -> Refusal | None:
 
     This is the one home `SEAT_PROFILE_BLOCKS` is consulted, so `resolve_selection` calls it
     for a profile named directly and a future seat resolver (#321) calls it to skip a
-    blocked preference — never a second copy of the list.
+    blocked preference — never a second copy of the list. With the list empty it clears
+    every pair, which is the honest answer and not a disabled check: a mechanism that is
+    kept while its evidence is gone reads as a rule waiting for its next entry, and one
+    deleted with its evidence has to be argued back through the ADR that requires it.
 
     No failure class, for `off_peak_refusal`'s reason exactly: this refusal found nothing
     about a provider or about code under test. The provider is up, the lane is reachable,
     the profile is registered, and this project declines to head a seat with a profile a
     measured ceiling holds below the seat's contract. `infra_unavailable` would assert an
-    outage that is not happening and `provider_refused` a refusal Codex never made; a wrong
-    class is a harness bug by CLAUDE.md's table, so this carries none.
+    outage that is not happening and `provider_refused` a refusal the provider never made; a
+    wrong class is a harness bug by CLAUDE.md's table, so this carries none.
     """
-    if (seat, profile_name) not in SEAT_PROFILE_BLOCKS:
+    ceiling = SEAT_PROFILE_BLOCKS.get((seat, profile_name))
+    if ceiling is None:
         return None
     return Refusal(
         "profile_blocked_for_seat",
-        (f"profile={profile_name}", f"seat={seat}", "ceiling=#265"),
+        (f"profile={profile_name}", f"seat={seat}", f"ceiling={ceiling}"),
         (
-            "ADR-0071 ruling 2: this (profile, seat) pair is blocked. #265's measured gate "
-            "ceiling holds it below the seat's contract — no `writable_roots` set lets a "
-            "Codex dispatch both commit and run its own gate, because the commit needs the "
-            "per-worktree git directory named directly and the gate needs that same directory "
-            "not named (see `_codex_sandbox_argv`), and an implementer that cannot run its "
-            "own gate is not an implementer under the binary capability rule. The same "
-            "profile on a read-only seat dispatches normally, because a read-only seat needs "
-            "neither commit nor gate. What would clear it: #265 — a Codex discovery path "
-            "that lets the gate run under the same roots that let the commit through. "
-            "Nothing was dispatched."
+            "ADR-0071 ruling 2: this (profile, seat) pair is blocked, because a measured "
+            f"ceiling ({ceiling}) holds the profile below what the seat's contract requires. "
+            "The block is on the pair, so the same profile on a seat that needs less of it "
+            "dispatches normally, and naming the profile with `--profile` is a way of "
+            "choosing it and never a way around this. What would clear it: the ceiling's own "
+            "issue, and nothing here. Nothing was dispatched."
         ),
     )
 
@@ -2843,82 +2849,63 @@ CODEX_SANDBOX: Final = {
 }
 
 
-def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, ...]:
-    """Return the sandbox flags, widened where `workspace-write` alone withheld the intent.
+def _codex_sandbox_argv(permission_mode: str) -> tuple[str, ...]:
+    """Return the sandbox flags: the gate's roots, and never a git directory (#405).
 
     The human ruled on 2026-08-06 (#221 decision 2, #259) that a dispatched Codex session
     gets the same *intent* as the widened `zai` allowlist — run the gate, make its own
     commit, land it — and left the mechanism to be worked out, with one option ruled out by
     name: `--dangerously-bypass-approvals-and-sandbox`, which disables the sandbox rather
-    than widening it. The ruling also said to **measure before changing**, because
-    `workspace-write` might already have delivered it.
+    than widening it. The ruling also said to **measure before changing**.
 
-    It did not, and the measurement is why this function exists. Dispatch
-    `d-20260806-163129-479a57`, base `873a0c8`, ran under plain `--sandbox workspace-write`
-    and got as far as `git add`::
+    Six arrangements were measured, and the commit half is not reachable from any of them.
+    **Codex deliberately enforces `<root>/.git` as a read-only path inside every writable
+    root**: it is protecting git history from the agent, which is a defensible thing for a
+    coding sandbox to do, and it is a policy rather than a bookkeeping accident. Where the
+    root *is* a git directory there is no `.git` to protect, so one is created, and libgit2
+    opens that empty directory instead of the real layout — which is why naming a git
+    directory buys the commit and loses `cog check`. The sandbox says so in its own words
+    when the path it wants to enforce is already occupied (`d-20260818-111104-5138a7`)::
 
-        fatal: Unable to create '/home/andre/code/github.com/andrewesweet/arma-cti/.git/
-        worktrees/issue-259-codex/index.lock': Read-only file system
+        error building bubblewrap command: Fatal error: cannot enforce sandbox read-only
+        path …/issue-405c.gitdir/.git because it crosses writable symlink
+        …/issue-405c.gitdir/.git
 
-    `git status`, `git log` and `git diff` had all succeeded — reads. The refusal is
-    structural rather than incidental: this project dispatches into **linked worktrees**, so
-    the session's cwd is `<main checkout>/.claude/worktrees/issue-<N>` while its git metadata
-    lives in `<main checkout>/.git/worktrees/issue-<N>`, above the one root
-    `workspace-write` makes writable. Every commit was therefore out of reach, and with it
-    the gate and the landing that follow it.
+    Refuted, each by measurement rather than by argument: the linked worktree with both git
+    directories named (`d-20260806-172045-9a0a0e`, `cog check` red on `could not find
+    repository`, mechanism confirmed by strace in `d-20260807-222221-1a2c7e`); the parent
+    `<main>/.git/worktrees` named instead (`d-20260808-075346-f27564`, `index.lock` still
+    read-only — the carve-out confers nothing on a nested directory); the standalone clone,
+    which removed this project's worktree layout as a variable and did not move the failure
+    (`d-20260818-080724-50f2be`); `--separate-git-dir` outward and inward; and the symlink
+    above. The name `.git` is not the key either — probe `issue-405b` put the git directory
+    at `<cwd>/_gitdir` and its `index.lock` was read-only all the same, because Codex
+    discovers the repository's git directory rather than matching a name.
 
-    Three roots and one flag, each measured necessary and none inferred:
+    **The green half is what this function is built on.** Under that same probe, with no
+    git directory a writable root, `cog check` returned `No errored commits`: a Codex
+    session runs the gate. So the division of labour is *the session gates, the harness
+    commits* — `harness_finish` is the other half, and `CODEX_COMMIT_MESSAGE` is the seam
+    between them. Accepting the sandbox's policy rather than fighting it is what makes an
+    implementer on this lane real: it runs its own gate, which is the binary capability
+    rule's whole demand, and the commit happens where this project already performs
+    unsandboxed git acts.
 
-    - **The main checkout**, because `just land`'s final step is `git -C <main checkout>
-      merge --ff-only origin/main`, which writes that checkout's working tree. A grant that
-      stopped short of it would push and then refuse `merge_blocked_by_sandbox` — the
-      Claude-side finisher again, smaller but still there. Derived per invocation rather
-      than written down, so a dispatch from a second checkout widens to that one.
-    - **Both git directories, each named in its own right**, which is the finding worth
-      carrying forward: *Codex refuses a write under a `.git` directory unless that exact
-      directory is a writable root, and naming an ancestor does not lift the refusal for a
-      nested one.* Measured in two steps rather than argued. Probe
-      `d-20260806-164858-905eb2` wrote a file beside `.git` (`MAINROOT_OK`) while `.git/p2`
-      refused, so the repository root had applied and `.git` was carved out of it. Naming
-      `.git` then made `.git/topA` succeed while
-      `.git/worktrees/issue-259-codex/subB` — the linked worktree's own directory, where its
-      index, `HEAD` and `FETCH_HEAD` live — refused in the same command; naming that
-      directory too made both succeed. `_codex_writable_roots` asks git for both.
+    What is granted, and why each:
+
     - **`~/.cache/uv`**, because `uv` acquires a lock there before any test runs: without it
       `just check`, `just unit` and `just fast` all died at `check-generated` on
       ``Could not create temporary file … Read-only file system``. `~/.cargo` was measured
       *not* necessary — the gate ran green without it — though that was against a warm cargo
       registry, and a cold one may want writing.
-    - **`network_access`**, which defaults off while `just land` fetches and pushes. Proven
-      reachable at `NET_HTTP_200` under the same probe.
+    - **`network_access`**, which defaults off while the gate reads `gh` and `uv` may fetch.
+      Proven reachable at `NET_HTTP_200` under the 2026-08-06 probe.
 
-    Both readings come from the same box on 2026-08-06. This set buys the commit, not the
-    gate: `cog check` went red under it (`d-20260806-172045-9a0a0e`, `could not find
-    repository`), which is #265. The mechanism is now measured, not open: read-only probe
-    `d-20260807-222221-1a2c7e` (`codex-terra-low`) ran `strace -f -e
-    trace=openat,stat,statx,newfstatat` over `cog check` inside the sandbox and found the
-    sandbox had created an empty directory at `<main>/.git/worktrees/<name>/.git` (mode
-    0555, size 40) — a mount point injected for that writable root, where no real git
-    layout puts a `.git`. libgit2 stats it during repository discovery, mistakes it for a
-    repository, probes for its `commondir` and `HEAD`, gets `ENOENT` for both, and reports
-    `could not find repository`: it found too many repositories, not none. Outside the
-    sandbox that directory does not exist and `cog check` is green at the same commit.
-
-    The one alternative a `writable_roots` list admits — naming the parent
-    `<main>/.git/worktrees` instead of the per-worktree directory itself — is the set
-    `d12a27f` ran (`--absolute-git-dir`'s `.parent` resolves to exactly that path), and it
-    is refuted: probe `d-20260808-075346-f27564` found `git add` itself refused under it,
-    `index.lock` read-only, because Codex's `.git` carve-out does not confer write on a
-    nested directory merely by naming an ancestor. The dichotomy is structural, not a pair
-    of unlucky tries: a commit needs the exact per-worktree directory named, else the
-    carve-out holds its `index.lock` read-only (#259); the gate needs that same directory
-    *not* named, else the injected `.git` defeats libgit2 (#265). No `writable_roots` set
-    satisfies both, and `--dangerously-bypass-approvals-and-sandbox` was declined on #221.
-    So this four-root set, both git directories named directly, stands as the known-good
-    commit baseline, and the gate half of #265 is a recorded ceiling rather than an open
-    question. The consequence — a hand-finished landing for any Codex route — is stated
-    once in `docs/multi-provider-dispatch.md` and §10 of
-    `docs/research/codex-lane-live-findings.md`.
+    The main checkout was granted while the session was expected to land: `just land`'s
+    final step is `git -C <main checkout> merge --ff-only origin/main`, which writes that
+    checkout's working tree. It is not granted now — the session does not land — and its
+    removal is a narrowing worth having in its own right, since that root reaches every
+    sibling worktree on the box, which is #105's collision surface.
 
     **This is not parity with the `zai` lane and must not be described as one.** That lane's
     grant is a list of named commands; this one is a filesystem and network policy that every
@@ -2928,7 +2915,7 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
     separately in `docs/multi-provider-dispatch.md` rather than claimed equal.
 
     Read-only modes are left exactly as they were, which is the branch #407's `recon` seat
-    now takes. A review or recon seat has nothing to commit and nothing to land, so neither
+    now takes. A review or recon seat has nothing to commit and nothing to gate, so neither
     override has anything to buy there — no `writable_roots`, no `network_access` — and a
     sandbox that stays narrow when nothing needs it wider is the point of mapping per mode
     at all.
@@ -2936,9 +2923,7 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
     flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
     if flags != CODEX_SANDBOX["acceptEdits"]:
         return flags
-    roots = ", ".join(
-        hook_parity.toml_string(str(path)) for path in _codex_writable_roots(project_dir)
-    )
+    roots = ", ".join(hook_parity.toml_string(str(path)) for path in _codex_writable_roots())
     return (
         "--config",
         f"sandbox_workspace_write.writable_roots=[{roots}]",
@@ -2948,50 +2933,184 @@ def _codex_sandbox_argv(permission_mode: str, project_dir: Path) -> tuple[str, .
     )
 
 
-def _codex_writable_roots(project_dir: Path) -> tuple[Path, ...]:
-    """Return the directories a Codex session must write to commit, gate and land.
+def _codex_writable_roots() -> tuple[Path, ...]:
+    """Return the directories a Codex session must write to run the gate — never a git one.
 
     The session's own worktree is already writable and so is not listed — Codex's
     `workspace-write` grants cwd, and `writable_roots` is documented as "additional folders
     (beyond cwd and possibly TMPDIR)".
 
-    **Both git directories are named, and that is not belt and braces.** Measured on
-    2026-08-06: Codex refuses a write under a `.git` directory unless *that exact directory*
-    is a writable root, and naming an ancestor does not lift the refusal for a nested one.
-    With `<main>/.git` granted, `<main>/.git/topA` was created and
-    `<main>/.git/worktrees/issue-259-codex/subB` was still "Read-only file system"; adding
-    the per-worktree directory made both succeed. This project dispatches into linked
-    worktrees, where the index, `HEAD` and `FETCH_HEAD` all live in the second one — so
-    granting only the common directory buys a session `git log` and nothing it needs.
+    **No git directory is ever named here, and that is the whole of #405's finding.** Codex
+    enforces `<root>/.git` read-only inside every writable root to protect git history from
+    the agent; where the named root *is* a git directory there is no `.git` to protect, so
+    the sandbox creates one and libgit2 opens the empty directory instead of the real
+    layout. Naming a git directory therefore buys `git commit` and costs `cog check`, and no
+    arrangement of paths escapes that — `_codex_sandbox_argv` lists the six that were
+    measured and refuted. With no git directory named, the gate runs; the commit is
+    `harness_finish`'s, on the unsandboxed side.
 
-    That exact-name requirement is also the gate's undoing, which is #265 and is a
-    recorded ceiling, not a fix to chase here. Naming the per-worktree directory directly
-    makes Codex's sandbox inject an empty `<dir>/.git` mount point that libgit2 — and so
-    `cog check` — trips over during discovery; the alternative of naming its parent
-    `<main>/.git/worktrees` instead is refuted (the carve-out keeps `index.lock` read-only).
-    So "name both exactly" buys the commit and loses the gate, and no `writable_roots` set
-    buys both. The measurement and the consequence are carried in `_codex_sandbox_argv`'s
-    docstring; this function keeps assembling the set that commits.
-
-    Asked of git rather than assembled from strings, because git is the authority on where
-    its own metadata is: in a plain checkout the two answers coincide and the duplicate is
-    dropped, and a `--git-common-dir` that comes back relative is resolved against the tree
-    it was asked about. A tree git cannot read yields neither, and the caller is left with
-    the roots it can still name — a dispatch into a non-repository has no commit to make.
+    Nothing here is derived from the tree any more, which is why this function takes no
+    argument: the two roots it used to ask git for were the two it must never name, and a
+    parameter that exists only to be discarded invites a future edit to name them again.
 
     `uv`'s cache is read from the environment the way `uv` reads it, so a box that relocates
     it does not silently lose the gate. A root that does not exist is not an error: Codex
     logs it and carries on, which is the right shape for a path that follows a convention
     rather than a fact.
     """
-    roots = [main_checkout(project_dir)]
-    for spelling in ("--absolute-git-dir", "--git-common-dir"):
-        answer = git("rev-parse", spelling, cwd=project_dir)
-        if answer:
-            roots.append(Path(answer) if Path(answer).is_absolute() else project_dir / answer)
     cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
-    roots.append(Path(os.environ.get("UV_CACHE_DIR") or cache / "uv"))
-    return tuple(dict.fromkeys(roots))
+    return (Path(os.environ.get("UV_CACHE_DIR") or cache / "uv"),)
+
+
+# The seam between a session that cannot commit and a harness that can (#405). Named once
+# here: the brief tells the session this path, `harness_finish` reads it, and nothing else
+# spells it. It lives in the worktree root because the worktree is the one directory the
+# sandbox grants, so there is nowhere else a sandboxed session could put it.
+CODEX_COMMIT_MESSAGE: Final = ".dispatch-commit-message"
+
+# What a sandboxed session is told about the division of labour, appended to whatever brief
+# the dispatch carries. Appended rather than composed into `tools/brief.py`, because the lane
+# is resolved here and not there: a seat resolves its profile at dispatch time, so the
+# composer cannot know whether its brief will be sent to a sandboxed runner, and a rule the
+# orchestrator has to remember to include is a rule that will one day be missing.
+CODEX_COMMIT_PROTOCOL: Final = f"""
+## Committing on this lane: you gate, the harness commits
+
+Codex's sandbox holds this repository's git directory read-only. That is deliberate policy
+on Codex's side — it protects git history from the agent — and #405 measured six
+arrangements of writable roots without finding one that lifts it and still lets `cog check`
+open the repository. So `git add` and `git commit` will refuse here, `just check` and
+`just fast` will run, and looking for a way round the refusal is a spent dispatch: do not.
+
+Work as any implementer does — edit in your worktree, gate it there — and instead of
+committing, write your Conventional Commits message (subject, body, `refs #<issue>`) to
+`{CODEX_COMMIT_MESSAGE}` in the worktree root. When you exit, the dispatcher — which is not
+sandboxed — reads that file, commits everything in the tree with it as the message, and
+pushes the branch for review. Write the file before you finish: a tree you edited with no
+message file in it is a refusal rather than a commit, because a commit nobody wrote a
+message for is worse than none. The message goes through `cog verify` like any other, so a
+message that is not Conventional Commits fails the commit.
+
+`just land` on the Landing section above is the orchestrator's on this lane, not yours.
+"""
+
+
+def harness_commits(lane: Lane, permission_mode: str) -> bool:
+    """Say whether this dispatch's commit is the harness's to make rather than the session's.
+
+    True exactly where the sandbox is the writable one — a read-only seat has nothing to
+    commit, and every other lane's session commits its own work. The mode is compared
+    through `CODEX_SANDBOX` rather than against the string `acceptEdits`, so this predicate
+    and `_codex_sandbox_argv` cannot come to disagree about which mode is the writable one.
+    """
+    if lane.runner_family != "codex":
+        return False
+    flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
+    return flags == CODEX_SANDBOX["acceptEdits"]
+
+
+def harness_finish(tree: Path, issue: int, record: Path) -> tuple[tuple[str, ...], int]:
+    """Commit what a sandboxed session edited, with the message it left, and push it (#405).
+
+    The unsandboxed half of the division of labour `_codex_sandbox_argv` records. It runs
+    in the dispatcher after the session has exited, so it is subject to nothing the sandbox
+    holds — and to everything else: `git commit` here fires the repository's own
+    `commit-msg` hook, so a session's message meets `cog verify` exactly as a Claude-side
+    session's would.
+
+    Four states, and each is a distinct answer rather than a shade of the same one:
+
+    - **A clean tree** is `nothing_to_commit` and not a refusal. A dispatch that read,
+      searched or found nothing to change is a legitimate run, and a harness that invented
+      an empty commit for it would be recording an act nobody performed.
+    - **Edits with a message** is the commit, followed by the push to the issue's review
+      ref, which is `review_exchange.exchange`'s — the same ref, the same verification that
+      the remote resolves this exact HEAD, and no second convention for a reviewer to learn.
+    - **Edits with no message** is `commit_message_absent`, and it leaves the tree exactly
+      as the session left it. The alternative is a commit with a message the harness made
+      up, which is unreviewable and unattributable; a named refusal over an untouched tree
+      can be finished by hand from the transcript, which nothing else can.
+    - **git refusing** is `git_failed` with git's own words, which is where a message that
+      is not Conventional Commits arrives.
+
+    The message file is moved out of the tree before anything is staged — read, written
+    beside the dispatch record where the run's other evidence lives, then unlinked — so it
+    can never enter the commit it describes, and so a reader of the record can see what the
+    session asked for even when the commit was refused.
+
+    Authorship is untouched: the commit carries the box's git identity, as a hand-finished
+    Codex commit did, and what attributes the work to a profile is the dispatch record. A
+    `--author` invented from a profile name would be a claim about a person.
+    """
+    message_path = tree / CODEX_COMMIT_MESSAGE
+    try:
+        message = message_path.read_text(encoding="utf-8") if message_path.is_file() else ""
+        if message_path.is_file():
+            kept = record / "commit-message.txt"
+            kept.write_text(message, encoding="utf-8")
+            message_path.unlink()
+        status = worktree_tool.read_status(worktree_tool.git("status", "--porcelain", cwd=tree))
+    except OSError as unreachable:
+        return _harness_refusal(
+            "commit_message_unreadable",
+            (f"worktree={tree}", f"file={message_path}", f"found={unreachable}"),
+            "The session's message could not be moved out of the tree, so nothing was "
+            "committed and the tree is as the session left it. This is the box's to fix.",
+        )
+    except worktree_tool.GitError as failure:
+        return _harness_git_failed(tree, failure)
+    if status.clean:
+        return (("harness_commit=nothing_to_commit", f"worktree={tree}"), 0)
+    if not message.strip():
+        return _harness_refusal(
+            "commit_message_absent",
+            (f"worktree={tree}", f"expected={message_path}", *_harness_found(status)),
+            "The session edited this tree and left no commit message at the path above, so "
+            "the harness has nothing to commit with and has committed nothing. The edits "
+            "are untouched. Read the run's log for what it did, write the message, and "
+            "commit by hand — never reset the tree (#105).",
+        )
+    try:
+        worktree_tool.git("add", "--all", cwd=tree)
+        worktree_tool.git("commit", "--file", str(record / "commit-message.txt"), cwd=tree)
+        committed = worktree_tool.git("rev-parse", "HEAD", cwd=tree).strip()
+    except worktree_tool.GitError as failure:
+        return _harness_git_failed(tree, failure)
+    pushed = review_exchange.exchange(tree, issue)
+    return (
+        ("harness_commit=committed", f"commit={committed}", *pushed.lines),
+        pushed.code,
+    )
+
+
+def _harness_refusal(kind: str, found: tuple[str, ...], action: str) -> tuple[tuple[str, ...], int]:
+    """Render one `harness_finish` refusal in the dispatcher's own shape."""
+    return (Refusal(kind, found, action).lines(), EXIT_REFUSED)
+
+
+def _harness_git_failed(tree: Path, failure: worktree_tool.GitError) -> tuple[tuple[str, ...], int]:
+    """Render git's own failure, argv and stderr quoted, the way the exchange renders it."""
+    return _harness_refusal(
+        "git_failed",
+        (
+            f"worktree={tree}",
+            f"command=git {' '.join(failure.args_run)}",
+            f"stderr={failure.stderr}",
+        ),
+        "Read git's own error above. The tree is as the session left it, and a message "
+        "that is not Conventional Commits arrives here as the `commit-msg` hook's refusal.",
+    )
+
+
+def _harness_found(status: worktree_tool.Preflight) -> tuple[str, ...]:
+    """Name the edits a refusal is about, capped the way every other ladder caps them."""
+    shown = worktree_tool.HOW_MANY_SHOWN
+    found = [f"tracked={line}" for line in status.tracked[:shown]]
+    found += [f"untracked={line}" for line in status.untracked[:shown]]
+    total = len(status.tracked) + len(status.untracked)
+    if total > len(found):
+        found.append(f"and={total - len(found)} more")
+    return tuple(found)
 
 
 def build_argv(
@@ -3061,7 +3180,7 @@ def _codex_argv(
         "--config",
         _codex_metrics_override(),
         *_codex_hook_argv(project_dir),
-        *_codex_sandbox_argv(permission_mode, project_dir),
+        *_codex_sandbox_argv(permission_mode),
     )
 
 
@@ -3473,6 +3592,8 @@ def plan_dispatch(
         if args.brief_file
         else default_brief(identity, worktree)
     )
+    if harness_commits(lane, args.permission_mode):
+        brief += CODEX_COMMIT_PROTOCOL
     plan = Plan(
         identity=identity,
         worktree=worktree,
@@ -3665,6 +3786,13 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         ),
         datetime.now(tz=UTC).timestamp(),
     )
+    # The harness's half of #405's division of labour, and it runs after the breaker has
+    # read the run: what the session's exit code says about the lane is the provider's
+    # business, and a harness-side commit that refuses says nothing about the provider.
+    finish: tuple[str, ...] = ()
+    finish_code = 0
+    if harness_commits(lane, plan.permission_mode):
+        finish, finish_code = harness_finish(plan.worktree, plan.identity.issue, record)
     write_result(
         record,
         dispatch_id=plan.identity.dispatch_id,
@@ -3672,8 +3800,12 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         outcome=outcome,
         started_at=started.isoformat(),
         ended_at=datetime.now(tz=UTC).isoformat(),
+        harness_finish=list(finish),
     )
-    return done.returncode, (f"dispatch={plan.identity.dispatch_id}", f"exit={done.returncode}")
+    return (
+        finish_code or done.returncode,
+        (f"dispatch={plan.identity.dispatch_id}", f"exit={done.returncode}", *finish),
+    )
 
 
 def classify_finished_run(record: Path, returncode: int) -> tuple[str, float | None]:
@@ -3770,24 +3902,15 @@ def registry_lines() -> tuple[str, ...]:
     for seat in sorted(SEATS.values()):
         lines.extend(seat_listing(seat))
     # ADR-0071 ruling 2: a (profile, seat) pair held below a seat's contract is blocked,
-    # and the block is stated wherever the registry is read. `codex-luna-max` renders as a
-    # profile and `implementer` renders as an eligible seat, so a reader who paired them
-    # would discover the exception only by attempting the dispatch; the line names the
-    # ceiling so they do not have to. The ceiling is taken from `pair_block` rather than
-    # named a second time here, so the registry and the refusal cannot drift apart.
-    for seat, profile_name in sorted(SEAT_PROFILE_BLOCKS):
-        block = pair_block(seat, profile_name)
-        if block is None:  # pragma: no cover - a member that does not block is a registry bug
-            # #320's review found this branch skipping where the assertion it replaced failed
-            # loudly. A member of `SEAT_PROFILE_BLOCKS` that `pair_block` clears is the two
-            # halves of one fact disagreeing, and the registry listing's job is to state that
-            # fact; printing the listing without the block would be the quiet wrong answer.
-            message = (
-                f"SEAT_PROFILE_BLOCKS carries ({seat}, {profile_name}) and pair_block cleared it"
-            )
-            raise ValueError(message)
-        ceiling = next(line for line in block.found if line.startswith("ceiling="))
-        lines.append(f"seat_profile_block=adr0071 seat={seat} profile={profile_name} {ceiling}")
+    # and the block is stated wherever the registry is read — a blocked pair renders as an
+    # available profile and an eligible seat, so a reader who paired them would otherwise
+    # discover the exception only by attempting the dispatch. The list ships empty since
+    # #405, so this loop normally emits nothing; that is the registry saying there is no
+    # such pair, which is exactly what it should say.
+    lines.extend(
+        f"seat_profile_block=adr0071 seat={seat} profile={profile_name} ceiling={ceiling}"
+        for (seat, profile_name), ceiling in sorted(SEAT_PROFILE_BLOCKS.items())
+    )
     return tuple(lines)
 
 
