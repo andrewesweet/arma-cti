@@ -4,7 +4,9 @@ The shape of the review seat: what a review dispatch is handed, what it must han
 its claims go, and what now happens to a confirmed claim. Binding decisions: ADR-0061
 Decision 3 (review is eligible on a foreign lane, and provider diversity is the point), the
 human's ruling on #228 (a review lands nothing — its output is claims, each checkable
-against the code it cites), and, until #328, the admission bar.
+against the code it cites), the human's ruling on #353 (2026-08-14: a review is
+**judgement-only by construction** — it reads the implementer's pasted gate output and never
+executes), and, until #328, the admission bar.
 
 **ADR-0071 supersedes the first and third of those**, and this document has not yet been
 fully re-based on it: ruling 1 rescinds the foreign-lane concept Decision 3 rests on. Ruling
@@ -32,7 +34,7 @@ diversity ADR-0061 Decision 3 wants, because one model family's blind spots are 
 
 ## What the seat is handed
 
-Five things, and the dispatch record carries four of them by construction:
+Six things, and the dispatch record carries four of them by construction:
 
 - **the landed SHA** — `--base-sha <sha>`, which lands in `cti.base_sha` on the run's
   telemetry, so the review's ledger row names the commit it reviewed;
@@ -46,6 +48,14 @@ Five things, and the dispatch record carries four of them by construction:
 - **the close audit** — read by the reviewer from the issue thread, because the audit is what
   states which criteria the landing claimed to meet and a review that does not read it can
   only check the code against itself;
+- **the implementer's pasted gate output** — the gate record the 2026-08-14 ruling puts in
+  the review's hands in place of a gate run (#353). The paste must carry `just check`,
+  `just unit` **and** `just mutation`, and any quoted kill rate must state whether it was
+  **sampled** — the twenty-mutant sample `just mutation` plants — or **exhaustive** over
+  every candidate: #344's round-2 review found an exhaustive 91% hiding behind a reported
+  `rate=100%`, because the sample missed both survivors on the line the round had just
+  added. A paste that is absent, thinner than that, or silent on sampled-or-exhaustive is a
+  finding — the reviewer reports it as an observation rather than running anything;
 - **a worktree at `origin/main`** — `just worktree add issue-<n>`. The reviewed SHA is reached
   with `git show`, and the tree's own head is recorded, because a citation into a landing that
   a later commit has moved is stale rather than wrong and the two must be distinguishable.
@@ -64,6 +74,22 @@ registry and `routed` writes it over whatever the caller passed; on the `claude`
 `--permission-mode plan`, and on `codex` the sandbox mapping renders it `--sandbox read-only`.
 The override is printed, in the dry run and on the record, as
 `route_permission_mode=plan forced_by_seat=review`.
+
+**Since the human's ruling of 2026-08-14 (#353), the mode is not the whole of the rule —
+the seat runs nothing, not merely lands nothing.** The ruling reversed the 2026-08-13 ruling
+recorded in #353's body, which would have given the seat an executable read-only mode: its own
+worktree, `git checkout`/`git fetch`, `just fast`. The answer given instead was
+*"reviewer must not trigger tests themselves"*, so the review does not check out the branch
+under review, does not run `just fast` or any rung of it, and — the question #353 left open,
+now decided — **does not run `just mutation`**, whose mutants touch tracked files in place
+even though the sidecar restores them. The gate record a review reads is the implementer's
+paste, above. What this leaves the verdict resting on is stated rather than glossed over:
+judgement on the diff plus trust in a paste, with `just land`'s re-gate after rebase — which
+no flag skips — as the one independent re-execution. The `codex` lane's inability to run the
+gate (#265's sandbox ceiling) is therefore **moot for this seat rather than blocking it**: no
+review runs a gate on any lane, so a `codex` review reports no `gate=not_run` shortfall
+against its peers. The ceiling still bites `codex` as an *implementer*, where
+`docs/agents/orchestration.md` states it.
 
 ### The reviewer is never the reviewed profile
 
@@ -367,6 +393,15 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     run `just land`, do not file an issue or a comment. Your entire output is your
     final message. Your permission mode is `plan`, which enforces this; the rule is
     stated as well because a mechanism you understand is one you do not fight.
+
+    A review also runs nothing. Do not check out the branch under review, do not
+    run `just fast` or any rung of it, do not run `just mutation` — judgement-only
+    by construction (human ruling 2026-08-14, #353). The implementer's pasted gate
+    output on the issue thread is your gate record: it must carry `just check`,
+    `just unit` and `just mutation`, and any quoted kill rate must say whether it
+    was sampled or exhaustive. A paste absent, thinner than that, or silent on
+    sampled-or-exhaustive is a finding — report it as an observation rather than
+    running anything.
 
     Read, in this order: CLAUDE.md in your worktree; `gh issue view <N>` including
     every comment, and its close audit in particular; `git show <SHA>`; then the

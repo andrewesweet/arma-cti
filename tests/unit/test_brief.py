@@ -1048,6 +1048,70 @@ def test_the_composer_takes_the_subject_from_the_command_line() -> None:
     )
 
 
+# -------------------------------------- the review seat runs no gate (#353, 2026-08-14)
+
+# The human ruled on 2026-08-14 — reversing the 2026-08-13 ruling in #353's body — that a
+# review is judgement-only by construction: it reads the implementer's pasted gate output and
+# never executes, "reviewer must not trigger tests themselves". Until then every review brief
+# asked for a gate run and every review spent its effort explaining why it could not; these
+# assert the ask is gone from the three sections that carried it.
+
+
+def review_composed(**over: object) -> str:
+    """Compose a review-seat brief, so each test below names only its own concern."""
+    return composed(seat=brief.derive_seat("review", "opus-high"), **over)
+
+
+def test_a_review_briefing_asks_for_no_gate_run_and_names_the_paste_it_reads() -> None:
+    rendered = review_composed()
+    assert "## Gate: none — this seat runs none" in rendered
+    assert brief.REVIEW_GATE_RULE in rendered
+    # The paste the ruling requires: three rungs and the sampled-or-exhaustive statement.
+    assert "`just check`" in rendered
+    assert "`just unit`" in rendered
+    assert "`just mutation`" in rendered
+    assert "sampled" in rendered
+    assert "exhaustive" in rendered
+    # The derived gate line an implementer would get is not handed to a seat that cannot run it.
+    assert "`just fast`" not in rendered
+
+
+def test_a_review_briefing_with_open_flakes_is_told_to_re_run_nothing() -> None:
+    flake = brief.Flake(issue=130, test="test_linger_refuses", module="tests/unit/test_recall.py")
+    rendered = review_composed(flakes=(flake,))
+    assert brief.REVIEW_FLAKE_RESPONSE in rendered
+    assert brief.FLAKE_RESPONSE not in rendered
+
+
+def test_a_review_briefing_with_no_open_flakes_claims_no_red_of_its_own() -> None:
+    rendered = review_composed()
+    assert "None open." in rendered
+    assert "Any red is yours" not in rendered
+
+
+def test_a_review_briefing_is_told_to_land_nothing() -> None:
+    rendered = review_composed()
+    assert "## Landing: none — a review lands nothing" in rendered
+    assert brief.REVIEW_LANDING_RULE in rendered
+    assert "Land via `just land`" not in rendered
+
+
+def test_every_seat_that_reviews_gets_the_review_sections_and_no_other_does() -> None:
+    """The three sections follow the registry's `reviews` column, as the subject rule does."""
+    for name, seat in dispatch.SEATS.items():
+        rendered = composed(seat=brief.derive_seat(name))
+        assert (brief.REVIEW_GATE_RULE in rendered) is seat.reviews, name
+        assert (brief.REVIEW_LANDING_RULE in rendered) is seat.reviews, name
+
+
+def test_an_implementer_briefing_is_asked_for_the_paste_the_review_reads() -> None:
+    """The other half of the ruling: the paste the review reads, the implementer owes."""
+    rendered = composed()
+    assert "quoting the gate's output" in rendered
+    assert "`just check`, `just unit`, `just mutation`" in rendered
+    assert "sampled or exhaustive" in rendered
+
+
 @pytest.mark.parametrize("seat", ["implementer", "planner", "recon", "retro"])
 def test_the_composer_refuses_the_subject_in_the_dispatchers_own_refusal_shape(
     capsys: pytest.CaptureFixture[str], seat: str
@@ -1233,6 +1297,28 @@ def test_the_default_brief_carries_the_same_single_shot_contract() -> None:
     )
     rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-279")
     assert dispatch.SINGLE_SHOT_CONTRACT in rendered
+
+
+def test_the_default_brief_asks_no_seat_that_cannot_run_a_gate_to_run_one() -> None:
+    """#353, human ruling 2026-08-14: the thin brief's gate line follows the forced mode.
+
+    "Run `just fast` after every edit" reached review and recon dispatches unchanged — the
+    one gate ask that survived in the default brief after the composed brief stopped asking.
+    The line now follows the registry's `permission_mode` column, so a seat that forces
+    `plan` is told to run nothing, and no seat is told what it is forbidden to do.
+    """
+    for seat_name, seat in dispatch.SEATS.items():
+        identity = dispatch.Identity(
+            dispatch_id="d-test",
+            lane="claude-native",
+            profile="opus-high",
+            seat=seat_name,
+            issue=353,
+            base_sha="deadbee",
+        )
+        rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-353")
+        asks = "Run `just fast` after every edit." in rendered
+        assert asks == (seat.permission_mode != "plan"), seat_name
 
 
 # ------------------------------------------------------------------- the CLI's refusals

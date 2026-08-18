@@ -2843,7 +2843,19 @@ def default_brief(identity: Identity, worktree: Path) -> str:
     default that invented instructions would be a second, untracked copy of the seat's
     contract. The single-shot contract is the one operational rule a thin brief cannot
     omit, because a dispatched session has no second turn to recover from missing it.
+
+    The one line that varies is the gate line, because a seat that forces a read-only
+    mode (`review`, `recon` — the `permission_mode` column) cannot act on "run `just
+    fast` after every edit", and a brief asking for what the seat is forbidden to do is
+    the ritual #353's ruling of 2026-08-14 stopped: such a seat runs no gate at all.
     """
+    runs_gate = SEATS[identity.seat].permission_mode != "plan"
+    gate_line = (
+        "Run `just fast` after every edit."
+        if runs_gate
+        else "Run no gate — judgement-only by construction (human ruling 2026-08-14, #353);"
+        " read what the issue thread carries rather than executing anything."
+    )
     return (
         f"You are the {identity.seat} seat, dispatched as {identity.dispatch_id} on the "
         f"{identity.lane} lane under profile {identity.profile}.\n\n"
@@ -2853,7 +2865,7 @@ def default_brief(identity: Identity, worktree: Path) -> str:
         f"Issue: #{identity.issue}\n\n"
         f"Read CLAUDE.md, then `gh issue view {identity.issue}`, and do that issue's "
         f"work in the worktree above and nowhere else. The issue's acceptance criteria "
-        f"are the contract. Run `just fast` after every edit.\n"
+        f"are the contract. {gate_line}\n"
     )
 
 

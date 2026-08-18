@@ -706,6 +706,34 @@ FLAKE_RESPONSE: Final = (
     "`flake_quarantine`: do not act. If one of those exact tests is your only red, quote its"
     " issue number and re-run once; a second red, or any other red, is yours."
 )
+# The review seat's halves of the same three sections. The human ruled on 2026-08-14 (#353,
+# reversing the 2026-08-13 ruling in that issue's body) that a review is judgement-only by
+# construction: it reads the implementer's pasted gate output and never executes — no checkout,
+# no gate, no mutation. Until that ruling every review brief asked for a gate run and every
+# review spent effort explaining why it could not, which produced nothing except the honest
+# sentence; these sections stop asking. The mutation question the issue left open is decided
+# by the same ruling — "reviewer must not trigger tests themselves" — so the sampled-or-
+# exhaustive distinction (#344: an exhaustive 91% hid behind a reported 100%, because
+# `just mutation` plants at most twenty of a module's candidates) is a thing the *implementer*
+# states in the paste, not a thing the reviewer measures.
+REVIEW_GATE_RULE: Final = (
+    "This seat runs no gate and triggers no test — judgement-only by construction (human"
+    " ruling 2026-08-14, #353). The implementer's pasted gate output on the issue thread is"
+    " your gate record: it must carry `just check`, `just unit` and `just mutation`, and any"
+    " quoted kill rate must say whether it was sampled (the twenty-mutant sample the recipe"
+    " plants) or exhaustive over every candidate (#344). A paste that is absent, thinner than"
+    " that, or silent on sampled-or-exhaustive is a finding — report it as an observation"
+    " rather than running anything."
+)
+REVIEW_FLAKE_RESPONSE: Final = (
+    "You re-run none of these: a flake named in the implementer's paste is context for"
+    " reading it, never a red of yours to retry (human ruling 2026-08-14, #353)."
+)
+REVIEW_LANDING_RULE: Final = (
+    "A review lands nothing. Do not commit, do not push, do not run `just land`, do not"
+    " file an issue or a comment; your entire output is your final message (ADR-0071"
+    " ruling 4; `docs/review-dispatch.md`)."
+)
 PASTE_RULE: Final = (
     "Quote `just verdict`'s rendered body verbatim; never retype the SHA or the evidence"
     " path (CLAUDE.md; #219's A/B — all four failures were retyping)."
@@ -893,24 +921,54 @@ def compose(briefing: Briefing) -> str:
         ),
         "Work only there. Files you did not write mean stop and report, never reset (#105).",
         f"Finish with `just worktree done issue-{issue}`.",
-        "",
-        f"## Gate: {gate.line}",
-        *gate.because,
-        "",
-        f"## Open flakes ({len(briefing.flakes)}, read live at composition)",
     ]
-    if briefing.flakes:
-        lines += [flake.line() for flake in briefing.flakes]
-        lines.append(FLAKE_RESPONSE)
+    # The three sections below are the implementer's until the seat reviews: a reviewing seat
+    # runs no gate, retries no flake and lands nothing (human ruling 2026-08-14, #353), so the
+    # gate ask, the re-run instruction and the landing protocol would each demand something
+    # the seat is forbidden to do. The derived gate is still composed — a reviewing seat meets
+    # the same headings and never a silence — it just carries the read-the-paste rule instead.
+    if seat.reviews:
+        lines += [
+            "",
+            "## Gate: none — this seat runs none",
+            REVIEW_GATE_RULE,
+            "",
+            f"## Open flakes ({len(briefing.flakes)}, read live at composition)",
+        ]
+        if briefing.flakes:
+            lines += [flake.line() for flake in briefing.flakes]
+            lines.append(REVIEW_FLAKE_RESPONSE)
+        else:
+            lines.append("None open.")
+        lines += [
+            "",
+            "## Landing: none — a review lands nothing",
+            REVIEW_LANDING_RULE,
+        ]
     else:
-        lines.append("None open. Any red is yours.")
-    lines += [
-        "",
-        "## Landing",
-        f"Conventional Commits, `refs #{issue}`, commit early.",
-        "Land via `just land` and paste its output verbatim — never retype it.",
-        f"Close #{issue} with a criterion-by-criterion audit.",
-    ]
+        lines += [
+            "",
+            f"## Gate: {gate.line}",
+            *gate.because,
+            "",
+            f"## Open flakes ({len(briefing.flakes)}, read live at composition)",
+        ]
+        if briefing.flakes:
+            lines += [flake.line() for flake in briefing.flakes]
+            lines.append(FLAKE_RESPONSE)
+        else:
+            lines.append("None open. Any red is yours.")
+        lines += [
+            "",
+            "## Landing",
+            f"Conventional Commits, `refs #{issue}`, commit early.",
+            "Land via `just land` and paste its output verbatim — never retype it.",
+            (
+                f"Close #{issue} with a criterion-by-criterion audit quoting the gate's output"
+                " — `just check`, `just unit`, `just mutation` — and stating whether any quoted"
+                " kill rate was sampled or exhaustive (#344)."
+            ),
+        ]
     if gate.reads_a_verdict:
         lines += ["", "## Paste rule", PASTE_RULE]
     findings = ",".join(found.kind for found in briefing.assessment.findings) or "none"

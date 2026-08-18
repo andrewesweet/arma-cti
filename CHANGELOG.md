@@ -55,6 +55,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   every landing with a cross-lane reviewer still available refuses
   `review_same_lane` exactly as before.
 
+
+- **A review is judgement-only by construction: no review brief asks for a gate run
+  (#353, human ruling 2026-08-14).** Five consecutive reviews had reported `gate=not_run`
+  while every review brief asked them to run one — the request was made, the capability
+  was absent, and the honesty ritual absorbed the difference. The ruling reversed the
+  2026-08-13 decision to build an executable read-only mode and adopted the alternative:
+  the reviewer reads the implementer's pasted gate output and triggers no test itself —
+  no checkout, no gate, no `just mutation`. `just brief --seat review` now carries
+  read-the-paste sections in place of the gate ask, the flake re-run instruction and the
+  landing protocol; the dispatcher's default brief derives its gate line from the seat's
+  forced permission mode; and the implementer's own brief now asks its close audit to
+  quote `just check`, `just unit` and `just mutation`, stating whether any quoted kill
+  rate was sampled or exhaustive — the distinction #344's review found hiding an
+  exhaustive 91% behind a reported 100%. `docs/review-dispatch.md` carries the ruling,
+  the paste contract and the statement that the `codex` sandbox ceiling (#265) is moot
+  for reviews rather than blocking them; the remaining independent check is `just land`'s
+  re-gate after rebase, which no flag skips.
+
 - **A renamed profile's old name resolves for reading dispatch records, and still never
   dispatches (#413).** Renaming a profile used to strand every branch authored under the old
   name: `--reviewing <old name>` refused `unknown_reviewed_profile` against the registry,
