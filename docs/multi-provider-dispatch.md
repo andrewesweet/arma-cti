@@ -373,7 +373,8 @@ runs are worth keeping:
 
 The lane does not read `.claude/settings.json`'s allowlist at all. `tools/dispatch.py` maps
 the permission mode to a sandbox policy, and `acceptEdits` is `--sandbox workspace-write`
-plus, on that mode only, one writable root — `~/.cache/uv` — and network access. Every
+plus, on that mode only, writable roots — the tool caches named in
+`dispatch._codex_writable_roots` — and network access. Every
 command the session runs inherits all of it; there is no per-command list to consult.
 
 What that buys, measured rather than inferred, over five dispatches and four probes:
@@ -383,8 +384,15 @@ What that buys, measured rather than inferred, over five dispatches and four pro
 - The gate runs. `cog check` returns `No errored commits` and `just fast` executes, which
   is the capability that matters, because a profile that cannot run its own gate is not an
   implementer.
-- The gate additionally needs `~/.cache/uv`, where `uv` takes a lock before any test runs.
-  `~/.cargo` looked as likely and was measured unnecessary, so it is not granted.
+- The gate additionally needs three tool caches outside every worktree, each measured red
+  or read from the tool's own source: `~/.cache/uv`, where `uv` takes a lock before any
+  test runs; `~/.ansible/tmp`, where `ansible-playbook --syntax-check` puts its per-run
+  directory — the proving dispatch `d-20260818-185929-ae5491` died there, because
+  `check-machine-b` joined the gate on 2026-08-13, a week *after* the root set was
+  measured; and `~/.cache/ansible-lint`, whose `latest.json` the linter rewrites once it
+  is over 24 h old. The grant principle is one sentence: a tool cache outside every
+  worktree, writing no project file and no git state, is granted; a git directory never
+  is. `~/.cargo` looked as likely and was measured unnecessary, so it is not granted.
 - `network_access` defaults off while the gate reads `gh` and `uv` may fetch, so it is
   enabled.
 

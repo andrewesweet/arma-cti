@@ -46,7 +46,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   measured and refuted, and the list is closed. The half that is green settles the design: a
   session whose git directory is not a writable root returns `No errored commits` and runs
   `just fast`. So `_codex_writable_roots` names no git directory and no checkout containing
-  one — `~/.cache/uv` alone — the session writes its Conventional Commits message to
+  one — exactly the tool caches the gate was measured or derived to need (`~/.cache/uv`,
+  `~/.ansible/tmp`, `~/.cache/ansible-lint`; the proving dispatch
+  `d-20260818-185929-ae5491` committed and pushed through the harness but died at
+  `check-machine-b`, which had joined the gate a week after the root set was measured), with
+  an exact-list test so the next gate stage that grows a cache is a diff rather than a
+  discovery — the session writes its Conventional Commits message to
   `.dispatch-commit-message` in its worktree, and after it exits the unsandboxed dispatcher
   commits with that message and pushes the branch to the issue's review ref. A tree edited
   with no message file refuses `commit_message_absent` and is left untouched; the commit meets

@@ -515,3 +515,13 @@ Codex implementer dispatch that edits, gates green in the session and reaches a 
 commit through the harness, **has not been recorded**. Until that dispatch's id is on #405,
 what is written here is a design that unit tests hold up, not a route that has carried a
 piece of work.
+
+The first attempt at that evidence ran as `d-20260818-185929-ae5491` and proved the commit
+half — the session wrote `.dispatch-commit-message`, ran no git command, and the harness
+committed `d9b9dab` and pushed it — while the gate half died one root short:
+`check-machine-b` joined `just check` on 2026-08-13, a week after the root set was
+measured, and `ansible-playbook --syntax-check` wants `~/.ansible/tmp`. The completed root
+list (`~/.cache/uv`, `~/.ansible/tmp`, `~/.cache/ansible-lint`, the last derived from the
+linter's own source rather than measured) is what the next dispatch tests; `~/.cargo`
+stays ungranted on the 2026-08-06 warm-registry measurement, which that dispatch's run of
+`check-rust` re-proves or refutes.
