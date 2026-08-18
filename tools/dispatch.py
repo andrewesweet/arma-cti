@@ -2880,7 +2880,7 @@ def reuse_preflight_refusal(tree: Path) -> Refusal | None:
 
 
 def preflight_assertion(identity: Identity) -> str:
-    """The line every dispatched brief carries once the dispatcher has run the pre-flight.
+    """State in the brief what the dispatcher's pre-flight found, and that the dispatcher ran it.
 
     #373's second criterion: the seat must know the tree's state was asserted and by
     whom, because a seat that believes its tree unchecked re-runs the check itself — and
@@ -3603,18 +3603,14 @@ def plan_dispatch(
     # record directory answers it — a record with no `result.json` is live, or dead
     # without having written one — and this rung sits directly below the existence check
     # because both are properties of the assigned tree rather than of the request (#308).
+    # #373's pre-flight joins it as the second tree-state rung, ordered after occupancy
+    # because a live holder is the more actionable of two findings about the same tree:
+    # reuse entered a tree no cleanliness check had ever run, and the check cannot live
+    # in the seat, whose permissions inside the tree are a per-dispatch fact
+    # (`reuse_preflight_refusal` carries the full reasoning).
     refusal = _from_stop(
         dispatch_stop.occupancy_refusal(worktree, Path(args.dispatch_dir).expanduser())
-    )
-    if refusal is not None:
-        return None, "", refusal
-
-    # #373: the pre-flight the seat could not be relied on to run — or, in some trees, to
-    # be allowed to run. `reuse_preflight_refusal` carries the reasoning; the rung sits
-    # with the other tree-state rungs because it is a property of the assigned tree
-    # rather than of the request, and below occupancy because a live holder is the more
-    # actionable of two findings about the same tree.
-    refusal = reuse_preflight_refusal(worktree)
+    ) or reuse_preflight_refusal(worktree)
     if refusal is not None:
         return None, "", refusal
 
