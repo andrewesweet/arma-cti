@@ -36,6 +36,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   its meaning survived the move onto the new base — the gate's tests at landing are what catch
   that difference, and they still run.
 
+
+- **A gate landing whose authors span every registry lane clears as
+  `lane_exhausted` rather than refusing forever (#416, ADR-0073 Amendment A1).**
+  The cross-lane rung #406 landed had no answer for a branch whose potential-author
+  set covers every lane: the admissible reviewer-lane set is empty, so no dispatch
+  could ever satisfy it and the landing refused permanently — #405 sat green at the
+  gate and unlandable, because the project had deliberately spread its work across
+  all three lanes. Where every lane the registry carries is a lane the issue's
+  records place on the work, the requirement now degrades to ADR-0071 ruling 4's
+  own different-profile rule — already enforced one rung up, so the fallback holds
+  by construction — and the landing records the degradation in its own key:
+  `gate_review=lane_exhausted`, beside the reviewer lane and the author lanes, so a
+  reader sees that the stronger check could not run and what ran instead.
+  Exhaustion is the only trigger, derived at landing time from
+  `tools/dispatch.py`'s registry and the issue's records and never declared by a
+  caller, so a lane joining or leaving the registry moves it in both directions;
+  every landing with a cross-lane reviewer still available refuses
+  `review_same_lane` exactly as before.
+
 - **A renamed profile's old name resolves for reading dispatch records, and still never
   dispatches (#413).** Renaming a profile used to strand every branch authored under the old
   name: `--reviewing <old name>` refused `unknown_reviewed_profile` against the registry,

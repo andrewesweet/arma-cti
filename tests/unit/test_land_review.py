@@ -24,6 +24,8 @@ from conftest import load_tool
 if TYPE_CHECKING:
     from pathlib import Path
 
+    import pytest
+
 land_review = load_tool("land_review")
 review_loop = load_tool("review_loop")
 review_exchange = load_tool("review_exchange")
@@ -1435,3 +1437,125 @@ def test_a_gate_landing_is_not_exemptible_by_the_review_exemption_table(tmp_path
     assert outcome.refusal is None
     assert "review=exempt" not in outcome.cleared
     assert any(line.startswith("gate_review=cross_lane") for line in outcome.cleared)
+
+
+# ------------- #416: exhaustion degrades the cross-lane rule rather than refusing forever
+
+
+def _authored(profile: str, dispatch_id: str) -> tuple[str, str, str]:
+    """One authoring record as `records=` takes it, on the profile and id named."""
+    return (
+        dispatch_id,
+        "dispatch.json",
+        json.dumps(
+            {
+                "seat": "implementer",
+                "issue": ISSUE,
+                "profile": profile,
+                "dispatch_id": dispatch_id,
+            }
+        ),
+    )
+
+
+def test_an_exhausted_gate_landing_degrades_to_the_different_profile_rule(
+    tmp_path: Path,
+) -> None:
+    """#405's state: the records place a profile on every lane, so no reviewer lane is free.
+
+    The cross-lane predicate cannot be satisfied by any dispatch, and the fallback is
+    ruling 4's own different-profile rule — already enforced one rung up, so an arrangement
+    that reaches the cross-lane rung holds a different-profile verdict by construction. What
+    the landing records is the degradation itself: `gate_review=lane_exhausted` beside the
+    reviewer lane and the author lanes, in its own key rather than by omission (ADR-0073
+    Amendment A1).
+    """
+    outcome = _gate_rung(
+        _stage(
+            tmp_path,
+            records=(
+                _authored("zai-glm53-max", "d-author-2"),
+                _authored("codex-sol-high", "d-author-3"),
+            ),
+        )
+    )
+
+    assert outcome.refusal is None
+    assert (
+        f"gate_review=lane_exhausted reviewer_lane=codex"
+        f" author_lanes=claude-native zai codex gate_paths={GATE_PATH}" in outcome.cleared
+    )
+    assert land_review.LANE_EXHAUSTED_LIMIT in outcome.cleared
+
+
+def test_exhaustion_degrades_to_ruling_4_not_to_nothing(tmp_path: Path) -> None:
+    """The fallback rule still refuses the proposer approving itself.
+
+    A degradation to the different-profile rule is a degradation to a rule, and the same
+    verdict this rung would refuse on profile grounds is refused before the lane question
+    is ever reached — so exhaustion cannot be read as the cross-lane predicate turning off.
+    """
+    outcome = _gate_rung(
+        _stage(
+            tmp_path,
+            records=(
+                _authored("zai-glm53-max", "d-author-2"),
+                _authored(REVIEWER, "d-author-3"),
+            ),
+        )
+    )
+
+    assert _kind(outcome) == "review_same_profile"
+
+
+def test_a_gate_landing_with_a_lane_still_free_refuses_unchanged(tmp_path: Path) -> None:
+    """Two lanes authored, one free: exhaustion does not fire and the refusal stands.
+
+    The degradation is bounded by derivation — it fires only where no admissible reviewer
+    lane exists — so a landing that could have dispatched its review cross-lane refuses
+    `review_same_lane` exactly as it did before #416.
+    """
+    outcome = _gate_rung(
+        _stage(tmp_path, records=(_authored("zai-glm53-max", "d-author-2"),)),
+        reviewer=CLAUDE_REVIEWER,
+        reviewer_lane="claude-native",
+    )
+
+    assert _kind(outcome) == "review_same_lane"
+    assert "author_lanes=claude-native zai" in _text(outcome)
+    assert "lane_exhausted" not in _text(outcome)
+
+
+def test_exhaustion_follows_the_registry_rather_than_any_record_of_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The boundary where a lane leaves the registry, both directions, live at landing time.
+
+    One staging, one verdict, three registries: under the registry as it stands the landing
+    refuses `review_same_lane` (a codex reviewer was available); under one that has lost
+    `codex` it clears as exhausted; under one that has gained a lane it refuses again. The
+    comparison is computed from `LANES` at every landing, so a registry that moves moves the
+    degradation with it — never a flag, never a record of a past exhaustion (#416).
+    """
+    staged = _stage(tmp_path, records=(_authored("zai-glm53-max", "d-author-2"),))
+    full = _gate_rung(staged, reviewer=CLAUDE_REVIEWER, reviewer_lane="claude-native")
+
+    assert _kind(full) == "review_same_lane"
+
+    lanes = land_review.dispatch.LANES
+    shrunk = {name: lane for name, lane in lanes.items() if name != "codex"}
+    monkeypatch.setattr(land_review.dispatch, "LANES", shrunk)
+    without_codex = _gate_rung(staged, reviewer=CLAUDE_REVIEWER, reviewer_lane="claude-native")
+
+    assert without_codex.refusal is None
+    assert (
+        f"gate_review=lane_exhausted reviewer_lane=claude-native"
+        f" author_lanes=claude-native zai gate_paths={GATE_PATH}" in without_codex.cleared
+    )
+
+    grown = dict(lanes)
+    grown["a-fourth-lane"] = lanes["zai"]
+    monkeypatch.setattr(land_review.dispatch, "LANES", grown)
+    regrown = _gate_rung(staged, reviewer=CLAUDE_REVIEWER, reviewer_lane="claude-native")
+
+    assert _kind(regrown) == "review_same_lane"

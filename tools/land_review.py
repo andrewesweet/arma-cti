@@ -74,6 +74,18 @@ cannot place at either end — and a gate landing is also **not** exemptible by
 `config/review-exemptions.json`, which is why `gate_paths` is decided before the
 exemption table is consulted rather than after.
 
+**One arrangement degrades rather than refuses (ADR-0073 Amendment A1, #416).**
+Where the author lanes are every lane the registry carries, no admissible reviewer
+lane exists — the refusal would be permanent, and #405 sat in exactly that state,
+green at the gate and unlandable, because the project had deliberately spread its
+work across all three lanes. The requirement then falls back to ruling 4's own
+different-profile rule — already enforced one rung up, so the fallback holds by
+construction — and the landing records it as `gate_review=lane_exhausted` beside
+the reviewer lane and the author lanes, in its own key rather than by omission.
+Exhaustion is the only trigger, derived from the registry and the records at
+landing time and never declared by a caller; every case with a cross-lane reviewer
+available refuses exactly as before.
+
 ## The loop record, and whose reader and writer these are
 
 `<review_root>/<issue>/loop.json` is #333's format and #333's reader: this module
@@ -150,6 +162,18 @@ CROSS_LANE_LIMIT: Final = (
     " dispatch record or a declaration places on this issue, whether or not that run wrote a"
     " line — so this rung over-excludes by construction and a cleared cross-lane review is"
     " not evidence that the excluded lanes authored anything"
+)
+
+# The line every exhausted clearance carries beside it (ADR-0073 Amendment A1, #416). The
+# degradation is the record's own words rather than a fact a lander has to know: what ran
+# instead is ruling 4's different-profile rule, and the exhaustion was derived here from the
+# registry and the records — never declared by whoever is landing.
+LANE_EXHAUSTED_LIMIT: Final = (
+    "limit=every lane the registry carries is a lane the records place on this issue, so no"
+    " cross-lane reviewer exists to dispatch — the requirement degrades to ruling 4's own"
+    " different-profile rule, which the rung above already enforced on this landing, and the"
+    " exhaustion is derived at landing time from `tools/dispatch.py`'s registry and the"
+    " issue's records, never declared by a caller (ADR-0073 Amendment A1, #416)"
 )
 
 # Printed beside every clearance that read a loop, for the reason `review_exchange`
@@ -332,6 +356,21 @@ def _cross_lane_refusal(
     **lane**". Same-provider models share failure modes, which is ruling 4's own argument for
     never-alone; on the gates themselves it is worth one more predicate.
 
+    **Exhaustion degrades the requirement rather than refusing forever (Amendment A1, #416).**
+    Where the author lanes are every lane the registry carries, the set of admissible reviewer
+    lanes is empty and no dispatch can ever satisfy the predicate — #405 sat exactly there,
+    green at the gate and unlandable by construction, because the project had deliberately
+    spread its work across all three lanes. The requirement then falls back to ruling 4's own
+    rule, a verdict from a **different profile** than any author, which the rung above has
+    already enforced by the time this one runs — so the fallback clears rather than refuses,
+    and the clearance says what happened in its own key (`gate_review=lane_exhausted`) rather
+    than by omission, beside the reviewer lane and the author lanes. A rung that silently
+    downgrades is worse than one that refuses; a rung that refuses forever is worse than both.
+    Exhaustion is the only trigger, it is computed here from the registry and the records at
+    landing time — never declared by a caller, never cached in a record — and the refusal
+    stands unchanged for every case where a cross-lane reviewer *is* available. The boundary
+    follows: a lane joining or leaving the registry moves it, because the comparison is live.
+
     **Both lanes are placed against `tools/dispatch.py`'s registry, and a lane it cannot place
     refuses.** The reviewer's lane is a string on a record — `parse_verdict` requires it to be
     a string and not to be a registered one — and an author's lane is derived from the
@@ -341,7 +380,10 @@ def _cross_lane_refusal(
     (#41). A retired name places through the successor a rename left (#413,
     `dispatch.resolved_profile`) — re-registering the dead name is the one remedy the old
     refusal named that a rename exists to make impossible — and a name whose chain resolves
-    nowhere still refuses here.
+    nowhere still refuses here. An author whose lane has left the registry still places (the
+    profile is registered; the lane is its attribute), and an author lane no reviewer can be
+    on removes nothing from the admissible set — so it cannot create exhaustion, only witness
+    it.
 
     The author set is `Authorship.potential`, which is a *potential*-author set: over-excluding
     costs a resolution step and under-excluding costs the invariant, the trade `dispatch`
@@ -370,6 +412,18 @@ def _cross_lane_refusal(
     author_lanes = tuple(
         dict.fromkeys(dispatch.resolved_profile(profile).lane for profile in authorship.potential)
     )
+    # Above the same-lane refusal because exhaustion subsumes it: a registered reviewer lane
+    # is an author lane wherever every registered lane is one, so the same-lane branch below
+    # is unreachable exactly when this fires. A clearance, not a refusal, and the author lanes
+    # are printed beside the reviewer's so a reader sees the set that exhausted (#416).
+    if frozenset(dispatch.LANES).issubset(author_lanes):
+        return (
+            (
+                f"gate_review=lane_exhausted reviewer_lane={reviewer_lane}"
+                f" author_lanes={' '.join(author_lanes)} gate_paths={' '.join(gate_paths)}"
+            ),
+            LANE_EXHAUSTED_LIMIT,
+        )
     if reviewer_lane in author_lanes:
         shared = tuple(
             profile

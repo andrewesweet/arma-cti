@@ -82,6 +82,37 @@ exists to forbid. Its neighbours `tools/review_loop.py` and `tools/review_exchan
 join: they are records and readers rather than the rung, and the coverage question generally
 is the one ADR-0071 filed and this decision does not answer.
 
+*(Amendment A1, 2026-08-18, #416 — the human's instruction carried by that issue, whose body
+names the degradation, its visibility and exhaustion as the only trigger; the wording of this
+note is the implementer's rendering of it, posted to the issue before anything landed, and the
+human may amend it there.)* *The rule this record states had no answer for the branch whose
+authors span every lane: the admissible reviewer-lane set is then empty, no dispatch can ever
+satisfy the predicate, and the landing refuses forever. #405 sat in exactly that state — green
+at the gate and unlandable by construction — because the project had deliberately spread its
+work across all three lanes, which is the outcome this decision's own retirement of the
+provenance bar exists to enable; the rung punished the goal rather than a breach of it.*
+
+***The requirement degrades rather than refusing forever.** Where every lane the registry
+carries is a lane the issue's records place on the work, the cross-lane predicate falls back
+to ruling 4's own rule — a verdict from a **different profile** than any author, which is
+never empty while more than one profile exists — and the rung has already enforced that rule
+by the time it reaches the lane question, so the fallback holds by construction. The landing
+records the degradation in its own key rather than by omission: `gate_review=lane_exhausted`,
+printed beside the reviewer lane and the author lanes, so a reader sees that the stronger
+check could not run and what ran instead. A rung that silently downgrades is worse than one
+that refuses; a rung that refuses forever is worse than both.*
+
+***Exhaustion is the only trigger, and it is derived, never declared.** The comparison is
+computed at landing time from `tools/dispatch.py`'s registry and the issue's dispatch records
+and declared authorship — no flag, no exemption entry, no record of a past exhaustion — so a
+lane joining or leaving the registry moves the degradation with it, in both directions: a
+landing that cleared as exhausted refuses again the day a fourth lane registers, and a
+landing that refused clears the day a lane retires with its authors' records still in place.
+Every case where a cross-lane reviewer **is** available refuses `review_same_lane` exactly as
+this record first stated it. This is not the escape hatch the cost section below refused: an
+escape hatch is a caller's declaration, and this fires only on an empty set that no caller
+can write into being.*
+
 ## Why
 
 The bar was provenance, not protection, and the record already said so. Class 6's own remedy
@@ -123,7 +154,11 @@ tools upstream.
 a breaker trip on the third stops gate work until it clears. That is a real availability cost
 and it is accepted rather than mitigated here; the mitigation, if one is wanted, is a fourth
 lane rather than an escape hatch, because an escape hatch on this class is the self-exemption
-the class forbids.
+the class forbids. *(Amendment A1 names the floor this paragraph stopped short of: with three
+lanes and three excluded there is no lane left to trip, and the answer there is the derived
+degradation above, not a refusal with no end. A fourth lane remains the real mitigation — it
+re-arms the refusal — and the degradation remains the opposite of an escape hatch, because it
+fires on an empty set no caller can declare into being.)*
 
 **No routing class refuses a landing any more.** Class 6 was the last row that both refused and
 carried landing prefixes, so `routing_policy.enforcing_match` returns `None` for every input
