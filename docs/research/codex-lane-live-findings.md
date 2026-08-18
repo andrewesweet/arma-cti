@@ -434,7 +434,12 @@ before `just land` could run (#265).
 - Not that the six published reasoning levels are six distinct arms. Two adjacent levels
   were shown distinct; the other four pairs were not tested.
 
-## 10. The #265 ceiling: the lane commits, and cannot gate
+## 10. The #265 ceiling, and how #405 lifted it
+
+*As first written this section recorded a ceiling: the lane commits and cannot gate. §10.1
+and §10.2 below correct its cause and record what replaced it. The observations here are
+unchanged and none of them moved — what changed is the reading, and the reading is where
+the answer was hiding, so the original is kept rather than rewritten.*
 
 The widening in §8 buys the commit and not the gate, and both root-set families a
 `writable_roots` list admits have now been live-probed to ground that "not" in a
@@ -466,15 +471,47 @@ the carve-out holds its `index.lock` read-only (§8). The gate needs that same d
 *not* named, else the injected `.git` defeats libgit2 (§8's strace). No `writable_roots`
 set satisfies both, and the one escape from the sandbox —
 `--dangerously-bypass-approvals-and-sandbox` — was put to the human on #221 and declined.
-The four-root set therefore stands as the known-good commit baseline, and the gate is a
-recorded ceiling on this lane.
 
-The consequence is stated once here rather than repeated as a footnote. The Codex lane
-reaches its own commit under the sandbox but cannot run `just fast` through `cog check`, so
-a Codex dispatch that finishes its work lands by a hand finish — a `zai` or Claude-side
-agent re-gating and landing it — rather than unaided. The admission bar judges a foreign
-route on ten issues it landed unaided, and a route that cannot gate cannot land unaided, so
-no Codex route carries an admission assessment until the ceiling moves. The ceiling moves
-only by a change outside `writable_roots`: a sandbox mechanism dispatch.py does not expose
-today, or a worktree layout whose git metadata does not live under `.git/`. Both are larger
-than #265 and belong to their own issue when one is opened.
+### 10.1 The cause, corrected: it is a deliberate Codex policy (#405, 2026-08-18)
+
+Three further probes replaced the causal account above without moving a single one of its
+observations. What was read as an accident of mount bookkeeping is policy: **Codex enforces
+`<root>/.git` as a read-only path inside every writable root**, protecting git history from
+the agent. Where the named root *is* a git directory there is no `.git` to protect, so one
+is created and libgit2 opens it instead of the real layout.
+
+- **Standalone clone, its `.git` named** (`d-20260818-080724-50f2be`): commit green,
+  `cog check` red on `could not find repository`, `.git/.git` present. This removed this
+  project's linked-worktree layout as the cause — the failure did not move.
+- **`--separate-git-dir <cwd>/_gitdir`, no git directory named** (hand-run, `issue-405b`):
+  `cog check` green with `No errored commits` and no injection anywhere; `git commit` red on
+  `Unable to create '…/_gitdir/index.lock': Read-only file system`. So the carve-out is not
+  keyed on the *name* `.git` either — Codex discovers the repository's git directory.
+- **`<gitdir>/.git` pre-created as a symlink to `.`** (`d-20260818-111104-5138a7`): the
+  sandbox refused to start, `cannot enforce sandbox read-only path … because it crosses
+  writable symlink`, which is the policy stating itself.
+
+Six arrangements are now measured and refuted — linked worktree, standalone clone,
+`--separate-git-dir` in both directions, parent-naming, and symlink pre-creation — and the
+list is closed rather than open. A seventh arrangement is not worth a dispatch.
+
+### 10.2 The consequence: the session gates, the harness commits
+
+The second probe is the important one, and it is half green: **a Codex session whose git
+directory is not a writable root runs the gate.** What it cannot do is commit. That makes
+the answer a division of labour rather than a sandbox trick, and #405 built it: the session
+edits and gates, writes its commit message to `.dispatch-commit-message` in the worktree
+root, and the dispatcher — which is not sandboxed — commits with that message and pushes the
+branch after the session exits. `tools/dispatch.py`'s `harness_finish` is that half;
+`_codex_sandbox_argv` carries the measurements; a tree edited with no message file refuses
+`commit_message_absent` rather than taking a message the harness invented.
+
+Under that shape a Codex implementer runs its own gate, which is the binary capability
+rule's whole demand, so #265's ceiling is lifted and the hand-finished landing by *another
+model* is gone. Two things are deliberately not claimed. **Landing is still the
+orchestrator's** — `just land` writes the git directory and the main checkout, neither
+reachable from inside the sandbox — and the end-to-end evidence #405 asks for, one real
+Codex implementer dispatch that edits, gates green in the session and reaches a pushed
+commit through the harness, **has not been recorded**. Until that dispatch's id is on #405,
+what is written here is a design that unit tests hold up, not a route that has carried a
+piece of work.

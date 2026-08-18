@@ -373,68 +373,86 @@ runs are worth keeping:
 
 The lane does not read `.claude/settings.json`'s allowlist at all. `tools/dispatch.py` maps
 the permission mode to a sandbox policy, and `acceptEdits` is `--sandbox workspace-write`
-plus, on that mode only, three writable roots and network access. Every command the session
-runs inherits all of it; there is no per-command list to consult.
+plus, on that mode only, one writable root — `~/.cache/uv` — and network access. Every
+command the session runs inherits all of it; there is no per-command list to consult.
 
-What that buys, measured rather than inferred, over four dispatches and three probes:
+What that buys, measured rather than inferred, over five dispatches and four probes:
 
 - Plain `workspace-write` grants the session's own worktree and nothing above it. `git
-  status`, `git log` and `git diff` worked; `git add` did not, because a linked worktree's
-  index lives under the main checkout's `.git`.
-- Codex refuses a write under a `.git` directory unless **that exact directory** is a
-  writable root. Naming an ancestor does not lift it for a nested one — with `<main>/.git`
-  granted, `<main>/.git/topA` was created and
-  `<main>/.git/worktrees/<name>/subB` was refused in the same command. Both directories are
-  therefore derived from git and granted.
+  status`, `git log` and `git diff` worked; `git add` did not.
+- The gate runs. `cog check` returns `No errored commits` and `just fast` executes, which
+  is the capability that matters, because a profile that cannot run its own gate is not an
+  implementer.
 - The gate additionally needs `~/.cache/uv`, where `uv` takes a lock before any test runs.
   `~/.cargo` looked as likely and was measured unnecessary, so it is not granted.
-- `network_access` defaults off and `just land` fetches and pushes, so it is enabled.
+- `network_access` defaults off while the gate reads `gh` and `uv` may fetch, so it is
+  enabled.
 
 Read-only seats keep the sandbox they always had, and
 `--dangerously-bypass-approvals-and-sandbox` was put to the human, declined, and is unused.
 
-**The lane does not reach a landing, and the reason is a recorded ceiling rather than a fix
-still owed.** The two capabilities the ruling asked for are exclusive on this lane, isolated
-by running `cog check` under each root set in the same worktree at the same commit:
+**The session cannot commit, and that is Codex's policy rather than a gap in this
+configuration.** Codex enforces `<root>/.git` as a read-only path inside every writable
+root: it is protecting git history from the agent. Where the named root *is* a git
+directory there is no `.git` to protect, so the sandbox creates one, and libgit2 — which
+`cog` reads the repository through — opens that empty directory instead of the real layout.
+Naming a git directory therefore buys the commit and costs the gate, in that order and
+always. The sandbox states the policy in its own words when the path it wants to enforce is
+already occupied (`d-20260818-111104-5138a7`, a symlink pre-created at that path):
 
-| writable roots | `git add` / `git commit` | `cog check`, the gate's first step |
+```
+error building bubblewrap command: Fatal error: cannot enforce sandbox read-only path
+…/issue-405c.gitdir/.git because it crosses writable symlink …/issue-405c.gitdir/.git
+```
+
+Six arrangements are measured and refuted, and the list is closed rather than open — a
+seventh is not worth a dispatch:
+
+| arrangement | `git commit` | `cog check`, the gate's first step |
 |---|---|---|
-| main checkout, `<main>/.git`, `~/.cache/uv` | refused, `index.lock` read-only | `No errored commits` |
-| the same plus `<main>/.git/worktrees/<name>` | exit 0, no escalation | `failed to open repository … could not find repository at '<main>/.git/worktrees/<name>/'` |
-| the four-root set with `<name>` replaced by its parent `<main>/.git/worktrees` | refused, `index.lock` read-only (`d-20260808-075346-f27564`) | not reached |
+| linked worktree; main checkout, `<main>/.git`, `~/.cache/uv` writable | refused, `index.lock` read-only | `No errored commits` |
+| the same plus `<main>/.git/worktrees/<name>` | exit 0, no escalation | `could not find repository at '<main>/.git/worktrees/<name>/'` |
+| the same with `<name>` replaced by its parent `<main>/.git/worktrees` | refused, `index.lock` read-only (`d-20260808-075346-f27564`) | not reached |
+| standalone clone, its `.git` writable (`d-20260818-080724-50f2be`) | exit 0 | `could not find repository`, `.git/.git` present |
+| `--separate-git-dir` to `<cwd>/_gitdir`, no git directory writable (`issue-405b`) | refused, `_gitdir/index.lock` read-only | `No errored commits` |
+| `<gitdir>/.git` pre-created as a symlink to `.` (`d-20260818-111104-5138a7`) | not reached | the sandbox refused to start |
 
-`cog` reads the repository through libgit2, and granting the per-worktree git directory as
-a *writable* root is what stops libgit2 opening it — the same directory it opens without
-complaint outside the sandbox, and under the three-root set. The mechanism is measured: a
-read-only strace over `cog check` in the sandbox (`d-20260807-222221-1a2c7e`) found the
-sandbox creates an empty `<main>/.git/worktrees/<name>/.git` directory (mode 0555) — a mount
-point injected for that writable root, where no real git layout puts a `.git` — which libgit2
-stats during discovery, mistakes for a repository, and reports missing when its `commondir`
-and `HEAD` are absent. The refusals read `Read-only file system` (EROFS), not the `EACCES` a
-Landlock denial produces, so the sandbox is mount-based (Codex bundles `bwrap`) rather than
-Landlock-based; #265's "Landlock composition" first-suspect is refuted by its own recorded
-evidence. The parent-grant alternative — the third row — is refuted too: it is the set
-`d12a27f` shipped, and the carve-out that holds `.git` read-only does not confer write on a
-nested directory merely by naming an ancestor.
+The fifth row is the one that settles the cause. The git directory was not called `.git`
+and its `index.lock` was read-only all the same, so the carve-out is keyed on the
+repository Codex *discovers* rather than on a name. The second row's mechanism is measured
+too: a read-only strace over `cog check` in the sandbox (`d-20260807-222221-1a2c7e`) found
+an empty `<main>/.git/worktrees/<name>/.git` directory (mode 0555) — the read-only mount
+point for that writable root — which libgit2 stats during discovery, mistakes for a
+repository, and reports missing when its `commondir` and `HEAD` are absent. The refusals
+read `Read-only file system` (EROFS), not the `EACCES` a Landlock denial produces, so the
+sandbox is mount-based (Codex bundles `bwrap`) rather than Landlock-based; #265's "Landlock
+composition" first-suspect is refuted by its own recorded evidence.
 
-So the dichotomy is structural: a commit needs the exact per-worktree directory named, else
-its `index.lock` is read-only; the gate needs that same directory not named, else the injected
-`.git` defeats libgit2. No `writable_roots` set satisfies both, and
-`--dangerously-bypass-approvals-and-sandbox` was declined on #221. The four-root set stands as
-the known-good commit baseline, the gate is a recorded ceiling, and a Codex dispatch that
-finishes its work lands by a hand finish rather than unaided. Dispatch `d-20260806-172045-9a0a0e`
-is the end-to-end attempt under the four-root set: it committed its own work at `fb093fe` under
-the sandbox with no escalation, stopped on that red as it was told to, and did not land. The
-full finding is §10 of `docs/research/codex-lane-live-findings.md`, whose consequence is
-recorded there against the admission bar that ADR-0071 ruling 6 withdrew and #328 dropped
-from the code; what the
-ceiling now blocks is stated by the ADR instead — under ruling 1's binary rule a profile that
-cannot run its own gate is not an implementer, so **lifting this ceiling is a blocking
-prerequisite** for `codex-luna-max` heading the implementer seat's preference list, and until
-it lifts that list resolves past it. Gating Codex's output elsewhere was considered and
-rejected: "capable of implementing but not of gating" is precisely the ladder ruling 1
-withdrew, arrived at quietly. This section implements #259's ruling and carries #265 as its
-recorded ceiling rather than stretching #259 to cover it.
+**So the session gates and the harness commits** (#405). The session edits in its worktree,
+runs `just check` and `just fast` there as any implementer does, and writes its Conventional
+Commits message to `.dispatch-commit-message` in the worktree root —
+`dispatch.CODEX_COMMIT_MESSAGE`, named once in code and stated to the session in the brief
+the dispatcher appends for this lane. After the session exits, `dispatch.harness_finish`
+runs on the unsandboxed side: it moves that message beside the dispatch record, commits
+everything in the tree with it, and pushes the branch to the issue's review ref through
+`review_exchange.exchange`. A tree the session edited with no message file in it refuses
+`commit_message_absent` and is left untouched, because a commit nobody wrote a message for
+is worse than none. The commit is subject to the repository's own `commit-msg` hook, so a
+Codex session's message meets `cog verify` exactly as any other session's does, and
+authorship stays what it was: the box's git identity on the commit, the dispatch record for
+the profile that did the work.
+
+This is not a workaround for the sandbox — it accepts the sandbox's policy and puts the
+commit where this project already performs unsandboxed git acts. It also ends the
+Claude-side finisher that #265 forced: the ceiling is lifted, `SEAT_PROFILE_BLOCKS` ships
+empty, and `codex-luna-max` heads the implementer seat's preference list for real. What is
+*not* claimed: **landing is still the orchestrator's**, on this lane as on the day the
+sandbox was first widened — `just land` writes the git directory and the main checkout, and
+neither is reachable from inside the sandbox. And the end-to-end evidence #405 asks for —
+one real Codex implementer dispatch that edits, gates green inside the session and reaches a
+pushed commit through the harness — **has not been recorded yet**; the design is landed and
+unit-proven, and until that dispatch's id is on #405 this paragraph is describing something
+built rather than something demonstrated.
 
 ### Where they are not comparable
 

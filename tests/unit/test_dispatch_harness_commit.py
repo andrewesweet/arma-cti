@@ -1,0 +1,213 @@
+"""The session gates and the harness commits, which is how Codex becomes an implementer (#405).
+
+Codex's sandbox enforces `<root>/.git` as a read-only path inside every writable root — it is
+protecting git history from the agent, deliberately — so a session can commit only if its git
+directory is a writable root, and naming one makes the sandbox create the `.git` it means to
+protect, which libgit2 then opens instead of the real layout. Six arrangements were measured
+against that and none escaped it; the seventh reading is that there is nothing to escape. With
+no git directory named, `cog check` returns `No errored commits`: the session runs the gate,
+which is the whole of the binary capability rule's demand, and the commit belongs to the
+dispatcher, which is not sandboxed.
+
+So the claims here are about the seam between the two halves — `CODEX_COMMIT_MESSAGE` — and
+about the four states `harness_finish` can end in. They are made against real git repositories
+rather than a mocked `git`, because every one of them is a claim about what git did: a commit
+that exists, a tree left untouched, a `commit-msg` hook that refused. A stubbed git would let
+all four pass over code that never committed anything.
+
+The push half is `review_exchange.exchange`'s and is asserted through a real remote, so the
+"pushed commit" the acceptance evidence asks for is a fact about a ref rather than about a
+call. `harness_commits` — which dispatches decide by — is asserted per lane and per permission
+mode, because a predicate that answered "yes" on the Claude family would have the harness
+committing over a session that commits its own work.
+
+The brief's half of the seam is claimed in `test_dispatch_seat.py` rather than here, with the
+rest of the planning ladder: reaching it means planning a whole dispatch, and a module that
+executes the ladder is a module whose mutation sample is planted across code these tests
+cannot pin.
+"""
+
+from __future__ import annotations
+
+import subprocess
+from typing import TYPE_CHECKING
+
+from conftest import load_tool
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+dispatch = load_tool("dispatch")
+
+MESSAGE = "feat(x): a session's own message\n\nrefs #405\n"
+
+
+def _git(*args: str, cwd: Path) -> str:
+    """Run one git command and hand back stdout, failing the test on git's own error."""
+    done = subprocess.run(  # noqa: S603
+        ["git", *args],  # noqa: S607
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    return done.stdout.strip()
+
+
+def _repository(path: Path, *, bare: bool = False) -> Path:
+    """Make a git repository the harness can really commit into."""
+    path.mkdir(parents=True)
+    _git("init", "-q", "-b", "main", *(("--bare",) if bare else ()), cwd=path)
+    if not bare:
+        _git("config", "user.email", "t@example.invalid", cwd=path)
+        _git("config", "user.name", "t", cwd=path)
+    return path
+
+
+def _tree_with_a_remote(tmp_path: Path) -> tuple[Path, Path]:
+    """Build a worktree with one commit and an `origin` a push can really reach."""
+    remote = _repository(tmp_path / "remote.git", bare=True)
+    tree = _repository(tmp_path / "tree")
+    (tree / "README.md").write_text("t\n", encoding="utf-8")
+    _git("add", "-A", cwd=tree)
+    _git("commit", "-qm", "chore: base", cwd=tree)
+    _git("remote", "add", "origin", str(remote), cwd=tree)
+    return tree, remote
+
+
+def _record(tmp_path: Path) -> Path:
+    """Make the dispatch record directory the message is kept beside."""
+    record = tmp_path / "record"
+    record.mkdir(parents=True, exist_ok=True)
+    return record
+
+
+def _edited(tree: Path, message: str | None = MESSAGE) -> None:
+    """Stage the tree the way a sandboxed session leaves it: an edit, and maybe a message."""
+    (tree / "edited.txt").write_text("what the session wrote\n", encoding="utf-8")
+    if message is not None:
+        (tree / dispatch.CODEX_COMMIT_MESSAGE).write_text(message, encoding="utf-8")
+
+
+# ------------------------------------------------------- which dispatches this applies to
+
+
+def test_only_a_writable_codex_sandbox_hands_its_commit_to_the_harness() -> None:
+    # The whole reason the harness commits is that this one sandbox will not let the
+    # session do it. Every other lane's session commits its own work, and a harness that
+    # committed over it would be committing whatever that session had not finished.
+    assert dispatch.harness_commits(dispatch.LANES["codex"], "acceptEdits") is True
+    assert dispatch.harness_commits(dispatch.LANES["claude-native"], "acceptEdits") is False
+    assert dispatch.harness_commits(dispatch.LANES["zai"], "acceptEdits") is False
+
+
+def test_a_read_only_codex_seat_has_nothing_for_the_harness_to_commit() -> None:
+    # `plan` and `default` are the read-only branch of the sandbox map, which is what the
+    # recon and review seats force. Nothing was edited, so nothing is committed — and the
+    # unrecognised mode falls to the same read-only default rather than to the writable one.
+    for mode in ("plan", "default", "read-only-ish-nonsense"):
+        assert dispatch.harness_commits(dispatch.LANES["codex"], mode) is False
+
+
+# ------------------------------------------------------------------ the four end states
+
+
+def test_the_harness_commits_what_the_session_edited_with_the_message_it_left(
+    tmp_path: Path,
+) -> None:
+    tree, remote = _tree_with_a_remote(tmp_path)
+    record = _record(tmp_path)
+    _edited(tree)
+    lines, code = dispatch.harness_finish(tree, 405, record)
+    assert code == 0, lines
+    assert "harness_commit=committed" in lines
+    # The commit is real, carries the session's message verbatim, and holds its edit.
+    assert _git("log", "-1", "--pretty=%B", cwd=tree).strip() == MESSAGE.strip()
+    assert _git("show", "--name-only", "--pretty=", "HEAD", cwd=tree) == "edited.txt"
+    # And the message file itself is never in it: it is moved to the record before anything
+    # is staged, so a reader of the run's evidence sees what the session asked for.
+    assert not (tree / dispatch.CODEX_COMMIT_MESSAGE).exists()
+    assert (record / "commit-message.txt").read_text(encoding="utf-8") == MESSAGE
+    # The push is the exchange's, on the ref the review loop already reads, and the remote
+    # really resolves this exact commit.
+    head = _git("rev-parse", "HEAD", cwd=tree)
+    assert f"commit={head}" in lines
+    assert _git("rev-parse", "refs/heads/issue-405", cwd=remote) == head
+
+
+def test_a_tree_the_session_left_clean_is_not_a_commit_and_not_a_refusal(
+    tmp_path: Path,
+) -> None:
+    # A dispatch that read, searched or found nothing to change is a legitimate run. An
+    # empty commit invented for it would record an act nobody performed.
+    tree, remote = _tree_with_a_remote(tmp_path)
+    before = _git("rev-parse", "HEAD", cwd=tree)
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+    assert code == 0
+    assert "harness_commit=nothing_to_commit" in lines
+    assert _git("rev-parse", "HEAD", cwd=tree) == before
+    assert _git("branch", "--list", cwd=remote) == ""
+
+
+def test_edits_with_no_message_refuse_by_name_and_leave_the_tree_alone(
+    tmp_path: Path,
+) -> None:
+    # The issue's own instruction: a refusal that names the missing file beats a commit
+    # nobody wrote a message for. The edits stay exactly as the session left them, because
+    # the alternative — a message the harness made up — is unreviewable, and resetting the
+    # tree is the one thing #105 forbids.
+    tree, _remote = _tree_with_a_remote(tmp_path)
+    _edited(tree, message=None)
+    before = _git("rev-parse", "HEAD", cwd=tree)
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=commit_message_absent" in lines
+    assert f"expected={tree / dispatch.CODEX_COMMIT_MESSAGE}" in lines
+    # What was found is named, not counted: the reader has to decide whose file it is.
+    assert "untracked=?? edited.txt" in lines
+    assert _git("rev-parse", "HEAD", cwd=tree) == before
+    assert (tree / "edited.txt").exists()
+
+
+def test_a_message_that_is_only_whitespace_is_no_message(tmp_path: Path) -> None:
+    # `git commit` would refuse an empty message anyway; refusing it here is what makes the
+    # refusal name the file rather than quote git at a reader who cannot act on it.
+    tree, _remote = _tree_with_a_remote(tmp_path)
+    _edited(tree, message="   \n\n")
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=commit_message_absent" in lines
+
+
+def test_a_message_the_commit_msg_hook_refuses_arrives_as_git_failed(tmp_path: Path) -> None:
+    # The harness commit is subject to the repository's own hooks, which is the point: a
+    # session's message meets `cog verify` exactly as a Claude-side session's would. Staged
+    # with a hook that refuses everything, because what this asserts is that the hook's
+    # refusal reaches the reader with git's own words — not that `cog` is installed here.
+    tree, _remote = _tree_with_a_remote(tmp_path)
+    hook = tree / ".git" / "hooks" / "commit-msg"
+    hook.write_text("#!/bin/sh\necho 'not a conventional commit' >&2\nexit 1\n", encoding="utf-8")
+    hook.chmod(0o755)
+    _edited(tree)
+    before = _git("rev-parse", "HEAD", cwd=tree)
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=git_failed" in lines
+    assert any("not a conventional commit" in line for line in lines)
+    assert _git("rev-parse", "HEAD", cwd=tree) == before
+
+
+def test_a_push_that_does_not_land_is_the_exchanges_refusal_and_not_a_silent_success(
+    tmp_path: Path,
+) -> None:
+    # The commit is made either way — it is local work and worth keeping — but the run does
+    # not report success on a handover the reviewer cannot reach.
+    tree, remote = _tree_with_a_remote(tmp_path)
+    _git("remote", "set-url", "origin", str(tmp_path / "nowhere.git"), cwd=tree)
+    _edited(tree)
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+    assert code == dispatch.EXIT_REFUSED
+    assert "harness_commit=committed" in lines
+    assert "refusal=git_failed" in lines
+    assert _git("log", "-1", "--pretty=%B", cwd=tree).strip() == MESSAGE.strip()
+    assert _git("branch", "--list", cwd=remote) == ""
