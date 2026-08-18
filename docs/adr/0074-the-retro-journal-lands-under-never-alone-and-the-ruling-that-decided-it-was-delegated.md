@@ -3,20 +3,24 @@
 Delegated-decision: yes
 Date: 2026-08-17
 Stood-in-for: human sign-off on an amendment to a landed ADR — ADR-0071 ruling 3, whose closing
-sentence A3 strikes — and on the retro-seat wording in `AGENTS.md` (`CLAUDE.md` is the committed
+sentence A4 strikes — and on the retro-seat wording in `AGENTS.md` (`CLAUDE.md` is the committed
 symlink to it) that carries the same exception to the surface an agent reads before the skill;
 both are human sign-off gates in CLAUDE.md's list, taken on #397
 Reviewed-by-human: pending
-Supersedes: none — the decision it records is ADR-0071 amendment A3, which is marked inline in
+Supersedes: none — the decision it records is ADR-0071 amendment A4, which is marked inline in
 that file at the passage it changes and indexed in its `Amended:` header; this ADR records the
 delegation, and supersedes and amends nothing on its own account
-Claimed: 0073, after `git fetch origin` (`docs/adr/` on `origin/main` topping at 0072, at
-`be3d846`) and a scan of all 105 open issues' bodies and comments for an ADR number at or above
-0073, which returned nothing. The scan was checked against a known answer rather than trusted
-empty: the same query for 0071 or 0072 returns twenty issues. One live blind spot, recorded
-rather than papered over — #394's fix round is ruled to write an ADR-0013 record of its own and
-has not claimed a number on its thread, so it may claim 0073 concurrently. The rebase backstop
-is what catches that, per CLAUDE.md's claiming protocol
+Claimed: 0074 — originally 0073, claimed against `docs/adr/` on `origin/main` topping at 0072
+(`be3d846`), and renumbered on the review of this branch after #406 landed its own ADR-0073
+(`51c2ffe`, 2026-08-18) first: the collision the original claim's rebase backstop exists to
+catch, found late because the branch rebased over #406's landings without renumbering. The
+renumber's scan: `git fetch origin` (`docs/adr/` on `origin/main` topping at 0073) and a sweep
+of all 100 open issues' bodies and comments for an ADR number at or above 0074, which returned
+nothing. The scan was checked against a known answer rather than trusted empty: the same comment
+query for 0073 returns issue 397, and for ADR-0071 returns issue 317. One live blind spot,
+recorded rather than papered over — #394's fix round is ruled to write an ADR-0013 record of
+its own and has not claimed a number on its thread, so it may claim 0074 concurrently. The
+rebase backstop is what catches that, per CLAUDE.md's claiming protocol
 
 ## What happened
 
@@ -35,12 +39,12 @@ resolution the record does not have.
 ## Decision
 
 **Option 1: the exception stands, and never-alone applies to it.** ADR-0071 ruling 3's closing
-sentence is struck by amendment A3; the journal entry lands under ruling 4 like any other change
+sentence is struck by amendment A4; the journal entry lands under ruling 4 like any other change
 — a reviewing instance in a different session, a lander who may be the proposer — and everything
 else a retro produces is still a filed item.
 
 The alternative — a first entry on `config/review-exemptions.json` exempting the journal from
-review — is declined. Three grounds are recorded in A3 itself. A fourth, found in review and
+review — is declined. Three grounds are recorded in A4 itself. A fourth, found in review and
 decisive on its own: the exemption route needs the amendment **as well**. Ruling 3's stated
 reason for the exemption from never-alone is that nothing lands, and under the exemption route
 the journal still lands and is merely unreviewed, so the sentence is false either way and has to
@@ -68,7 +72,7 @@ in that file. The delegation's greppable trace is this file.
 
 Stated so a reviewer can disagree by pointing at evidence rather than at taste (ADR-0019).
 
-1. **The human rejecting A3 at sign-off**, in favour of the exemption route or of dropping the
+1. **The human rejecting A4 at sign-off**, in favour of the exemption route or of dropping the
    exception entirely. This ADR is a stand-in for that sign-off, not a substitute for it.
 2. **ruling 6's pre-registered question answered "no" at a retro** — that pre-landing review of
    gated work finds no defect the gates and post-landing review would not. That is the one cause
@@ -80,7 +84,7 @@ Stated so a reviewer can disagree by pointing at evidence rather than at taste (
    most where the writer has the strongest interest in how it reads. Several cycles of journal
    reviews returning no finding at all, against post-landing reads that do find something, would
    be evidence the round is theatre on this artefact specifically.
-4. **The refusal path proving to cost a journal entry rather than delay one.** A3 states that the
+4. **The refusal path proving to cost a journal entry rather than delay one.** A4 states that the
    journal lands only from a retro dispatched against a numbered issue, because `just land`'s
    never-alone rung refuses an unnumbered tree and an issue with no dispatch records. If attended
    retros recur and their entries go unwritten rather than re-dispatched, the constraint is
@@ -88,7 +92,7 @@ Stated so a reviewer can disagree by pointing at evidence rather than at taste (
 
 ## Scope
 
-This records one delegated ruling. It does not decide the residue A3 creates elsewhere: the
+This records one delegated ruling. It does not decide the residue A4 creates elsewhere: the
 `/retro` skill's step 4 still tells its reader the conflict is open, and `tools/ledger.py` still
 books the `retro` seat as landing nothing. Both are filed as their own items against #397, and
 neither is settled here.

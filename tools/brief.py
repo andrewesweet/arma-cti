@@ -475,7 +475,7 @@ SEAT_REASON: Final[dict[str, str]] = {
         "that decides a routing choice is cited; no gate reads recon output."
     ),
     "retro": (
-        "ADR-0071 ruling 3 as amended by A3: finds, researches and files backlog items; "
+        "ADR-0071 ruling 3 as amended by A4: finds, researches and files backlog items; "
         "lands nothing but its own journal entry in `docs/process-log.md`, which is "
         "reviewed under ruling 4 like any other landing."
     ),

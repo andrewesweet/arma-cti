@@ -42,15 +42,15 @@ Amended: 2026-08-17, not by a human ruling but under the human's standing
 authorisation of that date — *"resolve all decisions and rulings on my behalf
 in consultation with a fable/high advisor according to your collective best
 judgement"* — exercised by the orchestrator seat on #397 after consulting a
-`fable`/high advisor, and recorded as a delegated decision in ADR-0073 under
-ADR-0013. One amendment, marked inline at the passage it changes — **A3**
+`fable`/high advisor, and recorded as a delegated decision in ADR-0074 under
+ADR-0013. One amendment, marked inline at the passage it changes — **A4**
 (#397, orchestrator ruling 2026-08-17) strikes ruling 3's closing sentence,
 *"Never-alone does not apply to retros, because nothing lands"*, and makes the
 retro journal in `docs/process-log.md` the single named exception to "lands
 nothing", with never-alone applying to that one artefact per cycle. It reverses
 no other decision and adds no rule beyond the exception it names. The
 `Reviewed-by-human:` line above covers the version at the 2026-08-15 sign-off
-and does not reach A3; A3's human review is pending, tracked on ADR-0073.
+and does not reach A4; A4's human review is pending, tracked on ADR-0074.
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
 Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
@@ -381,7 +381,7 @@ never-alone applies to it. One artefact per retro — the entry appended to
 instance in a different session, and a lander who may be the proposer.
 Everything else a retro produces is a filed item.
 
-*(Amendment A3, proposed on #397, 2026-08-17. It takes effect by landing: this
+*(Amendment A4, proposed on #397, 2026-08-17. It takes effect by landing: this
 file is a human sign-off gate, so the sign-off that lands it is the ruling, and
 until then the text sits on a branch rather than in the tree. #330's skill
 rewrite settled the exception where this ruling said it belonged; what #397
@@ -777,7 +777,7 @@ The key is defined only where its denominator exists: it ranks **profiles in the
 — `mechanical` is retired by ruling 2 and naming it here was a leftover. A
 profile with no landings has no ranking, not a ranking of infinity, and `review`,
 `recon`, `planner` and `retro` land nothing by contract — `retro`'s journal
-aside, one entry per cycle under A3, which is not an implementer's denominator
+aside, one entry per cycle under A4, which is not an implementer's denominator
 and is not ranked here either. Their rework is reported,
 never ranked. An implementer whose work never lands is a zero denominator too, and
 shows as an unranked row with its rounds visible rather than as a division.

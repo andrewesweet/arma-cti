@@ -63,8 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 - **What a retro lands is one rule on every surface again, and the journal is reviewed
-  rather than exempted (#397, ADR-0071 amendment A3, recorded as a delegated decision in
-  ADR-0073).** #330 made the retro journal the single named exception to "a
+  rather than exempted (#397, ADR-0071 amendment A4, recorded as a delegated decision in
+  ADR-0074).** #330 made the retro journal the single named exception to "a
   retro lands nothing" and flagged the conflict it created rather than resolving it by
   assertion: three surfaces an agent reads **before** that skill still stated the
   prohibition flat — `AGENTS.md`'s retro bullet, routing class 3's remedy naming the exact
