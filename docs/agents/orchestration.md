@@ -17,13 +17,20 @@ two are deliberately separate: the study reasons about the mechanism; this docum
 states the operating rules. **Cite the study; do not restate it.** Deleting the study
 would not leave this runbook incoherent.
 
-The always-loaded surface — `CLAUDE.md`, which is the committed symlink to `AGENTS.md`
-and not a second copy of it — already carries the rules every agent on every lane must
+The always-loaded surface — `AGENTS.md`, with `CLAUDE.md` its committed symlink and
+not a second copy of it — already carries the rules every agent on every lane must
 hold (the working-style, seats-and-profiles, failure-class and command-table
 sections). This document carries the rules only the dispatching seat can act on, and
-it is read on demand, not resident. Where a rule here and a rule in `CLAUDE.md` say
-the same thing, `CLAUDE.md` is authoritative; this document points at it rather than
+it is read on demand, not resident. Where a rule here and a rule in `AGENTS.md` say
+the same thing, `AGENTS.md` is authoritative; this document points at it rather than
 quoting it.
+
+`AGENTS.md` is the human sign-off gate its own gate list names — "changes to this
+file" — and the split cost the gate nothing: `CLAUDE.md` is a symlink to the gated
+file, not a second file whose gate lapsed, so an edit through either name is an edit
+to the one gated surface. No gate ceased in the split (`b3f3a23`, 2026-08-09); what
+changed is which name is the source, and this document's references were reconciled
+to it under #367.
 
 ## The seat and its model
 
@@ -109,7 +116,7 @@ worth naming: the loss while *awake* was 73 agent-minutes over 19 minutes of tur
 
 ## The top-of-turn sequence
 
-1. **`just watch-report`** — leads, because CLAUDE.md already puts this read at the
+1. **`just watch-report`** — leads, because `AGENTS.md` already puts this read at the
    top of an orchestrator's turn. It runs four reads in order: the **lane breakers**
    first (#226) — one line per lane that is not dispatchable, silent otherwise; then
    the **queue's underfill verdict** (#278) — `queue=underfilled …
@@ -133,7 +140,9 @@ worth naming: the loss while *awake* was 73 agent-minutes over 19 minutes of tur
    truth, and the reason for a non-default seat. This is the real work of the turn;
    an unedited brief is obviously unfinished by construction. Before writing it, read the
    issue body and its latest comments; an explicit human ruling is ground truth, and
-   neither the title nor the seat's memory may widen it. Measured at **837 output
+   neither the title nor the seat's memory may widen it — and see *What the seat must
+   not do* for the rule that every pre-derived decision names the comment it came
+   from. Measured at **837 output
    tokens and about 30 seconds**, 57% of a dispatch turn's generation and 0.028 pp₅ₕ
    (#295). Do not spend that as a reason to write less of it: over the block where the
    seat's occupancy collapsed, all the brief-writing in it was worth under 1% of the
@@ -149,8 +158,8 @@ The orchestrator holds the wait — that is what the seat is for. A subagent, by
 contrast, **ends rather than waiting**: foreseeably long work is dispatched detached,
 the agent arms `just watch`, writes a handoff per `docs/agents/handoff.md`, and stops
 there, because a background completion nobody is billed to wake is the stall shape
-(CLAUDE.md working style; #218's measurement retired the cache arithmetic that rule
-once rested on).
+(working style, `AGENTS.md`; #218's measurement retired the cache arithmetic that
+rule once rested on).
 
 A wait that genuinely cannot be decomposed has **one sanctioned fallback**: a
 dispatched session — `just dispatch --lane claude-native` — with `just watch` armed at
@@ -200,7 +209,7 @@ turn.
 alone: every landing is reviewed by an instance in a different session that did not
 author it, dispatched at `--seat review` with `--reviewing <profile>`, and the review
 seat's containment is forced rather than defaulted. That is not an added pass the seat
-may skip or absorb — it is one of the two exceptions `CLAUDE.md`'s no-further-
+may skip or absorb — it is one of the two exceptions `AGENTS.md`'s no-further-
 verification rule now names, and the orchestrator is bound by it for the changes it
 authors itself like anyone else.
 
@@ -213,7 +222,7 @@ and the review seat's own resolution rule, which prefers a different lane). Thre
 constraints on the spot-check:
 
 - **Sampled, never standing.** A spot-check on every close is a standing second pass
-  wearing another name, and never-alone's review does not make one available. CLAUDE.md
+  wearing another name, and never-alone's review does not make one available. `AGENTS.md`
   bars added verification passes beyond its two named exceptions, and #220 re-based
   that from a quality rule to a first-order cost rule — an extra pass is pure
   generation, and generation is what this plan meters.
@@ -289,7 +298,7 @@ does by hand.
   is no longer "to fable": ADR authorship is routing class 3, which appoints `planner`
   to author, `implementer` to land and `review` to review, on any lane, and refuses
   `orchestrator`, `fable` and `retro`; orchestration's own process docs — this file
-  among them, by `CLAUDE.md`'s Agent-skills section — are routing class 2, which admits
+  among them, by `AGENTS.md`'s Agent-skills section — are routing class 2, which admits
   that same route plus `orchestrator` and refuses `retro` and `fable`. Either way the
   seat does not hold the drafting. **Neither class is inferred from the path** — neither
   row carries path prefixes, and the policy's own coverage note says a seat-bound class is
