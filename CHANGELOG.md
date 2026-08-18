@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **ADR-0071's seat table is now compared against the seat registry it transcribes
+  (#392).** The ADR's ruling-2 table and `tools/dispatch.py`'s `SEATS` carried the
+  same preference and escalation data on two surfaces with nothing comparing them,
+  and the gap bit twice in opposite directions: amendment A1 landed with the ADR's
+  two escalation cells ahead of the registry (`eaabf9f`), and the `zai-glm53-max`
+  rename landed with the registry ahead of the ADR (`e19410e`), the table naming a
+  retired profile for a day. `tools/check_adr_seat_table.py` — run by `just check`,
+  folded into `check-adr`, and itself a routing-class-6 gate path — compares the
+  table's two data columns and the `orchestrator` Claude-only cell against
+  `SEATS` and `DECLARED_ONLY_SEATS` exactly, profile-name for profile-name, and
+  refuses a blank or ambiguous cell rather than skipping it. Its first run found
+  the `e19410e` drift, which amendment A5 (ADR-0075, a recorded delegated decision)
+  reconciles in the same commit: those two cells are tracked data now, not dated
+  narration, and a rename reaches them the same commit it reaches the registry.
+
 ### Changed
 
 - **A renamed profile's old name resolves for reading dispatch records, and still never

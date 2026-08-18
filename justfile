@@ -50,9 +50,13 @@ check-commits:
     cog check
 
 # ADR-0019's form requirements on a delegated decision: it states what evidence
-# would overturn it, and it carries the human's review-state line (#137).
+# would overturn it, and it carries the human's review-state line (#137). The
+# second line is #392's: ADR-0071's ruling-2 seat table compared against the
+# SEATS registry, exactly, so the two surfaces cannot drift apart one commit
+# at a time.
 check-adr:
     uv run python tools/check_adr_form.py
+    uv run python tools/check_adr_seat_table.py
 
 # AGENTS.md is the sole source and CLAUDE.md a committed symlink to it (#264,
 # #221 decision 2). A copy would diverge invisibly, since both names still read.

@@ -51,6 +51,24 @@ nothing", with never-alone applying to that one artefact per cycle. It reverses
 no other decision and adds no rule beyond the exception it names. The
 `Reviewed-by-human:` line above covers the version at the 2026-08-15 sign-off
 and does not reach A4; A4's human review is pending, tracked on ADR-0074.
+Amended: 2026-08-18, not by a human ruling but under the human's standing
+authorisation of 2026-07-31 recorded by ADR-0013 — exercised by the implementer
+seat on #392 (zai lane, `zai-glm53-max`), recorded as a delegated decision in
+ADR-0075. One amendment, marked inline at the passages it changes — **A5**
+(#392) moves ruling 2's `implementer` preference cell and the "the head is"
+sentence below from `zai-glm52-max` to `zai-glm53-max`, reconciling them with
+`e19410e`'s rename of 2026-08-17, which had moved the registry and left both
+naming the retired profile; and it rewrites the "Nothing mechanical compares
+this table to the registry" passage, whose gate now exists and runs. The
+substance of A5 is one reclassification: those two cells were treated by
+`e19410e` as dated narration — true of the time they describe — and from A5
+they are tracked data, compared against `SEATS` by
+`tools/check_adr_seat_table.py` (`just check-adr`) so a rename reaches them in
+the same commit or the check refuses. No preference, escalation or seat-set
+decision moves: the second `implementer` slot was and remains the zai lane's
+max effort profile, under whatever name the registry gives it. The
+`Reviewed-by-human:` line above does not reach A5; A5's human review is
+pending, tracked on ADR-0075.
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
 Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
@@ -184,7 +202,7 @@ replaced by a preference list per seat, resolved at dispatch time.
 | seat | preference, head first | escalation |
 |---|---|---|
 | `planner` (new; absorbs `cti-implementer-xhigh`) | `codex-sol-xhigh`, `opus-xhigh` | `fable-high` |
-| `implementer` | `codex-luna-max`, `zai-glm52-max`, `opus-low` | `codex-sol-high`, `opus-high` |
+| `implementer` | `codex-luna-max`, `zai-glm53-max` (A5), `opus-low` | `codex-sol-high`, `opus-high` |
 | `recon` (read-only) | `codex-luna-medium`, `haiku-medium` | — never escalates (A1) |
 | `review` | the implementer's list, resolved to the first profile that is **not** the one being reviewed, preferring a different lane | the implementer's escalation head |
 | `retro` (ruling 3) | `fable-high`, `opus-xhigh`, `codex-sol-xhigh` | `opus-max`, `fable-max` (A1) |
@@ -233,17 +251,25 @@ either (review round 2, claim 6). Read the walk, not this table's prose, for the
 order (review round 1, claim 6; review round 2, claim 1's rule — checked at
 `tools/arbiter.py:120`, `1a5a7fb`).*
 
-*The registry carries these entries as of this commit:
+*The registry carries these entries, and something compares them:
 `tools/dispatch.py`'s `SEATS` gives `retro` and `orchestrator` the escalation
 tuples above, so `just dispatch --seat retro --list` prints them and
 `seat_list_exhausted` names them. When A1 first landed at `eaabf9f` it did not,
 and for one commit the ADR said what neither live surface said (review round 1,
-claim 1). Nothing mechanical compares this table to the registry; the only tool
-that reads this file is `tools/check_adr_form.py`, which checks form. That gate
-is **#392's**, filed on review round 2's claim 5 and not built here. An earlier
-pass called it "#354's shape", which is wrong and is corrected rather than
-dropped: #354 is retro-proposal-versus-tree, a different pair of surfaces, and
-this pair is ADR prose versus `SEATS`.*
+claim 1). Nothing mechanical compared this table to the registry then; the only
+tool that read this file was `tools/check_adr_form.py`, which checks form, and
+that gap was **#392's**, filed on review round 2's claim 5. It is built now
+*(Amendment A5)*: `tools/check_adr_seat_table.py`, run by `just check-adr`,
+compares this table's preference and escalation columns and `orchestrator`'s
+Claude-only cell against `SEATS` and `DECLARED_ONLY_SEATS` exactly, and its
+first run on the #392 tree found the drift `e19410e` had left behind — this
+table and the "head is" sentence below still naming `zai-glm52-max` after the
+registry renamed it — which A5 reconciles in the same commit. From A5 on, this
+table is tracked data rather than a dated transcription: a profile rename
+reaches it in the same commit or the check refuses. An earlier pass called the
+gap "#354's shape", which is wrong and is corrected rather than dropped: #354
+is retro-proposal-versus-tree, a different pair of surfaces, and this pair is
+ADR prose versus `SEATS`.*
 
 *`recon` and the interlocutor are marked not-applicable rather than given
 profiles, because neither can produce the thing an arbiter adjudicates: `recon`
@@ -288,7 +314,10 @@ commit and run the gate, and "the gate half of #265 is a recorded ceiling rather
 than an open question". Under this ADR's own binary rule an implementer that
 cannot run its own gate is not an implementer. So lifting that ceiling is a
 **blocking prerequisite** for `codex-luna-max` heading the list — the human's
-ruling — and until it lifts, the head is `zai-glm52-max` followed by `opus-low`.
+ruling — and until it lifts, the head is `zai-glm53-max` followed by `opus-low`
+*(Amendment A5: the slot was `zai-glm52-max` until `e19410e` renamed the
+profile, 2026-08-17, and the rename now reaches this sentence in the same
+commit the seat-table check lands — see the A5 note under the table)*.
 The alternative considered and rejected was gating Codex's output elsewhere, which
 is "capable of implementing but not of gating" — precisely the ladder ruling 1
 withdrew, arrived at quietly.

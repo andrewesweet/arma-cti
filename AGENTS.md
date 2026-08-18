@@ -43,7 +43,7 @@ Interact with the project through `just` only. The rule binds work that lands an
 
 | Command | Purpose | Requires Arma | Run when |
 |---|---|---|---|
-| `just check` | cog, generated-schema check, ADR-form check, validated-marker check, conflict-marker check, seat-config check, HEMTT lints, gitleaks, ruff, ty, rustfmt, clippy | No | Every edit |
+| `just check` | cog, generated-schema check, ADR-form check, ADR seat-table check, validated-marker check, conflict-marker check, seat-config check, HEMTT lints, gitleaks, ruff, ty, rustfmt, clippy | No | Every edit |
 | `just unit` | pytest, cargo test | No | Every edit |
 | `just fast` | `check` + `unit` + `mutation` | No | Every edit |
 | `just mutation [--paths f] [--report]` | Mutation smoke over the landing's new test modules (`tools/mutation_smoke.py`, ADR-0064, #239): the diff against `origin/main`, up to twenty seeded mutants per module planted in what its tests actually execute, red when one survives — and red when a test module executes no line of this repo's source, which is what an `assert True` module earns. No flag lowers the floor; the one escape is the `NO_MUTABLE_SUBJECT` named list, a module with its reason beside it, visible in the diff. `--paths` one module while writing it; `--report` surveys every verdict and never reds | No | Runs last inside `just fast`; `--paths` while writing a test module |

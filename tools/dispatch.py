@@ -640,8 +640,10 @@ SEATS: Final[dict[str, Seat]] = {
     # read-only in the body, so the harness was the half that was wrong. It renders
     # `--permission-mode plan` on the `claude` family and `--sandbox read-only` on `codex`,
     # where the read-only branch of `_codex_sandbox_argv` grants neither `writable_roots`
-    # nor `network_access`. #392 — nothing compares the ADR's seat table to this registry —
-    # is the check that would have caught the gap; this is its first live instance.
+    # nor `network_access`. #392 — nothing compared the ADR's seat table to this
+    # registry — was the check that would have caught the gap; this row was its
+    # first live instance, and `tools/check_adr_seat_table.py` now runs on every
+    # `just check`, so this half of the pair can never silently drift again.
     "recon": Seat(
         "recon",
         claude_only=False,
