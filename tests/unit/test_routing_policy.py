@@ -56,9 +56,15 @@ RETIRED = (1, 7)
 # would have been editing the half no parser of this vintage reads.
 LIVE: Final = routing_policy.REFOUNDED
 
-# The body both halves of the seam pair share: ready-shaped, with a scope naming
-# `tools/dispatch.py` so the gates row's dispatch half refuses it on any lane. Read from the
-# fixture rather than restated here, so the two halves cannot drift apart (#327 round 2).
+# The body both halves of the seam pair share: ready-shaped, declaring ADR authorship so the
+# `adr_authorship` row refuses a `retro` seat on any lane. Read from the fixture rather than
+# restated here, so the two halves cannot drift apart (#327 round 2). It moved off the gates
+# fixture when ADR-0073 retired that row's refusal (#406); the seam test in `test_dispatch.py`
+# carries the reasoning for why the pair sits on class 3 now.
+ADR_BODY: Final = (REPO / "tests/fixtures/routing-eligible-adr.md").read_text(encoding="utf-8")
+# The body the seam pair used while class 6 refused, kept for the admission test that
+# replaced that refusal (ADR-0073, #406): the arrangement that was refused is the one whose
+# admission is the change.
 GATES_BODY: Final = (REPO / "tests/fixtures/routing-eligible-gates.md").read_text(encoding="utf-8")
 
 
@@ -344,20 +350,19 @@ def test_the_class_2_row_no_longer_contradicts_the_always_loaded_prefix() -> Non
     assert routing_policy.advisory_match(policy(), "Routing-class: orchestration.", fable_seat)
 
 
-def test_the_one_lane_selected_refusing_row_is_the_class_6_bridge() -> None:
-    """Acceptance criteria 1 and 2, measured rather than asserted in prose.
+def test_no_row_of_the_live_table_is_lane_selected_any_more() -> None:
+    """ADR-0073 acceptance criterion 1, measured by the same walk that used to find one.
 
-    The round-1 landing claimed exactly one provenance refusal survived outside the seat
-    table and there were two, because nothing walked the table (#327 review round 2, claim
-    1). This is that walk, and the lane-selected half is measured **by behaviour**: the
-    symmetric difference of the rows `_refusing_rules` yields off Claude and on it, which
-    is the exemption itself, not a re-derivation from field shapes — a row that gained the
-    Claude exemption by any field other than an empty `required_seats` would be
-    lane-selected in behaviour and invisible to a field-shape walk, and the difference is
-    symmetric so the row that refuses only the Claude lane is caught too, not just the one
-    that clears it (#327 re-review of round 3 `d-20260814-160910-42c68f`, claims 5 and 6).
+    The assertion inverts rather than the walk changing, and that is deliberate: the walk
+    is what caught the second surviving provenance refusal when the round-1 landing claimed
+    there was one (#327 review round 2, claim 1), and it is what will catch a row that
+    reintroduces a lane-selected refusal by any field at all. The one row it used to find —
+    class 6's keep-on-Claude bridge — was retired on the human's instruction of 2026-08-18
+    (#406), so the symmetric difference is now empty and the `just land` half of that bridge
+    clears every lane on the same input.
+
     The seat table's own half lives in `test_dispatch.py`, pinned on the `claude_only`
-    column.
+    column, and is untouched: the orchestrator carve-out is not this table's rule.
     """
     # The noqa justification (re-review of round 3, claim 6): measuring the exemption means
     # calling the predicate that grants it, not a public re-derivation. The directives stay
@@ -368,9 +373,9 @@ def test_the_one_lane_selected_refusing_row_is_the_class_6_bridge() -> None:
     lane_selected = [
         rule for rule in off_claude + on_claude if rule not in off_claude or rule not in on_claude
     ]
-    assert [(rule.id, rule.name) for rule in lane_selected] == [(6, "gates_themselves")]
-    # And the bridge really is lane-selected: it clears the Claude lane on the same input.
-    assert routing_policy.enforcing_match(policy(), ("tools/land.py",), "zai") is not None
+    assert lane_selected == []
+    # The retired bridge's own input, on both lanes: the gate paths refuse neither now.
+    assert routing_policy.enforcing_match(policy(), ("tools/land.py",), "zai") is None
     assert routing_policy.enforcing_match(policy(), ("tools/land.py",), "claude-native") is None
 
 
@@ -686,11 +691,16 @@ def test_class_6_took_the_two_gate_paths_the_deleted_class_1_held() -> None:
 
     ADR-0071: "Deleting the class outright would let an instance author the hook that judges
     it with nothing firing, so both paths move to class 6 rather than falling out."
+
+    Read off the row rather than off a refusal since ADR-0073 (#406): the row refuses nothing
+    now, so `enforcing_match` answers `None` on every path and would have made this test
+    vacuous. The claim was always about which class holds the paths, so the reader changes and
+    the claim does not — and it changes again in #406's second commit, to the accessor the
+    never-alone rung reads this list through.
     """
+    prefixes = next(rule for rule in policy().rules if rule.id == 6).landing_path_prefixes
     for path in (".claude/hooks/deny-subagent-waits.py", ".claude/settings.json"):
-        match = landing(path)
-        assert match is not None, path
-        assert (match.rule.id, match.rule.name) == (6, "gates_themselves")
+        assert any(routing_policy.path_matches(path, prefix) for prefix in prefixes), path
 
 
 def test_class_6_binds_every_instance_and_therefore_carries_no_exception() -> None:
@@ -720,13 +730,22 @@ def test_binds_every_instance_does_not_reach_the_claude_lane_and_required_seats_
     consults `refuses` and `required_seats` and nothing else — so they would have set a field
     that does nothing and shipped a silently Claude-exempt row. Asserted on the two fields in
     isolation, planted on a parsed policy, so neither can be inferred from the shipped rows.
+
+    `refuses=True` is planted with them since ADR-0073 (#406), because the shipped row no
+    longer refuses at all: without it both arms would clear on both lanes and this test would
+    pass while asserting nothing about either field. That is also the reason it stays planted
+    rather than read — the question is which field would reach the Claude lane *if* a row
+    refused, and the live table now has no refusing landing row to ask.
     """
     parsed = policy()
     gate = "tools/mutation_smoke.py"
 
     def planted(**fields: object) -> Any:  # noqa: ANN401 — a NamedTuple `_replace` result
         return parsed._replace(
-            rules=tuple(rule._replace(**fields) if rule.id == 6 else rule for rule in parsed.rules)
+            rules=tuple(
+                rule._replace(refuses=True, **fields) if rule.id == 6 else rule
+                for rule in parsed.rules
+            )
         )
 
     binding = planted(binds_every_instance=True, required_seats=())
@@ -822,8 +841,12 @@ def test_the_retired_exception_markers_no_longer_appear_anywhere() -> None:
     markers = [entry.marker for entry in policy().issue_exceptions]
     for marker in ("pure-transcription", "no-gated-landing", "proposal-only"):
         assert not any(marker in declared for declared in markers)
-    body = "Change `tools/dispatch.py`.\n\nRouting-exception: proposal-only"
-    assert routing_policy.advisory_match(policy(), body, route()) is not None
+    # A body carrying the withdrawn marker used to be asserted still-refused on class 6.
+    # That assertion went vacuous when ADR-0073 retired the row's refusal (#406) — nothing
+    # refuses the body now, with the marker or without it, so it would pass either way. What
+    # still makes the marker unusable is the parse guard, asserted in
+    # `test_class_6_binds_every_instance_and_therefore_carries_no_exception`: an entry
+    # naming class 6 does not parse at all, which is stronger than a body that fails to lift.
 
 
 def test_an_exception_naming_a_retired_class_is_refused_rather_than_ignored() -> None:
@@ -865,9 +888,14 @@ def test_a_policy_that_states_no_coverage_reads_as_incomplete_rather_than_comple
 
 
 def test_the_advisory_refusal_carries_the_coverage_line_a_reader_meets() -> None:
-    """The reader being routed by the table is the reader forming a belief about it."""
-    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "implementer"})()
-    found = dispatch().Readiness(None, body="Change `tools/dispatch.py`.")
+    """The reader being routed by the table is the reader forming a belief about it.
+
+    On class 3 since ADR-0073 (#406): the gates row no longer refuses, so the arrangement
+    that used to reach a refusal here now clears, and a coverage line asserted on a refusal
+    needs a row that still issues one.
+    """
+    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "retro"})()
+    found = dispatch().Readiness(None, body="Routing-class: adr-authorship")
     refusal = dispatch().routing_refusal(args, found, REPO, NOW)
     assert refusal is not None
     assert f"coverage={policy().coverage}" in refusal.found
@@ -953,7 +981,12 @@ def test_the_remedys_just_check_clause_is_true_of_every_tool_it_scopes() -> None
     """
     conflict = next(rule for rule in policy().rules if rule.id == 6)
     reached = just_check_tools()
-    scoped, _, rest = conflict.remedy.partition("— the eight `just check` reaches —")
+    # From `and omits ` rather than from the start of the remedy (ADR-0073, #406): the row's
+    # prose above that phrase now names the tools that *enforce* the invariant — the registry
+    # and the rung — and a regex over the whole prefix would read those as claimed omissions.
+    _, _, listed = conflict.remedy.partition("and omits ")
+    assert listed, "the remedy no longer enumerates its omissions"
+    scoped, _, rest = listed.partition("— the eight `just check` reaches —")
     assert rest, "the remedy no longer scopes its `just check` clause"
     omissions = set(re.findall(r"tools/[a-z0-9_]+\.py", scoped))
     assert omissions <= reached, sorted(omissions - reached)
@@ -962,25 +995,29 @@ def test_the_remedys_just_check_clause_is_true_of_every_tool_it_scopes() -> None
     assert "tools/breaker.py" in rest
 
 
-def test_class_6_keeps_the_label_of_the_refusal_it_actually_issues() -> None:
-    """Two rules on one row, and the reader is told which one refused them.
+def test_class_6_carries_the_invariant_alone_now_that_its_lane_bar_is_retired() -> None:
+    """ADR-0073 acceptance criterion 1, on the row itself (#406).
 
-    The invariant — no instance authors the gate that judges it — binds every instance and no
-    refusal enforces it. The refusal that fires is still the older keep-on-Claude bar, and it
-    is lane-selected. Round 1 relabelled the row "Conflict of interest" while leaving that
-    refusal unchanged, so a reader meeting `routing_class=6` would have read a
-    conflict-of-interest verdict where a provenance one was issued (review round 1 claim 4).
-    Kept rather than retired to `refuses: false`, because retiring it before #331's
-    exemption list exists would leave the gates with neither rule.
+    Two rules used to live on this row and a reader had to be told which one refused them:
+    the invariant — no instance authors the gate that judges it — which nothing enforced, and
+    the older keep-on-Claude bar, which was lane-selected and did. Round 1 of #326 relabelled
+    the row "Conflict of interest" while leaving that refusal unchanged, so a reader meeting
+    `routing_class=6` read a conflict-of-interest verdict where a provenance one was issued
+    (review round 1 claim 4). The human's instruction of 2026-08-18 retires the bar, so one
+    rule is left and the label is the invariant's.
+
+    Both halves are measured rather than read off the prose: the row refuses no lane, and it
+    is still the row that binds every instance and so may carry no exception.
     """
     conflict = next(rule for rule in policy().rules if rule.id == 6)
     assert conflict.label == "The gates themselves"
     assert conflict.binds_every_instance is True
-    assert conflict.refuses is True
-    assert "no refusal enforces it" in conflict.remedy
-    assert "still selected by lane" in conflict.remedy
-    # The lane selection is the finding, so it is measured rather than read off the prose.
-    assert landing("tools/land.py") is not None
+    assert conflict.refuses is False
+    assert "2026-08-18" in conflict.remedy
+    assert "review_same_lane" in conflict.remedy
+    assert "`refuses: false`" in conflict.remedy
+    # The retirement is the finding, so it is measured: neither lane is refused these paths.
+    assert landing("tools/land.py") is None
     assert routing_policy.enforcing_match(policy(), ("tools/land.py",), "claude-native") is None
 
 
@@ -1013,11 +1050,16 @@ def test_class_4s_two_remedies_name_one_seat_rather_than_agreeing_by_accident() 
     [
         (2, "Routing-class: orchestration", "retro"),
         (3, "Routing-class: adr-authorship", "retro"),
-        (6, "Change `tools/dispatch.py`.", "implementer"),
     ],
 )
 def test_every_refusing_class_row_refuses_by_name(class_id: int, body: str, seat: str) -> None:
-    """Exercise the refusing rows' shape, not only the first one."""
+    """Exercise the refusing rows' shape, not only the first one.
+
+    Two rows, not three, since ADR-0073 (#406): class 6 left this list when its
+    keep-on-Claude bar retired, and the list is the refusing rows rather than a sample of
+    them — `test_no_row_of_the_live_table_is_lane_selected_any_more` is what holds that
+    nothing else has quietly rejoined.
+    """
     args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": seat})()
     found = dispatch().Readiness(None, body=body)
     refusal = dispatch().routing_refusal(args, found, REPO, NOW)
@@ -1033,24 +1075,52 @@ def test_the_seams_own_arrangement_refuses_the_same_way_against_this_branchs_pol
 
     That test runs the real seam, so it reads the policy from the **main checkout** and can
     only ever exercise the landed copy (#364). This one puts the identical arrangement —
-    `zai`, the `implementer` seat, the gates body — through `routing_refusal` rooted at
+    `zai`, the `retro` seat, the ADR-authorship body — through `routing_refusal` rooted at
     `REPO`, which is this worktree, so between them both copies of the policy are covered by
     the suite rather than by a clone somebody has to remember to build. If a later edit
-    moves class 6, this reds here first and the seam test follows it on landing, instead of
-    the landing being the first thing to find out (review round 1 claim 1). The arrangement
-    moved off class 2 in #327's second round, and the reason it stays off is durability
-    rather than any one seat clearing: class 2 is the row routing issues keep re-founding —
-    #326 re-founded it; #327 founded it anew and widened it — so a pair riding it rides the
-    next change, where class 6 has refused this route identically under every policy this
-    window has shipped. The reason stands here rather than in a commit message, which is
-    class 3's own remedy's rule.
+    moves class 3, this reds here first and the seam test follows it on landing, instead of
+    the landing being the first thing to find out (review round 1 claim 1). The pair rode
+    class 6 until ADR-0073 retired that row's refusal (#406) and class 2 before that; the
+    seam test carries the durability reasoning for each move, and it stands on the record
+    rather than in a commit message, which is class 3's own remedy's rule.
     """
-    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "implementer"})()
-    found = dispatch().Readiness(None, body=GATES_BODY)
+    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "retro"})()
+    found = dispatch().Readiness(None, body=ADR_BODY)
     refusal = dispatch().routing_refusal(args, found, REPO, NOW)
     assert refusal is not None
     assert refusal.kind == "routing_policy_advisory"
-    assert "routing_class=6:gates_themselves" in refusal.found
+    assert "routing_class=3:adr_authorship" in refusal.found
+
+
+@pytest.mark.parametrize(
+    ("lane", "profile"),
+    [("zai", "zai-glm52-max"), ("codex", "codex-sol-high"), ("claude-native", "opus-low")],
+)
+def test_a_gate_declaring_issue_is_admitted_on_every_lane(lane: str, profile: str) -> None:
+    """ADR-0073 acceptance criterion 4, as a test rather than as two pasted transcripts (#406).
+
+    The criterion asked for a dry-run dispatch of a `zai` and a `codex` profile against a
+    class-6 path, admitted at dispatch time. A pasted transcript proves it once and then
+    rots; worse, `just dispatch` reads the policy from the **main checkout**, so a transcript
+    taken from this worktree would have been answered by the *landed* policy and shown the
+    refusal being retired here — #364's blindness, and the same trap review round 1 claim 1
+    found on the seam test. This asserts the claim against this branch's own copy, through
+    the same `routing_refusal` seam, on every registered lane including Claude's, so the
+    admission is a property of the table rather than of when somebody ran a command.
+
+    The gates body is the one the seam pair used while class 6 refused, kept for exactly this:
+    it is the arrangement that was refused, so it is the arrangement whose admission is the
+    change. `claude-native` rides along because "admitted on every lane" is the claim, and a
+    row that refused only Claude would be lane-selected too.
+    """
+    args = type("Args", (), {"lane": lane, "profile": profile, "seat": "implementer"})()
+    found = dispatch().Readiness(None, body=GATES_BODY)
+    assert dispatch().routing_refusal(args, found, REPO, NOW) is None
+    # And the issue still *classifies* as class 6, so what was retired is the refusal and
+    # not the row: the observatory and the landing's gate-path read both still see it.
+    match = routing_policy.classify_issue(policy(), GATES_BODY)
+    assert match is not None
+    assert (match.rule.id, match.rule.name) == (6, "gates_themselves")
 
 
 def test_work_outside_every_class_dispatches_unimpeded() -> None:
@@ -1067,29 +1137,35 @@ def test_the_live_map_ui_example_still_classifies_as_the_in_world_class() -> Non
 
 
 def test_dispatch_reads_the_file_again_for_each_call(tmp_path: Path) -> None:
-    """Two dispatch checks in one process see a policy edit between them."""
+    """Two dispatch checks in one process see a policy edit between them.
+
+    On class 3 since ADR-0073 (#406), for the reason the coverage-line test moved: this needs
+    a row that issues a refusal to read the name off, and the gates row no longer does.
+    """
     policy_path = tmp_path / routing_policy.POLICY_RELATIVE
     policy_path.parent.mkdir(parents=True)
     shutil.copyfile(POLICY, policy_path)
-    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "implementer"})()
-    found = dispatch().Readiness(None, body="Change `tools/dispatch.py`.")
+    args = type("Args", (), {"lane": "zai", "profile": "zai-glm52-max", "seat": "retro"})()
+    found = dispatch().Readiness(None, body="Routing-class: adr-authorship")
 
     first = dispatch().routing_refusal(args, found, tmp_path, NOW)
     assert first is not None
-    assert "routing_class=6:gates_themselves" in first.found
+    assert "routing_class=3:adr_authorship" in first.found
 
     document = json.loads(policy_path.read_text(encoding="utf-8"))
-    conflict = next(entry for entry in document[LIVE.classes] if entry["id"] == 6)
-    conflict["name"] = "gates_after_rebase"
+    authorship = next(entry for entry in document[LIVE.classes] if entry["id"] == 3)
+    authorship["name"] = "adr_authorship_after_rebase"
     policy_path.write_text(json.dumps(document), encoding="utf-8")
 
     second = dispatch().routing_refusal(args, found, tmp_path, NOW)
     assert second is not None
-    assert "routing_class=6:gates_after_rebase" in second.found
+    assert "routing_class=3:adr_authorship_after_rebase" in second.found
 
 
 def test_the_advisory_refusal_has_no_failure_class() -> None:
-    match = routing_policy.advisory_match(policy(), "Change `tools/dispatch.py`.", route())
+    match = routing_policy.advisory_match(
+        policy(), "Routing-class: adr-authorship", route(seat="retro")
+    )
     assert match is not None
     refusal = dispatch().Refusal(
         "routing_policy_advisory",

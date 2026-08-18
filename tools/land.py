@@ -58,6 +58,16 @@ record, and it is inverted so unlisted means covered. It sits *before*
 `just fast` because it costs a handful of file reads and an unreviewed landing
 should not burn a gate first.
 
+Since ADR-0073 (#406) routing class 6's keep-on-Claude bar is retired, which
+leaves **no routing class refusing a landing at all**: `routing_policy_gate` is
+unreachable against the live policy, and the routing rung's remaining job is to
+refuse a policy or a diff it could not read. Both are kept rather than deleted —
+a refusing row is one table edit away. The invariant that row asserts, no
+instance authors the gate that judges it, is enforced by a cross-lane
+requirement on the review rung above, which lands as this issue's second commit;
+until it does, the invariant is honoured by procedure rather than by a refusal
+here.
+
 Refusals are this recipe's own vocabulary, not the harness failure-class table:
 a landing is not a corpus verdict and must not borrow its class names. What it
 borrows is the discipline — a named, actionable refusal rather than an opaque
@@ -71,8 +81,10 @@ exit code.
                             nothing here resolves or aborts on your behalf
     conflict_markers        the rebased tree carries git conflict markers, named
                             by file and line (#231, ADR-0062)
-    routing_policy_gate     a non-exempt lane's real rebased diff touches a
-                            class the trusted policy keeps on Claude (#266)
+    routing_policy_gate     a non-exempt lane's real rebased diff touches a class
+                            the trusted policy refuses that lane (#266). No live
+                            class does since ADR-0073; the rung is kept for the
+                            row a future table may add
     routing_policy_gate_unreadable / routing_policy_diff_unreadable
                             the enforcing routing check could not run; fail closed
     gate_red                `just fast` failed; its own output is above

@@ -21,13 +21,16 @@ Four ideas, and each is a ruling made mechanical:
   encodes provenance and no seat is refused on it at this registry — every seat
   dispatches on every lane. The carve-out is the exception and it is provisional:
   orchestration runs on Claude with a Claude model until a tested alternative exists.
-  One second provenance refusal survives outside the seat table: routing class 6's
-  #326 bridge, which refuses on every lane but `claude-native` — a dispatch whose
-  issue names the gates themselves, and, on the same row's landing half, a `just land`
-  on any lane but this one whose diff touches them. #331 owns it — when that issue's
-  never-alone exemption list lands, the invariant the bridge is kept in lieu of, and
-  not evidence for, is enforced and the bridge retires, because deleting it first
-  would leave the gates with neither rule. Routing class 2, orchestration, is not a
+  It is now the **only** provenance refusal the project holds. Routing class 6's
+  #326 bridge was the second — it refused a dispatch naming the gates themselves on
+  every lane but `claude-native`, and a `just land` on any lane but this one whose diff
+  touched them — and ADR-0073 retired it on the human's instruction of 2026-08-18
+  (#406). What enforces that row's invariant is `tools/land_review.py`'s never-alone
+  rung — a landing touching those paths needs a review verdict from a different **lane**
+  than the author's, which is a rule about the review rather than about who may dispatch
+  — and that rung is #406's second commit, which the retirement precedes so the rung does
+  not refuse the landing that brings it in. Either way, nothing in this module refuses a
+  gate path any more. Routing class 2, orchestration, is not a
   second one: #327 re-founded it on its seats, so it refuses an orchestration declaration
   taken by any seat outside the route that finishes that work — `orchestrator` to perform
   it, `planner`, `implementer` and `review` to plan, land and review it, `recon` to
@@ -501,11 +504,14 @@ class Seat(NamedTuple):
     # It is a column on the table for the same reason `reviews` and `permission_mode`
     # are: "which seats the carve-out reaches" is a fact about the seat table, and the
     # table is where every other such fact lives. The ADR names it the only provenance
-    # rule the project holds, and it ends when a Codex orchestrator backup exists. That
-    # "every seat" is a statement about seats, not a promise that nothing else refuses:
-    # routing class 6's bridge still refuses a dispatch naming the gates themselves on
-    # every lane but `claude-native`, and its landing half refuses the same row's paths
-    # on a non-Claude `just land`, until #331's exemption list retires the row.
+    # rule the project holds, and it ends when a Codex orchestrator backup exists. Since
+    # ADR-0073 (#406) it is the only one in fact as well as in the ADR's words: routing
+    # class 6's bridge refused a dispatch naming the gates themselves on every lane but
+    # `claude-native`, and a `just land` on the same row's paths off it, and the human
+    # retired both halves on 2026-08-18. That row's invariant is enforced at the landing
+    # instead, by that issue's second commit, as a requirement on the review rather than a
+    # bar on a route: a gate landing's verdict must come from a different lane than the
+    # author's (`tools/land_review.py`).
     claude_only: bool
     # ADR-0071 ruling 2's preference column, head first. `resolve_seat` walks exactly this
     # and nothing else, so a seat gains a route by being written here.
@@ -1617,12 +1623,12 @@ def resolve_selection(lane_name: str, profile_name: str, seat: str) -> Refusal |
     Three registry rungs — lane, profile, seat — then ADR-0071 ruling 1's one survivor:
     the orchestrator carve-out, which keeps orchestration on Claude until a tested
     alternative exists. #327 deleted the eligibility ladder ADR-0061 built and the retro
-    allowance that suspended it, but one further provenance refusal survives, outside
-    this function: routing class 6's keep-on-Claude bridge, which refuses a dispatch
-    whose issue names the gates themselves on every lane but `claude-native` — and,
-    on the same row's landing half, a non-Claude `just land` whose diff touches them.
-    It is #331's — retired when that issue's never-alone exemption list lands, because
-    deleting it first would leave the gates with neither rule (review round 1, claim 1).
+    allowance that suspended it, and ADR-0073 (#406) retired the one further provenance
+    refusal that outlived them — routing class 6's keep-on-Claude bridge, which refused a
+    dispatch whose issue named the gates themselves on every lane but `claude-native`, and
+    a non-Claude `just land` whose diff touched them. That row's invariant is enforced at
+    the landing instead, by #406's second commit, as a requirement on the review rather than
+    a bar on a route, so the carve-out below is the only provenance refusal left anywhere.
     Routing class 2 was a second until #327 re-founded it on its seats (#327 review round
     2, claim 1; widened from the one seat to the whole route in #327 review round 3, claim
     1): an
@@ -3245,9 +3251,12 @@ def routing_clearance(
     was checked. It matters more here than there, because since #326 dispatch is the **only**
     rung that checks the seat-bound classes — 2 and 3, a landing has no seat — so a
     dispatcher cleared here is cleared by the one check that could have caught an ADR or an
-    orchestration issue taken by an unadmitted seat, and hears nothing about classes 4 and 5
-    refusing no route, class 6 naming a minority of the gates, or the landing rung not
-    re-checking any of it.
+    orchestration issue taken by an unadmitted seat, and hears nothing about classes 4, 5 and
+    — since ADR-0073 (#406) — 6 refusing no route, class 6 naming a minority of the gates, or
+    the landing rung not re-checking any of it. Class 6 is the one whose silence here means
+    most: it refuses no dispatch at all now, and what it asks for lands on `just land`'s
+    never-alone rung — in #406's second commit — as a cross-lane review the dispatcher has
+    not been told about.
 
     **The unreadable-policy fallback is stated rather than silent (#326 round 2, claim 7).** The
     Claude lane dispatches on an unreadable policy so the policy can be repaired on Claude,

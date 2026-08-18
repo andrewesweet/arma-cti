@@ -73,8 +73,12 @@ OFF_PEAK = datetime(2026, 8, 5, 20, 0, tzinfo=UTC)
 # than becoming a test about GitHub being reachable from this box.
 READY_BODY = REPO / "tests" / "fixtures" / "readiness-corpus" / "223.md"
 ROUTING_ELIGIBLE_BODY = REPO / "tests" / "fixtures" / "routing-eligible.md"
-# Same shape, scope naming a gate path: the body a seam arrangement refuses on class 6.
+# Same shape, scope naming a gate path: a class-6 body, kept for the classification tests.
+# It stopped being a *refusing* arrangement when ADR-0073 retired that row's bar (#406).
 ROUTING_ELIGIBLE_GATES_BODY = REPO / "tests" / "fixtures" / "routing-eligible-gates.md"
+# Same shape again, declaring ADR authorship: the body the seam arrangement now refuses on,
+# because class 3 is the row this branch does not touch (see the seam test's own docstring).
+ROUTING_ELIGIBLE_ADR_BODY = REPO / "tests" / "fixtures" / "routing-eligible-adr.md"
 UNREADY_BODY = "The dispatcher feels slow lately and somebody should have a look.\n"
 
 # A review dispatch declares the profile whose work it reviews (#322), so every arrangement
@@ -2005,7 +2009,7 @@ def test_the_seam_forks_nothing_for_a_dry_run(tmp_path: Path) -> None:
 def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> None:
     """A routing refusal reaches the caller's stderr and nothing forks.
 
-    The arrangement is on class 6, and which class it is on is load-bearing. This test runs
+    The arrangement is on class 3, and which class it is on is load-bearing. This test runs
     the **real seam**, so `tools/dispatch.py` reads the routing policy from
     `main_checkout(Path.cwd())` — the parent checkout, not this worktree — and every other
     box dependency in `seam_env` has an override for exactly that reason while the policy has
@@ -2013,21 +2017,27 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
     landed policy and is green for the wrong reason: this test asserted the old
     `3:retros_and_adr_authorship`, stayed green through five in-worktree gates, and was red the
     moment #326 reached `origin/main` (review round 1 claim 1). The blindness itself is #364's;
-    what belongs here is an arrangement that does not depend on it. Class 6 is that
-    arrangement — it refused this route before #326, after it, and through #327's rounds
-    alike, because both of its halves name `tools/dispatch.py` and the row appoints no seat,
-    and the `implementer` seat carries no legacy seat evidence — so the assertion holds
-    against either copy, which is the only property that makes a seam test about *the seam*
-    rather than about which policy it found. Class 2 was the arrangement until #327's second
-    round re-founded it, and the durable reason it stays former is not that some seat of it
-    clears — across the two vintages #327 itself has written, the founding and the widening,
-    some seat always has, though before the founding the row was a lane carve-out and no
-    seat of it cleared off Claude at all — but that class 2 is
-    the row routing issues keep re-founding (#326 re-founded it; #327 founded it anew and
-    widened it), so a pair riding it rides the next change. The reason lives here on the
-    record rather than in a commit message, which is class 3's own remedy's rule
-    (`config/dispatch-routing-policy.json`), so a successor who wants the old arrangement
-    back meets why it left (#327 review round 3, claim 5).
+    what belongs here is an arrangement that does not depend on it, which means a row the
+    branch under test does not edit.
+
+    **Class 6 was that arrangement and is not any more, and its going is the rule working
+    rather than failing** (ADR-0073, #406). It was chosen because it had refused this route
+    identically under every policy the window had shipped — and that reasoning holds only in
+    the context it was tested, which the human's instruction of 2026-08-18 ended by retiring
+    the row's bar. A branch editing class 6 therefore has to move this pair, and moving it
+    *before* landing is the point: the assertion would otherwise be answered by the landed
+    policy, stay green through every in-worktree gate, and red on `origin/main` — #364's
+    blindness in exactly the shape review round 1 claim 1 found it.
+
+    Class 3 is the replacement, and the property that qualifies it is durability, not
+    strength: `adr_authorship` refuses `retro` on every lane, has refused it under every
+    vintage since #326 founded the row on its seats, and is untouched by the branch that
+    moved this pair. Class 2 was the arrangement until #327's second round re-founded it, and
+    stays former because class 2 is the row routing issues keep re-founding (#326 re-founded
+    it; #327 founded it anew and widened it), so a pair riding it rides the next change. The
+    reason lives here on the record rather than in a commit message, which is class 3's own
+    remedy's rule (`config/dispatch-routing-policy.json`), so a successor who wants an older
+    arrangement back meets why it left (#327 review round 3, claim 5).
     """
     done = run_seam(
         [
@@ -2036,7 +2046,7 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
             "--profile",
             "zai-glm52-max",
             "--seat",
-            "implementer",
+            "retro",
             "--issue",
             "223",
             "--dispatch-dir",
@@ -2045,12 +2055,12 @@ def test_the_seam_passes_a_refusal_through_without_forking(tmp_path: Path) -> No
         seam_env(
             tmp_path,
             tmp_path / "must-not-run.txt",
-            CTI_READINESS_BODY=str(ROUTING_ELIGIBLE_GATES_BODY),
+            CTI_READINESS_BODY=str(ROUTING_ELIGIBLE_ADR_BODY),
         ),
     )
     assert done.returncode == dispatch.EXIT_REFUSED
     assert "refusal=routing_policy_advisory" in done.stderr
-    assert "routing_class=6:gates_themselves" in done.stderr
+    assert "routing_class=3:adr_authorship" in done.stderr
     assert not (tmp_path / "dispatches").exists()
 
 

@@ -875,11 +875,11 @@ on provenance, and separating them is the substance of this ADR.
 | class | disposition | why |
 |---|---|---|
 | 1 `gated_semantic_surfaces` | **dies as a routing rule, except two paths that move to class 6** | its basis was provenance, and the human sign-off gate on those surfaces is untouched — that gate was never this file. But `.claude/hooks/` and `.claude/settings.json` are the denial layer and the permission allowlist, i.e. **gates**, and class 1's list was the only routing rule naming them. Deleting the class outright would let an instance author the hook that judges it with nothing firing, so both paths move to class 6 rather than falling out |
-| 2 `orchestration` | **survives, re-founded on the route's seats** *(Amendment A2)* | it carries no lane rule at all. Its `required_seats` are `orchestrator`, `planner`, `implementer`, `review` and `recon` — the route that finishes orchestration work — and it refuses `retro` and `fable` on **every** lane, Claude's included, where the row this table originally described refused every seat off Claude and no seat on it. **This row is not ruling 1's carve-out and not a provenance rule.** That carve-out is `orchestrator_claude_only` in `tools/dispatch.py`'s seat table; the policy's own surviving keep-on-Claude bar is class 6's, below. See the A2 note under this table for what forced the shape, and for the two alternatives the human declined |
+| 2 `orchestration` | **survives, re-founded on the route's seats** *(Amendment A2)* | it carries no lane rule at all. Its `required_seats` are `orchestrator`, `planner`, `implementer`, `review` and `recon` — the route that finishes orchestration work — and it refuses `retro` and `fable` on **every** lane, Claude's included, where the row this table originally described refused every seat off Claude and no seat on it. **This row is not ruling 1's carve-out and not a provenance rule.** That carve-out is `orchestrator_claude_only` in `tools/dispatch.py`'s seat table, and it is now the **only** keep-on-Claude rule the project holds: the policy's own, class 6's, was retired by ADR-0073 *(Amendment A3)*. See the A2 note under this table for what forced the shape, and for the two alternatives the human declined |
 | 3 `retros_and_adr_authorship` | **splits, and the survivor needs a path it does not have** | the retro half dies with ruling 3. ADR authorship survives, bound to the planner's list rather than to Claude — but the class's only `landing_path_prefixes` entry is `docs/process-log.md`, which belongs to the half being killed, so the surviving half would enforce on issue phrases alone. It gains `docs/adr/` as its landing path, or it is a class that catches nothing |
 | 4 `plausible_wrong_fix_goes_green` | **survives, remedy restated** | gate coverage, not provenance. Remedy becomes route-to-planner-and-escalate, and ruling 5 carries the matching condition |
 | 5 `in_world_landings` | **narrowed to a subagent rule** | a *subagent* cannot hold the corpus's foreground wait, so a seat reached that way cannot gate its own in-world work. `just dispatch` already launches a **top-level** session, which the wait hook permits — it returns 0 where there is no `agent_id` — so the class does not restrict the dispatch route this ADR defines, and two drafts said it did. What remains is a real but much smaller rule about subagents |
-| 6 `gates_themselves` | **survives, reframed, and does not yet hold** | conflict of interest: *no instance authors the gate that judges it*. Now binds Claude too, and takes class 1's two gate paths. Enforcement is a hard-coded path list and its coverage is far worse than the third draft admitted: of the seven gate tools `just check` runs it names **one**, `tools/mutation_smoke.py`; it omits `tools/check_adr_form.py` — **which this commit adds and then uses to judge the ADR in the same commit** — along with `check_seat_config`, `check_validated_markers`, `check_conflict_markers`, `check_source_symlink`, `export_command_schema`, `tools/breaker.py`, and the exemption list step 7 creates. Deriving the list from `just check` alone would still miss gates under `just unit`, `just mutation`, `just land` and `just regress`, so that filed item is stated as insufficient rather than as the fix. **The class is aspirational: today it names six paths and the invariant it asserts is not enforced.** |
+| 6 `gates_themselves` | **survives, reframed, and holds once #406's second commit lands** *(Amendment A3)* | conflict of interest: *no instance authors the gate that judges it*. Binds Claude too, and takes class 1's two gate paths. Enforcement is a hard-coded path list and its coverage is far worse than the third draft admitted: of the seven gate tools `just check` runs it names **one**, `tools/mutation_smoke.py`; it omits `tools/check_adr_form.py` — **which this commit adds and then uses to judge the ADR in the same commit** — along with `check_seat_config`, `check_validated_markers`, `check_conflict_markers`, `check_source_symlink`, `export_command_schema`, `tools/breaker.py`, and the exemption list step 7 creates. Deriving the list from `just check` alone would still miss gates under `just unit`, `just mutation`, `just land` and `just regress`, so that filed item is stated as insufficient rather than as the fix. **The class was aspirational when this table was written — it named six paths and the invariant it asserted was enforced by nothing, while the refusal that actually fired was the older keep-on-Claude bar.** ADR-0073 (#406), on the human's instruction of 2026-08-18, retires that bar and enforces the invariant instead: the row refuses no route on any lane, and a landing whose diff touches these paths must carry a review verdict from a **different lane** than the author's — the retirement in that issue's first commit and the enforcement in its second, minutes apart and in that order (ADR-0073, *How this lands*). The coverage sentence above is unchanged and still true — the invariant now holds over exactly the paths this row names, and nowhere else |
 | 7 `anthropic_plan_meter` | **deleted** | its basis does not hold. The class's own paths are `tools/quota_tap.sh` and a usage fixture, and the meter itself is read by `tools/breaker.py` over plain `urllib` at a fixed URL with no Claude session involved. `quota_tap.sh` is a Claude Code status-line integration, which is a reason to keep it working on Claude, not a routing rule about who may author it |
 
 *(Amendment A2, 2026-08-15, on the human's ruling of 2026-08-14 recorded in full
@@ -922,7 +922,13 @@ count of what survives rather than of what was written down. Read as a claim abo
 would exist in a single-provider project, but its only live **refusal** would not,
 since that refusal is lane-selected and clears on `claude-native`. The count is
 about what each class is for, not about what would still fire (review round 1,
-claim 10).
+claim 10). *(Amendment A3 makes the qualification sharper rather than removing
+it: the lane-selected refusal is gone and the invariant gains an enforcement of
+its own in #406's second commit, but the
+enforcement — a review from a different **lane** — is itself a multi-provider
+mechanism, so in a single-provider project the class would still exist and still
+fire nothing. What changed is that the gap is now in the enforcement's reach
+rather than in its absence.)*
 
 The one lane-selected refusal the policy still carries is class 6's
 keep-on-Claude bar, which is a rule about the gates rather than a class resting
@@ -939,6 +945,25 @@ the bar survives deliberately or was forgotten is undecided, and the answer is a
 decision rather than a reading. **Owner: #389**, filed for it — the second pass
 named #333, which closed on 2026-08-15 at 17:38Z, so that owner was spent too
 (review round 1, claim 8).)*
+
+*(**Amendment A3, 2026-08-18, on the human's instruction of that date, recorded
+in ADR-0073 and applied by #406.** The paragraph above is now history and is kept
+as history: the policy carries **no** lane-selected refusal, because the
+keep-on-Claude bar it describes is retired. #389's question — deliberate or
+forgotten — is answered by the human rather than by an agent's reading, and the
+answer is neither: the bar was not their intent in the first place. What replaces
+it is the invariant with an enforcement of its own, in the never-alone rung this
+ADR's ruling 4 already runs at every landing: a class-6 landing's review verdict
+must come from a different lane than the author's. That enforcement is #406's
+**second** commit and this amendment rides its first, minutes apart and in that
+order — ADR-0073's own *How this lands* section carries why — so a tree holding
+this paragraph and not that commit has the bar off and the rung not yet in. The
+bar's own defect is on the
+record in ADR-0073 — it exempted the lane that authors nearly every gate change,
+so the surface most at risk was the one the rule cleared, which this table's own
+row 6 conceded in as many words. #331 is **narrowed rather than reopened**: its
+substance is closed for this one class, and what it still owns is the coverage
+question — the gates this row's path list does not name.)*
 
 ## What this costs, stated rather than discovered
 

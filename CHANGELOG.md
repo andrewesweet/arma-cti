@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Routing class 6's keep-on-Claude bar is retired: every lane is a peer on the gate paths
+  (#406, ADR-0073).** On the human's instruction of 2026-08-18 — a non-Claude lane restricted
+  to read-only work on the gate paths "was definitely not my intent" — the last lane-selected
+  refusal in `config/dispatch-routing-policy.json` is gone. A `codex` or `zai` dispatch naming
+  those paths is admitted exactly as a `claude-native` one is, and so is a `just land` from
+  any lane. The bar was provenance rather than protection and the row said so itself: it
+  exempted the lane that authors nearly every gate change, so the surface most at risk was the
+  one it cleared, while the invariant it stood in for — no instance authors the gate that
+  judges it — was enforced by nothing. **No routing class refuses a landing any more**, so
+  `just land`'s routing rung is left refusing only an unreadable policy or diff, and the
+  policy's `coverage` sentence says what a `routing=clear` line now does and does not mean.
+  The invariant's own enforcement — a cross-lane review requirement on the never-alone rung —
+  is the next entry and the next commit: the two land minutes apart and in this order, because
+  a rung firing on class 6's paths would otherwise refuse the landing that brings it in (#364;
+  the reasoning is in ADR-0073's *How this lands*). In that window never-alone is enforced as
+  it always was, and only this class's cross-lane requirement is absent — as it was before
+  this decision. #331 is narrowed rather than closed — the coverage question is what it still
+  owns — and #389, which asked whether the bar survived deliberately or was forgotten, is
+  answered.
+
 ### Added
 
 - **`just review-loop author` — the authorship record for interactive work, and the route out

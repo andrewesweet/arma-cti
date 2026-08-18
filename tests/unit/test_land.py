@@ -192,6 +192,27 @@ def _policy_read() -> Any:  # noqa: ANN401 — load_tool returns a runtime modul
     return routing_policy.read_policy(POLICY)
 
 
+def _refusing_read() -> Any:  # noqa: ANN401 — load_tool returns a runtime module type
+    """Return the shipped policy with class 6's `refuses` planted back on, for this rung.
+
+    ADR-0073 (#406) retired the last landing row that refused anything, so against the live
+    document `enforcing_match` returns `None` for every input and the `routing_policy_gate`
+    branch below is unreachable. The rung is kept — a refusing row is one table edit away —
+    so its tests plant the one property that makes a row refuse rather than being deleted
+    with the row. Planted on the shipped row rather than on a hand-built one, so the paths,
+    the remedy and the coverage sentence a refusal prints are still this repo's own.
+    """
+    read = _policy_read()
+    assert read.policy is not None
+    return routing_policy.ReadResult(
+        read.policy._replace(
+            rules=tuple(
+                rule._replace(refuses=True) if rule.id == 6 else rule for rule in read.policy.rules
+            )
+        )
+    )
+
+
 def _seed(prefix: str) -> str:
     return f"{prefix}seed.txt" if prefix.endswith("/") else prefix
 
@@ -231,8 +252,9 @@ def test_the_181_shape_stays_declaration_only_because_no_diff_path_can_prove_it(
 
 
 def test_a_routed_class_diff_is_an_enforcing_named_refusal() -> None:
+    """The rung's shape, against a table that has a refusing row (see `_refusing_read`)."""
     refusal = land.classify_routing(
-        _policy_read(), (".claude/hooks/deny-subagent-waits.py",), "zai"
+        _refusing_read(), (".claude/hooks/deny-subagent-waits.py",), "zai"
     )
     assert _kind(refusal) == "routing_policy_gate"
     assert "check=enforcing actual diff" in _text(refusal)
@@ -247,8 +269,12 @@ def test_the_enforcing_refusal_says_the_class_list_does_not_cover_everything() -
     the orchestration doc class 2 used to refuse: #327's round 2 re-founded class 2 on its
     seats, so `docs/agents/orchestration.md` no longer refuses a landing anywhere and would
     turn this into an assertion on `None`.
+
+    Against `_refusing_read` since ADR-0073 (#406): the gates row stopped refusing too, so
+    the coverage line a *refusal* carries now needs a planted refusing row to carry it. The
+    coverage line a *clearance* carries is asserted separately, on the live policy.
     """
-    read = _policy_read()
+    read = _refusing_read()
     refusal = land.classify_routing(read, ("tools/dispatch.py",), "zai")
     assert f"coverage={read.policy.coverage}" in _text(refusal)
 
@@ -341,7 +367,7 @@ def test_every_routing_refusal_ends_with_the_clause_the_plan_strips() -> None:
     """
     unreadable_policy = routing_policy.ReadResult(None, "policy is absent")
     refusals = [
-        land.classify_routing(_policy_read(), ("tools/land.py",), "zai"),
+        land.classify_routing(_refusing_read(), ("tools/land.py",), "zai"),
         land.classify_routing(unreadable_policy, ("tools/worker.py",), "zai"),
         land.classify_routing(_policy_read(), None, "zai", "fatal: bad revision"),
     ]
@@ -490,11 +516,14 @@ def test_the_gate_exempts_the_lane_the_policy_names_rather_than_a_second_literal
     is kept as a statement of the pair, and the binding half is the constant's (review
     round 2 claim 6, correcting this docstring's first version).
     """
-    shipped = routing_policy.parse_policy(POLICY.read_text(encoding="utf-8"))
+    shipped = _refusing_read().policy
     renamed = shipped._replace(claude_lane="claude-anthropic")
     read = routing_policy.ReadResult(renamed)
     # A class-6 path since #326: class 5 was narrowed to a subagent rule and refuses no
-    # landing at all, so it can no longer separate an exempt lane from a judged one.
+    # landing at all, so it can no longer separate an exempt lane from a judged one. Since
+    # ADR-0073 (#406) class 6 refuses nothing either, so the row is read through
+    # `_refusing_read` — the exemption this test is about only means anything to a rung with
+    # something to exempt from.
     gated = ("tools/land.py",)
 
     # The policy's name is exempt, and it is not the constant.
@@ -567,6 +596,24 @@ def repo(tmp_path: Path) -> tuple[Path, Path, Path]:
 
 def _tip(origin: Path) -> str:
     return _git("rev-parse", "main", cwd=origin).strip()
+
+
+def _plant_refusing_policy(main: Path) -> None:
+    """Put a policy with a refusing landing row on `origin/main`, for the rung's own tests.
+
+    ADR-0073 (#406) retired the last row that refused a landing, so against the shipped
+    document the routing gate clears everything and `routing=would_refuse` is unreachable.
+    The rung is kept — a refusing row is one table edit away — so its tests plant that row
+    where `just land` reads the trusted copy from, rather than substituting the rung or
+    deleting the coverage. Everything else about the row stays the shipped file's: the
+    paths, the remedy and the coverage sentence a refusal prints are this repo's own.
+    """
+    document = json.loads(POLICY.read_text(encoding="utf-8"))
+    for row in document[routing_policy.REFOUNDED.classes]:
+        if row["id"] == routing_policy.CONFLICT_OF_INTEREST_CLASS_ID:
+            row["refuses"] = True
+    _commit(main, routing_policy.POLICY_RELATIVE.as_posix(), json.dumps(document))
+    _git("push", "origin", "main", cwd=main)
 
 
 class _Gate:
@@ -748,21 +795,29 @@ def test_a_red_gate_leaves_origin_exactly_where_it_was(
     assert _tip(origin) == before
 
 
-def test_a_routed_class_diff_refuses_before_the_normal_gate_or_push(
+def test_a_gate_path_lands_from_a_non_claude_lane(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
 ) -> None:
-    origin, _main, here = repo
-    before = _tip(origin)
+    """ADR-0073's headline, end to end: `zai` is a peer on the gate paths (#406).
+
+    This landing used to be refused `routing_policy_gate` before the gate ran, on the
+    keep-on-Claude bar the human retired on 2026-08-18. What replaces it is a requirement
+    on the review rather than a bar on the lane, and it arrives in this issue's second
+    commit; the reviewer `_reviewed` stages is on `codex` over a `claude-native` author,
+    so this landing satisfies that requirement already and will keep passing when the rung
+    is in.
+    """
+    origin, main, here = repo
     _commit(here, ".claude/settings.json", "{}\n")
     gate = _Gate()
+    review = _reviewed(here, tmp_path)
 
-    report = land.land(_main, here, gate=gate, lane="zai")
+    report = land.land(main, here, gate=gate, lane="zai", review=review)
 
-    assert report.code == 1
-    assert report.lines[0] == "refusal=routing_policy_gate"
-    assert "routing_class=6:gates_themselves" in report.lines
-    assert gate.calls == []
-    assert _tip(origin) == before
+    assert report.code == 0, report.lines
+    assert not any(line.startswith("refusal=") for line in report.lines)
+    assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
 
 
 def test_a_non_exempt_diff_outside_every_class_lands_unimpeded(
@@ -989,8 +1044,11 @@ def test_a_dry_run_on_a_gated_surface_from_a_non_exempt_lane_does_not_plan_to_pu
     is this rung's contract with its reader, so renaming `would_refuse` reds these on
     purpose. Verified by running it — see the round's own note on #344; the claim that a
     rewording stays green was wrong about these three assertions (review round 1 claim 8).
+
+    Against a planted refusing row since ADR-0073 (#406) — see `_plant_refusing_policy`.
     """
     origin, main, here = repo
+    _plant_refusing_policy(main)
     before = _tip(origin)
     _commit(here, ".claude/settings.json", "{}\n")
 
@@ -1212,6 +1270,12 @@ def test_a_refusing_dry_run_still_prints_its_plan_on_stdout(
     seat on another lane #344 was filed for got a bare `recipe … failed` banner — the shape
     this project trains agents to read as a harness failure rather than a verdict
     (review round 2 claim 3).
+
+    The refusing rung is the review one since ADR-0073 (#406): this tree stages no review
+    records at all, so the never-alone rung refuses, and the routing rung — which used to be
+    what refused here — clears the diff now that class 6's lane bar is retired. The claim is
+    about *where a refusing plan prints*, not about which rung refused, so the arrangement
+    moves to whichever rung still refuses on a bare tree.
     """
     _origin, _main, here = repo
     _commit(here, ".claude/settings.json", "{}\n")
@@ -1222,7 +1286,7 @@ def test_a_refusing_dry_run_still_prints_its_plan_on_stdout(
 
     captured = capsys.readouterr()
     assert code == land.EXIT_REFUSED
-    assert any("routing=would_refuse" in line for line in captured.out.splitlines())
+    assert any("review=would_refuse" in line for line in captured.out.splitlines())
     assert captured.err == ""
 
 

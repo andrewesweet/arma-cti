@@ -24,14 +24,28 @@ in `tools/escalation.py`. `REQUIRED_CLASSES` is the fail-closed half: a table th
 one of the rows another module addresses would otherwise parse and govern silently.
 
 **Four fields decide what a row does, and three of them are new.** `refuses` (default true)
-says whether a match produces a refusal at all: classes 4 and 5 classify without refusing,
-because their remedies are a capability route and a subagent prohibition rather than a bar
-on a route. `binds_every_instance` (default false) does **not** touch the Claude-lane
+says whether a match produces a refusal at all: classes 4, 5 and — since ADR-0073 (#406) —
+6 classify without refusing, because their remedies are a capability route, a subagent
+prohibition and a cross-lane review requirement rather than a bar on a route.
+`binds_every_instance` (default false) does **not** touch the Claude-lane
 exemption and never has — `_refusing_rules` does not consult it. What it does is forbid the
 row any exception: class 6's conflict of interest — no instance authors the gate that judges
 it — cannot be excepted by the instance it judges. Round 1 documented it here as the field
 that binds Claude, which is the one false sentence a future row author would act on, so it
 is corrected rather than softened (#326, review round 2 claim 2).
+
+**No row refuses by lane any more, and none refuses at landing at all (ADR-0073, #406).**
+The human instructed on 2026-08-18 that the non-Claude lanes be full peers on the gate
+paths, which retired class 6's keep-on-Claude bar — the last lane-selected refusal this
+table held, and the last row with `landing_path_prefixes` that could refuse. What refuses
+at dispatch is seating (classes 2 and 3, on every lane); what will enforce class 6's
+invariant is the landing's never-alone rung, reading this row's paths as **data** and
+refusing a review verdict from the author's own lane — the second commit of #406, which
+this one deliberately precedes so that the rung does not gate its own arrival. So
+`enforcing_match` can now only ever return `None`, and `just land`'s routing rung refuses
+only an unreadable policy or an unreadable diff. Neither is deleted: a table whose rows can
+refuse again is one row away, and the machinery is what makes adding it an edit rather than
+a rebuild.
 
 `required_seats` (default empty) is the third, and it is what re-founding a row on
 **capability** actually takes, and it is also the only field that lifts the Claude-lane
@@ -117,8 +131,11 @@ IN_WORLD_CLASS_ID: Final = 5
 IN_WORLD_CLASS: Final = "in_world_landings"
 
 # The conflict-of-interest class. Named here because it is the one row whose invariant
-# binds every instance, and because `tests/unit/test_routing_policy.py` asserts that the
-# gate paths the withdrawn class 1 held arrived here rather than falling out.
+# binds every instance, because `tests/unit/test_routing_policy.py` asserts that the
+# gate paths the withdrawn class 1 held arrived here rather than falling out, and — since
+# ADR-0073 (#406) — because this row's `landing_path_prefixes` is the **one authority** for
+# what a gate path is, the position class 5's list holds for in-world surfaces. #406's second
+# commit is what reads it in that position, from the landing's never-alone rung.
 CONFLICT_OF_INTEREST_CLASS_ID: Final = 6
 
 # The orchestration class. Named for `REQUIRED_CLASSES` on class 3's ground rather than
@@ -134,14 +151,16 @@ ADR_AUTHORSHIP_CLASS_ID: Final = 3
 
 # The rows that cannot leave silently, on either of two grounds. **Addressed by id
 # elsewhere**: class 4 is `tools/escalation.py`'s `CLASS_FOUR`, deliberately a decoupled
-# copy; class 5 is the in-world authority three readers depend on; class 6 is the
-# conflict-of-interest rule ADR-0071 ruling 4's exemption list is bound by. **Load-bearing by
-# absence**: classes 2 and 3 are the only rows that refuse on the Claude lane at all, so a
-# table dropping either would not merely stop enforcing one class, and a table dropping both
-# would return the Claude lane to exempt-from-everything, which is the state #326 was
-# re-founded to end — and `parse_policy` would accept either table (review round 2 claim 10;
-# class 2 joined the set in #327's second round, when it became the second seat-bound
-# refusing row). A table missing one of these parses nowhere.
+# copy; class 5 is the in-world authority three readers depend on; class 6 is the gate-path
+# authority #406's second commit has the landing's never-alone rung read (ADR-0073), and was
+# already required here as the conflict-of-interest rule ADR-0071 ruling 4 is bound by.
+# **Load-bearing by
+# absence**: since ADR-0073 classes 2 and 3 are the only rows that refuse anything at all, so
+# a table dropping either would not merely stop enforcing one class, and a table dropping
+# both would leave a routing document that refuses no route on any lane, which is further
+# than any ruling has gone — and `parse_policy` would accept either table (review round 2
+# claim 10; class 2 joined the set in #327's second round, when it became the second
+# seat-bound refusing row). A table missing one of these parses nowhere.
 # Ids only, never names: the name is what a row is called today and a rename is not a removal
 # — `tests/unit/test_corpus_gate.py` holds that the row's own name is not load-bearing, and
 # pinning it here would quietly make it so.
@@ -568,30 +587,33 @@ def _refusing_rules(policy: Policy, lane: str) -> tuple[Rule, ...]:
     subagent prohibition, so their remedies are addressed to whoever takes the work rather
     than to the router, and neither bars a route.
 
-    **The Claude-lane exemption is per row, not per policy, and that is claim 2's fix.** A
-    row founded on provenance is exempt on the Claude lane, because provenance is what it
-    selects on — after #327's second round the live document's one such row is class 6's
-    bridge, which #331 owns the retirement of; class 2 was the other until that round
-    re-founded it on its seat. A row
-    founded on a *seat* is not, because its basis has nothing to do with which provider is
-    answering: class 3 refuses an ADR taken by a seat it does not admit on the Claude lane
-    exactly as it does on `codex`, and class 2 refuses an orchestration declaration taken by
-    a seat outside its route on the Claude lane exactly as it does on `zai`.
-    Exempting it by lane was what made the class
+    **The Claude-lane exemption is per row, not per policy, and since ADR-0073 no live row
+    uses it.** A row founded on provenance is exempt on the Claude lane, because provenance
+    is what it selects on. The live document has no such row left: class 2 was re-founded on
+    its seat by #327's second round, and class 6's keep-on-Claude bridge — the last one —
+    was retired on the human's instruction of 2026-08-18 (#406), which set that row
+    `refuses: false`. The `not claude` arm below is therefore reachable only by a row a
+    future author adds, and it is kept rather than deleted so that adding one is a visible
+    act rather than a silent re-derivation. A row founded on a *seat* was never exempt,
+    because its basis has nothing to do with which provider is answering: class 3 refuses an
+    ADR taken by a seat it does not admit on the Claude lane exactly as it does on `codex`,
+    and class 2 refuses an orchestration declaration taken by a seat outside its route on
+    the Claude lane exactly as it does on `zai`. Exempting class 3 by lane was what made it
     refuse `codex`/`codex-sol-xhigh`/`planner` — the head of the very list its own remedy
     prescribes — while clearing `claude-native` on any seat at all.
 
-    **`binds_every_instance` deliberately does not appear here, and that is the honest
-    reading of ADR-0071.** Class 6's conflict of interest — no instance authors the gate
-    that judges it — binds Claude too, but the ADR records the class as *aspirational*: the
-    invariant it asserts is not enforced, and is discharged by an independent review under
-    ruling 4, which no refusal enforces until #331's exemption list lands. Enforcing it
-    here instead would refuse every Claude landing that touches a gate, this project's own
-    maintenance of its gates included, with no review record yet existing to lift it — a bar
-    on all gate work rather than a conflict-of-interest rule. What the field does enforce is
-    the half that is enforceable today and is the ADR's own reasoning: a class that binds
-    every instance may carry no exception, because an instance that can except itself from
-    the gate that judges it is exactly the shape being forbidden.
+    **`binds_every_instance` deliberately does not appear here, and since ADR-0073 that is
+    a division of labour rather than a gap.** Class 6's conflict of interest — no instance
+    authors the gate that judges it — binds Claude too, and enforcing it *here* would refuse
+    every landing that touches a gate, this project's own maintenance of its gates included:
+    a bar on all gate work rather than a conflict-of-interest rule. What enforces it is the
+    landing's never-alone rung (`tools/land_review.py`), reading this row's paths and refusing
+    a verdict whose reviewer lane equals the author's — #406's second commit, which this one
+    precedes so that the rung does not gate its own arrival, and until it lands the invariant
+    is honoured by procedure. What the field enforces here is what it always did: a class that
+    binds every
+    instance may carry no exception, because an instance that can except itself from the gate
+    that judges it is exactly the shape being forbidden.
     """
     claude = lane == policy.claude_lane
     return tuple(
@@ -698,6 +720,13 @@ def enforcing_match(policy: Policy, paths: tuple[str, ...], lane: str) -> Match 
     already refuses such a row landing prefixes, so this loop would skip it for want of a
     match anyway; the guard is here so a future row carrying both is refused by the rule
     rather than by the accident of an empty list.
+
+    **Against the live document this returns `None` for every input (ADR-0073, #406).** The
+    only row that both refused and carried landing prefixes was class 6, whose bar retired,
+    so the enforcing routing gate now has nothing to enforce and `just land`'s routing rung
+    refuses only an unreadable policy or diff. That is a property of the *data*, not of this
+    function: it is kept so a future refusing row needs a table edit and no code, and the
+    reader is told rather than left to infer a check from a function that exists.
     """
     for rule in _refusing_rules(policy, lane):
         if rule.required_seats:
