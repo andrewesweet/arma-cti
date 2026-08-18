@@ -774,8 +774,11 @@ def read_close(args: argparse.Namespace) -> tuple[str, str]:
 # which is not mechanisable and is theirs alone (and is therefore not counted here).
 #
 # **It is closed as inconclusive by ADR-0071 ruling 2**; see `TRIAL_CLOSURE` below. Everything
-# in this section still runs, because the harness is a pre-registration mechanism with no
-# opinion about what is trialled, and a later question would use it unchanged.
+# in this section still runs as one closed trial's harness — bar id and criteria as code
+# constants by design, kept because its records are history — and the harness has no opinion
+# about profiles or verdicts. A later question is a new pre-registration, not this one
+# reused: it needs a new bar id, new criteria and a new ruling, and `tools/wip_trial.py`
+# chose its own rather than reach for this harness.
 #
 # It is **not a dispatch gate**. Three properties follow, and each was a design constraint the
 # ruling wrote — they belong to pre-registration rather than to the orchestration seat, which
