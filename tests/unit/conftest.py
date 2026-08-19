@@ -18,7 +18,9 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import sys
+import tempfile
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -199,3 +201,55 @@ def recorded_death(**fields: object) -> dict[str, Any]:
     hand in two files.
     """
     return {"at_ns": 1, "event": "casualty", **death(**fields)}
+
+
+# The host registry every test that executes `spike/run.sh` or `spike/regress.sh`
+# stages through `CTI_HOSTS_FILE` (#362). Those scripts read
+# `$HOME/.arma-cti/hosts.toml` otherwise — machine state shared by every
+# worktree on the box and written when a machine is commissioned — so an
+# unstaged suite reds on a registry change nobody connected to it: a second host
+# row did exactly that (#356), and a valid registry declaring `local` a tier
+# host, or one the validator refuses, reddened 42 and 88 tests (#362's review).
+#
+# `server_slots = 5` is load-bearing, not a detail. `host_registry.load()`
+# falls back to a one-row `local` default when its path does not exist, and that
+# default is this fixture except for the count — so a fixture drifted onto the
+# default's own value would be indistinguishable from the fallback and no
+# staging would prove anything. `test_pool_slots` canaries the difference
+# through the seam. Five also covers the widest pool any of these suites runs
+# (`--slots 3`; `regress.sh` refuses a pool wider than the host's slots).
+HOSTS_LOCAL_ONLY = """version = 1
+[hosts.local]
+ssh_target = ""
+server_slots = 5
+headed_client = true
+human = true
+client_driver = "windows"
+remote_root = ""
+"""
+
+
+def local_hosts_file(tmp_path: Path) -> str:
+    """Write the local-only host registry and return its path for `CTI_HOSTS_FILE`."""
+    path = tmp_path / "hosts.toml"
+    path.write_text(HOSTS_LOCAL_ONLY, encoding="utf-8")
+    return str(path)
+
+
+_UNIT_HOSTS_PATH: str | None = None
+
+
+def unit_hosts_file() -> str:
+    """Serve the same fixture registry at one per-process path, for helpers with no tmp_path.
+
+    `test_pool_slots`'s `bash_ok` sources `spike/slots.sh` — which sources
+    `hosts.sh` and so reads the registry — from helpers that hold no `tmp_path`
+    to write into. Same content as `local_hosts_file`, written once per test
+    process under the system temp directory rather than left per-test.
+    """
+    global _UNIT_HOSTS_PATH  # noqa: PLW0603 — one lazily-written constant, read back every call
+    if _UNIT_HOSTS_PATH is None:
+        path = Path(tempfile.gettempdir()) / f"arma-cti-unit-hosts-{os.getpid()}.toml"
+        path.write_text(HOSTS_LOCAL_ONLY, encoding="utf-8")
+        _UNIT_HOSTS_PATH = str(path)
+    return _UNIT_HOSTS_PATH

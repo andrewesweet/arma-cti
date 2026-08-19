@@ -373,6 +373,16 @@ SHELL_SUBJECT: Final[dict[str, str]] = {
         # there — and scored the module 42% against a script it is not about.
         "spike/hosts.sh"
     ),
+    "tests/unit/test_bringup_guards.py": (
+        # spike/run.sh, which every test here drives as far as its first
+        # refusal. The evidence rule picks spike/slots.sh instead — run.sh
+        # sources it, and a run that stops at the guard crosses run.sh's
+        # shared preamble while executing slots.sh's source-time lines whole,
+        # so the helper outscored the subject (0/10 against it, the same
+        # mispick shape the seam's comment records). First gating of this
+        # module since the shell arm landed is #362.
+        "spike/run.sh"
+    ),
 }
 
 NO_MUTABLE_SUBJECT: Final[dict[str, str]] = {

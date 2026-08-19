@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from conftest import REPO
+from conftest import REPO, local_hosts_file, unit_hosts_file
 
 # Same directory, pytest's prepend import mode. The corpus, its header parser and
 # the set of probes that drive the headed Windows client have one definition
@@ -147,12 +147,17 @@ def bash_ok(script: str, env: dict[str, str] | None = None, *, want_stderr: bool
     """
     full = f'source "{SLOTS_SH}"\n{script}'
     # S603: this repo's own library, with a script this test wrote.
+    # The registry default sits under the caller's `env` so a snippet can still
+    # name its own; sourcing `slots.sh` reads the registry through `hosts.sh`,
+    # and a snippet reaching `cti_host_exec` refuses outright when the machine's
+    # registry is one the validator rejects (#362 — four of these did, under
+    # exactly that planting).
     result = subprocess.run(  # noqa: S603
         [BASH, "-c", full],
         capture_output=True,
         text=True,
         check=False,
-        env={**os.environ, **(env or {})},
+        env={**os.environ, "CTI_HOSTS_FILE": unit_hosts_file(), **(env or {})},
     )
     assert result.returncode == 0, result.stderr
     return (result.stderr if want_stderr else result.stdout).strip()
@@ -612,6 +617,13 @@ def pool_env(tmp_path: Path, extra_env: dict[str, str] | None = None) -> dict[st
     return {
         **os.environ,
         "CTI_TIER_STATE": str(tmp_path / "state"),
+        # The host registry is machine state under `$HOME` like the state
+        # directory (#362): unstaged, every pool run reads whatever
+        # `~/.arma-cti/hosts.toml` happens to declare, and a commissioning
+        # change nobody connected to this suite reds trees on rebase. The
+        # fixture's slot count is the canary's, and the test below pins the
+        # difference from the no-registry fallback.
+        "CTI_HOSTS_FILE": local_hosts_file(tmp_path),
         "CTI_SLOT_INSTALL_MASTER": str(master),
         "CTI_RUN_SH": str(executable(tmp_path / "stub-run.sh", STUB_RUN)),
         "CTI_WINDOWS_TASKLIST": str(executable(tmp_path / "tasklist.sh", TASKLIST_FREE)),
@@ -653,6 +665,42 @@ def verdicts_by_probe(tmp_path: Path) -> dict[str, dict[str, Any]]:
 
 
 ALL_PROBES = sorted(path.stem for path in PROBES)
+
+
+def test_the_staged_registry_differs_from_the_no_registry_fallback(tmp_path: Path) -> None:
+    """The isolation every pool test rests on, asserted rather than assumed.
+
+    `host_registry.load()` falls back to a one-row `local` default when
+    `CTI_HOSTS_FILE` names no existing file, and that default is the staged
+    fixture except for the slot count — so a fixture drifted onto the default's
+    own count would pass every test here while proving nothing about isolation
+    (#356 claim 1, applied to the pool's staging by #362). Read through
+    `hosts.sh`, the seam a pool run reads it through, so a `CTI_HOSTS_FILE` the
+    seam ever stops honouring reds here too — the mistyped-path failure this
+    exists to catch.
+    """
+
+    def slots_under(hosts_file: str) -> list[str]:
+        # S603: this repo's own seam, sourced, with a path this test wrote.
+        result = subprocess.run(  # noqa: S603
+            [
+                BASH,
+                "-c",
+                f'source "{REPO / "spike" / "hosts.sh"}"; cti_host_slots local',
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            env={**os.environ, "CTI_HOSTS_FILE": hosts_file},
+        )
+        assert result.returncode == 0, result.stderr
+        return result.stdout.split()
+
+    staged = pool_env(tmp_path)["CTI_HOSTS_FILE"]
+    assert slots_under(staged) != slots_under(str(tmp_path / "no-such-registry.toml")), (
+        "the staged host registry is indistinguishable from the no-registry "
+        "fallback, so no pool test proves it is being read"
+    )
 
 
 def test_the_whole_corpus_gets_a_verdict_across_three_slots(tmp_path: Path) -> None:

@@ -37,7 +37,7 @@ from contextlib import suppress
 from pathlib import Path
 
 import pytest
-from conftest import REPO
+from conftest import REPO, local_hosts_file
 
 # Same directory, pytest's prepend import mode. The probes whose `env:` header
 # drives the headed client are derived from those headers in one place; this
@@ -628,6 +628,9 @@ def run_sh(tmp_path: Path, listing: str | Path, **extra: str) -> subprocess.Comp
         CTI_SPIKE_OUT=str(tmp_path / "out"),
         CTI_SERVER_DIR=str(tmp_path / "no-server"),
         CTI_TIER_STATE=str(tmp_path / "state"),
+        # `pool_env`'s own reason, one seam over: the host registry is machine
+        # state under `$HOME`, and `run.sh` resolves a host out of it (#362).
+        CTI_HOSTS_FILE=local_hosts_file(tmp_path),
         **extra,
     )
     # S603: this repo's own script, with paths this test just wrote.
@@ -721,6 +724,9 @@ def pool_env(tmp_path: Path, tag: str, *, listing: str | Path = TASKLIST_FREE) -
     return {
         **os.environ,
         "CTI_TIER_STATE": str(tmp_path / "state"),
+        # `test_pool_slots.py`'s reason, which this file's own pool runs share
+        # (#362): unstaged, the pool reads the machine's `~/.arma-cti/hosts.toml`.
+        "CTI_HOSTS_FILE": local_hosts_file(tmp_path),
         # `test_pool_slots.py`'s reason, which this file's own pool runs had
         # missed (#132): the memory pre-flight reads the real host, so a test
         # about the client lock goes red about memory whenever the machine is

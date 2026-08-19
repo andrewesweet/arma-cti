@@ -23,7 +23,7 @@ import subprocess
 from typing import TYPE_CHECKING
 
 import pytest
-from conftest import REPO
+from conftest import REPO, local_hosts_file
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -63,6 +63,11 @@ def _run_spike(tmp_path: Path, listing: str, *args: str) -> subprocess.Completed
         CTI_WINDOWS_TASKLIST=str(_tasklist(tmp_path, listing)),
         CTI_SPIKE_OUT=str(tmp_path / "out"),
         CTI_SERVER_DIR=str(tmp_path / "no-server"),
+        # The host registry is machine state under `$HOME`, and the guard this
+        # file drives is gated on the role the registry gives `local` (#362) —
+        # unstaged, a commissioned tier role for `local` silently skips the
+        # guard every test here exists to exercise.
+        CTI_HOSTS_FILE=local_hosts_file(tmp_path),
     )
     # S603: this repo's own script, with paths this test just wrote.
     return subprocess.run(  # noqa: S603
@@ -108,6 +113,7 @@ def test_a_process_list_that_cannot_be_read_stops_too(tmp_path: Path) -> None:
         CTI_WINDOWS_TASKLIST=str(tmp_path / "there-is-no-tasklist-here.exe"),
         CTI_SPIKE_OUT=str(tmp_path / "out"),
         CTI_SERVER_DIR=str(tmp_path / "no-server"),
+        CTI_HOSTS_FILE=local_hosts_file(tmp_path),
     )
     # S603: this repo's own script, with paths this test just wrote.
     result = subprocess.run(  # noqa: S603

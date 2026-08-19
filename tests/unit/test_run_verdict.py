@@ -32,7 +32,7 @@ import subprocess
 from typing import TYPE_CHECKING
 
 import pytest
-from conftest import REPO
+from conftest import REPO, local_hosts_file
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -141,6 +141,12 @@ def run_with_lines(
         # sight. Every other unit test that drives these scripts already isolates
         # this; this one was the outlier.
         CTI_TIER_STATE=str(tmp_path / "state"),
+        # Its own host registry for the same reason (#362): `run.sh` resolves a
+        # host and gates its guard on the role the registry declares, and the
+        # machine's `~/.arma-cti/hosts.toml` is state no test of this tier owns.
+        # `test_play_install` and `test_playtest_observer_staging` borrow this
+        # harness, so they are isolated by the same line.
+        CTI_HOSTS_FILE=local_hosts_file(tmp_path),
         CTI_BASIC_CFG="",
         CTI_HC_TIMEOUT="20",
         CTI_HARNESS_TIMEOUT="60",
