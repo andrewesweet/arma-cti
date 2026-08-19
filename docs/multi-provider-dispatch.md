@@ -384,15 +384,21 @@ What that buys, measured rather than inferred, over five dispatches and four pro
 - The gate runs. `cog check` returns `No errored commits` and `just fast` executes, which
   is the capability that matters, because a profile that cannot run its own gate is not an
   implementer.
-- The gate additionally needs three tool caches outside every worktree, each measured red
-  or read from the tool's own source: `~/.cache/uv`, where `uv` takes a lock before any
-  test runs; `~/.ansible/tmp`, where `ansible-playbook --syntax-check` puts its per-run
-  directory — the proving dispatch `d-20260818-185929-ae5491` died there, because
-  `check-machine-b` joined the gate on 2026-08-13, a week *after* the root set was
-  measured; and `~/.cache/ansible-lint`, whose `latest.json` the linter rewrites once it
-  is over 24 h old. The grant principle is one sentence: a tool cache outside every
-  worktree, writing no project file and no git state, is granted; a git directory never
-  is. `~/.cargo` looked as likely and was measured unnecessary, so it is not granted.
+- The gate additionally needs two tool caches outside every worktree, each measured red:
+  `~/.cache/uv`, where `uv` takes a lock before any test runs; and `~/.ansible/tmp`,
+  where `ansible-playbook --syntax-check` puts its per-run directory — the proving
+  dispatch `d-20260818-185929-ae5491` died there, because `check-machine-b` joined the
+  gate on 2026-08-13, a week *after* the root set was measured. `~/.cache/ansible-lint`
+  was granted once on a derivation from the linter's source and dropped on review: the
+  installed copy reports `INSTALLER=uv`, returns before reaching the version check the
+  derivation rested on, and the directory does not exist. The grant principle is one
+  sentence: a tool cache outside every worktree, writing no project file and no git
+  state, is granted; a git directory never is — and the environment variables that
+  relocate a cache (`UV_CACHE_DIR`, `ANSIBLE_LOCAL_TEMP`, `XDG_CACHE_HOME`,
+  `ANSIBLE_HOME`) are validated rather than trusted: a root that is a git directory, or
+  reaches the project from inside or outside it, is the `writable_root_refused`
+  refusal at plan time. `~/.cargo` looked as likely and was measured unnecessary, so it
+  is not granted.
 - `network_access` defaults off while the gate reads `gh` and `uv` may fetch, so it is
   enabled.
 

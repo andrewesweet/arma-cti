@@ -1008,11 +1008,10 @@ def test_a_codex_session_can_write_the_directories_the_gate_grew(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # `check-machine-b` joined `just check` on 2026-08-13, a week after the root set was
-    # measured, and its two ansible halves each want a home-directory write: the syntax
-    # check died on `[Errno 30] Read-only file system: '…/.ansible/tmp/ansible-local-…'`
-    # (d-20260818-185929-ae5491), and ansible-lint rewrites `latest.json` whenever the
-    # copy on the box is over 24 h old. Both read the environment the way their tool
-    # reads it, for the same reason the uv root does.
+    # measured, and its ansible half wants a home-directory write: the syntax check died
+    # on `[Errno 30] Read-only file system: '…/.ansible/tmp/ansible-local-…'`
+    # (d-20260818-185929-ae5491). It reads the environment the way its tool reads it, for
+    # the same reason the uv root does.
     monkeypatch.setenv("ANSIBLE_LOCAL_TEMP", "/somewhere/else/ansible-tmp")
     argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
     assert '"/somewhere/else/ansible-tmp"' in _writable_roots(argv)
@@ -1022,17 +1021,26 @@ def test_a_codex_session_can_write_the_directories_the_gate_grew(
     argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits", "second")
     assert '"/ansible/home/tmp"' in _writable_roots(argv)
 
-    monkeypatch.delenv("ANSIBLE_HOME")
-    monkeypatch.setenv("XDG_CACHE_HOME", "/xdg/cache")
-    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits", "third")
-    assert '"/xdg/cache/ansible-lint"' in _writable_roots(argv)
+
+def test_a_cache_the_box_does_not_exercise_is_not_granted_for_being_likely(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # `~/.cache/ansible-lint` was granted on a derivation from ansible-lint's source and
+    # dropped on review: the installed copy reports INSTALLER=uv, returns before reaching
+    # the version check the derivation rested on, and the directory does not exist. A
+    # grant nothing exercises is surface without evidence, so the default root list names
+    # exactly the two measured caches.
+    for variable in ("UV_CACHE_DIR", "XDG_CACHE_HOME", "ANSIBLE_LOCAL_TEMP", "ANSIBLE_HOME"):
+        monkeypatch.delenv(variable, raising=False)
+    argv, _root, _linked = _codex_argv_from_a_linked_worktree(tmp_path, "acceptEdits")
+    assert "ansible-lint" not in _writable_roots(argv)
 
 
 def test_the_writable_roots_are_exactly_the_tool_caches_the_walk_found(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # The root list is an assertion surface, not a discovery: every entry is a tool cache
-    # a gate stage was measured or derived to need, so a future gate stage — or a future
+    # a gate stage was measured red to need, so a future gate stage — or a future
     # removal — changes this line and shows in the diff. The whole override block is
     # asserted, not just the roots, so a grant arriving here without a root (or a root
     # without its reason landing in `dispatch.py`) is the same visible diff.
@@ -1043,8 +1051,7 @@ def test_the_writable_roots_are_exactly_the_tool_caches_the_walk_found(
     roots = (
         "sandbox_workspace_write.writable_roots="
         f'["{home / ".cache" / "uv"}", '
-        f'"{home / ".ansible" / "tmp"}", '
-        f'"{home / ".cache" / "ansible-lint"}"]'
+        f'"{home / ".ansible" / "tmp"}"]'
     )
     assert argv[-6:] == (
         "--config",
@@ -1054,6 +1061,111 @@ def test_the_writable_roots_are_exactly_the_tool_caches_the_walk_found(
         "--sandbox",
         "workspace-write",
     )
+
+
+# ------------------------------------------------- the environment cannot widen the grant
+
+
+# The exact-list test above clears the override variables before asserting, which is how
+# review's High 1 hid: the same variables that relocate a cache honestly can name `/` or a
+# git directory, and `_codex_writable_roots` handed the value to the sandbox verbatim.
+# These tests set them to hostile values and assert the named refusal instead — the test
+# the exact-list one should have had beside it. Each goes through `plan_dispatch`, because
+# that is where the argv is minted and the roots frozen into the record.
+def _codex_plan(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, **env: str
+) -> tuple[Any, str, Any]:
+    for variable in ("UV_CACHE_DIR", "XDG_CACHE_HOME", "ANSIBLE_LOCAL_TEMP", "ANSIBLE_HOME"):
+        monkeypatch.delenv(variable, raising=False)
+    for variable, value in env.items():
+        monkeypatch.setenv(variable, value)
+    return plan_for(tmp_path, lane="codex", profile="codex-sol-high")
+
+
+def test_the_whole_filesystem_is_not_a_cache_however_the_environment_names_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # `UV_CACHE_DIR=/` grants `/`: every worktree, every git directory, every credential
+    # file on the box — the one invariant three probes were spent establishing, defeated
+    # by one character.
+    _plan, _brief, refusal = _codex_plan(tmp_path, monkeypatch, UV_CACHE_DIR="/")
+    assert refusal is not None
+    assert refusal.kind == "writable_root_refused"
+    assert "root=/" in refusal.found
+    assert any("contains the project" in line for line in refusal.found)
+
+
+def test_a_git_directory_the_environment_names_is_refused_not_granted(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Review's own example: `ANSIBLE_LOCAL_TEMP` pointed at a linked worktree's git
+    # directory. Naming a git directory buys `git commit` and costs `cog check` (#405's
+    # six measured arrangements), so it is a refusal whatever tool the variable belongs to.
+    gitdir = tmp_path / "checkout" / ".git" / "worktrees" / "issue-999"
+    gitdir.mkdir(parents=True)
+    _plan, _brief, refusal = _codex_plan(tmp_path, monkeypatch, ANSIBLE_LOCAL_TEMP=str(gitdir))
+    assert refusal is not None
+    assert refusal.kind == "writable_root_refused"
+    assert f"root={gitdir}" in refusal.found
+    assert any("git directory" in line for line in refusal.found)
+
+
+def test_a_bare_git_directory_is_caught_by_its_layout_not_its_name(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # A bare repository is a git directory without the `.git` component, so the refusal
+    # reads its layout — `HEAD`, `objects` and `refs` beside each other — which is the
+    # shape `ANSIBLE_LOCAL_TEMP` pointed at a bare remote would present.
+    bare = tmp_path / "remote.git"
+    subprocess.run(["git", "init", "-q", "--bare", str(bare)], check=True, capture_output=True)  # noqa: S603, S607
+    _plan, _brief, refusal = _codex_plan(tmp_path, monkeypatch, ANSIBLE_LOCAL_TEMP=str(bare))
+    assert refusal is not None
+    assert refusal.kind == "writable_root_refused"
+    assert any("bare git directory" in line for line in refusal.found)
+
+
+def test_a_root_inside_the_repository_is_refused_not_granted(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Inside the project, a "cache" is a project file: `git add --all` in the harness
+    # commit sweeps it, and the gates read it. The containment runs against the project
+    # root the dispatcher was invoked from, not against the assigned worktree, because the
+    # grant reaches every sibling tree, not only this run's.
+    inside = REPO / ".claude" / "caches"
+    _plan, _brief, refusal = _codex_plan(tmp_path, monkeypatch, UV_CACHE_DIR=str(inside))
+    assert refusal is not None
+    assert refusal.kind == "writable_root_refused"
+    assert any("inside the project" in line for line in refusal.found)
+
+
+def test_a_cache_that_merely_holds_someone_elses_git_still_plans(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The literal reading of "never contain a git directory" refuses this box's own uv
+    # cache, which carries a `.git` entry and is the measured-green grant the whole lane
+    # rests on: nine planning tests failed the moment that check ran, which is how the
+    # carve-out was found. A `.git` that is not the project's breaks nothing a session
+    # does, and the project's own git state is unreachable from any root the containment
+    # rules pass — so this pins the boundary: foreign git inside, project git never.
+    _plan, _brief, refusal = _codex_plan(
+        tmp_path, monkeypatch, XDG_CACHE_HOME=str(git_worktree(tmp_path, "foreign-cache"))
+    )
+    assert refusal is None
+
+
+def test_a_relocated_cache_the_environment_names_honestly_still_plans(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The rung refuses hostility, not relocation: the honest override — a cache outside
+    # the project, no git state — still plans, which is what keeps a box that relocates
+    # its caches able to dispatch at all.
+    _plan, _brief, refusal = _codex_plan(
+        tmp_path,
+        monkeypatch,
+        UV_CACHE_DIR=str(tmp_path / "uv"),
+        ANSIBLE_LOCAL_TEMP=str(tmp_path / "ansible-tmp"),
+    )
+    assert refusal is None
 
 
 @pytest.mark.parametrize("mode", ["plan", "default", "somethingUnmapped"])

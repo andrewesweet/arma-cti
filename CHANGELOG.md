@@ -20,6 +20,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tree instead of a dirt count it never read. The remaining `check=False` reads in the module are
   named where they sit, each with why its absence decides nothing.
 
+
+- **The Codex writable roots no longer trust the environment verbatim, and a stale
+  predecessor can no longer be committed with the current work (#405).** Two Highs from the
+  review of the harness-commit path. A root named by `UV_CACHE_DIR`, `ANSIBLE_LOCAL_TEMP`,
+  `XDG_CACHE_HOME` or `ANSIBLE_HOME` is validated before it is granted: a root that is or
+  sits inside a git directory, is a bare one, or reaches the project from inside or outside
+  it is the `writable_root_refused` refusal at plan time — `UV_CACHE_DIR=/` and
+  `ANSIBLE_LOCAL_TEMP=<gitdir>` were silently granted before. A `.git` sitting *inside* a
+  root outside the project is deliberately not a refusal, because this box's own
+  measured-green uv cache carries one; the project's git state is unreachable from any root
+  the containment rules pass. Before a session launches, a worktree holding a surviving
+  `.dispatch-commit-message` refuses `dispatch_message_present` and a dirty one refuses
+  `dirty_tree` — `git add --all` would have swept a finished predecessor's message and edits
+  into this run's commit and pushed them under its issue. A non-UTF-8 message is now the
+  `commit_message_unreadable` refusal with a written record rather than an uncaught
+  `UnicodeDecodeError` that left the worktree occupied, and the `git_failed` refusal after a
+  refused commit names what the tree really holds — everything staged, message preserved
+  beside the record — instead of claiming it is as the session left it. The unevidenced
+  `~/.cache/ansible-lint` grant is dropped (the installed copy returns before creating it),
+  and ADR-0071 is swept with Amendment A6: the #265 ceiling is lifted, the Codex implementer
+  head is live, and every paragraph that said otherwise now says so.
+
 ### Changed
 
 - **A review verdict binds the diff it reviewed, not only the commit, so a clean rebase no

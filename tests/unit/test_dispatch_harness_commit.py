@@ -10,10 +10,12 @@ which is the whole of the binary capability rule's demand, and the commit belong
 dispatcher, which is not sandboxed.
 
 So the claims here are about the seam between the two halves — `CODEX_COMMIT_MESSAGE` — and
-about the four states `harness_finish` can end in. They are made against real git repositories
+about the states either side of it can end in: the pre-launch refusals that stop a stale
+predecessor being absorbed into a fresh run, and the end states `harness_finish` reaches.
+They are made against real git repositories
 rather than a mocked `git`, because every one of them is a claim about what git did: a commit
 that exists, a tree left untouched, a `commit-msg` hook that refused. A stubbed git would let
-all four pass over code that never committed anything.
+all of them pass over code that never committed anything.
 
 The push half is `review_exchange.exchange`'s and is asserted through a real remote, so the
 "pushed commit" the acceptance evidence asks for is a fact about a ref rather than about a
@@ -190,11 +192,87 @@ def test_a_message_the_commit_msg_hook_refuses_arrives_as_git_failed(tmp_path: P
     hook.chmod(0o755)
     _edited(tree)
     before = _git("rev-parse", "HEAD", cwd=tree)
-    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+    record = _record(tmp_path)
+    lines, code = dispatch.harness_finish(tree, 405, record)
     assert code == dispatch.EXIT_REFUSED
     assert "refusal=git_failed" in lines
     assert any("not a conventional commit" in line for line in lines)
     assert _git("rev-parse", "HEAD", cwd=tree) == before
+    # Review's Medium: the refusal used to claim "the tree is as the session left it",
+    # which `git add --all` had already made false — everything staged, message file gone.
+    # The text now names what the tree really holds, and these three facts are what make
+    # it true rather than polite.
+    assert any("staged" in line for line in lines)
+    assert any(str(record / "commit-message.txt") in line for line in lines)
+    assert (record / "commit-message.txt").read_text(encoding="utf-8") == MESSAGE
+    assert _git("status", "--porcelain", cwd=tree).startswith("A  edited.txt")
+
+
+def test_a_message_that_is_not_utf8_text_is_a_named_refusal_not_a_traceback(
+    tmp_path: Path,
+) -> None:
+    # Review's Medium: a non-UTF-8 message raised an uncaught UnicodeDecodeError, so no
+    # named refusal and no result.json — and a worktree left occupied by a crash. Named
+    # here, the file left exactly where the session put it, and the reader sent to the
+    # run's own log rather than to a traceback nobody actionable can read.
+    tree, _remote = _tree_with_a_remote(tmp_path)
+    (tree / "edited.txt").write_text("what the session wrote\n", encoding="utf-8")
+    (tree / dispatch.CODEX_COMMIT_MESSAGE).write_bytes(b"\xff\xfe not text\r\n\x00")
+    before = _git("rev-parse", "HEAD", cwd=tree)
+    lines, code = dispatch.harness_finish(tree, 405, _record(tmp_path))
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=commit_message_unreadable" in lines
+    assert f"file={tree / dispatch.CODEX_COMMIT_MESSAGE}" in lines
+    assert _git("rev-parse", "HEAD", cwd=tree) == before
+    assert (tree / dispatch.CODEX_COMMIT_MESSAGE).exists()
+
+
+# --------------------------------------------------- what must hold before the session runs
+
+
+def test_a_predecessors_surviving_message_refuses_before_the_session_launches(
+    tmp_path: Path,
+) -> None:
+    # Review's High 2: a finished predecessor's message file and edits survive in the
+    # worktree, and `git add --all` in `harness_finish` would sweep them into this run's
+    # commit — attributing one run's work to another's issue. The refusal comes before
+    # anything launches, and it names the file rather than the tree's dirt, because a
+    # surviving `CODEX_COMMIT_MESSAGE` says "uncommitted handover" where a dirty tree
+    # alone says "someone is working here".
+    tree, _remote = _tree_with_a_remote(tmp_path)
+    (tree / "edited.txt").write_text("the predecessor's edit\n", encoding="utf-8")
+    (tree / dispatch.CODEX_COMMIT_MESSAGE).write_text(
+        "fix(x): the predecessor's own message\n\nrefs #404\n", encoding="utf-8"
+    )
+    refusal = dispatch.harness_start_refusal(tree)
+    assert refusal is not None
+    assert refusal.kind == "dispatch_message_present"
+    assert f"file={tree / dispatch.CODEX_COMMIT_MESSAGE}" in refusal.found
+    # Nothing has been committed, staged or removed by the asking.
+    assert (tree / dispatch.CODEX_COMMIT_MESSAGE).exists()
+    assert dispatch.harness_start_refusal(tree).kind == "dispatch_message_present"
+
+
+def test_a_dirty_tree_with_no_message_refuses_before_the_session_launches(
+    tmp_path: Path,
+) -> None:
+    # The other half of High 2: edits with no message file are still files this run did
+    # not write, and the harness commit would absorb them. #105's vocabulary is reused
+    # rather than invented — `dirty_tree`, with the files named, never counted.
+    tree, _remote = _tree_with_a_remote(tmp_path)
+    (tree / "edited.txt").write_text("someone's edit\n", encoding="utf-8")
+    refusal = dispatch.harness_start_refusal(tree)
+    assert refusal is not None
+    assert refusal.kind == "dirty_tree"
+    assert "untracked=?? edited.txt" in refusal.found
+    assert any("harness commit sweeps" in line for line in refusal.lines())
+
+
+def test_a_clean_tree_with_no_message_launches_without_refusal(tmp_path: Path) -> None:
+    # The rung asks a question with a real negative answer, not a blanket stop: the tree
+    # `just worktree add` makes is exactly this one, and it must keep launching.
+    tree, _remote = _tree_with_a_remote(tmp_path)
+    assert dispatch.harness_start_refusal(tree) is None
 
 
 def test_a_push_that_does_not_land_is_the_exchanges_refusal_and_not_a_silent_success(

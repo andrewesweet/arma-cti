@@ -2988,9 +2988,10 @@ def _codex_sandbox_argv(permission_mode: str) -> tuple[str, ...]:
 
     What is granted, and why each:
 
-    - **The three tool caches `_codex_writable_roots` returns** — `~/.cache/uv`,
-      `~/.ansible/tmp` and `~/.cache/ansible-lint` — each measured red or derived from the
-      tool's own source, and each carrying the walk that found it there. `~/.cargo` stays
+    - **The two tool caches `_codex_writable_roots` returns** — `~/.cache/uv` and
+      `~/.ansible/tmp` — each measured red, each carrying the walk that found it there,
+      and each checked by `writable_root_refusal` whatever the environment names.
+      `~/.cargo` stays
       ungranted: measured unnecessary on 2026-08-06 against a warm registry, unchanged
       since, and the proving dispatch never reached `check-rust` to re-ask the question.
     - **`network_access`**, which defaults off while the gate reads `gh` and `uv` may fetch.
@@ -3060,11 +3061,13 @@ def _codex_writable_roots() -> tuple[Path, ...]:
       The stage joined `just check` on 2026-08-13 (`178bef4`), a week *after* the
       2026-08-06 measurement that set the uv root — which is why the gate could grow a
       need the root list had already been measured without.
-    - **`~/.cache/ansible-lint`** — `ansible-lint --strict` writes `latest.json` there
-      whenever the copy on the box is over 24 h old, and creates the directory when absent
-      (`ansiblelint/config.py`'s version check). Derived from source rather than measured
-      in-sandbox — the proving dispatch died one line earlier — and granted anyway,
-      because a gate that is green only while a cache is fresh is a flake with a calendar.
+
+    `~/.cache/ansible-lint` was granted here once, on a derivation from `ansiblelint`'s
+    source that the box contradicted: the installed copy reports `INSTALLER=uv`, returns
+    before reaching the version check the derivation rested on, and the directory did not
+    exist after a gate run. A grant nothing on this box exercises is not containment but
+    unreviewed surface, so it is dropped — to return only with a measured red, the way the
+    two above each carry theirs.
 
     What the walk found **not** to need a grant: `cog`, `hemtt`, `gitleaks`, `ruff` and `ty`
     all ran green in-sandbox on `d-20260818-185929-ae5491` with the uv root alone; pytest,
@@ -3083,15 +3086,82 @@ def _codex_writable_roots() -> tuple[Path, ...]:
     Each cache is read from the environment the way its tool reads it, so a box that
     relocates it does not silently lose the gate. A root that does not exist is not an
     error: Codex logs it and carries on, which is the right shape for a path that follows a
-    convention rather than a fact.
+    convention rather than a fact. Which is exactly why the environment is not trusted with
+    the value: the same override that relocates a cache honestly can name `/`, or a git
+    directory, and a grant this function hands back verbatim is a grant the sandbox honours
+    verbatim. `writable_root_refusal` is the gate on that, and it reads whatever its source.
     """
     cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
     ansible_home = Path(os.environ.get("ANSIBLE_HOME") or Path.home() / ".ansible")
     return (
         Path(os.environ.get("UV_CACHE_DIR") or cache / "uv"),
         Path(os.environ.get("ANSIBLE_LOCAL_TEMP") or ansible_home / "tmp"),
-        cache / "ansible-lint",
     )
+
+
+def _hostile_root_reason(path: Path, project_root: Path) -> str | None:
+    """Say which grant principle a root breaks, or `None` if it breaks none.
+
+    Filesystem facts only, because a root that does not exist yet is still a grant: `.git`
+    as a component means the root is or sits inside a git directory (a linked worktree's
+    git dir is `<main>/.git/worktrees/<name>`, the shape `ANSIBLE_LOCAL_TEMP` was fed in
+    review), `HEAD` beside `objects` beside `refs` means the root *is* one (a bare
+    repository, the same trap without the name). Containment runs both ways against the
+    project root — inside it is a project file `git add --all` would sweep up, and
+    containing it reaches every worktree at once, which is #105's collision surface from
+    outside the project.
+
+    A `.git` sitting *inside* a root is deliberately not a refusal, because the box's own
+    measured-green uv cache carries one: the sandbox read-only-enforcing `<root>/.git`
+    breaks nothing a session does when that `.git` is not the project's, and the project's
+    own git state is already unreachable from any root the containment rules pass. The
+    trap #405 measured is a root that *is* a git directory, and that is what is refused.
+    """
+    if path == project_root or path.is_relative_to(project_root):
+        return f"inside the project {project_root}, so its files are project files"
+    if project_root.is_relative_to(path):
+        return f"contains the project {project_root}, so it reaches every worktree"
+    if ".git" in path.parts:
+        return "is or sits inside a git directory (.git component)"
+    if (path / "HEAD").is_file() and (path / "objects").is_dir() and (path / "refs").is_dir():
+        return "is a bare git directory (HEAD, objects and refs beside each other)"
+    return None
+
+
+def writable_root_refusal(project_root: Path) -> Refusal | None:
+    """Refuse an environment override that names a root the grant principle forbids (#405).
+
+    `_codex_writable_roots` reads `UV_CACHE_DIR` and `ANSIBLE_LOCAL_TEMP` verbatim, and a
+    verbatim `/` or git directory silently defeats the one invariant three probes were
+    spent establishing — outside every worktree, and never a git directory. This is the
+    rung that closes review's High 1: every root is checked whatever its source, and a
+    hostile value is a named refusal at plan time rather than a silent grant at run time.
+    It runs where the argv is minted, because the roots are frozen into the record then
+    and nothing re-derives them later.
+
+    No failure class, for `pair_block`'s reason: the provider is up and nothing was asked
+    of the code under test — this project declines to widen a sandbox on an environment
+    value it cannot vouch for.
+    """
+    for path in _codex_writable_roots():
+        reason = _hostile_root_reason(path, project_root)
+        if reason is not None:
+            return Refusal(
+                "writable_root_refused",
+                (
+                    f"root={path}",
+                    f"reason={reason}",
+                    (
+                        "variable_source=UV_CACHE_DIR or ANSIBLE_LOCAL_TEMP or XDG_CACHE_HOME"
+                        " or ANSIBLE_HOME override"
+                    ),
+                    f"project={project_root}",
+                ),
+                "The sandbox's writable roots are tool caches, and the environment just "
+                "named one that reaches the project or its git state. Fix the variable or "
+                "unset it so the cache defaults apply. Nothing was dispatched.",
+            )
+    return None
 
 
 # The seam between a session that cannot commit and a harness that can (#405). Named once
@@ -3141,7 +3211,69 @@ def harness_commits(lane: Lane, permission_mode: str) -> bool:
     return flags == CODEX_SANDBOX["acceptEdits"]
 
 
-def harness_finish(tree: Path, issue: int, record: Path) -> tuple[tuple[str, ...], int]:
+def harness_start_refusal(worktree: Path) -> Refusal | None:
+    """Refuse before the session launches where the tree is not provably empty (#405).
+
+    Review's High 2: `harness_finish` commits everything in the tree with `git add --all`,
+    so a finished predecessor's `.dispatch-commit-message` and its edits — surviving in a
+    worktree because nothing refused — would be swept into this run's commit and pushed
+    under this run's issue. The exact-list test missed it because the tree was clean. This
+    rung is #105's rule at the new place the failure moved to: files you did not write are
+    evidence, so refuse and report rather than absorb them.
+
+    The message file is asked about first, because the two findings say different things
+    to a reader: a surviving `CODEX_COMMIT_MESSAGE` is a predecessor's uncommitted
+    handover — the recovery runbook's, not a collision in progress — while a dirty tree
+    without one is the ordinary foreign-files shape, and reuses `classify_preflight`'s
+    `dirty_tree` refusal with an action written for this caller.
+
+    It runs in `run_dispatch` rather than at plan time, beside the credential re-check:
+    the child is what launches, and a refusal here writes a `result.json`, so the worktree
+    stops being occupied the moment the refusal lands rather than after a full run.
+    """
+    message_path = worktree / CODEX_COMMIT_MESSAGE
+    if message_path.exists():
+        return Refusal(
+            "dispatch_message_present",
+            (f"worktree={worktree}", f"file={message_path}"),
+            "A dispatch-commit message is already in this worktree, so a predecessor's "
+            "uncommitted handover is sitting in the tree this run was assigned — its "
+            "message and its edits belong to that run, and a harness that committed them "
+            "here would attribute them to this one. Nothing was launched. Follow "
+            "`docs/agents/recovery.md` for the predecessor's run, and never reset the "
+            "tree (#105).",
+        )
+    try:
+        status = worktree_tool.read_status(worktree_tool.git("status", "--porcelain", cwd=worktree))
+    except worktree_tool.GitError as failure:
+        return Refusal(
+            "git_failed",
+            (
+                f"worktree={worktree}",
+                f"command=git {' '.join(failure.args_run)}",
+                f"stderr={failure.stderr}",
+            ),
+            "Git would not answer for this worktree, so nothing about its contents could "
+            "be checked before launching. Nothing was dispatched.",
+        )
+    found = worktree_tool.classify_preflight(
+        worktree,
+        status,
+        "The worktree this dispatch was assigned is not clean, so every file in it is "
+        "evidence of work this run did not do — and a harness commit sweeps all of it "
+        "into this run's push (#105). Nothing was launched. Find whose work it is and "
+        "land or recover it first; never reset the tree.",
+    )
+    if found is None:
+        return None
+    # The worktree module's refusal carries no failure class, and this is a conversion
+    # rather than a restatement: `_from_stop`'s reason, for the third module it holds.
+    return Refusal(found.kind, found.found, found.action)
+
+
+def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal hides inside another
+    tree: Path, issue: int, record: Path
+) -> tuple[tuple[str, ...], int]:
     """Commit what a sandboxed session edited, with the message it left, and push it (#405).
 
     The unsandboxed half of the division of labour `_codex_sandbox_argv` records. It runs
@@ -3182,6 +3314,15 @@ def harness_finish(tree: Path, issue: int, record: Path) -> tuple[tuple[str, ...
             kept.write_text(message, encoding="utf-8")
             message_path.unlink()
         status = worktree_tool.read_status(worktree_tool.git("status", "--porcelain", cwd=tree))
+    except UnicodeDecodeError as undecodable:
+        return _harness_refusal(
+            "commit_message_unreadable",
+            (f"worktree={tree}", f"file={message_path}", f"found={undecodable}"),
+            "The session's message is not UTF-8 text, so the harness has nothing to commit "
+            "with and has committed nothing. The file is untouched in the tree and the tree "
+            "is as the session left it. Read the run's log, recover the message it meant, "
+            "and commit by hand — never reset the tree (#105).",
+        )
     except OSError as unreachable:
         return _harness_refusal(
             "commit_message_unreadable",
@@ -3190,7 +3331,7 @@ def harness_finish(tree: Path, issue: int, record: Path) -> tuple[tuple[str, ...
             "committed and the tree is as the session left it. This is the box's to fix.",
         )
     except worktree_tool.GitError as failure:
-        return _harness_git_failed(tree, failure)
+        return _harness_git_failed(tree, failure, record)
     if status.clean:
         return (("harness_commit=nothing_to_commit", f"worktree={tree}"), 0)
     if not message.strip():
@@ -3205,9 +3346,38 @@ def harness_finish(tree: Path, issue: int, record: Path) -> tuple[tuple[str, ...
     try:
         worktree_tool.git("add", "--all", cwd=tree)
         worktree_tool.git("commit", "--file", str(record / "commit-message.txt"), cwd=tree)
+    except worktree_tool.GitError as failure:
+        # The refusal cannot claim the tree is as the session left it, because `git add
+        # --all` ran first: every edit is staged and the message file is already gone.
+        # #105's rule stops this from resetting the staging away: what the harness did to
+        # the tree is named rather than undone, so the reader judges the evidence as found.
+        return _harness_refusal(
+            "git_failed",
+            (
+                f"worktree={tree}",
+                f"command=git {' '.join(failure.args_run)}",
+                f"stderr={failure.stderr}",
+            ),
+            "Read git's own error above, and read the tree before acting: `git add --all` "
+            "ran before the commit was refused, so every edit is staged and nothing is "
+            "committed. The tree is not as the session left it. The message is preserved "
+            "beside the record as commit-message.txt; finish by hand from there — never "
+            "reset the tree (#105).",
+        )
+    try:
         committed = worktree_tool.git("rev-parse", "HEAD", cwd=tree).strip()
     except worktree_tool.GitError as failure:
-        return _harness_git_failed(tree, failure)
+        return _harness_refusal(
+            "git_failed",
+            (
+                f"worktree={tree}",
+                f"command=git {' '.join(failure.args_run)}",
+                f"stderr={failure.stderr}",
+            ),
+            "The commit was made and its SHA could not be read back, so the push was not "
+            "attempted. Read git's own error above; the message the session asked for is "
+            "beside the record as commit-message.txt.",
+        )
     pushed = review_exchange.exchange(tree, issue)
     return (
         ("harness_commit=committed", f"commit={committed}", *pushed.lines),
@@ -3220,8 +3390,16 @@ def _harness_refusal(kind: str, found: tuple[str, ...], action: str) -> tuple[tu
     return (Refusal(kind, found, action).lines(), EXIT_REFUSED)
 
 
-def _harness_git_failed(tree: Path, failure: worktree_tool.GitError) -> tuple[tuple[str, ...], int]:
-    """Render git's own failure, argv and stderr quoted, the way the exchange renders it."""
+def _harness_git_failed(
+    tree: Path, failure: worktree_tool.GitError, record: Path
+) -> tuple[tuple[str, ...], int]:
+    """Render git's own failure, argv and stderr quoted, the way the exchange renders it.
+
+    The one site left on this helper is the `git status` read, which runs before anything
+    is staged: nothing was committed, and the message — if the session left one — has
+    already been moved beside the record, which the action names so the reader is not sent
+    looking for a file that is no longer in the tree.
+    """
     return _harness_refusal(
         "git_failed",
         (
@@ -3229,8 +3407,9 @@ def _harness_git_failed(tree: Path, failure: worktree_tool.GitError) -> tuple[tu
             f"command=git {' '.join(failure.args_run)}",
             f"stderr={failure.stderr}",
         ),
-        "Read git's own error above. The tree is as the session left it, and a message "
-        "that is not Conventional Commits arrives here as the `commit-msg` hook's refusal.",
+        "Read git's own error above. Nothing was staged and nothing committed; the edits "
+        "are untouched, and the message the session left, if any, is beside the record as "
+        f"{record / 'commit-message.txt'}.",
     )
 
 
@@ -3654,7 +3833,7 @@ def _state_refusal(
     return off_peak_refusal(LANES[PROFILES[args.profile].lane], now)
 
 
-def plan_dispatch(
+def plan_dispatch(  # noqa: PLR0911 — one return per refusal rung and per half of the plan
     args: argparse.Namespace,
     root: Path,
     now: datetime,
@@ -3735,6 +3914,11 @@ def plan_dispatch(
         else default_brief(identity, worktree)
     )
     if harness_commits(lane, args.permission_mode):
+        # High 1's rung: the roots are minted into the argv below, so the environment is
+        # checked here or not at all — the record freezes them for the child.
+        refusal = writable_root_refusal(root)
+        if refusal is not None:
+            return None, "", refusal
         brief += CODEX_COMMIT_PROTOCOL
     plan = Plan(
         identity=identity,
@@ -3895,6 +4079,11 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
     refusal = assert_worktree(plan.worktree, git("rev-parse", "--show-toplevel", cwd=plan.worktree))
     if refusal is None:
         token, refusal = lane_credential(lane, plan.credentials)
+    if refusal is None and harness_commits(lane, plan.permission_mode):
+        # High 2's rung, and the template is the credential re-check beside it: the child
+        # is what launches, so this is the last place to refuse without a run, and the
+        # `result.json` it writes releases the worktree's occupancy the moment it lands.
+        refusal = harness_start_refusal(plan.worktree)
     if refusal is not None:
         write_result(
             record,

@@ -196,7 +196,7 @@ replaced by a preference list per seat, resolved at dispatch time.
 | seat | preference, head first | escalation |
 |---|---|---|
 | `planner` (new; absorbs `cti-implementer-xhigh`) | `codex-sol-xhigh`, `opus-xhigh` | `fable-high` |
-| `implementer` | `codex-luna-max`, `zai-glm52-max`, `opus-low` | `codex-sol-high`, `opus-high` |
+| `implementer` | `codex-luna-max`, `zai-glm52-max`, `opus-low` *(A6: live as written — and the z.ai entry is `zai-glm53-max` in the registry since `89fc445` re-named the current GLM model; the table keeps the name it was decided with and the registry is the authority)* | `codex-sol-high`, `opus-high` |
 | `recon` (read-only) | `codex-luna-medium`, `haiku-medium` | — never escalates (A1) |
 | `review` | the implementer's list, resolved to the first profile that is **not** the one being reviewed, preferring a different lane | the implementer's escalation head |
 | `retro` (ruling 3) | `fable-high`, `opus-xhigh`, `codex-sol-xhigh` | `opus-max`, `fable-max` (A1) |
@@ -305,6 +305,22 @@ The alternative considered and rejected was gating Codex's output elsewhere, whi
 is "capable of implementing but not of gating" — precisely the ladder ruling 1
 withdrew, arrived at quietly.
 
+*(Amendment A6, 2026-08-19, on the human's instruction of 2026-08-18 recorded on
+#405: **the ceiling is lifted, and every sentence in this paragraph that said
+"blocked" is history rather than current state.** The seventh arrangement — no
+git directory a writable root at all — is the one that escaped the six measured:
+Codex read-only-enforces `<root>/.git` inside every writable root, and where no
+root is a git directory there is nothing to enforce, so the gate runs in the true
+repository layout while the commit moves to the dispatcher, which is not
+sandboxed. `SEAT_PROFILE_BLOCKS`' one entry —
+`("implementer", "codex-luna-max")` — is gone with the ceiling, and the registry
+heads `implementer` with `codex-luna-max` again, per the preference table above
+and not per this paragraph's "until it lifts" ordering. What survives unchanged is
+the binary rule this paragraph applied and the rejected alternative it records:
+gating Codex's output elsewhere is still the graded ladder ruling 1 withdrew, and
+the division of labour — the session gates, `harness_finish` commits — is the
+arrangement that made the head live without touching it.)*
+
 Three registry lines are new: Luna at maximum effort, Luna at its published
 default of medium, and Opus at low effort. **Luna enters on publication rather
 than measurement**, at the human's ruling — a named exception to `AGENTS.md`'s
@@ -314,7 +330,10 @@ and describes it as a fast, affordable agentic coding model; neither adjective h
 been measured in this project.
 
 **On `recon` that exception has no expiry, and the ADR should say so.** The
-implementer head is at least gated and ranked once #265 lifts. `recon` is
+implementer head is at least gated and ranked once #265 lifts *(A6: it has
+lifted, #405 — the head is live, and the sentence's contrast is what survives:
+the implementer is now checked by the gate, while nothing will ever check this
+one)*. `recon` is
 read-only, so no gate reads its output; it lands nothing, so ruling 6 never ranks
 it; and the admission bar that would have judged it is dropped. Nothing in this
 design will ever check that profile — and recon output is what an orchestrator
@@ -782,8 +801,8 @@ prose with extra steps.
 
 Consultative escalation is available only on Claude Code. Codex has no Advisor
 equivalent and heads four seats under this map — planner, implementer once its
-ceiling lifts, recon and review — so those reach the same conditions by
-re-dispatch, at the cost re-dispatch carries.
+ceiling lifts *(A6: lifted, #405 — it heads it now)*, recon and review — so those
+reach the same conditions by re-dispatch, at the cost re-dispatch carries.
 
 ### 6. Judgement moves from an upfront bar to a retrospective observatory
 
@@ -1085,7 +1104,10 @@ question — the gates this row's path list does not name.)*
   contradict that judgement.
 - **Two lanes cannot enforce something this map requires, and only one of them
   blocks anything.** The gate ceiling makes the Codex implementer head a blocking
-  prerequisite; the missing seat-definition surface — whose failure mode is
+  prerequisite *(A6: this cost is spent, #405 — the ceiling is lifted and the head
+  is live, so the lane enforces what the map requires of it; the seat-gap half
+  below stands unchanged, and its reasoning about visible-only-in-a-bill failures
+  is why it was never made blocking)*; the missing seat-definition surface — whose failure mode is
   *silent tier inheritance*, the one that consumed the bulk of a weekly budget on
   2026-08-04 — blocks nothing and is merely recorded. The inconsistency is
   deliberate: the ceiling is falsifiable by running a gate, while the seat gap is
@@ -1094,7 +1116,9 @@ question — the gates this row's path list does not name.)*
   the weakest place in ruling 1's binary rule.
 - **Consultative escalation is unavailable on the lane heading four seats.**
 - **The implementer head is blocked on #265's ceiling**, so ruling 2's headline
-  allocation is not the one that runs on the day this lands.
+  allocation is not the one that runs on the day this lands. *(A6, #405: no longer
+  a cost — the ceiling lifted on the human's instruction of 2026-08-18, and the
+  headline allocation is the one that runs.)*
 
 ## What would overturn this
 
@@ -1185,7 +1209,9 @@ land under a rule saying everything is reviewed, because it would have to review
 itself.
 
 Filed separately: lifting #265's gate ceiling, which blocks the Codex implementer
-head; the `AGENTS.md` reduction and its `NO_PYTHON_SUBJECT` correction; the Codex
+head *(A6: done, #405 — the session gates and the harness commits, and
+`SEAT_PROFILE_BLOCKS` is empty)*; the `AGENTS.md` reduction and its
+`NO_PYTHON_SUBJECT` correction; the Codex
 orchestrator backup that ends ruling 1's carve-out; the Codex seat-definition
 surface; the blind classifier the severity hypothesis needs; the top-level
 dispatched corpus runner that would lift routing class 5; `hook_parity`'s
