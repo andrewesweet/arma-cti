@@ -374,8 +374,7 @@
   `dispatch.candidate_refusal` — the breaker, the off-peak rule and the lane's credential among
   the things that exclude a head. The comment now names all four rungs and scopes its "not a
   fallback for a head the breaker happens to be refusing" clause to `resolve_seat`, which is the
-  only resolution it was ever true of.
-  <!-- arbiter-rule: stated — a dated entry, quoting what one landing corrected. Bound to its date, not to the current tree; cutting it to a pointer would delete the record. #390 -->
+  only resolution it was ever true of. <!-- arbiter-rule: stated — a dated entry, quoting what one landing corrected. Bound to its date, not to the current tree; cutting it to a pointer would delete the record. #390 -->
 
 - **AGENTS.md now says what an escalation entry actually resolves through (#329, review round 3).**
   The *Seats and profiles* paragraph closed with "registry data that nothing resolves through …
@@ -389,8 +388,7 @@
   it. The half that was true is kept: an escalation entry is a judgement that the work is harder
   than the seat's tier, and `just dispatch`'s own resolution still never spends one for you.
   The same flat claim in `exhausted_refusal`'s remedy text is scoped to that resolution rather
-  than left standing over both.
-  <!-- arbiter-rule: stated — a dated entry, quoting what one landing corrected. Bound to its date, not to the current tree; cutting it to a pointer would delete the record. #390 -->
+  than left standing over both. <!-- arbiter-rule: stated — a dated entry, quoting what one landing corrected. Bound to its date, not to the current tree; cutting it to a pointer would delete the record. #390 -->
 
 - **`tools/dispatch.py` no longer contradicts itself on the `fable`/`retro` overlap (#329, review
   round 3).** One comment recorded #329 as having closed the documentation half; two others still
@@ -579,8 +577,7 @@
   filing owed on the originating item for every finding an arbiter upheld, and a recorded
   trace for every dismissal. Rounds, escalations, dispute outcomes, terminuses and arbiter
   resolutions now emit OTel events journaled under `~/.arma-cti/review/` — rounds leave no
-  trace in a diff, so a loop shipped without them is a loop whose cost cannot be recovered.
-  <!-- arbiter-rule: stated — a dated entry, describing the rule at the landing that introduced it. Bound to its date, not to the current tree. #390 -->
+  trace in a diff, so a loop shipped without them is a loop whose cost cannot be recovered. <!-- arbiter-rule: stated — a dated entry, describing the rule at the landing that introduced it. Bound to its date, not to the current tree. #390 -->
 
 - **`just admission` is `just trial`, carrying the pre-registration harness and the close audit
   that outlived the bar (#328).** `tools/admission.py` became `tools/trial.py`: verbs are
@@ -625,8 +622,7 @@
   `implementer`, `review`, `recon`) and refuses `retro` and `fable` on every lane including
   Claude's. The carve-out it was confused with is `orchestrator_claude_only` in the seat table,
   and the policy's surviving keep-on-Claude bar is class 6's. The ADR text moves; the code stays
-  as landed.
-  <!-- arbiter-rule: stated — a dated entry, quoting the ADR amendment it records. Bound to its date, not to the current tree. #390 -->
+  as landed. <!-- arbiter-rule: stated — a dated entry, quoting the ADR amendment it records. Bound to its date, not to the current tree. #390 -->
 
 - **The seat registry carries A1's escalation entries, and the arbiter is resolved from the seat
   that did the work (#361, review round 1).** For one commit the ADR named `retro`'s and
@@ -659,8 +655,7 @@
   none. `docs/agents/review-severity.md` and `config/escalation-conditions.json` describe the
   resolution rather than only its head. The one live decision left is the class 6 keep-on-Claude
   bar, whose retirement condition #331 spent ten hours before it was written down: #389 owns it,
-  replacing an owner (#333) that had closed.
-  <!-- arbiter-rule: stated — a dated entry, quoting what one landing corrected. Bound to its date, not to the current tree. #390 -->
+  replacing an owner (#333) that had closed. <!-- arbiter-rule: stated — a dated entry, quoting what one landing corrected. Bound to its date, not to the current tree. #390 -->
 
 - **The fifth copy of the arbiter rule is corrected and counted, and two false owners are
   replaced by filed issues (#361, review round 3).** `dispatch.escalation_head`'s docstring said
@@ -681,8 +676,7 @@
   ADR's only worked example put `codex-sol-xhigh` third in the walk where it is fifth (third is
   its preference-list position, the confusion that paragraph exists to correct); and
   `docs/agents/review-severity.md` and `config/escalation-conditions.json` each listed fewer
-  exclusion rungs than `_walk_first` runs — all four are named now.
-  <!-- arbiter-rule: stated — a dated entry, quoting what one landing corrected. Bound to its date, not to the current tree. #390 -->
+  exclusion rungs than `_walk_first` runs — all four are named now. <!-- arbiter-rule: stated — a dated entry, quoting what one landing corrected. Bound to its date, not to the current tree. #390 -->
 
 - **ADR-0071 stops claiming its arbiter-copy enumeration was derived, and four smaller copies are
   corrected (#361, the human's ruling of 2026-08-15).** Round 3's paragraph justified a
@@ -697,8 +691,7 @@
   escalation refuses by name; `dispatch.escalation_head`'s docstring described the fall-through as
   walking the preference list, where the code walks the entry **tail** first (held across all three
   review rounds); and `AGENTS.md` and the `justfile` listed `escalate`'s exclusion rungs without
-  the registry rung.
-  <!-- arbiter-rule: stated — a dated entry, quoting what one landing corrected. Bound to its date, not to the current tree. #390 -->
+  the registry rung. <!-- arbiter-rule: stated — a dated entry, quoting what one landing corrected. Bound to its date, not to the current tree. #390 -->
 
 - **The three documents that still commanded the withdrawn rules are re-based on ADR-0071
   (#329), after the mechanisms rather than before them.** The always-loaded file's *Model roles*

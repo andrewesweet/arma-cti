@@ -33,7 +33,10 @@ def _repo(root: Path) -> None:
     (root / "CHANGELOG.md").write_text(
         "# Changelog\n\n<!-- scriv-insert-here -->\n", encoding="utf-8"
     )
-    _git(root, "add", "CHANGELOG.md")
+    fragments = root / "changelog.d"
+    fragments.mkdir()
+    (fragments / "existing.md").write_text("### Fixed\n\n- Existing entry.\n", encoding="utf-8")
+    _git(root, "add", "CHANGELOG.md", "changelog.d/existing.md")
     _git(root, "commit", "-m", "chore: seed")
     _git(root, "update-ref", "refs/remotes/origin/main", "HEAD")
 
@@ -45,15 +48,25 @@ def test_source_changes_need_a_live_fragment(tmp_path: Path) -> None:
     (root / "tools" / "feature.py").write_text("value = 1\n", encoding="utf-8")
 
     findings = check_changelog.scan(root)
-    assert any("no branch-owned fragment" in finding.detail for finding in findings)
+    assert any("no valid branch-owned fragment" in finding.detail for finding in findings)
+
+    (root / "changelog.d" / "existing.md").write_text(
+        "### Fixed\n\n- Edited entry.\n", encoding="utf-8"
+    )
+    assert any("no valid branch-owned fragment" in f.detail for f in check_changelog.scan(root))
 
     fragment = root / "changelog.d" / "358-feature.md"
-    fragment.parent.mkdir()
+    fragment.write_text("", encoding="utf-8")
+    assert any("no valid branch-owned fragment" in f.detail for f in check_changelog.scan(root))
+
+    fragment.write_text("### Invalid\n\n- Not collectable.\n", encoding="utf-8")
+    assert any("no valid branch-owned fragment" in f.detail for f in check_changelog.scan(root))
+
     fragment.write_text("### Added\n\n- Feature.\n", encoding="utf-8")
     assert check_changelog.scan(root) == []
 
     fragment.unlink()
-    assert any("no branch-owned fragment" in f.detail for f in check_changelog.scan(root))
+    assert any("no valid branch-owned fragment" in f.detail for f in check_changelog.scan(root))
 
     (root / "CHANGELOG.md").write_text("# Changelog\n", encoding="utf-8")
     assert any("scriv-insert-here" in f.detail for f in check_changelog.scan(root))
@@ -72,7 +85,9 @@ def test_scriv_collects_in_filename_and_category_order_then_deletes_fragments(
     fragments.mkdir()
     (fragments / "002.md").write_text("### Fixed\n\n- second\n", encoding="utf-8")
     (fragments / "001.md").write_text(
-        "### Added\n\n- added\n\n### Fixed\n\n- first\n", encoding="utf-8"
+        "### Added\n\n- added\n\n### Fixed\n\n- first "
+        "<!-- arbiter-rule: stated — collection fixture (#390) -->\n",
+        encoding="utf-8",
     )
 
     subprocess.run(
@@ -91,5 +106,6 @@ def test_scriv_collects_in_filename_and_category_order_then_deletes_fragments(
     text = (tmp_path / "CHANGELOG.md").read_text(encoding="utf-8")
     assert text.index("### Added") < text.index("### Fixed")
     assert text.index("- first") < text.index("- second")
+    assert "arbiter-rule: stated — collection fixture (#390)" in text
     assert "## [0.2.0] - " in text
     assert list(fragments.iterdir()) == []

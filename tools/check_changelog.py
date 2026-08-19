@@ -7,6 +7,8 @@ import sys
 from pathlib import Path
 from typing import Final, NamedTuple
 
+from scriv.format_md import MdTools
+
 sys.path.insert(0, str(Path(__file__).parent))
 
 from worktree import git
@@ -17,6 +19,9 @@ STATUS_PATH_AT: Final = 3
 NON_SOURCE_ROOTS: Final = frozenset({".claude", ".github", "changelog.d", "docs", "tests"})
 NON_SOURCE_FILES: Final = frozenset(
     {".dispatch-commit-message", "AGENTS.md", "CHANGELOG.md", "CLAUDE.md", "LICENSE", "README.md"}
+)
+VALID_CATEGORIES: Final = frozenset(
+    {"Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"}
 )
 
 
@@ -37,6 +42,23 @@ def _changed_paths(root: Path) -> set[str]:
     return {path for path in committed if path} | {
         line[STATUS_PATH_AT:] for line in working if len(line) > STATUS_PATH_AT
     }
+
+
+def _added_paths(root: Path) -> set[str]:
+    committed = git(
+        "diff", "--name-only", "--diff-filter=A", f"{BASE}...HEAD", cwd=root
+    ).splitlines()
+    working = git("status", "--porcelain", "--untracked-files=all", cwd=root).splitlines()
+    return {path for path in committed if path} | {
+        line[STATUS_PATH_AT:]
+        for line in working
+        if len(line) > STATUS_PATH_AT and line.startswith(("??", "A"))
+    }
+
+
+def _valid_fragment(path: Path) -> bool:
+    sections = MdTools().parse_text(path.read_text(encoding="utf-8"))
+    return bool(sections) and set(sections) <= VALID_CATEGORIES
 
 
 def _is_source(path: str) -> bool:
@@ -68,15 +90,18 @@ def scan(root: Path) -> list[Finding]:
     sources = sorted(path for path in paths if _is_source(path))
     fragments = sorted(
         path
-        for path in paths
-        if path.startswith("changelog.d/") and path.endswith(".md") and (root / path).is_file()
+        for path in _added_paths(root)
+        if path.startswith("changelog.d/")
+        and path.endswith(".md")
+        and (root / path).is_file()
+        and _valid_fragment(root / path)
     )
     if sources and not fragments:
         findings.append(
             Finding(
-                f"source changes and no branch-owned fragment; source={','.join(sources)}",
+                f"source changes and no valid branch-owned fragment; source={','.join(sources)}",
                 "add `changelog.d/<issue>-<slug>.md` with an Added, Changed, Deprecated, "
-                "Removed, Fixed, or Security section",
+                "Removed, Fixed, or Security section and a non-empty entry",
             )
         )
     return findings

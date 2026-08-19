@@ -50,6 +50,51 @@
   and ADR-0071 is swept with Amendment A6: the #265 ceiling is lifted, the Codex implementer
   head is live, and every paragraph that said otherwise now says so.
 
+- **Every surface that states the cross-lane gate rule now states its exhaustion case too
+  (#416, ADR-0073 Amendment A1).** `AGENTS.md`, the class-6 remedy in
+  `config/dispatch-routing-policy.json` and ADR-0071's row 6 each still said a gate landing
+  needs a different-lane verdict in absolute terms, which the `lane_exhausted` degradation
+  had already qualified — an agent reading any of them was told something the code no
+  longer does. Each now states the rule first and the degradation second, so the ordering
+  is read rather than implied: the refusal stands unchanged wherever a cross-lane reviewer
+  exists. ADR-0073's A1 gains the `Amended:` header entry the A1/A2 precedent prescribes
+  beside its inline marking, its fallback's false "never empty while more than one profile
+  exists" is replaced with the true bound — empty where the records place every registered
+  profile on the work, and there the rung above refuses `review_same_profile` before the
+  lane question is reached — and `tools/land_review.py`'s decision helper is named for what
+  it returns rather than for the refusal it used to be.
+
+- **The review seat's resolution reads the declared authorship record, not only the dispatch
+  records (#402).** #398 gave the author set a second source — the interactive declaration,
+  because #294 bars a dispatched session from writing under `.claude/` and such a change
+  leaves no dispatch record at all — and `just land`'s never-alone rung reads both.
+  `just dispatch --seat review` read only the first, so for an interactively authored
+  change the seat could resolve the very profile that authored it: the dispatch was spent,
+  the review ran, and `review_same_profile` refused at the landing on a record the
+  dispatcher had never seen, while the dispatch's own `reviewing_checked` mark answered
+  over a set missing an author sitting on disk. The two consumers of the author set now
+  perform the same merge — `review_authorship` calls `with_declared_authors` over
+  `recorded_authors`, exactly as the landing rung does — so they cannot disagree, and the
+  route's mark and `potential_authors` reflect the merged set. Two fail-closed companions
+  ride with it, reusing the landing's names for the same facts: a declared record that
+  will not read refuses the dispatch `authorship_unreadable` rather than crashing or
+  overstating the set, and a record removed after a declaration refuses
+  `authorship_lost` — the silent narrowing `just review-loop escalate` already refuses,
+  one door along. The same-user limit ADR-0071 ruling 4 states is unchanged: a declared
+  author is the recording session's own word, which is why the route still says
+  `checked` and never `verified`.
+
+- **A brief no longer promises a clean tree the flake filter never established (#360).**
+  `just brief`'s empty flake section told a seat "None open. Any red is yours." on the
+  strength of a name-based filter — a title naming a `test_` that says it flakes, or a
+  body opening `Class: flake_quarantine` — that cannot see an open issue phrased any
+  other way. Three briefs on one day carried the claim while #341's deterministic
+  four-hours-a-day red sat open, so two seats met reds the brief had just told them were
+  theirs. The zero branch now states what was searched and that the filter may miss, and
+  tells the seat to check the tracker before treating a red as its own; the non-empty
+  branch's "any other red is yours" tail, which made the same claim one filter-miss away,
+  carries the same qualification, as does the orchestration seat's copy of the rule.
+
 ### Changed
 
 - **Cross-lane review of a gate change is a strong preference carried by a mandatory record,
@@ -186,48 +231,3 @@
   `docs/agents/review-severity.md` carries the rule and its worked example, and the dispatch
   brief's landing section now enumerates all four routes, so an implementer meets the fourth
   before the `finding_unadjudicated` refusal names it at `just land`.
-
-- **Every surface that states the cross-lane gate rule now states its exhaustion case too
-  (#416, ADR-0073 Amendment A1).** `AGENTS.md`, the class-6 remedy in
-  `config/dispatch-routing-policy.json` and ADR-0071's row 6 each still said a gate landing
-  needs a different-lane verdict in absolute terms, which the `lane_exhausted` degradation
-  had already qualified — an agent reading any of them was told something the code no
-  longer does. Each now states the rule first and the degradation second, so the ordering
-  is read rather than implied: the refusal stands unchanged wherever a cross-lane reviewer
-  exists. ADR-0073's A1 gains the `Amended:` header entry the A1/A2 precedent prescribes
-  beside its inline marking, its fallback's false "never empty while more than one profile
-  exists" is replaced with the true bound — empty where the records place every registered
-  profile on the work, and there the rung above refuses `review_same_profile` before the
-  lane question is reached — and `tools/land_review.py`'s decision helper is named for what
-  it returns rather than for the refusal it used to be.
-
-- **The review seat's resolution reads the declared authorship record, not only the dispatch
-  records (#402).** #398 gave the author set a second source — the interactive declaration,
-  because #294 bars a dispatched session from writing under `.claude/` and such a change
-  leaves no dispatch record at all — and `just land`'s never-alone rung reads both.
-  `just dispatch --seat review` read only the first, so for an interactively authored
-  change the seat could resolve the very profile that authored it: the dispatch was spent,
-  the review ran, and `review_same_profile` refused at the landing on a record the
-  dispatcher had never seen, while the dispatch's own `reviewing_checked` mark answered
-  over a set missing an author sitting on disk. The two consumers of the author set now
-  perform the same merge — `review_authorship` calls `with_declared_authors` over
-  `recorded_authors`, exactly as the landing rung does — so they cannot disagree, and the
-  route's mark and `potential_authors` reflect the merged set. Two fail-closed companions
-  ride with it, reusing the landing's names for the same facts: a declared record that
-  will not read refuses the dispatch `authorship_unreadable` rather than crashing or
-  overstating the set, and a record removed after a declaration refuses
-  `authorship_lost` — the silent narrowing `just review-loop escalate` already refuses,
-  one door along. The same-user limit ADR-0071 ruling 4 states is unchanged: a declared
-  author is the recording session's own word, which is why the route still says
-  `checked` and never `verified`.
-
-- **A brief no longer promises a clean tree the flake filter never established (#360).**
-  `just brief`'s empty flake section told a seat "None open. Any red is yours." on the
-  strength of a name-based filter — a title naming a `test_` that says it flakes, or a
-  body opening `Class: flake_quarantine` — that cannot see an open issue phrased any
-  other way. Three briefs on one day carried the claim while #341's deterministic
-  four-hours-a-day red sat open, so two seats met reds the brief had just told them were
-  theirs. The zero branch now states what was searched and that the filter may miss, and
-  tells the seat to check the tracker before treating a red as its own; the non-empty
-  branch's "any other red is yours" tail, which made the same claim one filter-miss away,
-  carries the same qualification, as does the orchestration seat's copy of the rule.
