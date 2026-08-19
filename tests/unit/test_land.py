@@ -22,8 +22,9 @@ from __future__ import annotations
 
 import json
 import subprocess
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Final
 
 import pytest
 from conftest import REPO, load_tool
@@ -36,6 +37,7 @@ pool_merge = load_tool("pool_merge")
 pool_comment = load_tool("pool_comment")
 corpus_gate = load_tool("corpus_gate")
 land = load_tool("land")
+land_review = load_tool("land_review")
 review_exchange = load_tool("review_exchange")
 routing_policy = load_tool("routing_policy")
 
@@ -629,6 +631,25 @@ class _Gate:
         return land.GateResult(self.code, "")
 
 
+# Saturday 07:00 UTC — outside z.ai's Mon-Fri 14:00-18:00 SGT peak band, so a staged
+# landing's free-lane read is the same answer on every box at every hour (#426).
+OFF_PEAK: Final = datetime(2026, 8, 22, 7, 0, tzinfo=UTC)
+
+
+def _reach(at: Path) -> land_review.LaneReach:
+    """Point the gate rung's free-lane read at scratch state and a fixed clock (#426).
+
+    `_never_the_real_records`' reasoning, one seam further: the real defaults are this
+    box's breaker directory, its credentials file and the wall clock, and a landing that
+    read them would record `lane_barred` or `same_lane_chosen` according to the hour and
+    to whether z.ai's key happens to be installed here.
+    """
+    credentials = at / "credentials.env"
+    credentials.write_text("ZAI_API_KEY=staged-for-this-test\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    return land_review.LaneReach(at / "breaker", credentials, OFF_PEAK)
+
+
 def _reviewed(  # noqa: PLR0913 — one parameter per field of the record under test
     here: Path,
     at: Path,
@@ -725,7 +746,7 @@ def _reviewed(  # noqa: PLR0913 — one parameter per field of the record under 
         target = review_root / "213" / "loop.json"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(json.dumps(loop), encoding="utf-8")
-    return land.ReviewInputs(213, dispatch_root, review_root)
+    return land.ReviewInputs(213, dispatch_root, review_root, _reach(at))
 
 
 @pytest.fixture(autouse=True)
@@ -884,30 +905,35 @@ def test_a_gate_path_lands_from_a_non_claude_lane_under_a_cross_lane_review(
     assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
 
 
-def test_a_gate_path_reviewed_on_the_authors_lane_refuses_before_the_gate_or_push(
+def test_a_gate_path_reviewed_on_the_authors_lane_lands_and_records_the_downgrade(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,
 ) -> None:
-    """The refusal that replaced the lane bar, in the place the lane bar used to fire.
+    """The human's ruling of 2026-08-19, end to end where the lane bar used to fire (#426).
 
-    Same diff, same lane, and the only thing changed is the reviewing dispatch's lane: the
-    review is now on `claude-native`, which is the author's. It refuses before `just fast`
-    runs and before anything is pushed, which is where the retired bar sat (#406).
+    Same diff, same lane, and the only thing changed from the test above is the reviewing
+    dispatch's lane: the review is now on `claude-native`, which is the author's. That used
+    to refuse `review_same_lane` before the gate ran; under the ruling the lane half is a
+    strong preference rather than a rule, so the landing runs its gate, reaches the remote,
+    and carries in its own printed bytes the fact that a cross-lane reviewer was there to
+    dispatch and was not the one that ran.
     """
     origin, main, here = repo
-    before = _tip(origin)
     _commit(here, ".claude/settings.json", "{}\n")
     gate = _Gate()
     review = _reviewed(here, tmp_path, reviewer=("opus-xhigh", "claude-native"))
 
     report = land.land(main, here, gate=gate, lane="zai", review=review)
 
-    assert report.code == 1
-    assert report.lines[0] == "refusal=review_same_lane"
-    assert "reviewer_lane=claude-native" in report.lines
-    assert "gate_path=.claude/settings.json" in report.lines
-    assert gate.calls == []
-    assert _tip(origin) == before
+    assert report.code == 0, report.lines
+    assert not any(line.startswith("refusal=") for line in report.lines)
+    downgrade = [line for line in report.lines if line.startswith("gate_review=")]
+    assert len(downgrade) == 1
+    assert downgrade[0].startswith("gate_review=same_lane_chosen reviewer_lane=claude-native")
+    assert "gate_paths=.claude/settings.json" in downgrade[0]
+    assert "free_lanes=zai codex" in downgrade[0]
+    assert land_review.SAME_LANE_CHOSEN_LIMIT in report.lines
+    assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
 
 
 def test_a_non_exempt_diff_outside_every_class_lands_unimpeded(

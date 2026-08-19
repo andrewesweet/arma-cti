@@ -52,6 +52,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Cross-lane review of a gate change is a strong preference carried by a mandatory record,
+  not a refusal (#426).** On the human's ruling of 2026-08-19 ("Same lane review is a strong
+  preference, not a rule"), `just land` no longer refuses `review_same_lane` when a routing
+  class 6 landing's reviewer shares a lane with an author. The refusal is deleted, and every
+  gate landing now prints exactly one `gate_review=` line naming which of four things
+  happened: `cross_lane`, where the preferred check ran; `lane_exhausted`, where every lane
+  the registry carries is a lane the issue's records place on the work; `lane_barred`, where
+  a free lane existed and every one of them was unreachable, each named with the bar that
+  says so — its off-peak window, its breaker, or a provider quota; and `same_lane_chosen`,
+  where a free lane was reachable and a same-lane verdict cleared the landing anyway. Those
+  last three are three different facts about a downgrade and a reader must be able to tell
+  them apart, so the record is not optional and no flag suppresses it. Every cause is derived
+  at landing time — exhaustion from `tools/dispatch.py`'s registry against the records, a bar
+  from that module's new `lane_bar`, which is the breaker, off-peak and credential rungs
+  `candidate_refusal` already asked, read live through the one function so the landing's
+  account cannot drift from what a dispatch would have done. `review_same_profile` is
+  untouched and still absolute: no instance reviews its own work. `review_lane_unknown` and
+  `gate_class_undetermined` also stand, because each refuses a landing whose record cannot be
+  computed rather than one whose lanes coincide. ADR-0073 carries the reasoning as Amendment
+  A2, with #416's exhaustion rule folded into the new shape rather than left beside it.
+
 - **A review verdict binds the diff it reviewed, not only the commit, so a clean rebase no
   longer orphans it (#417).** `just review record` now writes the exact identity of the
   reviewed diff into the verdict — a SHA-256 over `git diff --unified=0` of the same

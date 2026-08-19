@@ -22,19 +22,33 @@ exhaustive open-issue scan CLAUDE.md prescribes could not be run from this sessi
 collision found there is renumbered on the rebase as prescribed
 Amended: 2026-08-18, same day as the decision above, on the human's instruction carried by
 #416's body — which names the degradation, its visibility in the landing's own key, and
-exhaustion as its only trigger. One amendment, marked inline at the passages it changes —
-**A1** (#416, human instruction 2026-08-18) answers the arrangement this record's rule had
-no answer for: a branch whose potential-author set covers every lane the registry carries,
-where the admissible reviewer-lane set is empty and no dispatch can ever satisfy the
+exhaustion as its only trigger. Two amendments, each marked inline at the passages it
+changes — **A1** (#416, human instruction 2026-08-18) answers the arrangement this record's
+rule had no answer for: a branch whose potential-author set covers every lane the registry
+carries, where the admissible reviewer-lane set is empty and no dispatch can ever satisfy the
 predicate, so the landing refuses forever — #405 sat exactly there. The requirement degrades
 there to ADR-0071 ruling 4's different-profile rule, recorded as `gate_review=lane_exhausted`;
 exhaustion is the only trigger, derived at landing time from the registry and the records
 and never declared by a caller. A1 reverses no decision this record states and adds the one
-degradation it names: every case with a cross-lane reviewer available refuses
-`review_same_lane` exactly as first written. Its wording is the implementer's rendering of
-the instruction, posted to #416 before anything landed and amendable by the human there; the
-`Reviewed-by-human:` line above covers the base record, and A1 rides the instruction that
-issue's body records
+degradation it names. Its wording is the implementer's rendering of the instruction, posted
+to #416 before anything landed and amendable by the human there; the `Reviewed-by-human:`
+line above covers the base record, and A1 rides the instruction that issue's body records
+Amended: 2026-08-19, on the human's ruling recorded at #217 and carried out by #426 —
+**A2**, which does reverse a decision this record states, and is written where A1 stopped.
+A1 answered exhaustion and left every other unavailability refusing forever; #390 then sat
+green and unlandable with two of three lanes as authors and the third, `zai`, inside its
+published off-peak window — both other lanes up and idle, the branch waiting on a schedule
+rather than on a risk. Told that, the human ruled: *"Same lane review is a strong preference,
+not a rule. Amend accordingly."* **The lane predicate stops being a refusal and becomes a
+preference carried by a mandatory record.** `review_same_lane` is deleted. Every gate
+landing now prints exactly one `gate_review=` line: `cross_lane` where the preferred check
+ran, and one of three named downgrades where it did not — `lane_exhausted` (A1's, folded in
+here rather than left beside this one), `lane_barred`, `same_lane_chosen`. A1's substance
+survives unchanged as the first of the three; what A2 removes is the sentence that every
+other case refuses. ADR-0071 ruling 4 is untouched and `review_same_profile` stays an
+absolute refusal, which is the invariant the lane rule was strengthening rather than
+replacing. This amendment's wording is the implementer's rendering of the ruling; the
+ruling's own text is at #217 and the human may amend it there
 
 ## How this landed, because it landed in two pieces
 
@@ -70,15 +84,22 @@ From today the row refuses nothing. `config/dispatch-routing-policy.json` class 
 one predicate added to the never-alone rung ADR-0071 ruling 4 already runs at every landing
 (`tools/land_review.py`): **for a landing whose diff touches a class-6 path, the review
 verdict clearing it must come from a different lane than the author's**, not merely a
-different profile.
+different profile. *(Amendment A2, #426, replaces "must" with "should, and says so when it
+did not" — the rule below became a preference with a mandatory record on the human's ruling
+of 2026-08-19. The predicate, the author set and the fail-closed refusals are unchanged;
+what changed is the answer where the predicate is not met, and it is given in full at the
+amendment's own passage below.)*
 
-Three refusals carry it, all fail-closed:
+Two refusals carry it, both fail-closed, and both survive A2 because each refuses a landing
+whose lane record cannot be **computed** rather than one whose lanes coincide:
 
 | kind | fires when |
 |---|---|
-| `review_same_lane` | the diff touches a gate path and the verdict's reviewer lane is a lane the issue's records place on the work |
-| `review_lane_unknown` | it touches one and either the reviewer's lane or an author profile is not in `tools/dispatch.py`'s registry, so the two cannot be compared |
+| `review_lane_unknown` | the diff touches a gate path and either the reviewer's lane or an author profile is not in `tools/dispatch.py`'s registry, so the two cannot be compared |
 | `gate_class_undetermined` | the trusted policy or the diff could not be read, so whether it touches one is unknown |
+
+*(A third, `review_same_lane`, fired when the diff touched a gate path and the reviewer's
+lane was an author's. Amendment A2 deleted it.)*
 
 Two consequences are recorded rather than left to be discovered. First, class 6's
 `landing_path_prefixes` is now the **one authority** for what a gate path is — the position
@@ -127,13 +148,71 @@ that refuses; a rung that refuses forever is worse than both.*
 ***Exhaustion is the only trigger, and it is derived, never declared.** The comparison is
 computed at landing time from `tools/dispatch.py`'s registry and the issue's dispatch records
 and declared authorship — no flag, no exemption entry, no record of a past exhaustion — so a
-lane joining or leaving the registry moves the degradation with it, in both directions: a
-landing that cleared as exhausted refuses again the day a fourth lane registers, and a
-landing that refused clears the day a lane retires with its authors' records still in place.
-Every case where a cross-lane reviewer **is** available refuses `review_same_lane` exactly as
-this record first stated it. This is not the escape hatch the cost section below refused: an
-escape hatch is a caller's declaration, and this fires only on an empty set that no caller
-can write into being.*
+lane joining or leaving the registry moves the cause with it, in both directions. This is not
+the escape hatch the cost section below refused: an escape hatch is a caller's declaration,
+and this fires only on an empty set that no caller can write into being.* *(A1 as first
+written ended here with "every case where a cross-lane reviewer **is** available refuses
+`review_same_lane` exactly as this record first stated it". Amendment A2 removes that
+sentence and keeps everything above it: exhaustion is now the first of three named
+downgrade causes rather than the only arrangement that does not refuse.)*
+
+*(Amendment A2, 2026-08-19, #426 — the human's ruling recorded at #217, whose text is quoted
+below; the wording of this note is the implementer's rendering of it and the human may amend
+it there.)*
+
+***The lane half is a strong preference, not a rule.** A1 answered the branch whose authors
+span every lane and left every other unavailability refusing forever. #390 then sat green
+and unlandable with two of three lanes as authors and the third, `zai`, inside its published
+off-peak window — both other lanes up and idle, the branch waiting on a schedule rather than
+on a risk. Told that, the human ruled: "Same lane review is a strong preference, not a rule.
+Amend accordingly." So the rung no longer refuses on lane at all. **`review_same_lane` is
+deleted**, and what stands in its place is a record that no landing on a gate path can omit.*
+
+***Every gate landing prints exactly one `gate_review=` line, and it names one of four
+things.***
+
+| key | what it says |
+|---|---|
+| `cross_lane` | the preferred check ran: the reviewer's lane is no author's |
+| `lane_exhausted` | every lane the registry carries is a lane the records place on this issue (A1's cause, unchanged) |
+| `lane_barred` | a free lane existed and every one of them was unreachable, each named with the bar that says so |
+| `same_lane_chosen` | a free lane was reachable and a same-lane verdict cleared the landing anyway |
+
+*Those last three are three different facts about a downgrade and a reader must be able to
+tell them apart. A single flag would hide the third inside the first, and the third is the
+only one that is a person's judgement rather than a state of the world: `lane_barred` names
+the window, the breaker or the quota that made the preferred check impossible, while
+`same_lane_chosen` records that it was possible and was not taken. The record is not
+optional and there is no flag that suppresses it — a downgrade nobody can see is worse than
+the refusal it replaces, because it is indistinguishable from a landing that met the
+stronger bar.*
+
+***Every cause is derived at landing time and none is declared.** Exhaustion is A1's
+comparison, unchanged. A bar is `dispatch.lane_bar`'s answer for that lane — the lane's
+breaker, the human's off-peak rule and the lane's credential, the same three rungs in the
+same order that `candidate_refusal` asks before any dispatch, called through the one
+function rather than copied, so the landing's account cannot drift from what a dispatch
+would actually have done. It is read live at the moment of the landing; a bar that clears
+makes a cross-lane review available again, and the record then reads differently for the
+next landing. `tools/land_review.py`'s `LaneReach` carries only where those reads come from,
+which is a seam for tests and never a fact about the landing.*
+
+***The preference is real and the boundary is the human's own.** From the ruling: "A same-lane
+review is taken when a cross-lane one is unavailable — not when it is merely inconvenient,
+and not to save a wait that is measured in minutes." The rung cannot enforce that line —
+that is what makes it a preference — and `same_lane_chosen` exists so that a reader can see
+where it was crossed. The ruling's own worked example: the day's case was a two-minute wait
+for an off-peak window and the human would still have waited; the ruling earns its keep on a
+lane barred for hours by a quota, or on a branch whose authorship spread across lanes through
+ordinary fix rounds.*
+
+***What A2 does not touch is ADR-0071 ruling 4.** `review_same_profile` remains an absolute
+refusal and it fires a rung above the lane question, so every downgrade above — exhausted,
+barred or chosen — is still a verdict from a profile no record places on the work. The
+cross-lane rule was strengthening that invariant rather than replacing it, and this ruling
+relaxes only the strengthening. `review_lane_unknown` also stands: it refuses a landing whose
+lane record cannot be computed, which is #41's rule about a check that could not run, and is
+a different thing from a landing whose lanes merely coincide.*
 
 ## Why
 
@@ -180,7 +259,14 @@ the class forbids. *(Amendment A1 names the floor this paragraph stopped short o
 lanes and three excluded there is no lane left to trip, and the answer there is the derived
 degradation above, not a refusal with no end. A fourth lane remains the real mitigation — it
 re-arms the refusal — and the degradation remains the opposite of an escape hatch, because it
-fires on an empty set no caller can declare into being.)*
+fires on an empty set no caller can declare into being.)* *(Amendment A2 pays this cost off
+and books a different one in its place. No gate landing is blocked by a lane being down any
+more — that arrangement is `lane_barred` and it clears — so the availability cost is gone and
+what replaces it is a **weaker guarantee**: a `gate_review=` line is now a fact to read rather
+than a bar that held, and a reader who treats every gate landing as cross-lane reviewed will
+be wrong on three of the four keys. That is the trade the human made knowingly, and the
+mandatory record is the whole of what makes it visible. A fourth lane still helps — it makes
+`cross_lane` reachable more often — but it no longer decides whether work can land.)*
 
 **No routing class refuses a landing any more.** Class 6 was the last row that both refused and
 carried landing prefixes, so `routing_policy.enforcing_match` returns `None` for every input
@@ -190,6 +276,13 @@ table edit away — and the policy's `coverage` sentence now says what a `routin
 does and does not mean.
 
 ## What would overturn this
+
+*(Amendment A2 adds a second, and it is the one to watch now that the lane half no longer
+refuses: **a class-6 defect landed under a `same_lane_chosen` or `lane_barred` record that a
+cross-lane review would have caught.** The ruling's bet is that the preference is taken
+seriously without a mechanism, and one such finding is evidence the mechanism was doing work
+the record cannot. The `gate_review=` keys are what make that countable after the fact, and
+#336's retrospective observatory is where such a count would live.)*
 
 **A class-6 defect that a cross-lane review passed and a Claude-only review would have
 caught.** That is the finding the retired bar's argument predicted and this decision denies: a

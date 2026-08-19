@@ -60,9 +60,13 @@ should not burn a gate first.
 
 Since ADR-0073 (#406) that rung also carries routing class 6's invariant, which
 the routing gate above used to stand in for with a keep-on-Claude bar: a landing
-touching **the gates themselves** needs its verdict from a different *lane* than
-the author's, and its diff is not exemptible. The gate-path list is the trusted
-policy's own, read here and handed in (`_gate_paths`); the decision is the rung's.
+touching **the gates themselves** should take its verdict from a different *lane*
+than the author's, and its diff is not exemptible. Since Amendment A2 (#426, the
+human's ruling of 2026-08-19) the lane half is a strong preference rather than a
+rule: no landing is refused on lane, and every gate landing instead prints one
+`gate_review=` line — `cross_lane`, or one of three named downgrades. The
+gate-path list is the trusted policy's own, read here and handed in
+(`_gate_paths`); the decision, and the record, are the rung's.
 With that bar retired no routing class refuses a landing at all, so
 `routing_policy_gate` is unreachable against the live policy and the routing rung's
 remaining job is to refuse a policy or a diff it could not read.
@@ -123,11 +127,9 @@ exit code.
     gate_class_undetermined the trusted policy or the diff could not be read, so
                             whether this landing touches the gates themselves is
                             unknown; fail closed (ADR-0073)
-    review_same_lane        it does touch them, and the verdict came from the
-                            author's own lane — a different profile is not enough
-                            on the gates (ADR-0073)
     review_lane_unknown     it does touch them, and a lane at one end is not one
-                            the registry carries, so the two cannot be compared
+                            the registry carries, so the two cannot be compared and
+                            no honest `gate_review=` record can be written
     no_review_loop / review_loop_unreadable
                             findings above Low exist but no readable loop state
                             (#333's format) adjudicates them
@@ -263,6 +265,11 @@ class ReviewInputs(NamedTuple):
     issue: int | None
     dispatch_root: Path | None = None
     review_root: Path | None = None
+    # Where the gate rung reads a free reviewer lane's dispatchability, and when it asks
+    # (#426). Here for the same reason the roots are: the real defaults are the live breaker,
+    # the live credentials and the wall clock, and a test that read them would be asserting
+    # on this box's provider state and on the hour of the day.
+    reach: land_review.LaneReach = land_review.LIVE_REACH
 
 
 class Report(NamedTuple):
@@ -870,6 +877,7 @@ def _review_rung(
         review.dispatch_root or review_exchange.DISPATCH_ROOT,
         review.review_root or land_review.REVIEW_ROOT,
         diff_id=identity,
+        reach=review.reach,
     )
 
 

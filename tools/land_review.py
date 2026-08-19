@@ -54,8 +54,8 @@ it matched, quotable from the decision that granted it.
 ## The fourth fact, and the one class that has it (ADR-0073, #406)
 
 Ruling 4's three criteria bind every landing. A landing whose diff touches routing
-class 6 — **the gates themselves** — owes one more, and it is criterion 2 tightened
-rather than a fourth criterion beside it: the verdict's reviewer must be on a
+class 6 — **the gates themselves** — owes one more, and it is criterion 2 extended
+rather than a fourth criterion beside it: the verdict's reviewer should be on a
 different **lane** than the author's, not merely a different profile. The gate-path
 list is data, read from `config/dispatch-routing-policy.json` on fetched
 `origin/main` by whoever calls this rung and handed in already filtered, so the one
@@ -68,26 +68,36 @@ paths and exempted the Claude lane, which is the lane that authors nearly every 
 change, so the surface most at risk was the one the rule cleared. The invariant it
 stood in for is the one enforced here: no instance authors the gate that judges it.
 Same-provider models share failure modes, which is ruling 4's own argument for
-never-alone; on the gates it is worth one more predicate. Two refusals carry it —
-`review_same_lane` and `review_lane_unknown`, the second for a lane the registry
-cannot place at either end — and a gate landing is also **not** exemptible by
-`config/review-exemptions.json`, which is why `gate_paths` is decided before the
-exemption table is consulted rather than after.
+never-alone; on the gates it is worth one more predicate. A gate landing is also
+**not** exemptible by `config/review-exemptions.json`, which is why `gate_paths` is
+decided before the exemption table is consulted rather than after.
 
-**One arrangement degrades rather than refuses (ADR-0073 Amendment A1, #416).**
-Where the author lanes are every lane the registry carries, no admissible reviewer
-lane exists — the refusal would be permanent, and #405 sat in exactly that state,
-green at the gate and unlandable, because the project had deliberately spread its
-work across all three lanes. The requirement then falls back to ruling 4's own
-different-profile rule — already enforced one rung up, so the fallback holds by
-construction wherever a reviewer profile outside the authors exists. Where the records
-place every registered profile on the work even that set is empty, and the rung above
-refuses `review_same_profile` before this one runs — exhaustion at the lane level lifts
-ruling 4 nothing. The landing records the degradation as `gate_review=lane_exhausted`
-beside the reviewer lane and the author lanes, in its own key rather than by omission.
-Exhaustion is the only trigger, derived from the registry and the records at
-landing time and never declared by a caller; every case with a cross-lane reviewer
-available refuses exactly as before.
+**The lane half is a preference and not a rule (ADR-0073 Amendment A2, #426).** The
+human ruled on 2026-08-19, on being told that #390 could not be reviewed because both
+available lanes had authored it and the third sat inside its off-peak window: *"Same
+lane review is a strong preference, not a rule. Amend accordingly."* So no landing is
+refused on lane any more — `review_same_lane` is gone — and what replaces it is a
+mandatory record naming which of four things happened: `gate_review=cross_lane` where
+the preferred check ran, and one of three downgrades where it did not —
+`lane_exhausted` (Amendment A1, #416: every registered lane is an author's),
+`lane_barred` (a free lane existed and every one of them was unreachable, each named
+with the bar that says so), `same_lane_chosen` (a free lane was reachable and a
+same-lane verdict cleared the landing anyway). Those are three different facts about a
+downgrade and a reader needs to tell them apart; a single flag would hide the third
+inside the first. A downgrade nobody can see is worse than the refusal it replaces,
+because it is indistinguishable from a landing that met the stronger bar.
+
+Every cause is **derived at landing time and none is declared**: exhaustion from
+`tools/dispatch.py`'s registry against the records, a bar from `dispatch.lane_bar` —
+the same breaker, off-peak and credential rungs a dispatch would hit, asked through
+the one function so the record cannot drift from what a dispatch would have done.
+
+`review_lane_unknown` survives the ruling, for a lane the registry cannot place at
+either end: it refuses a landing whose *record* cannot be computed, never one whose
+lanes merely coincide. And `review_same_profile` is untouched — an absolute refusal,
+a rung above this one, so every downgrade below it is still a verdict from a profile
+no record places on the work. The preference relaxes the strengthening, not the
+invariant it was strengthening.
 
 ## The loop record, and whose reader and writer these are
 
@@ -121,9 +131,14 @@ the clearance because that is what a lander quotes (round 1 claims 3 and 4).
 ## What this rung never does
 
 `review_finding` — the rung `just land` climbs — is the whole of this module, and
-it writes nothing, dispatches nothing and adjudicates nothing: the verdict is
+it writes no record, dispatches nothing and adjudicates nothing: the verdict is
 #332's exchange, the dispatch the dispatcher's, and every loop decision
-`review_loop`'s. It has no command surface of its own; the loop's acts are
+`review_loop`'s. One qualification since #426, stated rather than glossed: reading
+a free lane's breaker goes through `dispatch.lane_bar`, and the breaker settles an
+expired window as it is read, so a landing that consults one may leave that lane's
+state file converged. That is the breaker's own convergence on its own record —
+the same write any `just dispatch` or `just breaker` read performs — and it moves
+nothing this rung judges. It has no command surface of its own; the loop's acts are
 `just review-loop`'s. And nothing here reads as approval by absence: no verdict,
 an unreadable verdict, a verdict for another commit or another item, and records
 that name no author at all each refuse by name.
@@ -132,6 +147,7 @@ that name no author at all each refuse by name.
 from __future__ import annotations
 
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Final, NamedTuple
 
@@ -140,6 +156,7 @@ from typing import Final, NamedTuple
 # `brief.py` and `review_loop.py` all use.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import breaker
 import dispatch
 import review_exchange
 import review_loop
@@ -178,6 +195,58 @@ LANE_EXHAUSTED_LIMIT: Final = (
     " exhaustion is derived at landing time from `tools/dispatch.py`'s registry and the"
     " issue's records, never declared by a caller (ADR-0073 Amendment A1, #416)"
 )
+
+# The second downgrade cause, and the one the human's ruling of 2026-08-19 was given for
+# (ADR-0073 Amendment A2, #426): a lane no record places on this issue existed and could not
+# be dispatched to at the moment of the landing.
+LANE_BARRED_LIMIT: Final = (
+    "limit=a free reviewer lane existed and none of them could be dispatched to at the moment"
+    " this landing ran — the bars are named above, each one `tools/dispatch.py`'s own answer"
+    " for that lane rather than a judgement made here, and each is a state of the provider or"
+    " the clock and not of the work. A bar that clears makes a cross-lane review available"
+    " again, and this record is the reason to seek one before the next gate change rather"
+    " than after it (ADR-0073 Amendment A2, #426)"
+)
+
+# The third, and the reason the ruling is a preference rather than a rule: a cross-lane
+# reviewer was there to dispatch and a same-lane verdict cleared the landing anyway.
+SAME_LANE_CHOSEN_LIMIT: Final = (
+    "limit=a cross-lane reviewer was available at the moment this landing ran and the verdict"
+    " that cleared it came from an author's own lane — the preferred check did not run, and"
+    " nothing here derived a reason it could not have. Same-provider models share failure"
+    " modes, which is ruling 4's own argument for never-alone, so a reader weighing this"
+    " landing is reading a weaker separation than a cross-lane clearance states (the human's"
+    " ruling of 2026-08-19, #217; ADR-0073 Amendment A2, #426)"
+)
+
+
+class LaneReach(NamedTuple):
+    """Where the rung reads a free lane's dispatchability from, and the moment it asks.
+
+    A parameter rather than a flag or an environment variable, on `ReviewInputs`' own terms:
+    the live breaker directory, the live credentials file and the wall clock are what `just
+    land` must read — the whole point of the downgrade record is whether a cross-lane review
+    was dispatchable *then* — and a test that read them would be asserting on this box's
+    provider state and on the hour of the day, which is what made `just fast` red for the
+    four hours a day z.ai sits in peak (#238's note). Defaults are the real ones; `at` of
+    `None` is "ask the clock now".
+    """
+
+    breaker_dir: Path = breaker.DEFAULT_BREAKER_DIR
+    credentials: Path = dispatch.CREDENTIALS
+    at: datetime | None = None
+
+    def moment(self) -> datetime:
+        """Answer the instant the bars are read at — the caller's, or now."""
+        return self.at or datetime.now(tz=UTC)
+
+
+# The reach a landing takes when nobody names one: the box's real breaker, its real
+# credentials, and the clock at the moment the rung asks. A module-level singleton rather
+# than a default constructed per call, which is B008's own remedy and is also the honest
+# shape — the paths are fixed and only `at` varies, and `at=None` is what defers it.
+LIVE_REACH: Final = LaneReach()
+
 
 # Printed beside every clearance that read a loop, for the reason `review_exchange`
 # prints `SAME_USER_LIMIT` beside every recorded verdict: the clearance is the durable
@@ -344,52 +413,93 @@ def _undetermined_gate_refusal() -> Refusal:
     )
 
 
+def _lane_bars(free: tuple[str, ...], reach: LaneReach) -> tuple[tuple[str, str], ...]:
+    """Ask each free lane whether it could be dispatched to, and name what says no.
+
+    One entry per barred lane, `(lane, bar)`, where the bar is `dispatch.lane_bar`'s own
+    refusal kind with its failure class where it carries one — `lane_peak_hours` for the
+    human's off-peak window, `lane_breaker_open/quota_exhausted` for a lane out of quota,
+    `lane_breaker_open` for one the breaker tripped on quality, and whichever of
+    `credential_absent`, `credentials_missing` or `credentials_mode` the lane's own
+    credential read gives back. Naming the class as well as the kind is what makes the
+    ruling's "barred by its off-peak window, its breaker, or a provider quota" three facts
+    in the record rather than one (#217, 2026-08-19).
+
+    A lane the bar clears is absent from the result, so an empty tuple means every free lane
+    was reachable. The lanes are asked in registry order, so the record is stable.
+    """
+    bars = []
+    at = reach.moment()
+    for name in free:
+        bar = dispatch.lane_bar(dispatch.LANES[name], reach.breaker_dir, reach.credentials, at)
+        if bar is None:
+            continue
+        bars.append((name, f"{bar.kind}/{bar.failure_class}" if bar.failure_class else bar.kind))
+    return tuple(bars)
+
+
 def _gate_review_decision(
     gate_paths: tuple[str, ...],
     binding: review_exchange.Bound,
     authorship: dispatch.Authorship,
+    reach: LaneReach,
 ) -> Refusal | tuple[str, ...]:
-    """Decide a gate landing's lane rule: the refusal that fires, or the lines it clears with.
+    """Decide a gate landing's lane record: the refusal that fires, or the lines it clears with.
 
     ADR-0073, on the human's instruction of 2026-08-18. Routing class 6's keep-on-Claude bar
     selected on provenance and exempted the lane that authors nearly every gate change, so
     the surface most at risk was the one the rule cleared. What replaces it is the invariant
-    the bar stood in for, spent as one predicate on the rung that already runs: for a landing
-    whose diff touches a class-6 path, ruling 4's "not the same profile" becomes "not the same
-    **lane**". Same-provider models share failure modes, which is ruling 4's own argument for
-    never-alone; on the gates themselves it is worth one more predicate.
+    the bar stood in for, spent on the rung that already runs: for a landing whose diff
+    touches a class-6 path, ruling 4's "not the same profile" is joined by "and preferably
+    not the same **lane**". Same-provider models share failure modes, which is ruling 4's own
+    argument for never-alone; on the gates themselves it is worth one more predicate.
 
-    **Exhaustion degrades the requirement rather than refusing forever (Amendment A1, #416).**
-    Where the author lanes are every lane the registry carries, the set of admissible reviewer
-    lanes is empty and no dispatch can ever satisfy the predicate — #405 sat exactly there,
-    green at the gate and unlandable by construction, because the project had deliberately
-    spread its work across all three lanes. The requirement then falls back to ruling 4's own
-    rule, a verdict from a **different profile** than any author, which the rung above has
-    already enforced by the time this one runs — so the fallback clears rather than refuses
-    wherever a profile outside the authors exists. Where the records place every registered
-    profile on the work that set is empty too, and the rung above has refused
-    `review_same_profile` before this one ran — the degradation bounds the lane rule, never
-    ruling 4. The clearance says what happened in its own key (`gate_review=lane_exhausted`) rather
-    than by omission, beside the reviewer lane and the author lanes. A rung that silently
-    downgrades is worse than one that refuses; a rung that refuses forever is worse than both.
-    Exhaustion is the only trigger, it is computed here from the registry and the records at
-    landing time — never declared by a caller, never cached in a record — and the refusal
-    stands unchanged for every case where a cross-lane reviewer *is* available. The boundary
-    follows: a lane joining or leaving the registry moves it, because the comparison is live.
+    **The lane half is a preference and not a rule (Amendment A2, #426).** The human ruled on
+    2026-08-19, on being told that #390 could not be reviewed because both available lanes had
+    authored it and the third sat inside its off-peak window: *"Same lane review is a strong
+    preference, not a rule. Amend accordingly."* So this rung no longer refuses on lane at all
+    — `review_same_lane` is gone — and what it does instead is **record**, in the landing's own
+    bytes, which of four things happened. A downgrade nobody can see is worse than the refusal
+    it replaces, because it is indistinguishable from a landing that met the stronger bar.
 
-    **Both lanes are placed against `tools/dispatch.py`'s registry, and a lane it cannot place
-    refuses.** The reviewer's lane is a string on a record — `parse_verdict` requires it to be
-    a string and not to be a registered one — and an author's lane is derived from the
-    registry entry for a profile a record named. Either unplaceable and the comparison cannot
-    be made, so the rung refuses rather than clearing on an inequality between a known lane
-    and an unknown one, which would pass by accident exactly where the records are worst
-    (#41). A retired name places through the successor a rename left (#413,
-    `dispatch.resolved_profile`) — re-registering the dead name is the one remedy the old
-    refusal named that a rename exists to make impossible — and a name whose chain resolves
-    nowhere still refuses here. An author whose lane has left the registry still places (the
-    profile is registered; the lane is its attribute), and an author lane no reviewer can be
-    on removes nothing from the admissible set — so it cannot create exhaustion, only witness
-    it.
+    | key | what it says |
+    |---|---|
+    | `gate_review=cross_lane` | the preferred check ran: the reviewer's lane is no author's |
+    | `gate_review=lane_exhausted` | every lane the registry carries is an author's lane |
+    | `gate_review=lane_barred` | a free lane existed and every one of them was unreachable |
+    | `gate_review=same_lane_chosen` | a free lane was reachable and a same-lane verdict cleared |
+
+    Those are three different facts about a downgrade and a reader needs to tell them apart:
+    a single flag would hide the third inside the first, and the third is the only one the
+    ruling leaves to a person's judgement. Amendment A1's `lane_exhausted` (#416) is the first
+    of them and is folded in here unchanged rather than left beside them; the second and third
+    are this amendment's, and the second is the case the ruling was actually given for — a lane
+    barred for hours by a quota, where the old rung turned a preference into an indefinite
+    block on completed, gated work.
+
+    **Every cause is derived, and none is declared.** Exhaustion is computed from
+    `tools/dispatch.py`'s registry against the records, so a lane joining or leaving moves it
+    in both directions. A bar is `dispatch.lane_bar`'s own answer for that lane at the moment
+    of the landing — the same three rungs a dispatch would hit, asked through the same
+    function so the record cannot drift from what a dispatch would have done — and it is read
+    live rather than taken from a caller's flag. `LaneReach` carries only *where* to read them
+    from, which is the seam a test needs and not a fact about this landing.
+
+    **What does not move is ruling 4.** `review_same_profile` is an absolute refusal and it
+    fires a rung above this one, so every clearance below — exhausted, barred or chosen — is a
+    verdict from a profile no record places on the work. The preference relaxes the
+    strengthening, never the invariant it was strengthening.
+
+    **Both lanes are placed against the registry, and a lane it cannot place still refuses.**
+    The reviewer's lane is a string on a record — `parse_verdict` requires it to be a string
+    and not to be a registered one — and an author's lane is derived from the registry entry
+    for a profile a record named. Either unplaceable and no honest record can be written: the
+    fail-open reading would print `cross_lane` on an inequality between a known lane and an
+    unknown one, which is a stronger claim than the records support, exactly where they are
+    worst (#41). `review_lane_unknown` therefore survives the ruling — it refuses a landing
+    whose *record* cannot be computed, never one whose lanes merely coincide. A retired name
+    places through the successor a rename left (#413, `dispatch.resolved_profile`), and a name
+    whose chain resolves nowhere still refuses here.
 
     The author set is `Authorship.potential`, which is a *potential*-author set: over-excluding
     costs a resolution step and under-excluding costs the invariant, the trade `dispatch`
@@ -409,59 +519,56 @@ def _gate_review_decision(
                 f"potential={' '.join(authorship.potential)}",
                 *(f"gate_path={path}" for path in gate_paths),
             ),
-            "This landing touches the gates themselves, so the review clearing it must come"
-            " from a different lane than the author's — and a lane above is not one"
-            " `tools/dispatch.py`'s registry carries, so the two cannot be compared. Register"
-            " the profile or the lane, or re-derive the record that names it; a check that"
-            " could not run is not a check that passed (#41, ADR-0073). Nothing was pushed.",
+            "This landing touches the gates themselves, so the record of which lane reviewed"
+            " it must name lanes the registry carries — and a lane above is not one"
+            " `tools/dispatch.py`'s registry carries, so the comparison cannot be made and no"
+            " honest record can be written. Register the profile or the lane, or re-derive the"
+            " record that names it; a check that could not run is not a check that passed"
+            " (#41, ADR-0073). Nothing was pushed.",
         )
     author_lanes = tuple(
         dict.fromkeys(dispatch.resolved_profile(profile).lane for profile in authorship.potential)
     )
-    # Above the same-lane refusal because exhaustion subsumes it: a registered reviewer lane
-    # is an author lane wherever every registered lane is one, so the same-lane branch below
-    # is unreachable exactly when this fires. A clearance, not a refusal, and the author lanes
-    # are printed beside the reviewer's so a reader sees the set that exhausted (#416).
-    if frozenset(dispatch.LANES).issubset(author_lanes):
+    where = f"author_lanes={' '.join(author_lanes)} gate_paths={' '.join(gate_paths)}"
+    free = tuple(name for name in dispatch.LANES if name not in author_lanes)
+    # First because exhaustion subsumes every branch below it: with no free lane, a registered
+    # reviewer lane is necessarily an author's, and there is no lane left to ask a bar of. The
+    # author lanes print beside the reviewer's so a reader sees the set that exhausted (#416).
+    if not free:
         return (
-            (
-                f"gate_review=lane_exhausted reviewer_lane={reviewer_lane}"
-                f" author_lanes={' '.join(author_lanes)} gate_paths={' '.join(gate_paths)}"
-            ),
+            f"gate_review=lane_exhausted reviewer_lane={reviewer_lane} {where}",
             LANE_EXHAUSTED_LIMIT,
         )
-    if reviewer_lane in author_lanes:
-        shared = tuple(
-            profile
-            for profile in authorship.potential
-            if dispatch.resolved_profile(profile).lane == reviewer_lane
-        )
-        return Refusal(
-            "review_same_lane",
+    if reviewer_lane not in author_lanes:
+        return (f"gate_review=cross_lane reviewer_lane={reviewer_lane} {where}", CROSS_LANE_LIMIT)
+    # A same-lane verdict from here on, which since the ruling of 2026-08-19 clears either way.
+    # What separates the two records is whether the preferred check was *available*: the bars
+    # are read live from the same rungs a dispatch would have hit, so "the free lane was
+    # barred" and "the operator chose" are derived apart rather than collapsed into one flag.
+    shared = " ".join(
+        profile
+        for profile in authorship.potential
+        if dispatch.resolved_profile(profile).lane == reviewer_lane
+    )
+    bars = _lane_bars(free, reach)
+    barred = {name for name, _ in bars}
+    available = tuple(name for name in free if name not in barred)
+    if not available:
+        named = " ".join(f"{name}:{bar}" for name, bar in bars)
+        return (
             (
-                f"reviewer_profile={binding.profile}",
-                f"reviewer_lane={reviewer_lane}",
-                f"author_lanes={' '.join(author_lanes)}",
-                f"same_lane_authors={' '.join(shared)}",
-                f"review_dispatch={binding.dispatch_id}",
-                *(f"gate_path={path}" for path in gate_paths),
+                f"gate_review=lane_barred reviewer_lane={reviewer_lane} {where}"
+                f" same_lane_authors={shared} barred_lanes={named}"
             ),
-            "This landing touches the gates themselves, and the verdict clearing it was"
-            " produced on the same lane as a profile the records place on the work. A"
-            " different profile is not enough here: same-provider models share failure"
-            " modes, which is ruling 4's own argument for never-alone, and on the gate paths"
-            " the invariant is that no instance authors the gate that judges it (ADR-0073,"
-            " the human's instruction of 2026-08-18). Dispatch the review on another lane —"
-            " `just dispatch --seat review --reviewing <profile> --lane <lane> --profile"
-            " <profile>`, naming a lane none of the authors above is on — record its verdict,"
-            " and land again. Nothing was pushed.",
+            LANE_BARRED_LIMIT,
         )
     return (
         (
-            f"gate_review=cross_lane reviewer_lane={reviewer_lane}"
-            f" author_lanes={' '.join(author_lanes)} gate_paths={' '.join(gate_paths)}"
+            f"gate_review=same_lane_chosen reviewer_lane={reviewer_lane} {where}"
+            f" same_lane_authors={shared} free_lanes={' '.join(available)}"
+            f" review_dispatch={binding.dispatch_id}"
         ),
-        CROSS_LANE_LIMIT,
+        SAME_LANE_CHOSEN_LIMIT,
     )
 
 
@@ -584,6 +691,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     dispatch_root: Path,
     review_root: Path,
     diff_id: str | Refusal | None = None,
+    reach: LaneReach = LIVE_REACH,
 ) -> Outcome:
     """Decide the never-alone rung for one landing: a typed refusal, or the clearance.
 
@@ -617,6 +725,10 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     a verdict for the exact SHA clears without either, and a moved SHA refuses
     (`diff_id_unreadable`, `rebase_unproven`) rather than reading the miss as a
     mismatch.
+
+    `reach` is where the gate rung reads a free lane's dispatchability from and the
+    moment it asks (#426) — a seam for tests and nothing else, since every fact the
+    downgrade record states is derived through it rather than handed in.
     """
     if gate_paths is None or paths is None:
         return Outcome(_undetermined_gate_refusal(), ())
@@ -798,7 +910,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     # rung has not yet established it may trust (ADR-0073).
     gate_review: tuple[str, ...] = ()
     if gate_paths:
-        decision = _gate_review_decision(gate_paths, binding, authorship)
+        decision = _gate_review_decision(gate_paths, binding, authorship, reach)
         if isinstance(decision, Refusal):
             return Outcome(decision, ())
         gate_review = decision

@@ -642,10 +642,11 @@ def _refusing_rules(policy: Policy, lane: str) -> tuple[Rule, ...]:
     every landing that touches a gate, this project's own maintenance of its gates included:
     a bar on all gate work rather than a conflict-of-interest rule. What enforces it is the
     landing's never-alone rung (`tools/land_review.py`), which reads this row's paths through
-    `conflict_of_interest_paths` and refuses a verdict whose reviewer lane equals the
-    author's. What the field enforces here is what it always did: a class that binds every
-    instance may carry no exception, because an instance that can except itself from the gate
-    that judges it is exactly the shape being forbidden.
+    `conflict_of_interest_paths` and records — since ADR-0073 Amendment A2 (#426) — whether
+    the verdict's reviewer lane was the author's and why, the lane half being a strong
+    preference rather than a refusal. What the field enforces here is what it always did: a
+    class that binds every instance may carry no exception, because an instance that can
+    except itself from the gate that judges it is exactly the shape being forbidden.
     """
     claude = lane == policy.claude_lane
     return tuple(

@@ -2602,6 +2602,33 @@ def off_peak_refusal(lane: Lane, at: datetime) -> Refusal | None:
     )
 
 
+def lane_bar(lane: Lane, breaker_dir: Path, credentials: Path, at: datetime) -> Refusal | None:
+    """Whether this lane can be reached at all at that moment, and what bars it if not.
+
+    The half of `candidate_refusal` that is a function of the lane and the clock alone —
+    the lane's breaker, the human's off-peak rule and the lane's credential, in the order
+    the resolver has always asked them. Split out rather than copied because a second
+    reader arrived (#426): `tools/land_review.py`'s never-alone rung asks whether a *free*
+    reviewer lane was reachable at landing time, so that the record it writes about a
+    same-lane review names the same bar a dispatch would have hit. A second copy of these
+    three rungs is exactly how the landing's account and the dispatcher's answer would
+    come to disagree.
+
+    No profile is involved and none is asked for. The `(profile, seat)` block and the
+    registry rungs stay with `candidate_refusal`, which is where a profile exists to
+    judge; a caller holding only a lane name gets the lane's own answer and nothing
+    borrowed from a profile it did not name.
+    """
+    refusal = breaker_refusal(lane.name, breaker_dir, at.timestamp())
+    if refusal is not None:
+        return refusal
+    refusal = off_peak_refusal(lane, at)
+    if refusal is not None:
+        return refusal
+    _, refusal = lane_credential(lane, credentials)
+    return refusal
+
+
 def candidate_refusal(
     args: argparse.Namespace, seat: str, profile_name: str, now: datetime
 ) -> Refusal | None:
@@ -2612,8 +2639,10 @@ def candidate_refusal(
     the `(profile, seat)` block, the lane's breaker and the human's off-peak rule — each
     one the ladder's own function, called here rather than restated, because a second copy
     is how a profile comes to be dispatchable to a resolver and refused by the ladder two
-    lines later. The profile's admission standing was one of these until #328 dropped the
-    bar; nothing replaced it here, and a route is now judged by nothing upfront.
+    lines later. The last three of those arrive together as `lane_bar`, which is the same
+    three rungs in the same order under one name so that a caller holding only a lane can
+    ask them (#426). The profile's admission standing was one of these until #328 dropped
+    the bar; nothing replaced it here, and a route is now judged by nothing upfront.
 
     Readiness and the queue policy are deliberately absent: each reads the *issue*, so each
     judges the dispatch rather than the candidate, and no change of profile could ever clear
@@ -2638,14 +2667,12 @@ def candidate_refusal(
     refusal = resolve_selection(lane.name, profile_name, seat)
     if refusal is not None:
         return refusal
-    refusal = breaker_refusal(lane.name, Path(args.breaker_dir).expanduser(), now.timestamp())
-    if refusal is not None:
-        return refusal
-    refusal = off_peak_refusal(lane, now)
-    if refusal is not None:
-        return refusal
-    _, refusal = lane_credential(lane, Path(args.credentials).expanduser())
-    return refusal
+    return lane_bar(
+        lane,
+        Path(args.breaker_dir).expanduser(),
+        Path(args.credentials).expanduser(),
+        now,
+    )
 
 
 def exhausted_refusal(

@@ -1015,7 +1015,11 @@ def test_class_6_carries_the_invariant_alone_now_that_its_lane_bar_is_retired() 
     assert conflict.binds_every_instance is True
     assert conflict.refuses is False
     assert "2026-08-18" in conflict.remedy
-    assert "review_same_lane" in conflict.remedy
+    # The lane half is a preference carried by a record since #426, so the row's remedy names
+    # the record rather than the retired refusal — and says the refusal is gone, because a
+    # reader arriving with a pre-#426 memory of `review_same_lane` needs that in as many words.
+    assert "review_same_lane` is gone" in conflict.remedy
+    assert "gate_review=" in conflict.remedy
     assert "`refuses: false`" in conflict.remedy
     # The retirement is the finding, so it is measured: neither lane is refused these paths.
     assert landing("tools/land.py") is None

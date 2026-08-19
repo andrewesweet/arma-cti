@@ -17,6 +17,7 @@ rather than assumed (round 2).
 from __future__ import annotations
 
 import json
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Final
 
 from conftest import load_tool
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
 
     import pytest
 
+breaker = load_tool("breaker")
 land_review = load_tool("land_review")
 review_loop = load_tool("review_loop")
 review_exchange = load_tool("review_exchange")
@@ -1231,14 +1233,56 @@ def test_the_rung_reads_the_loop_the_loops_own_writer_wrote(tmp_path: Path) -> N
 GATE_PATH: Final = "tools/land.py"
 CLAUDE_REVIEWER: Final = "opus-xhigh"
 
+# Two instants that decide z.ai's off-peak bar without asking this box's clock. Peak is
+# Mon-Fri 14:00-18:00 SGT (UTC+8), so 07:00 UTC on a Wednesday is inside it and the same
+# hour on a Saturday is outside — `tools/breaker.py`'s `zai_is_peak` is the authority and
+# these two are read off it rather than off a second copy of the schedule.
+PEAK: Final = datetime(2026, 8, 19, 7, 0, tzinfo=UTC)
+OFF_PEAK: Final = datetime(2026, 8, 22, 7, 0, tzinfo=UTC)
 
-def _gate_rung(
+
+def _reach(
+    tmp_path: Path, at: datetime = OFF_PEAK, *, tripped: tuple[str, ...] = ()
+) -> land_review.LaneReach:
+    """Build a `LaneReach` over scratch state, so every bar is one this test staged (#426).
+
+    The real defaults are the box's breaker directory, its credentials file and the wall
+    clock; asserting on those would make the record under test a fact about this machine
+    and about the hour of the day. `tripped` opens a lane's breaker on the quota rule with
+    a published reset in the future, which is the `quota_exhausted` bar the human's ruling
+    names.
+    """
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("ZAI_API_KEY=staged-for-this-test\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    directory = tmp_path / "breaker"
+    for lane in tripped:
+        breaker.write_state(
+            directory,
+            breaker.LaneState(
+                lane,
+                breaker.Circuit(
+                    state=breaker.OPEN,
+                    rule="quota",
+                    reason="a 429 from the provider",
+                    opened_at=at.timestamp(),
+                    reset_at=at.timestamp() + 3600,
+                ),
+                None,
+                at.timestamp(),
+            ),
+        )
+    return land_review.LaneReach(directory, credentials, at)
+
+
+def _gate_rung(  # noqa: PLR0913 — one parameter per staged fact the rung reads
     roots: tuple[Path, Path],
     *,
     reviewer: str = REVIEWER,
     reviewer_lane: str = "codex",
     gate_paths: tuple[str, ...] | None = (GATE_PATH,),
     paths: tuple[str, ...] | None = (GATE_PATH,),
+    reach: land_review.LaneReach | None = None,
 ) -> land_review.Outcome:
     """Call the rung over a gate landing, with the reviewing dispatch's lane named."""
     dispatch_root, review_root = roots
@@ -1251,29 +1295,115 @@ def _gate_rung(
         document["lane" if name == "dispatch.json" else "reviewer_lane"] = reviewer_lane
         (record / name).write_text(json.dumps(document), encoding="utf-8")
     return land_review.review_finding(
-        ISSUE, SHA, paths, gate_paths, None, dispatch_root, review_root
+        ISSUE,
+        SHA,
+        paths,
+        gate_paths,
+        None,
+        dispatch_root,
+        review_root,
+        reach=reach or _reach(review_root.parent),
     )
 
 
-def test_a_gate_landing_reviewed_from_the_authors_own_lane_refuses_by_name(
+# ---- #426: the lane half is a preference with a mandatory record, not a refusal
+
+
+def test_a_same_lane_gate_landing_clears_and_records_that_a_free_lane_was_available(
     tmp_path: Path,
 ) -> None:
-    """The invariant the retired bar stood in for: no instance authors the gate that judges it.
+    """The human's ruling of 2026-08-19, and the case it is most exposed on.
 
     `AUTHOR` is `opus-high`, a `claude-native` profile, so a `claude-native` reviewer is on
-    the author's lane even though it is a different profile — which is exactly the
-    arrangement `review_same_profile` clears and this refusal does not.
+    the author's lane even though it is a different profile. That used to refuse
+    `review_same_lane`; under the ruling it clears — and because `zai` and `codex` were both
+    reachable at the moment of the landing, the record says the preferred check was
+    available and was not the one that ran. That is the third of the three causes, and the
+    only one the ruling leaves to a person's judgement: a single flag would hide it inside
+    exhaustion (#426, criterion 4).
     """
     outcome = _gate_rung(_stage(tmp_path), reviewer=CLAUDE_REVIEWER, reviewer_lane="claude-native")
 
-    assert _kind(outcome) == "review_same_lane"
-    found = _text(outcome)
-    assert "reviewer_lane=claude-native" in found
-    assert f"same_lane_authors={AUTHOR}" in found
-    assert f"gate_path={GATE_PATH}" in found
-    # The remedy names a cross-lane review and the command that produces one (criterion 2).
-    assert "--seat review" in outcome.refusal.action
-    assert "--lane <lane>" in outcome.refusal.action
+    assert outcome.refusal is None
+    assert (
+        f"gate_review=same_lane_chosen reviewer_lane=claude-native"
+        f" author_lanes=claude-native gate_paths={GATE_PATH}"
+        f" same_lane_authors={AUTHOR} free_lanes=zai codex review_dispatch=d-review-1"
+        in outcome.cleared
+    )
+    assert land_review.SAME_LANE_CHOSEN_LIMIT in outcome.cleared
+
+
+def test_a_same_lane_gate_landing_names_the_bar_on_every_free_lane(tmp_path: Path) -> None:
+    """The second cause, and the one the ruling was actually given for (#390's shape).
+
+    A lane no record places on this issue existed and could not be dispatched to: `zai` sat
+    inside its off-peak window and `codex`'s breaker was open on quota. Both bars are named
+    with the kind and the failure class `tools/dispatch.py` itself gives them, so a reader
+    can tell "the window" from "a provider quota" — which the ruling asks for by name.
+    """
+    _, review_root = roots = _stage(tmp_path)
+    outcome = _gate_rung(
+        roots,
+        reviewer=CLAUDE_REVIEWER,
+        reviewer_lane="claude-native",
+        reach=_reach(review_root.parent, PEAK, tripped=("codex",)),
+    )
+
+    assert outcome.refusal is None
+    assert (
+        f"gate_review=lane_barred reviewer_lane=claude-native"
+        f" author_lanes=claude-native gate_paths={GATE_PATH}"
+        f" same_lane_authors={AUTHOR}"
+        f" barred_lanes=zai:lane_peak_hours codex:lane_breaker_open/quota_exhausted"
+        in outcome.cleared
+    )
+    assert land_review.LANE_BARRED_LIMIT in outcome.cleared
+
+
+def test_one_reachable_free_lane_is_enough_to_make_it_the_operators_choice(
+    tmp_path: Path,
+) -> None:
+    """The boundary between the second cause and the third, moved by one lane's bar.
+
+    Same staging as the barred case but for `codex`'s breaker, which is closed here: one
+    reachable lane is a cross-lane review that could have been dispatched, so the record is
+    `same_lane_chosen` and it names the lane that was free rather than the one that was not.
+    A downgrade that read "barred" while a lane stood open would be the record saying the
+    stronger check was impossible when it was merely not taken.
+    """
+    _, review_root = roots = _stage(tmp_path)
+    outcome = _gate_rung(
+        roots,
+        reviewer=CLAUDE_REVIEWER,
+        reviewer_lane="claude-native",
+        reach=_reach(review_root.parent, PEAK),
+    )
+
+    assert outcome.refusal is None
+    assert any(
+        line.startswith("gate_review=same_lane_chosen")
+        and line.endswith(f"same_lane_authors={AUTHOR} free_lanes=codex review_dispatch=d-review-1")
+        for line in outcome.cleared
+    )
+    assert not any("lane_barred" in line for line in outcome.cleared)
+
+
+def test_the_ruling_relaxes_the_lane_rule_and_not_ruling_4(tmp_path: Path) -> None:
+    """`review_same_profile` is untouched, and it fires a rung above the lane record (#426).
+
+    The reviewing profile is the author's own, on a gate path, with every free lane
+    reachable — the arrangement that now clears on lane grounds and must still refuse on
+    ruling 4's. The preference relaxes the strengthening, never the invariant.
+    """
+    outcome = _gate_rung(
+        _stage(tmp_path, author=CLAUDE_REVIEWER),
+        reviewer=CLAUDE_REVIEWER,
+        reviewer_lane="claude-native",
+    )
+
+    assert _kind(outcome) == "review_same_profile"
+    assert not any(line.startswith("gate_review=") for line in outcome.cleared)
 
 
 def test_a_gate_landing_reviewed_from_another_lane_clears_and_says_which(tmp_path: Path) -> None:
@@ -1371,8 +1501,10 @@ def test_a_retired_authors_gate_landing_places_its_lane_through_the_successor(
 
     The remedy that refusal used to name — register the profile — is the one act a rename
     exists to make impossible, so before the retirement table there was no answer here
-    either. The author's lane is the successor's lane, and a zai reviewer of zai-authored
-    gate work refuses `review_same_lane` rather than clearing by unplaceability.
+    either. The author's lane is the successor's lane, so a zai reviewer of zai-authored gate
+    work is recorded as a same-lane review rather than cleared as a cross-lane one — which
+    is where #413's finding lives now that #426 made the lane half a record instead of a
+    refusal.
     """
     outcome = _gate_rung(
         _stage(tmp_path, author="zai-glm52-max"),
@@ -1380,10 +1512,11 @@ def test_a_retired_authors_gate_landing_places_its_lane_through_the_successor(
         reviewer_lane="zai",
     )
 
-    assert _kind(outcome) == "review_same_lane"
-    found = _text(outcome)
-    assert "author_lanes=zai" in found
+    assert outcome.refusal is None
+    found = "\n".join(outcome.cleared)
+    assert "gate_review=same_lane_chosen reviewer_lane=zai author_lanes=zai" in found
     assert "same_lane_authors=zai-glm52-max" in found
+    assert "free_lanes=claude-native codex" in found
 
 
 def test_a_retired_authors_gate_landing_clears_from_another_lane(tmp_path: Path) -> None:
@@ -1508,12 +1641,15 @@ def test_exhaustion_degrades_to_ruling_4_not_to_nothing(tmp_path: Path) -> None:
     assert _kind(outcome) == "review_same_profile"
 
 
-def test_a_gate_landing_with_a_lane_still_free_refuses_unchanged(tmp_path: Path) -> None:
-    """Two lanes authored, one free: exhaustion does not fire and the refusal stands.
+def test_a_gate_landing_with_a_lane_still_free_is_not_recorded_as_exhausted(
+    tmp_path: Path,
+) -> None:
+    """Two lanes authored, one free: exhaustion does not fire and the cause is the other one.
 
-    The degradation is bounded by derivation — it fires only where no admissible reviewer
-    lane exists — so a landing that could have dispatched its review cross-lane refuses
-    `review_same_lane` exactly as it did before #416.
+    The degradation is bounded by derivation — `lane_exhausted` fires only where no
+    admissible reviewer lane exists at all — so a landing that could have dispatched its
+    review cross-lane records the choice instead. Distinguishing the two is criterion 2 of
+    #426: a reader must be able to tell "no lane was free" from "one was".
     """
     outcome = _gate_rung(
         _stage(tmp_path, records=(_authored("zai-glm53-max", "d-author-2"),)),
@@ -1521,9 +1657,12 @@ def test_a_gate_landing_with_a_lane_still_free_refuses_unchanged(tmp_path: Path)
         reviewer_lane="claude-native",
     )
 
-    assert _kind(outcome) == "review_same_lane"
-    assert "author_lanes=claude-native zai" in _text(outcome)
-    assert "lane_exhausted" not in _text(outcome)
+    assert outcome.refusal is None
+    found = "\n".join(outcome.cleared)
+    assert "gate_review=same_lane_chosen" in found
+    assert "author_lanes=claude-native zai" in found
+    assert "free_lanes=codex" in found
+    assert "lane_exhausted" not in found
 
 
 def test_exhaustion_follows_the_registry_rather_than_any_record_of_it(
@@ -1531,16 +1670,17 @@ def test_exhaustion_follows_the_registry_rather_than_any_record_of_it(
 ) -> None:
     """The boundary where a lane leaves the registry, both directions, live at landing time.
 
-    One staging, one verdict, three registries: under the registry as it stands the landing
-    refuses `review_same_lane` (a codex reviewer was available); under one that has lost
-    `codex` it clears as exhausted; under one that has gained a lane it refuses again. The
-    comparison is computed from `LANES` at every landing, so a registry that moves moves the
-    degradation with it — never a flag, never a record of a past exhaustion (#416).
+    One staging, one verdict, three registries: under the registry as it stands a `codex`
+    reviewer was available, so the record is `same_lane_chosen`; under one that has lost
+    `codex` no free lane is left and the record is `lane_exhausted`; under one that has
+    gained a lane it is `same_lane_chosen` again. The comparison is computed from `LANES` at
+    every landing, so a registry that moves moves the cause with it — never a flag, never a
+    record of a past exhaustion (#416, unchanged by #426).
     """
     staged = _stage(tmp_path, records=(_authored("zai-glm53-max", "d-author-2"),))
     full = _gate_rung(staged, reviewer=CLAUDE_REVIEWER, reviewer_lane="claude-native")
 
-    assert _kind(full) == "review_same_lane"
+    assert any(line.startswith("gate_review=same_lane_chosen") for line in full.cleared)
 
     lanes = land_review.dispatch.LANES
     shrunk = {name: lane for name, lane in lanes.items() if name != "codex"}
@@ -1558,4 +1698,9 @@ def test_exhaustion_follows_the_registry_rather_than_any_record_of_it(
     monkeypatch.setattr(land_review.dispatch, "LANES", grown)
     regrown = _gate_rung(staged, reviewer=CLAUDE_REVIEWER, reviewer_lane="claude-native")
 
-    assert _kind(regrown) == "review_same_lane"
+    assert regrown.refusal is None
+    assert any(
+        line.startswith("gate_review=same_lane_chosen")
+        and line.endswith("free_lanes=codex a-fourth-lane review_dispatch=d-review-1")
+        for line in regrown.cleared
+    )
