@@ -54,7 +54,7 @@ import json
 import subprocess
 import time
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 from conftest import REPO, load_tool
@@ -65,6 +65,7 @@ if TYPE_CHECKING:
 dispatch = load_tool("dispatch")
 breaker = load_tool("breaker")
 queue_policy = load_tool("queue_policy")
+review_loop = load_tool("review_loop")
 
 READY_BODY = REPO / "tests" / "fixtures" / "routing-eligible.md"
 
@@ -189,6 +190,9 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         # criterion and passing `plan` here would test the caller rather than the seat.
         "permission_mode": "acceptEdits",
         "dispatch_dir": str(tmp_path / "dispatches"),
+        # The declaration root is this test's own, for `--dispatch-dir`'s reason: a suite
+        # whose author set depended on what this box declared today would not be a suite.
+        "review_root": str(tmp_path / "review"),
         "credentials": str(tmp_path / "credentials.env"),
         "breaker_dir": str(tmp_path / "breaker"),
         "issue_body": str(READY_BODY),
@@ -1110,6 +1114,8 @@ def test_the_subject_reaches_the_dispatcher_from_the_command_line(
             str(READY_BODY),
             "--dispatch-dir",
             str(tmp_path / "dispatches"),
+            "--review-root",
+            str(tmp_path / "review"),
             "--credentials",
             str(tmp_path / "credentials.env"),
             "--breaker-dir",
@@ -1288,3 +1294,150 @@ def test_a_subject_declared_in_the_new_name_still_contradicts_old_name_records(
     assert refusal is not None
     assert refusal.kind == "review_subject_contradicted"
     assert "potential_authors=zai-glm52-max" in refusal.found
+
+
+# ------------------------------------- the declared record, read by this seat too (#402)
+
+# #398 gave the author set a second source — the interactive declaration, because #294
+# bars a dispatched session from writing under `.claude/` and such a change leaves no
+# dispatch record at all. `just land`'s rung reads both sources; the review seat's
+# resolution read only the first, so an interactively authored change could have its review
+# dispatched onto the very profile that wrote it — the dispatch spent, the review run, and
+# `review_same_profile` refused at the landing on a record the dispatcher never saw. The
+# claims below hold the two consumers to one merge.
+
+
+DECLARED_SHA: Final = "c" * 40
+DECLARED_STAMP: Final = "20260818T0000Z"
+
+
+def _declare(tmp_path: Path, profile: str) -> Path:
+    """Declare one interactive author under this test's own review root, via the real writer."""
+    review_root = tmp_path / "review"
+    review_loop.store_authorship(review_root, 322, profile, DECLARED_SHA, DECLARED_STAMP)
+    return review_root
+
+
+def test_the_profile_the_walk_would_take_is_not_taken_once_it_is_declared(
+    tmp_path: Path,
+) -> None:
+    """The refusal half of the criterion: a declared author is never the reviewer resolved.
+
+    The #402 arrangement exactly: the issue's dispatched records place the subject
+    (`opus-high`, honestly declared as `--reviewing`), and the interactive half of the same
+    branch is declared as `codex-luna-max` — the seat's head, and so the profile the walk
+    takes on this subject. Before #402 the scan placed nobody else, the walk spent the
+    dispatch on the author, and `review_same_profile` refused at the landing on the record
+    the dispatcher never saw.
+    """
+    dispatch_record(tmp_path)
+    _declare(tmp_path, "codex-luna-max")
+
+    plan, _, refusal = plan_for(tmp_path)
+
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.identity.profile != "codex-luna-max"
+    # The walk continued down the seat's own list rather than refusing: the exclusion
+    # costs a resolution step — past the z.ai entry this arrangement withholds a key for —
+    # never the dispatch.
+    assert plan.identity.profile == "opus-low"
+
+
+def test_a_declared_profile_the_walk_was_not_going_to_take_changes_nothing(
+    tmp_path: Path,
+) -> None:
+    """The passing half: the same declaration discriminates on the profile it names.
+
+    A guard that refused every declaration would pass the claim above while excluding
+    nothing, which is not a guard. The same dispatched record, a declaration naming a
+    profile the walk never considers, and the resolution stands where it stood — the seat's
+    head, exactly the answer the claim above refuses.
+    """
+    dispatch_record(tmp_path)
+    _declare(tmp_path, "opus-xhigh")
+
+    plan, _, refusal = plan_for(tmp_path)
+
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.identity.profile == "codex-luna-max"
+
+
+def test_the_route_records_the_merged_set_and_its_declared_record(
+    tmp_path: Path,
+) -> None:
+    """`reviewing_checked` answers over the merged set, not the dispatch records alone.
+
+    The scan the dispatcher performs and the scan the landing performs must agree: complete
+    over both sources, carrying the declared profile beside the dispatched one, and naming
+    each name's record — dispatch id for one, the authorship record's path for the other —
+    so the record this dispatch writes can no longer overstate what was checked.
+    """
+    dispatch_record(tmp_path)
+    review_root = _declare(tmp_path, "codex-luna-max")
+    record = review_loop.authorship_path(review_root, 322)
+
+    plan, _, refusal = plan_for(tmp_path)
+
+    assert refusal is None, refusal
+    assert plan is not None
+    assert plan.route.authorship.potential == (REVIEWED, "codex-luna-max")
+    assert plan.route.authorship.records == ("d-20260812-000000-aaaaaa", str(record))
+    assert plan.route.authorship.complete is True
+    document = plan.route.document()
+    assert document["reviewing_checked"] is True
+    assert document["reviewing_potential_authors"] == [REVIEWED, "codex-luna-max"]
+    assert document["reviewing_potential_author_records"] == [
+        "d-20260812-000000-aaaaaa",
+        str(record),
+    ]
+    assert (
+        f"route_reviewing_checked=yes potential_authors=codex-luna-max {REVIEWED}"
+        f" records=d-20260812-000000-aaaaaa {record}" in "\n".join(plan.route.lines())
+    )
+
+
+def test_a_declaration_that_will_not_read_refuses_rather_than_resolving(
+    tmp_path: Path,
+) -> None:
+    """The entry that would not open could name the profile this dispatch would resolve.
+
+    Before #402 the dispatcher never opened the record at all; reading it must not trade
+    that silence for a crash or for a set that overstates what was checked — the refusal
+    is fail-closed, and it reuses the landing's own name for the same fact.
+    """
+    review_root = tmp_path / "review"
+    record = review_loop.authorship_path(review_root, 322)
+    record.parent.mkdir(parents=True)
+    record.write_text('{"version": 1, "issue"', encoding="utf-8")
+
+    plan, _, refusal = plan_for(tmp_path)
+
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "authorship_unreadable"
+    assert f"record={record}" in refusal.found
+    assert "Nothing was dispatched" in refusal.action
+
+
+def test_a_lost_declaration_refuses_rather_than_narrowing_the_set(
+    tmp_path: Path,
+) -> None:
+    """A record gone beside the lock only the writer creates is a narrowing, not an answer.
+
+    `escalate` refuses the same absence for the same reason (#398 round 2); before #402
+    this seat could not, because it never read the record the loss removed.
+    """
+    review_root = _declare(tmp_path, "opus-low")
+    review_loop.authorship_path(review_root, 322).unlink()
+
+    plan, _, refusal = plan_for(tmp_path)
+
+    assert plan is None
+    assert refusal is not None
+    assert refusal.kind == "authorship_lost"
+    lost = review_loop.authorship_path(review_root, 322)
+    assert f"record={lost}" in refusal.found
+    assert f"lock={lost.with_name(review_loop.AUTHORSHIP_LOCK)}" in refusal.found
+    assert "just review-loop author" in refusal.action

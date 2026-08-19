@@ -260,6 +260,9 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
         # than resolving to the head the implementer would have taken. The review-seat
         # arrangements below override it with `REVIEWED`.
         "reviewing": "",
+        # This test's own declaration root, for `--dispatch-dir`'s reason (#402): the
+        # review arrangements here must not read whatever this box has declared.
+        "review_root": str(tmp_path / "review"),
     }
     request.update(overrides)
     args = _namespace(**request)

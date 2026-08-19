@@ -467,6 +467,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **The review seat's resolution reads the declared authorship record, not only the dispatch
+  records (#402).** #398 gave the author set a second source — the interactive declaration,
+  because #294 bars a dispatched session from writing under `.claude/` and such a change
+  leaves no dispatch record at all — and `just land`'s never-alone rung reads both.
+  `just dispatch --seat review` read only the first, so for an interactively authored
+  change the seat could resolve the very profile that authored it: the dispatch was spent,
+  the review ran, and `review_same_profile` refused at the landing on a record the
+  dispatcher had never seen, while the dispatch's own `reviewing_checked` mark answered
+  over a set missing an author sitting on disk. The two consumers of the author set now
+  perform the same merge — `review_authorship` calls `with_declared_authors` over
+  `recorded_authors`, exactly as the landing rung does — so they cannot disagree, and the
+  route's mark and `potential_authors` reflect the merged set. Two fail-closed companions
+  ride with it, reusing the landing's names for the same facts: a declared record that
+  will not read refuses the dispatch `authorship_unreadable` rather than crashing or
+  overstating the set, and a record removed after a declaration refuses
+  `authorship_lost` — the silent narrowing `just review-loop escalate` already refuses,
+  one door along. The same-user limit ADR-0071 ruling 4 states is unchanged: a declared
+  author is the recording session's own word, which is why the route still says
+  `checked` and never `verified`.
+
 - **A read-only dispatch is no longer refused for the surface it was sent to read (#339).**
   `just dispatch`'s surface-conflict rung keyed the candidate's surface on the issue rather
   than on the dispatch, so a review of one of two implementations writing the same paths was

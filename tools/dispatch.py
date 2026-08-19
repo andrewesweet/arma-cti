@@ -159,7 +159,12 @@ subject to every `(profile, seat)` refusal: it is a way of choosing, never a way
 Both halves come from one invariant: no single model instance may both propose a change and
 produce the verdict that clears it. So a review dispatch names the profile whose work it
 reviews — `--reviewing` — and resolution *removes* that profile from the list before walking
-it, putting a different lane first among what is left.
+it, putting a different lane first among what is left. The author set resolution removes
+against is both sources #398 named — the dispatch records and the interactive declaration,
+merged here exactly as `just land` merges them — because a dispatcher that read only the
+first could spend a review on the profile that authored the change and learn it from the
+landing's refusal (#402). A declaration that will not read, or has been lost, refuses the
+dispatch by name rather than resolving against a set it cannot trust.
 
 **The subject is derived where it is derivable, and the declaration is checked against the
 derivation.** A declaration on its own is controlled by whoever proposes the review: `--profile
@@ -236,6 +241,7 @@ import readiness
 # handed over on exactly the ref the review loop already reads, rather than on a second
 # convention. It reads no dispatch record and imports nothing from here, so there is no cycle.
 import review_exchange
+import review_loop
 import routing_policy
 import worktree as worktree_tool
 
@@ -2099,11 +2105,73 @@ def potential_authors_and_reviewers(issue: int, dispatch_dir: Path) -> Authorshi
     return _scan_records(issue, dispatch_dir, include_reviews=True)
 
 
-def review_authorship(seat: Seat, args: argparse.Namespace) -> Authorship:
-    """Read the records, on the one seat and the one dispatch that has a subject to check."""
+def review_authorship(seat: Seat, args: argparse.Namespace) -> tuple[Authorship, Refusal | None]:
+    """Read the records, on the one seat and the one dispatch that has a subject to check.
+
+    **Two sources, the same merge the landing rung performs** (#402). #398 gave the author
+    set a second source — the interactive declaration under `~/.arma-cti/review/`, read
+    through `with_declared_authors` — because #294 bars a dispatched session from writing
+    under `.claude/`, so such a change leaves no dispatch record at all. `just land`'s rung
+    reads both; this, the other consumer of the same set, read only the dispatch records,
+    so a review could be dispatched onto the very profile that authored the change and be
+    refused at the landing the record the dispatcher never saw. The two consumers now
+    cannot disagree, because both call the same merge.
+
+    **A declaration that will not read is a refusal, not a silence.** `recorded_authors`
+    raises on a record this tool did not write, and swallowing that would return a set
+    missing a name that could be the reviewer's own — the exact overstatement #402 was
+    filed about. A *lost* declaration — the record gone, the lock it alone creates still
+    there — is the same narrowing one door along, and `declaration_lost` names it. Both
+    refuse rather than resolve, matching the landing's vocabulary for the same facts
+    (`authorship_unreadable`, `authorship_lost`) so a reader meets one name per fact.
+    """
     if not seat.reviews or not args.reviewing:
-        return Authorship()
-    return potential_authors(args.issue, Path(args.dispatch_dir))
+        return Authorship(), None
+    review_root = Path(args.review_root)
+    record = review_loop.authorship_path(review_root, args.issue)
+    if review_loop.declaration_lost(review_root, args.issue):
+        return Authorship(), Refusal(
+            "authorship_lost",
+            (
+                f"issue={args.issue}",
+                f"record={record}",
+                f"lock={record.with_name(review_loop.AUTHORSHIP_LOCK)}",
+            ),
+            (
+                "A declaration was written for this issue and its record is gone, so the "
+                "profiles it named are absent from the set this review's candidates are "
+                "checked against — and one of them could be the profile that would have "
+                "resolved. The lock beside the missing record is what says a declaration "
+                "reached the writer; only the writer creates it. Re-declare every "
+                "interactive author with `just review-loop author --issue <n> --profile "
+                "<profile>` and dispatch again. A check that could not run is not a check "
+                f"that passed (#41). {NEVER_ALONE} Nothing was dispatched."
+            ),
+        )
+    try:
+        declared = review_loop.recorded_authors(review_root, args.issue)
+    except review_loop.ExternalError as error:
+        return Authorship(), Refusal(
+            "authorship_unreadable",
+            (f"issue={args.issue}", f"record={record}", f"reason={error}"),
+            (
+                "An interactive authorship record for this issue exists and could not be "
+                "read, so who authored this work is not an answer any record can give — "
+                "and the entry that would not open could name the profile this dispatch "
+                "would have resolved. Repair the record at the path above, or remove it "
+                "and re-declare with `just review-loop author --issue <n> --profile "
+                "<profile>`. A check that could not run is not a check that passed (#41). "
+                f"{NEVER_ALONE} Nothing was dispatched."
+            ),
+        )
+    return (
+        with_declared_authors(
+            potential_authors(args.issue, Path(args.dispatch_dir)),
+            declared,
+            str(record),
+        ),
+        None,
+    )
 
 
 def contradicted_refusal(seat: Seat, reviewed: str, issue: int, authorship: Authorship) -> Refusal:
@@ -2676,7 +2744,10 @@ def resolve_seat(
     the same reason and above the block on naming it: a caller who declares the wrong subject
     has already defeated that block, since it compares two strings the caller typed. The
     contradiction is refused only on a **complete** read of those records — a partial read
-    marks the subject unchecked and still excludes everything it did read.
+    marks the subject unchecked and still excludes everything it did read. The records are
+    both kinds #398 named: dispatch records and the interactive declaration, merged in
+    `review_authorship` (#402), which also refuses by name a declaration that will not read
+    or has been lost rather than resolving against a set it cannot trust.
     """
     refusal = unknown_seat_refusal(args.seat)
     if refusal is not None:
@@ -2685,7 +2756,9 @@ def resolve_seat(
     if refusal is not None:
         return None, refusal
     seat = SEATS[args.seat]
-    authorship = review_authorship(seat, args)
+    authorship, refusal = review_authorship(seat, args)
+    if refusal is not None:
+        return None, refusal
     if authorship.complete and args.reviewing not in authorship.potential:
         return None, contradicted_refusal(seat, args.reviewing, args.issue, authorship)
     if args.profile:
@@ -4329,6 +4402,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help="the profile whose work is under review; required by --seat review",
     )
     parser.add_argument("--dispatch-dir", default=str(DISPATCH_ROOT))
+    # Where the interactive authorship declarations live (#402): the review seat's author
+    # set reads them beside the dispatch records, the same merge the landing rung performs,
+    # so the two consumers of that set cannot disagree. A flag rather than a constant so a
+    # test can stage its own declarations, exactly as `--dispatch-dir` stages its own records.
+    parser.add_argument("--review-root", default=str(review_loop.REVIEW_ROOT))
     parser.add_argument("--credentials", default=str(CREDENTIALS))
     # `CTI_BREAKER_DIR` exists so that a test can run the real seam — `tools/dispatch.sh`
     # forks a fresh process, which no in-process patch reaches — against its own breaker

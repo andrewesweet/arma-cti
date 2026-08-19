@@ -43,8 +43,8 @@ Six things, and the dispatch record carries four of them by construction:
   through;
 - **the profile under review** — `--reviewing <profile>`, which resolution removes from the
   seat's preference list before walking it — along with every other profile the issue's own
-  dispatch records place on the work — and which the dispatcher checks against those records
-  rather than taking on the caller's word;
+  records place on the work, dispatch records and declared authorship both (#402) — and which
+  the dispatcher checks against those records rather than taking on the caller's word;
 - **the close audit** — read by the reviewer from the issue thread, because the audit is what
   states which criteria the landing claimed to meet and a review that does not read it can
   only check the code against itself;
@@ -156,6 +156,20 @@ Each of the following was a choice:
   is its own file in the review root, never a record among the dispatch records, because a
   record of a run that never ran would be a worse answer than the deadlock and every reader of
   that root would meet it.
+
+  **The dispatcher performs the same merge, not only the landing** (#402). Until #402 the
+  sentence above described one consumer: the landing rung read both sources and this seat's
+  resolution read only the dispatch records, so for an interactively authored change the walk
+  could resolve the very profile that authored it — the dispatch spent, the review run, and
+  `review_same_profile` refused at the landing on a record the dispatcher never saw, while
+  the dispatch's own `reviewing_checked` mark answered over a set missing an author sitting
+  on disk. Resolution now merges through the same two functions the landing rung calls, so
+  the two consumers cannot disagree, and the mark and `potential_authors` on the dispatch
+  record reflect the merged set. The same merge brings the same two fail-closed refusals to
+  this surface, under the landing's own names: a declared record that will not read refuses
+  the dispatch `authorship_unreadable`, and a record removed after a declaration refuses
+  `authorship_lost` — the absence `just review-loop escalate` already refuses, one door
+  along.
 
   Three properties of the record follow from the one direction it must not fail in — an author
   it loses is a reviewer the check stops refusing. **Declaring is one locked act**: the read,
