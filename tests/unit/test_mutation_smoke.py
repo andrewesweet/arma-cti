@@ -16,10 +16,11 @@ quoted once in a closing comment.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import textwrap
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 from conftest import load_tool
@@ -370,10 +371,29 @@ def test_the_cheapest_tests_reaching_a_line_are_the_ones_run() -> None:
     assert reach.cheapest(("slow", "middling", "quick")) == ["quick", "middling"]
 
 
-def test_the_selection_stops_at_its_wall_clock_bound() -> None:
-    # Three at 3.0s each would be 9s, past the 8s the selection may spend.
+def test_the_selection_takes_every_test_under_the_per_test_ceiling() -> None:
+    # The bound is on the single test, not the cumulative wall clock (#435): six
+    # tests at 3.0s each are all members — the cumulative cut this replaced would
+    # have kept two, and which two moved with measured jitter the grain does not
+    # remove. Membership, not order, is what a verdict is a function of.
     reach = smoke_tool.read_reach({}, {f"t{i}": 3.0 for i in range(6)})
-    assert reach.cheapest(tuple(f"t{i}" for i in range(6))) == ["t0", "t1"]
+    assert reach.cheapest(tuple(f"t{i}" for i in range(6))) == [f"t{i}" for i in range(6)]
+
+
+def test_a_line_reached_only_over_the_ceiling_keeps_its_single_cheapest_test() -> None:
+    reach = smoke_tool.read_reach({}, {"dear": 12.0, "dearest": 20.0})
+    assert reach.cheapest(("dear", "dearest")) == ["dear"]
+
+
+def test_selection_membership_survives_cost_jitter_the_grain_does_not_remove() -> None:
+    # #435's measured shape: two fresh measurements of one unchanged module had
+    # 33 of 65 costs move a grain or more, and the cumulative cut selected
+    # different tests for 532 of 874 lines. Under the per-test ceiling the same
+    # jitter moves only the run order, never the membership.
+    before = smoke_tool.read_reach({}, {"a": 0.71, "b": 0.48, "c": 0.5, "d": 0.63})
+    after = smoke_tool.read_reach({}, {"a": 0.52, "b": 0.5, "c": 0.68, "d": 0.5})
+    tests = ("a", "b", "c", "d")
+    assert set(before.cheapest(tests)) == set(after.cheapest(tests)) == set(tests)
 
 
 def test_an_unmeasured_test_is_assumed_free_rather_than_expensive() -> None:
@@ -387,17 +407,44 @@ def test_a_mutants_timeout_is_derived_from_what_its_tests_cost_unmutated() -> No
     assert reach.timeout([]) == smoke_tool.TIMEOUT_FLOOR_S
 
 
-def test_an_unrelated_collection_banner_does_not_turn_a_usage_error_into_a_kill(
+def _fake_pytest(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    judged: subprocess.CompletedProcess[str] | subprocess.TimeoutExpired,
+    collect: subprocess.CompletedProcess[str] | subprocess.TimeoutExpired,
+) -> list[list[str]]:
+    """Stand in for both subprocesses `_pytest` can start, and record their argv.
+
+    The judged run and the `--collect-only` question are told apart by their
+    argv, the same distinction the real code makes; the returned list collects
+    every argv for assertions that the right question was asked of the right
+    process.
+    """
+    argvs: list[list[str]] = []
+
+    def run(argv: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        argvs.append([str(part) for part in argv])
+        outcome = collect if "--collect-only" in argv else judged
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
+
+    monkeypatch.setattr(smoke_tool.subprocess, "run", run)
+    return argvs
+
+
+def test_a_module_that_stops_collecting_under_the_mutant_scores_as_a_kill(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    done = subprocess.CompletedProcess(
-        [],
-        4,
-        stdout="ERROR collecting tests/unit/test_mutation_smoke.py\n",
-        stderr="",
+    # #338's shape: a mutant that makes a module-level call raise turns the
+    # node-id run into an exit 4 — the same code as a usage error — and the
+    # collect-only question is what tells them apart.
+    argvs = _fake_pytest(
+        monkeypatch,
+        judged=subprocess.CompletedProcess([], 4, stdout="", stderr=""),
+        collect=subprocess.CompletedProcess([], 2, stdout="", stderr=""),
     )
-    monkeypatch.setattr(smoke_tool.subprocess, "run", lambda *_args, **_kwargs: done)
     assert (
         smoke_tool._pytest(  # noqa: SLF001 — the discriminator is the subject
             tmp_path,
@@ -406,8 +453,126 @@ def test_an_unrelated_collection_banner_does_not_turn_a_usage_error_into_a_kill(
             mutant=True,
             test_module="tests/unit/test_subject.py",
         )
+        == smoke_tool.PYTEST_FAILED
+    )
+    assert any("--collect-only" in argv for argv in argvs)
+
+
+def test_a_collection_banner_quoted_from_a_run_that_is_not_this_one_does_not_score_a_kill(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The compound arrangement #424 names: this repo runs pytest inside pytest,
+    # and the captured output a failing test leaves behind can quote a
+    # collection banner naming the very module under mutation — a stream token
+    # the old discriminator matched, right for the wrong reason whenever it
+    # agreed. The verdict must come from the collect-only question instead:
+    # the module collects, so the odd exit code stands and refuses upstream.
+    quoted = (
+        "=================================== FAILURES ===================================\n"
+        "______ test_inner ______________________________________________________________\n"
+        "E   AssertionError: \n"
+        "E   =========================== ERRORS ====================================\n"
+        "E   ______________ ERROR collecting tests/unit/test_subject.py ______________\n"
+        "E   ImportError while importing test module 'tests/unit/test_subject.py'\n"
+    )
+    _fake_pytest(
+        monkeypatch,
+        judged=subprocess.CompletedProcess([], 3, stdout=quoted, stderr=""),
+        collect=subprocess.CompletedProcess([], 0, stdout="", stderr=""),
+    )
+    assert (
+        smoke_tool._pytest(  # noqa: SLF001 — the discriminator is the subject
+            tmp_path,
+            [],
+            timeout=1.0,
+            mutant=True,
+            test_module="tests/unit/test_subject.py",
+        )
+        == 3
+    )
+
+
+def test_a_collect_only_question_that_cannot_be_answered_refuses_rather_than_scores(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _fake_pytest(
+        monkeypatch,
+        judged=subprocess.CompletedProcess([], 4, stdout="", stderr=""),
+        collect=subprocess.TimeoutExpired(cmd="pytest", timeout=1.0),
+    )
+    assert (
+        smoke_tool._pytest(  # noqa: SLF001 — the refusal branch is the subject
+            tmp_path,
+            [],
+            timeout=1.0,
+            mutant=True,
+            test_module="tests/unit/test_subject.py",
+        )
         == 4
     )
+
+
+def test_pytests_own_codes_for_a_collection_error_are_what_the_gate_reads(
+    tmp_path: Path,
+) -> None:
+    # The anchor (#424): the kill path reads exit codes, not output tokens, so
+    # the suite pins what this pytest actually exits — a collection error under
+    # node-id selection is 4, the ambiguous code the discriminator exists to
+    # resolve, and the bare-path `--collect-only` question is 2. If a pytest
+    # upgrade moves either number, this reds before the gate goes quietly blind
+    # or quietly generous. The banner is asserted only to document the stream
+    # shape the gate deliberately does not parse.
+    module = tmp_path / "tests" / "unit" / "test_subject.py"
+    module.parent.mkdir(parents=True)
+    module.write_text("import module_that_does_not_exist_for_this_fixture\n")
+    common = ["-n0", "-q", "-p", "no:cacheprovider", "--no-header"]
+    judged = subprocess.run(  # noqa: S603 - argv built here from constants
+        [sys.executable, "-m", "pytest", *common, "tests/unit/test_subject.py::test_any"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert judged.returncode == 4
+    assert "ERROR collecting" in judged.stdout
+    asked = subprocess.run(  # noqa: S603 - argv built here from constants
+        [sys.executable, "-m", "pytest", *common, "--collect-only", "tests/unit/test_subject.py"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert asked.returncode == 2
+
+
+def test_every_spawned_judge_runs_under_one_pinned_hash_seed(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # #435: unpinned, each of a module's twenty mutant runs picks its own hash
+    # seed, and a subject whose behaviour depends on set or dict iteration order
+    # is a coin toss across them. The pin reaches the subprocess by environment
+    # only — the gate's own process is left alone.
+    environments: list[dict[str, str]] = []
+
+    def run(_argv: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        environments.append(cast("dict[str, str]", kwargs.get("env")))
+        return subprocess.CompletedProcess([], 0, stdout="", stderr="")
+
+    monkeypatch.setattr(smoke_tool.subprocess, "run", run)
+    assert (
+        smoke_tool._pytest(  # noqa: SLF001 — the spawned environment is the subject
+            tmp_path,
+            [],
+            timeout=1.0,
+            test_module="tests/unit/test_subject.py",
+        )
+        == 0
+    )
+    assert environments[0]["PYTHONHASHSEED"] == smoke_tool.HASH_SEED
+    assert environments[0] is not os.environ
 
 
 def test_a_pytest_usage_error_refuses_instead_of_counting_as_a_kill() -> None:

@@ -80,13 +80,20 @@ never get worse; every strengthening of a test module becomes its new floor.
 Three things a ratchet gets wrong, and how this one answers each:
 
 - **A floor set from a single observation can lock in a lucky high.** This gate
-  is deterministic — the mutant sample is seeded and the subject's bytes are
-  pinned — so a rate is a fixed function of the (test module, subject) pair, not
-  a draw from a distribution. There is no day-to-day variance to average, so one
-  measurement establishes the rate for that pair. The "luck" is that the
-  particular ≤20-mutant sample is favourable, and it does not vary; the only way
-  the rate stops applying is a change to the tests or the subject, which is what
-  the ratchet exists to notice.
+  is deterministic where it can be and states the bound where it cannot (#435):
+  the mutant sample is seeded, the subject's bytes are pinned, every subprocess
+  runs under one pinned hash seed, and a mutant's selection takes every
+  reaching test under a per-test ceiling rather than a clock-derived cumulative
+  cut — the cut it replaced selected different tests for 532 of 874 covered
+  lines between two fresh measurements of one unchanged module, and a kill
+  moved with it about one run in six, at the same rate with the hash seed
+  pinned as without. What still reads the clock: the timeout that scores a
+  hanging mutant as a kill (a loaded box can award that kill to a survivor),
+  and the straddle case of a duration crossing the per-test ceiling. A rate is
+  therefore a fixed function of the (test module, subject) pair up to one kill,
+  and `SLACK` is sized by that stated bound rather than by the absence of
+  jitter; beyond it, the only way the rate stops applying is a change to the
+  tests or the subject, which is what the ratchet exists to notice.
 - **A legitimate refactor that lowers a module's achievable rate must not be
   blocked.** Editing the subject changes which mutants exist, so the recorded
   rate is about a *pair*, not a module. The row pins the subject's bytes, and
@@ -205,13 +212,15 @@ CAP: Final = 20
 FLOOR: Final = 0.50
 
 # How many kills a module may lose to its own recorded rate before the ratchet
-# reds. The sample is seeded and the subject is pinned, so a module's rate is a
-# fixed function of its (test module, subject) pair and does not move run to run
-# — there is no jitter to absorb. What this absorbs is the one deterministic-
-# but-fragile shift: renaming a test changes the node ids that reach a line, and
-# under equal-cost ties the cheapest-first selection reorders on the name, which
-# can flip a single kill without the assertions weakening. One kill of tolerance
-# lets a neutral rename through; two lost kills is a weakening the ratchet names.
+# reds. The sample is seeded, the subject is pinned, every subprocess shares one
+# hash seed, and selection membership no longer reads the clock (#435) — but
+# "no jitter" was a premise the instrument did not satisfy, and the bound that
+# actually holds is stated, not assumed. What this absorbs is the residual
+# one-kill jitter the gate cannot remove: a test whose measured duration
+# straddles the per-test ceiling flips one line's membership, and a timeout
+# scored under machine load can award a kill to a survivor. One kill of
+# tolerance is that stated bound; two lost kills is a weakening the ratchet
+# names.
 SLACK: Final = 1
 
 # The kill rate a module on the **shell** arm must reach, and its own number
@@ -286,10 +295,19 @@ COLLECT_S: Final = 600.0
 # about what one of them costs, and leaving the killing test out of the selection
 # is a false survivor the floor then has to be lowered to accommodate.
 TESTS_PER_MUTANT: Final = 200
-# ...and the wall clock those tests may cost between them, before the selection
-# stops adding. Cheapest-first ordering is what makes this bound cheap rather
-# than arbitrary: a 60 s soak is never chosen while a 0.01 s test reaches the
-# same line.
+# ...and the cost one test may carry and still be selected at all. A ceiling on
+# the single test, not a cumulative wall clock for the selection: a cumulative
+# cut reads the measured durations, which jitter far more than `COST_GRAIN`
+# removes, and it cut inside that jitter — on `tests/unit/test_dispatch_review.py`
+# two fresh measurements of the same tree selected different tests for 532 of
+# 874 covered lines, and one kill moved with them about one run in six (#435).
+# Membership is what a verdict is a function of (under `-x` a red anywhere is a
+# kill, wherever it sits in the order), so membership must not read the clock:
+# every reaching test at or under the ceiling runs, and only a line reached by
+# nothing cheaper falls back to its single cheapest test. The ceiling still
+# keeps the 60 s soak out while a 0.01 s test reaches the same line, and it
+# sits far above the corpus's dense cost mass, so a duration has to jitter
+# across 8.0 s to flip membership — the boundary case `SLACK` names.
 TEST_SECONDS_PER_MUTANT: Final = 8.0
 # The grain durations are rounded to before anything is ordered or summed by
 # them. Coarser than the run-to-run jitter of a millisecond test, finer than the
@@ -300,12 +318,32 @@ COST_GRAIN: Final = 0.1
 # makes the subject loop forever is detected only this way, so a timeout counts
 # as a kill — it is the tests noticing, slowly. Derived from what the same tests
 # cost unmutated, so it never bounds an honestly slow test out of a verdict.
+# The one verdict that still reads the wall clock rather than the tree (#435):
+# a box loaded enough to overrun the bound awards this kill to a survivor, in
+# the generous direction, and `SLACK` is the stated tolerance for exactly that.
 TIMEOUT_FLOOR_S: Final = 20.0
 TIMEOUT_FACTOR: Final = 4.0
 
 # `0.12s call tests/unit/test_x.py::test_y` — three fields, and a line with any
 # other shape is not one of pytest's duration rows.
 DURATION_FIELDS: Final = 3
+
+# The one hash seed every Python subprocess this gate spawns runs under (#435).
+# Not for this gate's own arithmetic — it sorts, or keys on names — but for the
+# code under judgement: a subject whose behaviour depends on set or dict
+# iteration order is a coin toss across the twenty mutant runs when each
+# subprocess picks its own seed, and a coin toss is not a verdict. Measured on
+# `tests/unit/test_dispatch_review.py` the flip traced to test selection rather
+# than hash order, so this pin is not the whole of #435's fix — it is the half
+# that costs one line and removes a whole class of coin toss the measurement
+# could not have ruled out on another module.
+HASH_SEED: Final = "0"
+
+
+def _env() -> dict[str, str]:
+    """Return the environment every spawned judge runs under: the caller's, seed pinned."""
+    return {**os.environ, "PYTHONHASHSEED": HASH_SEED}
+
 
 # The test modules no arm of this gate can measure, each with the reason.
 #
@@ -600,8 +638,10 @@ def plant(source: str, *, path: str, lines: frozenset[int]) -> list[Mutant]:
     """Every mutant this mutator will plant in `source`, on the given lines.
 
     Deterministic and pure: the same file and the same covered lines give the
-    same list in the same order, which is what makes the sample below repeatable
-    and this gate incapable of flaking.
+    same list in the same order, which is what makes the sample below repeatable.
+    The verdict's other input, the test selection, is deterministic only up to
+    the boundary `cheapest` states (#435) — purity here pins the sample, not
+    the whole gate.
     """
     tree = ast.parse(source)
     planter = _Planter(
@@ -803,11 +843,14 @@ class Reach(NamedTuple):
         """Seconds one node id costs, rounded to `COST_GRAIN`, over all its cases.
 
         Rounded, and that is the whole point of this method rather than a dict
-        lookup. Ordering the selection below by raw measured durations made this
-        gate **flake**: the same tree, the same mutants, 13/20 then 14/20, because
-        a suite whose tests all cost about a millisecond reorders on jitter and a
-        different set of them gets picked. A grain coarser than the jitter and a
-        tie-break on the name make the selection a function of the tree.
+        lookup. Ordering the selection by raw measured durations made this gate
+        **flake**: the same tree, the same mutants, 13/20 then 14/20, because
+        a suite whose tests all cost about a millisecond reorders on jitter and
+        a different set of them gets picked. The grain and the name tie-break
+        coarsen that; they do not remove it — a second measured flake (#435)
+        had 33 of 65 costs moving a grain or more between two runs — so the
+        selection's *membership* no longer reads cost at all, only the ceiling,
+        and cost orders the run and sizes the timeout.
         """
         exact = self.costs.get(node)
         if exact is None:
@@ -815,26 +858,32 @@ class Reach(NamedTuple):
         return round(exact / COST_GRAIN) * COST_GRAIN
 
     def cheapest(self, tests: tuple[str, ...], bound: float = TEST_SECONDS_PER_MUTANT) -> list[str]:
-        """Choose the tests to run against one mutant: cheapest first, twice bounded.
+        """Choose the tests to run against one mutant: every one under the per-test ceiling.
 
-        A test whose duration was never recorded is assumed free rather than
-        expensive, so an unmeasured test is still tried; the wall-clock bound
-        stops the selection whatever the assumption was worth.
+        Membership is all that a verdict is a function of — under `-x` a red
+        anywhere in the order is a kill, and an all-green run survives — so the
+        order below changes only wall clock, and the membership must not read
+        the clock: durations are measured afresh every run, they jitter past
+        what `COST_GRAIN` quantises away, and the cumulative wall-clock bound
+        this replaced cut inside that jitter and moved 532 of 874 lines'
+        selections between two measurements of one unchanged module, taking a
+        kill with it about one run in six (#435).
 
-        A test that rounds to free costs nothing against that bound, so a module
-        of millisecond tests runs **all** of them against every mutant — which is
-        what keeps a mutant from surviving merely because the test that would have
-        killed it was left out of the selection.
+        So a reaching test is a member iff its rounded cost is at or under
+        `bound`, capped at `TESTS_PER_MUTANT` in name order (a cap that bites
+        past two hundred tests, where name order is the only order that cannot
+        reorder on a measurement). A test whose duration was never recorded is
+        assumed free rather than expensive, so an unmeasured test is still
+        tried. A line every one of whose tests is over the ceiling keeps its
+        single cheapest one — the gate still asks something about that line —
+        and that fallback, plus a duration straddling the ceiling itself, are
+        the two places left where a measurement can flip a verdict; `SLACK`'s
+        comment names them.
         """
-        ordered = sorted(tests, key=lambda name: (self.cost(name), name))
-        chosen: list[str] = []
-        spent = 0.0
-        for name in ordered[:TESTS_PER_MUTANT]:
-            if chosen and spent + self.cost(name) > bound:
-                break
-            chosen.append(name)
-            spent += self.cost(name)
-        return chosen
+        members = sorted(name for name in tests if self.cost(name) <= bound)[:TESTS_PER_MUTANT]
+        if not members:
+            members = [min(tests, key=lambda name: (self.cost(name), name))]
+        return sorted(members, key=lambda name: (self.cost(name), name))
 
     def timeout(self, tests: list[str]) -> float:
         """How long those tests get before the mutant is called killed by timeout."""
@@ -1052,6 +1101,41 @@ def grafted(root: Path, path: str, text: str):  # noqa: ANN201 — a context man
                 signal.signal(number, handler)
 
 
+def _collects(root: Path, test_module: str, *, timeout: float) -> bool | None:
+    """Whether `test_module` imports and collects under the tree as it stands right now.
+
+    Asked of a process whose only subject is that module: a `--collect-only` run
+    of the bare path runs no tests, so it cannot quote captured output, and its
+    exit code — 0 when the module collects, 2 when collection is interrupted by
+    an import error — is about collecting `test_module` and nothing else. None
+    when even this run did not finish, which is no answer at all.
+    """
+    try:
+        done = subprocess.run(  # noqa: S603 — argv is built here from paths and constants
+            [
+                sys.executable,
+                "-m",
+                "pytest",
+                "--collect-only",
+                "-q",
+                "-n0",
+                "-p",
+                "no:cacheprovider",
+                "--no-header",
+                test_module,
+            ],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout,
+            env=_env(),
+        )
+    except subprocess.TimeoutExpired:
+        return None
+    return done.returncode == PYTEST_PASSED
+
+
 def _pytest(
     root: Path,
     argv: list[str],
@@ -1062,7 +1146,20 @@ def _pytest(
 ) -> int | None:
     """Run pytest in `root` and return its exit code, or None if it did not finish.
 
-    Score a mutant-caused collection error for `test_module` as a test failure.
+    Score a mutant-caused collection error for `test_module` as a test failure,
+    asked of collection itself rather than of the run's output. An exit outside
+    {0, 1} is not a verdict — except one: a mutant that makes a module-level
+    call of the subject raise turns the run into a collection error (#338), and
+    that is the tests noticing in the strongest sense. With node ids on the
+    command line that error exits 4, the same code as a bad-node-id usage
+    error, and the output stream cannot tell them apart honestly: this repo
+    runs pytest inside pytest, and the captured output of a failing test can
+    quote a collection banner naming this very module from a run that is not
+    this one (#424) — a token matched in a mixed stream, right for the wrong
+    reason whenever it agrees. So the question goes to `_collects`, a process
+    that can only answer it: the module does not collect under the mutant, or
+    it does. A miss in either direction refuses loudly — the odd exit code is
+    returned and `_tally` raises — so a wrong answer here cannot score a kill.
     """
     try:
         done = subprocess.run(  # noqa: S603 — argv is built here from paths and constants
@@ -1072,13 +1169,14 @@ def _pytest(
             text=True,
             check=False,
             timeout=timeout,
+            env=_env(),
         )
     except subprocess.TimeoutExpired:
         return None
     if (
         mutant
         and done.returncode not in (PYTEST_PASSED, PYTEST_FAILED)
-        and f"ERROR collecting {test_module}" in done.stdout
+        and _collects(root, test_module, timeout=timeout) is False
     ):
         return PYTEST_FAILED
     return done.returncode
@@ -1110,7 +1208,7 @@ def measure(root: Path, test_module: str, *, timeout: float) -> Collected:
         data = Path(workspace) / "cov.db"
         report = Path(workspace) / "cov.json"
         tracing = mutation_shell.trace_environment(Path(workspace))
-        environment = {**os.environ, "COVERAGE_RCFILE": str(rcfile), **tracing}
+        environment = {**_env(), "COVERAGE_RCFILE": str(rcfile), **tracing}
         argv = [
             sys.executable,
             "-m",
