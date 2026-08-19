@@ -116,6 +116,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for reviews rather than blocking them; the remaining independent check is `just land`'s
   re-gate after rebase, which no flag skips.
 
+- **The arbiter walk reads the routing policy itself, and `--routing-refusal` is gone
+  (#391).** The never-alone arbiter's routing rung was only as good as the flags a caller
+  passed to `just review-loop escalate --routing-refusal` — and no caller ever passed
+  them, so an escalation walked past a head the policy would refuse, a check that did not
+  run reading as one that passed. `arbiter._walk_first` now runs
+  `routing_policy.enforcing_match` per candidate — the landing read, the same one
+  `just land` runs — on inputs the escalation derives and no caller declares: the policy
+  read off fetched `origin/main`, the branch under review read off the review exchange's
+  own `refs/heads/issue-<n>`, merge-base-relative. An escalation with no exchange ref, or
+  whose policy will not parse, now refuses by name rather than resolving past a rung whose
+  inputs are absent; git that cannot be reached is not a result. Against the shipped
+  policy the rung excludes nobody, because since ADR-0073 no row refuses a landing — it
+  runs anyway. Ruled on #391 under the human's standing order of 2026-08-16, recorded as a
+  delegated decision in ADR-0075 and as ADR-0071 amendment A8.
+
 - **A renamed profile's old name resolves for reading dispatch records, and still never
   dispatches (#413).** Renaming a profile used to strand every branch authored under the old
   name: `--reviewing <old name>` refused `unknown_reviewed_profile` against the registry,

@@ -20,7 +20,7 @@ blanket `fable-high` default is struck (#361 ruling 4), the only empty columns l
 the two marked not-applicable (`recon`, the interlocutor), and **adding a seat now
 requires deciding its arbiter**.
 
-The exclusions are facts this module does not derive, read as inputs:
+The exclusions:
 
 - the issue's dispatch records, through `dispatch.potential_authors_and_reviewers` — a
   *potential*-author set, never proof, because nothing on a record names the commits a
@@ -28,9 +28,14 @@ The exclusions are facts this module does not derive, read as inputs:
   arbitrating its own work. The scan includes review records where the arbiter is
   concerned (#361: a prior reviewer is exactly the profile the walk must not select, and
   #318's real reviewer is on the records as a review dispatch and nowhere else).
-- routing refusals for the branch under review, caller-supplied as `profile -> reason` —
-  the #326 leg, where the head was eligible by records and refused by the routing policy
-  on the diff's own paths.
+- the routing policy over the branch under review's own paths, derived here and never
+  caller-supplied (#391, on the orchestrator's ruling of 2026-08-19): `enforcing_match`
+  per candidate, the landing read `just land` runs, so #326's head — eligible by records,
+  refused by the policy on the diff's own paths — is passed over with its class and its
+  matched paths recorded. This rung was caller-supplied flags for one cycle and the flags
+  were never passed; the walk now holds the read itself. Against the shipped policy it
+  excludes nobody, because since ADR-0073 no row refuses a landing — the rung runs
+  anyway, and a refusing row is one table edit away from being honoured.
 - live dispatchability, through `resolve_dispatchable`: the same `(lane, profile, seat)`
   rungs `just dispatch`'s ladder judges by, read through `dispatch.candidate_refusal`, so
   a profile resolved here cannot be one the ladder refuses two lines later.
@@ -48,7 +53,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Mapping
+    from collections.abc import Callable
     from datetime import datetime
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -58,6 +63,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import dispatch
 import otel_event
 import review_loop
+import routing_policy
 
 RESOLVED: Final = "resolved"
 REFUSED: Final = "refused"
@@ -135,15 +141,16 @@ def _walk(seat: dispatch.Seat) -> tuple[str, ...]:
 def _walk_first(
     seat: dispatch.Seat,
     authorship: dispatch.Authorship,
-    refusals: Mapping[str, str],
+    policy: routing_policy.Policy,
+    paths: tuple[str, ...],
     candidate: Callable[[str], dispatch.Refusal | None] | None,
 ) -> Resolution:
     """Walk one seat's candidates and return the first profile nothing excludes.
 
-    The rungs, in order: the registry, the caller's routing refusals, the records, and —
-    where `candidate` is supplied — the live `(lane, profile, seat)` rungs of
-    `dispatch.candidate_refusal`. Every exclusion is recorded with its reason and its
-    detail, whether the walk then answers or refuses. `unchecked` reads
+    The rungs, in order: the registry, the routing policy over the branch's own paths,
+    the records, and — where `candidate` is supplied — the live `(lane, profile, seat)`
+    rungs of `dispatch.candidate_refusal`. Every exclusion is recorded with its reason
+    and its detail, whether the walk then answers or refuses. `unchecked` reads
     `Authorship.complete`, so every incomplete read — not only the unreadable one —
     leaves the resolution taken but not verifiable.
     """
@@ -154,8 +161,17 @@ def _walk_first(
                 Exclusion(profile, UNREGISTERED_EXCLUSION, "the registry carries no such profile")
             )
             continue
-        if profile in refusals:
-            passed_over.append(Exclusion(profile, ROUTING_EXCLUSION, refusals[profile]))
+        match = routing_policy.enforcing_match(policy, paths, dispatch.PROFILES[profile].lane)
+        if match is not None:
+            # The #326 leg, derived rather than trusted since #391: the landing read over
+            # this branch's paths, so a head the policy refuses never resolves.
+            passed_over.append(
+                Exclusion(
+                    profile,
+                    ROUTING_EXCLUSION,
+                    f"routing_class={match.rule.id}:{match.rule.name} {' '.join(match.evidence)}",
+                )
+            )
             continue
         if profile in dispatch.never_alone_exclusions(authorship):
             # Resolved through `retired_names` (#413): the records rung asks who an arbiter
@@ -194,9 +210,10 @@ def _no_entry() -> Resolution:
 def resolve(
     seat: dispatch.Seat,
     authorship: dispatch.Authorship,
-    routing_refusals: Mapping[str, str] | None = None,
+    policy: routing_policy.Policy,
+    paths: tuple[str, ...],
 ) -> Resolution:
-    """Resolve one seat's arbiter over records and routing refusals alone.
+    """Resolve one seat's arbiter over records and the routing policy alone.
 
     An empty escalation column refuses before any walk — the struck default's replacement
     is a decision the registry now requires, not a fallback. This is the seam tests and
@@ -206,14 +223,15 @@ def resolve(
     """
     if not seat.escalation:
         return _no_entry()
-    return _walk_first(seat, authorship, routing_refusals or {}, None)
+    return _walk_first(seat, authorship, policy, paths, None)
 
 
 def resolve_for_issue(
     seat: dispatch.Seat,
     issue: int,
     dispatch_dir: Path,
-    routing_refusals: Mapping[str, str] | None = None,
+    policy: routing_policy.Policy,
+    paths: tuple[str, ...],
 ) -> Resolution:
     """Resolve one seat's arbiter by reading the issue's own dispatch records.
 
@@ -225,14 +243,15 @@ def resolve_for_issue(
     seam production never takes; this is the seam production takes.
     """
     authorship = dispatch.potential_authors_and_reviewers(issue, dispatch_dir)
-    return resolve(seat, authorship, routing_refusals)
+    return resolve(seat, authorship, policy, paths)
 
 
-def resolve_dispatchable(  # noqa: PLR0913 — the parameters are the walk's own inputs: seat, records, the clock, and the three directories the live rungs read
+def resolve_dispatchable(  # noqa: PLR0913 — the parameters are the walk's own inputs: seat, records, the clock, the policy and paths the routing rung reads, and the three directories the live rungs read
     seat: dispatch.Seat,
     authorship: dispatch.Authorship,
     now: datetime,
-    routing_refusals: Mapping[str, str] | None = None,
+    policy: routing_policy.Policy,
+    paths: tuple[str, ...],
     *,
     admission_dir: str | None = None,
     breaker_dir: str | None = None,
@@ -261,7 +280,7 @@ def resolve_dispatchable(  # noqa: PLR0913 — the parameters are the walk's own
     def candidate(profile: str) -> dispatch.Refusal | None:
         return dispatch.candidate_refusal(args, seat.name, profile, now)
 
-    return _walk_first(seat, authorship, routing_refusals or {}, candidate)
+    return _walk_first(seat, authorship, policy, paths, candidate)
 
 
 def resolution_event(

@@ -127,7 +127,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import escalation
 import otel_event
-from routing_policy import path_matches
+import routing_policy
+from worktree import GitError, git, remote_ref_sha
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator, Mapping
@@ -298,7 +299,7 @@ SELF_EXEMPTION_EVIDENCE: Final = (
 
 
 def _match(entry: Exemption, path: str) -> bool:
-    return path_matches(path, entry.surface)
+    return routing_policy.path_matches(path, entry.surface)
 
 
 def exemption_decision(read: ExemptionRead, paths: tuple[str, ...]) -> Decision:
@@ -1316,7 +1317,6 @@ NO_RESULT: Final = 3
 GH_TIMEOUT: Final = 60
 
 FINDING_SPEC_ERROR: Final = "a finding is id=severity, severity one of critical, high, medium, low"
-REFUSAL_SPEC_ERROR: Final = "a routing refusal is profile=reason"
 SEAT_UNKNOWN_ERROR: Final = "the registry carries no seat named {seat}"
 LOOP_EXISTS_ERROR: Final = (
     "a loop for #{issue} already exists under {root} — `round` advances it; `open` is once"
@@ -1354,6 +1354,26 @@ ESCALATION_FIELD_TYPE_ERROR: Final = (
     " 'None' and truthy, so every coerced value of `arbiter` authorised (#333 arbiter's"
     " ruling)"
 )
+NOT_A_REPOSITORY_ERROR: Final = (
+    "`escalate` reads the routing policy over the branch under review, and this directory"
+    " is not inside a git repository — run it from the repository, any checkout of it"
+)
+EXCHANGE_REF_ABSENT_ERROR: Final = (
+    "the walk's routing rung reads the branch under review, and `origin` carries no"
+    " {ref} — the review exchange (`just review exchange`) is what puts it there, and an"
+    " escalation with no branch cannot check what the policy would refuse on it (#41: a"
+    " check that could not run is not a check that passed)"
+)
+ROUTING_INPUTS_ERROR: Final = (
+    "the walk's routing read could not be performed ({what}): a resolution that skipped it"
+    " is the gap #391 closed — an escalation without the policy over the branch resolves"
+    " past a head the policy would refuse. Fix the reason above and run `escalate` again"
+)
+ROUTING_POLICY_ERROR: Final = (
+    "the routing policy on `origin/main` could not be read ({why}) — the walk reads the"
+    " trusted copy there, never the diff under judgement's own, and a check that could"
+    " not run is not a check that passed (#41)"
+)
 
 # The marker a filing opens with, so a reader can find every arbiter-upheld filing on an
 # originating item the way `Handoff-for:` is found (#210's device, this domain's use).
@@ -1378,13 +1398,6 @@ def _finding_spec(raw: str) -> tuple[str, str]:
     if not separator or not identifier or severity not in SEVERITY_RANK:
         raise argparse.ArgumentTypeError(FINDING_SPEC_ERROR)
     return identifier, severity
-
-
-def _refusal_spec(raw: str) -> tuple[str, str]:
-    profile, separator, reason = raw.partition("=")
-    if not separator or not profile or not reason:
-        raise argparse.ArgumentTypeError(REFUSAL_SPEC_ERROR)
-    return profile, reason
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -1431,14 +1444,6 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     escalated.add_argument("--seat", default="implementer", help="the seat whose arbiter resolves")
     escalated.add_argument(
         "--dispatch-dir", default="", help="the dispatch records; default is this box's own"
-    )
-    escalated.add_argument(
-        "--routing-refusal",
-        action="append",
-        default=[],
-        type=_refusal_spec,
-        metavar="PROFILE=REASON",
-        help="a profile the routing policy refused on the diff's own paths",
     )
     escalated.add_argument("--admission-dir", default="")
     escalated.add_argument("--breaker-dir", default="")
@@ -1628,6 +1633,49 @@ def _cmd_adjudicate(
     return OK
 
 
+def _arbiter_routing_inputs(issue: int) -> tuple[routing_policy.Policy, tuple[str, ...]]:
+    """Read the policy and the branch paths the arbiter walk's routing rung judges by.
+
+    The rung's inputs, derived rather than trusted since #391: the policy off fetched
+    `origin/main` — the same trust rule `tools/land.py`'s `_routing_inputs` states, that a
+    diff under judgement must not weaken the policy that judges it — and the branch under
+    review off the review exchange's own ref (`refs/heads/issue-<n>`, `review_exchange`'s
+    naming), merge-base-relative the same three-dot way, so the paths are the branch's own
+    wherever the command runs from. A rung that could not read either refuses the
+    escalation rather than resolving past it (#41).
+
+    Two failure classes, split the handoff tool's way: git that could not be reached is
+    `ExternalError` — could not look, not a result — while a ref that is not there and a
+    policy that will not parse are facts, and refuse by name.
+    """
+    try:
+        root = Path(git("rev-parse", "--show-toplevel", cwd=Path.cwd()).strip()).resolve()
+    except GitError as failure:
+        raise ReviewLoopError(NOT_A_REPOSITORY_ERROR) from failure
+    ref = f"refs/heads/issue-{issue}"
+    try:
+        sha = remote_ref_sha(root, ref)
+    except GitError as failure:
+        raise ExternalError(
+            ROUTING_INPUTS_ERROR.format(what=f"ls-remote: {failure.stderr}")
+        ) from failure
+    if sha is None:
+        raise ReviewLoopError(EXCHANGE_REF_ABSENT_ERROR.format(ref=ref))
+    try:
+        git("fetch", "origin", "main", cwd=root)
+        text = git("show", f"origin/main:{routing_policy.POLICY_RELATIVE.as_posix()}", cwd=root)
+        git("fetch", "origin", ref, cwd=root)
+        listed = git("diff", "--name-only", f"origin/main...{sha}", cwd=root)
+    except GitError as failure:
+        raise ExternalError(ROUTING_INPUTS_ERROR.format(what=f"git: {failure.stderr}")) from failure
+    try:
+        policy = routing_policy.parse_policy(text)
+    except (ValueError, KeyError, TypeError) as failure:
+        raise ReviewLoopError(ROUTING_POLICY_ERROR.format(why=failure)) from failure
+    paths = tuple(line.strip() for line in listed.splitlines() if line.strip())
+    return policy, paths
+
+
 def _cmd_escalate(
     args: argparse.Namespace, clock: Callable[[], float], _create: object, _post: object
 ) -> int:
@@ -1651,6 +1699,10 @@ def _cmd_escalate(
         raise ExternalError(
             AUTHORSHIP_LOST_ERROR.format(issue=args.issue, target=authorship_path(root, args.issue))
         )
+    # The routing rung's inputs are derived, never flagged (#391): a `--routing-refusal`
+    # a caller might not pass was a check that did not run reading as one that passed,
+    # and no caller ever passed it — its only feeder was the flag itself.
+    policy, paths = _arbiter_routing_inputs(args.issue)
     resolution = arbiter.resolve_dispatchable(
         seat,
         # An interactively declared author is an author the arbiter must not be either
@@ -1666,7 +1718,8 @@ def _cmd_escalate(
         # off-peak rung is a function of the hour, and a test that cannot pin the hour
         # cannot state which profiles the walk may resolve to.
         datetime.fromtimestamp(clock()).astimezone(),
-        dict(args.routing_refusal),
+        policy,
+        paths,
         admission_dir=args.admission_dir or None,
         breaker_dir=args.breaker_dir or None,
         credentials=args.credentials or None,

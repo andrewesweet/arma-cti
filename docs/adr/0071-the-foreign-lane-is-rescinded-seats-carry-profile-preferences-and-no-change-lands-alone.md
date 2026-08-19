@@ -76,6 +76,23 @@ ruling was filed as #372, so A7 opens the file again rather than riding it —
 recorded here rather than hidden. The enforcement and the loop writer already
 carried the route when A7 landed (#334 and #333), so this amendment brings the
 decision record level with the code.
+Amended: 2026-08-19, not by a human ruling but under the human's standing
+authorisation of 2026-08-16 — *"resolve all required decisions and rulings
+requiring human review by yourself using your own best judgement"* —
+exercised by the orchestrator seat on #391, quoted in full on that thread, and
+recorded as a delegated decision in ADR-0075 under ADR-0013. One amendment,
+marked inline at the passage it changes — **A8** (#391, orchestrator ruling
+2026-08-19) gives the rung the passage below said was unowned an owner and a
+reader: `arbiter._walk_first` runs `enforcing_match` per candidate on inputs
+the escalation derives itself — the policy off fetched `origin/main`, the
+branch under review off `refs/heads/issue-<n>` — and the caller-supplied
+`--routing-refusal` flag is deleted with no replacement seam. The ruling's
+binding precondition, that no caller's already-supplied refusal be
+double-applied, was discharged before the change: no caller ever passed the
+flag, its only feeder being the flag itself, so nothing needed separating. It
+reverses no decision this document records and adds no rule beyond moving an
+existing rung's read from the caller into the walk. A8's human review is
+pending, tracked on ADR-0075.
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
 Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
@@ -659,6 +676,27 @@ before that line was written — `candidate_refusal`'s docstring named the same
 closed issue. Naming a replacement owner is a decision rather than a repair, so
 round 3 states the gap and files **#391** for the ownership question instead of
 inventing one (review round 1, claim 4; review round 2, claim 2).*
+
+*(Amendment A8, ruled on #391, 2026-08-19, under the human's standing
+authorisation of 2026-08-16 and recorded as a delegated decision in
+ADR-0075. The gap this passage states is closed: **#391 owns the rung, and
+the walk reads the policy itself.** `arbiter._walk_first` now runs
+`routing_policy.enforcing_match` per candidate — the landing read, the same
+one `just land` runs — on inputs `just review-loop escalate` derives and no
+caller declares: the policy read off fetched `origin/main` (never the diff
+under judgement's own copy) and the branch under review read off the review
+exchange's own ref `refs/heads/issue-<n>`, merge-base-relative. The
+caller-supplied `--routing-refusal` flag this passage describes is deleted,
+with no replacement seam — a flag a caller may not pass is the trust hole,
+not the interface. The ruling's binding precondition, that no caller's
+already-supplied refusal be double-applied by the new read, was discharged
+before the change was built: no caller passed the flag, no document or brief
+composer computes it, and its only feeder was the flag itself, so there was
+nothing to separate. A rung that cannot read either input refuses the
+escalation by name rather than resolving past it (#41: a check that could
+not run is not a check that passed). Against the shipped policy the rung
+excludes nobody, because since ADR-0073 no row refuses a landing — it runs
+anyway, and a refusing row is one table edit away from being honoured.)*
 
 ***Copies of the arbiter rule are scattered, and this amendment reversed one.***
 *The in-repo ones known to this pass. Four — `docs/agents/review-severity.md`, `config/escalation-conditions.json`,

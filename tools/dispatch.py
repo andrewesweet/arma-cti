@@ -568,9 +568,10 @@ class Seat(NamedTuple):
     # dearer one, and would make the exhaustion refusal unreachable for every seat that has
     # an entry. So `resolve_seat` never walks it. What does read it is #333's arbiter walk
     # (`tools/arbiter.py`), which takes the entry head as the arbiter and falls through when
-    # any of `_walk_first`'s rungs excludes it — the registry, the caller's routing
-    # refusals, the issue's dispatch records, and the live `(lane, profile, seat)` rungs of
-    # `candidate_refusal`, the breaker among them. So the clause above is scoped to
+    # any of `_walk_first`'s rungs excludes it — the registry, the routing policy over the
+    # branch under review's own paths (derived by the walk itself since #391, never
+    # caller-supplied), the issue's dispatch records, and the live `(lane, profile, seat)`
+    # rungs of `candidate_refusal`, the breaker among them. So the clause above is scoped to
     # `resolve_seat` and never states a property of the escalation column itself: a
     # breaker-refused head **does** fall through to the entry tail in the arbiter walk.
     # The fall-through is the human ruling on #361, 2026-08-14, which also filled the two
@@ -2616,11 +2617,13 @@ def candidate_refusal(
 
     Readiness and the queue policy are deliberately absent: each reads the *issue*, so each
     judges the dispatch rather than the candidate, and no change of profile could ever clear
-    one. The routing policy is a function of both and is **uncovered and unowned**: it was
-    #326's to fold in, and #326 closed on 2026-08-14 without folding it in, so the question of
-    who owns it is #391's and no fix is appointed. Leaving it out means a resolved route can
-    still be refused by the ladder below, which is the honest outcome — the alternative is this
-    resolver quietly re-deciding a policy question.
+    one. The routing policy is a function of both and is **owned by the arbiter walk, not
+    here** (#391, on the orchestrator's ruling of 2026-08-19): it reads the branch under
+    review's own paths, which this resolver is never handed, so folding it in would mean a
+    caller-supplied trust seam rather than a derived read. `arbiter._walk_first` runs
+    `enforcing_match` per candidate on inputs the escalation derives itself; leaving it out
+    here means a resolved route can still be refused by the ladder below, which is the
+    honest outcome — the alternative is this resolver quietly re-deciding a policy question.
 
     The lane's credential is here for the same reason the breaker is, and it is the one
     rung this resolver reads that `ladder_refusal` does not: a lane with no key on this box

@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import subprocess
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -36,6 +37,8 @@ review_loop = load_tool("review_loop")
 # different class objects, and this module narrows escalation outcomes by `isinstance`
 # below, where the decision kinds are pinned separately.
 escalation = review_loop.escalation
+# The copy review_loop itself resolved the rung's inputs through, never a second exec.
+routing_policy = review_loop.routing_policy
 
 TABLE = REPO / review_loop.EXEMPTIONS_RELATIVE
 CONDITIONS = REPO / escalation.CONDITIONS_RELATIVE
@@ -1010,6 +1013,82 @@ def stepped_clock() -> Callable[[], float]:
     return now
 
 
+# The shipped policy, read per call rather than at import, for the same reason `live()`
+# gives: a broken shipped file is a test-time catch, not a collection failure.
+POLICY_PATH = REPO / "config/dispatch-routing-policy.json"
+
+
+def _refusing_policy_text() -> str:
+    """Plant class 6 back to refusing in the shipped policy — #326's own arrangement.
+
+    The same single-flag edit `tests/unit/test_arbiter.py`'s `refusing_policy` makes: the
+    shipped document has refused nothing since ADR-0073, so a CLI test that wants the rung
+    to bite plants the row the one way the shipped file defines.
+    """
+    document = json.loads(POLICY_PATH.read_text(encoding="utf-8"))
+    for row in document[routing_policy.REFOUNDED.classes]:
+        if row["id"] == routing_policy.CONFLICT_OF_INTEREST_CLASS_ID:
+            row["refuses"] = True
+    return json.dumps(document)
+
+
+def _git(*args: str, cwd: Path) -> str:
+    # S603/S607: fixed literals and tmp_path-derived paths, `git` off PATH on purpose —
+    # the same reasoning as `tests/unit/test_land.py`'s helper.
+    return subprocess.run(  # noqa: S603
+        ["git", *args],  # noqa: S607
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout
+
+
+@pytest.fixture
+def exchanged(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Build a scratch `origin` carrying the shipped policy on `main`.
+
+    The caller is chdir'd into its main checkout.
+
+    `escalate` derives its routing inputs from git since #391 — the policy off fetched
+    `origin/main`, the branch off `refs/heads/issue-<n>` — so every escalate test runs
+    against a bare repository this fixture builds, never this box's real remote. No
+    exchange ref exists yet: a test pushes `main:refs/heads/issue-<n>` (optionally past a
+    commit of its own) to name the branch under review.
+    """
+    origin = tmp_path / "origin.git"
+    _git("init", "--bare", "--initial-branch=main", str(origin), cwd=tmp_path)
+    main = tmp_path / "repo"
+    _git("clone", str(origin), str(main), cwd=tmp_path)
+    _git("config", "user.email", "t@example.com", cwd=main)
+    _git("config", "user.name", "T", cwd=main)
+    (main / "config").mkdir(parents=True, exist_ok=True)
+    (main / "config" / "dispatch-routing-policy.json").write_text(
+        POLICY_PATH.read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    _git("add", "config/dispatch-routing-policy.json", cwd=main)
+    _git("commit", "-m", "feat: shipped routing policy", cwd=main)
+    _git("push", "origin", "main", cwd=main)
+    monkeypatch.chdir(main)
+    return main
+
+
+def _exchange_branch(main: Path, issue: int, *commits: tuple[str, str]) -> None:
+    """Push `refs/heads/issue-<n>`, the branch under review.
+
+    At `main`, or past commits of `(path, body)` pairs staged onto it.
+    """
+    _git("checkout", "-b", f"issue-{issue}", cwd=main)
+    for path, body in commits:
+        target = main / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(body, encoding="utf-8")
+        _git("add", path, cwd=main)
+        _git("commit", "-m", f"feat: {path}", cwd=main)
+    _git("push", "origin", f"issue-{issue}:refs/heads/issue-{issue}", cwd=main)
+    _git("checkout", "main", cwd=main)
+
+
 def test_the_cli_refuses_the_round_zero_dismissal(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -1041,14 +1120,15 @@ def test_the_cli_refuses_the_round_zero_dismissal(
     assert review_loop.load_loop(root, 326).findings[0].adjudication is None
 
 
-def test_the_command_surface_drives_one_loop_end_to_end(tmp_path: Path) -> None:
+def test_the_command_surface_drives_one_loop_end_to_end(tmp_path: Path, exchanged: Path) -> None:
     """Open, three rounds, escalate, adjudicate, terminus — one issue, all durable state real.
 
     The escalation reads a dispatch directory the test writes (`resolve_dispatchable`'s
     production inputs: records, scratch admission/breaker state, a key-less credentials
-    file), so the arbiter answered here is the one the walk would answer on the box — the
-    implementer seat's entry head, `codex-sol-high`, held clean by the scratch state the
-    test points the rungs at.
+    file) and derives its routing inputs from the scratch origin (`exchanged`), so the
+    arbiter answered here is the one the walk would answer on the box — the implementer
+    seat's entry head, `codex-sol-high`, held clean by the scratch state the test points
+    the rungs at.
     """
     root = tmp_path / "review"
     journal = tmp_path / "journal.jsonl"
@@ -1082,6 +1162,7 @@ def test_the_command_surface_drives_one_loop_end_to_end(tmp_path: Path) -> None:
     assert review_loop.main(["round", "--issue", "333", *base], **kwargs) == review_loop.OK
     assert review_loop.main(["round", "--issue", "333", *base], **kwargs) == review_loop.OK
     assert review_loop.load_loop(root, 333).review_rounds == 3
+    _exchange_branch(exchanged, 333)
     assert (
         review_loop.main(
             [
@@ -1280,7 +1361,7 @@ def test_a_terminus_refuses_verdicts_no_escalation_record_chose(
 
 
 def test_a_non_firing_escalation_record_does_not_authorise_the_terminus(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path, exchanged: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """A record that resolved a profile but fired nothing transferred to it.
 
@@ -1304,6 +1385,7 @@ def test_a_non_firing_escalation_record_does_not_authorise_the_terminus(
     )
     assert review_loop.main(["round", "--issue", "326", *base], **kwargs) == review_loop.OK
     assert review_loop.main(["round", "--issue", "326", *base], **kwargs) == review_loop.OK
+    _exchange_branch(exchanged, 326)
     assert (
         review_loop.main(
             [
@@ -1353,7 +1435,7 @@ def test_a_non_firing_escalation_record_does_not_authorise_the_terminus(
 
 
 def test_a_terminus_that_died_mid_post_refuses_the_blind_retry(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path, exchanged: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """Round 2's High 4: side effects on GitHub plus two local writes is not a transaction.
 
@@ -1396,6 +1478,7 @@ def test_a_terminus_that_died_mid_post_refuses_the_blind_retry(
         "--conditions",
         str(CONDITIONS),
     ]
+    _exchange_branch(exchanged, 326)
     assert review_loop.main(escalate_args, now=clock) == review_loop.OK
     assert (
         review_loop.main(
@@ -1465,7 +1548,7 @@ def test_a_terminus_that_died_mid_post_refuses_the_blind_retry(
 
 
 def test_the_landing_record_is_the_claim_moved_not_a_second_fact_written_beside_it(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path, exchanged: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """Round 3's mutator race: a marker plus a record is two facts that can disagree.
 
@@ -1492,6 +1575,7 @@ def test_the_landing_record_is_the_claim_moved_not_a_second_fact_written_beside_
     )
     for _ in range(3):
         assert review_loop.main(["round", "--issue", "326", *base], now=clock) == review_loop.OK
+    _exchange_branch(exchanged, 326)
     assert (
         review_loop.main(
             [
@@ -1938,6 +2022,130 @@ def test_the_cli_named_refusals(tmp_path: Path, capsys: pytest.CaptureFixture[st
     assert review_loop.main(["terminus", "--issue", "326", *base], now=clock) == review_loop.REFUSED
     assert review_loop.TERMINUS_NOT_REACHED_ERROR in capsys.readouterr().err
     assert not (root / "326" / review_loop.LANDING_FILE).exists()
+
+
+def test_escalate_derives_its_routing_inputs_and_passes_the_refused_head_over(
+    tmp_path: Path, exchanged: Path
+) -> None:
+    """#391: the walk reads the policy and the branch itself — no caller flag to forget.
+
+    Class 6 planted back to refusing on the scratch origin's `main`, the branch under
+    review touching a gate path: the entry head (`codex-sol-high`, codex lane) is passed
+    over `routing_refused` and the tail (`opus-high`, the lane the row exempts) resolves.
+    Against the shipped policy this same command resolves the head — the inert
+    arrangement the end-to-end test above already carries — so this is the rung biting on
+    inputs the command derived, which is the whole of what #391 asked for.
+    """
+    policy = exchanged / "config" / "dispatch-routing-policy.json"
+    policy.write_text(_refusing_policy_text(), encoding="utf-8")
+    _git("add", "config/dispatch-routing-policy.json", cwd=exchanged)
+    _git("commit", "-m", "feat: class 6 refuses again", cwd=exchanged)
+    _git("push", "origin", "main", cwd=exchanged)
+    _exchange_branch(exchanged, 391, ("tools/dispatch.py", "# a gate path\n"))
+
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    dispatch_dir = tmp_path / "dispatches"
+    write_record(dispatch_dir, "d1", issue=391, profile="opus-low", seat="implementer")
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("# no keys the walk reads\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    base = ["--root", str(root), "--journal", str(journal)]
+    clock = stepped_clock()
+    assert (
+        review_loop.main(["open", "--issue", "391", *base, "--finding", "F1=high"], now=clock)
+        == review_loop.OK
+    )
+    assert (
+        review_loop.main(
+            [
+                "escalate",
+                "--issue",
+                "391",
+                *base,
+                "--seat",
+                "implementer",
+                "--dispatch-dir",
+                str(dispatch_dir),
+                "--admission-dir",
+                str(tmp_path / "admission"),
+                "--breaker-dir",
+                str(tmp_path / "breaker"),
+                "--credentials",
+                str(credentials),
+                "--conditions",
+                str(CONDITIONS),
+            ],
+            now=clock,
+        )
+        == review_loop.OK
+    )
+    record = json.loads((root / "391" / review_loop.ESCALATION_FILE).read_text(encoding="utf-8"))
+    assert record["arbiter"] == "opus-high"
+    events = [
+        json.loads(line)
+        for line in journal.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    resolutions = [e for e in events if e["event"] == "cti.review.arbiter.resolved"]
+    assert resolutions, "the resolution event is the rung's durable trace"
+    attributes = resolutions[-1]["attributes"]
+    assert attributes["cti.review.arbiter"] == "opus-high"
+    assert "codex-sol-high:routing_refused" in attributes["cti.review.arbiter.excluded"]
+
+
+def test_escalate_without_an_exchange_ref_refuses_rather_than_skipping_the_rung(
+    tmp_path: Path, exchanged: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """No `refs/heads/issue-<n>` on the origin: a named refusal, nothing written.
+
+    The rung that reads the branch cannot run, and a check that could not run is not a
+    check that passed (#41) — the escalation refuses by name rather than resolving past a
+    rung whose input is absent, and no escalation record exists to adjudicate against.
+    """
+    root = tmp_path / "review"
+    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    clock = stepped_clock()
+    assert (
+        review_loop.main(["open", "--issue", "326", *base, "--finding", "F1=high"], now=clock)
+        == review_loop.OK
+    )
+    # The fixture built the origin; nothing pushed `issue-326` onto it — stated as the
+    # ground it is, not left as a comment.
+    assert _git("ls-remote", "--heads", "origin", "refs/heads/issue-326", cwd=exchanged) == ""
+    assert (
+        review_loop.main(["escalate", "--issue", "326", *base, "--seat", "implementer"], now=clock)
+        == review_loop.REFUSED
+    )
+    assert (
+        review_loop.EXCHANGE_REF_ABSENT_ERROR.format(ref="refs/heads/issue-326")
+        in capsys.readouterr().err
+    )
+    assert not (root / "326" / review_loop.ESCALATION_FILE).exists()
+
+
+def test_escalate_outside_a_repository_refuses_by_name(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Refuse by name when run from a directory git does not know.
+
+    Never resolved past the unreadable rung.
+    """
+    root = tmp_path / "review"
+    base = ["--root", str(root), "--journal", str(tmp_path / "journal.jsonl")]
+    clock = stepped_clock()
+    assert (
+        review_loop.main(["open", "--issue", "326", *base, "--finding", "F1=high"], now=clock)
+        == review_loop.OK
+    )
+    (tmp_path / "nowhere").mkdir()
+    monkeypatch.chdir(tmp_path / "nowhere")
+    assert (
+        review_loop.main(["escalate", "--issue", "326", *base, "--seat", "implementer"], now=clock)
+        == review_loop.REFUSED
+    )
+    assert review_loop.NOT_A_REPOSITORY_ERROR in capsys.readouterr().err
+    assert not (root / "326" / review_loop.ESCALATION_FILE).exists()
 
 
 def test_a_dry_run_terminus_posts_and_writes_nothing(tmp_path: Path) -> None:

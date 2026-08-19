@@ -93,7 +93,8 @@ finding that survives four readings is still Low: it changed what no rule meant.
   as amended by A1, #361). The resolution is `tools/arbiter.py`, reached by
   `just review-loop escalate`: it walks the entry head, then the entry tail, then the seat's
   preference list, and excludes on four rungs in order — the registry (a profile it does not
-  carry), the routing refusals its caller passes, the profiles the issue's own dispatch
+  carry), the routing policy over the branch under review's own paths (read by the escalation
+  itself since #391, never caller-supplied), the profiles the issue's own dispatch
   records place on the work, and the profiles the dispatch ladder would refuse now
   (selection, breaker, off-peak, credential) — recording each exclusion with its reason.
   Until round 3 of #361 this listed the records rung alone. A seat whose entry is empty has no
