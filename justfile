@@ -858,10 +858,13 @@ wip-trial *args:
 # is a loss rather than a substitution, and `just trial bar` prints the five by name so
 # a reader meets the list rather than a count.
 #
-# What survives is the harness, which has no opinion about what is trialled: a bar
-# settled in advance, cycles accruing one at a time, a clock that starts at an explicit
-# act rather than at the tool's existence, criteria immutable once the first assessment
-# lands, and a verdict that is a finding for the human and never a dispatch gate.
+# What survives is the harness — one closed trial's harness, its bar id and criteria
+# code constants by design, kept because its records are history, with no opinion
+# about profiles or verdicts: a bar settled in advance, cycles accruing one at a time,
+# a clock that starts at an explicit act rather than at the tool's existence, criteria
+# immutable once the first assessment lands, and a verdict that is a finding for the
+# human and never a dispatch gate. A later question is a new pre-registration, not this
+# one reused: a new bar id, new criteria and a new ruling.
 # `record` invents nothing — every criterion is a required choice with no default,
 # because a criterion nobody passed is a criterion nobody checked — and `--from-audit`
 # fills only the three the artefacts decide, never the two a hand must assert.
