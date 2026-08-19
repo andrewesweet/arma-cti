@@ -492,6 +492,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   author is the recording session's own word, which is why the route still says
   `checked` and never `verified`.
 
+- **A brief no longer promises a clean tree the flake filter never established (#360).**
+  `just brief`'s empty flake section told a seat "None open. Any red is yours." on the
+  strength of a name-based filter — a title naming a `test_` that says it flakes, or a
+  body opening `Class: flake_quarantine` — that cannot see an open issue phrased any
+  other way. Three briefs on one day carried the claim while #341's deterministic
+  four-hours-a-day red sat open, so two seats met reds the brief had just told them were
+  theirs. The zero branch now states what was searched and that the filter may miss, and
+  tells the seat to check the tracker before treating a red as its own; the non-empty
+  branch's "any other red is yours" tail, which made the same claim one filter-miss away,
+  carries the same qualification, as does the orchestration seat's copy of the rule.
+
 - **A read-only dispatch is no longer refused for the surface it was sent to read (#339).**
   `just dispatch`'s surface-conflict rung keyed the candidate's surface on the issue rather
   than on the dispatch, so a review of one of two implementations writing the same paths was

@@ -333,7 +333,8 @@ does by hand.
   failure-class table).
 - **Re-run a flake past the one sanctioned retry.** The `flake_quarantine` row: if an
   exact quarantined test is the only red, quote its issue and re-run once; a second
-  red, or any other red, is yours.
+  red, or a red in any other test, is yours unless an open issue the flake filter
+  missed names it — check the tracker before owning a red (#360).
 - **Transcribe a ruling with drafting slack onto a gated semantic surface from the
   seat itself.** Dispatch it (#217 decision 4). "Or above" is not a comparison this
   project makes — profiles are opaque tokens and no cross-provider effort scale exists

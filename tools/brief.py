@@ -134,6 +134,13 @@ A flake whose title says neither is missed, and the remedy is a title edit rathe
 looser rule: "mentions `flake_quarantine` anywhere" also matches every issue that merely
 cites the class table, which on the live tracker is two issues out of four.
 
+A miss is therefore not a finding about the tree, and the zero branch says so: it states
+the filter and what to do on a red, never "None open. Any red is yours.", which asserted
+an absence the filter never established while #341's deterministic red sat open — the
+claim three briefs carried on one day (#360). `FLAKE_RESPONSE`'s tail carries the same
+qualification for the same reason: "any other red is yours" promised the identical
+absence one filter-miss away.
+
 ## What this does not do
 
 It does not judge readiness. `readiness.assess` runs and its findings are reported in the
@@ -704,7 +711,20 @@ REVIEW_SUBJECT_PLACEHOLDER: Final = (
 )
 FLAKE_RESPONSE: Final = (
     "`flake_quarantine`: do not act. If one of those exact tests is your only red, quote its"
-    " issue number and re-run once; a second red, or any other red, is yours."
+    " issue number and re-run once; a second red, or a red in any other test, is yours unless"
+    " an open issue the flake filter missed names it — check the tracker before owning a red"
+    " (#360)."
+)
+# The zero branch states the filter, never a clean tree: "None open. Any red is yours."
+# claimed an absence the name filter never established, and three briefs carried it on one
+# day while #341's deterministic red sat open (#360). FLAKE_RESPONSE's tail carries the
+# same qualification because "any other red is yours" made the identical claim one
+# filter-miss away.
+FLAKE_NONE: Final = (
+    "None matched the flake filter. The filter is name-based — a title naming a `test_`"
+    " that says it flakes, or a body opening `Class: flake_quarantine` — so an open issue"
+    " whose red shows in your gate can sit outside it. Before treating a red as yours,"
+    " check the tracker for an open issue naming your failing test."
 )
 # The review seat's halves of the same three sections. The human ruled on 2026-08-14 (#353,
 # reversing the 2026-08-13 ruling in that issue's body) that a review is judgement-only by
@@ -970,7 +990,7 @@ def compose(briefing: Briefing) -> str:
             lines += [flake.line() for flake in briefing.flakes]
             lines.append(FLAKE_RESPONSE)
         else:
-            lines.append("None open. Any red is yours.")
+            lines.append(FLAKE_NONE)
         lines += [
             "",
             "## Landing",

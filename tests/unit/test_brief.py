@@ -974,11 +974,40 @@ def test_the_flake_section_states_the_required_response_when_a_flake_is_open() -
     assert "re-run once" in rendered
 
 
-def test_an_empty_flake_section_says_so_rather_than_going_silent() -> None:
+def test_an_empty_flake_section_states_the_filter_and_never_a_clean_tree() -> None:
+    """#360: "None open. Any red is yours." asserted an absence the filter never established."""
     rendered = composed()
     assert "## Open flakes (0, read live at composition)" in rendered
-    assert "None open. Any red is yours." in rendered
-    assert "flake_quarantine" not in rendered
+    assert "None matched the flake filter" in rendered
+    assert "check the tracker" in rendered
+    # The section claims nothing matched, not that nothing is wrong: the required
+    # response stays out, and no unqualified ownership claim rides the zero branch.
+    assert "Any red is yours" not in rendered
+    assert "do not act" not in rendered
+
+
+def test_a_deterministic_red_issue_the_name_filter_misses_reaches_the_seat_as_a_caveat() -> None:
+    """#360 criterion 2, second arm.
+
+    #341's shape — open, deterministic red, no `test_` in its title — is invisible to
+    the filter, and the brief says so rather than promising a clean tree over it.
+    """
+    row = flake_row(
+        341,
+        "the four-hours-a-day red on `just fast`",
+        "## What happens\n\n`just fast` reds deterministically between 09:00 and 13:00.\n",
+    )
+    assert not brief.is_flake(str(row["title"]), str(row["body"]))
+    assert brief.select_flakes([row]) == ()
+    rendered = composed()  # the filter missed it, so the seat meets the zero branch
+    assert "an open issue whose red shows in your gate can sit outside it" in rendered
+
+
+def test_the_flake_response_qualifies_the_reds_it_promises_the_seat() -> None:
+    """#360: "any other red is yours" made the same claim one filter-miss away."""
+    rendered = composed(flakes=brief.select_flakes([flake_row(222, "test_a_thing flakes")]))
+    assert "is yours unless an open issue the flake filter missed names it" in rendered
+    assert "any other red, is yours" not in rendered
 
 
 def test_the_variable_half_is_a_visible_placeholder_and_not_composed() -> None:
