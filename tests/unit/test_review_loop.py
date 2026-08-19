@@ -23,6 +23,7 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -30,7 +31,6 @@ from conftest import REPO, load_tool
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from pathlib import Path
 
 review_loop = load_tool("review_loop")
 # The copy review_loop imported, not a second exec of the same file: two copies hold
@@ -1071,6 +1071,51 @@ def exchanged(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     _git("push", "origin", "main", cwd=main)
     monkeypatch.chdir(main)
     return main
+
+
+def _assert_scratch_origin(git_call: Callable[..., str], repo: Path, tmp_path: Path) -> None:
+    """Refuse a network-shaped git read whose `origin` is not this test's scratch remote.
+
+    `git remote get-url` reads local config only, so the check itself never touches the
+    network — it blesses the remote a `fetch` or an `ls-remote` is about to dial.
+    """
+    url = Path(git_call("remote", "get-url", "origin", cwd=repo).strip())
+    assert url.resolve().is_relative_to(tmp_path.resolve()), (
+        f"a review-loop test reached beyond its scratch origin: origin is {url}"
+    )
+
+
+@pytest.fixture(autouse=True)
+def every_network_read_stays_scratch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Enforce the escalate suite's hermeticity rather than leave it incidental (#425).
+
+    `escalate` derives its routing inputs from the repository at `Path.cwd()`, and these
+    tests are hermetic only while that is the chdir'd scratch clone — nothing pinned it,
+    so a reordering of handler or fixture that pointed a `fetch` or an `ls-remote` at
+    this box's real remote would stay green while reading the network: the scratch
+    origin's policy is byte-identical to the shipped one, so no result assertion can
+    tell. Every network-shaped read this module drives through `review_loop` now names
+    its `origin` first and refuses anything outside this test's `tmp_path` — red rather
+    than online. The deadline rides the same gate: a network-shaped read that has lost
+    its `ROUTING_READ_TIMEOUT_S` bound refuses too (#425's other half).
+    """
+    git_call, remote_sha = review_loop.git, review_loop.remote_ref_sha
+
+    def bounded_git(*args: str, cwd: Path, check: bool = True, timeout: float | None = None) -> str:
+        if args and args[0] in ("ls-remote", "fetch"):
+            _assert_scratch_origin(git_call, cwd, tmp_path)
+            assert timeout == review_loop.ROUTING_READ_TIMEOUT_S, (
+                f"a network-shaped git read ({' '.join(args)}) lost its deadline"
+            )
+        return git_call(*args, cwd=cwd, check=check, timeout=timeout)
+
+    def bounded_remote_sha(root: Path, ref: str, timeout: float | None = None) -> str | None:
+        _assert_scratch_origin(git_call, root, tmp_path)
+        assert timeout == review_loop.ROUTING_READ_TIMEOUT_S
+        return remote_sha(root, ref, timeout=timeout)
+
+    monkeypatch.setattr(review_loop, "git", bounded_git)
+    monkeypatch.setattr(review_loop, "remote_ref_sha", bounded_remote_sha)
 
 
 def _exchange_branch(main: Path, issue: int, *commits: tuple[str, str]) -> None:
@@ -2148,6 +2193,23 @@ def test_escalate_outside_a_repository_refuses_by_name(
     )
     assert review_loop.NOT_A_REPOSITORY_ERROR in capsys.readouterr().err
     assert not (root / "326" / review_loop.ESCALATION_FILE).exists()
+
+
+def test_the_scratch_origin_guard_fires_on_a_foreign_origin(tmp_path: Path) -> None:
+    """The pin is enforced, not decorative: a non-scratch origin refuses before any dial (#425).
+
+    The scratch clone's `origin` is pointed at the real remote and handed to the guard —
+    `git remote get-url` reads local config only, so nothing touches the network on the
+    way to the refusal. This is the red an accidentally-online escalate test would meet,
+    stated as the guard's own behaviour rather than left as the fixture's promise.
+    """
+    origin = tmp_path / "origin.git"
+    _git("init", "--bare", "--initial-branch=main", str(origin), cwd=tmp_path)
+    repo = tmp_path / "repo"
+    _git("clone", str(origin), str(repo), cwd=tmp_path)
+    _git("remote", "set-url", "origin", "https://github.com/andrewesweet/arma-cti.git", cwd=repo)
+    with pytest.raises(AssertionError, match="scratch origin"):
+        _assert_scratch_origin(review_loop.git, repo, tmp_path)
 
 
 def test_a_dry_run_terminus_posts_and_writes_nothing(tmp_path: Path) -> None:

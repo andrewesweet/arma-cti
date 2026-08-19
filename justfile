@@ -1152,9 +1152,12 @@ verdict *args:
 # never a green.
 #
 # `escalate` resolves the arbiter live — the registry, the issue's dispatch
-# records, the routing refusals you pass, and the same dispatchability rungs
-# `just dispatch`'s ladder judges by — and records what it excluded and why. The
-# clock it escalates against is the box's own; the off-peak rule it may meet
-# is the human's and has no override on this surface either.
+# records, the routing inputs it derives itself (the policy off fetched
+# `origin/main`, the branch under review off the review exchange's own ref,
+# #391 — nothing routing-shaped is a flag anymore), and the same
+# dispatchability rungs `just dispatch`'s ladder judges by — and records what
+# it excluded and why. The clock it escalates against is the box's own; the
+# off-peak rule it may meet is the human's and has no override on this
+# surface either.
 review-loop *args:
     uv run python tools/review_loop.py {{ args }}

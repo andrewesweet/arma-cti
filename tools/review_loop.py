@@ -1367,7 +1367,8 @@ EXCHANGE_REF_ABSENT_ERROR: Final = (
 ROUTING_INPUTS_ERROR: Final = (
     "the walk's routing read could not be performed ({what}): a resolution that skipped it"
     " is the gap #391 closed — an escalation without the policy over the branch resolves"
-    " past a head the policy would refuse. Fix the reason above and run `escalate` again"
+    " past a head the policy would refuse. Fix the failure quoted in parentheses here and"
+    " run `escalate` again"
 )
 ROUTING_POLICY_ERROR: Final = (
     "the routing policy on `origin/main` could not be read ({why}) — the walk reads the"
@@ -1633,28 +1634,45 @@ def _cmd_adjudicate(
     return OK
 
 
+# The deadline on every read of `origin` the routing rung makes (#425). Three of them
+# are network calls — the ls-remote below and the two fetches — and the lane's provider
+# had returned a 529 twice and exhausted a five-hour quota twice on the day this landed,
+# so an unbounded read here is a `just review-loop escalate` hanging on a bad afternoon.
+# 60 s is an order above what a working link needs for this repository's refs and objects
+# and well inside the afternoon it exists to cut short; the bound is the subprocess's own
+# kill, so a stall anywhere inside git — name resolution included — expires the same way
+# (`worktree.git`'s timeout, whose reasoning sits there).
+ROUTING_READ_TIMEOUT_S: Final = 60
+
+
 def _arbiter_routing_inputs(issue: int) -> tuple[routing_policy.Policy, tuple[str, ...]]:
     """Read the policy and the branch paths the arbiter walk's routing rung judges by.
 
     The rung's inputs, derived rather than trusted since #391: the policy off fetched
     `origin/main` — the same trust rule `tools/land.py`'s `_routing_inputs` states, that a
     diff under judgement must not weaken the policy that judges it — and the branch under
-    review off the review exchange's own ref (`refs/heads/issue-<n>`, `review_exchange`'s
-    naming), merge-base-relative the same three-dot way, so the paths are the branch's own
-    wherever the command runs from. A rung that could not read either refuses the
-    escalation rather than resolving past it (#41).
+    review off the review exchange's own ref (`review_exchange.review_ref`'s naming, the
+    one spelling of it), merge-base-relative the same three-dot way, so the paths are the
+    branch's own wherever the command runs from. A rung that could not read either refuses
+    the escalation rather than resolving past it (#41).
 
     Two failure classes, split the handoff tool's way: git that could not be reached is
     `ExternalError` — could not look, not a result — while a ref that is not there and a
-    policy that will not parse are facts, and refuse by name.
+    policy that will not parse are facts, and refuse by name. Every read of the remote
+    carries `ROUTING_READ_TIMEOUT_S`; the local reads (`rev-parse`, `show`, `diff`) do
+    not, having no network to stall on.
     """
+    # Handler-local for the same reason `_cmd_escalate`'s `arbiter` import is: the
+    # exchange module imports this one, so a module-level import here is a cycle.
+    from review_exchange import review_ref  # noqa: PLC0415 — the cycle is real; see above
+
     try:
         root = Path(git("rev-parse", "--show-toplevel", cwd=Path.cwd()).strip()).resolve()
     except GitError as failure:
         raise ReviewLoopError(NOT_A_REPOSITORY_ERROR) from failure
-    ref = f"refs/heads/issue-{issue}"
+    ref = review_ref(issue)
     try:
-        sha = remote_ref_sha(root, ref)
+        sha = remote_ref_sha(root, ref, timeout=ROUTING_READ_TIMEOUT_S)
     except GitError as failure:
         raise ExternalError(
             ROUTING_INPUTS_ERROR.format(what=f"ls-remote: {failure.stderr}")
@@ -1662,9 +1680,9 @@ def _arbiter_routing_inputs(issue: int) -> tuple[routing_policy.Policy, tuple[st
     if sha is None:
         raise ReviewLoopError(EXCHANGE_REF_ABSENT_ERROR.format(ref=ref))
     try:
-        git("fetch", "origin", "main", cwd=root)
+        git("fetch", "origin", "main", cwd=root, timeout=ROUTING_READ_TIMEOUT_S)
         text = git("show", f"origin/main:{routing_policy.POLICY_RELATIVE.as_posix()}", cwd=root)
-        git("fetch", "origin", ref, cwd=root)
+        git("fetch", "origin", ref, cwd=root, timeout=ROUTING_READ_TIMEOUT_S)
         listed = git("diff", "--name-only", f"origin/main...{sha}", cwd=root)
     except GitError as failure:
         raise ExternalError(ROUTING_INPUTS_ERROR.format(what=f"git: {failure.stderr}")) from failure

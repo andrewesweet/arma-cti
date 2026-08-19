@@ -19,14 +19,13 @@ still there afterwards" is the half that matters.
 
 from __future__ import annotations
 
+import socket
 import subprocess
+import time
 from pathlib import Path
-from typing import TYPE_CHECKING
 
+import pytest
 from conftest import REPO, load_tool
-
-if TYPE_CHECKING:
-    import pytest
 
 worktree = load_tool("worktree")
 
@@ -338,6 +337,38 @@ def a_repo(tmp_path: Path) -> Path:
     git("commit", "-q", "-m", "base", cwd=repo)
     git("push", "-q", "origin", "main", cwd=repo)
     return repo
+
+
+def test_a_deadlined_read_kills_a_silent_remote(tmp_path: Path) -> None:
+    """`git`'s `timeout` bounds the whole call, not a socket inside it (#425).
+
+    A `git://` remote that accepts and never speaks stalls the read with no socket
+    timeout positioned to catch it — the same shape #427's resolver stall had — so both
+    halves are asserted: the child dies at its deadline rather than hanging, and the
+    caller meets `GitError` naming the bound. `remote_ref_sha` forwards the same
+    deadline, being the seam `escalate`'s routing read goes through.
+    """
+    repo = a_repo(tmp_path)
+    silent = socket.socket()
+    silent.bind(("127.0.0.1", 0))
+    silent.listen(1)
+    git(
+        "remote",
+        "set-url",
+        "origin",
+        f"git://127.0.0.1:{silent.getsockname()[1]}/repo.git",
+        cwd=repo,
+    )
+    try:
+        started = time.monotonic()
+        with pytest.raises(worktree.GitError) as refused:
+            worktree.git("ls-remote", "origin", cwd=repo, timeout=0.5)
+        assert time.monotonic() - started < 5, "the deadline did not kill the read"
+        assert "within 0.5s" in str(refused.value)
+        with pytest.raises(worktree.GitError):
+            worktree.remote_ref_sha(repo, "refs/heads/main", timeout=0.5)
+    finally:
+        silent.close()
 
 
 def run(monkeypatch: pytest.MonkeyPatch, repo: Path, *argv: str) -> int:
@@ -761,10 +792,10 @@ def test_archive_fails_closed_when_the_remote_is_unreadable(
     git("push", "-q", "origin", f"{main_sha}:refs/heads/issue-1-parked", cwd=repo)
     real_git = worktree.git
 
-    def fake_git(*args: str, cwd: Path, check: bool = True) -> str:
+    def fake_git(*args: str, cwd: Path, check: bool = True, timeout: float | None = None) -> str:
         if args[:1] == ("ls-remote",):
             raise worktree.GitError(args, "could not reach origin")
-        return real_git(*args, cwd=cwd, check=check)
+        return real_git(*args, cwd=cwd, check=check, timeout=timeout)
 
     monkeypatch.setattr(worktree, "git", fake_git)
     code = run(monkeypatch, repo, "archive", "issue-1", "--ref", "refs/heads/issue-1-parked")
