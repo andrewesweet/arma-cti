@@ -438,17 +438,29 @@ class GitError(RuntimeError):
         self.stderr = stderr.strip()
 
 
-def git(*args: str, cwd: Path, check: bool = True) -> str:
-    """Run one git command and return its stdout, raising `GitError` when it fails."""
+def git(*args: str, cwd: Path, check: bool = True, timeout: float | None = None) -> str:
+    """Run one git command and return its stdout, raising `GitError` when it fails.
+
+    `timeout` bounds the *call*, not any socket inside it: a read that is still running
+    at its deadline is killed with the child and raised as `GitError` naming the bound —
+    the same whole-call property `bounded_request` buys for `urlopen` with a daemon
+    thread's join (#425), on the subprocess a git read already is. A resolver stall, a
+    silent remote, a wedged pack negotiation all expire alike; `check` still governs
+    only git's own exit code.
+    """
     # S603/S607: the argv is fixed literals plus paths this tool computed, and
     # `git` resolves off PATH on purpose — the repo's toolchain is the caller's.
-    done = subprocess.run(  # noqa: S603
-        ["git", *args],  # noqa: S607
-        cwd=cwd,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    try:
+        done = subprocess.run(  # noqa: S603
+            ["git", *args],  # noqa: S607
+            cwd=cwd,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as expired:
+        raise GitError(args, f"gave no answer within {timeout}s") from expired
     if check and done.returncode != 0:
         raise GitError(args, done.stderr)
     return done.stdout
@@ -514,7 +526,7 @@ def count_unlanded(path: Path) -> int | None:
     return int(counted) if counted.isdigit() else None
 
 
-def remote_ref_sha(root: Path, ref: str) -> str | None:
+def remote_ref_sha(root: Path, ref: str, timeout: float | None = None) -> str | None:
     """Return the exact SHA a remote ref resolves to on `origin`, else None.
 
     `git ls-remote` reads the remote's own ref table, so a ref that lives only
@@ -523,8 +535,10 @@ def remote_ref_sha(root: Path, ref: str) -> str | None:
     is distinct from a network failure, which raises `GitError` (and lands as
     ``git_failed`` at the caller). That separation is what makes "local-only
     ref refuses" and "unreadable remote refuses" two different classes.
+    `timeout` is the read's own deadline, forwarded for the callers whose
+    remote is the network (#425).
     """
-    out = git("ls-remote", "origin", ref, cwd=root).strip()
+    out = git("ls-remote", "origin", ref, cwd=root, timeout=timeout).strip()
     if not out:
         return None
     return out.splitlines()[0].split(maxsplit=1)[0]
