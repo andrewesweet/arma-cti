@@ -9,8 +9,11 @@
   bound and lands in the escalation's existing could-not-read refusal. The local reads
   (`rev-parse`, `show`, `diff`) carry no deadline, having no network to stall on.
   `worktree.remote_ref_sha` — every call of which dials `origin` — now defaults to the same finite
-  bound rather than leaving it opt-in, so `just worktree archive`, `just worktree restore` and
-  `just review exchange` cannot hang on the same bad afternoon.
+  bound rather than leaving it opt-in, and its callers — `just worktree archive`, `just worktree
+  restore`, `just review exchange` — inherit it. That removes one hang from each of those paths,
+  not all of them: `restore` still `fetch`es the ref it restores and `exchange` still `push`es
+  before that read, both unbounded, and #434 carries those with the other remaining unbounded
+  reads.
 - **The escalate suite's hermeticity is enforced rather than incidental (#425).** The tests were
   online-proof only while the chdir'd scratch clone stayed what `Path.cwd()` resolved to; nothing
   pinned that, and a harmless-looking reordering could point a `fetch` at this box's real remote
