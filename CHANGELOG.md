@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **A routing-class row carrying the deleted `seats` key is now refused rather than ignored
+  (#366).** The key was deleted because it appended one evidence term and never filtered — a
+  row author writing `seats: ["orchestrator"]` as scoping landed no scoping at all — but the
+  parser tolerates unknown keys, so a row that regrew it would parse clean and read as
+  restricted to a human approving this sign-off gate while matching exactly as broadly as
+  before. `parse_policy` now fails on the key with a remedy naming `required_seats`; no live
+  row carries it, so no routing decision moves.
+
 - **A review verdict binds the diff it reviewed, not only the commit, so a clean rebase no
   longer orphans it (#417).** `just review record` now writes the exact identity of the
   reviewed diff into the verdict — a SHA-256 over `git diff --unified=0` of the same

@@ -253,8 +253,8 @@ def test_class_2_is_founded_on_its_route_rather_than_on_a_lane() -> None:
     # Neither the document nor the parser carries the field that reads as scoping and is not:
     # the frozen pre-#326 half was its last reader, and #366's ruled deletion rode #365's
     # removal of that half. The row must not regrow the key, and the parser must not regrow
-    # the attribute — a `seats` key written today is ignored, which is only safe while no row
-    # writes one.
+    # the attribute — a `seats` key written today is refused, which is the test one function
+    # down.
     live_class_2 = next(
         row
         for row in json.loads(POLICY.read_text(encoding="utf-8"))[LIVE.classes]
@@ -263,6 +263,24 @@ def test_class_2_is_founded_on_its_route_rather_than_on_a_lane() -> None:
     assert "seats" not in live_class_2
     assert not hasattr(orchestration, "seats")
     assert "seats" not in routing_policy.Rule._fields
+
+
+def test_a_re_founded_row_carrying_seats_is_refused() -> None:
+    """#366's ruling: the key cannot come back through the parser's tolerance for unknown keys.
+
+    The field is deleted because it appended one evidence term and never filtered, so it could
+    only widen a match and never narrow one. Ignoring the key would leave the hazard the
+    ruling names: a row author writes `seats: ["orchestrator"]` intending scoping, the file
+    parses clean, and a human approving this sign-off gate reads a restriction that does not
+    exist. The refusal makes the deletion a property of the parser rather than of this
+    document's current rows — this test reds the moment a `seats` key parses, which is what
+    "silently became readable again" would be.
+    """
+    base = json.loads(POLICY.read_text(encoding="utf-8"))
+    document = json.loads(json.dumps(base))
+    next(entry for entry in document[LIVE.classes] if entry["id"] == 2)["seats"] = ["orchestrator"]
+    with pytest.raises(routing_policy.PolicyError, match="may not carry `seats`"):
+        routing_policy.parse_policy(json.dumps(document))
 
 
 def test_class_2_carries_no_landing_half_because_a_landing_has_no_seat() -> None:

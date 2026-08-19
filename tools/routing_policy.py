@@ -218,8 +218,8 @@ class Rule(NamedTuple):
     could only widen a match and never narrow one — a row author writing `seats:
     ["orchestrator"]` as scoping got no scoping at all, which is what #327's second round found
     on class 2 and replaced with `required_seats`. A parser that still carries the field is
-    pre-#365; a document carrying the key is read as if it did not, which is one reason the key
-    is absent from every row here.
+    pre-#365; a document carrying the key is refused, because a key that reads as scoping and
+    does nothing is a lie a reader of this sign-off gate would believe.
     """
 
     id: int
@@ -358,6 +358,12 @@ SEAT_BOUND_LANDING_ERROR: Final = (
     " enforceable only where a seat exists, and `just land` has no seat, so landing prefixes on"
     " such a row would enforce something other than the rule the row states (#326)"
 )
+SEATS_KEY_ERROR: Final = (
+    "a routing class may not carry `seats` — the field is deleted (#366): it appended one"
+    ' evidence term and never filtered, so a row author writing `seats: ["orchestrator"]` as'
+    " scoping landed no scoping at all, in a file that is a human sign-off gate precisely so it"
+    " can be read before approval. A row about particular seats appoints them in `required_seats`"
+)
 REMEDY_ERROR: Final = "every class must name its remedy"
 ISSUE_EXCEPTION_ERROR: Final = "each issue exception must be an object"
 ISSUE_CLASSES_ERROR: Final = "issue exception classes must be integers"
@@ -377,6 +383,10 @@ def _strings(value: object, field: str) -> tuple[str, ...]:
 def _rule(document: object) -> Rule:
     if not isinstance(document, dict):
         raise PolicyError(CLASS_OBJECT_ERROR)
+    # Refused rather than ignored (#366's ruling): the key reads as scoping to a human reading
+    # this sign-off gate, and an ignored key still reads as scoping while doing nothing at all.
+    if "seats" in document:
+        raise PolicyError(SEATS_KEY_ERROR)
     return Rule(
         id=int(document["id"]),
         name=str(document["name"]),
