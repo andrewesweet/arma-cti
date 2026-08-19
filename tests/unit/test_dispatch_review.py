@@ -1228,6 +1228,20 @@ def test_the_chain_walk_resolves_a_rename_and_stops_at_the_live_name() -> None:
     assert dispatch.resolved_profile("zai-glm54-max") is None
 
 
+def test_no_registered_name_is_also_claimed_by_retired_names() -> None:
+    """A name both tables claim would route and read as two different profiles (#433).
+
+    `retired_names` on a registered name must stop at the name itself: a registered name
+    that is also a retirement-table key is dispatchable by `--profile` (which reads
+    `PROFILES`) while `resolved_profile` and every review rung resolve it away to its
+    successor, so the same dispatch would be two profiles depending on who reads it.
+    #433 adds two names the retirement table must never swallow; this holds for every
+    future name too, which is why the loop is over the registry and not over the two.
+    """
+    for name in dispatch.PROFILES:
+        assert dispatch.retired_names(name) == (name,), name
+
+
 def test_a_retired_name_is_a_subject_a_review_may_declare_and_not_a_route_it_may_take(
     tmp_path: Path,
 ) -> None:

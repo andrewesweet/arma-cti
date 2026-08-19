@@ -1,0 +1,3 @@
+### Added
+
+- **Registered `zai-glm53-high` and `opus-medium` in the dispatch profile registry (#433, human ruling 2026-08-19).** Both gaps were met by #432's codex-absence substitution table: its Luna row asks for GLM 5.3 at High and its Terra row for Opus at medium, and neither name existed. The zai lane's effort-collapse measurement survives in the registry comment, which now records that the ruling overruled the one-name-per-model conclusion and that the two GLM 5.3 names behave identically today — the effort flag reaches the `claude` runner, but the endpoint ignores the thinking budget it varies.

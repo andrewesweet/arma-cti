@@ -303,22 +303,39 @@ def test_the_zai_lane_carries_z_ais_published_mirror_configuration() -> None:
     }
 
 
-def test_the_zai_lane_registers_one_arm_per_model_and_never_one_per_effort() -> None:
+def test_the_zai_lane_registers_only_the_two_models_worth_reaching() -> None:
     # #225's collapse, as a registry invariant rather than a comment. The endpoint
     # ignores `thinking.budget_tokens` (measured: budget 1,024 and budget 32,000 both
     # thought past 9,000 tokens and both stopped on `max_tokens` —
     # docs/research/zai-lane-live-findings.md §2), and Claude Code's five effort levels
-    # differ only in the budget they send. So two profiles here must never resolve to
-    # one model under two effort names: that would be two names for one configuration,
-    # which is exactly what ADR-0061 Decision 5's opaque token exists to prevent.
+    # differ only in the budget they send. That once read as one name per model; the
+    # human ruled a second glm-5.3 name back on 2026-08-19 (#433, for #432's
+    # codex-absence substitution table), so what survives as an invariant is the model
+    # set: the two arms worth reaching, with no third model slipping in under a new
+    # name. Two names on one model are now a ruled fact, not a registry bug.
     slots = dict(dispatch.LANES["zai"].model_slots)
-    resolved = [
+    resolved = {
         slots[f"ANTHROPIC_DEFAULT_{profile.model.upper()}_MODEL"]
         for profile in dispatch.PROFILES.values()
         if profile.lane == "zai"
-    ]
-    assert sorted(resolved) == ["glm-4.7", "glm-5.3"]
-    assert len(resolved) == len(set(resolved))
+    }
+    assert resolved == {"glm-4.7", "glm-5.3"}
+
+
+def test_the_ruled_2026_08_19_additions_resolve_with_lane_model_and_effort() -> None:
+    # #433, human ruling 2026-08-19 while codex is exhausted (#432). Named one by one so
+    # neither can drift: `zai-glm53-high` is the second GLM 5.3 name the ruling brought
+    # back beside `-max` — a label the endpoint does not distinguish, per the registry's
+    # own comment — and `opus-medium` is the Terra substitution's zai-fallback choice,
+    # `medium` already in that lane's vocabulary for other models.
+    assert dispatch.resolved_profile("zai-glm53-high") == dispatch.Profile(
+        "zai-glm53-high", "zai", "opus", "high"
+    )
+    assert dispatch.resolved_profile("opus-medium") == dispatch.Profile(
+        "opus-medium", "claude-native", "opus", "medium"
+    )
+    slots = dict(dispatch.LANES["zai"].model_slots)
+    assert slots["ANTHROPIC_DEFAULT_OPUS_MODEL"] == "glm-5.3"
 
 
 def test_every_zai_profile_selects_a_model_the_lane_actually_maps() -> None:

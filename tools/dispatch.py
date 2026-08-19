@@ -441,19 +441,32 @@ PROFILES: Final[dict[str, Profile]] = {
     "fable-high": Profile("fable-high", "claude-native", "fable", "high"),
     "fable-xhigh": Profile("fable-xhigh", "claude-native", "fable", "xhigh"),
     "fable-max": Profile("fable-max", "claude-native", "fable", "max"),
-    # Two profiles on this lane and not ten, because effort collapses to a single arm
-    # here — measured, not assumed (#225, docs/research/zai-lane-live-findings.md §2).
-    # z.ai's endpoint honours `thinking.type` and ignores `thinking.budget_tokens`: one
-    # hard prompt at budget 1,024 and at budget 32,000 both thought past 9,000 tokens and
-    # both stopped on `max_tokens`, not on the budget. Claude Code's five effort levels
-    # differ only in the budget they send, so on this lane all five are one configuration
-    # and registering `-high` or `-xhigh` beside `-max` would be four names for one arm.
-    # ADR-0061 predicted a partial collapse; the measurement makes it total.
+    # Effort collapses to a single arm on this lane — measured, not assumed (#225,
+    # docs/research/zai-lane-live-findings.md §2), and still the reason this block holds
+    # two models and not five names per model. z.ai's endpoint honours `thinking.type`
+    # and ignores `thinking.budget_tokens`: one hard prompt at budget 1,024 and at budget
+    # 32,000 both thought past 9,000 tokens and both stopped on `max_tokens`, not on the
+    # budget. Claude Code's five effort levels differ only in the budget they send, so on
+    # this lane all five are one configuration. ADR-0061 predicted a partial collapse;
+    # the measurement makes it total.
     #
-    # What remains genuinely distinct is the *model*, so the two profiles are the two
-    # models worth reaching, named for the model and selected through the lane's slots:
-    # `--model opus` resolves to glm-5.3 and `--model haiku` to glm-4.7.
+    # A human ruling on 2026-08-19 (#433, for #432's codex-absence substitution table)
+    # overruled the one-name-per-model conclusion that used to stand here and named
+    # `zai-glm53-high` back beside `-max`. **The two names behave identically today, and
+    # a reader choosing between them must not infer an effect the lane does not
+    # deliver.** `build_argv` passes `profile.effort` through to the `claude` runner on
+    # this lane like any other, so the argv differs — `--effort high` against
+    # `--effort max` — but the runner's levels differ only in the thinking budget they
+    # send and the endpoint ignores that field, so the effort is nominal here: the
+    # ruling's High/Max distinction has no counterpart at z.ai, and the second name
+    # exists so #432's table names something the registry resolves, not because it
+    # selects a different arm. Re-check by re-running §2's arrangement.
+    #
+    # What remains genuinely distinct is the *model*, and each name still selects
+    # through the lane's slots: `--model opus` resolves to glm-5.3 and `--model haiku`
+    # to glm-4.7.
     "zai-glm53-max": Profile("zai-glm53-max", "zai", "opus", "max"),
+    "zai-glm53-high": Profile("zai-glm53-high", "zai", "opus", "high"),
     "zai-glm47-max": Profile("zai-glm47-max", "zai", "haiku", "max"),
     # Four profiles on this lane, and the reason they are not one is the exact inverse of
     # z.ai's. There, effort collapsed: two thinking budgets a factor of thirty apart were
@@ -507,6 +520,12 @@ PROFILES: Final[dict[str, Profile]] = {
     # dispatch arm in its own right (ADR-0071 ruling 2). `low` was unregistered until now
     # for no reason deeper than that no seat named it; the seat map names it, so it joins.
     "opus-low": Profile("opus-low", "claude-native", "opus", "low"),
+    # Opus at medium: #433, human ruling 2026-08-19, for #432's codex-absence
+    # substitution table, whose Terra row asks for "Opus/medium" as zai's fallback and
+    # found no name to resolve to. Unlike `low`, `medium` was already in this lane's
+    # vocabulary for other models (`haiku-medium`, `fable-medium`); only the opus pair
+    # was missing it.
+    "opus-medium": Profile("opus-medium", "claude-native", "opus", "medium"),
 }
 
 
