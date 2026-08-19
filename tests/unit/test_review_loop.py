@@ -1077,16 +1077,29 @@ def _assert_scratch_origin(git_call: Callable[..., str], repo: Path, tmp_path: P
     """Refuse a network-shaped git read whose `origin` is not this test's scratch remote.
 
     `git remote get-url` reads local config only, so the check itself never touches the
-    network — it blesses the remote a `fetch` or an `ls-remote` is about to dial.
+    network — it blesses the remote a `fetch` or an `ls-remote` is about to dial. The
+    remote must be an absolute local path under `tmp_path`: a URL is a *relative* path
+    to `Path`, so resolving one prefixes the process cwd, and a caller chdir'd inside
+    the scratch tree put the resolved URL under `tmp_path` and passed containment
+    alone (#425 round 2's Medium — the check compared a token, not the thing).
     """
     url = Path(git_call("remote", "get-url", "origin", cwd=repo).strip())
+    assert url.is_absolute(), (
+        f"a review-loop test reached beyond its scratch origin: origin is {url}, "
+        "a URL or scp-style remote rather than the scratch clone's local path"
+    )
     assert url.resolve().is_relative_to(tmp_path.resolve()), (
         f"a review-loop test reached beyond its scratch origin: origin is {url}"
     )
 
 
+# Every git verb that dials a remote, checked per call rather than read once — a verb
+# missing here is a dial the guard below never blesses.
+NETWORK_VERBS: Final = ("clone", "fetch", "ls-remote", "pull", "push")
+
+
 @pytest.fixture(autouse=True)
-def every_network_read_stays_scratch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def every_git_read_stays_scratch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Enforce the escalate suite's hermeticity rather than leave it incidental (#425).
 
     `escalate` derives its routing inputs from the repository at `Path.cwd()`, and these
@@ -1098,11 +1111,15 @@ def every_network_read_stays_scratch(tmp_path: Path, monkeypatch: pytest.MonkeyP
     its `origin` first and refuses anything outside this test's `tmp_path` — red rather
     than online. The deadline rides the same gate: a network-shaped read that has lost
     its `ROUTING_READ_TIMEOUT_S` bound refuses too (#425's other half).
+
+    The name says git because that is the whole boundary: the walk's one HTTP seam —
+    `dispatch.lane_bar`'s quota read — is bounded by its own deadline and pinned at the
+    CLI boundary (`--breaker-dir`, `--credentials`), not by this fixture.
     """
     git_call, remote_sha = review_loop.git, review_loop.remote_ref_sha
 
     def bounded_git(*args: str, cwd: Path, check: bool = True, timeout: float | None = None) -> str:
-        if args and args[0] in ("ls-remote", "fetch"):
+        if args and args[0] in NETWORK_VERBS:
             _assert_scratch_origin(git_call, cwd, tmp_path)
             assert timeout == review_loop.ROUTING_READ_TIMEOUT_S, (
                 f"a network-shaped git read ({' '.join(args)}) lost its deadline"
@@ -2210,6 +2227,37 @@ def test_the_scratch_origin_guard_fires_on_a_foreign_origin(tmp_path: Path) -> N
     _git("remote", "set-url", "origin", "https://github.com/andrewesweet/arma-cti.git", cwd=repo)
     with pytest.raises(AssertionError, match="scratch origin"):
         _assert_scratch_origin(review_loop.git, repo, tmp_path)
+
+
+def test_the_scratch_origin_guard_fires_on_a_url_shaped_origin_under_chdir(
+    tmp_path: Path, exchanged: Path
+) -> None:
+    """The guard refuses a URL-shaped origin from inside the scratch tree (#425 round 2).
+
+    A remote URL is a *relative* path to `Path`, so `.resolve()` prefixes the process
+    cwd — and every escalate test sits chdir'd inside `tmp_path/repo` by `exchanged`,
+    which put the resolved URL under `tmp_path` and passed the containment check alone.
+    The guard's other test is green only because it never chdirs, so the old guard
+    discriminated by an accident of the caller's cwd. This one shares the guarded
+    tests' own conditions, which is why it was red before the fix and not after.
+    """
+    _git(
+        "remote", "set-url", "origin", "https://github.com/andrewesweet/arma-cti.git", cwd=exchanged
+    )
+    with pytest.raises(AssertionError, match="scratch origin"):
+        _assert_scratch_origin(review_loop.git, exchanged, tmp_path)
+
+
+def test_every_network_shaped_verb_meets_the_scratch_guard(exchanged: Path) -> None:
+    """`push` is network-shaped too: the wrapper's trigger set covers every verb that dials.
+
+    A verb outside the set is a dial the guard never blesses. The foreign origin is
+    URL-shaped and pointed at a port nothing answers, so a miss refuses fast rather
+    than reaching anything — the red this test exists to catch stays off the network.
+    """
+    _git("remote", "set-url", "origin", "https://127.0.0.1:9/never.git", cwd=exchanged)
+    with pytest.raises(AssertionError, match="scratch origin"):
+        review_loop.git("push", "origin", "main", cwd=exchanged)
 
 
 def test_a_dry_run_terminus_posts_and_writes_nothing(tmp_path: Path) -> None:

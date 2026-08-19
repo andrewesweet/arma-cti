@@ -64,6 +64,10 @@ from typing import Final, NamedTuple
 BASE: Final = "origin/main"
 WORKTREES: Final = Path(".claude") / "worktrees"
 EXIT_REFUSED: Final = 1
+# The default deadline on every `remote_ref_sha` read — same whole-call reasoning as
+# `review_loop.ROUTING_READ_TIMEOUT_S`, stated there; one order above what a working
+# link needs for this repository's refs, well inside the afternoon it exists to cut short.
+REMOTE_READ_TIMEOUT_S: Final = 60
 
 # A worktree name becomes a path segment under .claude/worktrees, so it is one
 # segment: no separators, no leading dot, nothing that walks upwards.
@@ -442,11 +446,12 @@ def git(*args: str, cwd: Path, check: bool = True, timeout: float | None = None)
     """Run one git command and return its stdout, raising `GitError` when it fails.
 
     `timeout` bounds the *call*, not any socket inside it: a read that is still running
-    at its deadline is killed with the child and raised as `GitError` naming the bound —
-    the same whole-call property `bounded_request` buys for `urlopen` with a daemon
-    thread's join (#425), on the subprocess a git read already is. A resolver stall, a
-    silent remote, a wedged pack negotiation all expire alike; `check` still governs
-    only git's own exit code.
+    at its deadline has its direct `git` child killed and is raised as `GitError`
+    naming the bound — the same whole-call property `bounded_request` buys for
+    `urlopen` with a daemon thread's join (#425), on the subprocess a git read already
+    is. The kill reaches only that child: helper processes git itself spawned can
+    outlive it. A resolver stall, a silent remote, a wedged pack negotiation all expire
+    alike; `check` still governs only git's own exit code.
     """
     # S603/S607: the argv is fixed literals plus paths this tool computed, and
     # `git` resolves off PATH on purpose — the repo's toolchain is the caller's.
@@ -526,7 +531,7 @@ def count_unlanded(path: Path) -> int | None:
     return int(counted) if counted.isdigit() else None
 
 
-def remote_ref_sha(root: Path, ref: str, timeout: float | None = None) -> str | None:
+def remote_ref_sha(root: Path, ref: str, timeout: float = REMOTE_READ_TIMEOUT_S) -> str | None:
     """Return the exact SHA a remote ref resolves to on `origin`, else None.
 
     `git ls-remote` reads the remote's own ref table, so a ref that lives only
@@ -535,8 +540,10 @@ def remote_ref_sha(root: Path, ref: str, timeout: float | None = None) -> str | 
     is distinct from a network failure, which raises `GitError` (and lands as
     ``git_failed`` at the caller). That separation is what makes "local-only
     ref refuses" and "unreadable remote refuses" two different classes.
-    `timeout` is the read's own deadline, forwarded for the callers whose
-    remote is the network (#425).
+    `timeout` defaults to a finite bound because every call of this function
+    dials `origin` — an opt-in bound left archive, restore and exchange
+    unbounded (#425 round 2). `git()`'s own `None` default stands: most of its
+    calls are local.
     """
     out = git("ls-remote", "origin", ref, cwd=root, timeout=timeout).strip()
     if not out:
