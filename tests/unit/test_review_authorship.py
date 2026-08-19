@@ -467,7 +467,9 @@ def _escalate_run(tmp_path: Path, issue: int) -> int:
     )
 
 
-def test_the_arbiter_walk_will_not_resolve_to_a_declared_author(tmp_path: Path) -> None:
+def test_the_arbiter_walk_will_not_resolve_to_a_declared_author(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """An arbiter that authored the work is the proposer approving itself by another door.
 
     The walk's own rung excludes the profiles the *records* place on the work, and on an
@@ -476,6 +478,10 @@ def test_the_arbiter_walk_will_not_resolve_to_a_declared_author(tmp_path: Path) 
     declaring the profile the walk would otherwise have chosen and watching it choose
     another (#398 round 1: the claim was made in three documents and asserted nowhere).
     """
+    policy = review_loop.routing_policy.parse_policy(
+        (REPO / review_loop.routing_policy.POLICY_RELATIVE).read_text(encoding="utf-8")
+    )
+    monkeypatch.setattr(review_loop, "_arbiter_routing_inputs", lambda _issue: (policy, ()))
     unconstrained = str(_escalate(tmp_path, ISSUE)["arbiter"])
     assert unconstrained  # the walk resolves something to exclude in the first place
 

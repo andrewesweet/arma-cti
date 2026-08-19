@@ -99,6 +99,14 @@ Stated so a reviewer can disagree by pointing at evidence rather than at taste (
    other than `refs/heads/issue-<n>`, a policy path moved — the cost is real escalations refused,
    and the input derivation, not the rung, is what would need revisiting.
 
+## Rebase resolution
+
+The 2026-08-19 replay onto `c690dc2` conflicted in two files. `CHANGELOG.md` keeps the upstream
+#417, #416 and #353 entries and this change's #391 entry because they describe independent
+landings. ADR-0071 keeps upstream amendments A5, A6 and A7 and renumbers this change's amendment
+from A5 to A8 because those three identifiers were already allocated; its routing-rung text is
+otherwise unchanged.
+
 ## Scope
 
 This records one delegated ruling and moves one rung's read. It does not decide what
