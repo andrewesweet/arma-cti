@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`AGENTS.md`'s commit-type sentence claimed a rejection the hook never made, and omitted
+  `revert` (#340).** The sentence said `cog verify` rejects every type outside a nine-type list;
+  `cog.toml` configures no commit types, so the hook has always enforced cocogitto's built-in
+  Conventional Commits set, which admits the list and `style` (observed once, `a1c73b7`) and
+  `revert` (carried by three real withdrawals) alike. The list was wrong twice over: `revert` was
+  never on it. The sentence now keeps the vocabulary as convention, adds `revert` to it, and
+  states what the hook enforces. Whether the vocabulary should bind mechanically is recorded as
+  ADR-0076's declined branch with its overturning conditions, rather than silently dropped.
+
 ### Changed
 
 - **A renamed profile's old name resolves for reading dispatch records, and still never
