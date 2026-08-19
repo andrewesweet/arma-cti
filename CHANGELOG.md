@@ -38,6 +38,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `UnicodeDecodeError` that left the worktree occupied, and the `git_failed` refusal after a
   refused commit names what the tree really holds — everything staged, message preserved
   beside the record — instead of claiming it is as the session left it. The unevidenced
+
+- **The Codex writable roots are an allowlist, and a stale predecessor can no longer be
+  committed with the current work (#405).** Three review rounds on the harness-commit path.
+  A root named by `UV_CACHE_DIR`, `ANSIBLE_LOCAL_TEMP`, `XDG_CACHE_HOME` or `ANSIBLE_HOME`
+  is granted only where it resolves onto one of the two canonical cache locations —
+  `~/.cache/uv` and `~/.ansible/tmp` — and every other value is the `writable_root_refused`
+  refusal at plan time, naming what is grantable: `UV_CACHE_DIR=/` and
+  `ANSIBLE_LOCAL_TEMP=<gitdir>` were silently granted before, and a cache relocated
+  honestly now refuses rather than passing a containment test, joining the list by a filed
+  issue with its measured red. Containment stays as defence in depth, upgraded to what it
+  had to be to stay: resolved on both sides, asked of every worktree `git worktree list`
+  reports rather than the main root alone, and an unresolvable path or an unreadable
+  worktree set is itself a refusal. Before a session launches, a worktree holding a
+  surviving `.dispatch-commit-message` refuses `dispatch_message_present` and a dirty one
+  refuses `dirty_tree` — `git add --all` would have swept a finished predecessor's message
+  and edits into this run's commit and pushed them under its issue. A non-UTF-8 message is
+  now the `commit_message_unreadable` refusal with a written record rather than an uncaught
+  `UnicodeDecodeError` that left the worktree occupied; `git add` and `git commit` are
+  asked separately, so each `git_failed` refusal is true of the command that refused — the
+  add's claims no staging state a failed add cannot vouch for, the commit's names the
+  staging the add left and preserves the message beside the record. The unevidenced
   `~/.cache/ansible-lint` grant is dropped (the installed copy returns before creating it),
   and ADR-0071 is swept with Amendment A6: the #265 ceiling is lifted, the Codex implementer
   head is live, and every paragraph that said otherwise now says so.

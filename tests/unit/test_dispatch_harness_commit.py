@@ -39,6 +39,8 @@ from conftest import load_tool
 if TYPE_CHECKING:
     from pathlib import Path
 
+    import pytest
+
 dispatch = load_tool("dispatch")
 
 MESSAGE = "feat(x): a session's own message\n\nrefs #405\n"
@@ -206,6 +208,64 @@ def test_a_message_the_commit_msg_hook_refuses_arrives_as_git_failed(tmp_path: P
     assert any(str(record / "commit-message.txt") in line for line in lines)
     assert (record / "commit-message.txt").read_text(encoding="utf-8") == MESSAGE
     assert _git("status", "--porcelain", cwd=tree).startswith("A  edited.txt")
+
+
+def test_an_add_that_cannot_stage_refuses_without_claiming_a_staged_tree(
+    tmp_path: Path,
+) -> None:
+    # Review round three's Medium: one `try` over `git add` and `git commit` made the
+    # add's refusal carry the commit's text — "every edit is staged" over a tree where
+    # the add never completed. Split, so each refusal is true of the git that refused.
+    # A stale `index.lock` is the real, deterministic way `git add --all` fails while
+    # the `git status` above it still answers: nothing is staged by it and nothing is
+    # cleaned away by the harness, so the lock is the reader's to judge.
+    tree, _remote = _tree_with_a_remote(tmp_path)
+    record = _record(tmp_path)
+    _edited(tree)
+    (tree / ".git" / "index.lock").write_text("", encoding="utf-8")
+    before = _git("rev-parse", "HEAD", cwd=tree)
+    lines, code = dispatch.harness_finish(tree, 405, record)
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=git_failed" in lines
+    assert "command=git add --all" in lines
+    # True of the add: no commit, no push, the edits and the lock untouched, and no
+    # claim about a staging state a failed add cannot vouch for.
+    assert any("itself was refused" in line for line in lines)
+    assert _git("rev-parse", "HEAD", cwd=tree) == before
+    assert (tree / "edited.txt").exists()
+    assert (tree / ".git" / "index.lock").exists()
+    assert (record / "commit-message.txt").read_text(encoding="utf-8") == MESSAGE
+
+
+def test_a_commit_whose_sha_cannot_be_read_back_refuses_and_never_pushes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Review round three's other Medium: the post-commit `rev-parse` had no test, so
+    # nothing pinned that its failure is a named refusal with the push unattempted
+    # rather than a traceback or a success. The read-back cannot be made to fail by
+    # staging the tree — it runs after a commit that must succeed — so the real `git` is
+    # wrapped for exactly that one command and nothing else: status, add and commit run
+    # for real, and the assertions below are facts about the tree and the remote, not
+    # about the wrapper.
+    tree, remote = _tree_with_a_remote(tmp_path)
+    _edited(tree)
+    record = _record(tmp_path)
+    real_git = dispatch.worktree_tool.git
+
+    def refusing_read_back(*args: str, cwd: Path) -> str:
+        if args[:2] == ("rev-parse", "HEAD"):
+            raise dispatch.worktree_tool.GitError(("rev-parse", "HEAD"), "fatal: HEAD is gone")
+        return real_git(*args, cwd=cwd)
+
+    monkeypatch.setattr(dispatch.worktree_tool, "git", refusing_read_back)
+    lines, code = dispatch.harness_finish(tree, 405, record)
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=git_failed" in lines
+    assert any("HEAD is gone" in line for line in lines)
+    # The commit is real and carries the session's message; the push is what the refusal
+    # held back, and the remote proves it.
+    assert _git("log", "-1", "--pretty=%B", cwd=tree).strip() == MESSAGE.strip()
+    assert _git("branch", "--list", cwd=remote) == ""
 
 
 def test_a_message_that_is_not_utf8_text_is_a_named_refusal_not_a_traceback(

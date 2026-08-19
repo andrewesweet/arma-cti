@@ -2905,6 +2905,24 @@ def git(*args: str, cwd: Path) -> str:
     return done.stdout.strip() if done.returncode == 0 else ""
 
 
+def _every_worktree(cwd: Path) -> tuple[Path, ...]:
+    """Every worktree the repository reports, main checkout first; empty where git gave no answer.
+
+    One home for the porcelain read, because two readers of the same listing are two
+    chances to disagree about what a worktree is: `main_checkout` wants the first entry,
+    and `writable_root_refusal` wants them all — a root inside *any* tree is the #105
+    surface, and this project's worktrees have lived under `.claude/worktrees/` and under
+    `~/.arma-cti/codex-trees/`, so no single root names them. Empty is git's own
+    "could not tell me" (`git` collapses refusal and never-starting to the empty string)
+    and every caller must treat it as that, never as "one worktree".
+    """
+    return tuple(
+        Path(line.removeprefix("worktree ").strip())
+        for line in git("worktree", "list", "--porcelain", cwd=cwd).splitlines()
+        if line.startswith("worktree ")
+    )
+
+
 def main_checkout(cwd: Path) -> Path:
     """Return the main checkout, which is where `.claude/worktrees` lives.
 
@@ -2913,10 +2931,8 @@ def main_checkout(cwd: Path) -> Path:
     armed *from inside* a worktree must default its assignment to a sibling under the
     main checkout, not to `<this worktree>/.claude/worktrees/…`, which is nowhere.
     """
-    for line in git("worktree", "list", "--porcelain", cwd=cwd).splitlines():
-        if line.startswith("worktree "):
-            return Path(line.removeprefix("worktree ").strip())
-    return cwd
+    trees = _every_worktree(cwd)
+    return trees[0] if trees else cwd
 
 
 # Where a `codex` dispatch sends its telemetry. This is on **argv, per invocation**, and
@@ -2990,8 +3006,8 @@ def _codex_sandbox_argv(permission_mode: str) -> tuple[str, ...]:
 
     - **The two tool caches `_codex_writable_roots` returns** — `~/.cache/uv` and
       `~/.ansible/tmp` — each measured red, each carrying the walk that found it there,
-      and each checked by `writable_root_refusal` whatever the environment names.
-      `~/.cargo` stays
+      and each granted only where `writable_root_refusal`'s allowlist names it: the
+      environment cannot relocate a cache, only refuse a dispatch. `~/.cargo` stays
       ungranted: measured unnecessary on 2026-08-06 against a warm registry, unchanged
       since, and the proving dispatch never reached `check-rust` to re-ask the question.
     - **`network_access`**, which defaults off while the gate reads `gh` and `uv` may fetch.
@@ -3083,13 +3099,14 @@ def _codex_writable_roots() -> tuple[Path, ...]:
     argument: the two roots it used to ask git for were the two it must never name, and a
     parameter that exists only to be discarded invites a future edit to name them again.
 
-    Each cache is read from the environment the way its tool reads it, so a box that
-    relocates it does not silently lose the gate. A root that does not exist is not an
-    error: Codex logs it and carries on, which is the right shape for a path that follows a
-    convention rather than a fact. Which is exactly why the environment is not trusted with
-    the value: the same override that relocates a cache honestly can name `/`, or a git
-    directory, and a grant this function hands back verbatim is a grant the sandbox honours
-    verbatim. `writable_root_refusal` is the gate on that, and it reads whatever its source.
+    Each cache is read from the environment the way its tool reads it, so the grant and
+    the tool inside the sandbox agree on where the cache is. A root that does not exist
+    is not an error: Codex logs it and carries on, which is the right shape for a path
+    that follows a convention rather than a fact. The environment is trusted with the
+    value only as far as naming the location the cache already occupies: every other
+    value — `/`, a git directory, an honest relocation — is `writable_root_refusal`'s
+    allowlist refusing at plan time, so a grant this function hands back verbatim reaches
+    a sandbox only where the allowlist already stood.
     """
     cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")
     ansible_home = Path(os.environ.get("ANSIBLE_HOME") or Path.home() / ".ansible")
@@ -3099,17 +3116,59 @@ def _codex_writable_roots() -> tuple[Path, ...]:
     )
 
 
-def _hostile_root_reason(path: Path, project_root: Path) -> str | None:
-    """Say which grant principle a root breaks, or `None` if it breaks none.
+def _grantable_cache_roots() -> frozenset[Path]:
+    """Return the only locations a writable root may be granted at (#405 review round three).
 
-    Filesystem facts only, because a root that does not exist yet is still a grant: `.git`
-    as a component means the root is or sits inside a git directory (a linked worktree's
-    git dir is `<main>/.git/worktrees/<name>`, the shape `ANSIBLE_LOCAL_TEMP` was fed in
-    review), `HEAD` beside `objects` beside `refs` means the root *is* one (a bare
-    repository, the same trap without the name). Containment runs both ways against the
-    project root — inside it is a project file `git add --all` would sweep up, and
-    containing it reaches every worktree at once, which is #105's collision surface from
-    outside the project.
+    Home-derived and canonical, deliberately not read from the environment: the four
+    variables that relocate a cache honestly are the same four that can name `/` or a git
+    directory, so an allowlist anchored anywhere they reach is not an allowlist. `HOME` is
+    the one anchor kept because everything else about this box already rests on it —
+    `~/.arma-cti/credentials.env` included — and a `HOME` that lies has won before this
+    gate is asked.
+
+    This is the allowlist half of the round-three ruling: the set of roots a gate
+    legitimately needs is small, known, and evidenced — each entry carries its measured
+    red in `_codex_writable_roots`' docstring — so the grant is membership in this set and
+    nothing else. A cache that legitimately lives elsewhere is not breached past but
+    refused, and joins by a filed issue carrying its own measured red; that degradation is
+    the property a path comparison cannot have.
+    """
+    home = Path.home()
+    return frozenset({home / ".cache" / "uv", home / ".ansible" / "tmp"})
+
+
+def _resolved(path: Path) -> Path | None:
+    """Canonicalise a path for comparison, or `None` where the filesystem would not answer.
+
+    Non-strict on purpose: a root that does not exist yet is still a grant (Codex logs it
+    and carries on), and `resolve()` leaves a non-existent tail untouched while folding
+    the symlinked ancestors that make an alias — a relative path, a `..` run, a symlinked
+    cache — collapse to the location it names. `None` is a refusal at every caller,
+    because a path this box cannot canonicalise is a path no comparison is honest about.
+    """
+    try:
+        return path.resolve()
+    except OSError:
+        return None
+
+
+def _hostile_root_reason(path: Path, worktrees: tuple[Path, ...]) -> str | None:
+    """Say which grant principle a resolved root breaks, or `None` if it breaks none.
+
+    Defence in depth only: the caller has already passed the allowlist, so the question
+    here is not "is this one of the two grantable caches" but "has the filesystem moved a
+    grantable cache somewhere the grant must not reach" — a relocated or symlinked `HOME`
+    is exactly that case, which is why every comparison is on resolved paths and against
+    **every** worktree `_every_worktree` reports, never the main root alone: this
+    project's worktrees live under `.claude/worktrees/` and its probe trees lived under
+    `~/.arma-cti/codex-trees/`, so a root inside any tree is a session writing into work
+    it does not own (#105), and a root containing one reaches every sibling at once.
+
+    The two git-directory questions stay filesystem facts, because a root that does not
+    exist yet is still a grant: `.git` as a component means the root is or sits inside a
+    git directory (a linked worktree's git dir is `<main>/.git/worktrees/<name>`, the
+    shape `ANSIBLE_LOCAL_TEMP` was fed in review), `HEAD` beside `objects` beside `refs`
+    means the root *is* one (a bare repository, the same trap without the name).
 
     A `.git` sitting *inside* a root is deliberately not a refusal, because the box's own
     measured-green uv cache carries one: the sandbox read-only-enforcing `<root>/.git`
@@ -3117,10 +3176,11 @@ def _hostile_root_reason(path: Path, project_root: Path) -> str | None:
     own git state is already unreachable from any root the containment rules pass. The
     trap #405 measured is a root that *is* a git directory, and that is what is refused.
     """
-    if path == project_root or path.is_relative_to(project_root):
-        return f"inside the project {project_root}, so its files are project files"
-    if project_root.is_relative_to(path):
-        return f"contains the project {project_root}, so it reaches every worktree"
+    for tree in worktrees:
+        if path == tree or path.is_relative_to(tree):
+            return f"inside the worktree {tree}, so its files are another run's work"
+        if tree.is_relative_to(path):
+            return f"contains the worktree {tree}, so it reaches work it does not own"
     if ".git" in path.parts:
         return "is or sits inside a git directory (.git component)"
     if (path / "HEAD").is_file() and (path / "objects").is_dir() and (path / "refs").is_dir():
@@ -3129,13 +3189,21 @@ def _hostile_root_reason(path: Path, project_root: Path) -> str | None:
 
 
 def writable_root_refusal(project_root: Path) -> Refusal | None:
-    """Refuse an environment override that names a root the grant principle forbids (#405).
+    """Refuse a writable root the allowlist does not name (#405, review round three).
 
-    `_codex_writable_roots` reads `UV_CACHE_DIR` and `ANSIBLE_LOCAL_TEMP` verbatim, and a
-    verbatim `/` or git directory silently defeats the one invariant three probes were
-    spent establishing — outside every worktree, and never a git directory. This is the
-    rung that closes review's High 1: every root is checked whatever its source, and a
-    hostile value is a named refusal at plan time rather than a silent grant at run time.
+    `_codex_writable_roots` reads `UV_CACHE_DIR` and `ANSIBLE_LOCAL_TEMP` verbatim, and
+    round two checked what came back with a containment test against the main project
+    root — defeated by a relative path, a `..` run, a symlink alias, or a root inside a
+    worktree that is not the main checkout, none of them exotic on a box whose worktrees
+    live where this one's do. Round three replaces the reasoning with membership: a root
+    is granted only where it resolves onto one of `_grantable_cache_roots`' two canonical
+    locations, and everything else — `/`, a git directory, another worktree, an honest
+    relocation — refuses by name. An unlisted cache producing a refusal is the
+    degradation the ruling chose over a grant a path test blessed.
+
+    Containment stays as the second layer, per the same ruling, upgraded to what it had
+    to be to stay: resolved on both sides, asked of every worktree the repository
+    reports, and an unresolvable path or an unreadable worktree set is itself a refusal.
     It runs where the argv is minted, because the roots are frozen into the record then
     and nothing re-derives them later.
 
@@ -3143,25 +3211,68 @@ def writable_root_refusal(project_root: Path) -> Refusal | None:
     of the code under test — this project declines to widen a sandbox on an environment
     value it cannot vouch for.
     """
+    allowlist = {}
+    for entry in sorted(_grantable_cache_roots()):
+        resolved = _resolved(entry)
+        if resolved is not None:
+            allowlist[resolved] = entry
     for path in _codex_writable_roots():
-        reason = _hostile_root_reason(path, project_root)
-        if reason is not None:
-            return Refusal(
-                "writable_root_refused",
-                (
-                    f"root={path}",
-                    f"reason={reason}",
-                    (
-                        "variable_source=UV_CACHE_DIR or ANSIBLE_LOCAL_TEMP or XDG_CACHE_HOME"
-                        " or ANSIBLE_HOME override"
-                    ),
-                    f"project={project_root}",
-                ),
-                "The sandbox's writable roots are tool caches, and the environment just "
-                "named one that reaches the project or its git state. Fix the variable or "
-                "unset it so the cache defaults apply. Nothing was dispatched.",
+        resolved = _resolved(path)
+        if resolved is None:
+            return _writable_root_refusal(path, "unresolvable on this box", project_root, allowlist)
+        if resolved not in allowlist:
+            return _writable_root_refusal(
+                path, "not one of the grantable cache locations", project_root, allowlist
             )
+    worktrees = _every_worktree(project_root)
+    if not worktrees:
+        return Refusal(
+            "writable_root_refused",
+            (
+                f"project={project_root}",
+                "reason=git worktree list --porcelain gave no answer",
+            ),
+            "The roots are grantable, but the set of worktrees the grant must not reach "
+            "could not be read, so no root is granted and nothing was dispatched. This is "
+            "the box's to fix (#105).",
+        )
+    # A worktree that will not resolve is compared as git printed it rather than skipped:
+    # containment against the unresolved path still bounds the grant, where skipping it
+    # would silently narrow the set the grant must not reach.
+    resolved_trees = tuple(_resolved(tree) or tree for tree in worktrees)
+    for path in _codex_writable_roots():
+        reason = _hostile_root_reason(_resolved(path) or path, resolved_trees)
+        if reason is not None:
+            return _writable_root_refusal(path, reason, project_root, allowlist)
     return None
+
+
+def _writable_root_refusal(
+    path: Path, reason: str, project_root: Path, allowlist: dict[Path, Path]
+) -> Refusal:
+    """Render one allowlist refusal, naming what is grantable so the remedy is in hand."""
+    named = " ".join(str(entry) for entry in allowlist.values())
+    source = " ".join(
+        variable
+        for variable in ("UV_CACHE_DIR", "XDG_CACHE_HOME", "ANSIBLE_LOCAL_TEMP", "ANSIBLE_HOME")
+        if os.environ.get(variable)
+    )
+    return Refusal(
+        "writable_root_refused",
+        (
+            f"root={path}",
+            f"reason={reason}",
+            f"grantable={named}",
+            f"variable_source={source or 'none, the home-derived defaults'}",
+            f"project={project_root}",
+        ),
+        "The sandbox's writable roots are tool caches, and the grant is an allowlist: the "
+        "locations on the grantable line above are the only ones a dispatch may name. "
+        "Unset the variable so the cache defaults apply, or file an issue carrying the "
+        "measured red that shows the gate needs the new location — a cache this list does "
+        "not name refuses honestly rather than reasoning about paths. Nothing was "
+        "dispatched.",
+    )
 
 
 # The seam between a session that cannot commit and a harness that can (#405). Named once
@@ -3295,7 +3406,10 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
       up, which is unreviewable and unattributable; a named refusal over an untouched tree
       can be finished by hand from the transcript, which nothing else can.
     - **git refusing** is `git_failed` with git's own words, which is where a message that
-      is not Conventional Commits arrives.
+      is not Conventional Commits arrives. The add and the commit are asked separately
+      (review round three's Medium), so each refusal is true of the command that refused:
+      the add's claims no staging state it cannot know, the commit's names the staging
+      the add left behind.
 
     The message file is moved out of the tree before anything is staged — read, written
     beside the dispatch record where the run's other evidence lives, then unlinked — so it
@@ -3345,6 +3459,26 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
         )
     try:
         worktree_tool.git("add", "--all", cwd=tree)
+    except worktree_tool.GitError as failure:
+        # Review round three's Medium: the add's refusal must not carry the commit's
+        # text. `git add` can stage part of a tree and still refuse, so this says what is
+        # known — nothing was committed, nothing pushed — and sends the reader to the
+        # tree's own status rather than asserting a staging state it cannot know.
+        return _harness_refusal(
+            "git_failed",
+            (
+                f"worktree={tree}",
+                f"command=git {' '.join(failure.args_run)}",
+                f"stderr={failure.stderr}",
+            ),
+            "`git add --all` itself was refused, so the commit was never attempted and "
+            "nothing was pushed. Read git's own error above, and read the tree's status "
+            "before acting — the add may have staged part of the tree before refusing. "
+            "The edits are untouched, and the message the session left is beside the "
+            "record as commit-message.txt; finish by hand from there — never reset the "
+            "tree (#105).",
+        )
+    try:
         worktree_tool.git("commit", "--file", str(record / "commit-message.txt"), cwd=tree)
     except worktree_tool.GitError as failure:
         # The refusal cannot claim the tree is as the session left it, because `git add

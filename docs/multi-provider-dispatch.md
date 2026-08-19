@@ -391,14 +391,16 @@ What that buys, measured rather than inferred, over five dispatches and four pro
   gate on 2026-08-13, a week *after* the root set was measured. `~/.cache/ansible-lint`
   was granted once on a derivation from the linter's source and dropped on review: the
   installed copy reports `INSTALLER=uv`, returns before reaching the version check the
-  derivation rested on, and the directory does not exist. The grant principle is one
-  sentence: a tool cache outside every worktree, writing no project file and no git
-  state, is granted; a git directory never is — and the environment variables that
-  relocate a cache (`UV_CACHE_DIR`, `ANSIBLE_LOCAL_TEMP`, `XDG_CACHE_HOME`,
-  `ANSIBLE_HOME`) are validated rather than trusted: a root that is a git directory, or
-  reaches the project from inside or outside it, is the `writable_root_refused`
-  refusal at plan time. `~/.cargo` looked as likely and was measured unnecessary, so it
-  is not granted.
+  derivation rested on, and the directory does not exist. The grant is an allowlist, not
+  a path test (#405 review round three): the two canonical cache locations above are the
+  only ones a dispatch may name, compared resolved so an alias is the location it names,
+  and with containment over every worktree `git worktree list` reports kept as defence in
+  depth. The environment variables that relocate a cache (`UV_CACHE_DIR`,
+  `ANSIBLE_LOCAL_TEMP`, `XDG_CACHE_HOME`, `ANSIBLE_HOME`) cannot widen the grant — any
+  value that is not one of the two grantable locations, however harmless it looks, is the
+  `writable_root_refused` refusal at plan time, and a cache that honestly lives elsewhere
+  joins the list by a filed issue carrying its measured red. `~/.cargo` looked as likely
+  and was measured unnecessary, so it is not granted.
 - `network_access` defaults off while the gate reads `gh` and `uv` may fetch, so it is
   enabled.
 
