@@ -1188,12 +1188,14 @@ def test_the_composed_gate_and_landing_arms_follow_the_forced_permission_mode() 
     The composed brief branched these three sections on `seat.reviews` while the default
     brief branched its gate line on the registry's forced `permission_mode` — two tests
     pinning two different predicates over the same question, both green. The arm now
-    follows the mode, the same derivation #339 landed for surface computation, so this
-    and the default brief's loop below assert the same rule.
+    follows the predicate, so this and the default brief's loop below assert the same
+    rule. The assertion reads the predicate rather than retyping the column, because a
+    retyped expression here agreed with a bypassing code path by construction — the
+    failure the mutation test below exists to catch.
     """
     for name, seat in dispatch.SEATS.items():
         rendered = composed(seat=brief.derive_seat(name))
-        judgement_only = seat.permission_mode == "plan"
+        judgement_only = seat.judgement_only
         assert ("## Gate: none — this seat runs none" in rendered) is judgement_only, name
         assert ("## Landing: none" in rendered) is judgement_only, name
         # The implementer's asks reach only a seat that may act on them.
@@ -1429,7 +1431,47 @@ def test_the_default_brief_asks_no_seat_that_cannot_run_a_gate_to_run_one() -> N
         )
         rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-353")
         asks = "Run `just fast` after every edit." in rendered
-        assert asks == (seat.permission_mode != "plan"), seat_name
+        assert asks == (not seat.judgement_only), seat_name
+
+
+def test_forcing_the_predicate_false_moves_both_brief_paths_together(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """#421 round 2, the test the bypass defeated: mutate the predicate, both paths move.
+
+    The two loops above assert each brief against the predicate, but a path that rederived
+    the registry column agreed with its own test by construction and nothing could observe
+    the disagreement — the reviewer proved it by flipping the predicate and watching the
+    default `recon` brief stand still. Forcing `Seat.judgement_only` to `False` and
+    asserting both briefs change together is the construction that catches a bypass: the
+    composed `recon` brief must lose its read-only sections exactly when the default
+    `recon` brief gains its gate ask.
+
+    Patched on both `dispatch` copies — this module's and `brief`'s — because `load_tool`
+    re-execs each script into its own module object, so `brief.compose` reads a different
+    `SEATS` than the `dispatch.default_brief` this module holds.
+    """
+    forced_false = property(lambda *_: False)
+    monkeypatch.setattr(dispatch.Seat, "judgement_only", forced_false)
+    monkeypatch.setattr(brief.dispatch.Seat, "judgement_only", forced_false)
+
+    rendered = composed(seat=brief.derive_seat("recon"))
+    assert "## Gate: none — this seat runs none" not in rendered
+    assert "## Landing: none" not in rendered
+    assert "`just fast`" in rendered
+    assert "Land via `just land`" in rendered
+
+    identity = dispatch.Identity(
+        dispatch_id="d-test",
+        lane="claude-native",
+        profile="haiku-medium",
+        seat="recon",
+        issue=421,
+        base_sha="deadbee",
+    )
+    default = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-421")
+    assert "Run no gate and no tests" not in default
+    assert "Run `just fast` after every edit." in default
 
 
 def test_the_default_briefs_prohibition_names_gates_and_tests_not_all_execution() -> None:

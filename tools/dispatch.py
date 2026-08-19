@@ -604,6 +604,18 @@ class Seat(NamedTuple):
     # and is never silent — `Resolution.containment_lines` names the seat that forced it.
     permission_mode: str = ""
 
+    # #421's one predicate, stated where the column it reads lives so no caller rederives it.
+    # Both brief paths branch on this — the composed brief's three sections through
+    # `brief.Seat.judgement_only`, which delegates here, and `default_brief` below — and the
+    # queue's writes-nothing surface derivation (#339) reads it too. The round that named the
+    # predicate left this module's own gate line rederiving the column beside it, which is the
+    # shape this property exists to make impossible: an expression typed at a call site agrees
+    # with the predicate today and drifts the day one of them changes.
+    @property
+    def judgement_only(self) -> bool:
+        """Whether the forced mode makes this seat read-only, so it runs no gate."""
+        return self.permission_mode == "plan"
+
 
 # Named once because two seats share it: ADR-0071 ruling 2 gives `review` "the
 # implementer's list" and the implementer's escalation *head*. Sharing the object is what
@@ -2948,15 +2960,15 @@ def default_brief(identity: Identity, worktree: Path) -> str:
     contract. The single-shot contract is the one operational rule a thin brief cannot
     omit, because a dispatched session has no second turn to recover from missing it.
 
-    The one line that varies is the gate line, because a seat that forces a read-only
-    mode (`review`, `recon` — the `permission_mode` column) cannot act on "run `just
-    fast` after every edit", and a brief asking for what the seat is forbidden to do is
-    the ritual #353's ruling of 2026-08-14 stopped: such a seat runs no gate and no
-    tests. The prohibition is stated that narrowly on purpose (#421 finding 4): "rather
-    than executing anything" read as forbidding read-only inspection too, which would
-    make `recon` — a seat whose whole job is reading — impossible.
+    The one line that varies is the gate line, because a judgement-only seat (`review`,
+    `recon` — `Seat.judgement_only`, the predicate whose home is the registry row) cannot
+    act on "run `just fast` after every edit", and a brief asking for what the seat is
+    forbidden to do is the ritual #353's ruling of 2026-08-14 stopped: such a seat runs
+    no gate and no tests. The prohibition is stated that narrowly on purpose (#421
+    finding 4): "rather than executing anything" read as forbidding read-only inspection
+    too, which would make `recon` — a seat whose whole job is reading — impossible.
     """
-    runs_gate = SEATS[identity.seat].permission_mode != "plan"
+    runs_gate = not SEATS[identity.seat].judgement_only
     gate_line = (
         "Run `just fast` after every edit."
         if runs_gate
@@ -3670,7 +3682,7 @@ def queue_refusal(args: argparse.Namespace, root: Path) -> Refusal | None:
     # issue — which is the implementer's, and was refusing a review dispatch for the very
     # work it had been sent to read. The registry column is the containment `routed` forces
     # (#322, #407), so "this dispatch writes nothing" is derived, never declared here.
-    writes_nothing = SEATS[args.seat].permission_mode == "plan"
+    writes_nothing = SEATS[args.seat].judgement_only
     return _as_refusal(
         queue_policy.check_refusal(
             policy,

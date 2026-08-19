@@ -528,17 +528,19 @@ class Seat(NamedTuple):
     # The predicate both briefs branch on (#421). The composed brief branched its three
     # sections on `reviews` while the default brief branched its gate line on the forced
     # `permission_mode`, so a fix landed on one arm and missed the other twice in a row
-    # (#360's qualified flake wording reached only the branch that touched it). The
-    # registry column is the containment `routed` forces (#322, #407) and the same
-    # derivation #339 landed for surface computation: a seat that forces `plan` writes
-    # nothing, so it is told to run no gate, commit or landing — `review` because it
-    # judges, `recon` because it reads. What still follows `reviews` is the content
-    # *within* that arm: only a reviewer is handed the paste contract.
+    # (#360's qualified flake wording reached only the branch that touched it) — and the
+    # round that named this predicate left the default brief rederiving the column beside
+    # it, which is why the derivation now lives on the registry row itself
+    # (`dispatch.Seat.judgement_only`) and this property delegates rather than rederives:
+    # one home, and neither brief path can disagree with the other. A seat that forces
+    # `plan` writes nothing, so it is told to run no gate, commit or landing — `review`
+    # because it judges, `recon` because it reads. What still follows `reviews` is the
+    # content *within* that arm: only a reviewer is handed the paste contract.
     @property
     def judgement_only(self) -> bool:
-        """Whether the registry forces this seat read-only (`permission_mode == "plan"`)."""
+        """Whether the registry forces this seat read-only (`Seat.judgement_only` there)."""
         registered = dispatch.SEATS.get(self.name)
-        return registered is not None and registered.permission_mode == "plan"
+        return registered is not None and registered.judgement_only
 
 
 def derive_seat(override: str, reviewing: str = "") -> Seat:
@@ -980,10 +982,10 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
     a forced-`plan` seat runs no gate, retries no flake and lands nothing — the review by
     the human ruling of 2026-08-14 (#353), every other such seat (`recon`, #407) by the
     same construction — so the gate ask, the re-run instruction and the landing protocol
-    would each demand something the seat is forbidden to do. The arm follows the forced
-    permission mode, the same column the default brief branches on and #339 derived
-    surfaces from, because `reviews` reached only the reviewer and left `recon` carrying
-    the implementer's asks (#421): one predicate, both paths. The derived gate is still
+    would each demand something the seat is forbidden to do. The arm follows
+    `Seat.judgement_only`, the same predicate the default brief branches on and #339
+    derived surfaces from, because `reviews` reached only the reviewer and left `recon`
+    carrying the implementer's asks (#421): one predicate, both paths. The derived gate is still
     composed — these seats meet the same headings and never a silence — and within the arm
     the paste contract is the reviewer's alone, because `recon` judges no implementer's
     work.
