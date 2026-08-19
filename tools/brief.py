@@ -916,6 +916,59 @@ def _escalation_lines(outcome: escalation.Evaluation) -> list[str]:
     raise escalation.EscalationError(escalation.unknown_kind_error(outcome.kind))
 
 
+def _landing_lines(briefing: Briefing) -> list[str]:
+    """Return the gate, flake and landing sections for this seat."""
+    issue, seat, gate = briefing.issue, briefing.seat, briefing.gate
+    # These sections are the implementer's until the seat reviews: a reviewing seat runs no
+    # gate, retries no flake and lands nothing (human ruling 2026-08-14, #353). One predicate
+    # governs all three sections so their two composition paths cannot disagree (#421).
+    if seat.reviews:
+        lines = [
+            "",
+            "## Gate: none — this seat runs none",
+            REVIEW_GATE_RULE,
+            "",
+            f"## Open flakes ({len(briefing.flakes)}, read live at composition)",
+        ]
+        if briefing.flakes:
+            lines += [flake.line() for flake in briefing.flakes]
+            lines.append(REVIEW_FLAKE_RESPONSE)
+        else:
+            lines.append("None open.")
+        lines += [
+            "",
+            "## Landing: none — a review lands nothing",
+            REVIEW_LANDING_RULE,
+        ]
+        return lines
+
+    lines = [
+        "",
+        f"## Gate: {gate.line}",
+        *gate.because,
+        "",
+        f"## Open flakes ({len(briefing.flakes)}, read live at composition)",
+    ]
+    if briefing.flakes:
+        lines += [flake.line() for flake in briefing.flakes]
+        lines.append(FLAKE_RESPONSE)
+    else:
+        lines.append(FLAKE_NONE)
+    lines += [
+        "",
+        "## Landing",
+        f"Conventional Commits, `refs #{issue}`, commit early.",
+        "Land via `just land` and paste its output verbatim — never retype it.",
+        ADJUDICATION_RULE,
+        (
+            f"Close #{issue} with a criterion-by-criterion audit quoting the gate's output"
+            " — `just check`, `just unit`, `just mutation` — and stating whether any quoted"
+            " kill rate was sampled or exhaustive (#344)."
+        ),
+    ]
+    return lines
+
+
 def compose(briefing: Briefing) -> str:
     """Render the invariant half, with the variable half left as visible placeholders."""
     issue, seat, tree, gate = briefing.issue, briefing.seat, briefing.tree, briefing.gate
@@ -974,54 +1027,7 @@ def compose(briefing: Briefing) -> str:
         "Work only there. Files you did not write mean stop and report, never reset (#105).",
         f"Finish with `just worktree done issue-{issue}`.",
     ]
-    # The three sections below are the implementer's until the seat reviews: a reviewing seat
-    # runs no gate, retries no flake and lands nothing (human ruling 2026-08-14, #353), so the
-    # gate ask, the re-run instruction and the landing protocol would each demand something
-    # the seat is forbidden to do. The derived gate is still composed — a reviewing seat meets
-    # the same headings and never a silence — it just carries the read-the-paste rule instead.
-    if seat.reviews:
-        lines += [
-            "",
-            "## Gate: none — this seat runs none",
-            REVIEW_GATE_RULE,
-            "",
-            f"## Open flakes ({len(briefing.flakes)}, read live at composition)",
-        ]
-        if briefing.flakes:
-            lines += [flake.line() for flake in briefing.flakes]
-            lines.append(REVIEW_FLAKE_RESPONSE)
-        else:
-            lines.append("None open.")
-        lines += [
-            "",
-            "## Landing: none — a review lands nothing",
-            REVIEW_LANDING_RULE,
-        ]
-    else:
-        lines += [
-            "",
-            f"## Gate: {gate.line}",
-            *gate.because,
-            "",
-            f"## Open flakes ({len(briefing.flakes)}, read live at composition)",
-        ]
-        if briefing.flakes:
-            lines += [flake.line() for flake in briefing.flakes]
-            lines.append(FLAKE_RESPONSE)
-        else:
-            lines.append(FLAKE_NONE)
-        lines += [
-            "",
-            "## Landing",
-            f"Conventional Commits, `refs #{issue}`, commit early.",
-            "Land via `just land` and paste its output verbatim — never retype it.",
-            ADJUDICATION_RULE,
-            (
-                f"Close #{issue} with a criterion-by-criterion audit quoting the gate's output"
-                " — `just check`, `just unit`, `just mutation` — and stating whether any quoted"
-                " kill rate was sampled or exhaustive (#344)."
-            ),
-        ]
+    lines += _landing_lines(briefing)
     if gate.reads_a_verdict:
         lines += ["", "## Paste rule", PASTE_RULE]
     findings = ",".join(found.kind for found in briefing.assessment.findings) or "none"
