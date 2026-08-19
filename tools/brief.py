@@ -672,8 +672,11 @@ def fetch_open_issues(repo: str = REPO_SLUG) -> list[dict[str, object]]:
 # ------------------------------------------------------------------------- the rendering
 
 # The one string that makes an unedited brief obviously unfinished (criterion 5). Spelled
-# once so a test can assert on it and a reader can grep for it.
-PLACEHOLDER: Final = "TO BE WRITTEN BY THE ORCHESTRATOR"
+# once — in `tools/dispatch.py`, beside `SINGLE_SHOT_CONTRACT`, for that constant's own
+# reason: the import direction is fixed, so the dispatcher is the one home both surfaces
+# can share. The dispatch-time gate refuses on this same marker (#349), and a composer and
+# a gate that each kept their own copy could drift into a placeholder nothing refuses.
+PLACEHOLDER: Final = dispatch.BRIEF_PLACEHOLDER
 
 
 def _placeholder(what: str) -> str:

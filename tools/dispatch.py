@@ -2835,6 +2835,13 @@ SINGLE_SHOT_CONTRACT: Final = (
     " part and state exactly what remains and why."
 )
 
+# The one string that makes an unedited brief obviously unfinished. This is the marker the
+# dispatch-time gate below refuses on (#349), and it lives here rather than in
+# `tools/brief.py` for `SINGLE_SHOT_CONTRACT`'s exact reason: the import direction is fixed
+# — the composer imports the dispatcher, never the reverse — so one home here is how the
+# string that renders the placeholder and the string that refuses on it cannot drift apart.
+BRIEF_PLACEHOLDER: Final = "TO BE WRITTEN BY THE ORCHESTRATOR"
+
 
 def default_brief(identity: Identity, worktree: Path) -> str:
     """Compose the brief a dispatch sends when the caller named no file.
@@ -2855,6 +2862,91 @@ def default_brief(identity: Identity, worktree: Path) -> str:
         f"work in the worktree above and nowhere else. The issue's acceptance criteria "
         f"are the contract. Run `just fast` after every edit.\n"
     )
+
+
+# The route claims the gate reads (#349). Each pattern is a shape this project itself
+# composes — the default brief's identity clause, its opening, the composed brief's own
+# seat heading — because those are also the shapes a half-failed splice leaves behind: the
+# observed failure (#316) was a stale identity sentence carried out of a previous brief.
+# Freeform prose is deliberately not parsed. An instruction about some *other* dispatch
+# ("re-dispatch on the codex lane", quoting the failure-class table's own wording) is not
+# a claim about this one's route, and refusing on every lane-shaped word would break clean
+# briefs whose titles, handoffs and prior-work lines quote lane names in prose. The names
+# come from the registries, matched in the registries' own spelling.
+_ROUTE_CLAIM: Final = re.compile(
+    r"dispatched as \S+ on the ([a-z0-9-]+) lane under profile ([a-z0-9-]+)"
+)
+_SEAT_HEADING: Final = re.compile(r"^## Seat: ([a-z0-9-]+)")
+_SEAT_OPENING: Final = re.compile(r"^You are the ([a-z0-9-]+) seat")
+
+
+def brief_refusal(text: str, identity: Identity) -> Refusal | None:
+    """Refuse a brief that would go out half-composed or naming the wrong route (#349).
+
+    Composing a brief and dispatching it are two operations, and the first can half-fail
+    silently: a splice dies mid-string, the file goes out anyway, and the dispatched
+    session obeys the artefact over any contrary prose (#345) — reading an unfilled
+    template as its task, or working to a lane note from a previous dispatch. The manual
+    checks the seat added covered the last failure mode, not the class, so the seam closes
+    fail-closed here, at the second operation, where every composition route — `just
+    brief`, a hand edit, a heredoc splice — converges.
+
+    Two refusals. `brief_placeholder` fires on the composer's own marker (`BRIEF_PLACEHOLDER`
+    above, one home shared with `tools/brief.py`) and quotes the offending line.
+    `brief_lane_mismatch` fires on a route claim — a seat heading, a seat opening, or the
+    identity clause carrying lane and profile — that names something other than what this
+    dispatch resolved to. Neither carries a failure class, for `off_peak_refusal`'s reason:
+    nothing was found about a provider or about code under test; the request was
+    self-contradictory. Nothing is launched either way.
+    """
+    for line in text.splitlines():
+        if BRIEF_PLACEHOLDER in line:
+            return Refusal(
+                "brief_placeholder",
+                (f"line={line}",),
+                (
+                    "The brief still carries its composer's placeholder marker, so its "
+                    "variable half was never filled (#316's half-failed composition): the "
+                    "session would read an unfilled template as its task. Fill the task "
+                    "half and dispatch again. Nothing was launched."
+                ),
+            )
+    contradictions: list[str] = []
+    for line in text.splitlines():
+        for pattern in (_SEAT_HEADING, _SEAT_OPENING):
+            found = pattern.match(line)
+            if found and found.group(1) != identity.seat:
+                contradictions += [
+                    f"brief_seat={found.group(1)}",
+                    f"dispatch_seat={identity.seat}",
+                    f"line={line}",
+                ]
+        claim = _ROUTE_CLAIM.search(line)
+        if claim:
+            if claim.group(1) != identity.lane:
+                contradictions += [
+                    f"brief_lane={claim.group(1)}",
+                    f"dispatch_lane={identity.lane}",
+                    f"line={line}",
+                ]
+            if claim.group(2) != identity.profile:
+                contradictions += [
+                    f"brief_profile={claim.group(2)}",
+                    f"dispatch_profile={identity.profile}",
+                    f"line={line}",
+                ]
+    if contradictions:
+        return Refusal(
+            "brief_lane_mismatch",
+            tuple(dict.fromkeys(contradictions)),
+            (
+                "The brief names a seat, lane or profile this dispatch is not using — #316's "
+                "stale route note, which a dispatched session obeys over the dispatch's own "
+                "arguments (#345). Re-compose the brief for this route, or dispatch the route "
+                "the brief names. Nothing was launched."
+            ),
+        )
+    return None
 
 
 def git(*args: str, cwd: Path) -> str:
@@ -3486,7 +3578,7 @@ def _state_refusal(
     return off_peak_refusal(LANES[PROFILES[args.profile].lane], now)
 
 
-def plan_dispatch(
+def plan_dispatch(  # noqa: PLR0911 — one return per named refusal rung, and #349's brief gate is the seventh
     args: argparse.Namespace,
     root: Path,
     now: datetime,
@@ -3566,6 +3658,12 @@ def plan_dispatch(
         if args.brief_file
         else default_brief(identity, worktree)
     )
+    # #349's gate, over whatever brief is about to be sent — named or default. It sits
+    # before anything is written or launched, so a half-failed composition stops here
+    # rather than travelling out with the dispatch.
+    refusal = brief_refusal(brief, identity)
+    if refusal is not None:
+        return None, "", refusal
     plan = Plan(
         identity=identity,
         worktree=worktree,
