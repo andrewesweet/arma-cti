@@ -105,11 +105,31 @@ def test_one_marked_changelog_bullet_does_not_cover_its_neighbour() -> None:
     assert [finding.line for finding in findings] == [3]
 
 
+def test_one_marked_changelog_bullet_does_not_cover_a_nested_neighbour() -> None:
+    source = (
+        "- **One landing.** The walk takes the entry head, then the entry tail.\n"
+        "  <!-- arbiter-rule: stated — a dated entry (#390) -->\n"
+        "  - **Nested landing.** The arbiter walk falls through to the entry tail.\n"
+    )
+    findings = check_arbiter_copies.scan_source(source, "CHANGELOG.md")
+    assert [finding.line for finding in findings] == [3]
+
+
 def test_one_marked_table_row_does_not_cover_its_neighbour() -> None:
     source = (
         "| `just x` | The arbiter walk takes the entry head. |"
         " <!-- arbiter-rule: stated — a row (#390) -->\n"
         "| `just y` | The arbiter walk then takes the entry tail. |\n"
+    )
+    findings = check_arbiter_copies.scan_source(source, "AGENTS.md")
+    assert [finding.line for finding in findings] == [2]
+
+
+def test_one_marked_table_row_does_not_cover_an_indented_neighbour() -> None:
+    source = (
+        "| `just x` | The arbiter walk takes the entry head. |"
+        " <!-- arbiter-rule: stated — a row (#390) -->\n"
+        "  | `just y` | The arbiter walk then takes the entry tail. |\n"
     )
     findings = check_arbiter_copies.scan_source(source, "AGENTS.md")
     assert [finding.line for finding in findings] == [2]

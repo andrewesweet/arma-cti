@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`just check-arbiter` now keeps arbiter-rule copies derived instead of hand-counted
+  (#390).** The check scans every tracked file as part of `just check`, reports restatements
+  outside `tools/arbiter.py`, and treats each comment run, string paragraph, list item, and
+  table row as a separate site even when nested or indented. A reasoned
+  `arbiter-rule: stated` marker preserves dated records that must repeat the rule, and
+  `--report` enumerates those exceptions.
+
 ### Fixed
 
 - **Mutation smoke now scores a mutant-caused import failure as a kill (#338).** After the

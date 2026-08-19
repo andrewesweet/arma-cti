@@ -90,7 +90,9 @@ REMEDY: Final = (
 # command-table row are each a place of their own, and treating the list or the
 # table as one place is the file-is-one-place mistake at a smaller scale — it
 # would let one marked row license every row around it.
-NEW_SITE: Final = re.compile(r"^(?:[-*+] |\d+[.)] |\|)")
+# Indentation changes presentation, not document structure: every list item and
+# table row still starts a new site.
+NEW_SITE: Final = re.compile(r"^\s*(?:[-*+] |\d+[.)] |\|)")
 
 
 class Site(NamedTuple):
