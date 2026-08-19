@@ -72,11 +72,8 @@ check-markers:
 check-conflicts:
     uv run python tools/check_conflict_markers.py
 
-# A user-visible commit carries a changelog entry, now as a branch-owned
-# fragment rather than a shared-file edit (#358): `feat`, `fix` and any `!`
-# over origin/main owe either a `changelog.d/<issue>-<slug>.md` fragment or a
-# `CHANGELOG.md` change, and every fragment parses — the same standard the
-# landing's fold enforces, red here before a gate or review is spent on it.
+# A source-changing branch carries its own changelog fragment (#358). The
+# release marker is checked too: Scriv otherwise inserts above the document.
 check-changelog:
     uv run python tools/check_changelog.py
 

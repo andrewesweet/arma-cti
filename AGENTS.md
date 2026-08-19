@@ -43,7 +43,7 @@ Interact with the project through `just` only. The rule binds work that lands an
 
 | Command | Purpose | Requires Arma | Run when |
 |---|---|---|---|
-| `just check` | cog, generated-schema check, ADR-form check, validated-marker check, conflict-marker check, seat-config check, arbiter-copy check, HEMTT lints, gitleaks, ruff, ty, rustfmt, clippy | No | Every edit |
+| `just check` | cog, generated-schema check, ADR-form check, validated-marker check, conflict-marker check, changelog-fragment check, seat-config check, arbiter-copy check, HEMTT lints, gitleaks, ruff, ty, rustfmt, clippy | No | Every edit |
 | `just check-arbiter` | The arbiter rule has one statement, in `tools/arbiter.py`; everywhere else is a pointer, or carries `arbiter-rule: stated — <reason>` (#390, human ruling 2026-08-16). Its subject set is **derived** — every file `git ls-files` names, at comment-run, docstring-paragraph, list-item and table-row granularity — because the copies were miscounted at all five counts anyone made on #361, and the sweep brief that hunted them omitted `tests/`, where one sat. `--report` prints every marker and its reason. It checks that nothing was left to drift, never that a marked statement is true | No | Folded into `just check`; alone when reconciling a copy |
 | `just unit` | pytest, cargo test | No | Every edit |
 | `just fast` | `check` + `unit` + `mutation` | No | Every edit |
@@ -133,8 +133,8 @@ Repo hooks (`.claude/hooks/`, wired in `.claude/settings.json`) enforce mechanic
 ## Commits, changelog, versioning (ADR-0010)
 
 - Commit messages follow Conventional Commits 1.0.0 (`feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `chore`, `ci`; optional scope; `BREAKING CHANGE:` footer or `!` for breaking). A `commit-msg` hook (`cog verify`) rejects everything else; if the hook is missing on a fresh clone, run `cog install-hook commit-msg`.
-- Any commit with user-visible effect updates the `[Unreleased]` section of `CHANGELOG.md` in the same commit (Keep a Changelog 1.1.0 categories: Added/Changed/Deprecated/Removed/Fixed/Security). The changelog is curated for humans — never paste commit logs into it.
-- Releases: `cog bump --auto` derives the SemVer 2.0.0 bump and tags `vX.Y.Z`. `0.y.z` until MVP scope is fully playable.
+- Any commit with user-visible effect adds a uniquely named Markdown fragment under `changelog.d/` in the same commit (Keep a Changelog 1.1.0 categories: Added/Changed/Deprecated/Removed/Fixed/Security). The changelog is curated for humans — never paste commit logs into it.
+- Releases: `cog bump --auto` derives the SemVer 2.0.0 bump, runs `scriv collect` to fold and remove every fragment, and tags `vX.Y.Z`. `0.y.z` until MVP scope is fully playable.
 - Landing from an agent worktree: `just land`, which runs the protocol and refuses by name (#213). It re-gates after the rebase — no flag skips that — and when sandboxing blocks the fast-forward of the main checkout it exits non-zero with `merge_command=` naming the exact command for the orchestrator, because a stale main checkout is where ADR-0042's stale-hook window comes from (#130).
 
 ## Working style

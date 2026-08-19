@@ -119,6 +119,20 @@ sweeping for row-less recipes: "the `check-*`/`unit-*`/`build-*` sub-recipes hav
 carried rows, being components of rows that exist". `just check` already has its row and
 this changes nothing about when to run it. Nothing is routed to #228.
 
+## Amendment, 2026-08-16: Decision 2's named exit is taken (#358)
+
+Human ruling accepted Scriv news fragments after a measured evaluation. This takes Decision 2's
+named exit; it does not reverse that decision. `merge=union` remains declined for the measured
+reason above. The exit conditions became true instead: four branches needed hand resolution on
+2026-08-18 (#399, #397, #404 and #405), one left a diff3 marker, and fragments preserve their
+Keep a Changelog category before any shared-file merge can misfile it.
+
+Branches now add unique files under `changelog.d/` and never edit `CHANGELOG.md`. Scriv collects
+them in filename order during `cog bump --auto`, then deletes them. Collection belongs to release,
+not landing: this removes the shared write and the landing-time merge instead of automating a
+second form of it. The conflict-marker gate remains unchanged and still protects every tracked
+file.
+
 ## Not taken, and why
 
 **A `pre-commit` hook rather than a gate step.** The tier's hooks are Claude Code hooks

@@ -943,7 +943,7 @@ def tree_surface(path: Path) -> tuple[str, ...]:
     if not path.is_dir():
         return ()
     landed = _run(["git", "diff", "--name-only", "origin/main...HEAD"], cwd=path)
-    working = _run(["git", "status", "--porcelain"], cwd=path)
+    working = _run(["git", "status", "--porcelain", "--untracked-files=all"], cwd=path)
     touched = {line.strip() for line in landed.splitlines() if line.strip()}
     touched |= {
         line[STATUS_PREFIX:].strip() for line in working.splitlines() if len(line) > STATUS_PREFIX

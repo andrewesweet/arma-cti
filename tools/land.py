@@ -2,10 +2,8 @@
 
 Every landing narrates the same five steps — fetch, rebase onto `origin/main`,
 re-gate, `git push origin HEAD:main`, `git -C <main checkout> merge --ff-only
-origin/main` — with the changelog fold inside the second step since #358, so the
-fragments a branch carries reach `CHANGELOG.md` mechanically and no lander ever
-resolves that file by hand. #209 measured 220 `Bash` calls doing exactly that across
-117 of 214 agents, the second-widest hand loop in the project.
+origin/main`. #209 measured 220 `Bash` calls doing exactly that across 117 of
+214 agents, the second-widest hand loop in the project.
 
 The token case is real and secondary. The correctness case is that **a recipe
 cannot forget a step, and prose demonstrably does**:
@@ -86,13 +84,6 @@ exit code.
                             nothing here resolves or aborts on your behalf
     conflict_markers        the rebased tree carries git conflict markers, named
                             by file and line (#231, ADR-0062)
-    changelog_fragment_malformed / changelog_unreleased_missing / changelog_missing
-                            a fragment the fold cannot merge — a name, a shape or
-                            a section it refuses — or a `CHANGELOG.md` with no
-                            `[Unreleased]` to fold into, or none at all (#358).
-                            Refused before anything is written
-    changelog_commit_failed the fold's edits landed in the working tree and the
-                            commit that carries them did not run; git's own words
     routing_policy_gate     a non-exempt lane's real rebased diff touches a class
                             the trusted policy refuses that lane (#266). No live
                             class does since ADR-0073; the rung is kept for the
@@ -188,7 +179,6 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 # enables, which is why the import below sits apart from the block above.
 sys.path.insert(0, str(Path(__file__).parent))
 
-import changelog_fragments
 import corpus_gate
 import land_review
 import review_exchange
@@ -1026,13 +1016,6 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
         moved = _rebase_and_gate(here, incoming, gate, lines, lane, corpus, review_inputs)
         if moved is not None:
             return moved
-        # Recounted after the replay and the changelog fold, either of which can
-        # move the number the pre-rebase count named: the rebase drops commits
-        # that were already upstream, and the fold adds the one that carries the
-        # fragments. The line describes the tree as pushed, not as it stood.
-        replayed = counted(f"{BASE}..HEAD", cwd=here)
-        if replayed is not None:
-            lines[1] = f"commits={replayed}"
     else:
         # Nothing to push: this is the re-run after a blocked merge. The gate is
         # not skipped by a flag — there is simply nothing new being landed, and
@@ -1073,11 +1056,7 @@ def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:
     each fresh verdict.
 
     It stops before the gate, the push and the merge on purpose. Nothing here can land
-    anything: the rebase is the one act, with the changelog fold beside it since #358 —
-    a commit that touches nothing outside `CHANGELOG.md` and `changelog.d/`, and the one
-    the SHA below must already carry, because a verdict binds the commit the landing
-    pushes and a fold deferred to the landing would orphan every staged review by moving
-    exactly that commit. The refusals it shares with `land` are the
+    anything: the rebase is the one act. The refusals it shares with `land` are the
     dirty tree and the rebase already in progress (both decided before the rebase),
     and the conflict and the poisoned tree (both decided by it) — each in the same
     words. `root` is unused by the work and taken all the same, so the two entry points
@@ -1141,13 +1120,6 @@ def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:
     stopped = classify_rebase(here, code, conflicted_paths(here), stderr)
     if stopped is not None:
         return Report.refused(stopped)
-    # The changelog fold, in staging for the same reason it is in the landing
-    # (#358): the SHA printed below is the one a verdict binds, and a fold that
-    # happened only at landing would orphan every staged review by moving the
-    # very commit it named. Staging folds first and prints the post-fold SHA.
-    folded = changelog_fragments.fold(here)
-    if folded.refusal is not None:
-        return Report.refused(folded.refusal)
     poisoned = classify_conflict_markers(here, find_in_tree(here))
     if poisoned is not None:
         return Report.refused(poisoned)
@@ -1211,13 +1183,8 @@ def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:
                 " a conflict or a changed diff re-reviews"
             ),
         ),
-        (
-            "note=anything landing on origin/main before you do moves this SHA again"
-            " and orphans the verdict bound to it; stage, review and land without a"
-            " long gap between them."
-        ),
-    ]
-    return Report(tuple(report), 0)
+        0,
+    )
 
 
 def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return, one input apiece
@@ -1253,15 +1220,6 @@ def _rebase_and_gate(  # noqa: PLR0911, PLR0913, PLR0917 — one rung per return
         git("rev-parse", "HEAD", cwd=here).strip(),
         lines,
     )
-
-    # The changelog fold, before anything reads a SHA or spends a gate (#358): the
-    # commit it makes is part of what the review verdict below binds, which is the
-    # whole of the ordering. A tree with no fragments is a no-op line and no commit.
-    folded = changelog_fragments.fold(here)
-    if folded.refusal is not None:
-        return Report.refused(folded.refusal)
-    if folded.merged:
-        lines.append(folded.line)
 
     poisoned = classify_conflict_markers(here, find_in_tree(here))
     if poisoned is not None:
@@ -1460,19 +1418,8 @@ def _dry_run(  # noqa: PLR0913, PLR0917 — the plan's inputs, one parameter api
         # verdict about a rung that will not run.
         review_lines, review_kind = ("review=not_consulted reason=routing refused the plan",), None
     onward = [" ".join(push_argv()), merge_step or "(merge not needed)"]
-    # The fold's own pre-flight, consulted read-only: the fragments are in the
-    # tree and parse or do not, so a plan can hold the landing to the standard
-    # the fold enforces without writing anything (#358). A fragment that will
-    # not parse refuses the plan exactly as it will refuse the landing.
-    fragments = changelog_fragments.inspect(here)
-    plan = [f"would_run=git rebase {BASE}"]
-    if fragments.merged:
-        plan.append(f"would_run=fold {fragments.merged} changelog fragment(s) into [Unreleased]")
-    plan.append(f"would_run={' '.join(GATE)}")
+    plan = [f"would_run={step}" for step in (f"git rebase {BASE}", " ".join(GATE))]
     blocked = misrouted.kind if misrouted is not None else review_kind
-    if fragments.refusal is not None:
-        plan.append(f"changelog={fragments.refusal.kind} {' '.join(fragments.refusal.found)}")
-        blocked = blocked or fragments.refusal.kind
     if blocked is None:
         plan += [f"would_run={step}" for step in onward]
     else:

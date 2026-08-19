@@ -466,6 +466,15 @@ def test_the_wip_refusal_carries_no_failure_class() -> None:
 # ------------------------------------------------------------------------ the surface conflict
 
 
+def _surface_git(root: Path, *args: str) -> None:
+    subprocess.run(  # noqa: S603
+        ["git", *args],  # noqa: S607
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+
+
 def test_two_in_flight_trees_writing_the_same_paths_refuse_by_name() -> None:
     refusal = queue.surface_refusal(
         250, ["tools/dispatch.py", "justfile"], {250: ["tools/dispatch.py"], 241: ["justfile"]}
@@ -484,28 +493,36 @@ def test_disjoint_surfaces_do_not_conflict() -> None:
     assert queue.surface_refusal(250, ["a.py"], {241: ["b.py"]}) is None
 
 
-def test_two_branches_recording_changelog_entries_no_longer_contend() -> None:
-    """#358's own criterion: the one shared file every branch edited is now a path per issue.
+def test_live_tree_surfaces_keep_fragments_disjoint_and_real_overlaps_loud(
+    tmp_path: Path,
+) -> None:
+    surfaces: dict[int, tuple[str, ...]] = {}
+    for issue in (358, 241):
+        root = tmp_path / f"issue-{issue}"
+        root.mkdir()
+        _surface_git(root, "init", "-b", "main")
+        _surface_git(root, "config", "user.email", "test@example.com")
+        _surface_git(root, "config", "user.name", "Test")
+        (root / "README.md").write_text("seed\n", encoding="utf-8")
+        _surface_git(root, "add", "README.md")
+        _surface_git(root, "commit", "-m", "chore: seed")
+        _surface_git(root, "update-ref", "refs/remotes/origin/main", "HEAD")
+        fragment = root / "changelog.d" / f"{issue}-entry.md"
+        fragment.parent.mkdir()
+        fragment.write_text("### Changed\n\n- Entry.\n", encoding="utf-8")
+        (root / f"source-{issue}.py").write_text("value = 1\n", encoding="utf-8")
+        surfaces[issue] = queue.tree_surface(root)
 
-    Two in-flight trees each carrying their own `changelog.d/<issue>-<slug>.md` write
-    disjoint paths and clear the rung — where the single `CHANGELOG.md` edit both would
-    have made refused `surface_conflict` and capped concurrent implementation at two
-    trees total (#355 recommendation 8's audit of the cap).
-    """
-    fragments = {
-        358: ["tools/land.py", "changelog.d/358-fold.md"],
-        241: ["src/cti_daemon/other.py", "changelog.d/241-sibling.md"],
-    }
-    assert queue.surface_refusal(358, fragments[358], fragments) is None
-    # The counterfactual the fragments replace: the shared edit refused.
-    shared = {
-        358: ["tools/land.py", "CHANGELOG.md"],
-        241: ["src/cti_daemon/other.py", "CHANGELOG.md"],
-    }
-    refusal = queue.surface_refusal(358, shared[358], shared)
+    assert queue.surface_refusal(358, surfaces[358], surfaces) is None
+
+    for issue in surfaces:
+        root = tmp_path / f"issue-{issue}"
+        (root / "justfile").write_text("shared:\n", encoding="utf-8")
+        surfaces[issue] = queue.tree_surface(root)
+    refusal = queue.surface_refusal(358, surfaces[358], surfaces)
     assert refusal is not None
     assert refusal.kind == "surface_conflict"
-    assert "paths=CHANGELOG.md" in refusal.found
+    assert "paths=justfile" in refusal.found
 
 
 def test_a_candidate_that_has_written_nothing_yet_cannot_be_seen_to_conflict() -> None:

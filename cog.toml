@@ -1,4 +1,6 @@
 tag_prefix = "v"
+disable_changelog = true
+pre_bump_hooks = ["uv run scriv collect --version {{version}}"]
 
 # Installed by `cog install-hook commit-msg`, so this text is copied into
 # .git/hooks and only changes when someone reinstalls. Keep it a dispatcher: the

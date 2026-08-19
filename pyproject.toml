@@ -27,10 +27,19 @@ dev = [
   "ruff>=0.16",
   "ty==0.0.65", # pre-1.0 and moving fast: pin exactly, bump deliberately
   "pytest-xdist>=3.8",
+  "scriv==1.8.0",
 ]
 
 [tool.uv.build-backend]
 module-root = "src"
+
+[tool.scriv]
+categories = ["Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"]
+changelog = "CHANGELOG.md"
+format = "md"
+md_header_level = 2
+md_html_anchors = false
+entry_title_template = "[{{ version }}] - {{ date.strftime('%Y-%m-%d') }}"
 
 [tool.ruff]
 line-length = 100
