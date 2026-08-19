@@ -387,6 +387,43 @@ def test_a_mutants_timeout_is_derived_from_what_its_tests_cost_unmutated() -> No
     assert reach.timeout([]) == smoke_tool.TIMEOUT_FLOOR_S
 
 
+def test_an_unrelated_collection_banner_does_not_turn_a_usage_error_into_a_kill(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    done = subprocess.CompletedProcess(
+        [],
+        4,
+        stdout="ERROR collecting tests/unit/test_mutation_smoke.py\n",
+        stderr="",
+    )
+    monkeypatch.setattr(smoke_tool.subprocess, "run", lambda *_args, **_kwargs: done)
+    assert (
+        smoke_tool._pytest(  # noqa: SLF001 — the discriminator is the subject
+            tmp_path,
+            [],
+            timeout=1.0,
+            mutant=True,
+            test_module="tests/unit/test_subject.py",
+        )
+        == 4
+    )
+
+
+def test_a_pytest_usage_error_refuses_instead_of_counting_as_a_kill() -> None:
+    mutant = _plant("def f(a):\n    return a == 1\n")[0]
+    node = "tests/unit/test_subject.py::test_missing"
+    reach = smoke_tool.Reach({}, {node: 0.0})
+    with pytest.raises(smoke_tool.Refusal, match=r"pytest exited 4.*not a verdict"):
+        smoke_tool._tally(  # noqa: SLF001 — the refusal branch is the subject
+            [mutant],
+            reach,
+            {mutant.line: (node,)},
+            float("inf"),
+            lambda _mutant, _tests: 4,
+        )
+
+
 # --- the verdict ------------------------------------------------------------
 
 
