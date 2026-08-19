@@ -459,7 +459,8 @@ land *args:
 # not_on_remote, ref_mismatch, git_failed, no_dispatch_records,
 # no_review_dispatch, records_unreadable, verdict_exists, verdict_unreadable,
 # verdict_unwritten, no_verdict, unknown_dispatch, sha_mismatch,
-# diff_id_unreadable, rebase_unproven, identity_mismatch. Four carry the
+# diff_id_unreadable, rebase_unproven, binary_diff_uncarried,
+# identity_mismatch. Four carry the
 # issue's own weight: a verdict
 # satisfies the SHA it names, or a moved SHA only where a chain of tool-recorded
 # clean rebases connects the two commits and the diff's exact identity matches
@@ -468,7 +469,10 @@ land *args:
 # unreadable diff identity is a refusal and never a pass (`diff_id_unreadable`,
 # #41), a moved SHA with no recorded clean-rebase chain is
 # `rebase_unproven` — an identity match alone cannot prove whether a conflict
-# was resolved by hand — and any dispatch record
+# was resolved by hand — a diff changing a file git compares as bytes never
+# carries at all (`binary_diff_uncarried`, #419: such a diff is nothing but the
+# blob hashes that name the base, and `.gitattributes` can make a same-file
+# binary edit replay clean over them), and any dispatch record
 # the binding scan cannot read refuses the whole derivation
 # (`records_unreadable`), because the record that would not open could be the
 # binding one — an exclusion scan may continue on a partial read (#322), an

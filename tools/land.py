@@ -120,6 +120,11 @@ exit code.
                             rebases connects the reviewed commit to the one
                             landing — an identity match alone cannot prove whether
                             a conflict was resolved by hand (#417)
+    binary_diff_uncarried   the SHA moved and the diff changes a file git compares
+                            as bytes, whose whole identity is blob hashes that name
+                            the base — `.gitattributes` can make a same-file binary
+                            edit replay clean and move them, so no verdict carries
+                            across it and a fresh review is owed (#419)
     identity_mismatch       the verdict's claimed reviewer no longer derives from
                             the records as they stand
     review_same_profile     the reviewing profile is one the issue's own records

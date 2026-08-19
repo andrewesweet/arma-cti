@@ -756,7 +756,8 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     is "computed and refused" — both refuse only where they would have been needed:
     a verdict for the exact SHA clears without either, and a moved SHA refuses
     (`diff_id_unreadable`, `rebase_unproven`) rather than reading the miss as a
-    mismatch.
+    mismatch. A moved SHA over a diff that changes a binary file refuses
+    `binary_diff_uncarried` whatever both halves say (#419).
 
     `reach` is where the gate rung reads a free lane's dispatchability from and the
     moment it asks (#426) — a seam for tests and nothing else, since every fact the

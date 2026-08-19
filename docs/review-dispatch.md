@@ -266,6 +266,16 @@ whole for a binary change, where its blob hashes are the only content the diff c
 line offsets a sibling's landing shifts and a textual file's base-side blob hash cannot move
 it, while every added and removed byte, which function the change sits in, and a binary
 change's actual bytes still do.
+
+**A diff that changes a binary file is not carried across a moved SHA at all** (#419). Its
+identity is tagged `binary:` where it is computed, and the landing refuses
+`binary_diff_uncarried` whatever the two halves below say. The exemption it replaces rested on
+"git will not merge binaries, so a same-file binary edit cannot replay clean", and that is
+false: `.gitattributes` decides what git compares as bytes and how git merges it independently,
+so `*.bin -diff merge=union` gives a diff git calls binary and a same-file edit git replays
+clean, rewriting both blob hashes of the kept `index` line. Binary changes are rare here, so the
+refusal costs one fresh review and buys a premise that is true rather than nearly true.
+
 A landing whose rebase moved the SHA carries the review across only where **both** halves hold:
 
 1. **the rebase's own outcome, recorded as a fact.** Only the tool that ran the rebase knows

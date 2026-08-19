@@ -1208,14 +1208,16 @@ def test_different_binary_changes_to_one_path_change_the_diff_id(tmp_path: Path)
     assert ids[0] != ids[1]
 
 
-def test_a_clean_rebase_keeps_the_diff_id_of_a_binary_change(tmp_path: Path) -> None:
-    """Keeping a binary `index` line must not reintroduce base-dependence.
+def test_a_binary_change_never_carries_though_a_clean_rebase_keeps_its_diff_id(
+    tmp_path: Path,
+) -> None:
+    """A sibling landing elsewhere leaves a binary identity alone — and it still refuses.
 
-    The pre-image blob names the base, but only a same-file edit rewrites it —
-    and git will not merge binaries, so a same-file edit on both sides of a
-    rebase cannot replay clean and no verdict carries across it at all. A
-    sibling landing elsewhere leaves both blobs what they were, so the kept line
-    moves the identity for a real reason only.
+    The identity half is unchanged: the pre-image blob names the base, only a
+    same-file edit rewrites it, and a sibling landing elsewhere leaves both blobs
+    what they were. What is gone is the argument that made the kept line safe (#419)
+    — the carry refuses `binary_diff_uncarried` whatever the identity says, which is
+    what this arrangement asserts, because this is the arrangement that carried.
     """
     repo = init_repo(tmp_path)
     (repo / "blob.bin").write_bytes(b"\x00\x01\x02")
@@ -1246,8 +1248,84 @@ def test_a_clean_rebase_keeps_the_diff_id_of_a_binary_change(tmp_path: Path) -> 
     )
 
     rebased = head_of(repo)
+    landing_id = review_exchange.diff_id_of(repo, rebased)
     assert rebased != reviewed
-    assert review_exchange.diff_id_of(repo, rebased) == reviewed_id
+    assert landing_id == reviewed_id
+
+    refusal = review_exchange.satisfies(
+        verdict(reviewed_sha=reviewed, diff_id=reviewed_id), rebased, landing_id, clean_rebase=True
+    )
+    assert refusal is not None
+    assert refusal.kind == "binary_diff_uncarried"
+
+
+def test_a_same_file_binary_edit_replays_clean_and_moves_both_blobs(tmp_path: Path) -> None:
+    """The counter-example that took the exemption out (#419, fourth review of #417).
+
+    `.gitattributes` decides both what git compares as bytes and how git merges it,
+    and the two are independent: `*.bin -diff merge=union` gives a path git calls
+    binary in every diff and merges line-wise anyway. So a same-file binary edit on
+    both sides of a rebase **does** replay clean, and it rewrites both blob hashes
+    of the very `index` line the normalisation keeps — the base-dependence the
+    identity exists to remove. The carry is refused by name rather than left to
+    whatever those hashes happen to say.
+    """
+    lines = "a\nb\nc\nd\ne\nf\ng\nh\n"
+    repo = init_repo(tmp_path)
+    (repo / ".gitattributes").write_text("*.bin -diff merge=union\n", encoding="utf-8")
+    commit(repo, "blob.bin", lines, "bin")
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    base_blob = worktree.git("rev-parse", "HEAD:blob.bin", cwd=repo).strip()
+
+    worktree.git("checkout", "-q", "-b", "work", cwd=repo)
+    commit(repo, "blob.bin", lines.replace("a\n", "A2\n", 1), "work edits the head")
+    reviewed = head_of(repo)
+    reviewed_id = review_exchange.diff_id_of(repo, reviewed)
+    reviewed_blob = worktree.git("rev-parse", "HEAD:blob.bin", cwd=repo).strip()
+
+    # `origin/main` moves on the *same* file, at the other end of it.
+    worktree.git("checkout", "-q", "-b", "main-ahead", "origin/main", cwd=repo)
+    commit(repo, "blob.bin", lines.replace("h\n", "H2\n", 1), "main edits the tail")
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    worktree.git("checkout", "-q", "work", cwd=repo)
+    worktree.git(
+        "-c", "user.email=t@example", "-c", "user.name=t", "rebase", "origin/main", cwd=repo
+    )
+
+    # The replay ran clean and both blobs moved: the merged file carries both edits,
+    # so neither the pre-image nor the post-image of the kept `index` line survives.
+    rebased = head_of(repo)
+    merged = (repo / "blob.bin").read_text(encoding="utf-8")
+    assert "A2" in merged
+    assert "H2" in merged
+    assert worktree.git("rev-parse", "origin/main:blob.bin", cwd=repo).strip() != base_blob
+    assert worktree.git("rev-parse", "HEAD:blob.bin", cwd=repo).strip() != reviewed_blob
+
+    landing_id = review_exchange.diff_id_of(repo, rebased)
+    assert isinstance(reviewed_id, str)
+    assert isinstance(landing_id, str)
+    assert landing_id.startswith(review_exchange.BINARY_DIFF_TAG)
+    refusal = review_exchange.satisfies(
+        verdict(reviewed_sha=reviewed, diff_id=reviewed_id), rebased, landing_id, clean_rebase=True
+    )
+    assert refusal is not None
+    assert refusal.kind == "binary_diff_uncarried"
+
+
+def test_a_binary_identity_refuses_a_carry_whichever_side_carries_the_tag() -> None:
+    # The tag rides the recorded value as well as the landing one, so a verdict
+    # recorded over a binary diff refuses even where the asking side reads as
+    # textual — and the exact SHA still clears, which is the fresh review's path.
+    tagged = review_exchange.BINARY_DIFF_TAG + DIFF_ID
+    for recorded, asked in ((tagged, DIFF_ID), (DIFF_ID, tagged), (tagged, tagged)):
+        refusal = review_exchange.satisfies(
+            verdict(diff_id=recorded), OTHER_SHA, asked, clean_rebase=True
+        )
+        assert refusal is not None
+        assert refusal.kind == "binary_diff_uncarried"
+    assert review_exchange.satisfies(verdict(diff_id=tagged), SHA) is None
 
 
 # ------------------------------------------------------------------ invocation

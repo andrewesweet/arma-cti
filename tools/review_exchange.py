@@ -70,7 +70,11 @@ record can, because only it knows whether a hand touched the replay. Where the S
 and the diff both fail, `sha_mismatch` names both; where the recorded or the landing
 identity could not be read, `diff_id_unreadable` refuses rather than passes (#41);
 where no recorded clean-rebase chain connects the reviewed commit to the landing
-one, `rebase_unproven` refuses and a fresh review is owed. The identity and the
+one, `rebase_unproven` refuses and a fresh review is owed; and where the diff changes
+a file git compares as bytes, `binary_diff_uncarried` refuses whatever the other two
+say, because such a diff is nothing but blob hashes that name the base and
+`.gitattributes` can make a same-file binary edit replay clean over them (#419). The
+identity and the
 provenance together prove the diff is unchanged and mechanically replayed, not that
 its meaning survived the move onto the new base — the gate's tests at landing are
 what catch that difference, and they still run.
@@ -129,14 +133,19 @@ DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 # binding that could mean two commits satisfies neither.
 FULL_SHA: Final = re.compile(r"\A[0-9a-f]{40}\Z")
 # The diff identity is a sha256 hexdigest (64 lowercase hex), so the binding's second
-# half is spelled as strictly as its first.
-DIFF_ID: Final = re.compile(r"\A[0-9a-f]{64}\Z")
+# half is spelled as strictly as its first — tagged `binary:` where the diff it hashes
+# changes a binary file, which is the fact `satisfies` refuses a carry on (#419).
+BINARY_DIFF_TAG: Final = "binary:"
+DIFF_ID: Final = re.compile(rf"\A(?:{BINARY_DIFF_TAG})?[0-9a-f]{{64}}\Z")
 # `breaker.OK`, mirrored rather than imported so the completion ladder stays a local
 # decision over the records it reads (`tools/breaker.py` owns the vocabulary, and
 # `classify_run` is what ties `ok` to a zero exit behind `write_result`).
 OUTCOME_OK: Final = "ok"
 SHA_ERROR: Final = "a commit is named by its full 40-character SHA, never a shortened form"
-DIFF_ID_ERROR: Final = "a verdict carries the 64-hex exact diff identity of the reviewed diff"
+DIFF_ID_ERROR: Final = (
+    "a verdict carries the 64-hex exact diff identity of the reviewed diff, tagged"
+    " `binary:` where that diff changes a binary file"
+)
 ISSUE_ERROR: Final = "the issue is named by its number, greater than zero"
 VERSION_ERROR: Final = "a verdict must be a version 1 object"
 WALK_WITHOUT_REFUSAL_ERROR: Final = "the candidate walk ended without a refusal or a verdict"
@@ -300,10 +309,15 @@ def _exchange_found(status: worktree.Preflight) -> tuple[str, ...]:
 # are flattened and the anchor is kept. An `index` line's base-side blob hash is
 # rewritten by any sibling edit of the same textual file, so it is flattened there —
 # but a binary change's `index` line is the only content its diff carries at all, and
-# it stays byte for byte: git will not merge binaries, so a same-file binary edit on
-# both sides of a rebase cannot replay clean, and under every recorded clean replay
-# both blobs are exactly what they were, while erasing the line made different binary
-# changes to one path hash equal (round 3's Critical, other half). Everything else —
+# it stays byte for byte, because erasing the line made different binary changes to
+# one path hash equal (round 3's Critical, other half). A kept line is base-naming,
+# and the argument that it was safe anyway — git will not merge binaries, so a
+# same-file binary edit cannot replay clean — is false: `.gitattributes` decides both
+# halves, and `*.bin -diff merge=union` gives a diff git calls binary and a same-file
+# edit git replays clean, moving both blob hashes (#419). So the identity of a diff
+# carrying a binary change is tagged `BINARY_DIFF_TAG` and never carries across a
+# moved SHA at all: `satisfies` refuses it by name and a fresh review is owed.
+# Everything else —
 # content lines with their whitespace exact, file order, hunk order, mode lines — is
 # hashed byte for byte. One limit, fail-closed: a clean rebase can still shift the
 # anchor itself where a sibling lands a function-like line between the old anchor and
@@ -311,6 +325,11 @@ def _exchange_found(status: worktree.Preflight) -> tuple[str, ...]:
 HUNK_RANGES: Final = re.compile(r"\A@@ -\d+(?:,\d+)? \+\d+(?:,\d+)? @@")
 INDEX_LINE: Final = re.compile(r"\Aindex [^\n]*")
 BINARY_FOLLOWS: Final = ("Binary files ", "GIT binary patch")
+
+
+def _has_binary_change(diff: str) -> bool:
+    """Whether any file in this diff changed as bytes rather than as lines."""
+    return any(line.startswith(BINARY_FOLLOWS) for line in diff.splitlines())
 
 
 def _normalised_diff(diff: str) -> str:
@@ -348,9 +367,11 @@ def diff_id_of(cwd: Path, sha: str) -> str | Refusal:
     section anchor after them kept, and an `index` line is flattened for a textual
     file and kept whole for a binary one (`_normalised_diff`), because offsets and a
     textual file's base-side blob hash name the base, which a clean rebase moves by
-    construction — while a binary change's `index` line is the only content it has,
-    and under a recorded clean replay neither of its blobs can have moved. A diff
-    identity is a claim about the change, never
+    construction — while a binary change's `index` line is the only content it has.
+    That kept line is itself base-naming, and `.gitattributes` can make a same-file
+    binary edit replay clean and move it (#419), so the identity of a diff carrying
+    a binary change is returned tagged `BINARY_DIFF_TAG` and `satisfies` refuses to
+    carry it across a moved SHA. A diff identity is a claim about the change, never
     about whether the rebase that produced it was clean — that half is the recorded
     links' (`carried_by_clean_rebase`), and the two are checked together. The limit
     is `DIFF_ID_LIMIT`'s and is printed wherever a clearance rides it.
@@ -374,7 +395,8 @@ def diff_id_of(cwd: Path, sha: str) -> str | Refusal:
             " refs/heads/issue-<n>` — and a check that could not run is not a check"
             " that passed (#41).",
         )
-    return hashlib.sha256(_normalised_diff(diff).encode("utf-8")).hexdigest()
+    digest = hashlib.sha256(_normalised_diff(diff).encode("utf-8")).hexdigest()
+    return BINARY_DIFF_TAG + digest if _has_binary_change(diff) else digest
 
 
 # ------------------------------------------------------------- the clean-rebase links
@@ -1107,7 +1129,12 @@ def satisfies(  # noqa: PLR0911 — one return per way a binding can fail, so no
     landing's own computation, or the `Refusal` that says it could not run). Either
     alone is insufficient: an identical diff reached by a hand-resolved rebase is
     unproven, and a tool-run clean rebase can still drop a commit as already
-    upstream. The refusal names which half failed rather than returning a bare
+    upstream. **A diff carrying a binary change is not carried at all**, whatever
+    those two say (`binary_diff_uncarried`, #419): its identity is nothing but blob
+    hashes that name the base, and `.gitattributes` can make a same-file binary edit
+    replay clean and move them, so both answers are uninformative rather than one of
+    them wrong. Binary changes are rare here, so what that costs is one fresh review.
+    The refusal names which half failed rather than returning a bare
     false, because the caller that needs it is a landing gate: "not this one" must
     say which one it is before anyone re-reviews, and a quiet miss is how an amended
     branch rides an earlier approval.
@@ -1167,6 +1194,25 @@ def satisfies(  # noqa: PLR0911 — one return per way a binding can fail, so no
             " the half of the binding that carries a review across a rebase could not"
             " run. Compute it where the landing tree is (`diff_id_of`) — a check that"
             " could not run is not a check that passed (#41).",
+        )
+    if diff_id.startswith(BINARY_DIFF_TAG) or verdict.diff_id.startswith(BINARY_DIFF_TAG):
+        return Refusal(
+            "binary_diff_uncarried",
+            (
+                f"asked={sha}",
+                f"reviewed={verdict.reviewed_sha}",
+                f"dispatch={verdict.review_dispatch}",
+                f"binary=asked={diff_id} reviewed={verdict.diff_id}",
+            ),
+            "The SHA has moved and the diff changes a file git compares as bytes, so"
+            " the verdict is not carried and a fresh review is owed. A binary change's"
+            " diff has no content at all beyond the two blob hashes on its `index`"
+            " line, and those name the base: `.gitattributes` decides both what git"
+            " calls binary and how git merges it, so a same-file binary edit can"
+            " replay clean and move them (#419). An identity that survived would prove"
+            " nothing here, and one that moved would be base-dependence rather than a"
+            " changed diff — so neither answer is read. Re-review at the commit being"
+            " landed.",
         )
     if isinstance(clean_rebase, Refusal):
         return clean_rebase
@@ -1466,7 +1512,9 @@ def _show(  # noqa: PLR0911 — one return per refusal, so each stays a whole th
     recorded clean rebases are read from `review_root` — together they are what let
     `--satisfies` answer `yes` for a commit a rebase produced; without either, a
     moved SHA refuses (`diff_id_unreadable`, `rebase_unproven`), the honest "this
-    comparison could not run" and "this move is not proven" respectively.
+    comparison could not run" and "this move is not proven" respectively. A
+    `binary:`-tagged identity on either side refuses `binary_diff_uncarried` (#419) —
+    the tag rides the recorded value, so a paste answers as the landing gate does.
     """
     try:
         path = verdict_path(dispatch_root, dispatch_id)
