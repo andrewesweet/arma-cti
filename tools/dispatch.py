@@ -3110,7 +3110,7 @@ CODEX_SANDBOX: Final = {
 }
 
 
-def _codex_sandbox_argv(permission_mode: str) -> tuple[str, ...]:
+def _codex_sandbox_argv(permission_mode: str, granted: tuple[Path, ...] | None) -> tuple[str, ...]:
     """Return the sandbox flags: the gate's roots, and never a git directory (#405).
 
     The human ruled on 2026-08-06 (#221 decision 2, #259) that a dispatched Codex session
@@ -3185,9 +3185,8 @@ def _codex_sandbox_argv(permission_mode: str) -> tuple[str, ...]:
     flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
     if flags != CODEX_SANDBOX["acceptEdits"]:
         return flags
-    granted = _codex_writable_roots()
     if granted is None:
-        # Unreachable from `plan_dispatch`, which refuses on this same `None` before it mints
+        # Unreachable from `plan_dispatch`, which refuses on this same value before it mints
         # an argv. Granting nothing rather than guessing keeps the fallback fail-closed.
         return flags
     roots = ", ".join(hook_parity.toml_string(str(path)) for path in granted)
@@ -3278,7 +3277,7 @@ def _codex_writable_roots() -> tuple[Path, ...] | None:
         return None
 
 
-def writable_root_refusal(project_root: Path) -> Refusal | None:
+def writable_root_refusal(project_root: Path, granted: tuple[Path, ...] | None) -> Refusal | None:
     """Refuse where the two granted cache roots will not canonicalise (#405, round four).
 
     Three rounds of this function validated an environment-supplied path, and each round's
@@ -3300,7 +3299,7 @@ def writable_root_refusal(project_root: Path) -> Refusal | None:
     of the code under test — this project declines to widen a sandbox around a path it
     cannot name absolutely.
     """
-    if _codex_writable_roots() is not None:
+    if granted is not None:
         return None
     return Refusal(
         "writable_root_refused",
@@ -3599,7 +3598,11 @@ def _harness_found(status: worktree_tool.Preflight) -> tuple[str, ...]:
 
 
 def build_argv(
-    lane: Lane, profile: Profile, permission_mode: str, project_dir: Path
+    lane: Lane,
+    profile: Profile,
+    permission_mode: str,
+    project_dir: Path,
+    writable_roots: tuple[Path, ...] | None,
 ) -> tuple[str, ...]:
     """Build the runner's argv, which carries no secret, because a secret on argv is in `ps`.
 
@@ -3612,7 +3615,7 @@ def build_argv(
     lanes that share the `claude` binary sharing one builder.
     """
     if lane.runner_family == "codex":
-        return _codex_argv(lane, profile, permission_mode, project_dir)
+        return _codex_argv(lane, profile, permission_mode, project_dir, writable_roots)
     return (
         lane.runner,
         "--print",
@@ -3626,7 +3629,11 @@ def build_argv(
 
 
 def _codex_argv(
-    lane: Lane, profile: Profile, permission_mode: str, project_dir: Path
+    lane: Lane,
+    profile: Profile,
+    permission_mode: str,
+    project_dir: Path,
+    writable_roots: tuple[Path, ...] | None,
 ) -> tuple[str, ...]:
     """Build `codex exec`'s argv: model, reasoning effort, sandbox, and loopback telemetry.
 
@@ -3665,7 +3672,7 @@ def _codex_argv(
         "--config",
         _codex_metrics_override(),
         *_codex_hook_argv(project_dir),
-        *_codex_sandbox_argv(permission_mode),
+        *_codex_sandbox_argv(permission_mode, writable_roots),
     )
 
 
@@ -4087,10 +4094,12 @@ def plan_dispatch(  # noqa: PLR0911 — one return per refusal rung and per half
         if args.brief_file
         else default_brief(identity, worktree)
     )
+    writable_roots = None
     if harness_commits(lane, args.permission_mode):
         # High 1's rung: the roots are minted into the argv below, so the environment is
         # checked here or not at all — the record freezes them for the child.
-        refusal = writable_root_refusal(root)
+        writable_roots = _codex_writable_roots()
+        refusal = writable_root_refusal(root, writable_roots)
         if refusal is not None:
             return None, "", refusal
         brief += CODEX_COMMIT_PROTOCOL
@@ -4098,7 +4107,7 @@ def plan_dispatch(  # noqa: PLR0911 — one return per refusal rung and per half
         identity=identity,
         worktree=worktree,
         record=Path(args.dispatch_dir).expanduser() / dispatch_id,
-        argv=build_argv(lane, profile, args.permission_mode, worktree),
+        argv=build_argv(lane, profile, args.permission_mode, worktree, writable_roots),
         credentials=credentials,
         permission_mode=args.permission_mode,
         route=route,

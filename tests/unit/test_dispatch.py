@@ -945,11 +945,14 @@ def _codex_argv_from_a_linked_worktree(
     linked = root / ".claude" / "worktrees" / "issue-259"
     add = ("worktree", "add", "-q", "--detach", str(linked))
     subprocess.run(["git", *add], cwd=root, check=True, capture_output=True)  # noqa: S603, S607
+    writable_roots = dispatch._codex_writable_roots()  # noqa: SLF001
+    assert writable_roots is not None
     argv = dispatch.build_argv(
         dispatch.LANES["codex"],
         dispatch.PROFILES["codex-sol-high"],
         permission_mode,
         linked,
+        writable_roots,
     )
     return argv, root, linked
 
@@ -984,8 +987,14 @@ def test_a_plain_checkout_names_no_git_directory_either(tmp_path: Path) -> None:
     # The layout is not the variable — `d-20260818-080724-50f2be` ran the same failure in a
     # standalone clone — so a plain checkout gets the same answer as a linked worktree.
     root = git_worktree(tmp_path, name="plain")
+    writable_roots = dispatch._codex_writable_roots()  # noqa: SLF001
+    assert writable_roots is not None
     argv = dispatch.build_argv(
-        dispatch.LANES["codex"], dispatch.PROFILES["codex-sol-high"], "acceptEdits", root
+        dispatch.LANES["codex"],
+        dispatch.PROFILES["codex-sol-high"],
+        "acceptEdits",
+        root,
+        writable_roots,
     )
     assert ".git" not in _writable_roots(argv)
 
@@ -1064,17 +1073,34 @@ def test_a_home_that_will_not_canonicalise_refuses_rather_than_granting_it_unres
 ) -> None:
     # The one failure left once nothing external is admitted, and the round-three review's
     # second finding: where a resolution fails, refuse — never fall back to the unresolved
-    # path, which is a grant nothing has canonicalised. Asked of `Path.resolve` directly
-    # because this box will not fail on demand; what is under test is the branch.
-    def refuse_to_resolve(_self: Path, _strict: bool = False) -> Path:  # noqa: FBT001, FBT002 — `Path.resolve`'s own signature
-        message = "too many levels of symbolic links"
-        raise OSError(message)
-
-    monkeypatch.setattr(Path, "resolve", refuse_to_resolve)
-    refusal = dispatch.writable_root_refusal(tmp_path)
+    # path, which is a grant nothing has canonicalised. The helper is replaced because
+    # making every `Path.resolve` fail would also break the planner's earlier worktree reads.
+    monkeypatch.setattr(dispatch, "_codex_writable_roots", lambda: None)
+    plan, _brief, refusal = plan_for(tmp_path, lane="codex", profile="codex-sol-high")
+    assert plan is None
     assert refusal is not None
     assert refusal.kind == "writable_root_refused"
     assert "reason=the granted cache roots would not canonicalise on this box" in refusal.found
+
+
+def test_a_plan_resolves_its_writable_roots_once(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    home = Path.home()
+    granted = (home / ".cache" / "uv", home / ".ansible" / "tmp")
+    # The second answer is the old argv builder's silent failure. It must remain unused:
+    # the planner passes the successful first resolution through to argv construction.
+    answers = [granted, None]
+    monkeypatch.setattr(dispatch, "_codex_writable_roots", lambda: answers.pop(0))
+
+    plan, _brief, refusal = plan_for(tmp_path, lane="codex", profile="codex-sol-high")
+
+    assert refusal is None
+    assert plan is not None
+    assert _writable_roots(plan.argv) == (
+        f'sandbox_workspace_write.writable_roots=["{granted[0]}", "{granted[1]}"]'
+    )
+    assert answers == [None]
 
 
 # ------------------------------------- the stale-predecessor rung is wired where it runs
