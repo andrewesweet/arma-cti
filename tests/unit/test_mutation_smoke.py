@@ -765,6 +765,28 @@ def test_a_price_is_a_number():
     assert isinstance(subject.toll(11, heavy=True), int)
 """
 
+IMPORT_CRASH_SUBJECT = """
+def validated(value):
+    if value != 1:
+        raise ValueError("invalid")
+
+
+VALIDATED = validated(1)
+"""
+
+IMPORT_CRASH_TESTS = """
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+import subject
+
+
+def test_one_is_valid():
+    assert subject.validated(1) is None
+"""
+
 
 def _throwaway(root: Path, tests: str) -> str:
     (root / "src").mkdir()
@@ -805,6 +827,26 @@ def test_a_module_that_only_asserts_shapes_is_red(tmp_path: Path) -> None:
     assert verdict.subject == "src/subject.py"
     assert not verdict.ok
     assert verdict.survivors
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_a_mutant_that_breaks_import_after_a_green_preflight_is_killed(tmp_path: Path) -> None:
+    name = _throwaway(tmp_path, IMPORT_CRASH_TESTS)
+    (tmp_path / "src" / "subject.py").write_text(
+        textwrap.dedent(IMPORT_CRASH_SUBJECT).lstrip(),
+        encoding="utf-8",
+    )
+    verdict = smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0, rows={})
+    assert verdict.planted > 0
+    assert verdict.killed == verdict.run == verdict.planted
+    assert verdict.ok
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_a_module_that_is_not_green_still_refuses_before_mutation(tmp_path: Path) -> None:
+    name = _throwaway(tmp_path, "def test_red():\n    assert False\n")
+    with pytest.raises(smoke_tool.Refusal, match="is not green on its own"):
+        smoke_tool.smoke(tmp_path, name, cap=8, budget=120.0, rows={})
 
 
 # --- the ratchet, end to end (#244) -----------------------------------------
