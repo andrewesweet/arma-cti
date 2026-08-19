@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Mutation smoke now scores a mutant-caused import failure as a kill (#338).** After the
+  unmutated test module passes its existing preflight, a pytest collection diagnostic from a
+  planted mutant is scored as an ordinary test failure. Invalid test node ids remain usage
+  errors and still refuse the gate; a module red before mutation still refuses unchanged.
+
 - **A worktree status command that fails no longer reads as a clean tree (#375).**
   `tools/worktree.py`'s `gather` read `git status --porcelain` with `check=False`, so a status
   that failed printed nothing, and nothing parsed as a clean `Preflight` — `just worktree check`

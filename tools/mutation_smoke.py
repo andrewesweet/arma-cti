@@ -1052,8 +1052,14 @@ def grafted(root: Path, path: str, text: str):  # noqa: ANN201 — a context man
                 signal.signal(number, handler)
 
 
-def _pytest(root: Path, argv: list[str], *, timeout: float) -> int | None:
-    """Run pytest in `root` and return its exit code, or None if it did not finish."""
+def _pytest(
+    root: Path,
+    argv: list[str],
+    *,
+    timeout: float,
+    mutant: bool = False,
+) -> int | None:
+    """Run pytest, scoring a mutant-caused collection error as a test failure."""
     try:
         done = subprocess.run(  # noqa: S603 — argv is built here from paths and constants
             [sys.executable, "-m", "pytest", *argv],
@@ -1065,6 +1071,12 @@ def _pytest(root: Path, argv: list[str], *, timeout: float) -> int | None:
         )
     except subprocess.TimeoutExpired:
         return None
+    if (
+        mutant
+        and done.returncode not in (PYTEST_PASSED, PYTEST_FAILED)
+        and "ERROR collecting " in f"{done.stdout}\n{done.stderr}"
+    ):
+        return PYTEST_FAILED
     return done.returncode
 
 
@@ -1258,8 +1270,19 @@ def _python_smoke(  # noqa: PLR0913 — every bound this gate applies is a calle
         with grafted(root, subject, text):
             return _pytest(
                 root,
-                ["-n0", "-q", "-x", "-p", "no:cacheprovider", "--no-header", *tests],
+                [
+                    "-n0",
+                    "-q",
+                    "-x",
+                    "-p",
+                    "no:cacheprovider",
+                    "--no-header",
+                    *tests,
+                ],
                 timeout=reach.timeout(tests),
+                # `measure` proved the unmutated module green. A collection error now is
+                # mutant-caused and therefore a kill; bad node ids remain usage errors.
+                mutant=True,
             )
 
     tally = _tally(chosen, reach, covered, time.monotonic() + budget, run_one)
