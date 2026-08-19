@@ -20,6 +20,21 @@ whose subject could carry a claim — which mention no ADR above 0071. **Stated 
 exhaustive open-issue scan CLAUDE.md prescribes could not be run from this session, because
 `gh search issues` was permission-blocked; the rebase backstop is what covers the gap, and a
 collision found there is renumbered on the rebase as prescribed
+Amended: 2026-08-18, same day as the decision above, on the human's instruction carried by
+#416's body — which names the degradation, its visibility in the landing's own key, and
+exhaustion as its only trigger. One amendment, marked inline at the passages it changes —
+**A1** (#416, human instruction 2026-08-18) answers the arrangement this record's rule had
+no answer for: a branch whose potential-author set covers every lane the registry carries,
+where the admissible reviewer-lane set is empty and no dispatch can ever satisfy the
+predicate, so the landing refuses forever — #405 sat exactly there. The requirement degrades
+there to ADR-0071 ruling 4's different-profile rule, recorded as `gate_review=lane_exhausted`;
+exhaustion is the only trigger, derived at landing time from the registry and the records
+and never declared by a caller. A1 reverses no decision this record states and adds the one
+degradation it names: every case with a cross-lane reviewer available refuses
+`review_same_lane` exactly as first written. Its wording is the implementer's rendering of
+the instruction, posted to #416 before anything landed and amendable by the human there; the
+`Reviewed-by-human:` line above covers the base record, and A1 rides the instruction that
+issue's body records
 
 ## How this landed, because it landed in two pieces
 
@@ -94,9 +109,16 @@ provenance bar exists to enable; the rung punished the goal rather than a breach
 
 ***The requirement degrades rather than refusing forever.** Where every lane the registry
 carries is a lane the issue's records place on the work, the cross-lane predicate falls back
-to ruling 4's own rule — a verdict from a **different profile** than any author, which is
-never empty while more than one profile exists — and the rung has already enforced that rule
-by the time it reaches the lane question, so the fallback holds by construction. The landing
+to ruling 4's own rule — a verdict from a **different profile** than any author — and the
+rung has already enforced that rule by the time it reaches the lane question, so the
+fallback holds by construction. That fallback has a bound of its own, and it is not "more
+than one profile exists": the different-profile set is the registered profiles minus the
+authors, and it is empty where the records place **every registered profile** on the work.
+There the degradation clears nothing — the rung above refuses first, with its own named
+refusal `review_same_profile`, and the landing never reaches the lane question — so the
+branch is unlandable by ruling 4's own rule rather than by this record's predicate. That is
+the older refusal standing, not a hole this amendment leaves: exhaustion at the lane level
+lifts ruling 4 nothing. The landing
 records the degradation in its own key rather than by omission: `gate_review=lane_exhausted`,
 printed beside the reviewer lane and the author lanes, so a reader sees that the stronger
 check could not run and what ran instead. A rung that silently downgrades is worse than one

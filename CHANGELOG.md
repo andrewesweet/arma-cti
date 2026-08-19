@@ -168,6 +168,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dispatched session under #294), and `tools/ledger.py` still books the `retro` seat as
   landing nothing, which under-reports by one commit per cycle (#404).
 
+### Fixed
+
+- **Every surface that states the cross-lane gate rule now states its exhaustion case too
+  (#416, ADR-0073 Amendment A1).** `AGENTS.md`, the class-6 remedy in
+  `config/dispatch-routing-policy.json` and ADR-0071's row 6 each still said a gate landing
+  needs a different-lane verdict in absolute terms, which the `lane_exhausted` degradation
+  had already qualified — an agent reading any of them was told something the code no
+  longer does. Each now states the rule first and the degradation second, so the ordering
+  is read rather than implied: the refusal stands unchanged wherever a cross-lane reviewer
+  exists. ADR-0073's A1 gains the `Amended:` header entry the A1/A2 precedent prescribes
+  beside its inline marking, its fallback's false "never empty while more than one profile
+  exists" is replaced with the true bound — empty where the records place every registered
+  profile on the work, and there the rung above refuses `review_same_profile` before the
+  lane question is reached — and `tools/land_review.py`'s decision helper is named for what
+  it returns rather than for the refusal it used to be.
+
 ### Added
 
 - **`just review-loop author` — the authorship record for interactive work, and the route out

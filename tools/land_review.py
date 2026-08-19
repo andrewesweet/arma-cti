@@ -80,8 +80,11 @@ lane exists — the refusal would be permanent, and #405 sat in exactly that sta
 green at the gate and unlandable, because the project had deliberately spread its
 work across all three lanes. The requirement then falls back to ruling 4's own
 different-profile rule — already enforced one rung up, so the fallback holds by
-construction — and the landing records it as `gate_review=lane_exhausted` beside
-the reviewer lane and the author lanes, in its own key rather than by omission.
+construction wherever a reviewer profile outside the authors exists. Where the records
+place every registered profile on the work even that set is empty, and the rung above
+refuses `review_same_profile` before this one runs — exhaustion at the lane level lifts
+ruling 4 nothing. The landing records the degradation as `gate_review=lane_exhausted`
+beside the reviewer lane and the author lanes, in its own key rather than by omission.
 Exhaustion is the only trigger, derived from the registry and the records at
 landing time and never declared by a caller; every case with a cross-lane reviewer
 available refuses exactly as before.
@@ -341,12 +344,12 @@ def _undetermined_gate_refusal() -> Refusal:
     )
 
 
-def _cross_lane_refusal(
+def _gate_review_decision(
     gate_paths: tuple[str, ...],
     binding: review_exchange.Bound,
     authorship: dispatch.Authorship,
 ) -> Refusal | tuple[str, ...]:
-    """Refuse a gate landing reviewed from the author's own lane; else the line it clears with.
+    """Decide a gate landing's lane rule: the refusal that fires, or the lines it clears with.
 
     ADR-0073, on the human's instruction of 2026-08-18. Routing class 6's keep-on-Claude bar
     selected on provenance and exempted the lane that authors nearly every gate change, so
@@ -362,8 +365,11 @@ def _cross_lane_refusal(
     green at the gate and unlandable by construction, because the project had deliberately
     spread its work across all three lanes. The requirement then falls back to ruling 4's own
     rule, a verdict from a **different profile** than any author, which the rung above has
-    already enforced by the time this one runs — so the fallback clears rather than refuses,
-    and the clearance says what happened in its own key (`gate_review=lane_exhausted`) rather
+    already enforced by the time this one runs — so the fallback clears rather than refuses
+    wherever a profile outside the authors exists. Where the records place every registered
+    profile on the work that set is empty too, and the rung above has refused
+    `review_same_profile` before this one ran — the degradation bounds the lane rule, never
+    ruling 4. The clearance says what happened in its own key (`gate_review=lane_exhausted`) rather
     than by omission, beside the reviewer lane and the author lanes. A rung that silently
     downgrades is worse than one that refuses; a rung that refuses forever is worse than both.
     Exhaustion is the only trigger, it is computed here from the registry and the records at
@@ -790,12 +796,12 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
     # Below the three authorship refusals on purpose: this predicate reads the same author
     # set they guard, so asking it above them would compare a reviewer against a set the
     # rung has not yet established it may trust (ADR-0073).
-    cross_lane: tuple[str, ...] = ()
+    gate_review: tuple[str, ...] = ()
     if gate_paths:
-        crossed = _cross_lane_refusal(gate_paths, binding, authorship)
-        if isinstance(crossed, Refusal):
-            return Outcome(crossed, ())
-        cross_lane = crossed
+        decision = _gate_review_decision(gate_paths, binding, authorship)
+        if isinstance(decision, Refusal):
+            return Outcome(decision, ())
+        gate_review = decision
     above = tuple(
         finding for finding in verdict.findings if review_loop.above_low(finding.severity)
     )
@@ -824,7 +830,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
             None,
             (
                 *_authorship_lines(authorship, declared),
-                *cross_lane,
+                *gate_review,
                 (
                     f"review_dispatch={binding.dispatch_id} profile={binding.profile}"
                     f" lane={binding.lane}"
@@ -950,7 +956,7 @@ def review_finding(  # noqa: C901, PLR0911, PLR0912, PLR0913, PLR0917 — the la
         None,
         (
             *_authorship_lines(authorship, declared),
-            *cross_lane,
+            *gate_review,
             *authorised,
             f"review_dispatch={binding.dispatch_id} profile={binding.profile} lane={binding.lane}",
             f"verdict_sha={sha}",
