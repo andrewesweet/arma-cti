@@ -50,12 +50,14 @@ Six things, and the dispatch record carries four of them by construction:
   only check the code against itself;
 - **the implementer's pasted gate output** — the gate record the 2026-08-14 ruling puts in
   the review's hands in place of a gate run (#353). The paste must carry `just check`,
-  `just unit` **and** `just mutation`, and any quoted kill rate must state whether it was
-  **sampled** — the twenty-mutant sample `just mutation` plants — or **exhaustive** over
-  every candidate: #344's round-2 review found an exhaustive 91% hiding behind a reported
-  `rate=100%`, because the sample missed both survivors on the line the round had just
-  added. A paste that is absent, thinner than that, or silent on sampled-or-exhaustive is a
-  finding — the reviewer reports it as an observation rather than running anything;
+  `just unit` **and** `just mutation` **with their result counts**, and it must state —
+  unconditionally, not only where a kill rate is quoted (#421) — whether the mutation run
+  was **sampled** — the twenty-mutant sample `just mutation` plants — or **exhaustive**
+  over every candidate: #344's round-2 review found an exhaustive 91% hiding behind a
+  reported `rate=100%`, because the sample missed both survivors on the line the round had
+  just added. A paste that is absent, thinner than that, silent on counts, or silent on
+  sampled-or-exhaustive is a finding — the reviewer reports it as an observation rather
+  than running anything;
 - **a worktree at `origin/main`** — `just worktree add issue-<n>`. The reviewed SHA is reached
   with `git show`, and the tree's own head is recorded, because a citation into a landing that
   a later commit has moved is stale rather than wrong and the two must be distinguishable.
@@ -412,10 +414,11 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     run `just fast` or any rung of it, do not run `just mutation` — judgement-only
     by construction (human ruling 2026-08-14, #353). The implementer's pasted gate
     output on the issue thread is your gate record: it must carry `just check`,
-    `just unit` and `just mutation`, and any quoted kill rate must say whether it
-    was sampled or exhaustive. A paste absent, thinner than that, or silent on
-    sampled-or-exhaustive is a finding — report it as an observation rather than
-    running anything.
+    `just unit` and `just mutation` with their result counts, and it must say —
+    unconditionally, not only where a kill rate is quoted (#421) — whether the
+    mutation run was sampled or exhaustive. A paste absent, thinner than that,
+    silent on counts, or silent on sampled-or-exhaustive is a finding — report it
+    as an observation rather than running anything.
 
     Read, in this order: CLAUDE.md in your worktree; `gh issue view <N>` including
     every comment, and its close audit in particular; `git show <SHA>`; then the

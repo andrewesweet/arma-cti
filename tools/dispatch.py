@@ -2951,14 +2951,18 @@ def default_brief(identity: Identity, worktree: Path) -> str:
     The one line that varies is the gate line, because a seat that forces a read-only
     mode (`review`, `recon` — the `permission_mode` column) cannot act on "run `just
     fast` after every edit", and a brief asking for what the seat is forbidden to do is
-    the ritual #353's ruling of 2026-08-14 stopped: such a seat runs no gate at all.
+    the ritual #353's ruling of 2026-08-14 stopped: such a seat runs no gate and no
+    tests. The prohibition is stated that narrowly on purpose (#421 finding 4): "rather
+    than executing anything" read as forbidding read-only inspection too, which would
+    make `recon` — a seat whose whole job is reading — impossible.
     """
     runs_gate = SEATS[identity.seat].permission_mode != "plan"
     gate_line = (
         "Run `just fast` after every edit."
         if runs_gate
-        else "Run no gate — judgement-only by construction (human ruling 2026-08-14, #353);"
-        " read what the issue thread carries rather than executing anything."
+        else "Run no gate and no tests — judgement-only by construction (human ruling"
+        " 2026-08-14, #353); read what the issue thread and the repository carry. Reading"
+        " is this seat's work, not a breach of that (#421)."
     )
     return (
         f"You are the {identity.seat} seat, dispatched as {identity.dispatch_id} on the "

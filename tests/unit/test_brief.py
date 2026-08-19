@@ -1093,13 +1093,16 @@ def test_the_composer_takes_the_subject_from_the_command_line() -> None:
     )
 
 
-# -------------------------------------- the review seat runs no gate (#353, 2026-08-14)
+# ------------------------- the forced-read-only seats run no gate (#353, 2026-08-14; #421)
 
 # The human ruled on 2026-08-14 — reversing the 2026-08-13 ruling in #353's body — that a
 # review is judgement-only by construction: it reads the implementer's pasted gate output and
 # never executes, "reviewer must not trigger tests themselves". Until then every review brief
 # asked for a gate run and every review spent its effort explaining why it could not; these
-# assert the ask is gone from the three sections that carried it.
+# assert the ask is gone from the three sections that carried it. #421 widens the arm to the
+# predicate both briefs branch on — the forced `permission_mode` — so `recon`, the other seat
+# #407 forced read-only, is covered by the same sections rather than handed the implementer's
+# asks.
 
 
 def review_composed(**over: object) -> str:
@@ -1111,10 +1114,13 @@ def test_a_review_briefing_asks_for_no_gate_run_and_names_the_paste_it_reads() -
     rendered = review_composed()
     assert "## Gate: none — this seat runs none" in rendered
     assert brief.REVIEW_GATE_RULE in rendered
-    # The paste the ruling requires: three rungs and the sampled-or-exhaustive statement.
+    # The paste the ruling requires: three rungs with their result counts, and the
+    # sampled-or-exhaustive statement owed unconditionally (#421 finding 2).
     assert "`just check`" in rendered
     assert "`just unit`" in rendered
     assert "`just mutation`" in rendered
+    assert "with their result counts" in rendered
+    assert "unconditionally, not only where a kill rate is quoted" in rendered
     assert "sampled" in rendered
     assert "exhaustive" in rendered
     # The derived gate line an implementer would get is not handed to a seat that cannot run it.
@@ -1136,13 +1142,68 @@ def test_a_review_briefing_with_no_open_flakes_claims_no_red_of_its_own() -> Non
 
 def test_a_review_briefing_is_told_to_land_nothing() -> None:
     rendered = review_composed()
-    assert "## Landing: none — a review lands nothing" in rendered
+    assert "## Landing: none — this seat lands nothing" in rendered
     assert brief.REVIEW_LANDING_RULE in rendered
     assert "Land via `just land`" not in rendered
 
 
-def test_every_seat_that_reviews_gets_the_review_sections_and_no_other_does() -> None:
-    """The three sections follow the registry's `reviews` column, as the subject rule does."""
+def test_a_review_briefing_commands_no_worktree_management() -> None:
+    """#421 finding 3: `add` and `done` both write, and dispatch verified the tree already.
+
+    The commanded form carries the issue suffix (`…add issue-251`); the bare name inside
+    the prohibition is a mention, and naming what is forbidden is the point of the line.
+    """
+    rendered = review_composed()
+    assert "`just worktree add issue-" not in rendered
+    assert "`just worktree done issue-" not in rendered
+    assert "run no worktree command" in rendered
+    # The assignment itself is still named — the section states where, not what to run.
+    assert "issue-251" in rendered
+
+
+def test_a_recon_briefing_receives_no_gate_commit_or_landing_instruction() -> None:
+    """#421 criterion 1: the other seat #407 forced read-only, covered by the same arm."""
+    rendered = composed(seat=brief.derive_seat("recon"))
+    assert "## Gate: none — this seat runs none" in rendered
+    assert brief.READONLY_GATE_RULE in rendered
+    # The paste contract is the reviewer's alone: recon judges no implementer's work.
+    assert brief.REVIEW_GATE_RULE not in rendered
+    assert "Land via `just land`" not in rendered
+    assert "Conventional Commits" not in rendered
+    assert "`refs #251`" not in rendered
+    assert "`just worktree add issue-" not in rendered
+    assert "`just worktree done issue-" not in rendered
+
+
+def test_a_recon_briefing_with_open_flakes_is_told_to_re_run_nothing() -> None:
+    flake = brief.Flake(issue=130, test="test_linger_refuses", module="tests/unit/test_recall.py")
+    rendered = composed(seat=brief.derive_seat("recon"), flakes=(flake,))
+    assert brief.READONLY_FLAKE_RESPONSE in rendered
+    assert brief.FLAKE_RESPONSE not in rendered
+
+
+def test_the_composed_gate_and_landing_arms_follow_the_forced_permission_mode() -> None:
+    """#421 criterion 1: one predicate, both brief paths.
+
+    The composed brief branched these three sections on `seat.reviews` while the default
+    brief branched its gate line on the registry's forced `permission_mode` — two tests
+    pinning two different predicates over the same question, both green. The arm now
+    follows the mode, the same derivation #339 landed for surface computation, so this
+    and the default brief's loop below assert the same rule.
+    """
+    for name, seat in dispatch.SEATS.items():
+        rendered = composed(seat=brief.derive_seat(name))
+        judgement_only = seat.permission_mode == "plan"
+        assert ("## Gate: none — this seat runs none" in rendered) is judgement_only, name
+        assert ("## Landing: none" in rendered) is judgement_only, name
+        # The implementer's asks reach only a seat that may act on them.
+        assert ("`just fast`" in rendered) is not judgement_only, name
+        assert ("Land via `just land`" in rendered) is not judgement_only, name
+        assert ("commit early" in rendered) is not judgement_only, name
+
+
+def test_the_paste_contract_follows_the_reviews_column_within_that_arm() -> None:
+    """The reviewer's paste contract varies inside the read-only arm, never the arm itself."""
     for name, seat in dispatch.SEATS.items():
         rendered = composed(seat=brief.derive_seat(name))
         assert (brief.REVIEW_GATE_RULE in rendered) is seat.reviews, name
@@ -1154,7 +1215,9 @@ def test_an_implementer_briefing_is_asked_for_the_paste_the_review_reads() -> No
     rendered = composed()
     assert "quoting the gate's output" in rendered
     assert "`just check`, `just unit`, `just mutation`" in rendered
+    assert "each with its result counts" in rendered
     assert "sampled or exhaustive" in rendered
+    assert "unconditionally" in rendered
 
 
 @pytest.mark.parametrize("seat", ["implementer", "planner", "recon", "retro"])
@@ -1350,7 +1413,10 @@ def test_the_default_brief_asks_no_seat_that_cannot_run_a_gate_to_run_one() -> N
     "Run `just fast` after every edit" reached review and recon dispatches unchanged — the
     one gate ask that survived in the default brief after the composed brief stopped asking.
     The line now follows the registry's `permission_mode` column, so a seat that forces
-    `plan` is told to run nothing, and no seat is told what it is forbidden to do.
+    `plan` is told to run nothing, and no seat is told what it is forbidden to do. #421
+    criterion 2: the composed brief's loop above asserts this same predicate, so the two
+    tests that once pinned `reviews` and `permission_mode` against each other now assert
+    one rule.
     """
     for seat_name, seat in dispatch.SEATS.items():
         identity = dispatch.Identity(
@@ -1364,6 +1430,27 @@ def test_the_default_brief_asks_no_seat_that_cannot_run_a_gate_to_run_one() -> N
         rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-353")
         asks = "Run `just fast` after every edit." in rendered
         assert asks == (seat.permission_mode != "plan"), seat_name
+
+
+def test_the_default_briefs_prohibition_names_gates_and_tests_not_all_execution() -> None:
+    """#421 finding 4: "rather than executing anything" read as forbidding reading itself.
+
+    Taken literally it forbade read-only inspection and made `recon` — a seat whose whole
+    job is reading — impossible. The line states the prohibition it means: no gate, no
+    tests, and reading named as the work rather than carved out of it.
+    """
+    identity = dispatch.Identity(
+        dispatch_id="d-test",
+        lane="claude-native",
+        profile="haiku-medium",
+        seat="recon",
+        issue=421,
+        base_sha="deadbee",
+    )
+    rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-421")
+    assert "Run no gate and no tests" in rendered
+    assert "executing anything" not in rendered
+    assert "Reading is this seat's work" in rendered
 
 
 # ------------------------------------------------------------------- the CLI's refusals

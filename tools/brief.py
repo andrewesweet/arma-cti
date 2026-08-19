@@ -525,6 +525,21 @@ class Seat(NamedTuple):
         registered = dispatch.SEATS.get(self.name)
         return registered is not None and registered.reviews
 
+    # The predicate both briefs branch on (#421). The composed brief branched its three
+    # sections on `reviews` while the default brief branched its gate line on the forced
+    # `permission_mode`, so a fix landed on one arm and missed the other twice in a row
+    # (#360's qualified flake wording reached only the branch that touched it). The
+    # registry column is the containment `routed` forces (#322, #407) and the same
+    # derivation #339 landed for surface computation: a seat that forces `plan` writes
+    # nothing, so it is told to run no gate, commit or landing — `review` because it
+    # judges, `recon` because it reads. What still follows `reviews` is the content
+    # *within* that arm: only a reviewer is handed the paste contract.
+    @property
+    def judgement_only(self) -> bool:
+        """Whether the registry forces this seat read-only (`permission_mode == "plan"`)."""
+        registered = dispatch.SEATS.get(self.name)
+        return registered is not None and registered.permission_mode == "plan"
+
 
 def derive_seat(override: str, reviewing: str = "") -> Seat:
     """Name the seat and quote the mapping's reason, or ask for the orchestrator's.
@@ -736,14 +751,22 @@ FLAKE_NONE: Final = (
 # exhaustive distinction (#344: an exhaustive 91% hid behind a reported 100%, because
 # `just mutation` plants at most twenty of a module's candidates) is a thing the *implementer*
 # states in the paste, not a thing the reviewer measures.
+#
+# #421 finding 2 tightens what the paste owes: the counts were never required, and the
+# sampled-or-exhaustive classification was owed only "where a kill rate is quoted" — so the
+# brief that carried #353's own review demonstrated the gap, arriving with no current-SHA
+# mutation output and no sampled-versus-exhaustive statement. A reviewer told the gate is
+# not theirs and given no numbers has been disarmed rather than redirected: the counts and
+# the classification are required unconditionally.
 REVIEW_GATE_RULE: Final = (
     "This seat runs no gate and triggers no test — judgement-only by construction (human"
     " ruling 2026-08-14, #353). The implementer's pasted gate output on the issue thread is"
-    " your gate record: it must carry `just check`, `just unit` and `just mutation`, and any"
-    " quoted kill rate must say whether it was sampled (the twenty-mutant sample the recipe"
-    " plants) or exhaustive over every candidate (#344). A paste that is absent, thinner than"
-    " that, or silent on sampled-or-exhaustive is a finding — report it as an observation"
-    " rather than running anything."
+    " your gate record: it must carry `just check`, `just unit` and `just mutation` with"
+    " their result counts, and it must say whether the mutation run was sampled (the"
+    " twenty-mutant sample the recipe plants) or exhaustive over every candidate (#344) —"
+    " unconditionally, not only where a kill rate is quoted. A paste that is absent, thinner"
+    " than that, silent on counts, or silent on sampled-or-exhaustive is a finding — report"
+    " it as an observation rather than running anything (#421)."
 )
 REVIEW_FLAKE_RESPONSE: Final = (
     "You re-run none of these: a flake named in the implementer's paste is context for"
@@ -753,6 +776,24 @@ REVIEW_LANDING_RULE: Final = (
     "A review lands nothing. Do not commit, do not push, do not run `just land`, do not"
     " file an issue or a comment; your entire output is your final message (ADR-0071"
     " ruling 4; `docs/review-dispatch.md`)."
+)
+# The same three sections for a forced-read-only seat that is not the reviewer (#421
+# criterion 1). `recon` is that seat today: the same containment #407 forced on it, a
+# different job — it reads the repository and the thread rather than judging an
+# implementer's paste, so it gets the prohibitions without the paste contract.
+READONLY_GATE_RULE: Final = (
+    "This seat runs no gate and triggers no test — read-only by construction (ADR-0071"
+    " ruling 2; the forced `permission_mode` column, #407). Read the repository and the"
+    " issue thread; report what you find, never an edit."
+)
+READONLY_FLAKE_RESPONSE: Final = (
+    "You re-run none of these: a read-only seat triggers no test (human ruling"
+    " 2026-08-14, #353). They are context for what you read."
+)
+READONLY_LANDING_RULE: Final = (
+    "A read-only seat lands nothing. Do not commit, do not push, do not run `just land`,"
+    " do not file an issue or a comment; your entire output is your final message"
+    " (ADR-0071 ruling 2)."
 )
 PASTE_RULE: Final = (
     "Quote `just verdict`'s rendered body verbatim; never retype the SHA or the evidence"
@@ -899,9 +940,105 @@ def _escalation_lines(outcome: escalation.Evaluation) -> list[str]:
     raise escalation.EscalationError(escalation.unknown_kind_error(outcome.kind))
 
 
+def _worktree_lines(issue: int, seat: Seat, tree: Tree) -> list[str]:
+    """Render the worktree section: the assignment, and whose the two commands are.
+
+    A forced-read-only seat cannot run either call — `just worktree add` writes a tree,
+    `just worktree done` verifies and removes one — so commanding them contradicts the
+    same brief's "no checkout, no mutation". Dispatch already requires the worktree to
+    exist before launch (`assert_worktree`), so for these seats the section names the
+    assignment and says the commands are not theirs (#421 finding 3).
+    """
+    work_only = "Work only there. Files you did not write mean stop and report, never reset (#105)."
+    if seat.judgement_only:
+        return [
+            "",
+            "## Worktree",
+            (
+                f"`{tree.path}`, base `{tree.base or 'unresolved'}` ({tree.source})."
+                " Dispatch verified this tree before launch — run no worktree command:"
+                " no `just worktree add`, no `just worktree done` (#421)."
+            ),
+            work_only,
+        ]
+    return [
+        "",
+        "## Worktree",
+        (
+            f"`just worktree add issue-{issue}` → `{tree.path}`,"
+            f" base `{tree.base or 'printed by that call'}` ({tree.source})."
+        ),
+        work_only,
+        f"Finish with `just worktree done issue-{issue}`.",
+    ]
+
+
+def _protocol_lines(briefing: Briefing) -> list[str]:
+    """Render the gate, flake and landing sections for whichever arm the seat is in.
+
+    The three sections are the implementer's until the registry forces the seat read-only:
+    a forced-`plan` seat runs no gate, retries no flake and lands nothing — the review by
+    the human ruling of 2026-08-14 (#353), every other such seat (`recon`, #407) by the
+    same construction — so the gate ask, the re-run instruction and the landing protocol
+    would each demand something the seat is forbidden to do. The arm follows the forced
+    permission mode, the same column the default brief branches on and #339 derived
+    surfaces from, because `reviews` reached only the reviewer and left `recon` carrying
+    the implementer's asks (#421): one predicate, both paths. The derived gate is still
+    composed — these seats meet the same headings and never a silence — and within the arm
+    the paste contract is the reviewer's alone, because `recon` judges no implementer's
+    work.
+    """
+    issue, seat, gate, flakes = briefing.issue, briefing.seat, briefing.gate, briefing.flakes
+    if seat.judgement_only:
+        lines = [
+            "",
+            "## Gate: none — this seat runs none",
+            REVIEW_GATE_RULE if seat.reviews else READONLY_GATE_RULE,
+            "",
+            f"## Open flakes ({len(flakes)}, read live at composition)",
+        ]
+        if flakes:
+            lines += [flake.line() for flake in flakes]
+            lines.append(REVIEW_FLAKE_RESPONSE if seat.reviews else READONLY_FLAKE_RESPONSE)
+        else:
+            lines.append("None open.")
+        return [
+            *lines,
+            "",
+            "## Landing: none — this seat lands nothing",
+            REVIEW_LANDING_RULE if seat.reviews else READONLY_LANDING_RULE,
+        ]
+    lines = [
+        "",
+        f"## Gate: {gate.line}",
+        *gate.because,
+        "",
+        f"## Open flakes ({len(flakes)}, read live at composition)",
+    ]
+    if flakes:
+        lines += [flake.line() for flake in flakes]
+        lines.append(FLAKE_RESPONSE)
+    else:
+        lines.append(FLAKE_NONE)
+    return [
+        *lines,
+        "",
+        "## Landing",
+        f"Conventional Commits, `refs #{issue}`, commit early.",
+        "Land via `just land` and paste its output verbatim — never retype it.",
+        ADJUDICATION_RULE,
+        (
+            f"Close #{issue} with a criterion-by-criterion audit quoting the gate's output"
+            " — `just check`, `just unit`, `just mutation`, each with its result counts —"
+            " and stating whether the mutation run was sampled or exhaustive (#344, #421:"
+            " both unconditionally, never only where a kill rate is quoted)."
+        ),
+    ]
+
+
 def compose(briefing: Briefing) -> str:
     """Render the invariant half, with the variable half left as visible placeholders."""
-    issue, seat, tree, gate = briefing.issue, briefing.seat, briefing.tree, briefing.gate
+    issue, seat, gate = briefing.issue, briefing.seat, briefing.gate
     lines = [
         f"# Dispatch brief — #{issue}: {briefing.title}",
     ]
@@ -945,64 +1082,8 @@ def compose(briefing: Briefing) -> str:
             ", ".join(f"`{path}`" for path in briefing.reserved),
             RESERVED_RULE,
         ]
-    lines += [
-        "",
-        "## Worktree",
-        (
-            f"`just worktree add issue-{issue}` → `{tree.path}`,"
-            f" base `{tree.base or 'printed by that call'}` ({tree.source})."
-        ),
-        "Work only there. Files you did not write mean stop and report, never reset (#105).",
-        f"Finish with `just worktree done issue-{issue}`.",
-    ]
-    # The three sections below are the implementer's until the seat reviews: a reviewing seat
-    # runs no gate, retries no flake and lands nothing (human ruling 2026-08-14, #353), so the
-    # gate ask, the re-run instruction and the landing protocol would each demand something
-    # the seat is forbidden to do. The derived gate is still composed — a reviewing seat meets
-    # the same headings and never a silence — it just carries the read-the-paste rule instead.
-    if seat.reviews:
-        lines += [
-            "",
-            "## Gate: none — this seat runs none",
-            REVIEW_GATE_RULE,
-            "",
-            f"## Open flakes ({len(briefing.flakes)}, read live at composition)",
-        ]
-        if briefing.flakes:
-            lines += [flake.line() for flake in briefing.flakes]
-            lines.append(REVIEW_FLAKE_RESPONSE)
-        else:
-            lines.append("None open.")
-        lines += [
-            "",
-            "## Landing: none — a review lands nothing",
-            REVIEW_LANDING_RULE,
-        ]
-    else:
-        lines += [
-            "",
-            f"## Gate: {gate.line}",
-            *gate.because,
-            "",
-            f"## Open flakes ({len(briefing.flakes)}, read live at composition)",
-        ]
-        if briefing.flakes:
-            lines += [flake.line() for flake in briefing.flakes]
-            lines.append(FLAKE_RESPONSE)
-        else:
-            lines.append(FLAKE_NONE)
-        lines += [
-            "",
-            "## Landing",
-            f"Conventional Commits, `refs #{issue}`, commit early.",
-            "Land via `just land` and paste its output verbatim — never retype it.",
-            ADJUDICATION_RULE,
-            (
-                f"Close #{issue} with a criterion-by-criterion audit quoting the gate's output"
-                " — `just check`, `just unit`, `just mutation` — and stating whether any quoted"
-                " kill rate was sampled or exhaustive (#344)."
-            ),
-        ]
+    lines += _worktree_lines(issue, seat, briefing.tree)
+    lines += _protocol_lines(briefing)
     if gate.reads_a_verdict:
         lines += ["", "## Paste rule", PASTE_RULE]
     findings = ",".join(found.kind for found in briefing.assessment.findings) or "none"
