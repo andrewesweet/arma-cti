@@ -93,6 +93,14 @@ flag, its only feeder being the flag itself, so nothing needed separating. It
 reverses no decision this document records and adds no rule beyond moving an
 existing rung's read from the caller into the walk. A8's human review is
 pending, tracked on ADR-0075.
+Amended: 2026-08-19, on the human's ruling of 2026-08-16 recorded on #390.
+One amendment, marked inline at the passage it changes — **A9** (#390) replaces
+ruling 2's hand-maintained enumeration of arbiter-rule copies with
+`just check-arbiter`: its subject set comes from `git ls-files`, and every
+non-authoritative statement must become a pointer or carry a reasoned marker.
+It reverses no decision about arbiter resolution; it changes how copies are
+kept from drifting and states the check's two limits beside the mechanism.
+<!-- arbiter-rule: stated — this header names A1's third paragraph ("the conflicted-head fall-through") to say what the amendment added; it states nothing about what the walk does. #390 -->
 Supersedes: ADR-0061 decisions 2, 3, 4 and 6 (2026-08-06)
 Supersedes: ADR-0061 decision 1's quality-floor clause (2026-08-06)
 Supersedes: ADR-0009's rule that a retro *applies* the process changes it finds — the retro remains where process change originates
@@ -274,6 +282,8 @@ entries here carries, and which the implementer's preference list does not carry
 either (review round 2, claim 6). Read the walk, not this table's prose, for the
 order (review round 1, claim 6; review round 2, claim 1's rule — checked at
 `tools/arbiter.py:120`, `1a5a7fb`).*
+<!-- arbiter-rule: stated — a dated amendment note whose subject is a claim about the code made at `1a5a7fb`, and whose own closing sentence sends the reader to the walk. Rewriting it to a pointer would delete the record of what A1's second pass got wrong. #390 -->
+
 
 *The registry carries these entries as of this commit:
 `tools/dispatch.py`'s `SEATS` gives `retro` and `orchestrator` the escalation
@@ -698,22 +708,25 @@ not run is not a check that passed). Against the shipped policy the rung
 excludes nobody, because since ADR-0073 no row refuses a landing — it runs
 anyway, and a refusing row is one table edit away from being honoured.)*
 
-***Copies of the arbiter rule are scattered, and this amendment reversed one.***
-*The in-repo ones known to this pass. Four — `docs/agents/review-severity.md`, `config/escalation-conditions.json`,
-`tools/escalation.py` and `tools/brief.py` — were swept to "the implementing
-seat's" in the same commit as this paragraph, and `tools/brief.py` now takes the
-arbiter from the briefed seat's entry rather than emitting the implementer's head
-for every seat. The fifth is `dispatch.escalation_head`'s own docstring
-(`tools/dispatch.py:648`), which round 1 of this issue's review wrote and which
-sat **outside this enumeration** for two rounds while it claimed the fall-through
-was unbuilt and cited this very passage — the passage the previous pass had
-rewritten to say the opposite. It is corrected in round 3 and counted here, which
-is the arbitration of 2026-08-15 on this thread; the arbitration's own finding is
-that a hand-derived enumeration passes its blindness to the sweep that reads it,
-and deriving the set instead of counting it is **#390's**. Until #390 lands that
-derivation, this list is what successive passes have recalled, and nothing here
-establishes it as the whole set. `tools/arbiter.py` is not on the list because it
-is the authoritative surface rather than a copy of it. Also off-tree:
+***The copies of the arbiter rule are no longer enumerated here. They are
+derived (Amendment A9).*** *This paragraph used to carry the list, and the list was wrong at
+every count anyone made on this thread: round 1 wrote a false statement about
+the code; round 2 corrected four surfaces and left a fifth standing, which then
+cited the corrected passage as its authority; the arbitration of 2026-08-15
+upheld that and ruled **the enumeration itself** the defect; round 3 asserted
+in this very paragraph that it had derived the set with two named greps, and a
+sixth site stood 140 lines above the fifth in the same file; and the compliance
+check on that remedy found a seventh. Five counts, five wrong — a method, not a
+run of bad luck. So **#390 replaces the list with `just check-arbiter`**
+(`tools/check_arbiter_copies.py`): it derives its subject set from `git
+ls-files`, with no directory list to be incomplete, and holds every surface but
+`tools/arbiter.py` either to a pointer or to an `arbiter-rule: stated
+— <reason>` marker that it enumerates. That is the human's ruling of
+2026-08-16 — design 2, on this arbitration's own reasoning that a copy that
+cannot drift beats a copy under surveillance. The number that belongs here is
+therefore no number: run the check. Its two limits are stated rather than
+implied — it does not judge whether a marked statement is **true**, and it reads
+tracked files only. So off-tree, and outside it:
 **#333's body**, which still carries the
 struck blanket in a second form ("a seat whose escalation column is empty
 arbitrates at the escalation tier") and an acceptance criterion demanding a rule
@@ -770,6 +783,8 @@ case where the escalation head sits outside the preference list — which is bot
 filled rows. Correcting the ruling's own claim is the human's; flagged rather
 than rewritten (review round 1, claim 5; the reachability half corrected against
 the landed walk on review round 2, where A1's second pass had it unreachable).*
+<!-- arbiter-rule: stated — a worked example: it spells one seat's walk out profile by profile to correct the ruling's own stated outcome, which a pointer cannot do. Its own text sends the reader to `tools/arbiter.py:120`. #390 -->
+
 
 *With every dispatchable row filled, the sentence covered only cells marked
 not-applicable, and keeping it would have put two rules that can disagree in one

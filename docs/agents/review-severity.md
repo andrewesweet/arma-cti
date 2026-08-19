@@ -87,19 +87,13 @@ finding that survives four readings is still Low: it changed what no rule meant.
   **Worked example.** A review finds that a helper will misbehave if a future
   caller passes a value no current caller passes. Real, worth fixing, and
   nothing in this diff can trigger it. Accepted and filed — not a fix round.
-- An **arbiter** — resolved from the **implementing** seat's escalation entry, head first,
-  one rule with one answer — rules once per finding, and that ruling binds. The seat meant
-  is whichever one did the work, not the `implementer` row for every seat (ADR-0071 ruling 4
-  as amended by A1, #361). The resolution is `tools/arbiter.py`, reached by
-  `just review-loop escalate`: it walks the entry head, then the entry tail, then the seat's
-  preference list, and excludes on four rungs in order — the registry (a profile it does not
-  carry), the routing policy over the branch under review's own paths (read by the escalation
-  itself since #391, never caller-supplied), the profiles the issue's own dispatch
-  records place on the work, and the profiles the dispatch ladder would refuse now
-  (selection, breaker, off-peak, credential) — recording each exclusion with its reason.
-  Until round 3 of #361 this listed the records rung alone. A seat whose entry is empty has no
-  arbiter and refuses by name — A1 struck the blanket `fable-high` fallback that used to
-  answer for it — and so does a walk that reaches its end with everything excluded.
+- An **arbiter** — one rule with one answer — rules once per finding, and that ruling binds.
+  It is resolved from the **implementing** seat, whichever one did the work, not the
+  `implementer` row for every seat (ADR-0071 ruling 4 as amended by A1, #361). The
+  resolution is `tools/arbiter.py`, reached by `just review-loop escalate`, and **what that
+  walk does is stated there and nowhere else, this document included** — the version of it
+  that stood here listed one exclusion rung where the code has four, until round 3 of #361
+  (#390).
 - The loop's stop condition is that nothing above **Low** remains unadjudicated. Low
   findings do not block; they are recorded.
 

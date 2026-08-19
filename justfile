@@ -16,7 +16,7 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-seats check-sqf check-secrets check-python check-machine-b check-rust
+check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-seats check-arbiter check-sqf check-secrets check-python check-machine-b check-rust
 
 # Static validation for the repository-managed Machine B playbooks. The live
 # inventory is deliberately absent here: syntax and lint must be available to
@@ -78,6 +78,15 @@ check-conflicts:
 # failure the definition file exists to prevent.
 check-seats:
     uv run python tools/check_seat_config.py
+
+# Only tools/arbiter.py states what the arbiter walk does; everywhere else is a
+# pointer, or carries `arbiter-rule: stated — <reason>` (#390, human ruling
+# 2026-08-16). The subject set is `git ls-files` and not a list of directories,
+# because the enumeration of these copies was wrong at all five counts anyone
+# made on #361 — and the sweep brief that hunted them was an incomplete
+# enumeration in its own right. `--report` prints the markers.
+check-arbiter *args:
+    uv run python tools/check_arbiter_copies.py {{ args }}
 
 # -p adds the pedantic lints; -e makes findings fatal (without it the gate is a no-op).
 # The second step is the scoping HEMTT's banned_commands lint cannot express:

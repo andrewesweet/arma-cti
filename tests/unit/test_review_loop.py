@@ -1130,6 +1130,8 @@ def test_the_command_surface_drives_one_loop_end_to_end(tmp_path: Path, exchange
     seat's entry head, `codex-sol-high`, held clean by the scratch state the test points
     the rungs at.
     """
+    # arbiter-rule: stated — names the profile this test asserts the walk answers (#390), over
+    # inputs the test itself writes; the assertion below is what holds it true (#390).
     root = tmp_path / "review"
     journal = tmp_path / "journal.jsonl"
     dispatch_dir = tmp_path / "dispatches"

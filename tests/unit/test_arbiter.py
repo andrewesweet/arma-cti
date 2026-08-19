@@ -10,6 +10,9 @@ read leaves, the records read `resolve_for_issue` drives (reviewers included, #3
 criterion), the live dispatchability rungs `resolve_dispatchable` walks, and the event
 that makes an invocation countable.
 """
+# arbiter-rule: stated — the authority's own test module (#390). Each claim above is the
+# subject of an assertion below, so it goes red rather than drifting; a pointer
+# here would name the module the file already imports and tests (#390).
 
 from __future__ import annotations
 

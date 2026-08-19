@@ -919,7 +919,9 @@ def just_check_tools(source: str | None = None) -> frozenset[str]:
     stay green, and class 6's remedy would silently omit a gate `just check` runs.
     """
     text = JUSTFILE.read_text(encoding="utf-8") if source is None else source
-    recipe = re.compile(r"^([a-z0-9-]+):([^\n]*)\n((?:[ \t][^\n]*\n|\n)*)", re.MULTILINE)
+    recipe = re.compile(
+        r"^([a-z0-9-]+)(?: [^:\n]+)?:([^\n]*)\n((?:[ \t][^\n]*\n|\n)*)", re.MULTILINE
+    )
     bodies = {match[1]: (match[2], match[3]) for match in recipe.finditer(text)}
     assert "check" in bodies, "the justfile no longer has a `check` recipe"
     reached: set[str] = set()
@@ -974,11 +976,11 @@ def test_class_6s_own_remedy_names_the_gates_it_does_not_cover() -> None:
 def test_the_remedys_just_check_clause_is_true_of_every_tool_it_scopes() -> None:
     """The clause claims a scope, and the scope is checked rather than counted.
 
-    Round 1's remedy said nine tools were "all nine reached by `just check`". Eight are;
+    Round 1's remedy said nine tools were "all nine reached by `just check`". Eight were;
     `tools/breaker.py` is reached by `just breaker` and folded into `just watch-report`, and
-    ADR-0071's own row 6 made the same slip (review round 2 claim 4). The clause now scopes
-    eight and names the ninth separately, so this asserts both halves against the justfile
-    rather than against the sentence.
+    ADR-0071's own row 6 made the same slip (review round 2 claim 4). #390 adds a ninth
+    `just check` tool; the clause scopes those nine and names `tools/breaker.py` separately,
+    so this asserts both halves against the justfile rather than against the sentence.
     """
     conflict = next(rule for rule in policy().rules if rule.id == 6)
     reached = just_check_tools()
@@ -987,11 +989,11 @@ def test_the_remedys_just_check_clause_is_true_of_every_tool_it_scopes() -> None
     # and the rung — and a regex over the whole prefix would read those as claimed omissions.
     _, _, listed = conflict.remedy.partition("and omits ")
     assert listed, "the remedy no longer enumerates its omissions"
-    scoped, _, rest = listed.partition("— the eight `just check` reaches —")
+    scoped, _, rest = listed.partition("— the nine `just check` reaches —")
     assert rest, "the remedy no longer scopes its `just check` clause"
     omissions = set(re.findall(r"tools/[a-z0-9_]+\.py", scoped))
     assert omissions <= reached, sorted(omissions - reached)
-    assert len(omissions) == 8
+    assert len(omissions) == 9
     assert "tools/breaker.py" not in reached
     assert "tools/breaker.py" in rest
 
