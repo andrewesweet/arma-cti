@@ -87,13 +87,17 @@ Three things a ratchet gets wrong, and how this one answers each:
   cut — the cut it replaced selected different tests for 532 of 874 covered
   lines between two fresh measurements of one unchanged module, and a kill
   moved with it about one run in six, at the same rate with the hash seed
-  pinned as without. What still reads the clock: the timeout that scores a
-  hanging mutant as a kill (a loaded box can award that kill to a survivor),
-  and the straddle case of a duration crossing the per-test ceiling. A rate is
-  therefore a fixed function of the (test module, subject) pair up to one kill,
-  and `SLACK` is sized by that stated bound rather than by the absence of
-  jitter; beyond it, the only way the rate stops applying is a change to the
-  tests or the subject, which is what the ratchet exists to notice.
+  pinned as without. What still reads the clock, all three named by `SLACK`'s
+  comment: the timeout that scores a hanging mutant as a kill (a loaded box
+  can award that kill to a survivor), the straddle case of a duration crossing
+  the per-test ceiling, and the over-ceiling fallback's single cheapest pick.
+  The module budget does not read the clock into a verdict at all — when it
+  fires the run refuses rather than reporting a rate on a denominator the
+  clock moved (#435 round 2). A rate is therefore a fixed function of the
+  (test module, subject) pair up to one kill, and `SLACK` is sized by that
+  stated bound rather than by the absence of jitter; beyond it, the only way
+  the rate stops applying is a change to the tests or the subject, which is
+  what the ratchet exists to notice.
 - **A legitimate refactor that lowers a module's achievable rate must not be
   blocked.** Editing the subject changes which mutants exist, so the recorded
   rate is about a *pair*, not a module. The row pins the subject's bytes, and
@@ -105,12 +109,14 @@ Three things a ratchet gets wrong, and how this one answers each:
   it reports "held" and leaves it. Lowering is a hand-edit to the baseline, in
   the diff, with the same reviewability `NO_MUTABLE_SUBJECT` has.
 
-`SLACK` is one kill: a module may lose one kill to its own rate without redding,
-so a neutral test rename (which reorders an equal-cost test selection and can
-flip a single kill) passes, and two lost kills is the weakening the ratchet
-names. The baseline ships empty — landing the mechanism without moving any
-number, so a first red is unambiguously a mechanism failure rather than a
-threshold one — and is populated by `--record`, never by the gate.
+`SLACK` is one kill: a module may lose one kill to its own recorded rate without
+redding — each of the three clock-reads a verdict still rests on (a duration
+straddling the per-test ceiling, the over-ceiling fallback's cheapest pick, a
+timeout scored under machine load) flips at most one — and two lost kills is
+the weakening the ratchet names. The baseline ships empty — landing the
+mechanism without moving any number, so a first red is unambiguously a
+mechanism failure rather than a threshold one — and is populated by
+`--record`, never by the gate.
 
 ## Safety
 
@@ -216,11 +222,13 @@ FLOOR: Final = 0.50
 # hash seed, and selection membership no longer reads the clock (#435) — but
 # "no jitter" was a premise the instrument did not satisfy, and the bound that
 # actually holds is stated, not assumed. What this absorbs is the residual
-# one-kill jitter the gate cannot remove: a test whose measured duration
-# straddles the per-test ceiling flips one line's membership, and a timeout
-# scored under machine load can award a kill to a survivor. One kill of
-# tolerance is that stated bound; two lost kills is a weakening the ratchet
-# names.
+# one-kill jitter the gate cannot remove, in the three places a measured
+# duration still reaches a verdict: a test whose duration straddles the
+# per-test ceiling flips one line's membership; a line every one of whose
+# tests is over the ceiling falls back to its single cheapest, which a
+# jittering duration can pick differently; and a timeout scored under machine
+# load can award a kill to a survivor. One kill of tolerance is that stated
+# bound; two lost kills is a weakening the ratchet names.
 SLACK: Final = 1
 
 # The kill rate a module on the **shell** arm must reach, and its own number
@@ -278,10 +286,19 @@ SHELL_TEST_SECONDS_PER_MUTANT: Final = 5.0
 # re-argue (`--shell-all-lines` inverts it).
 SHELL_DISCRIMINATING: Final = False
 
-# A module's smoke gives up after this long and judges what it managed to run.
-# A smoke that ran fewer mutants is a weaker claim, never a pass by default: a
-# module that reached no verdict at all is a red.
-BUDGET_S: Final = 90.0
+# A module's smoke gives up after this long. The size is a survey measurement,
+# the way `SHELL_BUDGET_S`'s is: the dearest loop this arm runs is this gate's
+# own module at 60-75 s of mutants (bisected with `--budget`, #435 round 2;
+# the next module, `tests/unit/test_dispatch_review.py`, spends 71 s end to
+# end including its collect), so 180 sits at 2.4× the worst measured loop —
+# deliberately above it, so the **cap** decides how many mutants run and the
+# clock does not: a denominator that moved with machine load would release the
+# per-module ratchet at random (#244 keys a row on `run`).
+#
+# When the clock wins anyway — a box loaded past that margin — the run refuses
+# rather than reporting a rate on the denominator the clock chose, which is
+# never a pass by default; a module that reached no verdict at all is a red.
+BUDGET_S: Final = 180.0
 
 # The coverage pass has its own bound, because it is the test module's own cost
 # rather than this gate's: `tests/unit/test_client_lock.py` carries a deliberate
@@ -293,7 +310,9 @@ COLLECT_S: Final = 600.0
 # Tests to run per mutant, cheapest first. Deliberately generous: `-x` stops at
 # the first red, so a line reached by half a suite of millisecond tests costs
 # about what one of them costs, and leaving the killing test out of the selection
-# is a false survivor the floor then has to be lowered to accommodate.
+# is a false survivor the floor then has to be lowered to accommodate. This cap
+# bounds membership, not cost — the cumulative bound on the whole sample is
+# `BUDGET_S`, which refuses rather than truncating (#435 round 2).
 TESTS_PER_MUTANT: Final = 200
 # ...and the cost one test may carry and still be selected at all. A ceiling on
 # the single test, not a cumulative wall clock for the selection: a cumulative
@@ -305,9 +324,13 @@ TESTS_PER_MUTANT: Final = 200
 # kill, wherever it sits in the order), so membership must not read the clock:
 # every reaching test at or under the ceiling runs, and only a line reached by
 # nothing cheaper falls back to its single cheapest test. The ceiling still
-# keeps the 60 s soak out while a 0.01 s test reaches the same line, and it
-# sits far above the corpus's dense cost mass, so a duration has to jitter
-# across 8.0 s to flip membership — the boundary case `SLACK` names.
+# keeps the 60 s soak out while a 0.01 s test reaches the same line. Its
+# headroom over the corpus is not uniform and is not claimed as "far": the
+# dearest test of `tests/unit/test_dispatch_review.py` costs 0.690 s, but this
+# gate's own module's dearest costs 6.28 s — 22% below the ceiling, with two
+# of its tests in the 6-10 s band (measured, round-2 review of #435) — so a
+# duration there does not have to jitter far to flip membership, which is the
+# boundary case `SLACK` names.
 TEST_SECONDS_PER_MUTANT: Final = 8.0
 # The grain durations are rounded to before anything is ordered or summed by
 # them. Coarser than the run-to-run jitter of a millisecond test, finer than the
@@ -877,9 +900,13 @@ class Reach(NamedTuple):
         tried. A line every one of whose tests is over the ceiling keeps its
         single cheapest one — the gate still asks something about that line —
         and that fallback, plus a duration straddling the ceiling itself, are
-        the two places left where a measurement can flip a verdict; `SLACK`'s
-        comment names them.
+        the two places left in the *selection* where a measurement can flip a
+        verdict; the timeout is the third, and `SLACK`'s comment names all
+        three. An empty reaching set selects nothing rather than raising, so
+        `_tally`'s guard can still skip a mutant no test reaches.
         """
+        if not tests:
+            return []
         members = sorted(name for name in tests if self.cost(name) <= bound)[:TESTS_PER_MUTANT]
         if not members:
             members = [min(tests, key=lambda name: (self.cost(name), name))]
@@ -1106,9 +1133,19 @@ def _collects(root: Path, test_module: str, *, timeout: float) -> bool | None:
 
     Asked of a process whose only subject is that module: a `--collect-only` run
     of the bare path runs no tests, so it cannot quote captured output, and its
-    exit code — 0 when the module collects, 2 when collection is interrupted by
-    an import error — is about collecting `test_module` and nothing else. None
-    when even this run did not finish, which is no answer at all.
+    exit code is about collecting `test_module` and nothing else — 0 when it
+    collects, and non-zero for every way of not collecting (2 is an import
+    error pytest reports at collection, and the suite pins that one and the
+    node-id run's 4; a `conftest.py` that fails to import exits 4 and a module
+    that collects nothing exits 5, and the question this answers does not care
+    which). None when even this run did not finish, which is no answer at all.
+
+    The answer is only ever asked under a mutant, and that is what makes every
+    non-zero a kill downstream rather than an error read as a verdict: `measure`
+    refused this module unless a bare-path run of it exited 0, so a conftest
+    that cannot import, a usage error and an empty collection were all ruled
+    out before any mutant was planted (#424 round 2). Whatever stopped the
+    collect-only run now, the mutant caused.
     """
     try:
         done = subprocess.run(  # noqa: S603 — argv is built here from paths and constants
@@ -1158,8 +1195,11 @@ def _pytest(
     this one (#424) — a token matched in a mixed stream, right for the wrong
     reason whenever it agrees. So the question goes to `_collects`, a process
     that can only answer it: the module does not collect under the mutant, or
-    it does. A miss in either direction refuses loudly — the odd exit code is
-    returned and `_tally` raises — so a wrong answer here cannot score a kill.
+    it does. A "collects" answer returns the odd exit code and `_tally` refuses
+    loudly. A "does not collect" answer scores a kill — the generous direction,
+    not the blind one — and what makes that safe is not this branch but
+    `measure`'s green proof: the unmutated bare-path run exited 0, so any
+    collection failure now was caused by the mutant (#424 round 2).
     """
     try:
         done = subprocess.run(  # noqa: S603 — argv is built here from paths and constants
@@ -1306,7 +1346,16 @@ def _tally(  # noqa: PLR0913 — the loop's inputs, and every one of them is a b
     survivors: list[Mutant] = []
     for mutant in chosen:
         if time.monotonic() > deadline and run:
-            break
+            # The clock moved the denominator once already (#435 round 2: `ok`,
+            # 16/19, rate 84%, exit 0, ratchet released by `row.run != run`).
+            # A sample the budget cut is not a result on a smaller denominator
+            # — it is no result at all, which is a refusal.
+            message = (
+                f"the module budget ran out after {run} of {len(chosen)} chosen mutants "
+                f"reached a verdict — a denominator the clock moved is not a rate. "
+                f"Re-run on an idle box, or pass a larger --budget"
+            )
+            raise Refusal(message)
         tests = reach.cheapest(covered[mutant.line], bound)
         if not tests:
             continue

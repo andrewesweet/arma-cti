@@ -20,6 +20,7 @@ import os
 import subprocess
 import sys
 import textwrap
+import time
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
@@ -401,6 +402,14 @@ def test_an_unmeasured_test_is_assumed_free_rather_than_expensive() -> None:
     assert reach.cheapest(("known", "unknown")) == ["unknown", "known"]
 
 
+def test_an_empty_reaching_set_selects_no_tests_rather_than_raising() -> None:
+    # The over-ceiling fallback's `min(tests, ...)` raised ValueError on an
+    # empty reaching set where the selection used to return empty and
+    # `_tally`'s guard skipped the mutant (#435 round 2). Unreachable via
+    # `_selected` today, but the contract is the method's, not the caller's.
+    assert smoke_tool.read_reach({}, {}).cheapest(()) == []
+
+
 def test_a_mutants_timeout_is_derived_from_what_its_tests_cost_unmutated() -> None:
     reach = smoke_tool.read_reach({}, {"slow": 30.0})
     assert reach.timeout(["slow"]) == 120.0
@@ -587,6 +596,48 @@ def test_a_pytest_usage_error_refuses_instead_of_counting_as_a_kill() -> None:
             float("inf"),
             lambda _mutant, _tests: 4,
         )
+
+
+def _two_mutants_on_distinct_lines() -> tuple[Any, Any]:
+    """Two planted mutants the covered map can hand different selections."""
+    planted = _plant("def f(a):\n    if a == 1:\n        return a > 2\n    return a != 3\n")
+    first = planted[0]
+    second = next(mutant for mutant in planted if mutant.line != first.line)
+    return first, second
+
+
+def test_a_sample_the_budget_cuts_short_refuses_rather_than_moving_the_denominator() -> None:
+    # #435 round 2: with the per-test ceiling replacing the cumulative cut,
+    # BUDGET_S became the only cumulative bound, and a deadline that fired
+    # mid-sample printed `ok` on a denominator the clock chose — 16/19 at 84%
+    # where a full run reads 16/20 at 80%, releasing the ratchet by
+    # `row.run != run` and exiting 0. A cut sample is not a result on a smaller
+    # denominator; it is no result at all, which is a refusal.
+    first, second = _two_mutants_on_distinct_lines()
+    node = "tests/unit/test_subject.py::test_any"
+    reach = smoke_tool.Reach({}, {node: 0.0})
+    with pytest.raises(smoke_tool.Refusal, match=r"budget ran out after 1 of 2"):
+        smoke_tool._tally(  # noqa: SLF001 — the refusal branch is the subject
+            [first, second],
+            reach,
+            {first.line: (node,), second.line: (node,)},
+            time.monotonic() - 1.0,
+            lambda _mutant, _tests: smoke_tool.PYTEST_FAILED,
+        )
+
+
+def test_a_sample_that_runs_to_completion_inside_its_budget_is_no_refusal() -> None:
+    first, second = _two_mutants_on_distinct_lines()
+    node = "tests/unit/test_subject.py::test_any"
+    reach = smoke_tool.Reach({}, {node: 0.0})
+    tally = smoke_tool._tally(  # noqa: SLF001 — the happy path is the subject
+        [first, second],
+        reach,
+        {first.line: (node,), second.line: (node,)},
+        time.monotonic() + 60.0,
+        lambda _mutant, _tests: smoke_tool.PYTEST_FAILED,
+    )
+    assert (tally.run, tally.killed, tally.survivors) == (2, 2, ())
 
 
 # --- the verdict ------------------------------------------------------------
