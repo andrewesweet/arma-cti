@@ -400,8 +400,11 @@ def test_a_registered_selection_is_not_refused() -> None:
 #
 # Ruling 1 rescinds ADR-0061's graded eligibility ladder, so what replaced the Decision 2
 # block below is one survivor and a walk. The survivor is the orchestrator carve-out;
-# the walk is the proof that it is this ladder's only provenance refusal — the routing
-# rung's class 6 bridge is the other lane-selected one, and lives in another table — and —
+# the walk is the proof that it is this ladder's only provenance refusal — and, since
+# ADR-0073 (#406) retired the routing rung's class 6 keep-on-Claude bridge, the only
+# lane-selected refusal the project holds anywhere; what replaced that bridge is a
+# cross-lane preference on the review that clears a gate landing, in another table and at
+# another rung, and it refuses no dispatch — and —
 # because it crosses three providers' profiles under one seat — the proof that no verdict
 # anywhere in the ladder is a function of a model or an effort token (ADR-0061 decision 5:
 # a profile is one opaque token, and no cross-provider effort scale exists to infer).
@@ -417,8 +420,10 @@ def test_an_unknown_seat_is_refused_rather_than_mis_attributed() -> None:
 def test_the_orchestrator_carve_out_refuses_on_every_other_lane(lane: str) -> None:
     # ADR-0071 ruling 1's one survivor: orchestration runs on Claude with a Claude model
     # until a tested alternative exists. Of this ladder's refusals it is the only
-    # provenance-shaped one; the routing rung holds the other lane-selected refusal, class
-    # 6's bridge, one rung up and pinned in test_routing_policy.py.
+    # provenance-shaped one, and since ADR-0073 (#406) retired class 6's keep-on-Claude
+    # bridge it is the only lane-selected refusal left anywhere — the routing rung one up
+    # refuses no lane at all now, and what stands in the bridge's place is a cross-lane
+    # preference on a gate landing's review, pinned in test_routing_policy.py.
     profile = "codex-sol-xhigh" if lane == "codex" else "zai-glm53-max"
     refusal = dispatch.resolve_selection(lane, profile, "orchestrator")
     assert refusal is not None
@@ -438,8 +443,10 @@ def test_the_orchestrator_seat_still_dispatches_on_claude_native() -> None:
 def test_every_seat_walks_every_lane_with_the_verdict_named_for_each() -> None:
     """The carve-out is this ladder's only provenance refusal; no verdict reads a tier token.
 
-    The routing rung's class 6 bridge is the other lane-selected refusal the project holds,
-    and it lives in a different table with its own walk (review round 2, claim 3).
+    It is also the only lane-selected refusal the project holds anywhere: the routing rung's
+    class 6 bridge was the other until ADR-0073 (#406) retired it, and what replaced it — a
+    cross-lane preference on the review clearing a gate landing — refuses no route. That
+    lives in a different table with its own walk (review round 2, claim 3).
 
     Every seat in the registry against every registered profile on every lane — the
     exhaustive walk, with the expected verdict asserted for each combination rather than

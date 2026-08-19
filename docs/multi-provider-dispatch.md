@@ -279,9 +279,16 @@ in `.claude/settings.json`, which is a permissions decision and therefore the hu
 (#248); it is proposed on #294 rather than landed. Meanwhile the wall costs ergonomics
 rather than authority: every surface under `.claude/` is spoken for by something other than
 this wall — the project skills by CLAUDE.md's own sign-off list, the seat definitions by
-`just check`'s generated-file check, the settings file by #248's ruling that a permissions
-change is the human's, and the hooks and the settings file again by routing class 6 — so no
-dispatched session was ever entitled to land one of these unilaterally. The
+`just check`'s generated-file check, and the settings file by #248's ruling that a permissions
+change is the human's — so no dispatched session was ever entitled to land one of these
+unilaterally. Routing class 6 was a fourth support here and is not one any more: ADR-0073
+(#406) retired its keep-on-Claude bar, so the row refuses nothing at dispatch and nothing at
+landing. It still names `.claude/hooks/` and `.claude/settings.json`, and what that naming now
+buys is a constraint on the *review* that clears such a landing — the never-alone rung's
+cross-lane check, a strong preference carried by a mandatory `gate_review=` record since
+ADR-0073 Amendment A2 (#426) — never a bar on which session may land. The three supports above
+carry the conclusion on their own; this is a correction to its fourth leg rather than a
+retraction of it. The
 route that works is the one #299 already mandates for a gated edit: the dispatched seat
 authors the exact replacement text as a proposal, and the orchestrator transcribes it.
 `tools/brief.py` says so in the brief when an issue names such a path, so the next dispatch

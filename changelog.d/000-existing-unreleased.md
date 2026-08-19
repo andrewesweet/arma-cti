@@ -59,9 +59,10 @@
   `just land`'s routing rung is left refusing only an unreadable policy or diff, and the
   policy's `coverage` sentence says what a `routing=clear` line now does and does not mean.
   The invariant's own enforcement — a cross-lane review requirement on the never-alone rung —
-  is the next entry and the next commit: the two land minutes apart and in this order, because
-  a rung firing on class 6's paths would otherwise refuse the landing that brings it in (#364;
-  the reasoning is in ADR-0073's *How this lands*). In that window never-alone is enforced as
+  is the entry above and the commit after this one: the two land minutes apart and in this
+  order, because a rung firing on class 6's paths would otherwise refuse the landing that
+  brings it in (#364; the reasoning is in ADR-0073's *How this landed, because it landed in
+  two pieces*). In that window never-alone is enforced as
   it always was, and only this class's cross-lane requirement is absent — as it was before
   this decision. #331 is narrowed rather than closed — the coverage question is what it still
   owns — and #389, which asked whether the bar survived deliberately or was forgotten, is

@@ -939,6 +939,32 @@ def test_a_gate_path_reviewed_on_the_authors_lane_lands_and_records_the_downgrad
     assert _tip(origin) == _git("rev-parse", "HEAD", cwd=here).strip()
 
 
+def test_a_routed_class_diff_refuses_before_the_normal_gate_or_push(
+    repo: tuple[Path, Path, Path],
+) -> None:
+    """The rung sits ahead of the gate, and a real landing is what proves it (#410).
+
+    The test that carried `gate.calls == []` was replaced by the two ADR-0073 landings
+    above, which assert a landing and so cannot carry it — leaving the rung's position
+    covered only by the dry run, where nothing runs a gate to observe. Restored against a
+    planted refusing row (`_plant_refusing_policy`), since the shipped table refuses no
+    landing any more.
+    """
+    origin, main, here = repo
+    _plant_refusing_policy(main)
+    before = _tip(origin)
+    _commit(here, ".claude/settings.json", "{}\n")
+    gate = _Gate()
+
+    report = land.land(main, here, gate=gate, lane="zai")
+
+    assert report.code == 1
+    assert report.lines[0] == "refusal=routing_policy_gate"
+    assert "routing_class=6:gates_themselves" in report.lines
+    assert gate.calls == []
+    assert _tip(origin) == before
+
+
 def test_a_non_exempt_diff_outside_every_class_lands_unimpeded(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,

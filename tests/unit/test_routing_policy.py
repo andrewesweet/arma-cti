@@ -833,15 +833,33 @@ def test_the_deleted_classes_refuse_nothing(path: str) -> None:
     assert routing_policy.advisory_match(policy(), f"Change `{path}`.", route()) is None
 
 
+# ANN401: `routing_policy` is loaded by path, so its `Policy` is not a type an annotation
+# here names.
+def _retired_markers_declared_by(parsed: Any) -> list[str]:  # noqa: ANN401
+    """Collect the withdrawn markers this document's issue exceptions declare, if any."""
+    return [
+        entry.marker
+        for entry in parsed.issue_exceptions
+        for marker in ("pure-transcription", "no-gated-landing", "proposal-only")
+        if marker in entry.marker
+    ]
+
+
 def test_the_retired_exception_markers_no_longer_appear_anywhere() -> None:
     """Their classes are gone, and an orphaned marker reads as a live allowance.
 
     Read off the parsed exceptions, not the file's text: class 6's remedy names
     `proposal-only` on purpose, to say the marker was withdrawn rather than to offer it.
     """
-    markers = [entry.marker for entry in policy().issue_exceptions]
-    for marker in ("pure-transcription", "no-gated-landing", "proposal-only"):
-        assert not any(marker in declared for declared in markers)
+    assert not _retired_markers_declared_by(policy())
+    # The shipped list is empty, so the line above is true of nothing and would stay true if
+    # the predicate stopped reading anything at all (#410). The positive control is what makes
+    # it an observation: the same predicate over a document that *does* declare a withdrawn
+    # marker, on a live class so the entry parses. A guard that went blind reds here.
+    planted = json.loads(POLICY.read_text(encoding="utf-8")) | {
+        LIVE.issue_exceptions: [{"marker": "Routing-exception: proposal-only", "classes": [5]}]
+    }
+    assert _retired_markers_declared_by(routing_policy.parse_policy(json.dumps(planted)))
     # A body carrying the withdrawn marker used to be asserted still-refused on class 6.
     # That assertion went vacuous when ADR-0073 retired the row's refusal (#406) — nothing
     # refuses the body now, with the marker or without it, so it would pass either way. What
