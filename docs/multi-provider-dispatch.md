@@ -391,16 +391,17 @@ What that buys, measured rather than inferred, over five dispatches and four pro
   gate on 2026-08-13, a week *after* the root set was measured. `~/.cache/ansible-lint`
   was granted once on a derivation from the linter's source and dropped on review: the
   installed copy reports `INSTALLER=uv`, returns before reaching the version check the
-  derivation rested on, and the directory does not exist. The grant is an allowlist, not
-  a path test (#405 review round three): the two canonical cache locations above are the
-  only ones a dispatch may name, compared resolved so an alias is the location it names,
-  and with containment over every worktree `git worktree list` reports kept as defence in
-  depth. The environment variables that relocate a cache (`UV_CACHE_DIR`,
-  `ANSIBLE_LOCAL_TEMP`, `XDG_CACHE_HOME`, `ANSIBLE_HOME`) cannot widen the grant — any
-  value that is not one of the two grantable locations, however harmless it looks, is the
-  `writable_root_refused` refusal at plan time, and a cache that honestly lives elsewhere
-  joins the list by a filed issue carrying its measured red. `~/.cargo` looked as likely
-  and was measured unnecessary, so it is not granted.
+  derivation rested on, and the directory does not exist. **The two locations are
+  constants, computed once from `Path.home()` and resolved to absolute paths** (#405
+  review round four): no environment variable reaches them, so `UV_CACHE_DIR`,
+  `ANSIBLE_LOCAL_TEMP`, `XDG_CACHE_HOME` and `ANSIBLE_HOME` neither widen the grant nor
+  refuse a dispatch — they are simply not read. Three rounds of validating a path the
+  environment supplied each found the same defect somewhere new (a value checked here and
+  resolved differently there), so nothing external is admitted and there is nothing left
+  to validate; the one refusal that remains, `writable_root_refused`, is a `HOME` this box
+  will not canonicalise. A box that genuinely keeps a cache elsewhere edits the constants,
+  which is a diff under review. `~/.cargo` looked as likely and was measured unnecessary,
+  so it is not granted.
 - `network_access` defaults off while the gate reads `gh` and `uv` may fetch, so it is
   enabled.
 

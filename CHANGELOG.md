@@ -20,38 +20,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tree instead of a dirt count it never read. The remaining `check=False` reads in the module are
   named where they sit, each with why its absence decides nothing.
 
-
-- **The Codex writable roots no longer trust the environment verbatim, and a stale
-  predecessor can no longer be committed with the current work (#405).** Two Highs from the
-  review of the harness-commit path. A root named by `UV_CACHE_DIR`, `ANSIBLE_LOCAL_TEMP`,
-  `XDG_CACHE_HOME` or `ANSIBLE_HOME` is validated before it is granted: a root that is or
-  sits inside a git directory, is a bare one, or reaches the project from inside or outside
-  it is the `writable_root_refused` refusal at plan time — `UV_CACHE_DIR=/` and
-  `ANSIBLE_LOCAL_TEMP=<gitdir>` were silently granted before. A `.git` sitting *inside* a
-  root outside the project is deliberately not a refusal, because this box's own
-  measured-green uv cache carries one; the project's git state is unreachable from any root
-  the containment rules pass. Before a session launches, a worktree holding a surviving
-  `.dispatch-commit-message` refuses `dispatch_message_present` and a dirty one refuses
-  `dirty_tree` — `git add --all` would have swept a finished predecessor's message and edits
-  into this run's commit and pushed them under its issue. A non-UTF-8 message is now the
-  `commit_message_unreadable` refusal with a written record rather than an uncaught
-  `UnicodeDecodeError` that left the worktree occupied, and the `git_failed` refusal after a
-  refused commit names what the tree really holds — everything staged, message preserved
-  beside the record — instead of claiming it is as the session left it. The unevidenced
-
-- **The Codex writable roots are an allowlist, and a stale predecessor can no longer be
-  committed with the current work (#405).** Three review rounds on the harness-commit path.
-  A root named by `UV_CACHE_DIR`, `ANSIBLE_LOCAL_TEMP`, `XDG_CACHE_HOME` or `ANSIBLE_HOME`
-  is granted only where it resolves onto one of the two canonical cache locations —
-  `~/.cache/uv` and `~/.ansible/tmp` — and every other value is the `writable_root_refused`
-  refusal at plan time, naming what is grantable: `UV_CACHE_DIR=/` and
-  `ANSIBLE_LOCAL_TEMP=<gitdir>` were silently granted before, and a cache relocated
-  honestly now refuses rather than passing a containment test, joining the list by a filed
-  issue with its measured red. Containment stays as defence in depth, upgraded to what it
-  had to be to stay: resolved on both sides, asked of every worktree `git worktree list`
-  reports rather than the main root alone, and an unresolvable path or an unreadable
-  worktree set is itself a refusal. Before a session launches, a worktree holding a
-  surviving `.dispatch-commit-message` refuses `dispatch_message_present` and a dirty one
+- **The Codex writable roots are two constants the environment cannot reach, and a stale
+  predecessor can no longer be committed with the current work (#405).** Four review rounds
+  on the harness-commit path. The sandbox's writable roots — `~/.cache/uv` and
+  `~/.ansible/tmp`, each measured red — are now computed once from the box's home directory
+  as absolute resolved constants, and `UV_CACHE_DIR`, `ANSIBLE_LOCAL_TEMP`, `XDG_CACHE_HOME`
+  and `ANSIBLE_HOME` are not read at all: `UV_CACHE_DIR=/` and `ANSIBLE_LOCAL_TEMP=<gitdir>`
+  were once silently granted, and each of the three schemes that validated such a value in
+  turn was defeated somewhere else — most recently by a relative root that passed validation
+  as canonical and was then reinterpreted from the child's working directory. Nothing
+  external is admitted, so there is nothing left to validate; the sole remaining refusal,
+  `writable_root_refused`, is a home directory this box will not canonicalise, and a box
+  that genuinely keeps a cache elsewhere changes the constants in a reviewed diff. Before a
+  session launches, a worktree holding a surviving
+  `.dispatch-commit-message` refuses `dispatch_message_present` and a dirty one
   refuses `dirty_tree` — `git add --all` would have swept a finished predecessor's message
   and edits into this run's commit and pushed them under its issue. A non-UTF-8 message is
   now the `commit_message_unreadable` refusal with a written record rather than an uncaught
