@@ -15,6 +15,7 @@ quoted once in a closing comment.
 
 from __future__ import annotations
 
+import argparse
 import json
 import subprocess
 import sys
@@ -688,6 +689,122 @@ def test_restore_with_nothing_to_restore_is_not_an_error(tmp_path: Path) -> None
 def test_nothing_in_scope_is_a_pass_not_a_refusal(tmp_path: Path) -> None:
     _repo(tmp_path)
     assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 0
+
+
+# --- what a survey names that a gate only counts (#371) ----------------------
+
+
+def _args(*, report: bool) -> argparse.Namespace:
+    return argparse.Namespace(
+        cap=smoke_tool.CAP,
+        floor=smoke_tool.FLOOR,
+        budget=smoke_tool.BUDGET_S,
+        collect=smoke_tool.COLLECT_S,
+        shell_cap=smoke_tool.SHELL_CAP,
+        shell_floor=smoke_tool.SHELL_FLOOR,
+        shell_budget=smoke_tool.SHELL_BUDGET_S,
+        shell_discriminating_lines=smoke_tool.SHELL_DISCRIMINATING,
+        report=report,
+    )
+
+
+def _tolerated_survivor() -> smoke_tool.Verdict:
+    """Build a verdict that is `ok` and still carries a live mutant.
+
+    3/4 killed clears a 50% floor, so the gate owes nothing — which is exactly
+    why `--report` must name the survivor anyway: through three rounds of #325
+    no seat could say which mutant lived, because the survey printed a rate and
+    withheld every name beneath a green mark.
+    """
+    survivor = smoke_tool.Mutant(
+        "src/subject.py",
+        3,
+        "comparison",
+        10,
+        16,
+        "a > b",
+        "a < b",
+    )
+    return smoke_tool.Verdict(
+        "tests/test_subject.py",
+        "src/subject.py",
+        4,
+        4,
+        3,
+        (survivor,),
+        1.0,
+        0.5,
+    )
+
+
+def test_a_report_names_a_survivor_the_floor_already_tolerates(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(smoke_tool, "smoke", lambda *_a, **_k: _tolerated_survivor())
+    red, refused = smoke_tool._judge(  # noqa: SLF001 — the naming rule is what is under test
+        tmp_path,
+        ["tests/test_subject.py"],
+        _args(report=True),
+    )
+    assert (red, refused) == (0, 0)
+    assert "survived: src/subject.py:3: comparison: a > b -> a < b" in capsys.readouterr().err
+
+
+def test_the_gate_names_no_survivor_it_has_already_tolerated(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The gate half of the pair: a module above its floor owes no name, and
+    # printing one would teach a reader to expect red where the verdict says ok.
+    monkeypatch.setattr(smoke_tool, "smoke", lambda *_a, **_k: _tolerated_survivor())
+    red, refused = smoke_tool._judge(  # noqa: SLF001 — as above
+        tmp_path,
+        ["tests/test_subject.py"],
+        _args(report=False),
+    )
+    assert (red, refused) == (0, 0)
+    assert "survived" not in capsys.readouterr().err
+
+
+def test_a_survives_by_design_mutant_neither_runs_nor_is_scored(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The Python arm's escape (#371), mirroring the Rust rung's: an entry keys on
+    # the exact line `--report` prints, and an excused mutant is excused before it
+    # runs — it costs no wall clock, counts in neither `run` nor the rate, and can
+    # no longer be a survivor the floor has to tolerate.
+    mutant = smoke_tool.Mutant("src/subject.py", 4, "number", 7, 8, "0", "1")
+    reach = smoke_tool.read_reach(_report({"src/subject.py": {"4": ["tests/t.py::t|run"]}}))
+    ran: list[smoke_tool.Mutant] = []
+
+    def run_one(_mutant: smoke_tool.Mutant, _tests: list[str]) -> int:
+        ran.append(_mutant)
+        return smoke_tool.PYTEST_FAILED
+
+    monkeypatch.setattr(smoke_tool, "SURVIVES_BY_DESIGN", {str(mutant): "equivalent"})
+    tally = smoke_tool._tally(  # noqa: SLF001 — the excusing rule is what is under test
+        [mutant],
+        reach,
+        {4: ("tests/t.py::t",)},
+        float("inf"),
+        run_one,
+    )
+    assert tally == smoke_tool._Tally(0, 0, ())  # noqa: SLF001 — as above
+    assert ran == []
+
+    monkeypatch.setattr(smoke_tool, "SURVIVES_BY_DESIGN", {})
+    tally = smoke_tool._tally(  # noqa: SLF001 — as above
+        [mutant],
+        reach,
+        {4: ("tests/t.py::t",)},
+        float("inf"),
+        run_one,
+    )
+    assert tally == smoke_tool._Tally(1, 1, ())  # noqa: SLF001 — as above
+    assert ran == [mutant]
 
 
 # --- end to end, against a throwaway repo -----------------------------------

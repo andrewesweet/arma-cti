@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`just mutation-compare` runs the mutation harness under its standing allowlist grant (#371, #346).**
+  `just mutation` has no `Bash(...)` entry of its own, so a dispatched session — single-shot, with nobody
+  to approve a prompt — could not run the one gate that judges its tests: through every round of #325 both
+  the implementing and the reviewing seat were refused, and the survivors went unnamed. The grant
+  `Bash(just mutation-compare:*)` has existed since `2bd3e8f` (approved for the #281 prototype whose script
+  was later thrown away), so the recipe now fronts `tools/mutation_smoke.py` under that grant — same script,
+  same arguments, no widening.
+
 ### Changed
 
 - **A review verdict binds the diff it reviewed, not only the commit, so a clean rebase no
@@ -54,6 +64,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   caller, so a lane joining or leaving the registry moves it in both directions;
   every landing with a cross-lane reviewer still available refuses
   `review_same_lane` exactly as before.
+
+- **`just mutation --report` names every survivor, the Python arm gains `SURVIVES_BY_DESIGN`, and
+  `tools/brief.py`'s exhaustive run is clean (#371).** A green verdict used to withhold its survivors'
+  names — 19/20 against a 50% floor is `ok` — so the survey printed a rate and no name, which is how
+  #325's survivors stayed unnameable through three rounds. `--report` now prints a `survived:` line for
+  every mutant that lived whatever the verdict; `SURVIVES_BY_DESIGN` — the Rust rung's escape, carried
+  onto the Python arm — records an equivalent mutant with its reason, keyed on the exact line the report
+  prints so a pasted report line is the entry; and the exhaustive run over `tests/unit/test_brief.py`
+  (91 planted, 90 verdicts, every one a kill, one excused with its reason) closed the four
+  coverage gaps in the tests and left `tools/brief.py` itself unchanged — the module was never wrong,
+  its tests had four holes and one equivalent mutant. Which seats can execute the tooling — and through
+  which command — is now stated per seat beside the paste rule in `docs/review-dispatch.md`, with the
+  alias's command-table row landed under ADR-0077's delegated-decision record.
 
 - **A renamed profile's old name resolves for reading dispatch records, and still never
   dispatches (#413).** Renaming a profile used to strand every branch authored under the old

@@ -270,7 +270,7 @@ probe-contract:
 #                                          into the ratchet baseline (#244), then exit 0
 #
 # There is no flag that lowers the floor in `just fast`, and no marker a test
-# file can carry to excuse itself. The one escape is `NO_PYTHON_SUBJECT` in
+# file can carry to excuse itself. The one escape is `NO_MUTABLE_SUBJECT` in
 # `tools/mutation_smoke.py` — a named module with its reason beside it, visible
 # in the diff — for the modules whose subject is a shell script or an authored
 # document rather than Python.
@@ -281,6 +281,19 @@ probe-contract:
 # module; `--record` raises a row on stronger tests and never lowers one silently
 # — lowering is a hand-edit, in the diff, like `NO_PYTHON_SUBJECT`.
 mutation *args:
+    uv run python tools/mutation_smoke.py {{ args }}
+
+# The granted alias that makes the harness above reachable from a dispatched
+# session (#346, #371): `just mutation` carries no allowlist entry of its own,
+# and a single-shot seat has nobody to approve a prompt, so the tooling that
+# judges a landing is the one thing the seat that landed cannot run. The grant
+# `Bash(just mutation-compare:*)` does exist (2bd3e8f, approved for the #281
+# prototype whose script was later thrown away), so this recipe fronts the
+# production harness under that standing grant — same script, same arguments,
+# no widening. What a dispatched session runs through here is exactly what
+# `just mutation` runs; the name is the grant's, kept because renaming it would
+# spend a permission change to buy nothing.
+mutation-compare *args:
     uv run python tools/mutation_smoke.py {{ args }}
 
 # Everything that does not need Arma. `mutation` runs last: a red suite says

@@ -405,6 +405,29 @@ NO_MUTABLE_SUBJECT: Final[dict[str, str]] = {
     ),
 }
 
+# Mutants that survive and are not a finding, each with the reason — the Rust
+# rung's own escape (`mutation_rust.SURVIVES_BY_DESIGN`), carried onto the
+# Python arm by #371. An entry keys on exactly what `--report` prints for the
+# mutant (`path:line: operator: before -> after`), so a report line can be
+# pasted into this dict verbatim and a drifted entry — the subject moved, the
+# line with it — simply stops matching and the mutant survives visibly again.
+# Excused before they run, so they count in neither `run` nor the rate, and a
+# reason is not optional: like every list here it lives in the diff.
+SURVIVES_BY_DESIGN: Final[dict[str, str]] = {
+    # The exhaustive #371 run (85/90 killed) left exactly one equivalent mutant.
+    # `select_flakes` defaults a missing issue number to 0, and the rows come
+    # from `gh issue list --json number,title,body`, where every row carries a
+    # number: the default is unreachable through the real reader, and a test
+    # asserting `== 0` over `== 1` pins the sentinel's spelling rather than any
+    # behaviour — the same shape as mutmut's `digest_size=17` on `dedupe.py`
+    # (ADR-0064's founding example of an equivalent mutant).
+    "tools/brief.py:445: number: 0 -> 1": (
+        "equivalent: the `or 0` default is unreachable through `fetch_open_issues`, "
+        "whose rows always carry `number`, and 0 vs 1 is a sentinel's spelling, not "
+        "a behaviour any test can assert (#371's exhaustive run)"
+    ),
+}
+
 # Negating a comparison: the strongest single change to a decision that was
 # taken, and the one a suite which asserts nothing at all fails to notice.
 _FLIP: Final = {
@@ -1180,6 +1203,8 @@ def _tally(  # noqa: PLR0913 — the loop's inputs, and every one of them is a b
     run = 0
     survivors: list[Mutant] = []
     for mutant in chosen:
+        if str(mutant) in SURVIVES_BY_DESIGN:
+            continue
         if time.monotonic() > deadline and run:
             break
         tests = reach.cheapest(covered[mutant.line], bound)
@@ -1707,6 +1732,12 @@ def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[in
         if not verdict.ok:
             red += 1
             print(f"    {verdict.reason}", file=sys.stderr)  # noqa: T201
+        # A survey names what a gate only counts: a module can clear its floor
+        # with a survivor aboard (19/20 against 50% is `ok`), and a `--report`
+        # that withholds that name is the one that left #325's survivors
+        # unnameable through three rounds (#371). The gate itself owes no name
+        # over a verdict it has already passed.
+        if not verdict.ok or args.report:
             for survivor in verdict.survivors:
                 print(f"    survived: {survivor}", file=sys.stderr)  # noqa: T201
     return red, refused
@@ -1841,7 +1872,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--report",
         action="store_true",
-        help="survey only: print every verdict and always exit 0",
+        help="survey only: print every verdict, naming every survivor, and always exit 0",
     )
     parser.add_argument(
         "--restore",

@@ -863,6 +863,14 @@ def test_an_absent_handoff_composes_no_section() -> None:
     assert brief.HANDOFF_HEADING not in rendered
 
 
+def test_an_absent_handoff_renders_an_empty_list_not_a_none() -> None:
+    # `compose` guards with `if handoff_lines:`, so a `None` would flow silently
+    # through today's only caller — and the annotation promises `list[str]` to
+    # every future caller that extends it unconditionally. The exhaustive #371
+    # run's surviving `return [] -> None` lived in exactly that gap.
+    assert brief.render_handoff(251, brief.Handoff(brief.HANDOFF_ABSENT)) == []
+
+
 def test_a_handoff_that_could_not_be_looked_is_a_loud_line_not_an_absence() -> None:
     rendered = composed(
         handoff=brief.Handoff(brief.HANDOFF_UNAVAILABLE, detail="`gh` could not read #251: 404")
@@ -1382,7 +1390,9 @@ def test_a_standalone_lookup_with_no_prior_work_is_silent(
 def test_a_prior_work_lookup_that_could_not_run_refuses_loudly(
     tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    with pytest.raises(brief.PriorWorkError, match="could not inspect origin/main"):
+    with pytest.raises(
+        brief.PriorWorkError, match=r"could not inspect origin/main: fatal: not a git repository"
+    ):
         brief.prior_work(305, tmp_path)
 
     def unreadable(_issue: int, _repo: Path) -> tuple[brief.PriorWork, ...]:
@@ -1445,6 +1455,10 @@ def test_composing_for_a_closed_issue_says_so_without_refusing(
 def test_an_issue_reference_parses_with_or_without_the_hash() -> None:
     assert brief.issue_number("251") == 251
     assert brief.issue_number("#251") == 251
+    # The boundary itself: 1 is the smallest reference this repo can name (#1
+    # exists), which is the edge `<= 0` draws — the exhaustive #371 run's
+    # surviving `0 -> 1` lived one step inside it.
+    assert brief.issue_number("1") == 1
     for bad in ("", "0", "-3", "two-five-one"):
         with pytest.raises(Exception, match="not an issue number"):
             brief.issue_number(bad)
@@ -1462,6 +1476,19 @@ def test_a_gh_that_returns_no_issue_is_a_refusal_and_not_an_empty_brief(
     monkeypatch.setattr(brief, "_gh", lambda _args: "{}")
     with pytest.raises(brief.FetchError, match="no readable issue"):
         brief.fetch_issue(9999)
+
+
+def test_a_well_formed_issue_document_is_returned_as_read(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The happy path, which no refusal test walks: a dict with a title must come
+    # back untouched. An empty dict reaches the same refusal through either half
+    # of the guard, so only this input tells `not isinstance(...)` and
+    # `not document.get("title")` apart — the exhaustive #371 run's surviving
+    # `not` hid behind that coincidence.
+    document = {"number": 251, "title": "t", "body": "b", "state": "OPEN"}
+    monkeypatch.setattr(brief, "_gh", lambda _args: json.dumps(document))
+    assert brief.fetch_issue(251) == document
 
 
 def test_a_gh_that_answers_unparseably_is_a_refusal(monkeypatch: pytest.MonkeyPatch) -> None:
