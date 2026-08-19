@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`just review-queue` prints the ADR review queue (#351).** The count and file
+  list of `docs/adr/` records carrying `Reviewed-by-human: pending`, from the
+  line-anchored match only, so a prose mention of the marker is never counted. The
+  hand-typed grep had over-reported the queue 6-for-1 twice — once inside the retro
+  skill's step 3, once from the orchestration seat outside it — and where a
+  rule-table already decides, an agent is not handed the job of remembering
+  (#209). A report, not a gate: exit 0 whatever the depth.
+
 ### Changed
 
 - **A review verdict binds the diff it reviewed, not only the commit, so a clean rebase no

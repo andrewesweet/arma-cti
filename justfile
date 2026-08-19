@@ -469,6 +469,17 @@ land *args:
 review *args:
     uv run python tools/review_exchange.py {{ args }}
 
+# The ADR review queue: the count and the file list of `docs/adr/` records
+# carrying `Reviewed-by-human: pending`, from the anchored match only (#351,
+# ADR-0013). A prose mention of the marker never counts — an unanchored grep
+# over-reported the queue 6-for-1 twice, once inside the retro skill's step 3
+# and once from the orchestration seat outside it, which is ADR-0038's
+# escalation shape: nobody types the grep again. Reads; never interprets. A
+# report, not a gate: exit 0 whatever the depth, because a queue with depth is
+# the human's cadence to choose.
+review-queue:
+    uv run python tools/review_queue.py
+
 # Discard one named file's unstaged working-tree change, and nothing else
 # (#287, the human's ruling of 2026-08-08 on #248). No Arma, no lock.
 #
