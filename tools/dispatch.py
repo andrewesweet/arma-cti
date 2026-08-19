@@ -66,14 +66,17 @@ dispatch never happened" carries a failure class from CLAUDE.md's table. The ref
 this module owns are all `infra_unavailable`: a lane that could not be reached says
 nothing about the code under test, which is exactly what that row means.
 
-**The `zai` lane's economics are the inverse of Claude's, and that changes two settings
+**The `zai` lane's economics are the inverse of Claude's, and that changes one setting
 rather than the design.** Measured live against the endpoint (#225,
 `docs/research/zai-lane-live-findings.md`): the plan meters prompt counts, prefix caching
 is automatic and identical whether or not `cache_control` is sent, and
 `thinking.budget_tokens` is ignored. So `ENABLE_PROMPT_CACHING_1H` is **not set on this
 lane** — it only rewrites a `cache_control` TTL that measurably decides nothing here, and
-even a real token saving would not be a plan saving under a prompt meter — and the five
-Claude Code effort levels collapse to one profile per model rather than five.
+even a real token saving would not be a plan saving under a prompt meter. The ignored
+budget used to be read here as collapsing the five effort levels into one profile per
+model; the runner in use does not support that step, because effort travels as a request
+field of its own that nothing has measured on this lane (#433) — the `zai` profiles
+below, and their comment, are the statement of record.
 
 **No admission standing is read, and nothing here refuses on one** (#328). ADR-0061
 Decision 6 pre-registered a bar that admitted a profile to a seat against the Claude

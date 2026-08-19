@@ -11,7 +11,8 @@ this substrate, it is nearly free: Codex sends Claude Code's own hook payload, d
 tool names, so not one of the eight committed hooks needed editing. Telemetry parity
 needed **no engineering at all** — the mechanism the dispatcher already uses for every
 other lane works unchanged. And effort is a genuinely distinct dimension here, which is
-the exact opposite of the z.ai lane, where five effort levels collapsed into one.
+the exact opposite of the z.ai lane's budget finding — what the effort levels do there is
+unmeasured (§3).
 
 **Method.** Codex CLI 0.146.1, ChatGPT Plus, authenticated on this box before this work
 began. Every claim below comes from the CLI itself — its own model cache, its own config
@@ -81,8 +82,12 @@ variant, expected struct variant"*, while
 ## 3. Effort is a real dimension, which is the inverse of z.ai
 
 #225 found z.ai's endpoint ignored `thinking.budget_tokens` entirely: one hard prompt at
-budget 1,024 and at 32,000 were indistinguishable, so five Claude effort levels became one
-registered profile. The same question, asked the same way here, answers the other way.
+budget 1,024 and at 32,000 were indistinguishable, so two names differing only in that
+budget would be one arm on that lane. That settles the budget, not the effort levels — the
+`claude` runner sends effort as a field of its own, unmeasured on the z.ai lane
+(`zai-lane-live-findings.md` §2's closing note) — and the registry's shape there follows
+the #433 ruling, not that measurement. The effort question itself, put to the field that
+carries it here, answers the other way.
 
 The first attempt did not discriminate, and the reason is worth recording because it is
 the trap #225's method exists to avoid. Asked to count the domino tilings of a 4×6

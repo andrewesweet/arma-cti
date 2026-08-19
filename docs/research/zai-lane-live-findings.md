@@ -7,9 +7,12 @@ what the plan meters. All four had been reasoned about from z.ai's published pag
 (`docs/research/multi-provider-routing-substrates.md`, ADR-0061). This file is the first
 time any of them was put to the endpoint.
 
-**Outcome.** All five effort levels collapse to one configuration per model, not the
-partial collapse ADR-0061 predicted — a conclusion a human ruling overrode for the
-registry on 2026-08-19 (#433); see §2's closing note for what the measurement covers.
+**Outcome.** The endpoint honours `thinking.type` and ignores `thinking.budget_tokens` —
+that was measured and stands. The conclusion this file drew from it, that all five effort
+levels collapse to one configuration per model, no longer stands: a human ruling overrode
+it for the registry on 2026-08-19 (#433), and its step from the budget to the effort
+levels was an assertion about the runner the installed runner contradicts (§2's closing
+note).
 `ENABLE_PROMPT_CACHING_1H` is inert on this lane and
 is not set. Prefix caching happens anyway, without being asked for. Two of the eight
 models the key reaches are worth registering.
@@ -44,12 +47,12 @@ API reports cache writes there, and the ledger reads it (`tools/ledger.py`'s
 cached, but because the provider does not report the write half at all. A row from this
 lane showing zero cache creation is therefore a silence, never a measurement.
 
-## 2. Effort collapses completely, not partially
+## 2. The thinking budget is ignored entirely
 
 ADR-0061 Decision 5 predicted a partial collapse: "GLM-5.2 has two thinking levels plus
 off, so `xhigh` and `max` both land on GLM's Max and `high` and `xhigh` may be the same
-configuration". The measurement is stronger than the prediction. The endpoint honours
-`thinking.type` and ignores `thinking.budget_tokens`.
+configuration". What this section measured is the thinking fields, not that mapping: the
+endpoint honours `thinking.type` and ignores `thinking.budget_tokens`.
 
 **On and off are real.** Same prompt, `max_tokens: 2048`:
 
