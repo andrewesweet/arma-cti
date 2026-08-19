@@ -441,26 +441,31 @@ PROFILES: Final[dict[str, Profile]] = {
     "fable-high": Profile("fable-high", "claude-native", "fable", "high"),
     "fable-xhigh": Profile("fable-xhigh", "claude-native", "fable", "xhigh"),
     "fable-max": Profile("fable-max", "claude-native", "fable", "max"),
-    # Effort collapses to a single arm on this lane — measured, not assumed (#225,
-    # docs/research/zai-lane-live-findings.md §2), and still the reason this block holds
-    # two models and not five names per model. z.ai's endpoint honours `thinking.type`
-    # and ignores `thinking.budget_tokens`: one hard prompt at budget 1,024 and at budget
-    # 32,000 both thought past 9,000 tokens and both stopped on `max_tokens`, not on the
-    # budget. Claude Code's five effort levels differ only in the budget they send, so on
-    # this lane all five are one configuration. ADR-0061 predicted a partial collapse;
-    # the measurement makes it total.
+    # What #225 measured on this lane is narrow and still stands
+    # (docs/research/zai-lane-live-findings.md §2): z.ai's endpoint honours
+    # `thinking.type` and ignores `thinking.budget_tokens` — one hard prompt at budget
+    # 1,024 and at budget 32,000 both thought past 9,000 tokens and both stopped on
+    # `max_tokens`, not on the budget. That measured the thinking budget and nothing
+    # else: the requests were hand-sent `curl`s with Claude Code deliberately out of the
+    # loop. What it did not measure is what the runner sends for `--effort`. In the
+    # installed 2.1.235 the effort level travels as its own request field,
+    # `output_config.effort`, and the thinking budget comes from the model's own upper
+    # limit, not from the effort level — so §2's step from "the budget is ignored" to
+    # "all five efforts are one configuration" was an assertion about the runner, never
+    # a measurement, and the runner that dispatches today does not match it. It is why
+    # no model here carries five names; it is not proof that two names are one arm.
     #
     # A human ruling on 2026-08-19 (#433, for #432's codex-absence substitution table)
     # overruled the one-name-per-model conclusion that used to stand here and named
-    # `zai-glm53-high` back beside `-max`. **The two names behave identically today, and
-    # a reader choosing between them must not infer an effect the lane does not
-    # deliver.** `build_argv` passes `profile.effort` through to the `claude` runner on
-    # this lane like any other, so the argv differs — `--effort high` against
-    # `--effort max` — but the runner's levels differ only in the thinking budget they
-    # send and the endpoint ignores that field, so the effort is nominal here: the
-    # ruling's High/Max distinction has no counterpart at z.ai, and the second name
-    # exists so #432's table names something the registry resolves, not because it
-    # selects a different arm. Re-check by re-running §2's arrangement.
+    # `zai-glm53-high` beside `-max`. The two names produce different request bodies —
+    # `output_config.effort` high against max — in a field nobody has measured on this
+    # lane: whether z.ai honours, ignores or rejects it is open, and on a 400 the runner
+    # latches the field unsupported and retries without it. The arrangement that would
+    # settle it is §2's shape widened by one field — the same body twice at two effort
+    # levels, the `usage` blocks compared. It has not been run, and the orchestrator
+    # declined it deliberately: it spends lane quota and sends a prompt to an external
+    # provider to settle a comment's wording. A reader choosing between the two names
+    # follows the ruling's table, not a measured distinction.
     #
     # What remains genuinely distinct is the *model*, and each name still selects
     # through the lane's slots: `--model opus` resolves to glm-5.3 and `--model haiku`
@@ -469,8 +474,9 @@ PROFILES: Final[dict[str, Profile]] = {
     "zai-glm53-high": Profile("zai-glm53-high", "zai", "opus", "high"),
     "zai-glm47-max": Profile("zai-glm47-max", "zai", "haiku", "max"),
     # Four profiles on this lane, and the reason they are not one is the exact inverse of
-    # z.ai's. There, effort collapsed: two thinking budgets a factor of thirty apart were
-    # indistinguishable, so five names would have been five names for one arm. Here effort
+    # z.ai's. There, the thinking budget made no difference: two budgets a factor of
+    # thirty apart were indistinguishable, so names differing only in that budget would
+    # be names for one arm. Here effort
     # is a real dimension, measured the same way (#243,
     # docs/research/codex-lane-live-findings.md §3): one non-memorised counting problem at
     # `low` produced 484 reasoning tokens and at `xhigh` produced 2,393, a factor of 4.9 on

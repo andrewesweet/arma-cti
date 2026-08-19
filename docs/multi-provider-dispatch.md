@@ -59,10 +59,20 @@ writable root and no network access — because an argument that rests on a seat
 needs the seat to be unable to write, not merely described as not doing so.
 
 The z.ai lane made the argument concrete rather than abstract (#225). Claude Code's five
-effort levels differ only in the `thinking.budget_tokens` they send, and that endpoint
-ignores the field — a hard prompt at budget 1,024 and at budget 32,000 both thought past
-nine thousand tokens and both stopped on `max_tokens`. So on that lane all five efforts
-are one configuration, and there is one profile per model rather than five.
+effort levels differ in the `thinking.budget_tokens` they send, and that endpoint ignores
+that field — a hard prompt at budget 1,024 and at budget 32,000 both thought past nine
+thousand tokens and both stopped on `max_tokens`. On that measurement all five efforts
+are one configuration, and the registry carried one profile per model rather than five.
+
+**A human ruling on 2026-08-19 (#433) overrode that conclusion, not the measurement.**
+#432's codex-absence substitution table names GLM 5.3 at High, so `zai-glm53-high` is
+registered beside `zai-glm53-max` and the lane no longer carries one profile per model.
+The reasoning above was right about what it measured — §2's requests were hand-sent
+`curl`s varying `thinking.budget_tokens` alone — but its step to "one configuration" also
+rested on the runner sending nothing else for effort, which was asserted from `--help`
+and never measured. The installed runner (2.1.235) sends the effort level as its own
+request field, `output_config.effort`, unmeasured on this lane; the registry comment in
+`tools/dispatch.py` states what is known and the arrangement that would settle it.
 
 **A rename retires a name, and the retired name stays readable (#413).** The registry above
 is what a dispatch may take; `RETIRED_PROFILES`, beside it, is what a dispatch *record* may

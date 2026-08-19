@@ -8,7 +8,9 @@ what the plan meters. All four had been reasoned about from z.ai's published pag
 time any of them was put to the endpoint.
 
 **Outcome.** All five effort levels collapse to one configuration per model, not the
-partial collapse ADR-0061 predicted. `ENABLE_PROMPT_CACHING_1H` is inert on this lane and
+partial collapse ADR-0061 predicted — a conclusion a human ruling overrode for the
+registry on 2026-08-19 (#433); see §2's closing note for what the measurement covers.
+`ENABLE_PROMPT_CACHING_1H` is inert on this lane and
 is not set. Prefix caching happens anyway, without being asked for. Two of the eight
 models the key reaches are worth registering.
 
@@ -80,6 +82,20 @@ something: `zai-glm52-max`, `zai-glm47-max`. Registering `zai-glm52-high` beside
 would be a second name for a configuration nothing distinguishes — precisely the
 non-distinction Decision 5's "one opaque token" exists to prevent, and #225's acceptance
 criterion asks the registry to record only genuinely distinct levels.
+
+**A human ruling on 2026-08-19 (#433) overrode that conclusion, not the measurement.**
+#432's codex-absence substitution table names GLM 5.3 at High, so `zai-glm53-high` is
+registered beside `zai-glm53-max` and the registry no longer carries one profile per
+model on this lane. The paragraph above was right about what it measured: this section's
+Method sent every request by hand with Claude Code deliberately out of the loop, varying
+`thinking.budget_tokens` alone. Its step from there to "all five into one arm" also
+needed the runner to send nothing else for effort, and that half was asserted from
+`--help`, never measured. The installed runner (2.1.235) contradicts it: the effort level
+travels as its own request field, `output_config.effort`, sent on this lane, and the
+thinking budget comes from the model's own upper limit, not from the effort level.
+Whether z.ai honours, ignores or rejects that field is open — the same body twice at two
+effort levels, `usage` compared, would settle it, and it has not been run. The registry
+comment in `tools/dispatch.py` carries the current statement.
 
 The unreachable case is worth naming: "thinking off" *is* distinct and *is not*
 selectable, because no Claude Code effort level omits the budget. A lane profile for GLM
