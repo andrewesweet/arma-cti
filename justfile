@@ -460,7 +460,7 @@ land *args:
 # no_review_dispatch, records_unreadable, verdict_exists, verdict_unreadable,
 # verdict_unwritten, no_verdict, unknown_dispatch, sha_mismatch,
 # diff_id_unreadable, rebase_unproven, binary_diff_uncarried,
-# identity_mismatch. Four carry the
+# identity_mismatch. Five carry the
 # issue's own weight: a verdict
 # satisfies the SHA it names, or a moved SHA only where a chain of tool-recorded
 # clean rebases connects the two commits and the diff's exact identity matches
@@ -1151,11 +1151,12 @@ verdict *args:
 # performed (`gh` unreachable, state unwritable), which is not a result and
 # never a green.
 #
-# `escalate` resolves the arbiter live — the registry, the issue's dispatch
-# records, the routing inputs it derives itself (the policy off fetched
-# `origin/main`, the branch under review off the review exchange's own ref,
-# #391 — nothing routing-shaped is a flag anymore), and the same
-# dispatchability rungs `just dispatch`'s ladder judges by — and records what
+# `escalate` resolves the arbiter live — the registry, the routing refusal over
+# the inputs it derives itself (the policy off fetched `origin/main`, the
+# branch under review off the review exchange's own ref, #391 — nothing
+# routing-shaped is a flag anymore), the issue's dispatch records, and the
+# same dispatchability rungs `just dispatch`'s ladder judges by, in
+# `_walk_first`'s own order — and records what
 # it excluded and why. The clock it escalates against is the box's own; the
 # off-peak rule it may meet is the human's and has no override on this
 # surface either.
