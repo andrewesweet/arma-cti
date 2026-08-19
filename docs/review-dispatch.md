@@ -248,6 +248,44 @@ the rung refuses `diff_id_unreadable` rather than passing on a hash the rework h
 Nothing is migrated — re-run the review dispatch over the same branch and `just review record`
 writes a verdict that carries the identity.
 
+### Who can produce the paste: the mutation tooling, per seat
+
+The 2026-08-14 ruling on #353 made a review judgement-only by construction: it reads the
+implementer's pasted gate output — `just mutation`'s alongside `just check`'s and `just
+unit`'s — and states whether a quoted kill rate was **sampled or exhaustive**, the
+distinction #344 found hiding an exhaustive 91% behind a reported 100%. A paste can only
+carry output something produced, so which seats can execute the tooling is part of the
+contract rather than context around it. #325 is the failure this section exists to retire:
+the harness was unreachable from both seats asked to judge that issue's survivors, the
+survivors went unnameable through three rounds, and each round discovered the unreachability
+anew — a surprise in round 3 is what an undeclared property looks like.
+
+Measured and dated, per seat:
+
+- **Dispatched implementer, zai lane — runs, through `just mutation-compare` only.**
+  Measured 2026-08-19 (dispatch d-20260819-032929-8d939f): `just mutation` is refused — no
+  allowlist entry carries it — and `uv run python tools/mutation_smoke.py` is refused as
+  arbitrary execution. The alias fronts the same script under the standing
+  `Bash(just mutation-compare:*)` grant (#371 lands the recipe), so an exhaustive pass is
+  reachable from the seat that landed the work: `--paths <module> --report --cap <above the
+  module's candidate count> --budget <high enough the silent deadline cannot truncate>`, and
+  the paste carries the `planted=`/`killed=` accounting that shows which of sampled or
+  exhaustive it was.
+- **Dispatched implementer, claude-native lane — same answer, derived rather than measured.**
+  The deciding allowlist is the repository's `.claude/settings.json`, not a per-lane one, so
+  `just mutation`'s missing entry and the alias's grant hold on every lane that reaches the
+  shell through Claude Code's permission system. That the allowlist does the deciding for
+  `just` is itself measured (#396); the specific pair above was measured on zai.
+- **Review seat — unreachable by construction, and correctly so.** #353's ruling gave the
+  seat no executable mode; it runs nothing, in the forced `plan` mode. A reviewer that
+  cannot run the mutation tooling is the seat's shape, not a capability gap to close.
+- **Orchestrator and interactive sessions — unrestricted.** A session with a human to
+  answer its prompts runs `just mutation` bare.
+- **Codex — unmeasured.** A different sandbox (#265); nothing here carries to it.
+
+A brief handed to a dispatched implementer names the alias, not the recipe it fronts:
+`just mutation-compare` is what that seat can type.
+
 ### Citations are countable, and since #328 nobody counts them
 
 A citation **resolves** when the quoted text is present at `file:line` at the named SHA. That
