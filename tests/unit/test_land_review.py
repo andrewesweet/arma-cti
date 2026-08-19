@@ -17,6 +17,9 @@ rather than assumed (round 2).
 from __future__ import annotations
 
 import json
+import socket
+import threading
+import time
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Final
 
@@ -1436,7 +1439,7 @@ def test_a_free_lane_with_no_credential_on_this_box_is_a_bar_the_record_names(
     )
 
 
-def test_the_quota_reader_the_landing_reaches_the_provider_through_is_the_caller_s(
+def test_the_quota_reader_the_landing_reaches_the_provider_through_is_the_callers_own(
     tmp_path: Path,
 ) -> None:
     """The one network seam in this rung, proven to be a seam (#427).
@@ -1814,3 +1817,70 @@ def test_exhaustion_follows_the_registry_rather_than_any_record_of_it(
         )
         for line in regrown.cleared
     )
+
+
+def test_a_stalled_resolver_cannot_hold_the_landing_past_the_readers_deadline(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The live reader's bound is the whole call's, not the socket's (#427, round 2).
+
+    `urlopen`'s timeout begins once the hostname has resolved, so a stalled `getaddrinfo`
+    escapes it entirely and holds this serial rung for as long as the resolver hangs — the
+    landing waiting on a name lookup with nothing to cancel it. What is stalled here is
+    resolution specifically: `socket.getaddrinfo` is replaced by one that sleeps far past the
+    deadline, so no socket is ever created, no packet leaves this box, and a bound that covered
+    only the socket would not fire at all. The reader is the live default rather than a stub,
+    so the deadline under test is the one `just land` runs.
+
+    The landing comes back inside the deadline with the lane still barred: a read that could
+    not complete is an unavailable reading, which leaves an open circuit open. A deadline that
+    expired into "closed, proceed" would be worse than the hang it replaced. The abandoned read
+    is left on a daemon thread, which is what keeps the deadline from being a wait the process
+    still owes at exit.
+    """
+    _, review_root = roots = _stage(tmp_path)
+    deadline = 0.25
+    stall = 5.0
+    monkeypatch.setattr(breaker, "ZAI_USAGE_TIMEOUT_SECS", deadline)
+
+    def stalled_resolver(*_args: object, **_kwargs: object) -> list[object]:
+        time.sleep(stall)
+        return []
+
+    monkeypatch.setattr(socket, "getaddrinfo", stalled_resolver)
+
+    directory = review_root.parent / "breaker"
+    credentials = review_root.parent / "credentials.env"
+    credentials.write_text("ZAI_API_KEY=staged-for-this-test\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    breaker.write_state(
+        directory,
+        breaker.LaneState(
+            "zai",
+            breaker.Circuit(
+                state=breaker.OPEN,
+                rule="provider_errors",
+                reason="three consecutive provider errors",
+                opened_at=OFF_PEAK.timestamp(),
+                reset_at=None,
+            ),
+            None,
+            OFF_PEAK.timestamp(),
+        ),
+    )
+    reach = land_review.LaneReach(directory, credentials, OFF_PEAK, breaker.query_first_party_quota)
+
+    started = time.monotonic()
+    outcome = _gate_rung(
+        roots, reviewer=CLAUDE_REVIEWER, reviewer_lane="claude-native", reach=reach
+    )
+    elapsed = time.monotonic() - started
+
+    assert elapsed < stall / 2
+    assert outcome.refusal is None
+    assert any(
+        " barred_lanes=zai:lane_breaker_open/infra_unavailable " in line for line in outcome.cleared
+    )
+    abandoned = [worker for worker in threading.enumerate() if worker.name == "cti-bounded-request"]
+    assert abandoned
+    assert all(worker.daemon for worker in abandoned)

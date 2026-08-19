@@ -144,13 +144,14 @@ breaker's own convergence on its own record — the same write and the same requ
 `just dispatch` or `just breaker` read performs — and neither moves anything this rung
 judges. The call is bounded where it fires: one lane can ask it — `zai` is the only lane
 with a feed, and every other returns `feed_absent` without a socket — one request, no
-retry, a 10 s timeout on every socket operation, and every failure a typed unavailable
-reading rather than an exception, so a landing cannot hang on it and cannot spend the
-timeout more than once. `LaneReach.quota_reader` is the seam that suppresses it, and
-every test of this rung hands in a reader that refuses to be called, so no `just fast`
-run reaches a provider to decide a record. The default stays live, because the point of
-the record is what a dispatch would have met at that moment. This rung has no command
-surface of its own either; the loop's acts are
+retry, a 10 s deadline over the whole call (`tools/bounded_request.py`, so a stalled
+resolver expires like a stalled socket rather than escaping the bound), and every failure
+a typed unavailable reading rather than an exception, so a landing cannot hang on it and
+cannot spend the deadline more than once. `LaneReach.quota_reader` is the seam that
+suppresses it, and every test of this rung hands in a reader that refuses to be called,
+so no `just fast` run reaches a provider to decide a record. The default stays live,
+because the point of the record is what a dispatch would have met at that moment. This
+rung has no command surface of its own either; the loop's acts are
 `just review-loop`'s. And nothing here reads as approval by absence: no verdict,
 an unreadable verdict, a verdict for another commit or another item, and records
 that name no author at all each refuse by name.
@@ -248,8 +249,9 @@ class LaneReach(NamedTuple):
     lane is held open on availability with no published boundary, which is the lane healing
     itself; the default is the live reader and stays live, so this rung's record is what a
     dispatch would have met. It is bounded where it fires — one lane can ask it, one request,
-    no retry, a 10 s timeout on every socket operation, and every failure a typed unavailable
-    reading rather than an exception — so a landing cannot hang on it. A test hands in a
+    no retry, a 10 s deadline over the whole call rather than over the socket alone, so a
+    stalled resolver cannot outlast it (`tools/bounded_request.py`), and every failure a typed
+    unavailable reading rather than an exception — so a landing cannot hang on it. A test hands in a
     reader that refuses to be called, which is how a staged lane state stays a staged fact
     about the record and not a fact about this box's connectivity.
     """

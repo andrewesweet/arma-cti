@@ -85,7 +85,8 @@ from typing import TYPE_CHECKING, Final, NamedTuple
 # reach `pool_merge.py`.
 sys.path.insert(0, str(Path(__file__).parent))
 
-# The path insert above is what makes this importable.
+# The path insert above is what makes these importable.
+import bounded_request
 import otel_event
 
 if TYPE_CHECKING:
@@ -703,12 +704,10 @@ def query_claude_usage(
         },
     )
     try:
-        with urllib.request.urlopen(  # noqa: S310 — the request URL is not caller-controlled
-            request, timeout=CLAUDE_USAGE_TIMEOUT_SECS
-        ) as response:
-            if response.status != HTTP_OK:
-                return _unavailable_claude_reading(lane, now, f"http_{response.status}")
-            payload = json.loads(response.read().decode("utf-8"))
+        status, body = bounded_request.read(request, CLAUDE_USAGE_TIMEOUT_SECS)
+        if status != HTTP_OK:
+            return _unavailable_claude_reading(lane, now, f"http_{status}")
+        payload = json.loads(body.decode("utf-8"))
     except urllib.error.HTTPError as error:
         retry_at = (
             _retry_after_epoch(error.headers.get("retry-after"), now)
@@ -945,12 +944,10 @@ def _read_zai_quota_response(
 ) -> QuotaReading:
     """Translate the first-party response or its absence into one typed reading."""
     try:
-        with urllib.request.urlopen(  # noqa: S310 — the request URL is not caller-controlled
-            request, timeout=ZAI_USAGE_TIMEOUT_SECS
-        ) as response:
-            if response.status != HTTP_OK:
-                return _unavailable_zai_reading(lane, now, f"http_{response.status}")
-            payload = json.loads(response.read().decode("utf-8"))
+        status, body = bounded_request.read(request, ZAI_USAGE_TIMEOUT_SECS)
+        if status != HTTP_OK:
+            return _unavailable_zai_reading(lane, now, f"http_{status}")
+        payload = json.loads(body.decode("utf-8"))
     except urllib.error.HTTPError as error:
         return _unavailable_zai_reading(lane, now, f"http_{error.code}")
     except (OSError, UnicodeError, json.JSONDecodeError):

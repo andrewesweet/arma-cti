@@ -28,13 +28,21 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple
+
+# tools/ holds standalone scripts rather than an importable package, so a sibling import
+# needs the script's own directory on the path — the device `breaker.py` uses to reach here.
+sys.path.insert(0, str(Path(__file__).parent))
+
+# The path insert above is what makes this importable.
+import bounded_request
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
-    from pathlib import Path
 
 # The collector on this box: loopback only, file exporter, no egress. A caller may
 # point elsewhere through the standard OTLP variables, which is how #227's spine will
@@ -150,12 +158,12 @@ def post(
         method="POST",
     )
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:  # noqa: S310
-            return True, f"http_{response.status}"
+        status, _ = bounded_request.read(request, timeout)
     except urllib.error.HTTPError as error:
         return False, f"http_{error.code}"
-    except OSError as error:  # URLError, connection refused, timeout — all the same here
+    except OSError as error:  # URLError, refused, socket timeout, stalled resolver — all one here
         return False, f"unreachable:{type(error).__name__}"
+    return True, f"http_{status}"
 
 
 def journal_line(event: Event, exported: bool, detail: str) -> str:  # noqa: FBT001 — a journal records what happened, and whether it exported is half of it
