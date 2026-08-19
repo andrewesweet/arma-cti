@@ -40,7 +40,7 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 import pytest
-from conftest import REPO, load_tool
+from conftest import REPO, load_tool, no_lane_network
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -2409,6 +2409,61 @@ def test_one_lanes_trip_never_refuses_another_lanes_dispatch(tmp_path: Path) -> 
     plan, _, refusal = plan_for(tmp_path, lane="claude-native", profile="opus-high")
     assert refusal is None
     assert plan is not None
+
+
+def test_lane_bar_names_the_breaker_then_the_window_then_the_credential(tmp_path: Path) -> None:
+    """The order of `lane_bar`'s three rungs, pinned so a reordering is a red test (#427).
+
+    A lane can be barred by all three at once, and `lane_bar` returns the first — so the
+    order decides which single bar a dispatch refuses with and which one a landing record
+    carries in `barred_lanes=`. Nothing pinned it before this, which made the record's
+    wording a free variable of the source order. Asserted by peeling the rungs off one at a
+    time on `zai`, the only lane that has all three: with every bar set the answer is the
+    breaker's, without the breaker it is the window's, and off-peak with no key it is the
+    credential's.
+    """
+    directory = tmp_path / "breaker"
+    absent = tmp_path / "no-such-credentials.env"
+    zai = dispatch.LANES["zai"]
+    breaker.write_state(
+        directory,
+        breaker.LaneState(
+            "zai",
+            breaker.Circuit(
+                state=breaker.OPEN,
+                rule="quota",
+                reason="a 429 from the provider",
+                opened_at=PEAK.timestamp(),
+                reset_at=PEAK.timestamp() + 3600,
+            ),
+            None,
+            PEAK.timestamp(),
+        ),
+    )
+
+    every = dispatch.lane_bar(zai, directory, absent, PEAK, no_lane_network)
+    window = dispatch.lane_bar(zai, tmp_path / "clean", absent, PEAK, no_lane_network)
+    credential = dispatch.lane_bar(zai, tmp_path / "clean", absent, OFF_PEAK, no_lane_network)
+
+    assert every is not None
+    assert window is not None
+    assert credential is not None
+    assert (every.kind, window.kind, credential.kind) == (
+        "lane_breaker_open",
+        "lane_peak_hours",
+        "credentials_missing",
+    )
+
+
+def test_lane_bar_clears_a_lane_no_rung_bars(tmp_path: Path) -> None:
+    """The other half of the precedence assertion: three rungs passed is no bar at all."""
+    credentials = tmp_path / "credentials.env"
+    credentials.write_text("ZAI_API_KEY=staged-for-this-test\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    bar = dispatch.lane_bar(
+        dispatch.LANES["zai"], tmp_path / "breaker", credentials, OFF_PEAK, no_lane_network
+    )
+    assert bar is None
 
 
 def test_a_finished_runs_log_is_classified_and_fed_back_to_its_lane(tmp_path: Path) -> None:

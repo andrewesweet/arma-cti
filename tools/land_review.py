@@ -133,12 +133,24 @@ the clearance because that is what a lander quotes (round 1 claims 3 and 4).
 `review_finding` — the rung `just land` climbs — is the whole of this module, and
 it writes no record, dispatches nothing and adjudicates nothing: the verdict is
 #332's exchange, the dispatch the dispatcher's, and every loop decision
-`review_loop`'s. One qualification since #426, stated rather than glossed: reading
-a free lane's breaker goes through `dispatch.lane_bar`, and the breaker settles an
-expired window as it is read, so a landing that consults one may leave that lane's
-state file converged. That is the breaker's own convergence on its own record —
-the same write any `just dispatch` or `just breaker` read performs — and it moves
-nothing this rung judges. It has no command surface of its own; the loop's acts are
+`review_loop`'s. Two qualifications, stated in full rather than glossed, because
+#426's first statement of the first one was narrower than the behaviour (#427).
+Reading a free lane's breaker goes through `dispatch.lane_bar`, and **that read both
+writes and can reach the network**. It settles an expired window as it is read, so a
+landing that consults one may leave that lane's state file converged; and for a z.ai
+lane held open on availability with no published boundary it asks z.ai's own quota
+endpoint, which is how that lane heals itself without a dispatch. Both are the
+breaker's own convergence on its own record — the same write and the same request any
+`just dispatch` or `just breaker` read performs — and neither moves anything this rung
+judges. The call is bounded where it fires: one lane can ask it — `zai` is the only lane
+with a feed, and every other returns `feed_absent` without a socket — one request, no
+retry, a 10 s timeout on every socket operation, and every failure a typed unavailable
+reading rather than an exception, so a landing cannot hang on it and cannot spend the
+timeout more than once. `LaneReach.quota_reader` is the seam that suppresses it, and
+every test of this rung hands in a reader that refuses to be called, so no `just fast`
+run reaches a provider to decide a record. The default stays live, because the point of
+the record is what a dispatch would have met at that moment. This rung has no command
+surface of its own either; the loop's acts are
 `just review-loop`'s. And nothing here reads as approval by absence: no verdict,
 an unreadable verdict, a verdict for another commit or another item, and records
 that name no author at all each refuse by name.
@@ -230,11 +242,22 @@ class LaneReach(NamedTuple):
     provider state and on the hour of the day, which is what made `just fast` red for the
     four hours a day z.ai sits in peak (#238's note). Defaults are the real ones; `at` of
     `None` is "ask the clock now".
+
+    `quota_reader` is the fourth because the breaker read can reach the network and nothing
+    else here can (#427). `breaker.lane_verdict` asks z.ai's own quota endpoint when that
+    lane is held open on availability with no published boundary, which is the lane healing
+    itself; the default is the live reader and stays live, so this rung's record is what a
+    dispatch would have met. It is bounded where it fires — one lane can ask it, one request,
+    no retry, a 10 s timeout on every socket operation, and every failure a typed unavailable
+    reading rather than an exception — so a landing cannot hang on it. A test hands in a
+    reader that refuses to be called, which is how a staged lane state stays a staged fact
+    about the record and not a fact about this box's connectivity.
     """
 
     breaker_dir: Path = breaker.DEFAULT_BREAKER_DIR
     credentials: Path = dispatch.CREDENTIALS
     at: datetime | None = None
+    quota_reader: dispatch.QuotaReader = breaker.query_first_party_quota
 
     def moment(self) -> datetime:
         """Answer the instant the bars are read at — the caller's, or now."""
@@ -431,7 +454,9 @@ def _lane_bars(free: tuple[str, ...], reach: LaneReach) -> tuple[tuple[str, str]
     bars = []
     at = reach.moment()
     for name in free:
-        bar = dispatch.lane_bar(dispatch.LANES[name], reach.breaker_dir, reach.credentials, at)
+        bar = dispatch.lane_bar(
+            dispatch.LANES[name], reach.breaker_dir, reach.credentials, at, reach.quota_reader
+        )
         if bar is None:
             continue
         bars.append((name, f"{bar.kind}/{bar.failure_class}" if bar.failure_class else bar.kind))
@@ -553,8 +578,13 @@ def _gate_review_decision(
     bars = _lane_bars(free, reach)
     barred = {name for name, _ in bars}
     available = tuple(name for name in free if name not in barred)
+    # Both records carry the whole free set, split into the lanes that were reachable and the
+    # lanes that were not with the bar that says so — every free lane considered, and every
+    # rejection's reason, in the bytes the landing prints (#427). A record that named only the
+    # reachable half left a partially barred `same_lane_chosen` unable to say which lanes it
+    # had asked, and the record is the safety property of this whole downgrade.
+    named = " ".join(f"{name}:{bar}" for name, bar in bars) or "none"
     if not available:
-        named = " ".join(f"{name}:{bar}" for name, bar in bars)
         return (
             (
                 f"gate_review=lane_barred reviewer_lane={reviewer_lane} {where}"
@@ -566,7 +596,7 @@ def _gate_review_decision(
         (
             f"gate_review=same_lane_chosen reviewer_lane={reviewer_lane} {where}"
             f" same_lane_authors={shared} free_lanes={' '.join(available)}"
-            f" review_dispatch={binding.dispatch_id}"
+            f" barred_lanes={named} review_dispatch={binding.dispatch_id}"
         ),
         SAME_LANE_CHOSEN_LIMIT,
     )

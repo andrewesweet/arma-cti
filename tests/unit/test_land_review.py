@@ -20,7 +20,7 @@ import json
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Final
 
-from conftest import load_tool
+from conftest import load_tool, no_lane_network
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -1242,7 +1242,11 @@ OFF_PEAK: Final = datetime(2026, 8, 22, 7, 0, tzinfo=UTC)
 
 
 def _reach(
-    tmp_path: Path, at: datetime = OFF_PEAK, *, tripped: tuple[str, ...] = ()
+    tmp_path: Path,
+    at: datetime = OFF_PEAK,
+    *,
+    tripped: tuple[str, ...] = (),
+    key: bool = True,
 ) -> land_review.LaneReach:
     """Build a `LaneReach` over scratch state, so every bar is one this test staged (#426).
 
@@ -1250,10 +1254,15 @@ def _reach(
     clock; asserting on those would make the record under test a fact about this machine
     and about the hour of the day. `tripped` opens a lane's breaker on the quota rule with
     a published reset in the future, which is the `quota_exhausted` bar the human's ruling
-    names.
+    names. `key=False` writes the file without `ZAI_API_KEY`, which is the third of
+    `lane_bar`'s three rungs — the one arm #426 covered in `dispatch` but never composed
+    through a landing (#427).
+
+    The quota reader is the no-network one for every arrangement, so the bars asserted below
+    are the staged state and nothing a provider said.
     """
     credentials = tmp_path / "credentials.env"
-    credentials.write_text("ZAI_API_KEY=staged-for-this-test\n", encoding="utf-8")
+    credentials.write_text("ZAI_API_KEY=staged-for-this-test\n" if key else "", encoding="utf-8")
     credentials.chmod(0o600)
     directory = tmp_path / "breaker"
     for lane in tripped:
@@ -1272,7 +1281,7 @@ def _reach(
                 at.timestamp(),
             ),
         )
-    return land_review.LaneReach(directory, credentials, at)
+    return land_review.LaneReach(directory, credentials, at, no_lane_network)
 
 
 def _gate_rung(  # noqa: PLR0913 — one parameter per staged fact the rung reads
@@ -1328,8 +1337,8 @@ def test_a_same_lane_gate_landing_clears_and_records_that_a_free_lane_was_availa
     assert (
         f"gate_review=same_lane_chosen reviewer_lane=claude-native"
         f" author_lanes=claude-native gate_paths={GATE_PATH}"
-        f" same_lane_authors={AUTHOR} free_lanes=zai codex review_dispatch=d-review-1"
-        in outcome.cleared
+        f" same_lane_authors={AUTHOR} free_lanes=zai codex barred_lanes=none"
+        f" review_dispatch=d-review-1" in outcome.cleared
     )
     assert land_review.SAME_LANE_CHOSEN_LIMIT in outcome.cleared
 
@@ -1371,6 +1380,12 @@ def test_one_reachable_free_lane_is_enough_to_make_it_the_operators_choice(
     `same_lane_chosen` and it names the lane that was free rather than the one that was not.
     A downgrade that read "barred" while a lane stood open would be the record saying the
     stronger check was impossible when it was merely not taken.
+
+    It names the lane that was *not* free as well (#427). This is the partially barred
+    arrangement — `zai` off-peak, `codex` reachable — and a record carrying only
+    `free_lanes=codex` could not say whether `zai` had been considered and rejected or never
+    asked at all. Both halves of the free set, and the bar on every rejection, are the
+    record's own bytes.
     """
     _, review_root = roots = _stage(tmp_path)
     outcome = _gate_rung(
@@ -1383,10 +1398,103 @@ def test_one_reachable_free_lane_is_enough_to_make_it_the_operators_choice(
     assert outcome.refusal is None
     assert any(
         line.startswith("gate_review=same_lane_chosen")
-        and line.endswith(f"same_lane_authors={AUTHOR} free_lanes=codex review_dispatch=d-review-1")
+        and line.endswith(
+            f"same_lane_authors={AUTHOR} free_lanes=codex barred_lanes=zai:lane_peak_hours"
+            f" review_dispatch=d-review-1"
+        )
         for line in outcome.cleared
     )
-    assert not any("lane_barred" in line for line in outcome.cleared)
+    assert not any(line.startswith("gate_review=lane_barred") for line in outcome.cleared)
+
+
+def test_a_free_lane_with_no_credential_on_this_box_is_a_bar_the_record_names(
+    tmp_path: Path,
+) -> None:
+    """`lane_bar`'s third rung, composed through a landing rather than asserted alone (#427).
+
+    #426 pinned the breaker and off-peak arms through this rung and left the credential arm
+    covered only in `tools/dispatch.py`'s own tests, so the wiring from a landing to that
+    rung was unproven. Here the credentials file carries no `ZAI_API_KEY`: `zai` is barred
+    with the kind and the `infra_unavailable` class the credential read gives it, `codex`
+    needs no credential and stays free, and the record names both — one arrangement covering
+    the composition and the partially barred record together.
+    """
+    _, review_root = roots = _stage(tmp_path)
+    outcome = _gate_rung(
+        roots,
+        reviewer=CLAUDE_REVIEWER,
+        reviewer_lane="claude-native",
+        reach=_reach(review_root.parent, key=False),
+    )
+
+    assert outcome.refusal is None
+    assert any(
+        line.startswith("gate_review=same_lane_chosen")
+        and " barred_lanes=zai:credential_absent/infra_unavailable " in line
+        and " free_lanes=codex " in line
+        for line in outcome.cleared
+    )
+
+
+def test_the_quota_reader_the_landing_reaches_the_provider_through_is_the_caller_s(
+    tmp_path: Path,
+) -> None:
+    """The one network seam in this rung, proven to be a seam (#427).
+
+    `dispatch.lane_bar` asks z.ai's quota endpoint for a lane held open on availability with
+    no published boundary — the only outbound call `just land`'s decision path can make, and
+    the one #426 disclosed as a state-file write alone. The arrangement is that lane: open on
+    `provider_errors`, which carries no reset. A reader this test owns is handed in and comes
+    back saying nothing, so the lane stays barred on its own rule; asserting it was called is
+    what proves the parameter reaches the breaker rather than sitting unused beside a live
+    default. Every other arrangement here hands in `no_lane_network`, which fails if this branch
+    is ever reached unstaged.
+    """
+    _, review_root = roots = _stage(tmp_path)
+    asked: list[str] = []
+
+    def reader(lane: str, _credentials: Path, now: float) -> breaker.QuotaReading:
+        asked.append(lane)
+        return breaker.QuotaReading(
+            lane=lane,
+            source="staged-for-this-test",
+            estimated=False,
+            windows=(),
+            unavailable="staged",
+            observed_at=now,
+        )
+
+    directory = review_root.parent / "breaker"
+    credentials = review_root.parent / "credentials.env"
+    credentials.write_text("ZAI_API_KEY=staged-for-this-test\n", encoding="utf-8")
+    credentials.chmod(0o600)
+    breaker.write_state(
+        directory,
+        breaker.LaneState(
+            "zai",
+            breaker.Circuit(
+                state=breaker.OPEN,
+                rule="provider_errors",
+                reason="three consecutive provider errors",
+                opened_at=OFF_PEAK.timestamp(),
+                reset_at=None,
+            ),
+            None,
+            OFF_PEAK.timestamp(),
+        ),
+    )
+    outcome = _gate_rung(
+        roots,
+        reviewer=CLAUDE_REVIEWER,
+        reviewer_lane="claude-native",
+        reach=land_review.LaneReach(directory, credentials, OFF_PEAK, reader),
+    )
+
+    assert asked == ["zai"]
+    assert outcome.refusal is None
+    assert any(
+        " barred_lanes=zai:lane_breaker_open/infra_unavailable " in line for line in outcome.cleared
+    )
 
 
 def test_the_ruling_relaxes_the_lane_rule_and_not_ruling_4(tmp_path: Path) -> None:
@@ -1701,6 +1809,8 @@ def test_exhaustion_follows_the_registry_rather_than_any_record_of_it(
     assert regrown.refusal is None
     assert any(
         line.startswith("gate_review=same_lane_chosen")
-        and line.endswith("free_lanes=codex a-fourth-lane review_dispatch=d-review-1")
+        and line.endswith(
+            "free_lanes=codex a-fourth-lane barred_lanes=none review_dispatch=d-review-1"
+        )
         for line in regrown.cleared
     )

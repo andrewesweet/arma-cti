@@ -2507,7 +2507,15 @@ def readiness_advisories(issue: int, found: Readiness) -> tuple[str, ...]:
     )
 
 
-def breaker_refusal(lane_name: str, breaker_dir: Path, now: float) -> Refusal | None:
+type QuotaReader = Callable[[str, Path, float], breaker.QuotaReading]
+
+
+def breaker_refusal(
+    lane_name: str,
+    breaker_dir: Path,
+    now: float,
+    quota_reader: QuotaReader = breaker.query_first_party_quota,
+) -> Refusal | None:
     """Read this lane's breaker before anything is planned, and refuse a tripped one (#226).
 
     This is the integration point ADR-0061 Decision 7 asks for: the state is read
@@ -2516,8 +2524,19 @@ def breaker_refusal(lane_name: str, breaker_dir: Path, now: float) -> Refusal | 
     trip refuses with `provider_refused` instead — waiting does not fix a lane that is
     serving the wrong thing, and that row's response is exactly the right one: not a
     result, re-dispatch elsewhere, and escalate.
+
+    `quota_reader` is the one seam through which this read can reach the network:
+    `breaker.lane_verdict` asks the provider's own quota endpoint for a z.ai lane held
+    open on availability with no published boundary, which is how that lane heals itself
+    without a dispatch. The live reader is bounded — one request, no retry, a 10 s timeout
+    on every socket operation, every failure a typed unavailable reading — and it stays the
+    default, so that what this refusal says is what a dispatch would have met. It is a
+    parameter because a second caller arrived that is not a dispatch (#427): `tools/land_review.py`
+    asks this rung inside `just land`, and a test of a landing record must be able to
+    stage that lane's state without a socket.
     """
-    result = breaker.lane_verdict(breaker.Store(directory=breaker_dir), lane_name, now)
+    store = breaker.Store(directory=breaker_dir, quota_reader=quota_reader)
+    result = breaker.lane_verdict(store, lane_name, now)
     if result.conducting:
         return None
     found = [f"lane={lane_name}", f"rule={result.rule}", f"why={result.reason}"]
@@ -2609,7 +2628,13 @@ def off_peak_refusal(lane: Lane, at: datetime) -> Refusal | None:
     )
 
 
-def lane_bar(lane: Lane, breaker_dir: Path, credentials: Path, at: datetime) -> Refusal | None:
+def lane_bar(
+    lane: Lane,
+    breaker_dir: Path,
+    credentials: Path,
+    at: datetime,
+    quota_reader: QuotaReader = breaker.query_first_party_quota,
+) -> Refusal | None:
     """Whether this lane can be reached at all at that moment, and what bars it if not.
 
     The half of `candidate_refusal` that is a function of the lane and the clock alone —
@@ -2625,8 +2650,22 @@ def lane_bar(lane: Lane, breaker_dir: Path, credentials: Path, at: datetime) -> 
     registry rungs stay with `candidate_refusal`, which is where a profile exists to
     judge; a caller holding only a lane name gets the lane's own answer and nothing
     borrowed from a profile it did not name.
+
+    **The order below is the answer, not an implementation detail**, and it is pinned by a
+    test (#427). A lane can be barred by more than one of the three at once — a tripped
+    breaker on a lane that is also off-peak and also missing its key — and this returns the
+    first, so the order decides which single bar a dispatch names and which one a landing
+    record carries. Breaker first because it is the only one that says something happened to
+    the provider; off-peak next because it is the human's policy on a lane that is otherwise
+    working; the credential last because a lane already refused for a reason of its own does
+    not need this box's configuration reported as its problem.
+
+    `quota_reader` is `breaker_refusal`'s seam and is passed through unchanged: it is the
+    only path from here to the network, its default is the live bounded reader, and a caller
+    that must not reach the provider — a test, or a landing rung staging a lane's state —
+    hands in its own.
     """
-    refusal = breaker_refusal(lane.name, breaker_dir, at.timestamp())
+    refusal = breaker_refusal(lane.name, breaker_dir, at.timestamp(), quota_reader)
     if refusal is not None:
         return refusal
     refusal = off_peak_refusal(lane, at)

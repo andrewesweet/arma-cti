@@ -27,7 +27,7 @@ from pathlib import Path
 from typing import Any, Final
 
 import pytest
-from conftest import REPO, load_tool
+from conftest import REPO, load_tool, no_lane_network
 
 # `land` imports `worktree` as a sibling script, so the sibling is loaded first
 # and registered under its own name for that import to find.
@@ -642,12 +642,15 @@ def _reach(at: Path) -> land_review.LaneReach:
     `_never_the_real_records`' reasoning, one seam further: the real defaults are this
     box's breaker directory, its credentials file and the wall clock, and a landing that
     read them would record `lane_barred` or `same_lane_chosen` according to the hour and
-    to whether z.ai's key happens to be installed here.
+    to whether z.ai's key happens to be installed here. The fourth default is the live
+    quota reader, which that same read can reach the provider through (#427) — so this
+    hands in the one that refuses to be called, and a staged landing that reached the
+    network would be red rather than online.
     """
     credentials = at / "credentials.env"
     credentials.write_text("ZAI_API_KEY=staged-for-this-test\n", encoding="utf-8")
     credentials.chmod(0o600)
-    return land_review.LaneReach(at / "breaker", credentials, OFF_PEAK)
+    return land_review.LaneReach(at / "breaker", credentials, OFF_PEAK, no_lane_network)
 
 
 def _reviewed(  # noqa: PLR0913 — one parameter per field of the record under test

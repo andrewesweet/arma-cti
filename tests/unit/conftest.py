@@ -95,6 +95,22 @@ def _load_script(name: str, path: Path) -> ModuleType:
     return module
 
 
+def no_lane_network(lane: str, credentials: Path, now: float) -> Any:  # noqa: ANN401 — see below
+    """Refuse to be the quota reader: this is what every test of a lane bar hands in (#427).
+
+    `dispatch.lane_bar`'s breaker rung is the one path from a dispatch's or a landing's
+    decision to the network — `breaker.lane_verdict` asks z.ai's own quota endpoint for a
+    lane held open on availability with no published boundary — and a unit test that reached
+    a provider to decide a bar would pass slowly, or differently, according to this box's
+    connectivity. Handed in wherever a bar is staged, so a test that reaches that branch
+    without staging its own reader is red rather than online. The return type is `Any`
+    because it never returns: annotating `breaker.QuotaReading` would make this the one
+    place in `conftest` that imports a `tools/` module at collection time.
+    """
+    message = f"a lane bar reached the network for {lane} at {now} via {credentials}"
+    raise AssertionError(message)
+
+
 def reply_to(daemon: Daemon, **envelope: object) -> dict[str, Any]:
     """Send one request and return its decoded reply."""
     return json.loads(daemon.handle_line(json.dumps(envelope)))
