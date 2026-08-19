@@ -361,8 +361,10 @@ worktree *args:
 # verdict carries across a clean rebase only where the rebase itself recorded the
 # replay as clean and the diff's exact identity still matches, and whether this
 # rebase replays clean is a fact only the landing has. A conflicted replay
-# changes the diff and the landing re-reviews; a recorded clean one keeps the
-# review and clears.
+# leaves the carry unproven — the landing re-reviews even where a hand
+# reproduced the diff exactly, because the provenance is missing rather than
+# the content changed; a recorded clean one keeps the review where the diff's
+# exact identity still matches, and clears.
 #
 # Three things it does that prose could not. The refspec is a constant no
 # argument reaches, so `git push origin main` — which pushes the local `main`

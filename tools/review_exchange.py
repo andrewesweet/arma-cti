@@ -54,9 +54,10 @@ that would not open could be the binding one, so any unreadable record refuses
 diff the record identifies exactly (#417, reworked).** The record carries the full
 reviewed SHA **and** the exact diff identity of the diff it was recorded over —
 merge-base relative to `origin/main`, the same range `just land` lands, hashed with
-`--unified=0` so no context line enters it and with hunk offsets normalised away, so
-whitespace is exact and an upstream edit beside the branch's own lines moves neither
-half. `satisfies` clears the named SHA first; where the SHA has moved, the verdict
+`--unified=0` so no context line enters it and with hunk offsets normalised away and
+the section anchors after them kept, so whitespace is exact and an upstream edit
+beside the branch's own lines moves neither half. `satisfies` clears the named SHA
+first; where the SHA has moved, the verdict
 carries **only** when two independent facts both hold: the move is a chain of clean
 rebases this project's tools ran and recorded (`just land --stage` and `just land`
 write each one as a link under the review state, so a rebase a hand resolved —
@@ -291,26 +292,43 @@ def _exchange_found(status: worktree.Preflight) -> tuple[str, ...]:
 
 # ------------------------------------------------------------------ the diff identity
 
-# Two line shapes inside a unified diff name the base rather than the change, so both
-# are normalised away before hashing: a hunk header (`@@ -12,3 +14,3 @@ …`) carries
-# line offsets that a clean rebase shifts whenever a sibling lands above the change,
-# and an `index` line carries the base-side blob hash, which any sibling edit of the
-# same file rewrites. Everything else — content lines with their whitespace exact,
-# file order, hunk order, mode lines — is hashed byte for byte.
-HUNK_HEADER: Final = re.compile(r"\A@@ [^\n]*")
+# What names the base inside a unified diff is narrower than a line: the line-number
+# ranges of a hunk header (`@@ -12,3 +14,3 @@ def anchor()`) shift whenever a sibling
+# lands above the change, while everything after them — the function or section
+# anchor — is content, and erasing the whole header made the same edit in two
+# different functions hash equal (round 3's Critical, one half). So only the ranges
+# are flattened and the anchor is kept. An `index` line's base-side blob hash is
+# rewritten by any sibling edit of the same textual file, so it is flattened there —
+# but a binary change's `index` line is the only content its diff carries at all, and
+# it stays byte for byte: git will not merge binaries, so a same-file binary edit on
+# both sides of a rebase cannot replay clean, and under every recorded clean replay
+# both blobs are exactly what they were, while erasing the line made different binary
+# changes to one path hash equal (round 3's Critical, other half). Everything else —
+# content lines with their whitespace exact, file order, hunk order, mode lines — is
+# hashed byte for byte. One limit, fail-closed: a clean rebase can still shift the
+# anchor itself where a sibling lands a function-like line between the old anchor and
+# the change, and that refuses a carry rather than granting one.
+HUNK_RANGES: Final = re.compile(r"\A@@ -\d+(?:,\d+)? \+\d+(?:,\d+)? @@")
 INDEX_LINE: Final = re.compile(r"\Aindex [^\n]*")
+BINARY_FOLLOWS: Final = ("Binary files ", "GIT binary patch")
 
 
 def _normalised_diff(diff: str) -> str:
-    """Return the diff with base-naming lines flattened, keeping content byte-exact."""
-    lines = []
+    """Return the diff with base-naming numbers flattened, keeping content byte-exact."""
+    lines: list[str] = []
+    pending_index: str | None = None
     for line in diff.splitlines(keepends=True):
-        if HUNK_HEADER.match(line):
-            lines.append("@@\n")
-        elif INDEX_LINE.match(line):
-            lines.append("index\n")
+        if pending_index is not None:
+            # What follows decides: a binary change keeps its `index` line (the only
+            # content it has); a textual or mode-only one flattens it.
+            lines.append(pending_index if line.startswith(BINARY_FOLLOWS) else "index\n")
+            pending_index = None
+        if INDEX_LINE.match(line):
+            pending_index = line
         else:
-            lines.append(line)
+            lines.append(HUNK_RANGES.sub("@@", line))
+    if pending_index is not None:  # a diff ending on an index line flattens it too
+        lines.append("index\n")
     return "".join(lines)
 
 
@@ -326,9 +344,13 @@ def diff_id_of(cwd: Path, sha: str) -> str | Refusal:
     re-reviewed every branch a sibling had landed near; and sha256 of the exact
     bytes, so whitespace is significant — the other disproof, where `git patch-id
     --stable` stripped trailing whitespace and a resolution the reviewer never saw
-    hashed equal to the reviewed diff. Hunk offsets and `index` lines are normalised
-    away (`_normalised_diff`) because they name the base, and a clean rebase moves
-    the base by construction. A diff identity is a claim about the change, never
+    hashed equal to the reviewed diff. Hunk offsets are normalised away and the
+    section anchor after them kept, and an `index` line is flattened for a textual
+    file and kept whole for a binary one (`_normalised_diff`), because offsets and a
+    textual file's base-side blob hash name the base, which a clean rebase moves by
+    construction — while a binary change's `index` line is the only content it has,
+    and under a recorded clean replay neither of its blobs can have moved. A diff
+    identity is a claim about the change, never
     about whether the rebase that produced it was clean — that half is the recorded
     links' (`carried_by_clean_rebase`), and the two are checked together. The limit
     is `DIFF_ID_LIMIT`'s and is printed wherever a clearance rides it.

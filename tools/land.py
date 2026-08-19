@@ -1043,8 +1043,9 @@ def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:
     `origin/main` had no supported way to obtain the commit to review: the only way to
     produce it was to run the landing, be refused `no_review_dispatch`, and review what
     the refused run left behind. That worked, but it made the refusal a step of the
-    happy path — and under concurrency it does not converge, because anything landing
-    in the interval moves the SHA again and orphans the fresh verdict.
+    happy path — and under concurrency it did not converge, because anything landing
+    in the interval moved the SHA again, which before #417's recorded carry orphaned
+    each fresh verdict.
 
     It stops before the gate, the push and the merge on purpose. Nothing here can land
     anything: the rebase is the one act. The refusals it shares with `land` are the
@@ -1168,9 +1169,10 @@ def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:
                 " then `just land`"
             ),
             (
-                "note=anything landing on origin/main before you do moves this SHA again"
-                " and orphans the verdict bound to it; stage, review and land without a"
-                " long gap between them."
+                "note=anything landing on origin/main before you do moves this SHA"
+                " again; the landing's own rebase is recorded, so the verdict still"
+                " carries where that replay is clean and the diff's identity matches —"
+                " a conflict or a changed diff re-reviews"
             ),
         ),
         0,

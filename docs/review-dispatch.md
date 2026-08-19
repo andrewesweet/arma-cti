@@ -218,8 +218,12 @@ from `git show`, `rg -n` or a `Read`, never retyped from memory of what was read
 
 The verdict record beside the review's dispatch names the commit it judged and the exact
 identity of the diff it judged (#417): a SHA-256 over `git diff --unified=0 origin/main...<sha>`
-with the hunk-header and `index` lines normalised away, so line offsets a sibling's landing
-shifts and base-side blob hashes cannot move it, while every added and removed byte still does.
+with only the line-number ranges inside a hunk header normalised away — the section anchor
+after them is content and stays — and an `index` line flattened for a textual file but kept
+whole for a binary change, where its blob hashes are the only content the diff carries. So
+line offsets a sibling's landing shifts and a textual file's base-side blob hash cannot move
+it, while every added and removed byte, which function the change sits in, and a binary
+change's actual bytes still do.
 A landing whose rebase moved the SHA carries the review across only where **both** halves hold:
 
 1. **the rebase's own outcome, recorded as a fact.** Only the tool that ran the rebase knows

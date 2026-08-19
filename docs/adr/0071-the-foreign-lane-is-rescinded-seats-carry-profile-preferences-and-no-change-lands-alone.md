@@ -506,8 +506,10 @@ Without that, an amended or rebased branch lands on an earlier approval.
 *(Amendment A5, 2026-08-18, on the human's instruction of that date recorded on
 #417, whose first build was reviewed Critical and reworked: the refusal is
 not absolute over a moved SHA. A verdict also records the exact identity of the diff
-it judged — a SHA-256 over `git diff --unified=0 origin/main...<sha>` with hunk-header
-and `index` lines normalised away — and a landing carries the review across a rebase
+it judged — a SHA-256 over `git diff --unified=0 origin/main...<sha>` with only the
+line-number ranges of each hunk header normalised away (the section anchor after them
+kept) and an `index` line flattened for a textual file but kept whole for a binary
+change, whose blob hashes are its only content — and a landing carries the review across a rebase
 only where **both** hold: the rebase's own outcome was recorded as clean by the tool
 that ran it (`<review-root>/<issue>/rebases.json`, written by `just land --stage` and
 `just land`), and the identity computed over the rebased tree equals the recorded one.

@@ -12,8 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **A review verdict binds the diff it reviewed, not only the commit, so a clean rebase no
   longer orphans it (#417).** `just review record` now writes the exact identity of the
   reviewed diff into the verdict — a SHA-256 over `git diff --unified=0` of the same
-  merge-base-relative range `just land` will land, with hunk-header and `index` lines
-  normalised away so a sibling's landing cannot move it, fetched first, never typed — and the
+  merge-base-relative range `just land` will land, with only the line-number ranges inside a
+  hunk header normalised away (the section anchor after them is content and stays) and an
+  `index` line flattened for textual files but kept for a binary change, whose blob hashes
+  are its only content, so a sibling's landing cannot move it while a change of function,
+  bytes or whitespace still does — fetched first, never typed — and the
   landing's never-alone rung accepts a verdict whose SHA has moved only where **both** halves
   hold: the rebase was recorded as clean by the tool that ran it (`just land` and `just land
   --stage` append to `rebases.json` under the review root), and the identity computed over the
@@ -23,7 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   patch-id hashes context, so an upstream edit inside the surrounding lines refused the very
   carry the mechanism existed to grant. Hashing the output cannot prove whether conflict
   resolution occurred at all — only the rebase knows that, which is why its own record is one
-  of the two halves. A moved SHA with no recorded clean-rebase chain refuses `rebase_unproven`,
+  of the two halves. A moved SHA with no recorded clean-rebase chain refuses `rebase_unproven`
+  — the verdict never rides a rebase a hand resolved, even one that reproduced the diff
+  exactly, because the provenance is missing rather than the content changed —
   an absent or malformed identity on either side is `diff_id_unreadable` and never a pass
   (#41) — which is also the one-time re-review a verdict recorded before this change takes —
   and the limit is stated in the docs and the rung's own prose: a matching identity plus

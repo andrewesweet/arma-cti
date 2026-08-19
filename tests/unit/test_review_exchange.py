@@ -1053,20 +1053,28 @@ def test_a_conflict_resolved_rebase_changes_the_diff_id(tmp_path: Path) -> None:
 
 
 def test_a_whitespace_only_resolution_changes_the_diff_id(tmp_path: Path) -> None:
-    """The review's Critical disproof, held as a test.
+    """The first build's Critical disproof, held as a test that holds it.
 
-    The resolution the reviewer never saw differs from the reviewed diff by
-    whitespace alone. `git patch-id --stable` strips it, so under the first build this resolution
-    cleared as "unchanged" and carried a review across a diff no reviewer had
-    judged. The identity hashes the diff's bytes exactly, so it refuses here —
-    and the recorded-clean-rebase half refuses it too, because no tool ran this
-    rebase to completion on its own.
+    Round 3's Medium: the first draft of this test compared `one`→`two` against
+    `three`→`a hand resolved it   `, whose non-whitespace content already
+    differs — strip the spaces and it still passed, so it pinned nothing. Here
+    the reviewed diff and the resolved one differ by whitespace alone: the
+    sibling change on `origin/main` is itself whitespace-only, the hand keeps
+    the work's line exactly, and the only byte distance between the two diffs is
+    the trailing spaces on the removed line. `git patch-id --stable` strips
+    whitespace, so under the first build this resolution cleared as "unchanged"
+    and carried a review across a diff no reviewer had judged. The identity
+    hashes the diff's bytes exactly, so it refuses here — and the
+    recorded-clean-rebase half refuses it too, because no tool ran this rebase
+    to completion on its own.
     """
     repo, reviewed = staged_review(tmp_path, readme="one\nline 2\nline 3\nline 4\nline 5\nline 6")
     reviewed_id = review_exchange.diff_id_of(repo, reviewed)
     assert isinstance(reviewed_id, str)
 
-    move_main(repo, readme="three\nline 2\nline 3\nline 4\nline 5\nline 6")
+    # The sibling change rewrites the same line by whitespace alone, so the
+    # conflict is real but the two bases differ only in trailing spaces.
+    move_main(repo, readme="one  \nline 2\nline 3\nline 4\nline 5\nline 6")
     worktree.git(
         "-c",
         "user.email=t@example",
@@ -1077,9 +1085,9 @@ def test_a_whitespace_only_resolution_changes_the_diff_id(tmp_path: Path) -> Non
         cwd=repo,
         check=False,
     )  # conflicts, as staged
-    # Identical resolution to the test above, save trailing whitespace on the
-    # line the reviewer's diff never carried.
-    (repo / "README").write_text("a hand resolved it   ", encoding="utf-8")
+    # The hand keeps the work's line exactly: the resolved diff differs from the
+    # reviewed one by the removed line's trailing spaces and nothing else.
+    (repo / "README").write_text("two\nline 2\nline 3\nline 4\nline 5\nline 6", encoding="utf-8")
     worktree.git("add", ".", cwd=repo)
     worktree.git(
         "-c",
@@ -1118,6 +1126,128 @@ def test_a_whitespace_only_resolution_changes_the_diff_id(tmp_path: Path) -> Non
     )
     assert unproven is not None
     assert unproven.kind == "rebase_unproven"
+
+
+def test_the_same_edit_in_a_different_function_changes_the_diff_id(tmp_path: Path) -> None:
+    """Round 3's Critical disproof, anchor half, held as a test.
+
+    Flattening the whole hunk header erased the section anchor after the line
+    numbers, so the same one-line edit made in a different function hashed equal
+    to the reviewed one — a recorded clean rebase could then satisfy the
+    provenance half while the identity hid a changed diff. Only the ranges name
+    the base; the anchor is content.
+    """
+    code = "def alpha():\n    return 1\n\n\ndef beta():\n    return 1\n"
+    repo = init_repo(tmp_path)
+    commit(repo, "code.py", code, "code")
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    base = head_of(repo)
+
+    ids = []
+    for which in ("alpha", "beta"):
+        worktree.git("checkout", "-q", base, cwd=repo)
+        worktree.git("checkout", "-q", "-b", which, cwd=repo)
+        (repo / "code.py").write_text(
+            code.replace(f"def {which}():\n    return 1", f"def {which}():\n    return 2", 1),
+            encoding="utf-8",
+        )
+        worktree.git("add", ".", cwd=repo)
+        worktree.git(
+            "-c", "user.email=t@example", "-c", "user.name=t", "commit", "-q", "-m", which, cwd=repo
+        )
+        identity = review_exchange.diff_id_of(repo, head_of(repo))
+        assert isinstance(identity, str)
+        ids.append(identity)
+
+    # Both diffs carry the same removed and added lines; only the anchor names
+    # which function each sits in, and the identity must hear it.
+    assert ids[0] != ids[1]
+
+
+def test_different_binary_changes_to_one_path_change_the_diff_id(tmp_path: Path) -> None:
+    """Round 3's Critical disproof, binary half, held as a test.
+
+    A binary change's diff has no content lines: the changed bytes exist only as
+    blob hashes on the `index` line, which the previous normalisation flattened
+    whole — so two different binary changes to the same path hashed equal, and a
+    changed diff could hide behind a recorded clean rebase. Where what follows
+    the `index` line says the change is binary, the line stays byte for byte.
+    """
+    repo = init_repo(tmp_path)
+    (repo / "blob.bin").write_bytes(b"\x00\x01\x02")
+    worktree.git("add", ".", cwd=repo)
+    worktree.git(
+        "-c", "user.email=t@example", "-c", "user.name=t", "commit", "-q", "-m", "bin", cwd=repo
+    )
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    base = head_of(repo)
+
+    ids = []
+    for content in (b"\x00\x01\x03", b"\x00\x01\x05"):
+        worktree.git("checkout", "-q", base, cwd=repo)
+        worktree.git("checkout", "-q", "-b", f"b{content[-1]}", cwd=repo)
+        (repo / "blob.bin").write_bytes(content)
+        worktree.git("add", ".", cwd=repo)
+        worktree.git(
+            "-c",
+            "user.email=t@example",
+            "-c",
+            "user.name=t",
+            "commit",
+            "-q",
+            "-m",
+            "bytes",
+            cwd=repo,
+        )
+        identity = review_exchange.diff_id_of(repo, head_of(repo))
+        assert isinstance(identity, str)
+        ids.append(identity)
+
+    assert ids[0] != ids[1]
+
+
+def test_a_clean_rebase_keeps_the_diff_id_of_a_binary_change(tmp_path: Path) -> None:
+    """Keeping a binary `index` line must not reintroduce base-dependence.
+
+    The pre-image blob names the base, but only a same-file edit rewrites it —
+    and git will not merge binaries, so a same-file edit on both sides of a
+    rebase cannot replay clean and no verdict carries across it at all. A
+    sibling landing elsewhere leaves both blobs what they were, so the kept line
+    moves the identity for a real reason only.
+    """
+    repo = init_repo(tmp_path)
+    (repo / "blob.bin").write_bytes(b"\x00\x01\x02")
+    worktree.git("add", ".", cwd=repo)
+    worktree.git(
+        "-c", "user.email=t@example", "-c", "user.name=t", "commit", "-q", "-m", "bin", cwd=repo
+    )
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    worktree.git("checkout", "-q", "-b", "work", cwd=repo)
+    (repo / "blob.bin").write_bytes(b"\x00\x01\x07")
+    worktree.git("add", ".", cwd=repo)
+    worktree.git(
+        "-c", "user.email=t@example", "-c", "user.name=t", "commit", "-q", "-m", "work", cwd=repo
+    )
+    reviewed = head_of(repo)
+    reviewed_id = review_exchange.diff_id_of(repo, reviewed)
+    assert isinstance(reviewed_id, str)
+
+    # `origin/main` moves on a file the work never touches, and the rebase replays.
+    worktree.git("checkout", "-q", "-b", "main-ahead", "origin/main", cwd=repo)
+    commit(repo, "elsewhere", "unrelated", "main moves on")
+    worktree.git("push", "-q", "origin", "HEAD:refs/heads/main", cwd=repo)
+    worktree.git("fetch", "-q", "origin", cwd=repo)
+    worktree.git("checkout", "-q", "work", cwd=repo)
+    worktree.git(
+        "-c", "user.email=t@example", "-c", "user.name=t", "rebase", "origin/main", cwd=repo
+    )
+
+    rebased = head_of(repo)
+    assert rebased != reviewed
+    assert review_exchange.diff_id_of(repo, rebased) == reviewed_id
 
 
 # ------------------------------------------------------------------ invocation
