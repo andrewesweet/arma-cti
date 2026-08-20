@@ -773,15 +773,19 @@ FLAKE_NONE: Final = (
 # mutation output and no sampled-versus-exhaustive statement. A reviewer told the gate is
 # not theirs and given no numbers has been disarmed rather than redirected: the counts and
 # the classification are required unconditionally. That requirement is untouched by #449.
+MUTATION_SAMPLING_PASTE_RULE: Final = (
+    "`just mutation`'s own `mutation smoke: run was sampled` (fewer than every planted"
+    " candidate reached a verdict) or `mutation smoke: run was exhaustive` (every planted"
+    " candidate reached a verdict) line verbatim"
+)
 REVIEW_GATE_RULE: Final = (
     "You re-run none of the implementer's gate. It has already run; its wall time is the"
     " cost this rule exists to avoid, and you are passed its report instead (human ruling"
     " 2026-08-14 on #353, as clarified 2026-08-20 on #449). The implementer's pasted gate"
     " output on the issue thread is your gate record: it must carry `just check`,"
-    " `just unit` and `just mutation` with their result counts, including `just mutation`'s"
-    " own `mutation smoke: run was sampled` (fewer than every planted candidate reached a"
-    " verdict) or `mutation smoke: run was exhaustive` (every planted candidate reached a"
-    " verdict) line verbatim (#344) — unconditionally, not only where a kill rate is quoted."
+    " `just unit` and `just mutation` with their result counts, including "
+    f"{MUTATION_SAMPLING_PASTE_RULE} (#344) — unconditionally, not only where a kill rate"
+    " is quoted."
     " A paste that is absent, thinner than that, silent on counts, or silent on"
     " sampled-or-exhaustive is a finding — report it as an observation rather than running"
     " the gate yourself (#421)."
@@ -1069,9 +1073,7 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
         (
             f"Close #{issue} with a criterion-by-criterion audit quoting the gate's output"
             " — `just check`, `just unit`, `just mutation`, each with its result counts —"
-            " and including `just mutation`'s own `mutation smoke: run was sampled` (fewer"
-            " than every planted candidate reached a verdict) or `mutation smoke: run was"
-            " exhaustive` (every planted candidate reached a verdict) line verbatim (#344,"
+            f" and including {MUTATION_SAMPLING_PASTE_RULE} (#344,"
             " #421: unconditionally, never only where a kill rate is quoted)."
         ),
     ]

@@ -2068,7 +2068,10 @@ def _judge(
     red = 0
     refused = 0
     subjects: set[str] = set()
-    sampled = False
+    # A non-empty target set that reaches no verdict measured nothing, so it
+    # must not make the stronger exhaustive claim. Mixed runs still aggregate
+    # only the verdicts they reached; an exempt target planted no candidate.
+    sampled = bool(targets) and all(target in NO_MUTABLE_SUBJECT for target in targets)
     for target in targets:
         if target in NO_MUTABLE_SUBJECT:
             print(f"-- {target} exempt: {NO_MUTABLE_SUBJECT[target]}", flush=True)  # noqa: T201

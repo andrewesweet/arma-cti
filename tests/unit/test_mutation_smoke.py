@@ -257,7 +257,7 @@ def test_the_sampling_line_agrees_with_the_composed_brief(
     capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
 ) -> None:
     smoke_tool._report_sampling(sampled=sampled, refused=False)  # noqa: SLF001
-    assert capsys.readouterr().out.strip() in brief_tool.REVIEW_GATE_RULE
+    assert capsys.readouterr().out.strip() in brief_tool.MUTATION_SAMPLING_PASTE_RULE
 
 
 def test_a_refused_run_states_no_sampling_result(capsys) -> None:  # noqa: ANN001
@@ -1191,6 +1191,20 @@ def test_an_empty_run_states_no_sampling_result(tmp_path: Path, capsys) -> None:
     assert "mutation smoke: nothing added or changed against main" in out
     assert "run was sampled" not in out
     assert "run was exhaustive" not in out
+
+
+def test_an_all_exempt_run_fails_closed_as_sampled(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    target = "tests/unit/test_exempt.py"
+    monkeypatch.setattr(smoke_tool, "NO_MUTABLE_SUBJECT", {target: "cost, not shape"})
+    assert smoke_tool.main(["--root", str(tmp_path), "--paths", target]) == 0
+    out = capsys.readouterr().out
+    assert f"-- {target} exempt: cost, not shape" in out
+    assert "mutation smoke: run was sampled" in out
+    assert "mutation smoke: run was exhaustive" not in out
 
 
 def test_the_named_list_clears_the_gate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

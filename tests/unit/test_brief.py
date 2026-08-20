@@ -1249,11 +1249,16 @@ def test_an_implementer_briefing_is_asked_for_the_paste_the_review_reads() -> No
     assert "quoting the gate's output" in rendered
     assert "`just check`, `just unit`, `just mutation`" in rendered
     assert "each with its result counts" in rendered
-    assert "mutation smoke: run was sampled" in rendered
-    assert "mutation smoke: run was exhaustive" in rendered
-    assert "fewer than every planted candidate reached a verdict" in rendered
-    assert "every planted candidate reached a verdict" in rendered
+    assert brief.MUTATION_SAMPLING_PASTE_RULE in rendered
     assert "unconditionally" in rendered
+
+
+def test_review_dispatch_docs_carry_the_same_sampling_paste_rule_twice() -> None:
+    documented = " ".join(
+        (REPO / "docs" / "review-dispatch.md").read_text(encoding="utf-8").split()
+    )
+    rule = " ".join(brief.MUTATION_SAMPLING_PASTE_RULE.split())
+    assert documented.count(rule) == 2
 
 
 @pytest.mark.parametrize("seat", ["implementer", "planner", "recon", "retro"])
