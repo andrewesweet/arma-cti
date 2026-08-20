@@ -19,7 +19,7 @@ import json
 import subprocess
 import time
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 from conftest import REPO, load_tool
@@ -193,11 +193,26 @@ def test_a_seat_omitting_the_lands_column_refuses_rather_than_defaulting() -> No
 
     The guard runs at import over both registries; this calls it directly on a seat
     spelling neither `True` nor `False`, which is the arrival the set pin above cannot
-    distinguish from a decided `False`.
+    distinguish from a decided `False`. That covers the omitted column and, since the
+    review round that widened the guard, the misspelled one too: the annotation
+    `bool | None` enforces nothing at runtime, and the guard's first spelling refused
+    only `is None`, so a truthy `1` passed it into the registry — read into the lander
+    set by truthiness, composed as a non-lander by `brief.Seat.lands`'s `is True`, the
+    disagreement the review blocked on. `cast`, not a `type: ignore`, because the wrong
+    type is the arrangement rather than a check to silence.
     """
     undecided = dispatch.Seat("new", claude_only=False, preference=("opus-low",))
     with pytest.raises(TypeError, match="lands"):
         dispatch.refuse_undecided_lands({"new": undecided})
+    for misspelled in (1, "false"):
+        seat = dispatch.Seat(
+            "new",
+            claude_only=False,
+            preference=("opus-low",),
+            lands=cast("bool | None", misspelled),
+        )
+        with pytest.raises(TypeError, match="lands"):
+            dispatch.refuse_undecided_lands({"new": seat})
 
 
 def test_the_implementer_list_is_the_adrs_order_head_first() -> None:

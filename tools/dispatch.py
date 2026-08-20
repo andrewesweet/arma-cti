@@ -678,7 +678,8 @@ class Seat(NamedTuple):
     # or the `orchestrator` as any route's lander, so they are `False`. Every row
     # spells its answer, because the column has no working default: `None` is the
     # undecided state and `refuse_undecided_lands` below fails this module's import on
-    # it, so a new seat arrives decided or not at all — never silently in either arm.
+    # every spelling but the two booleans, so a new seat arrives decided or not at
+    # all — never silently in either arm.
     # This is not `tools/ledger.py`'s `SEAT_LANDS`, which classifies what a finished
     # run's record reads as having landed — a view over records, not a fact a brief is
     # composed from, and the two are held in step by name-set only.
@@ -890,12 +891,22 @@ DECLARED_ONLY_SEATS: Final[dict[str, Seat]] = {
 # any assertion ran, which is the gap the cross-lane review found in the
 # re-implementation — the banked branch had spelled the column on every row, and the
 # persisted claim ("a new seat arrives decided") was written as if spelling were
-# enforcement. It is not: `None` is the undecided state, and failing this module's
+# enforcement. It is not, and neither is the annotation: `bool | None` checks nothing
+# at runtime, and this guard's first spelling refused only `is None`, so a truthy
+# `1` passed it into a registry whose set pin reads truthiness while `brief.Seat.lands`
+# composes `is True` — two surfaces disagreeing over a value the registry admitted,
+# the fresh cross-lane review's blocker. `isinstance` admits exactly the two decided
+# spellings (`bool` has no other instances and cannot be subclassed) and refuses
+# everything else, `None` the omitted column included, and failing this module's
 # import is the refusal, because every gate and every test run reaches it. A new seat
 # spelling neither `True` nor `False` never reaches a brief.
 def refuse_undecided_lands(seats: Mapping[str, Seat]) -> None:
-    """Refuse a registry whose rows leave `lands` undecided, rather than defaulting it."""
-    undecided = [name for name, seat in seats.items() if seat.lands is None]
+    """Refuse a registry whose rows leave `lands` undecided, rather than defaulting it.
+
+    Undecided is both spellings the column forbids: omitted (`None`, the default) and
+    any value that is not exactly a boolean, which the annotation never checks.
+    """
+    undecided = [name for name, seat in seats.items() if not isinstance(seat.lands, bool)]
     if undecided:
         raise TypeError("seat(s) without a decided `lands` column: " + " ".join(undecided))
 
