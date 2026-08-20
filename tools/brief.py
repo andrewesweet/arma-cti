@@ -542,6 +542,17 @@ class Seat(NamedTuple):
         registered = dispatch.SEATS.get(self.name)
         return registered is not None and registered.judgement_only
 
+    # #345's predicate, in the same shape as the one above it: the derivation lives on
+    # the registry row (`dispatch.Seat.lands`) and this delegates rather than rederives,
+    # so the composed brief cannot disagree with the table. A seat absent from the
+    # registry lands nothing — the arm that refuses the close, which is the safe side
+    # for a name the parser should never have accepted.
+    @property
+    def lands(self) -> bool:
+        """Whether the registry names this seat ADR-0071 ruling 4's lander."""
+        registered = dispatch.SEATS.get(self.name)
+        return registered is not None and registered.lands
+
 
 def derive_seat(override: str, reviewing: str = "") -> Seat:
     """Name the seat and quote the mapping's reason, or ask for the orchestrator's.
@@ -835,6 +846,44 @@ READONLY_LANDING_RULE: Final = (
     " do not file an issue or a comment; your entire output is your final message"
     " (ADR-0071 ruling 2)."
 )
+# #345, re-derived after #439. The Landing section's close sentence used to be the
+# only mechanism that closed an issue, and before ADR-0071 telling every seat to run
+# it was right. Ruling 4 then made the close the lander's act — #323's seat closed its
+# issue on the composed line alone, before any review existed — and #439 made `just
+# land` itself perform it on the success path. So the sentence is not softened but
+# replaced: a seat obeying the old wording walks a second mechanism onto ground the
+# rung already covered and finds the issue closed. What survives of it is the audit,
+# moved to the thread report below, because #449's review reads exactly that paste as
+# its gate record — the audit was never the close's private form, it is the record
+# both the review and the rung's close rest on.
+RUNG_CLOSE_RULE: Final = (
+    "`just land` closes #{issue} itself, on its success path and nowhere else (#439):"
+    " do not close the issue by hand and do not close it early. The landing's own"
+    " `issue_closed=` line is part of the verbatim paste; where it reads"
+    " `issue_closed=no reason=…` the work is already on `origin/main` and the tracker"
+    " state is bookkeeping — report the line, never retry the close."
+)
+THREAD_AUDIT_RULE: Final = (
+    "Post on #{issue}'s thread a criterion-by-criterion audit quoting the gate's output"
+    " — `just check`, `just unit`, `just mutation`, each with its result counts —"
+    f" including {MUTATION_SAMPLING_PASTE_RULE} (#344, #421:"
+    " unconditionally, never only where a kill rate is quoted). That paste is the"
+    " review's gate record (#449), so it is owed before the branch is handed over, not"
+    " only once the landing has closed the issue."
+)
+# The writable arm's other half (#345): a seat that may write but is not the lander.
+# `planner` is today's clearest row — ruling 2's "neither gates nor lands" — with
+# `fable` and the `orchestrator` beside it on the same ground: no ruling names them
+# as any route's lander. The section states what the seat's role permits rather than
+# a softened implementer's: committing and reporting are its acts, and both the
+# landing and the close belong to the rung that performs them.
+NONLANDING_LANDING_RULE: Final = (
+    "This seat is not the lander (ADR-0071 ruling 4): do not run `just land`, and leave"
+    " #{issue} open — never close it. Commit your work and report it; the review that"
+    " gates the landing has not happened when this seat finishes, so whether the work"
+    " reached `main` is not this seat's to know. The issue closes with the landing"
+    " itself — `just land`'s own success path (#439) — and by no other hand."
+)
 PASTE_RULE: Final = (
     "Quote `just verdict`'s rendered body verbatim; never retype the SHA or the evidence"
     " path (CLAUDE.md; #219's A/B — all four failures were retyping)."
@@ -1047,10 +1096,15 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
     composed — these seats meet the same headings and never a silence — and within the arm
     the paste contract is the reviewer's alone, because `recon` judges no implementer's
     work.
-
     `CHANGELOG_CLAIM_RULE` reaches both arms: the implementer writes the fragment and the
     reviewer judges it, so each meets it where it works (#460). `recon` writes no fragment
     and judges none, so it is the one seat the rule is silent for.
+
+    The writable arm splits once more, on `Seat.lands` (#345): a seat the registry does
+    not name as ruling 4's lander keeps the gate and the commit instruction but is left
+    off the landing protocol, and neither half carries a close instruction, because
+    `just land` closes the issue itself on its success path (#439) — a composed order
+    to close would be a second mechanism for an act the rung had already performed.
     """
     issue, seat, gate, flakes = briefing.issue, briefing.seat, briefing.gate, briefing.flakes
     if seat.judgement_only:
@@ -1085,6 +1139,23 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
         lines.append(FLAKE_RESPONSE)
     else:
         lines.append(FLAKE_NONE)
+    # The writable arm's own split (#345): only the registry's lander is handed the
+    # landing protocol, and no seat at all is handed the close — that is `just land`'s
+    # own act on its success path (#439), so the branch that remains is over whether
+    # the seat runs the rung, never over who closes. The commit line stays in both
+    # halves: a non-lander's commits reach `main` through the lander, and Conventional
+    # Commits and the `refs` trailer bind them the same. `CHANGELOG_CLAIM_RULE` rides
+    # beside it for the same reason — a non-lander's commits carry fragments, so the
+    # claim rule binds them exactly as the lander's do (#460).
+    if not seat.lands:
+        return [
+            *lines,
+            "",
+            "## Landing: none — this seat is not the lander",
+            f"Conventional Commits, `refs #{issue}`, commit early.",
+            CHANGELOG_CLAIM_RULE,
+            NONLANDING_LANDING_RULE.format(issue=issue),
+        ]
     return [
         *lines,
         "",
@@ -1093,12 +1164,8 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
         CHANGELOG_CLAIM_RULE,
         "Land via `just land` and paste its output verbatim — never retype it.",
         ADJUDICATION_RULE,
-        (
-            f"Close #{issue} with a criterion-by-criterion audit quoting the gate's output"
-            " — `just check`, `just unit`, `just mutation`, each with its result counts —"
-            f" and including {MUTATION_SAMPLING_PASTE_RULE} (#344,"
-            " #421: unconditionally, never only where a kill rate is quoted)."
-        ),
+        RUNG_CLOSE_RULE.format(issue=issue),
+        THREAD_AUDIT_RULE.format(issue=issue),
     ]
 
 

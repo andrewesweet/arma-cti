@@ -171,6 +171,21 @@ def test_every_seat_carries_a_preference_list_of_registered_profiles() -> None:
             assert name in dispatch.PROFILES, f"{seat.name}: {name}"
 
 
+def test_the_landers_are_exactly_the_seats_the_rulings_name() -> None:
+    """#345: the `lands` column holds the rulings' own words, pinned as a set.
+
+    Ruling 2 makes the implementer "carry the work out … and land it" and the planner
+    "neither gates nor lands"; A4 makes the retro's journal entry "land under ruling 4
+    like any other change". No ruling names `fable` or the `orchestrator` as any route's
+    lander, so they sit outside the set rather than defaulting in — a new seat arriving
+    unclassified fails here rather than silently inheriting the landing protocol.
+    """
+    assert {name for name, seat in dispatch.SEATS.items() if seat.lands} == {
+        "implementer",
+        "retro",
+    }
+
+
 def test_the_implementer_list_is_the_adrs_order_head_first() -> None:
     # Ordered, not a set: ADR-0071 ruling 2 gives the list head-first and resolution walks
     # it in exactly that order, so the sequence is the claim.

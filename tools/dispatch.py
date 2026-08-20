@@ -661,6 +661,24 @@ class Seat(NamedTuple):
     # and is never silent — `Resolution.containment_lines` names the seat that forced it.
     permission_mode: str = ""
 
+    # #345: whether this seat is ADR-0071 ruling 4's lander — the role that "executes
+    # `just land`". The composed brief's Landing section branches on it through
+    # `brief.Seat.lands`, which delegates here, exactly as its three protocol sections
+    # branch on `judgement_only` (#421): an instruction to land and to close is an ask
+    # only the rulings' lander can act on, and every other seat met it as a standing
+    # order to do what ruling 4 had taken from it (#323 closed its issue on this line
+    # alone). Two rows carry `True`, each on its ruling's own words: `implementer`
+    # because ruling 2 says it "carries the work out … and lands it", and `retro`
+    # because A4 makes the journal entry "land under ruling 4 like any other change" —
+    # one artefact, scoped in the seat's own reason. The planner's `False` is ruling
+    # 2's "neither gates nor lands"; `recon` and `review` land nothing by their own
+    # rulings and are read-only besides; no ruling names `fable` or the `orchestrator`
+    # as any route's lander, so they stay `False` rather than defaulting to `True`.
+    # This is not `tools/ledger.py`'s `SEAT_LANDS`, which classifies what a finished
+    # run's record reads as having landed — a view over records, not a fact a brief is
+    # composed from, and the two are held in step by name-set only.
+    lands: bool = False
+
     # #421's one predicate, stated where the column it reads lives so no caller rederives it.
     # Both brief paths branch on this — the composed brief's three sections through
     # `brief.Seat.judgement_only`, which delegates here, and `default_brief` below — and the
@@ -707,6 +725,7 @@ SEATS: Final[dict[str, Seat]] = {
         claude_only=False,
         preference=IMPLEMENTER_PREFERENCE,
         escalation=IMPLEMENTER_ESCALATION,
+        lands=True,
     ),
     # No escalation entry, and ADR-0071 ruling 2 as A1 amends it means that as *never
     # applicable* rather than *not yet decided*: `recon` is read-only and lands nothing, so no
@@ -811,6 +830,7 @@ SEATS: Final[dict[str, Seat]] = {
         claude_only=False,
         preference=("fable-high", "opus-xhigh", "codex-sol-xhigh"),
         escalation=("opus-max", "fable-max"),
+        lands=True,
     ),
     # Absent from ADR-0071 ruling 2's table and therefore carrying no escalation entry, which
     # after A1 struck the blanket `fable-high` fallback means an escalation from this seat

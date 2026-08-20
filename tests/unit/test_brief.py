@@ -1223,15 +1223,21 @@ def test_the_composed_gate_and_landing_arms_follow_the_forced_permission_mode() 
     rule. The assertion reads the predicate rather than retyping the column, because a
     retyped expression here agreed with a bypassing code path by construction — the
     failure the mutation test below exists to catch.
+
+    #345 narrowed the landing half a rung further: `## Landing: none` now marks every
+    seat the registry does not name as ruling 4's lander, not only the forced-read-only
+    ones, and the land-via instruction reaches the landers alone. The gate assertions
+    are unchanged — the gate arm still follows the forced mode and nothing else.
     """
     for name, seat in dispatch.SEATS.items():
         rendered = composed(seat=brief.derive_seat(name))
         judgement_only = seat.judgement_only
+        lands = seat.lands and not judgement_only
         assert ("## Gate: none — this seat runs none" in rendered) is judgement_only, name
-        assert ("## Landing: none" in rendered) is judgement_only, name
+        assert ("## Landing: none" in rendered) is not lands, name
         # The implementer's asks reach only a seat that may act on them.
         assert ("`just fast`" in rendered) is not judgement_only, name
-        assert ("Land via `just land`" in rendered) is not judgement_only, name
+        assert ("Land via `just land`" in rendered) is lands, name
         assert ("commit early" in rendered) is not judgement_only, name
 
 
@@ -1284,6 +1290,60 @@ def test_the_changelog_claim_rule_says_the_gate_is_content_blind() -> None:
     """Criterion 5: nothing may claim `just check` judges whether a fragment is true (#429)."""
     assert "content-blind" in brief.CHANGELOG_CLAIM_RULE
     assert "verifies that a fragment exists, never that it is true" in brief.CHANGELOG_CLAIM_RULE
+
+
+def test_no_composed_brief_commands_its_seat_to_close_the_issue() -> None:
+    """#345, re-derived after #439: the close is the landing rung's act, unconditionally.
+
+    The issue was filed against a close instruction that reached every seat; the banked
+    fix kept it for the two landers on the ground that ruling 4 made closing theirs.
+    #439 landed two days later and put the close inside `just land`'s own success path,
+    so the kept instruction became a second mechanism for one act — a seat obeying it
+    finds the issue already closed. The assertion is therefore over every seat rather
+    than the non-landing half: the unconditional close was the defect, and the seat
+    condition that survives is none. What the lander meets instead is named in the
+    companion test below.
+    """
+    for name in dispatch.SEATS:
+        rendered = composed(seat=brief.derive_seat(name))
+        assert "Close #" not in rendered, name
+
+
+def test_the_lander_is_told_the_rung_closes_and_owed_the_thread_audit() -> None:
+    """#345's keep-list against #439's change of ground.
+
+    The verbatim-paste rule survives wherever landing is described, and the
+    criterion-by-criterion audit survives as the lander's thread report — #449's review
+    reads exactly that paste as its gate record — but the close itself is gone from the
+    seat's acts: the brief names `just land`'s own `issue_closed=` line as the close.
+    """
+    for name, seat in dispatch.SEATS.items():
+        if seat.judgement_only or not seat.lands:
+            continue
+        rendered = composed(seat=brief.derive_seat(name))
+        assert "paste its output verbatim — never retype it" in rendered, name
+        assert "`just land` closes #251 itself" in rendered, name
+        assert "criterion-by-criterion audit quoting the gate's output" in rendered, name
+        assert brief.MUTATION_SAMPLING_PASTE_RULE in rendered, name
+
+
+def test_a_writable_seat_the_registry_does_not_name_lander_is_left_off_the_landing() -> None:
+    """#345: the planner/fable/orchestrator arm — writable, but not ruling 4's lander.
+
+    The section is not a softened implementer's: the seat keeps the commit instruction
+    (its commits reach `main` through the lander) and is told to leave the issue open
+    in the registry's own words rather than by an orchestrator's contrary prose — the
+    two-disagreeing-instructions shape the issue exists to remove.
+    """
+    for name, seat in dispatch.SEATS.items():
+        if seat.judgement_only or seat.lands:
+            continue
+        rendered = composed(seat=brief.derive_seat(name))
+        assert "## Landing: none — this seat is not the lander" in rendered, name
+        assert "Conventional Commits" in rendered, name
+        assert "Land via `just land`" not in rendered, name
+        assert brief.ADJUDICATION_RULE not in rendered, name
+        assert "leave #251 open — never close it" in rendered, name
 
 
 def test_review_dispatch_docs_carry_the_same_sampling_paste_rule_twice() -> None:
@@ -1520,7 +1580,10 @@ def test_forcing_the_predicate_false_moves_both_brief_paths_together(
     default `recon` brief stand still. Forcing `Seat.judgement_only` to `False` and
     asserting both briefs change together is the construction that catches a bypass: the
     composed `recon` brief must lose its read-only sections exactly when the default
-    `recon` brief gains its gate ask.
+    `recon` brief gains its gate ask. #345 added the second flip: `lands` forced `True`
+    in the same move, because the writable arm now splits on it and a path that ignored
+    the column would keep the non-lander's "Landing: none" while the gate ask moved —
+    the same disagreement, one rung down.
 
     Patched on both `dispatch` copies — this module's and `brief`'s — because `load_tool`
     re-execs each script into its own module object, so `brief.compose` reads a different
@@ -1529,6 +1592,9 @@ def test_forcing_the_predicate_false_moves_both_brief_paths_together(
     forced_false = property(lambda *_: False)
     monkeypatch.setattr(dispatch.Seat, "judgement_only", forced_false)
     monkeypatch.setattr(brief.dispatch.Seat, "judgement_only", forced_false)
+    forced_true = property(lambda *_: True)
+    monkeypatch.setattr(dispatch.Seat, "lands", forced_true)
+    monkeypatch.setattr(brief.dispatch.Seat, "lands", forced_true)
 
     rendered = composed(seat=brief.derive_seat("recon"))
     assert "## Gate: none — this seat runs none" not in rendered
