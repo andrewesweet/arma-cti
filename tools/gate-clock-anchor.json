@@ -1,5 +1,5 @@
 {
-  "_read_me": "The gate-duration anchor (#446). Nothing in tools/gate_clock.py writes this file, under any verb, ever: raising a value here is a deliberate hand-edit somebody makes on purpose, visible in the diff, because a number that moves by itself cannot detect slow growth. Lowering it after a measured improvement (#442, #447) is the same deliberate edit. The threshold the anchor is compared against, and the measurement behind both, are tools/gate_clock.py's header.",
+  "_read_me": "The gate-duration anchor (#446). Nothing in tools/gate_clock.py writes this file, under any verb, ever: raising a value here is a deliberate hand-edit somebody makes on purpose, visible in the diff, because a number that moves by itself cannot detect slow growth. Lowering it after a measured improvement (#442, #447) is the same deliberate edit, and moves 'set' with it: each entry's 'set' date bounds the report's window to green runs on or after it, so a lowered anchor never false-fires against the older, slower rows still in the records — instead the recipe reads insufficient_sample until five post-set green runs exist, which is the honest state of a re-set instrument. Every entry needs a positive numeric 'anchor_seconds' and an ISO 'set' date; a malformed file or entry prints from 'report' and reddens 'just check' rather than reading as an unset anchor, which would be silence dressed as health. The threshold the anchor is compared against, and the measurement behind both, are tools/gate_clock.py's header.",
   "unit": {
     "anchor_seconds": 176,
     "set": "2026-08-20",
@@ -7,6 +7,7 @@
   },
   "fast": {
     "anchor_seconds": 195,
+    "set": "2026-08-20",
     "derivation": "Median of 4 green runs this day (193.4, 180.1, 197.3, 199.9 s), same arrangement as unit; one red run (4.9 s, a ruff red during development) recorded and excluded. Each run's whole wall: check, unit, mutation."
   }
 }

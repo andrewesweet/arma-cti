@@ -16,7 +16,7 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-changelog check-seats check-arbiter check-sqf check-secrets check-python check-machine-b check-rust
+check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-changelog check-gate-clock check-seats check-arbiter check-sqf check-secrets check-python check-machine-b check-rust
 
 # Static validation for the repository-managed Machine B playbooks. The live
 # inventory is deliberately absent here: syntax and lint must be available to
@@ -76,6 +76,14 @@ check-conflicts:
 # release marker is checked too: Scriv otherwise inserts above the document.
 check-changelog:
     uv run python tools/check_changelog.py
+
+# The gate-duration anchor must read: every entry well-formed, the file
+# parseable (#446). A half-edited anchor would otherwise silence the drift
+# report behind `anchor_unset` — silence dressed as health, the exact failure
+# the report exists to prevent. `report` prints the same finding as a line;
+# this leg makes it a red before it can land.
+check-gate-clock:
+    uv run python tools/gate_clock.py check
 
 # Every seat declares its (model, effort) pair, and declares it validly (#255).
 # Both declaration surfaces fail open — a misspelled key or a level that does not
@@ -144,14 +152,18 @@ check-rust:
 # weeks unnoticed because nothing recorded it. The nested `just` invocations
 # replace the dependency line so the wall covers both legs; a `just fast` that
 # runs this recipe records its own row too, and both rows are real measurements
-# of real invocations. The recorder runs `|| true` on purpose: a measurement
-# must never redden the gate it measures. Cost is one `uv run` start (~0.3s
-# against a ~190s tier) plus one file write at collection time.
+# of real invocations. The wall is read from /proc/uptime at both ends — the
+# kernel's monotonic clock, because CLOCK_REALTIME steps under NTP mid-run. The
+# recorder's inputs are each guarded because a measurement must never redden
+# the gate it measures, and the collected-count file is removed after the
+# recorder reads it, not before — rm-first left tests_collected null on every
+# bare-run row. Cost is one `uv run` start (~0.3s against a ~190s tier) plus
+# one file write at collection time.
 unit:
     #!/usr/bin/env bash
     set -euo pipefail
-    start_ns=$(date +%s%N)
-    start_load=$(cut -d' ' -f1 /proc/loadavg)
+    start_up=$(cut -d' ' -f1 /proc/uptime) || start_up=""
+    start_load=$(cut -d' ' -f1 /proc/loadavg) || start_load=""
     start_foreign=$(pgrep -fc 'pytest|cargo test' || true)
     created=0
     if [ -z "${CTI_GATE_CLOCK_COLLECTED_FILE:-}" ]; then
@@ -160,11 +172,13 @@ unit:
     fi
     status=0
     just unit-python && just unit-rust || status=$?
-    if [ "$created" = 1 ]; then rm -f "$CTI_GATE_CLOCK_COLLECTED_FILE"; fi
-    uv run python tools/gate_clock.py record --recipe unit \
-        --start-epoch-ns "$start_ns" --status "$status" \
-        --load-1m "$start_load" --foreign-gate "$start_foreign" \
+    record_args=(record --recipe unit --status "$status")
+    if [ -n "$start_up" ]; then record_args+=(--start-uptime "$start_up"); fi
+    if [ -n "$start_load" ]; then record_args+=(--load-1m "$start_load"); fi
+    if [ -n "$start_foreign" ]; then record_args+=(--foreign-gate "$start_foreign"); fi
+    uv run python tools/gate_clock.py "${record_args[@]}" \
         || echo "gate-clock: recording failed" >&2
+    if [ "$created" = 1 ]; then rm -f "$CTI_GATE_CLOCK_COLLECTED_FILE"; fi
     exit "$status"
 
 # pytest over the daemon and tooling. Parallel by default: `-n auto` lives in
@@ -340,21 +354,26 @@ alias mutation-compare := mutation
 # recipe's wall is the figure the subagent-wait threshold applies to, and it
 # would be lost if only its legs were recorded. It always mints the collected
 # count's temp file itself; the nested `just unit` sees one already exported and
-# leaves removal to this, the recipe that created it.
+# leaves removal to this, the recipe that created it — after the recorder has
+# read it. The count it reads is the suite's: `tools/mutation_smoke.py` strips
+# the export from its judges' environment, so a judge's one-module collection
+# cannot overwrite the unit leg's suite count between the two records.
 fast:
     #!/usr/bin/env bash
     set -euo pipefail
-    start_ns=$(date +%s%N)
-    start_load=$(cut -d' ' -f1 /proc/loadavg)
+    start_up=$(cut -d' ' -f1 /proc/uptime) || start_up=""
+    start_load=$(cut -d' ' -f1 /proc/loadavg) || start_load=""
     start_foreign=$(pgrep -fc 'pytest|cargo test' || true)
     export CTI_GATE_CLOCK_COLLECTED_FILE="$(mktemp)"
     status=0
     just check && just unit && just mutation || status=$?
-    rm -f "$CTI_GATE_CLOCK_COLLECTED_FILE"
-    uv run python tools/gate_clock.py record --recipe fast \
-        --start-epoch-ns "$start_ns" --status "$status" \
-        --load-1m "$start_load" --foreign-gate "$start_foreign" \
+    record_args=(record --recipe fast --status "$status")
+    if [ -n "$start_up" ]; then record_args+=(--start-uptime "$start_up"); fi
+    if [ -n "$start_load" ]; then record_args+=(--load-1m "$start_load"); fi
+    if [ -n "$start_foreign" ]; then record_args+=(--foreign-gate "$start_foreign"); fi
+    uv run python tools/gate_clock.py "${record_args[@]}" \
         || echo "gate-clock: recording failed" >&2
+    rm -f "$CTI_GATE_CLOCK_COLLECTED_FILE"
     exit "$status"
 
 # The worktree protocol as one call (#214, ADR-0049): fetch, create off
@@ -768,10 +787,21 @@ watch-report *args:
     # than its anchored expectation — a median over recent green runs against a
     # number only a hand-edit moves, because a rolling baseline normalises to
     # exactly the drift it exists to catch. Silent while healthy, while the Arma
-    # tier owns the box, and until an anchor and enough records exist. The anchor
-    # lives in the tree at tools/gate-clock-anchor.json; raising it is a
-    # deliberate diff, never automatic. Reads `CTI_GATE_CLOCK_DIR`, the same seam.
+    # tier owns the box, and until an anchor and enough records exist — and loud
+    # when the anchor itself is broken, because a half-edited anchor reading as
+    # health is the failure the report exists to prevent. The anchor lives in
+    # the tree at tools/gate-clock-anchor.json; raising it is a deliberate diff,
+    # never automatic. Reads `CTI_GATE_CLOCK_DIR`, the same seam.
     uv run python tools/gate_clock.py report
+
+# The gate-duration read's other half (#446): per-recipe record counts, green
+# medians, spans and the anchor each recipe holds with its set date, for the
+# retro asking what moving an anchor would be moving from. Story 7's explicit
+# ask — `report` is silent-when-healthy by contract, so the history needs its
+# own surface rather than hiding behind `uv run`. Reads the same
+# `CTI_GATE_CLOCK_DIR` seam and the tree's anchor file; never gates.
+gate-clock-history:
+    uv run python tools/gate_clock.py history
 
 # The recovery runbook's two computable procedures (#253, orchestration-design §4).
 # No Arma, no lock, no turn held open; both verbs are reads and neither writes

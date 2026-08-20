@@ -418,8 +418,17 @@ HASH_SEED: Final = "0"
 
 
 def _env() -> dict[str, str]:
-    """Return the environment every spawned judge runs under: the caller's, seed pinned."""
-    return {**os.environ, "PYTHONHASHSEED": HASH_SEED}
+    """Return the environment every spawned judge runs under: the caller's, seed pinned.
+
+    The gate-clock collection export is dropped: a judge's pytest run of one
+    module is not a suite collection, and inside `just fast` it would overwrite
+    the suite count the unit leg wrote, handing the fast row the last module's
+    count instead (#446).
+    """
+    env = {
+        key: value for key, value in os.environ.items() if key != "CTI_GATE_CLOCK_COLLECTED_FILE"
+    }
+    return {**env, "PYTHONHASHSEED": HASH_SEED}
 
 
 # The test modules no arm of this gate can measure, each with the reason.

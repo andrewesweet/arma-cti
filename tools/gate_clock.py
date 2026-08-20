@@ -55,6 +55,42 @@ gate up (#442, #447) re-derives and lowers it as part of itself, so a deliberate
 improvement becomes the new expectation instead of being reported forever as
 drift in the wrong direction.
 
+**Each entry's `set` date bounds the window, so lowering the anchor cannot
+false-fire against the rows that predate it.** The records accumulate across
+branches and lanes with no reset, so an anchor lowered from 176 s to 110 s
+would otherwise sit beside ten green rows at ~176 s and fire at ~1.6× on every
+orchestrator turn until new rows crowded them out — the first use of the
+maintenance path producing the false alarms the report exists to avoid. Only
+green runs on or after the entry's `set` date enter the median, which after a
+re-set leaves the recipe at `insufficient_sample` until five post-`set` greens
+exist: unknown, never healthy — the honest state of a re-set instrument. A row
+whose `at` will not parse is excluded rather than guessed at.
+
+**A broken anchor is the one state where noise is correct.** The file ships in
+the tree with both recipes anchored, so a file that is missing, unparseable, or
+carrying a half-edited entry (a quoted number, a dropped key) is a broken
+instrument and not the shipped unset state: every recipe it leaves unreadable
+prints one line saying so, ahead of the Arma-tier suppression, because it
+claims nothing about the gate and a busy box does not license a broken
+instrument's silence. Silence there would be exactly the failure #446 exists
+to prevent, reintroduced inside the fix. `just check`'s `check-gate-clock` leg
+makes the same finding a red, so a half-edited anchor cannot land through its
+own gate. A recipe the valid file simply does not name stays `anchor_unset`:
+the file grows one row at a time as anchors are derived.
+
+**The wall is read from the kernel's monotonic clock.** Both ends of a recorded
+wall read `/proc/uptime` — `CLOCK_REALTIME` steps under NTP and a step mid-run
+would record a duration the suite never cost. The row's `at` is wall-clock
+provenance for a later investigation, never an input to the wall.
+
+**The fired line carries its own load context.** The rows' `load_1m` and
+`foreign_gate_processes` fields separate a busy box from a regression when
+investigated — and a loaded stretch is not always visible at report time (a
+Windows play session does not appear in a `/proc` scan), while the rows it
+leaves behind stay in the window after the load ends. So the one line that
+fires names the window's load-1m median, and the reader can tell a busy box
+from the line itself rather than from an investigation the line invites.
+
 **Only green runs are compared.** A red run is faster — the #446 investigation
 has a 306-failure run finishing in 221 s where the green run took 271 s — so a
 red admitted to the median flatters it. Red rows are still recorded, with their
@@ -89,14 +125,14 @@ import argparse
 import json
 import os
 import sys
-import time
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from pathlib import Path
 from typing import Final, NamedTuple
 
 DEFAULT_GATE_CLOCK_DIR: Final = Path.home() / ".arma-cti" / "gate-clock"
 RECORDS_NAME: Final = "records.jsonl"
 ANCHOR_PATH: Final = Path(__file__).with_name("gate-clock-anchor.json")
+PROC_UPTIME: Final = Path("/proc/uptime")
 
 # The two recipes that run the gate (issue #446): a bare `just unit` is most of
 # the recorded population (22.27 h of the 57.51 h the investigation measured),
@@ -140,6 +176,14 @@ class Verdict(NamedTuple):
     recipe: str
     reason: str
     line: str | None
+
+
+class AnchorState(NamedTuple):
+    """What `load_anchors` read: the anchors, their `set` dates, and the unreadable entries."""
+
+    anchors: dict[str, float]
+    set_dates: dict[str, date]
+    problems: dict[str, str]
 
 
 def median(values: list[float]) -> float:
@@ -272,34 +316,54 @@ def read_collected_file() -> int | None:
         return None
 
 
-def load_anchors(path: Path) -> tuple[dict[str, float], str | None]:
-    """Read the anchor file, or say why it could not be read.
+def load_anchors(path: Path) -> AnchorState:
+    """Read the anchor file: the anchors, their `set` dates, and every entry that will not read.
 
-    Returns `(anchors, problem)`. An absent file is the shipped unset state —
-    every recipe silent, reason `anchor_unset` — while a file that exists but
-    will not parse is `anchor_unreadable`: an anchor somebody half-edited must
-    not read as *no* anchor, which would be silence dressed as health. Recipes
-    the file simply does not name are unset, not errors; the file grows one row
-    at a time as anchors are derived.
+    The file ships in the tree with both recipes anchored, so a file that cannot
+    be read at all is a broken instrument, not the unset state: every recipe in
+    `RECIPES` is returned as unreadable with the reason. An entry that exists
+    but is half-edited — a quoted number, a dropped key, a `set` that is not an
+    ISO date — is a problem for that recipe alone; a recipe the valid file
+    simply does not name is unset, and the file grows one row at a time as
+    anchors are derived. `set` is required because the report bounds its window
+    by it: an anchor without a set date could not be lowered without
+    false-firing against the rows that predate the change.
     """
+    state = AnchorState({}, {}, {})
     try:
         text = path.read_text(encoding="utf-8")
-    except OSError:
-        return {}, None
+    except OSError as error:
+        reason = f"anchor file {path} cannot be read ({error.strerror or error})"
+        return state._replace(problems=dict.fromkeys(RECIPES, reason))
     try:
         document = json.loads(text)
     except ValueError:
-        return {}, f"anchor file {path} is not valid JSON"
+        reason = f"anchor file {path} is not valid JSON"
+        return state._replace(problems=dict.fromkeys(RECIPES, reason))
     if not isinstance(document, dict):
-        return {}, f"anchor file {path} is not an object"
+        reason = f"anchor file {path} is not an object"
+        return state._replace(problems=dict.fromkeys(RECIPES, reason))
     anchors: dict[str, float] = {}
+    set_dates: dict[str, date] = {}
+    problems: dict[str, str] = {}
     for recipe, entry in document.items():
-        if recipe.startswith("_") or not isinstance(entry, dict):
+        if recipe.startswith("_"):
+            continue
+        name = str(recipe)
+        if not isinstance(entry, dict):
+            problems[name] = f"{name} entry is not an object"
             continue
         seconds = entry.get("anchor_seconds")
-        if isinstance(seconds, (int, float)) and seconds > 0:
-            anchors[str(recipe)] = float(seconds)
-    return anchors, None
+        if isinstance(seconds, bool) or not isinstance(seconds, (int, float)) or seconds <= 0:
+            problems[name] = f"{name}.anchor_seconds is not a positive number"
+            continue
+        try:
+            set_dates[name] = date.fromisoformat(str(entry["set"]))
+        except (KeyError, TypeError, ValueError):
+            problems[name] = f"{name}.set is missing or not an ISO date"
+            continue
+        anchors[name] = float(seconds)
+    return AnchorState(anchors, set_dates, problems)
 
 
 def arma_tier_processes(proc: Path = Path("/proc")) -> int:
@@ -328,10 +392,21 @@ def arma_tier_processes(proc: Path = Path("/proc")) -> int:
     return count
 
 
+def record_date(row: Record) -> date | None:
+    """Return the row's calendar date, or `None` when `at` will not parse.
+
+    Used only to place a row against an anchor's `set` date; a row that cannot
+    be placed in time is excluded from a bounded window rather than guessed at.
+    """
+    try:
+        return datetime.fromisoformat(row.at).date()
+    except ValueError:
+        return None
+
+
 def assess(
     records: tuple[Record, ...],
-    anchors: dict[str, float],
-    anchor_problem: str | None = None,
+    anchor_state: AnchorState,
     *,
     arma_running: bool = False,
 ) -> tuple[Verdict, ...]:
@@ -341,34 +416,60 @@ def assess(
     reason it is silent or the one line it fires. The ladder, and why each rung
     is where it is:
 
-    1. `arma_tier_running` — the corpus or a play server owns the box; a slow
-       gate under that is a busy box, not a regression. Ahead of everything so
-       an anchored watcher cannot cry regression during a play session.
-    2. `anchor_unreadable` — the file exists and will not parse. Said before
-       `anchor_unset` because it is the state a half-edit leaves behind.
-    3. `anchor_unset` — no anchor for this recipe. The shipped state for a
-       fresh clone: unknown, never healthy.
-    4. `insufficient_sample` — fewer than `MIN_SAMPLE` green runs. A median of
-       two runs says what the scheduler did, not what the suite costs.
+    1. `anchor_unreadable` — the file or this recipe's entry will not read, and
+       this rung *prints*, even while the Arma tier owns the box: it is a
+       broken instrument, not a claim about the gate, so a busy box does not
+       license its silence. Ahead of everything because a half-edited anchor
+       reading as health is the failure #446 exists to prevent.
+    2. `arma_tier_running` — the corpus or a play server owns the box; a slow
+       gate under that is a busy box, not a regression. Ahead of the comparison
+       rungs so an anchored watcher cannot cry regression during a play session.
+    3. `anchor_unset` — no anchor for this recipe. The growth state for a
+       recipe whose anchor has not been derived: unknown, never healthy.
+    4. `insufficient_sample` — fewer than `MIN_SAMPLE` green runs **on or after
+       the anchor's `set` date**. Also the honest state right after a re-set:
+       the pre-`set` rows are excluded, so a lowered anchor reads as unknown
+       until five new greens exist rather than false-firing at the old rows.
     5. `healthy` — the window median is at or under `THRESHOLD`× the anchor.
-    6. `slower` — over it, with the one line.
+    6. `slower` — over it, with the one line, which carries the window's
+       load-1m median so a busy box can be read off the line itself.
     """
-    if arma_running:
-        return tuple(Verdict(recipe, "arma_tier_running", None) for recipe in RECIPES)
-    if anchor_problem is not None:
-        return tuple(Verdict(recipe, "anchor_unreadable", None) for recipe in RECIPES)
     verdicts: list[Verdict] = []
     for recipe in RECIPES:
-        anchor = anchors.get(recipe)
+        problem = anchor_state.problems.get(recipe)
+        if problem is not None:
+            verdicts.append(
+                Verdict(
+                    recipe,
+                    "anchor_unreadable",
+                    f"gate-clock {recipe} anchor unreadable: {problem} — a broken "
+                    "instrument must not read as a healthy gate; fix "
+                    "tools/gate-clock-anchor.json in a diff",
+                )
+            )
+            continue
+        if arma_running:
+            verdicts.append(Verdict(recipe, "arma_tier_running", None))
+            continue
+        anchor = anchor_state.anchors.get(recipe)
         if anchor is None:
             verdicts.append(Verdict(recipe, "anchor_unset", None))
             continue
-        greens = [row.wall_seconds for row in records if row.recipe == recipe and row.status == 0]
+        greens = [row for row in records if row.recipe == recipe and row.status == 0]
+        set_on = anchor_state.set_dates.get(recipe)
+        if set_on is not None:
+            greens = [
+                row for row in greens if (when := record_date(row)) is not None and when >= set_on
+            ]
         if len(greens) < MIN_SAMPLE:
             verdicts.append(Verdict(recipe, "insufficient_sample", None))
             continue
         window = greens[-REPORT_WINDOW:]
-        current = median(window)
+        current = median([row.wall_seconds for row in window])
+        load_text = ""
+        loads = [row.load_1m for row in window if row.load_1m is not None]
+        if loads:
+            load_text = f", window load-1m median {median(loads):.2f}"
         if current <= anchor * THRESHOLD:
             verdicts.append(Verdict(recipe, "healthy", None))
             continue
@@ -377,7 +478,7 @@ def assess(
                 recipe,
                 "slower",
                 f"gate-clock {recipe} durably slower: median {current:.0f}s over the "
-                f"last {len(window)} green runs, {current / anchor:.2f}× the "
+                f"last {len(window)} green runs{load_text}, {current / anchor:.2f}× the "
                 f"{anchor:.0f}s anchor — no single commit does this; the anchor "
                 f"moves only by hand, in a diff",
             )
@@ -385,20 +486,27 @@ def assess(
     return tuple(verdicts)
 
 
-def history(gate_clock_dir: Path, anchors: dict[str, float]) -> list[str]:
+def history(gate_clock_dir: Path, anchor_state: AnchorState) -> list[str]:
     """One line per recipe, for the retro asking what it would be raising.
 
     Story 7 of #446: a proposal to move the anchor should quote what it is
     moving from. Silent-when-healthy is the report's contract; this verb is the
-    explicit ask, and prints whether an anchor is set.
+    explicit ask, and prints whether an anchor is set, its value and its set
+    date — the date the report's window is bounded by.
     """
     records = load_records(gate_clock_dir)
     lines: list[str] = []
     for recipe in RECIPES:
         rows = [row for row in records if row.recipe == recipe]
         walls = [row.wall_seconds for row in rows if row.status == 0]
-        anchor = anchors.get(recipe)
-        anchor_text = f"{anchor:.0f}s anchor" if anchor is not None else "no anchor set"
+        anchor = anchor_state.anchors.get(recipe)
+        set_on = anchor_state.set_dates.get(recipe)
+        if anchor is None:
+            anchor_text = "no anchor set"
+        elif set_on is None:
+            anchor_text = f"{anchor:.0f}s anchor, set date unrecorded"
+        else:
+            anchor_text = f"{anchor:.0f}s anchor set {set_on.isoformat()}"
         if not walls:
             lines.append(f"{recipe}: no green runs recorded, {anchor_text}")
             continue
@@ -411,8 +519,27 @@ def history(gate_clock_dir: Path, anchors: dict[str, float]) -> list[str]:
     return lines
 
 
+def proc_uptime(path: Path | None = None) -> float | None:
+    """Seconds since boot from `/proc/uptime` — the kernel's monotonic clock.
+
+    Both ends of a recorded wall read this rather than `CLOCK_REALTIME`, which
+    steps under NTP: a step mid-run would record a duration the suite never
+    cost. `path` resolves the module's `PROC_UPTIME` at call time rather than
+    as a def-time default, so a test can stage it; `None` when it cannot be
+    read, never a guess.
+    """
+    try:
+        first = (PROC_UPTIME if path is None else path).read_text(encoding="utf-8").split()[0]
+    except (OSError, IndexError):
+        return None
+    try:
+        return float(first)
+    except ValueError:
+        return None
+
+
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """Three verbs: record a finished run, report drift, read the history."""
+    """Four verbs: record a finished run, report drift, read the history, check the anchor."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--gate-clock-dir",
@@ -424,10 +551,10 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     entry = verbs.add_parser("record", help="append one finished gate run")
     entry.add_argument("--recipe", choices=RECIPES, required=True)
     entry.add_argument(
-        "--start-epoch-ns",
-        type=int,
+        "--start-uptime",
+        type=float,
         required=True,
-        help="the recipe's own start, from bash's `date +%s%N`",
+        help="the recipe's own start, from /proc/uptime's first field",
     )
     entry.add_argument("--status", type=int, required=True)
     entry.add_argument("--load-1m", type=float, default=None, help="load average at start")
@@ -441,19 +568,33 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     verbs.add_parser("report", help="one line per durably slower recipe; silent when healthy")
 
     verbs.add_parser("history", help="per-recipe medians and spans, anchor stated")
+
+    verbs.add_parser("check", help="refuse a malformed anchor file; the `just check` leg")
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Record, report or read history. Exit 0 throughout — this reads, never gates."""
+    """Record, report, read history or check the anchor.
+
+    Exit 0 for every verb but `check` — the reads never gate. `check` is the
+    one exception and the reason it exists: a malformed anchor is a red at
+    `just check` time rather than a line nobody is obliged to read at
+    watch-report time.
+    """
     args = parse_args(argv)
 
     if args.verb == "record":
-        start = args.start_epoch_ns / 1_000_000_000
+        now_up = proc_uptime()
+        if now_up is None or args.start_uptime > now_up:
+            print(  # noqa: T201 — the shell reads this
+                "gate-clock: recording failed — /proc/uptime unreadable at one end",
+                file=sys.stderr,
+            )
+            return 0
         row = Record(
-            at=datetime.fromtimestamp(start, tz=UTC).isoformat(),
+            at=datetime.now(UTC).isoformat(),
             recipe=args.recipe,
-            wall_seconds=max(time.time_ns() / 1_000_000_000 - start, 0.0),
+            wall_seconds=max(now_up - args.start_uptime, 0.0),
             status=args.status,
             head=head_sha(),
             tests_collected=read_collected_file(),
@@ -462,22 +603,27 @@ def main(argv: list[str] | None = None) -> int:
         )
         append_record(args.gate_clock_dir, row)
         health = "green" if row.status == 0 else f"status {row.status}"
+        count = f" {row.tests_collected} tests" if row.tests_collected is not None else ""
         print(  # noqa: T201 — the shell reads this
-            f"gate-clock: recorded {row.recipe} {row.wall_seconds:.1f}s {health}"
+            f"gate-clock: recorded {row.recipe} {row.wall_seconds:.1f}s {health}{count}"
         )
         return 0
 
-    anchors, problem = load_anchors(ANCHOR_PATH)
+    anchor_state = load_anchors(ANCHOR_PATH)
 
     if args.verb == "history":
-        for line in history(args.gate_clock_dir, anchors):
+        for line in history(args.gate_clock_dir, anchor_state):
             print(line)  # noqa: T201 — the ask is the output
         return 0
 
+    if args.verb == "check":
+        for recipe, problem in sorted(anchor_state.problems.items()):
+            print(f"gate-clock {recipe} anchor unreadable: {problem}")  # noqa: T201 — the red
+        return 1 if anchor_state.problems else 0
+
     for verdict in assess(
         load_records(args.gate_clock_dir),
-        anchors,
-        problem,
+        anchor_state,
         arma_running=arma_tier_processes() > 0,
     ):
         if verdict.line is not None:

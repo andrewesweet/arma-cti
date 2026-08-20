@@ -1311,6 +1311,11 @@ def test_watch_report_prints_the_verdicts_and_stays_silent_when_nothing_is_tripp
         "CTI_ADMISSION_DIR": str(tmp_path / "admission"),
         "CTI_BREAKER_DIR": str(directory),
         "CTI_DISPATCH_DIR": str(tmp_path / "dispatches"),
+        # #249 again, for the read #446 folded in: without this seam the live
+        # `~/.arma-cti/gate-clock/` records feed the report, and a gate that is
+        # genuinely durably slower on this box would redden a run about the
+        # breaker — the anchor file stays the tree's own, which is what reads.
+        "CTI_GATE_CLOCK_DIR": str(tmp_path / "gate-clock"),
         "CTI_QUEUE_DIR": str(queue_dir),
         "CTI_QUEUE_ROOT": str(tmp_path / "queue-root"),
         # #249 again, for the read #343 folded in: without this seam a Remote Control

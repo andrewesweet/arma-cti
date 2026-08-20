@@ -226,15 +226,21 @@ def pytest_collection_finish(session: Any) -> None:  # noqa: ANN401 — pytest's
     change can be told apart from a suite that simply grew. The count is written
     to the path the recording recipes exported in `CTI_GATE_CLOCK_COLLECTED_FILE`
     — and nowhere when it is unset, so a bare `uv run pytest` and `just
-    mutation`'s own runs leave no file behind. With `-n auto` every xdist worker
-    finishes collection too; a worker is recognised by its `workerinput`
-    attribute and does not write, because the controller collected the same
-    suite and the workers would race on the one path. A failed write records
-    `None`: the count is provenance for a later investigation, not an input to
-    any decision, so it must not redden a run that already finished green.
+    mutation`'s own runs leave no file behind. Under `-n auto` the controller
+    collects nothing at all (xdist prohibits it) and every worker collects the
+    full suite, so the write comes from exactly one process: worker gw0 under
+    xdist, the single process of a plain run. The worker test is on
+    `session.config` — pytest's own plugins (`cacheprovider`, `junitxml`) test
+    `config.workerinput`, and `Session` never carries the attribute. A failed
+    write records `None`: the count is provenance for a later investigation,
+    not an input to any decision, so it must not redden a run that already
+    finished green.
     """
+    worker = getattr(session.config, "workerinput", None)
+    if worker is not None and worker.get("workerid") != "gw0":
+        return
     named = os.environ.get("CTI_GATE_CLOCK_COLLECTED_FILE", "")
-    if not named or hasattr(session, "workerinput"):
+    if not named:
         return
     with contextlib.suppress(OSError):
         Path(named).write_text(f"{len(session.items)}\n", encoding="utf-8")
