@@ -1,6 +1,6 @@
 # Reducing the verification gate's wall clock
 
-Status: proposal. Nothing here is landed, and no gate is changed by this document.
+Status: landed investigation. This record landed through #450; its adopted recommendations landed through #442 (`--dist worksteal`) and #446 (gate-duration recording, anchor/reporting and changelog fragment). #442 and #446 cite this record. #447 remains open but does not cite it. This document itself changes no gate.
 
 **Revised 2026-08-20** after the adversarial review on #442 (`d-20260820-044246-a8b21d`,
 opus/high). Corrections applied here: the headline ratio is a range rather than a number (§1.4),
@@ -660,11 +660,14 @@ over 1800 s and background invocations, and matching a recipe only where a shell
 arguments and moves the `just fast` median from 168 s to 5 s. Scripts are in `/tmp/gateprof/`;
 they read only and are not proposed for landing.
 
-## 6. What lands, and what needs whose approval
+## 6. What landed, and what remains
 
-Nothing in this document is landed. Splitting it by gate:
+This investigation landed through #450. Its adopted ordinary work landed through #442 and #446, both
+closed. #442 and #446 cite `docs/research/gate-wall-clock.md`; #447 remains open but does not cite
+this record, although it uses figures from it without a provenance line. Splitting its standing by
+gate:
 
-**Ordinary work, no sign-off gate.**
+**Ordinary work, no sign-off gate — landed.**
 
 1. `pyproject.toml`: add `--dist worksteal` to `addopts`, and rewrite the comment above it. The
    present comment states an inherited ratio ("wall clock is six times its user CPU") that this
@@ -678,21 +681,22 @@ Nothing in this document is landed. Splitting it by gate:
    revision withdrew — "955 s of test time" and "the blind initial chunk scales with the count" —
    until round two of the review found them here, in the one section that dictates the words a
    reader will find in `pyproject.toml`. Accepted in prose and not discharged in the artefact is
-   the exact failure that finding names.)*
-2. A changelog fragment under `changelog.d/`, category Changed, per ADR-0010.
+   the exact failure that finding names.)* Landed through #442.
+2. A changelog fragment under `changelog.d/`, category Changed, per ADR-0010. Landed through #446.
 
-**Human sign-off, proposed only.**
+**Human sign-off, not adopted.**
 
 3. `.claude/hooks/deny-subagent-waits.py` — no change proposed. The p90 observation in section 2
-   is put to the next retro, which is where that file's own docstring says the list moves. If
-   item 1 lands first the observation expires.
+   was put to the next retro, which is where that file's own docstring says the list moves. Item 1
+   landed through #442, so the observation expired.
 4. `docs/process-log.md` — a retro's to write, not this document's.
 
-**Filed as issues, not done here.**
+**Filed separately, not done here.**
 
-5. The heavy-module conversion of section 3.4, with the per-module numbers attached.
-6. The `~/.gitconfig` typo of section 0, which is not a repository change at all and needs the
-   human's hand or a permission this session does not have.
+5. The heavy-module conversion of section 3.4, with the per-module numbers attached, remains open
+   under #447. #447 uses these measurements but does not cite this record.
+6. The `~/.gitconfig` typo of section 0, which is not a repository change at all, was corrected and
+   committed in the human's dotfiles repository.
 
 **Explicitly not proposed:** any change that reduces what the gate proves. No test is skipped,
 no module is excluded, no timeout is widened, no tier is split, and the collected and passed
