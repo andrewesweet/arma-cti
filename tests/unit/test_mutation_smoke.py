@@ -1070,6 +1070,7 @@ def test_the_selection_report_names_the_class_the_fetch_and_both_remedies(
         ["tools/excused.py", "tools/new.py"],
         ["tools/new.py"],
         survey=False,
+        refused=False,
     )
     out = capsys.readouterr().out
     assert "-- tools/excused.py exempt: reads a document" in out
@@ -1078,21 +1079,50 @@ def test_the_selection_report_names_the_class_the_fetch_and_both_remedies(
     # The fetch precedes the escape: a stale origin/main is the one cause the
     # reader can cure without writing anything (#370 round 2).
     assert out.index("git fetch origin") < out.index("NO_TEST_MODULE")
+    # And it says which gate fetches for the reader, because the residual false
+    # red lives in the one that does not (#441).
+    assert "`just fast` never fetches" in out
 
 
-def test_the_selection_report_is_silent_about_reds_in_a_survey(
+def test_the_survey_names_the_unmeasured_module_without_redding_it(
     monkeypatch: pytest.MonkeyPatch,
     capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
 ) -> None:
+    # #441: the survey is the one non-gating preview of a landing's selection, so
+    # it names the accused as well as the excused — in its own `--` voice, never
+    # the gate's RED.
     monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/excused.py": "reads a document"})
     smoke_tool._report_selection(  # noqa: SLF001 — this module's own private half is what is under test
         ["tools/excused.py", "tools/new.py"],
         ["tools/new.py"],
         survey=True,
+        refused=False,
     )
     out = capsys.readouterr().out
     assert "-- tools/excused.py exempt: reads a document" in out
+    assert "-- tools/new.py unmeasured:" in out
+    assert "no_test_module" in out
     assert "RED" not in out
+
+
+def test_a_refusal_keeps_the_exemptions_and_drops_the_unmeasured(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    # #441: an exemption is a statement about the diff and survives a refusal;
+    # `unnamed` is computed from the subjects the verdicts selected, and a
+    # refused run has only some of them, so it is dropped in either voice.
+    monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/excused.py": "reads a document"})
+    for survey in (False, True):
+        smoke_tool._report_selection(  # noqa: SLF001 — this module's own private half is what is under test
+            ["tools/excused.py", "tools/new.py"],
+            ["tools/new.py"],
+            survey=survey,
+            refused=True,
+        )
+        out = capsys.readouterr().out
+        assert "-- tools/excused.py exempt: reads a document" in out
+        assert "tools/new.py" not in out
 
 
 def test_a_new_module_with_no_test_module_reds_the_gate(tmp_path: Path, capsys) -> None:  # noqa: ANN001 — pytest's own fixture type adds nothing here
@@ -1119,12 +1149,14 @@ def test_the_survey_still_exits_zero_and_prints_no_red(
 ) -> None:
     # `--report` surveys every verdict and never reds (#370 round 2): the
     # selection rung has no verdict, so the survey does not speak in the gate's
-    # RED voice about it either.
+    # RED voice about it either — but it does name the module, end to end (#441).
     _repo(tmp_path)
     (tmp_path / "tools").mkdir()
     (tmp_path / "tools" / "new.py").write_text("x = 1\n")
     assert smoke_tool.main(["--root", str(tmp_path), "--base", "main", "--report"]) == 0
-    assert "RED" not in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "-- tools/new.py unmeasured:" in out
+    assert "RED" not in out
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
@@ -1141,6 +1173,23 @@ def test_a_refused_run_prints_no_selection_red_beside_its_refusal(
     _throwaway(tmp_path, "def test_red():\n    assert False\n")
     assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 2
     assert "RED" not in capsys.readouterr().out
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_a_refused_run_still_names_the_escapes_this_landing_takes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    # #441: the refusal exit sits below the report, so an exemption — a statement
+    # about the diff, true whatever the run did — is not swallowed with the red.
+    monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/excused.py": "reads a document"})
+    _repo(tmp_path)
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "tools" / "excused.py").write_text("x = 1\n")
+    _throwaway(tmp_path, "def test_red():\n    assert False\n")
+    assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 2
+    assert "-- tools/excused.py exempt: reads a document" in capsys.readouterr().out
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
