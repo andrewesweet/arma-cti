@@ -287,6 +287,11 @@ LANE_OWNED: Final = (
     # dispatched `claude -p` is a main session and already carries the one-hour TTL
     # (#218) — and on `zai` it is measured inert; see `zai_cache_ttl` below.
     "ENABLE_PROMPT_CACHING_1H",
+    # A declared context window is lane-owned for a base URL's reason: it changes what the
+    # child assumes about its provider, so inheriting it would make auto-compaction a
+    # property of the shell that dispatched. Set from `Lane.context_window` and nowhere
+    # else (#444).
+    "CLAUDE_CODE_MAX_CONTEXT_TOKENS",
 )
 
 STOP_NOT_A_RESULT: Final = (
@@ -330,6 +335,13 @@ class Lane(NamedTuple):
     # third Claude-shaped lane changes nothing here; adding a differently-shaped runner
     # adds one builder and one family name, which is the only place the difference lives.
     runner_family: str = "claude"
+    # The provider's real context window, in tokens, where the runner cannot learn it.
+    # Claude Code assumes 200,000 for a model name it does not recognise and auto-compacts
+    # against that assumption, which on `zai` compacted 34 of 129 sessions against a
+    # provider that would have held five times as much (#444). Zero means the runner
+    # already knows and nothing is declared — never "unmeasured", which is why the one
+    # non-zero value below carries its measurement rather than a round guess.
+    context_window: int = 0
 
 
 class Profile(NamedTuple):
@@ -389,6 +401,23 @@ LANES: Final[dict[str, Lane]] = {
         # The human's hard rule, 2026-08-05 (#238): this lane is used only off-peak, as a
         # dispatch-time refusal rather than as guidance. Only the human amends it.
         off_peak_only=True,
+        # Measured against the live endpoint on 2026-08-20 (#444), `/count_tokens` as the
+        # ruler: `glm-5.3` accepted 1,049,169 input tokens and refused 1,052,969, so the
+        # window is about 1.05M against the 200,000 Claude Code assumes. A round million
+        # sits below the accepted floor with margin for a serving tokeniser that counts a
+        # request slightly differently from `/count_tokens`.
+        #
+        # The ceiling this does not cover: the variable is session-wide rather than
+        # per-model — measured, by running the same treatment on `--model haiku` and
+        # watching the `glm-4.7` warning go quiet too — and the haiku slot's own window is
+        # smaller, accepting 200,729 and refusing 256,467. A haiku-slot subagent is
+        # therefore told it has a million tokens and would be refused at about 256k, with
+        # z.ai's refusal arriving as an HTTP 200 carrying `model_context_window_exceeded`
+        # and an empty content block rather than as an error. Measured exposure is 3
+        # transcripts peaking at 74,567 tokens, so this is a named ceiling rather than a
+        # mechanism; the fix, if it is ever spent, is to point the haiku slot at `glm-5.3`
+        # so the session has one window.
+        context_window=1_000_000,
     ),
     "codex": Lane(
         name="codex",
@@ -1626,6 +1655,8 @@ def assemble_environment(
     if lane.credential and token:
         child["ANTHROPIC_AUTH_TOKEN"] = token
     child.update(dict(lane.model_slots))
+    if lane.context_window:
+        child["CLAUDE_CODE_MAX_CONTEXT_TOKENS"] = str(lane.context_window)
 
     child["OTEL_RESOURCE_ATTRIBUTES"] = resource_attributes(
         identity, parent.get("OTEL_RESOURCE_ATTRIBUTES", "")

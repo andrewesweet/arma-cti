@@ -737,6 +737,41 @@ def test_the_cheap_zai_profile_reaches_the_other_glm_through_the_haiku_slot() ->
     assert dispatch.PROFILES["zai-glm47-max"].model == "haiku"
 
 
+def test_the_zai_lane_declares_the_window_the_runner_cannot_recognise() -> None:
+    # Claude Code does not recognise `glm-5.3`, assumes 200,000 tokens and auto-compacts
+    # against that assumption, which is what compacted 34 of 129 GLM sessions against a
+    # provider measured at about 1.05M (#444). The declared figure is the lane's, so this
+    # asserts the registry's number reaches the child rather than restating it.
+    child = assembled("zai", "zai-glm53-max", {"HOME": "/home/t"}, FAKE_TOKEN)
+    assert child["CLAUDE_CODE_MAX_CONTEXT_TOKENS"] == str(dispatch.LANES["zai"].context_window)
+    assert dispatch.LANES["zai"].context_window == 1_000_000
+
+
+def test_a_lane_whose_runner_knows_its_own_window_declares_none() -> None:
+    # Not "200000", and not the model's real figure either. Claude Code recognises its own
+    # models, so a declaration here could only ever disagree with what the runner already
+    # knows — and a disagreement it wins is a compaction bug nobody wrote down.
+    child = assembled("claude-native", "opus-high", {"HOME": "/home/t"})
+    assert "CLAUDE_CODE_MAX_CONTEXT_TOKENS" not in child
+    assert dispatch.LANES["claude-native"].context_window == 0
+
+
+@pytest.mark.parametrize(
+    ("lane", "profile"), [("zai", "zai-glm53-max"), ("claude-native", "opus-high")]
+)
+def test_no_lane_inherits_a_context_window_from_the_shell(lane: str, profile: str) -> None:
+    # Lane-owned for a base URL's reason: a shell that had exported some other provider's
+    # window would otherwise decide when this child compacts. The `zai` case must come
+    # back as the registry's own value rather than the parent's, and the `claude-native`
+    # case must come back absent — a stripped key that the lane does not set is gone, not
+    # blanked.
+    parent = {"HOME": "/home/t", "CLAUDE_CODE_MAX_CONTEXT_TOKENS": "200000"}
+    child = assembled(lane, profile, parent, FAKE_TOKEN)
+    declared = dispatch.LANES[lane].context_window
+    expected = str(declared) if declared else None
+    assert child.get("CLAUDE_CODE_MAX_CONTEXT_TOKENS") == expected
+
+
 @pytest.mark.parametrize(
     ("lane", "profile"), [("zai", "zai-glm53-max"), ("claude-native", "opus-high")]
 )
