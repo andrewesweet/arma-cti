@@ -3,7 +3,7 @@
   "unit": {
     "anchor_seconds": 71.25,
     "set": "2026-08-20T15:48:00+00:00",
-    "derivation": "Re-set by #442/#452 (load never rebalances; the tier now runs --dist worksteal). Median of 10 green runs this day after the flag landed (71.3, 74.7, 71.2, 74.2, 71.8, 70.1, 69.4, 70.6, 69.4, 74.7 s), on the issue-442 worktree at 861eb6a plus the change, uncommitted. 1-minute load before each run 0.42 to 5.42; foreign gate processes 1 throughout. 5155 Python tests collected, 17 Rust. The pre-change arm the same morning, same box and clock: 158.8, 148.2, 150.7, 150.2 s (median 150.45). The set moment is a timestamp, not a date, so this morning's slower load-scheduler rows stay out of the window."
+    "derivation": "Re-set by #442/#452 (load never rebalances; the tier now runs --dist worksteal). Median of 10 green runs this day after the flag landed (71.3, 74.7, 71.2, 74.2, 71.8, 70.1, 69.4, 70.6, 69.4, 74.7 s), on the issue-442 worktree at 861eb6a plus the change, uncommitted. 1-minute load before each run 0.25 to 5.49, and foreign_gate_processes 0 on every row, read from the gate-clock records themselves (#446's durable instrument) rather than from in-session observation — load context is what distinguishes a scheduler gain from a quieter-box gain, so it rests on the record. 5155 Python tests collected, 17 Rust. The pre-change arm the same morning, same box and clock: 158.8, 148.2, 150.7, 150.2 s (median 150.45). The set moment is a timestamp, not a date, so this morning's slower load-scheduler rows stay out of the window."
   },
   "fast": {
     "anchor_seconds": 93.6,
