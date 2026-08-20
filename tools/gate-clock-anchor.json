@@ -1,0 +1,12 @@
+{
+  "_read_me": "The gate-duration anchor (#446). Nothing in tools/gate_clock.py writes this file, under any verb, ever: raising a value here is a deliberate hand-edit somebody makes on purpose, visible in the diff, because a number that moves by itself cannot detect slow growth. Lowering it after a measured improvement (#442, #447) is the same deliberate edit. The threshold the anchor is compared against, and the measurement behind both, are tools/gate_clock.py's header.",
+  "unit": {
+    "anchor_seconds": 176,
+    "set": "2026-08-20",
+    "derivation": "Median of 6 green runs this day (185, 181, 172, 158.3, 174.8, 177.8 s), serial, on the issue-446 tree at c23d07c plus this change; one red run (190 s, two red tests) recorded and excluded. 1-minute load before each run 1.06 to 2.18; foreign gate processes 1 (3 earlier in the day). 5131 Python tests collected, 17 Rust. #442/#452 had NOT landed: this is the regressed figure, and #452 re-sets it when it lands."
+  },
+  "fast": {
+    "anchor_seconds": 195,
+    "derivation": "Median of 4 green runs this day (193.4, 180.1, 197.3, 199.9 s), same arrangement as unit; one red run (4.9 s, a ruff red during development) recorded and excluded. Each run's whole wall: check, unit, mutation."
+  }
+}

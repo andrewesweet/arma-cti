@@ -16,8 +16,10 @@ as what it is.
 
 from __future__ import annotations
 
+import contextlib
 import importlib.util
 import json
+import os
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -215,3 +217,24 @@ def recorded_death(**fields: object) -> dict[str, Any]:
     hand in two files.
     """
     return {"at_ns": 1, "event": "casualty", **death(**fields)}
+
+
+def pytest_collection_finish(session: Any) -> None:  # noqa: ANN401 — pytest's hook signature, not ours to narrow
+    """Hand the suite's collected test count to the gate-duration recorder (#446).
+
+    Each recorded gate run carries how many tests it collected, so a duration
+    change can be told apart from a suite that simply grew. The count is written
+    to the path the recording recipes exported in `CTI_GATE_CLOCK_COLLECTED_FILE`
+    — and nowhere when it is unset, so a bare `uv run pytest` and `just
+    mutation`'s own runs leave no file behind. With `-n auto` every xdist worker
+    finishes collection too; a worker is recognised by its `workerinput`
+    attribute and does not write, because the controller collected the same
+    suite and the workers would race on the one path. A failed write records
+    `None`: the count is provenance for a later investigation, not an input to
+    any decision, so it must not redden a run that already finished green.
+    """
+    named = os.environ.get("CTI_GATE_CLOCK_COLLECTED_FILE", "")
+    if not named or hasattr(session, "workerinput"):
+        return
+    with contextlib.suppress(OSError):
+        Path(named).write_text(f"{len(session.items)}\n", encoding="utf-8")
