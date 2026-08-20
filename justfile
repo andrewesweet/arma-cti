@@ -305,8 +305,7 @@ probe-contract:
 mutation *args:
     uv run python tools/mutation_smoke.py {{ args }}
 
-mutation-compare *args:
-    uv run python tools/mutation_smoke.py {{ args }}
+alias mutation-compare := mutation
 
 # Everything that does not need Arma. `mutation` runs last: a red suite says
 # nothing about mutants, and the smoke refuses rather than guesses when the

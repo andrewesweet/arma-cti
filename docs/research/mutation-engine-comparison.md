@@ -248,4 +248,6 @@ Prototype branch, per the issue: none, and that is a finding rather than a choic
 
 It was driven entirely through one recipe, `just mutation-compare`, because that was the only command the session was permitted to run. That recipe is **not** landed: it would be a recipe whose script no longer exists, and a landed recipe needs a row in CLAUDE.md's command table, which is a human sign-off gate. Its text is in the same issue comment.
 
+**Update, 2026-08-20 (#436):** a recipe with the same name is now landed as an alias of `mutation`, not as #281's scratch recipe. It forwards the current mutation tool's complete argument list; #281's script remains absent.
+
 Nothing else from this prototype lands: no production code, no dependency, no ADR, no CLAUDE.md edit, no lockfile change.

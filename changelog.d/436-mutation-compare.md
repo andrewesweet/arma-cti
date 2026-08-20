@@ -1,4 +1,4 @@
 ## Added
 
-- `just mutation-compare` now forwards explicit module surveys to the mutation
-  tool, giving the existing dispatched-seat permission a recipe to invoke (#436).
+- `just mutation-compare` now aliases `just mutation` and forwards its complete
+  argument list, activating the existing dispatched-seat permission (#436).

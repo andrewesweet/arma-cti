@@ -59,6 +59,8 @@ This session adds a fourth instance, on the analysis issue itself [observed]: th
 
 The two-kind split is a claim about *why a wrong answer would not be caught*. The third kind is a claim about *whether an answer can be produced at all*. They dissolve by opposite means: a gate obstacle is dissolved by adding machinery, a permission obstacle by removing a restriction or by routing around it with a narrow grant (`just discard`, `just mutation-compare` — the shape approved twice, per #294's scope note).
 
+**Update, 2026-08-20 (#436):** the `mutation-compare` references in this document describe #281's narrow scratch recipe. The landed recipe with that name is instead an alias of `mutation` and exposes its complete argument surface, so it is no longer a narrow-recipe exemplar.
+
 They also fail differently, and this is the operational reason to separate them. A gate obstacle that is wrong lands bad code. A permission obstacle that is wrong **costs a whole dispatch to discover**, because nothing in `tools/routing_policy.py` checks whether a destination lane can run what it is sent — the module's own docstring says it "decides whether a class may leave Claude under ADR-0061 and #258" [read], and capability is not in `Rule`'s fields (`issue_path_prefixes`, `issue_phrases`, `seats`, `landing_path_prefixes`, `remedy`) [read]. #294 states the same consequence independently: *"nothing in the routing policy checks whether a destination lane can run the work it is sent."*
 
 ### 1.4 The class list, re-assigned

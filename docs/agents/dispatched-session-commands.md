@@ -70,11 +70,13 @@ A command that runs perfectly well alone can be refused inside a chain — which
 
 ## What to do about it
 
-Nothing that widens anything — #248's ruling puts permissions with the human, and the narrow-recipe pattern (`just discard`, `just mutation-compare`) is the approved shape. What this buys is a brief that costs nothing to compose and a dispatch that does not spend itself rediscovering the list:
+**Update, 2026-08-20 (#436):** `just mutation-compare` no longer exemplifies the narrow-recipe pattern. Landing it as an alias of `mutation` activated its dormant grant over the mutation tool's complete argument surface. That wider surface is deliberate because comparable surveys need arguments such as `--budget`; `just fast` still invokes `mutation` without arguments, so the alias cannot soften the landing gate. The narrow `just discard` grant remains the approved pattern.
+
+What this buys is a brief that costs nothing to compose and a dispatch that does not spend itself rediscovering the list:
 
 - `grep`, `rg`, `find` and `wc` run bare since 2026-08-16; the `\grep` escape is harmless but buys nothing now;
 - keep reads out of `&&` chains;
-- reach for a `just` recipe rather than `python3 -c` — and note that whatever a recipe's subprocess does is invisible to the permission check, which is why the grant belongs on a *narrow* recipe rather than a general one. `just land --dry-run` created a `.venv` in passing; the harness saw a `just` command and nothing else.
+- reach for a `just` recipe rather than `python3 -c` — and note that whatever a recipe's subprocess does is invisible to the permission check, which is why its argument surface must match the capability being granted. `just land --dry-run` created a `.venv` in passing; the harness saw a `just` command and nothing else.
 
 ## What this does not establish
 

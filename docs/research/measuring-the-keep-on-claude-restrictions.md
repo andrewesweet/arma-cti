@@ -120,6 +120,8 @@ This refines the codex study's author/executor/finisher/lander composition: the 
 
 The replacement both lenses converge on is a **required-executor / capability axis**, separate from the class list: an issue declares operations (`write-dot-claude`, `create-symlink`, `run-full-regress`, `run-just-fast`); routing composes a workflow whose author, executor, finisher and lander may differ; an unknown capability fails closed before a dispatch is spent; and a narrow recipe may satisfy one operation without widening the session's general command surface (the `just discard` / `just mutation-compare` shape, approved twice). The wall is **cross-lane** (codex and zai both hit it, §3), which confirms it is a property of the harness around a dispatched session, not of any one provider — the strongest reason it deserves its own axis rather than a seat-class row.
 
+**Update, 2026-08-20 (#436):** that `mutation-compare` reference describes #281's narrow scratch recipe. The landed recipe with that name aliases `mutation` and exposes its complete argument surface, so only `just discard` remains a narrow exemplar here.
+
 ## 5. Class 5 — tooling and lifecycle, second-lane position
 
 Both lenses read class 5 the same way: the `#258` ruling and the policy remedy both make it **contingent** on a dispatched session being allowed to run the corpus [read, `:111`], and no source attributes it to foreign-model competence. The blocker has two parts, both confirmed this session:

@@ -144,6 +144,8 @@ closed before a dispatch is spent. A narrow recipe may satisfy one operation wit
 session's general command vocabulary; that is the already approved `just discard` and
 `just mutation-compare` shape, not an override.
 
+**Update, 2026-08-20 (#436):** that `mutation-compare` reference describes #281's narrow scratch recipe. The landed recipe with that name aliases `mutation` and exposes its complete argument surface, so only `just discard` remains a narrow exemplar here.
+
 This matters particularly to the lane writing this report. Codex can author and commit ordinary
 work, but it cannot run `just fast`. Recording `run-just-fast` as unsatisfied would route its
 finisher elsewhere rather than pretending Codex has authority it does not.
