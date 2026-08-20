@@ -55,16 +55,21 @@ gate up (#442, #447) re-derives and lowers it as part of itself, so a deliberate
 improvement becomes the new expectation instead of being reported forever as
 drift in the wrong direction.
 
-**Each entry's `set` date bounds the window, so lowering the anchor cannot
+**Each entry's `set` bounds the window, so lowering the anchor cannot
 false-fire against the rows that predate it.** The records accumulate across
 branches and lanes with no reset, so an anchor lowered from 176 s to 110 s
 would otherwise sit beside ten green rows at ~176 s and fire at ~1.6× on every
 orchestrator turn until new rows crowded them out — the first use of the
 maintenance path producing the false alarms the report exists to avoid. Only
-green runs on or after the entry's `set` date enter the median, which after a
+green runs at or after the entry's `set` enter the median, which after a
 re-set leaves the recipe at `insufficient_sample` until five post-`set` greens
-exist: unknown, never healthy — the honest state of a re-set instrument. A row
-whose `at` will not parse is excluded rather than guessed at.
+exist: unknown, never healthy — the honest state of a re-set instrument. `set`
+takes a date or a full ISO timestamp: a date bounds from that day's start,
+while a timestamp bounds from the moment it names — the shape a same-day re-set
+needs, because an implementer who improves the gate on a day they have already
+run it leaves that morning's slower rows on disk, and a day-granular bound
+would keep them in the window against the lowered anchor. A row whose `at`
+will not parse is excluded rather than guessed at.
 
 **A broken anchor is the one state where noise is correct.** The file ships in
 the tree with both recipes anchored, so a file that is missing, unparseable, or
@@ -75,8 +80,13 @@ claims nothing about the gate and a busy box does not license a broken
 instrument's silence. Silence there would be exactly the failure #446 exists
 to prevent, reintroduced inside the fix. `just check`'s `check-gate-clock` leg
 makes the same finding a red, so a half-edited anchor cannot land through its
-own gate. A recipe the valid file simply does not name stays `anchor_unset`:
-the file grows one row at a time as anchors are derived.
+own gate. A file that fails to *name* a recipe the recorder writes is the same
+damage — a deleted key, or one misspelled into a key nothing reads — so a
+missing recipe is a problem too, and a key outside the recorder's recipes is
+flagged where it sits, which is how a misspelling presents. `assess`'s
+`anchor_unset` rung stays as a backstop for a state the loader no longer
+produces; the recipes the file must name are `RECIPES`, the set the recorder
+writes rows for, so the file and the loader cannot drift apart silently.
 
 **The wall is read from the kernel's monotonic clock.** Both ends of a recorded
 wall read `/proc/uptime` — `CLOCK_REALTIME` steps under NTP and a step mid-run
@@ -125,7 +135,7 @@ import argparse
 import json
 import os
 import sys
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime, time
 from pathlib import Path
 from typing import Final, NamedTuple
 
@@ -179,10 +189,10 @@ class Verdict(NamedTuple):
 
 
 class AnchorState(NamedTuple):
-    """What `load_anchors` read: the anchors, their `set` dates, and the unreadable entries."""
+    """What `load_anchors` read: the anchors, their `set` moments, and the unreadable entries."""
 
     anchors: dict[str, float]
-    set_dates: dict[str, date]
+    set_dates: dict[str, datetime]
     problems: dict[str, str]
 
 
@@ -316,18 +326,41 @@ def read_collected_file() -> int | None:
         return None
 
 
+def _read_anchor_entry(name: str, entry: object) -> tuple[float, datetime] | str:
+    """Return one entry's `(anchor, set moment)`, or the problem with it as a string.
+
+    Split out of `load_anchors` so the file-level failures (missing,
+    unparseable, not an object) and the per-entry ladder read separately.
+    """
+    if not isinstance(entry, dict):
+        return f"{name} entry is not an object"
+    seconds = entry.get("anchor_seconds")
+    if isinstance(seconds, bool) or not isinstance(seconds, (int, float)) or seconds <= 0:
+        return f"{name}.anchor_seconds is not a positive number"
+    try:
+        moment = as_utc(datetime.fromisoformat(str(entry["set"])))
+    except (KeyError, TypeError, ValueError):
+        return f"{name}.set is missing or not an ISO date or timestamp"
+    return float(seconds), moment
+
+
 def load_anchors(path: Path) -> AnchorState:
-    """Read the anchor file: the anchors, their `set` dates, and every entry that will not read.
+    """Read the anchor file: the anchors, their `set` moments, and every entry that will not read.
 
     The file ships in the tree with both recipes anchored, so a file that cannot
     be read at all is a broken instrument, not the unset state: every recipe in
     `RECIPES` is returned as unreadable with the reason. An entry that exists
-    but is half-edited — a quoted number, a dropped key, a `set` that is not an
-    ISO date — is a problem for that recipe alone; a recipe the valid file
-    simply does not name is unset, and the file grows one row at a time as
-    anchors are derived. `set` is required because the report bounds its window
-    by it: an anchor without a set date could not be lowered without
-    false-firing against the rows that predate the change.
+    but is half-edited — a quoted number, a dropped key, a `set` that is neither
+    an ISO date nor a timestamp — is a problem for that recipe alone. So is a
+    recipe the file fails to name: the file ships naming every recipe the
+    recorder writes, so a missing key — deleted, or misspelled into a key
+    nothing reads — is damage rather than the unset state, and a key outside
+    `RECIPES` is flagged where it sits, which is how a misspelling presents.
+    `set` is required because the report bounds its window by it: an anchor
+    without a set moment could not be lowered without false-firing against the
+    rows that predate the change. A date bounds from that day's start; a full
+    timestamp bounds from the moment it names, so a re-set on a day already run
+    excludes that morning's rows.
     """
     state = AnchorState({}, {}, {})
     try:
@@ -344,25 +377,25 @@ def load_anchors(path: Path) -> AnchorState:
         reason = f"anchor file {path} is not an object"
         return state._replace(problems=dict.fromkeys(RECIPES, reason))
     anchors: dict[str, float] = {}
-    set_dates: dict[str, date] = {}
+    set_dates: dict[str, datetime] = {}
     problems: dict[str, str] = {}
     for recipe, entry in document.items():
         if recipe.startswith("_"):
             continue
         name = str(recipe)
-        if not isinstance(entry, dict):
-            problems[name] = f"{name} entry is not an object"
+        if name not in RECIPES:
+            problems[name] = (
+                f"{name} is not a recipe the recorder writes (expected one of {', '.join(RECIPES)})"
+            )
             continue
-        seconds = entry.get("anchor_seconds")
-        if isinstance(seconds, bool) or not isinstance(seconds, (int, float)) or seconds <= 0:
-            problems[name] = f"{name}.anchor_seconds is not a positive number"
-            continue
-        try:
-            set_dates[name] = date.fromisoformat(str(entry["set"]))
-        except (KeyError, TypeError, ValueError):
-            problems[name] = f"{name}.set is missing or not an ISO date"
-            continue
-        anchors[name] = float(seconds)
+        read = _read_anchor_entry(name, entry)
+        if isinstance(read, str):
+            problems[name] = read
+        else:
+            anchors[name], set_dates[name] = read
+    for recipe in RECIPES:
+        if recipe not in anchors and recipe not in problems:
+            problems[recipe] = f"{recipe} entry is missing from the anchor file"
     return AnchorState(anchors, set_dates, problems)
 
 
@@ -392,14 +425,25 @@ def arma_tier_processes(proc: Path = Path("/proc")) -> int:
     return count
 
 
-def record_date(row: Record) -> date | None:
-    """Return the row's calendar date, or `None` when `at` will not parse.
+def as_utc(moment: datetime) -> datetime:
+    """Read a naive moment as UTC, because both sides of the window bound must compare.
 
-    Used only to place a row against an anchor's `set` date; a row that cannot
-    be placed in time is excluded from a bounded window rather than guessed at.
+    The recorder writes aware timestamps; a naive value arises only from a
+    hand-written `set` or an arranged row, and assuming UTC beats crashing the
+    comparison that assumption feeds.
+    """
+    return moment if moment.tzinfo is not None else moment.replace(tzinfo=UTC)
+
+
+def record_moment(row: Record) -> datetime | None:
+    """Return the row's moment in UTC, or `None` when `at` will not parse.
+
+    Used only to place a row against an anchor's `set` moment; a row that
+    cannot be placed in time is excluded from a bounded window rather than
+    guessed at.
     """
     try:
-        return datetime.fromisoformat(row.at).date()
+        return as_utc(datetime.fromisoformat(row.at))
     except ValueError:
         return None
 
@@ -424,12 +468,15 @@ def assess(
     2. `arma_tier_running` — the corpus or a play server owns the box; a slow
        gate under that is a busy box, not a regression. Ahead of the comparison
        rungs so an anchored watcher cannot cry regression during a play session.
-    3. `anchor_unset` — no anchor for this recipe. The growth state for a
-       recipe whose anchor has not been derived: unknown, never healthy.
-    4. `insufficient_sample` — fewer than `MIN_SAMPLE` green runs **on or after
-       the anchor's `set` date**. Also the honest state right after a re-set:
+    3. `anchor_unset` — no anchor for this recipe. A backstop the loader no
+       longer produces — `load_anchors` treats a missing entry as a broken
+       file — kept so a hand-built state cannot fall through to a comparison
+       against nothing: unknown, never healthy.
+    4. `insufficient_sample` — fewer than `MIN_SAMPLE` green runs **at or after
+       the anchor's `set` moment**. Also the honest state right after a re-set:
        the pre-`set` rows are excluded, so a lowered anchor reads as unknown
-       until five new greens exist rather than false-firing at the old rows.
+       until five new greens exist rather than false-firing at the old rows —
+       including the same morning's rows when `set` names a timestamp.
     5. `healthy` — the window median is at or under `THRESHOLD`× the anchor.
     6. `slower` — over it, with the one line, which carries the window's
        load-1m median so a busy box can be read off the line itself.
@@ -459,7 +506,7 @@ def assess(
         set_on = anchor_state.set_dates.get(recipe)
         if set_on is not None:
             greens = [
-                row for row in greens if (when := record_date(row)) is not None and when >= set_on
+                row for row in greens if (when := record_moment(row)) is not None and when >= set_on
             ]
         if len(greens) < MIN_SAMPLE:
             verdicts.append(Verdict(recipe, "insufficient_sample", None))
@@ -505,6 +552,8 @@ def history(gate_clock_dir: Path, anchor_state: AnchorState) -> list[str]:
             anchor_text = "no anchor set"
         elif set_on is None:
             anchor_text = f"{anchor:.0f}s anchor, set date unrecorded"
+        elif set_on.time() == time(0):
+            anchor_text = f"{anchor:.0f}s anchor set {set_on.date().isoformat()}"
         else:
             anchor_text = f"{anchor:.0f}s anchor set {set_on.isoformat()}"
         if not walls:

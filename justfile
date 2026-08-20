@@ -77,9 +77,10 @@ check-conflicts:
 check-changelog:
     uv run python tools/check_changelog.py
 
-# The gate-duration anchor must read: every entry well-formed, the file
-# parseable (#446). A half-edited anchor would otherwise silence the drift
-# report behind `anchor_unset` — silence dressed as health, the exact failure
+# The gate-duration anchor must read: every entry well-formed, every recipe
+# the recorder writes named, the file parseable (#446). A half-edited anchor —
+# or a deleted or misspelled key — would otherwise silence the drift report
+# behind `anchor_unset` — silence dressed as health, the exact failure
 # the report exists to prevent. `report` prints the same finding as a line;
 # this leg makes it a red before it can land.
 check-gate-clock:

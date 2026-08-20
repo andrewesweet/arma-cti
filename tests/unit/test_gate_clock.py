@@ -18,9 +18,12 @@ the history, not to the number as written.
 
 The fix round's additions pin the instrument's own failure mode: a broken
 anchor prints rather than reading as health, the window is bounded by the
-anchor's `set` date so lowering it cannot false-fire at the old rows, and the
-fired line carries its load context. Those three are the class #446 is about
-turned on the fix itself.
+anchor's `set` so lowering it cannot false-fire at the old rows, and the fired
+line carries its load context. Those three are the class #446 is about turned
+on the fix itself. Round 3 extends the same discipline to the sibling shapes:
+a deleted or misspelled recipe key is damage the file ships against, not an
+unset recipe, and a `set` timestamp bounds the window to the moment it names
+so a same-day re-set excludes the same morning's rows.
 """
 
 from __future__ import annotations
@@ -42,12 +45,15 @@ gate_clock = load_tool("gate_clock")
 ANCHOR_SECONDS = 109.0
 DAY_MEDIANS = {"08-06": 110.0, "08-08": 124.0, "08-10": 150.0}
 
-# The default `at` of a arranged row, and the anchor set dates the window-bound
-# tests place rows against. Dates, not datetimes, because the anchor file's
-# `set` is a date and the bound is calendar-granular by design.
+# The default `at` of an arranged row, and the anchor set values the
+# window-bound tests place rows against: `set` takes a date (bounding from that
+# day's start) or a full timestamp (bounding from the moment it names).
 ROW_AT = "2026-08-20T12:00:00+00:00"
 SET_ON = "2026-08-20"
 SET_LATER = "2026-08-21"
+MORNING = "2026-08-20T09:00:00+00:00"
+SET_MOMENT = "2026-08-20T14:30:00+00:00"
+EVENING = "2026-08-20T15:00:00+00:00"
 
 
 def row(  # noqa: PLR0913, PLR0917 — the eight parameters are Record's own eight fields
@@ -83,10 +89,13 @@ def anchor_state(
     set_dates: dict[str, str] | None = None,
     problems: dict[str, str] | None = None,
 ) -> gate_clock.AnchorState:
-    """Return an AnchorState, with `set` dates as the anchor file spells them."""
+    """Return an AnchorState, with `set` values as the anchor file spells them."""
     return gate_clock.AnchorState(
         anchors or {},
-        {recipe: gate_clock.date.fromisoformat(day) for recipe, day in (set_dates or {}).items()},
+        {
+            recipe: gate_clock.as_utc(gate_clock.datetime.fromisoformat(when))
+            for recipe, when in (set_dates or {}).items()
+        },
         problems or {},
     )
 
@@ -170,7 +179,12 @@ def test_below_the_minimum_sample_is_silent_for_that_reason() -> None:
 
 
 def test_an_unset_anchor_is_silent_for_that_reason() -> None:
-    """A recipe the valid file does not name reads as unknown, never as healthy."""
+    """The `anchor_unset` backstop: unknown, never healthy.
+
+    The loader no longer produces this state — a recipe the file fails to name
+    is a problem, pinned below — so this rung exists for a hand-built state and
+    must not fall through to a comparison against no anchor.
+    """
     verdict = verdict_for(greens([150.0] * gate_clock.MIN_SAMPLE), anchor_state())
     assert verdict.reason == "anchor_unset"
     assert verdict.line is None
@@ -211,7 +225,7 @@ def test_a_missing_anchor_file_is_unreadable_not_unset(tmp_path: Path) -> None:
 
 
 def test_half_edited_entries_are_problems_for_their_recipe_alone(tmp_path: Path) -> None:
-    """A quoted number, a dropped key or a bad `set` date is a half-edit, not an unset recipe."""
+    """A quoted number, a dropped key or a bad `set` is a half-edit, not a missing recipe."""
     anchor_file = tmp_path / "anchor.json"
     write_anchor(
         anchor_file,
@@ -224,14 +238,15 @@ def test_half_edited_entries_are_problems_for_their_recipe_alone(tmp_path: Path)
     assert state.anchors == {"fast": 195.0}
     assert set(state.problems) == {"unit"}
 
+    good_fast = {"fast": {"anchor_seconds": 195, "set": SET_ON}}
     anchor_file.write_text(
-        json.dumps({"unit": {"anchor_seconds": 110}}),
+        json.dumps({"unit": {"anchor_seconds": 110}, **good_fast}),
         encoding="utf-8",  # `set` dropped
     )
     assert set(gate_clock.load_anchors(anchor_file).problems) == {"unit"}
 
     anchor_file.write_text(
-        json.dumps({"unit": 176}),
+        json.dumps({"unit": 176, **good_fast}),
         encoding="utf-8",  # the entry itself is not an object
     )
     assert set(gate_clock.load_anchors(anchor_file).problems) == {"unit"}
@@ -250,6 +265,24 @@ def test_the_window_is_bounded_by_the_anchors_set_date() -> None:
 
     new_rows = greens([110.0] * gate_clock.MIN_SAMPLE, at=f"{SET_LATER}T09:00:00+00:00")
     assert verdict_for(old_rows + new_rows, lowered).reason == "healthy"
+
+
+def test_a_timestamp_set_bounds_the_window_to_the_moment_it_names() -> None:
+    """A same-day re-set must exclude the same morning's rows (round 3's second finding).
+
+    An implementer who improves the gate on a day they have already run it
+    leaves that morning's slower rows on disk: ten greens at 176 s from 09:00,
+    the anchor lowered to 109 s at 14:30. A day-granular `set` keeps those rows
+    in the window and false-fires at 1.61×; `set` as a timestamp bounds from
+    the moment, and the recipe reads insufficient until five post-moment greens
+    exist.
+    """
+    morning = greens([176.0] * gate_clock.REPORT_WINDOW, at=MORNING)
+    lowered = anchor_state({"unit": ANCHOR_SECONDS}, {"unit": SET_MOMENT})
+    assert verdict_for(morning, lowered).reason == "insufficient_sample"
+
+    evening = greens([ANCHOR_SECONDS] * gate_clock.MIN_SAMPLE, at=EVENING)
+    assert verdict_for(morning + evening, lowered).reason == "healthy"
 
 
 def test_rows_whose_at_will_not_parse_leave_a_bounded_window() -> None:
@@ -374,14 +407,61 @@ def test_the_arma_scan_reads_proc_and_can_be_staged(tmp_path: Path) -> None:
     assert gate_clock.arma_tier_processes(proc=tmp_path / "nowhere") == 0
 
 
-def test_the_anchor_loader_skips_provenance_and_unnamed_recipes(tmp_path: Path) -> None:
-    """`_`-keys are prose; a recipe the file does not name is unset, not a problem."""
+def test_the_anchor_loader_skips_provenance_only(tmp_path: Path) -> None:
+    """`_`-keys are prose; a file naming every recipe reads clean, `set` date or timestamp."""
     anchor_file = tmp_path / "gate-clock-anchor.json"
-    write_anchor(anchor_file, {"unit": {"anchor_seconds": 190, "set": SET_ON}})
+    write_anchor(
+        anchor_file,
+        {
+            "unit": {"anchor_seconds": 190, "set": SET_ON},
+            "fast": {"anchor_seconds": 195, "set": SET_MOMENT},
+        },
+    )
     state = gate_clock.load_anchors(anchor_file)
     assert state.problems == {}
+    assert state.anchors == {"unit": 190.0, "fast": 195.0}
+    assert state.set_dates == {
+        "unit": gate_clock.as_utc(gate_clock.datetime.fromisoformat(SET_ON)),
+        "fast": gate_clock.datetime.fromisoformat(SET_MOMENT),
+    }
+
+
+def test_a_recipe_the_file_does_not_name_is_a_problem(tmp_path: Path) -> None:
+    """The file ships naming every recipe, so a deleted key is damage, not the growth state.
+
+    The round-3 finding: a recipe missing from the file used to read as
+    `anchor_unset` — silence — where a deleted block is exactly the half-edit
+    the broken-anchor rule exists to catch.
+    """
+    anchor_file = tmp_path / "gate-clock-anchor.json"
+    write_anchor(anchor_file, {"unit": {"anchor_seconds": 190, "set": SET_ON}})  # `fast` deleted
+    state = gate_clock.load_anchors(anchor_file)
     assert state.anchors == {"unit": 190.0}
-    assert state.set_dates == {"unit": gate_clock.date.fromisoformat(SET_ON)}
+    assert set(state.problems) == {"fast"}
+    assert "missing" in state.problems["fast"]
+
+
+def test_a_misspelled_key_is_flagged_where_it_sits(tmp_path: Path) -> None:
+    """A typo in a key is as likely as a trailing comma, and presents twice.
+
+    `unti` leaves `unit` missing (a problem in its own right, above) *and*
+    loads a well-formed entry nothing reads; the loader names the stray key so
+    the red tells the editor where their entry went.
+    """
+    anchor_file = tmp_path / "gate-clock-anchor.json"
+    write_anchor(
+        anchor_file,
+        {
+            "unti": {"anchor_seconds": 190, "set": SET_ON},
+            "fast": {"anchor_seconds": 195, "set": SET_ON},
+        },
+    )
+    state = gate_clock.load_anchors(anchor_file)
+    assert state.anchors == {"fast": 195.0}  # the misspelling loads nowhere
+    assert state.set_dates == {"fast": gate_clock.as_utc(gate_clock.datetime.fromisoformat(SET_ON))}
+    assert set(state.problems) == {"unti", "unit"}
+    assert "not a recipe" in state.problems["unti"]
+    assert "missing" in state.problems["unit"]
 
 
 def test_record_then_report_through_the_cli(
@@ -464,8 +544,9 @@ def test_report_through_the_cli_in_each_state(
 
     The same ladder `just watch-report` drives, with the anchor file pointed at
     a staged one so the shipped tree's anchor is never the input: a missing file
-    prints, a valid file naming no recipe stays silent, anchored-at-median stays
-    silent, and drift fires once.
+    prints, a file naming no recipe prints (the file ships naming every recipe,
+    so every key missing is damage), anchored-at-median stays silent, and drift
+    fires once.
     """
     anchor_file = tmp_path / "anchor.json"
     monkeypatch.setattr(gate_clock, "ANCHOR_PATH", anchor_file)
@@ -478,11 +559,19 @@ def test_report_through_the_cli_in_each_state(
 
     for wall in (ANCHOR_SECONDS,) * gate_clock.MIN_SAMPLE:
         gate_clock.append_record(tmp_path, row(wall=wall))
-    write_anchor(anchor_file, {})  # a valid file naming no recipe: the growth state
+    write_anchor(anchor_file, {})  # valid JSON, no recipe named: every key missing
     assert gate_clock.main(run) == 0
-    assert capsys.readouterr().out == ""
+    printed = capsys.readouterr().out
+    assert printed.count("\n") == len(gate_clock.RECIPES)
+    assert "missing from the anchor file" in printed
 
-    write_anchor(anchor_file, {"unit": {"anchor_seconds": ANCHOR_SECONDS, "set": SET_ON}})
+    write_anchor(
+        anchor_file,
+        {
+            "unit": {"anchor_seconds": ANCHOR_SECONDS, "set": SET_ON},
+            "fast": {"anchor_seconds": ANCHOR_SECONDS, "set": SET_ON},
+        },
+    )
     assert gate_clock.main(run) == 0  # anchored at the current median: healthy
     assert capsys.readouterr().out == ""
 
@@ -499,15 +588,35 @@ def test_the_check_verb_reds_a_broken_anchor_and_passes_a_good_one(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """The `just check` leg: a malformed anchor is a red, not a line nobody must read."""
+    """The `just check` leg: a malformed anchor is a red, not a line nobody must read.
+
+    Round 3's first finding: the passing arm used to name only `unit`, pinning
+    a file missing `fast` green — the guard reached the malformation it was
+    shown and not its sibling. A deleted key and a misspelled one both red now.
+    """
     anchor_file = tmp_path / "anchor.json"
     monkeypatch.setattr(gate_clock, "ANCHOR_PATH", anchor_file)
+    good: dict[str, object] = {
+        "unit": {"anchor_seconds": 176, "set": SET_ON},
+        "fast": {"anchor_seconds": 195, "set": SET_ON},
+    }
 
     anchor_file.write_text("{not json", encoding="utf-8")
     assert gate_clock.main(["check"]) == 1
     assert "anchor unreadable" in capsys.readouterr().out
 
-    write_anchor(anchor_file, {"unit": {"anchor_seconds": 176, "set": SET_ON}})
+    write_anchor(anchor_file, {"unit": good["unit"]})  # the `fast` block deleted
+    assert gate_clock.main(["check"]) == 1
+    printed = capsys.readouterr().out
+    assert "fast entry is missing" in printed
+
+    write_anchor(anchor_file, {"unti": good["unit"], "fast": good["fast"]})  # the key misspelled
+    assert gate_clock.main(["check"]) == 1
+    printed = capsys.readouterr().out
+    assert "unit entry is missing" in printed
+    assert "unti is not a recipe" in printed
+
+    write_anchor(anchor_file, good)
     assert gate_clock.main(["check"]) == 0
     assert capsys.readouterr().out == ""
 
