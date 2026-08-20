@@ -792,12 +792,13 @@ REVIEW_FLAKE_RESPONSE: Final = (
 )
 # The posting half is written as an instruction to *attempt and report*, not as a promise
 # that the call will land. The seat's containment is a forced read-only permission mode
-# (`dispatch.SEATS["review"]`, where #449's mechanism decision is recorded), and whether
-# that mode passes an allowlisted `gh issue comment` through is unmeasured — the fifteen
-# relayed verdicts measured the sentence, not the mechanism, because none of those reviews
-# was ever permitted to try. Telling the reviewer to try and to record the refusal is what
-# makes the first live review settle it at no extra cost; claiming the capability outright
-# would ship this issue's own defect.
+# (`dispatch.SEATS["review"]`, where #449's mechanism decision and the two runs that measure
+# it are recorded): both runner families were observed posting from `plan` mode on
+# 2026-08-20, so this asks the reviewer for nothing unproven. It stays an attempt rather
+# than a promise because two runs are an observation and not an invariant, and a family,
+# mode or runner version that does refuse should be recorded the first time it happens
+# rather than assumed away. The fifteen relayed verdicts of 2026-08-19/20 measured the
+# instruction rather than the mechanism, because none of those reviews was permitted to try.
 REVIEW_LANDING_RULE: Final = (
     "A review lands nothing: do not commit, do not push, do not run `just land`, and edit no"
     " file — ADR-0071 ruling 4's never-alone invariant, which this ruling leaves untouched."

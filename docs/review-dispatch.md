@@ -121,22 +121,34 @@ things follow, and the first is the correction.
   were relayed by hand, each a plan read, an extraction and a `gh issue comment`, and every
   extraction was a retyping risk the paste discipline below exists to remove.
 
-**What is not yet true, stated so nobody reads a permission out of a paragraph.** The forced
-`plan` mode is unchanged, and it answers the two runner families differently.
+**Both runner families have been observed posting from `plan` mode, and the mode is
+unchanged.** On `codex`, dispatch `d-20260820-110847-f9b197` — `seat=review`, `lane=codex`,
+`permission_mode=plan`, argv ending `--sandbox read-only` — ran `gh issue comment 434` from
+inside its own sandboxed session and created comment `5355112577` at 2026-08-20T11:14:56Z,
+seconds before the run ended. On the `claude` family, the `zai` review of the commit that
+first drafted this section posted its findings to #449 as comment `5355396609` at 11:44:10Z.
+Neither was relayed. The fifteen relays above measured the instruction rather than the
+mechanism: every one of those reviews had been told its findings were not its to file.
 
-On the **`codex`** family the answer is already known from the code: `plan` renders
-`--sandbox read-only`, and `_codex_sandbox_argv` grants that branch neither `writable_roots`
-nor `network_access`. `gh issue comment` needs the network, so a `codex` review **cannot**
-post, and its findings reach the thread through the orchestrator.
+**The first draft of this section said the opposite about `codex`, and it was false.** It
+read: *"`plan` renders `--sandbox read-only`, and `_codex_sandbox_argv` grants that branch
+neither `writable_roots` nor `network_access`. `gh issue comment` needs the network, so a
+`codex` review cannot post."* The dispatch record disproving it was on disk an hour before
+that commit. The error is kept on the page rather than silently replaced, because #449 exists
+over an unverified sentence surviving under a green suite, and this was the same move inside
+its own correction. Its mechanism is worth knowing: `network_access` is a
+**`sandbox_workspace_write`** setting, so the grant attaches to the `acceptEdits` branch
+alone. *`_codex_sandbox_argv` grants nothing on the read-only branch* is a fact about that
+function; *the sandbox blocks the network* is a claim about Codex's own read-only policy,
+which nobody here had measured. CLAUDE.md decides between the two — a lane's enforcement is
+what it demonstrably runs, never what its provider claims.
 
-On the **`claude`** family it is **unmeasured**. `.claude/settings.json` already carries
-`Bash(gh issue:*)` on its allow list; what nobody here has established is whether an allow
-rule reaches a Bash call a `plan`-mode headless session would otherwise refuse. The fifteen
-relays do not settle it, because each of those reviews had been told not to try — they
-measured the sentence, not the mechanism. The brief now tells the reviewer to attempt the
-post and to report a refusal among its findings, so the first live `claude`-family review
-after this lands settles the question at no extra cost. Until one has, the orchestrator
-relay remains the fallback rather than the protocol.
+**What is still not claimed.** Two runs are an observation, not an invariant: nothing here
+says every `plan`-mode review will be permitted to post. The brief tells the reviewer to
+attempt the post and to report a refusal among its findings, so a family, mode or runner
+version that does refuse is recorded the first time it happens rather than assumed away, and
+the orchestrator relay stays available for that case. Whether the relay can be retired as a
+standing step is #393's question, not this document's.
 
 ### The reviewer is never the reviewed profile
 
@@ -401,8 +413,8 @@ The orchestrator receives the report and routes each claim:
 Either route is the reviewer's own to take (human ruling 2026-08-20, #449: *"they can of
 course … post their own findings"*), and the seat's contract is still the report — a review
 that files nothing has not failed, it has produced its claims. The orchestrator relays where
-the reviewer's tool call was refused, which is the unmeasured case named above, not a
-standing division of labour.
+the reviewer's tool call was refused — a case neither family has been observed to hit, so a
+fallback rather than a standing division of labour.
 
 ## What a confirmed claim now reaches: nothing
 

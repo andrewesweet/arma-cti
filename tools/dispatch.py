@@ -751,29 +751,39 @@ SEATS: Final[dict[str, Seat]] = {
     #   worktree. Granting it back makes the reviewer able to edit and, with the network
     #   access the gate half needs, to push.
     # - **A seat-scoped `--allowed-tools Bash(gh issue comment:*)` on top of `plan`.** This
-    #   is the only candidate that keeps the containment, and it rests on an unmeasured
-    #   premise: that an allow rule reaches a Bash call a `plan`-mode headless session would
-    #   otherwise refuse. Nobody here has measured it. `.claude/settings.json` already
-    #   carries `Bash(gh issue:*)` on its allow list, so if the premise holds the capability
-    #   is already granted and needs no flag at all; if it does not hold, a flag would not
-    #   supply it either. Measuring it costs one dispatch, and #449's briefing was explicit
-    #   that a named gap beats a rushed permission change.
+    #   is the only candidate that keeps the containment, and it is moot rather than
+    #   rejected: `.claude/settings.json` already carries `Bash(gh issue:*)` on its allow
+    #   list, and both runner families have since been observed posting from `plan` mode
+    #   with no seat-scoped flag at all. A flag granting an already-exercised capability
+    #   buys nothing.
     #
-    # The two families do not answer alike, and the `codex` half needs no measuring: `plan`
-    # renders `--sandbox read-only`, and `_codex_sandbox_argv` grants that branch neither
-    # `writable_roots` nor `network_access`, so a `codex` review cannot reach `gh` at all
-    # and its findings travel through the orchestrator whatever the `claude` half turns out
-    # to do.
+    # **Both families were observed posting from `plan` mode on 2026-08-20**, so the
+    # orchestrator relay is not a bottleneck for either. On `codex`, dispatch
+    # `d-20260820-110847-f9b197` — `seat=review`, `lane=codex`, `permission_mode=plan`,
+    # `--sandbox read-only` — ran `gh issue comment 434` from inside its own sandboxed
+    # session and created comment `5355112577` at 2026-08-20T11:14:56Z, seconds before the
+    # run ended. On the `claude` family, the `zai` review of this row's own change posted
+    # its findings to #449 as comment `5355396609` at 11:44:10Z.
     #
-    # So the containment is unchanged and the gap is stated where a reader meets it:
-    # `docs/review-dispatch.md`, and `REVIEW_LANDING_RULE`, which tells the reviewer to
-    # attempt the post and to report a refusal in its findings. That turns the unmeasured
-    # premise into something the next live review settles at no extra cost, rather than
-    # something this issue guesses at. The half of the ruling this leaves unbuilt is stated
-    # rather than glossed: a review dispatch cannot land a review-specific gate, because it
-    # can write nothing — such a gate is a change like any other and lands through an
-    # implementer dispatch on its own issue, which is a route the seat's containment never
-    # blocked.
+    # An earlier draft of this comment asserted the opposite — that a `codex` review
+    # "cannot reach `gh` at all" — and marked it as needing no measuring; the run that
+    # disproves it was already on disk when it was written. Recorded rather than quietly
+    # corrected, because the error is #449's own defect class and its mechanism is worth
+    # knowing: `network_access` is a **`sandbox_workspace_write`** key, so the grant
+    # attaches to the `acceptEdits` branch alone. "`_codex_sandbox_argv` grants nothing on
+    # the read-only branch" is a fact about that function; "the sandbox blocks the network"
+    # is a claim about Codex's own read-only policy, which this repository had never
+    # measured. CLAUDE.md decides which of the two may be written down — a lane's
+    # enforcement is what it demonstrably runs, never what its provider claims.
+    #
+    # So the containment is unchanged and posting is the reviewer's own act.
+    # `REVIEW_LANDING_RULE` still tells the reviewer to attempt the post and to report a
+    # refusal, because two runs are an observation and not an invariant. Whether the relay
+    # can be retired as a standing step is #393's question, not this row's. The half of the
+    # ruling this leaves unbuilt is stated rather than glossed: a review dispatch cannot
+    # land a review-specific gate, because it can write nothing — such a gate is a change
+    # like any other and lands through an implementer dispatch on its own issue, which is a
+    # route the seat's containment never blocked.
     "review": Seat(
         "review",
         claude_only=False,
@@ -3288,6 +3298,15 @@ def _codex_sandbox_argv(permission_mode: str, granted: tuple[Path, ...] | None) 
     override has anything to buy there — no `writable_roots`, no `network_access` — and a
     sandbox that stays narrow when nothing needs it wider is the point of mapping per mode
     at all.
+
+    **Adding no override on that branch is not the same as the sandbox refusing what the
+    override would have granted**, and reading it as such is what shipped a false sentence
+    about the `review` seat in #449. Both keys here live under `sandbox_workspace_write`, so
+    they describe the `acceptEdits` branch and say nothing about `read-only`'s own policy.
+    Measured on 2026-08-20: dispatch `d-20260820-110847-f9b197`, a `review` seat on this
+    lane under `--sandbox read-only`, reached the network and posted `gh issue comment 434`
+    (comment `5355112577`). What a read-only Codex session may *write* is untested here and
+    stays unclaimed.
     """
     flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
     if flags != CODEX_SANDBOX["acceptEdits"]:

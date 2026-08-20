@@ -13,8 +13,12 @@
   three review strings, `tools/dispatch.py`'s thin default brief, and `docs/review-dispatch.md`
   including its brief template. A sweep for the other spellings — "judgement-only", "runs
   nothing", "triggers no test", "must not trigger", "never executes" — is recorded as closed on
-  the issue: every remaining hit belongs to `just regress --list`, to `recon`, or to the
-  historical journal. The paste contract is untouched: `just check`, `just unit` and
+  the issue: no spelling of the review ruling survives, and every remaining hit is one of a
+  command flag that runs nothing (`just regress --list`, `just land --dry-run`,
+  `machine-b steam-library-script`), a shell file's sourced-not-executed header, a mutation
+  vacuity or never-executed-code statement, an unrelated "judgement only" domain (ADR-0012's
+  Command Port reply), `recon`'s own separately cited ground, this correction's own quoted
+  history, or the historical journal. The paste contract is untouched: `just check`, `just unit` and
   `just mutation` with their result counts, and sampled-or-exhaustive stated unconditionally
   (#344, #421).
 
@@ -22,14 +26,26 @@
   costs is stated rather than glossed (#449).** The mode is not what states the test rule; it
   is what enforces ADR-0071 ruling 4's never-alone invariant, that a review neither edits nor
   lands the change it judges — an invariant this clarification leaves alone. The three
-  alternatives weighed are recorded in `tools/dispatch.py` beside the registry row, each
-  rejected for trading a mechanism for a sentence: a Bash deny-list any shell defeats, a
-  `codex` sandbox widening whose writable root is the review's own worktree, and a seat-scoped
-  allow rule resting on an unmeasured premise. Two consequences follow and both are written
-  down. A `codex` review **cannot** post — `plan` renders `--sandbox read-only`, which is
-  granted no network access — so its findings still travel through the orchestrator. On the
-  `claude` family it is **unmeasured** whether a `plan`-mode session reaches the
-  already-allowlisted `gh issue comment`; the brief now tells the reviewer to attempt the post
-  and to report a refusal among its findings, so the first live review settles it at no extra
-  cost. A review-specific gate still cannot be landed from inside a review dispatch; it is a
-  change like any other and lands through an implementer dispatch on its own issue.
+  alternatives weighed are recorded in `tools/dispatch.py` beside the registry row: a Bash
+  deny-list any shell defeats, and a `codex` sandbox widening whose writable root is the
+  review's own worktree, both rejected for trading a mechanism for a sentence; and a
+  seat-scoped `gh issue comment` allow rule, now moot rather than rejected, because both
+  runner families have been observed posting from `plan` mode without one. Those two runs are
+  named in the row and in `docs/review-dispatch.md`: on `codex`, dispatch
+  `d-20260820-110847-f9b197` posted comment `5355112577` to #434 from inside its own
+  `--sandbox read-only` session; on the `claude` family, a `zai` review posted comment
+  `5355396609` to #449. Keeping `plan` therefore costs no relay on either family. A
+  review-specific gate still cannot be landed from inside a review dispatch; it is a change
+  like any other and lands through an implementer dispatch on its own issue.
+
+- **A `codex` review can post its own findings; the first draft of this change said it could
+  not, and that was false (#449).** The claim — that `--sandbox read-only` leaves the session
+  no network because `_codex_sandbox_argv` grants that branch no `network_access` — was
+  written as "known from the code, not guessed" and disproved by a dispatch record already on
+  disk an hour earlier. `network_access` is a `sandbox_workspace_write` setting, so the grant
+  attaches to the `acceptEdits` branch alone: *the function grants nothing here* is a fact
+  about the function, while *the sandbox blocks the network* is a claim about Codex's own
+  read-only policy that had never been measured. The correction and its cause are kept on the
+  page in `docs/review-dispatch.md` rather than silently replaced, because #449 was filed over
+  an unverified sentence surviving under a green suite and this was the same move inside its
+  own fix.
