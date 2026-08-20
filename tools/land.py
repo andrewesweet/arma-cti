@@ -206,7 +206,16 @@ import review_exchange
 import review_loop
 import routing_policy
 from check_conflict_markers import Finding, find_in_tree
-from worktree import BASE, GitError, Preflight, Refusal, git, main_checkout, read_status
+from worktree import (
+    BASE,
+    REMOTE_READ_TIMEOUT_S,
+    GitError,
+    Preflight,
+    Refusal,
+    git,
+    main_checkout,
+    read_status,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -1092,7 +1101,13 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     if blocked is not None:
         return Report.refused(blocked)
 
-    git("fetch", REMOTE, cwd=here)
+    # Bounded (#434), and deliberately not left unbounded: this fetch runs before the
+    # rebase, the gate and the push, so expiring at the bound leaves nothing half-done,
+    # and `main` catches the `GitError` as the same `git_failed` refusal every other
+    # failed git read lands as. The bound is the one every other read of `origin` in
+    # the worktree protocol already carries, and a landing waiting on a wedged remote
+    # is the #168 stall shape, not patience the protocol owes anyone.
+    git("fetch", REMOTE, cwd=here, timeout=REMOTE_READ_TIMEOUT_S)
     base_before = git("merge-base", "HEAD", BASE, cwd=here).strip()
     incoming = counted(f"{base_before}..{BASE}", cwd=here) or 0
     ahead = counted(f"{BASE}..HEAD", cwd=here)
@@ -1179,7 +1194,9 @@ def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:
     blocked = classify_tree(here, status, rebasing=rebase_in_progress(here))
     if blocked is not None:
         return Report.refused(blocked)
-    git("fetch", REMOTE, cwd=here)
+    # Bounded as `land`'s is (#434): before the rebase, so expiring leaves nothing
+    # half-done, and refused as `git_failed` by `main`'s catch like any failed read.
+    git("fetch", REMOTE, cwd=here, timeout=REMOTE_READ_TIMEOUT_S)
     base_before = git("merge-base", "HEAD", BASE, cwd=here).strip()
     incoming = counted(f"{base_before}..{BASE}", cwd=here) or 0
     # Decided **before** the rebase, where `land`'s own `nothing_to_land` is decided, and

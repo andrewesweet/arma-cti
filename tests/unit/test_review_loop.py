@@ -1073,29 +1073,205 @@ def exchanged(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     return main
 
 
-def _assert_scratch_origin(git_call: Callable[..., str], repo: Path, tmp_path: Path) -> None:
-    """Refuse a network-shaped git read whose `origin` is not this test's scratch remote.
+def _assert_scratch_location(location: str, tmp_path: Path, blame: str) -> None:
+    """Refuse one dialled location that is not an absolute local path under `tmp_path`.
 
-    `git remote get-url` reads local config only, so the check itself never touches the
-    network — it blesses the remote a `fetch` or an `ls-remote` is about to dial. The
-    remote must be an absolute local path under `tmp_path`: a URL is a *relative* path
-    to `Path`, so resolving one prefixes the process cwd, and a caller chdir'd inside
-    the scratch tree put the resolved URL under `tmp_path` and passed containment
-    alone (#425 round 2's Medium — the check compared a token, not the thing).
+    A URL is a *relative* path to `Path`, so resolving one prefixes the process cwd,
+    and a caller chdir'd inside the scratch tree put the resolved URL under `tmp_path`
+    and passed containment alone (#425 round 2's Medium — the check compared a token,
+    not the thing).
     """
-    url = Path(git_call("remote", "get-url", "origin", cwd=repo).strip())
-    assert url.is_absolute(), (
-        f"a review-loop test reached beyond its scratch origin: origin is {url}, "
+    resolved = Path(location)
+    assert resolved.is_absolute(), (
+        f"a review-loop test reached beyond its scratch origin: {blame} is {location}, "
         "a URL or scp-style remote rather than the scratch clone's local path"
     )
-    assert url.resolve().is_relative_to(tmp_path.resolve()), (
-        f"a review-loop test reached beyond its scratch origin: origin is {url}"
+    assert resolved.resolve().is_relative_to(tmp_path.resolve()), (
+        f"a review-loop test reached beyond its scratch origin: {blame} is {location}"
     )
+
+
+def _assert_scratch_origin(git_call: Callable[..., str], repo: Path, tmp_path: Path) -> None:
+    """Refuse where the implicit remote a call falls back to is not the scratch one.
+
+    `git remote get-url` reads local config only, so the check itself never touches
+    the network. This blesses the *fallback* only — what a call with no remote in its
+    argv dials — never a call that names one, which `_assert_scratch_dial` reads from
+    the argv instead (#434: this half is a proxy for exactly and only the calls that
+    name no remote).
+    """
+    url = git_call("remote", "get-url", "origin", cwd=repo).strip()
+    _assert_scratch_location(url, tmp_path, blame="origin")
 
 
 # Every git verb that dials a remote, checked per call rather than read once — a verb
 # missing here is a dial the guard below never blesses.
 NETWORK_VERBS: Final = ("clone", "fetch", "ls-remote", "pull", "push")
+
+# Two-word subcommands that dial: `remote update|show|prune` contact the remotes they
+# name and `submodule update` clones missing submodule repositories. A trigger keyed
+# on the first word alone saw `remote` and `submodule` and blessed a dial (#434).
+NETWORK_SECOND_WORDS: Final = {
+    "remote": ("update", "show", "prune"),
+    "submodule": ("update",),
+}
+
+# Git's global options sit before the subcommand and carry their value in the next
+# argv slot (`-C path`) or glued (`-Cpath`, `--git-dir=path`). A trigger keyed on
+# `args[0]` blessed every call that hid its verb behind one of these (#434).
+_GLOBAL_OPTS_WITH_VALUE: Final = frozenset(
+    {"-C", "-c", "--git-dir", "--work-tree", "--namespace", "--exec-path", "--super-prefix"}
+)
+
+
+def _past_globals(args: tuple[str, ...]) -> tuple[str, ...]:
+    """Return the argv from its subcommand on: every leading global option consumed."""
+    index = 0
+    while index < len(args):
+        word = args[index]
+        if word == "--" or not word.startswith("-"):
+            return args[index:]
+        glued = word.startswith("--") and "=" in word
+        if not glued and word in _GLOBAL_OPTS_WITH_VALUE:
+            index += 2
+        else:
+            index += 1
+    return ()
+
+
+def _network_shaped(command: tuple[str, ...]) -> bool:
+    """Whether a post-globals argv dials a remote: the wrapper's whole trigger."""
+    if not command:
+        return False
+    verb = command[0]
+    if verb in NETWORK_VERBS:
+        return True
+    if (
+        verb in NETWORK_SECOND_WORDS
+        and len(command) > 1
+        and command[1] in (NETWORK_SECOND_WORDS[verb])
+    ):
+        return True
+    return verb == "archive" and any(
+        option == "--remote" or option.startswith("--remote=") for option in command[1:]
+    )
+
+
+def _looks_like_location(token: str, remotes: frozenset[str]) -> bool:
+    """Whether a bare argv token names a configured remote or spells a dialled location."""
+    if token in remotes or "://" in token or token.startswith(("/", "./", "../")):
+        return True
+    host, colon, _ = token.partition(":")
+    return bool(colon) and "." in host  # scp-style `host.xz:path`; `HEAD:refs/heads/x` is not
+
+
+def _remote_location(git_call: Callable[..., str], cwd: Path, name: str, *, push: bool) -> str:
+    """Return the location a remote name dials; the token itself when unconfigured.
+
+    `push` reads `pushurl` first, because a push to a remote carrying one dials it and
+    `git remote get-url` without `--push` answers the fetch URL — the proxy #434 was
+    filed over. Every read here is config-only: the guard never dials to decide.
+    """
+    keys = ("remote.{0}.pushurl", "remote.{0}.url") if push else ("remote.{0}.url",)
+    for key in keys:
+        url = git_call("config", "--get", key.format(name), cwd=cwd, check=False).strip()
+        if url:
+            return url
+    return name
+
+
+def _argv_candidates(
+    git_call: Callable[..., str], command: tuple[str, ...], cwd: Path, remotes: frozenset[str]
+) -> list[str]:
+    """Return every location the argv itself names, options skipped.
+
+    `archive --remote`'s value is read apart and glued, and a `submodule update`'s
+    dial targets are the URLs `.gitmodules` carries, which are not remote config.
+    """
+    candidates: list[str] = []
+    for index, word in enumerate(command[1:]):
+        if word == "--remote" and index + 1 < len(command):
+            candidates.append(command[index + 1])
+            continue
+        if word.startswith("--remote="):
+            candidates.append(word.partition("=")[2])
+            continue
+        if word.startswith("-"):
+            continue
+        if _looks_like_location(word, remotes):
+            candidates.append(word)
+    if command[0] == "submodule":
+        listed = git_call(
+            "config",
+            "--file",
+            ".gitmodules",
+            "--get-regexp",
+            r"submodule\..*\.url",
+            cwd=cwd,
+            check=False,
+        )
+        candidates.extend(line.split(maxsplit=1)[1] for line in listed.splitlines() if line.split())
+    return candidates
+
+
+def _dialled_locations(
+    git_call: Callable[..., str], command: tuple[str, ...], cwd: Path
+) -> tuple[str, ...]:
+    """Return every remote location this argv will dial, from the argv and the config.
+
+    The remedy half of #434, whose defect was the sixth instance of a check comparing
+    a token rather than the thing: `fetch <url>` dials the URL in the argv while the
+    cwd's `origin` is the scratch clone, a `push` dials a differing `pushurl`, and a
+    `clone` is usually run from a directory that is no repository at all. Candidates
+    come from the argv first, and only a verb that dials *implicitly* falls back to
+    its configured default remote, derived from the branch's config rather than
+    assumed to be `origin`.
+    """
+    verb = command[0]
+    push = verb == "push"
+    # `check=False` throughout: a clone's cwd is often no repository, and an
+    # unreadable config answers "nothing dialled by name" rather than an error.
+    remotes = frozenset(git_call("remote", cwd=cwd, check=False).split())
+    candidates = _argv_candidates(git_call, command, cwd, remotes)
+    if not candidates and verb not in ("clone", "archive"):
+        branch = git_call("rev-parse", "--abbrev-ref", "HEAD", cwd=cwd, check=False).strip()
+        candidates.append(
+            git_call("config", "--get", f"branch.{branch}.remote", cwd=cwd, check=False).strip()
+            or "origin"
+        )
+        if verb == "remote":
+            # `remote update` with no name dials every remote with a fetch refspec.
+            candidates.extend(sorted(remotes))
+    locations: list[str] = []
+    for name in candidates:
+        location = _remote_location(git_call, cwd, name, push=push)
+        if location not in locations:
+            locations.append(location)
+    return tuple(locations)
+
+
+def _assert_scratch_dial(
+    git_call: Callable[..., str], args: tuple[str, ...], cwd: Path, tmp_path: Path
+) -> None:
+    """Refuse a network-shaped git read that dials anything beyond this test's scratch.
+
+    Asserts on what the call will dial — argv and config together, per
+    `_dialled_locations` — never on the cwd's configured `origin`, which is a proxy
+    that passes while the call dials elsewhere (#434). A network-shaped argv the
+    guard cannot derive any location from refuses too: a dial it cannot read is a
+    dial it cannot bless.
+    """
+    command = _past_globals(args)
+    if not _network_shaped(command):
+        return
+    locations = _dialled_locations(git_call, command, cwd)
+    assert locations, (
+        "a review-loop test reached beyond its scratch origin: cannot tell what "
+        f"`git {' '.join(args)}` would dial, and a dial the guard cannot read is one "
+        "it cannot bless"
+    )
+    for location in locations:
+        _assert_scratch_location(location, tmp_path, blame=f"`git {' '.join(command)}` would dial")
 
 
 @pytest.fixture(autouse=True)
@@ -1110,7 +1286,10 @@ def every_git_read_stays_scratch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     tell. Every network-shaped read this module drives through `review_loop` now names
     its `origin` first and refuses anything outside this test's `tmp_path` — red rather
     than online. The deadline rides the same gate: a network-shaped read that has lost
-    its `ROUTING_READ_TIMEOUT_S` bound refuses too (#425's other half).
+    its `ROUTING_READ_TIMEOUT_S` bound refuses too (#425's other half). Since #434 the
+    blessed remote is what the call will dial, derived from its argv and the config
+    together — the cwd's configured `origin` is a proxy that passes while `fetch <url>`,
+    a differing `pushurl` or a `clone` from outside any repository dials elsewhere.
 
     The name says git because that is the whole boundary: the walk's one HTTP seam —
     `dispatch.lane_bar`'s quota read — is bounded by its own deadline and pinned at the
@@ -1119,8 +1298,8 @@ def every_git_read_stays_scratch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     git_call, remote_sha = review_loop.git, review_loop.remote_ref_sha
 
     def bounded_git(*args: str, cwd: Path, check: bool = True, timeout: float | None = None) -> str:
-        if args and args[0] in NETWORK_VERBS:
-            _assert_scratch_origin(git_call, cwd, tmp_path)
+        if _network_shaped(_past_globals(args)):
+            _assert_scratch_dial(git_call, args, cwd, tmp_path)
             assert timeout == review_loop.ROUTING_READ_TIMEOUT_S, (
                 f"a network-shaped git read ({' '.join(args)}) lost its deadline"
             )
@@ -2258,6 +2437,119 @@ def test_every_network_shaped_verb_meets_the_scratch_guard(exchanged: Path) -> N
     _git("remote", "set-url", "origin", "https://127.0.0.1:9/never.git", cwd=exchanged)
     with pytest.raises(AssertionError, match="scratch origin"):
         review_loop.git("push", "origin", "main", cwd=exchanged)
+
+
+def _beyond(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Return a bare repository outside this test's `tmp_path`, which the guard must refuse."""
+    beyond = tmp_path_factory.mktemp("beyond") / "origin.git"
+    _git("init", "--bare", "--initial-branch=main", str(beyond), cwd=beyond.parent)
+    return beyond
+
+
+def test_the_scratch_guard_blesses_what_the_argv_dials_not_the_cwd_origin(
+    tmp_path_factory: pytest.TempPathFactory, exchanged: Path
+) -> None:
+    """A fetch naming a remote in the argv refuses even though the cwd's origin is scratch (#434).
+
+    The old guard read `git remote get-url origin` for the call's cwd and blessed that
+    — a proxy. Here the scratch clone's origin is exactly what it should be, so the
+    proxy passed while the fetch dialled the URL in the argv. The timeout is stated so
+    the old wrapper's deadline assertion stays quiet and the remote assertion is the
+    only thing under test. Red on the proxy, green on the derivation.
+    """
+    with pytest.raises(AssertionError, match="scratch origin"):
+        review_loop.git(
+            "fetch",
+            str(_beyond(tmp_path_factory)),
+            "main",
+            cwd=exchanged,
+            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
+        )
+
+
+def test_the_trigger_sees_a_verb_behind_a_leading_global_option(
+    tmp_path_factory: pytest.TempPathFactory, exchanged: Path
+) -> None:
+    """`git -C <tree> fetch <beyond>` is a fetch, not a `-C` invocation of nothing (#434).
+
+    The trigger keyed on `args[0]`, so a leading global option hid the verb from it
+    entirely.
+    """
+    with pytest.raises(AssertionError, match="scratch origin"):
+        review_loop.git(
+            "-C",
+            str(exchanged),
+            "fetch",
+            str(_beyond(tmp_path_factory)),
+            "main",
+            cwd=exchanged,
+            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
+        )
+
+
+def test_the_trigger_sees_the_two_word_remote_and_submodule_verbs(
+    tmp_path_factory: pytest.TempPathFactory, exchanged: Path
+) -> None:
+    """`remote update <name>` and `submodule update` dial; the trigger reads both (#434).
+
+    Keyed on the first word alone, neither reached the guard at all — `remote` and
+    `submodule` are not network verbs — so each drove a dial the guard never blessed.
+    The two name their remotes where the cwd's `origin` says nothing: a second
+    configured remote, and a submodule URL, which is `.gitmodules` config rather than
+    remote config.
+    """
+    _git("remote", "add", "preserved", str(_beyond(tmp_path_factory)), cwd=exchanged)
+    with pytest.raises(AssertionError, match="scratch origin"):
+        review_loop.git(
+            "remote",
+            "update",
+            "preserved",
+            cwd=exchanged,
+            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
+        )
+    (exchanged / ".gitmodules").write_text(
+        '[submodule "never"]\n\tpath = never\n\turl = https://127.0.0.1:9/never.git\n',
+        encoding="utf-8",
+    )
+    with pytest.raises(AssertionError, match="scratch origin"):
+        review_loop.git(
+            "submodule",
+            "update",
+            "--init",
+            cwd=exchanged,
+            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
+        )
+
+
+def test_the_trigger_sees_archive_remote(exchanged: Path) -> None:
+    """`archive --remote=<repo>` dials the repository the option names (#434)."""
+    with pytest.raises(AssertionError, match="scratch origin"):
+        review_loop.git(
+            "archive",
+            "--remote=https://127.0.0.1:9/never.git",
+            "HEAD",
+            cwd=exchanged,
+            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
+        )
+
+
+def test_a_push_dials_the_pushurl_not_the_fetch_url(
+    tmp_path_factory: pytest.TempPathFactory, exchanged: Path
+) -> None:
+    """`git remote get-url` without `--push` answers the fetch URL; a push dials `pushurl` (#434).
+
+    The fetch URL here is the scratch origin, so the old proxy passed and the push
+    itself dialled the configured `pushurl` beyond `tmp_path`.
+    """
+    _git("config", "remote.origin.pushurl", str(_beyond(tmp_path_factory)), cwd=exchanged)
+    with pytest.raises(AssertionError, match="scratch origin"):
+        review_loop.git(
+            "push",
+            "origin",
+            "main",
+            cwd=exchanged,
+            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
+        )
 
 
 def test_a_dry_run_terminus_posts_and_writes_nothing(tmp_path: Path) -> None:
