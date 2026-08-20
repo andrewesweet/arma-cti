@@ -1,13 +1,13 @@
 {
   "_read_me": "The gate-duration anchor (#446). Nothing in tools/gate_clock.py writes this file, under any verb, ever: raising a value here is a deliberate hand-edit somebody makes on purpose, visible in the diff, because a number that moves by itself cannot detect slow growth. Lowering it after a measured improvement (#442, #447) is the same deliberate edit, and moves 'set' with it: each entry's 'set' bounds the report's window to green runs at or after it, so a lowered anchor never false-fires against the older, slower rows still in the records — instead the recipe reads insufficient_sample until five post-set green runs exist, which is the honest state of a re-set instrument. 'set' takes an ISO date (bounding from that day's start) or a full ISO timestamp (bounding from the moment it names — write the timestamp when re-setting on a day already run, or that morning's slower rows stay in the window). Every entry needs a positive numeric 'anchor_seconds' and a 'set'; the file names every recipe the recorder writes ('unit', 'fast'), and a malformed file or entry, a recipe the file fails to name (deleted or misspelled), or a key the recorder does not write prints from 'report' and reddens 'just check' rather than reading as an unset anchor, which would be silence dressed as health. The threshold the anchor is compared against, and the measurement behind both, are tools/gate_clock.py's header.",
   "unit": {
-    "anchor_seconds": 176,
-    "set": "2026-08-20",
-    "derivation": "Median of 6 green runs this day (185, 181, 172, 158.3, 174.8, 177.8 s), serial, on the issue-446 tree at c23d07c plus this change; one red run (190 s, two red tests) recorded and excluded. 1-minute load before each run 1.06 to 2.18; foreign gate processes 1 (3 earlier in the day). 5131 Python tests collected, 17 Rust. #442/#452 had NOT landed: this is the regressed figure, and #452 re-sets it when it lands."
+    "anchor_seconds": 71.25,
+    "set": "2026-08-20T15:48:00+00:00",
+    "derivation": "Re-set by #442/#452 (load never rebalances; the tier now runs --dist worksteal). Median of 10 green runs this day after the flag landed (71.3, 74.7, 71.2, 74.2, 71.8, 70.1, 69.4, 70.6, 69.4, 74.7 s), on the issue-442 worktree at 861eb6a plus the change, uncommitted. 1-minute load before each run 0.42 to 5.42; foreign gate processes 1 throughout. 5155 Python tests collected, 17 Rust. The pre-change arm the same morning, same box and clock: 158.8, 148.2, 150.7, 150.2 s (median 150.45). The set moment is a timestamp, not a date, so this morning's slower load-scheduler rows stay out of the window."
   },
   "fast": {
-    "anchor_seconds": 195,
-    "set": "2026-08-20",
-    "derivation": "Median of 4 green runs this day (193.4, 180.1, 197.3, 199.9 s), same arrangement as unit; one red run (4.9 s, a ruff red during development) recorded and excluded. Each run's whole wall: check, unit, mutation."
+    "anchor_seconds": 93.6,
+    "set": "2026-08-20T15:48:00+00:00",
+    "derivation": "Re-set by #442/#452 with unit. Median of 4 green runs this day after the flag landed (92.8, 94.4, 92.8, 98.6 s), each run's whole wall: check, unit, mutation. The pre-change arm the same morning: 164.1, 160.0 s (median 162.05). Four green runs is one below the report's minimum sample of five, so the recipe reads insufficient_sample until one more green run lands after this one - the honest state of a re-set instrument."
   }
 }

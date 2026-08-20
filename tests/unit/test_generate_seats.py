@@ -1,11 +1,17 @@
-"""The Claude seat surfaces are the dispatch registry's, and drift is caught (#324).
+"""The repository's declaration surfaces, and the drift in them (#324, #442).
 
-Both declaration surfaces fail open (ADR-0068): a drifted pair does not refuse, the seat
-answers at whatever tier the session had, and the only trace is a cheaper arm than the one
-the map ratified. `tools/check_seat_config.py` already asserts that a pair is *declared and
-valid*; what is tested here is the half that was missing — that it is the *registry's*, and
-that a hand edit, a retired seat's file, or an un-regenerated registry change is a
-`schema_stale` red rather than a silently obeyed file.
+The seat surfaces are the dispatch registry's. Both fail open (ADR-0068): a
+drifted pair does not refuse, the seat answers at whatever tier the session
+had, and the only trace is a cheaper arm than the one the map ratified.
+`tools/check_seat_config.py` already asserts that a pair is *declared and
+valid*; what is tested here is the half that was missing — that it is the
+*registry's*, and that a hand edit, a retired seat's file, or an un-regenerated
+registry change is a `schema_stale` red rather than a silently obeyed file.
+
+The unit tier's scheduler declaration is the same kind of surface and fails
+open the same way (#442): a deleted `--dist worksteal` does not refuse, the
+suite silently runs a scheduler that never rebalances, and the only trace is
+wall clock. It is asserted here for the same reason the seat pair is.
 """
 
 from __future__ import annotations
@@ -622,3 +628,32 @@ def test_a_command_in_an_unreachable_branch_takes_the_check_off_the_gate_too(
     assert unreachable != text
     assert "uv run python tools/generate_seats.py --check" in unreachable
     assert gate(root, unreachable).returncode == 0
+
+
+# ------------------------------------------- the unit tier's declared shape
+
+
+def test_the_unit_tier_declares_a_parallel_rebalancing_scheduler(
+    pytestconfig: pytest.Config,
+) -> None:
+    """The tier's `addopts` declares both the worker count and the scheduler (#442).
+
+    This asserts what `pyproject.toml` declares, not what any one run did: the
+    live scheduler is not observable from inside a test — xdist sets
+    `dist = "no"` in every worker before the worker's session starts and forces
+    the same at `-n0`, so a `--dist` typed on a command line runs something
+    else entirely while this test stays green. What it catches is the silent
+    deletion the seat tests catch for their surfaces: a configuration edit that
+    drops the flag, or drops `-n auto` alone — which would run the suite
+    serially at ~593 s with every assertion intact, the deletion most worth
+    catching, and the reason the pair is asserted rather than two independent
+    memberships. What it cannot catch, beyond command-line overrides, is any
+    spelling it does not name: `--dist=worksteal` or an `addopts` array is
+    equally valid pytest and would red this with nothing wrong. The environment
+    guard asserts no `--dist` is injected from outside the file, correct or
+    otherwise.
+    """
+    addopts = " ".join(pytestconfig.getini("addopts"))
+    assert "-n auto" in addopts
+    assert "--dist worksteal" in addopts
+    assert "--dist" not in os.environ.get("PYTEST_ADDOPTS", "")

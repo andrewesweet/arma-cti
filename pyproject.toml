@@ -92,14 +92,26 @@ ignore = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-# `-n auto` is one worker per logical CPU (#197, from #195's measurement). The
-# tier's wall clock is six times its user CPU — it waits on `flock`, on bash
-# subprocesses and on stub bring-ups rather than computing — so the workers
-# oversubscribe nothing, and every test is function-scoped over its own
-# `tmp_path` with no shared fixture between them. Serial for a debugging session
-# is `-n0` on the command line, which overrides this; the mutation smoke passes
-# `-n0` for the same reason, once per mutant (#239, ADR-0064).
-addopts = "-q --strict-markers --strict-config -n auto"
+# `-n auto` is one worker per logical CPU (#197, from #195's measurement; the
+# 6x wall-to-CPU ratio that justification once rested on measured 2.66x on
+# 2026-08-20 — 593 s of serial wall against 223 s of user CPU, #442 — and an
+# inherited ratio whose context had moved is how the scheduler below went
+# unexamined for two weeks). `-n auto` stays because the workers
+# oversubscribe nothing: the tier waits on `flock`, on bash subprocesses and on
+# stub bring-ups rather than computing, and every test is function-scoped over
+# its own `tmp_path` with no shared fixture between them. `--dist worksteal`
+# because xdist's default `load` scheduler never rebalances — once a test
+# index is assigned there is no path back, so the wall clock is set by the
+# unluckiest worker's blind consecutive block, a block whose size grows with
+# the test count (#442: the suite's work grew 1.23x while `load`'s wall grew
+# 2.27x, with no guilty commit). Work stealing hands an idle worker part of a
+# busy one's queue. The scheduler is named — not left at xdist's default — so
+# its silent deletion reddens a declaration test rather than passing
+# unnoticed. Serial for a debugging session is `-n0` on the command line,
+# which overrides all of this (xdist forces `dist = "no"` at zero processes);
+# the mutation smoke passes `-n0` for the same reason, once per mutant (#239,
+# ADR-0064).
+addopts = "-q --strict-markers --strict-config -n auto --dist worksteal"
 xfail_strict = true
 
 [tool.coverage.run]
