@@ -99,6 +99,16 @@ clean shell. That property is what makes a dispatch reproducible from its record
 the strip, the plan in `dispatch.json` would describe the variables the dispatcher added
 and be silent about the ones it did not remove.
 
+A lane may also declare what its runner cannot work out for itself. Claude Code recognises
+its own model names and knows their windows; it does not recognise `glm-5.3`, assumes
+200,000 tokens for it, and auto-compacts against that assumption — which on the `zai` lane
+compacted a quarter of sessions against a provider measured at about 1.05M (#444,
+`docs/research/zai-lane-live-findings.md` §7). `Lane.context_window` is the one place that
+figure is written; a lane that declares one exports it as `CLAUDE_CODE_MAX_CONTEXT_TOKENS`,
+and zero means the runner already knows. The variable is lane-owned and stripped like the
+rest, for a base URL's reason: it decides when a child compacts, so inheriting it would make
+that a property of the shell that dispatched.
+
 Credentials come from `~/.arma-cti/credentials.env` at mode 0600, by environment only.
 Never on argv, so never in `ps`; never echoed; and the dispatch record names the key it
 used and not its value. `just prereqs credentials` is the only writer of that file, it

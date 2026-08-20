@@ -320,6 +320,47 @@ on the `zai` lane with no Claude-side finisher: a dispatched session can run git
 gate, make its own commit, and land its own work — once the test the dispatch's own
 environment used to trip is itself fixed.
 
+## 7. The context window, and what the runner assumed instead
+
+**Measured 2026-08-20, #444**, by the same method as the rest of this file: `curl` against
+`/v1/messages` with `max_tokens: 1`, and `/v1/messages/count_tokens` as the ruler, so every
+size below is the endpoint's own count of the request rather than a client-side estimate.
+
+Claude Code 2.1.235 does not recognise either GLM name the lane registers. It says so on
+every dispatch — 65 dispatch logs on 08-18/19 carry the warning and every one of them is
+`lane=zai` — and it acts on the assumption: auto-compact holds the session to the 200,000
+tokens it assumes an unrecognised model can hold. Across the transcript archive that
+compacted 34 of 129 GLM sessions against 12 of 1,286 everywhere else, with 45 GLM sessions
+peaking in the 150k–200k band.
+
+The assumption is wrong by roughly a factor of five:
+
+| model | largest input accepted | smallest input refused |
+|---|---|---|
+| `glm-5.3` | 1,049,169 | 1,052,969 |
+| `glm-4.7` | 200,729 | 256,467 |
+
+**How the endpoint refuses matters as much as where.** An over-limit request comes back
+HTTP 200, `stop_reason: "model_context_window_exceeded"`, an empty content block and a
+`usage` block of zeroes — never a 4xx. That is why the runner's other offered branch,
+`CLAUDE_CODE_DISABLE_UNKNOWN_MODEL_WINDOW_ENFORCEMENT=1`, which waits for the API to
+complain, is the worse one here: nothing loud ever arrives to be waited for.
+
+**The registry declares 1,000,000**, below the accepted floor with margin for a serving
+tokeniser that counts a request slightly differently from `/count_tokens`. A control and
+treatment run through the runner rather than through `curl` — the one place in this file
+where measuring Claude Code's own behaviour is the point — confirms the lever: the same
+`zai` environment plus `CLAUDE_CODE_MAX_CONTEXT_TOKENS=1000000` prints the answer with no
+warning, where the control prints the warning and `within 200k tokens`.
+
+**One ceiling stays uncovered.** The variable is session-wide, not per-model: running the
+same treatment on `--model haiku` silences the `glm-4.7` warning too. So a haiku-slot
+subagent inside a `zai` session is told it has a million tokens against a real 256k, and
+would be refused in the silent shape above. Exposure was measured before the number was
+chosen — `glm-4.7` appears in 3 transcripts across 58 assistant messages, peaking at 74,567
+tokens — so this is recorded as a ceiling rather than engineered around. Pointing the haiku
+slot at `glm-5.3` gives the session one window if that headroom is ever spent.
+
 ## What a reader should not take from this
 
 - Not that the models above are the ones the *plan* covers. The key reaches eight; which
@@ -330,3 +371,7 @@ environment used to trip is itself fixed.
 - Not that GLM-5.2's single thinking arm is equal to any Claude effort level. ADR-0061
   Decision 5's non-monotonicity finding stands: nothing here compares quality across
   providers, and one arm on this lane is not evidence about where that arm sits.
+- Not that 1,049,169 is `glm-5.3`'s published window. It is the largest request this box
+  got an answer to; the smallest refusal sat 3,800 tokens above it, and z.ai may move
+  either without telling us. The registry's figure is chosen to survive that, not to
+  match it.
