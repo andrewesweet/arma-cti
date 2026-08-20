@@ -21,12 +21,11 @@ import time
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any
 
+import pytest
 from conftest import REPO, load_tool
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    import pytest
 
 dispatch = load_tool("dispatch")
 breaker = load_tool("breaker")
@@ -177,13 +176,28 @@ def test_the_landers_are_exactly_the_seats_the_rulings_name() -> None:
     Ruling 2 makes the implementer "carry the work out … and land it" and the planner
     "neither gates nor lands"; A4 makes the retro's journal entry "land under ruling 4
     like any other change". No ruling names `fable` or the `orchestrator` as any route's
-    lander, so they sit outside the set rather than defaulting in — a new seat arriving
-    unclassified fails here rather than silently inheriting the landing protocol.
+    lander, so they sit outside the set rather than defaulting in. What a set pin
+    cannot see is an *omitted* column — a default would have answered `False` before
+    any assertion ran, the gap the cross-lane review found in the re-implementation —
+    so decidability is refused at the registry's own construction by the test below,
+    and this pin holds the decided answers against the rulings' words.
     """
     assert {name for name, seat in dispatch.SEATS.items() if seat.lands} == {
         "implementer",
         "retro",
     }
+
+
+def test_a_seat_omitting_the_lands_column_refuses_rather_than_defaulting() -> None:
+    """#345: the column has no working default, so a new seat arrives decided or not at all.
+
+    The guard runs at import over both registries; this calls it directly on a seat
+    spelling neither `True` nor `False`, which is the arrival the set pin above cannot
+    distinguish from a decided `False`.
+    """
+    undecided = dispatch.Seat("new", claude_only=False, preference=("opus-low",))
+    with pytest.raises(TypeError, match="lands"):
+        dispatch.refuse_undecided_lands({"new": undecided})
 
 
 def test_the_implementer_list_is_the_adrs_order_head_first() -> None:

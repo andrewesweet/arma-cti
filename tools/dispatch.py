@@ -665,19 +665,24 @@ class Seat(NamedTuple):
     # `just land`". The composed brief's Landing section branches on it through
     # `brief.Seat.lands`, which delegates here, exactly as its three protocol sections
     # branch on `judgement_only` (#421): an instruction to land and to close is an ask
-    # only the rulings' lander can act on, and every other seat met it as a standing
-    # order to do what ruling 4 had taken from it (#323 closed its issue on this line
-    # alone). Two rows carry `True`, each on its ruling's own words: `implementer`
-    # because ruling 2 says it "carries the work out … and lands it", and `retro`
-    # because A4 makes the journal entry "land under ruling 4 like any other change" —
-    # one artefact, scoped in the seat's own reason. The planner's `False` is ruling
-    # 2's "neither gates nor lands"; `recon` and `review` land nothing by their own
-    # rulings and are read-only besides; no ruling names `fable` or the `orchestrator`
-    # as any route's lander, so they stay `False` rather than defaulting to `True`.
+    # only the rulings' lander can act on, and every other seat met the close as a
+    # standing order for an act ruling 4 had left with nobody — it defines proposer,
+    # reviewer and lander and assigns the close to none of them, the correction #345's
+    # own first follow-up records — until #439 made it the landing rung's (#323 closed
+    # its issue on this line alone). Two rows carry `True`, each on its ruling's own
+    # words: `implementer` because ruling 2 says it "carries the work out … and lands
+    # it", and `retro` because A4 makes the journal entry "land under ruling 4 like any
+    # other change" — one artefact, scoped in the seat's own reason. The planner's
+    # `False` is ruling 2's "neither gates nor lands"; `recon` and `review` land
+    # nothing by their own rulings and are read-only besides; no ruling names `fable`
+    # or the `orchestrator` as any route's lander, so they are `False`. Every row
+    # spells its answer, because the column has no working default: `None` is the
+    # undecided state and `refuse_undecided_lands` below fails this module's import on
+    # it, so a new seat arrives decided or not at all — never silently in either arm.
     # This is not `tools/ledger.py`'s `SEAT_LANDS`, which classifies what a finished
     # run's record reads as having landed — a view over records, not a fact a brief is
     # composed from, and the two are held in step by name-set only.
-    lands: bool = False
+    lands: bool | None = None
 
     # #421's one predicate, stated where the column it reads lives so no caller rederives it.
     # Both brief paths branch on this — the composed brief's three sections through
@@ -719,6 +724,7 @@ SEATS: Final[dict[str, Seat]] = {
         claude_only=False,
         preference=("codex-sol-xhigh", "opus-xhigh"),
         escalation=("fable-high",),
+        lands=False,
     ),
     "implementer": Seat(
         "implementer",
@@ -744,6 +750,7 @@ SEATS: Final[dict[str, Seat]] = {
         claude_only=False,
         preference=("codex-luna-medium", "haiku-medium"),
         permission_mode="plan",
+        lands=False,
     ),
     # ADR-0071 ruling 4 (#322) adds the two columns that make never-alone real. `reviews`
     # is what makes this seat's resolution take the profile under review as an input and
@@ -811,6 +818,7 @@ SEATS: Final[dict[str, Seat]] = {
         escalation=IMPLEMENTER_ESCALATION[:1],
         reviews=True,
         permission_mode="plan",
+        lands=False,
     ),
     # Ruling 3's own kind of work: the retro seat, on the preference order the ADR's own
     # table carries. That order is not the human's enumerated retro list of 2026-08-09
@@ -837,7 +845,7 @@ SEATS: Final[dict[str, Seat]] = {
     # resolves to nothing and refuses. That is the consequence the human accepted at the time
     # of ruling, not an oversight. The documentation half of the `fable`/`retro` overlap is
     # closed above by #329; the `/retro` skill's half is #330's.
-    "fable": Seat("fable", claude_only=False, preference=("fable-high",)),
+    "fable": Seat("fable", claude_only=False, preference=("fable-high",), lands=False),
     # ADR-0071 ruling 1's one survivor, and the only `claude_only=True` row the table
     # carries: orchestration runs on Claude with a Claude model until a tested
     # alternative exists. The ADR calls it the only provenance rule the project holds.
@@ -849,6 +857,7 @@ SEATS: Final[dict[str, Seat]] = {
         claude_only=True,
         preference=("opus-xhigh",),
         escalation=("opus-max", "fable-xhigh"),
+        lands=False,
     ),
 }
 
@@ -864,12 +873,35 @@ SEATS: Final[dict[str, Seat]] = {
 # own Codex entry is reachable by the human opening a Codex session by hand, and no
 # refusal of this module's ever reaches this registry.
 DECLARED_ONLY_SEATS: Final[dict[str, Seat]] = {
+    # `lands=False` on the same ground as every undispatched judgement: ADR-0068 makes
+    # the seat the human's own invocation, and nothing in this module resolves through
+    # the row, so no brief is ever composed from it either.
     "interlocutor": Seat(
         "interlocutor",
         claude_only=False,
         preference=("opus-xhigh", "codex-sol-xhigh"),
+        lands=False,
     ),
 }
+
+
+# #345's arrival guard. The exact-set pin in `tests/unit/test_dispatch_seat.py` cannot
+# see an omitted `lands` column: a `bool = False` default would answer `False` before
+# any assertion ran, which is the gap the cross-lane review found in the
+# re-implementation — the banked branch had spelled the column on every row, and the
+# persisted claim ("a new seat arrives decided") was written as if spelling were
+# enforcement. It is not: `None` is the undecided state, and failing this module's
+# import is the refusal, because every gate and every test run reaches it. A new seat
+# spelling neither `True` nor `False` never reaches a brief.
+def refuse_undecided_lands(seats: Mapping[str, Seat]) -> None:
+    """Refuse a registry whose rows leave `lands` undecided, rather than defaulting it."""
+    undecided = [name for name, seat in seats.items() if seat.lands is None]
+    if undecided:
+        raise TypeError("seat(s) without a decided `lands` column: " + " ".join(undecided))
+
+
+refuse_undecided_lands(SEATS)
+refuse_undecided_lands(DECLARED_ONLY_SEATS)
 
 
 # The standing retro allowance lived here until #327: two `(fable, codex, …)` routes

@@ -33,5 +33,7 @@
   outright. `tools/ledger.py`'s `SEAT_LANDS` carries `work` for both, but that table
   classifies what a finished run's record reads as having landed; it is a view over
   records, not a fact a brief is composed from, and the two are held in step by name-set
-  only. A unit test pins the lander set to exactly `{implementer, retro}`, so a new seat
-  arrives decided rather than silently inheriting the landing protocol.
+  only. The registry's own construction refuses a seat whose `lands` column is spelled
+  neither `True` nor `False`, and a unit test pins the lander set to exactly
+  `{implementer, retro}`, so a new seat arrives decided rather than silently inheriting
+  the landing protocol.

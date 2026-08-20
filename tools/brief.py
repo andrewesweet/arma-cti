@@ -551,7 +551,10 @@ class Seat(NamedTuple):
     def lands(self) -> bool:
         """Whether the registry names this seat ADR-0071 ruling 4's lander."""
         registered = dispatch.SEATS.get(self.name)
-        return registered is not None and registered.lands
+        # `is True`, not truthiness: the registry column is `bool | None`, `None` the
+        # undecided state `dispatch.refuse_undecided_lands` refuses, so this names the
+        # one decided answer that composes a lander's brief.
+        return registered is not None and registered.lands is True
 
 
 def derive_seat(override: str, reviewing: str = "") -> Seat:
@@ -848,14 +851,17 @@ READONLY_LANDING_RULE: Final = (
 )
 # #345, re-derived after #439. The Landing section's close sentence used to be the
 # only mechanism that closed an issue, and before ADR-0071 telling every seat to run
-# it was right. Ruling 4 then made the close the lander's act — #323's seat closed its
-# issue on the composed line alone, before any review existed — and #439 made `just
-# land` itself perform it on the success path. So the sentence is not softened but
-# replaced: a seat obeying the old wording walks a second mechanism onto ground the
-# rung already covered and finds the issue closed. What survives of it is the audit,
-# moved to the thread report below, because #449's review reads exactly that paste as
-# its gate record — the audit was never the close's private form, it is the record
-# both the review and the rung's close rest on.
+# it was right. Ruling 4 then assigned the close to nobody — it defines proposer,
+# reviewer and lander and allows the proposer to land, the correction #345's own first
+# follow-up records — so the sentence stayed every seat's standing order, and #323's
+# seat closed its issue on the composed line alone, before any review existed. #439
+# made the close the landing rung's act instead: `just land` itself performs it on
+# the success path. So the sentence is not softened but replaced: a seat obeying the
+# old wording walks a second mechanism onto ground the rung already covered and finds
+# the issue closed. What survives of it is the audit, moved to the thread report
+# below, because #449's review reads exactly that paste as its gate record — the
+# audit was never the close's private form, it is the record both the review and the
+# rung's close rest on.
 RUNG_CLOSE_RULE: Final = (
     "`just land` closes #{issue} itself, on its success path and nowhere else (#439):"
     " do not close the issue by hand and do not close it early. The landing's own"
