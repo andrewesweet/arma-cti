@@ -35,12 +35,14 @@
 # Environment:
 #   CTI_QUOTA_SPOOL   spool file (default ~/.arma-cti/quota/statusline.jsonl)
 #   CTI_QUOTA_MAX     roll the spool over at this size in bytes (default 8388608)
+#   CTI_QUOTA_KEEP    how many rolled generations to keep (default 8)
 #   CTI_QUOTA_OAUTH   set to 0 to disable the endpoint refresh (default 1)
 
 set -uo pipefail
 
 spool="${CTI_QUOTA_SPOOL:-${HOME}/.arma-cti/quota/statusline.jsonl}"
 max_bytes="${CTI_QUOTA_MAX:-8388608}"
+keep="${CTI_QUOTA_KEEP:-8}"
 downstream="${1-}"
 oauth="${CTI_QUOTA_OAUTH:-1}"
 
@@ -52,11 +54,20 @@ payload="$(cat)"
 # tap that cannot write is a tap that stayed out of the way.
 {
     if mkdir -p -- "$(dirname -- "${spool}")" 2>/dev/null; then
-        # Single rollover rather than unbounded growth: the status line re-renders
+        # Generational rollover rather than unbounded growth: the status line re-renders
         # on every conversation update, and this file lives in the human's home.
         # #226 owns retention; this only stops the tap being a disk-filler.
+        #
+        # A single rollover destroyed the older half on every roll, and this
+        # spool is the only per-session record of cost, tokens, duration and
+        # lines changed for sessions no dispatch covers — the orchestrator's
+        # and the human's. Keeping generations makes it a history rather than
+        # a two-file window.
         size="$(stat -c %s -- "${spool}" 2>/dev/null || echo 0)"
         if [[ "${size}" -gt "${max_bytes}" ]]; then
+            for ((gen = keep - 1; gen >= 1; gen--)); do
+                mv -f -- "${spool}.${gen}" "${spool}.$((gen + 1))" 2>/dev/null || true
+            done
             mv -f -- "${spool}" "${spool}.1" 2>/dev/null || true
         fi
         printf '%s\n' "${payload}" >>"${spool}" 2>/dev/null || true
