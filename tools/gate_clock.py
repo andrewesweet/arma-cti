@@ -107,6 +107,49 @@ red admitted to the median flatters it. Red rows are still recorded, with their
 status, because the history is the point of recording; they are excluded from
 every comparison.
 
+**A run whose diff gave the mutation tier no subject is a different
+measurement, and the row records which (#466).** Every other leg of both
+recipes prices the whole tree whatever the diff holds — `ruff check .`,
+`ty check`, `hemtt check -p -e`, `gitleaks dir .`, the whole pytest suite —
+so `just mutation` is the one leg whose cost the diff moves, and `just fast`
+carries it while `just unit` does not. `mutation_subjects` is therefore that
+tier's own subject count and nothing else: the test modules
+`tools/mutation_smoke.py`'s `in_scope` selects, plus its Rust arm as one,
+obtained at record time by calling those functions against the tree the run
+just gated. No flag declares it, ever.
+
+**It is not a docs-only flag and must not be read as one.** Zero means the
+mutation tier had no subject to plant against. A docs-only diff earns that;
+so does a config or comment edit; so does a change to a product module that
+adds or rewrites no test module. Those three cost the same, and the cost is
+what this instrument measures — a field that separated them by what the diff
+looked like would be a token standing in for the thing (#458 tracks eight of
+that class in this tree). The convenient shape here was a `docs_only`
+boolean, which would have had to call that third case a code run while it
+cost what a docs run costs; this field names what it counted instead, and
+answers "did the tier have work" rather than "was this documentation".
+
+**`fast`'s comparison excludes the zero rows; `unit` records the count and
+compares on it not at all.** Excluded rather than weighted, because the
+93.6 s anchor was derived from four runs whose diff carried
+`tests/unit/test_generate_seats.py` (`6a769cb`) and so paid the mutation leg:
+the like-for-like population is the runs that paid it too, and a second
+anchor derived from the cheap kind is a derivation nobody has done. Direction
+settles the rest — the issue's reading has #450's three docs-only landings at
+81.49, 82.53 and 81.35 s, the floor of a recorded span reaching 231 s, and a
+median those drag down makes a real slowdown read as ordinary, the
+false-negative direction on an instrument built to catch slow growth. `unit`
+is left unfiltered because its own legs are diff-independent: a zero-subject
+`unit` row is the same measurement as any other, and filtering it would only
+shrink the sample.
+
+**Rows written before #466 carry no count and read as `None` — unclassified,
+never guessed at.** They leave `fast`'s window alongside the zero rows, so
+the recipe stands at `insufficient_sample` until five classified green runs
+exist: the same honest unknown a re-set anchor reads. `history` counts both
+kinds on its line, so a reader can see how much of the history the window is
+declining to use rather than inferring it from a shrunken median.
+
 **It only notices.** Nothing here refuses a dispatch, trips a breaker or blocks
 a landing; whether to act on the line is a judgement, and the consequences
 already live in `.claude/hooks/deny-subagent-waits.py`'s threshold and the retro
@@ -119,9 +162,12 @@ when it is investigated.
 
 **What recording costs.** One `uv run python` start per recorded recipe (~0.3 s
 against a ~190 s tier, under 0.2%) and one small file write at collection time;
-nothing is added to any assertion or test. `just fast` invoking `just unit`
-records two rows — the unit tier's own wall and the whole recipe's — and both
-are real measurements of real invocations.
+nothing is added to any assertion or test. The #466 count adds one import of
+`tools/mutation_smoke.py` and two passes of its `changed` git reads
+(`merge-base`, `diff --name-only`, `status --porcelain`) — stated as a count
+rather than a duration, because nobody has timed it. `just fast` invoking
+`just unit` records two rows — the unit tier's own wall and the whole
+recipe's — and both are real measurements of real invocations.
 
 The state directory is `CTI_GATE_CLOCK_DIR`, the seam `CTI_WATCH_DIR`,
 `CTI_BREAKER_DIR` and `CTI_RC_HEALTH_DIR` exist for (#249): without it a unit
@@ -139,10 +185,21 @@ from datetime import UTC, datetime, time
 from pathlib import Path
 from typing import Final, NamedTuple
 
+# tools/ holds standalone scripts rather than an importable package, so a sibling
+# import needs the script's own directory on the path — the device gate.py and
+# dispatch.py use; it is what makes mutation_smoke importable below.
+sys.path.insert(0, str(Path(__file__).parent))
+
 DEFAULT_GATE_CLOCK_DIR: Final = Path.home() / ".arma-cti" / "gate-clock"
 RECORDS_NAME: Final = "records.jsonl"
 ANCHOR_PATH: Final = Path(__file__).with_name("gate-clock-anchor.json")
 PROC_UPTIME: Final = Path("/proc/uptime")
+
+# The ref the mutation tier measures a landing against, and the tree it is
+# measured in — the same pair `just mutation` itself uses, so the count below
+# can never disagree with the tier it describes.
+BASE_REF: Final = "origin/main"
+REPO_ROOT: Final = Path(__file__).resolve().parents[1]
 
 # The two recipes that run the gate (issue #446): a bare `just unit` is most of
 # the recorded population (22.27 h of the 57.51 h the investigation measured),
@@ -150,6 +207,12 @@ PROC_UPTIME: Final = Path("/proc/uptime")
 # to. `just check` (~10 s) and `just mutation` (~0 s) are noise against a 200 s
 # tier, and a record nobody will read is not worth the line.
 RECIPES: Final = ("unit", "fast")
+
+# The recipes that carry `just mutation`, and so the only ones whose comparison
+# reads `mutation_subjects` (#466). Every other leg of both recipes prices the
+# whole tree, so a `unit` row's count is provenance and never a filter. One
+# home for that rule: `assess` and `history` both ask here.
+MUTATION_LEG_RECIPES: Final = ("fast",)
 
 # The comparison window and floor. The window is ten green runs because the
 # day medians the threshold was derived from are runs-of-a-day shapes; the floor
@@ -178,6 +241,7 @@ class Record(NamedTuple):
     tests_collected: int | None
     load_1m: float | None
     foreign_gate_processes: int | None
+    mutation_subjects: int | None
 
 
 class Verdict(NamedTuple):
@@ -216,6 +280,7 @@ def record_document(row: Record) -> dict[str, object]:
         "tests_collected": row.tests_collected,
         "load_1m": row.load_1m,
         "foreign_gate_processes": row.foreign_gate_processes,
+        "mutation_subjects": row.mutation_subjects,
     }
 
 
@@ -226,6 +291,10 @@ def parse_record(document: object) -> Record | None:
     feeds the top of an orchestrator turn, so one truncated line (a box that
     died mid-append) must not take out the breaker and queue lines printed
     beside it. The malformed line stays on disk for a later look.
+
+    A row without `mutation_subjects` predates #466 and reads as `None` —
+    unclassified, never guessed — which is how the fifty-odd existing records
+    stay readable without re-deriving a diff nobody kept.
     """
     if not isinstance(document, dict):
         return None
@@ -245,6 +314,11 @@ def parse_record(document: object) -> Record | None:
             foreign_gate_processes=(
                 int(document["foreign_gate_processes"])
                 if document.get("foreign_gate_processes") is not None
+                else None
+            ),
+            mutation_subjects=(
+                int(document["mutation_subjects"])
+                if document.get("mutation_subjects") is not None
                 else None
             ),
         )
@@ -324,6 +398,52 @@ def read_collected_file() -> int | None:
         return int(Path(named).read_text(encoding="utf-8").strip())
     except (OSError, ValueError):
         return None
+
+
+def read_mutation_subjects(root: Path | None = None) -> int | None:
+    """Count what the mutation tier had to plant against in the tree this run gated.
+
+    The tier's own selection, asked of the tier: `mutation_smoke.in_scope` for
+    the Python subjects and `mutation_rust.in_scope` for the shim arm, counted
+    as one. Calling those rather than re-deriving them here is the whole point
+    — a copy of the rule could drift from the tier whose cost it claims to
+    describe, and then the field would be a token standing in for the thing
+    (#458). It costs a second pass of `changed`'s git reads, which is the price
+    of the count having one home.
+
+    Zero means the tier had no subject: a docs-only diff, a config or comment
+    edit, and a product-module change that adds or rewrites no test module all
+    reach it, and all three cost the same. This is not a docs-only flag —
+    `mutation_subjects` answers "did the tier have work", never "was this
+    documentation", and the module header states why the honest question is
+    the narrower one.
+
+    `None` only when git or the tree cannot be read; the row then carries no
+    count, and `MUTATION_LEG_RECIPES`' comparison drops it as unclassified
+    rather than guessing a kind for it.
+    """
+    repo = REPO_ROOT if root is None else root
+    try:
+        import mutation_rust  # noqa: PLC0415 — beside its only caller, like head_sha's subprocess
+        import mutation_smoke  # noqa: PLC0415 — same reason
+
+        subjects = len(mutation_smoke.in_scope(repo, BASE_REF))
+        if mutation_rust.in_scope(mutation_smoke.changed(repo, BASE_REF)):
+            subjects += 1
+    except OSError:
+        return None
+    return subjects
+
+
+def had_mutation_subjects(row: Record) -> bool:
+    """Whether this row's run gave the mutation tier something to plant against.
+
+    `False` for the cheap kind — no subject, whatever the diff looked like —
+    and `False` for the pre-#466 rows carrying no count at all, which is why a
+    comparison reading this excludes those rows rather than inventing a kind
+    for them.
+    """
+    return (row.mutation_subjects or 0) > 0
 
 
 def _read_anchor_entry(name: str, entry: object) -> tuple[float, datetime] | str:
@@ -473,10 +593,13 @@ def assess(
        file — kept so a hand-built state cannot fall through to a comparison
        against nothing: unknown, never healthy.
     4. `insufficient_sample` — fewer than `MIN_SAMPLE` green runs **at or after
-       the anchor's `set` moment**. Also the honest state right after a re-set:
-       the pre-`set` rows are excluded, so a lowered anchor reads as unknown
-       until five new greens exist rather than false-firing at the old rows —
-       including the same morning's rows when `set` names a timestamp.
+       the anchor's `set` moment**, and for a `MUTATION_LEG_RECIPES` recipe
+       only those that gave the mutation tier a subject (#466; the reasoning is
+       in the module header, the predicate at `had_mutation_subjects`). Also the
+       honest state right after a re-set: the pre-`set` rows are excluded, so a
+       lowered anchor reads as unknown until five new greens exist rather than
+       false-firing at the old rows — including the same morning's rows when
+       `set` names a timestamp, and including every pre-#466 row for `fast`.
     5. `healthy` — the window median is at or under `THRESHOLD`× the anchor.
     6. `slower` — over it, with the one line, which carries the window's
        load-1m median so a busy box can be read off the line itself.
@@ -508,6 +631,17 @@ def assess(
             greens = [
                 row for row in greens if (when := record_moment(row)) is not None and when >= set_on
             ]
+        # #466: a run that gave the mutation tier no subject skipped this
+        # recipe's one diff-scoped leg and is systematically cheaper, so
+        # admitting it drags the median down — the false-negative direction on
+        # an instrument built to catch slow growth. Excluded rather than
+        # weighted, because the anchor was derived from runs that paid that leg
+        # and the like-for-like population is those runs alone; the pre-#466
+        # rows carry no count and are dropped here as unclassified rather than
+        # guessed at. Both choices, and the reason a docs-only flag was not the
+        # field, are in the module header.
+        if recipe in MUTATION_LEG_RECIPES:
+            greens = [row for row in greens if had_mutation_subjects(row)]
         if len(greens) < MIN_SAMPLE:
             verdicts.append(Verdict(recipe, "insufficient_sample", None))
             continue
@@ -540,12 +674,27 @@ def history(gate_clock_dir: Path, anchor_state: AnchorState) -> list[str]:
     moving from. Silent-when-healthy is the report's contract; this verb is the
     explicit ask, and prints whether an anchor is set, its value and its set
     date — the date the report's window is bounded by.
+
+    #466 adds the kinds to that line. Every recipe's line counts its green runs
+    that gave the mutation tier no subject and its green runs written before the
+    count existed, so a reader can see how much of the history is being declined
+    rather than infer it. For a `MUTATION_LEG_RECIPES` recipe the median and the
+    span are taken over the rest — `assess`'s kind filter, so a retro quoting
+    this median quotes a figure drawn from the same population the anchor is
+    compared against. Only the kind filter is shared: `assess` also bounds its
+    window by the anchor's `set` moment and this verb never has, which is why
+    the line prints that date beside the median rather than applying it.
     """
     records = load_records(gate_clock_dir)
     lines: list[str] = []
     for recipe in RECIPES:
         rows = [row for row in records if row.recipe == recipe]
-        walls = [row.wall_seconds for row in rows if row.status == 0]
+        all_green = [row for row in rows if row.status == 0]
+        greens = (
+            [row for row in all_green if had_mutation_subjects(row)]
+            if recipe in MUTATION_LEG_RECIPES
+            else all_green
+        )
         anchor = anchor_state.anchors.get(recipe)
         set_on = anchor_state.set_dates.get(recipe)
         if anchor is None:
@@ -556,12 +705,21 @@ def history(gate_clock_dir: Path, anchor_state: AnchorState) -> list[str]:
             anchor_text = f"{anchor:.0f}s anchor set {set_on.date().isoformat()}"
         else:
             anchor_text = f"{anchor:.0f}s anchor set {set_on.isoformat()}"
-        if not walls:
-            lines.append(f"{recipe}: no green runs recorded, {anchor_text}")
+        cheap = sum(1 for row in all_green if row.mutation_subjects == 0)
+        unrecorded = sum(1 for row in all_green if row.mutation_subjects is None)
+        detail = f"{len(all_green)} green"
+        if cheap:
+            detail += f", {cheap} with no mutation subject"
+        if unrecorded:
+            detail += f", {unrecorded} predating the subject count"
+        if not greens:
+            reason = "no green runs recorded" if not all_green else "no comparable green runs"
+            lines.append(f"{recipe}: {len(rows)} records ({detail}), {reason}, {anchor_text}")
             continue
+        walls = [row.wall_seconds for row in greens]
         window = walls[-REPORT_WINDOW:]
         lines.append(
-            f"{recipe}: {len(rows)} records ({len(walls)} green), "
+            f"{recipe}: {len(rows)} records ({detail}), "
             f"median(last {len(window)} green) {median(window):.0f}s, "
             f"span {min(walls):.0f}s to {max(walls):.0f}s, {anchor_text}"
         )
@@ -649,12 +807,21 @@ def main(argv: list[str] | None = None) -> int:
             tests_collected=read_collected_file(),
             load_1m=args.load_1m,
             foreign_gate_processes=args.foreign_gate,
+            mutation_subjects=read_mutation_subjects(),
         )
         append_record(args.gate_clock_dir, row)
         health = "green" if row.status == 0 else f"status {row.status}"
         count = f" {row.tests_collected} tests" if row.tests_collected is not None else ""
+        # The subject count is on the line for the reason the test count is: a
+        # zero — the kind `fast`'s comparison will decline — is then visible in
+        # the run's own output rather than only in a row nobody opens (#466).
+        subjects = (
+            f", {row.mutation_subjects} mutation subject(s)"
+            if row.mutation_subjects is not None
+            else ""
+        )
         print(  # noqa: T201 — the shell reads this
-            f"gate-clock: recorded {row.recipe} {row.wall_seconds:.1f}s {health}{count}"
+            f"gate-clock: recorded {row.recipe} {row.wall_seconds:.1f}s {health}{count}{subjects}"
         )
         return 0
 
