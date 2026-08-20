@@ -1776,6 +1776,19 @@ def added(root: Path, base: str) -> list[str]:
     A rename counts as an introduction: the destination is a path that was not
     there at the base, and a module renamed away from its test module's name is
     measured by nothing exactly as a new one is.
+
+    The committed half is the merge-base diff minus every path the base tree
+    holds. A branch can carry a module origin/main already has without main's
+    commit for it — cherry-picked, or a squash of main carried in — and the
+    merge-base diff alone would then name another landing's module as this
+    one's introduction (#370 round 2), so a path the base ref's own tree holds
+    is on main and never this landing's. Diffing the two refs outright would
+    subtract it too, but it would also count everything main deleted or renamed
+    after this branch's point as introduced here, which is the same
+    wrong-remedy red this subtraction exists to kill. The subtraction's limit
+    is the ref itself: a stale origin/main predates a module the remote already
+    holds, the base tree therefore lacks it, and the red stands until the fetch
+    the refusal names — which is why the refusal names it.
     """
     merge_base = _git(root, ["merge-base", "HEAD", base]).strip()
     found: set[str] = set()
@@ -1783,6 +1796,7 @@ def added(root: Path, base: str) -> list[str]:
         found.update(
             _git(root, ["diff", "--name-only", "--diff-filter=AR", merge_base, "HEAD"]).split(),
         )
+    found -= set(_git(root, ["ls-tree", "-r", "--name-only", base]).split())
     for line in _git(root, ["status", "--porcelain", "--untracked-files=all"]).splitlines():
         # The index half of the porcelain code, or `??` for an untracked file.
         if line[:1] not in {"A", "R"} and line[:2] != "??":
@@ -2058,26 +2072,36 @@ def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[in
     return red, refused, subjects
 
 
-def _report_selection(introduced: list[str], unnamed: list[str]) -> None:
+def _report_selection(introduced: list[str], unnamed: list[str], *, survey: bool) -> None:
     """Print the escapes this landing takes and the modules it measures by nothing.
 
     A red of its own kind: there is no verdict to print, because the thing that
     went wrong is that nothing was selected to reach one. So the line names the
-    class — `no_test_module` — and both remedies, in the order they should be
-    reached for. The first remedy is the test module's name because that is what
-    `Reach.subject` leans on: a test module that reaches the code it names makes
-    it the subject, which is the measurement this red demands.
+    class — `no_test_module` — and its remedies in the order they should be
+    reached for. The fetch comes first, because a stale origin/main is the one
+    cause no choice of diff basis can rule out and the fetch is the remedy that
+    writes nothing. Then the test module's name, which is what `Reach.subject`
+    leans on: a test module that reaches the code it names makes it the subject,
+    which is the measurement this red demands. The escape comes last.
+
+    The RED half is a gate's voice, so a survey never hears it — `--report`
+    never reds — and the caller holds the whole report back while the run is
+    still a refusal, because a refusal is not a result and has no red beside it.
     """
     for path in introduced:
         if path in NO_TEST_MODULE:
             print(f"-- {path} exempt: {NO_TEST_MODULE[path]}", flush=True)  # noqa: T201
+    if survey:
+        return
     for path in unnamed:
         print(  # noqa: T201 — stdout text IS this gate's output
             f"RED {path} no_test_module: this landing introduces it and no verdict in "
             f"this run selected it as a subject — the diff's test modules name other "
-            f"code, or none ran it at all — so no rung of `just fast` measures it. Add "
-            f"tests/unit/test_{_stem_key(path)}.py whose tests execute it, or add "
-            f"{path} to NO_TEST_MODULE in tools/mutation_smoke.py with the reason.",
+            f"code, or none ran it at all — so no rung of `just fast` measures it. A "
+            f"stale origin/main ref names another landing's module as introduced here, "
+            f"so `git fetch origin` is the first thing to try. If it is this landing's "
+            f"work, add tests/unit/test_{_stem_key(path)}.py whose tests execute it, or "
+            f"add {path} to NO_TEST_MODULE in tools/mutation_smoke.py with the reason.",
             flush=True,
         )
 
@@ -2271,13 +2295,15 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911 — every refus
     # nothing then runs to measure anything.
     red, refused, subjects = _judge(root, targets, args)
     unnamed = unmeasured(introduced, subjects)
-    _report_selection(introduced, unnamed)
     if rust:
         rust_red, rust_refused = _judge_rust(root)
         red += rust_red
         refused += rust_refused
     if refused and not args.report:
         return 2
+    # RED is a gate's voice: the survey never hears it, and neither does a
+    # refusal — the report waits until the run has an answer that is a result.
+    _report_selection(introduced, unnamed, survey=args.report)
     if (red or unnamed) and not args.report:
         print(  # noqa: T201
             f"{red} subject(s) did not notice the code changing. Strengthen the "

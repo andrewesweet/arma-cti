@@ -932,6 +932,69 @@ def test_a_renames_destination_is_introduced(tmp_path: Path) -> None:
     assert smoke_tool.added(tmp_path, "main") == ["tests/test_new.py"]
 
 
+def _commit_all(root: Path, message: str) -> None:
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    subprocess.run(["git", "commit", "-qm", message], cwd=root, check=True)  # noqa: S603, S607 — git is resolved off PATH, argv is this test's own
+
+
+def _origin(root: Path) -> Path:
+    """Build a bare origin beside the repo, holding main as a fetch would leave it."""
+    origin = root.parent / f"{root.name}-origin.git"
+    subprocess.run(["git", "init", "-q", "--bare", "-b", "main", str(origin)], check=True)  # noqa: S603, S607 — git is resolved off PATH, argv is this test's own
+    subprocess.run(["git", "remote", "add", "origin", str(origin)], cwd=root, check=True)  # noqa: S603, S607 — git is resolved off PATH, argv is this test's own
+    subprocess.run(["git", "push", "-q", "origin", "main"], cwd=root, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    return origin
+
+
+def test_a_module_origin_main_holds_is_not_this_landings_introduction(tmp_path: Path) -> None:
+    # #370 round 2: a branch can carry a module origin/main already has without
+    # main's commit for it — cherry-picked here, a squash of main carried in on
+    # a real branch — and the merge-base diff alone then names another landing's
+    # module as this one's introduction. A path the base ref's tree holds is on
+    # main, whatever this branch's history did to bring it into HEAD.
+    _repo(tmp_path)
+    _origin(tmp_path)
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "tools" / "foreign.py").write_text("y = 2\n")
+    _commit_all(tmp_path, "theirs: land the module")
+    subprocess.run(["git", "push", "-q", "origin", "main"], cwd=tmp_path, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    subprocess.run(["git", "checkout", "-q", "-b", "work", "HEAD~1"], cwd=tmp_path, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    subprocess.run(["git", "cherry-pick", "main"], cwd=tmp_path, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    (tmp_path / "tools" / "mine.py").write_text("mine = 1\n")
+    _commit_all(tmp_path, "work")
+    assert smoke_tool.added(tmp_path, "origin/main") == ["tools/mine.py"]
+
+
+def test_a_stale_origin_main_names_the_module_until_the_fetch(tmp_path: Path) -> None:
+    # The half no choice of diff basis can compute away (#370 round 2): the
+    # remote's main holds a module the tracking ref predates, the branch carries
+    # it through another ref's merge, and the base tree therefore lacks it — so
+    # the red stands, which is why the refusal names the fetch. The fetch moves
+    # the ref, the module joins the base tree, and the red clears with nothing
+    # written in this tree.
+    _repo(tmp_path)
+    origin = _origin(tmp_path)
+    subprocess.run(["git", "checkout", "-q", "-b", "work"], cwd=tmp_path, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    sibling = tmp_path.parent / f"{tmp_path.name}-sibling"
+    subprocess.run(["git", "clone", "-q", str(origin), str(sibling)], check=True)  # noqa: S603, S607 — git is resolved off PATH, argv is this test's own
+    for key, value in (("user.email", "t@t"), ("user.name", "t")):
+        subprocess.run(["git", "config", key, value], cwd=sibling, check=True)  # noqa: S603, S607 — git is resolved off PATH, argv is this test's own
+    (sibling / "tools").mkdir()
+    (sibling / "tools" / "foreign.py").write_text("y = 2\n")
+    _commit_all(sibling, "theirs: the module")
+    subprocess.run(["git", "push", "-q", "origin", "main:theirs"], cwd=sibling, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    # Fetching their branch alone leaves origin/main where it was: the state a
+    # worktree is in before its own fetch.
+    subprocess.run(["git", "fetch", "-q", "origin", "theirs"], cwd=tmp_path, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    subprocess.run(["git", "merge", "-q", "-m", "merge", "FETCH_HEAD"], cwd=tmp_path, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    assert smoke_tool.added(tmp_path, "origin/main") == ["tools/foreign.py"]
+    # Their work lands on the remote's main; the tracking ref still predates it.
+    subprocess.run(["git", "push", "-q", "origin", "main:main"], cwd=sibling, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    assert smoke_tool.added(tmp_path, "origin/main") == ["tools/foreign.py"]
+    subprocess.run(["git", "fetch", "-q", "origin"], cwd=tmp_path, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    assert smoke_tool.added(tmp_path, "origin/main") == []
+
+
 @pytest.mark.parametrize(
     ("name", "expected"),
     [
@@ -998,17 +1061,38 @@ def test_the_named_list_excuses_a_module(monkeypatch: pytest.MonkeyPatch) -> Non
     assert smoke_tool.unmeasured(["tools/new.py"], []) == []
 
 
-def test_the_selection_report_names_the_class_and_both_remedies(
+def test_the_selection_report_names_the_class_the_fetch_and_both_remedies(
     monkeypatch: pytest.MonkeyPatch,
     capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
 ) -> None:
     monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/excused.py": "reads a document"})
-    smoke_tool._report_selection(["tools/excused.py", "tools/new.py"], ["tools/new.py"])  # noqa: SLF001 — this module's own private half is what is under test
+    smoke_tool._report_selection(  # noqa: SLF001 — this module's own private half is what is under test
+        ["tools/excused.py", "tools/new.py"],
+        ["tools/new.py"],
+        survey=False,
+    )
     out = capsys.readouterr().out
     assert "-- tools/excused.py exempt: reads a document" in out
     assert "RED tools/new.py no_test_module:" in out
     assert "tests/unit/test_new.py" in out
-    assert "NO_TEST_MODULE" in out
+    # The fetch precedes the escape: a stale origin/main is the one cause the
+    # reader can cure without writing anything (#370 round 2).
+    assert out.index("git fetch origin") < out.index("NO_TEST_MODULE")
+
+
+def test_the_selection_report_is_silent_about_reds_in_a_survey(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/excused.py": "reads a document"})
+    smoke_tool._report_selection(  # noqa: SLF001 — this module's own private half is what is under test
+        ["tools/excused.py", "tools/new.py"],
+        ["tools/new.py"],
+        survey=True,
+    )
+    out = capsys.readouterr().out
+    assert "-- tools/excused.py exempt: reads a document" in out
+    assert "RED" not in out
 
 
 def test_a_new_module_with_no_test_module_reds_the_gate(tmp_path: Path, capsys) -> None:  # noqa: ANN001 — pytest's own fixture type adds nothing here
@@ -1029,15 +1113,34 @@ def test_the_named_list_clears_the_gate(tmp_path: Path, monkeypatch: pytest.Monk
     assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 0
 
 
-def test_the_survey_reports_an_unmeasured_module_and_still_exits_zero(
+def test_the_survey_still_exits_zero_and_prints_no_red(
     tmp_path: Path,
     capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
 ) -> None:
+    # `--report` surveys every verdict and never reds (#370 round 2): the
+    # selection rung has no verdict, so the survey does not speak in the gate's
+    # RED voice about it either.
     _repo(tmp_path)
     (tmp_path / "tools").mkdir()
     (tmp_path / "tools" / "new.py").write_text("x = 1\n")
     assert smoke_tool.main(["--root", str(tmp_path), "--base", "main", "--report"]) == 0
-    assert "RED tools/new.py no_test_module:" in capsys.readouterr().out
+    assert "RED" not in capsys.readouterr().out
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_a_refused_run_prints_no_selection_red_beside_its_refusal(
+    tmp_path: Path,
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    # Exit 2 is the refusal and carries no red beside it (#370 round 2): a
+    # refusal is not a result, so the selection rung waits for a run that is
+    # one, and its RED line is not printed next to a verdict that never was.
+    _repo(tmp_path)
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "tools" / "new.py").write_text("x = 1\n")
+    _throwaway(tmp_path, "def test_red():\n    assert False\n")
+    assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 2
+    assert "RED" not in capsys.readouterr().out
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
@@ -1219,9 +1322,9 @@ def test_one_is_valid():
 
 
 def _throwaway(root: Path, tests: str) -> str:
-    (root / "src").mkdir()
+    (root / "src").mkdir(exist_ok=True)
     (root / "src" / "subject.py").write_text(textwrap.dedent(SUBJECT).lstrip(), encoding="utf-8")
-    (root / "tests").mkdir()
+    (root / "tests").mkdir(exist_ok=True)
     name = "tests/test_subject.py"
     (root / name).write_text(textwrap.dedent(tests).lstrip(), encoding="utf-8")
     return name
