@@ -33,8 +33,11 @@
   runner families have been observed posting from `plan` mode without one. Those two runs are
   named in the row and in `docs/review-dispatch.md`: on `codex`, dispatch
   `d-20260820-110847-f9b197` posted comment `5355112577` to #434 from inside its own
-  `--sandbox read-only` session; on the `claude` family, a `zai` review posted comment
-  `5355396609` to #449. Keeping `plan` therefore costs no relay on either family. A
+  `--sandbox read-only` session; on the `claude` family, dispatch `d-20260820-113736-1c53a4`,
+  a `zai` review, posted comment `5355396609` to #449. What those runs measure is that both
+  families *can* post from `plan`, so the fifteen relays were a consequence of the instruction
+  rather than of the mechanism. They do not establish that the relay is gone: whether it can be
+  retired as a standing step is #393's question, and nothing here answers it. A
   review-specific gate still cannot be landed from inside a review dispatch; it is a change
   like any other and lands through an implementer dispatch on its own issue.
 

@@ -125,8 +125,9 @@ things follow, and the first is the correction.
 unchanged.** On `codex`, dispatch `d-20260820-110847-f9b197` — `seat=review`, `lane=codex`,
 `permission_mode=plan`, argv ending `--sandbox read-only` — ran `gh issue comment 434` from
 inside its own sandboxed session and created comment `5355112577` at 2026-08-20T11:14:56Z,
-seconds before the run ended. On the `claude` family, the `zai` review of the commit that
-first drafted this section posted its findings to #449 as comment `5355396609` at 11:44:10Z.
+seconds before the run ended. On the `claude` family, dispatch `d-20260820-113736-1c53a4` — the
+`zai` review of the commit that first drafted this section — posted its findings to #449 as
+comment `5355396609` at 11:44:10Z.
 Neither was relayed. The fifteen relays above measured the instruction rather than the
 mechanism: every one of those reviews had been told its findings were not its to file.
 

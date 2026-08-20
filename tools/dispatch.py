@@ -762,8 +762,9 @@ SEATS: Final[dict[str, Seat]] = {
     # `d-20260820-110847-f9b197` — `seat=review`, `lane=codex`, `permission_mode=plan`,
     # `--sandbox read-only` — ran `gh issue comment 434` from inside its own sandboxed
     # session and created comment `5355112577` at 2026-08-20T11:14:56Z, seconds before the
-    # run ended. On the `claude` family, the `zai` review of this row's own change posted
-    # its findings to #449 as comment `5355396609` at 11:44:10Z.
+    # run ended. On the `claude` family, dispatch `d-20260820-113736-1c53a4` — the `zai`
+    # review of this row's own change — posted its findings to #449 as comment
+    # `5355396609` at 11:44:10Z.
     #
     # An earlier draft of this comment asserted the opposite — that a `codex` review
     # "cannot reach `gh` at all" — and marked it as needing no measuring; the run that
