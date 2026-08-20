@@ -744,40 +744,67 @@ FLAKE_NONE: Final = (
     " check the tracker for an open issue naming your failing test."
 )
 # The review seat's halves of the same three sections. The human ruled on 2026-08-14 (#353,
-# reversing the 2026-08-13 ruling in that issue's body) that a review is judgement-only by
-# construction: it reads the implementer's pasted gate output and never executes — no checkout,
-# no gate, no mutation. Until that ruling every review brief asked for a gate run and every
+# reversing the 2026-08-13 ruling in that issue's body) that a reviewer is passed the
+# implementer's gate report rather than running the gate itself — "reviewer must not trigger
+# tests themselves". Until that ruling every review brief asked for a gate run and every
 # review spent effort explaining why it could not, which produced nothing except the honest
 # sentence; these sections stop asking. The mutation question the issue left open is decided
-# by the same ruling — "reviewer must not trigger tests themselves" — so the sampled-or-
-# exhaustive distinction (#344: an exhaustive 91% hid behind a reported 100%, because
-# `just mutation` plants at most twenty of a module's candidates) is a thing the *implementer*
-# states in the paste, not a thing the reviewer measures.
+# by the same ruling, so the sampled-or-exhaustive distinction (#344: an exhaustive 91% hid
+# behind a reported 100%, because `just mutation` plants at most twenty of a module's
+# candidates) is a thing the *implementer* states in the paste, not a thing the reviewer
+# measures.
+#
+# **The clarification of 2026-08-20 (#449) narrows what that ruling ever said**, and these
+# strings carry the narrower rule. It was transcribed here as "this seat runs no gate and
+# triggers no test", which reads as *the seat runs nothing* — and the landing rule below
+# then spelled out one consequence nobody had ruled, "do not file an issue or a comment".
+# The human's words: "#393 ruling was intended to prevent reviewers from re-running tests.
+# They should be passed test reports to examine, not rerun them (so we avoid the significant
+# wall time cost). They can of course land review-specific gates and post their own
+# findings." So the bar is **re-running the implementer's suite**, its stated reason is wall
+# time, and posting is permitted. The cost of the wider transcription is measured: in the
+# session of 2026-08-19/20 fifteen verdicts were relayed by hand through the orchestrator,
+# each a plan read, an extraction and a `gh issue comment`, because every review had been
+# told its findings were not its to file.
 #
 # #421 finding 2 tightens what the paste owes: the counts were never required, and the
 # sampled-or-exhaustive classification was owed only "where a kill rate is quoted" — so the
 # brief that carried #353's own review demonstrated the gap, arriving with no current-SHA
 # mutation output and no sampled-versus-exhaustive statement. A reviewer told the gate is
 # not theirs and given no numbers has been disarmed rather than redirected: the counts and
-# the classification are required unconditionally.
+# the classification are required unconditionally. That requirement is untouched by #449.
 REVIEW_GATE_RULE: Final = (
-    "This seat runs no gate and triggers no test — judgement-only by construction (human"
-    " ruling 2026-08-14, #353). The implementer's pasted gate output on the issue thread is"
-    " your gate record: it must carry `just check`, `just unit` and `just mutation` with"
-    " their result counts, and it must say whether the mutation run was sampled (the"
-    " twenty-mutant sample the recipe plants) or exhaustive over every candidate (#344) —"
-    " unconditionally, not only where a kill rate is quoted. A paste that is absent, thinner"
-    " than that, silent on counts, or silent on sampled-or-exhaustive is a finding — report"
-    " it as an observation rather than running anything (#421)."
+    "You re-run none of the implementer's gate. It has already run; its wall time is the"
+    " cost this rule exists to avoid, and you are passed its report instead (human ruling"
+    " 2026-08-14 on #353, as clarified 2026-08-20 on #449). The implementer's pasted gate"
+    " output on the issue thread is your gate record: it must carry `just check`,"
+    " `just unit` and `just mutation` with their result counts, and it must say whether the"
+    " mutation run was sampled (the twenty-mutant sample the recipe plants) or exhaustive"
+    " over every candidate (#344) — unconditionally, not only where a kill rate is quoted."
+    " A paste that is absent, thinner than that, silent on counts, or silent on"
+    " sampled-or-exhaustive is a finding — report it as an observation rather than running"
+    " the gate yourself (#421)."
 )
 REVIEW_FLAKE_RESPONSE: Final = (
     "You re-run none of these: a flake named in the implementer's paste is context for"
-    " reading it, never a red of yours to retry (human ruling 2026-08-14, #353)."
+    " reading it, never a red of yours to retry (human ruling 2026-08-14 on #353, as"
+    " clarified 2026-08-20 on #449)."
 )
+# The posting half is written as an instruction to *attempt and report*, not as a promise
+# that the call will land. The seat's containment is a forced read-only permission mode
+# (`dispatch.SEATS["review"]`, where #449's mechanism decision is recorded), and whether
+# that mode passes an allowlisted `gh issue comment` through is unmeasured — the fifteen
+# relayed verdicts measured the sentence, not the mechanism, because none of those reviews
+# was ever permitted to try. Telling the reviewer to try and to record the refusal is what
+# makes the first live review settle it at no extra cost; claiming the capability outright
+# would ship this issue's own defect.
 REVIEW_LANDING_RULE: Final = (
-    "A review lands nothing. Do not commit, do not push, do not run `just land`, do not"
-    " file an issue or a comment; your entire output is your final message (ADR-0071"
-    " ruling 4; `docs/review-dispatch.md`)."
+    "A review lands nothing: do not commit, do not push, do not run `just land`, and edit no"
+    " file — ADR-0071 ruling 4's never-alone invariant, which this ruling leaves untouched."
+    " Filing is not landing. Post your findings on the issue thread yourself with"
+    " `gh issue comment`; if that tool call is refused, say so in your report and let your"
+    " final message stand as the record for the orchestrator to relay (human ruling"
+    " 2026-08-20, #449; `docs/review-dispatch.md`)."
 )
 # The same three sections for a forced-read-only seat that is not the reviewer (#421
 # criterion 1). `recon` is that seat today: the same containment #407 forced on it, a
@@ -788,9 +815,14 @@ READONLY_GATE_RULE: Final = (
     " ruling 2; the forced `permission_mode` column, #407). Read the repository and the"
     " issue thread; report what you find, never an edit."
 )
+# Cited to `recon`'s own ground rather than to #353. The 2026-08-14 ruling is about a
+# reviewer re-running an implementer's suite, and #449 narrowed it to exactly that; a seat
+# that judges no implementer's work never had that rule to inherit. `recon` triggers no test
+# because ADR-0071 ruling 2 makes it read-only, which is a different reason for the same
+# sentence, and a mis-citation is how a rule ends up wider than the ruling behind it.
 READONLY_FLAKE_RESPONSE: Final = (
-    "You re-run none of these: a read-only seat triggers no test (human ruling"
-    " 2026-08-14, #353). They are context for what you read."
+    "You re-run none of these: a read-only seat triggers no test (ADR-0071 ruling 2; the"
+    " forced `permission_mode` column, #407). They are context for what you read."
 )
 READONLY_LANDING_RULE: Final = (
     "A read-only seat lands nothing. Do not commit, do not push, do not run `just land`,"
@@ -980,9 +1012,12 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
 
     The three sections are the implementer's until the registry forces the seat read-only:
     a forced-`plan` seat runs no gate, retries no flake and lands nothing — the review by
-    the human ruling of 2026-08-14 (#353), every other such seat (`recon`, #407) by the
-    same construction — so the gate ask, the re-run instruction and the landing protocol
-    would each demand something the seat is forbidden to do. The arm follows
+    the human ruling of 2026-08-14 (#353) as clarified on 2026-08-20 (#449), every other
+    such seat (`recon`, #407) by the same construction — so the gate ask, the re-run
+    instruction and the landing protocol would each demand something the seat is forbidden
+    to do. What the read-only arm does *not* say is that the seat may not file: #449 puts
+    posting its own findings back inside the reviewer's contract, and only landing,
+    editing and re-running the implementer's gate stay out. The arm follows
     `Seat.judgement_only`, the same predicate the default brief branches on and #339
     derived surfaces from, because `reviews` reached only the reviewer and left `recon`
     carrying the implementer's asks (#421): one predicate, both paths. The derived gate is still

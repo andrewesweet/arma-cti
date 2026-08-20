@@ -4,9 +4,9 @@ The shape of the review seat: what a review dispatch is handed, what it must han
 its claims go, and what now happens to a confirmed claim. Binding decisions: ADR-0061
 Decision 3 (review is eligible on a foreign lane, and provider diversity is the point), the
 human's ruling on #228 (a review lands nothing — its output is claims, each checkable
-against the code it cites), the human's ruling on #353 (2026-08-14: a review is
-**judgement-only by construction** — it reads the implementer's pasted gate output and never
-executes), and, until #328, the admission bar.
+against the code it cites), the human's ruling on #353 (2026-08-14: a review **is passed the
+implementer's gate report rather than re-running it**, as clarified on 2026-08-20 in #449),
+and, until #328, the admission bar.
 
 **ADR-0071 supersedes the first and third of those**, and this document has not yet been
 fully re-based on it: ruling 1 rescinds the foreign-lane concept Decision 3 rests on. Ruling
@@ -68,6 +68,17 @@ read-only Bash work in it headless, and no edit can be applied. Verified before 
 `plan`-mode headless run executed `git rev-parse --short HEAD` and returned its output. The
 brief forbids landing as well, but the brief is an instruction and the mode is a mechanism.
 
+**What that mode is for, after #449.** The clarification of 2026-08-20 narrowed the test rule
+and left this one alone: the mode enforces that a review neither edits nor lands the change it
+judges — ADR-0071 ruling 4's never-alone invariant — and it is *not* the statement of what a
+reviewer may run or file. The three replacements weighed against keeping it are recorded in
+`tools/dispatch.py` beside the registry row, with why each trades a mechanism for a sentence.
+The consequence is stated plainly rather than glossed: under `plan` a review dispatch cannot
+land a **review-specific gate**, which the ruling permits it to do. That is not a bar the
+ruling meets, because a review-specific gate is a change like any other and lands through an
+implementer dispatch on its own issue; the seat's containment never blocked that route, and a
+review that wants such a gate proposes it as a finding.
+
 Forced, because a default is not a containment. `--permission-mode` defaults to `acceptEdits`,
 which is writable on both runner families, so until #322 a review dispatched without the flag
 could edit — and the sentence above described what a careful caller would type rather than what
@@ -77,8 +88,8 @@ registry and `routed` writes it over whatever the caller passed; on the `claude`
 The override is printed, in the dry run and on the record, as
 `route_permission_mode=plan forced_by_seat=review`.
 
-**Since the human's ruling of 2026-08-14 (#353), the mode is not the whole of the rule —
-the seat runs nothing, not merely lands nothing.** The ruling reversed the 2026-08-13 ruling
+**Since the human's ruling of 2026-08-14 (#353), the mode is not the whole of the rule — the
+seat does not re-run the implementer's tests.** The ruling reversed the 2026-08-13 ruling
 recorded in #353's body, which would have given the seat an executable read-only mode: its own
 worktree, `git checkout`/`git fetch`, `just fast`. The answer given instead was
 *"reviewer must not trigger tests themselves"*, so the review does not check out the branch
@@ -92,6 +103,40 @@ gate (#265's sandbox ceiling) is therefore **moot for this seat rather than bloc
 review runs a gate on any lane, so a `codex` review reports no `gate=not_run` shortfall
 against its peers. The ceiling still bites `codex` as an *implementer*, where
 `docs/agents/orchestration.md` states it.
+
+**The human's clarification of 2026-08-20 (#449) says what that ruling never said.** In their
+own words: *"#393 ruling was intended to prevent reviewers from re-running tests. They should
+be passed test reports to examine, not rerun them (so we avoid the significant wall time
+cost). They can of course land review-specific gates and post their own findings."* Three
+things follow, and the first is the correction.
+
+- **The bar is re-running the implementer's suite, and its reason is wall time.** Everything
+  the paragraph above states about `just fast`, its rungs and `just mutation` survives intact.
+- **The seat was never told to run *nothing*.** That was this document's transcription, and
+  the brief template below carried it as *"A review also runs nothing"* alongside *"do not
+  file an issue or a comment"* — a consequence nobody had ruled. Both are gone.
+- **Posting its own findings is the reviewer's, not a favour from the orchestrator.** The
+  cost of the wider reading is measured: in the session of 2026-08-19/20, fifteen verdicts
+  (#421, #427, #422, #419, #433, #425, #410, #424, #370, #438, #437, #443, #441, #440, #436)
+  were relayed by hand, each a plan read, an extraction and a `gh issue comment`, and every
+  extraction was a retyping risk the paste discipline below exists to remove.
+
+**What is not yet true, stated so nobody reads a permission out of a paragraph.** The forced
+`plan` mode is unchanged, and it answers the two runner families differently.
+
+On the **`codex`** family the answer is already known from the code: `plan` renders
+`--sandbox read-only`, and `_codex_sandbox_argv` grants that branch neither `writable_roots`
+nor `network_access`. `gh issue comment` needs the network, so a `codex` review **cannot**
+post, and its findings reach the thread through the orchestrator.
+
+On the **`claude`** family it is **unmeasured**. `.claude/settings.json` already carries
+`Bash(gh issue:*)` on its allow list; what nobody here has established is whether an allow
+rule reaches a Bash call a `plan`-mode headless session would otherwise refuse. The fifteen
+relays do not settle it, because each of those reviews had been told not to try — they
+measured the sentence, not the mechanism. The brief now tells the reviewer to attempt the
+post and to report a refusal among its findings, so the first live `claude`-family review
+after this lands settles the question at no extra cost. Until one has, the orchestrator
+relay remains the fallback rather than the protocol.
 
 ### The reviewer is never the reviewed profile
 
@@ -353,8 +398,11 @@ The orchestrator receives the report and routes each claim:
   counted in the citation denominator. Silently dropping it would make the seat's bar
   unmeasurable in exactly the direction that flatters the reviewer.
 
-Either route may be taken by the reviewer itself where its permissions allow it. Neither is
-assumed: the seat's contract is the report, and the filing is the orchestrator's by default.
+Either route is the reviewer's own to take (human ruling 2026-08-20, #449: *"they can of
+course … post their own findings"*), and the seat's contract is still the report — a review
+that files nothing has not failed, it has produced its claims. The orchestrator relays where
+the reviewer's tool call was refused, which is the unmeasured case named above, not a
+standing division of labour.
 
 ## What a confirmed claim now reaches: nothing
 
@@ -416,19 +464,22 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     Your worktree: <path>, at origin/main. Work only there.
 
     A review lands nothing. Do not edit a file, do not commit, do not push, do not
-    run `just land`, do not file an issue or a comment. Your entire output is your
-    final message. Your permission mode is `plan`, which enforces this; the rule is
-    stated as well because a mechanism you understand is one you do not fight.
+    run `just land`. Your permission mode is `plan`, which enforces this; the rule
+    is stated as well because a mechanism you understand is one you do not fight.
+    Filing is not landing: post your findings on the issue thread yourself with
+    `gh issue comment` (human ruling 2026-08-20, #449). If that call is refused,
+    say so in your report and let your final message stand as the record.
 
-    A review also runs nothing. Do not check out the branch under review, do not
-    run `just fast` or any rung of it, do not run `just mutation` — judgement-only
-    by construction (human ruling 2026-08-14, #353). The implementer's pasted gate
-    output on the issue thread is your gate record: it must carry `just check`,
-    `just unit` and `just mutation` with their result counts, and it must say —
-    unconditionally, not only where a kill rate is quoted (#421) — whether the
-    mutation run was sampled or exhaustive. A paste absent, thinner than that,
-    silent on counts, or silent on sampled-or-exhaustive is a finding — report it
-    as an observation rather than running anything.
+    A review re-runs none of the implementer's gate. Do not check out the branch
+    under review, do not run `just fast` or any rung of it, do not run
+    `just mutation` — you are passed their report and the wall time is the reason
+    (human ruling 2026-08-14 on #353, as clarified 2026-08-20 on #449). The
+    implementer's pasted gate output on the issue thread is your gate record: it
+    must carry `just check`, `just unit` and `just mutation` with their result
+    counts, and it must say — unconditionally, not only where a kill rate is quoted
+    (#421) — whether the mutation run was sampled or exhaustive. A paste absent,
+    thinner than that, silent on counts, or silent on sampled-or-exhaustive is a
+    finding — report it as an observation rather than running the gate yourself.
 
     Read, in this order: CLAUDE.md in your worktree; `gh issue view <N>` including
     every comment, and its close audit in particular; `git show <SHA>`; then the

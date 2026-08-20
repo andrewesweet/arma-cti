@@ -1096,13 +1096,19 @@ def test_the_composer_takes_the_subject_from_the_command_line() -> None:
 # ------------------------- the forced-read-only seats run no gate (#353, 2026-08-14; #421)
 
 # The human ruled on 2026-08-14 — reversing the 2026-08-13 ruling in #353's body — that a
-# review is judgement-only by construction: it reads the implementer's pasted gate output and
-# never executes, "reviewer must not trigger tests themselves". Until then every review brief
-# asked for a gate run and every review spent its effort explaining why it could not; these
-# assert the ask is gone from the three sections that carried it. #421 widens the arm to the
-# predicate both briefs branch on — the forced `permission_mode` — so `recon`, the other seat
-# #407 forced read-only, is covered by the same sections rather than handed the implementer's
+# reviewer is passed the implementer's gate report rather than running the gate itself,
+# "reviewer must not trigger tests themselves". Until then every review brief asked for a
+# gate run and every review spent its effort explaining why it could not; these assert the
+# ask is gone from the three sections that carried it. #421 widens the arm to the predicate
+# both briefs branch on — the forced `permission_mode` — so `recon`, the other seat #407
+# forced read-only, is covered by the same sections rather than handed the implementer's
 # asks.
+#
+# The clarification of 2026-08-20 (#449) narrows the rule these assert: the bar is
+# re-running the implementer's suite, its reason is wall time, and posting findings was
+# never barred. `test_a_review_briefing_may_file_its_own_findings` below is the half that
+# was missing — nothing asserted the *absence* of a prohibition, so "do not file an issue or
+# a comment" sat in the landing rule with a green suite over it for six days.
 
 
 def review_composed(**over: object) -> str:
@@ -1145,6 +1151,31 @@ def test_a_review_briefing_is_told_to_land_nothing() -> None:
     assert "## Landing: none — this seat lands nothing" in rendered
     assert brief.REVIEW_LANDING_RULE in rendered
     assert "Land via `just land`" not in rendered
+
+
+def test_a_review_briefing_may_file_its_own_findings() -> None:
+    """#449: filing is not landing, and the landing rule used to forbid both.
+
+    The human's clarification of 2026-08-20 is that #353's ruling barred re-running the
+    implementer's tests and nothing else — "they can of course land review-specific gates
+    and post their own findings". The transcription that reached this string forbade the
+    reviewer to "file an issue or a comment", and fifteen verdicts in one session were
+    relayed by hand because of it. The prohibition's absence is asserted here because
+    nothing asserted it before: every test above pins text that is *present*, so a sentence
+    nobody had ruled sat in the brief under a green suite.
+
+    The never-alone half is asserted in the same test on purpose. It is the invariant the
+    forced `plan` mode enforces and the one this ruling does not touch, so a future edit
+    that widens the permission by deleting the wrong sentence fails here rather than in a
+    review of the change it let through.
+    """
+    rendered = review_composed()
+    assert "file an issue or a comment" not in rendered
+    assert "`gh issue comment`" in rendered
+    # ADR-0071 ruling 4, untouched by #449.
+    assert "do not commit" in rendered
+    assert "do not push" in rendered
+    assert "edit no file" in rendered
 
 
 def test_a_review_briefing_commands_no_worktree_management() -> None:
@@ -1432,6 +1463,9 @@ def test_the_default_brief_asks_no_seat_that_cannot_run_a_gate_to_run_one() -> N
         rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-353")
         asks = "Run `just fast` after every edit." in rendered
         assert asks == (not seat.judgement_only), seat_name
+        # #449: the line bars the gate and re-running, never the seat's whole activity.
+        bars_reruns = "re-run none of the implementer's tests" in rendered
+        assert bars_reruns == seat.judgement_only, seat_name
 
 
 def test_forcing_the_predicate_false_moves_both_brief_paths_together(
@@ -1479,7 +1513,9 @@ def test_the_default_briefs_prohibition_names_gates_and_tests_not_all_execution(
 
     Taken literally it forbade read-only inspection and made `recon` — a seat whose whole
     job is reading — impossible. The line states the prohibition it means: no gate, no
-    tests, and reading named as the work rather than carved out of it.
+    re-running of the implementer's tests, and reading named as the work rather than carved
+    out of it. #449 narrowed the second half again — the bar is re-running, and its reason
+    is wall time — which is the same lesson arriving a second time from the other side.
     """
     identity = dispatch.Identity(
         dispatch_id="d-test",
@@ -1490,7 +1526,7 @@ def test_the_default_briefs_prohibition_names_gates_and_tests_not_all_execution(
         base_sha="deadbee",
     )
     rendered = dispatch.default_brief(identity, REPO / ".claude" / "worktrees" / "issue-421")
-    assert "Run no gate and no tests" in rendered
+    assert "Run no gate and re-run none of the implementer's tests" in rendered
     assert "executing anything" not in rendered
     assert "Reading is this seat's work" in rendered
 

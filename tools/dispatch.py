@@ -730,6 +730,50 @@ SEATS: Final[dict[str, Seat]] = {
     # is what makes this seat's resolution take the profile under review as an input and
     # never return it; `permission_mode` forces the containment `--permission-mode`'s
     # writable default would otherwise have left to whoever typed the command.
+    #
+    # **`plan` stays after #449's ruling, and that is a decision rather than an omission.**
+    # The human clarified on 2026-08-20 that the 2026-08-14 ruling bars a reviewer from
+    # *re-running the implementer's tests* — the reason being wall time — and not from
+    # posting its own findings. The brief strings in `tools/brief.py` now say exactly that.
+    # The mode does not, because the mode is not what states the test rule: it is what
+    # enforces the *other* invariant, that a review neither edits nor lands the change it
+    # judges (ADR-0071 ruling 4), and that invariant is untouched by the clarification.
+    #
+    # Three replacements were weighed against keeping it, and each trades a mechanism for a
+    # sentence, which is the one thing the design here refuses:
+    #
+    # - **A writable mode plus `--disallowed-tools`** for `Edit`, `Write` and the landing
+    #   commands. A Bash deny-rule is prefix matching over a string the session composes,
+    #   and any shell defeats it — `bash -c`, `python -c`, a heredoc — so what looks like a
+    #   deny list is an instruction with a matcher attached.
+    # - **`acceptEdits` narrowed by the sandbox on `codex`.** `CODEX_SANDBOX` renders that
+    #   mode `workspace-write`, whose writable root is the session's own cwd — the review's
+    #   worktree. Granting it back makes the reviewer able to edit and, with the network
+    #   access the gate half needs, to push.
+    # - **A seat-scoped `--allowed-tools Bash(gh issue comment:*)` on top of `plan`.** This
+    #   is the only candidate that keeps the containment, and it rests on an unmeasured
+    #   premise: that an allow rule reaches a Bash call a `plan`-mode headless session would
+    #   otherwise refuse. Nobody here has measured it. `.claude/settings.json` already
+    #   carries `Bash(gh issue:*)` on its allow list, so if the premise holds the capability
+    #   is already granted and needs no flag at all; if it does not hold, a flag would not
+    #   supply it either. Measuring it costs one dispatch, and #449's briefing was explicit
+    #   that a named gap beats a rushed permission change.
+    #
+    # The two families do not answer alike, and the `codex` half needs no measuring: `plan`
+    # renders `--sandbox read-only`, and `_codex_sandbox_argv` grants that branch neither
+    # `writable_roots` nor `network_access`, so a `codex` review cannot reach `gh` at all
+    # and its findings travel through the orchestrator whatever the `claude` half turns out
+    # to do.
+    #
+    # So the containment is unchanged and the gap is stated where a reader meets it:
+    # `docs/review-dispatch.md`, and `REVIEW_LANDING_RULE`, which tells the reviewer to
+    # attempt the post and to report a refusal in its findings. That turns the unmeasured
+    # premise into something the next live review settles at no extra cost, rather than
+    # something this issue guesses at. The half of the ruling this leaves unbuilt is stated
+    # rather than glossed: a review dispatch cannot land a review-specific gate, because it
+    # can write nothing — such a gate is a change like any other and lands through an
+    # implementer dispatch on its own issue, which is a route the seat's containment never
+    # blocked.
     "review": Seat(
         "review",
         claude_only=False,
@@ -3062,17 +3106,21 @@ def default_brief(identity: Identity, worktree: Path) -> str:
     `recon` — `Seat.judgement_only`, the predicate whose home is the registry row) cannot
     act on "run `just fast` after every edit", and a brief asking for what the seat is
     forbidden to do is the ritual #353's ruling of 2026-08-14 stopped: such a seat runs
-    no gate and no tests. The prohibition is stated that narrowly on purpose (#421
-    finding 4): "rather than executing anything" read as forbidding read-only inspection
-    too, which would make `recon` — a seat whose whole job is reading — impossible.
+    no gate and re-runs no test. The prohibition is stated narrowly on purpose, twice
+    over. #421 finding 4: "rather than executing anything" read as forbidding read-only
+    inspection too, which would make `recon` — a seat whose whole job is reading —
+    impossible. #449: "runs nothing" read as forbidding the seat to file its own findings,
+    which nobody had ruled and which cost fifteen hand-relayed verdicts in one session.
+    What the line bars is the gate, and the reason it gives is the ruling's own: wall time.
     """
     runs_gate = not SEATS[identity.seat].judgement_only
     gate_line = (
         "Run `just fast` after every edit."
         if runs_gate
-        else "Run no gate and no tests — judgement-only by construction (human ruling"
-        " 2026-08-14, #353); read what the issue thread and the repository carry. Reading"
-        " is this seat's work, not a breach of that (#421)."
+        else "Run no gate and re-run none of the implementer's tests — you are passed their"
+        " report instead, and the wall time is the reason (human ruling 2026-08-14 on #353,"
+        " as clarified 2026-08-20 on #449); read what the issue thread and the repository"
+        " carry. Reading is this seat's work, not a breach of that (#421)."
     )
     return (
         f"You are the {identity.seat} seat, dispatched as {identity.dispatch_id} on the "
