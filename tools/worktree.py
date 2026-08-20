@@ -55,6 +55,7 @@ refusal; the class is the first line, in the tier's ``key=value`` form.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import re
 import subprocess
 import sys
@@ -578,7 +579,9 @@ def add(root: Path, name: str) -> Report:
     if occupied is not None:
         return Report.refused(occupied)
 
-    git("fetch", "origin", cwd=root)
+    # Bounded (#434): the same whole-call deadline `remote_ref_sha` reads under, so a
+    # wedged remote refuses as `git_failed` rather than hanging the protocol's start.
+    git("fetch", "origin", cwd=root, timeout=REMOTE_READ_TIMEOUT_S)
     base = git("rev-parse", "--short", BASE, cwd=root).strip()
     git("worktree", "add", str(path), BASE, "--detach", cwd=root)
 
@@ -718,8 +721,11 @@ def done(root: Path, name: str) -> Report:
         return Report.refused(bad_name)
     path = root / WORKTREES / name
     # `check=False`: a fetch that fails leaves an older `origin/main`, against
-    # which unlanded commits can only over-count — the refusing direction.
-    git("fetch", "origin", cwd=root, check=False)
+    # which unlanded commits can only over-count — the refusing direction. A fetch
+    # that expires at its bound (#434) fails the same read the same way, so it is
+    # tolerated identically rather than refused: the over-count still refuses.
+    with contextlib.suppress(GitError):
+        git("fetch", "origin", cwd=root, check=False, timeout=REMOTE_READ_TIMEOUT_S)
     registrations = parse_registrations(git("worktree", "list", "--porcelain", cwd=root))
     holder = gather(root, path, registrations)
     refusal = classify_done(path, holder)
@@ -793,7 +799,9 @@ def restore(root: Path, name: str, ref: str) -> Report:
                 "Push it first, or point --ref at one that is.",
             )
         )
-    git("fetch", "origin", ref, cwd=root)
+    # Bounded (#434): one call after the already-bounded `remote_ref_sha`, so the
+    # fetch of the ref it resolved cannot hang where the read that named it did not.
+    git("fetch", "origin", ref, cwd=root, timeout=REMOTE_READ_TIMEOUT_S)
     git("worktree", "add", str(path), sha, "--detach", cwd=root)
     dirty = classify_preflight(path, read_status(git("status", "--porcelain", cwd=path)))
     if dirty is not None:

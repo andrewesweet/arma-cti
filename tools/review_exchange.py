@@ -246,7 +246,17 @@ def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole
         )
     try:
         ref = review_ref(issue)
-        worktree.git("push", "--force", "origin", f"HEAD:{ref}", cwd=cwd)
+        # Bounded (#434): the push dials before the already-bounded `remote_ref_sha`
+        # on the next line, so a wedged remote hung the push the read was bounded
+        # against. A timeout lands in the `git_failed` refusal below like any other.
+        worktree.git(
+            "push",
+            "--force",
+            "origin",
+            f"HEAD:{ref}",
+            cwd=cwd,
+            timeout=worktree.REMOTE_READ_TIMEOUT_S,
+        )
         remote_sha = worktree.remote_ref_sha(cwd, ref)
     except worktree.GitError as failure:
         return _git_failed(cwd, failure)
@@ -1687,7 +1697,12 @@ def main(argv: list[str] | None = None) -> int:
                 # reviewed.
                 repo = Path(args.repo)
                 try:
-                    worktree.git("fetch", "origin", cwd=repo)
+                    # Bounded (#434), the same deadline every other read of `origin`
+                    # in this protocol carries; a wedged remote refuses as
+                    # `git_failed` rather than hanging the record.
+                    worktree.git(
+                        "fetch", "origin", cwd=repo, timeout=worktree.REMOTE_READ_TIMEOUT_S
+                    )
                 except worktree.GitError as failure:
                     report = _git_failed(repo, failure)
                 else:
