@@ -92,6 +92,21 @@ them, so asking the same of an edit would red a docstring fix. The escape is
 blank reason on any entry of either list refuses the gate outright, because an
 escape whose reason can be left blank is an escape with its cost removed.
 
+One false red survives this and cannot be computed away in-repo, so it is
+written where the rung is met rather than left to be inferred (#441). What
+counts as introduced is measured against `origin/main` as this tree holds it, so
+a stale ref names another landing's module as an introduction here. `just land`
+fetches before it gates, which makes the landing gate right twice over; `just
+fast` mid-work does not fetch, and that is exactly where the surviving false red
+lives. The red's own text is the whole mitigation — it names the fetch first and
+says which gate fetches for you — and the cost of putting it first is accepted
+rather than absent: a reader whose module genuinely is new runs one fetch and
+learns nothing from it. That is the cheaper error, because the fetch writes
+nothing while both other remedies write code against a diagnosis that may be
+wrong. Adding a fetch to `just fast` is not the fix: it would put a network call
+into the loop an agent runs after every edit, and a gate that cannot run offline
+is a worse gate than one that occasionally names a stale ref.
+
 ## The per-module ratchet
 
 `FLOOR` is one number every module clears, set below the corpus minimum so the
@@ -2076,7 +2091,13 @@ def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[in
     return red, refused, subjects
 
 
-def _report_selection(introduced: list[str], unnamed: list[str], *, survey: bool) -> None:
+def _report_selection(
+    introduced: list[str],
+    unnamed: list[str],
+    *,
+    survey: bool,
+    refused: bool,
+) -> None:
     """Print the escapes this landing takes and the modules it measures by nothing.
 
     A red of its own kind: there is no verdict to print, because the thing that
@@ -2088,22 +2109,39 @@ def _report_selection(introduced: list[str], unnamed: list[str], *, survey: bool
     leans on: a test module that reaches the code it names makes it the subject,
     which is the measurement this red demands. The escape comes last.
 
-    The RED half is a gate's voice, so a survey never hears it — `--report`
-    never reds — and the caller holds the whole report back while the run is
-    still a refusal, because a refusal is not a result and has no red beside it.
+    RED is a gate's voice, so a survey never hears it — `--report` never reds.
+    It still names the module, in the survey's own `--` voice, because `--report`
+    is the one non-gating way to see a landing's selection and a survey that
+    named every excused module and no accused one would preview everything except
+    the rung most likely to red the reader (#441).
+
+    A refusal keeps the `-- exempt:` lines and drops the unmeasured ones, in
+    either voice. The exemptions are statements about the diff, true whatever the
+    run did; `unnamed` is computed from the subjects the verdicts selected, and a
+    refused run has only some of them — so a module named there may be one a
+    completed run would have measured.
     """
     for path in introduced:
         if path in NO_TEST_MODULE:
             print(f"-- {path} exempt: {NO_TEST_MODULE[path]}", flush=True)  # noqa: T201
-    if survey:
+    if refused:
         return
     for path in unnamed:
+        if survey:
+            print(  # noqa: T201 — stdout text IS this gate's output
+                f"-- {path} unmeasured: this landing introduces it and no verdict in "
+                f"this run selected it as a subject, so the gate reds here with the "
+                f"class no_test_module and its remedies. A survey reports; it never reds.",
+                flush=True,
+            )
+            continue
         print(  # noqa: T201 — stdout text IS this gate's output
             f"RED {path} no_test_module: this landing introduces it and no verdict in "
             f"this run selected it as a subject — the diff's test modules name other "
             f"code, or none ran it at all — so no rung of `just fast` measures it. A "
             f"stale origin/main ref names another landing's module as introduced here, "
-            f"so `git fetch origin` is the first thing to try. If it is this landing's "
+            f"so `git fetch origin` is the first thing to try — `just fast` never "
+            f"fetches, and the landing gate always does. If it is this landing's "
             f"work, add tests/unit/test_{_stem_key(path)}.py whose tests execute it, or "
             f"add {path} to NO_TEST_MODULE in tools/mutation_smoke.py with the reason.",
             flush=True,
@@ -2303,11 +2341,12 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911 — every refus
         rust_red, rust_refused = _judge_rust(root)
         red += rust_red
         refused += rust_refused
+    # The report comes before the refusal exit, because the `-- exempt:` half is
+    # a statement about the diff rather than a verdict about the run (#441). The
+    # unmeasured half is a verdict, in either voice, so a refusal drops it.
+    _report_selection(introduced, unnamed, survey=args.report, refused=bool(refused))
     if refused and not args.report:
         return 2
-    # RED is a gate's voice: the survey never hears it, and neither does a
-    # refusal — the report waits until the run has an answer that is a result.
-    _report_selection(introduced, unnamed, survey=args.report)
     if (red or unnamed) and not args.report:
         print(  # noqa: T201
             f"{red} subject(s) did not notice the code changing. Strengthen the "
