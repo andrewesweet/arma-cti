@@ -1253,6 +1253,39 @@ def test_an_implementer_briefing_is_asked_for_the_paste_the_review_reads() -> No
     assert "unconditionally" in rendered
 
 
+def test_the_changelog_claim_rule_reaches_every_seat_that_writes_or_judges_a_fragment() -> None:
+    """#460's implementer half, and the reviewer's, from one string.
+
+    A seat that acts writes the fragment; the reviewer judges it. `recon` does neither, so it
+    is the one seat the rule is silent for — the same `judgement_only`/`reviews` pair the
+    paste contract already splits on, rather than a second predicate that could disagree.
+    """
+    for name, seat in dispatch.SEATS.items():
+        rendered = composed(seat=brief.derive_seat(name))
+        owed = seat.reviews or not seat.judgement_only
+        assert (brief.CHANGELOG_CLAIM_RULE in rendered) is owed, name
+
+
+def test_the_changelog_claim_rule_has_one_home_that_all_three_surfaces_read() -> None:
+    """Criterion 4: bound to the constant, never three hand-typed copies (#445's finding 3).
+
+    Counts rather than `in`: `docs/review-dispatch.md` owes the rule twice — once as the
+    reviewer's obligation beside the gate-paste contract, once inside the brief template that
+    is copied and passed as `--brief-file` — and a template silently losing it would still
+    satisfy a bare containment check.
+    """
+    rule = " ".join(brief.CHANGELOG_CLAIM_RULE.split())
+    for name, wanted in (("AGENTS.md", 1), ("docs/review-dispatch.md", 2)):
+        source = " ".join((REPO / name).read_text(encoding="utf-8").split())
+        assert source.count(rule) == wanted, name
+
+
+def test_the_changelog_claim_rule_says_the_gate_is_content_blind() -> None:
+    """Criterion 5: nothing may claim `just check` judges whether a fragment is true (#429)."""
+    assert "content-blind" in brief.CHANGELOG_CLAIM_RULE
+    assert "verifies that a fragment exists, never that it is true" in brief.CHANGELOG_CLAIM_RULE
+
+
 def test_review_dispatch_docs_carry_the_same_sampling_paste_rule_twice() -> None:
     documented = " ".join(
         (REPO / "docs" / "review-dispatch.md").read_text(encoding="utf-8").split()

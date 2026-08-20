@@ -852,6 +852,23 @@ ADJUDICATION_RULE: Final = (
     " recorded by `just review-loop adjudicate` (ADR-0071 ruling 4; the fourth route"
     " is the human ruling of 2026-08-14 on #334)."
 )
+# The human's ruling of 2026-08-20 (#460, recorded by ADR-0077). Spelled once and read by
+# every surface that states it: `AGENTS.md` carries this text, `docs/review-dispatch.md`
+# carries it twice, and both arms of the composed brief render it. Three hand-typed copies
+# is exactly #445's finding 3 — the sampling rule was built here, retyped in the document
+# and retyped again in the template, so changing one redded one test while the others went
+# on asking for a line that no longer existed. The rule reaches the implementer's brief and
+# not only the review contract for the other half of that issue's lesson: a rule only
+# reviewers know produces findings, and #445's own fragment was a revision behind its code.
+CHANGELOG_CLAIM_RULE: Final = (
+    "A `changelog.d/` fragment is reviewed as a claim, not as prose: every sentence is checked"
+    " against the diff exactly as a code comment is, and a fragment claiming more than landed"
+    " blocks the landing rather than being filed as a follow-up. `scriv collect` folds a"
+    " fragment verbatim into `CHANGELOG.md` at the next `cog bump`, and `just check`'s"
+    " fragment leg is content-blind — it verifies that a fragment exists, never that it is"
+    " true (#429) — so a false sentence there is the one claim in this repository that ships"
+    " without ever being checked again (human ruling 2026-08-20, #460)."
+)
 RESERVED_RULE: Final = (
     "You cannot write these, and neither can any dispatched session on any lane: `.claude/`"
     " is reserved by the harness above the project allowlist, through the tool call and"
@@ -1030,6 +1047,10 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
     composed — these seats meet the same headings and never a silence — and within the arm
     the paste contract is the reviewer's alone, because `recon` judges no implementer's
     work.
+
+    `CHANGELOG_CLAIM_RULE` reaches both arms: the implementer writes the fragment and the
+    reviewer judges it, so each meets it where it works (#460). `recon` writes no fragment
+    and judges none, so it is the one seat the rule is silent for.
     """
     issue, seat, gate, flakes = briefing.issue, briefing.seat, briefing.gate, briefing.flakes
     if seat.judgement_only:
@@ -1037,6 +1058,7 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
             "",
             "## Gate: none — this seat runs none",
             REVIEW_GATE_RULE if seat.reviews else READONLY_GATE_RULE,
+            *([CHANGELOG_CLAIM_RULE] if seat.reviews else []),
             "",
             f"## Open flakes ({len(flakes)}, read live at composition)",
         ]
@@ -1068,6 +1090,7 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
         "",
         "## Landing",
         f"Conventional Commits, `refs #{issue}`, commit early.",
+        CHANGELOG_CLAIM_RULE,
         "Land via `just land` and paste its output verbatim — never retype it.",
         ADJUDICATION_RULE,
         (

@@ -64,6 +64,25 @@ Six things, and the dispatch record carries four of them by construction:
   with `git show`, and the tree's own head is recorded, because a citation into a landing that
   a later commit has moved is stale rather than wrong and the two must be distinguishable.
 
+**The changelog fragment in the diff is a claim the seat checks, and this is the reviewer's
+half of the human's ruling of 2026-08-20 (#460; ADR-0077).** The wording is
+`tools/brief.py`'s `CHANGELOG_CLAIM_RULE`, which the composed brief renders to both the
+implementer and this seat, so the three surfaces cannot drift apart:
+
+A `changelog.d/` fragment is reviewed as a claim, not as prose: every sentence is checked
+against the diff exactly as a code comment is, and a fragment claiming more than landed
+blocks the landing rather than being filed as a follow-up. `scriv collect` folds a fragment
+verbatim into `CHANGELOG.md` at the next `cog bump`, and `just check`'s fragment leg is
+content-blind — it verifies that a fragment exists, never that it is true (#429) — so a
+false sentence there is the one claim in this repository that ships without ever being
+checked again (human ruling 2026-08-20, #460).
+
+The route is `defect` and never `observation`. Before a landing that is `just land`'s finding
+gate; on a post-landing pass the fragment is still in `changelog.d/` and unreleased, so the
+remedy is a correction to the fragment rather than a note about it. The rule discriminates
+rather than merely obstructs: in the session of 2026-08-19/20 five fragments claimed more
+than their diff delivered and #446's, read sentence by sentence, was accurate.
+
 The permission mode is **`plan`**, and since #322 the seat forces it rather than asking the
 caller for it. That is the mechanical face of "a review lands nothing": read-only tools and
 read-only Bash work in it headless, and no edit can be applied. Verified before first use — a
@@ -497,6 +516,16 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     unconditionally, not only where a kill rate is quoted (#421). A paste absent,
     thinner than that, silent on counts, or silent on sampled-or-exhaustive is a
     finding — report it as an observation rather than running the gate yourself.
+
+    A `changelog.d/` fragment is reviewed as a claim, not as prose: every
+    sentence is checked against the diff exactly as a code comment is, and a
+    fragment claiming more than landed blocks the landing rather than being
+    filed as a follow-up. `scriv collect` folds a fragment verbatim into
+    `CHANGELOG.md` at the next `cog bump`, and `just check`'s fragment leg is
+    content-blind — it verifies that a fragment exists, never that it is true
+    (#429) — so a false sentence there is the one claim in this repository
+    that ships without ever being checked again (human ruling 2026-08-20,
+    #460). Its route is `defect`, never `observation`.
 
     Read, in this order: CLAUDE.md in your worktree; `gh issue view <N>` including
     every comment, and its close audit in particular; `git show <SHA>`; then the
