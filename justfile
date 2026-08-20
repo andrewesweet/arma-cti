@@ -283,17 +283,25 @@ probe-contract:
 #   just mutation --record                 measure each in-scope module and write its rate
 #                                          into the ratchet baseline (#244), then exit 0
 #
+# A second rung reads the same diff the other way round (#370). A landing that
+# introduces `tools/x.py` with no `tests/unit/test_x.py` in the diff selects
+# nothing, so nothing above it ever runs and the gate goes green on a module it
+# has never looked at. That is a red carrying the class `no_test_module`, and it
+# asks about modules a landing *introduces* rather than ones it edits — an edit
+# keeps whatever test module the file always had.
+#
 # There is no flag that lowers the floor in `just fast`, and no marker a test
-# file can carry to excuse itself. The one escape is `NO_PYTHON_SUBJECT` in
-# `tools/mutation_smoke.py` — a named module with its reason beside it, visible
-# in the diff — for the modules whose subject is a shell script or an authored
-# document rather than Python.
+# file can carry to excuse itself. The escapes are two named lists in
+# `tools/mutation_smoke.py` — `NO_MUTABLE_SUBJECT` for a test module whose
+# subject is a shell script or an authored document rather than Python, and
+# `NO_TEST_MODULE` for a product module introduced with no test module — each a
+# name with its reason beside it, visible in the diff.
 #
 # The floor is a per-module ratchet (#244): a module reds when it falls below
 # its own recorded rate in `tools/mutation-baseline.json`, not just the global
 # floor. The baseline ships empty, so nothing moves until `--record` measures a
 # module; `--record` raises a row on stronger tests and never lowers one silently
-# — lowering is a hand-edit, in the diff, like `NO_PYTHON_SUBJECT`.
+# — lowering is a hand-edit, in the diff, like `NO_MUTABLE_SUBJECT`.
 mutation *args:
     uv run python tools/mutation_smoke.py {{ args }}
 

@@ -891,6 +891,183 @@ def test_a_change_to_something_that_is_not_a_test_is_not_in_scope(tmp_path: Path
     assert smoke_tool.in_scope(tmp_path, "main") == []
 
 
+# --- the selection rung: a module nothing was written for (#370) --------------
+
+
+def _branch_and_commit(root: Path) -> None:
+    subprocess.run(["git", "checkout", "-q", "-b", "work"], cwd=root, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    subprocess.run(["git", "commit", "-qm", "work"], cwd=root, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+
+
+def test_an_untracked_new_module_is_introduced(tmp_path: Path) -> None:
+    _repo(tmp_path)
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "tools" / "new.py").write_text("x = 1\n")
+    assert smoke_tool.added(tmp_path, "main") == ["tools/new.py"]
+
+
+def test_a_committed_new_module_is_introduced(tmp_path: Path) -> None:
+    # The other half of the diff: what `tools/land.py` will push, rather than
+    # what an agent has loose in the tree while running `just fast`.
+    _repo(tmp_path)
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "tools" / "new.py").write_text("x = 1\n")
+    _branch_and_commit(tmp_path)
+    assert smoke_tool.added(tmp_path, "main") == ["tools/new.py"]
+
+
+def test_an_edited_module_is_not_introduced(tmp_path: Path) -> None:
+    # The whole reason this rung asks about introductions and not about changes:
+    # an edit keeps whatever test module the file always had.
+    _repo(tmp_path)
+    (tmp_path / "tests" / "test_old.py").write_text("def test_a():\n    assert 1\n")
+    assert smoke_tool.added(tmp_path, "main") == []
+
+
+def test_a_renames_destination_is_introduced(tmp_path: Path) -> None:
+    _repo(tmp_path)
+    moved = ["git", "mv", "tests/test_old.py", "tests/test_new.py"]
+    subprocess.run(moved, cwd=tmp_path, check=True)  # noqa: S603 — argv is built from constants here
+    assert smoke_tool.added(tmp_path, "main") == ["tests/test_new.py"]
+
+
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        ("tools/new.py", True),
+        ("src/cti_daemon/new.py", True),
+        (".claude/hooks/deny-new.py", True),
+        ("src/cti_daemon/__init__.py", False),
+        ("tests/unit/test_new.py", False),
+        ("tools/new.json", False),
+        ("spike/new.sh", False),
+    ],
+)
+def test_what_counts_as_a_product_module(name: str, *, expected: bool) -> None:
+    assert smoke_tool.is_product_module(name) is expected
+
+
+def test_a_new_module_no_verdict_measured_is_unmeasured() -> None:
+    assert smoke_tool.unmeasured(["tools/new.py"], set()) == ["tools/new.py"]
+
+
+def test_a_new_module_a_verdict_planted_in_is_measured() -> None:
+    assert smoke_tool.unmeasured(["tools/new.py"], {"tools/new.py"}) == []
+
+
+def test_a_test_module_named_after_it_proves_nothing_when_the_run_measured_elsewhere() -> None:
+    # #370: `tests/unit/test_new_cases.py` whose tests exercise only existing
+    # code selects that other file as its subject, and the name alone used to
+    # clear this check while no mutant was ever planted in the new module.
+    assert smoke_tool.unmeasured(["tools/new.py"], {"src/cti_daemon/daemon.py"}) == ["tools/new.py"]
+
+
+def test_the_escape_problems_name_the_list_and_the_entry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/new.py": "   "})
+    monkeypatch.setattr(smoke_tool, "NO_MUTABLE_SUBJECT", {"tests/unit/test_x.py": ""})
+    joined = "\n".join(smoke_tool.escape_problems())
+    assert "blank_escape_reason: NO_TEST_MODULE[tools/new.py]" in joined
+    assert "blank_escape_reason: NO_MUTABLE_SUBJECT[tests/unit/test_x.py]" in joined
+
+
+def test_argued_escapes_are_not_problems(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/new.py": "because"})
+    assert smoke_tool.escape_problems() == []
+
+
+def test_a_blank_reason_refuses_the_gate_before_anything_runs(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    # No repo is staged: the refusal fires before the tree is read at all.
+    monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/new.py": ""})
+    assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 2
+    assert "blank_escape_reason: NO_TEST_MODULE[tools/new.py]" in capsys.readouterr().err
+
+
+def test_something_that_is_not_a_product_module_is_never_unmeasured() -> None:
+    assert smoke_tool.unmeasured(["docs/note.md", "spike/new.sh"], []) == []
+
+
+def test_the_named_list_excuses_a_module(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/new.py": "because"})
+    assert smoke_tool.unmeasured(["tools/new.py"], []) == []
+
+
+def test_the_selection_report_names_the_class_and_both_remedies(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/excused.py": "reads a document"})
+    smoke_tool._report_selection(["tools/excused.py", "tools/new.py"], ["tools/new.py"])  # noqa: SLF001 — this module's own private half is what is under test
+    out = capsys.readouterr().out
+    assert "-- tools/excused.py exempt: reads a document" in out
+    assert "RED tools/new.py no_test_module:" in out
+    assert "tests/unit/test_new.py" in out
+    assert "NO_TEST_MODULE" in out
+
+
+def test_a_new_module_with_no_test_module_reds_the_gate(tmp_path: Path, capsys) -> None:  # noqa: ANN001 — pytest's own fixture type adds nothing here
+    # The #324 shape end to end: before this rung the same tree printed "nothing
+    # added or changed" and exited 0.
+    _repo(tmp_path)
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "tools" / "new.py").write_text("x = 1\n")
+    assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 1
+    assert "RED tools/new.py no_test_module:" in capsys.readouterr().out
+
+
+def test_the_named_list_clears_the_gate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(smoke_tool, "NO_TEST_MODULE", {"tools/new.py": "because"})
+    _repo(tmp_path)
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "tools" / "new.py").write_text("x = 1\n")
+    assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 0
+
+
+def test_the_survey_reports_an_unmeasured_module_and_still_exits_zero(
+    tmp_path: Path,
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    _repo(tmp_path)
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "tools" / "new.py").write_text("x = 1\n")
+    assert smoke_tool.main(["--root", str(tmp_path), "--base", "main", "--report"]) == 0
+    assert "RED tools/new.py no_test_module:" in capsys.readouterr().out
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_a_test_module_that_exercises_other_code_does_not_clear_the_new_module(
+    tmp_path: Path,
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    # #370's critical finding, end to end. The diff introduces `tools/new.py`
+    # beside `tests/test_new_cases.py`, whose name used to be enough: the check
+    # matched a filename and never asked what the run measured. The tests
+    # execute only the pre-existing subject, so the smoke plants every mutant
+    # there and `tools/new.py` must still red.
+    _repo(tmp_path)
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "other.py").write_text(textwrap.dedent(SUBJECT).lstrip(), encoding="utf-8")
+    subprocess.run(["git", "add", "-A"], cwd=tmp_path, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    subprocess.run(["git", "commit", "-qm", "subject"], cwd=tmp_path, check=True)  # noqa: S607 — git is resolved off PATH, as everywhere in tools/
+    (tmp_path / "tools").mkdir()
+    (tmp_path / "tools" / "new.py").write_text("y = 2\n")
+    (tmp_path / "tests" / "test_new_cases.py").write_text(
+        textwrap.dedent(SOUND_TESTS)
+        .lstrip()
+        .replace("import subject", "import other")
+        .replace("subject.toll", "other.toll"),
+        encoding="utf-8",
+    )
+    assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 1
+    assert "RED tools/new.py no_test_module:" in capsys.readouterr().out
+
+
 # --- in-place safety --------------------------------------------------------
 
 
