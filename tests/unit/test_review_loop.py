@@ -1117,26 +1117,31 @@ NETWORK_SECOND_WORDS: Final = {
 }
 
 # Git's global options sit before the subcommand and carry their value in the next
-# argv slot (`-C path`) or glued (`-Cpath`, `--git-dir=path`). A trigger keyed on
-# `args[0]` blessed every call that hid its verb behind one of these (#434).
+# argv slot (`-C path`) or glued (`--git-dir=path`); git rejects glued shorts, so
+# `-Cpath` never parses. A trigger keyed on `args[0]` blessed every call that hid
+# its verb behind one of these (#434), and the value-carrying ones move where git
+# reads config — so the guard keeps them as a context it reads *through*, never an
+# obstacle it steps past to find the verb and then drops (#434 round 2, Medium 1).
 _GLOBAL_OPTS_WITH_VALUE: Final = frozenset(
     {"-C", "-c", "--git-dir", "--work-tree", "--namespace", "--exec-path", "--super-prefix"}
 )
 
 
-def _past_globals(args: tuple[str, ...]) -> tuple[str, ...]:
-    """Return the argv from its subcommand on: every leading global option consumed."""
+def _split_globals(args: tuple[str, ...]) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Split an argv into its leading global options and the subcommand that follows."""
+    context: list[str] = []
     index = 0
     while index < len(args):
         word = args[index]
         if word == "--" or not word.startswith("-"):
-            return args[index:]
-        glued = word.startswith("--") and "=" in word
-        if not glued and word in _GLOBAL_OPTS_WITH_VALUE:
+            return tuple(context), args[index:]
+        if word in _GLOBAL_OPTS_WITH_VALUE:
+            context.extend(args[index : index + 2])
             index += 2
         else:
+            context.append(word)
             index += 1
-    return ()
+    return tuple(context), ()
 
 
 def _network_shaped(command: tuple[str, ...]) -> bool:
@@ -1157,51 +1162,127 @@ def _network_shaped(command: tuple[str, ...]) -> bool:
     )
 
 
-def _looks_like_location(token: str, remotes: frozenset[str]) -> bool:
-    """Whether a bare argv token names a configured remote or spells a dialled location."""
-    if token in remotes or "://" in token or token.startswith(("/", "./", "../")):
-        return True
-    host, colon, _ = token.partition(":")
-    return bool(colon) and "." in host  # scp-style `host.xz:path`; `HEAD:refs/heads/x` is not
+def _context_config(
+    git_call: Callable[..., str], context: tuple[str, ...], cwd: Path, *operands: str
+) -> str:
+    """One `git config` read in the command's own context: its globals passed verbatim.
+
+    `git -C <repo> config --get <key>` reads the repository the dialling command
+    will read, `--git-dir` likewise, and a `-c k=v` override shows in `--get`
+    where `remote get-url` ignores it (measured on this box for #434 round 2).
+    `check=False` throughout: a clone's cwd is often no repository, and an
+    unreadable config answers "nothing dialled by name" rather than an error.
+    """
+    return git_call(*context, "config", *operands, cwd=cwd, check=False).strip()
 
 
-def _remote_location(git_call: Callable[..., str], cwd: Path, name: str, *, push: bool) -> str:
-    """Return the location a remote name dials; the token itself when unconfigured.
+def _dialled_url(
+    git_call: Callable[..., str], context: tuple[str, ...], cwd: Path, name: str, *, push: bool
+) -> str:
+    """Return the location `name` dials in this context; the token itself when unconfigured.
 
-    `push` reads `pushurl` first, because a push to a remote carrying one dials it and
-    `git remote get-url` without `--push` answers the fetch URL — the proxy #434 was
-    filed over. Every read here is config-only: the guard never dials to decide.
+    A push reads `pushurl` first because a push to a remote carrying one dials it
+    and `git remote get-url` without `--push` answers the fetch URL — the proxy
+    #434 was filed over. An unconfigured token is itself what git dials —
+    `fetch <url>`, `fetch <path>` and `fetch <host:path>` all dial the token — so
+    no shape heuristic stands between a token and the check (#434 round 2, Medium
+    2: the dot-in-host rule was one more token test).
     """
     keys = ("remote.{0}.pushurl", "remote.{0}.url") if push else ("remote.{0}.url",)
     for key in keys:
-        url = git_call("config", "--get", key.format(name), cwd=cwd, check=False).strip()
+        url = _context_config(git_call, context, cwd, "--get", key.format(name))
         if url:
             return url
     return name
 
 
-def _argv_candidates(
-    git_call: Callable[..., str], command: tuple[str, ...], cwd: Path, remotes: frozenset[str]
+def _all_remote_urls(
+    git_call: Callable[..., str], context: tuple[str, ...], cwd: Path
 ) -> list[str]:
-    """Return every location the argv itself names, options skipped.
+    """Every configured fetch URL in this context — what `remote update` and `--all` dial."""
+    listed = _context_config(git_call, context, cwd, "--get-regexp", r"^remote\..*\.url$")
+    return [line.split(maxsplit=1)[1] for line in listed.splitlines() if line.split()]
 
-    `archive --remote`'s value is read apart and glued, and a `submodule update`'s
-    dial targets are the URLs `.gitmodules` carries, which are not remote config.
+
+def _default_remote(
+    git_call: Callable[..., str], context: tuple[str, ...], cwd: Path, *, push: bool
+) -> tuple[str, ...]:
+    """Return the remote a verb with none in its argv dials, from git's documented order.
+
+    A push's ladder is `branch.<name>.pushRemote`, then `remote.pushDefault`, then
+    `branch.<name>.remote`, then `origin` — measured on this box against local
+    scratch remotes before being written, because the first guard read only the
+    third and fourth rungs (#434 round 2, Medium 2).
     """
+    branch = git_call(*context, "rev-parse", "--abbrev-ref", "HEAD", cwd=cwd, check=False).strip()
+    if push:
+        keys = (f"branch.{branch}.pushRemote", "remote.pushDefault", f"branch.{branch}.remote")
+    else:
+        keys = (f"branch.{branch}.remote",)
+    for key in keys:
+        name = _context_config(git_call, context, cwd, "--get", key)
+        if name:
+            return (name,)
+    return ("origin",)
+
+
+def _repository_tokens(command: tuple[str, ...]) -> tuple[str, ...]:
+    """Return every token the argv names as the thing dialled, options skipped.
+
+    The repository is the first non-option word — refspecs follow it, so `fetch
+    origin main` names `origin` and never treats `main` as a location. `archive
+    --remote` is read apart in both spellings, over the whole argv: the previous
+    slice arithmetic read the option's own word back as its value (#434 round 2,
+    Low 3). `remote update|show|prune` names every remote after its second word.
+    """
+    if command[0] == "archive":
+        values: list[str] = []
+        for index in range(1, len(command)):
+            if command[index] == "--remote" and index + 1 < len(command):
+                values.append(command[index + 1])
+            elif command[index].startswith("--remote="):
+                values.append(command[index].partition("=")[2])
+        return tuple(values)
+    if command[0] == "remote":
+        return tuple(word for word in command[2:] if not word.startswith("-"))
+    for word in command[1:]:
+        if not word.startswith("-"):
+            return (word,)
+    return ()
+
+
+def _dialled_locations(
+    git_call: Callable[..., str], context: tuple[str, ...], command: tuple[str, ...], cwd: Path
+) -> tuple[str, ...]:
+    """Return every remote location this argv will dial, in the context it will dial it.
+
+    The remedy half of #434, whose defect was the sixth instance of a check
+    comparing a token rather than the thing — and #434 round 2's finding was that
+    the remedy's own heuristics were instances seven: config read from the cwd
+    the globals had moved away from, remote selection paths only a shape rule
+    covered. Now every read runs through the command's own global options, the
+    repository is the first non-option word resolved by config alone, and the
+    implicit defaults follow git's documented ladders. Two limits are stated
+    rather than papered over, both refusing: an `url.*.insteadOf` rewrite dials a
+    location no config read answers, so any rewrite in the context's config
+    refuses the call; and an option carrying its value as a separate word before
+    the repository (`--upload-pack cmd`) would shadow the repository token — none
+    is reachable from this module, and a shadowed token that resolves anywhere
+    but scratch refuses rather than blesses.
+    """
+    verb = command[0]
+    push = verb == "push"
+    rewrites = _context_config(git_call, context, cwd, "--get-regexp", r"^url\.")
+    if any(
+        line.split(maxsplit=1)[0].rsplit(".", 1)[-1].lower() in ("insteadof", "pushinsteadof")
+        for line in rewrites.splitlines()
+        if line.split()
+    ):
+        return ()  # a rewrite the config reads will not follow: a dial the guard cannot bless
     candidates: list[str] = []
-    for index, word in enumerate(command[1:]):
-        if word == "--remote" and index + 1 < len(command):
-            candidates.append(command[index + 1])
-            continue
-        if word.startswith("--remote="):
-            candidates.append(word.partition("=")[2])
-            continue
-        if word.startswith("-"):
-            continue
-        if _looks_like_location(word, remotes):
-            candidates.append(word)
-    if command[0] == "submodule":
+    if verb == "submodule":
         listed = git_call(
+            *context,
             "config",
             "--file",
             ".gitmodules",
@@ -1210,41 +1291,22 @@ def _argv_candidates(
             cwd=cwd,
             check=False,
         )
-        candidates.extend(line.split(maxsplit=1)[1] for line in listed.splitlines() if line.split())
-    return candidates
-
-
-def _dialled_locations(
-    git_call: Callable[..., str], command: tuple[str, ...], cwd: Path
-) -> tuple[str, ...]:
-    """Return every remote location this argv will dial, from the argv and the config.
-
-    The remedy half of #434, whose defect was the sixth instance of a check comparing
-    a token rather than the thing: `fetch <url>` dials the URL in the argv while the
-    cwd's `origin` is the scratch clone, a `push` dials a differing `pushurl`, and a
-    `clone` is usually run from a directory that is no repository at all. Candidates
-    come from the argv first, and only a verb that dials *implicitly* falls back to
-    its configured default remote, derived from the branch's config rather than
-    assumed to be `origin`.
-    """
-    verb = command[0]
-    push = verb == "push"
-    # `check=False` throughout: a clone's cwd is often no repository, and an
-    # unreadable config answers "nothing dialled by name" rather than an error.
-    remotes = frozenset(git_call("remote", cwd=cwd, check=False).split())
-    candidates = _argv_candidates(git_call, command, cwd, remotes)
-    if not candidates and verb not in ("clone", "archive"):
-        branch = git_call("rev-parse", "--abbrev-ref", "HEAD", cwd=cwd, check=False).strip()
-        candidates.append(
-            git_call("config", "--get", f"branch.{branch}.remote", cwd=cwd, check=False).strip()
-            or "origin"
-        )
-        if verb == "remote":
-            # `remote update` with no name dials every remote with a fetch refspec.
-            candidates.extend(sorted(remotes))
+        candidates = [line.split(maxsplit=1)[1] for line in listed.splitlines() if line.split()]
+    elif verb in ("fetch", "pull") and any(
+        word in ("--all", "-a") for word in command[1:] if word.startswith("-")
+    ):
+        candidates = _all_remote_urls(git_call, context, cwd)
+    else:
+        tokens = _repository_tokens(command)
+        if tokens:
+            candidates = list(tokens)
+        elif verb == "remote":
+            candidates = _all_remote_urls(git_call, context, cwd)
+        elif verb not in ("clone", "archive"):
+            candidates = list(_default_remote(git_call, context, cwd, push=push))
     locations: list[str] = []
     for name in candidates:
-        location = _remote_location(git_call, cwd, name, push=push)
+        location = _dialled_url(git_call, context, cwd, name, push=push)
         if location not in locations:
             locations.append(location)
     return tuple(locations)
@@ -1255,16 +1317,16 @@ def _assert_scratch_dial(
 ) -> None:
     """Refuse a network-shaped git read that dials anything beyond this test's scratch.
 
-    Asserts on what the call will dial — argv and config together, per
-    `_dialled_locations` — never on the cwd's configured `origin`, which is a proxy
-    that passes while the call dials elsewhere (#434). A network-shaped argv the
-    guard cannot derive any location from refuses too: a dial it cannot read is a
-    dial it cannot bless.
+    Asserts on what the call will dial — argv, config, and the command's own
+    global context together, per `_dialled_locations` — never on the cwd's
+    configured `origin`, which is a proxy that passes while the call dials
+    elsewhere (#434). A network-shaped argv the guard cannot derive any location
+    from refuses too: a dial it cannot read is a dial it cannot bless.
     """
-    command = _past_globals(args)
+    context, command = _split_globals(args)
     if not _network_shaped(command):
         return
-    locations = _dialled_locations(git_call, command, cwd)
+    locations = _dialled_locations(git_call, context, command, cwd)
     assert locations, (
         "a review-loop test reached beyond its scratch origin: cannot tell what "
         f"`git {' '.join(args)}` would dial, and a dial the guard cannot read is one "
@@ -1290,6 +1352,10 @@ def every_git_read_stays_scratch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     blessed remote is what the call will dial, derived from its argv and the config
     together — the cwd's configured `origin` is a proxy that passes while `fetch <url>`,
     a differing `pushurl` or a `clone` from outside any repository dials elsewhere.
+    Round 2 moved the derivation into the command's own context: the global options
+    are the context the guard's reads run through, not an obstacle stepped past to
+    find the verb (#434 Medium 1), and a shape the guard cannot resolve refuses rather
+    than falling back to any default remote.
 
     The name says git because that is the whole boundary: the walk's one HTTP seam —
     `dispatch.lane_bar`'s quota read — is bounded by its own deadline and pinned at the
@@ -1298,7 +1364,7 @@ def every_git_read_stays_scratch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     git_call, remote_sha = review_loop.git, review_loop.remote_ref_sha
 
     def bounded_git(*args: str, cwd: Path, check: bool = True, timeout: float | None = None) -> str:
-        if _network_shaped(_past_globals(args)):
+        if _network_shaped(_split_globals(args)[1]):
             _assert_scratch_dial(git_call, args, cwd, tmp_path)
             assert timeout == review_loop.ROUTING_READ_TIMEOUT_S, (
                 f"a network-shaped git read ({' '.join(args)}) lost its deadline"
@@ -2427,18 +2493,6 @@ def test_the_scratch_origin_guard_fires_on_a_url_shaped_origin_under_chdir(
         _assert_scratch_origin(review_loop.git, exchanged, tmp_path)
 
 
-def test_every_network_shaped_verb_meets_the_scratch_guard(exchanged: Path) -> None:
-    """`push` is network-shaped too: the wrapper's trigger set covers every verb that dials.
-
-    A verb outside the set is a dial the guard never blesses. The foreign origin is
-    URL-shaped and pointed at a port nothing answers, so a miss refuses fast rather
-    than reaching anything — the red this test exists to catch stays off the network.
-    """
-    _git("remote", "set-url", "origin", "https://127.0.0.1:9/never.git", cwd=exchanged)
-    with pytest.raises(AssertionError, match="scratch origin"):
-        review_loop.git("push", "origin", "main", cwd=exchanged)
-
-
 def _beyond(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Return a bare repository outside this test's `tmp_path`, which the guard must refuse."""
     beyond = tmp_path_factory.mktemp("beyond") / "origin.git"
@@ -2446,110 +2500,190 @@ def _beyond(tmp_path_factory: pytest.TempPathFactory) -> Path:
     return beyond
 
 
-def test_the_scratch_guard_blesses_what_the_argv_dials_not_the_cwd_origin(
-    tmp_path_factory: pytest.TempPathFactory, exchanged: Path
-) -> None:
-    """A fetch naming a remote in the argv refuses even though the cwd's origin is scratch (#434).
-
-    The old guard read `git remote get-url origin` for the call's cwd and blessed that
-    — a proxy. Here the scratch clone's origin is exactly what it should be, so the
-    proxy passed while the fetch dialled the URL in the argv. The timeout is stated so
-    the old wrapper's deadline assertion stays quiet and the remote assertion is the
-    only thing under test. Red on the proxy, green on the derivation.
-    """
-    with pytest.raises(AssertionError, match="scratch origin"):
-        review_loop.git(
-            "fetch",
-            str(_beyond(tmp_path_factory)),
-            "main",
-            cwd=exchanged,
-            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
-        )
+def _foreign(tmp_path_factory: pytest.TempPathFactory, beyond: Path) -> Path:
+    """Return a clone whose `origin` dials `beyond` — the context a `-C` or `--git-dir` moves to."""
+    foreign = tmp_path_factory.mktemp("foreign") / "repo"
+    _git("clone", str(beyond), str(foreign), cwd=foreign.parent)
+    return foreign
 
 
-def test_the_trigger_sees_a_verb_behind_a_leading_global_option(
-    tmp_path_factory: pytest.TempPathFactory, exchanged: Path
-) -> None:
-    """`git -C <tree> fetch <beyond>` is a fetch, not a `-C` invocation of nothing (#434).
-
-    The trigger keyed on `args[0]`, so a leading global option hid the verb from it
-    entirely.
-    """
-    with pytest.raises(AssertionError, match="scratch origin"):
-        review_loop.git(
-            "-C",
-            str(exchanged),
-            "fetch",
-            str(_beyond(tmp_path_factory)),
-            "main",
-            cwd=exchanged,
-            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
-        )
+def _preserve(repo: Path, beyond: Path, name: str = "preserved") -> None:
+    """Configure a second remote on `repo` dialling `beyond`, outside the scratch tree."""
+    _git("remote", "add", name, str(beyond), cwd=repo)
 
 
-def test_the_trigger_sees_the_two_word_remote_and_submodule_verbs(
-    tmp_path_factory: pytest.TempPathFactory, exchanged: Path
-) -> None:
-    """`remote update <name>` and `submodule update` dial; the trigger reads both (#434).
-
-    Keyed on the first word alone, neither reached the guard at all — `remote` and
-    `submodule` are not network verbs — so each drove a dial the guard never blessed.
-    The two name their remotes where the cwd's `origin` says nothing: a second
-    configured remote, and a submodule URL, which is `.gitmodules` config rather than
-    remote config.
-    """
-    _git("remote", "add", "preserved", str(_beyond(tmp_path_factory)), cwd=exchanged)
-    with pytest.raises(AssertionError, match="scratch origin"):
-        review_loop.git(
-            "remote",
-            "update",
-            "preserved",
-            cwd=exchanged,
-            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
-        )
-    (exchanged / ".gitmodules").write_text(
-        '[submodule "never"]\n\tpath = never\n\turl = https://127.0.0.1:9/never.git\n',
-        encoding="utf-8",
-    )
-    with pytest.raises(AssertionError, match="scratch origin"):
-        review_loop.git(
-            "submodule",
-            "update",
-            "--init",
-            cwd=exchanged,
-            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
-        )
-
-
-def test_the_trigger_sees_archive_remote(exchanged: Path) -> None:
-    """`archive --remote=<repo>` dials the repository the option names (#434)."""
-    with pytest.raises(AssertionError, match="scratch origin"):
-        review_loop.git(
+# One arrangement per shape the old proxies blessed — the #425 cwd-origin read, and
+# the #434 first guard's shape heuristics (#434 round 2). Each param is one
+# assertion, so a red names the shape that passed rather than the function that
+# contained it: the previous comparison quoted `5 failed` test *functions*, and the
+# combined remote/submodule one stopped at its first unmet raise, so no run had
+# proven every arrangement (#434 round 2, Low 4). Every dialled target is a local
+# bare repository, a reserved-unroutable name, or a loopback port nothing answers,
+# so a guard that blesses the call runs it without touching anything real.
+ARRANGEMENTS: Final = (
+    pytest.param(
+        lambda _repo, beyond, _foreign: ("fetch", str(beyond), "main"), id="fetch_argv_path"
+    ),
+    pytest.param(
+        lambda _repo, beyond, _foreign: ("ls-remote", str(beyond)), id="ls_remote_argv_path"
+    ),
+    pytest.param(lambda _repo, beyond, _foreign: ("pull", str(beyond)), id="pull_argv_path"),
+    pytest.param(lambda _repo, beyond, _foreign: ("clone", str(beyond)), id="clone_argv_path"),
+    pytest.param(
+        lambda repo, beyond, _foreign: (_preserve(repo, beyond), ("push", str(beyond), "main"))[1],
+        id="push_argv_path",
+    ),
+    pytest.param(
+        lambda _repo, _beyond, _foreign: ("fetch", "never.invalid:/repo.git"),
+        id="fetch_scp_endpoint",
+    ),
+    pytest.param(
+        lambda _repo, _beyond, _foreign: ("fetch", "user@never.invalid:/repo.git"),
+        id="fetch_scp_user_endpoint",
+    ),
+    pytest.param(
+        lambda _repo, _beyond, _foreign: ("fetch", "neverhost9x:/repo.git"),
+        id="fetch_scp_dotless_endpoint",
+    ),
+    pytest.param(
+        lambda _repo, _beyond, _foreign: ("fetch", "https://127.0.0.1:9/never.git"),
+        id="fetch_argv_url",
+    ),
+    pytest.param(
+        lambda repo, beyond, _foreign: (
+            _git("config", "remote.origin.pushurl", str(beyond), cwd=repo),
+            ("push", "origin", "main"),
+        )[1],
+        id="push_pushurl",
+    ),
+    pytest.param(
+        lambda repo, beyond, _foreign: (
+            _preserve(repo, beyond),
+            _git("config", "branch.main.pushRemote", "preserved", cwd=repo),
+            ("push",),
+        )[2],
+        id="bare_push_branch_push_remote",
+    ),
+    pytest.param(
+        lambda repo, beyond, _foreign: (
+            _preserve(repo, beyond),
+            _git("config", "remote.pushDefault", "preserved", cwd=repo),
+            ("push",),
+        )[2],
+        id="bare_push_push_default",
+    ),
+    pytest.param(
+        lambda repo, beyond, _foreign: (
+            _preserve(repo, beyond),
+            _git("config", "branch.main.remote", "preserved", cwd=repo),
+            ("fetch",),
+        )[2],
+        id="bare_fetch_branch_remote",
+    ),
+    pytest.param(
+        lambda repo, beyond, _foreign: (_preserve(repo, beyond), ("fetch", "--all"))[1],
+        id="fetch_all",
+    ),
+    pytest.param(
+        lambda repo, beyond, _foreign: (_preserve(repo, beyond), ("remote", "update", "preserved"))[
+            1
+        ],
+        id="remote_update_named",
+    ),
+    pytest.param(
+        lambda repo, beyond, _foreign: (_preserve(repo, beyond), ("remote", "update"))[1],
+        id="remote_update_all",
+    ),
+    pytest.param(
+        lambda repo, _beyond, _foreign: (
+            (repo / ".gitmodules").write_text(
+                '[submodule "never"]\n\tpath = never\n\turl = https://127.0.0.1:9/never.git\n',
+                encoding="utf-8",
+            ),
+            ("submodule", "update", "--init"),
+        )[1],
+        id="submodule_update",
+    ),
+    pytest.param(
+        lambda _repo, _beyond, _foreign: (
             "archive",
             "--remote=https://127.0.0.1:9/never.git",
             "HEAD",
-            cwd=exchanged,
-            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
-        )
+        ),
+        id="archive_remote_glued",
+    ),
+    pytest.param(
+        lambda _repo, _beyond, _foreign: (
+            "archive",
+            "--remote",
+            "https://127.0.0.1:9/never.git",
+            "HEAD",
+        ),
+        id="archive_remote_split",
+    ),
+    pytest.param(
+        lambda _repo, _beyond, foreign: ("-C", str(foreign), "fetch", "origin"),
+        id="global_dash_c_reads_the_foreign_config",
+    ),
+    pytest.param(
+        lambda _repo, beyond, _foreign: ("-c", f"remote.origin.url={beyond}", "fetch", "origin"),
+        id="global_lowercase_c_overrides_the_dialled_url",
+    ),
+    pytest.param(
+        lambda _repo, _beyond, foreign: (f"--git-dir={foreign}/.git", "fetch", "origin"),
+        id="global_git_dir_reads_the_foreign_config",
+    ),
+)
 
 
-def test_a_push_dials_the_pushurl_not_the_fetch_url(
-    tmp_path_factory: pytest.TempPathFactory, exchanged: Path
+@pytest.mark.parametrize("build", ARRANGEMENTS)
+def test_every_arrangement_the_old_guards_blessed_now_refuses(
+    tmp_path_factory: pytest.TempPathFactory,
+    exchanged: Path,
+    build: Callable[..., tuple[str, ...]],
 ) -> None:
-    """`git remote get-url` without `--push` answers the fetch URL; a push dials `pushurl` (#434).
+    """Each shape that passed a previous guard refuses now: argv, config and context derived.
 
-    The fetch URL here is the scratch origin, so the old proxy passed and the push
-    itself dialled the configured `pushurl` beyond `tmp_path`.
+    The timeout is stated so the deadline assertion stays quiet and the dialled
+    location is the only thing under test. Restoring either old guard runs this
+    table red per arrangement — the comparison this time proves each shape, not
+    each containing function (#434 round 2, Low 4).
     """
-    _git("config", "remote.origin.pushurl", str(_beyond(tmp_path_factory)), cwd=exchanged)
+    beyond = _beyond(tmp_path_factory)
+    foreign = _foreign(tmp_path_factory, beyond)
+    argv = build(exchanged, beyond, foreign)
     with pytest.raises(AssertionError, match="scratch origin"):
-        review_loop.git(
-            "push",
-            "origin",
-            "main",
-            cwd=exchanged,
-            timeout=review_loop.ROUTING_READ_TIMEOUT_S,
-        )
+        review_loop.git(*argv, cwd=exchanged, timeout=review_loop.ROUTING_READ_TIMEOUT_S)
+
+
+def test_the_guard_blesses_the_call_the_module_actually_makes(exchanged: Path) -> None:
+    """The production shape still passes: `fetch origin main` dials the scratch origin.
+
+    `escalate`'s two reads are exactly this shape, so the tightened derivation
+    must keep passing them through — green here rather than discovered by every
+    escalate test at once.
+    """
+    review_loop.git(
+        "fetch", "origin", "main", cwd=exchanged, timeout=review_loop.ROUTING_READ_TIMEOUT_S
+    )
+
+
+def test_a_split_archive_remote_dialling_scratch_is_read_not_rejected(exchanged: Path) -> None:
+    """`archive --remote <scratch>` in the split spelling passes: its value is read (#434 Low 3).
+
+    The first guard enumerated the argv from its second word but indexed the value
+    from the first, so the split spelling offered the option's own word as the
+    location and refused a legitimate call.
+    """
+    scratch = _git("remote", "get-url", "origin", cwd=exchanged).strip()
+    review_loop.git(
+        "archive",
+        "--remote",
+        scratch,
+        "HEAD",
+        cwd=exchanged,
+        timeout=review_loop.ROUTING_READ_TIMEOUT_S,
+    )
 
 
 def test_a_dry_run_terminus_posts_and_writes_nothing(tmp_path: Path) -> None:

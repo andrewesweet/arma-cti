@@ -9,14 +9,24 @@
   option (`-C`, `-c`, `--git-dir`) or a two-word subcommand (`remote update`, `remote show`,
   `submodule update`, `archive --remote`) escaped it entirely. Nothing reachable from `escalate`
   was exposed — its verbs all name `origin` — but the guard would have passed silently the moment
-  one stopped doing so. It now derives the dialled location from the argv and the config together:
-  global options are consumed before the verb is read, the two-word shapes are recognised, a bare
-  token naming a configured remote resolves through `remote.<name>.url` — through `pushurl` first
-  for a push — a `fetch <url>` checks the URL itself, a `submodule update` checks the URLs
-  `.gitmodules` carries, a verb dialling implicitly derives its default from the branch's config
-  rather than assuming `origin`, and a network-shaped argv no location can be derived from refuses
-  rather than bless. Five tests drive the arrangements that passed before, each red against the
-  old proxy.
+  one stopped doing so. Round 2 (the cross-lane review) rebuilt the derivation around git's own
+  resolution rather than heuristics standing in for it: the leading global options are kept as a
+  context the guard's own config reads run through — so `git -C <repo> fetch origin` and `git -c
+  remote.origin.url=<url> fetch origin` are checked against the repository and the override the
+  command itself will read, not the cwd's — the dialled repository is the first non-option word of
+  the argv (a token that names no configured remote *is* the location git dials, so scp-style and
+  URL tokens need no dot-in-host rule to be caught), a bare `push` walks git's documented ladder
+  (`branch.<name>.pushRemote`, `remote.pushDefault`, `branch.<name>.remote`, `origin` — measured
+  on this box before being written), `fetch --all` and a bare `remote update` check every
+  configured remote, `archive --remote` is read in both spellings (the split one was refused as a
+  non-absolute path — the option's own word, miscounted as its value), and what the guard cannot
+  resolve refuses: an `url.*.insteadOf` rewrite dials a location no config read answers, so any
+  rewrite in the context's config refuses the call rather than blessing the unrewritten URL. The
+  arrangement suite is parametrised one assertion per shape, and the before/after ran each of the
+  22 arrangements under both restored guards: the #425 guard blessed all 22, the round-1 #434 guard
+  blessed exactly the seven round 2 filed (the three global-option context shapes, the two bare-push
+  ladder rungs, `fetch --all`, and the dotless scp endpoint) and wrongly refused the legitimate
+  split `--remote` — so each red names its shape rather than a containing function.
 - **The last unbounded git reads of `origin` in the worktree, review-exchange and landing
   protocols carry the shared 60 s deadline (#434).** `just worktree add`, `done` and `restore`
   `fetch` under `worktree.REMOTE_READ_TIMEOUT_S`; `done`'s fetch is `check=False`, and an expiry
