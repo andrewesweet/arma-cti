@@ -1,6 +1,6 @@
 # Reducing the verification gate's wall clock
 
-Status: landed investigation. This record landed through #450; its adopted recommendations landed through #442 (`--dist worksteal`) and #446 (gate-duration recording, anchor/reporting and changelog fragment). #442 and #446 cite this record. #447 remains open but does not cite it. This document itself changes no gate.
+Status: landed investigation. This record landed through #450; #442 carried the adopted recommendation (`--dist worksteal`), and #442 and #446 both cite this record. #447 remains open but does not cite it. This document itself changes no gate.
 
 **Revised 2026-08-20** after the adversarial review on #442 (`d-20260820-044246-a8b21d`,
 opus/high). Corrections applied here: the headline ratio is a range rather than a number (§1.4),
@@ -662,8 +662,8 @@ they read only and are not proposed for landing.
 
 ## 6. What landed, and what remains
 
-This investigation landed through #450. Its adopted ordinary work landed through #442 and #446, both
-closed. #442 and #446 cite `docs/research/gate-wall-clock.md`; #447 remains open but does not cite
+This investigation landed through #450. Its adopted ordinary work landed through #442, which is
+closed. #442 and #446 are closed and cite `docs/research/gate-wall-clock.md`; #447 remains open but does not cite
 this record, although it uses figures from it without a provenance line. Splitting its standing by
 gate:
 
@@ -682,7 +682,7 @@ gate:
    until round two of the review found them here, in the one section that dictates the words a
    reader will find in `pyproject.toml`. Accepted in prose and not discharged in the artefact is
    the exact failure that finding names.)* Landed through #442.
-2. A changelog fragment under `changelog.d/`, category Changed, per ADR-0010. Landed through #446.
+2. A changelog fragment under `changelog.d/`, category Changed, per ADR-0010. Landed through #442.
 
 **Human sign-off, not adopted.**
 
