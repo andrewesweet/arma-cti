@@ -175,7 +175,8 @@ shrink the sample.
 never guessed at.** They leave `fast`'s window alongside the zero rows, so
 the recipe stands at `insufficient_sample` until five classified green runs
 exist: the same honest unknown a re-set anchor reads. `history` counts both
-kinds on its line, so a reader can see how much of the history the window is
+kinds among a recipe's green runs and names each on its line only when its
+count is nonzero, so a reader can see how much of the history the window is
 declining to use rather than inferring it from a shrunken median.
 
 **It only notices.** Nothing here refuses a dispatch, trips a breaker or blocks
