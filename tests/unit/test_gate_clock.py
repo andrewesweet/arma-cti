@@ -25,15 +25,24 @@ a deleted or misspelled recipe key is damage the file ships against, not an
 unset recipe, and a `set` timestamp bounds the window to the moment it names
 so a same-day re-set excludes the same morning's rows.
 
-#466's round pins the record's blind spot: a run that gave `just mutation` no
-subject skipped the one leg of either recipe whose cost the diff moves, and the
-row now carries that tier's own subject count — read by calling the tier's
-selection against a staged tree — rather than a docs label that would have had
-to call a product edit with no test module beside it a code run. What is
-asserted is the decision that count feeds: the cheap kind cannot hide a
+#466's round pins the record's blind spot: a run that gave `just mutation`
+nothing to work on skipped the one leg of either recipe whose cost the diff
+moves, and the row now carries that tier's own target count — read by calling
+the tier's selection against a staged tree — rather than a docs label that
+would have had to call a product edit with no test module beside it a code run.
+What is asserted is the decision that count feeds: the cheap kind cannot hide a
 slowdown in `fast`'s median (the false-negative direction the issue is about),
 `unit`'s window reads every kind because its legs price the whole tree, and the
 rows written before the count read as unclassified rather than guessed at.
+
+Round 2 of that pins the narrower form of the same bias: a target on
+`mutation_smoke.NO_MUTABLE_SUBJECT` is skipped before `smoke` is called, so it
+plants nothing and costs nothing, and counting it would have let a floor-priced
+run into `fast`'s window carrying a code run's count. The count is of targets
+the tier does work on, and the exempt case is asserted directly rather than
+assumed — the sibling divergences (a target that reaches `measure` and finds
+nothing to plant on, and one whose `measure` refuses) are paid for and red
+respectively, so neither reaches a green row cheaply.
 """
 
 from __future__ import annotations
@@ -50,6 +59,9 @@ if TYPE_CHECKING:
     import pytest
 
 gate_clock = load_tool("gate_clock")
+# The exempt list is read from the tier rather than restated here, so an entry
+# added or removed there moves the target count's test with it (#466 round 2).
+mutation_smoke = load_tool("mutation_smoke")
 
 # The post-#197 median the issue's day table is anchored to, and three of its
 # days: the shapes the 1.25x threshold was derived to separate.
@@ -76,7 +88,7 @@ def row(  # noqa: PLR0913, PLR0917 — the nine parameters are Record's own nine
     tests: int | None = 5022,
     load: float | None = 0.42,
     foreign: int | None = 0,
-    subjects: int | None = 2,
+    targets: int | None = 2,
 ) -> gate_clock.Record:
     """Return one finished gate run, arranged."""
     return gate_clock.Record(
@@ -88,7 +100,7 @@ def row(  # noqa: PLR0913, PLR0917 — the nine parameters are Record's own nine
         tests_collected=tests,
         load_1m=load,
         foreign_gate_processes=foreign,
-        mutation_subjects=subjects,
+        mutation_targets=targets,
     )
 
 
@@ -164,9 +176,9 @@ def fast_state(set_on: str = SET_ON) -> gate_clock.AnchorState:
     return anchor_state({"fast": ANCHOR_SECONDS}, {"fast": set_on})
 
 
-def fast_rows(walls: list[float], subjects: int | None) -> list[gate_clock.Record]:
-    """Return green `fast` runs at those walls, each carrying that subject count."""
-    return [row(recipe="fast", wall=wall, subjects=subjects) for wall in walls]
+def fast_rows(walls: list[float], targets: int | None) -> list[gate_clock.Record]:
+    """Return green `fast` runs at those walls, each carrying that target count."""
+    return [row(recipe="fast", wall=wall, targets=targets) for wall in walls]
 
 
 def fast_verdict_for(
@@ -689,8 +701,8 @@ def test_history_names_each_recipe_the_anchor_and_its_set_date(tmp_path: Path) -
     assert "no anchor set" in lines[1]
 
 
-def test_the_subject_count_is_the_tiers_own_selection_of_a_staged_tree(tmp_path: Path) -> None:
-    """What `just mutation` would plant against, asked of the tier rather than re-derived.
+def test_the_target_count_is_the_tiers_own_selection_of_a_staged_tree(tmp_path: Path) -> None:
+    """What `just mutation` would do work on, asked of the tier rather than re-derived.
 
     The fourth arrangement is the case a docs-only flag would have had to
     guess at: product code with no test module beside it. It counts zero
@@ -699,22 +711,40 @@ def test_the_subject_count_is_the_tiers_own_selection_of_a_staged_tree(tmp_path:
     """
     repo = stage_repo(tmp_path)
     lay_down(repo, "docs/note.md", "changelog.d/466-note.md")
-    assert gate_clock.read_mutation_subjects(repo) == 0
+    assert gate_clock.read_mutation_targets(repo) == 0
 
     lay_down(repo, "tests/unit/test_thing.py")
-    assert gate_clock.read_mutation_subjects(repo) == 1
+    assert gate_clock.read_mutation_targets(repo) == 1
 
-    lay_down(repo, "extension/src/lib.rs")  # the shim arm, counted as one subject
-    assert gate_clock.read_mutation_subjects(repo) == 2
+    lay_down(repo, "extension/src/lib.rs")  # the shim arm, counted as one target
+    assert gate_clock.read_mutation_targets(repo) == 2
 
     product_only = stage_repo(tmp_path, "product-only")
     lay_down(product_only, "src/cti_daemon/thing.py")
-    assert gate_clock.read_mutation_subjects(product_only) == 0
+    assert gate_clock.read_mutation_targets(product_only) == 0
+
+
+def test_an_exempt_target_plants_nothing_and_so_counts_as_nothing(tmp_path: Path) -> None:
+    """The narrower form of #466's bias: a floor-priced run wearing a code run's count.
+
+    `_judge` skips a `NO_MUTABLE_SUBJECT` target before calling `smoke`, so
+    that run plants nothing and pays nothing — two of the list's entries are
+    on it precisely because measuring them costs minutes. The exempt name is
+    taken from the tier rather than written here, so removing an entry there
+    moves this count with it.
+    """
+    exempt = next(iter(mutation_smoke.NO_MUTABLE_SUBJECT))
+    repo = stage_repo(tmp_path)
+    lay_down(repo, exempt)
+    assert gate_clock.read_mutation_targets(repo) == 0
+
+    lay_down(repo, "tests/unit/test_thing.py")
+    assert gate_clock.read_mutation_targets(repo) == 1
 
 
 def test_a_tree_git_cannot_be_asked_about_is_unclassified_not_zero(tmp_path: Path) -> None:
     """Zero would claim the tier had no work; only a run that was read can claim that."""
-    assert gate_clock.read_mutation_subjects(tmp_path / "nowhere") is None
+    assert gate_clock.read_mutation_targets(tmp_path / "nowhere") is None
 
 
 def test_cheap_rows_cannot_hide_a_slowdown_in_the_fast_median() -> None:
@@ -725,8 +755,8 @@ def test_cheap_rows_cannot_hide_a_slowdown_in_the_fast_median() -> None:
     without the filter this window reads healthy while five real runs are at
     1.38x the anchor.
     """
-    slow = fast_rows([ANCHOR_SECONDS * 1.38] * gate_clock.MIN_SAMPLE, subjects=2)
-    cheap = fast_rows([ANCHOR_SECONDS * 0.75] * gate_clock.MIN_SAMPLE, subjects=0)
+    slow = fast_rows([ANCHOR_SECONDS * 1.38] * gate_clock.MIN_SAMPLE, targets=2)
+    cheap = fast_rows([ANCHOR_SECONDS * 0.75] * gate_clock.MIN_SAMPLE, targets=0)
     assert fast_verdict_for(slow, fast_state()).reason == "slower"
     assert fast_verdict_for([*slow, *cheap], fast_state()).reason == "slower"
     unfiltered = gate_clock.median([one.wall_seconds for one in [*slow, *cheap]])
@@ -735,13 +765,13 @@ def test_cheap_rows_cannot_hide_a_slowdown_in_the_fast_median() -> None:
 
 def test_a_fast_window_of_only_cheap_rows_is_insufficient_not_healthy() -> None:
     """No comparable run is an unknown, and an unknown must not read as health."""
-    cheap = fast_rows([ANCHOR_SECONDS * 0.75] * gate_clock.MIN_SAMPLE, subjects=0)
+    cheap = fast_rows([ANCHOR_SECONDS * 0.75] * gate_clock.MIN_SAMPLE, targets=0)
     assert fast_verdict_for(cheap, fast_state()).reason == "insufficient_sample"
 
 
 def test_the_unit_window_reads_every_kind() -> None:
-    """`unit` carries no diff-scoped leg, so a zero-subject row is the same measurement."""
-    rows = [row(wall=ANCHOR_SECONDS, subjects=0) for _ in range(gate_clock.MIN_SAMPLE)]
+    """`unit` carries no diff-scoped leg, so a zero-target row is the same measurement."""
+    rows = [row(wall=ANCHOR_SECONDS, targets=0) for _ in range(gate_clock.MIN_SAMPLE)]
     assert verdict_for(rows, unit_state()).reason == "healthy"
 
 
@@ -766,7 +796,7 @@ def test_rows_written_before_the_count_stay_readable_and_leave_the_fast_window(
     )
     read_back = gate_clock.load_records(tmp_path)
     assert len(read_back) == gate_clock.MIN_SAMPLE
-    assert all(one.mutation_subjects is None for one in read_back)
+    assert all(one.mutation_targets is None for one in read_back)
     assert all(one.wall_seconds == 81.49 for one in read_back)
     assert gate_clock.assess(read_back, fast_state())[1].reason == "insufficient_sample"
 
@@ -774,14 +804,14 @@ def test_rows_written_before_the_count_stay_readable_and_leave_the_fast_window(
 def test_history_counts_the_kinds_and_medians_only_the_comparable_rows(tmp_path: Path) -> None:
     """The retro's read shows what the window declined, not only a median that shrank."""
     for wall in (150.0, 160.0, 170.0):
-        gate_clock.append_record(tmp_path, row(recipe="fast", wall=wall, subjects=2))
+        gate_clock.append_record(tmp_path, row(recipe="fast", wall=wall, targets=2))
     for _ in range(2):
-        gate_clock.append_record(tmp_path, row(recipe="fast", wall=81.0, subjects=0))
-    gate_clock.append_record(tmp_path, row(recipe="fast", wall=81.0, subjects=None))
+        gate_clock.append_record(tmp_path, row(recipe="fast", wall=81.0, targets=0))
+    gate_clock.append_record(tmp_path, row(recipe="fast", wall=81.0, targets=None))
     _unit_line, fast_line = gate_clock.history(tmp_path, fast_state())
     assert "6 green" in fast_line
-    assert "2 with no mutation subject" in fast_line
-    assert "1 predating the subject count" in fast_line
+    assert "2 with no mutation target" in fast_line
+    assert "1 predating the target count" in fast_line
     assert "median(last 3 green) 160s" in fast_line
     assert "span 150s to 170s" in fast_line
 
@@ -815,13 +845,13 @@ def test_a_run_over_docs_and_a_run_over_code_land_as_different_rows(
 
     lay_down(repo, "docs/note.md")
     assert gate_clock.main(run) == 0
-    assert "0 mutation subject(s)" in capsys.readouterr().out
+    assert "0 mutation target(s)" in capsys.readouterr().out
 
     lay_down(repo, "tests/unit/test_thing.py")
     assert gate_clock.main(run) == 0
-    assert "1 mutation subject(s)" in capsys.readouterr().out
+    assert "1 mutation target(s)" in capsys.readouterr().out
 
     docs_row, code_row = gate_clock.load_records(tmp_path)
-    assert docs_row.mutation_subjects == 0
-    assert code_row.mutation_subjects == 1
+    assert docs_row.mutation_targets == 0
+    assert code_row.mutation_targets == 1
     assert docs_row.wall_seconds == code_row.wall_seconds

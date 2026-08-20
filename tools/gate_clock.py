@@ -107,27 +107,55 @@ red admitted to the median flatters it. Red rows are still recorded, with their
 status, because the history is the point of recording; they are excluded from
 every comparison.
 
-**A run whose diff gave the mutation tier no subject is a different
+**A run whose diff gave the mutation tier nothing to work on is a different
 measurement, and the row records which (#466).** Every other leg of both
 recipes prices the whole tree whatever the diff holds — `ruff check .`,
 `ty check`, `hemtt check -p -e`, `gitleaks dir .`, the whole pytest suite —
 so `just mutation` is the one leg whose cost the diff moves, and `just fast`
-carries it while `just unit` does not. `mutation_subjects` is therefore that
-tier's own subject count and nothing else: the test modules
-`tools/mutation_smoke.py`'s `in_scope` selects, plus its Rust arm as one,
-obtained at record time by calling those functions against the tree the run
-just gated. No flag declares it, ever.
+carries it while `just unit` does not. `mutation_targets` is therefore the
+count of what that tier will do work on: the test modules
+`tools/mutation_smoke.py`'s `in_scope` selects, **minus** the ones its
+`NO_MUTABLE_SUBJECT` list excuses, plus its Rust arm as one — obtained at
+record time by asking those names of the tier against the tree the run just
+gated. No flag declares it, ever.
+
+**Targets selected, not mutants planted, and the noun is deliberate.** What
+the comparison cares about is the expensive half, which is planting; how many
+mutants a run planted is decided inside a run this recorder cannot see and
+could not re-derive without paying the tier's cost a second time. What it can
+read cheaply is the selection, and selecting is a fair stand-in for planting
+exactly where selecting a target commits the tier to work: `smoke` runs one
+coverage-instrumented pytest pass of the module (`measure`) before it can know
+whether there is anything to plant on, so a target that plants nothing has
+already been paid for. The word is the tier's own — `mutation_smoke`'s
+`targets` are the test modules a run smokes, while its `subject` is the
+product module a target is measured against, a different noun and the one this
+field's first draft wrongly borrowed.
+
+**The exempt list is the one place where selecting costs nothing, which is
+why it is subtracted.** `_judge` prints an `-- exempt:` line for a target in
+`NO_MUTABLE_SUBJECT` and moves on without calling `smoke`, so a run whose only
+changed test module is exempt plants nothing and costs a floor-priced run —
+the shape `fast`'s window exists to keep out. Two of that list's five entries
+are on it *because* they are expensive (`test_client_lock.py` at 216.6 s,
+`test_pool_slots.py` at 190.8 s), so counting them would put a row's biggest
+claimed target where the run spent none of its time. Checked rather than
+assumed, and it is the only such place: every non-exempt target reaches
+`measure`; a target whose `measure` refuses (not green on its own, or past the
+collect timeout) has run it anyway and reds the recipe besides, so no green row
+carries one; and the Rust arm has no exemption list at all — in scope means
+`cargo-mutants` runs.
 
 **It is not a docs-only flag and must not be read as one.** Zero means the
-mutation tier had no subject to plant against. A docs-only diff earns that;
-so does a config or comment edit; so does a change to a product module that
-adds or rewrites no test module. Those three cost the same, and the cost is
-what this instrument measures — a field that separated them by what the diff
-looked like would be a token standing in for the thing (#458 tracks eight of
-that class in this tree). The convenient shape here was a `docs_only`
-boolean, which would have had to call that third case a code run while it
-cost what a docs run costs; this field names what it counted instead, and
-answers "did the tier have work" rather than "was this documentation".
+mutation tier had nothing to work on. A docs-only diff earns that; so does a
+config or comment edit; so does a change to a product module that adds or
+rewrites no test module. Those three cost the same, and the cost is what this
+instrument measures — a field that separated them by what the diff looked like
+would be a token standing in for the thing (#458 tracks eight of that class in
+this tree). The convenient shape here was a `docs_only` boolean, which would
+have had to call that third case a code run while it cost what a docs run
+costs; this field names what it counted instead, and answers "did the tier have
+work" rather than "was this documentation".
 
 **`fast`'s comparison excludes the zero rows; `unit` records the count and
 compares on it not at all.** Excluded rather than weighted, because the
@@ -139,7 +167,7 @@ settles the rest — the issue's reading has #450's three docs-only landings at
 81.49, 82.53 and 81.35 s, the floor of a recorded span reaching 231 s, and a
 median those drag down makes a real slowdown read as ordinary, the
 false-negative direction on an instrument built to catch slow growth. `unit`
-is left unfiltered because its own legs are diff-independent: a zero-subject
+is left unfiltered because its own legs are diff-independent: a zero-target
 `unit` row is the same measurement as any other, and filtering it would only
 shrink the sample.
 
@@ -209,7 +237,7 @@ REPO_ROOT: Final = Path(__file__).resolve().parents[1]
 RECIPES: Final = ("unit", "fast")
 
 # The recipes that carry `just mutation`, and so the only ones whose comparison
-# reads `mutation_subjects` (#466). Every other leg of both recipes prices the
+# reads `mutation_targets` (#466). Every other leg of both recipes prices the
 # whole tree, so a `unit` row's count is provenance and never a filter. One
 # home for that rule: `assess` and `history` both ask here.
 MUTATION_LEG_RECIPES: Final = ("fast",)
@@ -241,7 +269,7 @@ class Record(NamedTuple):
     tests_collected: int | None
     load_1m: float | None
     foreign_gate_processes: int | None
-    mutation_subjects: int | None
+    mutation_targets: int | None
 
 
 class Verdict(NamedTuple):
@@ -280,7 +308,7 @@ def record_document(row: Record) -> dict[str, object]:
         "tests_collected": row.tests_collected,
         "load_1m": row.load_1m,
         "foreign_gate_processes": row.foreign_gate_processes,
-        "mutation_subjects": row.mutation_subjects,
+        "mutation_targets": row.mutation_targets,
     }
 
 
@@ -292,9 +320,13 @@ def parse_record(document: object) -> Record | None:
     died mid-append) must not take out the breaker and queue lines printed
     beside it. The malformed line stays on disk for a later look.
 
-    A row without `mutation_subjects` predates #466 and reads as `None` —
+    A row without `mutation_targets` predates #466 and reads as `None` —
     unclassified, never guessed — which is how the fifty-odd existing records
-    stay readable without re-deriving a diff nobody kept.
+    stay readable without re-deriving a diff nobody kept. The rows this
+    branch's own runs wrote under the field's first name are in that set
+    deliberately: their count was taken by a definition that included the
+    exempt targets, so reading them as unclassified is the honest fate of a
+    figure derived by a rule that has since changed.
     """
     if not isinstance(document, dict):
         return None
@@ -316,9 +348,9 @@ def parse_record(document: object) -> Record | None:
                 if document.get("foreign_gate_processes") is not None
                 else None
             ),
-            mutation_subjects=(
-                int(document["mutation_subjects"])
-                if document.get("mutation_subjects") is not None
+            mutation_targets=(
+                int(document["mutation_targets"])
+                if document.get("mutation_targets") is not None
                 else None
             ),
         )
@@ -400,23 +432,33 @@ def read_collected_file() -> int | None:
         return None
 
 
-def read_mutation_subjects(root: Path | None = None) -> int | None:
-    """Count what the mutation tier had to plant against in the tree this run gated.
+def read_mutation_targets(root: Path | None = None) -> int | None:
+    """Count what the mutation tier will do work on in the tree this run gated.
 
     The tier's own selection, asked of the tier: `mutation_smoke.in_scope` for
-    the Python subjects and `mutation_rust.in_scope` for the shim arm, counted
+    the Python targets and `mutation_rust.in_scope` for the shim arm, counted
     as one. Calling those rather than re-deriving them here is the whole point
     — a copy of the rule could drift from the tier whose cost it claims to
     describe, and then the field would be a token standing in for the thing
     (#458). It costs a second pass of `changed`'s git reads, which is the price
     of the count having one home.
 
-    Zero means the tier had no subject: a docs-only diff, a config or comment
-    edit, and a product-module change that adds or rewrites no test module all
-    reach it, and all three cost the same. This is not a docs-only flag —
-    `mutation_subjects` answers "did the tier have work", never "was this
-    documentation", and the module header states why the honest question is
-    the narrower one.
+    **`NO_MUTABLE_SUBJECT` is subtracted, because `_judge` skips those targets
+    without calling `smoke` at all**: an exempt target plants nothing and costs
+    nothing, so counting it would let a floor-priced run into `fast`'s window
+    wearing a code run's count — this issue's own bias in a narrower form. Every
+    other selected target reaches `measure`, one coverage-instrumented pytest
+    pass of the module, before the tier can know whether there is anything to
+    plant on; so a target that ends up planting nothing was still paid for, and
+    a target whose `measure` refuses reds the recipe and never reaches a green
+    row. The header states the check that this exemption is the only divergence.
+
+    Zero means the tier has nothing to work on: a docs-only diff, a config or
+    comment edit, an exempt-only diff, and a product-module change that adds or
+    rewrites no test module all reach it, and all four cost the same. This is
+    not a docs-only flag — `mutation_targets` answers "did the tier have work",
+    never "was this documentation", and the module header states why the honest
+    question is the narrower one.
 
     `None` only when git or the tree cannot be read; the row then carries no
     count, and `MUTATION_LEG_RECIPES`' comparison drops it as unclassified
@@ -427,23 +469,27 @@ def read_mutation_subjects(root: Path | None = None) -> int | None:
         import mutation_rust  # noqa: PLC0415 — beside its only caller, like head_sha's subprocess
         import mutation_smoke  # noqa: PLC0415 — same reason
 
-        subjects = len(mutation_smoke.in_scope(repo, BASE_REF))
+        targets = sum(
+            1
+            for name in mutation_smoke.in_scope(repo, BASE_REF)
+            if name not in mutation_smoke.NO_MUTABLE_SUBJECT
+        )
         if mutation_rust.in_scope(mutation_smoke.changed(repo, BASE_REF)):
-            subjects += 1
+            targets += 1
     except OSError:
         return None
-    return subjects
+    return targets
 
 
-def had_mutation_subjects(row: Record) -> bool:
-    """Whether this row's run gave the mutation tier something to plant against.
+def had_mutation_target(row: Record) -> bool:
+    """Whether this row's run gave the mutation tier something to work on.
 
-    `False` for the cheap kind — no subject, whatever the diff looked like —
-    and `False` for the pre-#466 rows carrying no count at all, which is why a
-    comparison reading this excludes those rows rather than inventing a kind
-    for them.
+    `False` for the cheap kind — nothing to plant against, whatever the diff
+    looked like — and `False` for the rows carrying no count at all, which is
+    why a comparison reading this excludes those rows rather than inventing a
+    kind for them.
     """
-    return (row.mutation_subjects or 0) > 0
+    return (row.mutation_targets or 0) > 0
 
 
 def _read_anchor_entry(name: str, entry: object) -> tuple[float, datetime] | str:
@@ -594,8 +640,8 @@ def assess(
        against nothing: unknown, never healthy.
     4. `insufficient_sample` — fewer than `MIN_SAMPLE` green runs **at or after
        the anchor's `set` moment**, and for a `MUTATION_LEG_RECIPES` recipe
-       only those that gave the mutation tier a subject (#466; the reasoning is
-       in the module header, the predicate at `had_mutation_subjects`). Also the
+       only those that gave the mutation tier a target (#466; the reasoning is
+       in the module header, the predicate at `had_mutation_target`). Also the
        honest state right after a re-set: the pre-`set` rows are excluded, so a
        lowered anchor reads as unknown until five new greens exist rather than
        false-firing at the old rows — including the same morning's rows when
@@ -631,17 +677,18 @@ def assess(
             greens = [
                 row for row in greens if (when := record_moment(row)) is not None and when >= set_on
             ]
-        # #466: a run that gave the mutation tier no subject skipped this
+        # #466: a run that gave the mutation tier no target skipped this
         # recipe's one diff-scoped leg and is systematically cheaper, so
         # admitting it drags the median down — the false-negative direction on
         # an instrument built to catch slow growth. Excluded rather than
         # weighted, because the anchor was derived from runs that paid that leg
-        # and the like-for-like population is those runs alone; the pre-#466
-        # rows carry no count and are dropped here as unclassified rather than
-        # guessed at. Both choices, and the reason a docs-only flag was not the
-        # field, are in the module header.
+        # and the like-for-like population is those runs alone; the rows written
+        # before the count carry none and are dropped here as unclassified
+        # rather than guessed at. Both choices, why the count is of targets
+        # selected rather than mutants planted, and the reason a docs-only flag
+        # was not the field, are in the module header.
         if recipe in MUTATION_LEG_RECIPES:
-            greens = [row for row in greens if had_mutation_subjects(row)]
+            greens = [row for row in greens if had_mutation_target(row)]
         if len(greens) < MIN_SAMPLE:
             verdicts.append(Verdict(recipe, "insufficient_sample", None))
             continue
@@ -676,7 +723,7 @@ def history(gate_clock_dir: Path, anchor_state: AnchorState) -> list[str]:
     date — the date the report's window is bounded by.
 
     #466 adds the kinds to that line. Every recipe's line counts its green runs
-    that gave the mutation tier no subject and its green runs written before the
+    that gave the mutation tier no target and its green runs written before the
     count existed, so a reader can see how much of the history is being declined
     rather than infer it. For a `MUTATION_LEG_RECIPES` recipe the median and the
     span are taken over the rest — `assess`'s kind filter, so a retro quoting
@@ -691,7 +738,7 @@ def history(gate_clock_dir: Path, anchor_state: AnchorState) -> list[str]:
         rows = [row for row in records if row.recipe == recipe]
         all_green = [row for row in rows if row.status == 0]
         greens = (
-            [row for row in all_green if had_mutation_subjects(row)]
+            [row for row in all_green if had_mutation_target(row)]
             if recipe in MUTATION_LEG_RECIPES
             else all_green
         )
@@ -705,13 +752,13 @@ def history(gate_clock_dir: Path, anchor_state: AnchorState) -> list[str]:
             anchor_text = f"{anchor:.0f}s anchor set {set_on.date().isoformat()}"
         else:
             anchor_text = f"{anchor:.0f}s anchor set {set_on.isoformat()}"
-        cheap = sum(1 for row in all_green if row.mutation_subjects == 0)
-        unrecorded = sum(1 for row in all_green if row.mutation_subjects is None)
+        cheap = sum(1 for row in all_green if row.mutation_targets == 0)
+        unrecorded = sum(1 for row in all_green if row.mutation_targets is None)
         detail = f"{len(all_green)} green"
         if cheap:
-            detail += f", {cheap} with no mutation subject"
+            detail += f", {cheap} with no mutation target"
         if unrecorded:
-            detail += f", {unrecorded} predating the subject count"
+            detail += f", {unrecorded} predating the target count"
         if not greens:
             reason = "no green runs recorded" if not all_green else "no comparable green runs"
             lines.append(f"{recipe}: {len(rows)} records ({detail}), {reason}, {anchor_text}")
@@ -807,21 +854,21 @@ def main(argv: list[str] | None = None) -> int:
             tests_collected=read_collected_file(),
             load_1m=args.load_1m,
             foreign_gate_processes=args.foreign_gate,
-            mutation_subjects=read_mutation_subjects(),
+            mutation_targets=read_mutation_targets(),
         )
         append_record(args.gate_clock_dir, row)
         health = "green" if row.status == 0 else f"status {row.status}"
         count = f" {row.tests_collected} tests" if row.tests_collected is not None else ""
-        # The subject count is on the line for the reason the test count is: a
+        # The target count is on the line for the reason the test count is: a
         # zero — the kind `fast`'s comparison will decline — is then visible in
         # the run's own output rather than only in a row nobody opens (#466).
-        subjects = (
-            f", {row.mutation_subjects} mutation subject(s)"
-            if row.mutation_subjects is not None
+        targets = (
+            f", {row.mutation_targets} mutation target(s)"
+            if row.mutation_targets is not None
             else ""
         )
         print(  # noqa: T201 — the shell reads this
-            f"gate-clock: recorded {row.recipe} {row.wall_seconds:.1f}s {health}{count}{subjects}"
+            f"gate-clock: recorded {row.recipe} {row.wall_seconds:.1f}s {health}{count}{targets}"
         )
         return 0
 
