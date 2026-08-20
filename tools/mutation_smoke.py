@@ -1068,7 +1068,7 @@ class Verdict(NamedTuple):
     # know that `killed=8/10` on a `spike/*.sh` subject is a different mutator
     # over a different corpus with a floor of its own (#246).
     arm: str = "python"
-    sampled: bool = False
+    sampled: bool = True
 
     @property
     def kill_rate(self) -> float:
@@ -1123,10 +1123,11 @@ class Verdict(NamedTuple):
             return f"ok {self.test_module} subject={self.subject} {self.reason} {self.seconds:.1f}s"
         where = self.subject or "-"
         floor = f"{self.floor:.0%}" + (" (ratchet)" if self.ratcheted else "")
+        sampling = "sampled" if self.sampled else "exhaustive"
         return (
             f"{mark} {self.test_module} subject={where} arm={self.arm} "
             f"killed={self.killed}/{self.run} planted={self.planted} "
-            f"rate={self.kill_rate:.0%} floor={floor} {self.seconds:.1f}s"
+            f"rate={self.kill_rate:.0%} floor={floor} sampling={sampling} {self.seconds:.1f}s"
         )
 
 
@@ -1508,6 +1509,7 @@ def _python_smoke(  # noqa: PLR0913 — every bound this gate applies is a calle
             )
 
     tally = _tally(chosen, reach, covered, time.monotonic() + budget, run_one)
+    sampled = tally.run < len(planted)
     return _verdict_for(
         root,
         test_module,
@@ -1518,7 +1520,7 @@ def _python_smoke(  # noqa: PLR0913 — every bound this gate applies is a calle
         rows=rows,
         started=started,
         arm="python",
-        sampled=len(chosen) < len(planted),
+        sampled=sampled,
     )
 
 
@@ -1637,6 +1639,7 @@ def _shell_smoke(  # noqa: PLR0913 — every bound this gate applies is a caller
                 )
 
         tally = _tally(chosen, reach, covered, time.monotonic() + budget, run_one, bound=bound)
+    sampled = tally.run < len(planted)
     return _verdict_for(
         root,
         test_module,
@@ -1647,7 +1650,7 @@ def _shell_smoke(  # noqa: PLR0913 — every bound this gate applies is a caller
         rows=rows,
         started=started,
         arm="shell",
-        sampled=len(chosen) < len(planted),
+        sampled=sampled,
     )
 
 
@@ -2160,9 +2163,12 @@ def _report_selection(
 
 
 def _report_sampling(*, sampled: bool, refused: bool) -> None:
-    """State the completed run's selection without calling a refusal a result."""
+    """State the completed run's coverage without calling a refusal a result."""
     if not refused:
-        print(f"mutation smoke: run was {'sampled' if sampled else 'exhaustive'}")  # noqa: T201
+        print(  # noqa: T201 — stdout text IS this gate's output
+            f"mutation smoke: run was {'sampled' if sampled else 'exhaustive'}",
+            flush=True,
+        )
 
 
 def _record(root: Path, targets: list[str], args: argparse.Namespace) -> int:
@@ -2340,8 +2346,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911 — every refus
     # No targets means nothing will run, so no subject can appear later: the
     # empty set is the run's whole answer, and this exit stays as cheap as it was.
     if not targets and not rust and not unmeasured(introduced, set()):
-        print(  # noqa: T201
-            f"mutation smoke: run was exhaustive; nothing added or changed against {args.base}",
+        print(  # noqa: T201 — stdout text IS this gate's output
+            f"mutation smoke: nothing added or changed against {args.base}",
+            flush=True,
         )
         return 0
 

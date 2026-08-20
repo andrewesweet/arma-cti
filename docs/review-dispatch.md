@@ -51,8 +51,10 @@ Six things, and the dispatch record carries four of them by construction:
 - **the implementer's pasted gate output** — the gate record the 2026-08-14 ruling puts in
   the review's hands in place of a gate run (#353). The paste must carry `just check`,
   `just unit` **and** `just mutation` **with their result counts**, including `just
-  mutation`'s own `mutation smoke: run was sampled` or `mutation smoke: run was exhaustive`
-  line verbatim — unconditionally, not only where a kill rate is quoted (#421): #344's
+  mutation`'s own `mutation smoke: run was sampled` (fewer than every planted candidate
+  reached a verdict) or `mutation smoke: run was exhaustive` (every planted candidate
+  reached a verdict) line verbatim — unconditionally, not only where a kill rate is quoted
+  (#421): #344's
   round-2 review found an exhaustive 91% hiding behind a
   reported `rate=100%`, because the sample missed both survivors on the line the round had
   just added. A paste that is absent, thinner than that, silent on counts, or silent on
@@ -489,7 +491,9 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     (human ruling 2026-08-14 on #353, as clarified 2026-08-20 on #449). The
     implementer's pasted gate output on the issue thread is your gate record: it
     must carry `just check`, `just unit` and `just mutation` with their result
-    counts, including `just mutation`'s own sampled-or-exhaustive line verbatim —
+    counts, including `just mutation`'s own `mutation smoke: run was sampled` (fewer
+    than every planted candidate reached a verdict) or `mutation smoke: run was
+    exhaustive` (every planted candidate reached a verdict) line verbatim —
     unconditionally, not only where a kill rate is quoted (#421). A paste absent,
     thinner than that, silent on counts, or silent on sampled-or-exhaustive is a
     finding — report it as an observation rather than running the gate yourself.

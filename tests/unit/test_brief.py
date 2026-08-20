@@ -1249,7 +1249,10 @@ def test_an_implementer_briefing_is_asked_for_the_paste_the_review_reads() -> No
     assert "quoting the gate's output" in rendered
     assert "`just check`, `just unit`, `just mutation`" in rendered
     assert "each with its result counts" in rendered
-    assert "sampled-or-exhaustive line verbatim" in rendered
+    assert "mutation smoke: run was sampled" in rendered
+    assert "mutation smoke: run was exhaustive" in rendered
+    assert "fewer than every planted candidate reached a verdict" in rendered
+    assert "every planted candidate reached a verdict" in rendered
     assert "unconditionally" in rendered
 
 

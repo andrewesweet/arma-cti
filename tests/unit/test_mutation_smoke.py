@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 load_tool("mutation_shell")
 load_tool("mutation_rust")
 smoke_tool: ModuleType = load_tool("mutation_smoke")
+brief_tool: ModuleType = load_tool("brief")
 
 
 def _plant(source: str, *, lines: set[int] | None = None) -> list[Any]:
@@ -224,7 +225,44 @@ def test_a_different_module_draws_a_different_sample() -> None:
 def test_the_gate_states_when_its_run_was_sampled(tmp_path: Path, capsys) -> None:  # noqa: ANN001
     name = _throwaway(tmp_path, SOUND_TESTS)
     assert smoke_tool.main(["--root", str(tmp_path), "--paths", name, "--cap", "1"]) == 0
+    out = capsys.readouterr().out
+    assert "sampling=sampled" in out
+    assert "mutation smoke: run was sampled" in out
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_the_gate_states_when_its_run_was_exhaustive(tmp_path: Path, capsys) -> None:  # noqa: ANN001
+    name = _throwaway(tmp_path, SOUND_TESTS)
+    assert smoke_tool.main(["--root", str(tmp_path), "--paths", name, "--cap", "99"]) == 0
+    out = capsys.readouterr().out
+    assert "sampling=exhaustive" in out
+    assert "mutation smoke: run was exhaustive" in out
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_a_dropped_candidate_makes_the_run_sampled(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    name = _throwaway(tmp_path, SOUND_TESTS)
+    monkeypatch.setattr(smoke_tool, "graft", lambda _source, _mutant: None)
+    assert smoke_tool.main(["--root", str(tmp_path), "--paths", name, "--cap", "99"]) == 1
     assert "mutation smoke: run was sampled" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("sampled", [False, True])
+def test_the_sampling_line_agrees_with_the_composed_brief(
+    sampled: bool,  # noqa: FBT001 — parametrised false and true arms are the subject
+    capsys,  # noqa: ANN001 — pytest's own fixture type adds nothing here
+) -> None:
+    smoke_tool._report_sampling(sampled=sampled, refused=False)  # noqa: SLF001
+    assert capsys.readouterr().out.strip() in brief_tool.REVIEW_GATE_RULE
+
+
+def test_a_refused_run_states_no_sampling_result(capsys) -> None:  # noqa: ANN001
+    smoke_tool._report_sampling(sampled=True, refused=True)  # noqa: SLF001
+    assert capsys.readouterr().out == ""
 
 
 # --- reading what the tests reached -----------------------------------------
@@ -664,6 +702,10 @@ def _verdict(**overrides: object) -> Any:  # noqa: ANN401
         "floor": 0.75,
     }
     return smoke_tool.Verdict(**{**fields, **overrides})
+
+
+def test_an_unspecified_sampling_result_fails_closed() -> None:
+    assert _verdict().sampled
 
 
 def test_a_module_at_the_floor_passes_and_one_below_it_does_not() -> None:
@@ -1142,10 +1184,13 @@ def test_a_new_module_with_no_test_module_reds_the_gate(tmp_path: Path, capsys) 
     assert "RED tools/new.py no_test_module:" in capsys.readouterr().out
 
 
-def test_an_empty_run_states_that_it_was_exhaustive(tmp_path: Path, capsys) -> None:  # noqa: ANN001
+def test_an_empty_run_states_no_sampling_result(tmp_path: Path, capsys) -> None:  # noqa: ANN001
     _repo(tmp_path)
     assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 0
-    assert "mutation smoke: run was exhaustive" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "mutation smoke: nothing added or changed against main" in out
+    assert "run was sampled" not in out
+    assert "run was exhaustive" not in out
 
 
 def test_the_named_list_clears_the_gate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
