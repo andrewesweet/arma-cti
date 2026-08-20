@@ -722,7 +722,7 @@ def test_the_ratchet_floor_takes_one_kill_of_slack_off_the_recorded_rate() -> No
     [
         ("src/x.py", "different", 20),  # the subject's bytes changed
         ("src/other.py", "deadbeef", 20),  # the test now exercises a different file
-        ("src/x.py", "deadbeef", 15),  # the budget cut this run short
+        ("src/x.py", "deadbeef", 15),  # a moved --cap, or mutants the graft dropped
     ],
 )
 def test_the_ratchet_releases_to_the_global_floor_when_the_pair_is_not_the_recorded_one(
