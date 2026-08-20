@@ -79,13 +79,27 @@ issue is the one the worktree is named for, `_issue_from`'s derivation and not a
 second one, and the close is `gh issue close` with a comment naming the SHA.
 
 Three properties make it safe to put a network call on the serial landing path:
-it is bounded (`CLOSE_TIMEOUT_S`, which kills the `gh` child at its deadline —
+it is bounded (`GH_CALL_TIMEOUT_S`, which kills the `gh` child at its deadline —
 #425's shape, on the subprocess a `gh` read already is); it cannot fail the
 landing, since the work is already on `origin/main` and the issue's state is
 bookkeeping, so every way it can go wrong is the non-fatal `issue_closed=no
 reason=…` line and the landing still exits 0; and it is a seam (`close`) rather
 than a hard-wired call, so the unit tier substitutes it and never reaches
 GitHub.
+
+**The close depends on the audit** (#461, human ruling 2026-08-20). #439 automated
+the close and, unnoticed, dropped the protection that had ridden on the prose
+close — `THREAD_AUDIT_RULE`'s criterion-by-criterion thread report — so a missing
+audit could coexist with `issue_closed=yes`. The rung now reads the thread before
+closing and refuses the close where no audit is present, in the same non-fatal
+shape as every other close failure: the work is already pushed, and a rung that
+red a good landing over tracker state would strand it in exactly the state #439
+was filed to end. What "present" means is `AUDIT_MARKERS`, stated beside it: a
+presence check, deliberately not a quality one (#458's class — every one of its
+eight instances was a check standing in for a judgement). The cost is one more
+`gh` round trip on every landing (#446's discipline: say what the gate costs),
+and it is paid only on the success path, where the landing can afford a bounded
+read that prints its reason on failure rather than moving an exit code.
 
 Refusals are this recipe's own vocabulary, not the harness failure-class table:
 a landing is not a corpus verdict and must not borrow its class names. What it
@@ -186,6 +200,7 @@ refusal means stays the agent's.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -233,6 +248,12 @@ if TYPE_CHECKING:
     # everywhere else here, where the value is what went wrong.
     Close = Callable[[int, str], "str | None"]
 
+    # What `land` calls to read the thread for the audit the close depends on
+    # (#461). The same network shape as `Close`, so the same reason it is a
+    # parameter. `reason` is why the thread could not be read — `None` means it
+    # was read, and `present` is the answer only then.
+    Audit = Callable[[int], "AuditRead"]
+
 # The refspec, as a constant nothing parameterises. `git push origin main` from
 # a detached worktree pushes the local `main` branch, not HEAD, and CLAUDE.md
 # documents `HEAD:main` because agents kept typing the other one.
@@ -244,11 +265,12 @@ GATE: Final = ("just", "fast")
 # expectation: an unbounded `uv run` is what #144 was about.
 GATE_TIMEOUT_S: Final = 1800
 
-# The whole `gh issue close` call's bound, not any socket inside it. Short because
-# this is the last step of a landing that has already succeeded and nothing waits on
-# its answer: an unreachable tracker should cost the lander seconds and a printed
-# reason, never a hung serial path (#427's condition, #425's mechanism).
-CLOSE_TIMEOUT_S: Final = 20
+# The whole `gh` call's bound — the audit read's and the close's, not any socket
+# inside either. Short because both are late steps of a landing that has already
+# succeeded and nothing waits on their answers: an unreachable tracker should cost
+# the lander seconds and a printed reason, never a hung serial path (#427's
+# condition, #425's mechanism).
+GH_CALL_TIMEOUT_S: Final = 20
 # A reason is the tail of one output line, so a proxy's error page does not become the
 # last thing a successful landing says — every other line here is one fact wide.
 REASON_LIMIT: Final = 200
@@ -795,10 +817,10 @@ def close_issue(issue: int, comment: str) -> str | None:
             capture_output=True,
             text=True,
             check=False,
-            timeout=CLOSE_TIMEOUT_S,
+            timeout=GH_CALL_TIMEOUT_S,
         )
     except subprocess.TimeoutExpired:
-        return f"gh_timeout gh gave no answer within {CLOSE_TIMEOUT_S}s"
+        return f"gh_timeout gh gave no answer within {GH_CALL_TIMEOUT_S}s"
     except FileNotFoundError:
         return "gh_not_on_path"
     except (OSError, subprocess.SubprocessError) as blocked:
@@ -811,6 +833,88 @@ def close_issue(issue: int, comment: str) -> str | None:
 def _one_line(detail: str) -> str:
     """Collapse a subprocess's words to one capped line, so one fact stays one line."""
     return " ".join(detail.split())[:REASON_LIMIT]
+
+
+class AuditRead(NamedTuple):
+    """What one bounded read of an issue's thread found.
+
+    `reason` is `None` exactly when the thread was read; `present` is meaningful
+    only then. A read that could not be made answers `present=False` with its
+    reason, and the caller must not read that as "no audit" — owing an audit and
+    being unable to look are different facts, and the close line keeps them
+    apart (#461).
+    """
+
+    present: bool
+    reason: str | None
+
+
+# What "an audit is present" mechanically means, because a rung cannot judge one
+# (#461): any single comment on the thread whose body names all three gate
+# recipes. That is the shape `THREAD_AUDIT_RULE` instructs the landing session to
+# post, so a compliant thread reads present and a bare thread does not. It is a
+# presence check, not a quality check — it cannot tell an audit from any other
+# comment quoting the three names, and it cannot see an audit split across
+# several comments. Both blind spots fail toward the issue staying open, which is
+# the safe side: the close is withheld until a human-readable audit is there, and
+# the judge of whether it is *good* stays the review's (#449) and the human's,
+# never this rung's (#458's class: a check standing in for a judgement).
+AUDIT_MARKERS: Final = ("just check", "just unit", "just mutation")
+
+
+def read_audit(issue: int) -> AuditRead:  # noqa: PLR0911 — one return per named way the read could not be made, the vocabulary the close line prints
+    """Read one issue's thread, bounded, and answer whether an audit is on it.
+
+    The bound is the `gh` child's whole call — `subprocess.run`'s deadline kill,
+    #425's shape — and not `tools/bounded_request.py`'s thread-join, because the
+    call here is a `gh` CLI subprocess whose authentication this tool must not
+    rebuild, and whatever `gh` stalls on, DNS resolution included (#427's
+    condition), a killed child ends. The join-shaped bound is for reads this
+    repository makes itself, over `urlopen`; the one caveat `close_issue` records
+    applies here too, that the kill reaches only the child, not a helper it
+    spawned.
+
+    Every way this can go wrong is a returned reason rather than a raised
+    exception, on `close_issue`'s argument: the caller has already pushed, so an
+    unreachable tracker is one printed line and never a failed landing.
+    """
+    try:
+        done = subprocess.run(  # noqa: S603 — fixed argv, no shell, no interpolation
+            ["gh", "issue", "view", str(issue), "--json", "comments"],  # noqa: S607 — `gh` off PATH on purpose, as `git` is
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=GH_CALL_TIMEOUT_S,
+        )
+    except subprocess.TimeoutExpired:
+        return AuditRead(
+            present=False, reason=f"gh_timeout gh gave no answer within {GH_CALL_TIMEOUT_S}s"
+        )
+    except FileNotFoundError:
+        return AuditRead(present=False, reason="gh_not_on_path")
+    except (OSError, subprocess.SubprocessError) as blocked:
+        return AuditRead(present=False, reason=f"gh_unrunnable {type(blocked).__name__}: {blocked}")
+    if done.returncode != 0:
+        return AuditRead(
+            present=False,
+            reason=f"gh_refused {_one_line(done.stderr) or f'exit {done.returncode}'}",
+        )
+    try:
+        comments = json.loads(done.stdout)["comments"]
+    except (json.JSONDecodeError, KeyError, TypeError) as broken:
+        return AuditRead(
+            present=False, reason=f"gh_unreadable_output {type(broken).__name__}: {broken}"
+        )
+    if not isinstance(comments, list):
+        return AuditRead(
+            present=False,
+            reason=f"gh_unreadable_output comments is not a list: {type(comments).__name__}",
+        )
+    bodies = (one.get("body", "") for one in comments if isinstance(one, dict))
+    return AuditRead(
+        present=any(all(marker in body for marker in AUDIT_MARKERS) for body in bodies),
+        reason=None,
+    )
 
 
 def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, ...] | None, str]:
@@ -1088,13 +1192,15 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     corpus: Path | None = None,
     review: ReviewInputs | None = None,
     close: Close | None = None,
+    audit: Audit | None = None,
 ) -> Report:
     """Run the whole protocol, or refuse by name at the first rung that says no.
 
-    `close` is the tracker seam (#439), resolved at call time rather than bound as a
-    default so that the unit tier can replace `close_issue` itself and pin that the
-    real one is never reached. `None` means the real one, exactly as it does for
-    `review`.
+    `close` is the tracker seam (#439) and `audit` the thread-read seam the close
+    depends on (#461), both resolved at call time rather than bound as defaults so
+    that the unit tier can replace `close_issue` and `read_audit` themselves and pin
+    that the real ones are never reached. `None` means the real one, exactly as it
+    does for `review`.
     """
     status = read_status(git("status", "--porcelain", cwd=here))
     blocked = classify_tree(here, status, rebasing=rebase_in_progress(here))
@@ -1153,7 +1259,9 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     pushed = _push(here, ahead, lines)
     if isinstance(pushed, Report):
         return pushed
-    return _merge(root, here, pushed, lines, review_inputs.issue, close or close_issue)
+    return _merge(
+        root, here, pushed, lines, review_inputs.issue, close or close_issue, audit or read_audit
+    )
 
 
 def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:  # noqa: PLR0911 — a ladder of named refusals
@@ -1400,6 +1508,7 @@ def _merge(  # noqa: PLR0913, PLR0917 — the merge's inputs, one parameter apie
     lines: list[str],
     issue: int | None,
     close: Close,
+    audit: Audit,
 ) -> Report:
     """Fast-forward the main checkout, and make a merge that did not run loud.
 
@@ -1423,41 +1532,67 @@ def _merge(  # noqa: PLR0913, PLR0917 — the merge's inputs, one parameter apie
     """
     if not _merge_needed(here, root):
         lines.append(f"merge=not_needed reason=landed_from_the_main_checkout ({root})")
-        return _landed(lines, issue, pushed, close)
+        return _landed(lines, issue, pushed, close, audit)
     code, stderr = _run(merge_argv(root), cwd=root)
     outstanding = classify_merge(root, pushed, code, stderr)
     if outstanding is not None:
         return Report((*lines, *outstanding.lines()), EXIT_LANDED_INCOMPLETE)
     lines.append(f"merge=fast-forwarded {root} to {pushed}")
-    return _landed(lines, issue, pushed, close)
+    return _landed(lines, issue, pushed, close, audit)
 
 
-def _landed(lines: list[str], issue: int | None, pushed: str, close: Close) -> Report:
+def _landed(lines: list[str], issue: int | None, pushed: str, close: Close, audit: Audit) -> Report:
     """Close the landed issue and return the one report that says `ok=landed`.
 
     Both success branches come through here rather than each closing for itself, so
     "landed" and "closed" are one condition and cannot drift apart the way a value
     computed twice can (#422).
     """
-    lines.append(_close_line(issue, pushed, close))
+    lines.append(_close_line(issue, pushed, close, audit))
     return Report(("ok=landed", *lines), 0)
 
 
-def _close_line(issue: int | None, pushed: str, close: Close) -> str:
+def _close_line(issue: int | None, pushed: str, close: Close, audit: Audit) -> str:
     """Close the issue, and say what happened either way in one line.
 
-    Nothing here can fail the landing. The seam's own failures come back as reasons, and
-    the `except` catches what a *future* seam might raise instead — because the cost of
-    being wrong about that is a traceback out of `main`, which catches only `GitError`,
+    Nothing here can fail the landing. The seams' own failures come back as reasons, and
+    the `except` blocks catch what a *future* seam might raise instead — because the cost
+    of being wrong about that is a traceback out of `main`, which catches only `GitError`,
     on a run whose work is already on `origin/main`. A lander told the landing failed
     when it did not is worse than a lander told the tracker could not be reached.
 
     An issue this tree cannot name is the same non-fatal line. It is reachable: the review
     rung refuses `review_issue_unknown` on a tree that is not an `issue-<n>` one, but only
     when it runs, and the re-run after a blocked merge skips it.
+
+    The close depends on the audit's presence (#461), and the line's `reason=` keeps the
+    two ways it can be withheld apart, because they ask different things of the reader:
+    `audit_absent` — the thread was read and carries no audit, so one is owed — and
+    `audit_unreadable`, prefixed to `gh`'s own vocabulary, which says the thread could not
+    be looked at and nothing is owed yet. A bare `gh_…` reason after both is the close
+    call itself failing, with the audit already found.
     """
     if issue is None:
         return "issue_closed=no reason=issue_unknown (this tree is not an `issue-<n>` worktree)"
+    try:
+        read = audit(issue)
+    except Exception as unexpected:  # noqa: BLE001 — see the docstring: never fail the landing
+        read = AuditRead(
+            present=False,
+            reason=f"gh_unrunnable {type(unexpected).__name__}: {_one_line(str(unexpected))}",
+        )
+    if read.reason is not None:
+        return (
+            f"issue_closed=no issue={issue} reason=audit_unreadable {read.reason}"
+            " (the thread was not read, so the audit was not checked)"
+        )
+    if not read.present:
+        return (
+            f"issue_closed=no issue={issue} reason=audit_absent (the thread carries no comment"
+            " naming `just check`, `just unit` and `just mutation`; post the criterion audit"
+            " and close by hand per docs/agents/issue-tracker.md — a re-run has nothing to land"
+            " and will not close)"
+        )
     try:
         reason = close(issue, CLOSE_COMMENT.format(sha=pushed))
     except Exception as unexpected:  # noqa: BLE001 — see the docstring: never fail the landing

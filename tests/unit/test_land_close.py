@@ -70,7 +70,7 @@ def test_the_close_is_bounded_by_a_deadline_that_kills_the_child(
 
     (argv,), kwargs = ran.calls[0]
     assert argv == ["gh", "issue", "close", "439", "--comment", "landed as abc1234"]
-    assert kwargs["timeout"] == land.CLOSE_TIMEOUT_S
+    assert kwargs["timeout"] == land.GH_CALL_TIMEOUT_S
 
 
 @pytest.mark.parametrize(

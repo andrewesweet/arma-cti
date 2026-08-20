@@ -867,7 +867,11 @@ RUNG_CLOSE_RULE: Final = (
     " do not close the issue by hand and do not close it early. The landing's own"
     " `issue_closed=` line is part of the verbatim paste; where it reads"
     " `issue_closed=no reason=…` the work is already on `origin/main` and the tracker"
-    " state is bookkeeping — report the line, never retry the close."
+    " state is bookkeeping — report the line, never retry the close. One reason is"
+    " different (#461): `reason=audit_absent` means the thread carried no criterion"
+    " audit, so post it and close by hand with the criterion comment"
+    " (docs/agents/issue-tracker.md) — a re-run has nothing left to land and will not"
+    " close."
 )
 THREAD_AUDIT_RULE: Final = (
     "Post on #{issue}'s thread a criterion-by-criterion audit quoting the gate's output"
@@ -875,7 +879,8 @@ THREAD_AUDIT_RULE: Final = (
     f" including {MUTATION_SAMPLING_PASTE_RULE} (#344, #421:"
     " unconditionally, never only where a kill rate is quoted). That paste is the"
     " review's gate record (#449), so it is owed before the branch is handed over, not"
-    " only once the landing has closed the issue."
+    " only once the landing has closed the issue — and the landing's close reads its"
+    " presence on the thread (#461), so a landing without it leaves the issue open."
 )
 # The writable arm's other half (#345): a seat that may write but is not the lander.
 # `planner` is today's clearest row — ruling 2's "neither gates nor lands" — with

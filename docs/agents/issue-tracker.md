@@ -17,6 +17,8 @@ Infer the repo from `git remote -v` — `gh` does this automatically when run in
 
 Close it in the same session that lands its work, with a comment addressing every acceptance criterion: evidence for each criterion met, and for any criterion not met as written, a pointer to the recorded decision (ADR or issue) that superseded it — a prose note is not a supersession, and commit titles are not evidence. If you inherit an issue whose work landed in an earlier session, audit every criterion against the tree before closing: that audit on #12 found an architectural pivot (callback-push to poll-and-ack) shipped but decided nowhere, and stopped it closing as "done".
 
+Since #461 the close has a rung behind it: `just land` refuses to close an issue whose thread carries no criterion audit. Its check is presence — any one comment naming `just check`, `just unit` and `just mutation` — and never a judgement of the audit's quality. Where its line reads `issue_closed=no reason=audit_absent`, post the audit and close by hand with the criterion comment above; a re-run of `just land` has nothing left to land and will not close, so that hand close is the recovery the rung itself names, not a second mechanism beside it. `reason=audit_unreadable` is a different fact — the thread could not be read, so nothing is owed yet; report the line rather than acting.
+
 A `Closes #N` commit trailer closes the issue on push and skips this audit entirely: #89
 was auto-closed with two acceptance boxes unticked and had to be reopened by its own
 agent, and #24 repeated it despite this paragraph — its criterion-by-criterion comment

@@ -776,6 +776,32 @@ class _RaisingClose:
         raise RuntimeError(message)
 
 
+class _Audit:
+    """A thread read that records what it was asked to read, and answers as told.
+
+    `read_audit`'s stand-in, in `_Close`'s shape one seam out: what a landing
+    reads the thread through before it closes (#461). The default answers
+    present, so a test that does not name the audit reads a compliant thread,
+    exactly as `closer` defaults to a tracker that closes.
+    """
+
+    def __init__(self, *, present: bool = True, reason: str | None = None) -> None:
+        self.answer = land.AuditRead(present=present, reason=reason)
+        self.calls: list[int] = []
+
+    def __call__(self, issue: int) -> land.AuditRead:
+        self.calls.append(issue)
+        return self.answer
+
+
+class _RaisingAudit:
+    """A thread-read seam that raises rather than returning, which no landing may propagate."""
+
+    def __call__(self, issue: int) -> land.AuditRead:
+        message = f"the tracker exploded on #{issue}'s thread"
+        raise RuntimeError(message)
+
+
 @pytest.fixture(autouse=True)
 def closer(monkeypatch: pytest.MonkeyPatch) -> _Close:
     """Stand in for the tracker on every test in this module, always (#439).
@@ -797,6 +823,21 @@ def closer(monkeypatch: pytest.MonkeyPatch) -> _Close:
     """
     stand_in = _Close()
     monkeypatch.setattr(land, "close_issue", stand_in)
+    return stand_in
+
+
+@pytest.fixture(autouse=True)
+def auditor(monkeypatch: pytest.MonkeyPatch) -> _Audit:
+    """Stand in for the thread read on every test in this module, always (#461).
+
+    `closer`'s reasoning, pointed at the `gh` call a successful landing now makes
+    *first*: without this, the suite would read `andrewesweet/arma-cti` from
+    whatever credentials the runner holds, and would pass or fail by
+    connectivity. The default answers present, because the tests that do not
+    name the audit are the tests of everything else.
+    """
+    stand_in = _Audit()
+    monkeypatch.setattr(land, "read_audit", stand_in)
     return stand_in
 
 
@@ -1994,6 +2035,117 @@ def test_a_landing_from_the_main_checkout_closes_its_issue_too(
     assert any(line.startswith("merge=not_needed") for line in report.lines)
     assert f"issue_closed=yes issue=213 sha={landed}" in report.lines
     assert [issue for issue, _ in closer.calls] == [213]
+
+
+def test_a_thread_without_an_audit_leaves_the_issue_open_and_lands_anyway(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    closer: _Close,
+) -> None:
+    """#461 criterion 1: the close is withheld, the landing is not.
+
+    The work is already on `origin/main` when the rung runs, so refusing the
+    *landing* would strand it in exactly the state #439 was filed to end. The
+    exit stays 0, the line still says `ok=landed`, and the close is simply not
+    made.
+    """
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+    thread = _Audit(present=False)
+
+    report = land.land(main, here, gate=_Gate(), review=review, audit=thread)
+
+    assert report.lines[0] == "ok=landed"
+    withheld = next(line for line in report.lines if line.startswith("issue_closed="))
+    assert withheld.startswith("issue_closed=no issue=213 reason=audit_absent")
+    assert closer.calls == []
+    assert thread.calls == [213]
+
+
+def test_a_thread_that_cannot_be_read_leaves_the_issue_open_naming_the_unreadable_read(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    closer: _Close,
+) -> None:
+    """#461 criterion 3: `gh` absent, unauthenticated, rate-limited or stalled is one reason.
+
+    The audit seam's failures reach the close line in `close_issue`'s own
+    vocabulary, so a reader who owes nothing is not told they owe an audit.
+    """
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+    thread = _Audit(reason="gh_not_on_path")
+
+    report = land.land(main, here, gate=_Gate(), review=review, audit=thread)
+
+    assert report.lines[0] == "ok=landed"
+    withheld = next(line for line in report.lines if line.startswith("issue_closed="))
+    assert withheld.startswith("issue_closed=no issue=213 reason=audit_unreadable gh_not_on_path")
+    assert closer.calls == []
+
+
+def test_owing_an_audit_and_unable_to_look_are_two_different_printed_reasons(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+) -> None:
+    """The ruling's distinction, pinned: the same `issue_closed=no` tells the two causes apart.
+
+    A reader who owes an audit and a reader whose thread was never read have
+    different next acts, so `audit_absent` (the obligation) and `audit_unreadable`
+    (the infrastructure) must never appear on one another's line — or the reader's
+    next act is a guess.
+    """
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+
+    absent = land.land(main, here, gate=_Gate(), review=review, audit=_Audit(present=False))
+    _commit(here, "second.txt", "more work\n")
+    unreadable = land.land(
+        main,
+        here,
+        gate=_Gate(),
+        review=_reviewed(here, tmp_path),
+        audit=_Audit(reason="gh_timeout"),
+    )
+
+    owed = next(line for line in absent.lines if line.startswith("issue_closed="))
+    blind = next(line for line in unreadable.lines if line.startswith("issue_closed="))
+    assert owed.startswith("issue_closed=no issue=213 reason=audit_absent")
+    assert blind.startswith("issue_closed=no issue=213 reason=audit_unreadable gh_timeout")
+    assert "audit_unreadable" not in owed
+    assert "audit_absent" not in blind
+
+
+def test_a_thread_read_seam_that_raises_never_fails_the_landing(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    closer: _Close,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Red first against a `_close_line` without its `except`, where this test raised.
+
+    `read_audit` returns its own failures as reasons, so this is about the *next*
+    seam: whatever a future one raises, the work is already on `origin/main` and
+    the landing's answer is a line, never a traceback.
+    """
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+    monkeypatch.setattr(land, "read_audit", _RaisingAudit())
+
+    report = land.land(main, here, gate=_Gate(), review=review)
+
+    assert report.lines[0] == "ok=landed"
+    assert any(
+        line.startswith(
+            "issue_closed=no issue=213 reason=audit_unreadable gh_unrunnable RuntimeError:"
+        )
+        for line in report.lines
+    )
+    assert closer.calls == []
 
 
 def _race_the_push(main: Path) -> Any:  # noqa: ANN401 — `land.GateResult` is a loaded module's type
