@@ -66,6 +66,32 @@ lines, was tried and is **not** here: it moved `test_daemon_casualties.py` from
 reach. Measured, disproved, recorded in the research note rather than carried as
 an untested intuition.
 
+## The selection rung: a module nothing was written for
+
+Everything above measures a *test* module, which leaves one thing it cannot see.
+A landing that adds `tools/x.py` and no `tests/unit/test_x.py` puts nothing in
+scope at all, so there is no subject, no verdict and no floor — and the gate goes
+green on a module it has never looked at. The silence is structural rather than
+lenient: no rung ever learns the module exists. Three instances in one cycle
+(#370, filed by retro 31): #324, whose `tools/generate_seats.py` landed unmeasured
+and surfaced only when an unrelated harness defect turned its test module red;
+#338; and #346, where production grew a private constructor purely to stay
+scoreable.
+
+So the diff is read a second way. Every product module this landing *introduces*
+— added, or renamed to a name that was not there at the base — must come out of
+the run as a verdict's subject, mutants planted in it and judged, and one that
+does not is a red carrying the class `no_test_module`. A test file's name is not
+the evidence (#370's own review): a `test_new_cases.py` that exercises only
+existing code clears any filename check while its smoke plants every mutant in
+some other file, so the check is bound to what the run measured, never to what
+the files are called. Introduced rather than edited, measured before it was
+written: eleven modules in this tree are tested under a name that does not reach
+them, so asking the same of an edit would red a docstring fix. The escape is
+`NO_TEST_MODULE`, the same named-list shape as everything else here — and a
+blank reason on any entry of either list refuses the gate outright, because an
+escape whose reason can be left blank is an escape with its cost removed.
+
 ## The per-module ratchet
 
 `FLOOR` is one number every module clears, set below the corpus minimum so the
@@ -457,6 +483,28 @@ SHELL_SUBJECT: Final[dict[str, str]] = {
         "spike/hosts.sh"
     ),
 }
+
+# The modules this landing may introduce without a test module naming them, each
+# with the reason.
+#
+# `NO_MUTABLE_SUBJECT`'s sibling on the other side of the selection (#370). That
+# list excuses a test module with no measurable subject; this one excuses a
+# product module with no test module at all — the gap that list could not see,
+# because a landing that adds `tools/x.py` and no `tests/unit/test_x.py` puts
+# nothing in scope, so no verdict is reached, no floor is applied and every rung
+# of `just fast` stays green. Three instances in one cycle before it was closed:
+# #324 (`tools/generate_seats.py`, landed unmeasured and surfaced only by an
+# unrelated harness defect), #338 and #346.
+#
+# Same shape and the same reviewability as every other escape here — one line in
+# the diff with its reason beside it, no flag, no marker in the file, no
+# environment variable. Ships empty: the rule is enforced from its first landing
+# and no module in this tree claims it.
+#
+# The reason is load-bearing on both this list and `NO_MUTABLE_SUBJECT`: an entry
+# whose reason is empty or whitespace is refused by name (`escape_problems`)
+# rather than honoured, because entering an escape is meant to cost an argument.
+NO_TEST_MODULE: Final[dict[str, str]] = {}
 
 NO_MUTABLE_SUBJECT: Final[dict[str, str]] = {
     # --- reads a document rather than executing anything ---
@@ -1711,6 +1759,101 @@ def in_scope(root: Path, base: str) -> list[str]:
     return [name for name in changed(root, base) if is_test_module(name) and (root / name).exists()]
 
 
+def added(root: Path, base: str) -> list[str]:
+    """List every path this landing introduces, committed and uncommitted.
+
+    `changed` cannot answer this: it merges its two halves into one set and the
+    status letter is gone by the time it returns. The distinction is needed here
+    and nowhere else in this gate. A module this landing *edits* keeps whatever
+    test module it always had, so demanding one in the same diff would red a
+    docstring fix — and eleven of this tree's modules are tested under a name
+    that does not reach them (`src/cti_daemon/outbox.py` by
+    `tests/unit/test_daemon_outbox.py`, `tools/queue_policy.py` by
+    `tests/unit/test_queue.py`), so the rule would red them too, measured before
+    it was written. A module this landing *introduces* has whatever this diff
+    gives it and nothing else.
+
+    A rename counts as an introduction: the destination is a path that was not
+    there at the base, and a module renamed away from its test module's name is
+    measured by nothing exactly as a new one is.
+    """
+    merge_base = _git(root, ["merge-base", "HEAD", base]).strip()
+    found: set[str] = set()
+    if merge_base:
+        found.update(
+            _git(root, ["diff", "--name-only", "--diff-filter=AR", merge_base, "HEAD"]).split(),
+        )
+    for line in _git(root, ["status", "--porcelain", "--untracked-files=all"]).splitlines():
+        # The index half of the porcelain code, or `??` for an untracked file.
+        if line[:1] not in {"A", "R"} and line[:2] != "??":
+            continue
+        entry = line[3:].strip()
+        found.add(entry.split(" -> ")[-1] if " -> " in entry else entry)
+    return sorted(found)
+
+
+def is_product_module(path: str) -> bool:
+    """Whether a path is one of this repo's own Python modules.
+
+    `PRODUCT_ROOTS` is the same set a mutant may be planted in, so the question
+    "does this landing measure it?" is asked about exactly the files this gate
+    could have had something to say about. Dunder modules are left out:
+    `__init__.py` is a package marker and `test___init__.py` is not a file
+    anybody means.
+    """
+    normalised = path.replace(os.sep, "/")
+    return (
+        normalised.endswith(".py")
+        and not Path(normalised).name.startswith("__")
+        and normalised.startswith(PRODUCT_ROOTS)
+    )
+
+
+def unmeasured(introduced: list[str], subjects: set[str]) -> list[str]:
+    """List the modules this landing introduces that no verdict in the run measured.
+
+    What this asserts about reality is that a smoke selected each survivor as a
+    subject — read its bytes, judged mutants against the module's tests. A test
+    file's *name* asserts nothing: #370's own review cleared `tools/new.py` on a
+    `test_new_cases.py` whose tests exercised only existing code, so every mutant
+    went to some other file and the name still satisfied a filename check. The
+    subjects the run actually selected are already computed by the time this is
+    asked, so they are the evidence, and a module no verdict names is measured by
+    nothing — not by a low kill rate, not by a refusal, by nothing at all: no
+    rung of `just fast` ever learns it exists.
+
+    An undecided verdict counts: a subject whose reached lines carry no decision
+    was still selected and examined, and reding it would be the #239 false red.
+    """
+    return [
+        path
+        for path in introduced
+        if is_product_module(path) and path not in subjects and path not in NO_TEST_MODULE
+    ]
+
+
+def escape_problems() -> list[str]:
+    """Every escape entry whose reason is blank, spelled as the refusal it causes.
+
+    Entering an escape is designed to cost an argument: the reason sits beside the
+    path in the diff, and that visibility is the whole design of the lists. An
+    entry whose reason is empty or whitespace is the hatch with its cost taken
+    out (#370), so `main` refuses the gate over one — by name, before anything
+    runs — rather than honouring it. Both lists share the contract, so both are
+    held to it.
+    """
+    return [
+        f"blank_escape_reason: {name}[{path}] carries no reason. An escape is argued "
+        "beside its path in tools/mutation_smoke.py, or it is not an escape"
+        for name, entries in (
+            ("NO_MUTABLE_SUBJECT", NO_MUTABLE_SUBJECT),
+            ("NO_TEST_MODULE", NO_TEST_MODULE),
+        )
+        for path, reason in entries.items()
+        if not reason.strip()
+    ]
+
+
 def restore(root: Path) -> int:
     """Put back the file the sidecar names, and say what was done.
 
@@ -1869,11 +2012,17 @@ def write_baseline(root: Path, rows: dict[str, Row]) -> None:
     path.write_text(json.dumps(serialised, indent=2) + "\n", encoding="utf-8")
 
 
-def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[int, int]:
-    """Smoke each target, print its verdict, and count the reds and the refusals."""
+def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[int, int, set[str]]:
+    """Smoke each target, print its verdict, and count the reds and the refusals.
+
+    The subjects come back too, because the selection rung's evidence is what the
+    run measured rather than any name (#370): a module no verdict here selected
+    is what `unmeasured` names.
+    """
     rows = read_baseline(root)
     red = 0
     refused = 0
+    subjects: set[str] = set()
     for target in targets:
         if target in NO_MUTABLE_SUBJECT:
             print(f"-- {target} exempt: {NO_MUTABLE_SUBJECT[target]}", flush=True)  # noqa: T201
@@ -1898,13 +2047,39 @@ def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[in
             refused += 1
             print(f"?? {target} could not run: {refusal}", file=sys.stderr)  # noqa: T201
             continue
+        if verdict.subject is not None:
+            subjects.add(verdict.subject)
         print(verdict, flush=True)  # noqa: T201 — stdout text IS this gate's output
         if not verdict.ok:
             red += 1
             print(f"    {verdict.reason}", file=sys.stderr)  # noqa: T201
             for survivor in verdict.survivors:
                 print(f"    survived: {survivor}", file=sys.stderr)  # noqa: T201
-    return red, refused
+    return red, refused, subjects
+
+
+def _report_selection(introduced: list[str], unnamed: list[str]) -> None:
+    """Print the escapes this landing takes and the modules it measures by nothing.
+
+    A red of its own kind: there is no verdict to print, because the thing that
+    went wrong is that nothing was selected to reach one. So the line names the
+    class — `no_test_module` — and both remedies, in the order they should be
+    reached for. The first remedy is the test module's name because that is what
+    `Reach.subject` leans on: a test module that reaches the code it names makes
+    it the subject, which is the measurement this red demands.
+    """
+    for path in introduced:
+        if path in NO_TEST_MODULE:
+            print(f"-- {path} exempt: {NO_TEST_MODULE[path]}", flush=True)  # noqa: T201
+    for path in unnamed:
+        print(  # noqa: T201 — stdout text IS this gate's output
+            f"RED {path} no_test_module: this landing introduces it and no verdict in "
+            f"this run selected it as a subject — the diff's test modules name other "
+            f"code, or none ran it at all — so no rung of `just fast` measures it. Add "
+            f"tests/unit/test_{_stem_key(path)}.py whose tests execute it, or add "
+            f"{path} to NO_TEST_MODULE in tools/mutation_smoke.py with the reason.",
+            flush=True,
+        )
 
 
 def _record(root: Path, targets: list[str], args: argparse.Namespace) -> int:
@@ -2002,7 +2177,7 @@ def _judge_rust(root: Path) -> tuple[int, int]:
     return 1, 0
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911 — every refusal is its own exit, and collapsing them hides which one fired
     """Smoke every test module in scope and print one line per module."""
     parser = argparse.ArgumentParser(
         description="Red a landing whose new tests do not notice the code changing.",
@@ -2057,6 +2232,11 @@ def main(argv: list[str] | None = None) -> int:
     sidecar = root / RESTORE
     if args.restore:
         return restore(root)
+    problems = escape_problems()
+    if problems:
+        for problem in problems:
+            print(f"?? {problem}", file=sys.stderr)  # noqa: T201
+        return 2
     if sidecar.exists():
         print(  # noqa: T201 — stdout text IS this gate's output
             f"{RESTORE} is present: another smoke is running in this tree, or one was "
@@ -2070,28 +2250,41 @@ def main(argv: list[str] | None = None) -> int:
     targets = args.paths or [
         name for name in touched if is_test_module(name) and (root / name).exists()
     ]
+    # `--paths` names the modules to smoke, so the diff is not what is being
+    # judged and the selection rung has nothing to say about it.
+    introduced = [] if args.paths else added(root, args.base)
     rust = args.rust or (mutation_rust.in_scope(touched) and not args.no_rust)
-    if not targets and not rust:
+    # No targets means nothing will run, so no subject can appear later: the
+    # empty set is the run's whole answer, and this exit stays as cheap as it was.
+    if not targets and not rust and not unmeasured(introduced, set()):
         print(f"mutation smoke: nothing added or changed against {args.base}")  # noqa: T201
         return 0
 
     if args.record:
         return _record(root, targets, args)
 
-    red, refused = _judge(root, targets, args)
+    # The selection rung's evidence is what the run measured, so a module
+    # nothing selected is known only after the verdicts and is reported after
+    # them (#370) — the red-before-any-mutant ordering a name check allowed
+    # cannot survive binding the check to the measurement. A landing with no
+    # test modules at all still reds before a single mutant is planted, because
+    # nothing then runs to measure anything.
+    red, refused, subjects = _judge(root, targets, args)
+    unnamed = unmeasured(introduced, subjects)
+    _report_selection(introduced, unnamed)
     if rust:
         rust_red, rust_refused = _judge_rust(root)
         red += rust_red
         refused += rust_refused
     if refused and not args.report:
         return 2
-    if red and not args.report:
+    if (red or unnamed) and not args.report:
         print(  # noqa: T201
             f"{red} subject(s) did not notice the code changing. Strengthen the "
             f"assertions that let the survivors above through — never weaken the floor.",
             file=sys.stderr,
         )
-    return 1 if red and not args.report else 0
+    return 1 if (red or unnamed) and not args.report else 0
 
 
 if __name__ == "__main__":
