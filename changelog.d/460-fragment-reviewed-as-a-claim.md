@@ -15,9 +15,11 @@
   gate-paste contract and again in the brief template it hands out, and `tools/brief.py`,
   whose new `CHANGELOG_CLAIM_RULE` is that string. The composed brief renders it to the
   implementer who writes the fragment and to the reviewer who judges it; `recon`, which
-  writes none and judges none, is the one seat it is silent for. Three tests hold the surfaces
-  to the constant rather than to their own literals, which is #445's finding 3 not repeated in
-  the change that codifies reviewing claims.
+  writes none and judges none, is the one seat it is silent for. Two tests hold the surfaces to
+  the constant rather than to their own literals — one counting its copies in `AGENTS.md` and
+  `docs/review-dispatch.md`, one binding every rendered brief — which is #445's finding 3 not
+  repeated in the change that codifies reviewing claims. A third uses its own literals
+  deliberately, to pin that the constant's own wording says the gate is content-blind.
 
 - **No mechanical content check comes with it, and none is proposed.** `just check`'s fragment
   leg is untouched: it still asks whether a fragment exists and never whether a sentence is
