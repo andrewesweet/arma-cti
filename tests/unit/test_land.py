@@ -790,9 +790,10 @@ def closer(monkeypatch: pytest.MonkeyPatch) -> _Close:
 
     Patching the module attribute is what `land` reads: `close or close_issue` resolves
     at call time, so this reaches the default path rather than only the injected one.
-    It reaches the seam's *own* tests too, which is not what they want and is why they
-    take `_CLOSE_ISSUE`, the function bound at import; they stay hermetic by standing in
-    one seam further down, at `subprocess.run`.
+    It would reach the seam's *own* tests too, which is not what they want — so they do
+    not live here. `tests/unit/test_land_close.py` has no stand-in for `close_issue` at
+    all, which is what makes a seam test written the wrong way unrepresentable rather
+    than merely policed (#440).
     """
     stand_in = _Close()
     monkeypatch.setattr(land, "close_issue", stand_in)
@@ -2214,124 +2215,6 @@ def test_a_landing_from_a_tree_that_names_no_issue_says_so_rather_than_guessing(
     assert report.lines[0] == "ok=landed"
     assert any(line.startswith("issue_closed=no reason=issue_unknown") for line in report.lines)
     assert closer.calls == []
-
-
-# ------------------------------------------------------------ the tracker seam itself
-
-# The real seam, bound at import — before the autouse `closer` fixture replaces the
-# module attribute for every test in this module (#439). Everything above wants the
-# stand-in and gets it; the tests below are the tests *of* `close_issue`, so reading
-# `land.close_issue` inside them would assert against the stand-in and pass whatever
-# the function does. They stay off the network by standing in one seam further down,
-# at `subprocess.run`.
-_CLOSE_ISSUE: Final = land.close_issue
-
-
-class _Ran:
-    """Stand in for `subprocess.run`, recording the call and answering as told."""
-
-    def __init__(
-        self, returncode: int = 0, stderr: str = "", raises: Exception | None = None
-    ) -> None:
-        self.returncode = returncode
-        self.stderr = stderr
-        self.raises = raises
-        self.calls: list[tuple[tuple[Any, ...], dict[str, Any]]] = []
-
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
-        self.calls.append((args, kwargs))
-        if self.raises is not None:
-            raise self.raises
-        return subprocess.CompletedProcess(args[0], self.returncode, "", self.stderr)
-
-
-def test_the_close_is_bounded_by_a_deadline_that_kills_the_child(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """The bound is the whole call's, which is the only kind that survives a stalled resolver.
-
-    A socket timeout does not reach `getaddrinfo` (#427), so what makes this safe on the
-    serial landing path is `subprocess.run`'s deadline killing the `gh` child (#425's
-    shape). Asserted on the argument rather than by waiting on a real stall.
-    """
-    ran = _Ran()
-    monkeypatch.setattr(land.subprocess, "run", ran)
-
-    assert _CLOSE_ISSUE(439, "landed as abc1234") is None
-
-    (argv,), kwargs = ran.calls[0]
-    assert argv == ["gh", "issue", "close", "439", "--comment", "landed as abc1234"]
-    assert kwargs["timeout"] == land.CLOSE_TIMEOUT_S
-
-
-@pytest.mark.parametrize(
-    ("failure", "expected"),
-    [
-        (FileNotFoundError("gh"), "gh_not_on_path"),
-        (subprocess.TimeoutExpired(["gh"], 20), "gh_timeout"),
-        (PermissionError("blocked by the sandbox"), "gh_unrunnable"),
-    ],
-    ids=["absent", "stalled", "unrunnable"],
-)
-def test_every_way_gh_cannot_run_comes_back_as_a_reason(
-    failure: Exception,
-    expected: str,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Returned, never raised: the caller has already pushed and has no red to spend."""
-    monkeypatch.setattr(land.subprocess, "run", _Ran(raises=failure))
-
-    reason = _CLOSE_ISSUE(439, "landed")
-
-    assert reason is not None
-    assert reason.startswith(expected)
-
-
-def test_a_gh_that_answers_with_a_refusal_carries_its_own_words_on_one_line(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """An unauthenticated or rate-limited `gh` is this: a non-zero exit and something to say.
-
-    Collapsed to one line and capped, because a reason is the tail of one output line and a
-    proxy's error page must not become the last thing a successful landing says.
-    """
-    monkeypatch.setattr(
-        land.subprocess,
-        "run",
-        _Ran(
-            returncode=1, stderr="gh: To get started with GitHub CLI,\nplease run: gh auth login\n"
-        ),
-    )
-
-    reason = _CLOSE_ISSUE(439, "landed")
-
-    assert reason is not None
-    assert "\n" not in reason
-    assert reason.startswith("gh_refused gh: To get started with GitHub CLI, please run:")
-
-
-def test_a_gh_that_refuses_without_a_word_still_names_its_exit(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(land.subprocess, "run", _Ran(returncode=3))
-
-    assert _CLOSE_ISSUE(439, "landed") == "gh_refused exit 3"
-
-
-def test_a_reason_is_capped_so_a_page_of_html_cannot_be_the_landings_last_word(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(land.subprocess, "run", _Ran(returncode=1, stderr="x " * 5000))
-
-    reason = _CLOSE_ISSUE(439, "landed")
-
-    assert reason is not None
-    assert len(reason) <= len("gh_refused ") + land.REASON_LIMIT
-
-
-def test_the_closing_comment_names_the_sha_that_landed() -> None:
-    """The one thing a reader of the closed issue needs: which commit is the work."""
-    assert "abc1234" in land.CLOSE_COMMENT.format(sha="abc1234")
 
 
 # ---------------------------------------------------------------- staging for review
