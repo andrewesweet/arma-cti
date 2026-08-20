@@ -54,7 +54,11 @@ class PathEchoHandler(BaseHTTPRequestHandler):
     answer came back rather than trusting any body to be any body.
     """
 
-    def log_message(self, format: str, *args: object) -> None:  # noqa: A002
+    def log_message(
+        self,
+        format: str,  # noqa: A002 — `BaseHTTPRequestHandler` fixes this parameter's name
+        *args: object,
+    ) -> None:
         """Swallow the request log: these reads are staged, not served."""
 
     def do_GET(self) -> None:
@@ -110,8 +114,13 @@ def _workers() -> list[threading.Thread]:
 
 
 def _request(url: str) -> urllib.request.Request:
-    """Build the GET every read goes through; one `S310` site for this file's own http."""
-    return urllib.request.Request(url)  # noqa: S310 — loopback http this file staged, nothing else
+    """Build the GET every read goes through; one `S310` site for this file's own http.
+
+    Both callers are staged by this file and neither can leave the box: the loopback servers
+    `_serve` starts on ephemeral ports, and the one `.invalid` host, which is not loopback but
+    is never resolved — its resolution is the seam the stall tests replace.
+    """
+    return urllib.request.Request(url)  # noqa: S310 — staged http: loopback, or `.invalid`
 
 
 def test_a_stalled_resolver_expires_at_the_calls_deadline_not_the_sockets(
@@ -138,19 +147,24 @@ def test_a_stalled_resolver_expires_at_the_calls_deadline_not_the_sockets(
     monkeypatch.setattr(socket, "getaddrinfo", stalled_resolver)
     request = _request("http://resolution-stalled.invalid/usage")
     started = time.monotonic()
-    with pytest.raises(TimeoutError) as raised:
-        bounded_request.read(request, 0.25)
-    elapsed = time.monotonic() - started
     try:
+        with pytest.raises(TimeoutError) as raised:
+            bounded_request.read(request, 0.25)
+        elapsed = time.monotonic() - started
         assert elapsed < 1.0
         assert "http://resolution-stalled.invalid/usage" in str(raised.value)
-        assert [worker for worker in _workers() if worker.is_alive()], (
+        stalled = [worker for worker in _workers() if worker.is_alive()]
+        assert stalled, (
             "the worker must still be inside resolution at expiry — a socket timeout "
             "firing here would mean the stall was never a resolver stall"
         )
     finally:
+        # Inside the `finally`, and wrapping the `pytest.raises` rather than following it: any
+        # other outcome propagates from in there, and a release that did not run would leave a
+        # worker blocked for the 30 s backstop — a red here becoming a red in a neighbour that
+        # reads the same worker table (#443).
         release.set()
-    for worker in _workers():
+    for worker in stalled:
         worker.join(5.0)  # released, it raises gaierror into its own failure list and dies
 
 
@@ -243,15 +257,19 @@ def test_a_worker_completing_after_its_deadline_cannot_reach_a_moved_on_caller(
         try:
             with pytest.raises(TimeoutError) as raised:
                 bounded_request.read(_request(f"{base}/abandoned"), 0.25)
+            # Read before the release, where it is the delivered outcome rather than an object
+            # captured earlier and re-checked after nothing could have touched it (#443).
+            assert type(raised.value) is TimeoutError
             stalled = _workers()
             assert stalled, "the worker must still exist at expiry — it was never joined"
             assert all(worker.daemon for worker in stalled)
         finally:
             release.set()
-        for worker in _workers():
+        for worker in stalled:
             worker.join(5.0)
-        assert all(not worker.is_alive() for worker in _workers())
-        assert type(raised.value) is TimeoutError  # the late success changed nothing delivered
+        # Over the workers alive at expiry, asserted non-empty above: a fresh `_workers()` can
+        # be empty, and an empty list satisfies an `all(...)` over it without a thread ending.
+        assert not [worker for worker in stalled if worker.is_alive()]
         fresh = bounded_request.read(_request(f"{base}/after"), 5.0)
         assert fresh == (200, b"/after")
 
