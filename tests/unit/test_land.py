@@ -790,6 +790,9 @@ def closer(monkeypatch: pytest.MonkeyPatch) -> _Close:
 
     Patching the module attribute is what `land` reads: `close or close_issue` resolves
     at call time, so this reaches the default path rather than only the injected one.
+    It reaches the seam's *own* tests too, which is not what they want and is why they
+    take `_CLOSE_ISSUE`, the function bound at import; they stay hermetic by standing in
+    one seam further down, at `subprocess.run`.
     """
     stand_in = _Close()
     monkeypatch.setattr(land, "close_issue", stand_in)
@@ -2215,6 +2218,14 @@ def test_a_landing_from_a_tree_that_names_no_issue_says_so_rather_than_guessing(
 
 # ------------------------------------------------------------ the tracker seam itself
 
+# The real seam, bound at import — before the autouse `closer` fixture replaces the
+# module attribute for every test in this module (#439). Everything above wants the
+# stand-in and gets it; the tests below are the tests *of* `close_issue`, so reading
+# `land.close_issue` inside them would assert against the stand-in and pass whatever
+# the function does. They stay off the network by standing in one seam further down,
+# at `subprocess.run`.
+_CLOSE_ISSUE: Final = land.close_issue
+
 
 class _Ran:
     """Stand in for `subprocess.run`, recording the call and answering as told."""
@@ -2246,7 +2257,7 @@ def test_the_close_is_bounded_by_a_deadline_that_kills_the_child(
     ran = _Ran()
     monkeypatch.setattr(land.subprocess, "run", ran)
 
-    assert land.close_issue(439, "landed as abc1234") is None
+    assert _CLOSE_ISSUE(439, "landed as abc1234") is None
 
     (argv,), kwargs = ran.calls[0]
     assert argv == ["gh", "issue", "close", "439", "--comment", "landed as abc1234"]
@@ -2270,7 +2281,7 @@ def test_every_way_gh_cannot_run_comes_back_as_a_reason(
     """Returned, never raised: the caller has already pushed and has no red to spend."""
     monkeypatch.setattr(land.subprocess, "run", _Ran(raises=failure))
 
-    reason = land.close_issue(439, "landed")
+    reason = _CLOSE_ISSUE(439, "landed")
 
     assert reason is not None
     assert reason.startswith(expected)
@@ -2292,7 +2303,7 @@ def test_a_gh_that_answers_with_a_refusal_carries_its_own_words_on_one_line(
         ),
     )
 
-    reason = land.close_issue(439, "landed")
+    reason = _CLOSE_ISSUE(439, "landed")
 
     assert reason is not None
     assert "\n" not in reason
@@ -2304,7 +2315,7 @@ def test_a_gh_that_refuses_without_a_word_still_names_its_exit(
 ) -> None:
     monkeypatch.setattr(land.subprocess, "run", _Ran(returncode=3))
 
-    assert land.close_issue(439, "landed") == "gh_refused exit 3"
+    assert _CLOSE_ISSUE(439, "landed") == "gh_refused exit 3"
 
 
 def test_a_reason_is_capped_so_a_page_of_html_cannot_be_the_landings_last_word(
@@ -2312,7 +2323,7 @@ def test_a_reason_is_capped_so_a_page_of_html_cannot_be_the_landings_last_word(
 ) -> None:
     monkeypatch.setattr(land.subprocess, "run", _Ran(returncode=1, stderr="x " * 5000))
 
-    reason = land.close_issue(439, "landed")
+    reason = _CLOSE_ISSUE(439, "landed")
 
     assert reason is not None
     assert len(reason) <= len("gh_refused ") + land.REASON_LIMIT
