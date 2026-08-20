@@ -6,7 +6,10 @@
   requires. A missing or stale audit could therefore coexist with `issue_closed=yes`. Before
   closing, the landing now reads the issue's thread and withholds the close where no audit is on
   it. The check is presence, not quality: any single comment naming `just check`, `just unit` and
-  `just mutation` counts, because a rung cannot judge an audit and every instance of #458's class
+  `just mutation` counts, and an audit split across several comments does not — blind spots that
+  fail in opposite directions, a stale comment quoting the three names a false positive that
+  permits the close and a real audit the token cannot see a false negative that withholds it —
+  because a rung cannot judge an audit and every instance of #458's class
   was a check standing in for a judgement. The withheld close never fails the landing — the work is
   already on `origin/main` — and the printed reason keeps the two causes apart:
   `reason=audit_absent` means an audit is owed (post it, then close by hand with the criterion

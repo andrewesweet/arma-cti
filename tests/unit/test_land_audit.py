@@ -79,6 +79,10 @@ def test_the_read_is_bounded_by_a_deadline_that_kills_the_child(
     [
         ((_AUDIT_BODY,), True),
         (("noise first", _AUDIT_BODY), True),
+        (
+            ("Before trusting this branch, re-run `just check`, `just unit` and `just mutation`.",),
+            True,
+        ),
         ((_AUDIT_BODY.upper(),), False),
         (("just check green, just unit green",), False),
         (("just check green", "just unit green, just mutation sampled"), False),
@@ -88,6 +92,7 @@ def test_the_read_is_bounded_by_a_deadline_that_kills_the_child(
     ids=[
         "the_audit_alone",
         "noise_around_it",
+        "a_non_audit_quoting_the_three_names_still_permits",
         "uppercased_gate_names_do_not_match",
         "one_gate_short",
         "split_across_comments",
@@ -103,10 +108,11 @@ def test_presence_is_one_comment_naming_all_three_gates(
 ) -> None:
     """The mechanical property stated where a reader meets it (`AUDIT_MARKERS`).
 
-    Not a judgement (#458's class): a comment quoting the three gate names passes
-    whether or not it is a good audit, one naming only two fails, and an audit
-    split across comments fails too — every blind spot failing toward the issue
-    staying open, which is the safe side of a presence check.
+    Not a judgement (#458's class), and the blind spots fail in opposite
+    directions: a comment quoting the three gate names passes whether or not it
+    is a good audit — the false positive, permitting the close — while one naming
+    only two fails, and an audit split across comments fails too — false
+    negatives, withholding the close from work already on `origin/main`.
     """
     monkeypatch.setattr(land.subprocess, "run", _Ran(stdout=_thread(*bodies)))
 

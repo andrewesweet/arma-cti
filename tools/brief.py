@@ -893,7 +893,9 @@ NONLANDING_LANDING_RULE: Final = (
     " #{issue} open — never close it. Commit your work and report it; the review that"
     " gates the landing has not happened when this seat finishes, so whether the work"
     " reached `main` is not this seat's to know. The issue closes with the landing"
-    " itself — `just land`'s own success path (#439) — and by no other hand."
+    " itself — `just land`'s own success path (#439) — and the one hand close is the"
+    " lander's own recovery, where that rung withheld for `reason=audit_absent`"
+    " (#461); it is never this seat's."
 )
 PASTE_RULE: Final = (
     "Quote `just verdict`'s rendered body verbatim; never retype the SHA or the evidence"

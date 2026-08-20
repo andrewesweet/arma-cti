@@ -787,33 +787,28 @@ def _run(argv: list[str], cwd: Path) -> tuple[int | None, str]:
 CLOSE_COMMENT: Final = (
     "Landed on `origin/main` as `{sha}`.\n\n"
     "Closed by `just land`, which closes the issue its worktree is named for on its"
-    " success path and nowhere else (#439) — so an item still open carries work that"
-    " is not on `origin/main`."
+    " success path and nowhere else (#439). An item still open after a landing is"
+    " therefore not proof the work is absent: the close can be withheld — no"
+    " criterion audit on the thread (#461), or the tracker not answering — with the"
+    " work already pushed, and the landing's own `issue_closed=` line names which."
 )
 
 
-def close_issue(issue: int, comment: str) -> str | None:
-    """Close one issue on the tracker, returning `None`, or why it did not close.
+def _gh(argv: list[str]) -> subprocess.CompletedProcess[str] | str:
+    """Run one `gh` call under the whole-call bound, returning why it could not run.
 
-    Every way this can go wrong is a returned reason rather than a raised exception,
-    because the caller has already pushed: the work is on `origin/main` and the issue's
-    state is bookkeeping, so a landing that reds because GitHub was unreachable would be
-    a worse defect than the open issue it was fixing (#439). `gh` absent, `gh`
-    unauthenticated, a rate limit, a stalled read — one line apiece, no exit code moved.
-
-    The bound is the *call's*, and `subprocess.run` kills the `gh` child at it: the same
-    whole-call property `worktree.git` has and for the same reason (#425), which a socket
-    timeout could not give because `getaddrinfo` takes none (#427). The kill reaches only
-    that child, so a helper `gh` spawned can outlive it.
-
-    The comment goes on argv rather than on stdin — `gh issue close` has no `--body-file`
-    — which is safe here and would not be for an arbitrary body: this one is a module
-    constant with a short SHA interpolated, so there is nothing secret to appear in `ps`
-    and nothing a caller can inject.
+    One home for the reason vocabulary both tracker calls print — `close_issue` as its
+    return, `read_audit` inside `AuditRead` — so the two spellings cannot drift apart
+    (review round 2, Low). The bound is the *call's*, and `subprocess.run` kills the
+    `gh` child at it: the same whole-call property `worktree.git` has and for the same
+    reason (#425), which a socket timeout could not give because `getaddrinfo` takes
+    none (#427). The kill reaches only that child, so a helper `gh` spawned can
+    outlive it. A non-zero exit is the caller's to interpret, not a way this could
+    not run.
     """
     try:
-        done = subprocess.run(  # noqa: S603 — fixed argv, no shell; the body is a constant
-            ["gh", "issue", "close", str(issue), "--comment", comment],  # noqa: S607 — `gh` off PATH on purpose, as `git` is
+        return subprocess.run(  # noqa: S603 — argv is a variable every caller builds from constants, no shell; `gh` off PATH on purpose, as `git` is
+            argv,
             capture_output=True,
             text=True,
             check=False,
@@ -825,6 +820,26 @@ def close_issue(issue: int, comment: str) -> str | None:
         return "gh_not_on_path"
     except (OSError, subprocess.SubprocessError) as blocked:
         return f"gh_unrunnable {type(blocked).__name__}: {blocked}"
+
+
+def close_issue(issue: int, comment: str) -> str | None:
+    """Close one issue on the tracker, returning `None`, or why it did not close.
+
+    Every way this can go wrong is a returned reason rather than a raised exception,
+    because the caller has already pushed: the work is on `origin/main` and the issue's
+    state is bookkeeping, so a landing that reds because GitHub was unreachable would be
+    a worse defect than the open issue it was fixing (#439). `gh` absent, `gh`
+    unauthenticated, a rate limit, a stalled read — one line apiece, no exit code moved.
+    The bound and the failure vocabulary are `_gh`'s, stated there.
+
+    The comment goes on argv rather than on stdin — `gh issue close` has no `--body-file`
+    — which is safe here and would not be for an arbitrary body: this one is a module
+    constant with a short SHA interpolated, so there is nothing secret to appear in `ps`
+    and nothing a caller can inject.
+    """
+    done = _gh(["gh", "issue", "close", str(issue), "--comment", comment])
+    if isinstance(done, str):
+        return done
     if done.returncode != 0:
         return f"gh_refused {_one_line(done.stderr) or f'exit {done.returncode}'}"
     return None
@@ -853,47 +868,36 @@ class AuditRead(NamedTuple):
 # (#461): any single comment on the thread whose body names all three gate
 # recipes. That is the shape `THREAD_AUDIT_RULE` instructs the landing session to
 # post, so a compliant thread reads present and a bare thread does not. It is a
-# presence check, not a quality check — it cannot tell an audit from any other
-# comment quoting the three names, and it cannot see an audit split across
-# several comments. Both blind spots fail toward the issue staying open, which is
-# the safe side: the close is withheld until a human-readable audit is there, and
-# the judge of whether it is *good* stays the review's (#449) and the human's,
-# never this rung's (#458's class: a check standing in for a judgement).
+# presence check, not a quality check, and its two blind spots fail in opposite
+# directions (review round 2): a comment that is not an audit but quotes the
+# three names reads present and the close is permitted — the false positive, the
+# token standing in for the thing — while a real audit split across several
+# comments or capitalising the recipe names reads absent and the close is
+# withheld with the work already on `origin/main` — the false negative, a good
+# landing left open until its audit is reposted as one comment and the issue
+# closed by hand. Neither direction judges quality: whether an audit is *good*
+# stays the review's (#449) and the human's, never this rung's (#458's class: a
+# check standing in for a judgement).
 AUDIT_MARKERS: Final = ("just check", "just unit", "just mutation")
 
 
-def read_audit(issue: int) -> AuditRead:  # noqa: PLR0911 — one return per named way the read could not be made, the vocabulary the close line prints
+def read_audit(issue: int) -> AuditRead:
     """Read one issue's thread, bounded, and answer whether an audit is on it.
 
-    The bound is the `gh` child's whole call — `subprocess.run`'s deadline kill,
-    #425's shape — and not `tools/bounded_request.py`'s thread-join, because the
-    call here is a `gh` CLI subprocess whose authentication this tool must not
+    The bound is the `gh` child's whole call — `_gh`'s deadline kill, #425's
+    shape — and not `tools/bounded_request.py`'s thread-join, because the call
+    here is a `gh` CLI subprocess whose authentication this tool must not
     rebuild, and whatever `gh` stalls on, DNS resolution included (#427's
     condition), a killed child ends. The join-shaped bound is for reads this
-    repository makes itself, over `urlopen`; the one caveat `close_issue` records
-    applies here too, that the kill reaches only the child, not a helper it
-    spawned.
+    repository makes itself, over `urlopen`.
 
     Every way this can go wrong is a returned reason rather than a raised
     exception, on `close_issue`'s argument: the caller has already pushed, so an
     unreachable tracker is one printed line and never a failed landing.
     """
-    try:
-        done = subprocess.run(  # noqa: S603 — fixed argv, no shell, no interpolation
-            ["gh", "issue", "view", str(issue), "--json", "comments"],  # noqa: S607 — `gh` off PATH on purpose, as `git` is
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=GH_CALL_TIMEOUT_S,
-        )
-    except subprocess.TimeoutExpired:
-        return AuditRead(
-            present=False, reason=f"gh_timeout gh gave no answer within {GH_CALL_TIMEOUT_S}s"
-        )
-    except FileNotFoundError:
-        return AuditRead(present=False, reason="gh_not_on_path")
-    except (OSError, subprocess.SubprocessError) as blocked:
-        return AuditRead(present=False, reason=f"gh_unrunnable {type(blocked).__name__}: {blocked}")
+    done = _gh(["gh", "issue", "view", str(issue), "--json", "comments"])
+    if isinstance(done, str):
+        return AuditRead(present=False, reason=done)
     if done.returncode != 0:
         return AuditRead(
             present=False,
