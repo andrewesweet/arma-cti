@@ -8,7 +8,7 @@
 
 ## 0. Method and limits
 
-Everything below was measured on this machine on 2026-08-05, against the tree at `8e0c751`. Where a number is a single observation it says so.
+Everything below was measured on this machine on 2026-08-05, against the tree at `8e0c751`, with one exception that names itself where it sits: §7's `BUDGET_S` survey — the 60-75 s bisected loop and the 71 s next-dearest module — was measured on 2026-08-19 against the tree at `1a140df`, on #435 round 2. Where a number is a single observation it says so.
 
 The corpus sweep ran in a `--shared` clone of the repo under `/tmp`, not in an agent worktree, and that is a finding rather than tidiness: the smoke mutates the real tree in place and runs pytest against it, and this suite takes real `flock`s and binds real ports. The first attempt ran beside an ordinary `uv run pytest` in another checkout and produced a spurious red in `tests/unit/test_client_lock.py` — #124's collision, where a sibling `just unit` swept the tier's ports. The reading stood; the story built on it did not, and the test passes on its own.
 
@@ -137,13 +137,15 @@ The eleven below 75% are not a finding about the gate; they are a finding about 
 | | |
 |---|---|
 | one module, mean over the 66 measured | **15.7 s** |
-| this landing's own module (`test_mutation_smoke.py` → `tools/mutation_smoke.py`, 178 planted, 20 run) | **36.2 s** |
+| this landing's own module (`test_mutation_smoke.py` → `tools/mutation_smoke.py`, 178 planted, 20 run), at `8e0c751` | **36.2 s** |
 | slowest in the corpus | 188.1 s (`test_pool_slots.py`, essentially all of it that module's own coverage pass) |
 | a landing that adds or rewrites no test module | **0 s** — the recipe says so and exits |
 
+That second row is a reading of this note's own tree and has since moved, which is expected rather than drift: the module's subject is this gate itself, so every edit to `tools/mutation_smoke.py` changes its mutant population. The same module measured 261 planted and 60.2 s at `ca8ae38` (#435 round 2, recorded on that issue's thread), and will move again the next time the tool is edited.
+
 The rung costs `just fast` nothing on a landing that touches no test module, and of order fifteen seconds per module that it does. Against #197's budget — `just fast` at about 2 min 10 s, under a five-minute prompt-cache cliff — a landing adding three test modules pays about 45 s and stays well inside it.
 
-The per-module `BUDGET_S` — 90 s when this note was written, 180 s since #435 round 2 re-sized it against a measured survey — bounds the tail rather than the mean. That survey, written down here the way the shell arm's is in its own note (§3 of `mutation-shell-arm.md`): the dearest loop this arm runs is this gate's own module, `test_mutation_smoke.py` → `tools/mutation_smoke.py`, at 60-75 s of mutants (bisected with `--budget`), and the next dearest, `test_dispatch_review.py`, spends 71 s end to end including its collect. 180 s is 2.4× the worst measured loop, deliberately above it so the **cap**, not the clock, decides how many mutants run — and a loop the budget still cuts short refuses rather than reporting a rate on the denominator the clock chose. The coverage pass is bounded separately (`COLLECT_S`), which is why `test_pool_slots.py`'s 188.1 s above is not a `BUDGET_S` question.
+The per-module `BUDGET_S` — 90 s when this note was written, 180 s since #435 round 2 re-sized it against a measured survey — bounds the tail rather than the mean. That survey, measured on 2026-08-19 against the tree at `1a140df` rather than this note's `8e0c751`: the dearest loop this arm runs is this gate's own module, `test_mutation_smoke.py` → `tools/mutation_smoke.py`, at 60-75 s of mutants (bisected with `--budget`), and the next dearest, `test_dispatch_review.py`, spends 71 s end to end including its collect. 180 s is 2.4× the worst measured loop, deliberately above it so the **cap**, not the clock, decides how many mutants run — and a loop the budget still cuts short refuses rather than reporting a rate on the denominator the clock chose. The coverage pass is bounded separately (`COLLECT_S`), which is why `test_pool_slots.py`'s 188.1 s above is not a `BUDGET_S` question.
 
 ## 8. What the gate does not catch
 

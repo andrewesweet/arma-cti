@@ -8,11 +8,11 @@
   of an unchanged module. Selection membership now takes every reaching test
   under a per-test ceiling and reads the clock only there — at that ceiling
   boundary, and in the over-ceiling fallback that keeps one cheapest test for a
-  line all of whose tests are over it; every spawned subprocess also runs under
-  one pinned `PYTHONHASHSEED`. The
-  per-module budget was re-sized against a measured survey so the cap, not the
-  clock, decides how many mutants run — and a loop the budget still cuts short
-  now refuses rather than reporting a rate on the smaller denominator the clock
-  chose. The module's determinism claims are restated with the bound that
-  actually holds — three clock-reads can each still flip one kill — and `SLACK`
-  now takes one of them as a stated tolerance rather than a derived bound.
+  line all of whose tests are over it; every Python subprocess this gate spawns
+  also runs under one pinned `PYTHONHASHSEED`. The per-module budget was
+  re-sized against a measured survey so the cap, not the clock, decides how many
+  mutants run — and a loop the budget still cuts short now refuses rather than
+  reporting a rate on the smaller denominator the clock chose. The module's
+  determinism claims are restated with what the tree supports — three clock-reads
+  survive, no bound on how many kills they can move between them has been
+  derived, and `SLACK` is one as a stated tolerance rather than a derived bound.
