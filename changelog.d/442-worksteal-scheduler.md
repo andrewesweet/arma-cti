@@ -15,5 +15,7 @@
   The evidence supports a real, large step — same-SHA `load` rows at 148–159 s
   against work-stealing rows at 69–75 s, plus an independent run at 69.6 s —
   and the new ~71 s expectation; it does not isolate the full 2.11× ratio as
-  scheduler-caused, because this session had already moved `unit` from 191.7 s
-  to 134.6 s before the scheduler changed.
+  scheduler-caused, because the session's green `unit` walls under `--dist load`
+  include a 134.56 s run alongside the 148–159 s rows above — same recipe, same
+  scheduler, all before the change — so the ratio's numerator is one position
+  in a spread the scheduler did not cause.
