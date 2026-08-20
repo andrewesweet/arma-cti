@@ -220,6 +220,13 @@ def test_a_different_module_draws_a_different_sample() -> None:
     )
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="the gate runs on the WSL2 side only")
+def test_the_gate_states_when_its_run_was_sampled(tmp_path: Path, capsys) -> None:  # noqa: ANN001
+    name = _throwaway(tmp_path, SOUND_TESTS)
+    assert smoke_tool.main(["--root", str(tmp_path), "--paths", name, "--cap", "1"]) == 0
+    assert "mutation smoke: run was sampled" in capsys.readouterr().out
+
+
 # --- reading what the tests reached -----------------------------------------
 
 
@@ -1133,6 +1140,12 @@ def test_a_new_module_with_no_test_module_reds_the_gate(tmp_path: Path, capsys) 
     (tmp_path / "tools" / "new.py").write_text("x = 1\n")
     assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 1
     assert "RED tools/new.py no_test_module:" in capsys.readouterr().out
+
+
+def test_an_empty_run_states_that_it_was_exhaustive(tmp_path: Path, capsys) -> None:  # noqa: ANN001
+    _repo(tmp_path)
+    assert smoke_tool.main(["--root", str(tmp_path), "--base", "main"]) == 0
+    assert "mutation smoke: run was exhaustive" in capsys.readouterr().out
 
 
 def test_the_named_list_clears_the_gate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

@@ -50,10 +50,10 @@ Six things, and the dispatch record carries four of them by construction:
   only check the code against itself;
 - **the implementer's pasted gate output** — the gate record the 2026-08-14 ruling puts in
   the review's hands in place of a gate run (#353). The paste must carry `just check`,
-  `just unit` **and** `just mutation` **with their result counts**, and it must state —
-  unconditionally, not only where a kill rate is quoted (#421) — whether the mutation run
-  was **sampled** — the twenty-mutant sample `just mutation` plants — or **exhaustive**
-  over every candidate: #344's round-2 review found an exhaustive 91% hiding behind a
+  `just unit` **and** `just mutation` **with their result counts**, including `just
+  mutation`'s own `mutation smoke: run was sampled` or `mutation smoke: run was exhaustive`
+  line verbatim — unconditionally, not only where a kill rate is quoted (#421): #344's
+  round-2 review found an exhaustive 91% hiding behind a
   reported `rate=100%`, because the sample missed both survivors on the line the round had
   just added. A paste that is absent, thinner than that, silent on counts, or silent on
   sampled-or-exhaustive is a finding — the reviewer reports it as an observation rather
@@ -489,8 +489,8 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     (human ruling 2026-08-14 on #353, as clarified 2026-08-20 on #449). The
     implementer's pasted gate output on the issue thread is your gate record: it
     must carry `just check`, `just unit` and `just mutation` with their result
-    counts, and it must say — unconditionally, not only where a kill rate is quoted
-    (#421) — whether the mutation run was sampled or exhaustive. A paste absent,
+    counts, including `just mutation`'s own sampled-or-exhaustive line verbatim —
+    unconditionally, not only where a kill rate is quoted (#421). A paste absent,
     thinner than that, silent on counts, or silent on sampled-or-exhaustive is a
     finding — report it as an observation rather than running the gate yourself.
 

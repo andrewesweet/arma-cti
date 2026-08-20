@@ -1068,6 +1068,7 @@ class Verdict(NamedTuple):
     # know that `killed=8/10` on a `spike/*.sh` subject is a different mutator
     # over a different corpus with a floor of its own (#246).
     arm: str = "python"
+    sampled: bool = False
 
     @property
     def kill_rate(self) -> float:
@@ -1517,6 +1518,7 @@ def _python_smoke(  # noqa: PLR0913 — every bound this gate applies is a calle
         rows=rows,
         started=started,
         arm="python",
+        sampled=len(chosen) < len(planted),
     )
 
 
@@ -1645,6 +1647,7 @@ def _shell_smoke(  # noqa: PLR0913 — every bound this gate applies is a caller
         rows=rows,
         started=started,
         arm="shell",
+        sampled=len(chosen) < len(planted),
     )
 
 
@@ -1659,6 +1662,7 @@ def _verdict_for(  # noqa: PLR0913 — a verdict is made of exactly these
     rows: dict[str, Row],
     started: float,
     arm: str,
+    sampled: bool,
 ) -> Verdict:
     """Apply the per-module ratchet to what an arm measured and render the verdict."""
     effective, ratcheted = _clamped_floor(
@@ -1676,6 +1680,7 @@ def _verdict_for(  # noqa: PLR0913 — a verdict is made of exactly these
         effective,
         ratcheted=ratcheted,
         arm=arm,
+        sampled=sampled,
     )
 
 
@@ -2045,7 +2050,11 @@ def write_baseline(root: Path, rows: dict[str, Row]) -> None:
     path.write_text(json.dumps(serialised, indent=2) + "\n", encoding="utf-8")
 
 
-def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[int, int, set[str]]:
+def _judge(
+    root: Path,
+    targets: list[str],
+    args: argparse.Namespace,
+) -> tuple[int, int, set[str], bool]:
     """Smoke each target, print its verdict, and count the reds and the refusals.
 
     The subjects come back too, because the selection rung's evidence is what the
@@ -2056,6 +2065,7 @@ def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[in
     red = 0
     refused = 0
     subjects: set[str] = set()
+    sampled = False
     for target in targets:
         if target in NO_MUTABLE_SUBJECT:
             print(f"-- {target} exempt: {NO_MUTABLE_SUBJECT[target]}", flush=True)  # noqa: T201
@@ -2082,13 +2092,14 @@ def _judge(root: Path, targets: list[str], args: argparse.Namespace) -> tuple[in
             continue
         if verdict.subject is not None:
             subjects.add(verdict.subject)
+        sampled |= verdict.sampled
         print(verdict, flush=True)  # noqa: T201 — stdout text IS this gate's output
         if not verdict.ok:
             red += 1
             print(f"    {verdict.reason}", file=sys.stderr)  # noqa: T201
             for survivor in verdict.survivors:
                 print(f"    survived: {survivor}", file=sys.stderr)  # noqa: T201
-    return red, refused, subjects
+    return red, refused, subjects, sampled
 
 
 def _report_selection(
@@ -2146,6 +2157,12 @@ def _report_selection(
             f"add {path} to NO_TEST_MODULE in tools/mutation_smoke.py with the reason.",
             flush=True,
         )
+
+
+def _report_sampling(*, sampled: bool, refused: bool) -> None:
+    """State the completed run's selection without calling a refusal a result."""
+    if not refused:
+        print(f"mutation smoke: run was {'sampled' if sampled else 'exhaustive'}")  # noqa: T201
 
 
 def _record(root: Path, targets: list[str], args: argparse.Namespace) -> int:
@@ -2323,7 +2340,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911 — every refus
     # No targets means nothing will run, so no subject can appear later: the
     # empty set is the run's whole answer, and this exit stays as cheap as it was.
     if not targets and not rust and not unmeasured(introduced, set()):
-        print(f"mutation smoke: nothing added or changed against {args.base}")  # noqa: T201
+        print(  # noqa: T201
+            f"mutation smoke: run was exhaustive; nothing added or changed against {args.base}",
+        )
         return 0
 
     if args.record:
@@ -2335,7 +2354,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911 — every refus
     # cannot survive binding the check to the measurement. A landing with no
     # test modules at all still reds before a single mutant is planted, because
     # nothing then runs to measure anything.
-    red, refused, subjects = _judge(root, targets, args)
+    red, refused, subjects, sampled = _judge(root, targets, args)
     unnamed = unmeasured(introduced, subjects)
     if rust:
         rust_red, rust_refused = _judge_rust(root)
@@ -2347,6 +2366,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0911 — every refus
     _report_selection(introduced, unnamed, survey=args.report, refused=bool(refused))
     if refused and not args.report:
         return 2
+    _report_sampling(sampled=sampled, refused=bool(refused))
     if (red or unnamed) and not args.report:
         print(  # noqa: T201
             f"{red} subject(s) did not notice the code changing. Strengthen the "

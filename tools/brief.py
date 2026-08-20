@@ -778,9 +778,9 @@ REVIEW_GATE_RULE: Final = (
     " cost this rule exists to avoid, and you are passed its report instead (human ruling"
     " 2026-08-14 on #353, as clarified 2026-08-20 on #449). The implementer's pasted gate"
     " output on the issue thread is your gate record: it must carry `just check`,"
-    " `just unit` and `just mutation` with their result counts, and it must say whether the"
-    " mutation run was sampled (the twenty-mutant sample the recipe plants) or exhaustive"
-    " over every candidate (#344) — unconditionally, not only where a kill rate is quoted."
+    " `just unit` and `just mutation` with their result counts, including `just mutation`'s"
+    " own `mutation smoke: run was sampled` or `mutation smoke: run was exhaustive` line"
+    " verbatim (#344) — unconditionally, not only where a kill rate is quoted."
     " A paste that is absent, thinner than that, silent on counts, or silent on"
     " sampled-or-exhaustive is a finding — report it as an observation rather than running"
     " the gate yourself (#421)."
@@ -1068,8 +1068,8 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
         (
             f"Close #{issue} with a criterion-by-criterion audit quoting the gate's output"
             " — `just check`, `just unit`, `just mutation`, each with its result counts —"
-            " and stating whether the mutation run was sampled or exhaustive (#344, #421:"
-            " both unconditionally, never only where a kill rate is quoted)."
+            " and including `just mutation`'s own sampled-or-exhaustive line verbatim (#344,"
+            " #421: both unconditionally, never only where a kill rate is quoted)."
         ),
     ]
 

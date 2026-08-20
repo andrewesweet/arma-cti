@@ -1127,8 +1127,8 @@ def test_a_review_briefing_asks_for_no_gate_run_and_names_the_paste_it_reads() -
     assert "`just mutation`" in rendered
     assert "with their result counts" in rendered
     assert "unconditionally, not only where a kill rate is quoted" in rendered
-    assert "sampled" in rendered
-    assert "exhaustive" in rendered
+    assert "mutation smoke: run was sampled" in rendered
+    assert "mutation smoke: run was exhaustive" in rendered
     # The derived gate line an implementer would get is not handed to a seat that cannot run it.
     assert "`just fast`" not in rendered
 
@@ -1249,7 +1249,7 @@ def test_an_implementer_briefing_is_asked_for_the_paste_the_review_reads() -> No
     assert "quoting the gate's output" in rendered
     assert "`just check`, `just unit`, `just mutation`" in rendered
     assert "each with its result counts" in rendered
-    assert "sampled or exhaustive" in rendered
+    assert "sampled-or-exhaustive line verbatim" in rendered
     assert "unconditionally" in rendered
 
 
