@@ -16,7 +16,7 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-changelog check-gate-clock check-seats check-arbiter check-sqf check-secrets check-python check-machine-b check-rust
+check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-changelog check-gate-clock check-seats check-just-grants check-arbiter check-sqf check-secrets check-python check-machine-b check-rust
 
 # Static validation for the repository-managed Machine B playbooks. The live
 # inventory is deliberately absent here: syntax and lint must be available to
@@ -92,6 +92,12 @@ check-gate-clock:
 # failure the definition file exists to prevent.
 check-seats:
     uv run python tools/check_seat_config.py
+
+# A dead `Bash(just ...)` grant is invisible until a dispatched session needs it.
+# This is intentionally one-way: ungranted recipes may be orchestrator-only, and
+# granting them merely for symmetry would widen dispatched-session permissions.
+check-just-grants:
+    uv run python tools/check_just_grants.py
 
 # Only tools/arbiter.py states what the arbiter walk does; everywhere else is a
 # pointer, or carries `arbiter-rule: stated — <reason>` (#390, human ruling
