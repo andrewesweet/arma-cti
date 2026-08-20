@@ -141,7 +141,9 @@ The eleven below 75% are not a finding about the gate; they are a finding about 
 | slowest in the corpus | 188.1 s (`test_pool_slots.py`, essentially all of it that module's own coverage pass) |
 | a landing that adds or rewrites no test module | **0 s** — the recipe says so and exits |
 
-The rung costs `just fast` nothing on a landing that touches no test module, and of order fifteen seconds per module that it does. Against #197's budget — `just fast` at about 2 min 10 s, under a five-minute prompt-cache cliff — a landing adding three test modules pays about 45 s and stays well inside it. The per-module `BUDGET_S` of 90 s is what bounds the tail rather than the mean.
+The rung costs `just fast` nothing on a landing that touches no test module, and of order fifteen seconds per module that it does. Against #197's budget — `just fast` at about 2 min 10 s, under a five-minute prompt-cache cliff — a landing adding three test modules pays about 45 s and stays well inside it.
+
+The per-module `BUDGET_S` — 90 s when this note was written, 180 s since #435 round 2 re-sized it against a measured survey — bounds the tail rather than the mean. That survey, written down here the way the shell arm's is in its own note (§3 of `mutation-shell-arm.md`): the dearest loop this arm runs is this gate's own module, `test_mutation_smoke.py` → `tools/mutation_smoke.py`, at 60-75 s of mutants (bisected with `--budget`), and the next dearest, `test_dispatch_review.py`, spends 71 s end to end including its collect. 180 s is 2.4× the worst measured loop, deliberately above it so the **cap**, not the clock, decides how many mutants run — and a loop the budget still cuts short refuses rather than reporting a rate on the denominator the clock chose. The coverage pass is bounded separately (`COLLECT_S`), which is why `test_pool_slots.py`'s 188.1 s above is not a `BUDGET_S` question.
 
 ## 8. What the gate does not catch
 

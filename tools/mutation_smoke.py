@@ -94,10 +94,12 @@ Three things a ratchet gets wrong, and how this one answers each:
   The module budget does not read the clock into a verdict at all — when it
   fires the run refuses rather than reporting a rate on a denominator the
   clock moved (#435 round 2). A rate is therefore a fixed function of the
-  (test module, subject) pair up to one kill, and `SLACK` is sized by that
-  stated bound rather than by the absence of jitter; beyond it, the only way
-  the rate stops applying is a change to the tests or the subject, which is
-  what the ratchet exists to notice.
+  (test module, subject) pair up to those three one-kill flips — and because
+  nothing stops two of them firing in one run, the bound the premises support
+  is three kills, not one. `SLACK` takes one of them as a pragmatic tolerance
+  rather than a derived bound, stated as that choice; beyond those flips, the
+  only way the rate stops applying is a change to the tests or the subject,
+  which is what the ratchet exists to notice.
 - **A legitimate refactor that lowers a module's achievable rate must not be
   blocked.** Editing the subject changes which mutants exist, so the recorded
   rate is about a *pair*, not a module. The row pins the subject's bytes, and
@@ -110,10 +112,14 @@ Three things a ratchet gets wrong, and how this one answers each:
   the diff, with the same reviewability `NO_MUTABLE_SUBJECT` has.
 
 `SLACK` is one kill: a module may lose one kill to its own recorded rate without
-redding — each of the three clock-reads a verdict still rests on (a duration
-straddling the per-test ceiling, the over-ceiling fallback's cheapest pick, a
-timeout scored under machine load) flips at most one — and two lost kills is
-the weakening the ratchet names. The baseline ships empty — landing the
+redding, and two lost kills is the weakening the ratchet names. That one is a
+pragmatic tolerance, not a bound derived from the three clock-reads a verdict
+still rests on (a duration straddling the per-test ceiling, the over-ceiling
+fallback's cheapest pick, a timeout scored under machine load) — each flips at
+most one kill and nothing stops two firing in one run, so the premises support
+three; one is taken because the measured jitter (#435) moved a single kill at a
+time, and because a tolerance wide enough to absorb every combination would
+absorb a real two-kill weakening too. The baseline ships empty — landing the
 mechanism without moving any number, so a first red is unambiguously a
 mechanism failure rather than a threshold one — and is populated by
 `--record`, never by the gate.
@@ -221,14 +227,17 @@ FLOOR: Final = 0.50
 # reds. The sample is seeded, the subject is pinned, every subprocess shares one
 # hash seed, and selection membership no longer reads the clock (#435) — but
 # "no jitter" was a premise the instrument did not satisfy, and the bound that
-# actually holds is stated, not assumed. What this absorbs is the residual
-# one-kill jitter the gate cannot remove, in the three places a measured
-# duration still reaches a verdict: a test whose duration straddles the
-# per-test ceiling flips one line's membership; a line every one of whose
-# tests is over the ceiling falls back to its single cheapest, which a
-# jittering duration can pick differently; and a timeout scored under machine
-# load can award a kill to a survivor. One kill of tolerance is that stated
-# bound; two lost kills is a weakening the ratchet names.
+# actually holds is stated, not assumed. Three places a measured duration still
+# reach a verdict: a test whose duration straddles the per-test ceiling flips
+# one line's membership; a line every one of whose tests is over the ceiling
+# falls back to its single cheapest, which a jittering duration can pick
+# differently; and a timeout scored under machine load can award a kill to a
+# survivor. Each costs at most one kill, they can fire together, and the bound
+# those premises support is therefore three — this is one: a pragmatic
+# tolerance, not a derived one, sized to the single flip the measured jitter
+# (#435) actually produced, because a tolerance wide enough to absorb every
+# combination would absorb a real two-kill weakening too. Two lost kills is
+# the weakening the ratchet names.
 SLACK: Final = 1
 
 # The kill rate a module on the **shell** arm must reach, and its own number
@@ -287,10 +296,12 @@ SHELL_TEST_SECONDS_PER_MUTANT: Final = 5.0
 SHELL_DISCRIMINATING: Final = False
 
 # A module's smoke gives up after this long. The size is a survey measurement,
-# the way `SHELL_BUDGET_S`'s is: the dearest loop this arm runs is this gate's
-# own module at 60-75 s of mutants (bisected with `--budget`, #435 round 2;
-# the next module, `tests/unit/test_dispatch_review.py`, spends 71 s end to
-# end including its collect), so 180 sits at 2.4× the worst measured loop —
+# written down in `docs/research/mutation-testing.md` §7 the way the shell
+# arm's is in `docs/research/mutation-shell-arm.md` §3: the dearest loop this
+# arm runs is this gate's own module at 60-75 s of mutants (bisected with
+# `--budget`, #435 round 2; the next module, `tests/unit/test_dispatch_review.py`,
+# spends 71 s end to end including its collect), so 180 sits at 2.4× the worst
+# measured loop —
 # deliberately above it, so the **cap** decides how many mutants run and the
 # clock does not: a denominator that moved with machine load would release the
 # per-module ratchet at random (#244 keys a row on `run`).
@@ -1353,7 +1364,8 @@ def _tally(  # noqa: PLR0913 — the loop's inputs, and every one of them is a b
             message = (
                 f"the module budget ran out after {run} of {len(chosen)} chosen mutants "
                 f"reached a verdict — a denominator the clock moved is not a rate. "
-                f"Re-run on an idle box, or pass a larger --budget"
+                f"Re-run on an idle box; a larger --budget is for a subject that "
+                f"genuinely grew, never the remedy for a refusal"
             )
             raise Refusal(message)
         tests = reach.cheapest(covered[mutant.line], bound)
@@ -1799,9 +1811,12 @@ def ratchet_floor(
     module meets `FLOOR`); the row's subject differs (the test now exercises a
     different file); the subject's bytes differ (the file changed, so the
     recorded rate is about a different mutant set — #244's "the number is about a
-    pair, not a module"); or fewer mutants ran than the row recorded (the budget
-    cut the run short, so the rate is on a smaller denominator than the row and
-    the comparison would be across them). In every release the gate still applies
+    pair, not a module"); or the number of mutants that reached a verdict is not
+    the row's — a dropped mutant (its graft changed nothing, or no test reaches
+    its line), a moved `--cap`, or a changed coverage set each put the rate on a
+    denominator other than the row's, and the comparison would be across them.
+    The clock is not among these causes: a budget-cut run refuses before any
+    verdict exists (#435 round 2). In every release the gate still applies
     `FLOOR` — the ratchet only ever raises the bar.
 
     The floor takes `SLACK` kills off the recorded rate. With the subject pinned
