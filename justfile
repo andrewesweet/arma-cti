@@ -96,6 +96,7 @@ check-seats:
 # A dead `Bash(just ...)` grant is invisible until a dispatched session needs it.
 # This is intentionally one-way: ungranted recipes may be orchestrator-only, and
 # granting them merely for symmetry would widen dispatched-session permissions.
+# Review measured this rung at 0.04-0.17 s on this box, about 0.1% of fast's 93.6 s anchor.
 check-just-grants:
     uv run python tools/check_just_grants.py
 

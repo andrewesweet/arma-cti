@@ -15,7 +15,12 @@ import sys
 from pathlib import Path
 from typing import Final
 
-GRANT: Final = re.compile(r"^Bash\(just\s+(?P<recipe>[^\s:)]+)(?::\*)?(?:\s+[^)]*)?\)$")
+JUST_GRANT: Final = "Bash(just "
+GRANT: Final = re.compile(r"^Bash\(just\s+(?P<recipe>(?!-)[^\s:)]+)(?::\*)?(?:\s+.*)?\)$")
+
+
+class JustDumpError(RuntimeError):
+    """`just --dump` could not supply the names this check needs."""
 
 
 def defined_recipes(justfile: Path) -> set[str]:
@@ -30,12 +35,19 @@ def defined_recipes(justfile: Path) -> set[str]:
             str(justfile),
         ],
         cwd=justfile.parent,
-        check=True,
+        check=False,
         capture_output=True,
         text=True,
     )
-    document = json.loads(completed.stdout)
-    return set(document["recipes"]) | set(document["aliases"])
+    if completed.returncode:
+        detail = " ".join(completed.stderr.split()) or f"exit {completed.returncode}"
+        raise JustDumpError(detail)
+    try:
+        document = json.loads(completed.stdout)
+        return set(document["recipes"]) | set(document["aliases"])
+    except (json.JSONDecodeError, KeyError, TypeError) as error:
+        detail = f"unreadable JSON output: {error}"
+        raise JustDumpError(detail) from error
 
 
 def failures(settings: Path, justfile: Path) -> list[str]:
@@ -46,8 +58,12 @@ def failures(settings: Path, justfile: Path) -> list[str]:
     missing: list[str] = []
     for grant in allowed:
         match = GRANT.fullmatch(grant)
-        if match and match["recipe"] not in defined:
-            recipe = match["recipe"]
+        if match is None:
+            if grant.startswith(JUST_GRANT):
+                missing.append(f"`{grant}` is a `Bash(just ...)` grant this check cannot read")
+            continue
+        recipe = match["recipe"]
+        if recipe not in defined:
             missing.append(f"`{grant}` grants `{recipe}`, which `{justfile.name}` does not define")
     return missing
 
@@ -59,7 +75,18 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--settings", type=Path, default=root / ".claude" / "settings.json")
     parser.add_argument("--justfile", type=Path, default=root / "justfile")
     args = parser.parse_args(argv)
-    found = failures(args.settings.resolve(), args.justfile.resolve())
+    justfile = args.justfile.resolve()
+    try:
+        found = failures(args.settings.resolve(), justfile)
+    except JustDumpError as error:
+        print("refusal=just_dump_failed", file=sys.stderr)  # noqa: T201
+        print(f"justfile={justfile}", file=sys.stderr)  # noqa: T201
+        print(f"detail={error}", file=sys.stderr)  # noqa: T201
+        print(  # noqa: T201
+            "action=run `just --dump --dump-format json --justfile <path>` and fix its error",
+            file=sys.stderr,
+        )
+        return 1
     for failure in found:
         print(failure, file=sys.stderr)  # noqa: T201 — the check speaks to its runner
     return bool(found)
