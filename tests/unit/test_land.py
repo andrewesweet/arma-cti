@@ -752,6 +752,50 @@ def _reviewed(  # noqa: PLR0913 — one parameter per field of the record under 
     return land.ReviewInputs(213, dispatch_root, review_root, _reach(at))
 
 
+class _Close:
+    """A tracker that records what it was asked to close, and answers what it was told to.
+
+    The `_Gate` shape, one seam further out: `reason` is what `close_issue` would have
+    returned — `None` for "it closed", a string for every way it did not.
+    """
+
+    def __init__(self, reason: str | None = None) -> None:
+        self.reason = reason
+        self.calls: list[tuple[int, str]] = []
+
+    def __call__(self, issue: int, comment: str) -> str | None:
+        self.calls.append((issue, comment))
+        return self.reason
+
+
+class _RaisingClose:
+    """A tracker seam that raises rather than returning, which no landing may propagate."""
+
+    def __call__(self, issue: int, comment: str) -> str | None:
+        message = f"the tracker exploded on #{issue} ({len(comment)} bytes of comment)"
+        raise RuntimeError(message)
+
+
+@pytest.fixture(autouse=True)
+def closer(monkeypatch: pytest.MonkeyPatch) -> _Close:
+    """Stand in for the tracker on every test in this module, always (#439).
+
+    `_never_the_real_records`' reasoning, pointed at the one seam here that leaves this
+    box: a successful landing closes its issue, and `close_issue` shells `gh` — so
+    without this the suite would post to `andrewesweet/arma-cti` from whatever
+    credentials the runner happens to hold, and would pass or fail by connectivity.
+    Autouse rather than a parameter each success test remembers, because "every test
+    that lands" is not a set a later author can be asked to keep in mind (#425's guard,
+    which existed because the escalate tests were hermetic only by accident).
+
+    Patching the module attribute is what `land` reads: `close or close_issue` resolves
+    at call time, so this reaches the default path rather than only the injected one.
+    """
+    stand_in = _Close()
+    monkeypatch.setattr(land, "close_issue", stand_in)
+    return stand_in
+
+
 @pytest.fixture(autouse=True)
 def _never_the_real_records(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """Point the review rung's default record roots at empty directories, always.
@@ -1895,6 +1939,388 @@ def test_a_landing_from_a_tree_that_names_no_issue_refuses_rather_than_guesses(
     report = land.land(main, renamed, gate=_Gate())
 
     assert report.lines[0] == "refusal=review_issue_unknown"
+
+
+# ------------------------------------------------------- closing the landed issue
+
+
+def test_a_successful_landing_closes_its_issue_and_names_the_sha(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    closer: _Close,
+) -> None:
+    """#439's whole point: the landing that ships the work is the one that closes the item."""
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+
+    report = land.land(main, here, gate=_Gate(), review=review)
+
+    landed = _git("rev-parse", "--short", "HEAD", cwd=here).strip()
+    assert report.lines[0] == "ok=landed"
+    assert f"issue_closed=yes issue=213 sha={landed}" in report.lines
+    assert len(closer.calls) == 1
+    issue, comment = closer.calls[0]
+    assert issue == 213
+    assert landed in comment
+
+
+def test_a_landing_from_the_main_checkout_closes_its_issue_too(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    closer: _Close,
+) -> None:
+    """The other `ok=landed` branch, where there is no second checkout to fast-forward.
+
+    Both success returns go through one closing site, and this is the arrangement that
+    proves the second one is not the branch that forgot: `merge=not_needed` is a landing
+    exactly as much as `merge=fast-forwarded` is.
+    """
+    _origin, main, _here = repo
+    # The fixture's linked worktree is an untracked directory in the main checkout, which is
+    # #105's own refusal condition; this arrangement is the one without it.
+    _git("worktree", "remove", str(_here), cwd=main)
+    _commit(main, "feature.txt", "work\n")
+    review = _reviewed(main, tmp_path)
+
+    report = land.land(main, main, gate=_Gate(), review=review)
+
+    landed = _git("rev-parse", "--short", "HEAD", cwd=main).strip()
+    assert report.lines[0] == "ok=landed"
+    assert any(line.startswith("merge=not_needed") for line in report.lines)
+    assert f"issue_closed=yes issue=213 sha={landed}" in report.lines
+    assert [issue for issue, _ in closer.calls] == [213]
+
+
+def _race_the_push(main: Path) -> Any:  # noqa: ANN401 — `land.GateResult` is a loaded module's type
+    """Return a gate that lands a sibling's commit while it runs, so this push loses the race."""
+
+    def gate(_path: Path) -> Any:  # noqa: ANN401
+        _commit(main, "sibling.txt", "landed first\n")
+        _git("push", "origin", "main", cwd=main)
+        return land.GateResult(0, "")
+
+    return gate
+
+
+def _refuse_dirty_tree(main: Path, here: Path, _tmp_path: Path) -> Any:  # noqa: ANN401
+    _commit(here, "feature.txt", "work\n")
+    (here / "foreign.txt").write_text("someone else's\n", encoding="utf-8")
+    return land.land(main, here, gate=_Gate())
+
+
+def _refuse_nothing_to_land(main: Path, here: Path, _tmp_path: Path) -> Any:  # noqa: ANN401
+    return land.land(main, here, gate=_Gate())
+
+
+def _refuse_rebase_conflict(main: Path, here: Path, _tmp_path: Path) -> Any:  # noqa: ANN401
+    _commit(main, "CHANGELOG.md", "theirs\n")
+    _git("push", "origin", "main", cwd=main)
+    _commit(here, "CHANGELOG.md", "ours\n")
+    return land.land(main, here, gate=_Gate())
+
+
+def _refuse_conflict_markers(main: Path, here: Path, _tmp_path: Path) -> Any:  # noqa: ANN401
+    marker = "|" * 7
+    _commit(here, "CHANGELOG.md", f"### Added\n\n{marker} parent of 7bea7f6\n- an entry.\n")
+    return land.land(main, here, gate=_Gate())
+
+
+def _refuse_review_issue_unknown(main: Path, here: Path, _tmp_path: Path) -> Any:  # noqa: ANN401
+    renamed = here.parent / "hand-named"
+    _git("worktree", "move", str(here), str(renamed), cwd=main)
+    _commit(renamed, "tools/worker.py", "work\n")
+    return land.land(main, renamed, gate=_Gate())
+
+
+def _refuse_no_dispatch_records(main: Path, here: Path, _tmp_path: Path) -> Any:  # noqa: ANN401
+    _commit(here, "tools/worker.py", "work\n")
+    return land.land(main, here, gate=_Gate())
+
+
+def _refuse_gate_red(main: Path, here: Path, tmp_path: Path) -> Any:  # noqa: ANN401
+    _commit(here, "feature.txt", "work\n")
+    return land.land(main, here, gate=_Gate(1), review=_reviewed(here, tmp_path))
+
+
+def _refuse_corpus_owed(main: Path, here: Path, tmp_path: Path) -> Any:  # noqa: ANN401
+    _commit(here, "src/cti_daemon/transport.py", "181 changed lines\n")
+    return land.land(main, here, gate=_Gate(), review=_reviewed(here, tmp_path))
+
+
+def _refuse_not_fast_forward(main: Path, here: Path, tmp_path: Path) -> Any:  # noqa: ANN401
+    _commit(here, "feature.txt", "work\n")
+    review = _reviewed(here, tmp_path)
+    return land.land(main, here, gate=_race_the_push(main), review=review)
+
+
+def _refuse_merge_not_fast_forward(main: Path, here: Path, tmp_path: Path) -> Any:  # noqa: ANN401
+    _commit(main, "local-only.txt", "never pushed\n")
+    _commit(here, "feature.txt", "work\n")
+    return land.land(main, here, gate=_Gate(), review=_reviewed(here, tmp_path))
+
+
+def _plan_a_landing(main: Path, here: Path, tmp_path: Path) -> Any:  # noqa: ANN401
+    _commit(here, "feature.txt", "work\n")
+    return land.land(main, here, gate=_Gate(), dry_run=True, review=_reviewed(here, tmp_path))
+
+
+def _stage_for_review(main: Path, here: Path, tmp_path: Path) -> Any:  # noqa: ANN401
+    _commit(here, "feature.txt", "work\n")
+    return land.stage(main, here, _reviewed(here, tmp_path))
+
+
+# One entry per shape a run can end in without having landed, because "a refusal leaves the
+# issue open" asserted once is a claim about one ladder rung and the rung it is about is the
+# next one somebody adds. The three groups differ in what they promise: the first nine
+# refuse and push nothing, `not_fast_forward` refuses after the gate with the remote moved
+# under it, and `merge_not_fast_forward` is the exit-2 shape where the push *did* happen —
+# the one this issue had to decide (see `_merge`'s docstring). A plan and a staging land
+# nothing either, and both return exit 0, so a close keyed on the code rather than on
+# reaching `_merge` would fire on them.
+LANDS_NOTHING: Final = (
+    ("dirty_tree", _refuse_dirty_tree),
+    ("nothing_to_land", _refuse_nothing_to_land),
+    ("rebase_conflict", _refuse_rebase_conflict),
+    ("conflict_markers", _refuse_conflict_markers),
+    ("review_issue_unknown", _refuse_review_issue_unknown),
+    ("no_dispatch_records", _refuse_no_dispatch_records),
+    ("gate_red", _refuse_gate_red),
+    ("corpus_owed", _refuse_corpus_owed),
+    ("not_fast_forward", _refuse_not_fast_forward),
+    ("merge_not_fast_forward", _refuse_merge_not_fast_forward),
+    ("dry_run", _plan_a_landing),
+    ("stage", _stage_for_review),
+)
+
+
+@pytest.mark.parametrize(("shape", "run"), LANDS_NOTHING, ids=[name for name, _ in LANDS_NOTHING])
+def test_a_run_that_did_not_land_leaves_its_issue_open(
+    shape: str,
+    run: Any,  # noqa: ANN401 — a module-typed `Report` no annotation here can name
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    closer: _Close,
+) -> None:
+    """One shape apiece, and every one of them leaves the tracker alone."""
+    _origin, main, here = repo
+
+    report = run(main, here, tmp_path)
+
+    assert "ok=landed" not in report.lines, shape
+    assert not any(line.startswith("issue_closed=") for line in report.lines), shape
+    assert closer.calls == [], shape
+
+
+def test_the_rerun_that_finishes_a_blocked_merge_is_where_the_issue_closes(
+    repo: tuple[Path, Path, Path],
+    closer: _Close,
+) -> None:
+    """The other half of the exit-2 decision: nothing is lost by not closing at exit 2.
+
+    The documented recovery from `merge_blocked_by_sandbox` / `merge_not_fast_forward` is
+    to run `just land` again once the outstanding step can run, and that re-run takes the
+    nothing-to-push branch straight back to `_merge` — so the issue closes then, from the
+    one site, and the open list keeps meaning "a step is outstanding" until there is not
+    one (#439).
+    """
+    origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    _git("push", "origin", "HEAD:main", cwd=here)
+    landed = _tip(origin)
+
+    report = land.land(main, here, gate=_Gate())
+
+    assert report.code == 0
+    assert report.lines[0] == "ok=landed"
+    assert "push=not_needed reason=already_on_origin/main" in report.lines
+    assert _git("rev-parse", "main", cwd=main).strip() == landed
+    assert [issue for issue, _ in closer.calls] == [213]
+
+
+def test_a_tracker_that_refuses_prints_the_reason_and_the_landing_still_exits_zero(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Constraint 3, by construction: the work is pushed, so the tracker cannot red a landing.
+
+    A landing that failed because GitHub was unreachable would be a worse defect than the
+    open issue #439 is about — the lander is told the landing failed when the work is on
+    `origin/main`, which is the one thing exit 0 has to mean.
+    """
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    monkeypatch.setattr(land, "close_issue", _Close("gh_not_on_path"))
+    review = _reviewed(here, tmp_path)
+
+    report = land.land(main, here, gate=_Gate(), review=review)
+
+    assert report.code == 0
+    assert report.lines[0] == "ok=landed"
+    assert "issue_closed=no issue=213 reason=gh_not_on_path" in report.lines
+
+
+def test_a_tracker_seam_that_raises_is_reported_rather_than_propagated(
+    repo: tuple[Path, Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Red first against a `_close_line` without its `except`, where this test raised.
+
+    `main` catches `GitError` and nothing else, so an exception out of the seam is a
+    traceback and a non-zero exit on a run whose work is already on `origin/main`.
+    `close_issue` returns its own failures as reasons, so this is about the *next* seam:
+    the guarantee is the landing's, not one implementation's.
+    """
+    _origin, main, here = repo
+    _commit(here, "feature.txt", "work\n")
+    monkeypatch.setattr(land, "close_issue", _RaisingClose())
+    review = _reviewed(here, tmp_path)
+
+    report = land.land(main, here, gate=_Gate(), review=review)
+
+    assert report.code == 0
+    assert report.lines[0] == "ok=landed"
+    assert any(
+        line.startswith("issue_closed=no issue=213 reason=gh_unrunnable RuntimeError:")
+        for line in report.lines
+    )
+
+
+def test_a_landing_from_a_tree_that_names_no_issue_says_so_rather_than_guessing(
+    repo: tuple[Path, Path, Path],
+    closer: _Close,
+) -> None:
+    """Reachable, because the re-run after a blocked merge never consults the review rung.
+
+    That rung is what refuses `review_issue_unknown` on a hand-named tree, and the
+    nothing-to-push branch skips it — so this branch can reach `ok=landed` with no issue
+    to close, and it says which rather than closing something it guessed.
+    """
+    origin, main, here = repo
+    renamed = here.parent / "hand-named"
+    _git("worktree", "move", str(here), str(renamed), cwd=main)
+    _commit(renamed, "feature.txt", "work\n")
+    _git("push", "origin", "HEAD:main", cwd=renamed)
+    assert _tip(origin) == _git("rev-parse", "HEAD", cwd=renamed).strip()
+
+    report = land.land(main, renamed, gate=_Gate())
+
+    assert report.code == 0
+    assert report.lines[0] == "ok=landed"
+    assert any(line.startswith("issue_closed=no reason=issue_unknown") for line in report.lines)
+    assert closer.calls == []
+
+
+# ------------------------------------------------------------ the tracker seam itself
+
+
+class _Ran:
+    """Stand in for `subprocess.run`, recording the call and answering as told."""
+
+    def __init__(
+        self, returncode: int = 0, stderr: str = "", raises: Exception | None = None
+    ) -> None:
+        self.returncode = returncode
+        self.stderr = stderr
+        self.raises = raises
+        self.calls: list[tuple[tuple[Any, ...], dict[str, Any]]] = []
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
+        self.calls.append((args, kwargs))
+        if self.raises is not None:
+            raise self.raises
+        return subprocess.CompletedProcess(args[0], self.returncode, "", self.stderr)
+
+
+def test_the_close_is_bounded_by_a_deadline_that_kills_the_child(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The bound is the whole call's, which is the only kind that survives a stalled resolver.
+
+    A socket timeout does not reach `getaddrinfo` (#427), so what makes this safe on the
+    serial landing path is `subprocess.run`'s deadline killing the `gh` child (#425's
+    shape). Asserted on the argument rather than by waiting on a real stall.
+    """
+    ran = _Ran()
+    monkeypatch.setattr(land.subprocess, "run", ran)
+
+    assert land.close_issue(439, "landed as abc1234") is None
+
+    (argv,), kwargs = ran.calls[0]
+    assert argv == ["gh", "issue", "close", "439", "--comment", "landed as abc1234"]
+    assert kwargs["timeout"] == land.CLOSE_TIMEOUT_S
+
+
+@pytest.mark.parametrize(
+    ("failure", "expected"),
+    [
+        (FileNotFoundError("gh"), "gh_not_on_path"),
+        (subprocess.TimeoutExpired(["gh"], 20), "gh_timeout"),
+        (PermissionError("blocked by the sandbox"), "gh_unrunnable"),
+    ],
+    ids=["absent", "stalled", "unrunnable"],
+)
+def test_every_way_gh_cannot_run_comes_back_as_a_reason(
+    failure: Exception,
+    expected: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Returned, never raised: the caller has already pushed and has no red to spend."""
+    monkeypatch.setattr(land.subprocess, "run", _Ran(raises=failure))
+
+    reason = land.close_issue(439, "landed")
+
+    assert reason is not None
+    assert reason.startswith(expected)
+
+
+def test_a_gh_that_answers_with_a_refusal_carries_its_own_words_on_one_line(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An unauthenticated or rate-limited `gh` is this: a non-zero exit and something to say.
+
+    Collapsed to one line and capped, because a reason is the tail of one output line and a
+    proxy's error page must not become the last thing a successful landing says.
+    """
+    monkeypatch.setattr(
+        land.subprocess,
+        "run",
+        _Ran(
+            returncode=1, stderr="gh: To get started with GitHub CLI,\nplease run: gh auth login\n"
+        ),
+    )
+
+    reason = land.close_issue(439, "landed")
+
+    assert reason is not None
+    assert "\n" not in reason
+    assert reason.startswith("gh_refused gh: To get started with GitHub CLI, please run:")
+
+
+def test_a_gh_that_refuses_without_a_word_still_names_its_exit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(land.subprocess, "run", _Ran(returncode=3))
+
+    assert land.close_issue(439, "landed") == "gh_refused exit 3"
+
+
+def test_a_reason_is_capped_so_a_page_of_html_cannot_be_the_landings_last_word(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(land.subprocess, "run", _Ran(returncode=1, stderr="x " * 5000))
+
+    reason = land.close_issue(439, "landed")
+
+    assert reason is not None
+    assert len(reason) <= len("gh_refused ") + land.REASON_LIMIT
+
+
+def test_the_closing_comment_names_the_sha_that_landed() -> None:
+    """The one thing a reader of the closed issue needs: which commit is the work."""
+    assert "abc1234" in land.CLOSE_COMMENT.format(sha="abc1234")
 
 
 # ---------------------------------------------------------------- staging for review

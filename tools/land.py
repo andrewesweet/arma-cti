@@ -71,6 +71,22 @@ With that bar retired no routing class refuses a landing at all, so
 `routing_policy_gate` is unreachable against the live policy and the routing rung's
 remaining job is to refuse a policy or a diff it could not read.
 
+**A landing closes the issue it landed** (#439), on the success path and nowhere
+else. Eighteen landed issues were open when that was filed, ten of them from
+previous sessions, because closing was a prose obligation with no mechanism —
+and an open list that includes finished work is a queue nobody can read. The
+issue is the one the worktree is named for, `_issue_from`'s derivation and not a
+second one, and the close is `gh issue close` with a comment naming the SHA.
+
+Three properties make it safe to put a network call on the serial landing path:
+it is bounded (`CLOSE_TIMEOUT_S`, which kills the `gh` child at its deadline —
+#425's shape, on the subprocess a `gh` read already is); it cannot fail the
+landing, since the work is already on `origin/main` and the issue's state is
+bookkeeping, so every way it can go wrong is the non-fatal `issue_closed=no
+reason=…` line and the landing still exits 0; and it is a seam (`close`) rather
+than a hard-wired call, so the unit tier substitutes it and never reaches
+GitHub.
+
 Refusals are this recipe's own vocabulary, not the harness failure-class table:
 a landing is not a corpus verdict and must not borrow its class names. What it
 borrows is the discipline — a named, actionable refusal rather than an opaque
@@ -201,6 +217,13 @@ if TYPE_CHECKING:
     # to exist, and there is no seam here for one to grow out of.
     Gate = Callable[[Path], "GateResult"]
 
+    # What `land` calls to close the issue it landed (#439). A parameter for the
+    # gate's own reason and one more: this one reaches the network, and the unit
+    # tier must never do that. `None` is the reason it did not close and `None`
+    # from the seam is "it closed" — the same direction as `Refusal | None`
+    # everywhere else here, where the value is what went wrong.
+    Close = Callable[[int, str], "str | None"]
+
 # The refspec, as a constant nothing parameterises. `git push origin main` from
 # a detached worktree pushes the local `main` branch, not HEAD, and CLAUDE.md
 # documents `HEAD:main` because agents kept typing the other one.
@@ -211,6 +234,15 @@ GATE: Final = ("just", "fast")
 # Generous against a gate measured at about 1:02 since #197. A bound, not an
 # expectation: an unbounded `uv run` is what #144 was about.
 GATE_TIMEOUT_S: Final = 1800
+
+# The whole `gh issue close` call's bound, not any socket inside it. Short because
+# this is the last step of a landing that has already succeeded and nothing waits on
+# its answer: an unreachable tracker should cost the lander seconds and a printed
+# reason, never a hung serial path (#427's condition, #425's mechanism).
+CLOSE_TIMEOUT_S: Final = 20
+# A reason is the tail of one output line, so a proxy's error page does not become the
+# last thing a successful landing says — every other line here is one fact wide.
+REASON_LIMIT: Final = 200
 
 EXIT_REFUSED: Final = 1
 # The work is on origin/main; a step after the push is outstanding. Separated
@@ -718,6 +750,60 @@ def _run(argv: list[str], cwd: Path) -> tuple[int | None, str]:
     return done.returncode, done.stderr
 
 
+# What the closing comment says. The SHA is the one the landing pushed, and the
+# sentence after it is for the reader who finds this issue a year from now and wants
+# to know whether a human judged it done or a recipe did.
+CLOSE_COMMENT: Final = (
+    "Landed on `origin/main` as `{sha}`.\n\n"
+    "Closed by `just land`, which closes the issue its worktree is named for on its"
+    " success path and nowhere else (#439) — so an item still open carries work that"
+    " is not on `origin/main`."
+)
+
+
+def close_issue(issue: int, comment: str) -> str | None:
+    """Close one issue on the tracker, returning `None`, or why it did not close.
+
+    Every way this can go wrong is a returned reason rather than a raised exception,
+    because the caller has already pushed: the work is on `origin/main` and the issue's
+    state is bookkeeping, so a landing that reds because GitHub was unreachable would be
+    a worse defect than the open issue it was fixing (#439). `gh` absent, `gh`
+    unauthenticated, a rate limit, a stalled read — one line apiece, no exit code moved.
+
+    The bound is the *call's*, and `subprocess.run` kills the `gh` child at it: the same
+    whole-call property `worktree.git` has and for the same reason (#425), which a socket
+    timeout could not give because `getaddrinfo` takes none (#427). The kill reaches only
+    that child, so a helper `gh` spawned can outlive it.
+
+    The comment goes on argv rather than on stdin — `gh issue close` has no `--body-file`
+    — which is safe here and would not be for an arbitrary body: this one is a module
+    constant with a short SHA interpolated, so there is nothing secret to appear in `ps`
+    and nothing a caller can inject.
+    """
+    try:
+        done = subprocess.run(  # noqa: S603 — fixed argv, no shell; the body is a constant
+            ["gh", "issue", "close", str(issue), "--comment", comment],  # noqa: S607 — `gh` off PATH on purpose, as `git` is
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=CLOSE_TIMEOUT_S,
+        )
+    except subprocess.TimeoutExpired:
+        return f"gh_timeout gh gave no answer within {CLOSE_TIMEOUT_S}s"
+    except FileNotFoundError:
+        return "gh_not_on_path"
+    except (OSError, subprocess.SubprocessError) as blocked:
+        return f"gh_unrunnable {type(blocked).__name__}: {blocked}"
+    if done.returncode != 0:
+        return f"gh_refused {_one_line(done.stderr) or f'exit {done.returncode}'}"
+    return None
+
+
+def _one_line(detail: str) -> str:
+    """Collapse a subprocess's words to one capped line, so one fact stays one line."""
+    return " ".join(detail.split())[:REASON_LIMIT]
+
+
 def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, ...] | None, str]:
     """Read the trusted policy from fetched origin/main and this branch's own paths.
 
@@ -992,8 +1078,15 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     lane: str = CLAUDE_LANE,
     corpus: Path | None = None,
     review: ReviewInputs | None = None,
+    close: Close | None = None,
 ) -> Report:
-    """Run the whole protocol, or refuse by name at the first rung that says no."""
+    """Run the whole protocol, or refuse by name at the first rung that says no.
+
+    `close` is the tracker seam (#439), resolved at call time rather than bound as a
+    default so that the unit tier can replace `close_issue` itself and pin that the
+    real one is never reached. `None` means the real one, exactly as it does for
+    `review`.
+    """
     status = read_status(git("status", "--porcelain", cwd=here))
     blocked = classify_tree(here, status, rebasing=rebase_in_progress(here))
     if blocked is not None:
@@ -1045,7 +1138,7 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     pushed = _push(here, ahead, lines)
     if isinstance(pushed, Report):
         return pushed
-    return _merge(root, here, pushed, lines)
+    return _merge(root, here, pushed, lines, review_inputs.issue, close or close_issue)
 
 
 def stage(root: Path, here: Path, review: ReviewInputs | None = None) -> Report:  # noqa: PLR0911 — a ladder of named refusals
@@ -1283,7 +1376,14 @@ def _push(here: Path, ahead: int, lines: list[str]) -> Report | str:
     return pushed
 
 
-def _merge(root: Path, here: Path, pushed: str, lines: list[str]) -> Report:
+def _merge(  # noqa: PLR0913, PLR0917 — the merge's inputs, one parameter apiece
+    root: Path,
+    here: Path,
+    pushed: str,
+    lines: list[str],
+    issue: int | None,
+    close: Close,
+) -> Report:
     """Fast-forward the main checkout, and make a merge that did not run loud.
 
     The exit-2 refusal keeps the lines the landing already earned, and it is the one refusal
@@ -1292,16 +1392,62 @@ def _merge(root: Path, here: Path, pushed: str, lines: list[str]) -> Report:
     this path the work **is** on `origin/main`, and dropping the lines would leave the only
     lander who has actually shipped as the only one never told what the routing rung did and
     did not check.
+
+    **`EXIT_LANDED_INCOMPLETE` does not close, and the argument for closing it is the one
+    worth answering** (#439). The work is on `origin/main`, which is what the issue tracks,
+    so closing there is defensible — but the exit code's own meaning is "a step is
+    outstanding", and a closed issue is exactly how that step gets forgotten, which is
+    ADR-0042's stale-hook window and the thing `merge_blocked_by_sandbox` was built to make
+    loud. Nothing is lost by waiting: the documented recovery is to run `just land` again,
+    that re-run takes the nothing-to-push branch straight back to this function, and it
+    closes then. So the issue closes exactly once the landing is complete, from one site,
+    and the open list means "something is outstanding" rather than "the push has not
+    happened" — the stronger reading for a queue.
     """
     if not _merge_needed(here, root):
         lines.append(f"merge=not_needed reason=landed_from_the_main_checkout ({root})")
-        return Report((("ok=landed"), *lines), 0)
+        return _landed(lines, issue, pushed, close)
     code, stderr = _run(merge_argv(root), cwd=root)
     outstanding = classify_merge(root, pushed, code, stderr)
     if outstanding is not None:
         return Report((*lines, *outstanding.lines()), EXIT_LANDED_INCOMPLETE)
     lines.append(f"merge=fast-forwarded {root} to {pushed}")
-    return Report((("ok=landed"), *lines), 0)
+    return _landed(lines, issue, pushed, close)
+
+
+def _landed(lines: list[str], issue: int | None, pushed: str, close: Close) -> Report:
+    """Close the landed issue and return the one report that says `ok=landed`.
+
+    Both success branches come through here rather than each closing for itself, so
+    "landed" and "closed" are one condition and cannot drift apart the way a value
+    computed twice can (#422).
+    """
+    lines.append(_close_line(issue, pushed, close))
+    return Report(("ok=landed", *lines), 0)
+
+
+def _close_line(issue: int | None, pushed: str, close: Close) -> str:
+    """Close the issue, and say what happened either way in one line.
+
+    Nothing here can fail the landing. The seam's own failures come back as reasons, and
+    the `except` catches what a *future* seam might raise instead — because the cost of
+    being wrong about that is a traceback out of `main`, which catches only `GitError`,
+    on a run whose work is already on `origin/main`. A lander told the landing failed
+    when it did not is worse than a lander told the tracker could not be reached.
+
+    An issue this tree cannot name is the same non-fatal line. It is reachable: the review
+    rung refuses `review_issue_unknown` on a tree that is not an `issue-<n>` one, but only
+    when it runs, and the re-run after a blocked merge skips it.
+    """
+    if issue is None:
+        return "issue_closed=no reason=issue_unknown (this tree is not an `issue-<n>` worktree)"
+    try:
+        reason = close(issue, CLOSE_COMMENT.format(sha=pushed))
+    except Exception as unexpected:  # noqa: BLE001 — see the docstring: never fail the landing
+        reason = f"gh_unrunnable {type(unexpected).__name__}: {_one_line(str(unexpected))}"
+    if reason is None:
+        return f"issue_closed=yes issue={issue} sha={pushed}"
+    return f"issue_closed=no issue={issue} reason={reason}"
 
 
 def _review_plan(
