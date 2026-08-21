@@ -74,6 +74,7 @@ REMOTE_READ_TIMEOUT_S: Final = 60
 # segment: no separators, no leading dot, nothing that walks upwards.
 VALID_NAME: Final = re.compile(r"\A[A-Za-z0-9][A-Za-z0-9._-]*\Z")
 FULL_COMMIT_SHA: Final = re.compile(r"\A[0-9a-f]{40}\Z")
+COMMIT_SHA_ERROR: Final = "a commit is named by its full 40-character SHA, never a shortened form"
 
 STOP_AND_REPORT: Final = (
     "Stop and report which tree and which holder. Another agent may be live in it — "
@@ -473,14 +474,21 @@ def git(*args: str, cwd: Path, check: bool = True, timeout: float | None = None)
     return done.stdout
 
 
-def commit_on_head(repo: Path, sha: str) -> Refusal | None:
-    """Ask the object database whether ``sha`` names a commit reachable from ``HEAD``."""
-    if not FULL_COMMIT_SHA.fullmatch(sha):
-        return Refusal(
-            "invalid_sha",
-            (f"repository={repo}", f"sha={sha}"),
-            "Name the commit by its full 40-character lowercase SHA. Nothing was recorded.",
-        )
+def invalid_commit_sha(sha: str, *, field: str = "sha") -> Refusal | None:
+    """Return the one form refusal shared by every commit-recording path."""
+    if FULL_COMMIT_SHA.fullmatch(sha):
+        return None
+    return Refusal(
+        "invalid_sha",
+        (f"{field}={sha}", COMMIT_SHA_ERROR),
+        f"Name the reviewed commit in full — {COMMIT_SHA_ERROR}.",
+    )
+
+
+def validate_referenced_commit(repo: Path, sha: str) -> Refusal | None:
+    """Ask whether ``sha`` names a commit contained by any ref in ``repo``."""
+    if invalid := invalid_commit_sha(sha):
+        return invalid
     # S603/S607: fixed git operations plus the caller's SHA, passed as one argv word.
     commit = subprocess.run(  # noqa: S603
         ["git", "cat-file", "-e", f"{sha}^{{commit}}"],  # noqa: S607
@@ -495,23 +503,15 @@ def commit_on_head(repo: Path, sha: str) -> Refusal | None:
             (f"repository={repo}", f"sha={sha}", "commit=missing_or_not_a_commit"),
             "Re-read the full SHA and name a commit this repository holds. Nothing was recorded.",
         )
-    reachable = subprocess.run(  # noqa: S603
-        ["git", "merge-base", "--is-ancestor", sha, "HEAD"],  # noqa: S607
-        cwd=repo,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if reachable.returncode == 0:
+    refs = git("for-each-ref", f"--contains={sha}", "--format=%(refname)", cwd=repo)
+    if refs.strip():
         return None
-    if reachable.returncode == 1:
-        return Refusal(
-            "commit_unreachable",
-            (f"repository={repo}", f"sha={sha}", "reachable_from_HEAD=no"),
-            "Name the commit on the branch under review. After a rebase, name the rebased"
-            " commit. Nothing was recorded.",
-        )
-    raise GitError(("merge-base", "--is-ancestor", sha, "HEAD"), reachable.stderr)
+    return Refusal(
+        "commit_unreachable",
+        (f"repository={repo}", f"sha={sha}", "reachable_from_refs=no"),
+        "Name a commit reachable from a ref in this repository. After a rebase, name the"
+        " rebased commit. Nothing was recorded.",
+    )
 
 
 def main_checkout(cwd: Path) -> Path:

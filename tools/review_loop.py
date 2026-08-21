@@ -1475,6 +1475,11 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
     authored.add_argument(
         "--sha", default="", help="the commit in hand when the declaration was recorded"
     )
+    authored.add_argument(
+        "--repo",
+        default=str(Path.cwd()),
+        help="a git repository whose refs contain the declared commit (default: this directory)",
+    )
     authored.set_defaults(handler=_cmd_author)
 
     shown = commands.add_parser("show", help="print an issue's stored loop state")
@@ -1870,6 +1875,9 @@ def _cmd_author(
     nothing in an interactive session's environment says which model is reading this — so
     the record says `declared` and the landing prints it that way.
 
+    Omitting the optional `--sha` also omits commit validation; the stored record says that
+    no commit was named rather than claiming a validation occurred.
+
     **Nor is the dispatch refusal a barrier.** It reads one environment variable, and a
     dispatched session that runs this command under `env -u CTI_DISPATCH_ID` writes the
     record; that was constructed and confirmed on #398's first review round. It is written
@@ -1893,8 +1901,7 @@ def _cmd_author(
         )
     if args.sha:
         try:
-            repo = Path(git("rev-parse", "--show-toplevel", cwd=Path.cwd()).strip())
-            commit = worktree.commit_on_head(repo, args.sha)
+            commit = worktree.validate_referenced_commit(Path(args.repo), args.sha)
         except GitError as failure:
             raise ExternalError(str(failure)) from failure
         if commit is not None:
