@@ -12,17 +12,23 @@ commit is exactly the kind only a standing measurement catches.
 So every `just unit` and `just fast` run attempts one row in
 `~/.arma-cti/gate-clock/records.jsonl` (outside every worktree, accumulating
 across branches and lanes). A dispatched run that cannot write there queues its
-row in a sandbox-writable outbox which the unsandboxed dispatcher attempts to
-append after the session exits; a failed host append is reported and leaves the
-outbox in place. This module's `report` — folded into
+row in a sandbox-writable outbox, or reports the outbox write failure. Each
+active session holds that outbox's
+`flock`; after the session exits, the unsandboxed dispatcher appends its rows
+under the canonical history's file lock. A stable per-history temp root lets
+the next dispatcher find every unlocked outbox whose dispatcher died. Each new
+row has a delivery id, so a retry after canonical append but before outbox
+cleanup does not append it twice. A failed host append is reported and leaves
+the outbox in place. This module's `report` — folded into
 `just watch-report` — compares a median of recent green runs against an
 **anchor** held in `tools/gate-clock-anchor.json`, in the tree.
 
 **Coverage is unknowable.** Recording failures before #472 were not counted,
 and a non-dispatched recorder still has no host harness that could durably count
-a failed write. `history` states that beside every numeric sample. The outbox
-closes the known sandbox-selected loss for dispatched runs; it does not recover
-old rows or manufacture a denominator.
+a failed write. `history` states that beside every numeric sample. While host
+temp storage remains, a successfully queued row is recoverable after dispatcher
+death; the mechanism does not survive host temp cleanup, recover old rows, or
+manufacture a denominator.
 
 **Anchored, not rolling, and that was measured rather than argued.** A
 self-normalising watcher — trailing N runs against the previous N — is the
@@ -210,20 +216,24 @@ recipe's — and both are real measurements of real invocations.
 The selected state directory is `CTI_GATE_CLOCK_DIR`, the seam
 `CTI_WATCH_DIR`, `CTI_BREAKER_DIR` and `CTI_RC_HEALTH_DIR` exist for (#249):
 without it a unit test of this reporter reads the live box, and whatever the box
-happens to be carrying reddens an unrelated run. During dispatch, selecting a
-different directory also queues the row for canonical collection; outside a
-dispatch, the recorder says that the canonical history does not include it.
+happens to be carrying reddens an unrelated run. It never selects a dispatch's
+canonical history: during dispatch, a row written to a different selected
+directory is also queued for canonical collection, or the queue failure is
+stated. Outside a dispatch, the recorder says that the canonical history does
+not include it.
 """
 
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import sys
 from datetime import UTC, datetime, time
 from pathlib import Path
 from typing import Final, NamedTuple
+from uuid import uuid4
 
 # tools/ holds standalone scripts rather than an importable package, so a sibling
 # import needs the script's own directory on the path — the device gate.py and
@@ -284,6 +294,7 @@ class Record(NamedTuple):
     load_1m: float | None
     foreign_gate_processes: int | None
     mutation_targets: int | None
+    record_id: str = ""
 
 
 class Verdict(NamedTuple):
@@ -313,7 +324,7 @@ def median(values: list[float]) -> float:
 
 def record_document(row: Record) -> dict[str, object]:
     """Render one run as the JSONL row the next report reads."""
-    return {
+    document: dict[str, object] = {
         "at": row.at,
         "recipe": row.recipe,
         "wall_seconds": row.wall_seconds,
@@ -324,6 +335,9 @@ def record_document(row: Record) -> dict[str, object]:
         "foreign_gate_processes": row.foreign_gate_processes,
         "mutation_targets": row.mutation_targets,
     }
+    if row.record_id:
+        document["record_id"] = row.record_id
+    return document
 
 
 def parse_record(document: object) -> Record | None:
@@ -341,6 +355,10 @@ def parse_record(document: object) -> Record | None:
     deliberately: their count was taken by a definition that included the
     exempt targets, so reading them as unclassified is the honest fate of a
     figure derived by a rule that has since changed.
+
+    A row without `record_id` predates #472 and remains readable. Collection
+    uses that legacy row's exact contents as its retry identity; every row this
+    version records carries a generated id instead.
     """
     if not isinstance(document, dict):
         return None
@@ -367,6 +385,7 @@ def parse_record(document: object) -> Record | None:
                 if document.get("mutation_targets") is not None
                 else None
             ),
+            record_id=str(document.get("record_id", "") or ""),
         )
     except (KeyError, TypeError, ValueError):
         return None
@@ -398,13 +417,51 @@ def load_records(gate_clock_dir: Path) -> tuple[Record, ...]:
     return tuple(rows)
 
 
-def append_record(gate_clock_dir: Path, row: Record) -> Path:
-    """Append one row, creating the state directory on first use."""
+def _record_identity(row: Record) -> object:
+    """Stable delivery identity, with exact legacy-row fallback."""
+    return ("id", row.record_id) if row.record_id else ("legacy", row)
+
+
+def _append_records(
+    gate_clock_dir: Path, rows: tuple[Record, ...], *, idempotent: bool
+) -> tuple[Path, int]:
+    """Append rows under one file lock and return how many were new."""
     path = records_path(gate_clock_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(record_document(row)) + "\n")
+    with path.open("a+", encoding="utf-8") as handle:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        handle.seek(0)
+        existing_text = handle.read()
+        known = (
+            {_record_identity(row) for row in load_records(gate_clock_dir)} if idempotent else set()
+        )
+        pending = []
+        for row in rows:
+            identity = _record_identity(row)
+            if identity in known:
+                continue
+            pending.append(row)
+            known.add(identity)
+        handle.seek(0, os.SEEK_END)
+        if existing_text and not existing_text.endswith("\n"):
+            handle.write("\n")
+        for row in pending:
+            handle.write(json.dumps(record_document(row)) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    return path, len(pending)
+
+
+def append_record(gate_clock_dir: Path, row: Record) -> Path:
+    """Append one row, creating the state directory on first use."""
+    path, _appended = _append_records(gate_clock_dir, (row,), idempotent=False)
     return path
+
+
+def append_records_once(gate_clock_dir: Path, rows: tuple[Record, ...]) -> int:
+    """Durably append each delivery identity at most once."""
+    _path, appended = _append_records(gate_clock_dir, rows, idempotent=True)
+    return appended
 
 
 def record_or_queue(gate_clock_dir: Path, row: Record) -> str | None:
@@ -921,6 +978,7 @@ def main(argv: list[str] | None = None) -> int:
             load_1m=args.load_1m,
             foreign_gate_processes=args.foreign_gate,
             mutation_targets=read_mutation_targets(),
+            record_id=uuid4().hex,
         )
         note = record_or_queue(args.gate_clock_dir, row)
         if note is None:

@@ -26,6 +26,7 @@ half the assertion; "and nothing else can see them" is the half this issue is fo
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import os
@@ -102,6 +103,27 @@ def credentials_file(tmp_path: Path, body: str, mode: int = 0o600) -> Path:
     return path
 
 
+def gate_clock_row(
+    record_id: str,
+    *,
+    at: str = "2026-08-21T06:25:00+00:00",
+    wall_seconds: float = 27.22,
+) -> gate_clock.Record:
+    """Return one queued gate-clock row for dispatcher arrangements."""
+    return gate_clock.Record(
+        at=at,
+        recipe="unit",
+        wall_seconds=wall_seconds,
+        status=0,
+        head="1341ca2",
+        tests_collected=5210,
+        load_1m=0.5,
+        foreign_gate_processes=0,
+        mutation_targets=None,
+        record_id=record_id,
+    )
+
+
 def git_worktree(tmp_path: Path, name: str = "tree") -> Path:
     """Make a real git repository, because the worktree assertion's subject is real git."""
     root = tmp_path / name
@@ -130,9 +152,13 @@ def fake_claude(tmp_path: Path) -> Path:
     runner = bindir / "claude"
     runner.write_text(
         """#!/usr/bin/env bash
-if [ -n "${CTI_FAKE_GATE_ROW:-}" ]; then
-  mkdir -p "$CTI_GATE_CLOCK_OUTBOX_DIR"
-  printf '%s\\n' "$CTI_FAKE_GATE_ROW" >>"$CTI_GATE_CLOCK_OUTBOX_DIR/records.jsonl"
+if [ -n "${CTI_FAKE_GATE_CLOCK_TOOL:-}" ]; then
+  start_up=$(cut -d' ' -f1 /proc/uptime)
+  "$CTI_FAKE_PYTHON" "$CTI_FAKE_GATE_CLOCK_TOOL" record \
+    --recipe unit --start-uptime "$start_up" --status 0
+  if [ -n "${CTI_FAKE_GATE_CLOCK_RESTORE:-}" ]; then
+    chmod 0700 "$CTI_FAKE_GATE_CLOCK_RESTORE"
+  fi
 fi
 {
   printf 'argv=%s\\n' "$*"
@@ -2028,23 +2054,65 @@ def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: P
 # --------------------------------------------------------------- the seam, end to end
 
 
+def test_orphaned_gate_clock_rows_are_recovered_once(tmp_path: Path) -> None:
+    canonical = tmp_path / "gate-clock"
+    delivered = gate_clock_row("delivered")
+    pending = gate_clock_row("pending", at="2026-08-21T06:30:00+00:00", wall_seconds=28.0)
+    gate_clock.append_record(canonical, delivered)
+    root = dispatch.gate_clock_outbox_root(canonical)
+    orphan = root / "d-orphan"
+    gate_clock.append_record(orphan, delivered)
+    gate_clock.append_record(orphan, pending)
+
+    assert dispatch.recover_gate_clock_outboxes(root, canonical) == (
+        "gate_clock_recovery=collected rows=1 duplicates=1",
+    )
+    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
+    assert gate_clock.load_records(canonical) == (delivered, pending)
+    assert not orphan.exists()
+
+
+def test_an_active_gate_clock_outbox_is_not_recovered(tmp_path: Path) -> None:
+    canonical = tmp_path / "gate-clock"
+    queued = gate_clock_row("active")
+    root = dispatch.gate_clock_outbox_root(canonical)
+    active = root / "d-active"
+    gate_clock.append_record(active, queued)
+    with (active / dispatch.GATE_CLOCK_OUTBOX_LOCK).open("a", encoding="utf-8") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
+        assert gate_clock.load_records(canonical) == ()
+
+    assert dispatch.recover_gate_clock_outboxes(root, canonical) == (
+        "gate_clock_recovery=collected rows=1",
+    )
+    assert gate_clock.load_records(canonical) == (queued,)
+
+
+def test_an_unreadable_gate_clock_outbox_stays_for_recovery(tmp_path: Path) -> None:
+    canonical = tmp_path / "gate-clock"
+    root = dispatch.gate_clock_outbox_root(canonical)
+    orphan = root / "d-broken"
+    gate_clock.append_record(orphan, gate_clock_row("readable"))
+    path = gate_clock.records_path(orphan)
+    path.write_text(path.read_text(encoding="utf-8") + "{broken\n", encoding="utf-8")
+
+    result = dispatch.recover_gate_clock_outboxes(root, canonical)
+
+    assert result[0] == "gate_clock_recovery=failed cause=outbox contained unreadable rows"
+    assert result[1] == f"outbox={orphan}"
+    assert gate_clock.load_records(canonical) == ()
+    assert orphan.exists()
+
+
 def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     tmp_path: Path,
 ) -> None:
     worktree = git_worktree(tmp_path)
     capture = tmp_path / "claude-ran.txt"
-    canonical_gate_clock = tmp_path / "gate-clock"
-    queued = gate_clock.Record(
-        at="2026-08-21T06:25:00+00:00",
-        recipe="unit",
-        wall_seconds=27.22,
-        status=0,
-        head="1341ca2",
-        tests_collected=5210,
-        load_1m=0.5,
-        foreign_gate_processes=0,
-        mutation_targets=None,
-    )
+    canonical_gate_clock = tmp_path / ".arma-cti" / "gate-clock"
+    canonical_gate_clock.mkdir(parents=True)
+    canonical_gate_clock.chmod(0o500)
     started = time.monotonic()
     done = run_seam(
         [
@@ -2064,8 +2132,11 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
         seam_env(
             tmp_path,
             capture,
+            HOME=str(tmp_path),
             CTI_GATE_CLOCK_DIR=str(canonical_gate_clock),
-            CTI_FAKE_GATE_ROW=json.dumps(gate_clock.record_document(queued)),
+            CTI_FAKE_GATE_CLOCK_TOOL=str(REPO / "tools" / "gate_clock.py"),
+            CTI_FAKE_GATE_CLOCK_RESTORE=str(canonical_gate_clock),
+            CTI_FAKE_PYTHON=sys.executable,
         ),
     )
     elapsed = time.monotonic() - started
@@ -2089,7 +2160,13 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     assert result["returncode"] == 0
     assert result["dispatch_id"] == printed["dispatch"]
     assert result["gate_clock_collection"] == ["gate_clock_collection=collected rows=1"]
-    assert gate_clock.load_records(canonical_gate_clock) == (queued,)
+    (collected,) = gate_clock.load_records(canonical_gate_clock)
+    assert collected.recipe == "unit"
+    assert collected.status == 0
+    assert collected.record_id
+    log = (record / "dispatch.log").read_text(encoding="utf-8")
+    assert "gate-clock unit canonical write failed" in log
+    assert "queued for dispatch harness" in log
 
     ran = read_lines(capture.read_text(encoding="utf-8"))
     assert ran["cwd"] == str(worktree.resolve())
@@ -2104,8 +2181,58 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     assert "cti.base_sha=" in attributes
     assert ran[gate_clock.CANONICAL_DIR_ENV] == str(canonical_gate_clock)
     assert gate_clock.OUTBOX_DIR_ENV in ran
+    assert not Path(ran[gate_clock.OUTBOX_DIR_ENV]).exists()
     # The poisoned parent did not reach the child.
     assert "ANTHROPIC_BASE_URL" not in ran
+
+
+def test_a_dispatched_gate_clock_override_still_reaches_canonical_history(
+    tmp_path: Path,
+) -> None:
+    worktree = git_worktree(tmp_path)
+    capture = tmp_path / "claude-ran.txt"
+    canonical = tmp_path / ".arma-cti" / "gate-clock"
+    selected = tmp_path / "selected-gate-clock"
+    orphaned = gate_clock_row("orphaned")
+    orphan = dispatch.gate_clock_outbox_root(canonical) / "d-orphan"
+    gate_clock.append_record(orphan, orphaned)
+    done = run_seam(
+        [
+            "--lane",
+            "claude-native",
+            "--profile",
+            "opus-high",
+            "--seat",
+            "implementer",
+            "--issue",
+            "223",
+            "--worktree",
+            str(worktree),
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+        ],
+        seam_env(
+            tmp_path,
+            capture,
+            HOME=str(tmp_path),
+            CTI_GATE_CLOCK_DIR=str(selected),
+            CTI_FAKE_GATE_CLOCK_TOOL=str(REPO / "tools" / "gate_clock.py"),
+            CTI_FAKE_PYTHON=sys.executable,
+        ),
+    )
+    assert done.returncode == 0, done.stderr
+    record = Path(read_lines(done.stdout)["record"])
+    assert await_file(record / "result.json"), (record / "dispatch.log").read_text(encoding="utf-8")
+
+    result = json.loads((record / "result.json").read_text(encoding="utf-8"))
+    assert result["gate_clock_recovery"] == ["gate_clock_recovery=collected rows=1"]
+    assert len(gate_clock.load_records(selected)) == 1
+    canonical_rows = gate_clock.load_records(canonical)
+    assert len(canonical_rows) == 2
+    assert orphaned in canonical_rows
+    assert gate_clock.load_records(selected)[0] in canonical_rows
+    ran = read_lines(capture.read_text(encoding="utf-8"))
+    assert ran[gate_clock.CANONICAL_DIR_ENV] == str(canonical)
 
 
 def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(
