@@ -51,12 +51,11 @@ import json
 import subprocess
 from typing import TYPE_CHECKING
 
+import pytest
 from conftest import load_tool
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    import pytest
 
 gate_clock = load_tool("gate_clock")
 # The exempt list is read from the tier rather than restated here, so an entry
@@ -677,6 +676,65 @@ def test_a_dispatched_noncanonical_destination_also_queues_the_canonical_row(
     assert len(gate_clock.load_records(outbox)) == 1
     assert gate_clock.load_records(canonical) == ()
     assert "queued for canonical collection" in capsys.readouterr().out
+
+
+def test_a_recorder_crash_cannot_leave_a_row_only_under_the_override(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A death between durable writes must leave the canonical outbox copy."""
+    canonical = tmp_path / "canonical"
+    selected = tmp_path / "selected"
+    outbox = tmp_path / "outbox"
+    recorded = row()
+    monkeypatch.setenv("CTI_GATE_CLOCK_CANONICAL_DIR", str(canonical))
+    monkeypatch.setenv("CTI_GATE_CLOCK_OUTBOX_DIR", str(outbox))
+    append_record = gate_clock.append_record
+    destinations: list[Path] = []
+
+    class RecorderCrash(BaseException):
+        """Stand in for process death, outside the recorder's recovery catches."""
+
+    def crash_between_writes(destination: Path, candidate: gate_clock.Record) -> Path:
+        destinations.append(destination)
+        if len(destinations) == 2:
+            raise RecorderCrash
+        return append_record(destination, candidate)
+
+    monkeypatch.setattr(gate_clock, "append_record", crash_between_writes)
+
+    with pytest.raises(RecorderCrash):
+        gate_clock.record_or_queue(selected, recorded)
+
+    assert destinations == [outbox.absolute(), selected.absolute()]
+    assert gate_clock.load_records(outbox) == (recorded,)
+    assert gate_clock.load_records(selected) == ()
+    assert gate_clock.load_records(canonical) == ()
+
+
+def test_a_failed_outbox_enqueue_does_not_create_an_override_only_row(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Without the recoverable copy, a dispatched override must not accept the row."""
+    canonical = tmp_path / "canonical"
+    selected = tmp_path / "selected"
+    outbox = tmp_path / "outbox"
+    recorded = row()
+    monkeypatch.setenv("CTI_GATE_CLOCK_CANONICAL_DIR", str(canonical))
+    monkeypatch.setenv("CTI_GATE_CLOCK_OUTBOX_DIR", str(outbox))
+    append_record = gate_clock.append_record
+    refusal = "arranged outbox refusal"
+
+    def reject_outbox(destination: Path, candidate: gate_clock.Record) -> Path:
+        if destination.absolute() == outbox.absolute():
+            raise PermissionError(refusal)
+        return append_record(destination, candidate)
+
+    monkeypatch.setattr(gate_clock, "append_record", reject_outbox)
+
+    assert gate_clock.record_or_queue(selected, recorded) is None
+    assert gate_clock.load_records(selected) == ()
+    assert gate_clock.load_records(canonical) == ()
+    assert "dispatch outbox write failed: arranged outbox refusal" in capsys.readouterr().err
 
 
 def test_report_through_the_cli_in_each_state(

@@ -2105,6 +2105,39 @@ def test_an_unreadable_gate_clock_outbox_stays_for_recovery(tmp_path: Path) -> N
     assert orphan.exists()
 
 
+def test_invalid_utf8_in_an_outbox_does_not_block_the_next_dispatch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Recovery reports byte corruption, leaves it, then launches and records the run."""
+    worktree = git_worktree(tmp_path)
+    capture = tmp_path / "claude-ran.txt"
+    canonical = tmp_path / ".arma-cti" / "gate-clock"
+    monkeypatch.setattr(dispatch.gate_clock, "DEFAULT_GATE_CLOCK_DIR", canonical)
+    root = dispatch.gate_clock_outbox_root(canonical)
+    orphan = root / "d-corrupt"
+    orphan.mkdir(parents=True)
+    gate_clock.records_path(orphan).write_bytes(b"\xff\n")
+    plan, brief_text, refusal = plan_for(tmp_path, worktree=str(worktree))
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+
+    code, lines = dispatch.run_dispatch(
+        plan.record,
+        seam_env(tmp_path, capture, HOME=str(tmp_path)),
+    )
+
+    assert code == 0
+    failure = next(line for line in lines if line.startswith("gate_clock_recovery=failed"))
+    assert "can't decode byte 0xff" in failure
+    assert f"outbox={orphan}" in lines
+    assert capture.exists()
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["returncode"] == 0
+    assert result["gate_clock_recovery"] == [failure, f"outbox={orphan}"]
+    assert orphan.exists()
+
+
 def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     tmp_path: Path,
 ) -> None:

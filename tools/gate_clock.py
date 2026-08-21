@@ -11,9 +11,11 @@ commit is exactly the kind only a standing measurement catches.
 
 So every `just unit` and `just fast` run attempts one row in
 `~/.arma-cti/gate-clock/records.jsonl` (outside every worktree, accumulating
-across branches and lanes). A dispatched run that cannot write there queues its
-row in a sandbox-writable outbox, or reports the outbox write failure. Each
-active session holds that outbox's
+across branches and lanes). A dispatched run first queues its row in a
+sandbox-writable outbox, then attempts its selected directory, or reports the
+outbox write failure without writing the selected copy. A death between those
+writes may omit the selected copy, but leaves the canonical copy recoverable.
+Each active session holds that outbox's
 `flock`; after the session exits, the unsandboxed dispatcher appends its rows
 under the canonical history's file lock. A stable per-history temp root lets
 the next dispatcher find every unlocked outbox whose dispatcher died. Each new
@@ -205,8 +207,9 @@ rows' `load_1m` and `foreign_gate_processes` fields are what separates that case
 when it is investigated.
 
 **What recording costs.** One `uv run python` start per recorded recipe (~0.3 s
-against a ~190 s tier, under 0.2%) and one small file write at collection time;
-nothing is added to any assertion or test. The #466 count adds one import of
+against a ~190 s tier, under 0.2%); outside a dispatch it appends one row, while
+a dispatched run appends the outbox row, attempts the selected copy, then
+appends at collection. Nothing is added to any assertion or test. The #466 count adds one import of
 `tools/mutation_smoke.py` and two passes of its `changed` git reads
 (`merge-base`, `diff --name-only`, `status --porcelain`) — stated as a count
 rather than a duration, because nobody has timed it. `just fast` invoking
@@ -217,10 +220,11 @@ The selected state directory is `CTI_GATE_CLOCK_DIR`, the seam
 `CTI_WATCH_DIR`, `CTI_BREAKER_DIR` and `CTI_RC_HEALTH_DIR` exist for (#249):
 without it a unit test of this reporter reads the live box, and whatever the box
 happens to be carrying reddens an unrelated run. It never selects a dispatch's
-canonical history: during dispatch, a row written to a different selected
-directory is also queued for canonical collection, or the queue failure is
-stated. Outside a dispatch, the recorder says that the canonical history does
-not include it.
+canonical history: during dispatch, a row is queued for canonical collection
+before a different selected directory is attempted. A death between those
+writes costs that selected copy, not canonical delivery; if the queue cannot be
+written, the selected copy is skipped and the failure is stated. Outside a
+dispatch, the recorder says that the canonical history does not include it.
 """
 
 from __future__ import annotations
@@ -469,9 +473,9 @@ def record_or_queue(gate_clock_dir: Path, row: Record) -> str | None:
 
     The outbox is injected only by `just dispatch`. It is writable inside the
     session sandbox; the unsandboxed dispatcher appends its rows to the canonical
-    history after the session exits. A caller-selected noncanonical destination is
-    still written, but its row also enters the outbox so `CTI_GATE_CLOCK_DIR` cannot
-    silently fork dispatched history.
+    history after the session exits. The outbox is written first, so a crash before
+    the caller-selected destination leaves the canonical delivery copy rather than an
+    override-only row. If that enqueue fails, the selected destination is not written.
 
     `None` means this function already reported the one non-gating failure line.
     Otherwise the string is appended to the ordinary recorded line.
@@ -480,24 +484,26 @@ def record_or_queue(gate_clock_dir: Path, row: Record) -> str | None:
     primary = gate_clock_dir.absolute()
     outbox_text = os.environ.get(OUTBOX_DIR_ENV, "")
     outbox = Path(outbox_text).absolute() if outbox_text else None
+    if outbox is not None:
+        try:
+            append_record(outbox, row)
+        except OSError as outbox_error:
+            print(  # noqa: T201 — the run's report surface
+                f"gate-clock {row.recipe} recording failed: dispatch outbox write "
+                f"failed: {outbox_error}",
+                file=sys.stderr,
+            )
+            return None
     try:
         append_record(primary, row)
     except OSError as primary_error:
         if outbox is None:
             failure = f"gate-clock {row.recipe} recording failed: {primary_error}"
         else:
-            try:
-                append_record(outbox, row)
-            except OSError as outbox_error:
-                failure = (
-                    f"gate-clock {row.recipe} recording failed: canonical write "
-                    f"failed: {primary_error}; dispatch outbox write failed: {outbox_error}"
-                )
-            else:
-                failure = (
-                    f"gate-clock {row.recipe} canonical write failed: {primary_error}; "
-                    "queued for dispatch harness"
-                )
+            failure = (
+                f"gate-clock {row.recipe} canonical write failed: {primary_error}; "
+                "queued for dispatch harness"
+            )
         print(failure, file=sys.stderr)  # noqa: T201 — the run's report surface
         return None
 
@@ -505,10 +511,6 @@ def record_or_queue(gate_clock_dir: Path, row: Record) -> str | None:
         return ""
     if outbox is None:
         return "; canonical history does not include this row"
-    try:
-        append_record(outbox, row)
-    except OSError as outbox_error:
-        return f"; canonical collection failed: {outbox_error}"
     return "; queued for canonical collection"
 
 

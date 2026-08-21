@@ -1,10 +1,12 @@
 #### Fixed
 
 - A dispatch always identifies `~/.arma-cti/gate-clock` as canonical, independent
-  of `CTI_GATE_CLOCK_DIR`. A row written under an override is also queued for
-  canonical collection; a read-only canonical path uses the same outbox fallback.
-  The recorder reports any failed primary or outbox write while returning success,
-  so recording cannot fail the gate.
+  of `CTI_GATE_CLOCK_DIR`. Its recorder fsyncs the row to the dispatch outbox
+  before attempting the selected directory. A crash between those writes can omit
+  the selected copy, but leaves the row recoverable for canonical collection; a
+  failed enqueue skips the selected write. A read-only canonical path uses that
+  same outbox. Caught write failures are reported while returning success, so
+  recording cannot fail the gate.
 
 - Every new row has a delivery id. Canonical collection holds a file lock, flushes
   each new id before deleting its outbox, and skips an id already present, so retry
@@ -16,4 +18,6 @@
 - `just gate-clock-history` now states that coverage is unknowable because failed
   recording attempts are not durably counted. A successfully queued dispatch row
   remains recoverable while host temp storage survives; this does not reconstruct
-  rows already lost or claim a denominator the instrument never recorded.
+  rows already lost or claim a denominator the instrument never recorded. A death
+  before or during the initial outbox append can still lose the row without a
+  failure line; no durable copy yet exists from which the harness could recover it.

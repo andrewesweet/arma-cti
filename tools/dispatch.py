@@ -3584,7 +3584,7 @@ def collect_gate_clock(outbox: Path, canonical: Path) -> tuple[str, ...]:
         queued_lines = [
             line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
         ]
-    except OSError as error:
+    except (OSError, UnicodeDecodeError) as error:
         return (
             f"gate_clock_collection=failed cause={error}",
             f"outbox={outbox}",
