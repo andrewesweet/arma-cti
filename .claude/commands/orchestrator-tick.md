@@ -4,11 +4,11 @@ description: One orchestrator cycle — harvest finished dispatches, land what i
 
 Orchestrator tick. Act; do not wait for the human. *(This file's own convention; no ruling behind it.)*
 
-**Where this file and the code disagree, the code wins and this file is wrong.** Citations below name the ruling or the implementing path where one is known. Three review rounds have each found citations that pointed at an example rather than at the ruling, so treat a citation as a lead to check, not as proof that the rule is recorded. Most of the orchestration rulings here are #217's. Making the file reliably distinguish a recorded ruling from its own convention is #474; until that lands, this file does not promise it.
+**Where this file and the code disagree, the code wins and this file is wrong.** Citations below name the ruling or the implementing path where one is known. Three review rounds each found the previous version's citation promise false in a different way — rules with no citation, citations to sources that did not state the rule, and citations to a ruling's worked examples rather than to the ruling. Treat a citation as a lead to check, not as proof that the rule is recorded. Most of the orchestration rulings here are #217's. Making the file reliably distinguish a recorded ruling from its own convention is #474; until that lands, this file does not promise it.
 
 ## 1. Harvest
 
-For every dispatch finished since the last tick, do the orchestrator's half. **These acts belong to the seats that own them, not to every completion**: exchange belongs to a dispatch that produced an implementation branch, and a verdict is derived only from a completed `seat=review` dispatch (`tools/review_exchange.py:10-26,210-218`; `derive_binding` at `:757-845`). A planner, recon, retro or fable completion owes its report and nothing else below.
+For every dispatch finished since the last tick, do the orchestrator's half. **These acts belong to the seats that own them, not to every completion**: exchange belongs to a dispatch that produced an implementation branch, and a verdict is derived only from a completed `seat=review` dispatch (`tools/review_exchange.py:10-26,210-218`; `derive_binding` at `:757-845`). A planner, recon or fable completion owes its report and nothing else below — all three are `lands=False` (`tools/dispatch.py:723,749,849`). **`retro` is `lands=True`** (`:837`): its journal branch is work, and it takes the same exchange, review, verdict and landing path as an implementation branch.
 
 - Read its result and its report.
 - **Exchange its branch** with `just review exchange <issue>` (`tools/review_exchange.py`), and retire its tree when the issue is closed. "Push the branch" describes neither the recipe nor what the reviewer needs.

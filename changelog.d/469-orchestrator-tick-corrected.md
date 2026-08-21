@@ -6,7 +6,7 @@ The changes that alter what an orchestrator does:
 
 - The in-flight limit and its ruling are read from `just queue state` rather than named here. The file had said two; the live limit is five in any lane.
 - Occupancy is by issue, not by tree: a landed-but-open issue still holds a slot, and closing it releases the slot while leaving the tree owed for retirement.
-- The harvest acts belong to the seats that own them. Exchange belongs to a dispatch that produced an implementation branch, and a verdict is derived only from a completed review dispatch, so a planner or recon completion owes its report and nothing else.
+- The harvest acts belong to the seats that own them. Exchange belongs to a dispatch that produced a branch, and a verdict is derived only from a completed review dispatch, so a planner, recon or fable completion owes its report and nothing else. A retro completion does land, and its journal branch takes the same path as an implementation branch.
 - Codex may take the implementer seat. The orchestrator seat remains the only one restricted to a single lane.
 - The cross-lane rung is a preference rather than a bar, on that rung alone; every other landing refusal is unchanged, including the absolute one on a reviewer sharing the author's profile.
 - A verdict survives a tool-recorded clean rebase, so a parallel landing does not orphan another branch's verdict.
