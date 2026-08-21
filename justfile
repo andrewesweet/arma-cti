@@ -185,7 +185,7 @@ unit:
     if [ -n "$start_load" ]; then record_args+=(--load-1m "$start_load"); fi
     if [ -n "$start_foreign" ]; then record_args+=(--foreign-gate "$start_foreign"); fi
     uv run python tools/gate_clock.py "${record_args[@]}" \
-        || echo "gate-clock unit recording failed: recorder exited $?" >&2
+        || echo "gate-clock: recording failed" >&2
     if [ "$created" = 1 ]; then rm -f "$CTI_GATE_CLOCK_COLLECTED_FILE"; fi
     exit "$status"
 
@@ -380,7 +380,7 @@ fast:
     if [ -n "$start_load" ]; then record_args+=(--load-1m "$start_load"); fi
     if [ -n "$start_foreign" ]; then record_args+=(--foreign-gate "$start_foreign"); fi
     uv run python tools/gate_clock.py "${record_args[@]}" \
-        || echo "gate-clock fast recording failed: recorder exited $?" >&2
+        || echo "gate-clock: recording failed" >&2
     rm -f "$CTI_GATE_CLOCK_COLLECTED_FILE"
     exit "$status"
 
@@ -805,11 +805,9 @@ watch-report *args:
 
 # The gate-duration read's other half (#446): per-recipe record counts, green
 # medians, spans and the anchor each recipe holds with its set date, for the
-# retro asking what moving an anchor would be moving from, plus the instrument's
-# explicit `coverage unknowable` statement: failed attempts were never durably
-# counted, so no denominator exists. Story 7's explicit ask — `report` is
-# silent-when-healthy by contract, so the history needs its own surface rather
-# than hiding behind `uv run`. Reads the same
+# retro asking what moving an anchor would be moving from. Story 7's explicit
+# ask — `report` is silent-when-healthy by contract, so the history needs its
+# own surface rather than hiding behind `uv run`. Reads the same
 # `CTI_GATE_CLOCK_DIR` seam and the tree's anchor file; never gates.
 gate-clock-history:
     uv run python tools/gate_clock.py history
