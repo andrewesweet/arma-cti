@@ -248,15 +248,41 @@ reap_bounded() {
 
 cleanup() {
     local code=$?
+    local pids=("$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid")
+    local term_deadline term_now state running
     if [[ -n "$proton_client_started" ]]; then
         cti_proton_client_stop "$OUT/headed-client" ||
             log "teardown: Proton client service did not become cleanly inactive; see $OUT/headed-client"
     fi
-    for pid in "$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
+    for pid in "${pids[@]}"; do
         [[ -n "$pid" ]] && kill "$pid" 2>/dev/null
     done
-    sleep 2
-    for pid in "$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
+    # Keep the old two-second SIGTERM grace as the deadline, but stop waiting as
+    # soon as every child has exited. A zombie has exited and only needs reaping.
+    term_now="$(now)"
+    term_deadline=$((term_now + 2000))
+    while :; do
+        running=0
+        for pid in "${pids[@]}"; do
+            [[ -z "$pid" ]] && continue
+            state="$(sed -e 's/^.*) //' -e 's/ .*//' "/proc/$pid/stat" 2>/dev/null)"
+            if [[ -n "$state" && "$state" != Z ]]; then
+                running=1
+                break
+            fi
+        done
+        if ((running == 0)); then
+            log "teardown: SIGTERM grace ended when every child exited"
+            break
+        fi
+        term_now="$(now)" || break
+        if ((term_now >= term_deadline)); then
+            log "teardown: SIGTERM grace reached its 2s deadline"
+            break
+        fi
+        sleep 0.05
+    done
+    for pid in "${pids[@]}"; do
         [[ -n "$pid" ]] && kill -9 "$pid" 2>/dev/null
     done
     # Reaped, not merely signalled. A pid this shell launched and has not reaped
@@ -269,7 +295,7 @@ cleanup() {
     # thing teardown must never do. A pid that survives the bound is reported and
     # left: teardown cannot fix it, and the next holder of this slot recovers it
     # as stale state (ADR-0022).
-    for pid in "$win_client_pid" "$win_hc_pid" "$hc_pid" "$server_pid" "$daemon_pid"; do
+    for pid in "${pids[@]}"; do
         [[ -n "$pid" ]] && reap_bounded "$pid"
     done
     # The server's own .rpt, now that the engine has stopped writing it. Here
