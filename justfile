@@ -662,6 +662,10 @@ discard path="" ruling="":
 # off by typing a flag is a default, and it is printed as
 # `route_permission_mode=plan forced_by_seat=review` rather than applied
 # silently.
+# A completed review's final stdout is its report. The unsandboxed dispatcher posts it once
+# with the host's `gh`, then records `review_delivery=posted`; blank output or any refused
+# host call is `review_delivery_failed`. No child GitHub credential or child-created body
+# file is used for delivery, and there is no retry, recovery scan or dedupe (#496).
 #
 # The issue is read before anything is planned, and one that states no criteria
 # is refused (#241). Definition of ready, mechanically: criteria must exist, and
@@ -719,7 +723,8 @@ discard path="" ruling="":
 # `just dispatch --list` shows which lanes carry the ruling.
 #
 # Evidence lands in `~/.arma-cti/dispatches/<id>/`: `dispatch.json`, the brief
-# as sent, `dispatch.log`, and `result.json` when the run ends.
+# as sent, `dispatch.log`, and `result.json` when the run ends. A review result also carries
+# its `review_delivery` lines, including the named refusal when its report was not posted.
 [positional-arguments]
 dispatch *args:
     ./tools/dispatch.sh "$@"

@@ -136,7 +136,7 @@ things follow, and the first is the correction.
 - **The seat was never told to run *nothing*.** That was this document's transcription, and
   the brief template below carried it as *"A review also runs nothing"* alongside *"do not
   file an issue or a comment"* — a consequence nobody had ruled. Both are gone.
-- **Posting its own findings is the reviewer's, not a favour from the orchestrator.** The
+- **Authoring the report is the reviewer's, not a favour from the orchestrator.** The
   cost of the wider reading is measured: in the session of 2026-08-19/20, fifteen verdicts
   (#421, #427, #422, #419, #433, #425, #410, #424, #370, #438, #437, #443, #441, #440, #436)
   were relayed by hand, each a plan read, an extraction and a `gh issue comment`, and every
@@ -165,12 +165,38 @@ function; *the sandbox blocks the network* is a claim about Codex's own read-onl
 which nobody here had measured. CLAUDE.md decides between the two — a lane's enforcement is
 what it demonstrably runs, never what its provider claims.
 
-**What is still not claimed.** Two runs are an observation, not an invariant: nothing here
-says every `plan`-mode review will be permitted to post. The brief tells the reviewer to
-attempt the post and to report a refusal among its findings, so a family, mode or runner
-version that does refuse is recorded the first time it happens rather than assumed away, and
-the orchestrator relay stays available for that case. Whether the relay can be retired as a
-standing step is #393's question, not this document's.
+**#496 answered the configuration question: direct posting was intended.** Three independent
+configuration surfaces agree: `.claude/settings.json` allows `Bash(gh issue:*)`; the review
+brief ordered `gh issue comment`; and `assemble_environment` strips only provider-owned
+Claude variables, not GitHub credentials. The two successful runs above corroborate that
+configuration. Therefore an invalid sandbox token, a cancelled connector call or unreachable
+GitHub is a broken delivery path, not intended read-only containment.
+
+**Direct posting was still not a dependable transport.** On 2026-08-21 eleven reviews in one
+session completed without a comment. The observed paths were Claude `plan` mode without an
+`ExitPlanMode` tool, repeated Codex connector cancellation, an invalid `gh` token inside the
+sandbox while the orchestrator's `gh` worked, and failure reaching `api.github.com`. A clean
+review and an undelivered review therefore still produced the same thread: no comment.
+
+**The dispatcher now transports the reviewer's final report once.** The reviewer puts the
+complete report, including a clean verdict, in its final response and does not call `gh` or
+write a body file. `_run_child_with_gate_clock` directs review stdout into an anonymous
+temporary file opened by the unsandboxed dispatcher; the child inherits its file descriptor,
+so neither its filesystem nor its credentials carry the body. After a zero child exit,
+`deliver_review` makes one bounded host-side `gh issue comment --body-file -` call. A blank
+report, an unavailable command, a timeout or a non-zero `gh` exit is the named refusal
+`review_delivery_failed`; `result.json` retains the zero child return code, marks
+`harness_failed_after_child`, and carries the refusal. The full captured report is also emitted
+to `dispatch.log` before the post.
+
+**Visibility is the target, not impossible loss.** There is no retry, recovery scan, lock,
+quarantine or dedupe. If the dispatcher dies abruptly after the child exits, nothing remains
+to report that failure; if a reviewer omits a finding from final stdout, the harness cannot
+recover it from a connector call or plan file; and a timed-out post may have reached GitHub
+before its result was lost. The handled delivery outcomes either record
+`review_delivery=posted` or end loudly with the named refusal. A host-side authentication or
+network failure still leaves the captured report undelivered and requires deliberate manual
+relay from the named log; an empty report has nothing to relay and requires a fresh review.
 
 ### The reviewer is never the reviewed profile
 
@@ -432,11 +458,13 @@ The orchestrator receives the report and routes each claim:
   counted in the citation denominator. Silently dropping it would make the seat's bar
   unmeasurable in exactly the direction that flatters the reviewer.
 
-Either route is the reviewer's own to take (human ruling 2026-08-20, #449: *"they can of
-course … post their own findings"*), and the seat's contract is still the report — a review
-that files nothing has not failed, it has produced its claims. The orchestrator relays where
-the reviewer's tool call was refused — a case neither family has been observed to hit, so a
-fallback rather than a standing division of labour.
+The report is the reviewer's own (human ruling 2026-08-20, #449: *"they can of course … post
+their own findings"*), and #496 changes only its transport: the dispatcher posts that report
+as one comment after the child exits. The orchestrator reads it from the thread and routes its
+claims above; it no longer extracts a successful review from `dispatch.log`. A review with no
+claims has not failed, but it still emits and delivers an explicit clean report. A refused
+post requires manual relay from the named log because the harness does not retry; an empty
+report instead requires a fresh review.
 
 ## What a confirmed claim now reaches: nothing
 
@@ -500,9 +528,12 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     A review lands nothing. Do not edit a file, do not commit, do not push, do not
     run `just land`. Your permission mode is `plan`, which enforces this; the rule
     is stated as well because a mechanism you understand is one you do not fight.
-    Filing is not landing: post your findings on the issue thread yourself with
-    `gh issue comment` (human ruling 2026-08-20, #449). If that call is refused,
-    say so in your report and let your final message stand as the record.
+    Filing is not landing. Put your complete review report in your final response,
+    including an explicit clean verdict when you find nothing. Do not call `gh` and
+    do not write a body file. After you exit, the unsandboxed dispatcher captures
+    that response and attempts exactly one `gh issue comment` with the host's
+    credentials. Empty output or a refused post ends the dispatch with
+    `review_delivery_failed`; there is no automatic retry or recovery (#496).
 
     A review re-runs none of the implementer's gate. Do not check out the branch
     under review, do not run `just fast` or any rung of it, do not run

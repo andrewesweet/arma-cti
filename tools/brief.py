@@ -809,22 +809,14 @@ REVIEW_FLAKE_RESPONSE: Final = (
     " reading it, never a red of yours to retry (human ruling 2026-08-14 on #353, as"
     " clarified 2026-08-20 on #449)."
 )
-# The posting half is written as an instruction to *attempt and report*, not as a promise
-# that the call will land. The seat's containment is a forced read-only permission mode
-# (`dispatch.SEATS["review"]`, where #449's mechanism decision and the two runs that measure
-# it are recorded): both runner families were observed posting from `plan` mode on
-# 2026-08-20, so this asks the reviewer for nothing unproven. It stays an attempt rather
-# than a promise because two runs are an observation and not an invariant, and a family,
-# mode or runner version that does refuse should be recorded the first time it happens
-# rather than assumed away. The fifteen relayed verdicts of 2026-08-19/20 measured the
-# instruction rather than the mechanism, because none of those reviews was permitted to try.
+# #496 moves delivery to the unsandboxed dispatcher without moving judgement there. The
+# reviewer owns every byte of the report and puts it in the final response; the harness owns
+# the one network mutation. `dispatch.REVIEW_DELIVERY_PROTOCOL` reaches the thin default brief
+# too, so a caller cannot accidentally omit the output contract by skipping this composer.
 REVIEW_LANDING_RULE: Final = (
     "A review lands nothing: do not commit, do not push, do not run `just land`, and edit no"
     " file — ADR-0071 ruling 4's never-alone invariant, which this ruling leaves untouched."
-    " Filing is not landing. Post your findings on the issue thread yourself with"
-    " `gh issue comment`; if that tool call is refused, say so in your report and let your"
-    " final message stand as the record for the orchestrator to relay (human ruling"
-    " 2026-08-20, #449; `docs/review-dispatch.md`)."
+    f" Filing is not landing. {dispatch.REVIEW_DELIVERY_PROTOCOL}"
 )
 # The same three sections for a forced-read-only seat that is not the reviewer (#421
 # criterion 1). `recon` is that seat today: the same containment #407 forced on it, a
@@ -1101,8 +1093,8 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
     such seat (`recon`, #407) by the same construction — so the gate ask, the re-run
     instruction and the landing protocol would each demand something the seat is forbidden
     to do. What the read-only arm does *not* say is that the seat may not file: #449 puts
-    posting its own findings back inside the reviewer's contract, and only landing,
-    editing and re-running the implementer's gate stay out. The arm follows
+    the findings inside the reviewer's contract, while #496 moves their transport to the
+    harness; only landing, editing and re-running the implementer's gate stay out. The arm follows
     `Seat.judgement_only`, the same predicate the default brief branches on and #339
     derived surfaces from, because `reviews` reached only the reviewer and left `recon`
     carrying the implementer's asks (#421): one predicate, both paths. The derived gate is still

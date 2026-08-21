@@ -1153,16 +1153,16 @@ def test_a_review_briefing_is_told_to_land_nothing() -> None:
     assert "Land via `just land`" not in rendered
 
 
-def test_a_review_briefing_may_file_its_own_findings() -> None:
-    """#449: filing is not landing, and the landing rule used to forbid both.
+def test_a_review_briefing_hands_its_complete_report_to_the_host_dispatcher() -> None:
+    """#449 keeps filing in scope; #496 moves only its unreliable transport.
 
     The human's clarification of 2026-08-20 is that #353's ruling barred re-running the
     implementer's tests and nothing else — "they can of course land review-specific gates
     and post their own findings". The transcription that reached this string forbade the
     reviewer to "file an issue or a comment", and fifteen verdicts in one session were
-    relayed by hand because of it. The prohibition's absence is asserted here because
-    nothing asserted it before: every test above pins text that is *present*, so a sentence
-    nobody had ruled sat in the brief under a green suite.
+    relayed by hand because of it. #496 then observed eleven permitted attempts fail through
+    four paths. The reviewer still authors the report, but the unsandboxed harness transports
+    its final response once, without asking the child for credentials or a body file.
 
     The never-alone half is asserted in the same test on purpose. It is the invariant the
     forced `plan` mode enforces and the one this ruling does not touch, so a future edit
@@ -1171,7 +1171,12 @@ def test_a_review_briefing_may_file_its_own_findings() -> None:
     """
     rendered = review_composed()
     assert "file an issue or a comment" not in rendered
-    assert "`gh issue comment`" in rendered
+    assert "complete review report in your final response" in rendered
+    assert "Do not call `gh`" in rendered
+    assert "do not write a body file" in rendered
+    assert "attempts exactly one `gh issue comment`" in rendered
+    assert "`review_delivery_failed`" in rendered
+    assert "post your findings on the issue thread yourself" not in rendered.lower()
     # ADR-0071 ruling 4, untouched by #449.
     assert "do not commit" in rendered
     assert "do not push" in rendered

@@ -161,11 +161,72 @@ fi
   printf 'stdin=%s\\n' "$(cat | tr '\\n' ' ')"
   env
 } >"$CTI_FAKE_CLAUDE_OUT"
+if [ -n "${CTI_FAKE_REVIEW_REPORT:-}" ]; then
+  printf '%s\n' "$CTI_FAKE_REVIEW_REPORT"
+fi
 """,
         encoding="utf-8",
     )
     runner.chmod(0o755)
     return bindir
+
+
+def fake_codex(tmp_path: Path) -> Path:
+    """Put a `codex` on PATH that proves its cwd cannot hold a body file."""
+    bindir = tmp_path / "bin"
+    bindir.mkdir(parents=True, exist_ok=True)
+    runner = bindir / "codex"
+    runner.write_text(
+        """#!/usr/bin/env bash
+cat >/dev/null
+if (printf 'child-owned body\n' >"$PWD/review-body.md") 2>/dev/null; then
+  printf 'child unexpectedly wrote review-body.md\n' >&2
+  exit 91
+fi
+printf '%s\n' "$CTI_FAKE_REVIEW_REPORT"
+""",
+        encoding="utf-8",
+    )
+    runner.chmod(0o755)
+    return bindir
+
+
+def fake_gh(tmp_path: Path) -> Path:
+    """Put a process-boundary `gh` on PATH that records stdin, then accepts or refuses."""
+    bindir = tmp_path / "bin"
+    bindir.mkdir(parents=True, exist_ok=True)
+    runner = bindir / "gh"
+    runner.write_text(
+        """#!/usr/bin/env bash
+printf '%s\n' "$*" >"$CTI_FAKE_GH_CALL"
+cat >"$CTI_FAKE_GH_BODY"
+if [ -n "${CTI_FAKE_GH_FAILURE:-}" ]; then
+  printf '%s\n' "$CTI_FAKE_GH_FAILURE" >&2
+  exit 17
+fi
+printf 'https://example.invalid/review-comment\n'
+""",
+        encoding="utf-8",
+    )
+    runner.chmod(0o755)
+    return bindir
+
+
+def auth_checking_gh(tmp_path: Path) -> tuple[Path, str]:
+    """Put a non-posting `gh` wrapper on PATH that delegates to real auth resolution."""
+    real_gh = shutil.which("gh")
+    assert real_gh is not None, "the dispatch harness requires the GitHub CLI"
+    bindir = tmp_path / "bin"
+    bindir.mkdir(parents=True, exist_ok=True)
+    runner = bindir / "gh"
+    runner.write_text(
+        """#!/usr/bin/env bash
+exec "$CTI_REAL_GH" auth status
+""",
+        encoding="utf-8",
+    )
+    runner.chmod(0o755)
+    return bindir, real_gh
 
 
 def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
@@ -2067,6 +2128,137 @@ def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: P
     assert code == dispatch.EXIT_REFUSED
     assert "refusal=credentials_missing" in lines
     assert "class=infra_unavailable" in lines
+
+
+# -------------------------------------- review findings cross the sandbox through the harness
+
+
+def test_review_delivery_posts_the_captured_report_once(tmp_path: Path) -> None:
+    """Pin the successful process boundary; the two failure cases are exercised below."""
+    plan, brief_text, refusal = plan_for(
+        tmp_path,
+        seat="review",
+        reviewing="codex-sol-high",
+    )
+    assert refusal is None
+    assert plan is not None
+    assert dispatch.REVIEW_DELIVERY_PROTOCOL in brief_text
+    dispatch.write_record(plan, brief_text)
+    capture = tmp_path / "review-child.txt"
+    gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
+    report = "reviewed=abc issue=223 claims=0\n\nNo claims."
+    bindir = fake_claude(tmp_path)
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "PATH": f"{bindir}:{parent['PATH']}",
+            "CTI_FAKE_CLAUDE_OUT": str(capture),
+            "CTI_FAKE_REVIEW_REPORT": report,
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(gh_body),
+        }
+    )
+
+    code, lines = dispatch.run_dispatch(plan.record, parent)
+
+    assert code == 0
+    assert "review_delivery=posted issue=223" in lines
+    assert gh_call.read_text(encoding="utf-8") == "issue comment 223 --body-file -\n"
+    assert gh_body.read_text(encoding="utf-8") == report + "\n"
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "child_finished"
+    assert result["review_delivery"] == ["review_delivery=posted issue=223"]
+
+
+def test_review_delivery_without_github_credentials_is_a_named_refusal(tmp_path: Path) -> None:
+    """Exercise real `gh` auth resolution with no token or login; never attempt a post."""
+    config = tmp_path / "empty-gh-config"
+    config.mkdir()
+    bindir, real_gh = auth_checking_gh(tmp_path)
+    parent = dict(os.environ)
+    for key in ("GH_TOKEN", "GITHUB_TOKEN", "GH_ENTERPRISE_TOKEN", "GITHUB_ENTERPRISE_TOKEN"):
+        parent.pop(key, None)
+    parent.update(
+        {
+            "PATH": f"{bindir}:{parent['PATH']}",
+            "CTI_REAL_GH": real_gh,
+            "GH_CONFIG_DIR": str(config),
+            "GH_PROMPT_DISABLED": "1",
+        }
+    )
+
+    lines, code = dispatch.deliver_review(496, "No claims.\n", tmp_path, parent)
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=review_delivery_failed" in lines
+    assert "reason=gh_refused" in lines
+    assert "review_delivery=posted" not in "\n".join(lines)
+
+
+def test_empty_review_report_requires_a_fresh_review_not_an_impossible_relay(
+    tmp_path: Path,
+) -> None:
+    lines, code = dispatch.deliver_review(496, " \n", tmp_path, {"PATH": str(tmp_path)})
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=review_delivery_failed" in lines
+    assert "reason=report_empty" in lines
+    assert any("dispatch a fresh review" in line for line in lines)
+    assert all("relay it" not in line for line in lines)
+
+
+def test_read_only_review_without_a_body_file_ends_in_named_delivery_refusal(
+    tmp_path: Path,
+) -> None:
+    """A real read-only cwd blocks the child file while the host still receives its report."""
+    worktree = git_worktree(tmp_path, "read-only-tree")
+    plan, brief_text, refusal = plan_for(
+        tmp_path,
+        worktree=worktree,
+        lane="codex",
+        profile="codex-luna-max",
+        seat="review",
+        reviewing="opus-high",
+    )
+    assert refusal is None
+    assert plan is not None
+    assert plan.permission_mode == "plan"
+    dispatch.write_record(plan, brief_text)
+    gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
+    report = "claim=1 route=defect file=tools/dispatch.py:1 sha=abc"
+    bindir = fake_codex(tmp_path)
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "PATH": f"{bindir}:{parent['PATH']}",
+            "CTI_FAKE_REVIEW_REPORT": report,
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(gh_body),
+            "CTI_FAKE_GH_FAILURE": "host authentication unavailable",
+        }
+    )
+    original_mode = worktree.stat().st_mode
+    worktree.chmod(0o555)
+    try:
+        code, lines = dispatch.run_dispatch(plan.record, parent)
+    finally:
+        worktree.chmod(original_mode)
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=review_delivery_failed" in lines
+    assert "reason=gh_refused" in lines
+    assert "detail=host authentication unavailable" in lines
+    assert not (worktree / "review-body.md").exists()
+    assert gh_call.read_text(encoding="utf-8") == "issue comment 223 --body-file -\n"
+    assert gh_body.read_text(encoding="utf-8") == report + "\n"
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "harness_failed_after_child"
+    assert result["returncode"] == 0
+    assert "refusal=review_delivery_failed" in result["review_delivery"]
 
 
 # -------------------------------------------- every detached-child exit closes its record

@@ -191,6 +191,13 @@ writable on both runner families, so a review dispatched at the default could ed
 now *forces* `plan` in `routed`, which `build_argv` renders as `--permission-mode plan` on
 the `claude` family and `--sandbox read-only` on `codex`.
 
+**Review delivery crosses that containment at the harness boundary** (#496). The review's
+final stdout is written through a file descriptor the unsandboxed dispatcher opened, so the
+session needs neither a writable body-file path nor GitHub credentials. After a successful
+child exit the dispatcher makes one bounded `gh issue comment --body-file -` call with that
+report. It retries nothing. Empty output or a refused call ends in
+`review_delivery_failed`, while the child's own return code remains on `result.json`.
+
 **`recon` forces the same mode, for a reason of its own** (#407). ADR-0071 does not merely
 describe that seat as read-only; it reasons from the property — the unranked profile head, the
 routing class 2 admission and the absent escalation entry are all founded on a seat that
@@ -223,6 +230,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+from contextlib import nullcontext
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -765,60 +773,23 @@ SEATS: Final[dict[str, Seat]] = {
     # never return it; `permission_mode` forces the containment `--permission-mode`'s
     # writable default would otherwise have left to whoever typed the command.
     #
-    # **`plan` stays after #449's ruling, and that is a decision rather than an omission.**
-    # The human clarified on 2026-08-20 that the 2026-08-14 ruling bars a reviewer from
-    # *re-running the implementer's tests* — the reason being wall time — and not from
-    # posting its own findings. The brief strings in `tools/brief.py` now say exactly that.
-    # The mode does not, because the mode is not what states the test rule: it is what
-    # enforces the *other* invariant, that a review neither edits nor lands the change it
-    # judges (ADR-0071 ruling 4), and that invariant is untouched by the clarification.
+    # **`plan` stays after #449 and #496.** The mode enforces that a review neither edits nor
+    # lands the change it judges (ADR-0071 ruling 4); it never meant that findings should be
+    # silent. Configuration originally expected the session itself to post: project settings
+    # allowlisted `Bash(gh issue:*)`, the brief ordered `gh issue comment`, and two 2026-08-20
+    # runs demonstrated that both runner families could do it from `plan`.
     #
-    # Three replacements were weighed against keeping it, and each trades a mechanism for a
-    # sentence, which is the one thing the design here refuses:
+    # That capability was not reliable. Eleven reviews on 2026-08-21 completed without a
+    # comment through four observed paths: Claude plan mode lacking `ExitPlanMode`, cancelled
+    # Codex connector calls, invalid sandbox-side `gh` authentication, and network failure.
+    # The containment remains correct; direct delivery was the broken half.
     #
-    # - **A writable mode plus `--disallowed-tools`** for `Edit`, `Write` and the landing
-    #   commands. A Bash deny-rule is prefix matching over a string the session composes,
-    #   and any shell defeats it — `bash -c`, `python -c`, a heredoc — so what looks like a
-    #   deny list is an instruction with a matcher attached.
-    # - **`acceptEdits` narrowed by the sandbox on `codex`.** `CODEX_SANDBOX` renders that
-    #   mode `workspace-write`, whose writable root is the session's own cwd — the review's
-    #   worktree. Granting it back makes the reviewer able to edit and, with the network
-    #   access the gate half needs, to push.
-    # - **A seat-scoped `--allowed-tools Bash(gh issue comment:*)` on top of `plan`.** This
-    #   is the only candidate that keeps the containment, and it is moot rather than
-    #   rejected: `.claude/settings.json` already carries `Bash(gh issue:*)` on its allow
-    #   list, and both runner families have since been observed posting from `plan` mode
-    #   with no seat-scoped flag at all. A flag granting an already-exercised capability
-    #   buys nothing.
-    #
-    # **Both families were observed posting from `plan` mode on 2026-08-20**, so the
-    # orchestrator relay is not a bottleneck for either. On `codex`, dispatch
-    # `d-20260820-110847-f9b197` — `seat=review`, `lane=codex`, `permission_mode=plan`,
-    # `--sandbox read-only` — ran `gh issue comment 434` from inside its own sandboxed
-    # session and created comment `5355112577` at 2026-08-20T11:14:56Z, seconds before the
-    # run ended. On the `claude` family, dispatch `d-20260820-113736-1c53a4` — the `zai`
-    # review of this row's own change — posted its findings to #449 as comment
-    # `5355396609` at 11:44:10Z.
-    #
-    # An earlier draft of this comment asserted the opposite — that a `codex` review
-    # "cannot reach `gh` at all" — and marked it as needing no measuring; the run that
-    # disproves it was already on disk when it was written. Recorded rather than quietly
-    # corrected, because the error is #449's own defect class and its mechanism is worth
-    # knowing: `network_access` is a **`sandbox_workspace_write`** key, so the grant
-    # attaches to the `acceptEdits` branch alone. "`_codex_sandbox_argv` grants nothing on
-    # the read-only branch" is a fact about that function; "the sandbox blocks the network"
-    # is a claim about Codex's own read-only policy, which this repository had never
-    # measured. CLAUDE.md decides which of the two may be written down — a lane's
-    # enforcement is what it demonstrably runs, never what its provider claims.
-    #
-    # So the containment is unchanged and posting is the reviewer's own act.
-    # `REVIEW_LANDING_RULE` still tells the reviewer to attempt the post and to report a
-    # refusal, because two runs are an observation and not an invariant. Whether the relay
-    # can be retired as a standing step is #393's question, not this row's. The half of the
-    # ruling this leaves unbuilt is stated rather than glossed: a review dispatch cannot
-    # land a review-specific gate, because it can write nothing — such a gate is a change
-    # like any other and lands through an implementer dispatch on its own issue, which is a
-    # route the seat's containment never blocked.
+    # #496 moves only transport. The reviewer puts its whole report in the final response;
+    # `_run_child_with_gate_clock` captures stdout through an anonymous host-opened temporary
+    # file, then `deliver_review` makes one bounded host-side post. A failed or empty delivery
+    # is `review_delivery_failed`. There is no retry, recovery scan, lock, quarantine or
+    # dedupe. Abrupt dispatcher death and findings omitted from final stdout remain outside
+    # the mechanism, stated in the changelog rather than promoted to guarantees.
     "review": Seat(
         "review",
         claude_only=False,
@@ -3174,6 +3145,19 @@ SINGLE_SHOT_CONTRACT: Final = (
     " part and state exactly what remains and why."
 )
 
+# The report is the reviewer's judgement; only its transport belongs to the harness. One
+# wording reaches both briefing paths: `default_brief` below and `tools/brief.py`'s composed
+# review protocol. Keeping `gh` out of the session removes all four #496 failure paths without
+# widening the read-only seat. The dispatcher still makes only one attempt, so this promises
+# visibility on failure rather than reliable GitHub availability.
+REVIEW_DELIVERY_PROTOCOL: Final = (
+    "Put your complete review report in your final response, including an explicit clean"
+    " verdict when you find nothing. Do not call `gh` and do not write a body file. After"
+    " you exit, the unsandboxed dispatcher captures that response and attempts exactly one"
+    " `gh issue comment` with the host's credentials. Empty output or a refused post ends"
+    " the dispatch with `review_delivery_failed`; there is no automatic retry or recovery."
+)
+
 
 def default_brief(identity: Identity, worktree: Path) -> str:
     """Compose the brief a dispatch sends when the caller named no file.
@@ -3203,7 +3187,7 @@ def default_brief(identity: Identity, worktree: Path) -> str:
         " as clarified 2026-08-20 on #449); read what the issue thread and the repository"
         " carry. Reading is this seat's work, not a breach of that (#421)."
     )
-    return (
+    rendered = (
         f"You are the {identity.seat} seat, dispatched as {identity.dispatch_id} on the "
         f"{identity.lane} lane under profile {identity.profile}.\n\n"
         f"{SINGLE_SHOT_CONTRACT}\n\n"
@@ -3214,6 +3198,9 @@ def default_brief(identity: Identity, worktree: Path) -> str:
         f"work in the worktree above and nowhere else. The issue's acceptance criteria "
         f"are the contract. {gate_line}\n"
     )
+    if SEATS[identity.seat].reviews:
+        rendered += f"\n{REVIEW_DELIVERY_PROTOCOL}\n"
+    return rendered
 
 
 def git(*args: str, cwd: Path) -> str:
@@ -3517,6 +3504,8 @@ def writable_root_refusal(project_root: Path, granted: tuple[Path, ...] | None) 
 # sandbox grants, so there is nowhere else a sandboxed session could put it.
 CODEX_COMMIT_MESSAGE: Final = ".dispatch-commit-message"
 GATE_CLOCK_DIR_ENV: Final = "CTI_GATE_CLOCK_DIR"
+REVIEW_DELIVERY_TIMEOUT_S: Final = 30
+REVIEW_DELIVERY_DETAIL_LIMIT: Final = 500
 
 # What a sandboxed session is told about the division of labour, appended to whatever brief
 # the dispatch carries. Appended rather than composed into `tools/brief.py`, because the lane
@@ -3592,24 +3581,46 @@ def _run_child_with_gate_clock(
     child_launch_attempted: Callable[[], None],
     child_finished: Callable[[int], None],
 ) -> tuple[subprocess.CompletedProcess[str], tuple[str, ...]]:
-    """Launch the child with local recording, then append once immediately."""
+    """Launch the child, capture a review's final stdout, then collect gate-clock rows.
+
+    The review outbox is opened by this unsandboxed process and inherited as stdout. The
+    child writes a file descriptor, not a path, so a read-only filesystem cannot strand the
+    report. It is anonymous and lives only for this call: delivery gets one later attempt,
+    with no orphan to scan or recover.
+    """
     canonical = gate_clock.DEFAULT_GATE_CLOCK_DIR.absolute()
     child_environment = dict(child)
     prefix = f"arma-cti-gate-clock-{plan.identity.dispatch_id}-"
     with tempfile.TemporaryDirectory(prefix=prefix, ignore_cleanup_errors=True) as temporary:
         session_directory = Path(temporary)
         child_environment[GATE_CLOCK_DIR_ENV] = temporary
-        # S603: argv is the registry's runner plus registry values; the brief is on stdin so
-        # nothing a dispatch carries reaches the process table.
-        child_launch_attempted()
-        done = subprocess.run(  # noqa: S603
-            list(plan.argv),
-            cwd=plan.worktree,
-            env=child_environment,
-            input=brief,
-            text=True,
-            check=False,
-        )
+        with (
+            tempfile.TemporaryFile(mode="w+", encoding="utf-8", errors="replace")
+            if SEATS[plan.identity.seat].reviews
+            else nullcontext(None)
+        ) as review_outbox:
+            # S603: argv is the registry's runner plus registry values; the brief is on stdin
+            # so nothing a dispatch carries reaches the process table.
+            child_launch_attempted()
+            done = subprocess.run(  # noqa: S603
+                list(plan.argv),
+                cwd=plan.worktree,
+                env=child_environment,
+                input=brief,
+                stdout=review_outbox,
+                text=True,
+                check=False,
+            )
+            if review_outbox is not None:
+                review_outbox.seek(0)
+                done.stdout = review_outbox.read()
+                # Keep the report in the ordinary dispatch log too. If host delivery fails,
+                # the named refusal points at a complete handoff rather than at an empty file.
+                if done.stdout:
+                    sys.stdout.write(done.stdout)
+                    if not done.stdout.endswith("\n"):
+                        sys.stdout.write("\n")
+                    sys.stdout.flush()
         # Publish this fact before collection. A BaseException during collection is a
         # harness failure after the child, never a launch failure.
         child_finished(done.returncode)
@@ -3815,8 +3826,85 @@ def harness_finish(  # noqa: PLR0911 — one return per end state, so no refusal
 
 
 def _harness_refusal(kind: str, found: tuple[str, ...], action: str) -> tuple[tuple[str, ...], int]:
-    """Render one `harness_finish` refusal in the dispatcher's own shape."""
+    """Render one post-child harness refusal in the dispatcher's own shape."""
     return (Refusal(kind, found, action).lines(), EXIT_REFUSED)
+
+
+def _review_delivery_detail(detail: str) -> str:
+    """Keep a process failure on one bounded result line, never the report body."""
+    return " ".join(detail.split())[:REVIEW_DELIVERY_DETAIL_LIMIT]
+
+
+def deliver_review(
+    issue: int,
+    report: str,
+    record: Path,
+    parent: Mapping[str, str],
+) -> tuple[tuple[str, ...], int]:
+    """Post one captured review report from the host, or refuse once and stop.
+
+    No validation read precedes the mutation and no retry follows it. `--body-file -` keeps
+    arbitrary findings off argv and removes the child-side body-file requirement that failed
+    live on #496. The environment is the dispatcher's parent, not the lane environment, so
+    provider credentials and sandbox-injected GitHub state do not decide this call.
+    """
+    log = record / "dispatch.log"
+    if not report.strip():
+        return _harness_refusal(
+            "review_delivery_failed",
+            (f"issue={issue}", "reason=report_empty", f"log={log}"),
+            (
+                "The completed review produced no final report. Do not read the missing"
+                " comment as a clean review; dispatch a fresh review. The dispatcher will"
+                " not retry or recover one automatically (#496)."
+            ),
+        )
+    action = (
+        "The completed review was not delivered. Do not read the missing comment as a clean"
+        f" review. Its final report is in {log}; relay it deliberately after fixing the host"
+        " failure. The dispatcher will not retry or recover it automatically (#496)."
+    )
+    argv = ["gh", "issue", "comment", str(issue), "--body-file", "-"]
+    try:
+        posted = subprocess.run(  # noqa: S603 — fixed gh argv plus a validated integer
+            argv,
+            input=report,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=REVIEW_DELIVERY_TIMEOUT_S,
+            env=dict(parent),
+        )
+    except subprocess.TimeoutExpired as failure:
+        return _harness_refusal(
+            "review_delivery_failed",
+            (
+                f"issue={issue}",
+                "reason=gh_timeout",
+                f"detail=no answer within {REVIEW_DELIVERY_TIMEOUT_S}s: {failure}",
+                f"log={log}",
+            ),
+            action,
+        )
+    except (OSError, subprocess.SubprocessError) as failure:
+        return _harness_refusal(
+            "review_delivery_failed",
+            (
+                f"issue={issue}",
+                "reason=gh_unrunnable",
+                f"detail={type(failure).__name__}: {failure}",
+                f"log={log}",
+            ),
+            action,
+        )
+    if posted.returncode != 0:
+        detail = _review_delivery_detail(posted.stderr) or f"exit {posted.returncode}"
+        return _harness_refusal(
+            "review_delivery_failed",
+            (f"issue={issue}", "reason=gh_refused", f"detail={detail}", f"log={log}"),
+            action,
+        )
+    return ((f"review_delivery=posted issue={issue}",), 0)
 
 
 def _harness_git_failed(
@@ -4605,28 +4693,44 @@ def _run_dispatch_body(
         ),
         datetime.now(tz=UTC).timestamp(),
     )
+    review_delivery: tuple[str, ...] = ()
+    review_delivery_code = 0
     finish: tuple[str, ...] = ()
     finish_code = 0
+    if SEATS[plan.identity.seat].reviews:
+        if done.returncode == 0:
+            progress.failure_phase = "review_delivery"
+            review_delivery, review_delivery_code = deliver_review(
+                plan.identity.issue,
+                done.stdout or "",
+                record,
+                parent,
+            )
+        else:
+            review_delivery = (f"review_delivery=not_attempted child_exit={done.returncode}",)
     progress.failure_phase = "harness_finish"
     if harness_commits(lane, plan.permission_mode):
         finish, finish_code = harness_finish(plan.worktree, plan.identity.issue, record)
+    harness_code = review_delivery_code or finish_code
     result = {
         "dispatch_id": plan.identity.dispatch_id,
-        "status": "harness_failed_after_child" if finish_code else "child_finished",
+        "status": "harness_failed_after_child" if harness_code else "child_finished",
         "returncode": done.returncode,
         "outcome": outcome,
         "started_at": progress.started.isoformat(),
         "ended_at": datetime.now(tz=UTC).isoformat(),
         "gate_clock_collection": list(gate_clock_collection),
+        "review_delivery": list(review_delivery),
         "harness_finish": list(finish),
     }
     lines = (
         f"dispatch={plan.identity.dispatch_id}",
         f"exit={done.returncode}",
         *gate_clock_collection,
+        *review_delivery,
         *finish,
     )
-    return finish_code or done.returncode, lines, result
+    return harness_code or done.returncode, lines, result
 
 
 def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[str, ...]]:
