@@ -8,11 +8,14 @@
   `subprocess.run` is invoked but before that mark records `child_state_unknown`, because
   the child may have run before the harness lost track of it; it no longer asserts
   `child_not_launched` and invites a duplicate dispatch. Raised failures also record their
-  phase, exception type, and message.
+  phase, exception type, and message. An unknown-state result tells its reader to inspect
+  the log, process, and worktree, reconcile any work, and re-dispatch only after verifying
+  that another run cannot duplicate it.
 
-- Closeout has no stronger durability guarantee: `result.json` exists only when control
-  reaches the boundary and its single write succeeds. Result writes are not retried, and
-  no recovery, lock, quarantine, dedupe, or temporary-file protocol is added.
+- Closeout is staged beside `result.json`, flushed, and renamed onto it. On filesystems
+  honouring atomic same-directory replacement, readers see a complete result or no result;
+  a failed write or rename does not publish a partial result as dispatch completion. Result
+  writes are not retried, and no recovery, lock, quarantine, or dedupe is added.
 
 - Tests interrupt real `subprocess.run` communication after its child starts, exercise
   failures on both sides of the completion mark, and check successful closeouts against

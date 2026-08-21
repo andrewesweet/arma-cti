@@ -257,6 +257,11 @@ EXIT_REFUSED: Final = 1
 
 DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 CREDENTIALS: Final = Path.home() / ".arma-cti" / "credentials.env"
+CHILD_STATE_UNKNOWN_ACTION: Final = (
+    "Do not re-dispatch yet. Inspect dispatch.log, the child process, and the assigned "
+    "worktree. Reconcile any work found, then re-dispatch only after verifying the child "
+    "has stopped and another run cannot duplicate that work."
+)
 
 # How much of a finished run's log the breaker's classifier reads. A provider's own
 # refusal or limit message is the last thing a run says, and a whole log of an agent's
@@ -4413,13 +4418,29 @@ def load_record(record: Path) -> Plan:
 
 
 def write_result(record: Path, **fields: object) -> None:
-    """Write the run's own outcome beside its plan — facts only, never a verdict.
+    """Atomically publish the run's own outcome beside its plan.
 
     A returncode is not a failure class. What a dispatched run's exit code means about
     the code under test is the gates' business, and inventing a class here would be a
     second, untested opinion about it.
+
+    The complete document is staged in the record directory, flushed, and renamed onto
+    `result.json`. On a filesystem that honours atomic same-directory replacement, a
+    reader therefore sees the complete result or no result; a write or rename failure
+    never publishes the staged bytes as a finished dispatch. No retry follows a failure.
     """
-    (record / "result.json").write_text(json.dumps(fields, indent=2) + "\n", encoding="utf-8")
+    target = record / "result.json"
+    document = json.dumps(fields, indent=2) + "\n"
+    handle, staged_name = tempfile.mkstemp(prefix=f".{target.name}.", suffix=".staged", dir=record)
+    staged = Path(staged_name)
+    try:
+        with os.fdopen(handle, "w", encoding="utf-8") as writing:
+            writing.write(document)
+            writing.flush()
+            os.fsync(writing.fileno())
+        staged.replace(target)
+    finally:
+        staged.unlink(missing_ok=True)
 
 
 def unreadable_record_refusal(record: Path, unreadable: Exception) -> Refusal:
@@ -4496,6 +4517,8 @@ def _failed_result(progress: _DispatchProgress, failure: BaseException) -> dict[
         "failure": {"type": type(failure).__name__, "message": str(failure)},
         "ended_at": datetime.now(tz=UTC).isoformat(),
     }
+    if status == "child_state_unknown":
+        result["action"] = CHILD_STATE_UNKNOWN_ACTION
     if progress.returncode is not None:
         result["returncode"] = progress.returncode
     if progress.started is not None and progress.returncode is not None:

@@ -37,7 +37,7 @@ import time
 from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import pytest
 from conftest import REPO, load_tool, no_lane_network
@@ -304,6 +304,17 @@ def assert_dispatch_no_longer_in_flight(plan: Any) -> None:  # noqa: ANN401 — 
         lambda _numbers: (frozenset(), "read"),
     )
     assert derived.issues == ()
+
+
+def assert_dispatch_still_in_flight(plan: Any) -> None:  # noqa: ANN401 — dynamic tool type
+    """Prove an unpublished result keeps the queue-policy source occupied."""
+    finished = (plan.record / "result.json").is_file()
+    derived = queue_policy.derive_in_flight(
+        [],
+        [(plan.identity.issue, plan.identity.dispatch_id, finished)],
+        lambda _numbers: (frozenset(), "read"),
+    )
+    assert derived.issues == (plan.identity.issue,)
 
 
 def _namespace(**fields: object) -> object:
@@ -2061,6 +2072,48 @@ def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: P
 # -------------------------------------------- every detached-child exit closes its record
 
 
+def test_result_write_failure_never_publishes_a_partial_finished_dispatch(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    plan, _brief_text, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+    plan.record.mkdir(parents=True)
+    real_fdopen = dispatch.os.fdopen
+    message = "disk full during result write"
+
+    class PartialWrite:
+        def __init__(self, handle: Any) -> None:  # noqa: ANN401 — os.fdopen overload
+            self.handle = handle
+
+        def __enter__(self) -> Self:
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            self.handle.close()
+
+        def write(self, document: str) -> None:
+            self.handle.write(document[: len(document) // 2])
+            self.handle.flush()
+            raise OSError(message)
+
+    def partially_write(handle: int, *args: object, **kwargs: object) -> PartialWrite:
+        return PartialWrite(real_fdopen(handle, *args, **kwargs))
+
+    monkeypatch.setattr(dispatch.os, "fdopen", partially_write)
+
+    with pytest.raises(OSError, match="disk full during result write"):
+        dispatch.write_result(
+            plan.record,
+            dispatch_id=plan.identity.dispatch_id,
+            status="child_finished",
+        )
+
+    assert not (plan.record / "result.json").exists()
+    assert list(plan.record.iterdir()) == []
+    assert_dispatch_still_in_flight(plan)
+
+
 def test_subprocess_run_raising_before_launch_records_unknown_child_state(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -2083,6 +2136,7 @@ def test_subprocess_run_raising_before_launch_records_unknown_child_state(
     assert result["status"] == "child_state_unknown"
     assert result["failure_phase"] == "child_launch_or_wait"
     assert result["failure"] == {"type": "FileNotFoundError", "message": "runner missing"}
+    assert result["action"] == dispatch.CHILD_STATE_UNKNOWN_ACTION
     assert "returncode" not in result
     assert_dispatch_no_longer_in_flight(plan)
 
@@ -2118,6 +2172,7 @@ def test_subprocess_run_wait_baseexception_after_launch_records_unknown_child_st
     assert result["status"] == "child_state_unknown"
     assert result["failure_phase"] == "child_launch_or_wait"
     assert result["failure"] == {"type": "KeyboardInterrupt", "message": "launch interrupted"}
+    assert result["action"] == dispatch.CHILD_STATE_UNKNOWN_ACTION
     assert "returncode" not in result
     assert_dispatch_no_longer_in_flight(plan)
 
