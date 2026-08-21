@@ -28,11 +28,13 @@ import os
 import subprocess
 import sys
 import threading
-from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 import pytest
 from conftest import REPO, load_tool
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 dispatch = load_tool("dispatch")
 review_loop = load_tool("review_loop")
@@ -210,10 +212,27 @@ def test_the_writer_refuses_to_append_to_a_record_it_cannot_read(tmp_path: Path)
 # ------------------------------------------------------------------ the command surface
 
 
+def _author_repo(root: Path) -> tuple[Path, str]:
+    repo = root / "repo"
+    repo.mkdir()
+    review_loop.git("init", "-q", "-b", "main", cwd=repo)
+    review_loop.git("config", "user.email", "t@example.invalid", cwd=repo)
+    review_loop.git("config", "user.name", "t", cwd=repo)
+    (repo / "README").write_text("base\n", encoding="utf-8")
+    review_loop.git("add", "README", cwd=repo)
+    review_loop.git("commit", "-q", "-m", "base", cwd=repo)
+    return repo, review_loop.git("rev-parse", "HEAD", cwd=repo).strip()
+
+
 def _author_command(
-    root: Path, profile: str = AUTHOR, *, issue: int = ISSUE, sha: str | None = None
+    root: Path,
+    repo: Path,
+    profile: str = AUTHOR,
+    *,
+    issue: int = ISSUE,
+    sha: str | None = None,
 ) -> int:
-    named = sha or review_loop.git("rev-parse", "HEAD", cwd=Path.cwd()).strip()
+    named = sha or review_loop.git("rev-parse", "HEAD", cwd=repo).strip()
     return review_loop.main(
         [
             "author",
@@ -225,6 +244,8 @@ def _author_command(
             profile,
             "--sha",
             named,
+            "--repo",
+            str(repo),
         ],
         now=lambda: 0.0,
     )
@@ -236,7 +257,9 @@ def test_the_command_records_the_declaration(
     """The route the refusal names, end to end from the command line."""
     monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
 
-    assert _author_command(tmp_path) == review_loop.OK
+    repo, _head = _author_repo(tmp_path)
+
+    assert _author_command(tmp_path, repo) == review_loop.OK
     assert review_loop.recorded_authors(tmp_path, ISSUE) == (AUTHOR,)
 
 
@@ -251,7 +274,9 @@ def test_a_dispatched_session_may_not_declare_interactive_authorship(
     """
     monkeypatch.setenv("CTI_DISPATCH_ID", "d-20260817-000000-abc123")
 
-    assert _author_command(tmp_path) == review_loop.REFUSED
+    repo, _head = _author_repo(tmp_path)
+
+    assert _author_command(tmp_path, repo) == review_loop.REFUSED
     assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
 
 
@@ -261,7 +286,9 @@ def test_an_unregistered_profile_is_refused_rather_than_recorded(
     """A typo names an author no reviewer could ever be, which clears the check silently."""
     monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
 
-    assert _author_command(tmp_path, "opus-hihg") == review_loop.REFUSED
+    repo, _head = _author_repo(tmp_path)
+
+    assert _author_command(tmp_path, repo, "opus-hihg") == review_loop.REFUSED
     assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
 
 
@@ -271,9 +298,61 @@ def test_the_command_refuses_a_sha_that_names_no_commit(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
+    repo, _head = _author_repo(tmp_path)
 
-    assert _author_command(tmp_path, sha="f" * 40) == review_loop.REFUSED
+    assert _author_command(tmp_path, repo, sha="f" * 40) == review_loop.REFUSED
     assert "refusal=commit_not_found" in capsys.readouterr().err
+    assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
+
+
+def test_the_command_pins_the_shared_invalid_sha_refusal(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
+    repo, head = _author_repo(tmp_path)
+
+    assert _author_command(tmp_path, repo, sha=head[:32]) == review_loop.REFUSED
+    assert (
+        "action=Name the reviewed commit in full — a commit is named by its full"
+        " 40-character SHA, never a shortened form."
+    ) in capsys.readouterr().err
+    assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
+
+
+def test_the_command_refuses_an_orphaned_commit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
+    repo, referenced = _author_repo(tmp_path)
+    (repo / "README").write_text("orphaned\n", encoding="utf-8")
+    review_loop.git("commit", "-qam", "orphaned", cwd=repo)
+    orphaned = review_loop.git("rev-parse", "HEAD", cwd=repo).strip()
+    review_loop.git("reset", "-q", "--hard", referenced, cwd=repo)
+
+    assert _author_command(tmp_path, repo, sha=orphaned) == review_loop.REFUSED
+    assert "refusal=commit_unreachable" in capsys.readouterr().err
+    assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
+
+
+def test_the_command_reports_a_failed_ref_read(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
+    repo, head = _author_repo(tmp_path)
+
+    def fail(_repo: Path, _sha: str) -> None:
+        raise review_loop.worktree.GitError(("for-each-ref",), "broken ref store")
+
+    monkeypatch.setattr(review_loop.worktree, "validate_referenced_commit", fail)
+
+    assert _author_command(tmp_path, repo, sha=head) == review_loop.NO_RESULT
+    assert "broken ref store" in capsys.readouterr().err
     assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
 
 

@@ -1331,7 +1331,7 @@ def test_a_binary_identity_refuses_a_carry_whichever_side_carries_the_tag() -> N
 # ------------------------------------------------------------------ invocation
 
 
-def cli_record(tmp_path: Path, root: Path, sha: str = SHA) -> int:
+def cli_record(tmp_path: Path, root: Path, sha: str) -> int:
     """Record one verdict through the CLI, as the orchestrator would.
 
     `record` computes the diff identity itself from `--repo` (#417), so every CLI
@@ -1391,6 +1391,57 @@ def test_cli_record_refuses_a_sha_that_names_no_commit(
 
     assert cli_record(tmp_path, root, sha="f" * 40) == 1
     assert "refusal=commit_not_found" in capsys.readouterr().err
+    assert not (root / "d-1" / review_exchange.VERDICT_NAME).exists()
+
+
+def test_cli_record_pins_the_shared_invalid_sha_refusal_before_fetch(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repo, root, head = cli_stage(tmp_path)
+    worktree.git("remote", "set-url", "origin", str(tmp_path / "missing.git"), cwd=repo)
+
+    assert cli_record(tmp_path, root, sha=head[:32]) == 1
+    refusal = capsys.readouterr().err
+    assert "refusal=invalid_sha" in refusal
+    assert (
+        "action=Name the reviewed commit in full — a commit is named by its full"
+        " 40-character SHA, never a shortened form."
+    ) in refusal
+    assert "git_failed" not in refusal
+    assert not (root / "d-1" / review_exchange.VERDICT_NAME).exists()
+
+
+def test_cli_record_refuses_an_orphaned_commit(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repo, root, referenced = cli_stage(tmp_path)
+    commit(repo, "README", "orphaned", "orphaned")
+    orphaned = head_of(repo)
+    worktree.git("reset", "-q", "--hard", referenced, cwd=repo)
+
+    assert cli_record(tmp_path, root, sha=orphaned) == 1
+    assert "refusal=commit_unreachable" in capsys.readouterr().err
+    assert not (root / "d-1" / review_exchange.VERDICT_NAME).exists()
+
+
+def test_cli_record_reports_a_failed_ref_read(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    _repo, root, head = cli_stage(tmp_path)
+
+    def fail(_repo: Path, _sha: str) -> None:
+        raise review_exchange.worktree.GitError(("for-each-ref",), "broken ref store")
+
+    monkeypatch.setattr(review_exchange.worktree, "validate_referenced_commit", fail)
+
+    assert cli_record(tmp_path, root, sha=head) == 1
+    refusal = capsys.readouterr().err
+    assert "refusal=git_failed" in refusal
+    assert "broken ref store" in refusal
     assert not (root / "d-1" / review_exchange.VERDICT_NAME).exists()
 
 

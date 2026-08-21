@@ -342,32 +342,54 @@ def a_repo(tmp_path: Path) -> Path:
 @pytest.mark.parametrize(
     ("candidate", "refusal"),
     [
-        ("reachable", None),
+        ("invalid", "invalid_sha"),
+        ("referenced", None),
         ("missing", "commit_not_found"),
         ("blob", "commit_not_found"),
-        ("unreachable", "commit_unreachable"),
+        ("orphaned", "commit_unreachable"),
     ],
 )
-def test_commit_on_head_checks_the_object_and_its_reachability(
+def test_validate_referenced_commit_checks_the_object_and_its_refs(
     tmp_path: Path, candidate: str, refusal: str | None
 ) -> None:
     repo = a_repo(tmp_path)
-    reachable = git("rev-parse", "HEAD", cwd=repo).strip()
+    base = git("rev-parse", "HEAD", cwd=repo).strip()
     blob = git("hash-object", "-w", "README.md", cwd=repo).strip()
-    (repo / "README.md").write_text("unreachable\n", encoding="utf-8")
-    git("commit", "-qam", "unreachable", cwd=repo)
-    unreachable = git("rev-parse", "HEAD", cwd=repo).strip()
-    git("checkout", "-q", "--detach", reachable, cwd=repo)
+    (repo / "README.md").write_text("referenced\n", encoding="utf-8")
+    git("commit", "-qam", "referenced", cwd=repo)
+    referenced = git("rev-parse", "HEAD", cwd=repo).strip()
+    git("branch", "topic", referenced, cwd=repo)
+    git("reset", "-q", "--hard", base, cwd=repo)
+    (repo / "README.md").write_text("orphaned\n", encoding="utf-8")
+    git("commit", "-qam", "orphaned", cwd=repo)
+    orphaned = git("rev-parse", "HEAD", cwd=repo).strip()
+    git("reset", "-q", "--hard", base, cwd=repo)
     shas = {
-        "reachable": reachable,
+        "invalid": referenced[:32],
+        "referenced": referenced,
         "missing": "f" * 40,
         "blob": blob,
-        "unreachable": unreachable,
+        "orphaned": orphaned,
     }
 
-    outcome = worktree.commit_on_head(repo, shas[candidate])
+    outcome = worktree.validate_referenced_commit(repo, shas[candidate])
 
     assert (outcome.kind if outcome else None) == refusal
+
+
+def test_validate_referenced_commit_propagates_a_failed_ref_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    repo = a_repo(tmp_path)
+    referenced = git("rev-parse", "HEAD", cwd=repo).strip()
+
+    def fail(*_args: str, **_kwargs: object) -> str:
+        raise worktree.GitError(("for-each-ref",), "broken ref store")
+
+    monkeypatch.setattr(worktree, "git", fail)
+
+    with pytest.raises(worktree.GitError, match="broken ref store"):
+        worktree.validate_referenced_commit(repo, referenced)
 
 
 def test_a_deadlined_read_kills_a_silent_remote(tmp_path: Path) -> None:

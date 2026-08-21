@@ -131,7 +131,7 @@ BOUND: Final = "bound"
 DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 # A commit is named in full or not at all: a shortened SHA names several commits, and a
 # binding that could mean two commits satisfies neither.
-FULL_SHA: Final = re.compile(r"\A[0-9a-f]{40}\Z")
+FULL_SHA: Final = worktree.FULL_COMMIT_SHA
 # The diff identity is a sha256 hexdigest (64 lowercase hex), so the binding's second
 # half is spelled as strictly as its first — tagged `binary:` where the diff it hashes
 # changes a binary file, which is the fact `satisfies` refuses a carry on (#419).
@@ -141,7 +141,7 @@ DIFF_ID: Final = re.compile(rf"\A(?:{BINARY_DIFF_TAG})?[0-9a-f]{{64}}\Z")
 # decision over the records it reads (`tools/breaker.py` owns the vocabulary, and
 # `classify_run` is what ties `ok` to a zero exit behind `write_result`).
 OUTCOME_OK: Final = "ok"
-SHA_ERROR: Final = "a commit is named by its full 40-character SHA, never a shortened form"
+SHA_ERROR: Final = worktree.COMMIT_SHA_ERROR
 DIFF_ID_ERROR: Final = (
     "a verdict carries the 64-hex exact diff identity of the reviewed diff, tagged"
     " `binary:` where that diff changes a binary file"
@@ -1078,12 +1078,8 @@ def record_verdict(  # noqa: PLR0911, PLR0913 — one refusal per way a record c
         return Refusal(
             "invalid_issue", (f"issue={issue}",), "Name the issue the review was dispatched on."
         )
-    if not FULL_SHA.fullmatch(reviewed_sha):
-        return Refusal(
-            "invalid_sha",
-            (f"reviewed_sha={reviewed_sha}", SHA_ERROR),
-            f"Name the reviewed commit in full — {SHA_ERROR}.",
-        )
+    if invalid := worktree.invalid_commit_sha(reviewed_sha, field="reviewed_sha"):
+        return invalid
     if not isinstance(diff_id, str) or not DIFF_ID.fullmatch(diff_id):
         return Refusal(
             "invalid_diff_id",
@@ -1509,6 +1505,16 @@ def _record_report(outcome: Recorded | Refusal) -> Report:
     )
 
 
+def _reviewed_commit_refusal(repo: Path, sha: str) -> Refusal | None:
+    """Validate form before fetching, then ask whether any ref contains the commit."""
+    if invalid := worktree.invalid_commit_sha(sha, field="reviewed_sha"):
+        return invalid
+    # Bounded (#434), the same deadline every other read of `origin` in this protocol
+    # carries; a wedged remote refuses as `git_failed` rather than hanging the record.
+    worktree.git("fetch", "origin", cwd=repo, timeout=worktree.REMOTE_READ_TIMEOUT_S)
+    return worktree.validate_referenced_commit(repo, sha)
+
+
 def _show(  # noqa: PLR0911 — one return per refusal, so each stays a whole thought
     dispatch_id: str,
     dispatch_root: Path,
@@ -1697,13 +1703,7 @@ def main(argv: list[str] | None = None) -> int:
                 # reviewed.
                 repo = Path(args.repo)
                 try:
-                    # Bounded (#434), the same deadline every other read of `origin`
-                    # in this protocol carries; a wedged remote refuses as
-                    # `git_failed` rather than hanging the record.
-                    worktree.git(
-                        "fetch", "origin", cwd=repo, timeout=worktree.REMOTE_READ_TIMEOUT_S
-                    )
-                    commit = worktree.commit_on_head(repo, args.reviewed_sha)
+                    commit = _reviewed_commit_refusal(repo, args.reviewed_sha)
                 except worktree.GitError as failure:
                     report = _git_failed(repo, failure)
                 else:
