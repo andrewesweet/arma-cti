@@ -2,107 +2,64 @@
 description: One orchestrator cycle — harvest finished dispatches, land what is ready, refill WIP, report only what changed.
 ---
 
-Orchestrator tick. Act; do not wait for the human.
+Orchestrator tick. Act; do not wait for the human. *(This file's own convention; no ruling behind it.)*
 
-Every rule below cites where it was taken. A sentence here with no citation is not a ruling; treat it as description, and if it conflicts with the code, the code wins and this file is wrong.
+Rules that bind cite where they were taken — an issue, an ADR, or the path that implements them. A sentence with no citation is this file's convention rather than a recorded ruling. **Where this file and the code disagree, the code wins and this file is wrong.**
 
 ## 1. Harvest
 
-For every dispatch finished since the last tick, do the orchestrator's half — the half a
-dispatched session cannot do for itself:
+For every dispatch finished since the last tick, do the orchestrator's half:
 
 - Read its result and its report.
-- **Exchange its branch** with `just review exchange <issue>`, and retire its tree. A slot held by
-  finished work is what silently caps WIP. Exchange is the operation; "push the branch" describes
-  neither what the recipe does nor what the reviewer needs (`tools/review_exchange.py`).
-- Post the report to the issue, record the verdict with `just review record`, file every
-  finding of `medium` and below as its own issue, and adjudicate each one
-  `accepted_and_filed --filed-issue <n> --conditional-on <n>` — the route names the issue it filed,
-  and refuses without it (`tools/review_loop.py`).
+- **Exchange its branch** with `just review exchange <issue>` (`tools/review_exchange.py`), and retire its tree when the issue is closed. "Push the branch" describes neither the recipe nor what the reviewer needs.
+- Post the report to the issue, record the verdict with `just review record`, file every finding of `medium` and below as its own issue, and adjudicate each with `just review-loop adjudicate --route accepted_and_filed --filed-issue <n> --conditional-on "<the work outside the diff the harm depends on>"` (`tools/review_loop.py:549-562,1431-1440`). `--filed-issue` is required. **`--conditional-on` takes a description, not an issue number** — any non-empty string passes, so a number there writes a semantically empty adjudication that still clears the rung.
 
-**A review seat may be unable to post.** The seat is forced into `permission_mode="plan"`
-(`tools/dispatch.py`'s `SEATS`), and a lane without `ExitPlanMode` completes the review and cannot
-comment. Read the run's report before concluding a reviewer went quiet, and post on its behalf.
+**Reviewers are passed test reports and do not re-run the suite** (#353, clarified by #449). They post their own findings. A reviewer that identifies a needed gate **proposes** it; the review seat is `lands=False` under forced plan mode and cannot land it (`tools/dispatch.py:811-814`), so an implementer lands it on its own issue.
 
-**Reviewers are passed test reports; they do not re-run the suite** (#353, and the human's ruling of
-2026-08-20). They may land review-specific gates and post their own findings. The wall-clock cost of
-a re-run is the reason. Do not brief a reviewer to run the gate.
+**If a reviewer reports it could not post, relay for it** — but only on an observed refusal (`docs/review-dispatch.md:139-173`). Both runner families do post from forced plan mode; absence of `ExitPlanMode` is not evidence that `gh issue comment` is unavailable. Two runs on #455 this session (`d-20260821-012423-2f47dd`, `d-20260821-015701-05d3f8`) ended with the review written to a plan file and unposted; that is the observed case this covers, not a standing expectation.
 
 ## 2. Land
 
-If a branch is gated, reviewed and adjudicated, land it and close its issue with what landed,
-who reviewed it, and what was filed rather than fixed. The close must carry a criterion-by-criterion
-audit naming `just check`, `just unit` and `just mutation`; the rung refuses the close without one
-(#461, `tools/land.py`'s `AUDIT_MARKERS`).
+If a branch is gated, reviewed and adjudicated, land it and close its issue with what landed, who reviewed it, and what was filed rather than fixed. The close needs a criterion-by-criterion audit in **one comment** naming `just check`, `just unit` and `just mutation`; the rung refuses `audit_absent` without it (#461, `tools/land.py`'s `AUDIT_MARKERS`).
 
-**A verdict survives a clean rebase** (#417). `just land` and `just land --stage` record the rebase,
-and an earlier verdict carries to the moved commit when the recorded chain reaches it and the diff's
-exact identity still matches. A fresh review is owed when that proof fails — a hand-resolved replay,
-or a binary diff, which is not carried. So a second landing does **not** automatically orphan another
-branch's verdict, and restaging every branch after every landing is work this rule already removed
-(`docs/review-dispatch.md:358-372`, `tools/land.py:990-1018`).
+**A verdict survives a clean rebase** (#417). `just land` and `just land --stage` record the rebase, and a verdict carries to the moved commit when the recorded chain reaches it and the diff's exact identity matches. A hand-resolved replay or a binary diff does not carry (`docs/review-dispatch.md:358-372`, `tools/land.py:990-1018`). So a second landing does not automatically orphan another branch's verdict.
 
-**Landing does not free a WIP slot; retiring the worktree does.** A landed tree still counts.
+**Occupancy is by issue, not by tree.** `queue_policy.derive_in_flight` unions issue worktrees with unfinished dispatch records, then drops every issue GitHub reports closed. A successful `just land` normally closes the issue. So a **landed-but-open** issue still occupies a slot; closing it releases the slot and leaves the tree as `worktree_done_owed`, which retirement then clears.
 
 ## 3. Refill to the limit
 
-The limit is **five in flight, any lane** — the human's ruling under the #284 stage-1 experiment.
-It is not restated here as a number to be maintained: read it from `just queue state`, which holds
-the live policy and its ruling text.
+Read the limit and its ruling from `just queue state` — it holds both, and a number copied into this file goes stale silently. At the time of writing it reports `wip_limit=5`, any lane, under the orchestrator ruling of 2026-08-19 taken on the human's standing authorisation, because #358 landed and the throttle's exit condition was met. (#284's own closing ruling says "WIP 3 remains in force" and closes that experiment as superseded; it is not the current authority.)
 
 Lane order of preference: **zai, then codex, then claude-native** (human, 2026-08-19).
 
-Preference chooses among admissible lanes; it never overrides a refusal. Still binding: the off-peak
-rule on zai (#238, no override), the breaker, and the routing policy.
+Preference chooses among admissible lanes; it never overrides a refusal. Still binding: the off-peak rule on zai (#238, no override), the breaker, and the routing policy.
 
-**The cross-lane rung is a preference, not a bar** (#426). `just land` prints `gate_review=` and
-refuses only on `review_lane_unknown` or `gate_class_undetermined`. Reading it as a bar parks
-branches that are landable.
+**The cross-lane rung is a preference, not a bar** (#426). On that rung specifically, lane coincidence no longer refuses; unknown lane or gate class still does — `review_lane_unknown`, `gate_class_undetermined`. Every other refusal in `tools/land.py:110-179` stands, including the absolute `review_same_profile`.
 
-**Every seat is open to every lane.** Codex heads the implementer preference
-(`tools/dispatch.py`'s `IMPLEMENTER_PREFERENCE`, `codex-luna-max` first).
+**Codex may take the implementer seat**: `IMPLEMENTER_PREFERENCE` heads with `codex-luna-max` (`tools/dispatch.py:708`). This is not a general rule about seats — `orchestrator` is the sole `claude_only=True` row (`tools/dispatch.py:858`, ADR-0071 ruling 1).
 
-**The in-flight count reads worktrees *and* dispatch records** — `queue_policy.gather` derives it
-from both, minus closed issues. A finished dispatch whose record has no result still counts, so
-sweeping trees alone will not explain a `wip_reached` refusal.
-
-**Read each issue's routing block.** Recent issues carry a `cti.dispatch-plan/1` comment naming the
-seat, lane and profile per stage and the escalation triggers. `just dispatch` does not read it yet
-(#463); until it does, honour it by hand.
+**Read each issue's routing block.** Recent issues carry a `cti.dispatch-plan/1` comment naming seat, lane and profile per stage with escalation triggers. `just dispatch` does not read it yet (#463); honour it by hand until it does.
 
 ## 4. Priority
 
-1. The correctness backlog, defect-class first: #458's class — a check comparing a token rather than
-   the thing — has ten recorded instances and three candidate escapes.
+1. The correctness backlog, defect-class first: #458's class — a check comparing a token rather than the thing — records eight instances in its body and a ninth in #470, with three candidate escapes.
 2. #353 and #393, the remaining throughput levers.
-3. The banked branches, disjoint surfaces first. Re-implement rather than rebase once a branch is
-   tens of commits behind: measured on #340, #342 and #349.
+3. The banked branches, disjoint surfaces first. Judge rebase against re-implementation per branch on how far behind it is and what it touches; #340, #342 and #349 are the open cases and record no threshold.
 4. The records backlog.
 
 Re-rank if the evidence says so, and say so in the tick rather than re-ranking quietly.
 
 ## 5. Two reviews per landing, and the cap changes the work
 
-`medium` and below are filed and the branch lands; `critical` and `high` go back **once**
-(#217, human rulings of 2026-08-18 and 2026-08-19). Two reviews total — not one per finding.
+`medium` and below are filed and the branch lands; `critical` and `high` go back **once** (#217, human rulings of 2026-08-18 and 2026-08-19). Two reviews total — not one per finding.
 
-**At the cap with a `critical` or `high` outstanding, a third patch is not an option.** The
-branch takes one of three routes: delete or simplify the thing being defended; narrow the
-claim to something provably sound and file the remainder; or park and escalate.
+**At the cap with a `critical` or `high` outstanding, a third patch is not an option.** The branch takes one of three routes: delete or simplify the thing being defended; narrow the claim to something provably sound and file the remainder; or park and escalate.
 
-**A false claim in a shipping artefact is worth breaking the cap for**, and has been, repeatedly. A
-changelog fragment is read as a claim, not as prose (ADR-0077, #460), and every sentence in it must be
-true of the code as merged. The same standard applies to a docstring that states a floor and to a
-close table that summarises decisions: five landings were blocked on this in one session, each on a
-sentence that was nearly true.
+**A changelog fragment is read as a claim, not as prose, and every sentence in it must be true of the code as merged** (ADR-0077, #460). ADR-0077 records five false fragments found, of which three blocked a landing.
 
-**Earlier trigger, worth more than the cap:** when round two finds the *same class* of defect
-as round one, stop patching and question the requirement. #405 spent four rounds on one class
-— a check comparing a token rather than the thing — and ended by deleting what was being
-defended. #417 the same. Two instances of a class is evidence about the design.
+**Earlier trigger, worth more than the cap:** when round two finds the *same class* of defect as round one, stop patching and question the requirement. #405 spent four rounds on one class and ended by deleting what was being defended; #417 the same. Two instances of a class is evidence about the design.
 
-Take rulings under the human's standing authorisation, record them where they bind, and do
-not park work waiting for a turn.
+Take rulings under the human's standing authorisation, record them where they bind, and do not park work waiting for a turn.
 
 ## 6. Report briefly
 
@@ -112,8 +69,6 @@ not park work waiting for a turn.
 
 ## 7. Escalate at once, not at the end of the tick
 
-A gated sign-off you cannot take; a `critical` that recurs on the same branch; a provider quota
-or breaker trip; a refusal you cannot route around.
+A gated sign-off you cannot take; a `critical` that recurs on the same branch; a provider quota or breaker trip; a refusal you cannot route around.
 
-**A refusal inside a chained command is not noise.** Read every line a command prints before acting
-on any of it: a `refusal=` filtered past has dispatched a reviewer onto the wrong commit.
+**Preserve typed refusals and exit status when chaining commands.** A `refusal=` line filtered out of a chained command's output on 2026-08-21 dispatched a reviewer onto a stale tree (`d-20260821-015246-9e1696`, stopped before it reported). Check the operation's own result — the tree's HEAD, the recipe's exit code — rather than the presence of a success line. *(This file's convention, from that incident; no ruling behind it.)*
