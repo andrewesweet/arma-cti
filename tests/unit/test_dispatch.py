@@ -48,6 +48,7 @@ if TYPE_CHECKING:
 dispatch = load_tool("dispatch")
 breaker = load_tool("breaker")
 brief = load_tool("brief")
+gate_clock = load_tool("gate_clock")
 readiness = load_tool("readiness")
 routing_policy = load_tool("routing_policy")
 
@@ -129,6 +130,10 @@ def fake_claude(tmp_path: Path) -> Path:
     runner = bindir / "claude"
     runner.write_text(
         """#!/usr/bin/env bash
+if [ -n "${CTI_FAKE_GATE_ROW:-}" ]; then
+  mkdir -p "$CTI_GATE_CLOCK_OUTBOX_DIR"
+  printf '%s\\n' "$CTI_FAKE_GATE_ROW" >>"$CTI_GATE_CLOCK_OUTBOX_DIR/records.jsonl"
+fi
 {
   printf 'argv=%s\\n' "$*"
   printf 'cwd=%s\\n' "$PWD"
@@ -2028,6 +2033,18 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
 ) -> None:
     worktree = git_worktree(tmp_path)
     capture = tmp_path / "claude-ran.txt"
+    canonical_gate_clock = tmp_path / "gate-clock"
+    queued = gate_clock.Record(
+        at="2026-08-21T06:25:00+00:00",
+        recipe="unit",
+        wall_seconds=27.22,
+        status=0,
+        head="1341ca2",
+        tests_collected=5210,
+        load_1m=0.5,
+        foreign_gate_processes=0,
+        mutation_targets=None,
+    )
     started = time.monotonic()
     done = run_seam(
         [
@@ -2044,7 +2061,12 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
             "--dispatch-dir",
             str(tmp_path / "dispatches"),
         ],
-        seam_env(tmp_path, capture),
+        seam_env(
+            tmp_path,
+            capture,
+            CTI_GATE_CLOCK_DIR=str(canonical_gate_clock),
+            CTI_FAKE_GATE_ROW=json.dumps(gate_clock.record_document(queued)),
+        ),
     )
     elapsed = time.monotonic() - started
     assert done.returncode == 0, done.stderr
@@ -2066,6 +2088,8 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     result = json.loads((record / "result.json").read_text(encoding="utf-8"))
     assert result["returncode"] == 0
     assert result["dispatch_id"] == printed["dispatch"]
+    assert result["gate_clock_collection"] == ["gate_clock_collection=collected rows=1"]
+    assert gate_clock.load_records(canonical_gate_clock) == (queued,)
 
     ran = read_lines(capture.read_text(encoding="utf-8"))
     assert ran["cwd"] == str(worktree.resolve())
@@ -2078,6 +2102,8 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     assert "cti.seat=implementer" in attributes
     assert "cti.issue=223" in attributes
     assert "cti.base_sha=" in attributes
+    assert ran[gate_clock.CANONICAL_DIR_ENV] == str(canonical_gate_clock)
+    assert gate_clock.OUTBOX_DIR_ENV in ran
     # The poisoned parent did not reach the child.
     assert "ANTHROPIC_BASE_URL" not in ran
 

@@ -222,6 +222,7 @@ import secrets as secrets_module
 import stat
 import subprocess
 import sys
+import tempfile
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -236,6 +237,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import breaker
 import dispatch_stop
 import gate
+import gate_clock
 import hook_parity
 import queue_policy
 import readiness
@@ -3551,6 +3553,41 @@ def harness_commits(lane: Lane, permission_mode: str) -> bool:
     return flags == CODEX_SANDBOX["acceptEdits"]
 
 
+def collect_gate_clock(outbox: Path, canonical: Path) -> tuple[str, ...]:
+    """Append a dispatched session's queued rows where the host already has access."""
+    path = gate_clock.records_path(outbox)
+    if not path.exists():
+        try:
+            outbox.rmdir()
+        except OSError as error:
+            return (f"gate_clock_collection=cleanup_failed cause={error}",)
+        return ()
+    rows = gate_clock.load_records(outbox)
+    if not rows:
+        return (
+            "gate_clock_collection=failed cause=outbox contained no readable rows",
+            f"outbox={outbox}",
+        )
+    try:
+        for row in rows:
+            gate_clock.append_record(canonical, row)
+    except OSError as error:
+        return (
+            f"gate_clock_collection=failed cause={error}",
+            f"outbox={outbox}",
+        )
+    try:
+        path.unlink()
+        outbox.rmdir()
+    except OSError as error:
+        return (
+            f"gate_clock_collection=collected rows={len(rows)}",
+            f"gate_clock_cleanup=failed cause={error}",
+            f"outbox={outbox}",
+        )
+    return (f"gate_clock_collection=collected rows={len(rows)}",)
+
+
 def harness_start_refusal(worktree: Path) -> Refusal | None:
     """Refuse before the session launches where the tree is not provably empty (#405).
 
@@ -4468,6 +4505,14 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         return EXIT_REFUSED, refusal.lines()
 
     child = assemble_environment(parent, profile, plan.identity, token)
+    canonical_gate_clock = Path(
+        parent.get("CTI_GATE_CLOCK_DIR", str(gate_clock.DEFAULT_GATE_CLOCK_DIR))
+    ).expanduser()
+    gate_clock_outbox = Path(
+        tempfile.mkdtemp(prefix=f"arma-cti-gate-clock-{plan.identity.dispatch_id}-")
+    )
+    child[gate_clock.CANONICAL_DIR_ENV] = str(canonical_gate_clock)
+    child[gate_clock.OUTBOX_DIR_ENV] = str(gate_clock_outbox)
     started = datetime.now(tz=UTC)
     # S603: argv is the registry's runner plus registry values; the brief is on stdin so
     # that nothing a dispatch carries reaches the process table.
@@ -4479,6 +4524,7 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         text=True,
         check=False,
     )
+    gate_clock_collection = collect_gate_clock(gate_clock_outbox, canonical_gate_clock)
     outcome, reset_at = classify_finished_run(record, done.returncode)
     breaker.record_outcome(
         breaker.Store(directory=plan.breaker_dir),
@@ -4504,11 +4550,17 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         outcome=outcome,
         started_at=started.isoformat(),
         ended_at=datetime.now(tz=UTC).isoformat(),
+        gate_clock_collection=list(gate_clock_collection),
         harness_finish=list(finish),
     )
     return (
         finish_code or done.returncode,
-        (f"dispatch={plan.identity.dispatch_id}", f"exit={done.returncode}", *finish),
+        (
+            f"dispatch={plan.identity.dispatch_id}",
+            f"exit={done.returncode}",
+            *gate_clock_collection,
+            *finish,
+        ),
     )
 
 

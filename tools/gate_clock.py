@@ -9,11 +9,20 @@ charges a scheduling penalty that scales with test count — every commit made t
 gate slightly worse and no bisect could stand out. A regression with no guilty
 commit is exactly the kind only a standing measurement catches.
 
-So every `just unit` and `just fast` run appends one row to
+So every `just unit` and `just fast` run attempts one row in
 `~/.arma-cti/gate-clock/records.jsonl` (outside every worktree, accumulating
-across branches and lanes), and this module's `report` — folded into
+across branches and lanes). A dispatched run that cannot write there queues its
+row in a sandbox-writable outbox which the unsandboxed dispatcher attempts to
+append after the session exits; a failed host append is reported and leaves the
+outbox in place. This module's `report` — folded into
 `just watch-report` — compares a median of recent green runs against an
 **anchor** held in `tools/gate-clock-anchor.json`, in the tree.
+
+**Coverage is unknowable.** Recording failures before #472 were not counted,
+and a non-dispatched recorder still has no host harness that could durably count
+a failed write. `history` states that beside every numeric sample. The outbox
+closes the known sandbox-selected loss for dispatched runs; it does not recover
+old rows or manufacture a denominator.
 
 **Anchored, not rolling, and that was measured rather than argued.** A
 self-normalising watcher — trailing N runs against the previous N — is the
@@ -198,10 +207,12 @@ rather than a duration, because nobody has timed it. `just fast` invoking
 `just unit` records two rows — the unit tier's own wall and the whole
 recipe's — and both are real measurements of real invocations.
 
-The state directory is `CTI_GATE_CLOCK_DIR`, the seam `CTI_WATCH_DIR`,
-`CTI_BREAKER_DIR` and `CTI_RC_HEALTH_DIR` exist for (#249): without it a unit
-test of this reporter reads the live box, and whatever the box happens to be
-carrying reddens an unrelated run.
+The selected state directory is `CTI_GATE_CLOCK_DIR`, the seam
+`CTI_WATCH_DIR`, `CTI_BREAKER_DIR` and `CTI_RC_HEALTH_DIR` exist for (#249):
+without it a unit test of this reporter reads the live box, and whatever the box
+happens to be carrying reddens an unrelated run. During dispatch, selecting a
+different directory also queues the row for canonical collection; outside a
+dispatch, the recorder says that the canonical history does not include it.
 """
 
 from __future__ import annotations
@@ -221,6 +232,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 DEFAULT_GATE_CLOCK_DIR: Final = Path.home() / ".arma-cti" / "gate-clock"
 RECORDS_NAME: Final = "records.jsonl"
+CANONICAL_DIR_ENV: Final = "CTI_GATE_CLOCK_CANONICAL_DIR"
+OUTBOX_DIR_ENV: Final = "CTI_GATE_CLOCK_OUTBOX_DIR"
 ANCHOR_PATH: Final = Path(__file__).with_name("gate-clock-anchor.json")
 PROC_UPTIME: Final = Path("/proc/uptime")
 
@@ -392,6 +405,54 @@ def append_record(gate_clock_dir: Path, row: Record) -> Path:
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(record_document(row)) + "\n")
     return path
+
+
+def record_or_queue(gate_clock_dir: Path, row: Record) -> str | None:
+    """Write one row, or leave it in the dispatch outbox for the host to collect.
+
+    The outbox is injected only by `just dispatch`. It is writable inside the
+    session sandbox; the unsandboxed dispatcher appends its rows to the canonical
+    history after the session exits. A caller-selected noncanonical destination is
+    still written, but its row also enters the outbox so `CTI_GATE_CLOCK_DIR` cannot
+    silently fork dispatched history.
+
+    `None` means this function already reported the one non-gating failure line.
+    Otherwise the string is appended to the ordinary recorded line.
+    """
+    canonical = Path(os.environ.get(CANONICAL_DIR_ENV, str(DEFAULT_GATE_CLOCK_DIR))).absolute()
+    primary = gate_clock_dir.absolute()
+    outbox_text = os.environ.get(OUTBOX_DIR_ENV, "")
+    outbox = Path(outbox_text).absolute() if outbox_text else None
+    try:
+        append_record(primary, row)
+    except OSError as primary_error:
+        if outbox is None:
+            failure = f"gate-clock {row.recipe} recording failed: {primary_error}"
+        else:
+            try:
+                append_record(outbox, row)
+            except OSError as outbox_error:
+                failure = (
+                    f"gate-clock {row.recipe} recording failed: canonical write "
+                    f"failed: {primary_error}; dispatch outbox write failed: {outbox_error}"
+                )
+            else:
+                failure = (
+                    f"gate-clock {row.recipe} canonical write failed: {primary_error}; "
+                    "queued for dispatch harness"
+                )
+        print(failure, file=sys.stderr)  # noqa: T201 — the run's report surface
+        return None
+
+    if primary == canonical:
+        return ""
+    if outbox is None:
+        return "; canonical history does not include this row"
+    try:
+        append_record(outbox, row)
+    except OSError as outbox_error:
+        return f"; canonical collection failed: {outbox_error}"
+    return "; queued for canonical collection"
 
 
 def head_sha() -> str:
@@ -762,14 +823,18 @@ def history(gate_clock_dir: Path, anchor_state: AnchorState) -> list[str]:
             detail += f", {unrecorded} predating the target count"
         if not greens:
             reason = "no green runs recorded" if not all_green else "no comparable green runs"
-            lines.append(f"{recipe}: {len(rows)} records ({detail}), {reason}, {anchor_text}")
+            lines.append(
+                f"{recipe}: {len(rows)} records ({detail}), {reason}, {anchor_text}; "
+                "coverage unknowable: failed recording attempts are not durably counted"
+            )
             continue
         walls = [row.wall_seconds for row in greens]
         window = walls[-REPORT_WINDOW:]
         lines.append(
             f"{recipe}: {len(rows)} records ({detail}), "
             f"median(last {len(window)} green) {median(window):.0f}s, "
-            f"span {min(walls):.0f}s to {max(walls):.0f}s, {anchor_text}"
+            f"span {min(walls):.0f}s to {max(walls):.0f}s, {anchor_text}; "
+            "coverage unknowable: failed recording attempts are not durably counted"
         )
     return lines
 
@@ -857,7 +922,9 @@ def main(argv: list[str] | None = None) -> int:
             foreign_gate_processes=args.foreign_gate,
             mutation_targets=read_mutation_targets(),
         )
-        append_record(args.gate_clock_dir, row)
+        note = record_or_queue(args.gate_clock_dir, row)
+        if note is None:
+            return 0
         health = "green" if row.status == 0 else f"status {row.status}"
         count = f" {row.tests_collected} tests" if row.tests_collected is not None else ""
         # The target count is on the line for the reason the test count is: a
@@ -869,7 +936,8 @@ def main(argv: list[str] | None = None) -> int:
             else ""
         )
         print(  # noqa: T201 — the shell reads this
-            f"gate-clock: recorded {row.recipe} {row.wall_seconds:.1f}s {health}{count}{targets}"
+            f"gate-clock: recorded {row.recipe} {row.wall_seconds:.1f}s "
+            f"{health}{count}{targets}{note}"
         )
         return 0
 
