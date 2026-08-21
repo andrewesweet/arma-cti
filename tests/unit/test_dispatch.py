@@ -2061,7 +2061,7 @@ def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: P
 # -------------------------------------------- every detached-child exit closes its record
 
 
-def test_subprocess_run_raising_records_that_the_child_never_launched(
+def test_subprocess_run_raising_before_launch_records_unknown_child_state(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     plan, brief_text, refusal = plan_for(tmp_path)
@@ -2080,33 +2080,43 @@ def test_subprocess_run_raising_records_that_the_child_never_launched(
         dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
 
     result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
-    assert result["status"] == "child_not_launched"
-    assert result["failure_phase"] == "child_launch"
+    assert result["status"] == "child_state_unknown"
+    assert result["failure_phase"] == "child_launch_or_wait"
     assert result["failure"] == {"type": "FileNotFoundError", "message": "runner missing"}
     assert "returncode" not in result
     assert_dispatch_no_longer_in_flight(plan)
 
 
-def test_child_launch_baseexception_records_that_the_child_never_launched(
+def test_subprocess_run_wait_baseexception_after_launch_records_unknown_child_state(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     plan, brief_text, refusal = plan_for(tmp_path)
     assert refusal is None
     assert plan is not None
+    plan = plan._replace(
+        argv=(sys.executable, "-c", "import time; time.sleep(60)"),
+    )
     dispatch.write_record(plan, brief_text)
+    monkeypatch.setattr(dispatch, "git", lambda *_args, **_kwargs: str(plan.worktree))
     message = "launch interrupted"
+    started_pids: list[int] = []
 
-    def launch_is_interrupted(*_args: object, **_kwargs: object) -> None:
+    def wait_is_interrupted(
+        process: subprocess.Popen[str], *_args: object, **_kwargs: object
+    ) -> None:
+        assert process.poll() is None
+        started_pids.append(process.pid)
         raise KeyboardInterrupt(message)
 
-    monkeypatch.setattr(dispatch, "_run_child_with_gate_clock", launch_is_interrupted)
+    monkeypatch.setattr(subprocess.Popen, "communicate", wait_is_interrupted)
 
     with pytest.raises(KeyboardInterrupt, match="launch interrupted"):
         dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
 
+    assert started_pids
     result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
-    assert result["status"] == "child_not_launched"
-    assert result["failure_phase"] == "child_launch"
+    assert result["status"] == "child_state_unknown"
+    assert result["failure_phase"] == "child_launch_or_wait"
     assert result["failure"] == {"type": "KeyboardInterrupt", "message": "launch interrupted"}
     assert "returncode" not in result
     assert_dispatch_no_longer_in_flight(plan)

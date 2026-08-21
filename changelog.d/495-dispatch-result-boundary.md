@@ -1,23 +1,19 @@
 #### Fixed
 
-- `run_dispatch` now reaches one `result.json` write attempt after every body return or
-  raised `BaseException`. When the closeout document can be constructed and written, its
-  `status` distinguishes a returned child
-  (`child_finished`), a refusal or failure before a child result
-  (`child_not_launched`), and a harness failure after the child returned
-  (`harness_failed_after_child`). Raised failures also record their phase, exception
-  type, and message. A child return is marked before gate-clock collection, so a
-  `BaseException` during collection is recorded as post-child rather than as a launch
-  failure.
+- `run_dispatch` now makes one best-effort `result.json` closeout attempt whenever control
+  reaches its outer Python boundary. A successfully written closeout releases dispatch-only
+  WIP even when the harness raised a `BaseException`.
 
-- A result-write failure is reported once on stderr. It is not retried and no recovery,
-  lock, quarantine, dedupe, or temporary-file protocol is added. Consequently
-  `result.json` can still be absent when its own write fails, when the record directory
-  does not exist, when resource exhaustion prevents closeout construction, or when
-  process, interpreter, kernel, or host termination prevents the Python `finally`
-  boundary from running.
+- Lifecycle status is reliable after child completion is marked. A failure after
+  `subprocess.run` is invoked but before that mark records `child_state_unknown`, because
+  the child may have run before the harness lost track of it; it no longer asserts
+  `child_not_launched` and invites a duplicate dispatch. Raised failures also record their
+  phase, exception type, and message.
 
-- Tests inject `subprocess.run`, child-launch, and breaker-journal failures, including
-  `KeyboardInterrupt` and `MemoryError`. Each checks the recorded status and checks the
-  resulting file against `queue_policy.derive_in_flight`, proving that these completed
-  failure paths no longer occupy dispatch-only WIP forever.
+- Closeout has no stronger durability guarantee: `result.json` exists only when control
+  reaches the boundary and its single write succeeds. Result writes are not retried, and
+  no recovery, lock, quarantine, dedupe, or temporary-file protocol is added.
+
+- Tests interrupt real `subprocess.run` communication after its child starts, exercise
+  failures on both sides of the completion mark, and check successful closeouts against
+  `queue_policy.derive_in_flight`.

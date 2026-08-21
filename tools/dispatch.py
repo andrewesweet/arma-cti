@@ -3584,6 +3584,7 @@ def _run_child_with_gate_clock(
     plan: Plan,
     child: Mapping[str, str],
     brief: str,
+    child_launch_attempted: Callable[[], None],
     child_finished: Callable[[int], None],
 ) -> tuple[subprocess.CompletedProcess[str], tuple[str, ...]]:
     """Launch the child with local recording, then append once immediately."""
@@ -3595,6 +3596,7 @@ def _run_child_with_gate_clock(
         child_environment[GATE_CLOCK_DIR_ENV] = temporary
         # S603: argv is the registry's runner plus registry values; the brief is on stdin so
         # nothing a dispatch carries reaches the process table.
+        child_launch_attempted()
         done = subprocess.run(  # noqa: S603
             list(plan.argv),
             cwd=plan.worktree,
@@ -4462,6 +4464,7 @@ class _DispatchProgress:
     dispatch_id: str
     failure_phase: str = "record_read"
     started: datetime | None = None
+    child_launch_attempted: bool = False
     returncode: int | None = None
 
 
@@ -4476,13 +4479,19 @@ def _not_launched_result(dispatch_id: str, refusal: Refusal) -> dict[str, object
 
 
 def _failed_result(progress: _DispatchProgress, failure: BaseException) -> dict[str, object]:
+    if progress.returncode is not None:
+        status = "harness_failed_after_child"
+    elif progress.child_launch_attempted:
+        # `subprocess.run` covers both process creation and communication. Until it
+        # returns, an exception cannot reliably say whether the child did no work or ran
+        # before the harness lost track of it. Preserve that uncertainty: asserting the
+        # child never launched would make a duplicate dispatch look safe.
+        status = "child_state_unknown"
+    else:
+        status = "child_not_launched"
     result: dict[str, object] = {
         "dispatch_id": progress.dispatch_id,
-        "status": (
-            "harness_failed_after_child"
-            if progress.returncode is not None
-            else "child_not_launched"
-        ),
+        "status": status,
         "failure_phase": progress.failure_phase,
         "failure": {"type": type(failure).__name__, "message": str(failure)},
         "ended_at": datetime.now(tz=UTC).isoformat(),
@@ -4546,14 +4555,18 @@ def _run_dispatch_body(
 
     child = assemble_environment(parent, profile, plan.identity, token)
     progress.started = datetime.now(tz=UTC)
-    progress.failure_phase = "child_launch"
+    progress.failure_phase = "child_setup"
+
+    def mark_child_launch_attempted() -> None:
+        progress.child_launch_attempted = True
+        progress.failure_phase = "child_launch_or_wait"
 
     def mark_child_finished(code: int) -> None:
         progress.returncode = code
         progress.failure_phase = "gate_clock_collection"
 
     done, gate_clock_collection = _run_child_with_gate_clock(
-        plan, child, brief, mark_child_finished
+        plan, child, brief, mark_child_launch_attempted, mark_child_finished
     )
     progress.returncode = done.returncode
     progress.failure_phase = "child_result"
