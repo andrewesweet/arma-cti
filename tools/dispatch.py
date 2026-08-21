@@ -3555,7 +3555,7 @@ def harness_commits(lane: Lane, permission_mode: str) -> bool:
 
 
 def collect_gate_clock(session_directory: Path, canonical: Path) -> tuple[str, ...]:
-    """Append one session-local gate-clock file once, without retry or recovery."""
+    """Append one session-local gate-clock file once, separating an unterminated tail."""
     source = gate_clock.records_path(session_directory)
     try:
         payload = source.read_bytes()
@@ -3568,7 +3568,12 @@ def collect_gate_clock(session_directory: Path, canonical: Path) -> tuple[str, .
             return ()
         destination = gate_clock.records_path(canonical)
         destination.parent.mkdir(parents=True, exist_ok=True)
-        with destination.open("ab") as handle:
+        with destination.open("ab+") as handle:
+            handle.seek(0, os.SEEK_END)
+            if handle.tell():
+                handle.seek(-1, os.SEEK_END)
+                if handle.read(1) != b"\n":
+                    payload = b"\n" + payload
             handle.write(payload)
     except OSError as error:
         return (f"gate_clock_collection=failed cause={error} canonical={canonical}",)

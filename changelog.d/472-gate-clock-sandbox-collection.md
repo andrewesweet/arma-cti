@@ -3,11 +3,13 @@
 - A dispatched gate run now writes its gate-clock rows to a writable,
   session-local temporary file. Immediately after the child exits, the
   unsandboxed dispatcher appends that file once to the canonical
-  `~/.arma-cti/gate-clock/records.jsonl`. If that append fails, the dispatcher
-  reports one `gate_clock_collection=failed` line, preserves the child's exit
-  result, and still writes `result.json`. Canonical collection runs only after
-  child exit, takes no lock, and no later dispatch scans its file, so it cannot
-  block child launch or another dispatch.
+  `~/.arma-cti/gate-clock/records.jsonl`. An unterminated canonical tail,
+  readable or malformed, is separated before the new rows so `load_records`
+  cannot merge and skip them. If that append fails, the dispatcher reports one
+  `gate_clock_collection=failed` line, preserves the child's exit result, and
+  still writes `result.json`. Canonical collection runs only after child exit,
+  takes no lock, and no later dispatch scans its file, so it cannot block child
+  launch or another dispatch.
 
 - Collection is deliberately lossy. If the dispatcher dies after the child
   exits but before the append completes, that row can be lost without a
