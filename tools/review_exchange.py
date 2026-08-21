@@ -1506,13 +1506,13 @@ def _record_report(outcome: Recorded | Refusal) -> Report:
 
 
 def _reviewed_commit_refusal(repo: Path, sha: str) -> Refusal | None:
-    """Validate form before fetching, then ask whether any ref contains the commit."""
+    """Validate form before fetching, then ask whether the commit exists."""
     if invalid := worktree.invalid_commit_sha(sha, field="reviewed_sha"):
         return invalid
     # Bounded (#434), the same deadline every other read of `origin` in this protocol
     # carries; a wedged remote refuses as `git_failed` rather than hanging the record.
     worktree.git("fetch", "origin", cwd=repo, timeout=worktree.REMOTE_READ_TIMEOUT_S)
-    return worktree.validate_referenced_commit(repo, sha)
+    return worktree.validate_commit(repo, sha)
 
 
 def _show(  # noqa: PLR0911 — one return per refusal, so each stays a whole thought

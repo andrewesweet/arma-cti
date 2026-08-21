@@ -485,8 +485,8 @@ def invalid_commit_sha(sha: str, *, field: str = "sha") -> Refusal | None:
     )
 
 
-def validate_referenced_commit(repo: Path, sha: str) -> Refusal | None:
-    """Ask whether ``sha`` names a commit contained by any ref in ``repo``."""
+def validate_commit(repo: Path, sha: str) -> Refusal | None:
+    """Ask whether ``sha`` names a commit in ``repo``."""
     if invalid := invalid_commit_sha(sha):
         return invalid
     # S603/S607: fixed git operations plus the caller's SHA, passed as one argv word.
@@ -503,15 +503,7 @@ def validate_referenced_commit(repo: Path, sha: str) -> Refusal | None:
             (f"repository={repo}", f"sha={sha}", "commit=missing_or_not_a_commit"),
             "Re-read the full SHA and name a commit this repository holds. Nothing was recorded.",
         )
-    refs = git("for-each-ref", f"--contains={sha}", "--format=%(refname)", cwd=repo)
-    if refs.strip():
-        return None
-    return Refusal(
-        "commit_unreachable",
-        (f"repository={repo}", f"sha={sha}", "reachable_from_refs=no"),
-        "Name a commit reachable from a ref in this repository. After a rebase, name the"
-        " rebased commit. Nothing was recorded.",
-    )
+    return None
 
 
 def main_checkout(cwd: Path) -> Path:

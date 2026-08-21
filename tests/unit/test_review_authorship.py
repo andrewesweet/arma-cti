@@ -321,41 +321,6 @@ def test_the_command_pins_the_shared_invalid_sha_refusal(
     assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
 
 
-def test_the_command_refuses_an_orphaned_commit(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
-    repo, referenced = _author_repo(tmp_path)
-    (repo / "README").write_text("orphaned\n", encoding="utf-8")
-    review_loop.git("commit", "-qam", "orphaned", cwd=repo)
-    orphaned = review_loop.git("rev-parse", "HEAD", cwd=repo).strip()
-    review_loop.git("reset", "-q", "--hard", referenced, cwd=repo)
-
-    assert _author_command(tmp_path, repo, sha=orphaned) == review_loop.REFUSED
-    assert "refusal=commit_unreachable" in capsys.readouterr().err
-    assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
-
-
-def test_the_command_reports_a_failed_ref_read(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
-    repo, head = _author_repo(tmp_path)
-
-    def fail(_repo: Path, _sha: str) -> None:
-        raise review_loop.worktree.GitError(("for-each-ref",), "broken ref store")
-
-    monkeypatch.setattr(review_loop.worktree, "validate_referenced_commit", fail)
-
-    assert _author_command(tmp_path, repo, sha=head) == review_loop.NO_RESULT
-    assert "broken ref store" in capsys.readouterr().err
-    assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
-
-
 # ------------------------------------------------------------------ the merge
 
 
