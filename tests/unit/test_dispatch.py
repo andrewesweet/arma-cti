@@ -51,6 +51,7 @@ brief = load_tool("brief")
 gate_clock = load_tool("gate_clock")
 readiness = load_tool("readiness")
 routing_policy = load_tool("routing_policy")
+queue_policy = load_tool("queue_policy")
 
 SEAM = REPO / "tools" / "dispatch.sh"
 JUSTFILE = REPO / "justfile"
@@ -292,6 +293,17 @@ def plan_for(tmp_path: Path, **overrides: object) -> tuple[Any, str, Any]:
     request.update(overrides)
     args = _namespace(**request)
     return dispatch.plan_dispatch(args, REPO, now)
+
+
+def assert_dispatch_no_longer_in_flight(plan: Any) -> None:  # noqa: ANN401 — dynamic tool type
+    """Prove the result file closes the queue-policy source, not merely that it exists."""
+    finished = (plan.record / "result.json").is_file()
+    derived = queue_policy.derive_in_flight(
+        [],
+        [(plan.identity.issue, plan.identity.dispatch_id, finished)],
+        lambda _numbers: (frozenset(), "read"),
+    )
+    assert derived.issues == ()
 
 
 def _namespace(**fields: object) -> object:
@@ -1225,6 +1237,7 @@ def test_the_child_launches_nothing_over_a_tree_a_predecessor_left(
     # The refusal is recorded — which is what releases the worktree's occupancy — and
     # the tree is untouched, because the evidence is still evidence (#105).
     result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "child_not_launched"
     assert result["refusal"] == kind
     assert "returncode" not in result
     if left_behind == "edits":
@@ -2045,6 +2058,150 @@ def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: P
     assert "class=infra_unavailable" in lines
 
 
+# -------------------------------------------- every detached-child exit closes its record
+
+
+def test_subprocess_run_raising_records_that_the_child_never_launched(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    plan, brief_text, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+    monkeypatch.setattr(dispatch, "git", lambda *_args, **_kwargs: str(plan.worktree))
+    message = "runner missing"
+
+    def launch_fails(*_args: object, **_kwargs: object) -> None:
+        raise FileNotFoundError(message)
+
+    monkeypatch.setattr(dispatch.subprocess, "run", launch_fails)
+
+    with pytest.raises(FileNotFoundError, match="runner missing"):
+        dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
+
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "child_not_launched"
+    assert result["failure_phase"] == "child_launch"
+    assert result["failure"] == {"type": "FileNotFoundError", "message": "runner missing"}
+    assert "returncode" not in result
+    assert_dispatch_no_longer_in_flight(plan)
+
+
+def test_child_launch_baseexception_records_that_the_child_never_launched(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    plan, brief_text, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+    message = "launch interrupted"
+
+    def launch_is_interrupted(*_args: object, **_kwargs: object) -> None:
+        raise KeyboardInterrupt(message)
+
+    monkeypatch.setattr(dispatch, "_run_child_with_gate_clock", launch_is_interrupted)
+
+    with pytest.raises(KeyboardInterrupt, match="launch interrupted"):
+        dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
+
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "child_not_launched"
+    assert result["failure_phase"] == "child_launch"
+    assert result["failure"] == {"type": "KeyboardInterrupt", "message": "launch interrupted"}
+    assert "returncode" not in result
+    assert_dispatch_no_longer_in_flight(plan)
+
+
+def test_breaker_journaling_baseexception_records_post_child_harness_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    plan, brief_text, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+    completed = subprocess.CompletedProcess(plan.argv, 17)
+    monkeypatch.setattr(
+        dispatch,
+        "_run_child_with_gate_clock",
+        lambda *_args, **_kwargs: (completed, ()),
+    )
+    message = "breaker journal unavailable"
+
+    def journal_fails(*_args: object, **_kwargs: object) -> None:
+        raise MemoryError(message)
+
+    monkeypatch.setattr(dispatch.breaker, "record_outcome", journal_fails)
+
+    with pytest.raises(MemoryError, match="breaker journal unavailable"):
+        dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
+
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "harness_failed_after_child"
+    assert result["failure_phase"] == "breaker_journal"
+    assert result["failure"] == {
+        "type": "MemoryError",
+        "message": "breaker journal unavailable",
+    }
+    assert result["returncode"] == 17
+    assert_dispatch_no_longer_in_flight(plan)
+
+
+def test_gate_clock_baseexception_after_child_exit_records_post_child_harness_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    plan, brief_text, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+    monkeypatch.setattr(dispatch, "git", lambda *_args, **_kwargs: str(plan.worktree))
+    completed = subprocess.CompletedProcess(plan.argv, 19)
+    monkeypatch.setattr(dispatch.subprocess, "run", lambda *_args, **_kwargs: completed)
+    message = "collection interrupted"
+
+    def collection_is_interrupted(*_args: object, **_kwargs: object) -> None:
+        raise KeyboardInterrupt(message)
+
+    monkeypatch.setattr(dispatch, "collect_gate_clock", collection_is_interrupted)
+
+    with pytest.raises(KeyboardInterrupt, match="collection interrupted"):
+        dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
+
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "harness_failed_after_child"
+    assert result["failure_phase"] == "gate_clock_collection"
+    assert result["returncode"] == 19
+    assert_dispatch_no_longer_in_flight(plan)
+
+
+def test_returned_harness_failure_is_distinct_from_the_child_result(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    plan, brief_text, refusal = plan_for(tmp_path)
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+    completed = subprocess.CompletedProcess(plan.argv, 0)
+    monkeypatch.setattr(dispatch, "harness_commits", lambda *_args: True)
+    monkeypatch.setattr(dispatch, "harness_start_refusal", lambda *_args: None)
+    monkeypatch.setattr(
+        dispatch,
+        "_run_child_with_gate_clock",
+        lambda *_args, **_kwargs: (completed, ()),
+    )
+    monkeypatch.setattr(dispatch.breaker, "record_outcome", lambda *_args: None)
+    finish = ("refusal=commit_message_absent",)
+    monkeypatch.setattr(dispatch, "harness_finish", lambda *_args: (finish, 1))
+
+    code, _lines = dispatch.run_dispatch(plan.record, {"HOME": str(tmp_path)})
+
+    assert code == dispatch.EXIT_REFUSED
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "harness_failed_after_child"
+    assert result["returncode"] == 0
+    assert result["harness_finish"] == list(finish)
+    assert_dispatch_no_longer_in_flight(plan)
+
+
 # --------------------------------------------------------------- the seam, end to end
 
 
@@ -2097,6 +2254,7 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     record = Path(printed["record"])
     assert await_file(record / "result.json"), (record / "dispatch.log").read_text(encoding="utf-8")
     result = json.loads((record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "child_finished"
     assert result["returncode"] == 0
     assert result["dispatch_id"] == printed["dispatch"]
     assert result["gate_clock_collection"] == []

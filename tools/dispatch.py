@@ -3584,6 +3584,7 @@ def _run_child_with_gate_clock(
     plan: Plan,
     child: Mapping[str, str],
     brief: str,
+    child_finished: Callable[[int], None],
 ) -> tuple[subprocess.CompletedProcess[str], tuple[str, ...]]:
     """Launch the child with local recording, then append once immediately."""
     canonical = gate_clock.DEFAULT_GATE_CLOCK_DIR.absolute()
@@ -3602,6 +3603,9 @@ def _run_child_with_gate_clock(
             text=True,
             check=False,
         )
+        # Publish this fact before collection. A BaseException during collection is a
+        # harness failure after the child, never a launch failure.
+        child_finished(done.returncode)
         collection = collect_gate_clock(session_directory, canonical)
     return done, collection
 
@@ -4416,8 +4420,8 @@ def write_result(record: Path, **fields: object) -> None:
     (record / "result.json").write_text(json.dumps(fields, indent=2) + "\n", encoding="utf-8")
 
 
-def unreadable_record_refusal(record: Path, unreadable: Exception) -> tuple[str, ...]:
-    """Refuse a record that cannot be read back, and leave the refusal beside it.
+def unreadable_record_refusal(record: Path, unreadable: Exception) -> Refusal:
+    """Refuse a record that cannot be read back.
 
     The name is `dispatch_stop.find_record`'s, deliberately, and not a second one for the
     same condition: `tools/dispatch_stop.py` already refuses a dispatch record that will
@@ -4436,7 +4440,7 @@ def unreadable_record_refusal(record: Path, unreadable: Exception) -> tuple[str,
     `dispatch.json` is `unknown_dispatch` there and `dispatch_unreadable` here, because
     there it means "no such dispatch" and here the child was handed one.
     """
-    refusal = Refusal(
+    return Refusal(
         "dispatch_unreadable",
         (
             f"dispatch={record.name}",
@@ -4451,81 +4455,110 @@ def unreadable_record_refusal(record: Path, unreadable: Exception) -> tuple[str,
         ),
         failure_class="infra_unavailable",
     )
-    # A record directory that does not exist at all reaches here — `FileNotFoundError` out
-    # of `load_record` is one of the ways a pointed-at record fails — and there is nowhere
-    # to leave the refusal then. The refusal still goes back to the caller either way.
-    if record.is_dir():
-        write_result(
-            record,
-            dispatch_id=record.name,
-            refusal=refusal.kind,
-            failure_class=refusal.failure_class,
-            ended_at=datetime.now(tz=UTC).isoformat(),
+
+
+@dataclass
+class _DispatchProgress:
+    dispatch_id: str
+    failure_phase: str = "record_read"
+    started: datetime | None = None
+    returncode: int | None = None
+
+
+def _not_launched_result(dispatch_id: str, refusal: Refusal) -> dict[str, object]:
+    return {
+        "dispatch_id": dispatch_id,
+        "status": "child_not_launched",
+        "refusal": refusal.kind,
+        "failure_class": refusal.failure_class,
+        "ended_at": datetime.now(tz=UTC).isoformat(),
+    }
+
+
+def _failed_result(progress: _DispatchProgress, failure: BaseException) -> dict[str, object]:
+    result: dict[str, object] = {
+        "dispatch_id": progress.dispatch_id,
+        "status": (
+            "harness_failed_after_child"
+            if progress.returncode is not None
+            else "child_not_launched"
+        ),
+        "failure_phase": progress.failure_phase,
+        "failure": {"type": type(failure).__name__, "message": str(failure)},
+        "ended_at": datetime.now(tz=UTC).isoformat(),
+    }
+    if progress.returncode is not None:
+        result["returncode"] = progress.returncode
+    if progress.started is not None and progress.returncode is not None:
+        result["started_at"] = progress.started.isoformat()
+    return result
+
+
+def _write_result_once(record: Path, result: Mapping[str, object]) -> None:
+    """Attempt the one closeout write, reporting failure without adding recovery machinery."""
+    try:
+        write_result(record, **result)
+    except BaseException as failure:  # noqa: BLE001 — BaseException is the boundary's subject
+        emit(
+            (
+                (
+                    "result_write=failed"
+                    f" cause={type(failure).__name__}: {failure}"
+                    f" record={record / 'result.json'}"
+                ),
+            ),
+            EXIT_REFUSED,
         )
-    return refusal.lines()
 
 
-def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[str, ...]]:
-    """Run the detached child: assert the worktree, assemble the environment, start the runner.
-
-    An unreadable record refuses rather than raising into the seam. The child is detached,
-    so an uncaught exception here reaches nobody but `dispatch.log`; a named refusal with a
-    failure class reaches whoever reads `result.json`, and `infra_unavailable` is the right
-    one — a record this code did not write says nothing about the code under test.
-
-    The whole read-back is inside that guard, not only the JSON parse, because the record
-    fails in more ways than one and every one of them lands in the same place. Measured:
-    a `planned_at` that is not an instant raises `ValueError`, an `issue` or `argv` of the
-    wrong JSON type raises `TypeError`, a since-retired profile or an unregistered lane
-    raises `KeyError` out of the registries, and an absent `dispatch.json` or `brief.md`
-    raises `OSError`. Registry churn makes the two `KeyError`s the likely ones in
-    practice — a record naming a profile this version no longer has is precisely "a
-    record this code did not write" — and they used to sit one and two lines outside the
-    guard, which meant no `result.json` and a dispatch the ledger and `occupancy` see as
-    started and never ended. The same consequence used to reach past the guard through the
-    worktree, which comes off the record too: `subprocess.run(cwd=…)` raises before git
-    runs when the assigned tree is gone, which `just worktree done` makes routine. `git`
-    now answers the empty string there, so that record refuses `worktree_unreadable` with
-    a `result.json` beside it — the branch that names the case can now reach it.
-
-    The brief is read here rather than at its point of use for the same reason and no
-    other: it is part of the record, so an unreadable one is this refusal and not a
-    traceback. It is not inert, and the cost is worth stating: a record whose worktree is
-    also gone now refuses `dispatch_unreadable` where it used to refuse
-    `worktree_unreadable`, and the worktree diagnosis is the more actionable of the two —
-    it names `just worktree add`. Read-back before assignment is still the right order,
-    because a record that will not read back cannot be trusted to name a worktree at all.
-    """
+def _run_dispatch_body(
+    record: Path,
+    parent: Mapping[str, str],
+    progress: _DispatchProgress,
+) -> tuple[int, tuple[str, ...], dict[str, object]]:
+    """Run one child and return the result document the outer boundary must write."""
     try:
         plan = load_record(record)
+        progress.dispatch_id = plan.identity.dispatch_id
         profile = PROFILES[plan.identity.profile]
         lane = LANES[plan.identity.lane]
         brief = (record / "brief.md").read_text(encoding="utf-8")
     except (KeyError, TypeError, ValueError, OSError) as unreadable:
-        return EXIT_REFUSED, unreadable_record_refusal(record, unreadable)
+        refusal = unreadable_record_refusal(record, unreadable)
+        return (
+            EXIT_REFUSED,
+            refusal.lines(),
+            _not_launched_result(progress.dispatch_id, refusal),
+        )
 
+    progress.failure_phase = "pre_launch"
     refusal = assert_worktree(plan.worktree, git("rev-parse", "--show-toplevel", cwd=plan.worktree))
     if refusal is None:
         token, refusal = lane_credential(lane, plan.credentials)
     if refusal is None and harness_commits(lane, plan.permission_mode):
-        # High 2's rung, and the template is the credential re-check beside it: the child
-        # is what launches, so this is the last place to refuse without a run, and the
-        # `result.json` it writes releases the worktree's occupancy the moment it lands.
         refusal = harness_start_refusal(plan.worktree)
     if refusal is not None:
-        write_result(
-            record,
-            dispatch_id=plan.identity.dispatch_id,
-            refusal=refusal.kind,
-            failure_class=refusal.failure_class,
-            ended_at=datetime.now(tz=UTC).isoformat(),
+        return (
+            EXIT_REFUSED,
+            refusal.lines(),
+            _not_launched_result(plan.identity.dispatch_id, refusal),
         )
-        return EXIT_REFUSED, refusal.lines()
 
     child = assemble_environment(parent, profile, plan.identity, token)
-    started = datetime.now(tz=UTC)
-    done, gate_clock_collection = _run_child_with_gate_clock(plan, child, brief)
+    progress.started = datetime.now(tz=UTC)
+    progress.failure_phase = "child_launch"
+
+    def mark_child_finished(code: int) -> None:
+        progress.returncode = code
+        progress.failure_phase = "gate_clock_collection"
+
+    done, gate_clock_collection = _run_child_with_gate_clock(
+        plan, child, brief, mark_child_finished
+    )
+    progress.returncode = done.returncode
+    progress.failure_phase = "child_result"
     outcome, reset_at = classify_finished_run(record, done.returncode)
+    progress.failure_phase = "breaker_journal"
     breaker.record_outcome(
         breaker.Store(directory=plan.breaker_dir),
         plan.identity.lane,
@@ -4536,32 +4569,42 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         ),
         datetime.now(tz=UTC).timestamp(),
     )
-    # The harness's half of #405's division of labour, and it runs after the breaker has
-    # read the run: what the session's exit code says about the lane is the provider's
-    # business, and a harness-side commit that refuses says nothing about the provider.
     finish: tuple[str, ...] = ()
     finish_code = 0
+    progress.failure_phase = "harness_finish"
     if harness_commits(lane, plan.permission_mode):
         finish, finish_code = harness_finish(plan.worktree, plan.identity.issue, record)
-    write_result(
-        record,
-        dispatch_id=plan.identity.dispatch_id,
-        returncode=done.returncode,
-        outcome=outcome,
-        started_at=started.isoformat(),
-        ended_at=datetime.now(tz=UTC).isoformat(),
-        gate_clock_collection=list(gate_clock_collection),
-        harness_finish=list(finish),
+    result = {
+        "dispatch_id": plan.identity.dispatch_id,
+        "status": "harness_failed_after_child" if finish_code else "child_finished",
+        "returncode": done.returncode,
+        "outcome": outcome,
+        "started_at": progress.started.isoformat(),
+        "ended_at": datetime.now(tz=UTC).isoformat(),
+        "gate_clock_collection": list(gate_clock_collection),
+        "harness_finish": list(finish),
+    }
+    lines = (
+        f"dispatch={plan.identity.dispatch_id}",
+        f"exit={done.returncode}",
+        *gate_clock_collection,
+        *finish,
     )
-    return (
-        finish_code or done.returncode,
-        (
-            f"dispatch={plan.identity.dispatch_id}",
-            f"exit={done.returncode}",
-            *gate_clock_collection,
-            *finish,
-        ),
-    )
+    return finish_code or done.returncode, lines, result
+
+
+def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[str, ...]]:
+    """Run a detached child and make one result write attempt however the body exits."""
+    progress = _DispatchProgress(record.name)
+    result: dict[str, object] = {}
+    try:
+        code, lines, result = _run_dispatch_body(record, parent, progress)
+    except BaseException as failure:
+        result = _failed_result(progress, failure)
+        raise
+    finally:
+        _write_result_once(record, result)
+    return code, lines
 
 
 def classify_finished_run(record: Path, returncode: int) -> tuple[str, float | None]:
