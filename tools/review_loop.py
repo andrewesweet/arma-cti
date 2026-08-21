@@ -128,6 +128,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import escalation
 import otel_event
 import routing_policy
+import worktree
 from worktree import GitError, git, remote_ref_sha
 
 if TYPE_CHECKING:
@@ -1890,6 +1891,14 @@ def _cmd_author(
                 profile=args.profile, known=" ".join(sorted(dispatch.PROFILES))
             )
         )
+    if args.sha:
+        try:
+            repo = Path(git("rev-parse", "--show-toplevel", cwd=Path.cwd()).strip())
+            commit = worktree.commit_on_head(repo, args.sha)
+        except GitError as failure:
+            raise ExternalError(str(failure)) from failure
+        if commit is not None:
+            raise ReviewLoopError("\n".join(commit.lines()))
     added = store_authorship(
         Path(args.root),
         args.issue,

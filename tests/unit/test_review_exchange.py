@@ -1383,6 +1383,17 @@ def test_cli_records_shows_and_prints_the_limit(
     assert review_exchange.SAME_USER_LIMIT in shown
 
 
+def test_cli_record_refuses_a_sha_that_names_no_commit(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    _repo, root, _reachable = cli_stage(tmp_path)
+
+    assert cli_record(tmp_path, root, sha="f" * 40) == 1
+    assert "refusal=commit_not_found" in capsys.readouterr().err
+    assert not (root / "d-1" / review_exchange.VERDICT_NAME).exists()
+
+
 def cli_rebased(tmp_path: Path, head: str) -> Path:
     """Return a review root whose recorded clean rebase carries `head` to the landing SHA."""
     review_root = tmp_path / "review"
