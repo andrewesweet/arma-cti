@@ -12,18 +12,20 @@
   each new id before deleting its outbox, and skips an id already present, so retry
   cannot duplicate a sample. Active dispatches hold an outbox lock; the next
   dispatch retries every unlocked orphan remaining in the stable per-history temp
-  root. An ordinary exception while reading or appending canonical history is
-  reported against that history and leaves the already-readable outbox unmarked.
-  The collector does not repair or quarantine poisoned canonical history: eligible
-  recovery attempts keep reporting it and pending outboxes can accumulate until the
-  history is repaired. A retry deduplicates any row whose append reached canonical
-  history before the failure was raised.
+  root. The collector does not repair or quarantine poisoned canonical history;
+  repairing that history remains an operator action. If a canonical append succeeds
+  but removing `records.jsonl`, `.active.lock`, or the outbox directory fails, the row
+  is canonical and the outbox remains eligible. Recovery retries and reports cleanup;
+  if the records remain, the delivery id makes their append a duplicate rather than a
+  second sample.
 
-- Gate-clock setup, orphan recovery, post-child collection and lock cleanup now
-  sit behind an instrumentation boundary. Any `Exception` raised inside those
-  steps is reported in one line while child launch and `result.json` continue.
-  Malformed outboxes and failures opening or acquiring their active locks enter the
-  same quarantine path, choosing recorded-and-skipped over parsing-shape enumeration.
+- Gate-clock collection is best-effort instrumentation. Within its `Exception`
+  boundary, failures are reported and never block a dispatch: child launch and
+  `result.json` continue. Collection has no retention bound; while a fault persists,
+  outboxes and repeated failure reports accumulate without bound until it is repaired.
+  Malformed outboxes use a quarantine marker, choosing recorded-and-skipped over
+  parsing-shape enumeration. Failures opening or acquiring an active lock use the
+  same path.
   The marker is written and fsynced under a temporary name before atomic publication;
   only a regular file with the complete marker body counts, so a failed
   pre-publication write or sync leaves the outbox eligible and a dangling symlink is
