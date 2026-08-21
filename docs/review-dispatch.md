@@ -178,25 +178,35 @@ session completed without a comment. The observed paths were Claude `plan` mode 
 sandbox while the orchestrator's `gh` worked, and failure reaching `api.github.com`. A clean
 review and an undelivered review therefore still produced the same thread: no comment.
 
-**The dispatcher now transports the reviewer's final report once.** The reviewer puts the
-complete report, including a clean verdict, in its final response and does not call `gh` or
-write a body file. `_run_child_with_gate_clock` directs review stdout into an anonymous
+**The dispatcher now transports one bounded stdout section once.** The reviewer puts its
+report, including a clean verdict, between the exact marker lines in the brief and does not call
+`gh` or write a body file. `_run_child_with_gate_clock` directs review stdout into an anonymous
 temporary file opened by the unsandboxed dispatcher; the child inherits its file descriptor,
-so neither its filesystem nor its credentials carry the body. After a zero child exit,
-`deliver_review` makes one bounded host-side `gh issue comment --body-file -` call. A blank
-report, an unavailable command, a timeout or a non-zero `gh` exit is the named refusal
+so neither its filesystem nor its credentials carry the body. `deliver_review` rejects missing,
+duplicated or reversed markers and an empty marked section. Otherwise it posts only the text
+between the markers, prefaced by a visible notice that output outside the section or on another
+stream was not posted and cannot be verified as absent.
+
+**Delivery precedes fallible bookkeeping.** After a zero child exit, `deliver_review` makes its
+one bounded host-side `gh issue comment --body-file -` call before `classify_finished_run` and
+`breaker.record_outcome`. Those steps describe the completed run; they do not gate transport of
+the report it already produced. If either raises, #495's outer closeout writes the post verdict
+beside the generic harness failure. A refused delivery retains its own lines there too.
+
+A marker refusal, an unavailable command, a timeout or a non-zero `gh` exit is the named refusal
 `review_delivery_failed`; `result.json` retains the zero child return code, marks
-`harness_failed_after_child`, and carries the refusal. The full captured report is also emitted
-to `dispatch.log` before the post.
+`harness_failed_after_child`, and carries the refusal. `dispatch-follow` reads that field: a
+posted review prints `review_delivery=posted` as a completion, while an undelivered review prints
+the refusal and exits non-zero. Captured stdout is emitted to `dispatch.log` before the post.
 
 **Visibility is the target, not impossible loss.** There is no retry, recovery scan, lock,
-quarantine or dedupe. If the dispatcher dies abruptly after the child exits, nothing remains
-to report that failure; if a reviewer omits a finding from final stdout, the harness cannot
-recover it from a connector call or plan file; and a timed-out post may have reached GitHub
-before its result was lost. The handled delivery outcomes either record
-`review_delivery=posted` or end loudly with the named refusal. A host-side authentication or
-network failure still leaves the captured report undelivered and requires deliberate manual
-relay from the named log; an empty report has nothing to relay and requires a fresh review.
+quarantine or dedupe. If the dispatcher dies abruptly after the child exits, nothing may remain
+to report that failure. A finding outside the marked stdout section, including one written to
+stderr or another tool channel, cannot be identified as part of the report; the notice on every
+posted comment states that limit instead of implying completeness. A timed-out post may have
+reached GitHub before its result was lost. Host-side authentication or network failure still
+leaves the bounded report undelivered and requires deliberate manual relay from the named log;
+an empty or unbounded report requires a fresh review or deliberate identification from the log.
 
 ### The reviewer is never the reviewed profile
 
@@ -528,12 +538,20 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     A review lands nothing. Do not edit a file, do not commit, do not push, do not
     run `just land`. Your permission mode is `plan`, which enforces this; the rule
     is stated as well because a mechanism you understand is one you do not fight.
-    Filing is not landing. Put your complete review report in your final response,
-    including an explicit clean verdict when you find nothing. Do not call `gh` and
-    do not write a body file. After you exit, the unsandboxed dispatcher captures
-    that response and attempts exactly one `gh issue comment` with the host's
-    credentials. Empty output or a refused post ends the dispatch with
-    `review_delivery_failed`; there is no automatic retry or recovery (#496).
+    Filing is not landing. Put your review report, including an explicit clean
+    verdict when you find nothing, between these exact lines in your final response:
+
+    <!-- arma-cti-review-report:begin -->
+    <report>
+    <!-- arma-cti-review-report:end -->
+
+    Put no finding outside those lines or on another stream: the harness cannot
+    identify it there. Do not call `gh` and do not write a body file. After you exit,
+    the unsandboxed dispatcher posts only that bounded stdout section, prefaced by an
+    explicit capture notice, using exactly one `gh issue comment` call with the host's
+    credentials. Missing, duplicated or reversed markers, an empty bounded section,
+    or a refused post ends the dispatch with `review_delivery_failed`; there is no
+    automatic retry or recovery (#496).
 
     A review re-runs none of the implementer's gate. Do not check out the branch
     under review, do not run `just fast` or any rung of it, do not run

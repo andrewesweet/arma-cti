@@ -192,11 +192,13 @@ now *forces* `plan` in `routed`, which `build_argv` renders as `--permission-mod
 the `claude` family and `--sandbox read-only` on `codex`.
 
 **Review delivery crosses that containment at the harness boundary** (#496). The review's
-final stdout is written through a file descriptor the unsandboxed dispatcher opened, so the
-session needs neither a writable body-file path nor GitHub credentials. After a successful
-child exit the dispatcher makes one bounded `gh issue comment --body-file -` call with that
-report. It retries nothing. Empty output or a refused call ends in
-`review_delivery_failed`, while the child's own return code remains on `result.json`.
+stdout is written through a file descriptor the unsandboxed dispatcher opened, so the session
+needs neither a writable body-file path nor GitHub credentials. Exact marker lines bound the
+report within that stream; the dispatcher posts only their contents with a capture notice.
+After a successful child exit it makes one bounded `gh issue comment --body-file -` call before
+outcome classification and breaker journaling. It retries nothing. Missing or ambiguous
+markers, an empty bounded report, or a refused call ends in `review_delivery_failed`, while
+the child's own return code remains on `result.json`.
 
 **`recon` forces the same mode, for a reason of its own** (#407). ADR-0071 does not merely
 describe that seat as read-only; it reasons from the property — the unranked profile head, the
@@ -784,11 +786,12 @@ SEATS: Final[dict[str, Seat]] = {
     # Codex connector calls, invalid sandbox-side `gh` authentication, and network failure.
     # The containment remains correct; direct delivery was the broken half.
     #
-    # #496 moves only transport. The reviewer puts its whole report in the final response;
-    # `_run_child_with_gate_clock` captures stdout through an anonymous host-opened temporary
-    # file, then `deliver_review` makes one bounded host-side post. A failed or empty delivery
-    # is `review_delivery_failed`. There is no retry, recovery scan, lock, quarantine or
-    # dedupe. Abrupt dispatcher death and findings omitted from final stdout remain outside
+    # #496 moves only transport. The reviewer bounds its report with the exact marker lines
+    # the brief supplies; `_run_child_with_gate_clock` captures stdout through an anonymous
+    # host-opened temporary file, then `deliver_review` posts only that section with a notice
+    # stating what was captured. A failed, unbounded or empty delivery is
+    # `review_delivery_failed`. There is no retry, recovery scan, lock, quarantine or dedupe.
+    # Abrupt dispatcher death and findings outside the bounded stdout section remain outside
     # the mechanism, stated in the changelog rather than promoted to guarantees.
     "review": Seat(
         "review",
@@ -3148,14 +3151,27 @@ SINGLE_SHOT_CONTRACT: Final = (
 # The report is the reviewer's judgement; only its transport belongs to the harness. One
 # wording reaches both briefing paths: `default_brief` below and `tools/brief.py`'s composed
 # review protocol. Keeping `gh` out of the session removes all four #496 failure paths without
-# widening the read-only seat. The dispatcher still makes only one attempt, so this promises
-# visibility on failure rather than reliable GitHub availability.
+# widening the read-only seat. Exact markers keep runner output outside the final response out
+# of the comment; the visible notice says which stream and section the harness actually saw.
+# The dispatcher still makes only one attempt, so this promises visibility on failure rather
+# than reliable GitHub availability.
+REVIEW_REPORT_BEGIN: Final = "<!-- arma-cti-review-report:begin -->"
+REVIEW_REPORT_END: Final = "<!-- arma-cti-review-report:end -->"
+REVIEW_CAPTURE_NOTICE: Final = (
+    "> Review delivery captured only the bounded final-response section from child stdout. "
+    "Output outside its markers and output on other streams were not posted; the harness "
+    "cannot verify findings omitted from that section."
+)
 REVIEW_DELIVERY_PROTOCOL: Final = (
-    "Put your complete review report in your final response, including an explicit clean"
-    " verdict when you find nothing. Do not call `gh` and do not write a body file. After"
-    " you exit, the unsandboxed dispatcher captures that response and attempts exactly one"
-    " `gh issue comment` with the host's credentials. Empty output or a refused post ends"
-    " the dispatch with `review_delivery_failed`; there is no automatic retry or recovery."
+    "Put your review report, including an explicit clean verdict when you find nothing,"
+    f" between exact lines `{REVIEW_REPORT_BEGIN}` and `{REVIEW_REPORT_END}` in your final"
+    " response. Put no finding outside those lines or on another stream: the harness cannot"
+    " identify it there. Do not call `gh` and do not write a body file. After you exit, the"
+    " unsandboxed dispatcher posts only that bounded stdout section, prefaced by an explicit"
+    " capture notice, using exactly one `gh issue comment` call with the host's credentials."
+    " Missing, duplicated or reversed markers, an empty bounded section, or a refused post"
+    " ends the dispatch with `review_delivery_failed`; there is no automatic retry or"
+    " recovery."
 )
 
 
@@ -3581,7 +3597,7 @@ def _run_child_with_gate_clock(
     child_launch_attempted: Callable[[], None],
     child_finished: Callable[[int], None],
 ) -> tuple[subprocess.CompletedProcess[str], tuple[str, ...]]:
-    """Launch the child, capture a review's final stdout, then collect gate-clock rows.
+    """Launch the child, capture review stdout, then collect gate-clock rows.
 
     The review outbox is opened by this unsandboxed process and inherited as stdout. The
     child writes a file descriptor, not a path, so a read-only filesystem cannot strand the
@@ -3614,8 +3630,8 @@ def _run_child_with_gate_clock(
             if review_outbox is not None:
                 review_outbox.seek(0)
                 done.stdout = review_outbox.read()
-                # Keep the report in the ordinary dispatch log too. If host delivery fails,
-                # the named refusal points at a complete handoff rather than at an empty file.
+                # Keep captured stdout in the ordinary dispatch log too. If delivery fails,
+                # the named refusal points at evidence rather than claiming an empty stream.
                 if done.stdout:
                     sys.stdout.write(done.stdout)
                     if not done.stdout.endswith("\n"):
@@ -3835,40 +3851,72 @@ def _review_delivery_detail(detail: str) -> str:
     return " ".join(detail.split())[:REVIEW_DELIVERY_DETAIL_LIMIT]
 
 
+def _bounded_review_report(captured_stdout: str) -> tuple[str, str, str]:
+    """Extract one exact report-marker pair, or explain why stdout is not postable."""
+    if not captured_stdout.strip():
+        return "", "report_empty", "captured stdout is empty"
+    lines = captured_stdout.splitlines()
+    begins = [index for index, line in enumerate(lines) if line == REVIEW_REPORT_BEGIN]
+    ends = [index for index, line in enumerate(lines) if line == REVIEW_REPORT_END]
+    if len(begins) != 1 or len(ends) != 1 or begins[0] >= ends[0]:
+        detail = f"expected one ordered marker pair; found begin={len(begins)} end={len(ends)}"
+        return "", "report_unbounded", detail
+    report = "\n".join(lines[begins[0] + 1 : ends[0]]).strip("\r\n")
+    if not report.strip():
+        return "", "report_empty", "bounded report section is empty"
+    return report, "", ""
+
+
 def deliver_review(
     issue: int,
-    report: str,
+    captured_stdout: str,
     record: Path,
     parent: Mapping[str, str],
 ) -> tuple[tuple[str, ...], int]:
-    """Post one captured review report from the host, or refuse once and stop.
+    """Post one bounded stdout section from the host, or refuse once and stop.
 
-    No validation read precedes the mutation and no retry follows it. `--body-file -` keeps
-    arbitrary findings off argv and removes the child-side body-file requirement that failed
-    live on #496. The environment is the dispatcher's parent, not the lane environment, so
-    provider credentials and sandbox-injected GitHub state do not decide this call.
+    No GitHub validation read precedes the mutation and no retry follows it. `--body-file -`
+    keeps arbitrary findings off argv and removes the child-side body-file requirement that
+    failed live on #496. The environment is the dispatcher's parent, not the lane environment,
+    so provider credentials and sandbox-injected GitHub state do not decide this call.
     """
     log = record / "dispatch.log"
-    if not report.strip():
-        return _harness_refusal(
-            "review_delivery_failed",
-            (f"issue={issue}", "reason=report_empty", f"log={log}"),
-            (
-                "The completed review produced no final report. Do not read the missing"
+    report, boundary_refusal, boundary_detail = _bounded_review_report(captured_stdout)
+    if boundary_refusal:
+        if boundary_refusal == "report_empty":
+            action = (
+                "The completed review produced no bounded report. Do not read the missing"
                 " comment as a clean review; dispatch a fresh review. The dispatcher will"
                 " not retry or recover one automatically (#496)."
+            )
+        else:
+            action = (
+                "The completed review's stdout did not contain exactly one ordered report"
+                f" boundary. Nothing was posted. Inspect {log}; dispatch a fresh review or"
+                " relay only after identifying the report deliberately. The dispatcher will"
+                " not infer, retry or recover it automatically (#496)."
+            )
+        return _harness_refusal(
+            "review_delivery_failed",
+            (
+                f"issue={issue}",
+                f"reason={boundary_refusal}",
+                f"detail={boundary_detail}",
+                f"log={log}",
             ),
+            action,
         )
     action = (
         "The completed review was not delivered. Do not read the missing comment as a clean"
-        f" review. Its final report is in {log}; relay it deliberately after fixing the host"
-        " failure. The dispatcher will not retry or recover it automatically (#496)."
+        f" review. Its bounded stdout report is in {log}; relay it deliberately after fixing"
+        " the host failure. The dispatcher will not retry or recover it automatically (#496)."
     )
     argv = ["gh", "issue", "comment", str(issue), "--body-file", "-"]
+    body = f"{REVIEW_CAPTURE_NOTICE}\n\n{report}\n"
     try:
         posted = subprocess.run(  # noqa: S603 — fixed gh argv plus a validated integer
             argv,
-            input=report,
+            input=body,
             capture_output=True,
             text=True,
             check=False,
@@ -4575,6 +4623,7 @@ class _DispatchProgress:
     started: datetime | None = None
     child_launch_attempted: bool = False
     returncode: int | None = None
+    review_delivery: tuple[str, ...] = ()
 
 
 def _not_launched_result(dispatch_id: str, refusal: Refusal) -> dict[str, object]:
@@ -4611,6 +4660,8 @@ def _failed_result(progress: _DispatchProgress, failure: BaseException) -> dict[
         result["returncode"] = progress.returncode
     if progress.started is not None and progress.returncode is not None:
         result["started_at"] = progress.started.isoformat()
+    if progress.review_delivery:
+        result["review_delivery"] = list(progress.review_delivery)
     return result
 
 
@@ -4680,6 +4731,23 @@ def _run_dispatch_body(
         plan, child, brief, mark_child_launch_attempted, mark_child_finished
     )
     progress.returncode = done.returncode
+    review_delivery: tuple[str, ...] = ()
+    review_delivery_code = 0
+    if SEATS[plan.identity.seat].reviews:
+        if done.returncode == 0:
+            progress.failure_phase = "review_delivery"
+            review_delivery, review_delivery_code = deliver_review(
+                plan.identity.issue,
+                done.stdout or "",
+                record,
+                parent,
+            )
+        else:
+            review_delivery = (f"review_delivery=not_attempted child_exit={done.returncode}",)
+        progress.review_delivery = review_delivery
+    # Review transport depends only on the completed child's bounded report. Outcome
+    # classification and breaker journaling are bookkeeping; neither may prevent the one post
+    # attempt or erase its verdict if that later bookkeeping raises (#496, #495's boundary).
     progress.failure_phase = "child_result"
     outcome, reset_at = classify_finished_run(record, done.returncode)
     progress.failure_phase = "breaker_journal"
@@ -4693,21 +4761,8 @@ def _run_dispatch_body(
         ),
         datetime.now(tz=UTC).timestamp(),
     )
-    review_delivery: tuple[str, ...] = ()
-    review_delivery_code = 0
     finish: tuple[str, ...] = ()
     finish_code = 0
-    if SEATS[plan.identity.seat].reviews:
-        if done.returncode == 0:
-            progress.failure_phase = "review_delivery"
-            review_delivery, review_delivery_code = deliver_review(
-                plan.identity.issue,
-                done.stdout or "",
-                record,
-                parent,
-            )
-        else:
-            review_delivery = (f"review_delivery=not_attempted child_exit={done.returncode}",)
     progress.failure_phase = "harness_finish"
     if harness_commits(lane, plan.permission_mode):
         finish, finish_code = harness_finish(plan.worktree, plan.identity.issue, record)

@@ -7,10 +7,10 @@ edge that detachment removed.
 
 The dispatcher records the runner's lifetime pipe and result path before
 returning. The follower reads those values back, waits for EOF from that exact
-runner, and then distinguishes the two honest endings: the recorded result was
-written, or the runner disappeared without one. There is no timeout, polling
-interval, failure-class inference, or stall judgement here; `just watch` retains
-the latter responsibility.
+runner, and then distinguishes three honest endings: a recorded completion, a
+recorded review delivery refusal, or a runner that disappeared without a result.
+There is no timeout, polling interval, failure-class inference, or stall judgement
+here; `just watch` retains the latter responsibility.
 
 Several ids may be followed at once, and the wait then ends on the **first** of
 them, naming the rest as still pending. That is the whole of #295's mechanism.
@@ -153,15 +153,60 @@ def finding_lines(target: FollowTarget, pending: Sequence[str] = ()) -> tuple[st
     )
 
 
+def _review_delivery_lines(result_path: Path) -> tuple[str, ...]:
+    """Read review transport facts from one atomically published result document."""
+    document = json.loads(result_path.read_text(encoding="utf-8"))
+    if not isinstance(document, dict):
+        message = f"result is {type(document).__name__}, expected object"
+        raise TypeError(message)
+    raw = document.get("review_delivery", [])
+    if not isinstance(raw, list) or any(not isinstance(line, str) for line in raw):
+        message = "result review_delivery is not a list of strings"
+        raise TypeError(message)
+    return tuple(raw)
+
+
+def recorded_result_lines(
+    target: FollowTarget, pending: Sequence[str] = ()
+) -> tuple[int, tuple[str, ...]]:
+    """Render a delivered result as completion and an undelivered review as refusal."""
+    try:
+        delivery = _review_delivery_lines(target.result_path)
+    except (OSError, ValueError, TypeError, json.JSONDecodeError) as error:
+        return (
+            EXIT_REFUSED,
+            (
+                "refusal=dispatch_follow_unavailable",
+                f"dispatch={target.dispatch_id}",
+                f"result={target.result_path}",
+                f"detail={error}",
+                *_pending_line(pending),
+            ),
+        )
+    refusal = "refusal=review_delivery_failed"
+    if refusal in delivery:
+        return (
+            EXIT_REFUSED,
+            (
+                refusal,
+                f"dispatch={target.dispatch_id}",
+                f"result={target.result_path}",
+                *(line for line in delivery if line != refusal),
+                *_pending_line(pending),
+            ),
+        )
+    return 0, (*completion_lines(target, pending), *delivery)
+
+
 def follow_first(targets: Sequence[FollowTarget]) -> tuple[int, tuple[str, ...]]:
     """Follow every target to whichever ends first, naming the rest as pending."""
     for target in targets:
         if target.result_path.is_file():
-            return 0, completion_lines(target, pending_ids(targets, target))
+            return recorded_result_lines(target, pending_ids(targets, target))
     first = wait_for_first(targets)
     pending = pending_ids(targets, first)
     if first.result_path.is_file():
-        return 0, completion_lines(first, pending)
+        return recorded_result_lines(first, pending)
     return EXIT_FINDING, finding_lines(first, pending)
 
 

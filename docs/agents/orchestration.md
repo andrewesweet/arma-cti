@@ -180,11 +180,13 @@ notification" (`just land` refused `dirty_tree`), one asked whether to run
 **`just dispatch-follow <id> [<id> …]` (#280, #295).** Restores the completion edge
 *inside a live orchestrator session*: a harness-attached follower that exits when a
 dispatch writes its result, printing the dispatch id and result path from the record,
-and whose exit re-invokes the seat. It has no timeout and classifies nothing — a runner
-that disappears without a result is `finding=runner_disappeared`, and stall judgement
-stays with `just watch`. **It cannot survive the session ending.** Cross-session
-autonomy requires the scheduled-agent mechanism that is with the human and is explicitly
-out of scope; do not imply autonomy the mechanism does not provide.
+and whose exit re-invokes the seat. It has no timeout and infers no failure class. A runner
+that disappears without a result is `finding=runner_disappeared`; a result carrying
+`review_delivery_failed` prints that refusal and exits non-zero rather than calling it a
+completion; a delivered review names `review_delivery=posted`. Stall judgement stays with
+`just watch`. **It cannot survive the session ending.** Cross-session autonomy requires the
+scheduled-agent mechanism that is with the human and is explicitly out of scope; do not imply
+autonomy the mechanism does not provide.
 
 **Follow a cohort in one invocation; never loop one follower per id inside one
 background task.** The loop is a barrier: it returns when the *slowest* member finishes,

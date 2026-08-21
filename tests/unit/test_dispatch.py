@@ -61,6 +61,9 @@ JUSTFILE = REPO / "justfile"
 # gitleaks over this file and a realistic-looking literal here would red the gate that
 # this issue added. The vacuity test below builds a high-entropy one at run time instead.
 FAKE_TOKEN = "zai-" + "test-" * 6
+REVIEW_REPORT_BEGIN = dispatch.REVIEW_REPORT_BEGIN
+REVIEW_REPORT_END = dispatch.REVIEW_REPORT_END
+REVIEW_CAPTURE_NOTICE = dispatch.REVIEW_CAPTURE_NOTICE
 
 # z.ai's published peak band is Mon-Fri 14:00-18:00 SGT (UTC+8). 2026-08-05 is a
 # Wednesday, so 07:00 UTC is 15:00 SGT and inside the band, and 20:00 UTC the same day is
@@ -164,6 +167,9 @@ fi
 if [ -n "${CTI_FAKE_REVIEW_REPORT:-}" ]; then
   printf '%s\n' "$CTI_FAKE_REVIEW_REPORT"
 fi
+if [ -n "${CTI_FAKE_REVIEW_STDERR:-}" ]; then
+  printf '%s\n' "$CTI_FAKE_REVIEW_STDERR" >&2
+fi
 """,
         encoding="utf-8",
     )
@@ -227,6 +233,11 @@ exec "$CTI_REAL_GH" auth status
     )
     runner.chmod(0o755)
     return bindir, real_gh
+
+
+def bounded_review(report: str, *, before: str = "", after: str = "") -> str:
+    """Wrap one report in the stdout boundary the review brief requires."""
+    return f"{before}{REVIEW_REPORT_BEGIN}\n{report}\n{REVIEW_REPORT_END}\n{after}"
 
 
 def seam_env(tmp_path: Path, capture: Path, **extra: str) -> dict[str, str]:
@@ -2148,6 +2159,7 @@ def test_review_delivery_posts_the_captured_report_once(tmp_path: Path) -> None:
     gh_call = tmp_path / "gh-call.txt"
     gh_body = tmp_path / "gh-body.md"
     report = "reviewed=abc issue=223 claims=0\n\nNo claims."
+    stderr_finding = "P1 written only to child stderr"
     bindir = fake_claude(tmp_path)
     fake_gh(tmp_path)
     parent = dict(os.environ)
@@ -2155,7 +2167,8 @@ def test_review_delivery_posts_the_captured_report_once(tmp_path: Path) -> None:
         {
             "PATH": f"{bindir}:{parent['PATH']}",
             "CTI_FAKE_CLAUDE_OUT": str(capture),
-            "CTI_FAKE_REVIEW_REPORT": report,
+            "CTI_FAKE_REVIEW_REPORT": bounded_review(report),
+            "CTI_FAKE_REVIEW_STDERR": stderr_finding,
             "CTI_FAKE_GH_CALL": str(gh_call),
             "CTI_FAKE_GH_BODY": str(gh_body),
         }
@@ -2166,10 +2179,179 @@ def test_review_delivery_posts_the_captured_report_once(tmp_path: Path) -> None:
     assert code == 0
     assert "review_delivery=posted issue=223" in lines
     assert gh_call.read_text(encoding="utf-8") == "issue comment 223 --body-file -\n"
-    assert gh_body.read_text(encoding="utf-8") == report + "\n"
+    assert gh_body.read_text(encoding="utf-8") == f"{REVIEW_CAPTURE_NOTICE}\n\n{report}\n"
+    assert stderr_finding not in gh_body.read_text(encoding="utf-8")
     result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
     assert result["status"] == "child_finished"
     assert result["review_delivery"] == ["review_delivery=posted issue=223"]
+
+
+def test_review_delivery_posts_only_the_bounded_stdout_section_with_an_explicit_notice(
+    tmp_path: Path,
+) -> None:
+    gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
+    fake_gh(tmp_path)
+    report = "P1 at tools/dispatch.py:4700\n\nRequired finding."
+    captured = bounded_review(
+        report,
+        before="runner setup output\n",
+        after="runner shutdown output\n",
+    )
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(gh_body),
+        }
+    )
+
+    lines, code = dispatch.deliver_review(496, captured, tmp_path, parent)
+
+    assert code == 0
+    assert lines == ("review_delivery=posted issue=496",)
+    assert gh_body.read_text(encoding="utf-8") == f"{REVIEW_CAPTURE_NOTICE}\n\n{report}\n"
+    assert "runner setup output" not in gh_body.read_text(encoding="utf-8")
+    assert "runner shutdown output" not in gh_body.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    "captured",
+    [
+        "P1 but no report boundary\n",
+        (
+            f"{REVIEW_REPORT_BEGIN}\nP1\n{REVIEW_REPORT_BEGIN}\n"
+            f"duplicate start\n{REVIEW_REPORT_END}\n"
+        ),
+        f"{REVIEW_REPORT_END}\nP1 after reversed markers\n{REVIEW_REPORT_BEGIN}\n",
+    ],
+)
+def test_unbounded_review_stdout_refuses_without_posting(tmp_path: Path, captured: str) -> None:
+    gh_call = tmp_path / "gh-call.txt"
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(tmp_path / "gh-body.md"),
+        }
+    )
+
+    lines, code = dispatch.deliver_review(496, captured, tmp_path, parent)
+
+    assert code == dispatch.EXIT_REFUSED
+    assert "refusal=review_delivery_failed" in lines
+    assert "reason=report_unbounded" in lines
+    assert not gh_call.exists()
+
+
+@pytest.mark.parametrize("failure_site", ["classification", "breaker"])
+def test_review_delivery_precedes_post_child_classification_and_breaker_failures(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    failure_site: str,
+) -> None:
+    plan, brief_text, refusal = plan_for(
+        tmp_path,
+        seat="review",
+        reviewing="codex-sol-high",
+    )
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+    report = "No findings."
+    completed = subprocess.CompletedProcess(
+        plan.argv,
+        0,
+        stdout=bounded_review(report),
+    )
+    monkeypatch.setattr(
+        dispatch,
+        "_run_child_with_gate_clock",
+        lambda *_args, **_kwargs: (completed, ()),
+    )
+    gh_call = tmp_path / "gh-call.txt"
+    gh_body = tmp_path / "gh-body.md"
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(gh_body),
+        }
+    )
+    message = f"{failure_site} unavailable"
+
+    def fail(*_args: object, **_kwargs: object) -> None:
+        raise MemoryError(message)
+
+    if failure_site == "classification":
+        monkeypatch.setattr(dispatch, "classify_finished_run", fail)
+    else:
+        monkeypatch.setattr(dispatch, "classify_finished_run", lambda *_args: (breaker.OK, None))
+        monkeypatch.setattr(dispatch.breaker, "record_outcome", fail)
+
+    with pytest.raises(MemoryError, match=message):
+        dispatch.run_dispatch(plan.record, parent)
+
+    assert gh_call.read_text(encoding="utf-8") == "issue comment 223 --body-file -\n"
+    assert gh_body.read_text(encoding="utf-8") == f"{REVIEW_CAPTURE_NOTICE}\n\n{report}\n"
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "harness_failed_after_child"
+    assert result["review_delivery"] == ["review_delivery=posted issue=223"]
+
+
+def test_delivery_refusal_survives_a_later_classification_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    plan, brief_text, refusal = plan_for(
+        tmp_path,
+        seat="review",
+        reviewing="codex-sol-high",
+    )
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+    completed = subprocess.CompletedProcess(
+        plan.argv,
+        0,
+        stdout=bounded_review("One finding."),
+    )
+    monkeypatch.setattr(
+        dispatch,
+        "_run_child_with_gate_clock",
+        lambda *_args, **_kwargs: (completed, ()),
+    )
+    gh_call = tmp_path / "gh-call.txt"
+    fake_gh(tmp_path)
+    parent = dict(os.environ)
+    parent.update(
+        {
+            "PATH": f"{tmp_path / 'bin'}:{parent['PATH']}",
+            "CTI_FAKE_GH_CALL": str(gh_call),
+            "CTI_FAKE_GH_BODY": str(tmp_path / "gh-body.md"),
+            "CTI_FAKE_GH_FAILURE": "host authentication unavailable",
+        }
+    )
+    message = "classification unavailable"
+
+    def classification_fails(*_args: object, **_kwargs: object) -> None:
+        raise MemoryError(message)
+
+    monkeypatch.setattr(dispatch, "classify_finished_run", classification_fails)
+
+    with pytest.raises(MemoryError, match=message):
+        dispatch.run_dispatch(plan.record, parent)
+
+    assert gh_call.read_text(encoding="utf-8") == "issue comment 223 --body-file -\n"
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["failure_phase"] == "child_result"
+    assert "refusal=review_delivery_failed" in result["review_delivery"]
+    assert "reason=gh_refused" in result["review_delivery"]
 
 
 def test_review_delivery_without_github_credentials_is_a_named_refusal(tmp_path: Path) -> None:
@@ -2189,7 +2371,7 @@ def test_review_delivery_without_github_credentials_is_a_named_refusal(tmp_path:
         }
     )
 
-    lines, code = dispatch.deliver_review(496, "No claims.\n", tmp_path, parent)
+    lines, code = dispatch.deliver_review(496, bounded_review("No claims."), tmp_path, parent)
 
     assert code == dispatch.EXIT_REFUSED
     assert "refusal=review_delivery_failed" in lines
@@ -2197,10 +2379,12 @@ def test_review_delivery_without_github_credentials_is_a_named_refusal(tmp_path:
     assert "review_delivery=posted" not in "\n".join(lines)
 
 
+@pytest.mark.parametrize("captured", [" \n", bounded_review(" \n")])
 def test_empty_review_report_requires_a_fresh_review_not_an_impossible_relay(
     tmp_path: Path,
+    captured: str,
 ) -> None:
-    lines, code = dispatch.deliver_review(496, " \n", tmp_path, {"PATH": str(tmp_path)})
+    lines, code = dispatch.deliver_review(496, captured, tmp_path, {"PATH": str(tmp_path)})
 
     assert code == dispatch.EXIT_REFUSED
     assert "refusal=review_delivery_failed" in lines
@@ -2235,7 +2419,7 @@ def test_read_only_review_without_a_body_file_ends_in_named_delivery_refusal(
     parent.update(
         {
             "PATH": f"{bindir}:{parent['PATH']}",
-            "CTI_FAKE_REVIEW_REPORT": report,
+            "CTI_FAKE_REVIEW_REPORT": bounded_review(report),
             "CTI_FAKE_GH_CALL": str(gh_call),
             "CTI_FAKE_GH_BODY": str(gh_body),
             "CTI_FAKE_GH_FAILURE": "host authentication unavailable",
@@ -2254,7 +2438,7 @@ def test_read_only_review_without_a_body_file_ends_in_named_delivery_refusal(
     assert "detail=host authentication unavailable" in lines
     assert not (worktree / "review-body.md").exists()
     assert gh_call.read_text(encoding="utf-8") == "issue comment 223 --body-file -\n"
-    assert gh_body.read_text(encoding="utf-8") == report + "\n"
+    assert gh_body.read_text(encoding="utf-8") == f"{REVIEW_CAPTURE_NOTICE}\n\n{report}\n"
     result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
     assert result["status"] == "harness_failed_after_child"
     assert result["returncode"] == 0

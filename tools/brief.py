@@ -810,9 +810,10 @@ REVIEW_FLAKE_RESPONSE: Final = (
     " clarified 2026-08-20 on #449)."
 )
 # #496 moves delivery to the unsandboxed dispatcher without moving judgement there. The
-# reviewer owns every byte of the report and puts it in the final response; the harness owns
-# the one network mutation. `dispatch.REVIEW_DELIVERY_PROTOCOL` reaches the thin default brief
-# too, so a caller cannot accidentally omit the output contract by skipping this composer.
+# reviewer owns every byte between the final response's exact report markers; the harness owns
+# the one network mutation and labels the section it captured. `dispatch.REVIEW_DELIVERY_PROTOCOL`
+# reaches the thin default brief too, so a caller cannot accidentally omit the output contract
+# by skipping this composer.
 REVIEW_LANDING_RULE: Final = (
     "A review lands nothing: do not commit, do not push, do not run `just land`, and edit no"
     " file — ADR-0071 ruling 4's never-alone invariant, which this ruling leaves untouched."

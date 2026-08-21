@@ -96,6 +96,70 @@ def test_a_nonzero_child_result_is_still_a_completion_not_an_invented_class(
     assert not any(line.startswith("class=") for line in lines)
 
 
+def test_an_undelivered_review_result_is_a_loud_refusal(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    dispatch_id = "d-20260821-120000-496496"
+    result_path = tmp_path / "result.json"
+    result_path.write_text(
+        json.dumps(
+            {
+                "status": "harness_failed_after_child",
+                "returncode": 0,
+                "review_delivery": [
+                    "refusal=review_delivery_failed",
+                    "issue=496",
+                    "reason=gh_refused",
+                    "log=/tmp/dispatch.log",
+                ],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    write_record(tmp_path, dispatch_id, result_path)
+
+    code = dispatch_follow.main([dispatch_id, "--dispatch-dir", str(tmp_path)])
+
+    captured = capsys.readouterr()
+    assert code == dispatch_follow.EXIT_REFUSED
+    assert "refusal=review_delivery_failed" in captured.err
+    assert f"dispatch={dispatch_id}" in captured.err
+    assert f"result={result_path}" in captured.err
+    assert "reason=gh_refused" in captured.err
+    assert "completion=" not in captured.err
+    assert captured.out == ""
+
+
+def test_a_delivered_review_result_names_delivery_as_a_completion(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    dispatch_id = "d-20260821-120001-496496"
+    result_path = tmp_path / "result.json"
+    result_path.write_text(
+        json.dumps(
+            {
+                "status": "child_finished",
+                "returncode": 0,
+                "review_delivery": ["review_delivery=posted issue=496"],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    write_record(tmp_path, dispatch_id, result_path)
+
+    code = dispatch_follow.main([dispatch_id, "--dispatch-dir", str(tmp_path)])
+
+    captured = capsys.readouterr()
+    assert code == 0
+    assert "completion=dispatch_result_written" in captured.out
+    assert "review_delivery=posted issue=496" in captured.out
+    assert captured.err == ""
+
+
 def test_the_wait_uses_the_runner_pipe_with_no_timeout_or_polling_interval(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
