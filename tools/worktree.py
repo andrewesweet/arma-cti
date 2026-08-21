@@ -278,7 +278,7 @@ def _holder_lines(path: Path, holder: Holder) -> tuple[str, ...]:
         f"holder_uncommitted={dirty}",
     ]
     if holder.unlanded:
-        lines.append(f"holder_unlanded={holder.unlanded} commits not on {BASE}")
+        lines.append(f"holder_unlanded={holder.unlanded} commit patches absent from {BASE}")
     return tuple(lines)
 
 
@@ -372,15 +372,16 @@ def _classify_present(path: Path, holder: Holder) -> Refusal | None:
 
 
 def _classify_landed(path: Path, unlanded: int | None) -> Refusal | None:
-    """Refuse a removal that would take commits `origin/main` has never seen."""
+    """Refuse a removal that would take changes `origin/main` has never seen."""
     if unlanded is None:
         return _could_not_run(path, f"unlanded=unreadable against {BASE}")
     if unlanded:
         return Refusal(
             "unlanded_work",
-            (f"worktree={path}", f"unlanded={unlanded} commits not on {BASE}"),
-            f"Land them first (`git push origin HEAD:main`) or say so in your report. "
-            f"Removing this tree now loses {unlanded} commits.",
+            (f"worktree={path}", f"unlanded={unlanded} commit patches absent from {BASE}"),
+            "Land them first (`git push origin HEAD:main`) or say so in your report. "
+            "Removing this tree now loses work; unreachable SHAs whose patches are upstream "
+            "do not block removal.",
         )
     return None
 
@@ -556,14 +557,15 @@ def gather(root: Path, path: Path, registrations: tuple[Registration, ...]) -> H
 
 
 def count_unlanded(path: Path) -> int | None:
-    """How many commits this worktree's HEAD carries that `origin/main` does not.
-
-    `check=False`, but no absence is manufactured: a failed count prints nothing,
-    nothing is not a digit, and `None` refuses at `_classify_landed` as
-    ``git_failed`` — the opposite of an empty status parsing as clean (#375).
-    """
-    counted = git("rev-list", "--count", f"{BASE}..HEAD", cwd=path, check=False).strip()
-    return int(counted) if counted.isdigit() else None
+    """How many commits carry a patch with no equivalent on `origin/main`."""
+    # `git cherry` compares patch IDs. Rebase context changes or hand-resolved conflicts
+    # change that ID and remain `+`, conservatively refusing a safe teardown. A `-` means
+    # Git found no patch unique to this tree, so SHA-only reachability does not block removal.
+    try:
+        cherries = git("cherry", BASE, "HEAD", cwd=path).splitlines()
+    except GitError:
+        return None
+    return sum(line.startswith("+ ") for line in cherries)
 
 
 def remote_ref_sha(root: Path, ref: str, timeout: float = REMOTE_READ_TIMEOUT_S) -> str | None:

@@ -178,7 +178,7 @@ def test_an_occupied_worktree_names_the_other_holder() -> None:
     assert "holder_head=2222222 feat: another agent's work" in refusal.found
     assert "holder_state=detached" in refusal.found
     assert "holder_uncommitted=2" in refusal.found
-    assert "holder_unlanded=2 commits not on origin/main" in refusal.found
+    assert "holder_unlanded=2 commit patches absent from origin/main" in refusal.found
     assert "never reset" in refusal.action
 
 
@@ -278,11 +278,12 @@ def test_a_name_git_does_not_know_refuses_rather_than_removing() -> None:
     assert refusal.kind == "no_such_worktree"
 
 
-def test_unlanded_commits_refuse_and_say_what_removal_would_cost() -> None:
+def test_unlanded_patches_refuse_and_say_what_removal_would_cost() -> None:
     refusal = worktree.classify_done(Path("/w"), holder(unlanded=3))
     assert refusal.kind == "unlanded_work"
-    assert "unlanded=3 commits not on origin/main" in refusal.found
-    assert "loses 3 commits" in refusal.action
+    assert "unlanded=3 commit patches absent from origin/main" in refusal.found
+    assert "Removing this tree now loses work" in refusal.action
+    assert "unreachable SHAs whose patches are upstream do not block removal" in refusal.action
 
 
 def test_a_dirty_tree_refuses_teardown_before_the_landed_check() -> None:
@@ -618,7 +619,7 @@ def test_done_removes_a_clean_landed_worktree(
     assert "issue-1" not in git("worktree", "list", "--porcelain", cwd=repo)
 
 
-def test_done_refuses_unlanded_commits_and_keeps_the_tree(
+def test_done_refuses_unlanded_patches_and_keeps_the_tree(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """The removal git itself allows, and the one that would lose committed work."""
@@ -634,8 +635,32 @@ def test_done_refuses_unlanded_commits_and_keeps_the_tree(
     printed = lines_of(capsys)
     assert code == 1
     assert printed[0] == "refusal=unlanded_work"
-    assert "unlanded=1 commits not on origin/main" in printed
+    assert "unlanded=1 commit patches absent from origin/main" in printed
     assert (created / "work.md").exists()
+
+
+def test_done_removes_a_rebased_worktree_whose_patch_is_upstream(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo = a_repo(tmp_path)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+    (created / "work.md").write_text("landed under another SHA\n", encoding="utf-8")
+    git("add", "work.md", cwd=created)
+    git("commit", "-q", "-m", "feat: original", cwd=created)
+
+    (repo / "work.md").write_text("landed under another SHA\n", encoding="utf-8")
+    git("add", "work.md", cwd=repo)
+    git("commit", "-q", "-m", "feat: rebased", cwd=repo)
+    git("push", "-q", "origin", "main", cwd=repo)
+    assert git("cherry", "origin/main", "HEAD", cwd=created).startswith("- ")
+
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 0
+    assert printed[0] == "ok=worktree_removed"
+    assert not created.exists()
 
 
 def test_done_refuses_a_dirty_tree_and_keeps_the_files(
