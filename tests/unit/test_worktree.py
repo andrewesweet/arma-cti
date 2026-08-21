@@ -25,7 +25,7 @@ import time
 from pathlib import Path
 
 import pytest
-from conftest import load_tool
+from conftest import REPO, load_tool
 
 worktree = load_tool("worktree")
 
@@ -405,6 +405,25 @@ def run(monkeypatch: pytest.MonkeyPatch, repo: Path, *argv: str) -> int:
     return worktree.main(list(argv))
 
 
+def run_recipe(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    """Run the repository's real worktree recipe against a temporary repository."""
+    (repo / "tools").symlink_to(REPO / "tools", target_is_directory=True)
+    return subprocess.run(  # noqa: S603 — exercises the public recipe seam
+        [  # noqa: S607 — `just` resolves off PATH by design
+            "just",
+            "--justfile",
+            str(REPO / "justfile"),
+            "--working-directory",
+            str(repo),
+            "worktree",
+            *args,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
 def lines_of(capsys: pytest.CaptureFixture[str]) -> list[str]:
     """Everything the tool printed, whichever stream it chose."""
     captured = capsys.readouterr()
@@ -628,7 +647,7 @@ def test_done_refuses_unproven_changes_and_keeps_the_tree(
     assert (created / "work.md").exists()
 
 
-def test_done_removes_a_rebased_worktree_whose_exact_diff_is_upstream(
+def test_recipe_done_removes_a_rebased_worktree_whose_exact_diff_is_upstream(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     repo = a_repo(tmp_path)
@@ -646,9 +665,9 @@ def test_done_removes_a_rebased_worktree_whose_exact_diff_is_upstream(
     assert git("cherry", "origin/main", "HEAD", cwd=created).startswith("- ")
     assert worktree.count_unlanded(created) == 0
 
-    code = run(monkeypatch, repo, "done", "issue-1")
-    printed = lines_of(capsys)
-    assert code == 0
+    completed = run_recipe(repo, "done", "issue-1")
+    printed = (completed.stdout + completed.stderr).splitlines()
+    assert completed.returncode == 0, completed.stderr
     assert printed[0] == "ok=worktree_removed"
     assert not created.exists()
 
