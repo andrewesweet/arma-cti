@@ -215,6 +215,8 @@ from __future__ import annotations
 
 import argparse
 import copy
+import fcntl
+import hashlib
 import json
 import os
 import re
@@ -3511,6 +3513,8 @@ def writable_root_refusal(project_root: Path, granted: tuple[Path, ...] | None) 
 # spells it. It lives in the worktree root because the worktree is the one directory the
 # sandbox grants, so there is nowhere else a sandboxed session could put it.
 CODEX_COMMIT_MESSAGE: Final = ".dispatch-commit-message"
+GATE_CLOCK_OUTBOX_LOCK: Final = ".active.lock"
+GATE_CLOCK_ROOT_LOCK: Final = ".scan.lock"
 
 # What a sandboxed session is told about the division of labour, appended to whatever brief
 # the dispatch carries. Appended rather than composed into `tools/brief.py`, because the lane
@@ -3553,39 +3557,96 @@ def harness_commits(lane: Lane, permission_mode: str) -> bool:
     return flags == CODEX_SANDBOX["acceptEdits"]
 
 
+def gate_clock_outbox_root(canonical: Path) -> Path:
+    """Stable temp root where the next dispatcher can find this history's outboxes."""
+    digest = hashlib.sha256(os.fsencode(canonical.absolute())).hexdigest()[:16]
+    return Path(tempfile.gettempdir()) / f"arma-cti-gate-clock-{os.getuid()}-{digest}"
+
+
+def _cleanup_gate_clock_outbox(outbox: Path) -> OSError | None:
+    """Remove one delivered or empty outbox, including its liveness lock."""
+    try:
+        gate_clock.records_path(outbox).unlink(missing_ok=True)
+        (outbox / GATE_CLOCK_OUTBOX_LOCK).unlink(missing_ok=True)
+        outbox.rmdir()
+    except OSError as error:
+        return error
+    return None
+
+
 def collect_gate_clock(outbox: Path, canonical: Path) -> tuple[str, ...]:
-    """Append a dispatched session's queued rows where the host already has access."""
+    """Idempotently append a dispatched session's queued rows on the host."""
     path = gate_clock.records_path(outbox)
     if not path.exists():
-        try:
-            outbox.rmdir()
-        except OSError as error:
-            return (f"gate_clock_collection=cleanup_failed cause={error}",)
-        return ()
-    rows = gate_clock.load_records(outbox)
-    if not rows:
-        return (
-            "gate_clock_collection=failed cause=outbox contained no readable rows",
-            f"outbox={outbox}",
-        )
+        error = _cleanup_gate_clock_outbox(outbox)
+        return (f"gate_clock_collection=cleanup_failed cause={error}",) if error else ()
     try:
-        for row in rows:
-            gate_clock.append_record(canonical, row)
+        queued_lines = [
+            line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+        ]
     except OSError as error:
         return (
             f"gate_clock_collection=failed cause={error}",
             f"outbox={outbox}",
         )
+    rows = gate_clock.load_records(outbox)
+    if not rows or len(rows) != len(queued_lines):
+        return (
+            "gate_clock_collection=failed cause=outbox contained unreadable rows",
+            f"outbox={outbox}",
+        )
     try:
-        path.unlink()
-        outbox.rmdir()
+        appended = gate_clock.append_records_once(canonical, rows)
     except OSError as error:
         return (
-            f"gate_clock_collection=collected rows={len(rows)}",
+            f"gate_clock_collection=failed cause={error}",
+            f"outbox={outbox}",
+        )
+    duplicates = len(rows) - appended
+    collected = f"gate_clock_collection=collected rows={appended}"
+    if duplicates:
+        collected += f" duplicates={duplicates}"
+    if error := _cleanup_gate_clock_outbox(outbox):
+        return (
+            collected,
             f"gate_clock_cleanup=failed cause={error}",
             f"outbox={outbox}",
         )
-    return (f"gate_clock_collection=collected rows={len(rows)}",)
+    return (collected,)
+
+
+def _recover_gate_clock_outboxes(root: Path, canonical: Path) -> tuple[str, ...]:
+    """Collect every unlocked outbox while the caller owns the root lock."""
+    lines: list[str] = []
+    try:
+        outboxes = sorted(path for path in root.iterdir() if path.is_dir())
+    except OSError as error:
+        return (f"gate_clock_recovery=failed cause={error}",)
+    for outbox in outboxes:
+        try:
+            lock = (outbox / GATE_CLOCK_OUTBOX_LOCK).open("a", encoding="utf-8")
+        except OSError as error:
+            lines.extend((f"gate_clock_recovery=failed cause={error}", f"outbox={outbox}"))
+            continue
+        with lock:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                continue
+            lines.extend(
+                line.replace("gate_clock_collection=", "gate_clock_recovery=", 1)
+                for line in collect_gate_clock(outbox, canonical)
+            )
+    return tuple(lines)
+
+
+def recover_gate_clock_outboxes(root: Path, canonical: Path) -> tuple[str, ...]:
+    """Collect every unlocked outbox left by a dead dispatcher."""
+    if not root.is_dir():
+        return ()
+    with (root / GATE_CLOCK_ROOT_LOCK).open("a", encoding="utf-8") as root_lock:
+        fcntl.flock(root_lock, fcntl.LOCK_EX)
+        return _recover_gate_clock_outboxes(root, canonical)
 
 
 def harness_start_refusal(worktree: Path) -> Refusal | None:
@@ -4505,26 +4566,34 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         return EXIT_REFUSED, refusal.lines()
 
     child = assemble_environment(parent, profile, plan.identity, token)
-    canonical_gate_clock = Path(
-        parent.get("CTI_GATE_CLOCK_DIR", str(gate_clock.DEFAULT_GATE_CLOCK_DIR))
-    ).expanduser()
-    gate_clock_outbox = Path(
-        tempfile.mkdtemp(prefix=f"arma-cti-gate-clock-{plan.identity.dispatch_id}-")
-    )
+    canonical_gate_clock = gate_clock.DEFAULT_GATE_CLOCK_DIR.absolute()
+    gate_clock_root = gate_clock_outbox_root(canonical_gate_clock)
+    gate_clock_root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    with (gate_clock_root / GATE_CLOCK_ROOT_LOCK).open("a", encoding="utf-8") as root_lock:
+        fcntl.flock(root_lock, fcntl.LOCK_EX)
+        gate_clock_recovery = _recover_gate_clock_outboxes(gate_clock_root, canonical_gate_clock)
+        gate_clock_outbox = Path(
+            tempfile.mkdtemp(prefix=f"{plan.identity.dispatch_id}-", dir=gate_clock_root)
+        )
+        gate_clock_lock = (gate_clock_outbox / GATE_CLOCK_OUTBOX_LOCK).open("a", encoding="utf-8")
+        fcntl.flock(gate_clock_lock, fcntl.LOCK_EX)
     child[gate_clock.CANONICAL_DIR_ENV] = str(canonical_gate_clock)
     child[gate_clock.OUTBOX_DIR_ENV] = str(gate_clock_outbox)
     started = datetime.now(tz=UTC)
-    # S603: argv is the registry's runner plus registry values; the brief is on stdin so
-    # that nothing a dispatch carries reaches the process table.
-    done = subprocess.run(  # noqa: S603
-        list(plan.argv),
-        cwd=plan.worktree,
-        env=child,
-        input=brief,
-        text=True,
-        check=False,
-    )
-    gate_clock_collection = collect_gate_clock(gate_clock_outbox, canonical_gate_clock)
+    with gate_clock_lock:
+        # S603: argv is the registry's runner plus registry values; the brief is on stdin so
+        # that nothing a dispatch carries reaches the process table. The inherited lock keeps
+        # another dispatcher from collecting this outbox while its session is still alive.
+        done = subprocess.run(  # noqa: S603
+            list(plan.argv),
+            cwd=plan.worktree,
+            env=child,
+            input=brief,
+            text=True,
+            check=False,
+            pass_fds=(gate_clock_lock.fileno(),),
+        )
+        gate_clock_collection = collect_gate_clock(gate_clock_outbox, canonical_gate_clock)
     outcome, reset_at = classify_finished_run(record, done.returncode)
     breaker.record_outcome(
         breaker.Store(directory=plan.breaker_dir),
@@ -4550,6 +4619,7 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         outcome=outcome,
         started_at=started.isoformat(),
         ended_at=datetime.now(tz=UTC).isoformat(),
+        gate_clock_recovery=list(gate_clock_recovery),
         gate_clock_collection=list(gate_clock_collection),
         harness_finish=list(finish),
     )
@@ -4558,6 +4628,7 @@ def run_dispatch(record: Path, parent: Mapping[str, str]) -> tuple[int, tuple[st
         (
             f"dispatch={plan.identity.dispatch_id}",
             f"exit={done.returncode}",
+            *gate_clock_recovery,
             *gate_clock_collection,
             *finish,
         ),

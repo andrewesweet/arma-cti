@@ -79,7 +79,7 @@ SET_MOMENT = "2026-08-20T14:30:00+00:00"
 EVENING = "2026-08-20T15:00:00+00:00"
 
 
-def row(  # noqa: PLR0913, PLR0917 — the nine parameters are Record's own nine fields
+def row(  # noqa: PLR0913, PLR0917 — these are the arranged measurement fields
     recipe: str = "unit",
     wall: float = ANCHOR_SECONDS,
     status: int = 0,
