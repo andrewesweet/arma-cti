@@ -424,17 +424,6 @@ def run_recipe(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def assert_worktree_recipe_uses_positional_forwarding() -> None:
-    """Make every live seam case red if interpolation replaces positional forwarding.
-
-    A no-argument call has the same process behaviour under `{{ args }}` and `"$@"`:
-    both pass zero words. The live call therefore needs this source-side half to make the
-    requested regression observable without returning to the obsolete dry-run rendering.
-    """
-    recipe = '[positional-arguments]\nworktree *args:\n    uv run python tools/worktree.py "$@"\n'
-    assert recipe in (REPO / "justfile").read_text(encoding="utf-8")
-
-
 def lines_of(capsys: pytest.CaptureFixture[str]) -> list[str]:
     """Everything the tool printed, whichever stream it chose."""
     captured = capsys.readouterr()
@@ -610,7 +599,6 @@ def test_bare_recipe_defaults_to_preflight_and_refuses_a_dirty_tree(tmp_path: Pa
     completed = run_recipe(repo)
     printed = (completed.stdout + completed.stderr).splitlines()
 
-    assert_worktree_recipe_uses_positional_forwarding()
     assert completed.returncode == 1
     assert "refusal=unverified" in printed
     assert "untracked=?? foreign.txt" in printed
@@ -888,13 +876,14 @@ def test_recipe_archive_forwards_a_ref_value_and_removes_the_preserved_tree(
     repo = a_repo(tmp_path)
     created = _parked_tree(repo, monkeypatch, capsys)
     head = git("rev-parse", "HEAD", cwd=created).strip()
-    ref = "refs/heads/issue-1-parked"
+    # `$$` is valid Git-ref text. Positional `"$@"` preserves it; unquoted
+    # `{{ args }}` expands it to the shell PID and looks up a different ref.
+    ref = "refs/heads/issue-$$-parked"
     git("push", "-q", "origin", f"HEAD:{ref}", cwd=created)
 
     completed = run_recipe(repo, "archive", "issue-1", "--ref", ref)
     printed = (completed.stdout + completed.stderr).splitlines()
 
-    assert_worktree_recipe_uses_positional_forwarding()
     assert completed.returncode == 0, completed.stderr
     assert printed[0] == "ok=worktree_archived"
     assert any(line.startswith(f"ref={ref} resolved=") for line in printed)
@@ -1018,7 +1007,9 @@ def test_recipe_restore_forwards_a_ref_value_and_recreates_the_preserved_tree(
     repo = a_repo(tmp_path)
     created = _parked_tree(repo, monkeypatch, capsys)
     head = git("rev-parse", "HEAD", cwd=created).strip()
-    ref = "refs/heads/issue-1-parked"
+    # `$$` is valid Git-ref text. Positional `"$@"` preserves it; unquoted
+    # `{{ args }}` expands it to the shell PID and looks up a different ref.
+    ref = "refs/heads/issue-$$-parked"
     git("push", "-q", "origin", f"HEAD:{ref}", cwd=created)
     run(monkeypatch, repo, "archive", "issue-1", "--ref", ref)
     capsys.readouterr()
@@ -1026,7 +1017,6 @@ def test_recipe_restore_forwards_a_ref_value_and_recreates_the_preserved_tree(
     completed = run_recipe(repo, "restore", "issue-1", "--ref", ref)
     printed = (completed.stdout + completed.stderr).splitlines()
 
-    assert_worktree_recipe_uses_positional_forwarding()
     assert completed.returncode == 0, completed.stderr
     assert printed[0] == "ok=worktree_restored"
     assert f"worktree={created}" in printed
