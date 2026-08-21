@@ -3,9 +3,10 @@
 - A dispatched gate run now writes its gate-clock rows to a writable,
   session-local temporary file. Immediately after the child exits, the
   unsandboxed dispatcher appends that file once to the canonical
-  `~/.arma-cti/gate-clock/records.jsonl`. An unterminated canonical tail,
-  readable or malformed, is separated before the new rows so `load_records`
-  cannot merge and skip them. If that append fails, the dispatcher reports one
+  `~/.arma-cti/gate-clock/records.jsonl`. An unterminated canonical tail is
+  separated before the new rows so `load_records` cannot merge and skip them.
+  A prior valid row survives; a prior malformed row is dropped when the
+  collected row is rescued. If that append fails, the dispatcher reports one
   `gate_clock_collection=failed` line, preserves the child's exit result, and
   still writes `result.json`. Canonical collection runs only after child exit,
   takes no lock, and no later dispatch scans its file, so it cannot block child
@@ -16,7 +17,10 @@
   failure line because no dispatcher remains to report it. There is no
   recovery, retry, delivery-id dedupe, orphan scan, or quarantine. While the
   dispatcher remains alive, a failed append is reported once and the dispatch
-  carries on. The reduced path performs no file or directory `fsync`.
+  carries on. `load_records` decodes each row strictly and silently drops a
+  whole row containing undecodable UTF-8; valid rows before and after it remain
+  readable. Thus an undecodable prior tail is lost when a collected row is
+  rescued. The reduced path performs no file or directory `fsync`.
 
 - Historical coverage remains unknowable because failed recording attempts and
   the accepted dispatcher-death window are not durably counted. This change

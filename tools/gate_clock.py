@@ -368,11 +368,15 @@ def load_records(gate_clock_dir: Path) -> tuple[Record, ...]:
     """Every readable row, oldest first; nothing at all on a missing directory."""
     path = records_path(gate_clock_dir)
     try:
-        lines = path.read_text(encoding="utf-8").splitlines()
+        lines = path.read_bytes().splitlines()
     except OSError:
         return ()
     rows: list[Record] = []
-    for line in lines:
+    for encoded_line in lines:
+        try:
+            line = encoded_line.decode("utf-8")
+        except UnicodeDecodeError:
+            continue
         if not line.strip():
             continue
         try:

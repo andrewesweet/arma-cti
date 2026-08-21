@@ -2174,6 +2174,20 @@ def test_gate_clock_collection_separates_a_malformed_unterminated_tail(tmp_path:
     assert gate_clock.load_records(canonical) == (collected,)
 
 
+def test_gate_clock_collection_separates_an_undecodable_unterminated_tail(tmp_path: Path) -> None:
+    session_directory = tmp_path / "session"
+    canonical = tmp_path / "canonical"
+    collected = gate_clock_row()
+    gate_clock.append_record(session_directory, collected)
+    destination = gate_clock.records_path(canonical)
+    destination.parent.mkdir(parents=True)
+    destination.write_bytes(b'{"at": "half", "recipe": "\xe2\x82')
+
+    assert dispatch.collect_gate_clock(session_directory, canonical) == ()
+
+    assert gate_clock.load_records(canonical) == (collected,)
+
+
 def test_a_dispatch_whose_gate_clock_append_fails_still_runs_and_writes_result(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
