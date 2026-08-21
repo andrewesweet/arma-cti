@@ -259,7 +259,8 @@ cleanup() {
     done
     # Keep the old two-second SIGTERM grace as the deadline, but stop waiting as
     # soon as every child has exited. A zombie has exited and only needs reaping.
-    term_now="$(now)"
+    term_now="$(now)" ||
+        log "teardown: SIGTERM grace clock failed before its deadline was set"
     term_deadline=$((term_now + 2000))
     while :; do
         running=0
@@ -275,7 +276,10 @@ cleanup() {
             log "teardown: SIGTERM grace ended when every child exited"
             break
         fi
-        term_now="$(now)" || break
+        term_now="$(now)" || {
+            log "teardown: SIGTERM grace ended because its clock failed"
+            break
+        }
         if ((term_now >= term_deadline)); then
             log "teardown: SIGTERM grace reached its 2s deadline"
             break

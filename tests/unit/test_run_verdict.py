@@ -317,9 +317,11 @@ def test_a_demanded_headless_client_that_cannot_join_stops_before_the_probe(
     Before this gate, `run.sh` recorded `hc_joined=false`, carried on, touched the
     marker and reported PASS. The demanded world was never assembled, so the
     honest outcome is an infrastructure stop before that marker can be reached.
-    Two seconds is the explicit floor: eight turns of the 0.25 s HC poll keep
-    the marker beyond any immediate-exit observation without lengthening the run,
-    because teardown kills this background holder.
+    The marker must outlast `run.sh`'s roughly 0.5 s detect-and-teardown path:
+    after mission start it spawns the exit-0 HC, observes its dead pid within one
+    or two 0.25 s poll turns, records the required-HC failure, then cleanup sends
+    its first kill. Two seconds is retained margin over that floor; teardown
+    kills this background holder, so the test does not pay it.
     """
     probe_ran = tmp_path / "probe-ran"
     server = f"""#!/usr/bin/env bash
