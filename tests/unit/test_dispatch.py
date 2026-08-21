@@ -26,7 +26,6 @@ half the assertion; "and nothing else can see them" is the half this issue is fo
 
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import json
 import os
@@ -104,7 +103,6 @@ def credentials_file(tmp_path: Path, body: str, mode: int = 0o600) -> Path:
 
 
 def gate_clock_row(
-    record_id: str,
     *,
     at: str = "2026-08-21T06:25:00+00:00",
     wall_seconds: float = 27.22,
@@ -120,7 +118,6 @@ def gate_clock_row(
         load_1m=0.5,
         foreign_gate_processes=0,
         mutation_targets=None,
-        record_id=record_id,
     )
 
 
@@ -156,9 +153,6 @@ if [ -n "${CTI_FAKE_GATE_CLOCK_TOOL:-}" ]; then
   start_up=$(cut -d' ' -f1 /proc/uptime)
   "$CTI_FAKE_PYTHON" "$CTI_FAKE_GATE_CLOCK_TOOL" record \
     --recipe unit --start-uptime "$start_up" --status 0
-  if [ -n "${CTI_FAKE_GATE_CLOCK_RESTORE:-}" ]; then
-    chmod 0700 "$CTI_FAKE_GATE_CLOCK_RESTORE"
-  fi
 fi
 {
   printf 'argv=%s\\n' "$*"
@@ -2054,397 +2048,12 @@ def test_the_child_re_checks_the_credential_the_plan_already_checked(tmp_path: P
 # --------------------------------------------------------------- the seam, end to end
 
 
-def test_orphaned_gate_clock_rows_are_recovered_once(tmp_path: Path) -> None:
-    canonical = tmp_path / "gate-clock"
-    delivered = gate_clock_row("delivered")
-    pending = gate_clock_row("pending", at="2026-08-21T06:30:00+00:00", wall_seconds=28.0)
-    gate_clock.append_record(canonical, delivered)
-    root = dispatch.gate_clock_outbox_root(canonical)
-    orphan = root / "d-orphan"
-    gate_clock.append_record(orphan, delivered)
-    gate_clock.append_record(orphan, pending)
-
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == (
-        "gate_clock_recovery=collected rows=1 duplicates=1",
-    )
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
-    assert gate_clock.load_records(canonical) == (delivered, pending)
-    assert not orphan.exists()
-
-
-def test_poisoned_canonical_history_does_not_quarantine_a_valid_outbox(
-    tmp_path: Path,
-) -> None:
-    canonical = tmp_path / "gate-clock"
-    poisoned = gate_clock_row("poisoned")
-    gate_clock.append_record(canonical, poisoned)
-    canonical_records = gate_clock.records_path(canonical)
-    original = canonical_records.read_text(encoding="utf-8")
-    poisoned_text = re.sub(r'"status":\s*0', '"status": 1e999', original)
-    assert poisoned_text != original
-    canonical_records.write_text(poisoned_text, encoding="utf-8")
-    root = dispatch.gate_clock_outbox_root(canonical)
-    orphan = root / "d-valid"
-    pending = gate_clock_row("pending")
-    gate_clock.append_record(orphan, pending)
-
-    result = dispatch.recover_gate_clock_outboxes(root, canonical)
-
-    assert len(result) == 1
-    assert result[0].startswith("gate_clock_recovery=failed")
-    assert f"canonical={canonical}" in result[0]
-    assert not (orphan / dispatch.GATE_CLOCK_QUARANTINE_MARKER).exists()
-    assert gate_clock.load_records(orphan) == (pending,)
-
-    canonical_records.write_text("", encoding="utf-8")
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == (
-        "gate_clock_recovery=collected rows=1",
-    )
-    assert gate_clock.load_records(canonical) == (pending,)
-    assert not orphan.exists()
-
-
-def test_an_active_gate_clock_outbox_is_not_recovered(tmp_path: Path) -> None:
-    canonical = tmp_path / "gate-clock"
-    queued = gate_clock_row("active")
-    root = dispatch.gate_clock_outbox_root(canonical)
-    active = root / "d-active"
-    gate_clock.append_record(active, queued)
-    with (active / dispatch.GATE_CLOCK_OUTBOX_LOCK).open("a", encoding="utf-8") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
-        assert gate_clock.load_records(canonical) == ()
-
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == (
-        "gate_clock_recovery=collected rows=1",
-    )
-    assert gate_clock.load_records(canonical) == (queued,)
-
-
-@pytest.mark.parametrize("lock_fault", ["malformed", "inaccessible"])
-def test_a_bad_gate_clock_outbox_lock_is_quarantined(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, lock_fault: str
-) -> None:
-    canonical = tmp_path / "gate-clock"
-    root = dispatch.gate_clock_outbox_root(canonical)
-    orphan = root / "d-broken-lock"
-    gate_clock.append_record(orphan, gate_clock_row("pending"))
-    lock_path = orphan / dispatch.GATE_CLOCK_OUTBOX_LOCK
-    if lock_fault == "malformed":
-        lock_path.mkdir()
-        expected_error = "IsADirectoryError"
-    else:
-        path_open = Path.open
-        refusal = "arranged inaccessible lock"
-
-        def deny_lock(  # noqa: PLR0913, PLR0917 — mirrors the patched Path.open API
-            candidate: Path,
-            mode: str = "r",
-            buffering: int = -1,
-            encoding: str | None = None,
-            errors: str | None = None,
-            newline: str | None = None,
-        ) -> object:
-            if candidate == lock_path:
-                raise PermissionError(refusal)
-            return path_open(candidate, mode, buffering, encoding, errors, newline)
-
-        monkeypatch.setattr(Path, "open", deny_lock)
-        expected_error = "PermissionError"
-
-    result = dispatch.recover_gate_clock_outboxes(root, canonical)
-
-    assert len(result) == 1
-    assert result[0].startswith(f"gate_clock_recovery=failed cause={expected_error}:")
-    assert f"outbox={orphan}" in result[0]
-    assert "quarantine=marked" in result[0]
-    assert gate_clock.load_records(canonical) == ()
-    assert (orphan / dispatch.GATE_CLOCK_QUARANTINE_MARKER).exists()
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
-
-
-def test_an_unreadable_gate_clock_outbox_is_marked_and_skipped(tmp_path: Path) -> None:
-    canonical = tmp_path / "gate-clock"
-    root = dispatch.gate_clock_outbox_root(canonical)
-    orphan = root / "d-broken"
-    gate_clock.append_record(orphan, gate_clock_row("readable"))
-    path = gate_clock.records_path(orphan)
-    path.write_text(path.read_text(encoding="utf-8") + "{broken\n", encoding="utf-8")
-
-    result = dispatch.recover_gate_clock_outboxes(root, canonical)
-
-    assert len(result) == 1
-    assert result[0].startswith(
-        "gate_clock_recovery=failed cause=GateClockOutboxMalformedError: "
-        "outbox contained unreadable rows"
-    )
-    assert f"outbox={orphan}" in result[0]
-    assert "quarantine=marked" in result[0]
-    assert gate_clock.load_records(canonical) == ()
-    assert (orphan / ".quarantined").exists()
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
-
-
-def test_invalid_utf8_in_an_outbox_does_not_block_the_next_dispatch(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """Recovery reports byte corruption once, then launches and records the run."""
-    worktree = git_worktree(tmp_path)
-    capture = tmp_path / "claude-ran.txt"
-    canonical = tmp_path / ".arma-cti" / "gate-clock"
-    monkeypatch.setattr(dispatch.gate_clock, "DEFAULT_GATE_CLOCK_DIR", canonical)
-    root = dispatch.gate_clock_outbox_root(canonical)
-    orphan = root / "d-corrupt"
-    orphan.mkdir(parents=True)
-    gate_clock.records_path(orphan).write_bytes(b"\xff\n")
-    plan, brief_text, refusal = plan_for(tmp_path, worktree=str(worktree))
-    assert refusal is None
-    assert plan is not None
-    dispatch.write_record(plan, brief_text)
-
-    code, lines = dispatch.run_dispatch(
-        plan.record,
-        seam_env(tmp_path, capture, HOME=str(tmp_path)),
-    )
-
-    assert code == 0
-    failures = [line for line in lines if line.startswith("gate_clock_recovery=failed")]
-    assert len(failures) == 1
-    (failure,) = failures
-    assert "UnicodeDecodeError" in failure
-    assert "can't decode byte 0xff" in failure
-    assert f"outbox={orphan}" in failure
-    assert "quarantine=marked" in failure
-    assert capture.exists()
-    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
-    assert result["returncode"] == 0
-    assert result["gate_clock_recovery"] == [failure]
-    assert (orphan / ".quarantined").exists()
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
-
-
-def test_a_deeply_nested_outbox_cannot_block_dispatch_and_is_not_retried(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """An unanticipated parser failure loses one row, not the dispatch or every later one."""
-    worktree = git_worktree(tmp_path)
-    capture = tmp_path / "claude-ran.txt"
-    canonical = tmp_path / ".arma-cti" / "gate-clock"
-    monkeypatch.setattr(dispatch.gate_clock, "DEFAULT_GATE_CLOCK_DIR", canonical)
-    root = dispatch.gate_clock_outbox_root(canonical)
-    orphan = root / "d-deeply-nested"
-    orphan.mkdir(parents=True)
-    depth = 100_000
-    gate_clock.records_path(orphan).write_text("[" * depth + "]" * depth + "\n", encoding="utf-8")
-    plan, brief_text, refusal = plan_for(tmp_path, worktree=str(worktree))
-    assert refusal is None
-    assert plan is not None
-    dispatch.write_record(plan, brief_text)
-
-    code, lines = dispatch.run_dispatch(
-        plan.record,
-        seam_env(tmp_path, capture, HOME=str(tmp_path)),
-    )
-
-    assert code == 0
-    failures = [line for line in lines if line.startswith("gate_clock_recovery=failed")]
-    assert len(failures) == 1
-    assert "RecursionError" in failures[0]
-    assert f"outbox={orphan}" in failures[0]
-    assert (orphan / ".quarantined").exists()
-    assert capture.exists()
-    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
-    assert result["returncode"] == 0
-    assert result["gate_clock_recovery"] == failures
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
-
-
-def test_an_unexpected_current_collection_failure_still_writes_the_result(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """The post-child half has the same boundary as pre-launch orphan recovery."""
-    worktree = git_worktree(tmp_path)
-    capture = tmp_path / "claude-ran.txt"
-    canonical = tmp_path / ".arma-cti" / "gate-clock"
-    monkeypatch.setattr(dispatch.gate_clock, "DEFAULT_GATE_CLOCK_DIR", canonical)
-    plan, brief_text, refusal = plan_for(tmp_path, worktree=str(worktree))
-    assert refusal is None
-    assert plan is not None
-    dispatch.write_record(plan, brief_text)
-
-    arranged_failure = "arranged unanticipated collection failure"
-
-    def fail_collection(_outbox: Path, _canonical: Path) -> tuple[str, ...]:
-        raise RuntimeError(arranged_failure)
-
-    monkeypatch.setattr(dispatch, "collect_gate_clock", fail_collection)
-    code, lines = dispatch.run_dispatch(
-        plan.record,
-        seam_env(tmp_path, capture, HOME=str(tmp_path)),
-    )
-
-    assert code == 0
-    failures = [line for line in lines if line.startswith("gate_clock_collection=failed")]
-    assert len(failures) == 1
-    assert "RuntimeError: arranged unanticipated collection failure" in failures[0]
-    assert "quarantine=marked" in failures[0]
-    assert capture.exists()
-    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
-    assert result["returncode"] == 0
-    assert result["gate_clock_collection"] == failures
-    root = dispatch.gate_clock_outbox_root(canonical)
-    markers = list(root.glob(f"*/{dispatch.GATE_CLOCK_QUARANTINE_MARKER}"))
-    assert len(markers) == 1
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
-
-
-def test_gate_clock_setup_failure_cannot_block_child_or_result(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """Even failure before an outbox exists degrades only the measurement instrument."""
-    worktree = git_worktree(tmp_path)
-    capture = tmp_path / "claude-ran.txt"
-    plan, brief_text, refusal = plan_for(tmp_path, worktree=str(worktree))
-    assert refusal is None
-    assert plan is not None
-    dispatch.write_record(plan, brief_text)
-
-    arranged_failure = "arranged gate-clock setup failure"
-
-    def fail_root(_canonical: Path) -> Path:
-        raise RuntimeError(arranged_failure)
-
-    monkeypatch.setattr(dispatch, "gate_clock_outbox_root", fail_root)
-    code, lines = dispatch.run_dispatch(
-        plan.record,
-        seam_env(tmp_path, capture, HOME=str(tmp_path)),
-    )
-
-    assert code == 0
-    failures = [line for line in lines if line.startswith("gate_clock_recovery=failed")]
-    assert failures == [
-        "gate_clock_recovery=failed cause=RuntimeError: arranged gate-clock setup failure"
-    ]
-    assert capture.exists()
-    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
-    assert result["returncode"] == 0
-    assert result["gate_clock_recovery"] == failures
-    assert result["gate_clock_collection"] == []
-
-
-def test_creating_a_dispatch_outbox_syncs_its_root(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    root = tmp_path / "outboxes"
-    root.mkdir()
-    synced: list[Path] = []
-    monkeypatch.setattr(dispatch.gate_clock, "fsync_directory", synced.append)
-
-    outbox = dispatch.create_gate_clock_outbox(root, "d-one")
-
-    assert outbox.parent == root
-    assert outbox.name.startswith("d-one-")
-    assert synced == [root]
-
-
-def test_quarantine_marker_syncs_its_file_and_outbox_directory(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    outbox = tmp_path / "outbox"
-    outbox.mkdir()
-    file_syncs: list[int] = []
-    directory_syncs: list[Path] = []
-    monkeypatch.setattr(dispatch.os, "fsync", file_syncs.append)
-    monkeypatch.setattr(dispatch.gate_clock, "fsync_directory", directory_syncs.append)
-
-    marker = dispatch._mark_gate_clock_outbox_quarantined(  # noqa: SLF001 — durability is the subject
-        outbox
-    )
-
-    assert marker == outbox / dispatch.GATE_CLOCK_QUARANTINE_MARKER
-    assert len(file_syncs) == 1
-    assert directory_syncs == [outbox]
-
-
-def test_failed_quarantine_marker_sync_leaves_no_visible_marker(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    outbox = tmp_path / "outbox"
-    outbox.mkdir()
-    arranged_failure = "arranged marker sync failure"
-
-    def fail_sync(_file_descriptor: int) -> None:
-        raise OSError(arranged_failure)
-
-    monkeypatch.setattr(dispatch.os, "fsync", fail_sync)
-
-    with pytest.raises(OSError, match=arranged_failure):
-        dispatch._mark_gate_clock_outbox_quarantined(  # noqa: SLF001 — visibility is the subject
-            outbox
-        )
-
-    assert list(outbox.iterdir()) == []
-
-
-def test_marker_directory_sync_failure_leaves_a_complete_visible_marker(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    canonical = tmp_path / "gate-clock"
-    root = dispatch.gate_clock_outbox_root(canonical)
-    outbox = root / "d-broken"
-    gate_clock.append_record(outbox, gate_clock_row("readable"))
-    records = gate_clock.records_path(outbox)
-    records.write_text(records.read_text(encoding="utf-8") + "{broken\n", encoding="utf-8")
-    directory_sync = gate_clock.fsync_directory
-    failed = False
-    arranged_failure = "arranged marker directory sync failure"
-
-    def fail_first_outbox_sync(directory: Path) -> None:
-        nonlocal failed
-        if directory == outbox and not failed:
-            failed = True
-            raise OSError(arranged_failure)
-        directory_sync(directory)
-
-    monkeypatch.setattr(dispatch.gate_clock, "fsync_directory", fail_first_outbox_sync)
-
-    result = dispatch.recover_gate_clock_outboxes(root, canonical)
-
-    assert len(result) == 1
-    assert "quarantine=failed" in result[0]
-    marker = outbox / dispatch.GATE_CLOCK_QUARANTINE_MARKER
-    assert marker.read_text(encoding="utf-8") == dispatch.GATE_CLOCK_QUARANTINE_BODY
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
-
-
-def test_a_dangling_quarantine_marker_is_replaced_and_not_retried(tmp_path: Path) -> None:
-    canonical = tmp_path / "gate-clock"
-    root = dispatch.gate_clock_outbox_root(canonical)
-    outbox = root / "d-broken"
-    gate_clock.append_record(outbox, gate_clock_row("readable"))
-    records = gate_clock.records_path(outbox)
-    records.write_text(records.read_text(encoding="utf-8") + "{broken\n", encoding="utf-8")
-    marker = outbox / dispatch.GATE_CLOCK_QUARANTINE_MARKER
-    marker.symlink_to(outbox / "missing")
-
-    result = dispatch.recover_gate_clock_outboxes(root, canonical)
-
-    assert len(result) == 1
-    assert "quarantine=marked" in result[0]
-    assert marker.is_file()
-    assert not marker.is_symlink()
-    assert marker.read_text(encoding="utf-8").strip()
-    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
-
-
 def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     tmp_path: Path,
 ) -> None:
     worktree = git_worktree(tmp_path)
     capture = tmp_path / "claude-ran.txt"
     canonical_gate_clock = tmp_path / ".arma-cti" / "gate-clock"
-    canonical_gate_clock.mkdir(parents=True)
-    canonical_gate_clock.chmod(0o500)
     started = time.monotonic()
     done = run_seam(
         [
@@ -2467,7 +2076,6 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
             HOME=str(tmp_path),
             CTI_GATE_CLOCK_DIR=str(canonical_gate_clock),
             CTI_FAKE_GATE_CLOCK_TOOL=str(REPO / "tools" / "gate_clock.py"),
-            CTI_FAKE_GATE_CLOCK_RESTORE=str(canonical_gate_clock),
             CTI_FAKE_PYTHON=sys.executable,
         ),
     )
@@ -2491,14 +2099,13 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     result = json.loads((record / "result.json").read_text(encoding="utf-8"))
     assert result["returncode"] == 0
     assert result["dispatch_id"] == printed["dispatch"]
-    assert result["gate_clock_collection"] == ["gate_clock_collection=collected rows=1"]
+    assert result["gate_clock_collection"] == []
     (collected,) = gate_clock.load_records(canonical_gate_clock)
     assert collected.recipe == "unit"
     assert collected.status == 0
-    assert collected.record_id
     log = (record / "dispatch.log").read_text(encoding="utf-8")
-    assert "gate-clock unit canonical write failed" in log
-    assert "queued for dispatch harness" in log
+    assert "gate-clock: recorded unit" in log
+    assert "gate_clock_collection=failed" not in log
 
     ran = read_lines(capture.read_text(encoding="utf-8"))
     assert ran["cwd"] == str(worktree.resolve())
@@ -2511,60 +2118,62 @@ def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(
     assert "cti.seat=implementer" in attributes
     assert "cti.issue=223" in attributes
     assert "cti.base_sha=" in attributes
-    assert ran[gate_clock.CANONICAL_DIR_ENV] == str(canonical_gate_clock)
-    assert gate_clock.OUTBOX_DIR_ENV in ran
-    assert not Path(ran[gate_clock.OUTBOX_DIR_ENV]).exists()
+    session_directory = Path(ran[dispatch.GATE_CLOCK_DIR_ENV])
+    assert session_directory != canonical_gate_clock
+    assert not session_directory.exists()
     # The poisoned parent did not reach the child.
     assert "ANTHROPIC_BASE_URL" not in ran
 
 
-def test_a_dispatched_gate_clock_override_still_reaches_canonical_history(
+def test_a_failed_gate_clock_append_is_reported_once_and_returns_normally(
     tmp_path: Path,
+) -> None:
+    session_directory = tmp_path / "session"
+    gate_clock.append_record(session_directory, gate_clock_row())
+    not_a_directory = tmp_path / "not-a-directory"
+    not_a_directory.write_text("blocks canonical parent creation\n", encoding="utf-8")
+    canonical = not_a_directory / "gate-clock"
+
+    lines = dispatch.collect_gate_clock(session_directory, canonical)
+
+    assert len(lines) == 1
+    assert lines[0].startswith("gate_clock_collection=failed cause=")
+    assert f"canonical={canonical}" in lines[0]
+    assert gate_clock.load_records(session_directory) == (gate_clock_row(),)
+
+
+def test_a_dispatch_whose_gate_clock_append_fails_still_runs_and_writes_result(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     worktree = git_worktree(tmp_path)
     capture = tmp_path / "claude-ran.txt"
-    canonical = tmp_path / ".arma-cti" / "gate-clock"
-    selected = tmp_path / "selected-gate-clock"
-    orphaned = gate_clock_row("orphaned")
-    orphan = dispatch.gate_clock_outbox_root(canonical) / "d-orphan"
-    gate_clock.append_record(orphan, orphaned)
-    done = run_seam(
-        [
-            "--lane",
-            "claude-native",
-            "--profile",
-            "opus-high",
-            "--seat",
-            "implementer",
-            "--issue",
-            "223",
-            "--worktree",
-            str(worktree),
-            "--dispatch-dir",
-            str(tmp_path / "dispatches"),
-        ],
+    not_a_directory = tmp_path / "not-a-directory"
+    not_a_directory.write_text("blocks canonical parent creation\n", encoding="utf-8")
+    canonical = not_a_directory / "gate-clock"
+    monkeypatch.setattr(dispatch.gate_clock, "DEFAULT_GATE_CLOCK_DIR", canonical)
+    plan, brief_text, refusal = plan_for(tmp_path, worktree=str(worktree))
+    assert refusal is None
+    assert plan is not None
+    dispatch.write_record(plan, brief_text)
+
+    code, lines = dispatch.run_dispatch(
+        plan.record,
         seam_env(
             tmp_path,
             capture,
             HOME=str(tmp_path),
-            CTI_GATE_CLOCK_DIR=str(selected),
             CTI_FAKE_GATE_CLOCK_TOOL=str(REPO / "tools" / "gate_clock.py"),
             CTI_FAKE_PYTHON=sys.executable,
         ),
     )
-    assert done.returncode == 0, done.stderr
-    record = Path(read_lines(done.stdout)["record"])
-    assert await_file(record / "result.json"), (record / "dispatch.log").read_text(encoding="utf-8")
 
-    result = json.loads((record / "result.json").read_text(encoding="utf-8"))
-    assert result["gate_clock_recovery"] == ["gate_clock_recovery=collected rows=1"]
-    assert len(gate_clock.load_records(selected)) == 1
-    canonical_rows = gate_clock.load_records(canonical)
-    assert len(canonical_rows) == 2
-    assert orphaned in canonical_rows
-    assert gate_clock.load_records(selected)[0] in canonical_rows
-    ran = read_lines(capture.read_text(encoding="utf-8"))
-    assert ran[gate_clock.CANONICAL_DIR_ENV] == str(canonical)
+    assert code == 0
+    failures = [line for line in lines if line.startswith("gate_clock_collection=failed")]
+    assert len(failures) == 1
+    assert capture.exists()
+    result = json.loads((plan.record / "result.json").read_text(encoding="utf-8"))
+    assert result["returncode"] == 0
+    assert result["gate_clock_collection"] == failures
 
 
 def test_a_zai_dispatch_leaks_into_neither_the_parent_nor_the_next_lane(

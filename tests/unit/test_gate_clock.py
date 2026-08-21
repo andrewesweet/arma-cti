@@ -51,11 +51,12 @@ import json
 import subprocess
 from typing import TYPE_CHECKING
 
-import pytest
 from conftest import load_tool
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    import pytest
 
 gate_clock = load_tool("gate_clock")
 # The exempt list is read from the tier rather than restated here, so an entry
@@ -78,7 +79,7 @@ SET_MOMENT = "2026-08-20T14:30:00+00:00"
 EVENING = "2026-08-20T15:00:00+00:00"
 
 
-def row(  # noqa: PLR0913, PLR0917 — these are the arranged measurement fields
+def row(  # noqa: PLR0913, PLR0917 — the nine parameters are Record's own nine fields
     recipe: str = "unit",
     wall: float = ANCHOR_SECONDS,
     status: int = 0,
@@ -428,24 +429,6 @@ def test_a_written_row_round_trips_every_field(tmp_path: Path) -> None:
     assert list(read_back) == list(written)
 
 
-def test_append_syncs_the_record_entry_and_new_state_directory(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    state = tmp_path / "new-state"
-    synced: list[Path] = []
-    real_sync = gate_clock.fsync_directory
-
-    def observe(directory: Path) -> None:
-        synced.append(directory)
-        real_sync(directory)
-
-    monkeypatch.setattr(gate_clock, "fsync_directory", observe)
-
-    gate_clock.append_record(state, row())
-
-    assert synced == [state, tmp_path]
-
-
 def test_malformed_lines_are_skipped_not_fatal(tmp_path: Path) -> None:
     """A box that died mid-append leaves a truncated line; the report must survive it."""
     gate_clock.append_record(tmp_path, row())
@@ -620,141 +603,6 @@ def test_record_refuses_rather_than_fabricates_a_wall(
     assert "recording failed" in capsys.readouterr().err
 
 
-def test_read_only_canonical_path_queues_the_row_for_the_dispatch_harness(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """The live sandbox failure stays non-gating and leaves a row the host can collect."""
-    canonical = tmp_path / "read-only"
-    canonical.mkdir()
-    canonical.chmod(0o500)
-    outbox = tmp_path / "outbox"
-    staged = tmp_path / "uptime"
-    staged.write_text("1000.50 2000.00\n", encoding="utf-8")
-    monkeypatch.setattr(gate_clock, "PROC_UPTIME", staged)
-    monkeypatch.setenv("CTI_GATE_CLOCK_CANONICAL_DIR", str(canonical))
-    monkeypatch.setenv("CTI_GATE_CLOCK_OUTBOX_DIR", str(outbox))
-
-    assert (
-        gate_clock.main(
-            [
-                "--gate-clock-dir",
-                str(canonical),
-                "record",
-                "--recipe",
-                "unit",
-                "--start-uptime",
-                "1000.00",
-                "--status",
-                "0",
-            ]
-        )
-        == 0
-    )
-
-    assert gate_clock.load_records(canonical) == ()
-    assert len(gate_clock.load_records(outbox)) == 1
-    error = capsys.readouterr().err
-    assert error.count("\n") == 1
-    assert "gate-clock unit canonical write failed" in error
-    assert "Permission denied" in error
-    assert "queued for dispatch harness" in error
-
-
-def test_a_dispatched_noncanonical_destination_also_queues_the_canonical_row(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """The #470 workaround may keep its copy, but cannot fork dispatched history."""
-    canonical = tmp_path / "canonical"
-    selected = tmp_path / "selected"
-    outbox = tmp_path / "outbox"
-    staged = tmp_path / "uptime"
-    staged.write_text("1000.50 2000.00\n", encoding="utf-8")
-    monkeypatch.setattr(gate_clock, "PROC_UPTIME", staged)
-    monkeypatch.setenv("CTI_GATE_CLOCK_CANONICAL_DIR", str(canonical))
-    monkeypatch.setenv("CTI_GATE_CLOCK_OUTBOX_DIR", str(outbox))
-
-    assert (
-        gate_clock.main(
-            [
-                "--gate-clock-dir",
-                str(selected),
-                "record",
-                "--recipe",
-                "unit",
-                "--start-uptime",
-                "1000.00",
-                "--status",
-                "0",
-            ]
-        )
-        == 0
-    )
-
-    assert len(gate_clock.load_records(selected)) == 1
-    assert len(gate_clock.load_records(outbox)) == 1
-    assert gate_clock.load_records(canonical) == ()
-    assert "queued for canonical collection" in capsys.readouterr().out
-
-
-def test_a_recorder_crash_cannot_leave_a_row_only_under_the_override(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """A death between durable writes must leave the canonical outbox copy."""
-    canonical = tmp_path / "canonical"
-    selected = tmp_path / "selected"
-    outbox = tmp_path / "outbox"
-    recorded = row()
-    monkeypatch.setenv("CTI_GATE_CLOCK_CANONICAL_DIR", str(canonical))
-    monkeypatch.setenv("CTI_GATE_CLOCK_OUTBOX_DIR", str(outbox))
-    append_record = gate_clock.append_record
-    destinations: list[Path] = []
-
-    class RecorderCrash(BaseException):
-        """Stand in for process death, outside the recorder's recovery catches."""
-
-    def crash_between_writes(destination: Path, candidate: gate_clock.Record) -> Path:
-        destinations.append(destination)
-        if len(destinations) == 2:
-            raise RecorderCrash
-        return append_record(destination, candidate)
-
-    monkeypatch.setattr(gate_clock, "append_record", crash_between_writes)
-
-    with pytest.raises(RecorderCrash):
-        gate_clock.record_or_queue(selected, recorded)
-
-    assert destinations == [outbox.absolute(), selected.absolute()]
-    assert gate_clock.load_records(outbox) == (recorded,)
-    assert gate_clock.load_records(selected) == ()
-    assert gate_clock.load_records(canonical) == ()
-
-
-def test_a_failed_outbox_enqueue_does_not_create_an_override_only_row(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    """Without the recoverable copy, a dispatched override must not accept the row."""
-    canonical = tmp_path / "canonical"
-    selected = tmp_path / "selected"
-    outbox = tmp_path / "outbox"
-    recorded = row()
-    monkeypatch.setenv("CTI_GATE_CLOCK_CANONICAL_DIR", str(canonical))
-    monkeypatch.setenv("CTI_GATE_CLOCK_OUTBOX_DIR", str(outbox))
-    append_record = gate_clock.append_record
-    refusal = "arranged outbox refusal"
-
-    def reject_outbox(destination: Path, candidate: gate_clock.Record) -> Path:
-        if destination.absolute() == outbox.absolute():
-            raise PermissionError(refusal)
-        return append_record(destination, candidate)
-
-    monkeypatch.setattr(gate_clock, "append_record", reject_outbox)
-
-    assert gate_clock.record_or_queue(selected, recorded) is None
-    assert gate_clock.load_records(selected) == ()
-    assert gate_clock.load_records(canonical) == ()
-    assert "dispatch outbox write failed: arranged outbox refusal" in capsys.readouterr().err
-
-
 def test_report_through_the_cli_in_each_state(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -851,7 +699,6 @@ def test_history_names_each_recipe_the_anchor_and_its_set_date(tmp_path: Path) -
     assert lines[0].startswith("unit: ")
     assert "109s anchor set 2026-08-20" in lines[0]
     assert "no anchor set" in lines[1]
-    assert all("coverage unknowable" in line for line in lines)
 
 
 def test_the_target_count_is_the_tiers_own_selection_of_a_staged_tree(tmp_path: Path) -> None:
