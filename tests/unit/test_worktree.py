@@ -424,6 +424,17 @@ def run_recipe(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def assert_worktree_recipe_uses_positional_forwarding() -> None:
+    """Make every live seam case red if interpolation replaces positional forwarding.
+
+    A no-argument call has the same process behaviour under `{{ args }}` and `"$@"`:
+    both pass zero words. The live call therefore needs this source-side half to make the
+    requested regression observable without returning to the obsolete dry-run rendering.
+    """
+    recipe = '[positional-arguments]\nworktree *args:\n    uv run python tools/worktree.py "$@"\n'
+    assert recipe in (REPO / "justfile").read_text(encoding="utf-8")
+
+
 def lines_of(capsys: pytest.CaptureFixture[str]) -> list[str]:
     """Everything the tool printed, whichever stream it chose."""
     captured = capsys.readouterr()
@@ -589,6 +600,21 @@ def test_check_without_a_name_reads_the_tree_the_caller_is_in(
     printed = lines_of(capsys)
     assert code == 0
     assert f"worktree={created.resolve()}" in printed
+
+
+def test_bare_recipe_defaults_to_preflight_and_refuses_a_dirty_tree(tmp_path: Path) -> None:
+    repo = a_repo(tmp_path)
+    foreign = repo / "foreign.txt"
+    foreign.write_text("not mine\n", encoding="utf-8")
+
+    completed = run_recipe(repo)
+    printed = (completed.stdout + completed.stderr).splitlines()
+
+    assert_worktree_recipe_uses_positional_forwarding()
+    assert completed.returncode == 1
+    assert "refusal=unverified" in printed
+    assert "untracked=?? foreign.txt" in printed
+    assert foreign.read_text(encoding="utf-8") == "not mine\n"
 
 
 def test_list_sweeps_every_registration_and_flags_the_stale_one(
@@ -856,6 +882,26 @@ def test_archive_removes_a_tree_whose_head_is_preserved_on_a_remote_ref(
     assert git("ls-remote", "origin", "refs/heads/issue-1-parked", cwd=repo).split()[0] == head
 
 
+def test_recipe_archive_forwards_a_ref_value_and_removes_the_preserved_tree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo = a_repo(tmp_path)
+    created = _parked_tree(repo, monkeypatch, capsys)
+    head = git("rev-parse", "HEAD", cwd=created).strip()
+    ref = "refs/heads/issue-1-parked"
+    git("push", "-q", "origin", f"HEAD:{ref}", cwd=created)
+
+    completed = run_recipe(repo, "archive", "issue-1", "--ref", ref)
+    printed = (completed.stdout + completed.stderr).splitlines()
+
+    assert_worktree_recipe_uses_positional_forwarding()
+    assert completed.returncode == 0, completed.stderr
+    assert printed[0] == "ok=worktree_archived"
+    assert any(line.startswith(f"ref={ref} resolved=") for line in printed)
+    assert not created.exists()
+    assert git("ls-remote", "origin", ref, cwd=repo).split()[0] == head
+
+
 def test_archive_refuses_a_local_only_ref_and_removes_nothing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -959,6 +1005,29 @@ def test_restore_recreates_the_archived_head_and_runs_the_preflight(
     code = run(monkeypatch, repo, "restore", "issue-1", "--ref", "refs/heads/issue-1-parked")
     printed = lines_of(capsys)
     assert code == 0
+    assert printed[0] == "ok=worktree_restored"
+    assert f"worktree={created}" in printed
+    assert "preflight=clean" in printed
+    assert git("rev-parse", "HEAD", cwd=created).strip() == head
+    assert (created / "work.md").exists()
+
+
+def test_recipe_restore_forwards_a_ref_value_and_recreates_the_preserved_tree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo = a_repo(tmp_path)
+    created = _parked_tree(repo, monkeypatch, capsys)
+    head = git("rev-parse", "HEAD", cwd=created).strip()
+    ref = "refs/heads/issue-1-parked"
+    git("push", "-q", "origin", f"HEAD:{ref}", cwd=created)
+    run(monkeypatch, repo, "archive", "issue-1", "--ref", ref)
+    capsys.readouterr()
+
+    completed = run_recipe(repo, "restore", "issue-1", "--ref", ref)
+    printed = (completed.stdout + completed.stderr).splitlines()
+
+    assert_worktree_recipe_uses_positional_forwarding()
+    assert completed.returncode == 0, completed.stderr
     assert printed[0] == "ok=worktree_restored"
     assert f"worktree={created}" in printed
     assert "preflight=clean" in printed
