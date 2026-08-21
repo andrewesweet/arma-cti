@@ -428,6 +428,24 @@ def test_a_written_row_round_trips_every_field(tmp_path: Path) -> None:
     assert list(read_back) == list(written)
 
 
+def test_append_syncs_the_record_entry_and_new_state_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    state = tmp_path / "new-state"
+    synced: list[Path] = []
+    real_sync = gate_clock.fsync_directory
+
+    def observe(directory: Path) -> None:
+        synced.append(directory)
+        real_sync(directory)
+
+    monkeypatch.setattr(gate_clock, "fsync_directory", observe)
+
+    gate_clock.append_record(state, row())
+
+    assert synced == [state, tmp_path]
+
+
 def test_malformed_lines_are_skipped_not_fatal(tmp_path: Path) -> None:
     """A box that died mid-append leaves a truncated line; the report must survive it."""
     gate_clock.append_record(tmp_path, row())
