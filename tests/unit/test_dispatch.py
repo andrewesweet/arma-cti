@@ -2072,6 +2072,38 @@ def test_orphaned_gate_clock_rows_are_recovered_once(tmp_path: Path) -> None:
     assert not orphan.exists()
 
 
+def test_poisoned_canonical_history_does_not_quarantine_a_valid_outbox(
+    tmp_path: Path,
+) -> None:
+    canonical = tmp_path / "gate-clock"
+    poisoned = gate_clock_row("poisoned")
+    gate_clock.append_record(canonical, poisoned)
+    canonical_records = gate_clock.records_path(canonical)
+    original = canonical_records.read_text(encoding="utf-8")
+    poisoned_text = re.sub(r'"status":\s*0', '"status": 1e999', original)
+    assert poisoned_text != original
+    canonical_records.write_text(poisoned_text, encoding="utf-8")
+    root = dispatch.gate_clock_outbox_root(canonical)
+    orphan = root / "d-valid"
+    pending = gate_clock_row("pending")
+    gate_clock.append_record(orphan, pending)
+
+    result = dispatch.recover_gate_clock_outboxes(root, canonical)
+
+    assert len(result) == 1
+    assert result[0].startswith("gate_clock_recovery=failed")
+    assert f"canonical={canonical}" in result[0]
+    assert not (orphan / dispatch.GATE_CLOCK_QUARANTINE_MARKER).exists()
+    assert gate_clock.load_records(orphan) == (pending,)
+
+    canonical_records.write_text("", encoding="utf-8")
+    assert dispatch.recover_gate_clock_outboxes(root, canonical) == (
+        "gate_clock_recovery=collected rows=1",
+    )
+    assert gate_clock.load_records(canonical) == (pending,)
+    assert not orphan.exists()
+
+
 def test_an_active_gate_clock_outbox_is_not_recovered(tmp_path: Path) -> None:
     canonical = tmp_path / "gate-clock"
     queued = gate_clock_row("active")
@@ -2087,6 +2119,48 @@ def test_an_active_gate_clock_outbox_is_not_recovered(tmp_path: Path) -> None:
         "gate_clock_recovery=collected rows=1",
     )
     assert gate_clock.load_records(canonical) == (queued,)
+
+
+@pytest.mark.parametrize("lock_fault", ["malformed", "inaccessible"])
+def test_a_bad_gate_clock_outbox_lock_is_quarantined(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, lock_fault: str
+) -> None:
+    canonical = tmp_path / "gate-clock"
+    root = dispatch.gate_clock_outbox_root(canonical)
+    orphan = root / "d-broken-lock"
+    gate_clock.append_record(orphan, gate_clock_row("pending"))
+    lock_path = orphan / dispatch.GATE_CLOCK_OUTBOX_LOCK
+    if lock_fault == "malformed":
+        lock_path.mkdir()
+        expected_error = "IsADirectoryError"
+    else:
+        path_open = Path.open
+        refusal = "arranged inaccessible lock"
+
+        def deny_lock(  # noqa: PLR0913, PLR0917 — mirrors the patched Path.open API
+            candidate: Path,
+            mode: str = "r",
+            buffering: int = -1,
+            encoding: str | None = None,
+            errors: str | None = None,
+            newline: str | None = None,
+        ) -> object:
+            if candidate == lock_path:
+                raise PermissionError(refusal)
+            return path_open(candidate, mode, buffering, encoding, errors, newline)
+
+        monkeypatch.setattr(Path, "open", deny_lock)
+        expected_error = "PermissionError"
+
+    result = dispatch.recover_gate_clock_outboxes(root, canonical)
+
+    assert len(result) == 1
+    assert result[0].startswith(f"gate_clock_recovery=failed cause={expected_error}:")
+    assert f"outbox={orphan}" in result[0]
+    assert "quarantine=marked" in result[0]
+    assert gate_clock.load_records(canonical) == ()
+    assert (orphan / dispatch.GATE_CLOCK_QUARANTINE_MARKER).exists()
+    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
 
 
 def test_an_unreadable_gate_clock_outbox_is_marked_and_skipped(tmp_path: Path) -> None:
@@ -2290,6 +2364,77 @@ def test_quarantine_marker_syncs_its_file_and_outbox_directory(
     assert marker == outbox / dispatch.GATE_CLOCK_QUARANTINE_MARKER
     assert len(file_syncs) == 1
     assert directory_syncs == [outbox]
+
+
+def test_failed_quarantine_marker_sync_leaves_no_visible_marker(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    outbox = tmp_path / "outbox"
+    outbox.mkdir()
+    arranged_failure = "arranged marker sync failure"
+
+    def fail_sync(_file_descriptor: int) -> None:
+        raise OSError(arranged_failure)
+
+    monkeypatch.setattr(dispatch.os, "fsync", fail_sync)
+
+    with pytest.raises(OSError, match=arranged_failure):
+        dispatch._mark_gate_clock_outbox_quarantined(  # noqa: SLF001 — visibility is the subject
+            outbox
+        )
+
+    assert list(outbox.iterdir()) == []
+
+
+def test_marker_directory_sync_failure_leaves_a_complete_visible_marker(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    canonical = tmp_path / "gate-clock"
+    root = dispatch.gate_clock_outbox_root(canonical)
+    outbox = root / "d-broken"
+    gate_clock.append_record(outbox, gate_clock_row("readable"))
+    records = gate_clock.records_path(outbox)
+    records.write_text(records.read_text(encoding="utf-8") + "{broken\n", encoding="utf-8")
+    directory_sync = gate_clock.fsync_directory
+    failed = False
+    arranged_failure = "arranged marker directory sync failure"
+
+    def fail_first_outbox_sync(directory: Path) -> None:
+        nonlocal failed
+        if directory == outbox and not failed:
+            failed = True
+            raise OSError(arranged_failure)
+        directory_sync(directory)
+
+    monkeypatch.setattr(dispatch.gate_clock, "fsync_directory", fail_first_outbox_sync)
+
+    result = dispatch.recover_gate_clock_outboxes(root, canonical)
+
+    assert len(result) == 1
+    assert "quarantine=failed" in result[0]
+    marker = outbox / dispatch.GATE_CLOCK_QUARANTINE_MARKER
+    assert marker.read_text(encoding="utf-8") == dispatch.GATE_CLOCK_QUARANTINE_BODY
+    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
+
+
+def test_a_dangling_quarantine_marker_is_replaced_and_not_retried(tmp_path: Path) -> None:
+    canonical = tmp_path / "gate-clock"
+    root = dispatch.gate_clock_outbox_root(canonical)
+    outbox = root / "d-broken"
+    gate_clock.append_record(outbox, gate_clock_row("readable"))
+    records = gate_clock.records_path(outbox)
+    records.write_text(records.read_text(encoding="utf-8") + "{broken\n", encoding="utf-8")
+    marker = outbox / dispatch.GATE_CLOCK_QUARANTINE_MARKER
+    marker.symlink_to(outbox / "missing")
+
+    result = dispatch.recover_gate_clock_outboxes(root, canonical)
+
+    assert len(result) == 1
+    assert "quarantine=marked" in result[0]
+    assert marker.is_file()
+    assert not marker.is_symlink()
+    assert marker.read_text(encoding="utf-8").strip()
+    assert dispatch.recover_gate_clock_outboxes(root, canonical) == ()
 
 
 def test_the_seam_returns_a_dispatch_id_at_once_and_the_child_runs_detached(

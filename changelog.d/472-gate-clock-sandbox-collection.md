@@ -12,17 +12,27 @@
   each new id before deleting its outbox, and skips an id already present, so retry
   cannot duplicate a sample. Active dispatches hold an outbox lock; the next
   dispatch retries every unlocked orphan remaining in the stable per-history temp
-  root. Failed canonical appends remain eligible for recovery.
+  root. An ordinary exception while reading or appending canonical history is
+  reported against that history and leaves the already-readable outbox unmarked.
+  The collector does not repair or quarantine poisoned canonical history: eligible
+  recovery attempts keep reporting it and pending outboxes can accumulate until the
+  history is repaired. A retry deduplicates any row whose append reached canonical
+  history before the failure was raised.
 
 - Gate-clock setup, orphan recovery, post-child collection and lock cleanup now
   sit behind an instrumentation boundary. Any `Exception` raised inside those
   steps is reported in one line while child launch and `result.json` continue.
-  Malformed outboxes are retained with a fsynced `.quarantined` marker and skipped
-  on later recovery, choosing recorded-and-skipped over parsing-shape enumeration.
-  Readable rows in a marked outbox are not subsequently recovered, so any not
-  already canonical are lost with the malformed one. If the marker itself cannot
-  be written, the outbox can be retried and reported again; the boundary still
-  contains that failure.
+  Malformed outboxes and failures opening or acquiring their active locks enter the
+  same quarantine path, choosing recorded-and-skipped over parsing-shape enumeration.
+  The marker is written and fsynced under a temporary name before atomic publication;
+  only a regular file with the complete marker body counts, so a failed
+  pre-publication write or sync leaves the outbox eligible and a dangling symlink is
+  replaced. Readable rows in a marked outbox are not subsequently recovered, so any
+  not already canonical are lost with the malformed one. An outbox whose marker path
+  cannot be replaced remains eligible and can be retried and reported again. A
+  directory sync failure after atomic publication reports `quarantine=failed`, but the
+  complete visible marker still suppresses later recovery; only a completed directory
+  sync makes that entry durable across power loss.
 
 - `just gate-clock-history` now states that coverage is unknowable because failed
   recording attempts are not durably counted. A successfully queued dispatch row

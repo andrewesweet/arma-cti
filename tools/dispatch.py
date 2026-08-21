@@ -3517,6 +3517,9 @@ CODEX_COMMIT_MESSAGE: Final = ".dispatch-commit-message"
 GATE_CLOCK_OUTBOX_LOCK: Final = ".active.lock"
 GATE_CLOCK_ROOT_LOCK: Final = ".scan.lock"
 GATE_CLOCK_QUARANTINE_MARKER: Final = ".quarantined"
+GATE_CLOCK_QUARANTINE_BODY: Final = (
+    "Gate-clock collection failed. This outbox is retained for inspection and skipped.\n"
+)
 
 
 class GateClockOutboxMalformedError(ValueError):
@@ -3595,18 +3598,40 @@ def _cleanup_gate_clock_outbox(outbox: Path) -> OSError | None:
 def _mark_gate_clock_outbox_quarantined(outbox: Path) -> Path:
     """Retain one poisoned outbox for inspection while excluding later recovery."""
     marker = outbox / GATE_CLOCK_QUARANTINE_MARKER
-    try:
-        handle = marker.open("x", encoding="utf-8")
-    except FileExistsError:
+    if _gate_clock_outbox_is_quarantined(outbox):
         return marker
-    with handle:
-        handle.write(
-            "Gate-clock collection failed. This outbox is retained for inspection and skipped.\n"
-        )
-        handle.flush()
-        os.fsync(handle.fileno())
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=outbox,
+            prefix=f"{GATE_CLOCK_QUARANTINE_MARKER}.",
+            delete=False,
+        ) as handle:
+            temporary = Path(handle.name)
+            handle.write(GATE_CLOCK_QUARANTINE_BODY)
+            handle.flush()
+            os.fsync(handle.fileno())
+        temporary.replace(marker)
+        temporary = None
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     gate_clock.fsync_directory(outbox)
     return marker
+
+
+def _gate_clock_outbox_is_quarantined(outbox: Path) -> bool:
+    """Recognise only a complete regular-file marker, never a partial file or symlink."""
+    marker = outbox / GATE_CLOCK_QUARANTINE_MARKER
+    try:
+        return (
+            stat.S_ISREG(marker.lstat().st_mode)
+            and marker.read_text(encoding="utf-8") == GATE_CLOCK_QUARANTINE_BODY
+        )
+    except (OSError, UnicodeError):
+        return False
 
 
 def _gate_clock_exception(error: Exception) -> str:
@@ -3657,11 +3682,10 @@ def collect_gate_clock(outbox: Path, canonical: Path) -> tuple[str, ...]:
         raise GateClockOutboxMalformedError
     try:
         appended = gate_clock.append_records_once(canonical, rows)
-    except OSError as error:
-        return (
-            f"gate_clock_collection=failed cause={error}",
-            f"outbox={outbox}",
-        )
+    except Exception as error:  # noqa: BLE001 — canonical failure is not outbox corruption
+        failure = f"gate_clock_collection=failed cause={_gate_clock_exception(error)}"
+        failure += f" canonical={canonical} pending_outbox={outbox}"
+        return (failure,)
     duplicates = len(rows) - appended
     collected = f"gate_clock_collection=collected rows={appended}"
     if duplicates:
@@ -3697,22 +3721,19 @@ def _recover_gate_clock_outboxes(root: Path, canonical: Path) -> tuple[str, ...]
         outboxes = sorted(
             path
             for path in root.iterdir()
-            if path.is_dir() and not (path / GATE_CLOCK_QUARANTINE_MARKER).exists()
+            if path.is_dir() and not _gate_clock_outbox_is_quarantined(path)
         )
     except OSError as error:
         return (f"gate_clock_recovery=failed cause={error}",)
     for outbox in outboxes:
         try:
-            lock = (outbox / GATE_CLOCK_OUTBOX_LOCK).open("a", encoding="utf-8")
-        except OSError as error:
-            lines.extend((f"gate_clock_recovery=failed cause={error}", f"outbox={outbox}"))
-            continue
-        with lock:
-            try:
+            with (outbox / GATE_CLOCK_OUTBOX_LOCK).open("a", encoding="utf-8") as lock:
                 fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except BlockingIOError:
-                continue
-            lines.extend(_collect_gate_clock_at_boundary(outbox, canonical, phase="recovery"))
+                lines.extend(_collect_gate_clock_at_boundary(outbox, canonical, phase="recovery"))
+        except BlockingIOError:
+            continue
+        except Exception as error:  # noqa: BLE001 — a bad lock is a bad outbox
+            lines.append(_gate_clock_boundary_failure("recovery", error, outbox))
     return tuple(lines)
 
 
