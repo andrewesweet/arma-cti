@@ -1703,23 +1703,27 @@ def main(argv: list[str] | None = None) -> int:
                     worktree.git(
                         "fetch", "origin", cwd=repo, timeout=worktree.REMOTE_READ_TIMEOUT_S
                     )
+                    commit = worktree.commit_on_head(repo, args.reviewed_sha)
                 except worktree.GitError as failure:
                     report = _git_failed(repo, failure)
                 else:
-                    identity = diff_id_of(repo, args.reviewed_sha)
-                    report = (
-                        _record_report(
-                            record_verdict(
-                                issue,
-                                args.reviewed_sha,
-                                Path(args.findings).read_text(encoding="utf-8"),
-                                Path(args.dispatch_dir),
-                                diff_id=identity,
+                    if commit is not None:
+                        report = Report.refused(commit)
+                    else:
+                        identity = diff_id_of(repo, args.reviewed_sha)
+                        report = (
+                            _record_report(
+                                record_verdict(
+                                    issue,
+                                    args.reviewed_sha,
+                                    Path(args.findings).read_text(encoding="utf-8"),
+                                    Path(args.dispatch_dir),
+                                    diff_id=identity,
+                                )
                             )
+                            if isinstance(identity, str)
+                            else Report.refused(identity)
                         )
-                        if isinstance(identity, str)
-                        else Report.refused(identity)
-                    )
         elif not args.dispatch_id:
             report = Report.refused(
                 Refusal(

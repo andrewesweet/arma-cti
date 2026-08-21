@@ -339,6 +339,37 @@ def a_repo(tmp_path: Path) -> Path:
     return repo
 
 
+@pytest.mark.parametrize(
+    ("candidate", "refusal"),
+    [
+        ("reachable", None),
+        ("missing", "commit_not_found"),
+        ("blob", "commit_not_found"),
+        ("unreachable", "commit_unreachable"),
+    ],
+)
+def test_commit_on_head_checks_the_object_and_its_reachability(
+    tmp_path: Path, candidate: str, refusal: str | None
+) -> None:
+    repo = a_repo(tmp_path)
+    reachable = git("rev-parse", "HEAD", cwd=repo).strip()
+    blob = git("hash-object", "-w", "README.md", cwd=repo).strip()
+    (repo / "README.md").write_text("unreachable\n", encoding="utf-8")
+    git("commit", "-qam", "unreachable", cwd=repo)
+    unreachable = git("rev-parse", "HEAD", cwd=repo).strip()
+    git("checkout", "-q", "--detach", reachable, cwd=repo)
+    shas = {
+        "reachable": reachable,
+        "missing": "f" * 40,
+        "blob": blob,
+        "unreachable": unreachable,
+    }
+
+    outcome = worktree.commit_on_head(repo, shas[candidate])
+
+    assert (outcome.kind if outcome else None) == refusal
+
+
 def test_a_deadlined_read_kills_a_silent_remote(tmp_path: Path) -> None:
     """`git`'s `timeout` bounds the whole call, not a socket inside it (#425).
 

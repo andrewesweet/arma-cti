@@ -28,13 +28,11 @@ import os
 import subprocess
 import sys
 import threading
-from typing import TYPE_CHECKING, Final
+from pathlib import Path
+from typing import Final
 
 import pytest
 from conftest import REPO, load_tool
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 dispatch = load_tool("dispatch")
 review_loop = load_tool("review_loop")
@@ -212,9 +210,22 @@ def test_the_writer_refuses_to_append_to_a_record_it_cannot_read(tmp_path: Path)
 # ------------------------------------------------------------------ the command surface
 
 
-def _author_command(root: Path, profile: str = AUTHOR, *, issue: int = ISSUE) -> int:
+def _author_command(
+    root: Path, profile: str = AUTHOR, *, issue: int = ISSUE, sha: str | None = None
+) -> int:
+    named = sha or review_loop.git("rev-parse", "HEAD", cwd=Path.cwd()).strip()
     return review_loop.main(
-        ["author", "--issue", str(issue), "--root", str(root), "--profile", profile, "--sha", SHA],
+        [
+            "author",
+            "--issue",
+            str(issue),
+            "--root",
+            str(root),
+            "--profile",
+            profile,
+            "--sha",
+            named,
+        ],
         now=lambda: 0.0,
     )
 
@@ -251,6 +262,18 @@ def test_an_unregistered_profile_is_refused_rather_than_recorded(
     monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
 
     assert _author_command(tmp_path, "opus-hihg") == review_loop.REFUSED
+    assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
+
+
+def test_the_command_refuses_a_sha_that_names_no_commit(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.delenv("CTI_DISPATCH_ID", raising=False)
+
+    assert _author_command(tmp_path, sha="f" * 40) == review_loop.REFUSED
+    assert "refusal=commit_not_found" in capsys.readouterr().err
     assert review_loop.recorded_authors(tmp_path, ISSUE) == ()
 
 
@@ -633,6 +656,7 @@ def test_the_arbiter_walk_refuses_where_a_declaration_has_been_lost(tmp_path: Pa
 def _declare_through_the_command_line(review_root: Path, profile: str) -> str:
     """Declare through `review_loop.py author` as a subprocess, as a human would."""
     environment = {k: v for k, v in os.environ.items() if k != "CTI_DISPATCH_ID"}
+    sha = review_loop.git("rev-parse", "HEAD", cwd=REPO).strip()
     done = subprocess.run(  # noqa: S603 — a fixed argv, this repository's own CLI
         [
             sys.executable,
@@ -645,11 +669,12 @@ def _declare_through_the_command_line(review_root: Path, profile: str) -> str:
             "--profile",
             profile,
             "--sha",
-            SHA,
+            sha,
         ],
         capture_output=True,
         text=True,
         env=environment,
+        cwd=REPO,
         check=False,
         timeout=60,
     )
