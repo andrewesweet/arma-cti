@@ -603,6 +603,82 @@ def test_record_refuses_rather_than_fabricates_a_wall(
     assert "recording failed" in capsys.readouterr().err
 
 
+def test_read_only_canonical_path_queues_the_row_for_the_dispatch_harness(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The live sandbox failure stays non-gating and leaves a row the host can collect."""
+    canonical = tmp_path / "read-only"
+    canonical.mkdir()
+    canonical.chmod(0o500)
+    outbox = tmp_path / "outbox"
+    staged = tmp_path / "uptime"
+    staged.write_text("1000.50 2000.00\n", encoding="utf-8")
+    monkeypatch.setattr(gate_clock, "PROC_UPTIME", staged)
+    monkeypatch.setenv("CTI_GATE_CLOCK_CANONICAL_DIR", str(canonical))
+    monkeypatch.setenv("CTI_GATE_CLOCK_OUTBOX_DIR", str(outbox))
+
+    assert (
+        gate_clock.main(
+            [
+                "--gate-clock-dir",
+                str(canonical),
+                "record",
+                "--recipe",
+                "unit",
+                "--start-uptime",
+                "1000.00",
+                "--status",
+                "0",
+            ]
+        )
+        == 0
+    )
+
+    assert gate_clock.load_records(canonical) == ()
+    assert len(gate_clock.load_records(outbox)) == 1
+    error = capsys.readouterr().err
+    assert error.count("\n") == 1
+    assert "gate-clock unit canonical write failed" in error
+    assert "Permission denied" in error
+    assert "queued for dispatch harness" in error
+
+
+def test_a_dispatched_noncanonical_destination_also_queues_the_canonical_row(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The #470 workaround may keep its copy, but cannot fork dispatched history."""
+    canonical = tmp_path / "canonical"
+    selected = tmp_path / "selected"
+    outbox = tmp_path / "outbox"
+    staged = tmp_path / "uptime"
+    staged.write_text("1000.50 2000.00\n", encoding="utf-8")
+    monkeypatch.setattr(gate_clock, "PROC_UPTIME", staged)
+    monkeypatch.setenv("CTI_GATE_CLOCK_CANONICAL_DIR", str(canonical))
+    monkeypatch.setenv("CTI_GATE_CLOCK_OUTBOX_DIR", str(outbox))
+
+    assert (
+        gate_clock.main(
+            [
+                "--gate-clock-dir",
+                str(selected),
+                "record",
+                "--recipe",
+                "unit",
+                "--start-uptime",
+                "1000.00",
+                "--status",
+                "0",
+            ]
+        )
+        == 0
+    )
+
+    assert len(gate_clock.load_records(selected)) == 1
+    assert len(gate_clock.load_records(outbox)) == 1
+    assert gate_clock.load_records(canonical) == ()
+    assert "queued for canonical collection" in capsys.readouterr().out
+
+
 def test_report_through_the_cli_in_each_state(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -699,6 +775,7 @@ def test_history_names_each_recipe_the_anchor_and_its_set_date(tmp_path: Path) -
     assert lines[0].startswith("unit: ")
     assert "109s anchor set 2026-08-20" in lines[0]
     assert "no anchor set" in lines[1]
+    assert all("coverage unknowable" in line for line in lines)
 
 
 def test_the_target_count_is_the_tiers_own_selection_of_a_staged_tree(tmp_path: Path) -> None:
