@@ -21,7 +21,12 @@ under the canonical history's file lock. A stable per-history temp root lets
 the next dispatcher find every unlocked outbox whose dispatcher died. Each new
 row has a delivery id, so a retry after canonical append but before outbox
 cleanup does not append it twice. A failed host append is reported and leaves
-the outbox in place. This module's `report` — folded into
+the outbox in place. Setup, orphan recovery and post-child collection sit behind
+one instrumentation boundary: an ordinary Python exception there is reported
+without denying child launch or `result.json`. A malformed outbox is retained
+with a durable quarantine marker and skipped thereafter; a marker write that
+fails cannot make the same promise, but still cannot escape the boundary. This
+module's `report` — folded into
 `just watch-report` — compares a median of recent green runs against an
 **anchor** held in `tools/gate-clock-anchor.json`, in the tree.
 
@@ -209,8 +214,10 @@ when it is investigated.
 **What recording costs.** One `uv run python` start per recorded recipe (~0.3 s
 against a ~190 s tier, under 0.2%); outside a dispatch it appends one row, while
 a dispatched run appends the outbox row, attempts the selected copy, then
-appends at collection. Nothing is added to any assertion or test. The #466 count adds one import of
-`tools/mutation_smoke.py` and two passes of its `changed` git reads
+appends at collection. Each durable append syncs the file and its directory
+entries; dispatch creation syncs the stable outbox root too. Nothing is added to
+any assertion or test. The #466 count adds one import of `tools/mutation_smoke.py`
+and two passes of its `changed` git reads
 (`merge-base`, `diff --name-only`, `status --porcelain`) — stated as a count
 rather than a duration, because nobody has timed it. `just fast` invoking
 `just unit` records two rows — the unit tier's own wall and the whole
@@ -400,6 +407,25 @@ def records_path(gate_clock_dir: Path) -> Path:
     return gate_clock_dir / RECORDS_NAME
 
 
+def fsync_directory(directory: Path) -> None:
+    """Persist directory entries created by a preceding durable file write."""
+    descriptor = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def directory_sync_targets(directory: Path) -> tuple[Path, ...]:
+    """Name entries whose directories must be synced after recursive creation."""
+    targets = [directory]
+    cursor = directory
+    while not cursor.exists() and cursor.parent != cursor:
+        targets.append(cursor.parent)
+        cursor = cursor.parent
+    return tuple(targets)
+
+
 def load_records(gate_clock_dir: Path) -> tuple[Record, ...]:
     """Every readable row, oldest first; nothing at all on a missing directory."""
     path = records_path(gate_clock_dir)
@@ -431,6 +457,7 @@ def _append_records(
 ) -> tuple[Path, int]:
     """Append rows under one file lock and return how many were new."""
     path = records_path(gate_clock_dir)
+    sync_targets = directory_sync_targets(path.parent)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a+", encoding="utf-8") as handle:
         fcntl.flock(handle, fcntl.LOCK_EX)
@@ -453,6 +480,8 @@ def _append_records(
             handle.write(json.dumps(record_document(row)) + "\n")
         handle.flush()
         os.fsync(handle.fileno())
+    for directory in sync_targets:
+        fsync_directory(directory)
     return path, len(pending)
 
 
