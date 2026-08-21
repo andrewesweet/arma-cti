@@ -339,11 +339,15 @@ def _found(path: Path, status: Preflight) -> tuple[str, ...]:
 
 
 def classify_done(path: Path, holder: Holder) -> Refusal | None:
-    """Decide whether a worktree is finished with: registered, clean, and landed.
+    """Decide whether a worktree is registered, clean, and safe to remove.
 
-    The order is the order the damage runs in. A dirty tree is somebody's
-    uncommitted work; unlanded commits are somebody's committed work; both
-    vanish with the directory, and `git worktree remove` only refuses the first.
+    After the presence and clean-status proofs, ``holder.unlanded`` carries
+    ``count_unlanded``'s result: each commit unreachable from ``origin/main``
+    must be a ``git cherry`` nominee whose full-index binary diff bytes exactly
+    match an upstream commit's. ``git cherry`` omits merges, so an unreachable
+    merge cannot be nominated and always refuses. A dirty tree is somebody's
+    uncommitted work; an unproven commit is somebody's committed work; both
+    vanish with the directory, and ``git worktree remove`` only refuses the first.
     """
     missing = _classify_present(path, holder)
     if missing is not None:
