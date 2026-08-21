@@ -346,10 +346,10 @@ def a_repo(tmp_path: Path) -> Path:
         ("referenced", None),
         ("missing", "commit_not_found"),
         ("blob", "commit_not_found"),
-        ("orphaned", "commit_unreachable"),
+        ("orphaned", None),
     ],
 )
-def test_validate_referenced_commit_checks_the_object_and_its_refs(
+def test_validate_commit_checks_the_object(
     tmp_path: Path, candidate: str, refusal: str | None
 ) -> None:
     repo = a_repo(tmp_path)
@@ -372,24 +372,9 @@ def test_validate_referenced_commit_checks_the_object_and_its_refs(
         "orphaned": orphaned,
     }
 
-    outcome = worktree.validate_referenced_commit(repo, shas[candidate])
+    outcome = worktree.validate_commit(repo, shas[candidate])
 
     assert (outcome.kind if outcome else None) == refusal
-
-
-def test_validate_referenced_commit_propagates_a_failed_ref_read(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    repo = a_repo(tmp_path)
-    referenced = git("rev-parse", "HEAD", cwd=repo).strip()
-
-    def fail(*_args: str, **_kwargs: object) -> str:
-        raise worktree.GitError(("for-each-ref",), "broken ref store")
-
-    monkeypatch.setattr(worktree, "git", fail)
-
-    with pytest.raises(worktree.GitError, match="broken ref store"):
-        worktree.validate_referenced_commit(repo, referenced)
 
 
 def test_a_deadlined_read_kills_a_silent_remote(tmp_path: Path) -> None:

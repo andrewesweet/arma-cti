@@ -537,7 +537,7 @@ land *args:
 #                                  (default: the loop's own root)
 #
 # Refusals are named, each says what was found and what to do: invalid_issue,
-# invalid_sha, commit_not_found, commit_unreachable, invalid_diff_id, invalid_findings,
+# invalid_sha, commit_not_found, invalid_diff_id, invalid_findings,
 # input_unreadable, dirty_tree,
 # not_on_remote, ref_mismatch, git_failed, no_dispatch_records,
 # no_review_dispatch, records_unreadable, verdict_exists, verdict_unreadable,

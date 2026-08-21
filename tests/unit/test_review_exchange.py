@@ -1412,39 +1412,6 @@ def test_cli_record_pins_the_shared_invalid_sha_refusal_before_fetch(
     assert not (root / "d-1" / review_exchange.VERDICT_NAME).exists()
 
 
-def test_cli_record_refuses_an_orphaned_commit(
-    tmp_path: Path,
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    repo, root, referenced = cli_stage(tmp_path)
-    commit(repo, "README", "orphaned", "orphaned")
-    orphaned = head_of(repo)
-    worktree.git("reset", "-q", "--hard", referenced, cwd=repo)
-
-    assert cli_record(tmp_path, root, sha=orphaned) == 1
-    assert "refusal=commit_unreachable" in capsys.readouterr().err
-    assert not (root / "d-1" / review_exchange.VERDICT_NAME).exists()
-
-
-def test_cli_record_reports_a_failed_ref_read(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    _repo, root, head = cli_stage(tmp_path)
-
-    def fail(_repo: Path, _sha: str) -> None:
-        raise review_exchange.worktree.GitError(("for-each-ref",), "broken ref store")
-
-    monkeypatch.setattr(review_exchange.worktree, "validate_referenced_commit", fail)
-
-    assert cli_record(tmp_path, root, sha=head) == 1
-    refusal = capsys.readouterr().err
-    assert "refusal=git_failed" in refusal
-    assert "broken ref store" in refusal
-    assert not (root / "d-1" / review_exchange.VERDICT_NAME).exists()
-
-
 def cli_rebased(tmp_path: Path, head: str) -> Path:
     """Return a review root whose recorded clean rebase carries `head` to the landing SHA."""
     review_root = tmp_path / "review"

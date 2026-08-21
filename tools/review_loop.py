@@ -1901,7 +1901,7 @@ def _cmd_author(
         )
     if args.sha:
         try:
-            commit = worktree.validate_referenced_commit(Path(args.repo), args.sha)
+            commit = worktree.validate_commit(Path(args.repo), args.sha)
         except GitError as failure:
             raise ExternalError(str(failure)) from failure
         if commit is not None:
