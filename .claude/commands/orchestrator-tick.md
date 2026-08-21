@@ -8,7 +8,7 @@ Orchestrator tick. Act; do not wait for the human. *(This file's own convention;
 
 ## 1. Harvest
 
-For every dispatch finished since the last tick, do the orchestrator's half. **These acts belong to the seats that own them, not to every completion**: exchange belongs to a dispatch that produced an implementation branch, and a verdict is derived only from a completed `seat=review` dispatch (`tools/review_exchange.py:10-26,210-218`; `derive_binding` at `:757-845`). A planner, recon or fable completion owes its report and nothing else below — all three are `lands=False` (`tools/dispatch.py:723,749,849`). **`retro` is `lands=True`** (`:837`): its journal branch is work, and it takes the same exchange, review, verdict and landing path as an implementation branch.
+For every dispatch finished since the last tick, do the orchestrator's half. **These acts belong to the seats that own them, not to every completion**: exchange belongs to a dispatch that produced a branch, and a verdict is derived only from a completed `seat=review` dispatch (`tools/review_exchange.py:10-26,210-218`; `derive_binding` at `:757-845`).
 
 - Read its result and its report.
 - **Exchange its branch** with `just review exchange <issue>` (`tools/review_exchange.py`), and retire its tree when the issue is closed. "Push the branch" describes neither the recipe nor what the reviewer needs.
