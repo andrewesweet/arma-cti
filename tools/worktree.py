@@ -23,11 +23,13 @@ Six actions, one refusal vocabulary:
   and the judgement left where it belongs. A tree whose status could not be read
   answers ``unverified`` as well, naming the read rather than the contents: an
   unread tree is not a clean one (#375).
-- ``list``         the hygiene sweep: every registration, its state, whether its
-  HEAD is landed, and which registrations are stale.
-- ``done <name>``  verify clean and landed, then remove. Never ``--force``.
-  Remains landed-on-``origin/main`` only: durability is explicit through the
-  archive call, never inferred from arbitrary refs (#272).
+- ``list``         the hygiene sweep: every registration, its state, how many
+  commits are not proven on ``origin/main``, and which registrations are stale.
+- ``done <name>``  verify clean and that every commit is reachable from
+  ``origin/main`` or is a ``git cherry``-nominated non-merge with an exact diff
+  there, then remove. Never ``--force``.
+  Durability through any other ref stays explicit through the archive call and
+  is never inferred (#272).
 - ``archive <name> --ref <remote-ref>``  verify the tree is clean and the named
   remote ref resolves to its exact HEAD, then remove the worktree. The ref is
   read, never created or moved — it is the preservation act a handoff pushed,
@@ -278,7 +280,9 @@ def _holder_lines(path: Path, holder: Holder) -> tuple[str, ...]:
         f"holder_uncommitted={dirty}",
     ]
     if holder.unlanded:
-        lines.append(f"holder_unlanded={holder.unlanded} commit patches absent from {BASE}")
+        lines.append(
+            f"holder_unlanded={holder.unlanded} commits not proven byte-for-byte on {BASE}"
+        )
     return tuple(lines)
 
 
@@ -372,16 +376,19 @@ def _classify_present(path: Path, holder: Holder) -> Refusal | None:
 
 
 def _classify_landed(path: Path, unlanded: int | None) -> Refusal | None:
-    """Refuse a removal that would take changes `origin/main` has never seen."""
+    """Refuse unless every unreachable commit has an exact change match upstream."""
     if unlanded is None:
         return _could_not_run(path, f"unlanded=unreadable against {BASE}")
     if unlanded:
         return Refusal(
             "unlanded_work",
-            (f"worktree={path}", f"unlanded={unlanded} commit patches absent from {BASE}"),
+            (
+                f"worktree={path}",
+                f"unlanded={unlanded} commits not proven byte-for-byte on {BASE}",
+            ),
             "Land them first (`git push origin HEAD:main`) or say so in your report. "
-            "Removing this tree now loses work; unreachable SHAs whose patches are upstream "
-            "do not block removal.",
+            "Removing this tree now could lose work; patch identity alone never permits "
+            "removal, and merge commits remain unproven.",
         )
     return None
 
@@ -400,13 +407,13 @@ def classify_archive(
 ) -> Refusal | None:
     """Decide whether a worktree may be removed against a preservation ref.
 
-    `done`'s ladder equates "not on `origin/main`" with "not durable", which is
-    right for a local-only commit and wrong for a tree a handoff has pushed to a
-    preservation ref (#170, #272). This ladder is the explicit durability call:
-    the tree must still be registered, present, clean, and — the whole point —
-    its exact HEAD must be verifiably on the remote at `ref`. Not "a ref exists",
-    not "the branch name looks right": the SHA, confirmed against the remote.
-    The ref is read, never created or moved, so a refusal leaves both untouched.
+    `done` proves each commit through SHA reachability or, for a `git cherry`-
+    nominated non-merge, an exact diff on `origin/main`. A preservation ref is a
+    different proof: this ladder requires the tree to be registered, present,
+    clean, and — the whole point — its exact HEAD verifiably on the remote at
+    `ref` (#170, #272). Not "a ref exists", not "the branch name looks right":
+    the SHA, confirmed against the remote. The ref is read, never created or
+    moved, so a refusal leaves both untouched.
     """
     present = _classify_present(path, holder)
     if present is not None:
@@ -472,6 +479,19 @@ def git(*args: str, cwd: Path, check: bool = True, timeout: float | None = None)
         raise GitError(args, f"gave no answer within {timeout}s") from expired
     if check and done.returncode != 0:
         raise GitError(args, done.stderr)
+    return done.stdout
+
+
+def _git_bytes(*args: str, cwd: Path) -> bytes:
+    """Run one local git read without decoding or newline conversion."""
+    done = subprocess.run(  # noqa: S603
+        ["git", *args],  # noqa: S607 — git resolves off PATH by design
+        cwd=cwd,
+        capture_output=True,
+        check=False,
+    )
+    if done.returncode != 0:
+        raise GitError(args, done.stderr.decode("utf-8", errors="replace"))
     return done.stdout
 
 
@@ -557,15 +577,48 @@ def gather(root: Path, path: Path, registrations: tuple[Registration, ...]) -> H
 
 
 def count_unlanded(path: Path) -> int | None:
-    """How many commits carry a patch with no equivalent on `origin/main`."""
-    # `git cherry` compares patch IDs. Rebase context changes or hand-resolved conflicts
-    # change that ID and remain `+`, conservatively refusing a safe teardown. A `-` means
-    # Git found no patch unique to this tree, so SHA-only reachability does not block removal.
+    """Count unreachable commits not nominated and proven by an exact upstream diff."""
     try:
+        unreachable = git("rev-list", f"{BASE}..HEAD", cwd=path).splitlines()
+        if not unreachable:
+            return 0
         cherries = git("cherry", BASE, "HEAD", cwd=path).splitlines()
+        nominees = {line[2:] for line in cherries if line.startswith("- ")}
+        if not nominees:
+            return len(unreachable)
+        upstream = git("rev-list", "--no-merges", f"HEAD..{BASE}", cwd=path).splitlines()
+        upstream_diffs = {_exact_commit_diff(path, sha) for sha in upstream}
+        return sum(
+            sha not in nominees or _exact_commit_diff(path, sha) not in upstream_diffs
+            for sha in unreachable
+        )
     except GitError:
         return None
-    return sum(line.startswith("+ ") for line in cherries)
+
+
+def _exact_commit_diff(path: Path, sha: str) -> bytes:
+    """Return Git's byte-exact parent-to-commit diff for one non-merge commit."""
+    # `git cherry` only nominates: patch IDs discard whitespace and line numbers, and
+    # its candidate list omits merges. Neither fact may permit irreversible removal.
+    # Full-index binary diff bytes preserve whitespace, hunk locations, paths, modes and
+    # full before/after blob IDs; a nominee passes only when every byte equals upstream.
+    return _git_bytes(
+        "diff-tree",
+        "--root",
+        "--no-commit-id",
+        "--no-color",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--no-renames",
+        "--ignore-submodules=none",
+        "--full-index",
+        "--binary",
+        "--diff-algorithm=myers",
+        "--no-indent-heuristic",
+        "-p",
+        sha,
+        cwd=path,
+    )
 
 
 def remote_ref_sha(root: Path, ref: str, timeout: float = REMOTE_READ_TIMEOUT_S) -> str | None:
@@ -751,15 +804,15 @@ def sweep(root: Path) -> Report:
 
 
 def done(root: Path, name: str) -> Report:
-    """Verify clean and landed, then remove. Never `--force`, never on a refusal."""
+    """Verify clean and the upstream proof for every commit, then remove."""
     bad_name = classify_name(name)
     if bad_name is not None:
         return Report.refused(bad_name)
     path = root / WORKTREES / name
     # `check=False`: a fetch that fails leaves an older `origin/main`, against
-    # which unlanded commits can only over-count — the refusing direction. A fetch
-    # that expires at its bound (#434) fails the same read the same way, so it is
-    # tolerated identically rather than refused: the over-count still refuses.
+    # which exact upstream matches can only be missed — the refusing direction. A
+    # fetch that expires at its bound (#434) is tolerated identically: it cannot
+    # manufacture an exact match in the older local `origin/main`.
     with contextlib.suppress(GitError):
         git("fetch", "origin", cwd=root, check=False, timeout=REMOTE_READ_TIMEOUT_S)
     registrations = parse_registrations(git("worktree", "list", "--porcelain", cwd=root))

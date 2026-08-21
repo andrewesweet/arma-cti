@@ -178,7 +178,7 @@ def test_an_occupied_worktree_names_the_other_holder() -> None:
     assert "holder_head=2222222 feat: another agent's work" in refusal.found
     assert "holder_state=detached" in refusal.found
     assert "holder_uncommitted=2" in refusal.found
-    assert "holder_unlanded=2 commit patches absent from origin/main" in refusal.found
+    assert "holder_unlanded=2 commits not proven byte-for-byte on origin/main" in refusal.found
     assert "never reset" in refusal.action
 
 
@@ -278,12 +278,12 @@ def test_a_name_git_does_not_know_refuses_rather_than_removing() -> None:
     assert refusal.kind == "no_such_worktree"
 
 
-def test_unlanded_patches_refuse_and_say_what_removal_would_cost() -> None:
+def test_unproven_changes_refuse_and_say_what_removal_would_cost() -> None:
     refusal = worktree.classify_done(Path("/w"), holder(unlanded=3))
     assert refusal.kind == "unlanded_work"
-    assert "unlanded=3 commit patches absent from origin/main" in refusal.found
-    assert "Removing this tree now loses work" in refusal.action
-    assert "unreachable SHAs whose patches are upstream do not block removal" in refusal.action
+    assert "unlanded=3 commits not proven byte-for-byte on origin/main" in refusal.found
+    assert "Removing this tree now could lose work" in refusal.action
+    assert "patch identity alone never permits removal" in refusal.action
 
 
 def test_a_dirty_tree_refuses_teardown_before_the_landed_check() -> None:
@@ -619,7 +619,7 @@ def test_done_removes_a_clean_landed_worktree(
     assert "issue-1" not in git("worktree", "list", "--porcelain", cwd=repo)
 
 
-def test_done_refuses_unlanded_patches_and_keeps_the_tree(
+def test_done_refuses_unproven_changes_and_keeps_the_tree(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     """The removal git itself allows, and the one that would lose committed work."""
@@ -635,11 +635,11 @@ def test_done_refuses_unlanded_patches_and_keeps_the_tree(
     printed = lines_of(capsys)
     assert code == 1
     assert printed[0] == "refusal=unlanded_work"
-    assert "unlanded=1 commit patches absent from origin/main" in printed
+    assert "unlanded=1 commits not proven byte-for-byte on origin/main" in printed
     assert (created / "work.md").exists()
 
 
-def test_done_removes_a_rebased_worktree_whose_patch_is_upstream(
+def test_done_removes_a_rebased_worktree_whose_exact_diff_is_upstream(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     repo = a_repo(tmp_path)
@@ -655,12 +655,70 @@ def test_done_removes_a_rebased_worktree_whose_patch_is_upstream(
     git("commit", "-q", "-m", "feat: rebased", cwd=repo)
     git("push", "-q", "origin", "main", cwd=repo)
     assert git("cherry", "origin/main", "HEAD", cwd=created).startswith("- ")
+    assert worktree.count_unlanded(created) == 0
 
     code = run(monkeypatch, repo, "done", "issue-1")
     printed = lines_of(capsys)
     assert code == 0
     assert printed[0] == "ok=worktree_removed"
     assert not created.exists()
+
+
+def test_done_refuses_a_patch_id_collision_and_keeps_the_tree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo = a_repo(tmp_path)
+    (repo / "danger.py").write_text("if False:\n    pass\n", encoding="utf-8")
+    git("add", "danger.py", cwd=repo)
+    git("commit", "-q", "-m", "base for collision", cwd=repo)
+    git("push", "-q", "origin", "main", cwd=repo)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+
+    (created / "danger.py").write_text("if False:\n    pass\ndanger()\n", encoding="utf-8")
+    git("commit", "-qam", "feat: top-level danger", cwd=created)
+    (repo / "danger.py").write_text("if False:\n    pass\n    danger()\n", encoding="utf-8")
+    git("commit", "-qam", "feat: unreachable danger", cwd=repo)
+    git("push", "-q", "origin", "main", cwd=repo)
+    assert git("cherry", "origin/main", "HEAD", cwd=created).startswith("- ")
+    assert worktree.count_unlanded(created) == 1
+
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=unlanded_work"
+    assert "unlanded=1 commits not proven byte-for-byte on origin/main" in printed
+    assert (created / "danger.py").read_text(encoding="utf-8").endswith("danger()\n")
+
+
+def test_done_refuses_an_unlisted_merge_commit_and_keeps_the_tree(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repo = a_repo(tmp_path)
+    (repo / "upstream.md").write_text("parent\n", encoding="utf-8")
+    git("add", "upstream.md", cwd=repo)
+    git("commit", "-q", "-m", "second parent", cwd=repo)
+    git("push", "-q", "origin", "main", cwd=repo)
+    run(monkeypatch, repo, "add", "issue-1")
+    capsys.readouterr()
+    created = repo / ".claude" / "worktrees" / "issue-1"
+
+    (created / "merge-only.md").write_text("unique conflict resolution\n", encoding="utf-8")
+    git("add", "merge-only.md", cwd=created)
+    tree = git("write-tree", cwd=created).strip()
+    first = git("rev-parse", "origin/main", cwd=created).strip()
+    second = git("rev-parse", "origin/main^", cwd=created).strip()
+    merge = git("commit-tree", tree, "-p", first, "-p", second, "-m", "merge", cwd=created).strip()
+    git("checkout", "-q", "--detach", merge, cwd=created)
+    assert git("cherry", "origin/main", "HEAD", cwd=created) == ""
+
+    code = run(monkeypatch, repo, "done", "issue-1")
+    printed = lines_of(capsys)
+    assert code == 1
+    assert printed[0] == "refusal=unlanded_work"
+    assert "unlanded=1 commits not proven byte-for-byte on origin/main" in printed
+    assert (created / "merge-only.md").exists()
 
 
 def test_done_refuses_a_dirty_tree_and_keeps_the_files(
@@ -693,11 +751,10 @@ def test_outside_a_repository_the_tool_fails_closed(
 
 # ----------------------------------------------------------- archive/restore (#272)
 #
-# `done` equates "not on origin/main" with "not durable"; archive is the explicit
-# durability call for a tree a handoff has preserved on a remote ref. The ladder
-# is tested pure, then the recipe over a real repo — and the heaviest claims are
-# again the negative ones: every refusing shape leaves both the worktree and the
-# ref exactly where they were.
+# `done` accepts reachability or a nominated non-merge's exact upstream diff;
+# archive is the explicit durability call for a tree preserved on another remote
+# ref. The ladder is tested pure, then over a real repo — and every refusing shape
+# leaves both worktree and ref exactly where they were.
 
 
 def test_classify_archive_accepts_a_remote_ref_at_the_exact_head() -> None:
