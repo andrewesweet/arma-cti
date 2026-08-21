@@ -1613,6 +1613,75 @@ def drive_to_the_wall(
     return base
 
 
+def test_every_variadic_recipe_preserves_argument_boundaries() -> None:
+    lines = (REPO / "justfile").read_text(encoding="utf-8").splitlines()
+    headers = [index for index, line in enumerate(lines) if "*args:" in line]
+    assert headers
+    assert all(lines[index - 1] == "[positional-arguments]" for index in headers)
+    assert all(
+        "{{ args }}" not in line
+        for line in lines
+        if line.startswith((" ", "\t")) and not line.lstrip().startswith("#")
+    )
+
+
+@pytest.mark.parametrize(
+    "conditional_on",
+    ["correcting the stale comment", "correcting the stale comment, which no rung reads"],
+)
+def test_the_recipe_preserves_the_conditional_work_as_one_argument(
+    tmp_path: Path, conditional_on: str
+) -> None:
+    root = tmp_path / "review"
+    journal = tmp_path / "journal.jsonl"
+    assert (
+        review_loop.main(
+            [
+                "open",
+                "--issue",
+                "477",
+                "--root",
+                str(root),
+                "--journal",
+                str(journal),
+                "--finding",
+                "F1=medium",
+            ]
+        )
+        == review_loop.OK
+    )
+
+    completed = subprocess.run(  # noqa: S603 — exercises the public recipe seam
+        [  # noqa: S607 — `just` resolves off PATH by design
+            "just",
+            "review-loop",
+            "adjudicate",
+            "--issue",
+            "477",
+            "--root",
+            str(root),
+            "--journal",
+            str(journal),
+            "--finding",
+            "F1",
+            "--route",
+            review_loop.ACCEPTED_AND_FILED,
+            "--filed-issue",
+            "476",
+            "--conditional-on",
+            conditional_on,
+        ],
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    stored = json.loads((root / "477" / review_loop.LOOP_FILE).read_text(encoding="utf-8"))
+    assert stored["findings"][0]["adjudication"]["conditional_on"] == conditional_on
+
+
 def close_by_hand(root: Path, issue: int, finding_id: str, route: str, arbiter: str = "") -> None:
     """Write an adjudication straight into the stored loop, past every writer's gate.
 

@@ -25,22 +25,11 @@ import time
 from pathlib import Path
 
 import pytest
-from conftest import REPO, load_tool
+from conftest import load_tool
 
 worktree = load_tool("worktree")
 
 _CLEAN = worktree.Preflight((), ())
-
-
-def dry_run_recipe(*args: str) -> subprocess.CompletedProcess[str]:
-    """Render the repository's real recipe without running its worktree action."""
-    return subprocess.run(  # noqa: S603 — this test intentionally exercises the public process seam
-        ["just", "--dry-run", "worktree", *args],  # noqa: S607 — `just` resolves off PATH by design
-        cwd=REPO,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
 
 
 MAIN_AND_LINKED = """\
@@ -995,21 +984,7 @@ def test_restore_without_a_ref_refuses_with_the_example(
     assert "refs/heads/" in printed[-1]
 
 
-def test_recipe_passes_ref_through_for_archive_and_restore() -> None:
-    for action in ("archive", "restore"):
-        done = dry_run_recipe(action, "issue-1", "--ref", "refs/heads/issue-1-parked")
-        assert done.returncode == 0, done.stderr
-        assert done.stderr.splitlines() == [
-            f"uv run python tools/worktree.py {action} issue-1 --ref refs/heads/issue-1-parked"
-        ]
-
-
-def test_bare_recipe_passes_nothing_and_the_tool_defaults_to_check() -> None:
-    done = dry_run_recipe()
-    assert done.returncode == 0, done.stderr
-    assert [line.rstrip() for line in done.stderr.splitlines()] == [
-        "uv run python tools/worktree.py"
-    ]
+def test_the_tool_defaults_to_check() -> None:
     args = worktree.parse_args([])
     assert args.action == "check"
     assert args.name == ""

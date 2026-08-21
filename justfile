@@ -106,8 +106,9 @@ check-just-grants:
 # because the enumeration of these copies was wrong at all five counts anyone
 # made on #361 — and the sweep brief that hunted them was an incomplete
 # enumeration in its own right. `--report` prints the markers.
+[positional-arguments]
 check-arbiter *args:
-    uv run python tools/check_arbiter_copies.py {{ args }}
+    uv run python tools/check_arbiter_copies.py "$@"
 
 # -p adds the pedantic lints; -e makes findings fatal (without it the gate is a no-op).
 # The second step is the scoping HEMTT's banned_commands lint cannot express:
@@ -305,8 +306,9 @@ probe file="" hold="150": build-shim build-addon
 # Evidence, including the probe as staged, lands in ~/.arma-cti/runs/ per probe,
 # with the pool's own schedule, RAM trace and merged verdict set beside it in
 # ~/.arma-cti/runs/<stamp>-pool/.
+[positional-arguments]
 regress *args: build-shim build-addon
-    ./spike/regress.sh {{ args }}
+    ./spike/regress.sh "$@"
 
 # Print the probe↔harness contract — the header keys the runner parses and
 # validates, the completion line it waits on, and what the window closing means —
@@ -349,8 +351,9 @@ probe-contract:
 # floor. The baseline ships empty, so nothing moves until `--record` measures a
 # module; `--record` raises a row on stronger tests and never lowers one silently
 # — lowering is a hand-edit, in the diff, like `NO_MUTABLE_SUBJECT`.
+[positional-arguments]
 mutation *args:
-    uv run python tools/mutation_smoke.py {{ args }}
+    uv run python tools/mutation_smoke.py "$@"
 
 alias mutation-compare := mutation
 
@@ -417,8 +420,9 @@ fast:
 # not_on_remote, ref_mismatch, git_failed. Nothing here resets, cleans, prunes or
 # removes on a refusal path — foreign files mean stop and report, and the
 # judgement of what a refusal means stays the agent's.
+[positional-arguments]
 worktree *args:
-    uv run python tools/worktree.py {{ args }}
+    uv run python tools/worktree.py "$@"
 
 # The landing protocol as one call (#213, ADR-0049): fetch, rebase onto
 # origin/main, re-gate, `git push origin HEAD:main`, then fast-forward the main
@@ -498,8 +502,9 @@ worktree *args:
 # origin/main and a step is outstanding (merge_blocked_by_sandbox,
 # merge_not_fast_forward). Nothing here resolves, aborts, resets or tidies on a
 # refusal path.
+[positional-arguments]
 land *args:
-    uv run python tools/land.py {{ args }}
+    uv run python tools/land.py "$@"
 
 # The never-alone handover: a review branch instead of a shared tree, and the
 # verdict that review becomes (#332, ADR-0071 ruling 4). No Arma, no lock.
@@ -567,8 +572,9 @@ land *args:
 # base — the gate's tests at landing are what catch that difference, and
 # they still run. Adjudication of the findings a verdict
 # carries is #333's; the landing refusal that reads this derivation is #334's.
+[positional-arguments]
 review *args:
-    uv run python tools/review_exchange.py {{ args }}
+    uv run python tools/review_exchange.py "$@"
 
 # Discard one named file's unstaged working-tree change, and nothing else
 # (#287, the human's ruling of 2026-08-08 on #248). No Arma, no lock.
@@ -714,8 +720,9 @@ discard path="" ruling="":
 #
 # Evidence lands in `~/.arma-cti/dispatches/<id>/`: `dispatch.json`, the brief
 # as sent, `dispatch.log`, and `result.json` when the run ends.
+[positional-arguments]
 dispatch *args:
-    ./tools/dispatch.sh {{ args }}
+    ./tools/dispatch.sh "$@"
 
 # Remain attached to the tool harness until a named dispatch writes the result
 # path in its own record. This invocation has no timeout and does not classify
@@ -728,8 +735,9 @@ dispatch *args:
 # and the seat sleeps through every slot the faster members free. Measured at 292
 # agent-minutes of delayed wake over four days, once 115 minutes on one cohort
 # (#295, docs/research/dispatch-cost-and-occupancy.md).
+[positional-arguments]
 dispatch-follow *args:
-    uv run python tools/dispatch_follow.py {{ args }}
+    uv run python tools/dispatch_follow.py "$@"
 
 # Arm a detached watcher over a dispatched agent's run, and read what the
 # watchers found (#198, ADR-0053). No Arma, no lock, no turn held open.
@@ -754,9 +762,9 @@ dispatch-follow *args:
 # The watcher never messages the agent. It writes one line under
 # ~/.arma-cti/watch/ and stands down; prodding stays a judgement, and an
 # `infra_unavailable` run is reported as the stop it is, never retried.
+[positional-arguments]
 watch name worktree subject="pool" *args:
-    ./tools/stall-watch.sh arm --name "{{ name }}" --worktree "{{ worktree }}" \
-        --subject "{{ subject }}" {{ args }}
+    ./tools/stall-watch.sh arm --name "$1" --worktree "$2" --subject "$3" "${@:4}"
 
 # One line per un-acknowledged finding, and nothing at all while every watched
 # agent is still working. `--ack` marks what it prints as read so the same
@@ -766,22 +774,23 @@ watch name worktree subject="pool" *args:
 # because this is the read CLAUDE.md already puts at the top of an orchestrator's
 # turn. The queue adds one underfill verdict when eligible work can fill ruled
 # capacity (#278); it selects and reports, and never dispatches. Every clean read
-# stays silent — a verdict, never a dashboard of numbers (#209). `{{ args }}` is
-# the watchers' alone; the other reads take none. Their state-directory seams are
-# environment variables (`CTI_BREAKER_DIR`, `CTI_QUEUE_DIR`, `CTI_QUEUE_ROOT`,
+# stays silent — a verdict, never a dashboard of numbers (#209). The positional
+# arguments are the watchers' alone; the other reads take none. Their state-directory
+# seams are environment variables (`CTI_BREAKER_DIR`, `CTI_QUEUE_DIR`, `CTI_QUEUE_ROOT`,
 # `CTI_DISPATCH_DIR`, `CTI_WATCH_DIR`, and `CTI_GATE_CLOCK_DIR`), so a unit test
 # never depends on what the box is carrying (#249).
+[positional-arguments]
 watch-report *args:
     uv run python tools/breaker.py report
     uv run python tools/queue_policy.py report
-    uv run python tools/stall_watch.py report {{ args }}
+    uv run python tools/stall_watch.py report "$@"
     # A Remote Control session the bridge killed (#343): the RC servers spawn every
     # worktree session this project runs from a phone, and when one dies for a token
     # refresh nothing else records it — the transcript stops, telemetry goes quiet at
     # the last completed turn with no error event, and the pane holding the only three
     # lines about it is 2,000 lines deep against a reconnect storm. On 2026-08-12 that
     # cost fifteen hours. Reads `CTI_RC_HEALTH_DIR`, the seam #249 landed, and takes no
-    # argument: `{{ args }}` is the watchers' alone.
+    # argument: `"$@"` is the watchers' alone.
     uv run python tools/rc_health.py report
     # The orchestration trial (#260): one line when it has failed, silent otherwise — which
     # since #328 closed it as inconclusive means silent from **every** reachable state, not
@@ -842,8 +851,9 @@ gate-clock-history:
 # than silence. The words *landed* and *lost* appear nowhere in it: a commit is
 # on origin/main or it is not, and which of those the work **is** is the resumed
 # agent's to verify on wake.
+[positional-arguments]
 recover *args:
-    uv run python tools/recovery.py {{ args }}
+    uv run python tools/recovery.py "$@"
 
 # Read and feed the lane circuit breakers (#226, ADR-0061 Decisions 7 and 8).
 # No Arma, no lock, no turn held open.
@@ -879,8 +889,9 @@ recover *args:
 # here means only that this breaker has nothing against the lane.
 #
 # Every transition goes to OTel and to `~/.arma-cti/breaker/transitions.jsonl`.
+[positional-arguments]
 breaker *args:
-    uv run python tools/breaker.py {{ args }}
+    uv run python tools/breaker.py "$@"
 
 # The dispatch queue as data: the human's freeze, WIP limit and carve-outs in a
 # file a running session reads (#250, ADR-0049). No Arma, no lock, no turn held
@@ -1006,8 +1017,9 @@ wip-trial *args:
 # `CTI_ADMISSION_DIR`, and every transition still goes to OTel and to that directory's
 # `transitions.jsonl`. Those names are wrong for what this is now and are kept anyway:
 # the trial's cycles are kept as history, and renaming their home would orphan them.
+[positional-arguments]
 trial *args:
-    uv run python tools/trial.py {{ args }}
+    uv run python tools/trial.py "$@"
 
 # Materialise the per-dispatch ledger from the OTel bus (#227, ADR-0061). No
 # Arma, no lock, no turn held open.
@@ -1047,8 +1059,9 @@ trial *args:
 # Retention: rows are kept indefinitely; the raw export is pruned after 30 days
 # and only where a row was materialised from that same durable file. Full policy
 # and reasoning in docs/telemetry-ledger.md.
+[positional-arguments]
 ledger-sync action="sync" *args:
-    uv run python tools/ledger.py {{ action }} {{ args }}
+    uv run python tools/ledger.py "$@"
 
 # Print an issue's newest handoff comment, and nothing else (#210,
 # docs/agents/handoff.md). A continuation's first read.
@@ -1125,8 +1138,9 @@ handoff issue:
 #
 # An issue that does not exist, or a `gh` that cannot be reached, is exit 3 with
 # a message and nothing written — never a silent empty brief (#168/#183).
+[positional-arguments]
 brief issue *args:
-    @uv run python tools/brief.py {{ issue }} {{ args }}
+    @uv run python tools/brief.py "$@"
 
 # Report one window's seat occupancy in agent-minutes, from the dispatch records
 # alone (#295, docs/research/dispatch-cost-and-occupancy.md). No Arma, no lock:
@@ -1139,8 +1153,9 @@ brief issue *args:
 # the one `just queue state` cannot produce because a count of what is in flight
 # now cannot show a sawtooth. It carries no verdict: this program cannot see the
 # queue, so a block may honestly have been short of eligible work.
+[positional-arguments]
 occupancy *args:
-    uv run python tools/occupancy.py {{ args }}
+    uv run python tools/occupancy.py "$@"
 
 # The multi-provider setup that does not need a human (#230, for #221/#229).
 # No Arma, no lock: it reads this box, writes user-owned files, and generates —
@@ -1177,8 +1192,9 @@ occupancy *args:
 # The status line is the one surface this repository cannot govern: the file is
 # outside it, so no hook and no gate can hold the tap in place. The recipe says
 # so in its own output every time it runs.
+[positional-arguments]
 prereqs action="check" *args:
-    uv run python tools/prereqs.py {{ action }} {{ args }}
+    uv run python tools/prereqs.py "$@"
 
 # Read or post a finished corpus run's own record as the lines a close quotes
 # (#199, #235).
@@ -1211,8 +1227,9 @@ prereqs action="check" *args:
 # and what the run gates, stay the agent's (the failure-class table's
 # required-response column). `infra_unavailable` is printed as the stop it is,
 # never interpreted.
+[positional-arguments]
 verdict *args:
-    uv run python tools/pool_comment.py {{ args }}
+    uv run python tools/pool_comment.py "$@"
 
 # Drive one issue's never-alone review loop: open, round, sync, adjudicate,
 # escalate, terminus, show (#333, ADR-0071 ruling 4). One command per act, one durable
@@ -1262,5 +1279,6 @@ verdict *args:
 # it excluded and why. The clock it escalates against is the box's own; the
 # off-peak rule it may meet is the human's and has no override on this
 # surface either.
+[positional-arguments]
 review-loop *args:
-    uv run python tools/review_loop.py {{ args }}
+    uv run python tools/review_loop.py "$@"
