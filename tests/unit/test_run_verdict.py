@@ -227,10 +227,15 @@ def test_a_fail_line_cannot_declare_itself_a_pass(tmp_path: Path) -> None:
 
 
 def test_a_run_with_no_fail_line_passes(tmp_path: Path) -> None:
-    """The other half of the branch: this must not have become a permanent red."""
+    """A green run passes and teardown ends its grace when its children exit.
+
+    The grace keeps its two-second deadline for a child that ignores SIGTERM;
+    making every successful child pay that whole window was only a fixed settle.
+    """
     records = run_with_lines(tmp_path, ["measurement thing=1"])
     assert records["verdict"] == "PASS"
     assert records["_returncode"] == "0"
+    assert "SIGTERM grace ended when every child exited" in records["_stderr"]
 
 
 def test_a_timeline_that_cannot_be_rendered_records_its_absence(tmp_path: Path) -> None:
@@ -312,6 +317,9 @@ def test_a_demanded_headless_client_that_cannot_join_stops_before_the_probe(
     Before this gate, `run.sh` recorded `hc_joined=false`, carried on, touched the
     marker and reported PASS. The demanded world was never assembled, so the
     honest outcome is an infrastructure stop before that marker can be reached.
+    Two seconds is the explicit floor: eight turns of the 0.25 s HC poll keep
+    the marker beyond any immediate-exit observation without lengthening the run,
+    because teardown kills this background holder.
     """
     probe_ran = tmp_path / "probe-ran"
     server = f"""#!/usr/bin/env bash
@@ -621,7 +629,8 @@ def test_a_deadline_still_fires_with_no_working_bc(tmp_path: Path) -> None:
     own 600 s `sleep` — in anger, the whole hold window and then some, with the
     slot lock held — and reported `node_crashed` when the process finally went,
     rather than the `timeout` the failure-class table sends the reader to
-    synchronisation for.
+    synchronisation for. The stub's 600 s is an explicit floor: it must outlive
+    the five-second harness deadline whose firing is this test's subject.
     """
     records = run_with_lines(
         tmp_path,
