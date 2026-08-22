@@ -1126,6 +1126,59 @@ def test_an_explicit_unknown_manifest_is_unclassified_in_the_ledger(tmp_path: Pa
     assert manifest["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
 
 
+def test_any_dispatch_record_parse_failure_is_unclassified_reported_once_and_sync_continues(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    bad = stage_record(tmp_path / "dispatches", dispatch_id="d-bad", result={"returncode": 0})
+    good = stage_record(tmp_path / "dispatches", dispatch_id="d-good", result={"returncode": 0})
+    write_jsonl(tmp_path / "export" / "dispatch-d-bad.jsonl", [])
+    write_jsonl(tmp_path / "export" / "dispatch-d-good.jsonl", [])
+
+    original_parser = guidance.manifest_from_record
+
+    class UnexpectedParseError(RuntimeError):
+        pass
+
+    def fail_one_parse(record: dict[str, object], harness: object) -> object:
+        if record.get("dispatch_id") == "d-bad":
+            raise UnexpectedParseError
+        return original_parser(record, harness)
+
+    monkeypatch.setattr(guidance, "manifest_from_record", fail_one_parse)
+
+    lines, code = ledger.sync(options(tmp_path), NOW)
+
+    bad_row = json.loads((bad / "ledger.json").read_text(encoding="utf-8"))
+    good_row = json.loads((good / "ledger.json").read_text(encoding="utf-8"))
+    reports = [line for line in lines if "record_parse=failed" in line]
+    assert code == 0
+    assert bad_row["guidance_manifest"]["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
+    assert good_row["guidance_manifest"]["state"] == guidance.GUIDANCE_STATE_UNKNOWN
+    assert len(reports) == 1
+    assert "dispatch=d-bad" in reports[0]
+    assert any(line.startswith("ok=synced rows=2 degraded=0") for line in lines)
+
+
+def test_dispatch_record_parse_boundary_does_not_hide_materialisation_failures(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    stage_record(tmp_path / "dispatches", result={"returncode": 0})
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+
+    class MaterialisationError(RuntimeError):
+        pass
+
+    def fail_handling(_items: object) -> object:
+        raise MaterialisationError
+
+    monkeypatch.setattr(ledger, "normalise_usage", fail_handling)
+
+    with pytest.raises(MaterialisationError):
+        ledger.sync(options(tmp_path), NOW)
+
+
 def test_a_pre503_codex_proof_is_derived_into_the_ledger_manifest(tmp_path: Path) -> None:
     proof = proof_document(tmp_path)
     record = stage_record(

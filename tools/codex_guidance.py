@@ -163,13 +163,12 @@ class LaunchContext:
 
 
 @dataclass(frozen=True)
-class SourceRecord:
-    """One selected source, with its identity and digest but never its body."""
+class _SourceMetadata:
+    """Content-free fields shared by captured and persisted source records."""
 
     path: str
     raw_bytes: int
     sha256: str
-    text: str = field(repr=False, compare=False)
 
     def document(self) -> dict[str, object]:
         """Render the source metadata without retaining instruction text."""
@@ -185,6 +184,18 @@ class SourceRecord:
         }
 
 
+@dataclass(frozen=True)
+class SourceRecord(_SourceMetadata):
+    """One captured source whose measurements remain tied to its in-memory content."""
+
+    text: str = field(repr=False, compare=False)
+
+
+@dataclass(frozen=True)
+class _PersistedSourceRecord(_SourceMetadata):
+    """Source measurements reconstructed where persisted evidence intentionally omits content."""
+
+
 @dataclass(frozen=True, init=False)
 class GuidanceProof:
     """Matched measurements retained as the dispatch's primary evidence."""
@@ -192,7 +203,7 @@ class GuidanceProof:
     codex_version: CodexVersion
     launch_directory: ResolvedLaunchDirectory
     project_doc_max_bytes: int
-    sources: tuple[SourceRecord, ...]
+    sources: tuple[_SourceMetadata, ...]
     raw_project_bytes: int
     expected_project_bytes: int
     expected_project_sha256: str
@@ -211,7 +222,7 @@ class GuidanceProof:
         codex_version: CodexVersion,
         launch_directory: ResolvedLaunchDirectory,
         project_doc_max_bytes: int,
-        sources: tuple[SourceRecord, ...],
+        sources: tuple[_SourceMetadata, ...],
         raw_project_bytes: int,
         expected_project_bytes: int,
         expected_project_sha256: str,
@@ -584,19 +595,30 @@ def _valid_launch_directory(value: object) -> bool:
 
 
 def _valid_source_record(value: object) -> bool:
-    if not isinstance(value, SourceRecord):
+    if not isinstance(value, _SourceMetadata):
         return False
     try:
-        return (
+        metadata_is_valid = (
             _valid_utf8_text(value.path)
             and "\r" not in value.path
             and "\n" not in value.path
             and _valid_nonnegative_int(value.raw_bytes)
             and _valid_hash(value.sha256)
-            and _valid_utf8_text(value.text)
         )
     except AttributeError:
         return False
+    if not metadata_is_valid:
+        return False
+    if isinstance(value, _PersistedSourceRecord):
+        return True
+    if not isinstance(value, SourceRecord) or not _valid_utf8_text(value.text):
+        return False
+    normalized_bytes = _byte_length(value.text)
+    return (
+        normalize(value.text) == value.text
+        and value.sha256 == _sha256(value.text)
+        and normalized_bytes <= value.raw_bytes <= normalized_bytes + value.text.count("\n")
+    )
 
 
 def _valid_source(value: object) -> bool:
@@ -700,11 +722,10 @@ def _proof_from_document(value: object, worktree: object) -> GuidanceProof | Non
             launch_directory=launch_directory,
             project_doc_max_bytes=value["project_doc_max_bytes"],
             sources=tuple(
-                SourceRecord(
+                _PersistedSourceRecord(
                     path=source["path"],
                     raw_bytes=source["raw_bytes"],
                     sha256=source["sha256"],
-                    text="",
                 )
                 for source in sources
             ),

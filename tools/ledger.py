@@ -1055,11 +1055,52 @@ def gate_outcome(
 
 def read_json(path: Path) -> dict[str, Any] | None:
     """Read one JSON document, or `None` when it is absent or not a document."""
+    if not path.is_file():
+        return None
     try:
         document = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except Exception:  # noqa: BLE001 — this function does only persisted-input parsing
         return None
     return document if isinstance(document, dict) else None
+
+
+class ParsedDispatchRecord(NamedTuple):
+    """One untrusted dispatch record converted to values safe for ledger handling."""
+
+    plan: dict[str, Any]
+    guidance: codex_guidance.GuidanceRecord
+    parse_failed: bool
+
+
+def parse_dispatch_record(path: Path) -> ParsedDispatchRecord:
+    """Contain every failure while parsing one record, before ledger handling starts."""
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(document, dict):
+            return ParsedDispatchRecord(
+                plan={},
+                guidance=codex_guidance.UnclassifiedGuidanceRecord(),
+                parse_failed=True,
+            )
+        lane = document.get("lane")
+        registered_lane = dispatch.LANES.get(lane) if isinstance(lane, str) else None
+        guidance = codex_guidance.manifest_from_record(
+            document, None if registered_lane is None else registered_lane.runner_family
+        )
+    except Exception:  # noqa: BLE001 — this is the whole untrusted-record parse boundary
+        return ParsedDispatchRecord(
+            plan={},
+            guidance=codex_guidance.UnclassifiedGuidanceRecord(),
+            parse_failed=True,
+        )
+    return ParsedDispatchRecord(plan=document, guidance=guidance, parse_failed=False)
+
+
+class MaterialisedRecord(NamedTuple):
+    """One ledger row plus its non-persisted parse report."""
+
+    row: dict[str, Any]
+    record_parse_failed: bool
 
 
 def count_kinds(items: Iterable[Item]) -> dict[str, int]:
@@ -1077,13 +1118,14 @@ def materialise(
     capture: Path,
     repo: Path,
     now: datetime,
-) -> dict[str, Any]:
+) -> MaterialisedRecord:
     """Build one dispatch's row: what it consumed, how it ended, and where it landed.
 
     Reads the plan the dispatcher wrote, the records the collector wrote, and git. Writes
     nothing but the row — no record is edited, appended to, or moved.
     """
-    plan = read_json(record / "dispatch.json") or {}
+    parsed_record = parse_dispatch_record(record / "dispatch.json")
+    plan = parsed_record.plan
     result = read_json(record / "result.json")
     dispatch_id = str(plan.get("dispatch_id") or record.name)
     source = choose_source(dispatch_id, export_dir, capture)
@@ -1100,33 +1142,32 @@ def materialise(
     end_state = type_end_state(items, result, source)
     usage = normalise_usage(items)
     lane = plan.get("lane")
-    registered_lane = dispatch.LANES.get(lane) if isinstance(lane, str) else None
-    guidance_manifest = codex_guidance.manifest_from_record(
-        plan, None if registered_lane is None else registered_lane.runner_family
-    )
-    return {
-        "schema": SCHEMA,
-        "materialised_at": now.isoformat(),
-        "dispatch_id": dispatch_id,
-        "lane": lane,
-        "profile": plan.get("profile"),
-        "seat": seat,
-        "issue": issue or None,
-        "base_sha": base_sha or None,
-        "source": source.document(),
-        "records": count_kinds(items),
-        "guidance_manifest": guidance_manifest.ledger_document(),
-        "usage": usage.document(),
-        "cap_fraction": cap_fraction(lane if isinstance(lane, str) else None, usage).document(),
-        "end_state": end_state.document(),
-        "gate": {
-            "outcome": gate_outcome(landing, result, end_state, seat),
-            "landed": landing.document(),
-            "returncode": result.get("returncode") if result else None,
-            "started_at": result.get("started_at") if result else None,
-            "ended_at": result.get("ended_at") if result else None,
+    return MaterialisedRecord(
+        {
+            "schema": SCHEMA,
+            "materialised_at": now.isoformat(),
+            "dispatch_id": dispatch_id,
+            "lane": lane,
+            "profile": plan.get("profile"),
+            "seat": seat,
+            "issue": issue or None,
+            "base_sha": base_sha or None,
+            "source": source.document(),
+            "records": count_kinds(items),
+            "guidance_manifest": parsed_record.guidance.ledger_document(),
+            "usage": usage.document(),
+            "cap_fraction": cap_fraction(lane if isinstance(lane, str) else None, usage).document(),
+            "end_state": end_state.document(),
+            "gate": {
+                "outcome": gate_outcome(landing, result, end_state, seat),
+                "landed": landing.document(),
+                "returncode": result.get("returncode") if result else None,
+                "started_at": result.get("started_at") if result else None,
+                "ended_at": result.get("ended_at") if result else None,
+            },
         },
-    }
+        parsed_record.parse_failed,
+    )
 
 
 def _points(value: object) -> str:
@@ -1134,7 +1175,7 @@ def _points(value: object) -> str:
     return f"{value:.6f}" if isinstance(value, (int, float)) else "none"
 
 
-def row_line(row: Mapping[str, Any]) -> str:
+def row_line(row: Mapping[str, Any], *, record_parse_failed: bool = False) -> str:
     """One dispatch, in the tier's `key=value` form.
 
     The spend fields are the five-hour window's two halves. Five-hour because it is the
@@ -1145,25 +1186,26 @@ def row_line(row: Mapping[str, Any]) -> str:
     """
     usage = row["usage"]
     five_hour = row["cap_fraction"]["windows"].get("five_hour", {})
-    return " ".join(
-        (
-            f"dispatch={row['dispatch_id']}",
-            f"lane={row['lane']}",
-            f"issue={row['issue']}",
-            f"source={row['source']['kind']}",
-            f"degraded={str(row['source']['degraded']).lower()}",
-            f"records={row['records']['total']}",
-            f"guidance={row['guidance_manifest']['state']}",
-            f"in={usage['input_tokens']}",
-            f"out={usage['output_tokens']}",
-            f"pool={row['cap_fraction']['pool'] or 'none'}",
-            f"cap5h_est={_points(five_hour.get('est'))}",
-            f"cap5h_obs={_points(five_hour.get('observed'))}",
-            f"class={row['end_state']['class']}",
-            f"gate={row['gate']['outcome']}",
-            f"landed={row['gate']['landed']['sha'] or 'none'}",
-        )
-    )
+    fields = [
+        f"dispatch={row['dispatch_id']}",
+        f"lane={row['lane']}",
+        f"issue={row['issue']}",
+        f"source={row['source']['kind']}",
+        f"degraded={str(row['source']['degraded']).lower()}",
+        f"records={row['records']['total']}",
+        f"guidance={row['guidance_manifest']['state']}",
+        f"in={usage['input_tokens']}",
+        f"out={usage['output_tokens']}",
+        f"pool={row['cap_fraction']['pool'] or 'none'}",
+        f"cap5h_est={_points(five_hour.get('est'))}",
+        f"cap5h_obs={_points(five_hour.get('observed'))}",
+        f"class={row['end_state']['class']}",
+        f"gate={row['gate']['outcome']}",
+        f"landed={row['gate']['landed']['sha'] or 'none'}",
+    ]
+    if record_parse_failed:
+        fields.insert(7, "record_parse=failed")
+    return " ".join(fields)
 
 
 # ---------------------------------------------------------------------------- actions
@@ -1222,16 +1264,17 @@ def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
         if not (record / "dispatch.json").is_file():
             lines.append(f"skipped={record.name} reason=no_dispatch_json")
             continue
-        row = materialise(
+        materialised = materialise(
             record,
             export_dir=options.export_dir,
             capture=options.capture,
             repo=options.repo,
             now=now,
         )
+        row = materialised.row
         (record / "ledger.json").write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8")
         degraded += int(bool(row["source"]["degraded"]))
-        lines.append(row_line(row))
+        lines.append(row_line(row, record_parse_failed=materialised.record_parse_failed))
     if degraded:
         lines.append(
             f"warning=degraded_source rows={degraded} "
