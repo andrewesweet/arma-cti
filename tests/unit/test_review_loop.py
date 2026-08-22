@@ -1074,20 +1074,21 @@ def exchanged(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
 
 @pytest.fixture(autouse=True)
-def every_git_transport_stays_off_network(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Let Git enforce this module's network boundary after resolving each command (#458).
+def default_git_transport_policy(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Default this module's Git calls away from non-file transports (#458).
 
     `GIT_ALLOW_PROTOCOL=file` is Git's own protocol policy: it behaves as
-    `protocol.allow=never` plus `protocol.file.allow=always`, overriding config. Every
-    Git subprocess started by this module or its fixtures inherits it. Scratch repositories
-    therefore keep working, while Git rejects HTTP, SSH, git and external-helper transports
-    after Git itself has resolved argv, config, rewrites, multiple URLs and submodule state.
+    `protocol.allow=never` plus `protocol.file.allow=always`, overriding Git config. Tests
+    that leave the process environment intact therefore keep their scratch repositories while
+    Git rejects HTTP, SSH, git and external-helper transports after resolving argv, config,
+    rewrites, multiple URLs and submodule state.
 
-    This enforces Git-transport hermeticity, not filesystem containment: a file remote
-    outside `tmp_path` remains reachable. The suite needs file remotes to build its scratch
-    topology. The walk's separate HTTP seam remains bounded and pinned at its CLI boundary.
-    Fetch deadlines are owned by `review_loop._routing_remote_git`, and `remote_ref_sha`
-    owns its own deadline; neither is inferred from Git argv here.
+    This is an accidental-network guard, not an isolation boundary: a test can unset or replace
+    the environment variable, and a file remote outside `tmp_path` remains reachable. The suite
+    needs file transport for its scratch topology. The walk's separate HTTP seam remains bounded
+    and pinned at its CLI boundary. Fetch deadlines are owned by
+    `review_loop._routing_remote_git`, and `remote_ref_sha` owns its own deadline; neither is
+    inferred from Git argv here.
     """
     monkeypatch.setenv("GIT_ALLOW_PROTOCOL", "file")
 
