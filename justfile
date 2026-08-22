@@ -213,6 +213,12 @@ unit-python:
 unit-rust:
     cargo test {{shim}}
 
+# Re-run the committed guidance control. Prompt bodies live in the versioned corpus;
+# this recipe reads #503 manifests and scores the paired fixture adapter without writing
+# to the telemetry ledger.
+guidance-eval:
+    uv run python tools/guidance_eval.py
+
 # Build every artefact the Arma tiers need. A green check does not imply a green build.
 build: build-addon build-shim build-missions
 

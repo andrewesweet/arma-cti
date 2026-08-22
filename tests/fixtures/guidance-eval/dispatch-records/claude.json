@@ -1,0 +1,20 @@
+{
+  "dispatch_id": "d-control-claude",
+  "lane": "claude-native",
+  "profile": "opus-high",
+  "seat": "implementer",
+  "base_sha": "f6f9963c87df59a333c8d3db93f9fa7d09fb860b",
+  "worktree": "/fixture/arma-cti",
+  "guidance_manifest": {
+    "schema": "cti.guidance-manifest/1",
+    "state": "unattributable",
+    "harness": "claude-code",
+    "source_provenance": "not_exposed",
+    "loader_outcome": "not_observable",
+    "reason": "no bounded capture",
+    "sources": null,
+    "launch_context": {
+      "launch_directory": "/fixture/arma-cti"
+    }
+  }
+}

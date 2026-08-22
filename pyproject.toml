@@ -74,6 +74,19 @@ ignore = [
 # This file is a command coordinator: it prints its machine contract and keeps
 # validation ladders together so their typed failures cannot drift by helper.
 "tools/machine_b.py" = ["C901", "FBT001", "PLR0911", "PLR0912", "PLR0915", "T201"]
+# This evaluator has two deliberately explicit ladders: structured refusal text must retain
+# field names, and the live adapter's argv is validated before its subprocess seam.
+"tools/guidance_eval.py" = [
+  "C901",    # scoring and pair validation keep their ordered fail-closed ladders together
+  "EM101",   # refusal strings carry machine-readable field and case identities
+  "EM102",   # refusal strings carry machine-readable field and case identities
+  "FBT003",  # fixture safety booleans are clearer at their call site
+  "PLR0912", # pair validation checks each provenance, cell, and contract boundary
+  "PLR0915", # pair validation emits one complete interpreted result
+  "S603",    # live argv is a validated configuration input, never shell-expanded
+  "T201",    # this standalone command's stdout/stderr is its public result channel
+  "TRY003",  # typed refusal text is the evaluator's machine-readable interface
+]
 # The installed client supervisor keeps its launch/observe/teardown ladder in
 # one function so every exit reaches the same owned-cgroup cleanup.
 "ops/machine-b/files/cti_arma_client.py" = ["C901", "PLR0912", "PLR0915"]

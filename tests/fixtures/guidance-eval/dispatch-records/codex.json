@@ -1,0 +1,42 @@
+{
+  "dispatch_id": "d-control-codex",
+  "lane": "codex",
+  "profile": "codex-sol-high",
+  "seat": "implementer",
+  "base_sha": "f6f9963c87df59a333c8d3db93f9fa7d09fb860b",
+  "worktree": "/fixture/arma-cti",
+  "guidance_manifest": {
+    "schema": "cti.guidance-manifest/1",
+    "state": "verified",
+    "harness": "codex",
+    "source_provenance": "expected_chain_only",
+    "loader_outcome": "matched",
+    "delivery": {
+      "schema": "codex-guidance-proof-v1",
+      "normalization": "lf-v1",
+      "codex_version": "codex-cli 0.147.0",
+      "launch_directory": "/fixture/arma-cti",
+      "project_doc_max_bytes": 98304,
+      "source_paths": [
+        "AGENTS.md"
+      ],
+      "sources": [
+        {
+          "path": "AGENTS.md",
+          "raw_bytes": 67149,
+          "sha256": "aed692fc089aa2992447169b3ddfa2846eb83a8c971455461be289d7fed8293b"
+        }
+      ],
+      "raw_project_bytes": 67149,
+      "expected_project_bytes": 67149,
+      "expected_project_sha256": "aed692fc089aa2992447169b3ddfa2846eb83a8c971455461be289d7fed8293b",
+      "delivered_project_bytes": 67149,
+      "delivered_project_sha256": "aed692fc089aa2992447169b3ddfa2846eb83a8c971455461be289d7fed8293b",
+      "global_expected_bytes": 0,
+      "global_expected_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "global_delivered_bytes": 0,
+      "global_delivered_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "combined_delivered_sha256": "d7c0876e4526e8395bf2c21f2f92d4614b04e0d0e9a7b3ca2ec01eede7e365ec"
+    }
+  }
+}
