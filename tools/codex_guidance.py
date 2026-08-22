@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import stat
 import subprocess
 from collections.abc import Iterator, Mapping
@@ -32,6 +33,7 @@ GUIDANCE_STATE_MISSING: Final = "missing"
 GUIDANCE_STATE_UNATTRIBUTABLE: Final = "unattributable"
 GUIDANCE_STATE_EMPTY: Final = "empty"
 GUIDANCE_STATE_UNCLASSIFIED: Final = "unclassified"
+UNATTRIBUTABLE_REASON: Final = "no bounded capture"
 GUIDANCE_STATES: Final = (
     GUIDANCE_STATE_VERIFIED,
     GUIDANCE_STATE_UNKNOWN,
@@ -41,6 +43,7 @@ GUIDANCE_STATES: Final = (
     GUIDANCE_STATE_UNCLASSIFIED,
 )
 _HASH_HEX_LENGTH: Final = 64
+_CODEX_VERSION_PATTERN: Final = re.compile(r"codex-cli \d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?")
 _VERIFIED_MANIFEST_KEYS: Final = frozenset(
     {"schema", "state", "harness", "source_provenance", "loader_outcome", "delivery"}
 )
@@ -56,25 +59,70 @@ _NON_SUCCESS_MANIFEST_KEYS: Final = frozenset(
         "launch_context",
     }
 )
-_NON_SUCCESS_HARNESSES: Final = frozenset({"codex", "claude-code"})
-_NON_SUCCESS_SOURCE_PROVENANCES: Final = frozenset(
-    {"not_available", "not_exposed", "loader_reported"}
-)
-_NON_SUCCESS_LOADER_OUTCOMES: Final = frozenset(
-    {"not_available", "not_observable", "not_run", "empty"}
-)
-_NON_SUCCESS_REASONS: Final = frozenset(
-    {
-        "historical_manifest_absent",
-        "missing_preflight_manifest",
-        "unattributable_loader",
-        "loader_returned_no_sources",
-        "unclassified_guidance_record",
-    }
-)
+_HARNESS_BY_LANE: Final = {
+    "claude-native": "claude-code",
+    "zai": "claude-code",
+    "codex": "codex",
+}
 _INSTRUCTION_START = "# AGENTS.md instructions"
 _INSTRUCTION_OPEN = "<INSTRUCTIONS>"
 _INSTRUCTION_CLOSE = "</INSTRUCTIONS>"
+
+
+@dataclass(frozen=True)
+class _NonSuccessShape:
+    """One allowed non-success tuple, including its runner and source shape."""
+
+    harness: str | None
+    source_provenance: str
+    loader_outcome: str
+    reason: str
+    empty_sources: bool
+    has_launch_directory: bool
+
+
+_NON_SUCCESS_SHAPES: Final[dict[str, _NonSuccessShape]] = {
+    GUIDANCE_STATE_UNKNOWN: _NonSuccessShape(
+        harness=None,
+        source_provenance="not_available",
+        loader_outcome="not_available",
+        reason="historical_manifest_absent",
+        empty_sources=False,
+        has_launch_directory=False,
+    ),
+    GUIDANCE_STATE_MISSING: _NonSuccessShape(
+        harness="codex",
+        source_provenance="not_available",
+        loader_outcome="not_run",
+        reason="missing_preflight_manifest",
+        empty_sources=False,
+        has_launch_directory=True,
+    ),
+    GUIDANCE_STATE_UNATTRIBUTABLE: _NonSuccessShape(
+        harness="claude-code",
+        source_provenance="not_exposed",
+        loader_outcome="not_observable",
+        reason=UNATTRIBUTABLE_REASON,
+        empty_sources=False,
+        has_launch_directory=True,
+    ),
+    GUIDANCE_STATE_EMPTY: _NonSuccessShape(
+        harness="codex",
+        source_provenance="loader_reported",
+        loader_outcome="empty",
+        reason="loader_returned_no_sources",
+        empty_sources=True,
+        has_launch_directory=True,
+    ),
+    GUIDANCE_STATE_UNCLASSIFIED: _NonSuccessShape(
+        harness=None,
+        source_provenance="not_available",
+        loader_outcome="not_available",
+        reason="unclassified_guidance_record",
+        empty_sources=False,
+        has_launch_directory=False,
+    ),
+}
 
 
 def loader_overrides(max_bytes: int = CODEX_PROJECT_DOC_CONTAINMENT_BYTES) -> tuple[str, ...]:
@@ -211,53 +259,62 @@ class GuidanceFailure:
 GuidanceResult = GuidanceProof | GuidanceFailure
 
 
-def unattributable_manifest(harness: str, launch_directory: str, _reason: str) -> dict[str, object]:
-    """Describe a harness whose bounded non-interactive loader output is unavailable."""
+def _manifest_for_shape(
+    state: str,
+    launch_directory: str | None = None,
+    *,
+    harness: str | None = None,
+    reason: str | None = None,
+) -> dict[str, object]:
+    shape = _NON_SUCCESS_SHAPES[state]
+    if harness is not None and harness != shape.harness:
+        message = "manifest harness does not match state"
+        raise ValueError(message)
+    if reason is not None and reason != shape.reason:
+        message = "manifest reason does not match state"
+        raise ValueError(message)
+    if shape.has_launch_directory != (launch_directory is not None):
+        message = "manifest launch context does not match state"
+        raise ValueError(message)
     return {
         "schema": GUIDANCE_MANIFEST_SCHEMA,
-        "state": GUIDANCE_STATE_UNATTRIBUTABLE,
-        "harness": harness,
-        "source_provenance": "not_exposed",
-        "loader_outcome": "not_observable",
-        "reason": "unattributable_loader",
-        "sources": None,
-        "launch_context": {"launch_directory": launch_directory},
+        "state": state,
+        "harness": shape.harness,
+        "source_provenance": shape.source_provenance,
+        "loader_outcome": shape.loader_outcome,
+        "reason": shape.reason if reason is None else reason,
+        "sources": [] if shape.empty_sources else None,
+        "launch_context": (
+            {"launch_directory": launch_directory} if shape.has_launch_directory else {}
+        ),
     }
+
+
+def unattributable_manifest(harness: str, launch_directory: str, reason: str) -> dict[str, object]:
+    """Describe a harness whose bounded non-interactive loader output is unavailable."""
+    return _manifest_for_shape(
+        GUIDANCE_STATE_UNATTRIBUTABLE,
+        launch_directory,
+        harness=harness,
+        reason=reason,
+    )
 
 
 def missing_manifest(harness: str, launch_directory: str) -> dict[str, object]:
     """Describe a dispatch that lacks the preflight manifest it was required to carry."""
-    return {
-        "schema": GUIDANCE_MANIFEST_SCHEMA,
-        "state": GUIDANCE_STATE_MISSING,
-        "harness": harness,
-        "source_provenance": "not_available",
-        "loader_outcome": "not_run",
-        "reason": "missing_preflight_manifest",
-        "sources": None,
-        "launch_context": {"launch_directory": launch_directory},
-    }
+    return _manifest_for_shape(GUIDANCE_STATE_MISSING, launch_directory, harness=harness)
 
 
-def _state_manifest(state: str, reason: str) -> dict[str, object]:
-    return {
-        "schema": GUIDANCE_MANIFEST_SCHEMA,
-        "state": state,
-        "harness": None,
-        "source_provenance": "not_available",
-        "loader_outcome": "not_available",
-        "reason": reason,
-        "sources": None,
-        "launch_context": {},
-    }
+def _state_manifest(state: str) -> dict[str, object]:
+    return _manifest_for_shape(state)
 
 
 def _unknown_manifest() -> dict[str, object]:
-    return _state_manifest(GUIDANCE_STATE_UNKNOWN, "historical_manifest_absent")
+    return _state_manifest(GUIDANCE_STATE_UNKNOWN)
 
 
 def _unclassified_manifest() -> dict[str, object]:
-    return _state_manifest(GUIDANCE_STATE_UNCLASSIFIED, "unclassified_guidance_record")
+    return _state_manifest(GUIDANCE_STATE_UNCLASSIFIED)
 
 
 def _valid_hash(value: object) -> bool:
@@ -270,6 +327,21 @@ def _valid_hash(value: object) -> bool:
 
 def _valid_nonnegative_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _valid_codex_version(value: object) -> bool:
+    return isinstance(value, str) and _CODEX_VERSION_PATTERN.fullmatch(value) is not None
+
+
+def _valid_launch_directory(value: object) -> bool:
+    if not isinstance(value, str) or not value or not value.isprintable():
+        return False
+    path = Path(value)
+    return (
+        path.is_absolute()
+        and str(path) == value
+        and all(part not in {".", ".."} for part in path.parts)
+    )
 
 
 def _valid_source(value: object) -> bool:
@@ -322,8 +394,8 @@ def _valid_proof(value: object) -> bool:
     if (
         value["schema"] != CODEX_GUIDANCE_SCHEMA
         or value["normalization"] != CODEX_GUIDANCE_NORMALIZATION
-        or not isinstance(value["codex_version"], str)
-        or not isinstance(value["launch_directory"], str)
+        or not _valid_codex_version(value["codex_version"])
+        or not _valid_launch_directory(value["launch_directory"])
         or not _valid_nonnegative_int(value["project_doc_max_bytes"])
         or not _valid_nonnegative_int(value["raw_project_bytes"])
         or not _valid_nonnegative_int(value["expected_project_bytes"])
@@ -363,13 +435,9 @@ def _launch_context_document(value: object) -> dict[str, object] | None:
     if not isinstance(value, Mapping) or set(value) != {"launch_directory"}:
         return None
     directory = value["launch_directory"]
-    if not isinstance(directory, str) or "\r" in directory or "\n" in directory:
+    if not _valid_launch_directory(directory):
         return None
     return {"launch_directory": directory}
-
-
-def _known_string(value: object, allowed: frozenset[str]) -> bool:
-    return isinstance(value, str) and value in allowed
 
 
 def _parse_verified_manifest(value: Mapping[str, object]) -> dict[str, object] | None:
@@ -385,34 +453,30 @@ def _parse_verified_manifest(value: Mapping[str, object]) -> dict[str, object] |
 def _parse_non_success_manifest(
     value: Mapping[str, object], state: str
 ) -> dict[str, object] | None:
-    launch_context = _launch_context_document(value.get("launch_context"))
-    if launch_context is None:
+    shape = _NON_SUCCESS_SHAPES.get(state)
+    if shape is None or set(value) != _NON_SUCCESS_MANIFEST_KEYS:
         return None
-    sources = value.get("sources")
-    if state == GUIDANCE_STATE_EMPTY:
-        if sources != []:
-            return None
-    elif sources is not None:
-        return None
-    valid = (
-        set(value) == _NON_SUCCESS_MANIFEST_KEYS
-        and (
-            value.get("harness") is None
-            or _known_string(value.get("harness"), _NON_SUCCESS_HARNESSES)
-        )
-        and _known_string(value.get("source_provenance"), _NON_SUCCESS_SOURCE_PROVENANCES)
-        and _known_string(value.get("loader_outcome"), _NON_SUCCESS_LOADER_OUTCOMES)
-        and _known_string(value.get("reason"), _NON_SUCCESS_REASONS)
+    if shape.has_launch_directory:
+        launch_context = _launch_context_document(value["launch_context"])
+    else:
+        launch_context = {} if value["launch_context"] == {} else None
+    sources = value["sources"]
+    valid_sources = sources == [] if shape.empty_sources else sources is None
+    fields_mismatch = (
+        value["harness"] != shape.harness
+        or value["source_provenance"] != shape.source_provenance
+        or value["loader_outcome"] != shape.loader_outcome
+        or value["reason"] != shape.reason
     )
-    if not valid:
+    if launch_context is None or not valid_sources or fields_mismatch:
         return None
     return {
         "schema": GUIDANCE_MANIFEST_SCHEMA,
         "state": state,
-        "harness": value.get("harness"),
-        "source_provenance": value.get("source_provenance"),
-        "loader_outcome": value.get("loader_outcome"),
-        "reason": value.get("reason"),
+        "harness": shape.harness,
+        "source_provenance": shape.source_provenance,
+        "loader_outcome": shape.loader_outcome,
+        "reason": shape.reason,
         "sources": sources,
         "launch_context": launch_context,
     }
@@ -429,25 +493,40 @@ def _parse_manifest(value: object) -> dict[str, object] | None:
     return _parse_non_success_manifest(value, state)
 
 
+def _manifest_matches_lane(record: Mapping[str, object], manifest: Mapping[str, object]) -> bool:
+    harness = manifest.get("harness")
+    if harness is None:
+        return True
+    lane = record.get("lane")
+    return isinstance(lane, str) and _HARNESS_BY_LANE.get(lane) == harness
+
+
 def manifest_from_record(record: Mapping[str, object]) -> dict[str, object]:
     """Read one manifest from a dispatch record without copying arbitrary record data."""
-    value = record.get("guidance_manifest")
-    legacy = record.get("instruction_delivery")
-    if value is None:
-        if legacy is None:
+    has_manifest = "guidance_manifest" in record
+    has_legacy = "instruction_delivery" in record
+    if not has_manifest:
+        if not has_legacy:
             return _unknown_manifest()
-        parsed_legacy = _manifest_from_proof(legacy)
-        return parsed_legacy or _unclassified_manifest()
+        parsed_legacy = _manifest_from_proof(record["instruction_delivery"])
+        return (
+            parsed_legacy
+            if parsed_legacy is not None and _manifest_matches_lane(record, parsed_legacy)
+            else _unclassified_manifest()
+        )
+    value = record["guidance_manifest"]
     parsed = _parse_manifest(value)
-    if parsed is None:
+    if parsed is None or not _manifest_matches_lane(record, parsed):
         return _unclassified_manifest()
-    if legacy is not None:
-        parsed_legacy = _manifest_from_proof(legacy)
-        if parsed["state"] != GUIDANCE_STATE_VERIFIED or parsed_legacy is None:
-            return _unclassified_manifest()
-        if parsed["delivery"] != parsed_legacy["delivery"]:
-            return _unclassified_manifest()
-    return parsed
+    legacy_matches = True
+    if has_legacy:
+        parsed_legacy = _manifest_from_proof(record["instruction_delivery"])
+        legacy_matches = (
+            parsed["state"] == GUIDANCE_STATE_VERIFIED
+            and parsed_legacy is not None
+            and parsed["delivery"] == parsed_legacy["delivery"]
+        )
+    return parsed if legacy_matches else _unclassified_manifest()
 
 
 def normalize(text: str) -> str:

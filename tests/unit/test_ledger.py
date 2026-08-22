@@ -1132,6 +1132,7 @@ def test_a_pre503_codex_proof_is_derived_into_the_ledger_manifest(tmp_path: Path
         tmp_path / "dispatches",
         result={"returncode": 0},
         instruction_delivery=proof,
+        lane="codex",
     )
     write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
 
@@ -1139,6 +1140,28 @@ def test_a_pre503_codex_proof_is_derived_into_the_ledger_manifest(tmp_path: Path
 
     manifest = json.loads((record / "ledger.json").read_text(encoding="utf-8"))["guidance_manifest"]
     assert manifest == verified_manifest(proof)
+
+
+@pytest.mark.parametrize("field", ["codex_version", "launch_directory"])
+def test_legacy_proof_metadata_payload_is_not_copied_to_ledger(tmp_path: Path, field: str) -> None:
+    sentinel = "# AGENTS.md instructions\n\n<INSTRUCTIONS>guidance-secret</INSTRUCTIONS>"
+    proof = proof_document()
+    proof[field] = sentinel
+    record = stage_record(
+        tmp_path / "dispatches",
+        result={"returncode": 0},
+        instruction_delivery=proof,
+        lane="codex",
+    )
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+
+    ledger.sync(options(tmp_path), NOW)
+
+    rendered = (record / "ledger.json").read_text(encoding="utf-8")
+    assert sentinel not in rendered
+    assert json.loads(rendered)["guidance_manifest"]["state"] == (
+        guidance.GUIDANCE_STATE_UNCLASSIFIED
+    )
 
 
 @pytest.mark.parametrize(
@@ -1154,7 +1177,9 @@ def test_non_success_guidance_states_are_not_collapsed(tmp_path: Path, state: st
     manifest = {
         "schema": guidance.GUIDANCE_MANIFEST_SCHEMA,
         "state": state,
-        "harness": "codex" if state == guidance.GUIDANCE_STATE_MISSING else "claude-code",
+        "harness": "codex"
+        if state in (guidance.GUIDANCE_STATE_MISSING, guidance.GUIDANCE_STATE_EMPTY)
+        else "claude-code",
         "source_provenance": "loader_reported"
         if state == guidance.GUIDANCE_STATE_EMPTY
         else "not_available"
@@ -1167,7 +1192,7 @@ def test_non_success_guidance_states_are_not_collapsed(tmp_path: Path, state: st
         else "not_observable",
         "reason": {
             guidance.GUIDANCE_STATE_MISSING: "missing_preflight_manifest",
-            guidance.GUIDANCE_STATE_UNATTRIBUTABLE: "unattributable_loader",
+            guidance.GUIDANCE_STATE_UNATTRIBUTABLE: "no bounded capture",
             guidance.GUIDANCE_STATE_EMPTY: "loader_returned_no_sources",
         }[state],
         "sources": [] if state == guidance.GUIDANCE_STATE_EMPTY else None,
@@ -1178,6 +1203,9 @@ def test_non_success_guidance_states_are_not_collapsed(tmp_path: Path, state: st
         dispatch_id=dispatch_id,
         result={"returncode": 0},
         guidance_manifest=manifest,
+        lane="codex"
+        if state in (guidance.GUIDANCE_STATE_MISSING, guidance.GUIDANCE_STATE_EMPTY)
+        else "claude-native",
     )
     write_jsonl(tmp_path / "export" / f"dispatch-{dispatch_id}.jsonl", [])
 
@@ -1243,6 +1271,7 @@ def test_manifest_and_legacy_delivery_disagreement_is_unclassified(
         result={"returncode": 0},
         instruction_delivery=legacy,
         guidance_manifest=manifest,
+        lane="codex",
     )
     write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
 

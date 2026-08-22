@@ -159,10 +159,14 @@ Every new dispatch record also carries `guidance_manifest`. A Codex manifest is 
 from the same proof and is `state=verified` only when that proof is complete and matched;
 its source provenance remains `expected_chain_only` for the limitation above. Claude Code
 has no bounded non-interactive loader capture, so its manifest is explicitly
-`state=unattributable` with `sources=null`, never an empty successful source list. The
+`state=unattributable`, `reason=no bounded capture`, and `sources=null`, never an empty
+successful source list. The
+state records a current harness boundary, not a permanent limitation: bounded loader or
+source evidence can make Claude attributable in a later change. The
 ledger reads this field without becoming another writer; an explicit loader-reported
-empty source list is `state=empty`, records from before #503 are classified as `unknown`,
-and unreadable, malformed or contradictory records as `unclassified`.
+empty source list is `state=empty`, records with neither evidence field are `unknown`,
+valid pre-#503 `instruction_delivery` proofs derive `verified`, and unreadable, malformed
+or contradictory records are `unclassified`.
 
 ## The worktree assertion
 

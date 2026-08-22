@@ -80,9 +80,13 @@ non-interactive `LoadedAgentsMd.sources()` result, so two source chains that ren
 same text cannot be told apart. The manifest never stores instruction or prompt bodies.
 
 Claude Code has no equivalent bounded capture, so a new Claude dispatch records
-`state: unattributable`, `loader_outcome: not_observable`, and `sources: null`; it does
-not pretend that the repository's current files prove what the loader used. A dispatch
-record from before this field existed is `state: unknown`, while explicit `missing` and
+`state: unattributable`, `reason: no bounded capture`, `loader_outcome: not_observable`,
+and `sources: null`; it does
+not pretend that the repository's current files prove what the loader used. This records
+a current harness boundary, not a permanent limitation: a later bounded loader or source
+evidence can make Claude attributable. A record with neither manifest nor legacy proof is
+`state: unknown`; a valid pre-#503 `instruction_delivery` proof derives `verified`. Explicit
+`missing` and
 `empty` states remain different from `unattributable`; `empty` carries an explicitly
 empty source list from a loader that reported no sources. An unreadable, malformed or
 contradictory manifest is `state: unclassified`. None of these states is a successful
