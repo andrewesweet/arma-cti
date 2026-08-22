@@ -15,8 +15,9 @@ on loopback, and the 2026-08-21 observation found durable per-dispatch files for
 `just occupancy` over dispatch intervals and `just gate-clock-history` over gate-clock
 rows. **General consumption remains the gap.** No persisted observatory store joins
 dispatch, gate, review, landing and telemetry records across work items; the observation
-found `ledger.json` on 6 of 639 dispatch records, while the review journal carrying
-ADR-0071 ruling 6's inputs has no general reader. The proposal is a query layer over the
+found `ledger.json` on 6 of 639 dispatch records, while the review journal has no general
+reader and lacks the author-profile, subject-commit and landing links needed to calculate
+ADR-0071 ruling 6's fix-rounds-per-landing key. The proposal is a query layer over the
 files that exist, lifecycle events that preserve distinctions the current closeout code
 already makes, and a written analyst contract. Its largest dated observation is that
 84.0% of ruled capacity went unused in the observed window. That figure is not a
@@ -158,17 +159,21 @@ From 475 issues, 353 closed:
 - **69%** close within a day; **90%** within three.
 - Throughput: **16.0 closes/day** mean over 22 active days, ranging 1 to 41.
 
-### 1.6 The ruled ranking key is near-degenerate
+### 1.6 Review rounds per issue are derivable; the ruled ranking key is not
 
-ADR-0071 ruling 6 ranks on **fix rounds per landing**. Its inputs exist and are readable:
-`~/.arma-cti/review/journal.jsonl` holds 37 `cti.review.round` events and 43
-`cti.review.dispute` events; the 28 `loop.json` files hold 58 findings — 42 medium, 16
-low — with adjudication routes 40 `accepted_and_filed`, 3 `fixed`, 15 unadjudicated.
+ADR-0071 ruling 6 ranks on **fix rounds per landing**. Current review records cannot
+derive that key. `~/.arma-cti/review/journal.jsonl` holds 37 `cti.review.round` events and
+43 `cti.review.dispute` events; the 28 `loop.json` files hold 58 findings — 42 medium, 16
+low — with adjudication routes 40 `accepted_and_filed`, 3 `fixed`, 15 unadjudicated. Those
+records identify issues and review loops, but carry no durable author-profile,
+subject-commit or landing linkage.
 
-The distribution of rounds per issue is **22 issues at 0, four at 1, one at 2, one at 3**.
-Median zero. The problem is not sample size, which ruling 6 anticipated and required be
-stated as an estimate; it is that **the key barely varies**, so it cannot separate
-profiles no matter how long it runs at this rate.
+What is derivable is the distribution of review rounds per issue: **22 issues at 0, four
+at 1, one at 2, one at 3**. Median zero. That describes issue-level review activity only;
+it does not establish the distribution or discriminatory power of fix rounds per landing.
+Computing the ruled key needs durable links from each fix round to its subject commit and
+author profile, then from that commit to its landing. That linkage is a dependency on the
+proposed observability set, not a measure this document can assert from current records.
 
 A companion measure with real variance already exists: **dispatches per issue**, across
 188 issues — 79 issues took one dispatch, 39 took two, and the distribution has a long
@@ -340,8 +345,9 @@ adds three things worth having: **object-to-object relations** (commit produced-
 dispatch works-on issue), **time-varying object attributes** so "what was the lane's breaker
 state at the moment this was refused" is answerable without reconstruction, and
 **qualifiers** on relations, which is how one landing event distinguishes the *author*
-dispatch from the *reviewing* dispatch. Without qualifiers, `gate_review=cross_lane` is not
-checkable from the log.
+dispatch from the *reviewing* dispatch. Current landing output prints
+`gate_review=cross_lane`, but no durable log stores it. Qualifiers make that cause checkable
+only after a later event persists both the cause and its relations.
 
 **And conformance checking is the capability this project would use most.** The Manifesto is
 explicit that it applies "to procedural models, organizational models, declarative process
@@ -483,12 +489,12 @@ the test lines, and the data supports the existing rule against adding further v
 passes rather than improving the review lens. His other number is a checkable claim about
 this repository: **7% of defect repairs introduce a new defect**.
 
-**And the natural experiment is already running.** Every gate landing prints `gate_review=`
-as one of four causes — `cross_lane`, `lane_exhausted`, `lane_barred`, `same_lane_chosen`.
-That is the independent variable of a comparison between cross-lane and same-lane review
-effectiveness, being recorded already, on the project's own strongest process claim. The
-dependent variable is escaped defects per landing within a stated window. Nothing needs to
-be built to start collecting it beyond the window and the escape channel.
+**The natural experiment is not yet recorded.** Every gate landing prints `gate_review=`
+as one of four causes — `cross_lane`, `lane_exhausted`, `lane_barred`, `same_lane_chosen` —
+to landing output. No durable result, event or journal stores that cause, so current
+records do not supply the independent variable for comparing cross-lane and same-lane
+review effectiveness. Starting that comparison needs durable, landing-linked capture of
+the cause, plus a stated window and escape channel for the dependent variable.
 
 ---
 
@@ -651,10 +657,11 @@ measurement has never been taken**, the instrument already exists (`just occupan
 it is the cheapest real result available. The cohort barrier accounts for 292 agent-minutes;
 the overnight gaps are far larger and nothing has diagnosed them.
 
-**2. Rework, with a companion that has variance.** The ruled key is right and nearly
-static — 22 of 28 issues at round zero. Dispatches per issue, across 188 issues with a tail
-to 23, is the measure that can actually move under an intervention. Report both; rank only
-the ruled one.
+**2. Rework, beginning with the missing linkage.** Current records derive review rounds
+per issue, not fix rounds per landing or the ruled profile ranking. First persist links
+from each fix round to its subject commit and author profile, then from that commit to its
+landing. Dispatches per issue already varies across 188 issues, with a tail to 23, and
+remains a proposed unranked companion. Report the ruled key only after its linkage exists.
 
 **3. Gate duration, continued.** #446 found a 2× regression that ran two weeks unnoticed
 and had no guilty commit, findable only because Claude Code's transcripts happen to carry
@@ -662,13 +669,13 @@ a timestamp — "an accident of the harness, not a record this project keeps". `
 now keeps it, for two recipes, with 111 rows. Extending it to every recipe and adding
 per-leg pass/fail is small and closes the blind spot that produced the finding.
 
-**4. Cross-lane versus same-lane review effectiveness — the natural experiment already
-running.** Every gate landing prints `gate_review=` as one of four causes, so the
-independent variable of the project's strongest process claim is being recorded today. What
-is missing is the dependent variable: escaped defects per landing, within a **stated
-window**, with an escape channel. Capers Jones's data says formal inspection removes ~85% of
-defects against under 50% for most testing, so this is the highest-yield mechanism in the
-system and it has never been checked against its own record.
+**4. Cross-lane versus same-lane review effectiveness — persist the independent variable
+first.** Every gate landing prints `gate_review=` as one of four causes, but no durable
+record stores that output. The natural experiment is therefore not running in an
+analysable record. Capture the cause against the landing before collecting escaped defects
+per landing within a **stated window** and escape channel. Capers Jones's data says formal
+inspection removes ~85% of defects against under 50% for most testing, so this remains a
+high-value comparison; this project has not yet recorded the inputs needed to run it.
 
 **5. Aging work-in-progress, as a candidate signal beside fixed-timeout watching.** Cycle
 time is known only after intervention was possible; item age is the same quantity while it

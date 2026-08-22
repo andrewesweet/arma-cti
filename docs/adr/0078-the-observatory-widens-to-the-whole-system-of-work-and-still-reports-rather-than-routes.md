@@ -31,6 +31,14 @@ The label on a heading applies to every statement beneath it until the next labe
 heading. Human sign-off on the recorded rulings does not silently promote the research
 proposals into policy.
 
+Pending sign-off, the orchestrator does not treat that labelling as certified complete.
+It has been corrected in three review passes, and each pass found additional unmarked
+normative text. No fourth pass is claimed: another inspection could establish only what
+that reader found. Human sign-off therefore still requires line-by-line classification.
+One bounded result is established: all twelve `Human choice` cells in the open-ruling
+table are `pending`; every capability question remains unanswered and no mode is selected.
+That boundary does not establish classification completeness elsewhere.
+
 ## Recorded rulings
 
 ### R1 — recorded ruling: widen the observatory's input scope
@@ -244,7 +252,8 @@ The human must choose one mode for each row; there is no default:
 | Retry a dispatch | A terminal reading may cause a re-dispatch when existing safety checks allow it. | #489 and any dispatch lifecycle event remain evidence only. | Any permission must still forbid automatic retry of `child_state_unknown` until #495's reconciliation completes. | pending |
 | Affect gate acceptance | Historical or per-leg readings may contribute to a gate's green/red result. | #479/#483 recording stays advisory and fail-open. | `control` changes those issues' current acceptance contract; the other modes preserve it. | pending |
 | Affect repository landing acceptance | Conformance, first-pass, relation or summary readings may add a rung or refusal governing whether work reaches `origin/main`. | #487, #490, #491 and #493 remain analytical outputs; `just land` keeps its existing repository-landing authorities. | `control` requires an explicit acceptance rule and tests; the other modes add none. | pending |
-| Affect audit posting or issue closing | After repository landing, a reading may influence whether or when the audit is posted or the issue is closed, as two independent actions. | Readings may describe or recommend either action, but no tool or in-loop orchestrator may cause, suppress or delay either action from telemetry. | Determines whether readings exposed by #478/#482, including #490/#491/#493 outputs, may drive either tracker action or remain analytical. | pending |
+| Affect audit posting | After repository landing, a reading may influence whether or when the audit is posted. | Readings may describe or recommend audit posting, but no tool or in-loop orchestrator may cause, suppress or delay it from telemetry. | Determines whether readings exposed by #478/#482, including #490/#491/#493 outputs, may drive audit posting or remain analytical. | pending |
+| Affect issue closing | After repository landing, a reading may influence whether or when the issue is closed. | Readings may describe or recommend issue closing, but no tool or in-loop orchestrator may cause, suppress or delay it from telemetry. | Determines whether readings exposed by #478/#482, including #490/#491/#493 outputs, may drive issue closing or remain analytical. | pending |
 
 ## Orchestrator working convention pending human ruling: issue drafting
 
