@@ -352,7 +352,7 @@ class Lane(NamedTuple):
     # the family — not the binary name — is what `build_argv` dispatches on. Adding a
     # third Claude-shaped lane changes nothing here; adding a differently-shaped runner
     # adds one builder and one family name, which is the only place the difference lives.
-    runner_family: str = "claude"
+    runner_family: codex_guidance.GuidanceHarness = codex_guidance.GuidanceHarness.CLAUDE_CODE
     # The provider's real context window, in tokens, where the runner cannot learn it.
     # Claude Code assumes 200,000 for a model name it does not recognise and auto-compacts
     # against that assumption, which on `zai` compacted 34 of 129 sessions against a
@@ -443,7 +443,7 @@ LANES: Final[dict[str, Lane]] = {
         base_url="",
         credential="",
         model_slots=(),
-        runner_family="codex",
+        runner_family=codex_guidance.GuidanceHarness.CODEX,
         note=(
             "OpenAI's Codex CLI against the ChatGPT Plus subscription, permitted by the "
             "human's 2026-08-06 ruling on #229. **No credential of ours and none on the "
@@ -1712,22 +1712,28 @@ class Plan(NamedTuple):
             "plan_charge": plan_charge(lane, self.planned_at),
             "planned_at": self.planned_at.isoformat(),
         }
+        launch_directory = codex_guidance.ResolvedLaunchDirectory.in_repository(
+            self.worktree, self.worktree
+        )
+        if launch_directory is None:
+            message = "dispatch worktree cannot construct a resolved launch directory"
+            raise ValueError(message)
         if self.guidance is not None:
+            if lane.runner_family is not codex_guidance.GuidanceHarness.CODEX:
+                message = "a Codex proof cannot construct a Claude Code manifest"
+                raise ValueError(message)
             # The manifest is derived from #502's one Codex capture. Keep the proof under
             # its landed key as a compatibility alias; neither field starts a second capture.
             delivery = self.guidance.document()
             document["instruction_delivery"] = delivery
-            document["guidance_manifest"] = self.guidance.manifest_document()
-        elif lane.runner_family == "codex":
+            manifest: codex_guidance.GuidanceManifest = self.guidance.manifest()
+        elif lane.runner_family is codex_guidance.GuidanceHarness.CODEX:
             # `write_record` follows successful preflight, so this branch is a typed impossible
             # state rather than an empty successful manifest if another caller bypasses it.
-            document["guidance_manifest"] = codex_guidance.missing_manifest(
-                "codex", str(self.worktree)
-            )
+            manifest = codex_guidance.MissingGuidanceManifest(launch_directory)
         else:
-            document["guidance_manifest"] = codex_guidance.unattributable_manifest(
-                "claude-code", str(self.worktree), "no bounded capture"
-            )
+            manifest = codex_guidance.UnattributableGuidanceManifest(launch_directory)
+        document["guidance_manifest"] = manifest.document()
         return document
 
 
@@ -3580,7 +3586,7 @@ def harness_commits(lane: Lane, permission_mode: str) -> bool:
     through `CODEX_SANDBOX` rather than against the string `acceptEdits`, so this predicate
     and `_codex_sandbox_argv` cannot come to disagree about which mode is the writable one.
     """
-    if lane.runner_family != "codex":
+    if lane.runner_family is not codex_guidance.GuidanceHarness.CODEX:
         return False
     flags = CODEX_SANDBOX.get(permission_mode, CODEX_SANDBOX["default"])
     return flags == CODEX_SANDBOX["acceptEdits"]
@@ -4028,7 +4034,7 @@ def build_argv(
     Dispatching on `lane.runner_family` rather than on `lane.runner` is what keeps two
     lanes that share the `claude` binary sharing one builder.
     """
-    if lane.runner_family == "codex":
+    if lane.runner_family is codex_guidance.GuidanceHarness.CODEX:
         return _codex_argv(lane, profile, permission_mode, project_dir, writable_roots)
     return (
         lane.runner,
@@ -4960,7 +4966,7 @@ def dry_run_lines(plan: Plan, brief: str, parent: Mapping[str, str]) -> tuple[st
         *plan.advisories,
         *plan.routing,
     ]
-    if LANES[plan.identity.lane].runner_family == "codex":
+    if LANES[plan.identity.lane].runner_family is codex_guidance.GuidanceHarness.CODEX:
         lines.extend(
             (
                 f"instruction_preflight=pending scope={codex_guidance.CODEX_GUIDANCE_SCOPE}",
@@ -4983,7 +4989,7 @@ def instruction_preflight(
 ) -> tuple[Plan | None, Refusal | None]:
     """Verify Codex delivery synchronously, before the record and child fork exist."""
     lane = LANES[plan.identity.lane]
-    if lane.runner_family != "codex":
+    if lane.runner_family is not codex_guidance.GuidanceHarness.CODEX:
         return plan, None
     profile = PROFILES[plan.identity.profile]
     token, refusal = lane_credential(lane, plan.credentials)

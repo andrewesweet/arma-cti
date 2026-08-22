@@ -11,7 +11,7 @@ import time
 from pathlib import Path
 
 import pytest
-from conftest import REPO, load_tool
+from conftest import REPO, codex_guidance_proof_document, load_tool
 
 guidance = load_tool("codex_guidance")
 dispatch = load_tool("dispatch")
@@ -201,31 +201,6 @@ def write_sources(root: Path, raw_sources: tuple[bytes, ...], *, nested: bool = 
     return root
 
 
-def legacy_proof(**overrides: object) -> dict[str, object]:
-    """Build one complete #502 proof for record-boundary validation tests."""
-    proof: dict[str, object] = {
-        "schema": guidance.CODEX_GUIDANCE_SCHEMA,
-        "normalization": guidance.CODEX_GUIDANCE_NORMALIZATION,
-        "codex_version": "codex-cli 0.147.0",
-        "launch_directory": "/fixture",
-        "project_doc_max_bytes": 98304,
-        "source_paths": ["AGENTS.md"],
-        "sources": [{"path": "AGENTS.md", "raw_bytes": 6, "sha256": "a" * 64}],
-        "raw_project_bytes": 6,
-        "expected_project_bytes": 6,
-        "expected_project_sha256": "a" * 64,
-        "delivered_project_bytes": 6,
-        "delivered_project_sha256": "a" * 64,
-        "global_expected_bytes": 0,
-        "global_expected_sha256": "b" * 64,
-        "global_delivered_bytes": 0,
-        "global_delivered_sha256": "b" * 64,
-        "combined_delivered_sha256": "c" * 64,
-    }
-    proof.update(overrides)
-    return proof
-
-
 def open_queue(tmp_path: Path) -> Path:
     queue_dir = tmp_path / "queue"
     queue_dir.mkdir()
@@ -249,6 +224,13 @@ def open_queue(tmp_path: Path) -> Path:
         encoding="utf-8",
     )
     return queue_dir
+
+
+def read_manifest(record: dict[str, object]) -> guidance.GuidanceRecord:
+    """Read through the lane registry and the production record parser."""
+    lane_name = record.get("lane")
+    lane = dispatch.LANES.get(lane_name) if isinstance(lane_name, str) else None
+    return guidance.manifest_from_record(record, None if lane is None else lane.runner_family)
 
 
 def test_match_records_sources_and_hashes_without_prompt_body(
@@ -276,7 +258,7 @@ def test_match_records_sources_and_hashes_without_prompt_body(
     assert fake.calls[1][1] == launch
     assert fake.calls[1][2]["CTI_SENTINEL"] == "not-output"
 
-    manifest = result.manifest_document()
+    manifest = result.manifest().document()
     assert manifest["schema"] == guidance.GUIDANCE_MANIFEST_SCHEMA
     assert manifest["state"] == guidance.GUIDANCE_STATE_VERIFIED
     assert manifest["harness"] == "codex"
@@ -285,28 +267,99 @@ def test_match_records_sources_and_hashes_without_prompt_body(
     assert manifest["delivery"] == result.document()
     assert expected not in json.dumps(manifest)
     assert (
-        guidance.manifest_from_record({"lane": "codex", "guidance_manifest": manifest}) == manifest
+        read_manifest(
+            {"lane": "codex", "worktree": str(launch), "guidance_manifest": manifest}
+        ).document()
+        == manifest
     )
 
 
 @pytest.mark.parametrize("field", ["codex_version", "launch_directory"])
 def test_legacy_proof_prompt_text_in_launch_metadata_is_unclassified_without_leaking(
+    tmp_path: Path,
     field: str,
 ) -> None:
-    sentinel = "# AGENTS.md instructions\n\n<INSTRUCTIONS>guidance-secret</INSTRUCTIONS>"
-    parsed = guidance.manifest_from_record(
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    proof = codex_guidance_proof_document(guidance, worktree)
+    sentinel = (
+        "codex-cli 1.2.3-AGENTS.md.instructions.guidance-secret"
+        if field == "codex_version"
+        else str(worktree / "AGENTS.md" / "instructions" / "guidance-secret")
+    )
+    proof[field] = sentinel
+    parsed = read_manifest(
         {
             "lane": "codex",
-            "instruction_delivery": legacy_proof(**{field: sentinel}),
+            "worktree": str(worktree),
+            "instruction_delivery": proof,
         }
     )
 
-    assert parsed["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
-    assert sentinel not in json.dumps(parsed)
+    assert parsed.document()["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
+    assert sentinel not in json.dumps(parsed.document())
 
 
-def test_an_unbounded_harness_is_explicitly_unattributable_not_empty() -> None:
-    manifest = guidance.unattributable_manifest("claude-code", "/fixture", "no bounded capture")
+def test_explicit_unknown_manifest_is_unclassified_because_presence_is_evidence() -> None:
+    explicit_unknown = {
+        "schema": guidance.GUIDANCE_MANIFEST_SCHEMA,
+        "state": guidance.GUIDANCE_STATE_UNKNOWN,
+        "harness": None,
+        "source_provenance": "not_available",
+        "loader_outcome": "not_available",
+        "reason": "historical_manifest_absent",
+        "sources": None,
+        "launch_context": {},
+    }
+
+    parsed = read_manifest({"lane": "codex", "guidance_manifest": explicit_unknown})
+
+    assert isinstance(parsed, guidance.UnclassifiedGuidanceRecord)
+    assert parsed.document()["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
+
+
+def test_a_legacy_proof_constructs_a_verified_manifest_variant(tmp_path: Path) -> None:
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+
+    manifest = read_manifest(
+        {
+            "lane": "codex",
+            "worktree": str(worktree),
+            "instruction_delivery": codex_guidance_proof_document(guidance, worktree),
+        }
+    )
+
+    assert isinstance(manifest, guidance.VerifiedGuidanceManifest)
+    assert manifest.document()["state"] == guidance.GUIDANCE_STATE_VERIFIED
+
+
+def test_a_legacy_launch_directory_stores_its_worktree_resolution(tmp_path: Path) -> None:
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    alias = tmp_path / "worktree-alias"
+    alias.symlink_to(worktree, target_is_directory=True)
+    proof = codex_guidance_proof_document(guidance, worktree)
+    proof["launch_directory"] = str(alias)
+
+    manifest = read_manifest(
+        {
+            "lane": "codex",
+            "worktree": str(worktree),
+            "instruction_delivery": proof,
+        }
+    )
+
+    assert isinstance(manifest, guidance.VerifiedGuidanceManifest)
+    assert manifest.delivery.document()["launch_directory"] == str(worktree.resolve())
+
+
+def test_an_unbounded_harness_is_explicitly_unattributable_not_empty(tmp_path: Path) -> None:
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    launch_directory = guidance.ResolvedLaunchDirectory.in_repository(worktree, worktree)
+    assert launch_directory is not None
+    manifest = guidance.UnattributableGuidanceManifest(launch_directory).document()
 
     assert manifest["state"] == guidance.GUIDANCE_STATE_UNATTRIBUTABLE
     assert manifest["loader_outcome"] == "not_observable"
@@ -314,59 +367,45 @@ def test_an_unbounded_harness_is_explicitly_unattributable_not_empty() -> None:
     assert manifest["sources"] is None
     assert manifest["reason"] == "no bounded capture"
     assert (
-        guidance.manifest_from_record({"lane": "claude-native", "guidance_manifest": manifest})
+        read_manifest(
+            {
+                "lane": "claude-native",
+                "worktree": str(worktree),
+                "guidance_manifest": manifest,
+            }
+        ).document()
         == manifest
     )
 
 
 @pytest.mark.parametrize(
-    ("lane", "manifest"),
-    [
-        (
-            "codex",
-            {
-                "schema": guidance.GUIDANCE_MANIFEST_SCHEMA,
-                "state": guidance.GUIDANCE_STATE_MISSING,
-                "harness": "codex",
-                "source_provenance": "not_available",
-                "loader_outcome": "not_run",
-                "reason": "missing_preflight_manifest",
-                "sources": None,
-                "launch_context": {"launch_directory": "/fixture"},
-            },
-        ),
-        (
-            "claude-native",
-            {
-                "schema": guidance.GUIDANCE_MANIFEST_SCHEMA,
-                "state": guidance.GUIDANCE_STATE_UNATTRIBUTABLE,
-                "harness": "claude-code",
-                "source_provenance": "not_exposed",
-                "loader_outcome": "not_observable",
-                "reason": "no bounded capture",
-                "sources": None,
-                "launch_context": {"launch_directory": "/fixture"},
-            },
-        ),
-        (
-            "codex",
-            {
-                "schema": guidance.GUIDANCE_MANIFEST_SCHEMA,
-                "state": guidance.GUIDANCE_STATE_EMPTY,
-                "harness": "codex",
-                "source_provenance": "loader_reported",
-                "loader_outcome": "empty",
-                "reason": "loader_returned_no_sources",
-                "sources": [],
-                "launch_context": {"launch_directory": "/fixture"},
-            },
-        ),
-    ],
+    ("lane", "variant"),
+    [("codex", "missing"), ("claude-native", "unattributable"), ("codex", "empty")],
 )
-def test_canonical_non_success_state_lane_tuples_round_trip(
-    lane: str, manifest: dict[str, object]
+def test_each_recorded_non_success_variant_round_trips_as_its_own_type(
+    tmp_path: Path, lane: str, variant: str
 ) -> None:
-    assert guidance.manifest_from_record({"lane": lane, "guidance_manifest": manifest}) == manifest
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    launch_directory = guidance.ResolvedLaunchDirectory.in_repository(worktree, worktree)
+    assert launch_directory is not None
+    variants = {
+        "missing": guidance.MissingGuidanceManifest(launch_directory),
+        "unattributable": guidance.UnattributableGuidanceManifest(launch_directory),
+        "empty": guidance.EmptyGuidanceManifest(launch_directory),
+    }
+    manifest = variants[variant]
+
+    parsed = read_manifest(
+        {
+            "lane": lane,
+            "worktree": str(worktree),
+            "guidance_manifest": manifest.document(),
+        }
+    )
+
+    assert type(parsed) is type(manifest)
+    assert parsed.document() == manifest.document()
 
 
 def test_incoherent_non_success_fields_are_unclassified() -> None:
@@ -399,8 +438,10 @@ def test_incoherent_non_success_fields_are_unclassified() -> None:
         ("codex", empty),
         ("claude-native", wrong_lane),
     ):
-        parsed = guidance.manifest_from_record({"lane": lane, "guidance_manifest": manifest})
-        assert parsed["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
+        parsed = read_manifest(
+            {"lane": lane, "worktree": "/fixture", "guidance_manifest": manifest}
+        )
+        assert parsed.document()["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
 
 
 @pytest.mark.parametrize(
@@ -411,7 +452,7 @@ def test_incoherent_non_success_fields_are_unclassified() -> None:
     ],
 )
 def test_explicit_null_guidance_evidence_is_unclassified(record: dict[str, object]) -> None:
-    assert guidance.manifest_from_record(record)["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
+    assert read_manifest(record).document()["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
 
 
 def test_claude_dispatch_records_unattributable_guidance_without_faking_sources(
@@ -838,7 +879,7 @@ def test_public_dispatch_seam_types_preflight_failure_before_record_or_child(
     record = json.dumps(document)
     assert "instruction_delivery" in record
     assert "secret-source" not in record
-    assert document["guidance_manifest"] == guidance.manifest_from_record(document)
+    assert document["guidance_manifest"] == read_manifest(document).document()
     assert document["guidance_manifest"]["delivery"] == document["instruction_delivery"]
 
     failure = guidance.GuidanceFailure("loader_exit")

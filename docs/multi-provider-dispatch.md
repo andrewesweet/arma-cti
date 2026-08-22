@@ -155,18 +155,31 @@ identities, but it cannot distinguish two source chains that render byte-identic
 it. The source identities in the proof are therefore recorded by the dispatcher rather
 than recovered from Codex's capture.
 
-Every new dispatch record also carries `guidance_manifest`. A Codex manifest is derived
-from the same proof and is `state=verified` only when that proof is complete and matched;
-its source provenance remains `expected_chain_only` for the limitation above. Claude Code
-has no bounded non-interactive loader capture, so its manifest is explicitly
-`state=unattributable`, `reason=no bounded capture`, and `sources=null`, never an empty
-successful source list. The
-state records a current harness boundary, not a permanent limitation: bounded loader or
-source evidence can make Claude attributable in a later change. The
-ledger reads this field without becoming another writer; an explicit loader-reported
-empty source list is `state=empty`, records with neither evidence field are `unknown`,
-valid pre-#503 `instruction_delivery` proofs derive `verified`, and unreadable, malformed
-or contradictory records are `unclassified`.
+Every new dispatch record also carries `guidance_manifest`. Its recordable form is one of
+four disjoint variants — verified, missing, unattributable or empty — whose state, harness,
+provenance, loader outcome, reason and source shape are fixed by the variant rather than
+accepted as independent fields. A successful Codex proof constructs only `verified`; the
+Claude Code harness, which has no bounded non-interactive loader capture, constructs only
+`unattributable`, with `reason=no bounded capture` and `sources=null`. That state records a
+current harness boundary, not a permanent limitation: bounded loader or source evidence
+can make Claude attributable in a later change.
+
+Codex metadata is typed before it reaches a manifest. The CLI release is parsed into three
+numeric version components. The launch directory is resolved inside the repository during
+preflight; when historical JSON is read, its value must resolve to the dispatch record's
+own worktree and the canonical resolution is stored. Path-shaped or version-shaped free
+text therefore has no manifest field that can retain it.
+
+Serialized `dispatch.json` is the one unavoidable after-the-fact validation seam: external
+JSON must be read before a type can be constructed, and a record may have been tampered
+after dispatch. The reader attempts exact variant construction using the selected lane's
+`runner_family` from `tools/dispatch.py`'s authoritative registry. Anything that constructs
+no variant becomes `state=unclassified`, `reason=unclassified_guidance_record`, without
+copying rejected fields. `Unknown` is a separate `GuidanceNotRecorded` reader result, not a
+`GuidanceManifest` variant, and is constructed solely when both the manifest and legacy
+proof are absent; an explicit `state=unknown` manifest therefore constructs no manifest.
+Valid pre-#503 `instruction_delivery` proofs derive `verified`. The ledger reads this
+evidence without becoming another writer.
 
 ## The worktree assertion
 

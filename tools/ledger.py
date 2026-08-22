@@ -101,6 +101,7 @@ from typing import TYPE_CHECKING, Any, Final, NamedTuple
 sys.path.insert(0, str(Path(__file__).parent))
 
 import codex_guidance
+import dispatch
 from telemetry_log import rows
 
 if TYPE_CHECKING:
@@ -1099,7 +1100,10 @@ def materialise(
     end_state = type_end_state(items, result, source)
     usage = normalise_usage(items)
     lane = plan.get("lane")
-    guidance_manifest = codex_guidance.manifest_from_record(plan)
+    registered_lane = dispatch.LANES.get(lane) if isinstance(lane, str) else None
+    guidance_manifest = codex_guidance.manifest_from_record(
+        plan, None if registered_lane is None else registered_lane.runner_family
+    )
     return {
         "schema": SCHEMA,
         "materialised_at": now.isoformat(),
@@ -1111,7 +1115,7 @@ def materialise(
         "base_sha": base_sha or None,
         "source": source.document(),
         "records": count_kinds(items),
-        "guidance_manifest": guidance_manifest,
+        "guidance_manifest": guidance_manifest.document(),
         "usage": usage.document(),
         "cap_fraction": cap_fraction(lane if isinstance(lane, str) else None, usage).document(),
         "end_state": end_state.document(),

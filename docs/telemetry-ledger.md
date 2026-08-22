@@ -72,12 +72,21 @@ gate     { outcome, landed { sha, commits, reason }, returncode, started_at, end
 ### Guidance manifest
 
 The dispatch record's `guidance_manifest` is immutable evidence written at the dispatch
-boundary. For Codex, it is derived from #502's one `GuidanceProof` capture and carries
-`state: verified`, the ordered expected source records, normalized hashes and byte counts,
-the loader outcome, and launch context. Its `source_provenance` is
-`expected_chain_only`: Codex exposes the delivered text but no bounded
-non-interactive `LoadedAgentsMd.sources()` result, so two source chains that render the
-same text cannot be told apart. The manifest never stores instruction or prompt bodies.
+boundary. Its four recordable states are separate variants whose other fields are fixed:
+no caller supplies a state beside an independently chosen harness, provenance, loader
+outcome, reason or source shape. For Codex, a successful #502 `GuidanceProof` constructs
+the verified variant and carries the ordered expected source records, normalized hashes
+and byte counts, loader outcome and launch context. Its `source_provenance` is
+`expected_chain_only`: Codex exposes the delivered text but no bounded non-interactive
+`LoadedAgentsMd.sources()` result, so two source chains that render the same text cannot
+be told apart.
+
+The proof's CLI release is parsed into numeric version components, and its launch
+directory is resolved in the repository before the manifest can hold it. A legacy proof
+is reconstructed only when that directory resolves to the dispatch record's canonical
+worktree. Serialization writes those typed values back into the existing string fields;
+it never retains their untrusted input spelling. The manifest never stores instruction or
+prompt bodies.
 
 Claude Code has no equivalent bounded capture, so a new Claude dispatch records
 `state: unattributable`, `reason: no bounded capture`, `loader_outcome: not_observable`,
@@ -85,19 +94,24 @@ and `sources: null`; it does
 not pretend that the repository's current files prove what the loader used. This records
 a current harness boundary, not a permanent limitation: a later bounded loader or source
 evidence can make Claude attributable. A record with neither manifest nor legacy proof is
-`state: unknown`; a valid pre-#503 `instruction_delivery` proof derives `verified`. Explicit
-`missing` and
-`empty` states remain different from `unattributable`; `empty` carries an explicitly
-empty source list from a loader that reported no sources. An unreadable, malformed or
-contradictory manifest is `state: unclassified`. None of these states is a successful
-empty manifest.
+`state: unknown`; this is a separate `GuidanceNotRecorded` reader result, not a
+`GuidanceManifest` variant, so an explicit `state: unknown` manifest is `unclassified`.
+A valid pre-#503 `instruction_delivery` proof derives `verified`. Explicit `missing` and
+`empty` variants remain different from `unattributable`; `empty` carries an explicitly
+empty source list from a loader that reported no sources. None of these states is a
+successful empty manifest.
+
+Persisted JSON is necessarily untyped and can be tampered after dispatch, so parsing it is
+the one after-the-fact validation exception. The reader takes the harness from
+`tools/dispatch.py`'s lane registry, attempts to construct exactly one recorded variant,
+and emits `state: unclassified`, `reason: unclassified_guidance_record` when none can be
+constructed. Rejected fields are not retained or copied to the row.
 
 The ledger reads the manifest from `dispatch.json` and exposes it under the same
 `guidance_manifest` key. For records written by #502 before this field existed, it derives
 the verified wrapper from the existing `instruction_delivery` proof; for older records
 with neither field it emits `unknown`. It never edits the dispatch record or telemetry
-source, and it rejects a malformed proof rather than copying arbitrary fields into the
-row.
+source. It writes only the constructed variant's document into the row.
 
 ### Cross-lane normalisation
 

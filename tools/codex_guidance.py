@@ -15,8 +15,9 @@ import stat
 import subprocess
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, field
+from enum import StrEnum
 from pathlib import Path
-from typing import Final
+from typing import Final, Self
 
 CODEX_PROJECT_DOC_DEFAULT_BYTES: Final = 32 * 1024
 CODEX_PROJECT_DOC_CONTAINMENT_BYTES: Final = 96 * 1024
@@ -34,95 +35,97 @@ GUIDANCE_STATE_UNATTRIBUTABLE: Final = "unattributable"
 GUIDANCE_STATE_EMPTY: Final = "empty"
 GUIDANCE_STATE_UNCLASSIFIED: Final = "unclassified"
 UNATTRIBUTABLE_REASON: Final = "no bounded capture"
-GUIDANCE_STATES: Final = (
-    GUIDANCE_STATE_VERIFIED,
-    GUIDANCE_STATE_UNKNOWN,
-    GUIDANCE_STATE_MISSING,
-    GUIDANCE_STATE_UNATTRIBUTABLE,
-    GUIDANCE_STATE_EMPTY,
-    GUIDANCE_STATE_UNCLASSIFIED,
-)
 _HASH_HEX_LENGTH: Final = 64
-_CODEX_VERSION_PATTERN: Final = re.compile(r"codex-cli \d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?")
-_VERIFIED_MANIFEST_KEYS: Final = frozenset(
-    {"schema", "state", "harness", "source_provenance", "loader_outcome", "delivery"}
+_CODEX_VERSION_PATTERN: Final = re.compile(
+    r"codex-cli (?P<major>0|[1-9]\d*)\."
+    r"(?P<minor>0|[1-9]\d*)\."
+    r"(?P<patch>0|[1-9]\d*)"
 )
-_NON_SUCCESS_MANIFEST_KEYS: Final = frozenset(
-    {
-        "schema",
-        "state",
-        "harness",
-        "source_provenance",
-        "loader_outcome",
-        "reason",
-        "sources",
-        "launch_context",
-    }
-)
-_HARNESS_BY_LANE: Final = {
-    "claude-native": "claude-code",
-    "zai": "claude-code",
-    "codex": "codex",
-}
 _INSTRUCTION_START = "# AGENTS.md instructions"
 _INSTRUCTION_OPEN = "<INSTRUCTIONS>"
 _INSTRUCTION_CLOSE = "</INSTRUCTIONS>"
 
 
-@dataclass(frozen=True)
-class _NonSuccessShape:
-    """One allowed non-success tuple, including its runner and source shape."""
+@dataclass(frozen=True, init=False)
+class CodexVersion:
+    """A parsed Codex CLI release, never an arbitrary metadata string."""
 
-    harness: str | None
-    source_provenance: str
-    loader_outcome: str
-    reason: str
-    empty_sources: bool
-    has_launch_directory: bool
+    major: int
+    minor: int
+    patch: int
+
+    @classmethod
+    def parse(cls, value: object) -> Self | None:
+        """Parse the exact CLI release grammar into numeric components."""
+        if not isinstance(value, str):
+            return None
+        match = _CODEX_VERSION_PATTERN.fullmatch(value)
+        if match is None:
+            return None
+        parsed = object.__new__(cls)
+        object.__setattr__(parsed, "major", int(match.group("major")))
+        object.__setattr__(parsed, "minor", int(match.group("minor")))
+        object.__setattr__(parsed, "patch", int(match.group("patch")))
+        return parsed
+
+    def document(self) -> str:
+        """Render only the canonical version represented by the components."""
+        return f"codex-cli {self.major}.{self.minor}.{self.patch}"
 
 
-_NON_SUCCESS_SHAPES: Final[dict[str, _NonSuccessShape]] = {
-    GUIDANCE_STATE_UNKNOWN: _NonSuccessShape(
-        harness=None,
-        source_provenance="not_available",
-        loader_outcome="not_available",
-        reason="historical_manifest_absent",
-        empty_sources=False,
-        has_launch_directory=False,
-    ),
-    GUIDANCE_STATE_MISSING: _NonSuccessShape(
-        harness="codex",
-        source_provenance="not_available",
-        loader_outcome="not_run",
-        reason="missing_preflight_manifest",
-        empty_sources=False,
-        has_launch_directory=True,
-    ),
-    GUIDANCE_STATE_UNATTRIBUTABLE: _NonSuccessShape(
-        harness="claude-code",
-        source_provenance="not_exposed",
-        loader_outcome="not_observable",
-        reason=UNATTRIBUTABLE_REASON,
-        empty_sources=False,
-        has_launch_directory=True,
-    ),
-    GUIDANCE_STATE_EMPTY: _NonSuccessShape(
-        harness="codex",
-        source_provenance="loader_reported",
-        loader_outcome="empty",
-        reason="loader_returned_no_sources",
-        empty_sources=True,
-        has_launch_directory=True,
-    ),
-    GUIDANCE_STATE_UNCLASSIFIED: _NonSuccessShape(
-        harness=None,
-        source_provenance="not_available",
-        loader_outcome="not_available",
-        reason="unclassified_guidance_record",
-        empty_sources=False,
-        has_launch_directory=False,
-    ),
-}
+@dataclass(frozen=True, init=False)
+class ResolvedLaunchDirectory:
+    """A canonical directory resolved against the repository that launched Codex."""
+
+    path: Path
+
+    @classmethod
+    def in_repository(cls, directory: Path, repository: Path) -> Self | None:
+        """Resolve one existing launch directory inside an existing repository."""
+        try:
+            resolved_repository = repository.resolve(strict=True)
+            resolved = directory.resolve(strict=True)
+            resolved.relative_to(resolved_repository)
+            if not resolved.is_dir():
+                return None
+        except (OSError, ValueError):
+            return None
+        return cls._from_resolved(resolved)
+
+    @classmethod
+    def matching_worktree(cls, value: object, worktree: object) -> Self | None:
+        """Resolve recorded text only when it names the record's own worktree."""
+        if not isinstance(value, str) or not isinstance(worktree, str):
+            return None
+        try:
+            candidate = Path(value)
+            expected = Path(worktree)
+            if not candidate.is_absolute() or not expected.is_absolute():
+                return None
+            resolved = candidate.resolve(strict=False)
+            resolved_worktree = expected.resolve(strict=False)
+        except (OSError, ValueError):
+            return None
+        if resolved != resolved_worktree:
+            return None
+        return cls._from_resolved(resolved_worktree)
+
+    @classmethod
+    def _from_resolved(cls, path: Path) -> Self:
+        resolved = object.__new__(cls)
+        object.__setattr__(resolved, "path", path)
+        return resolved
+
+    def document(self) -> str:
+        """Render the canonical resolution, never the untrusted input spelling."""
+        return str(self.path)
+
+
+class GuidanceHarness(StrEnum):
+    """Runner families as recorded by the authoritative lane registry."""
+
+    CLAUDE_CODE = "claude-code"
+    CODEX = "codex"
 
 
 def loader_overrides(max_bytes: int = CODEX_PROJECT_DOC_CONTAINMENT_BYTES) -> tuple[str, ...]:
@@ -163,8 +166,8 @@ class SourceRecord:
 class GuidanceProof:
     """The safe, content-free measurements recorded for an allowed Codex dispatch."""
 
-    codex_version: str
-    launch_directory: str
+    codex_version: CodexVersion
+    launch_directory: ResolvedLaunchDirectory
     project_doc_max_bytes: int
     sources: tuple[SourceRecord, ...]
     raw_project_bytes: int
@@ -183,8 +186,8 @@ class GuidanceProof:
         return {
             "schema": CODEX_GUIDANCE_SCHEMA,
             "normalization": CODEX_GUIDANCE_NORMALIZATION,
-            "codex_version": self.codex_version,
-            "launch_directory": self.launch_directory,
+            "codex_version": self.codex_version.document(),
+            "launch_directory": self.launch_directory.document(),
             "project_doc_max_bytes": self.project_doc_max_bytes,
             "source_paths": [source.path for source in self.sources],
             "sources": [source.document() for source in self.sources],
@@ -200,18 +203,134 @@ class GuidanceProof:
             "combined_delivered_sha256": self.combined_delivered_sha256,
         }
 
-    def manifest_document(self) -> dict[str, object]:
-        """Render the dispatch manifest from this proof, without another capture."""
+    def manifest(self) -> VerifiedGuidanceManifest:
+        """Construct the sole manifest variant a successful proof can inhabit."""
+        return VerifiedGuidanceManifest(self)
+
+
+@dataclass(frozen=True)
+class VerifiedGuidanceManifest:
+    """A complete matched Codex proof; no state or tuple can be supplied by a caller."""
+
+    delivery: GuidanceProof
+
+    def document(self) -> dict[str, object]:
+        """Render the only valid verified-manifest shape."""
         return {
             "schema": GUIDANCE_MANIFEST_SCHEMA,
             "state": GUIDANCE_STATE_VERIFIED,
-            "harness": "codex",
+            "harness": GuidanceHarness.CODEX.value,
             # Codex reports delivered text but not LoadedAgentsMd.sources(). The paths below
             # are the independently derived expected chain, never a claim about loader origin.
             "source_provenance": "expected_chain_only",
             "loader_outcome": "matched",
-            "delivery": self.document(),
+            "delivery": self.delivery.document(),
         }
+
+
+@dataclass(frozen=True)
+class MissingGuidanceManifest:
+    """A Codex dispatch whose required preflight proof was absent."""
+
+    launch_directory: ResolvedLaunchDirectory
+
+    def document(self) -> dict[str, object]:
+        """Render the only valid missing-manifest shape."""
+        return {
+            "schema": GUIDANCE_MANIFEST_SCHEMA,
+            "state": GUIDANCE_STATE_MISSING,
+            "harness": GuidanceHarness.CODEX.value,
+            "source_provenance": "not_available",
+            "loader_outcome": "not_run",
+            "reason": "missing_preflight_manifest",
+            "sources": None,
+            "launch_context": {"launch_directory": self.launch_directory.document()},
+        }
+
+
+@dataclass(frozen=True)
+class UnattributableGuidanceManifest:
+    """A Claude Code dispatch whose harness exposes no bounded source capture."""
+
+    launch_directory: ResolvedLaunchDirectory
+
+    def document(self) -> dict[str, object]:
+        """Render the only valid unattributable-manifest shape."""
+        return {
+            "schema": GUIDANCE_MANIFEST_SCHEMA,
+            "state": GUIDANCE_STATE_UNATTRIBUTABLE,
+            "harness": GuidanceHarness.CLAUDE_CODE.value,
+            "source_provenance": "not_exposed",
+            "loader_outcome": "not_observable",
+            "reason": UNATTRIBUTABLE_REASON,
+            "sources": None,
+            "launch_context": {"launch_directory": self.launch_directory.document()},
+        }
+
+
+@dataclass(frozen=True)
+class EmptyGuidanceManifest:
+    """A Codex loader result that explicitly reported no active sources."""
+
+    launch_directory: ResolvedLaunchDirectory
+
+    def document(self) -> dict[str, object]:
+        """Render the only valid empty-manifest shape."""
+        return {
+            "schema": GUIDANCE_MANIFEST_SCHEMA,
+            "state": GUIDANCE_STATE_EMPTY,
+            "harness": GuidanceHarness.CODEX.value,
+            "source_provenance": "loader_reported",
+            "loader_outcome": "empty",
+            "reason": "loader_returned_no_sources",
+            "sources": [],
+            "launch_context": {"launch_directory": self.launch_directory.document()},
+        }
+
+
+@dataclass(frozen=True)
+class GuidanceNotRecorded:
+    """Reader result for a historical record carrying no guidance manifest."""
+
+    def document(self) -> dict[str, object]:
+        """Render absence found by the reader, never a guidance-manifest variant."""
+        return {
+            "schema": GUIDANCE_MANIFEST_SCHEMA,
+            "state": GUIDANCE_STATE_UNKNOWN,
+            "harness": None,
+            "source_provenance": "not_available",
+            "loader_outcome": "not_available",
+            "reason": "historical_manifest_absent",
+            "sources": None,
+            "launch_context": {},
+        }
+
+
+@dataclass(frozen=True)
+class UnclassifiedGuidanceRecord:
+    """Reader result for external JSON that constructs no guidance manifest."""
+
+    def document(self) -> dict[str, object]:
+        """Render the safe category without copying the rejected document."""
+        return {
+            "schema": GUIDANCE_MANIFEST_SCHEMA,
+            "state": GUIDANCE_STATE_UNCLASSIFIED,
+            "harness": None,
+            "source_provenance": "not_available",
+            "loader_outcome": "not_available",
+            "reason": "unclassified_guidance_record",
+            "sources": None,
+            "launch_context": {},
+        }
+
+
+type GuidanceManifest = (
+    VerifiedGuidanceManifest
+    | MissingGuidanceManifest
+    | UnattributableGuidanceManifest
+    | EmptyGuidanceManifest
+)
+type GuidanceRecord = GuidanceManifest | GuidanceNotRecorded | UnclassifiedGuidanceRecord
 
 
 @dataclass(frozen=True)
@@ -219,8 +338,8 @@ class GuidanceFailure:
     """A safe preflight failure; raw child output is intentionally never exposed."""
 
     reason: str
-    codex_version: str = ""
-    launch_directory: str = ""
+    codex_version: CodexVersion | None = None
+    launch_directory: ResolvedLaunchDirectory | None = None
     project_doc_max_bytes: int = CODEX_PROJECT_DOC_CONTAINMENT_BYTES
     source_paths: tuple[str, ...] = ()
     evidence: GuidanceProof | None = None
@@ -247,74 +366,16 @@ class GuidanceFailure:
         if self.evidence is not None:
             lines.extend(_proof_lines(self.evidence))
             return tuple(lines)
-        if self.codex_version:
-            lines.append(f"codex_version={self.codex_version}")
-        if self.launch_directory:
-            lines.append(f"launch_directory={self.launch_directory}")
+        if self.codex_version is not None:
+            lines.append(f"codex_version={self.codex_version.document()}")
+        if self.launch_directory is not None:
+            lines.append(f"launch_directory={self.launch_directory.document()}")
         lines.append(f"project_doc_max_bytes={self.project_doc_max_bytes}")
         lines.extend(f"source_path={path}" for path in self.source_paths)
         return tuple(lines)
 
 
 GuidanceResult = GuidanceProof | GuidanceFailure
-
-
-def _manifest_for_shape(
-    state: str,
-    launch_directory: str | None = None,
-    *,
-    harness: str | None = None,
-    reason: str | None = None,
-) -> dict[str, object]:
-    shape = _NON_SUCCESS_SHAPES[state]
-    if harness is not None and harness != shape.harness:
-        message = "manifest harness does not match state"
-        raise ValueError(message)
-    if reason is not None and reason != shape.reason:
-        message = "manifest reason does not match state"
-        raise ValueError(message)
-    if shape.has_launch_directory != (launch_directory is not None):
-        message = "manifest launch context does not match state"
-        raise ValueError(message)
-    return {
-        "schema": GUIDANCE_MANIFEST_SCHEMA,
-        "state": state,
-        "harness": shape.harness,
-        "source_provenance": shape.source_provenance,
-        "loader_outcome": shape.loader_outcome,
-        "reason": shape.reason if reason is None else reason,
-        "sources": [] if shape.empty_sources else None,
-        "launch_context": (
-            {"launch_directory": launch_directory} if shape.has_launch_directory else {}
-        ),
-    }
-
-
-def unattributable_manifest(harness: str, launch_directory: str, reason: str) -> dict[str, object]:
-    """Describe a harness whose bounded non-interactive loader output is unavailable."""
-    return _manifest_for_shape(
-        GUIDANCE_STATE_UNATTRIBUTABLE,
-        launch_directory,
-        harness=harness,
-        reason=reason,
-    )
-
-
-def missing_manifest(harness: str, launch_directory: str) -> dict[str, object]:
-    """Describe a dispatch that lacks the preflight manifest it was required to carry."""
-    return _manifest_for_shape(GUIDANCE_STATE_MISSING, launch_directory, harness=harness)
-
-
-def _state_manifest(state: str) -> dict[str, object]:
-    return _manifest_for_shape(state)
-
-
-def _unknown_manifest() -> dict[str, object]:
-    return _state_manifest(GUIDANCE_STATE_UNKNOWN)
-
-
-def _unclassified_manifest() -> dict[str, object]:
-    return _state_manifest(GUIDANCE_STATE_UNCLASSIFIED)
 
 
 def _valid_hash(value: object) -> bool:
@@ -327,21 +388,6 @@ def _valid_hash(value: object) -> bool:
 
 def _valid_nonnegative_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool) and value >= 0
-
-
-def _valid_codex_version(value: object) -> bool:
-    return isinstance(value, str) and _CODEX_VERSION_PATTERN.fullmatch(value) is not None
-
-
-def _valid_launch_directory(value: object) -> bool:
-    if not isinstance(value, str) or not value or not value.isprintable():
-        return False
-    path = Path(value)
-    return (
-        path.is_absolute()
-        and str(path) == value
-        and all(part not in {".", ".."} for part in path.parts)
-    )
 
 
 def _valid_source(value: object) -> bool:
@@ -357,7 +403,14 @@ def _valid_source(value: object) -> bool:
     )
 
 
-def _valid_proof(value: object) -> bool:
+def _proof_from_document(value: object, worktree: object) -> GuidanceProof | None:
+    """Parse untyped JSON at its unavoidable boundary into proof value objects.
+
+    Serialized historical records can carry arbitrary JSON, so this is the one place
+    validation remains after the fact. Nothing past this seam receives the raw version or
+    launch-directory strings, and any document that cannot construct the typed proof becomes
+    `unclassified` without being copied.
+    """
     required = {
         "schema",
         "normalization",
@@ -378,7 +431,7 @@ def _valid_proof(value: object) -> bool:
         "combined_delivered_sha256",
     }
     if not isinstance(value, Mapping) or set(value) != required:
-        return False
+        return None
     sources = value["sources"]
     source_paths = value["source_paths"]
     if (
@@ -388,14 +441,18 @@ def _valid_proof(value: object) -> bool:
         or not isinstance(source_paths, list)
         or source_paths != [source["path"] for source in sources]
     ):
-        return False
+        return None
     if not all(isinstance(path, str) for path in source_paths):
-        return False
+        return None
+    codex_version = CodexVersion.parse(value["codex_version"])
+    launch_directory = ResolvedLaunchDirectory.matching_worktree(
+        value["launch_directory"], worktree
+    )
     if (
         value["schema"] != CODEX_GUIDANCE_SCHEMA
         or value["normalization"] != CODEX_GUIDANCE_NORMALIZATION
-        or not _valid_codex_version(value["codex_version"])
-        or not _valid_launch_directory(value["launch_directory"])
+        or codex_version is None
+        or launch_directory is None
         or not _valid_nonnegative_int(value["project_doc_max_bytes"])
         or not _valid_nonnegative_int(value["raw_project_bytes"])
         or not _valid_nonnegative_int(value["expected_project_bytes"])
@@ -408,125 +465,127 @@ def _valid_proof(value: object) -> bool:
         or not _valid_hash(value["global_delivered_sha256"])
         or not _valid_hash(value["combined_delivered_sha256"])
     ):
-        return False
-    return (
-        value["raw_project_bytes"] == sum(source["raw_bytes"] for source in sources)
-        and value["expected_project_bytes"] == value["delivered_project_bytes"]
-        and value["expected_project_sha256"] == value["delivered_project_sha256"]
-        and value["global_expected_bytes"] == value["global_delivered_bytes"]
-        and value["global_expected_sha256"] == value["global_delivered_sha256"]
-    )
-
-
-def _manifest_from_proof(value: object) -> dict[str, object] | None:
-    if not _valid_proof(value):
         return None
-    return {
-        "schema": GUIDANCE_MANIFEST_SCHEMA,
-        "state": GUIDANCE_STATE_VERIFIED,
-        "harness": "codex",
-        "source_provenance": "expected_chain_only",
-        "loader_outcome": "matched",
-        "delivery": dict(value),
-    }
+    if (
+        value["raw_project_bytes"] != sum(source["raw_bytes"] for source in sources)
+        or value["expected_project_bytes"] != value["delivered_project_bytes"]
+        or value["expected_project_sha256"] != value["delivered_project_sha256"]
+        or value["global_expected_bytes"] != value["global_delivered_bytes"]
+        or value["global_expected_sha256"] != value["global_delivered_sha256"]
+    ):
+        return None
+    proof = GuidanceProof(
+        codex_version=codex_version,
+        launch_directory=launch_directory,
+        project_doc_max_bytes=value["project_doc_max_bytes"],
+        sources=tuple(
+            SourceRecord(
+                path=source["path"],
+                raw_bytes=source["raw_bytes"],
+                sha256=source["sha256"],
+                text="",
+            )
+            for source in sources
+        ),
+        raw_project_bytes=value["raw_project_bytes"],
+        expected_project_bytes=value["expected_project_bytes"],
+        expected_project_sha256=value["expected_project_sha256"],
+        delivered_project_bytes=value["delivered_project_bytes"],
+        delivered_project_sha256=value["delivered_project_sha256"],
+        global_expected_bytes=value["global_expected_bytes"],
+        global_expected_sha256=value["global_expected_sha256"],
+        global_delivered_bytes=value["global_delivered_bytes"],
+        global_delivered_sha256=value["global_delivered_sha256"],
+        combined_delivered_sha256=value["combined_delivered_sha256"],
+    )
+    canonical_input = dict(value)
+    canonical_input["launch_directory"] = launch_directory.document()
+    return proof if proof.document() == canonical_input else None
 
 
-def _launch_context_document(value: object) -> dict[str, object] | None:
+def _manifest_from_proof(value: object, worktree: object) -> VerifiedGuidanceManifest | None:
+    proof = _proof_from_document(value, worktree)
+    return None if proof is None else proof.manifest()
+
+
+def _launch_context(value: object, worktree: object) -> ResolvedLaunchDirectory | None:
     if not isinstance(value, Mapping) or set(value) != {"launch_directory"}:
         return None
-    directory = value["launch_directory"]
-    if not _valid_launch_directory(directory):
-        return None
-    return {"launch_directory": directory}
+    return ResolvedLaunchDirectory.matching_worktree(value["launch_directory"], worktree)
 
 
-def _parse_verified_manifest(value: Mapping[str, object]) -> dict[str, object] | None:
-    if set(value) != _VERIFIED_MANIFEST_KEYS or value.get("harness") != "codex":
-        return None
-    if value.get("source_provenance") != "expected_chain_only":
-        return None
-    if value.get("loader_outcome") != "matched":
-        return None
-    return _manifest_from_proof(value.get("delivery"))
+def _parse_manifest(
+    value: object,
+    worktree: object,
+    harness: GuidanceHarness | None,
+) -> GuidanceManifest | None:
+    """Construct one recorded variant from external JSON, or no variant at all.
 
-
-def _parse_non_success_manifest(
-    value: Mapping[str, object], state: str
-) -> dict[str, object] | None:
-    shape = _NON_SUCCESS_SHAPES.get(state)
-    if shape is None or set(value) != _NON_SUCCESS_MANIFEST_KEYS:
-        return None
-    if shape.has_launch_directory:
-        launch_context = _launch_context_document(value["launch_context"])
-    else:
-        launch_context = {} if value["launch_context"] == {} else None
-    sources = value["sources"]
-    valid_sources = sources == [] if shape.empty_sources else sources is None
-    fields_mismatch = (
-        value["harness"] != shape.harness
-        or value["source_provenance"] != shape.source_provenance
-        or value["loader_outcome"] != shape.loader_outcome
-        or value["reason"] != shape.reason
-    )
-    if launch_context is None or not valid_sources or fields_mismatch:
-        return None
-    return {
-        "schema": GUIDANCE_MANIFEST_SCHEMA,
-        "state": state,
-        "harness": shape.harness,
-        "source_provenance": shape.source_provenance,
-        "loader_outcome": shape.loader_outcome,
-        "reason": shape.reason,
-        "sources": sources,
-        "launch_context": launch_context,
-    }
-
-
-def _parse_manifest(value: object) -> dict[str, object] | None:
+    A serialized record is necessarily untyped and may be tampered after dispatch. This
+    boundary parser is the argued exception to unrepresentable invalid states: it must inspect
+    bytes before it can construct a type. Exact comparison is against each variant's own
+    serializer, so no second tuple table exists and rejected free text is never retained.
+    """
     if not isinstance(value, Mapping) or value.get("schema") != GUIDANCE_MANIFEST_SCHEMA:
         return None
     state = value.get("state")
-    if state == GUIDANCE_STATE_VERIFIED:
-        return _parse_verified_manifest(value)
-    if not isinstance(state, str) or state not in GUIDANCE_STATES:
+    candidate: GuidanceManifest | None = None
+    if state == GUIDANCE_STATE_VERIFIED and harness is GuidanceHarness.CODEX:
+        candidate = _manifest_from_proof(value.get("delivery"), worktree)
+    elif state in (
+        GUIDANCE_STATE_MISSING,
+        GUIDANCE_STATE_UNATTRIBUTABLE,
+        GUIDANCE_STATE_EMPTY,
+    ):
+        launch_directory = _launch_context(value.get("launch_context"), worktree)
+        if launch_directory is None:
+            return None
+        if state == GUIDANCE_STATE_MISSING and harness is GuidanceHarness.CODEX:
+            candidate = MissingGuidanceManifest(launch_directory)
+        elif state == GUIDANCE_STATE_UNATTRIBUTABLE and harness is GuidanceHarness.CLAUDE_CODE:
+            candidate = UnattributableGuidanceManifest(launch_directory)
+        elif state == GUIDANCE_STATE_EMPTY and harness is GuidanceHarness.CODEX:
+            candidate = EmptyGuidanceManifest(launch_directory)
+    if candidate is None:
         return None
-    return _parse_non_success_manifest(value, state)
+    canonical_input = dict(value)
+    if isinstance(candidate, VerifiedGuidanceManifest):
+        canonical_input["delivery"] = candidate.delivery.document()
+    else:
+        canonical_input["launch_context"] = {
+            "launch_directory": candidate.launch_directory.document()
+        }
+    return candidate if candidate.document() == canonical_input else None
 
 
-def _manifest_matches_lane(record: Mapping[str, object], manifest: Mapping[str, object]) -> bool:
-    harness = manifest.get("harness")
-    if harness is None:
-        return True
-    lane = record.get("lane")
-    return isinstance(lane, str) and _HARNESS_BY_LANE.get(lane) == harness
-
-
-def manifest_from_record(record: Mapping[str, object]) -> dict[str, object]:
-    """Read one manifest from a dispatch record without copying arbitrary record data."""
+def manifest_from_record(
+    record: Mapping[str, object], harness: GuidanceHarness | None
+) -> GuidanceRecord:
+    """Read one typed manifest without copying arbitrary dispatch-record data."""
     has_manifest = "guidance_manifest" in record
     has_legacy = "instruction_delivery" in record
+    worktree = record.get("worktree")
     if not has_manifest:
         if not has_legacy:
-            return _unknown_manifest()
-        parsed_legacy = _manifest_from_proof(record["instruction_delivery"])
+            return GuidanceNotRecorded()
+        parsed_legacy = _manifest_from_proof(record["instruction_delivery"], worktree)
         return (
             parsed_legacy
-            if parsed_legacy is not None and _manifest_matches_lane(record, parsed_legacy)
-            else _unclassified_manifest()
+            if (parsed_legacy is not None and harness is GuidanceHarness.CODEX)
+            else UnclassifiedGuidanceRecord()
         )
-    value = record["guidance_manifest"]
-    parsed = _parse_manifest(value)
-    if parsed is None or not _manifest_matches_lane(record, parsed):
-        return _unclassified_manifest()
-    legacy_matches = True
+    parsed = _parse_manifest(record["guidance_manifest"], worktree, harness)
+    if parsed is None:
+        return UnclassifiedGuidanceRecord()
     if has_legacy:
-        parsed_legacy = _manifest_from_proof(record["instruction_delivery"])
-        legacy_matches = (
-            parsed["state"] == GUIDANCE_STATE_VERIFIED
-            and parsed_legacy is not None
-            and parsed["delivery"] == parsed_legacy["delivery"]
-        )
-    return parsed if legacy_matches else _unclassified_manifest()
+        parsed_legacy = _manifest_from_proof(record["instruction_delivery"], worktree)
+        if (
+            not isinstance(parsed, VerifiedGuidanceManifest)
+            or parsed_legacy is None
+            or parsed.delivery != parsed_legacy.delivery
+        ):
+            return UnclassifiedGuidanceRecord()
+    return parsed
 
 
 def normalize(text: str) -> str:
@@ -553,8 +612,8 @@ def _proof_lines(proof: GuidanceProof) -> tuple[str, ...]:
     lines = [
         f"schema={CODEX_GUIDANCE_SCHEMA}",
         f"normalization={CODEX_GUIDANCE_NORMALIZATION}",
-        f"codex_version={proof.codex_version}",
-        f"launch_directory={proof.launch_directory}",
+        f"codex_version={proof.codex_version.document()}",
+        f"launch_directory={proof.launch_directory.document()}",
         f"project_doc_max_bytes={proof.project_doc_max_bytes}",
         f"raw_project_bytes={proof.raw_project_bytes}",
         f"expected_project_bytes={proof.expected_project_bytes}",
@@ -575,15 +634,15 @@ def _failure(  # noqa: PLR0913 — the safe failure carries the bounded prefligh
     reason: str,
     context: LaunchContext,
     *,
-    launch_directory: Path | None = None,
-    codex_version: str = "",
+    launch_directory: ResolvedLaunchDirectory | None = None,
+    codex_version: CodexVersion | None = None,
     source_paths: tuple[str, ...] = (),
     evidence: GuidanceProof | None = None,
 ) -> GuidanceFailure:
     return GuidanceFailure(
         reason=reason,
         codex_version=codex_version,
-        launch_directory="" if launch_directory is None else str(launch_directory),
+        launch_directory=launch_directory,
         project_doc_max_bytes=_project_doc_max(context.loader_config),
         source_paths=source_paths,
         evidence=evidence,
@@ -635,7 +694,7 @@ def _run(
         return _failure("loader_exit", context)
 
 
-def _codex_version(context: LaunchContext) -> str | GuidanceFailure:
+def _codex_version(context: LaunchContext) -> CodexVersion | GuidanceFailure:
     result = _run((context.executable, "--version"), context)
     if isinstance(result, GuidanceFailure):
         return result
@@ -645,8 +704,9 @@ def _codex_version(context: LaunchContext) -> str | GuidanceFailure:
         output = result.stdout.decode("utf-8", errors="strict")
     except UnicodeDecodeError:
         return _failure("loader_exit", context)
-    version = next((line.strip() for line in output.splitlines() if line.strip()), "")
-    if not version:
+    rendered = next((line.strip() for line in output.splitlines() if line.strip()), "")
+    version = CodexVersion.parse(rendered)
+    if version is None:
         return _failure("loader_exit", context)
     return version
 
@@ -696,8 +756,8 @@ def _capture(  # noqa: PLR0913 — each capture needs its scope and safe diagnos
     *,
     max_bytes: int,
     global_only: bool,
-    codex_version: str,
-    launch_directory: Path,
+    codex_version: CodexVersion,
+    launch_directory: ResolvedLaunchDirectory,
     source_paths: tuple[str, ...],
 ) -> tuple[str, GuidanceFailure] | tuple[None, GuidanceFailure] | tuple[str, None]:
     overrides = _with_project_doc_max(context.loader_config, max_bytes)
@@ -771,16 +831,13 @@ def _git_root(context: LaunchContext) -> Path | GuidanceFailure:
         return _failure("project_root_unavailable", context)
 
 
-def _launch_directory(context: LaunchContext, root: Path) -> Path | GuidanceFailure:
-    try:
-        launch = context.cwd.resolve(strict=True)
-        launch.relative_to(root)
-        if not launch.is_dir():
-            return _failure("launch_directory_unavailable", context)
-    except (OSError, ValueError):
+def _launch_directory(
+    context: LaunchContext, root: Path
+) -> ResolvedLaunchDirectory | GuidanceFailure:
+    launch = ResolvedLaunchDirectory.in_repository(context.cwd, root)
+    if launch is None:
         return _failure("launch_directory_unavailable", context)
-    else:
-        return launch
+    return launch
 
 
 def _directories(root: Path, launch: Path) -> tuple[Path, ...]:
@@ -805,11 +862,11 @@ def _select_source(directory: Path) -> Path | GuidanceFailure | None:
 
 
 def _read_sources(
-    root: Path, launch: Path, context: LaunchContext
+    root: Path, launch: ResolvedLaunchDirectory, context: LaunchContext
 ) -> tuple[tuple[SourceRecord, ...], GuidanceFailure | None]:
     sources: list[SourceRecord] = []
     paths: list[str] = []
-    for directory in _directories(root, launch):
+    for directory in _directories(root, launch.path):
         selected = _select_source(directory)
         if isinstance(selected, GuidanceFailure):
             return (), _failure(
@@ -857,8 +914,8 @@ def _project_text(sources: tuple[SourceRecord, ...]) -> str:
 
 def _evidence(  # noqa: PLR0913 — one immutable measurement object owns all proof fields
     *,
-    version: str,
-    launch: Path,
+    version: CodexVersion,
+    launch: ResolvedLaunchDirectory,
     max_bytes: int,
     sources: tuple[SourceRecord, ...],
     expected_project: str,
@@ -869,7 +926,7 @@ def _evidence(  # noqa: PLR0913 — one immutable measurement object owns all pr
 ) -> GuidanceProof:
     return GuidanceProof(
         codex_version=version,
-        launch_directory=str(launch),
+        launch_directory=launch,
         project_doc_max_bytes=max_bytes,
         sources=sources,
         raw_project_bytes=sum(source.raw_bytes for source in sources),

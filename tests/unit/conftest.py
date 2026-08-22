@@ -86,6 +86,34 @@ def load_hook(name: str) -> ModuleType:
     return _load_script(name.replace("-", "_"), HOOKS / f"{name}.py")
 
 
+def codex_guidance_proof_document(
+    guidance: ModuleType,
+    launch_directory: Path,
+    *,
+    source_sha: str = "a" * 64,
+) -> dict[str, Any]:
+    """Build one content-free #502 proof at its dispatch-record seam."""
+    return {
+        "schema": guidance.CODEX_GUIDANCE_SCHEMA,
+        "normalization": guidance.CODEX_GUIDANCE_NORMALIZATION,
+        "codex_version": "codex-cli 0.147.0",
+        "launch_directory": str(launch_directory.resolve()),
+        "project_doc_max_bytes": 98304,
+        "source_paths": ["AGENTS.md"],
+        "sources": [{"path": "AGENTS.md", "raw_bytes": 6, "sha256": source_sha}],
+        "raw_project_bytes": 6,
+        "expected_project_bytes": 6,
+        "expected_project_sha256": source_sha,
+        "delivered_project_bytes": 6,
+        "delivered_project_sha256": source_sha,
+        "global_expected_bytes": 0,
+        "global_expected_sha256": "b" * 64,
+        "global_delivered_bytes": 0,
+        "global_delivered_sha256": "b" * 64,
+        "combined_delivered_sha256": "c" * 64,
+    }
+
+
 def _load_script(name: str, path: Path) -> ModuleType:
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
