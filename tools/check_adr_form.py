@@ -138,6 +138,11 @@ def body(source: str) -> str:
     return "\n".join(_split(source)[1])
 
 
+def has_delegated_marker(source: str) -> bool:
+    """Whether ADR-0013's marker appears in the form's field block."""
+    return MARKER.search(field_block(source)) is not None
+
+
 def governed(path: str) -> bool:
     """Return whether the supersession convention binds this ADR."""
     found = ADR_NUMBER.match(path.rsplit("/", 1)[-1])
@@ -159,7 +164,7 @@ def scan_source(source: str, path: str) -> list[Finding]:
             )
         )
 
-    if not MARKER.search(header):
+    if not has_delegated_marker(source):
         return findings
     if not OVERTURN.search(body(source)):
         findings.append(

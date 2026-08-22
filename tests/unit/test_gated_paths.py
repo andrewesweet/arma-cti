@@ -373,6 +373,22 @@ def test_a_changed_delegated_adr_keeps_adr_0013s_authorisation_route(tmp_path: P
     assert "delegated_record=docs/adr/9999-delegated.md" in report.lines
 
 
+def test_a_body_marker_does_not_authorise_a_gated_edit(tmp_path: Path) -> None:
+    repo = repository(tmp_path)
+    adr = repo / "docs" / "adr" / "9999-not-delegated.md"
+    adr.parent.mkdir(parents=True)
+    adr.write_text(
+        "# Not delegated\n\nDate: 2026-08-22\n\n## Body\n\nDelegated-decision: yes\n",
+        encoding="utf-8",
+    )
+    (repo / "AGENTS.md").write_text("unauthorised instructions\n", encoding="utf-8")
+
+    report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
+
+    assert report.exit_code == 1
+    assert "refusal=approval_missing" in report.lines
+
+
 def test_an_old_delegated_adr_does_not_authorise_a_new_edit(tmp_path: Path) -> None:
     repo = repository(tmp_path)
     adr = repo / "docs" / "adr" / "9999-delegated.md"
@@ -416,6 +432,25 @@ def test_the_catalogue_owns_the_delegated_adr_path_and_marker() -> None:
     assert not gated_paths.is_delegated_decision_record(
         "docs/adr/9999-delegated.md",
         "Proposed marker: Delegated-decision: yes\n",
+    )
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "# Not delegated\n\nDate: 2026-08-22\n\n## Body\n\nDelegated-decision: yes\n",
+        "# Not delegated\n\nDate: 2026-08-22\n\n```\nDelegated-decision: yes\n```\n",
+        (
+            "# Not delegated\n\nDate: 2026-08-22\n\n<blockquote>\n"
+            "Delegated-decision: yes\n</blockquote>\n"
+        ),
+    ],
+    ids=("body", "fence", "quotation"),
+)
+def test_only_a_field_block_marker_is_a_delegated_record(source: str) -> None:
+    assert not gated_paths.is_delegated_decision_record(
+        "docs/adr/9999-not-delegated.md",
+        source,
     )
 
 

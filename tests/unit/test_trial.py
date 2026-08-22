@@ -739,7 +739,7 @@ def test_criterion_four_is_met_where_a_delegated_decision_was_recorded(tmp_path:
         repo,
         {
             "CONTEXT.md": "# ctx\n",
-            "docs/adr/ADR-9999.md": "---\nDelegated-decision: yes\n---\n# a delegation\n",
+            "docs/adr/ADR-9999.md": "# A delegation\n\nDelegated-decision: yes\n",
         },
         "edit a gated surface under that delegation",
     )
@@ -752,7 +752,7 @@ def test_an_unrelated_delegated_adr_does_not_approve_a_later_gated_edit(tmp_path
     repo = tmp_path / "repo"
     commit(
         repo,
-        {"docs/adr/ADR-9999.md": "---\nDelegated-decision: yes\n---\n# another decision\n"},
+        {"docs/adr/ADR-9999.md": "# Another decision\n\nDelegated-decision: yes\n"},
         "an earlier delegation",
     )
     sha = commit(repo, {"CONTEXT.md": "# ctx\n"}, "an unrelated gated edit")
@@ -762,7 +762,7 @@ def test_an_unrelated_delegated_adr_does_not_approve_a_later_gated_edit(tmp_path
 
 def test_the_delegated_decision_marker_is_a_line_not_a_fragment(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
-    # The marker as prose inside a sentence must not count: the grep is anchored to a line.
+    # A marker in body prose must not count: only the ADR field block records delegation.
     commit(
         repo,
         {"docs/adr/ADR-9998.md": "We discussed Delegated-decision: yes as an option.\n"},

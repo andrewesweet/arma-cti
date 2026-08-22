@@ -1286,7 +1286,7 @@ def _landing_shas(
 
 
 def delegated_decisions_in(repo: Path, shas: Sequence[str]) -> tuple[str, ...]:
-    """List changed ADRs in this landing that carry ADR-0013's exact marker line."""
+    """List changed ADRs carrying ADR-0013's marker in their field block."""
     found: list[str] = []
     for sha in shas:
         paths = landing_paths(repo, sha)

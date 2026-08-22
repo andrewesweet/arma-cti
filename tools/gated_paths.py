@@ -18,8 +18,8 @@ bytes.  This keeps an unrelated textual baseline edit without letting an
 identical hunk moved elsewhere reuse approval.  Another branch-side hunk or an
 altered approved hunk cannot carry.  Binary and non-regular diffs need fresh
 approval after a same-path baseline change.  A changed ADR carrying ADR-0013's
-exact ``Delegated-decision: yes`` line remains the standing-authorisation route
-AGENTS.md defines.
+exact ``Delegated-decision: yes`` line in the field block parsed by
+``check_adr_form.py`` remains the standing-authorisation route AGENTS.md defines.
 
 The approval command refuses a dispatched session.  Like #398's interactive
 authorship record, that is a mechanical floor rather than an identity proof: a
@@ -50,6 +50,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NamedTuple, cast
 
+# tools/ holds standalone scripts rather than an importable package, so a sibling import
+# needs the script's own directory on the path — the device `trial.py` uses.
+sys.path.insert(0, str(Path(__file__).parent))
+
+# ADR form owns the field-block boundary.  The authorisation gate asks it whether the
+# marker is there rather than growing a second parser for the same document shape.
+import check_adr_form
+
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator, Mapping, Sequence
 
@@ -58,7 +66,6 @@ APPROVAL_VERSION: Final = 2
 RECORD_MODE: Final = 0o600
 APPROVAL_SOURCE: Final = "declared_human"
 APPROVER_SOURCE: Final = "os_user"
-DELEGATED_DECISION_MARKER: Final = "Delegated-decision: yes"
 CONTENT_ID: Final = re.compile(r"\A[0-9a-f]{64}\Z")
 COMMIT_SHA: Final = re.compile(r"\A(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 ISSUE_WORKTREE: Final = re.compile(r"\Aissue-(\d+)\Z")
@@ -280,7 +287,7 @@ def is_delegated_decision_record(
     return bool(
         normalised
         and ADR_SIGNOFF_GATE.matches(normalised)
-        and DELEGATED_DECISION_MARKER in source.splitlines()
+        and check_adr_form.has_delegated_marker(source)
     )
 
 
@@ -741,7 +748,7 @@ def _stored_approvals(root: Path, issue: int) -> tuple[tuple[Path, Approval], ..
 
 
 def delegated_decisions(root: Path, paths: Sequence[str]) -> tuple[str, ...]:
-    """Return changed ADRs carrying ADR-0013's exact marker line."""
+    """Return changed ADRs carrying ADR-0013's marker in their field block."""
     found: list[str] = []
     for path in paths:
         try:
