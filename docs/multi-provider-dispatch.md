@@ -115,6 +115,43 @@ used and not its value. `just prereqs credentials` is the only writer of that fi
 reads the value off the terminal with echo off, and it refuses if the path ever resolves
 inside a git work tree.
 
+### Codex instruction delivery
+
+Before a Codex child is forked, `just dispatch` runs a synchronous instruction-delivery
+preflight. It asks the same Codex CLI that will run the child for `codex debug prompt-input`,
+using the planned worktree and child environment, and refuses before writing a dispatch
+record when the preflight cannot establish the proof. A mismatch is
+`instruction_delivery_mismatch`; an unavailable, malformed or incomplete preflight is
+`instruction_preflight_unavailable`. Both carry `class=infra_unavailable`, because no
+agent work has started and neither condition is a result about the code under test.
+
+The preflight captures the delivered instruction wrapper twice. The normal capture uses
+the scoped loader settings that the child receives: the repository marker is `.git`, the
+fallback filename list is empty, and `project_doc_max_bytes` is 96 KiB. The second capture
+sets only `project_doc_max_bytes=0` to identify the global prefix. The expected project
+chain is discovered from the Git root to the launch directory, choosing
+`AGENTS.override.md` before `AGENTS.md` at each directory, and is read as complete strict
+UTF-8 files. Expected and delivered text use the recorded `lf-v1` newline normalization;
+the comparison measures UTF-8 bytes, while inter-file separators are outside the loader's
+source-byte budget.
+
+The 96 KiB value is passed as per-invocation Codex configuration to both `debug
+prompt-input` and `codex exec`. It is not exported as a global setting, so interactive
+Codex sessions do not inherit the containment. A retirement tripwire asserts that the
+current chain still exceeds the 24 KiB retirement threshold; reducing every supported
+chain below that threshold therefore requires removing the override and its proof rather
+than leaving a stale containment in place.
+
+A successful dispatch record stores the proof schema, CLI version, launch directory,
+selected source paths and hashes, expected and delivered byte counts and hashes, the
+global-capture measurements, the configured limit, and a combined delivered hash. It
+stores no instruction body, global body, brief, child environment, or credential value.
+The proof establishes exact delivered text plus independently recorded expected source
+identities, but it cannot distinguish two source chains that render byte-identical text:
+`LoadedAgentsMd.sources()` exists internally, and no bounded non-interactive command emits
+it. The source identities in the proof are therefore recorded by the dispatcher rather
+than recovered from Codex's capture.
+
 ## The worktree assertion
 
 The dispatched process asserts `git rev-parse --show-toplevel` against its assignment

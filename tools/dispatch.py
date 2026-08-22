@@ -245,6 +245,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 # The path insert above is what makes these importable.
 import breaker
+import codex_guidance
 import dispatch_stop
 import gate
 import gate_clock
@@ -1682,11 +1683,15 @@ class Plan(NamedTuple):
     # confound the observatory exists to remove: a gate tier read off the diff would put
     # the router's assignment back into a profile finding in a subtler form.
     strata: Strata = NO_STRATA
+    # A successful Codex instruction-delivery preflight, recorded before the child is
+    # forked. Claude has no equivalent bounded prompt-capture surface, so this is absent
+    # for its lanes rather than a claim that the two providers expose the same proof.
+    guidance: codex_guidance.GuidanceProof | None = None
 
     def document(self) -> dict[str, object]:
         """Render the dispatch record, which names the credential key and never its value."""
         lane = LANES[self.identity.lane]
-        return {
+        document: dict[str, object] = {
             "dispatch_id": self.identity.dispatch_id,
             "lane": self.identity.lane,
             "profile": self.identity.profile,
@@ -1707,6 +1712,9 @@ class Plan(NamedTuple):
             "plan_charge": plan_charge(lane, self.planned_at),
             "planned_at": self.planned_at.isoformat(),
         }
+        if self.guidance is not None:
+            document["instruction_delivery"] = self.guidance.document()
+        return document
 
 
 def mint_dispatch_id(now: datetime, entropy: str) -> str:
@@ -4059,6 +4067,11 @@ def _codex_argv(
         "--dangerously-bypass-hook-trust",
         "--model",
         profile.model,
+        *tuple(
+            part
+            for override in codex_guidance.loader_overrides()
+            for part in ("--config", override)
+        ),
         "--config",
         f'model_reasoning_effort="{profile.effort}"',
         "--config",
@@ -4933,6 +4946,14 @@ def dry_run_lines(plan: Plan, brief: str, parent: Mapping[str, str]) -> tuple[st
         *plan.advisories,
         *plan.routing,
     ]
+    if LANES[plan.identity.lane].runner_family == "codex":
+        lines.extend(
+            (
+                f"instruction_preflight=pending scope={codex_guidance.CODEX_GUIDANCE_SCOPE}",
+                f"instruction_project_doc_max_bytes={codex_guidance.CODEX_PROJECT_DOC_CONTAINMENT_BYTES}",
+                f"instruction_retirement_bytes={codex_guidance.CODEX_PROJECT_CHAIN_RETIREMENT_BYTES}",
+            )
+        )
     lines += [f"env_child.{key}={child[key]}" for key in sorted(child) if key not in parent]
     lines += [
         f"env_child.{key}={child[key]}"
@@ -4941,6 +4962,41 @@ def dry_run_lines(plan: Plan, brief: str, parent: Mapping[str, str]) -> tuple[st
     ]
     lines += [f"env_stripped.{key}" for key in LANE_OWNED if key in parent and key not in child]
     return tuple(lines)
+
+
+def instruction_preflight(
+    plan: Plan, parent: Mapping[str, str]
+) -> tuple[Plan | None, Refusal | None]:
+    """Verify Codex delivery synchronously, before the record and child fork exist."""
+    lane = LANES[plan.identity.lane]
+    if lane.runner_family != "codex":
+        return plan, None
+    profile = PROFILES[plan.identity.profile]
+    token, refusal = lane_credential(lane, plan.credentials)
+    if refusal is not None:
+        return None, refusal
+    child = assemble_environment(parent, profile, plan.identity, token)
+    result = codex_guidance.verify_delivery(
+        codex_guidance.LaunchContext(
+            executable=plan.argv[0],
+            cwd=plan.worktree,
+            environment=child,
+            loader_config=codex_guidance.loader_overrides(),
+        )
+    )
+    if isinstance(result, codex_guidance.GuidanceFailure):
+        kind = (
+            "instruction_delivery_mismatch"
+            if result.reason == "instruction_delivery_mismatch"
+            else "instruction_preflight_unavailable"
+        )
+        return None, Refusal(
+            kind,
+            result.lines(),
+            result.action,
+            failure_class="infra_unavailable",
+        )
+    return plan._replace(guidance=result), None
 
 
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
@@ -5151,6 +5207,10 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
         return emit(refusal.lines() if refusal else (), EXIT_REFUSED)
     if args.dry_run:
         return emit(dry_run_lines(plan, brief, os.environ), 0)
+
+    plan, refusal = instruction_preflight(plan, os.environ)
+    if refusal is not None or plan is None:
+        return emit(refusal.lines() if refusal else (), EXIT_REFUSED)
 
     write_record(plan, brief)
     return emit(
