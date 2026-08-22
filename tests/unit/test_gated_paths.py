@@ -8,6 +8,7 @@ the limit statement every verdict prints.
 
 from __future__ import annotations
 
+import base64
 import json
 import subprocess
 from datetime import UTC, datetime
@@ -121,6 +122,101 @@ def test_an_approval_written_before_commit_still_binds_after_commit(tmp_path: Pa
     assert any(f"content_id={content_id}" in line for line in report.lines)
 
 
+def test_an_approval_survives_a_clean_rebase_over_an_unrelated_same_path_edit(
+    tmp_path: Path,
+) -> None:
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    (repo / "AGENTS.md").write_text("heading\nbefore\nfooter\n", encoding="utf-8")
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "multiline base")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+
+    (repo / "AGENTS.md").write_text("heading\nafter\nfooter\n", encoding="utf-8")
+    approved_change_id = gated_paths.binding_of(repo, "AGENTS.md").change_id
+    content_id = approve(repo, store)
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "approved edit")
+
+    git(repo, "checkout", "-q", "-b", "main-ahead", "origin/main")
+    (repo / "AGENTS.md").write_text(
+        "new upstream line\nheading\nbefore\nfooter\n", encoding="utf-8"
+    )
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "unrelated same-path edit")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+    git(repo, "checkout", "-q", "work")
+    git(repo, "rebase", "origin/main")
+
+    report = gated_paths.check(repo, store, issue=ISSUE)
+
+    rebased = gated_paths.binding_of(repo, "AGENTS.md")
+    assert rebased.content_id != content_id
+    assert rebased.change_id == approved_change_id
+    assert report.exit_code == 0
+    assert any(
+        "approval=carried" in line and "proof=exact_three_way_replay" in line
+        for line in report.lines
+    )
+
+
+def test_an_approval_does_not_survive_a_changed_hunk_preimage(tmp_path: Path) -> None:
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    (repo / "AGENTS.md").write_text("heading\nbefore\nfooter\n", encoding="utf-8")
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "multiline base")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+
+    (repo / "AGENTS.md").write_text("heading\nafter\nfooter\n", encoding="utf-8")
+    earlier = approve(repo, store)
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "approved edit")
+
+    git(repo, "checkout", "-q", "-b", "main-ahead", "origin/main")
+    (repo / "AGENTS.md").write_text("heading\nupstream\nfooter\n", encoding="utf-8")
+    git(repo, "add", "AGENTS.md")
+    git(repo, "commit", "-q", "-m", "upstream changes approved hunk")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+    git(repo, "checkout", "-q", "work")
+
+    report = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert report.exit_code == 1
+    assert "refusal=approval_missing" in report.lines
+    assert any(line.startswith("content_id=") and earlier not in line for line in report.lines)
+
+
+def test_a_binary_approval_does_not_survive_a_same_path_baseline_change(tmp_path: Path) -> None:
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    binary = repo / "tests" / "specs" / "intent.bin"
+    binary.parent.mkdir(parents=True)
+    binary.write_bytes(b"\x00abc")
+    git(repo, "add", "tests/specs/intent.bin")
+    git(repo, "commit", "-q", "-m", "binary base")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+
+    binary.write_bytes(b"\x00abX")
+    earlier = approve(repo, store, "tests/specs/intent.bin")
+    git(repo, "add", "tests/specs/intent.bin")
+    git(repo, "commit", "-q", "-m", "approved binary edit")
+
+    git(repo, "checkout", "-q", "-b", "main-ahead", "origin/main")
+    binary.write_bytes(b"\x00Ybc")
+    git(repo, "add", "tests/specs/intent.bin")
+    git(repo, "commit", "-q", "-m", "upstream binary edit")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+    git(repo, "checkout", "-q", "work")
+    binary.write_bytes(b"\x00YbX")
+
+    report = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert report.exit_code == 1
+    assert "refusal=approval_missing" in report.lines
+    assert any(line.startswith("content_id=") and earlier not in line for line in report.lines)
+
+
 def test_a_later_unrelated_edit_to_the_same_path_needs_another_approval(tmp_path: Path) -> None:
     repo = repository(tmp_path)
     store = tmp_path / "approvals"
@@ -135,6 +231,57 @@ def test_a_later_unrelated_edit_to_the_same_path_needs_another_approval(tmp_path
     assert report.exit_code == 1
     assert "refusal=approval_missing" in report.lines
     assert any(line.startswith("content_id=") and earlier not in line for line in report.lines)
+
+
+def test_an_identical_hunk_moved_elsewhere_does_not_reuse_the_approval(tmp_path: Path) -> None:
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    path = ".claude/skills/example.py"
+    target = repo / path
+    target.parent.mkdir(parents=True)
+    target.write_text(
+        "def section():\n    before\n    separator\n    before\n",
+        encoding="utf-8",
+    )
+    git(repo, "add", path)
+    git(repo, "commit", "-q", "-m", "repeated baseline")
+    git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+
+    target.write_text(
+        "def section():\n    after\n    separator\n    before\n",
+        encoding="utf-8",
+    )
+    approved = gated_paths.binding_of(repo, path)
+    approve(repo, store, path)
+    target.write_text(
+        "def section():\n    before\n    separator\n    after\n",
+        encoding="utf-8",
+    )
+    moved = gated_paths.binding_of(repo, path)
+
+    report = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert moved.change_id == approved.change_id
+    assert moved.content_id != approved.content_id
+    assert report.exit_code == 1
+    assert "refusal=approval_missing" in report.lines
+    assert any("not_carried=replayed_result_differs" in line for line in report.lines)
+
+
+def test_an_approval_does_not_cross_to_a_non_descendant_baseline(tmp_path: Path) -> None:
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    baseline_tree = git(repo, "rev-parse", "origin/main^{tree}")
+    (repo / "AGENTS.md").write_text("approved instructions\n", encoding="utf-8")
+    approve(repo, store)
+
+    unrelated_base = git(repo, "commit-tree", baseline_tree, "-m", "unrelated root")
+    git(repo, "update-ref", "refs/remotes/origin/main", unrelated_base)
+    report = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert report.exit_code == 1
+    assert "refusal=approval_missing" in report.lines
+    assert any("not_carried=baseline_not_descendant" in line for line in report.lines)
 
 
 def test_an_approval_for_another_issue_cannot_clear_identical_content(tmp_path: Path) -> None:
@@ -257,6 +404,21 @@ def test_every_stable_path_from_the_signoff_paragraph_uses_one_authority() -> No
     assert gated_paths.hook_denial("addons/main/generated/commands.hpp") is not None
 
 
+def test_the_catalogue_owns_the_delegated_adr_path_and_marker() -> None:
+    assert gated_paths.is_delegated_decision_record(
+        "docs/adr/9999-delegated.md",
+        "# Delegated\n\nDelegated-decision: yes\n",
+    )
+    assert not gated_paths.is_delegated_decision_record(
+        "notes/9999-delegated.md",
+        "Delegated-decision: yes\n",
+    )
+    assert not gated_paths.is_delegated_decision_record(
+        "docs/adr/9999-delegated.md",
+        "Proposed marker: Delegated-decision: yes\n",
+    )
+
+
 def test_an_untracked_acceptance_spec_is_in_the_gate_diff(tmp_path: Path) -> None:
     repo = repository(tmp_path)
     spec = repo / "tests" / "specs" / "campaign.yaml"
@@ -329,6 +491,14 @@ def test_the_cli_writes_the_record_with_time_and_os_identity(
     record = json.loads(
         gated_paths.approval_path(store, ISSUE, content_id).read_text(encoding="utf-8")
     )
+    binding = gated_paths.binding_of(repo, "AGENTS.md")
+    assert f"change_id={binding.change_id}" in output
+    assert f"base_sha={binding.base_sha}" in output
+    assert record["version"] == 2
+    assert record["change_id"] == binding.change_id
+    assert record["base_sha"] == binding.base_sha
+    assert base64.b64decode(record["result_payload"], validate=True) == binding.result_payload
+    assert record["binary"] is False
     assert record["approved_at"] == STAMP
     assert record["approved_by"] == "andre"
     assert record["source"] == "declared_human"

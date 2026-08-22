@@ -188,7 +188,9 @@ def landing_paths(repo: Path, sha: str) -> tuple[str, ...] | None:
         and not git("rev-parse", "--verify", "--quiet", f"{sha}^{{commit}}", cwd=repo).strip()
     ):
         return None
-    listed = git("show", "--name-only", "--pretty=format:", sha, cwd=repo)
+    # A rename is two touched paths for every path catalogue: disabling rename
+    # folding makes Git return the retired source and destination separately.
+    listed = git("show", "--name-only", "--no-renames", "--pretty=format:", sha, cwd=repo)
     return tuple(line.strip() for line in listed.splitlines() if line.strip())
 
 
@@ -864,9 +866,6 @@ TRIAL_RUNNING: Final = "running"
 # `CLEARED` and `FAILED` are shared with the route bar's vocabulary; a reader meets one verdict
 # at a time and never both objects at once, so the strings are reused rather than forked.
 
-# ADR-0013's marker, exactly as CLAUDE.md's `grep -rl` reads it: a line, not a fragment.
-DELEGATED_DECISION_MARKER: Final = "Delegated-decision: yes"
-
 
 class TrialCriterion(NamedTuple):
     """One of the trial's five, and whether the tool can check it against artefacts."""
@@ -1294,10 +1293,10 @@ def delegated_decisions_in(repo: Path, shas: Sequence[str]) -> tuple[str, ...]:
         if paths is None:
             continue
         for path in paths:
-            if not path.startswith("docs/adr/") or path in found:
+            if path in found:
                 continue
             source = git("show", f"{sha}:{path}", cwd=repo)
-            if DELEGATED_DECISION_MARKER in source.splitlines():
+            if gated_paths.is_delegated_decision_record(path, source):
                 found.append(path)
     return tuple(found)
 

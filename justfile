@@ -60,12 +60,12 @@ check-source-link:
     uv run python tools/check_source_symlink.py
 
 # Every lane reaches this boundary. Direct human approvals are tool-owned records
-# outside the worktree and bind one path to its exact resulting content; a changed
+# outside the worktree and bind one path to its exact change; a changed
 # ADR-0013 record remains the standing-authorisation route (#500).
 check-gated-paths:
     uv run python tools/gated_paths.py check
 
-# Human-facing writer for one content-bound approval. Dispatched sessions are
+# Human-facing writer for one change-bound approval. Dispatched sessions are
 # refused, and the approval store is outside every worktree.
 [positional-arguments]
 gated-paths *args:

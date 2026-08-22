@@ -8,10 +8,18 @@ the hook and the lane-neutral gate cannot drift onto separate lists.
 
 An explicit human approval is one versioned record below
 ``~/.arma-cti/gated-path-approvals/``.  It names the issue and one path, and is
-bound to that path's baseline and exact resulting bytes.  Another edit to the
-same path therefore computes another identity and cannot reuse the record.  A
-changed ADR carrying ADR-0013's exact ``Delegated-decision: yes`` line remains
-the standing-authorisation route AGENTS.md defines.
+bound to the exact change at that path.  Textual hunk bytes, section anchors,
+paths and modes remain exact; only hunk line ranges and textual whole-file blob
+IDs are discarded, because those name a moved baseline rather than the change.
+That normalised identity only nominates an earlier record: carrying it also
+requires the recorded baseline to be an ancestor and a clean three-way replay
+of the recorded approved result onto the current baseline to equal the current
+bytes.  This keeps an unrelated textual baseline edit without letting an
+identical hunk moved elsewhere reuse approval.  Another branch-side hunk or an
+altered approved hunk cannot carry.  Binary and non-regular diffs need fresh
+approval after a same-path baseline change.  A changed ADR carrying ADR-0013's
+exact ``Delegated-decision: yes`` line remains the standing-authorisation route
+AGENTS.md defines.
 
 The approval command refuses a dispatched session.  Like #398's interactive
 authorship record, that is a mechanical floor rather than an identity proof: a
@@ -23,6 +31,8 @@ recognise and the content/quality judgement it never performs.
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
 import fcntl
 import hashlib
 import json
@@ -38,24 +48,29 @@ import tempfile
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, NamedTuple
+from typing import TYPE_CHECKING, Final, NamedTuple, cast
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator, Mapping, Sequence
 
 BASE: Final = "origin/main"
-APPROVAL_VERSION: Final = 1
+APPROVAL_VERSION: Final = 2
 RECORD_MODE: Final = 0o600
 APPROVAL_SOURCE: Final = "declared_human"
 APPROVER_SOURCE: Final = "os_user"
 DELEGATED_DECISION_MARKER: Final = "Delegated-decision: yes"
 CONTENT_ID: Final = re.compile(r"\A[0-9a-f]{64}\Z")
+COMMIT_SHA: Final = re.compile(r"\A(?:[0-9a-f]{40}|[0-9a-f]{64})\Z")
 ISSUE_WORKTREE: Final = re.compile(r"\Aissue-(\d+)\Z")
 APPROVAL_ROOT: Final = Path(pwd.getpwuid(os.getuid()).pw_dir) / ".arma-cti" / "gated-path-approvals"
 
 FILE: Final = "file"
 TREE: Final = "tree"
 SEGMENT: Final = "segment"
+
+HUNK_RANGES: Final = re.compile(rb"\A@@ -\d+(?:,\d+)? \+\d+(?:,\d+)? @@")
+INDEX_LINE: Final = re.compile(rb"\Aindex [^\n]*")
+BINARY_FOLLOWS: Final = (b"Binary files ", b"GIT binary patch")
 
 APPROVAL_UNREADABLE: Final = "approval_unreadable"
 APPROVAL_FROM_DISPATCH: Final = "approval_from_dispatch"
@@ -95,6 +110,15 @@ class PathGate(NamedTuple):
         return self.target in parts
 
 
+ADR_SIGNOFF_GATE: Final = PathGate(
+    "docs/adr",
+    TREE,
+    "New and changed ADRs are a human sign-off gate.",
+    requires_approval=True,
+    deny_at_write=False,
+)
+
+
 # One path authority. ``deny_at_write`` preserves the hook contract AGENTS.md states:
 # generated files and acceptance specs get immediate Claude feedback.  The approval
 # gate also covers every stable path in the human sign-off paragraph.  Snapshot-schema
@@ -132,13 +156,7 @@ PATH_GATES: Final = (
         requires_approval=True,
         deny_at_write=False,
     ),
-    PathGate(
-        "docs/adr",
-        TREE,
-        "New and changed ADRs are a human sign-off gate.",
-        requires_approval=True,
-        deny_at_write=False,
-    ),
+    ADR_SIGNOFF_GATE,
     PathGate(
         ".claude/skills",
         TREE,
@@ -185,13 +203,27 @@ class Report(NamedTuple):
 
 
 class Approval(NamedTuple):
-    """One validated, content-bound direct approval."""
+    """One validated, change-bound direct approval."""
 
     issue: int
     path: str
     content_id: str
+    change_id: str
+    base_sha: str
+    result_payload: bytes
+    binary: bool
     approved_at: str
     approved_by: str
+
+
+class ChangeBinding(NamedTuple):
+    """Current exact state plus baseline-independent identity used for replay."""
+
+    content_id: str
+    change_id: str
+    base_sha: str
+    result_payload: bytes
+    binary: bool
 
 
 def _normalise_path(path: str, root: Path | None = None) -> str:
@@ -234,6 +266,21 @@ def hook_denial(path: str, *, root: Path | None = None) -> str | None:
     return next(
         (gate.reason for gate in gates_for_path(path, root=root) if gate.deny_at_write),
         None,
+    )
+
+
+def is_delegated_decision_record(
+    path: str,
+    source: str,
+    *,
+    root: Path | None = None,
+) -> bool:
+    """Whether ``path`` and ``source`` form ADR-0013's changed record."""
+    normalised = _normalise_path(path, root)
+    return bool(
+        normalised
+        and ADR_SIGNOFF_GATE.matches(normalised)
+        and DELEGATED_DECISION_MARKER in source.splitlines()
     )
 
 
@@ -297,12 +344,98 @@ def _current_payload(root: Path, path: str) -> bytes:
     raise GitError(("read", path), "path is neither a regular file, symlink, nor deletion")
 
 
-def content_id_of(root: Path, path: str) -> str:
-    """Bind one path to its baseline entry and exact resulting bytes."""
-    baseline = _git_bytes("ls-tree", "-z", BASE, "--", path, cwd=root)
-    payload = b"gated-path-content-v1\0" + path.encode("utf-8") + b"\0" + baseline
-    payload += b"current\0" + _current_payload(root, path)
+def _normalised_diff(diff: bytes) -> bytes:
+    """Keep exact change bytes while discarding textual baseline-only names."""
+    lines: list[bytes] = []
+    pending_index: bytes | None = None
+    for line in diff.splitlines(keepends=True):
+        if pending_index is not None:
+            # Binary patches carry no textual hunk bytes, so their full before/after
+            # blob IDs stay. Text diffs carry their change below; whole-file blob IDs
+            # would invalidate an unchanged hunk after any same-path baseline edit.
+            lines.append(pending_index if line.startswith(BINARY_FOLLOWS) else b"index\n")
+            pending_index = None
+        if INDEX_LINE.match(line):
+            pending_index = line
+        else:
+            lines.append(HUNK_RANGES.sub(b"@@", line))
+    if pending_index is not None:
+        lines.append(b"index\n")
+    return b"".join(lines)
+
+
+def _path_diff(root: Path, path: str) -> bytes:
+    """Return deterministic full-index diff bytes for one current path."""
+    return _git_bytes(
+        "diff",
+        "--unified=0",
+        "--no-color",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--no-renames",
+        "--ignore-submodules=none",
+        "--full-index",
+        "--binary",
+        "--diff-algorithm=myers",
+        "--no-indent-heuristic",
+        BASE,
+        "--",
+        path,
+        cwd=root,
+    )
+
+
+def _state_id(path: str, base_sha: str, baseline: bytes, current: bytes) -> str:
+    """Identify exact baseline and result bytes for one path."""
+    payload = b"gated-path-content-v2\0" + path.encode("utf-8") + b"\0"
+    payload += base_sha.encode("ascii") + b"\0" + baseline
+    payload += b"current\0" + current
     return hashlib.sha256(payload).hexdigest()
+
+
+def _change_id(path: str, baseline: bytes, current: bytes, diff: bytes) -> str:
+    """Identify the change while excluding only textual baseline movement."""
+    if not baseline:
+        # Git does not include an untracked file in `git diff`. Its whole content
+        # is the addition, and this form stays identical before and after commit.
+        change = b"addition\0" + current
+    elif current == b"absent\0":
+        # Deleting a file approves deleting those exact baseline bytes. A baseline
+        # edit changes the deletion itself, so it must not inherit approval.
+        change = b"deletion\0" + baseline
+    else:
+        if not diff:
+            raise GitError(("diff", BASE, "--", path), "path has no diff to bind")
+        change = b"diff\0" + _normalised_diff(diff)
+    payload = b"gated-path-change-v2\0" + path.encode("utf-8") + b"\0" + change
+    return hashlib.sha256(payload).hexdigest()
+
+
+def binding_of(root: Path, path: str) -> ChangeBinding:
+    """Compute exact state and replayable change identities for one path."""
+    baseline = _git_bytes("ls-tree", "-z", BASE, "--", path, cwd=root)
+    current = _current_payload(root, path)
+    diff = b"" if not baseline or current == b"absent\0" else _path_diff(root, path)
+    base_sha = _git_bytes("rev-parse", "--verify", f"{BASE}^{{commit}}", cwd=root)
+    try:
+        decoded_base = base_sha.decode("ascii").strip()
+    except UnicodeDecodeError as unreadable:
+        raise GitError(("rev-parse", BASE), f"non-ASCII commit id: {unreadable}") from unreadable
+    if not COMMIT_SHA.fullmatch(decoded_base):
+        raise GitError(("rev-parse", BASE), f"invalid commit id: {decoded_base!r}")
+    binary = any(line.startswith(BINARY_FOLLOWS) for line in diff.splitlines())
+    return ChangeBinding(
+        _state_id(path, decoded_base, baseline, current),
+        _change_id(path, baseline, current, diff),
+        decoded_base,
+        current,
+        binary,
+    )
+
+
+def content_id_of(root: Path, path: str) -> str:
+    """Return exact-state ID presented to the approval writer."""
+    return binding_of(root, path).content_id
 
 
 def approval_path(root: Path, issue: int, content_id: str) -> Path:
@@ -310,15 +443,17 @@ def approval_path(root: Path, issue: int, content_id: str) -> Path:
     return root / str(issue) / f"{content_id}.json"
 
 
-def _record_fault(document: object, expected: Approval) -> str:
-    """Say why stored bytes are not the record this tool writes."""
-    if not isinstance(document, dict):
-        return f"record is not an object: {document!r}"
+def _record_header_fault(document: dict[str, object]) -> str:
+    """Validate fixed record fields plus issue and path."""
     expected_keys = {
         "version",
         "issue",
         "path",
         "content_id",
+        "change_id",
+        "base_sha",
+        "result_payload",
+        "binary",
         "base",
         "approved_at",
         "approved_by",
@@ -327,11 +462,8 @@ def _record_fault(document: object, expected: Approval) -> str:
     }
     if set(document) != expected_keys:
         return f"keys={sorted(document)} expected={sorted(expected_keys)}"
-    expected_values: dict[str, object] = {
+    expected_values = {
         "version": APPROVAL_VERSION,
-        "issue": expected.issue,
-        "path": expected.path,
-        "content_id": expected.content_id,
         "base": BASE,
         "approved_by_source": APPROVER_SOURCE,
         "source": APPROVAL_SOURCE,
@@ -339,6 +471,44 @@ def _record_fault(document: object, expected: Approval) -> str:
     for key, value in expected_values.items():
         if document.get(key) != value:
             return f"{key}={document.get(key)!r} expected={value!r}"
+    issue = document.get("issue")
+    if not isinstance(issue, int) or isinstance(issue, bool) or issue <= 0:
+        return f"issue={issue!r}"
+    record_path = document.get("path")
+    if (
+        not isinstance(record_path, str)
+        or _normalise_path(record_path) != record_path
+        or signoff_gate(record_path) is None
+    ):
+        return f"path={record_path!r}"
+    return ""
+
+
+def _record_binding_fault(document: dict[str, object]) -> str:
+    """Validate binding IDs and replay metadata."""
+    for key in ("content_id", "change_id"):
+        value = document.get(key)
+        if not isinstance(value, str) or CONTENT_ID.fullmatch(value) is None:
+            return f"{key}={value!r}"
+    base_sha = document.get("base_sha")
+    if not isinstance(base_sha, str) or COMMIT_SHA.fullmatch(base_sha) is None:
+        return f"base_sha={base_sha!r}"
+    if not isinstance(document.get("binary"), bool):
+        return f"binary={document.get('binary')!r}"
+    return ""
+
+
+def _record_payload_fault(document: dict[str, object]) -> str:
+    """Validate encoded result and human-owned metadata."""
+    encoded = document.get("result_payload")
+    if not isinstance(encoded, str):
+        return f"result_payload={encoded!r}"
+    try:
+        decoded = base64.b64decode(encoded, validate=True)
+    except (ValueError, binascii.Error):
+        return "result_payload is not canonical base64"
+    if base64.b64encode(decoded).decode("ascii") != encoded:
+        return "result_payload is not canonical base64"
     for key in ("approved_at", "approved_by"):
         value = document.get(key)
         if not isinstance(value, str) or not value.strip():
@@ -346,7 +516,17 @@ def _record_fault(document: object, expected: Approval) -> str:
     return ""
 
 
-def read_approval(path: Path, expected: Approval) -> Approval:
+def _record_fault(document: object) -> str:
+    """Say why stored bytes are not the record this tool writes."""
+    if not isinstance(document, dict):
+        return f"record is not an object: {document!r}"
+    typed = cast("dict[str, object]", document)
+    return (
+        _record_header_fault(typed) or _record_binding_fault(typed) or _record_payload_fault(typed)
+    )
+
+
+def read_approval(path: Path, expected: Approval | None = None) -> Approval:
     """Read and validate one record; absence is handled by the caller."""
     try:
         details = path.stat()
@@ -367,7 +547,7 @@ def read_approval(path: Path, expected: Approval) -> Approval:
             ),
             "Restore a regular 0600 record owned by the current user, or re-record it.",
         )
-    fault = _record_fault(document, expected)
+    fault = _record_fault(document)
     if fault:
         raise ApprovalError(
             APPROVAL_UNREADABLE,
@@ -377,27 +557,198 @@ def read_approval(path: Path, expected: Approval) -> Approval:
                 " hand-shaped bytes do not clear the gate."
             ),
         )
-    return Approval(
+    document = cast("dict[str, object]", document)
+    approval = Approval(
         int(document["issue"]),
         str(document["path"]),
         str(document["content_id"]),
+        str(document["change_id"]),
+        str(document["base_sha"]),
+        base64.b64decode(str(document["result_payload"]), validate=True),
+        bool(document["binary"]),
         str(document["approved_at"]),
         str(document["approved_by"]),
     )
+    if path.stem != approval.content_id:
+        fault = f"filename={path.name!r} content_id={approval.content_id!r}"
+    elif expected is not None:
+        compared = (
+            "issue",
+            "path",
+            "content_id",
+            "change_id",
+            "base_sha",
+            "result_payload",
+            "binary",
+        )
+        fault = next(
+            (
+                f"{field} does not match current binding"
+                for field in compared
+                if getattr(approval, field) != getattr(expected, field)
+            ),
+            "",
+        )
+    else:
+        fault = ""
+    if fault:
+        raise ApprovalError(
+            APPROVAL_UNREADABLE,
+            f"record={path} reason={fault}",
+            (
+                "Re-record this exact approval through `just gated-paths approve`;"
+                " a record that does not match its path and binding cannot clear the gate."
+            ),
+        )
+    return approval
+
+
+def _approval_for(
+    issue: int,
+    path: str,
+    binding: ChangeBinding,
+    approved_at: str,
+    approved_by: str,
+) -> Approval:
+    """Join caller-owned approval facts to tool-computed binding facts."""
+    return Approval(
+        issue,
+        path,
+        binding.content_id,
+        binding.change_id,
+        binding.base_sha,
+        binding.result_payload,
+        binding.binary,
+        approved_at,
+        approved_by,
+    )
+
+
+def _tree_entry_and_payload(root: Path, ref: str, path: str) -> tuple[bytes, bytes]:
+    """Read one exact tree entry and its file payload at ``ref``."""
+    entry = _git_bytes("ls-tree", "-z", ref, "--", path, cwd=root)
+    if not entry:
+        return b"", b"absent\0"
+    try:
+        metadata, named = entry.removesuffix(b"\0").split(b"\t", 1)
+        mode, kind, object_id = metadata.split(b" ", 2)
+    except ValueError as malformed:
+        raise GitError(("ls-tree", ref, "--", path), "malformed tree entry") from malformed
+    if named != path.encode("utf-8") or kind != b"blob":
+        raise GitError(
+            ("ls-tree", ref, "--", path),
+            f"unexpected entry path={named!r} kind={kind!r}",
+        )
+    content = _git_bytes("cat-file", "blob", object_id.decode("ascii"), cwd=root)
+    return entry, mode + b"\0" + content
+
+
+def _regular_payload(payload: bytes) -> tuple[bytes, bytes] | None:
+    """Split one ordinary Git file payload into mode and bytes."""
+    mode, separator, content = payload.partition(b"\0")
+    if separator and mode in (b"100644", b"100755"):
+        return mode, content
+    return None
+
+
+def _is_ancestor(root: Path, earlier: str, later: str) -> bool:
+    """Whether ``earlier`` is an ancestor, distinguishing false from unreadable."""
+    args = ("merge-base", "--is-ancestor", earlier, later)
+    done = subprocess.run(  # noqa: S603
+        ["git", *args],  # noqa: S607
+        cwd=root,
+        capture_output=True,
+        check=False,
+    )
+    if done.returncode == 0:
+        return True
+    if done.returncode == 1:
+        return False
+    raise GitError(args, done.stderr.decode("utf-8", errors="replace"))
+
+
+def _merge_file(current_base: bytes, old_base: bytes, approved: bytes) -> bytes | None:
+    """Replay approved text onto current baseline; ``None`` means it did not merge cleanly."""
+    with tempfile.TemporaryDirectory(prefix="gated-path-replay-") as temporary_name:
+        directory = Path(temporary_name)
+        current_path = directory / "current"
+        base_path = directory / "base"
+        approved_path = directory / "approved"
+        current_path.write_bytes(current_base)
+        base_path.write_bytes(old_base)
+        approved_path.write_bytes(approved)
+        done = subprocess.run(  # noqa: S603
+            ["git", "merge-file", "-p", current_path, base_path, approved_path],  # noqa: S607
+            capture_output=True,
+            check=False,
+        )
+    return done.stdout if done.returncode == 0 else None
+
+
+def _approval_carries(  # noqa: PLR0911 — each unsupported replay shape is named
+    root: Path,
+    path: str,
+    approval: Approval,
+    current: ChangeBinding,
+) -> tuple[bool, str]:
+    """Prove exact approved text replays onto a descendant baseline."""
+    if approval.binary or current.binary:
+        return False, "binary_same_path_baseline"
+    if not _is_ancestor(root, approval.base_sha, current.base_sha):
+        return False, "baseline_not_descendant"
+    old_entry, old_payload = _tree_entry_and_payload(root, approval.base_sha, path)
+    if (
+        _state_id(path, approval.base_sha, old_entry, approval.result_payload)
+        != approval.content_id
+    ):
+        raise ApprovalError(
+            APPROVAL_UNREADABLE,
+            f"content_id={approval.content_id} does not bind its recorded baseline and result",
+            "Re-record this approval; its replay material does not match its identity.",
+        )
+    _new_entry, new_payload = _tree_entry_and_payload(root, current.base_sha, path)
+    old_parts = _regular_payload(old_payload)
+    approved_parts = _regular_payload(approval.result_payload)
+    new_parts = _regular_payload(new_payload)
+    current_parts = _regular_payload(current.result_payload)
+    if old_parts is None or approved_parts is None or new_parts is None or current_parts is None:
+        return False, "non_regular_same_path_baseline"
+    modes = {old_parts[0], approved_parts[0], new_parts[0], current_parts[0]}
+    if len(modes) != 1:
+        return False, "mode_changed"
+    merged = _merge_file(new_parts[1], old_parts[1], approved_parts[1])
+    if merged is None:
+        return False, "approved_change_did_not_replay_cleanly"
+    if merged != current_parts[1]:
+        return False, "replayed_result_differs"
+    return True, "exact_three_way_replay"
+
+
+def _stored_approvals(root: Path, issue: int) -> tuple[tuple[Path, Approval], ...]:
+    """Read every versioned record for one issue, failing closed on corrupt bytes."""
+    directory = root / str(issue)
+    if not directory.exists():
+        return ()
+    try:
+        records = tuple(sorted(directory.glob("*.json")))
+    except OSError as unreadable:
+        raise ApprovalError(
+            APPROVAL_UNREADABLE,
+            f"directory={directory} reason={unreadable}",
+            "Restore the readable approval directory and retry.",
+        ) from unreadable
+    return tuple((record, read_approval(record)) for record in records)
 
 
 def delegated_decisions(root: Path, paths: Sequence[str]) -> tuple[str, ...]:
     """Return changed ADRs carrying ADR-0013's exact marker line."""
     found: list[str] = []
     for path in paths:
-        gate = signoff_gate(path)
-        if gate is None or gate.target != "docs/adr":
-            continue
         try:
-            lines = (root / path).read_text(encoding="utf-8").splitlines()
+            source = (root / path).read_text(encoding="utf-8")
         except (OSError, UnicodeError):
             continue
-        if DELEGATED_DECISION_MARKER in lines:
+        if is_delegated_decision_record(path, source):
             found.append(path)
     return tuple(found)
 
@@ -429,7 +780,7 @@ def _refused(kind: str, found: Sequence[str], action: str) -> Report:
     )
 
 
-def check(  # noqa: PLR0911 — one complete report per fail-closed read
+def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read and carry shape
     root: Path,
     approvals: Path,
     *,
@@ -479,7 +830,7 @@ def check(  # noqa: PLR0911 — one complete report per fail-closed read
     approved: list[str] = []
     for path in gated:
         try:
-            content_id = content_id_of(root, path)
+            binding = binding_of(root, path)
         except GitError as failure:
             return _refused(
                 GATED_CONTENT_UNREADABLE,
@@ -493,9 +844,51 @@ def check(  # noqa: PLR0911 — one complete report per fail-closed read
                     " bound cannot be approved."
                 ),
             )
+        content_id = binding.content_id
         record = approval_path(approvals, issue, content_id)
-        expected = Approval(issue, path, content_id, "expected", "expected")
-        if not record.exists():
+        expected = _approval_for(issue, path, binding, "expected", "expected")
+        if record.exists():
+            try:
+                read_approval(record, expected)
+            except ApprovalError as refusal:
+                return _refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
+            approved.append(
+                f"approval=recorded issue={issue} path={path} content_id={content_id}"
+                f" record={record}"
+            )
+            continue
+
+        not_carried: list[str] = []
+        try:
+            stored = _stored_approvals(approvals, issue)
+        except ApprovalError as refusal:
+            return _refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
+        for prior_path, prior in stored:
+            if prior.issue != issue or prior.path != path or prior.change_id != binding.change_id:
+                continue
+            try:
+                carries, reason = _approval_carries(root, path, prior, binding)
+            except GitError as failure:
+                return _refused(
+                    GATED_CONTENT_UNREADABLE,
+                    (
+                        f"path={path}",
+                        f"record={prior_path}",
+                        f"command={' '.join(failure.args_run)}",
+                        f"stderr={failure.stderr}",
+                    ),
+                    "Restore readable approval and baseline history; an unproven replay fails.",
+                )
+            except ApprovalError as refusal:
+                return _refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
+            if carries:
+                approved.append(
+                    f"approval=carried issue={issue} path={path}"
+                    f" change_id={binding.change_id} record={prior_path} proof={reason}"
+                )
+                break
+            not_carried.append(f"prior_approval={prior_path} not_carried={reason}")
+        else:
             command = (
                 "just gated-paths approve"
                 f" --issue {issue} --path {shlex.quote(path)} --content-id {content_id}"
@@ -506,25 +899,20 @@ def check(  # noqa: PLR0911 — one complete report per fail-closed read
                     f"issue={issue}",
                     f"path={path}",
                     f"content_id={content_id}",
+                    f"change_id={binding.change_id}",
                     f"record={record}",
+                    *not_carried,
                 ),
                 (
-                    f"After the human reviews this exact change, they run `{command}`."
+                    f"After the human reviews this exact path diff, they run `{command}`."
                     " A session must not run it."
                 ),
             )
-        try:
-            read_approval(record, expected)
-        except ApprovalError as refusal:
-            return _refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
-        approved.append(
-            f"approval=recorded issue={issue} path={path} content_id={content_id} record={record}"
-        )
     return Report(
         (
             f"gated_paths=ok changed={len(gated)} authorization=recorded",
             *approved,
-            "verified=path_scan,record_shape,content_binding",
+            "verified=path_scan,record_shape,change_binding",
             LIMIT_LINE,
             SAME_USER_LIMIT,
         ),
@@ -570,7 +958,7 @@ def record_approval(  # noqa: C901, PLR0913 — validation ladder; one input per
     approved_by: str,
     environ: Mapping[str, str],
 ) -> tuple[Approval, Path, bool]:
-    """Write a direct approval after recomputing its exact content binding."""
+    """Write a direct approval after recomputing its exact change binding."""
     dispatch_id = environ.get("CTI_DISPATCH_ID", "").strip()
     if dispatch_id:
         raise ApprovalError(
@@ -619,24 +1007,25 @@ def record_approval(  # noqa: C901, PLR0913 — validation ladder; one input per
             "Paste the 64-character content_id from the gate refusal.",
         )
     try:
-        actual = content_id_of(root, normalised)
+        binding = binding_of(root, normalised)
     except GitError as failure:
         raise ApprovalError(
             GATED_CONTENT_UNREADABLE,
             (f"path={normalised} command={' '.join(failure.args_run)} stderr={failure.stderr}"),
             "Restore the readable path and baseline, then retry.",
         ) from failure
+    actual = binding.content_id
     if actual != expected_content_id:
         raise ApprovalError(
             CONTENT_CHANGED,
             f"path={normalised} asked={expected_content_id} actual={actual}",
             (
-                "Review the changed content and use its new content_id. The earlier"
-                " approval cannot carry."
+                "Run `just check` again. It may carry a prior text approval by exact replay;"
+                " otherwise review the current path diff and use the new content_id it prints."
             ),
         )
 
-    approval = Approval(issue, normalised, actual, approved_at, approved_by)
+    approval = _approval_for(issue, normalised, binding, approved_at, approved_by)
     target = approval_path(approvals, issue, actual)
     with _approval_lock(approvals, issue):
         if target.exists():
@@ -647,6 +1036,10 @@ def record_approval(  # noqa: C901, PLR0913 — validation ladder; one input per
             "issue": issue,
             "path": normalised,
             "content_id": actual,
+            "change_id": binding.change_id,
+            "base_sha": binding.base_sha,
+            "result_payload": base64.b64encode(binding.result_payload).decode("ascii"),
+            "binary": binding.binary,
             "base": BASE,
             "approved_at": approved_at,
             "approved_by": approved_by,
@@ -737,9 +1130,11 @@ def main(
                 f"issue={approval.issue}",
                 f"path={approval.path}",
                 f"content_id={approval.content_id}",
+                f"change_id={approval.change_id}",
+                f"base_sha={approval.base_sha}",
                 f"record={target}",
                 f"approved_by={approval.approved_by} source={APPROVAL_SOURCE}",
-                "verified=record_write,content_binding",
+                "verified=record_write,change_binding",
                 LIMIT_LINE,
                 SAME_USER_LIMIT,
             )

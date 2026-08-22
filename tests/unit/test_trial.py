@@ -710,6 +710,29 @@ def test_criterion_four_leaves_an_unapproved_gated_edit_to_the_recorder(tmp_path
     assert not verdict.decisive
 
 
+def test_criterion_four_checks_the_source_of_a_rename_out_of_the_gated_set(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "repo"
+    commit(repo, {"CONTEXT.md": "# context\n"}, "gated source")
+    destination = repo / "notes" / "context.md"
+    destination.parent.mkdir(parents=True)
+    (repo / "CONTEXT.md").rename(destination)
+    run_git(repo, "add", "-A")
+    run_git(repo, "commit", "-q", "-m", "rename out of gate")
+    sha = run_git(repo, "rev-parse", "HEAD")
+    run_git(repo, "update-ref", "refs/remotes/origin/main", sha)
+
+    paths = harness.landing_paths(repo, sha)
+    verdict = harness.trial_gated_verdict(repo, (sha,))
+
+    assert paths is not None
+    assert "CONTEXT.md" in paths
+    assert "notes/context.md" in paths
+    assert not verdict.decisive
+    assert "gated=CONTEXT.md" in verdict.detail
+
+
 def test_criterion_four_is_met_where_a_delegated_decision_was_recorded(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     sha = commit(
