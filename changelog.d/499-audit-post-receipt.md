@@ -7,8 +7,9 @@
   the close because the closing path never reads them.
 
 - A real landing now requires `--audit-file FILE`. The file supplies one complete UTF-8
-  criterion audit and is read before any repository step. After the push and main-checkout merge,
-  the rung posts that body plus the landed SHA through one bounded
+  criterion audit and is read before any repository step. A missing, unreadable or non-UTF-8 file
+  returns `refusal=audit_file_unreadable` with exit 1, because nothing landed. After the push and
+  main-checkout merge, the rung posts that body plus the landed SHA through one bounded
   `gh issue comment --body-file -` call. Only that call's successful receipt reaches the separate
   `gh issue close`; `audit_recorded=no` withholds the close without changing the successful
   landing result. The documented split-audit false negative is resolved at the author interface:

@@ -14,6 +14,7 @@ function nor its tests decide whether that body is a good audit.
 
 from __future__ import annotations
 
+import json
 import subprocess
 from typing import TYPE_CHECKING, Any
 
@@ -129,6 +130,77 @@ def test_an_unreadable_audit_file_refuses_before_repository_resolution(
 
     assert code == land.EXIT_REFUSED
     assert "refusal=audit_file_unreadable" in capsys.readouterr().err
+
+
+def test_a_missing_audit_argument_is_a_named_pre_landing_refusal(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Missing transport is exit 1, never argparse's landed-but-incomplete exit 2."""
+
+    def repository_was_touched(*_args: object, **_kwargs: object) -> str:
+        raise AssertionError
+
+    monkeypatch.setattr(land, "git", repository_was_touched)
+
+    code = land.main([])
+
+    captured = capsys.readouterr()
+    assert code == land.EXIT_REFUSED
+    assert captured.out == ""
+    assert "refusal=audit_file_unreadable" in captured.err.splitlines()
+    assert "audit_file=missing" in captured.err.splitlines()
+
+
+@pytest.mark.parametrize(
+    "unowned_comments",
+    [
+        ("Before trusting this branch, re-run `just check`, `just unit` and `just mutation`.",),
+        (
+            (
+                "No implementer's `just check`, `just unit`, `just mutation` counts or verbatim"
+                " mutation line are available."
+            ),
+        ),
+        ("just check green", "just unit green", "just mutation sampled"),
+    ],
+    ids=["quoted_recipe_names", "asserted_absence", "real_audit_split_across_comments"],
+)
+def test_unowned_thread_comments_cannot_replace_a_failed_rung_post(
+    unowned_comments: tuple[str, ...],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Drive production receipt decision with historical comments at tracker seam.
+
+    Fake tracker would return each historical thread if production requested it. New audit
+    post refuses. Only correct decision: no thread read, no close, one failed post call.
+    """
+    calls: list[list[str]] = []
+
+    def tracker(*args: Any, **_kwargs: Any) -> subprocess.CompletedProcess[str]:  # noqa: ANN401
+        argv = args[0]
+        calls.append(argv)
+        if argv[:3] == ["gh", "issue", "view"]:
+            body = json.dumps({"comments": [{"body": text} for text in unowned_comments]})
+            return subprocess.CompletedProcess(argv, 0, body, "")
+        if argv[:3] == ["gh", "issue", "comment"]:
+            return subprocess.CompletedProcess(argv, 1, "", "audit post refused")
+        if argv[:3] == ["gh", "issue", "close"]:
+            return subprocess.CompletedProcess(argv, 0, "", "")
+        raise AssertionError(argv)
+
+    monkeypatch.setattr(land.subprocess, "run", tracker)
+
+    lines = land._close_lines(  # noqa: SLF001 — production close decision is the subject
+        499,
+        "abc1234",
+        land.close_issue,
+        lambda issue, sha: land.record_audit(issue, sha, _AUDIT_BODY),
+    )
+
+    assert lines[0].startswith("audit_recorded=no issue=499 reason=gh_refused")
+    assert lines[1].startswith("issue_closed=no issue=499 reason=audit_not_recorded")
+    assert calls == [["gh", "issue", "comment", "499", "--body-file", "-"]]
 
 
 @pytest.mark.parametrize(

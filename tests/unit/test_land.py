@@ -416,14 +416,9 @@ def test_the_corpus_flag_takes_a_pool_path_and_defaults_to_naming_nothing() -> N
     )
 
 
-def test_a_landing_requires_one_audit_file_but_non_landing_modes_do_not(
-    capsys: pytest.CaptureFixture[str],
-) -> None:
-    with pytest.raises(SystemExit):
-        land.parse_args([])
-    assert "a landing requires --audit-file FILE" in capsys.readouterr().err
-
+def test_a_landing_accepts_one_audit_file_while_non_landing_modes_accept_none() -> None:
     audit_path = "/audit-records/audit.md"
+    assert land.parse_args([]).audit_file is None
     assert land.parse_args(["--audit-file", audit_path]).audit_file == Path(audit_path)
     assert land.parse_args(["--dry-run"]).audit_file is None
     assert land.parse_args(["--stage"]).audit_file is None
@@ -2059,50 +2054,6 @@ def test_a_landing_from_the_main_checkout_closes_its_issue_too(
     assert any(line.startswith("merge=not_needed") for line in report.lines)
     assert f"issue_closed=yes issue=213 sha={landed}" in report.lines
     assert closer.calls == [213]
-
-
-@pytest.mark.parametrize(
-    "unowned_comments",
-    [
-        ("Before trusting this branch, re-run `just check`, `just unit` and `just mutation`.",),
-        (
-            (
-                "No implementer's `just check`, `just unit`, `just mutation` counts or verbatim"
-                " mutation line are available."
-            ),
-        ),
-        ("just check green", "just unit green", "just mutation sampled"),
-    ],
-    ids=["quoted_recipe_names", "asserted_absence", "real_audit_split_across_comments"],
-)
-def test_a_comment_the_rung_did_not_record_cannot_close_the_issue(
-    unowned_comments: tuple[str, ...],
-    repo: tuple[Path, Path, Path],
-    tmp_path: Path,
-    closer: _Close,
-) -> None:
-    """#499: thread content has no input position; only this invocation's receipt clears.
-
-    The comments are held here only to name the three live arrangements. Production
-    has no thread-read seam to pass them through. The audit callback therefore reports
-    that this invocation wrote no record, and all three arrangements have one verdict.
-    """
-    _origin, main, here = repo
-    _commit(here, "feature.txt", "work\n")
-    review = _reviewed(here, tmp_path)
-    receipt = _Audit(reason=f"no_rung_record existing_comments={len(unowned_comments)}")
-
-    report = land.land(main, here, gate=_Gate(), review=review, audit=receipt)
-
-    assert report.lines[0] == "ok=landed"
-    recorded = next(line for line in report.lines if line.startswith("audit_recorded="))
-    withheld = next(line for line in report.lines if line.startswith("issue_closed="))
-    assert recorded.startswith("audit_recorded=no issue=213 reason=no_rung_record")
-    assert recorded.endswith("not_verified=content_or_quality")
-    assert withheld.startswith("issue_closed=no issue=213 reason=audit_not_recorded")
-    assert closer.calls == []
-    assert receipt.calls
-    assert receipt.calls[0][0] == 213
 
 
 def test_an_audit_post_failure_leaves_the_issue_open_and_names_its_reason(

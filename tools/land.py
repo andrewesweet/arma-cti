@@ -1841,13 +1841,20 @@ def _corpus_plan(
 # ------------------------------------------------------------------ invocation
 
 
-def read_audit_body(path: Path) -> str | Refusal:
+def read_audit_body(path: Path | None) -> str | Refusal:
     """Read the one complete audit body before any landing step can run.
 
     The file is transport, not evidence: this read checks only that the caller supplied
     readable UTF-8. It does not inspect the content or judge audit quality. Reading first
     keeps a missing path from being discovered after the work is already on `origin/main`.
     """
+    if path is None:
+        return Refusal(
+            "audit_file_unreadable",
+            ("audit_file=missing", "detail=--audit-file FILE was not supplied"),
+            "Write the complete criterion audit as one UTF-8 file outside the worktree,"
+            " then run `just land --audit-file FILE`. Nothing was pushed.",
+        )
     try:
         return path.read_text(encoding="utf-8")
     except (OSError, UnicodeError) as broken:
@@ -1904,8 +1911,6 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         help="one UTF-8 file containing the complete criterion audit to post before closing",
     )
     args = parser.parse_args(argv)
-    if not args.dry_run and not args.stage and args.audit_file is None:
-        parser.error("a landing requires --audit-file FILE")
     if (args.dry_run or args.stage) and args.audit_file is not None:
         parser.error("--audit-file is accepted only by a landing, not --dry-run or --stage")
     return args
@@ -1914,7 +1919,7 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     """Run the protocol, print what happened, and exit what it decided."""
     args = parse_args(argv)
-    audit_body = read_audit_body(args.audit_file) if args.audit_file is not None else None
+    audit_body = None if args.dry_run or args.stage else read_audit_body(args.audit_file)
     if isinstance(audit_body, Refusal):
         report = Report.refused(audit_body)
     else:
