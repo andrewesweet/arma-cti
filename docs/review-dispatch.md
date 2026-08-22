@@ -45,9 +45,10 @@ Six things, and the dispatch record carries four of them by construction:
   seat's preference list before walking it — along with every other profile the issue's own
   records place on the work, dispatch records and declared authorship both (#402) — and which
   the dispatcher checks against those records rather than taking on the caller's word;
-- **the close audit** — read by the reviewer from the issue thread, because the audit is what
-  states which criteria the landing claimed to meet and a review that does not read it can
-  only check the code against itself;
+- **the close audit** — not yet on the thread when you review. Since #499 the landing rung
+  posts it itself, after the review, and closes only from that posting receipt. What the
+  landing claims to meet is in the brief and the implementer's own report; read those
+  instead, and say so if neither states a criterion you are asked to judge;
 - **the implementer's pasted gate output** — the gate record the 2026-08-14 ruling puts in
   the review's hands in place of a gate run (#353). The paste must carry `just check`,
   `just unit` **and** `just mutation` **with their result counts**, including `just
@@ -577,7 +578,8 @@ deliberately thin and is wrong for this seat — it tells the agent to do the is
     #460). Its route is `defect`, never `observation`.
 
     Read, in this order: CLAUDE.md in your worktree; `gh issue view <N>` including
-    every comment, and its close audit in particular; `git show <SHA>`; then the
+    every comment — the close audit is not there yet, since #499 has the rung post
+    it after the review; `git show <SHA>`; then the
     files the diff touches, whole, where the hunk is not enough. Read the ADRs the
     diff touches — `docs/adr/` — and quote the clause you check against.
 

@@ -20,7 +20,7 @@ For every dispatch finished since the last tick, do the orchestrator's half. **T
 
 ## 2. Land
 
-If a branch is gated, reviewed and adjudicated, land it and close its issue with what landed, who reviewed it, and what was filed rather than fixed. The close needs a criterion-by-criterion audit in **one comment** naming `just check`, `just unit` and `just mutation`; the rung refuses `audit_absent` without it (#461, `tools/land.py`'s `AUDIT_MARKERS`).
+If a branch is gated, reviewed and adjudicated, land it with `just land --audit-file FILE`, passing one complete criterion-by-criterion audit written outside the worktree: what landed, who reviewed it, and what was filed rather than fixed. The rung posts that audit as its own comment and closes only from the successful posting receipt, so no comment anyone else wrote can satisfy the close. It refuses `audit_file_unreadable` without one, and `audit_recorded=yes` verifies the posting call rather than the audit's content or quality (#461, #499).
 
 **A verdict survives a clean rebase** (#417). `just land` and `just land --stage` record the rebase, and a verdict carries to the moved commit when the recorded chain reaches it and the diff's exact identity matches. A hand-resolved replay or a binary diff does not carry (`docs/review-dispatch.md:358-372`, `tools/land.py:990-1018`). So a second landing does not automatically orphan another branch's verdict.
 
