@@ -11,18 +11,21 @@ Claimed: 0078 — baseline `origin/main` at `29cf0e8` tops out at ADR-0077. The 
 2026-08-21 scan of sixty then-open issue comments found ADR-0071, ADR-0075 and ADR-0077 and
 no number at or above 0078; that dated scan has the blind window `AGENTS.md` records
 
-## Reading rule
+## Orchestrator working convention pending human ruling: reading this draft
 
 The 2026-08-21 session supplied the rulings recorded below. The corrected record and its
 unresolved authority choices still require the human's sign-off under `AGENTS.md`'s
 human-sign-off gate.
 
-Every substantive section below is labelled as one of three things:
+Pending that sign-off, the orchestrator uses four labels to keep supplied rulings separate
+from unruled material:
 
 - **Recorded ruling** — binding after the human signs off this corrected ADR.
 - **Research fact or proposal** — evidence or a non-binding design from
   `docs/research/system-of-work-observability.md`; a later issue may adopt, change or reject it.
 - **Open ruling question** — no option is selected and no default is implied.
+- **Orchestrator working convention pending human ruling** — temporary handling by the
+  orchestrator, not a human ruling and not authority granted to another issue.
 
 The label on a heading applies to every statement beneath it until the next labelled
 heading. Human sign-off on the recorded rulings does not silently promote the research
@@ -237,18 +240,24 @@ The human must choose one mode for each row; there is no default:
 | Select a reviewer | Review-effectiveness or relation data may influence reviewer selection. | #487 and #491 cannot affect review dispatch. | Must clarify whether reviewer selection is routing under R3. | pending |
 | Trigger watching | Age, block reason or depth may arm or intensify a watcher. | #486 and #492 cannot replace or trigger fixed watcher behaviour. | Decides whether their leading indicators are operational or reported. | pending |
 | Trigger escalation | Rework, age, abandonment or queue readings may start an escalation. | #484, #487, #489 and #492 cannot add escalation triggers. | Existing review-loop escalation conditions remain the only automatic ones unless this is allowed. | pending |
+| Select an arbiter for an escalated finding | A reading may influence which otherwise eligible profile the existing arbiter walk resolves for the finding. | #487's rework and #491's relation data remain reports or human recommendations; they cannot alter the arbiter walk. | Determines whether #478/#482 may feed #487/#491 readings into arbiter routing or only report them. | pending |
 | Retry a dispatch | A terminal reading may cause a re-dispatch when existing safety checks allow it. | #489 and any dispatch lifecycle event remain evidence only. | Any permission must still forbid automatic retry of `child_state_unknown` until #495's reconciliation completes. | pending |
 | Affect gate acceptance | Historical or per-leg readings may contribute to a gate's green/red result. | #479/#483 recording stays advisory and fail-open. | `control` changes those issues' current acceptance contract; the other modes preserve it. | pending |
-| Affect landing acceptance | Conformance, first-pass, relation or summary readings may add a landing rung or refusal. | #487, #490, #491 and #493 remain analytical outputs; `just land` keeps its existing authorities. | `control` requires an explicit acceptance rule and tests; the other modes add none. | pending |
+| Affect repository landing acceptance | Conformance, first-pass, relation or summary readings may add a rung or refusal governing whether work reaches `origin/main`. | #487, #490, #491 and #493 remain analytical outputs; `just land` keeps its existing repository-landing authorities. | `control` requires an explicit acceptance rule and tests; the other modes add none. | pending |
+| Affect audit posting or issue closing | After repository landing, a reading may influence whether or when the audit is posted or the issue is closed, as two independent actions. | Readings may describe or recommend either action, but no tool or in-loop orchestrator may cause, suppress or delay either action from telemetry. | Determines whether readings exposed by #478/#482, including #490/#491/#493 outputs, may drive either tracker action or remain analytical. | pending |
 
-Until each row is ruled, #478–#493 may describe dependencies on that capability only as
-conditional. The issues do not gain authority from this ADR's research sections.
+## Orchestrator working convention pending human ruling: issue drafting
 
-## What would change this record
+Pending a human choice for each row, the orchestrator will describe #478–#493 dependencies
+on that capability as conditional. This convention binds no issue and grants none authority
+from this ADR's research sections.
 
-Recorded rulings change only through another human ruling. Calibration evidence cannot by
-itself overturn R2's refusal to combine lane meters. A future human may revisit that
-refusal, but this human ruling said not to do so here.
+## Orchestrator working convention pending human ruling: changing this draft
+
+Pending sign-off, the orchestrator will change a recorded ruling only in response to another
+human ruling. Calibration evidence alone will not overturn R2's refusal to combine lane
+meters. A future human may revisit that refusal, but this human ruling said not to do so
+here.
 
 Research proposals need no overturning event because they are not adopted decisions. A
 later issue may reject one on code facts, cost or a better design. #464 landing would

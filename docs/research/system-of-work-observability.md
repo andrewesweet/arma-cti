@@ -110,7 +110,8 @@ unclassified / 4 absent; `zai` 135 ok / **13 `quota_exhausted`** / 4 unclassifie
 ### 1.3 Cost per landed issue was computed in the dated pass
 
 Built as a throwaway extractor over the per-dispatch sinks, joined to `dispatch.json` and
-to commits on `origin/main` that reference the issue:
+to commits on `origin/main` that reference the issue. This is a `dispatch_only` cost per
+landed issue and excludes orchestrator work:
 
 | Lane | Landed issues | Output tokens | Per issue | Plan points per issue |
 |---|---|---|---|---|
