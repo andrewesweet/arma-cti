@@ -16,7 +16,7 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-check: check-commits check-generated check-adr check-source-link check-markers check-conflicts check-changelog check-gate-clock check-seats check-just-grants check-arbiter check-sqf check-secrets check-python check-machine-b check-rust
+check: check-commits check-generated check-adr check-source-link check-gated-paths check-markers check-conflicts check-changelog check-gate-clock check-seats check-just-grants check-arbiter check-sqf check-secrets check-python check-machine-b check-rust
 
 # Static validation for the repository-managed Machine B playbooks. The live
 # inventory is deliberately absent here: syntax and lint must be available to
@@ -58,6 +58,18 @@ check-adr:
 # #221 decision 2). A copy would diverge invisibly, since both names still read.
 check-source-link:
     uv run python tools/check_source_symlink.py
+
+# Every lane reaches this boundary. Direct human approvals are tool-owned records
+# outside the worktree and bind one path to its exact resulting content; a changed
+# ADR-0013 record remains the standing-authorisation route (#500).
+check-gated-paths:
+    uv run python tools/gated_paths.py check
+
+# Human-facing writer for one content-bound approval. Dispatched sessions are
+# refused, and the approval store is outside every worktree.
+[positional-arguments]
+gated-paths *args:
+    uv run python tools/gated_paths.py "$@"
 
 # A `validated ×N` marker must not narrate a use its own count does not reach
 # (#186). CLAUDE.md's exemplar lists are out of scope — the reason is at the

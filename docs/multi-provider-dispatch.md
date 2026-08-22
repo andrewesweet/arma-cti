@@ -318,8 +318,8 @@ That is not an oversight to fix here, but the two are not covered by the same th
 paragraph used to say they were (review round 1 claim 7). `.claude/skills/` is human sign-off
 gated by CLAUDE.md, whose list ends "changes to this file or the project skills".
 `.claude/agents/` appears nowhere in that list, and nowhere in
-`.claude/hooks/protect-gated-paths.py`'s `GATED` either, which is `*/generated/*` and
-`*tests/specs/*` only; what covers it is `just check`'s generated-file check, since every seat
+the shared `tools/gated_paths.py` catalogue's `deny_at_write` entries either, which cover
+generated paths and `tests/specs/` only; what covers it is `just check`'s generated-file check, since every seat
 file is written from `tools/dispatch.py`'s registry by `tools/generate_seats.py` and a
 hand-edit reds the gate. The ground both share is the second one: the wall this section
 documents refuses a dispatched write to either regardless of lane. What

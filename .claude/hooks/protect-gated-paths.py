@@ -23,28 +23,20 @@ PreToolUse reads any exit other than 2 as approval.
 
 from __future__ import annotations
 
-import fnmatch
 import json
 import sys
 from pathlib import Path, PurePosixPath
 
 from shell_reading import read_command, without_assignments
 
-# `edit_payload` is shared with `tools/`, which is not on a hook's script path.
+# `edit_payload` and the path authority are shared with `tools/`, which is not on
+# a hook's script path.
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
 
 from edit_payload import edited_paths
+from gated_paths import hook_denial
 
-GATED = [
-    ("*/generated/*", "Generated file. Edit the schema source and regenerate; never hand-edit."),
-    (
-        "*tests/specs/*",
-        (
-            "Acceptance spec. Specs encode human intent and are sign-off gated"
-            " (CLAUDE.md); propose the change to the user instead of editing."
-        ),
-    ),
-]
+REPO = Path(__file__).resolve().parents[2]
 
 UNREADABLE_EDIT = (
     "Could not read this file-editing tool call to check it for writes to gated"
@@ -68,17 +60,8 @@ _EDITS_IN_PLACE = frozenset({"sed", "perl"})
 
 
 def _gated(path: str) -> str | None:
-    """Return the reason `path` is gated, or `None`.
-
-    A relative path is also tried with a `./` prefix (`generated/x` from inside
-    the addon) and a trailing slash (the directory itself, as `rm -rf` names
-    it), so the globs keep their one authoritative spelling.
-    """
-    for candidate in (path, f"./{path}", f"{path}/", f"./{path}/"):
-        for pattern, reason in GATED:
-            if fnmatch.fnmatch(candidate, pattern):
-                return reason
-    return None
+    """Return the shared path authority's immediate denial, or ``None``."""
+    return hook_denial(path, root=REPO)
 
 
 def _is_in_place_flag(word: str) -> bool:

@@ -122,7 +122,10 @@ sys.path.insert(0, str(Path(__file__).parent))
 # orchestration trial's first criterion reads, and it imports only `otel_event`, so the
 # cycle argument holds for it too (#260). `gate` carries the in-world surface list this
 # module's corpus check reads — its home since #328 — and imports only `routing_policy`.
+# `gated_paths` carries the path-identifiable sign-off definition shared with the hook
+# and the live check leg (#500).
 import gate
+import gated_paths
 import ledger
 import otel_event
 import pool_merge
@@ -861,21 +864,6 @@ TRIAL_RUNNING: Final = "running"
 # `CLEARED` and `FAILED` are shared with the route bar's vocabulary; a reader meets one verdict
 # at a time and never both objects at once, so the strings are reused rather than forked.
 
-# Criterion 4's path-identifiable sign-off surfaces, from CLAUDE.md's gated list. Snapshot-schema
-# semantics, perceptual-checklist growth and gameplay-balance feel are semantic rather than
-# path-derivable, so a path scan never claims to have checked those judgements.
-TRIAL_GATED_PREFIXES: Final = (
-    # `AGENTS.md` holds the content and `CLAUDE.md` is a symlink to it (#264). Both
-    # names are listed: a diff can name either, and the audit must see an edit to the
-    # process file however it was spelled.
-    "AGENTS.md",
-    "CLAUDE.md",
-    "CONTEXT.md",
-    "docs/adr/",
-    "tests/specs/",
-    ".claude/skills/",
-)
-
 # ADR-0013's marker, exactly as CLAUDE.md's `grep -rl` reads it: a line, not a fragment.
 DELEGATED_DECISION_MARKER: Final = "Delegated-decision: yes"
 
@@ -1328,7 +1316,7 @@ def trial_gated_verdict(repo: Path, shas: Sequence[str]) -> TrialCriterionResult
                 "gated_surface_approved", "", f"git could not name {sha[:8]}'s paths"
             )
         paths.extend(path for path in changed if path not in paths)
-    gated = tuple(path for path in paths if path.startswith(TRIAL_GATED_PREFIXES))
+    gated = tuple(path for path in paths if gated_paths.signoff_gate(path) is not None)
     if not gated:
         return TrialCriterionResult(
             "gated_surface_approved",
