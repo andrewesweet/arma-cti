@@ -4,18 +4,23 @@
 and anecdote. What telemetry would let it improve by measurement instead — what data
 points, captured how, sliced how, and read by whom?
 
-**Answer, in one paragraph.** Capture is not the problem and has not been for weeks: an
-OTel collector already runs on loopback, 626 of 639 dispatches already have a durable
-per-dispatch file, and those files already carry per-request tokens, cost, duration,
-model, tool decisions and the six-attribute `cti.*` identity that joins a record to a
-dispatch, a seat, a lane and an issue. **Consumption is the problem.** Nothing in the
-system aggregates across dispatches; the one view that would (`ledger.json`) exists on 6
-of 639 records; the review journal that computes ADR-0071 ruling 6's ranking key is read
-by nothing. The work is a canonical wide event per unit of work, a query layer over the
-files that already exist, and a written contract so an analyst does not re-derive the
-schema every time. The single largest finding is that the metric the human ranked first
-— cost per landed issue — is dominated not by what a dispatch spends but by the **84% of
-ruled capacity that goes unused**, and nothing measures that today except on demand.
+**Status.** This is research, not a decision record. Sections 1 and 2 contain dated
+observations and research findings. Sections 3 through 5 are design proposals that later
+issues may adopt, change or reject. Where this document restates a ruling, it cites the
+ADR that owns it; no `must`, `should` or proposed schema here creates policy by itself.
+
+**Answer, in one paragraph.** Capture is not the only gap: an OTel collector already runs
+on loopback, and the 2026-08-21 observation found durable per-dispatch files for 626 of
+639 dispatches. Two purpose-built readers already aggregate narrow slices across records:
+`just occupancy` over dispatch intervals and `just gate-clock-history` over gate-clock
+rows. **General consumption remains the gap.** No persisted observatory store joins
+dispatch, gate, review, landing and telemetry records across work items; the observation
+found `ledger.json` on 6 of 639 dispatch records, while the review journal carrying
+ADR-0071 ruling 6's inputs has no general reader. The proposal is a query layer over the
+files that exist, lifecycle events that preserve distinctions the current closeout code
+already makes, and a written analyst contract. Its largest dated observation is that
+84.0% of ruled capacity went unused in the observed window. That figure is not a
+reproducible baseline: no input snapshot or digest was committed.
 
 ---
 
@@ -28,29 +33,31 @@ Three documents already cover ground this one deliberately does not repeat.
   the four hosted candidates and `ccusage`. Its config sketch is what runs today.
 - `docs/research/claude-codex-mlflow-observability-gap-analysis.md` covers Claude/Codex
   parity and the common measurement contract.
-- `docs/research/mlflow-role-in-system-of-work-improvement.md` rules MLflow in as a
-  derived evidence and experiment workbench and out as a controller.
+- `docs/research/mlflow-role-in-system-of-work-improvement.md` recommends MLflow as a
+  derived evidence and experiment workbench and rejects it as a controller.
 
 This document sits one layer above all three. They answer *how do we capture agent
 telemetry*. This answers *what should we measure about the work system, and how does
 anyone read it afterwards*.
 
-**One conflict, stated rather than resolved silently.** The MLflow document recommends
+**One proposal conflict, stated rather than resolved silently.** The MLflow document recommends
 MLflow as the derived evidence plane. MLflow is **not installed** — absent from
 `pyproject.toml`, `uv.lock`, `justfile` and `tools/`, so the recommendation stands
 unadopted. Proposing a second derived plane without saying so would be the
 "second copy nothing compares" shape retro 31 named as its cycle's dominant failure. The
-position this document takes: **the derived store is the single canonical flattening**,
+non-binding position this document proposes: **the derived store is the single canonical flattening**,
 and MLflow, if ever piloted, projects from that store rather than from raw. One
-flattening, two consumers. That belongs in the ADR, not in a footnote here.
+flattening, two consumers. A later ruling or implementation issue may accept or reject it.
 
 ---
 
-## 1. The measured baseline
+## 1. Dated observation, not a reproducible baseline
 
-Every number below was measured on 2026-08-21 from this box. Reproduction commands are in
-§9. They are the first whole-history figures the project has had; every previous
-measurement of the work system was a single block or a single session.
+Every number below was observed on 2026-08-21 from mutable state on this box. The pass
+used throwaway scripts over local state, then-current `origin/main`, and live GitHub
+queries. No input snapshot, script or digest was committed. Section 8 records the inputs
+that were consulted, not commands that can reproduce the figures. Treat every figure as
+a dated observation, not a binding baseline or a result reproducible from this repository.
 
 ### 1.1 What the machine actually did
 
@@ -72,9 +79,9 @@ Concurrency histogram, in minutes at each level: **1 agent → 5,209 · 2 → 1,
 4 → 152 · 5 → 59**.
 
 This extends `docs/research/dispatch-cost-and-occupancy.md`, which measured one
-191-minute block at 70.1% loss and mean occupancy 1.50/5. Over the whole history the loss
-is **84.0%** and mean concurrency is **0.48**. The block was not unrepresentative; it was
-better than average, because it was awake.
+191-minute block at 70.1% loss and mean occupancy 1.50/5. In the dated dispatch-record
+window, loss was **84.0%** and mean concurrency was **0.48**; the earlier awake block
+appeared better than that wider observation.
 
 ### 1.2 Per-dispatch shape
 
@@ -100,7 +107,7 @@ dispatches carrying both timestamps:
 Outcomes by lane: `claude-native` 303 ok / 8 unclassified / 10 absent; `codex` 158 ok / 4
 unclassified / 4 absent; `zai` 135 ok / **13 `quota_exhausted`** / 4 unclassified.
 
-### 1.3 Cost per landed issue is computable today
+### 1.3 Cost per landed issue was computed in the dated pass
 
 Built as a throwaway extractor over the per-dispatch sinks, joined to `dispatch.json` and
 to commits on `origin/main` that reference the issue:
@@ -138,11 +145,11 @@ only:
 | `claude_code.tool.blocked_on_user` | 10,162 | **0.36** | 127 ms |
 
 So inside a dispatched turn, time splits roughly **58% inference, 41% tool execution**.
-And **permission prompts are not a cost** — 10,162 blocking spans totalling 21 minutes
-across the whole corpus. That hypothesis is now dead, measured, for the price of one
-query.
+In that dated Claude-only corpus, 10,162 `blocked_on_user` spans totalled 21 minutes.
+That observation does not support permission prompts as a large cost in that window; it
+does not prove the claim for other lanes or later records.
 
-### 1.5 Flow metrics, for the first time
+### 1.5 Flow metrics in the dated pass
 
 From 475 issues, 353 closed:
 
@@ -179,11 +186,15 @@ Four lines across four files are **truncated JSON**, consistent with a flush rac
 write. Small, but a naive reader dies on the first one — the benchmark written for this
 document did exactly that.
 
-Three structural holes, each provable by absence:
+Three structural holes visible on baseline `29cf0e8`, each checked against source:
 
-1. **This project emits no spans and no metrics of its own.** All six bespoke `cti.*`
-   event families are log records posted to `/v1/logs`. There is no span for a dispatch, a
-   gate run or a review round.
+1. **This project emits no spans and no metrics of its own.** It emits eight bespoke
+   `cti.*` log event families through `tools/otel_event.py`: `cti.breaker.transition`,
+   `cti.queue.transition`, `cti.review.arbiter.resolved`,
+   `cti.admission.trial.transition`, and the four review-loop events
+   `cti.review.round`, `cti.review.escalation`, `cti.review.dispute` and
+   `cti.review.terminus`. There is no project span for a dispatch, a gate run or a review
+   round, and no dispatch, gate or landing lifecycle event.
 2. **No gate leg records pass or fail.** Gate outcome is inferred from git, so a green
    gate that never landed is invisible. `gate_clock` times `unit` and `fast` only.
 3. **The spend estimator is unfalsified.** Every `cap_fraction.observed` is hardcoded
@@ -196,20 +207,20 @@ Three structural holes, each provable by absence:
 ### 2.1 Technical observability
 
 The findings below are from the OpenTelemetry specifications and the observability
-literature; sources are listed in §10.
+literature; sources are listed in §9.
 
-**The decision rule for span versus metric versus log.** No single OTel page states it;
-it follows from the three data models. Emit a **span** when the thing has a start, an end
-and a causal position in a larger operation. Emit a **metric** only for a question asked
-repeatedly over time with bounded dimensions, that must be answered without a scan. Emit
-a **log or event** for a discrete fact with no duration, or a wide record to be sliced
-later on high-cardinality fields.
+**Research heuristic for span versus metric versus log.** No single OTel page states it;
+the proposal infers it from the three data models. A **span** fits a thing with a start, an
+end and a causal position in a larger operation. A **metric** fits a question asked
+repeatedly over time with bounded dimensions that must be answered without a scan. A
+**log or event** fits a discrete fact with no duration, or a wide record to be sliced
+later on high-cardinality fields. This heuristic is not a project ruling.
 
-The corollary decides most of this design: **metrics can be derived from events at query
+The proposed corollary shapes most of the design: **metrics can be derived from events at query
 time; events cannot be derived from metrics.** With files and a SQL engine, a metric buys
 nothing that a `GROUP BY` does not, at full cardinality, retroactively. So: **emit no
-metrics of our own yet.** Add one only when something must be answered on a live surface
-without a scan.
+metrics of our own yet.** That is a research recommendation, not adopted policy; a later
+issue may choose differently when something must be answered live without a scan.
 
 **Wide structured events are the recommended primitive.** Majors' framing — one source of
 truth, arbitrarily wide structured events, from which metrics, traces and SLOs are all
@@ -228,10 +239,12 @@ outlive their process: a span is exported only at `End()`, so an hour-long span 
 invisible until it finishes and is **lost entirely if the process dies**. This project
 plans for agents dying — `flock` releases on holder death, ADR-0022 — so a single
 `invoke_agent` span per dispatch would be absent in exactly the cases most worth
-investigating. The alternative is a **pair of events**: `cti.dispatch.started` and
-`cti.dispatch.finished` sharing a dispatch id, with duration computed in SQL. A missing
-`finished` is then *itself the stall signal*, which is what `just watch` exists to detect
-and what a lost span can never provide.
+investigating. The proposed alternative is a **pair of events**:
+`cti.dispatch.started` and `cti.dispatch.finished` sharing a dispatch id, with duration
+computed in SQL. A missing `finished` is an investigation signal, not proof of a live
+stall: current `result.json` publication and a future event append cannot be one atomic
+write, so the result may exist when the event does not. `just watch` and the atomic result
+remain the current lifecycle authorities unless a later design unifies them.
 
 **Trace context can cross a process boundary, and probably will not here.** The
 Environment Variables as Context Propagation Carriers spec (Release Candidate) defines
@@ -259,9 +272,10 @@ that fits this project's vocabulary:
 | tool call | `execute_tool` span, `gen_ai.tool.name` |
 | effort, profile, issue, dispatch id, worktree | **no convention exists** → `cti.*` |
 
-Naming rules that bind: custom attributes use a unique prefix, and it is *not
+The source's naming guidance: custom attributes use a unique prefix, and it is *not
 recommended* to nest them under an existing convention namespace — so `cti.*` is correct
-and `gen_ai.cti.*` is not. `otel.*` is reserved.
+for this proposal and `gen_ai.cti.*` is not. `otel.*` is reserved. Adopting that mapping
+as project policy remains a later decision.
 
 **Cardinality is a metric problem and not a trace problem.** Each distinct attribute set
 on a metric is a separate series; the SDK's default aggregation cardinality limit is
@@ -284,10 +298,10 @@ and not one telemetry closes.
 
 **Governance has a published vocabulary worth borrowing.** Requirement levels — Required,
 Conditionally Required, Recommended, Opt-In — are the right words for deciding whether an
-attribute goes on an event. Deprecation practice is absolute: *attributes are never
-removed, only deprecated*, because an archive is permanent and a rename silently breaks
-every historical query. Schema URLs date every record so a query written today knows which
-attribute spelling an old file used.
+attribute goes on an event. The research proposal would never remove or repurpose an
+attribute name, only deprecate it, because a rename silently breaks historical queries.
+Schema URLs could date every record so a query knows which spelling an old file used.
+Neither choice has been ruled.
 
 ### 2.2 Business process observability
 
@@ -341,26 +355,27 @@ a different and better answer than a counter reading zero.
 WIP, throughput as an exact count of items, cycle time, and **work item age** — the elapsed
 time between start and *now*, computed on unfinished work. Cycle time is lagging: it is
 known only after intervention was possible. Age is the same quantity while intervention
-still helps, and the operational rule is to plot every open item's age against the
-historical percentile band. Measured here: p85 lead time is 54.7 hours, so an item at 60
-hours is the one to act on. This is a better stall detector than a fixed-timeout watcher
-because the threshold comes from the project's own distribution rather than a guess.
+may still help. The literature's operational rule is to plot every open item's age against
+a historical percentile band. The dated pass observed p85 lead time at 54.7 hours; using
+that observation to act on a 60-hour item or replace a fixed timeout remains an authority
+choice for the human, not a conclusion this research can implement.
 
-**Little's Law is a stability test, not a forecast**, and this system fails one of its
-assumptions structurally. The Law requires that all work started completes and exits;
-`infra_unavailable`, `quota_exhausted` and `provider_refused` are all work started that did
-not complete and is explicitly not a result. Counting them as WIP inflates cycle time
-without bound; dropping them silently understates WIP. The correct treatment is a **third
-terminal state — `abandoned`, with its class** — excluded from cycle-time distributions and
-counted separately as a yield loss. This project already has the vocabulary; it has never
-had the state.
+**Little's Law is a stability test, not a forecast.** The Law requires every item admitted
+to WIP to leave it. Since #495, atomic `result.json` closeout gives dispatches terminal
+lifecycle states including `child_not_launched`, `child_state_unknown` and
+`harness_failed_after_child`; these records no longer remain live merely because a child
+did not complete normally. What still does not exist is the proposed **analytical category
+`abandoned`, with its existing class** for separating not-a-result yield loss from completed
+work. That category must preserve the lifecycle status and must never make
+`child_state_unknown` look reconciled.
 
-**Flow efficiency is touch time over elapsed time**, and this system can compute it exactly
-where most cannot: touch time is dispatch wall-clock while a session is actually running,
-and everything else is wait. Typical software teams land at 15–40%. The measured figures in
-§1.1 imply this project's number is low and dominated by two arcs — waiting for the human,
-and waiting for a lane to reopen. Which is why the field that matters most is one that does
-not exist anywhere today: **`block_reason` on every wait interval**, distinguishing
+**Flow efficiency is touch time over elapsed time.** Dispatch wall-clock supplies part of
+touch time, but non-dispatched work and explicit wait-interval boundaries are absent, so
+this system cannot compute whole-work-system flow efficiency exactly today. Typical
+software teams land at 15–40%. The dated observations in §1.1 suggest this project's number
+may be low, but current records cannot say which causes dominate the wait. The proposed
+missing field is **`block_reason` on every wait interval**,
+distinguishing
 `waiting_human` from `lane_peak_band` from `quota_exhausted` from `waiting_reviewer` from
 `wip_limit`. Without it, wait time is one undifferentiated number and two opposite
 interventions look identical.
@@ -398,12 +413,12 @@ refusals, typed refusals, stale-copy false positives, each classified. A dispatc
 four hook denials before useful work is the agent equivalent of four meetings before lunch,
 and #254's whole filed diagnosis dissolved into one such interruption.
 
-**Statistical process control is the right statistics for samples of this size**, and that
+**Research recommendation: statistical process control fits samples of this size.** This
 is not a compromise — it is the design point. An XmR chart's limits come from a baseline
 that "may have as few as four points", twelve preferred, computed as
 `X̄ ± 2.660 × mR̄`. Three-sigma limits are chosen on economic grounds rather than a
 normality claim, which is why they work on skewed data like cycle times. Four practices
-follow and all four matter here:
+follow. They are proposed analytical practices, not binding project rules:
 
 - **Rule One only** — a point outside the limits. Wheeler's own recommendation, because
   extra rules "shift the balance toward more false alarms in order to find smaller signals"
@@ -441,13 +456,14 @@ raises refusal rates, turns dispatches into not-a-result, forces re-dispatch, an
 suffered. High utilisation of a quota lane does not merely slow the system; it makes it
 erratic.
 
-The human is the constraint in the Theory-of-Constraints sense — an M/M/1 server with
-utilisation near one and a very long service time — and every
-`human_ruling_requested → human_ruling_given` interval is constraint time that should be
-measured separately from everything else.
+**Research hypothesis, not an observation:** the human may be the Theory-of-Constraints
+constraint. Current records carry neither complete `human_ruling_requested` and
+`human_ruling_given` transitions nor a measured utilisation, so describing that resource
+as an M/M/1 server near full utilisation would outrun the data. Paired ruling intervals
+would make the hypothesis testable.
 
-**Rework has two metrics this project should adopt, and one empirical finding it should
-read carefully.** *Rolled Throughput Yield* is the product of each stage's first-pass yield:
+**Research proposal: consider two rework metrics, alongside one empirical finding.**
+*Rolled Throughput Yield* is the product of each stage's first-pass yield:
 five stages at 90% each is **59%**, so every stage can look healthy while four issues in ten
 need rework somewhere. The stages here are brief, implementation, own gate, cross-lane
 review, land. *Defect Removal Efficiency* is defects found before release over all defects
@@ -475,160 +491,153 @@ be built to start collecting it beyond the window and the escape channel.
 
 ---
 
-## 3. The proposed design
+## 3. Non-binding proposed design
 
-Four pieces. Each is independently useful, and they are ordered so that stopping after
-any one of them leaves something that works.
+Everything in this section is a research proposal. ADR-0078 records which parts the human
+has ruled and lists the remaining authority question; this section does not fill either
+gap by itself.
 
-### 3.1 A canonical wide event per unit of work
+### 3.1 Lifecycle events that preserve current closeout states
 
-Four units of work, four event families, each a single OTLP log record with `EventName`
-set — following the existing `tools/otel_event.py` dual-write pattern, which posts to the
-collector and appends to a local journal carrying `exported` and `export_detail`, so the
-journal is durable and the collector is the query path.
+The current base emits the eight event families listed in §1.7. The following are proposed
+additional lifecycle projections through the existing `tools/otel_event.py` dual-write
+seam. They do not replace the current records that own lifecycle truth.
 
-| Event | Emitted when | Carries |
-|---|---|---|
-| `cti.dispatch.started` | `just dispatch` mints an id | identity, seat, lane, profile, model, effort, issue, worktree, base SHA, route, strata, breaker state at dispatch, plan charge |
-| `cti.dispatch.finished` | the runner writes `result.json` | outcome, failure class, returncode, killed-by, wall seconds, token totals per class, per-lane spend in that lane's meter |
-| `cti.gate.finished` | every gate recipe, not just `unit` and `fast` | recipe, **per-leg pass/fail**, wall seconds, head SHA, tests collected, load, foreign gate processes |
-| `cti.landing.finished` | `just land` completes or refuses | issue, SHA, refusal class if any, `gate_review=` cause, review verdict identity, declared author if any |
+| Proposed event | Proposed source and contract |
+|---|---|
+| `cti.dispatch.started` | Emitted when `just dispatch` mints an id; carries identity, seat, lane, profile, model, effort, issue, worktree, base SHA, route, strata and breaker state. This means “dispatch record started”, not “child launched”. |
+| `cti.dispatch.finished` | Projected only after `result.json` has been published by the same-directory atomic replacement in `tools/dispatch.py:write_result`; carries every applicable result field rather than inferring completion from child exit. |
+| `cti.gate.finished` | Emitted for each gate recipe; carries recipe outcome plus the proposed per-leg pass/fail/not-run and duration fields, head SHA, tests collected, load and foreign gate processes. Per-leg outcome does not exist today. |
+| `cti.landing.finished` | Projected from the landing report; separates repository landing state from audit posting and issue closing, rather than treating all exit-0 landings as identical closeout. |
 
-The paired started/finished shape is deliberate and is the design's load-bearing choice:
-**a missing `finished` is the stall signal**, it survives the agent being killed, and it
-needs no long-lived span. It is also XES's `lifecycle:transition` under another name, which
-is what makes service time separable from waiting time at all.
+The proposed dispatch finish contract must preserve the four current `status` values:
+`child_finished`, `child_not_launched`, `child_state_unknown` and
+`harness_failed_after_child`. It also carries `failure_phase`, `failure`, `refusal`,
+`failure_class`, `returncode`, `outcome`, `action`, `gate_clock_collection`,
+`harness_finish`, timestamps and `review_delivery` when each exists. A review run's
+delivery must remain distinguishable as `review_delivery=posted`,
+`review_delivery=not_attempted`, or the typed `review_delivery_failed` refusal. A nullable
+field needs a reason; absence must never be rewritten as success. `child_finished` does
+not imply return code zero, and `harness_failed_after_child` needs the separate harness
+fields to identify what failed. `child_state_unknown` retains #495's inspect-and-reconcile
+action and must not look safe to retry. A review-delivery timeout is uncertain — the
+remote post may already have completed — and must not be rewritten as definite non-delivery.
 
-Three of the four are close to free — `dispatch.py`, `land.py` and `gate_clock.py`
-already compute everything listed. `cti.gate.finished` is the one that needs new
-information: **no gate leg currently records whether it passed**, which is why a green
-gate that never landed is invisible today.
+Atomic publication is part of that semantic contract. Child exit is not dispatch
+completion. `result.json` is staged, flushed, `fsync`ed and replaced atomically; a failed
+write deliberately leaves no published result. This proposal does **not** yet say how a
+separate event journal can atomically agree with that file. Therefore a result-write
+failure cannot honestly be represented as `cti.dispatch.finished` today: the current
+observable is no `result.json` plus `result_write=failed` on the runner's output. A later
+design must choose a separate closeout-failure event or a single atomic authority before
+using the event as lifecycle truth. It must not emit ordinary completion.
 
-Four fields do not exist anywhere today and are what the process literature says the log is
-missing. They cost a column each.
+The proposed landing contract has three independent dimensions:
 
-- **`block_reason`** on every wait interval — `waiting_human`, `lane_peak_band`,
-  `quota_exhausted`, `breaker_open`, `waiting_reviewer`, `worktree_occupied`, `wip_limit`,
-  `slot_unavailable`. Without it, wait time is one undifferentiated number and two opposite
-  interventions are indistinguishable. This is the highest-value single field in the design.
-- **An `abandoned` terminal state, with its class.** Little's Law assumes all started work
-  completes; `infra_unavailable`, `quota_exhausted` and `provider_refused` are work that
-  started and explicitly is not a result. Counting them as WIP inflates cycle time without
-  bound; dropping them understates it. A third terminal state is the correct treatment, and
-  it doubles as the yield-loss numerator.
-- **Qualified object relations** — an event names the objects it touches and *in what role*:
-  `subject`, `author`, `reviewer`, `produced`, `consumed`, `occupied`, `blocked_by`. This is
-  what makes `gate_review=cross_lane` checkable from the log rather than believed from a
-  printed line, and what stops one `just land` event being duplicated across three cases.
-- **`first_pass`** — whether this stage was reached without rework. One boolean per stage
-  transition yields first-pass yield per stage and rolled throughput yield for the pipeline.
+- repository state: `not_landed`, `landed_merge_outstanding` (current exit 2, work already
+  on `origin/main`) or `landed`;
+- `audit_recorded=yes|no|not_attempted`, preserving its reason and the current
+  `verified=posting_call not_verified=content_or_quality` limit; and
+- `issue_closed=yes|no|not_attempted`, preserving its reason.
 
-A fifth observation has no natural event because nothing happens: **queue depth**. An issue
-behind the WIP limit, a branch awaiting a reviewer, a finding filed and unadjudicated are
-invisible inventory, and a periodic depth sample per queue is the only way to see them.
+It also carries exit code, typed refusal or outstanding-step reason, issue, pushed SHA,
+`gate_review=` cause, review verdict identity and declared author when available. Thus a
+failed audit post is `repository=landed, audit_recorded=no, issue_closed=no`, not ordinary
+closeout; a successful audit followed by failed closing is distinct again. On current
+exit 2 the audit and close are not attempted. These proposed spellings are not current
+code and may change, but an implementation may not collapse the states.
 
-### 3.2 One identity, stated once
+The current `cti.review.round` event is a transition summary, not a paired lifecycle. No
+current code fact defines a review-round start and finish boundary. A paired review-round
+contract therefore remains unrepresentable until a later design chooses those boundaries;
+this document does not pretend the existing event is a pair.
 
-`cti.dispatch_id` already joins a record to a dispatch, seat, lane, profile, issue and base
-SHA, injected into `OTEL_RESOURCE_ATTRIBUTES` per invocation. It stays the spine. Two
-additions:
+### 3.2 Proposed additional fields and samples
 
-- **Non-dispatched sessions get an identity too.** The orchestrator's own turns and the
-  human's interactive sessions carry no dispatch id and reach no row, which is why nobody
-  knows what the orchestration seat consumes. The status-line spool already captures
-  per-session cost, tokens, duration, lines changed, model, effort and `session_id` for
-  **every** session — 6,043 lines of it, read today only for `rate_limits`. #464 made it
-  keep generations rather than destroying its history on every roll. It needs a timestamp,
-  which it currently lacks entirely.
-- **Attribute names live in one registry.** One file listing every `cti.*` name with a
-  requirement level and a one-line reason, in the shape of `SEATS` in `tools/dispatch.py`
-  — names in one place, never typed by hand into a surface. A `just check` leg asserting
-  that every emitted attribute appears in the registry is mechanical and prevents exactly
-  the drift `just check-arbiter` exists to catch elsewhere.
+The process literature suggests four additional fields and one periodic observation. All
+remain proposals:
 
-### 3.3 A derived store, rebuilt rather than migrated
+- **`block_reason`** on wait intervals, from a closed vocabulary with an explicit
+  `undetermined` value;
+- **an `abandoned` analytical terminal state with its existing failure class**, provided
+  it does not erase the dispatch closeout states above;
+- **qualified object relations** naming subject, author, reviewer and other roles;
+- **`first_pass`** on each stage transition, including an undetermined value; and
+- **queue-depth samples**, because no transition occurs while an item waits.
 
-A full rebuild from the immutable JSONL sources on every run, so the store is a cache and
-never a source of truth. **Measured: 591 files, 618 MB, 59,682 lines, 279,823 OTel records
-parse in 3.3 seconds** in unoptimised Python. At the current ~1 GB/fortnight and a 90-day
-retention, a rebuild lands near 20 seconds. Rebuild cost is not a design constraint, which
-means schema changes are re-runs rather than migrations — and this schema will change
-repeatedly in its first month.
+### 3.3 Proposed identity and durability boundary
 
-Two consumers, one flattening:
+`cti.dispatch_id` already joins per-dispatch telemetry to the dispatch resource attributes.
+The proposal keeps it as the dispatch spine and adds a session-grain identity for work no
+dispatch covers.
 
-- **The big store** under `~/.arma-cti/`, outside every worktree, like all other evidence.
-- **A small committed per-issue summary** — one row per landed issue: cost in its lane's
-  meter, rounds, dispatches, duration, lanes involved. It survives box death, diffs in
-  review, and gives an analyst a cheap first read. Written by the same tool, never by hand.
-  `docs/process-log.md` is the precedent: the project's only longitudinal record is
-  committed prose, and it is committed for good reasons that apply here too.
+That session source is **not historically durable on this base**. `tools/quota_tap.sh:54-62`
+performs one rollover from `statusline.jsonl` to `statusline.jsonl.1`, overwriting the old
+backup on the next roll. Commit `4a48f96` for #464, parked at
+`origin/issue-464-parked` on 2026-08-22, is not an ancestor of baseline `29cf0e8` or this
+branch. It adds bounded generations, but it has not landed. Until it does, the spool
+discards older session history and any whole-system or fully-loaded cost denominator that
+uses it is incomplete. The proposal becomes sound for retained history only after #464
+lands; a timestamp is still separately required because current lines have none.
 
-DuckDB is the query engine, over `read_json` views. The `otlp` community extension exists
-and matches this use case, but it is early-stage, single-node, caps file reads at 100 MB
-and has already broken its schema between minor versions — so a hand-rolled flattening of
-about thirty lines of SQL is the smaller liability, with the extension as an optional
-accelerator.
+The proposed attribute registry — one file naming every `cti.*` attribute, its requirement
+level and reason, plus a check leg — is also research. No ruling currently requires it.
 
-### 3.4 The analyst's contract
+### 3.4 Proposed derived store and analyst contract
 
-The mission's actual requirement: *future analytical agents should not work from first
-principles each time*. That needs three written things, and they are the cheapest part of
-this proposal.
+The proposal is a full rebuild over whatever source files remain available, making the
+derived store a cache rather than a source of truth. Not every input is immutable on this
+base: the session spool above is the counterexample. The 2026-08-21 pass observed 591
+files, 618 MB, 59,682 lines and 279,823 OTel records parsing in 3.3 seconds in unoptimised
+Python. Because neither inputs nor script were committed, that timing is a dated
+observation, not a reproducible capacity proof.
 
-1. **A schema reference** — every table, every column, what it means, which source file it
-   came from, and which columns are nullable *and why* the null exists.
-2. **A worked-query cookbook** — the ten questions that have actually been asked in retros,
-   each with its SQL. Cost per landed issue by lane. Occupancy over a window. Rounds per
-   landing by profile. Gate duration trend against its anchor. Lead time percentiles.
-   Dispatches per issue. Failure class rates by lane. Idle gaps over N minutes. Spend by
-   seat. Tool-time versus inference-time inside a dispatch.
-3. **A hazards list**, and this is the part that earns its keep. Every trap this document
-   hit while measuring: Codex tokens are metrics not logs, and a log-only reader books a
-   lane at zero; four lines of the archive are truncated JSON and a naive parser dies on
-   the first; `cap_fraction.observed` is always null and `0.0` there would be a lie; the
-   statusline spool has no timestamp and is ordered only by line position; spans exist
-   only from 2026-08-18 and only on the Claude lane; `dispatch_only` attribution means
-   totals exclude the orchestrator.
+The proposed outputs are a large local store and a small generated, committed per-issue
+summary. DuckDB, a single canonical flattening, and the summary schema are research choices
+for #478–#493 to accept or reject; this document does not mandate them.
+
+Three proposed analyst artefacts accompany the store:
+
+1. a schema reference naming every column, its source and each null reason;
+2. a worked-query cookbook for questions already asked; and
+3. a hazards list, beginning with Codex token metrics versus Claude log records, truncated
+   JSON, always-null `cap_fraction.observed`, the spool's missing timestamp and destructive
+   rollover, lane-limited span coverage, and `dispatch_only` attribution.
 
 ---
 
-## 4. Guidelines for future work
+## 4. Proposed guidelines for future work
 
-Proposed as the durable rule this document contributes, in the form a `CLAUDE.md` or ADR
-sentence would take.
+These are candidate rules, not rules this research document can create. A later issue or
+human ruling may adopt, alter or reject each one independently.
 
-**When to add telemetry.** Add a **dimension to an existing wide event** when a question
-was asked that could not be answered — that is nearly always the right move, it is one
-column, and it is retroactive from the moment it lands. Add a **new event family** only
-when no existing event's lifetime contains the thing being measured. Add a **metric** only
-when a live surface must answer without a scan. Never add a signal speculatively: an
-unread signal is indistinguishable from an absent one and costs a maintenance obligation.
+**Candidate capture guideline.** Prefer a dimension on an existing wide event when its
+lifetime contains the question; add an event family only for a distinct lifetime; add a
+metric only for a live bounded-cardinality query. Avoid speculative unread signals.
 
-**What every new feature owes.** A landing that adds a unit of work — a new seat, a new
-gate recipe, a new lifecycle state — adds that unit's start and finish events in the same
-commit. This is the existing convention that a rule lands with its first applied instance,
-applied to telemetry.
+**Candidate feature obligation.** A feature adding a unit of work could add matching
+lifecycle capture in the same commit. This is not an existing project convention for
+telemetry, and the current review-round boundary shows why it cannot be applied by slogan.
 
-**How to spell it.** Reuse `gen_ai.*` where a convention exists; use `cti.*` where none
-does; never nest one inside the other. Register the name with a requirement level and a
-reason. **Never delete or repurpose an attribute name** — deprecate it and keep it
-readable, because the archive is permanent and a silent rename breaks every historical
-query written before it.
+**Candidate attribute policy.** Reuse `gen_ai.*` where a convention exists, use `cti.*`
+where none does, register custom names, and deprecate rather than repurpose them. No human
+ruling has adopted the registry or deprecation policy.
 
-**What a signal must never do.** Report, never route. Nothing derived from this telemetry
-excludes a profile, reroutes work or trips a breaker. That is ADR-0071 ruling 6's
-constraint and it is reaffirmed rather than restated: the dropped admission bar is the
-worked example of a measurement given authority it could not carry, and it never
-adjudicated once across 24 routes.
+**Recorded authority boundary, plus an unresolved question.** ADR-0071 ruling 6 forbids
+profile exclusion, rerouting and breaker trips derived from observatory readings. It does
+not answer whether telemetry may reorder queue work, admit WIP, select lanes or reviewers,
+trigger watching or escalation, retry dispatches, or affect gate or landing acceptance.
+ADR-0078 returns those capabilities to the human as explicit choices. This research makes
+no default choice for them.
 
-**What a signal must always do.** Distinguish absence from zero, with a reason code. Every
-existing writer in this project already does this and it is why its data is worth
-querying at all.
+**Candidate data-quality guideline.** Distinguish absence from zero and preserve a reason
+when known. This is supported by existing writers but is not universal: current result
+fields are legitimately absent by state, and the status-line spool has no historical-loss
+marker when a generation is overwritten.
 
 ---
 
-## 5. What to measure first
+## 5. Proposed measurement order
 
 Ranked. The human held no prior view, so this is a proposal with its reasoning attached.
 
@@ -660,10 +669,11 @@ window**, with an escape channel. Capers Jones's data says formal inspection rem
 defects against under 50% for most testing, so this is the highest-yield mechanism in the
 system and it has never been checked against its own record.
 
-**5. Aging work-in-progress, as a replacement for fixed-timeout watching.** Cycle time is
-known only after intervention was possible; item age is the same quantity while it still
-helps. The p85 lead time measured here is 54.7 hours, which is a threshold derived from this
-project's own distribution rather than guessed — unlike every timeout in the watcher today.
+**5. Aging work-in-progress, as a candidate signal beside fixed-timeout watching.** Cycle
+time is known only after intervention was possible; item age is the same quantity while it
+may still help. The dated pass observed p85 lead time at 54.7 hours. Using that observation
+to trigger or replace watching is one of ADR-0078's unresolved authority choices; this
+research does not authorise it.
 
 **Deliberately not first: per-dispatch efficiency.** Brief size, prompt compression and
 scaffolding overhead have been measured repeatedly and found small — the 837-token brief
@@ -679,9 +689,10 @@ turn-top read is a verdict and never a dashboard of numbers.
 
 ---
 
-## 6. What this can never measure
+## 6. Research limits
 
-Stated because ruling 6 requires it and because the honest list is short.
+Ruling 6 requires its own output to state what it cannot measure. This research list is
+evidence for that output, not an expansion of the ruling.
 
 - **Never-alone's benefit.** Defects prevented has no counterfactual and no control arm.
   The one observable proxy is post-landing findings on landings that passed pre-landing
@@ -702,43 +713,48 @@ Stated because ruling 6 requires it and because the honest list is short.
 
 1. **Does Claude Code ingest `TRACEPARENT` from its environment?** Undetermined. The test
    is one dispatch with the variable set and one query for the trace id.
-2. **What causes the overnight gaps?** Measured at 251.8 hours; undiagnosed. The cohort
-   barrier explains 292 minutes of it.
+2. **What causes the overnight gaps?** The dated pass observed 251.8 hours; the cause
+   remains undiagnosed. The cohort barrier explains 292 minutes of it.
 3. **Would z.ai and Codex calibrations be worth their cost?** #237's calibration run cost
-   about 2.5 plan points against 10 budgeted. Until both exist, cross-lane cost per landed
-   issue is not computable and must not be synthesised.
+   about 2.5 plan points against 10 budgeted. A calibration would improve that lane's own
+   report; under the recorded ruling it would not authorise a cross-lane total or ranking.
 4. **Does `OTEL_METRICS_INCLUDE_RESOURCE_ATTRIBUTES` change what the metric leg carries?**
    Metrics do reach the per-dispatch files, so resource attributes are evidently present;
    whether datapoint-level copies would add anything is unverified.
 
 ---
 
-## 8. Reproduction
+## 8. Provenance of the dated observation
 
-```sh
-# Occupancy and idle gaps over the whole history (§1.1)
-#   reads ~/.arma-cti/dispatches/*/result.json
+The following is an input inventory, not a reproduction procedure. The scripts were
+throwaway, the local files have since changed, `origin/main` moves, live GitHub answers
+change, and no snapshot or digest pins any of them. A future reproducible baseline needs a
+committed extractor plus an input snapshot or content digests.
 
-# Per-dispatch shape by seat and lane (§1.2)
-#   reads ~/.arma-cti/dispatches/*/{dispatch,result}.json
+```text
+Occupancy and idle gaps (§1.1)
+  read ~/.arma-cti/dispatches/*/result.json
 
-# Cost per landed issue (§1.3)
-#   reads /var/log/claude-otel/dispatches/dispatch-*.jsonl
-#   MUST read both log records (Claude) and histogram metrics (Codex)
-#   joins to `git log origin/main` for landing
+Per-dispatch shape by seat and lane (§1.2)
+  read ~/.arma-cti/dispatches/*/{dispatch,result}.json
 
-# Span time decomposition (§1.4)
-#   reads resourceSpans in the same sinks; Claude lane only, from 2026-08-18
+Cost per landed issue (§1.3)
+  read /var/log/claude-otel/dispatches/dispatch-*.jsonl
+  read both log records (Claude) and histogram metrics (Codex)
+  joined to then-current `git log origin/main` for landing
 
-# Lead time and throughput (§1.5)
-#   gh issue list --state all --limit 500 --json number,createdAt,closedAt
+Span time decomposition (§1.4)
+  read resourceSpans in the same sinks; Claude lane only, from 2026-08-18
 
-# Review rounds (§1.6)
-#   reads ~/.arma-cti/review/journal.jsonl and ~/.arma-cti/review/*/loop.json
+Lead time and throughput (§1.5)
+  queried live GitHub issue number, createdAt and closedAt fields
+
+Review rounds (§1.6)
+  read ~/.arma-cti/review/journal.jsonl and ~/.arma-cti/review/*/loop.json
 ```
 
-The scripts these came from were throwaway. That is the point of §3.3: they should not
-have been, and the next analyst should inherit views rather than rewrite them.
+The resulting figures remain useful as a dated observation. They are not acceptance
+values for #478–#493 until a reproducible source set exists.
 
 ---
 
