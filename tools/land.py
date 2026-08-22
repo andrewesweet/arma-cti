@@ -76,36 +76,46 @@ else. Eighteen landed issues were open when that was filed, ten of them from
 previous sessions, because closing was a prose obligation with no mechanism —
 and an open list that includes finished work is a queue nobody can read. The
 issue is the one the worktree is named for, `_issue_from`'s derivation and not a
-second one, and the close is `gh issue close` with a comment naming the SHA.
+second one. The audit post names the SHA; the following `gh issue close` changes
+only tracker state.
 
-Three properties make it safe to put a network call on the serial landing path:
-it is bounded (`GH_CALL_TIMEOUT_S`, which kills the `gh` child at its deadline —
-#425's shape, on the subprocess a `gh` read already is); it cannot fail the
+Three properties make the tracker calls safe on the serial landing path: each is
+bounded (`GH_CALL_TIMEOUT_S`, which kills the `gh` child at its deadline — #425's
+shape); neither can fail the
 landing, since the work is already on `origin/main` and the issue's state is
 bookkeeping, so every way it can go wrong is the non-fatal `issue_closed=no
-reason=…` line and the landing still exits 0; and it is a seam (`close`) rather
-than a hard-wired call, so the unit tier substitutes it and never reaches
-GitHub.
+reason=…` line and the landing still exits 0; and both are seams (`audit`,
+`close`) rather than hard-wired calls, so the unit tier substitutes them and
+never reaches GitHub.
 
-**The close depends on the audit** (#461, human ruling 2026-08-20). #439 automated
-the close and, unnoticed, dropped the protection that had ridden on the prose
-close — `THREAD_AUDIT_RULE`'s criterion-by-criterion thread report — so a missing
-audit could coexist with `issue_closed=yes`. The rung now reads the thread before
-closing and refuses the close where no audit is present, in the same non-fatal
-shape as every other close failure: the work is already pushed, and a rung that
-red a good landing over tracker state would strand it in exactly the state #439
-was filed to end. What "present" means is `AUDIT_MARKERS`, stated beside it: a
-presence check, deliberately not a quality one (#458's class — every one of its
-eight instances was a check standing in for a judgement). The cost is one more
-`gh` round trip on every landing (#446's discipline: say what the gate costs),
-and it is paid only on the success path, where the landing can afford a bounded
-read that prints its reason on failure rather than moving an exit code.
+**The close depends on an audit record this invocation writes** (#499, replacing
+#461's content scan). `--audit-file` supplies one complete criterion audit. After
+the work is pushed and merged, the rung posts that body plus the landed SHA through
+one bounded `gh issue comment --body-file -` call, keeps the successful call's
+receipt, and only then asks GitHub to close. It never reads existing comments. A
+review quoting `just check`, `just unit` and `just mutation`, a comment asserting
+those records are absent, and a genuine audit split across comments are therefore
+the same fact: none is the record this invocation wrote. The split case is handled
+at the author interface rather than ignored — the complete audit must be one file,
+which the rung posts as one comment.
+
+This proves provenance, not content. `audit_recorded=yes` says the posting call
+succeeded and states `not_verified=content_or_quality`; whether the supplied body
+is complete, accurate or good remains the review's and human's judgement. A caller
+can deliberately supply non-audit prose; this is a mechanical floor against
+accidental substitution, not a defence against deceptive use. The stricter-marker
+alternative was rejected because another token has the same defect. Manual closing for every
+landing was rejected because it restores the hand step #439 replaced after eighteen
+landed issues remained open. Network cost stays two bounded `gh` calls on success:
+#461's read-plus-close becomes post-plus-close.
 
 Refusals are this recipe's own vocabulary, not the harness failure-class table:
 a landing is not a corpus verdict and must not borrow its class names. What it
 borrows is the discipline — a named, actionable refusal rather than an opaque
 exit code.
 
+    audit_file_unreadable   `--audit-file` is missing, unreadable or not UTF-8;
+                            refused before any repository or network step
     dirty_tree              uncommitted or untracked files here (#105's
                             pre-flight condition), refused before anything runs
     nothing_to_land         clean, level with origin/main, main checkout already
@@ -200,7 +210,6 @@ refusal means stays the agent's.
 from __future__ import annotations
 
 import argparse
-import json
 import os
 import re
 import subprocess
@@ -241,18 +250,15 @@ if TYPE_CHECKING:
     # to exist, and there is no seam here for one to grow out of.
     Gate = Callable[[Path], "GateResult"]
 
-    # What `land` calls to close the issue it landed (#439). A parameter for the
-    # gate's own reason and one more: this one reaches the network, and the unit
-    # tier must never do that. `None` is the reason it did not close and `None`
-    # from the seam is "it closed" — the same direction as `Refusal | None`
-    # everywhere else here, where the value is what went wrong.
-    Close = Callable[[int, str], "str | None"]
+    # What `land` calls to close the issue it landed (#439). A parameter because
+    # it reaches the network and the unit tier must never do that. `None` from
+    # the seam means "it closed"; a string is why it did not.
+    Close = Callable[[int], "str | None"]
 
-    # What `land` calls to read the thread for the audit the close depends on
-    # (#461). The same network shape as `Close`, so the same reason it is a
-    # parameter. `reason` is why the thread could not be read — `None` means it
-    # was read, and `present` is the answer only then.
-    Audit = Callable[[int], "AuditRead"]
+    # What `land` calls to post the audit record its close depends on (#499).
+    # The callback receives the issue and landed SHA. Production closes over the
+    # one supplied audit body; tests substitute the whole network seam.
+    Audit = Callable[[int, str], "AuditRecord"]
 
 # The refspec, as a constant nothing parameterises. `git push origin main` from
 # a detached worktree pushes the local `main` branch, not HEAD, and CLAUDE.md
@@ -265,7 +271,7 @@ GATE: Final = ("just", "fast")
 # expectation: an unbounded `uv run` is what #144 was about.
 GATE_TIMEOUT_S: Final = 1800
 
-# The whole `gh` call's bound — the audit read's and the close's, not any socket
+# The whole `gh` call's bound — the audit post's and the close's, not any socket
 # inside either. Short because both are late steps of a landing that has already
 # succeeded and nothing waits on their answers: an unreachable tracker should cost
 # the lander seconds and a printed reason, never a hung serial path (#427's
@@ -781,36 +787,36 @@ def _run(argv: list[str], cwd: Path) -> tuple[int | None, str]:
     return done.returncode, done.stderr
 
 
-# What the closing comment says. The SHA is the one the landing pushed, and the
-# sentence after it is for the reader who finds this issue a year from now and wants
-# to know whether a human judged it done or a recipe did.
-CLOSE_COMMENT: Final = (
+# Appended to the caller-supplied audit body. The SHA is the one the landing pushed,
+# and every sentence remains true when the following close call is refused: the post
+# precedes that call and records the landing independently of tracker state.
+AUDIT_RECORD_NOTE: Final = (
     "Landed on `origin/main` as `{sha}`.\n\n"
-    "Closed by `just land`, which closes the issue its worktree is named for on its"
-    " success path and nowhere else (#439). An item still open after a landing is"
-    " therefore not proof the work is absent: the close can be withheld — no"
-    " criterion audit on the thread (#461), or the tracker not answering — with the"
-    " work already pushed, and the landing's own `issue_closed=` line names which."
+    "`just land` supplied this audit as one comment. Its close path accepts only this"
+    " posting call's successful return; it does not inspect the supplied content or"
+    " judge audit quality (#499)."
 )
 
 
-def _gh(argv: list[str]) -> subprocess.CompletedProcess[str] | str:
+def _gh(
+    argv: list[str], *, input_text: str | None = None
+) -> subprocess.CompletedProcess[str] | str:
     """Run one `gh` call under the whole-call bound, returning why it could not run.
 
-    One home for the reason vocabulary both tracker calls print — `close_issue` as its
-    return, `read_audit` inside `AuditRead` — so the two spellings cannot drift apart
-    (review round 2, Low). The bound is the *call's*, and `subprocess.run` kills the
-    `gh` child at it: the same whole-call property `worktree.git` has and for the same
-    reason (#425), which a socket timeout could not give because `getaddrinfo` takes
-    none (#427). The kill reaches only that child, so a helper `gh` spawned can
-    outlive it. A non-zero exit is the caller's to interpret, not a way this could
-    not run.
+    One home for the reason vocabulary both tracker writes print — `record_audit`
+    and `close_issue` — so the two spellings cannot drift apart. The bound is the
+    *call's*, and `subprocess.run` kills the `gh` child at it: the same whole-call
+    property `worktree.git` has and for the same reason (#425), which a socket timeout
+    could not give because `getaddrinfo` takes none (#427). The kill reaches only that
+    child, so a helper `gh` spawned can outlive it. A non-zero exit is the caller's to
+    interpret, not a way this could not run.
     """
     try:
         return subprocess.run(  # noqa: S603 — argv is a variable every caller builds from constants, no shell; `gh` off PATH on purpose, as `git` is
             argv,
             capture_output=True,
             text=True,
+            input=input_text,
             check=False,
             timeout=GH_CALL_TIMEOUT_S,
         )
@@ -822,22 +828,21 @@ def _gh(argv: list[str]) -> subprocess.CompletedProcess[str] | str:
         return f"gh_unrunnable {type(blocked).__name__}: {blocked}"
 
 
-def close_issue(issue: int, comment: str) -> str | None:
+def close_issue(issue: int) -> str | None:
     """Close one issue on the tracker, returning `None`, or why it did not close.
 
     Every way this can go wrong is a returned reason rather than a raised exception,
     because the caller has already pushed: the work is on `origin/main` and the issue's
     state is bookkeeping, so a landing that reds because GitHub was unreachable would be
     a worse defect than the open issue it was fixing (#439). `gh` absent, `gh`
-    unauthenticated, a rate limit, a stalled read — one line apiece, no exit code moved.
+    unauthenticated, a rate limit, a stalled call — one line apiece, no exit code moved.
     The bound and the failure vocabulary are `_gh`'s, stated there.
 
-    The comment goes on argv rather than on stdin — `gh issue close` has no `--body-file`
-    — which is safe here and would not be for an arbitrary body: this one is a module
-    constant with a short SHA interpolated, so there is nothing secret to appear in `ps`
-    and nothing a caller can inject.
+    The audit and landing note were posted first through `record_audit`; this call changes
+    state only. Keeping arbitrary audit prose out of argv is why the two acts are separate:
+    `gh issue close` has no `--body-file` option.
     """
-    done = _gh(["gh", "issue", "close", str(issue), "--comment", comment])
+    done = _gh(["gh", "issue", "close", str(issue)])
     if isinstance(done, str):
         return done
     if done.returncode != 0:
@@ -850,75 +855,46 @@ def _one_line(detail: str) -> str:
     return " ".join(detail.split())[:REASON_LIMIT]
 
 
-class AuditRead(NamedTuple):
-    """What one bounded read of an issue's thread found.
+class AuditRecord(NamedTuple):
+    """Receipt for the audit comment this invocation asked GitHub to write.
 
-    `reason` is `None` exactly when the thread was read; `present` is meaningful
-    only then. A read that could not be made answers `present=False` with its
-    reason, and the caller must not read that as "no audit" — owing an audit and
-    being unable to look are different facts, and the close line keeps them
-    apart (#461).
+    `reason is None` means the bounded posting call succeeded. `reference` is
+    GitHub CLI's returned comment reference for a reader; it is not parsed or used
+    to decide anything. No existing thread comment can construct this value through
+    production flow because no thread read remains (#499).
     """
 
-    present: bool
+    reference: str
     reason: str | None
 
 
-# What "an audit is present" mechanically means, because a rung cannot judge one
-# (#461): any single comment on the thread whose body names all three gate
-# recipes. That is the shape `THREAD_AUDIT_RULE` instructs the landing session to
-# post, so a compliant thread reads present and a bare thread does not. It is a
-# presence check, not a quality check, and its two blind spots fail in opposite
-# directions (review round 2): a comment that is not an audit but quotes the
-# three names reads present and the close is permitted — the false positive, the
-# token standing in for the thing — while a real audit split across several
-# comments or capitalising the recipe names reads absent and the close is
-# withheld with the work already on `origin/main` — the false negative, a good
-# landing left open until its audit is reposted as one comment and the issue
-# closed by hand. Neither direction judges quality: whether an audit is *good*
-# stays the review's (#449) and the human's, never this rung's (#458's class: a
-# check standing in for a judgement).
-AUDIT_MARKERS: Final = ("just check", "just unit", "just mutation")
+def record_audit(issue: int, sha: str, body: str | None = None) -> AuditRecord:
+    """Post one supplied audit body and return its provenance-bearing receipt.
 
+    The whole body and the landing note go through one `gh issue comment` call, so
+    the supported audit is one comment. A real audit previously split across comments
+    must be supplied here as one body; existing comments are never aggregated or read.
 
-def read_audit(issue: int) -> AuditRead:
-    """Read one issue's thread, bounded, and answer whether an audit is on it.
-
-    The bound is the `gh` child's whole call — `_gh`'s deadline kill, #425's
-    shape — and not `tools/bounded_request.py`'s thread-join, because the call
-    here is a `gh` CLI subprocess whose authentication this tool must not
-    rebuild, and whatever `gh` stalls on, DNS resolution included (#427's
-    condition), a killed child ends. The join-shaped bound is for reads this
-    repository makes itself, over `urlopen`.
-
-    Every way this can go wrong is a returned reason rather than a raised
-    exception, on `close_issue`'s argument: the caller has already pushed, so an
-    unreachable tracker is one printed line and never a failed landing.
+    This identifies an audit by the act that posted it, not by words inside it. It does
+    not verify that `body` is complete, accurate, or even an audit, and it does not judge
+    quality. Those are review and human judgements. `body=None` is the internal direct-call
+    boundary; the CLI requires and reads `--audit-file` before starting a landing.
     """
-    done = _gh(["gh", "issue", "view", str(issue), "--json", "comments"])
+    if body is None:
+        return AuditRecord(reference="", reason="audit_file_missing")
+    comment = f"{body.rstrip()}\n\n{AUDIT_RECORD_NOTE.format(sha=sha)}\n"
+    done = _gh(
+        ["gh", "issue", "comment", str(issue), "--body-file", "-"],
+        input_text=comment,
+    )
     if isinstance(done, str):
-        return AuditRead(present=False, reason=done)
+        return AuditRecord(reference="", reason=done)
     if done.returncode != 0:
-        return AuditRead(
-            present=False,
+        return AuditRecord(
+            reference="",
             reason=f"gh_refused {_one_line(done.stderr) or f'exit {done.returncode}'}",
         )
-    try:
-        comments = json.loads(done.stdout)["comments"]
-    except (json.JSONDecodeError, KeyError, TypeError) as broken:
-        return AuditRead(
-            present=False, reason=f"gh_unreadable_output {type(broken).__name__}: {broken}"
-        )
-    if not isinstance(comments, list):
-        return AuditRead(
-            present=False,
-            reason=f"gh_unreadable_output comments is not a list: {type(comments).__name__}",
-        )
-    bodies = (one.get("body", "") for one in comments if isinstance(one, dict))
-    return AuditRead(
-        present=any(all(marker in body for marker in AUDIT_MARKERS) for body in bodies),
-        reason=None,
-    )
+    return AuditRecord(reference=_one_line(done.stdout) or "not_returned", reason=None)
 
 
 def _routing_inputs(path: Path) -> tuple[routing_policy.ReadResult, tuple[str, ...] | None, str]:
@@ -1200,11 +1176,12 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
 ) -> Report:
     """Run the whole protocol, or refuse by name at the first rung that says no.
 
-    `close` is the tracker seam (#439) and `audit` the thread-read seam the close
-    depends on (#461), both resolved at call time rather than bound as defaults so
-    that the unit tier can replace `close_issue` and `read_audit` themselves and pin
+    `close` is the tracker close seam (#439) and `audit` the audit-post seam its
+    close depends on (#499), both resolved at call time rather than bound as defaults
+    so the unit tier can replace `close_issue` and `record_audit` themselves and pin
     that the real ones are never reached. `None` means the real one, exactly as it
-    does for `review`.
+    does for `review`; a direct caller that supplies no audit body receives
+    `audit_file_missing`, while the CLI requires `--audit-file` before it starts.
     """
     status = read_status(git("status", "--porcelain", cwd=here))
     blocked = classify_tree(here, status, rebasing=rebase_in_progress(here))
@@ -1264,7 +1241,7 @@ def land(  # noqa: PLR0913 — the protocol's inputs, one parameter apiece
     if isinstance(pushed, Report):
         return pushed
     return _merge(
-        root, here, pushed, lines, review_inputs.issue, close or close_issue, audit or read_audit
+        root, here, pushed, lines, review_inputs.issue, close or close_issue, audit or record_audit
     )
 
 
@@ -1552,12 +1529,12 @@ def _landed(lines: list[str], issue: int | None, pushed: str, close: Close, audi
     "landed" and "closed" are one condition and cannot drift apart the way a value
     computed twice can (#422).
     """
-    lines.append(_close_line(issue, pushed, close, audit))
+    lines.extend(_close_lines(issue, pushed, close, audit))
     return Report(("ok=landed", *lines), 0)
 
 
-def _close_line(issue: int | None, pushed: str, close: Close, audit: Audit) -> str:
-    """Close the issue, and say what happened either way in one line.
+def _close_lines(issue: int | None, pushed: str, close: Close, audit: Audit) -> tuple[str, ...]:
+    """Record the supplied audit, close the issue, and report both acts.
 
     Nothing here can fail the landing. The seams' own failures come back as reasons, and
     the `except` blocks catch what a *future* seam might raise instead — because the cost
@@ -1569,41 +1546,47 @@ def _close_line(issue: int | None, pushed: str, close: Close, audit: Audit) -> s
     rung refuses `review_issue_unknown` on a tree that is not an `issue-<n>` one, but only
     when it runs, and the re-run after a blocked merge skips it.
 
-    The close depends on the audit's presence (#461), and the line's `reason=` keeps the
-    two ways it can be withheld apart, because they ask different things of the reader:
-    `audit_absent` — the thread was read and carries no audit, so one is owed — and
-    `audit_unreadable`, prefixed to `gh`'s own vocabulary, which says the thread could not
-    be looked at and nothing is owed yet. A bare `gh_…` reason after both is the close
-    call itself failing, with the audit already found.
+    The close depends on a successful audit post made by this invocation (#499), not on
+    anything already present on the thread. The receipt line states the narrow fact the
+    mechanism establishes and its two explicit limits: it verifies the posting call, not
+    the supplied content or audit quality. A bare `gh_…` reason on the close line means
+    the record exists and only the state-changing close call failed.
     """
     if issue is None:
-        return "issue_closed=no reason=issue_unknown (this tree is not an `issue-<n>` worktree)"
+        return (
+            "audit_recorded=no reason=issue_unknown not_verified=content_or_quality",
+            "issue_closed=no reason=issue_unknown (this tree is not an `issue-<n>` worktree)",
+        )
     try:
-        read = audit(issue)
+        receipt = audit(issue, pushed)
     except Exception as unexpected:  # noqa: BLE001 — see the docstring: never fail the landing
-        read = AuditRead(
-            present=False,
+        receipt = AuditRecord(
+            reference="",
             reason=f"gh_unrunnable {type(unexpected).__name__}: {_one_line(str(unexpected))}",
         )
-    if read.reason is not None:
+    if receipt.reason is not None:
         return (
-            f"issue_closed=no issue={issue} reason=audit_unreadable {read.reason}"
-            " (the thread was not read, so the audit was not checked)"
+            (
+                f"audit_recorded=no issue={issue} reason={receipt.reason}"
+                " not_verified=content_or_quality"
+            ),
+            (
+                f"issue_closed=no issue={issue} reason=audit_not_recorded"
+                " (the closing rung records only an audit it posts itself; no existing"
+                " thread comment can substitute)"
+            ),
         )
-    if not read.present:
-        return (
-            f"issue_closed=no issue={issue} reason=audit_absent (the thread carries no comment"
-            " naming `just check`, `just unit` and `just mutation`; post the criterion audit"
-            " and close by hand per docs/agents/issue-tracker.md — a re-run has nothing to land"
-            " and will not close)"
-        )
+    audit_line = (
+        f"audit_recorded=yes issue={issue} reference={receipt.reference}"
+        " verified=posting_call not_verified=content_or_quality"
+    )
     try:
-        reason = close(issue, CLOSE_COMMENT.format(sha=pushed))
+        reason = close(issue)
     except Exception as unexpected:  # noqa: BLE001 — see the docstring: never fail the landing
         reason = f"gh_unrunnable {type(unexpected).__name__}: {_one_line(str(unexpected))}"
     if reason is None:
-        return f"issue_closed=yes issue={issue} sha={pushed}"
-    return f"issue_closed=no issue={issue} reason={reason}"
+        return audit_line, f"issue_closed=yes issue={issue} sha={pushed}"
+    return audit_line, f"issue_closed=no issue={issue} reason={reason}"
 
 
 def _review_plan(
@@ -1858,8 +1841,26 @@ def _corpus_plan(
 # ------------------------------------------------------------------ invocation
 
 
+def read_audit_body(path: Path) -> str | Refusal:
+    """Read the one complete audit body before any landing step can run.
+
+    The file is transport, not evidence: this read checks only that the caller supplied
+    readable UTF-8. It does not inspect the content or judge audit quality. Reading first
+    keeps a missing path from being discovered after the work is already on `origin/main`.
+    """
+    try:
+        return path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as broken:
+        return Refusal(
+            "audit_file_unreadable",
+            (f"audit_file={path}", f"detail={type(broken).__name__}: {broken}"),
+            "Write the complete criterion audit as one UTF-8 file outside the worktree,"
+            " then run `just land --audit-file FILE`. Nothing was pushed.",
+        )
+
+
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """Two optional flags, and deliberately no others.
+    """Parse the landing's evidence inputs and two non-landing modes, with no bypasses.
 
     There is no `--no-gate`, no `--force`, and no way to name the refspec or the
     remote: those are #213's criterion 2 and the `git push origin main` trap,
@@ -1895,37 +1896,36 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         metavar="POOL",
         help="the pool evidence directory of the full `just regress` run over this tree",
     )
-    return parser.parse_args(argv)
+    parser.add_argument(
+        "--audit-file",
+        type=Path,
+        default=None,
+        metavar="FILE",
+        help="one UTF-8 file containing the complete criterion audit to post before closing",
+    )
+    args = parser.parse_args(argv)
+    if not args.dry_run and not args.stage and args.audit_file is None:
+        parser.error("a landing requires --audit-file FILE")
+    if (args.dry_run or args.stage) and args.audit_file is not None:
+        parser.error("--audit-file is accepted only by a landing, not --dry-run or --stage")
+    return args
 
 
 def main(argv: list[str] | None = None) -> int:
     """Run the protocol, print what happened, and exit what it decided."""
     args = parse_args(argv)
-    try:
-        here = Path(git("rev-parse", "--show-toplevel", cwd=Path.cwd()).strip()).resolve()
-        root = main_checkout(here).resolve()
-        report = (
-            stage(root, here)
-            if args.stage
-            else land(
-                root,
-                here,
-                dry_run=args.dry_run,
-                lane=os.environ.get("CTI_DISPATCH_LANE", CLAUDE_LANE),
-                corpus=args.corpus,
-            )
+    audit_body = read_audit_body(args.audit_file) if args.audit_file is not None else None
+    if isinstance(audit_body, Refusal):
+        report = Report.refused(audit_body)
+    else:
+        audit = (
+            (lambda issue, sha: record_audit(issue, sha, audit_body))
+            if audit_body is not None
+            else None
         )
-    except GitError as failure:
-        report = Report.refused(
-            Refusal(
-                "git_failed",
-                (f"command=git {' '.join(failure.args_run)}", f"stderr={failure.stderr}"),
-                "Read git's own error above. Check what actually happened with "
-                "`git log --oneline origin/main..HEAD` before running anything else.",
-            )
-        )
+        report = _main_report(args, audit)
     # A landing's refusal is an error and belongs on stderr. Since #344 gave a dry run a
-    # verdict its exit is non-zero exactly when it has the most to say, so routing on the
+    # verdict its exit is non-zero exactly when it has the most to say, routing on the
     # code alone emptied stdout in the one case #344 was filed about, leaving a
     # seat on another lane with a bare `recipe … failed` banner that this project trains
     # agents to read as a harness failure (round 2 claim 3).
@@ -1940,6 +1940,35 @@ def main(argv: list[str] | None = None) -> int:
     for line in report.lines:
         print(line, file=stream)
     return report.code
+
+
+def _main_report(args: argparse.Namespace, audit: Audit | None) -> Report:
+    """Run the repository-facing half after the audit body has been read."""
+    try:
+        here = Path(git("rev-parse", "--show-toplevel", cwd=Path.cwd()).strip()).resolve()
+        root = main_checkout(here).resolve()
+        report = (
+            stage(root, here)
+            if args.stage
+            else land(
+                root,
+                here,
+                dry_run=args.dry_run,
+                lane=os.environ.get("CTI_DISPATCH_LANE", CLAUDE_LANE),
+                corpus=args.corpus,
+                audit=audit,
+            )
+        )
+    except GitError as failure:
+        report = Report.refused(
+            Refusal(
+                "git_failed",
+                (f"command=git {' '.join(failure.args_run)}", f"stderr={failure.stderr}"),
+                "Read git's own error above. Check what actually happened with "
+                "`git log --oneline origin/main..HEAD` before running anything else.",
+            )
+        )
+    return report
 
 
 if __name__ == "__main__":

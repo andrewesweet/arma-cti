@@ -66,10 +66,10 @@ def test_the_close_is_bounded_by_a_deadline_that_kills_the_child(
     ran = _Ran()
     monkeypatch.setattr(land.subprocess, "run", ran)
 
-    assert land.close_issue(439, "landed as abc1234") is None
+    assert land.close_issue(439) is None
 
     (argv,), kwargs = ran.calls[0]
-    assert argv == ["gh", "issue", "close", "439", "--comment", "landed as abc1234"]
+    assert argv == ["gh", "issue", "close", "439"]
     assert kwargs["timeout"] == land.GH_CALL_TIMEOUT_S
 
 
@@ -90,7 +90,7 @@ def test_every_way_gh_cannot_run_comes_back_as_a_reason(
     """Returned, never raised: the caller has already pushed and has no red to spend."""
     monkeypatch.setattr(land.subprocess, "run", _Ran(raises=failure))
 
-    reason = land.close_issue(439, "landed")
+    reason = land.close_issue(439)
 
     assert reason is not None
     assert reason.startswith(expected)
@@ -112,7 +112,7 @@ def test_a_gh_that_answers_with_a_refusal_carries_its_own_words_on_one_line(
         ),
     )
 
-    reason = land.close_issue(439, "landed")
+    reason = land.close_issue(439)
 
     assert reason is not None
     assert "\n" not in reason
@@ -124,7 +124,7 @@ def test_a_gh_that_refuses_without_a_word_still_names_its_exit(
 ) -> None:
     monkeypatch.setattr(land.subprocess, "run", _Ran(returncode=3))
 
-    assert land.close_issue(439, "landed") == "gh_refused exit 3"
+    assert land.close_issue(439) == "gh_refused exit 3"
 
 
 def test_a_reason_is_capped_so_a_page_of_html_cannot_be_the_landings_last_word(
@@ -132,12 +132,20 @@ def test_a_reason_is_capped_so_a_page_of_html_cannot_be_the_landings_last_word(
 ) -> None:
     monkeypatch.setattr(land.subprocess, "run", _Ran(returncode=1, stderr="x " * 5000))
 
-    reason = land.close_issue(439, "landed")
+    reason = land.close_issue(439)
 
     assert reason is not None
     assert len(reason) <= len("gh_refused ") + land.REASON_LIMIT
 
 
-def test_the_closing_comment_names_the_sha_that_landed() -> None:
-    """The one thing a reader of the closed issue needs: which commit is the work."""
-    assert "abc1234" in land.CLOSE_COMMENT.format(sha="abc1234")
+def test_the_close_call_carries_no_arbitrary_body_on_argv(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The preceding audit post owns prose through stdin; closing only changes state."""
+    ran = _Ran()
+    monkeypatch.setattr(land.subprocess, "run", ran)
+
+    assert land.close_issue(439) is None
+
+    (argv,), _kwargs = ran.calls[0]
+    assert "--comment" not in argv

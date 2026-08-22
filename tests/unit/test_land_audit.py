@@ -1,30 +1,35 @@
-"""`read_audit` itself — the `gh` seam a landing reads its issue's thread through (#461).
+"""`record_audit` itself — the `gh` seam that creates close provenance (#499).
 
-`tests/unit/test_land_close.py`'s arrangement, pointed at the second `gh` call a
-successful landing makes: no stand-in for `read_audit` lives here, so the function
-under test is the real one and a test written the wrong way — patching the module
-attribute and calling through it — asserts against its own stand-in and fails
-against the real behaviour rather than agreeing with it. Hermetic by standing in
-one seam further down, at `subprocess.run`: the seam under test is what
-`read_audit` does with `gh`'s answers, and no test here runs `gh`.
+`tests/unit/test_land.py` exercises the close ladder with an audit-post stand-in.
+No stand-in for `record_audit` lives here: these tests call the real function and
+stand in one seam farther down, at `subprocess.run`, so no test reaches GitHub.
 
-What these tests pin that nowhere else can: what "an audit is present" mechanically
-means, which is `AUDIT_MARKERS` and not a judgement, and the boundary of that —
-one comment carrying all three gate names, and nothing split across comments.
+What this module pins is deliberately narrower than audit quality. One supplied
+body becomes one `gh issue comment --body-file -` call; a successful call returns
+a receipt. Existing issue comments are never read, so a review quoting recipe names,
+an assertion that gate evidence is absent, and a split real audit have no route into
+that receipt. The caller must supply the complete audit as one body. Neither this
+function nor its tests decide whether that body is a good audit.
 """
 
 from __future__ import annotations
 
-import json
 import subprocess
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from conftest import load_tool
 
 land = load_tool("land")
 
-_AUDIT_BODY = "Audit: `just check` green, `just unit` green, `just mutation` sampled."
+if TYPE_CHECKING:
+    from pathlib import Path
+
+_AUDIT_BODY = """## Criterion audit
+
+- Acceptance checked against the landed diff.
+- Gate evidence appears in the implementer's report.
+"""
 
 
 class _Ran:
@@ -50,73 +55,80 @@ class _Ran:
         return subprocess.CompletedProcess(args[0], self.returncode, self.stdout, self.stderr)
 
 
-def _thread(*bodies: str) -> str:
-    return json.dumps({"comments": [{"body": body} for body in bodies]})
-
-
-def test_the_read_is_bounded_by_a_deadline_that_kills_the_child(
+def test_one_supplied_body_is_one_bounded_comment_and_its_success_is_the_receipt(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The bound is the whole call's, which is the only kind that survives a stalled resolver.
-
-    A socket timeout does not reach `getaddrinfo` (#427), so what makes this safe on
-    the serial landing path is `subprocess.run`'s deadline killing the `gh` child
-    (#425's shape) — the same bound the close carries, because it is the same call
-    shape. Asserted on the argument rather than by waiting on a real stall.
-    """
-    ran = _Ran(stdout=_thread(_AUDIT_BODY))
+    """Provenance comes from the write this invocation made, never a thread scan."""
+    ran = _Ran(stdout="https://github.com/andrewesweet/arma-cti/issues/499#issuecomment-1\n")
     monkeypatch.setattr(land.subprocess, "run", ran)
 
-    assert land.read_audit(461) == land.AuditRead(present=True, reason=None)
+    receipt = land.record_audit(499, "abc1234", _AUDIT_BODY)
 
+    assert receipt == land.AuditRecord(
+        reference="https://github.com/andrewesweet/arma-cti/issues/499#issuecomment-1",
+        reason=None,
+    )
+    assert len(ran.calls) == 1
     (argv,), kwargs = ran.calls[0]
-    assert argv == ["gh", "issue", "view", "461", "--json", "comments"]
+    assert argv == ["gh", "issue", "comment", "499", "--body-file", "-"]
     assert kwargs["timeout"] == land.GH_CALL_TIMEOUT_S
+    assert kwargs["input"].startswith(_AUDIT_BODY.rstrip())
+    assert "abc1234" in kwargs["input"]
+    assert "does not inspect the supplied content or judge audit quality" in kwargs["input"]
 
 
-@pytest.mark.parametrize(
-    ("bodies", "expected"),
-    [
-        ((_AUDIT_BODY,), True),
-        (("noise first", _AUDIT_BODY), True),
-        (
-            ("Before trusting this branch, re-run `just check`, `just unit` and `just mutation`.",),
-            True,
-        ),
-        ((_AUDIT_BODY.upper(),), False),
-        (("just check green, just unit green",), False),
-        (("just check green", "just unit green, just mutation sampled"), False),
-        ((), False),
-        (("",), False),
-    ],
-    ids=[
-        "the_audit_alone",
-        "noise_around_it",
-        "a_non_audit_quoting_the_three_names_still_permits",
-        "uppercased_gate_names_do_not_match",
-        "one_gate_short",
-        "split_across_comments",
-        "no_comments",
-        "an_empty_body",
-    ],
-)
-def test_presence_is_one_comment_naming_all_three_gates(
-    bodies: tuple[str, ...],
-    *,
-    expected: bool,
+def test_no_supplied_body_records_nothing_and_never_reaches_the_tracker(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The mechanical property stated where a reader meets it (`AUDIT_MARKERS`).
+    ran = _Ran()
+    monkeypatch.setattr(land.subprocess, "run", ran)
 
-    Not a judgement (#458's class), and the blind spots fail in opposite
-    directions: a comment quoting the three gate names passes whether or not it
-    is a good audit — the false positive, permitting the close — while one naming
-    only two fails, and an audit split across comments fails too — false
-    negatives, withholding the close from work already on `origin/main`.
-    """
-    monkeypatch.setattr(land.subprocess, "run", _Ran(stdout=_thread(*bodies)))
+    assert land.record_audit(499, "abc1234") == land.AuditRecord(
+        reference="", reason="audit_file_missing"
+    )
+    assert ran.calls == []
 
-    assert land.read_audit(461) == land.AuditRead(present=expected, reason=None)
+
+def test_the_audit_file_is_read_before_landing_without_interpreting_its_body(
+    tmp_path: Path,
+) -> None:
+    body = "No recipe-name sentinel is required here.\n"
+    audit_file = tmp_path / "audit.md"
+    audit_file.write_text(body, encoding="utf-8")
+
+    assert land.read_audit_body(audit_file) == body
+
+
+@pytest.mark.parametrize("contents", [None, b"\xff"])
+def test_a_missing_or_non_utf8_audit_file_is_a_named_pre_landing_refusal(
+    tmp_path: Path,
+    contents: bytes | None,
+) -> None:
+    audit_file = tmp_path / "audit.md"
+    if contents is not None:
+        audit_file.write_bytes(contents)
+
+    refusal = land.read_audit_body(audit_file)
+
+    assert isinstance(refusal, land.Refusal)
+    assert refusal.kind == "audit_file_unreadable"
+    assert refusal.action.endswith("Nothing was pushed.")
+
+
+def test_an_unreadable_audit_file_refuses_before_repository_resolution(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    def repository_was_touched(*_args: object, **_kwargs: object) -> str:
+        raise AssertionError
+
+    monkeypatch.setattr(land, "git", repository_was_touched)
+
+    code = land.main(["--audit-file", str(tmp_path / "missing.md")])
+
+    assert code == land.EXIT_REFUSED
+    assert "refusal=audit_file_unreadable" in capsys.readouterr().err
 
 
 @pytest.mark.parametrize(
@@ -133,59 +145,41 @@ def test_every_way_gh_cannot_run_comes_back_as_a_reason(
     expected: str,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Returned, never raised, and never as `present`: the caller has already pushed."""
+    """Returned, never raised: the caller has already pushed when this seam runs."""
     monkeypatch.setattr(land.subprocess, "run", _Ran(raises=failure))
 
-    read = land.read_audit(461)
+    receipt = land.record_audit(499, "abc1234", _AUDIT_BODY)
 
-    assert read.present is False
-    assert read.reason is not None
-    assert read.reason.startswith(expected)
+    assert receipt.reference == ""
+    assert receipt.reason is not None
+    assert receipt.reason.startswith(expected)
 
 
-def test_a_gh_that_answers_with_a_refusal_carries_its_own_words_on_one_line(
+def test_a_gh_refusal_carries_its_own_words_on_one_line(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """An unauthenticated or rate-limited `gh` is this: a non-zero exit and something to say.
-
-    `close_issue`'s cap and collapse, unchanged: a reason is the tail of one output
-    line, and a proxy's error page must not become the last thing a successful
-    landing says.
-    """
     monkeypatch.setattr(
         land.subprocess,
         "run",
         _Ran(
-            returncode=1, stderr="gh: To get started with GitHub CLI,\nplease run: gh auth login\n"
+            returncode=1,
+            stderr="gh: To get started with GitHub CLI,\nplease run: gh auth login\n",
         ),
     )
 
-    read = land.read_audit(461)
+    receipt = land.record_audit(499, "abc1234", _AUDIT_BODY)
 
-    assert read.reason is not None
-    assert "\n" not in read.reason
-    assert read.reason.startswith("gh_refused gh: To get started with GitHub CLI, please run:")
+    assert receipt.reason is not None
+    assert "\n" not in receipt.reason
+    assert receipt.reason.startswith("gh_refused gh: To get started with GitHub CLI, please run:")
 
 
-@pytest.mark.parametrize(
-    "stdout",
-    ["not json at all", '{"issues": []}', '{"comments": "not a list"}'],
-    ids=["invalid", "wrong_key", "wrong_shape"],
-)
-def test_a_gh_whose_answer_cannot_be_parsed_is_a_reason_not_an_absence(
-    stdout: str,
+def test_a_gh_success_without_a_returned_url_is_still_its_own_receipt(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A zero exit whose body is unreadable could not look, and must not read as "no audit".
+    """Do not replace GitHub's successful write with a URL-shape parser (#471's class)."""
+    monkeypatch.setattr(land.subprocess, "run", _Ran(stdout=""))
 
-    Owing an audit and being unable to look are different facts (#461), and this is
-    the one path where a broken read could have collapsed them into `present=False`
-    with no reason.
-    """
-    monkeypatch.setattr(land.subprocess, "run", _Ran(stdout=stdout))
-
-    read = land.read_audit(461)
-
-    assert read.present is False
-    assert read.reason is not None
-    assert read.reason.startswith("gh_unreadable_output")
+    assert land.record_audit(499, "abc1234", _AUDIT_BODY) == land.AuditRecord(
+        reference="not_returned", reason=None
+    )

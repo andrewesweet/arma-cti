@@ -851,29 +851,32 @@ READONLY_LANDING_RULE: Final = (
 # made the close the landing rung's act instead: `just land` itself performs it on
 # the success path. So the sentence is not softened but replaced: a seat obeying the
 # old wording walks a second mechanism onto ground the rung already covered and finds
-# the issue closed. What survives of it is the audit, moved to the thread report
-# below, because #449's review reads exactly that paste as its gate record — the
-# audit was never the close's private form, it is the record both the review and the
-# rung's close rest on.
+# the issue closed. #499 separates the records that paragraph had conflated: the
+# implementer's thread paste is the gate report #449's reviewer reads; the closing
+# audit is one body the landing rung posts itself after terminal review.
 RUNG_CLOSE_RULE: Final = (
-    "`just land` closes #{issue} itself, on its success path and nowhere else (#439):"
-    " do not close the issue by hand and do not close it early. The landing's own"
-    " `issue_closed=` line is part of the verbatim paste; where it reads"
-    " `issue_closed=no reason=…` the work is already on `origin/main` and the tracker"
-    " state is bookkeeping — report the line, never retry the close. One reason is"
-    " different (#461): `reason=audit_absent` means the thread carried no criterion"
-    " audit, so post it and close by hand with the criterion comment"
-    " (docs/agents/issue-tracker.md) — a re-run has nothing left to land and will not"
-    " close."
+    "`just land --audit-file FILE` closes #{issue} itself, on its success path and nowhere"
+    " else (#439, #499): do not close the issue early. The landing first posts that one"
+    " complete audit body as one comment, then closes only from its successful post receipt;"
+    " no existing thread comment can substitute. Its `audit_recorded=` and `issue_closed=`"
+    " lines are part of the verbatim paste. Where `issue_closed=no`, work is already on"
+    " `origin/main`; close by hand only when the same output says `audit_recorded=yes`,"
+    " because that means the rung-owned audit exists and only the close call failed."
 )
-THREAD_AUDIT_RULE: Final = (
-    "Post on #{issue}'s thread a criterion-by-criterion audit quoting the gate's output"
-    " — `just check`, `just unit`, `just mutation`, each with its result counts —"
+THREAD_GATE_REPORT_RULE: Final = (
+    "Before review, post on #{issue}'s thread the implementer's gate report — `just check`,"
+    " `just unit`, `just mutation`, each with its result counts —"
     f" including {MUTATION_SAMPLING_PASTE_RULE} (#344, #421:"
     " unconditionally, never only where a kill rate is quoted). That paste is the"
-    " review's gate record (#449), so it is owed before the branch is handed over, not"
-    " only once the landing has closed the issue — and the landing's close reads its"
-    " presence on the thread (#461), so a landing without it leaves the issue open."
+    " review's gate record (#449), so it is owed before the branch is handed over. It is"
+    " not the closing audit and no words inside it satisfy the closing rung (#499)."
+)
+LANDING_AUDIT_RULE: Final = (
+    "After terminal review, write the complete criterion-by-criterion audit as one UTF-8"
+    " file outside the worktree, then pass it to `just land --audit-file FILE` (#499)."
+    " The rung posts the whole supplied body as one comment; split thread comments are"
+    " deliberately not aggregated. It verifies only its posting call, never the body's"
+    " completeness, accuracy or quality — those remain review and human judgements."
 )
 # The writable arm's other half (#345): a seat that may write but is not the lander.
 # `planner` is today's clearest row — ruling 2's "neither gates nor lands" — with
@@ -887,8 +890,9 @@ NONLANDING_LANDING_RULE: Final = (
     " gates the landing has not happened when this seat finishes, so whether the work"
     " reached `main` is not this seat's to know. The issue closes with the landing"
     " itself — `just land`'s own success path (#439) — and the one hand close is the"
-    " lander's own recovery, where that rung withheld for `reason=audit_absent`"
-    " (#461); it is never this seat's."
+    " lander's own recovery after a rung-owned audit post whose separate close call"
+    " failed (`audit_recorded=yes`, #499); it is never"
+    " this seat's."
 )
 PASTE_RULE: Final = (
     "Quote `just verdict`'s rendered body verbatim; never retype the SHA or the evidence"
@@ -1168,10 +1172,11 @@ def _protocol_lines(briefing: Briefing) -> list[str]:
         "## Landing",
         f"Conventional Commits, `refs #{issue}`, commit early.",
         CHANGELOG_CLAIM_RULE,
-        "Land via `just land` and paste its output verbatim — never retype it.",
+        "Land via `just land --audit-file FILE` and paste its output verbatim — never retype it.",
         ADJUDICATION_RULE,
         RUNG_CLOSE_RULE.format(issue=issue),
-        THREAD_AUDIT_RULE.format(issue=issue),
+        THREAD_GATE_REPORT_RULE.format(issue=issue),
+        LANDING_AUDIT_RULE,
     ]
 
 

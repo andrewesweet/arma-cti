@@ -1150,7 +1150,7 @@ def test_a_review_briefing_is_told_to_land_nothing() -> None:
     rendered = review_composed()
     assert "## Landing: none — this seat lands nothing" in rendered
     assert brief.REVIEW_LANDING_RULE in rendered
-    assert "Land via `just land`" not in rendered
+    assert "Land via `just land --audit-file FILE`" not in rendered
 
 
 def test_a_review_briefing_hands_its_bounded_report_to_the_host_dispatcher() -> None:
@@ -1209,7 +1209,7 @@ def test_a_recon_briefing_receives_no_gate_commit_or_landing_instruction() -> No
     assert brief.READONLY_GATE_RULE in rendered
     # The paste contract is the reviewer's alone: recon judges no implementer's work.
     assert brief.REVIEW_GATE_RULE not in rendered
-    assert "Land via `just land`" not in rendered
+    assert "Land via `just land --audit-file FILE`" not in rendered
     assert "Conventional Commits" not in rendered
     assert "`refs #251`" not in rendered
     assert "`just worktree add issue-" not in rendered
@@ -1247,7 +1247,7 @@ def test_the_composed_gate_and_landing_arms_follow_the_forced_permission_mode() 
         assert ("## Landing: none" in rendered) is not lands, name
         # The implementer's asks reach only a seat that may act on them.
         assert ("`just fast`" in rendered) is not judgement_only, name
-        assert ("Land via `just land`" in rendered) is lands, name
+        assert ("Land via `just land --audit-file FILE`" in rendered) is lands, name
         assert ("commit early" in rendered) is not judgement_only, name
 
 
@@ -1262,11 +1262,12 @@ def test_the_paste_contract_follows_the_reviews_column_within_that_arm() -> None
 def test_an_implementer_briefing_is_asked_for_the_paste_the_review_reads() -> None:
     """The other half of the ruling: the paste the review reads, the implementer owes."""
     rendered = composed()
-    assert "quoting the gate's output" in rendered
+    assert "implementer's gate report" in rendered
     assert "`just check`, `just unit`, `just mutation`" in rendered
     assert "each with its result counts" in rendered
     assert brief.MUTATION_SAMPLING_PASTE_RULE in rendered
     assert "unconditionally" in rendered
+    assert "not the closing audit" in rendered
 
 
 def test_the_changelog_claim_rule_reaches_every_seat_that_writes_or_judges_a_fragment() -> None:
@@ -1319,21 +1320,23 @@ def test_no_composed_brief_commands_its_seat_to_close_the_issue() -> None:
         assert "Close #" not in rendered, name
 
 
-def test_the_lander_is_told_the_rung_closes_and_owed_the_thread_audit() -> None:
+def test_the_lander_gets_distinct_review_gate_report_and_rung_owned_close_audit() -> None:
     """#345's keep-list against #439's change of ground.
 
-    The verbatim-paste rule survives wherever landing is described, and the
-    criterion-by-criterion audit survives as the lander's thread report — #449's review
-    reads exactly that paste as its gate record — but the close itself is gone from the
-    seat's acts: the brief names `just land`'s own `issue_closed=` line as the close.
+    #449's reviewer still reads the pre-handover gate report. #499 gives the closing
+    audit a different transport: one complete external file posted by the rung itself.
     """
     for name, seat in dispatch.SEATS.items():
         if seat.judgement_only or not seat.lands:
             continue
         rendered = composed(seat=brief.derive_seat(name))
         assert "paste its output verbatim — never retype it" in rendered, name
-        assert "`just land` closes #251 itself" in rendered, name
-        assert "criterion-by-criterion audit quoting the gate's output" in rendered, name
+        assert "`just land --audit-file FILE` closes #251 itself" in rendered, name
+        assert "implementer's gate report" in rendered, name
+        assert "complete criterion-by-criterion audit as one UTF-8 file" in rendered, name
+        assert "file outside the worktree" in rendered, name
+        assert "no existing thread comment can substitute" in rendered, name
+        assert "never the body's completeness, accuracy or quality" in rendered, name
         assert brief.MUTATION_SAMPLING_PASTE_RULE in rendered, name
 
 
@@ -1351,7 +1354,7 @@ def test_a_writable_seat_the_registry_does_not_name_lander_is_left_off_the_landi
         rendered = composed(seat=brief.derive_seat(name))
         assert "## Landing: none — this seat is not the lander" in rendered, name
         assert "Conventional Commits" in rendered, name
-        assert "Land via `just land`" not in rendered, name
+        assert "Land via `just land --audit-file FILE`" not in rendered, name
         assert brief.ADJUDICATION_RULE not in rendered, name
         assert "leave #251 open — never close it" in rendered, name
 
@@ -1610,7 +1613,7 @@ def test_forcing_the_predicate_false_moves_both_brief_paths_together(
     assert "## Gate: none — this seat runs none" not in rendered
     assert "## Landing: none" not in rendered
     assert "`just fast`" in rendered
-    assert "Land via `just land`" in rendered
+    assert "Land via `just land --audit-file FILE`" in rendered
 
     identity = dispatch.Identity(
         dispatch_id="d-test",

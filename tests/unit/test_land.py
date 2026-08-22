@@ -409,8 +409,28 @@ def test_there_is_no_flag_that_skips_the_corpus_check() -> None:
 
 
 def test_the_corpus_flag_takes_a_pool_path_and_defaults_to_naming_nothing() -> None:
-    assert land.parse_args([]).corpus is None
-    assert land.parse_args(["--corpus", "/runs/p"]).corpus == Path("/runs/p")
+    audit_path = "/audit-records/audit.md"
+    assert land.parse_args(["--audit-file", audit_path]).corpus is None
+    assert land.parse_args(["--audit-file", audit_path, "--corpus", "/runs/p"]).corpus == Path(
+        "/runs/p"
+    )
+
+
+def test_a_landing_requires_one_audit_file_but_non_landing_modes_do_not(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit):
+        land.parse_args([])
+    assert "a landing requires --audit-file FILE" in capsys.readouterr().err
+
+    audit_path = "/audit-records/audit.md"
+    assert land.parse_args(["--audit-file", audit_path]).audit_file == Path(audit_path)
+    assert land.parse_args(["--dry-run"]).audit_file is None
+    assert land.parse_args(["--stage"]).audit_file is None
+
+    for mode in ("--dry-run", "--stage"):
+        with pytest.raises(SystemExit):
+            land.parse_args([mode, "--audit-file", audit_path])
 
 
 # ------------------------------------------------------------------- the push
@@ -761,44 +781,43 @@ class _Close:
 
     def __init__(self, reason: str | None = None) -> None:
         self.reason = reason
-        self.calls: list[tuple[int, str]] = []
+        self.calls: list[int] = []
 
-    def __call__(self, issue: int, comment: str) -> str | None:
-        self.calls.append((issue, comment))
+    def __call__(self, issue: int) -> str | None:
+        self.calls.append(issue)
         return self.reason
 
 
 class _RaisingClose:
     """A tracker seam that raises rather than returning, which no landing may propagate."""
 
-    def __call__(self, issue: int, comment: str) -> str | None:
-        message = f"the tracker exploded on #{issue} ({len(comment)} bytes of comment)"
+    def __call__(self, issue: int) -> str | None:
+        message = f"the tracker exploded while closing #{issue}"
         raise RuntimeError(message)
 
 
 class _Audit:
-    """A thread read that records what it was asked to read, and answers as told.
+    """An audit post that records the issue and landed SHA, then answers as told."""
 
-    `read_audit`'s stand-in, in `_Close`'s shape one seam out: what a landing
-    reads the thread through before it closes (#461). The default answers
-    present, so a test that does not name the audit reads a compliant thread,
-    exactly as `closer` defaults to a tracker that closes.
-    """
+    def __init__(
+        self,
+        *,
+        reference: str = "https://example.test/audit-record",
+        reason: str | None = None,
+    ) -> None:
+        self.answer = land.AuditRecord(reference=reference if reason is None else "", reason=reason)
+        self.calls: list[tuple[int, str]] = []
 
-    def __init__(self, *, present: bool = True, reason: str | None = None) -> None:
-        self.answer = land.AuditRead(present=present, reason=reason)
-        self.calls: list[int] = []
-
-    def __call__(self, issue: int) -> land.AuditRead:
-        self.calls.append(issue)
+    def __call__(self, issue: int, sha: str) -> land.AuditRecord:
+        self.calls.append((issue, sha))
         return self.answer
 
 
 class _RaisingAudit:
-    """A thread-read seam that raises rather than returning, which no landing may propagate."""
+    """An audit-post seam that raises rather than returning, which no landing propagates."""
 
-    def __call__(self, issue: int) -> land.AuditRead:
-        message = f"the tracker exploded on #{issue}'s thread"
+    def __call__(self, issue: int, sha: str) -> land.AuditRecord:
+        message = f"the tracker exploded posting #{issue}'s audit for {sha}"
         raise RuntimeError(message)
 
 
@@ -828,16 +847,15 @@ def closer(monkeypatch: pytest.MonkeyPatch) -> _Close:
 
 @pytest.fixture(autouse=True)
 def auditor(monkeypatch: pytest.MonkeyPatch) -> _Audit:
-    """Stand in for the thread read on every test in this module, always (#461).
+    """Stand in for the audit post on every test in this module, always (#499).
 
     `closer`'s reasoning, pointed at the `gh` call a successful landing now makes
-    *first*: without this, the suite would read `andrewesweet/arma-cti` from
-    whatever credentials the runner holds, and would pass or fail by
-    connectivity. The default answers present, because the tests that do not
-    name the audit are the tests of everything else.
+    first: without this, the suite would post to `andrewesweet/arma-cti` from
+    whatever credentials the runner holds. The default returns a receipt because
+    tests that do not name the audit are tests of everything else.
     """
     stand_in = _Audit()
-    monkeypatch.setattr(land, "read_audit", stand_in)
+    monkeypatch.setattr(land, "record_audit", stand_in)
     return stand_in
 
 
@@ -1526,6 +1544,7 @@ def test_a_refusing_dry_run_still_prints_its_plan_on_stdout(
 
 def test_a_real_landings_refusal_is_an_error_and_goes_to_stderr(
     repo: tuple[Path, Path, Path],
+    tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -1543,9 +1562,11 @@ def test_a_real_landings_refusal_is_an_error_and_goes_to_stderr(
     """
     _origin, _main, here = repo
     (here / "foreign_file.txt").write_text("another agent's work\n", encoding="utf-8")
+    audit_file = tmp_path / "audit.md"
+    audit_file.write_text("criterion audit\n", encoding="utf-8")
     monkeypatch.chdir(here)
 
-    code = land.main([])
+    code = land.main(["--audit-file", str(audit_file)])
 
     captured = capsys.readouterr()
     assert code == land.EXIT_REFUSED
@@ -1993,6 +2014,7 @@ def test_a_successful_landing_closes_its_issue_and_names_the_sha(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,
     closer: _Close,
+    auditor: _Audit,
 ) -> None:
     """#439's whole point: the landing that ships the work is the one that closes the item."""
     _origin, main, here = repo
@@ -2003,11 +2025,13 @@ def test_a_successful_landing_closes_its_issue_and_names_the_sha(
 
     landed = _git("rev-parse", "--short", "HEAD", cwd=here).strip()
     assert report.lines[0] == "ok=landed"
+    assert (
+        "audit_recorded=yes issue=213 reference=https://example.test/audit-record"
+        " verified=posting_call not_verified=content_or_quality"
+    ) in report.lines
     assert f"issue_closed=yes issue=213 sha={landed}" in report.lines
-    assert len(closer.calls) == 1
-    issue, comment = closer.calls[0]
-    assert issue == 213
-    assert landed in comment
+    assert closer.calls == [213]
+    assert auditor.calls == [(213, landed)]
 
 
 def test_a_landing_from_the_main_checkout_closes_its_issue_too(
@@ -2034,117 +2058,133 @@ def test_a_landing_from_the_main_checkout_closes_its_issue_too(
     assert report.lines[0] == "ok=landed"
     assert any(line.startswith("merge=not_needed") for line in report.lines)
     assert f"issue_closed=yes issue=213 sha={landed}" in report.lines
-    assert [issue for issue, _ in closer.calls] == [213]
+    assert closer.calls == [213]
 
 
-def test_a_thread_without_an_audit_leaves_the_issue_open_and_lands_anyway(
+@pytest.mark.parametrize(
+    "unowned_comments",
+    [
+        ("Before trusting this branch, re-run `just check`, `just unit` and `just mutation`.",),
+        (
+            (
+                "No implementer's `just check`, `just unit`, `just mutation` counts or verbatim"
+                " mutation line are available."
+            ),
+        ),
+        ("just check green", "just unit green", "just mutation sampled"),
+    ],
+    ids=["quoted_recipe_names", "asserted_absence", "real_audit_split_across_comments"],
+)
+def test_a_comment_the_rung_did_not_record_cannot_close_the_issue(
+    unowned_comments: tuple[str, ...],
     repo: tuple[Path, Path, Path],
     tmp_path: Path,
     closer: _Close,
 ) -> None:
-    """#461 criterion 1: the close is withheld, the landing is not.
+    """#499: thread content has no input position; only this invocation's receipt clears.
 
-    The work is already on `origin/main` when the rung runs, so refusing the
-    *landing* would strand it in exactly the state #439 was filed to end. The
-    exit stays 0, the line still says `ok=landed`, and the close is simply not
-    made.
+    The comments are held here only to name the three live arrangements. Production
+    has no thread-read seam to pass them through. The audit callback therefore reports
+    that this invocation wrote no record, and all three arrangements have one verdict.
     """
     _origin, main, here = repo
     _commit(here, "feature.txt", "work\n")
     review = _reviewed(here, tmp_path)
-    thread = _Audit(present=False)
+    receipt = _Audit(reason=f"no_rung_record existing_comments={len(unowned_comments)}")
 
-    report = land.land(main, here, gate=_Gate(), review=review, audit=thread)
+    report = land.land(main, here, gate=_Gate(), review=review, audit=receipt)
 
     assert report.lines[0] == "ok=landed"
+    recorded = next(line for line in report.lines if line.startswith("audit_recorded="))
     withheld = next(line for line in report.lines if line.startswith("issue_closed="))
-    assert withheld.startswith("issue_closed=no issue=213 reason=audit_absent")
+    assert recorded.startswith("audit_recorded=no issue=213 reason=no_rung_record")
+    assert recorded.endswith("not_verified=content_or_quality")
+    assert withheld.startswith("issue_closed=no issue=213 reason=audit_not_recorded")
     assert closer.calls == []
-    assert thread.calls == [213]
+    assert receipt.calls
+    assert receipt.calls[0][0] == 213
 
 
-def test_a_thread_that_cannot_be_read_leaves_the_issue_open_naming_the_unreadable_read(
+def test_an_audit_post_failure_leaves_the_issue_open_and_names_its_reason(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,
     closer: _Close,
 ) -> None:
-    """#461 criterion 3: `gh` absent, unauthenticated, rate-limited or stalled is one reason.
-
-    The audit seam's failures reach the close line in `close_issue`'s own
-    vocabulary, so a reader who owes nothing is not told they owe an audit.
-    """
+    """Work already landed remains success; tracker failure cannot rewrite that fact."""
     _origin, main, here = repo
     _commit(here, "feature.txt", "work\n")
     review = _reviewed(here, tmp_path)
-    thread = _Audit(reason="gh_not_on_path")
+    audit = _Audit(reason="gh_not_on_path")
 
-    report = land.land(main, here, gate=_Gate(), review=review, audit=thread)
+    report = land.land(main, here, gate=_Gate(), review=review, audit=audit)
 
     assert report.lines[0] == "ok=landed"
+    recorded = next(line for line in report.lines if line.startswith("audit_recorded="))
     withheld = next(line for line in report.lines if line.startswith("issue_closed="))
-    assert withheld.startswith("issue_closed=no issue=213 reason=audit_unreadable gh_not_on_path")
+    assert recorded.startswith("audit_recorded=no issue=213 reason=gh_not_on_path")
+    assert withheld.startswith("issue_closed=no issue=213 reason=audit_not_recorded")
     assert closer.calls == []
 
 
-def test_owing_an_audit_and_unable_to_look_are_two_different_printed_reasons(
+def test_audit_post_failure_and_close_failure_are_two_distinct_records(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,
 ) -> None:
-    """The ruling's distinction, pinned: the same `issue_closed=no` tells the two causes apart.
-
-    A reader who owes an audit and a reader whose thread was never read have
-    different next acts, so `audit_absent` (the obligation) and `audit_unreadable`
-    (the infrastructure) must never appear on one another's line — or the reader's
-    next act is a guess.
-    """
+    """A failed close can still name the receipt; a failed post has none."""
     _origin, main, here = repo
     _commit(here, "feature.txt", "work\n")
     review = _reviewed(here, tmp_path)
 
-    absent = land.land(main, here, gate=_Gate(), review=review, audit=_Audit(present=False))
+    unrecorded = land.land(
+        main,
+        here,
+        gate=_Gate(),
+        review=review,
+        audit=_Audit(reason="gh_timeout"),
+    )
     _commit(here, "second.txt", "more work\n")
-    unreadable = land.land(
+    close = _Close("gh_timeout")
+    recorded = land.land(
         main,
         here,
         gate=_Gate(),
         review=_reviewed(here, tmp_path),
-        audit=_Audit(reason="gh_timeout"),
+        audit=_Audit(),
+        close=close,
     )
 
-    owed = next(line for line in absent.lines if line.startswith("issue_closed="))
-    blind = next(line for line in unreadable.lines if line.startswith("issue_closed="))
-    assert owed.startswith("issue_closed=no issue=213 reason=audit_absent")
-    assert blind.startswith("issue_closed=no issue=213 reason=audit_unreadable gh_timeout")
-    assert "audit_unreadable" not in owed
-    assert "audit_absent" not in blind
+    assert any(line.startswith("audit_recorded=no") for line in unrecorded.lines)
+    assert any("reason=audit_not_recorded" in line for line in unrecorded.lines)
+    assert any(line.startswith("audit_recorded=yes") for line in recorded.lines)
+    assert "issue_closed=no issue=213 reason=gh_timeout" in recorded.lines
+    assert close.calls == [213]
 
 
-def test_a_thread_read_seam_that_raises_never_fails_the_landing(
+def test_an_audit_post_seam_that_raises_never_fails_the_landing(
     repo: tuple[Path, Path, Path],
     tmp_path: Path,
     closer: _Close,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Red first against a `_close_line` without its `except`, where this test raised.
+    """Red first against `_close_lines` without its `except`, where this test raised.
 
-    `read_audit` returns its own failures as reasons, so this is about the *next*
+    `record_audit` returns its own failures as reasons, so this is about the *next*
     seam: whatever a future one raises, the work is already on `origin/main` and
     the landing's answer is a line, never a traceback.
     """
     _origin, main, here = repo
     _commit(here, "feature.txt", "work\n")
     review = _reviewed(here, tmp_path)
-    monkeypatch.setattr(land, "read_audit", _RaisingAudit())
+    monkeypatch.setattr(land, "record_audit", _RaisingAudit())
 
     report = land.land(main, here, gate=_Gate(), review=review)
 
     assert report.lines[0] == "ok=landed"
     assert any(
-        line.startswith(
-            "issue_closed=no issue=213 reason=audit_unreadable gh_unrunnable RuntimeError:"
-        )
+        line.startswith("audit_recorded=no issue=213 reason=gh_unrunnable RuntimeError:")
         for line in report.lines
     )
+    assert any("reason=audit_not_recorded" in line for line in report.lines)
     assert closer.calls == []
 
 
@@ -2291,7 +2331,7 @@ def test_the_rerun_that_finishes_a_blocked_merge_is_where_the_issue_closes(
     assert report.lines[0] == "ok=landed"
     assert "push=not_needed reason=already_on_origin/main" in report.lines
     assert _git("rev-parse", "main", cwd=main).strip() == landed
-    assert [issue for issue, _ in closer.calls] == [213]
+    assert closer.calls == [213]
 
 
 def test_a_tracker_that_refuses_prints_the_reason_and_the_landing_still_exits_zero(
@@ -2322,7 +2362,7 @@ def test_a_tracker_seam_that_raises_is_reported_rather_than_propagated(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Red first against a `_close_line` without its `except`, where this test raised.
+    """Red first against `_close_lines` without its `except`, where this test raised.
 
     `main` catches `GitError` and nothing else, so an exception out of the seam is a
     traceback and a non-zero exit on a run whose work is already on `origin/main`.

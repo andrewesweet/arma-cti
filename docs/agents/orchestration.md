@@ -257,7 +257,7 @@ do.
 | Judging a close | `just trial close-audit --issue N` | The six checkable claims over a close, computed and cited. It concludes nothing further: the bar that read two of them into criteria was dropped by #328 |
 | Quoting spend | `just ledger-sync show --dispatch <id>` | The per-dispatch row, in `cap_fraction`, before quoting a dispatch's cost |
 | Recovering | `just recover check <name>` / `just recover brief <issue\|worktree>` | The runbook's two computable procedures (#253) |
-| Landing | `just land` | The landing protocol — **paste its output verbatim, never retype it** |
+| Landing | `just land --audit-file FILE` | Put the complete criterion audit in one UTF-8 file outside the worktree; the rung posts it as one comment before closing — **paste its output verbatim, never retype it** (#499) |
 
 ## The landing half
 

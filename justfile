@@ -430,8 +430,10 @@ worktree *args:
 # same way every time — #209 measured 220 hand calls doing it across 117 of 214
 # agents, and its documented traps exist because agents kept falling into them.
 #
-#   just land                    the whole protocol, gate included
-#   just land --corpus <pool>    name the full `just regress` run an in-world diff owes
+#   just land --audit-file <file>
+#                                the whole protocol, gate and close audit included
+#   just land --audit-file <file> --corpus <pool>
+#                                also name the full `just regress` run an in-world diff owes
 #   just land --dry-run          the plan, having run nothing at all. It consults the
 #                                routing gate, which needs no rebase, and names what it
 #                                could not consult; a dry run lands nothing either way,
@@ -454,6 +456,15 @@ worktree *args:
 # poisoned tree refused in the same words. A tree carrying no commit of its own
 # refuses `nothing_to_land` rather than offering origin/main's tip as a SHA to
 # have reviewed.
+#
+# A real landing requires `--audit-file`: one complete UTF-8 criterion audit in
+# one file outside the worktree. It reads that file before touching the repository.
+# After push and merge, it posts the supplied body plus landed SHA through one
+# `gh issue comment --body-file -` call, records that call's receipt, then closes.
+# It never reads existing comments, so no quoted recipe name can stand in for the
+# record it wrote (#499). `audit_recorded=yes` verifies only the posting call — not
+# the body's completeness, accuracy or quality — and the output says so. `--stage`
+# and `--dry-run` land nothing, so neither accepts an audit file.
 #
 # `--dry-run`'s plan qualifies the push whenever the rebase will move the SHA a
 # verdict binds: `would_not_run=... reason=review_sha_will_move`. That reason is a
@@ -496,7 +507,7 @@ worktree *args:
 # 181 changed lines of the daemon's transport with no corpus run at all.
 #
 # Refusals are named, each says what was found and what to do, and the exit code
-# separates the two kinds: 1 is nothing landed (dirty_tree, nothing_to_land,
+# separates the two kinds: 1 is nothing landed (audit_file_unreadable, dirty_tree, nothing_to_land,
 # rebase_conflict, gate_red, gate_blocked, corpus_owed, corpus_not_pass,
 # corpus_check_unreadable, not_fast_forward, git_failed), 2 is the work IS on
 # origin/main and a step is outstanding (merge_blocked_by_sandbox,

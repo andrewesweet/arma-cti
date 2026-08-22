@@ -64,8 +64,9 @@ not a check that passed (#41).
 
 ## What is deliberately absent
 
-There is no flag, argument or environment variable that skips this. `just land --corpus`
-*names* evidence, and every claim it makes is verified here against the pool's own record
+There is no flag, argument or environment variable that skips this. A landing's
+`--corpus <pool>` *names* evidence, and every claim it makes is verified here against the
+pool's own record
 — so pointing it at the wrong run refuses rather than passes. The landing protocol's
 refspec is a constant no argument reaches, and this belongs in that tradition (#213).
 """
@@ -112,7 +113,8 @@ WHO_CAN_CLEAR: Final = (
     "permissions decision (#296/#298), not yours. If you are a dispatched agent, stop "
     "here and hand back to the orchestrator with your branch and this tree's HEAD — the "
     "work is committed and nothing was pushed. The orchestrator runs `just regress` with "
-    "no filter, then lands with `just land --corpus <pool evidence directory>`, and "
+    "no filter, then lands with `just land --audit-file <criterion audit file> --corpus "
+    "<pool evidence directory>`, and "
     "quotes `just verdict`'s rendered body verbatim into the issue without retyping the "
     "SHA or the evidence path (#219, #235)."
 )
@@ -126,8 +128,8 @@ READ_THE_TABLE: Final = (
 
 CHECK_DID_NOT_RUN: Final = (
     "The corpus rung could not be run, so nothing was pushed. A check that could not run "
-    "is not a check that passed (#41). Repair what is named above and run `just land` "
-    "again."
+    "is not a check that passed (#41). Repair what is named above and run `just land "
+    "--audit-file <criterion audit file>` again."
 )
 
 
