@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
-from typing import TYPE_CHECKING
+import tempfile
+import time
+from pathlib import Path
 
 import pytest
 from conftest import REPO, load_tool
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 guidance = load_tool("codex_guidance")
 dispatch = load_tool("dispatch")
@@ -23,14 +23,14 @@ def git_root(tmp_path: Path) -> Path:
     root = tmp_path / "repo"
     root.mkdir()
     subprocess.run(
-        ["git", "init", "-q", "-b", "main"],  # noqa: S607
+        ["git", "init", "-q", "-b", "main"],  # noqa: S607 — fixed git setup argv
         cwd=root,
         check=True,
         capture_output=True,
     )
     for key, value in (("user.email", "t@example.invalid"), ("user.name", "t")):
         subprocess.run(  # noqa: S603 — fixed temporary repository configuration
-            ["git", "config", key, value],  # noqa: S607
+            ["git", "config", key, value],  # noqa: S607 — fixed git setup command and data
             cwd=root,
             check=True,
             capture_output=True,
@@ -57,15 +57,20 @@ def wrapper(body: str) -> list[dict[str, object]]:
 
 def truncate_sources(raw_sources: tuple[bytes, ...], limit: int) -> str:
     """Model Codex's byte budget in the fake harness, excluding inter-file separators."""
+    selected = tuple(
+        raw
+        for raw in raw_sources
+        if guidance.normalize(raw.decode("utf-8", errors="ignore")).strip()
+    )
     remaining = limit
     delivered: list[str] = []
-    for raw in raw_sources:
+    for index, raw in enumerate(selected):
         if remaining <= 0:
             break
         part = raw[:remaining]
         delivered.append(guidance.normalize(part.decode("utf-8", errors="ignore")))
         remaining -= len(part)
-        if remaining > 0 and len(delivered) < len(raw_sources):
+        if remaining > 0 and index + 1 < len(selected):
             delivered.append("\n\n")
     return "".join(delivered)
 
@@ -73,7 +78,7 @@ def truncate_sources(raw_sources: tuple[bytes, ...], limit: int) -> str:
 class FakeCodex:
     """Return deterministic prompt captures while retaining the real subprocess seam."""
 
-    def __init__(  # noqa: D107
+    def __init__(  # noqa: D107 — fixture constructor arguments are documented by the class
         self,
         root: Path,
         raw_sources: tuple[bytes, ...],
@@ -89,7 +94,7 @@ class FakeCodex:
         self.fixed_project = fixed_project
         self.calls: list[tuple[tuple[str, ...], Path, dict[str, str]]] = []
 
-    def __call__(  # noqa: C901, D102, PLR0911, PLR0912, PLR0913
+    def __call__(  # noqa: C901, D102, PLR0911, PLR0912, PLR0913 — finite fake CLI mode matrix
         self,
         argv: list[str],
         *,
@@ -122,20 +127,22 @@ class FakeCodex:
         if max_bytes == 0:
             if self.mode == "global_unreadable":
                 return subprocess.CompletedProcess(argv, 0, b"{}", b"")
+            if not self.global_body:
+                return subprocess.CompletedProcess(argv, 0, b"[]", b"")
             body = self.global_body
         elif self.fixed_project is not None:
-            body = self.global_body + guidance.CODEX_PROJECT_SEPARATOR + self.fixed_project + "\n"
+            separator = guidance.CODEX_PROJECT_SEPARATOR if self.global_body else ""
+            body = self.global_body + separator + self.fixed_project + "\n"
         else:
+            separator = guidance.CODEX_PROJECT_SEPARATOR if self.global_body else ""
             body = (
-                self.global_body
-                + guidance.CODEX_PROJECT_SEPARATOR
-                + truncate_sources(self.raw_sources, max_bytes)
-                + "\n"
+                self.global_body + separator + truncate_sources(self.raw_sources, max_bytes) + "\n"
             )
         if self.mode == "reversed" and max_bytes > 0:
+            separator = guidance.CODEX_PROJECT_SEPARATOR if self.global_body else ""
             body = (
                 self.global_body
-                + guidance.CODEX_PROJECT_SEPARATOR
+                + separator
                 + "\n\n".join(reversed(tuple(raw.decode("utf-8") for raw in self.raw_sources)))
             )
         if self.mode == "missing_wrapper":
@@ -192,6 +199,31 @@ def write_sources(root: Path, raw_sources: tuple[bytes, ...], *, nested: bool = 
             )
         return launch
     return root
+
+
+def open_queue(tmp_path: Path) -> Path:
+    queue_dir = tmp_path / "queue"
+    queue_dir.mkdir()
+    (queue_dir / "policy.json").write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "freeze": {
+                    "state": "open",
+                    "since": "2026-08-06T00:00:00Z",
+                    "ruling": "a test",
+                },
+                "wip_limit": {
+                    "value": 9,
+                    "since": "2026-08-06T00:00:00Z",
+                    "ruling": "a test",
+                },
+                "packages": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return queue_dir
 
 
 def test_match_records_sources_and_hashes_without_prompt_body(
@@ -320,6 +352,21 @@ def test_missing_intermediate_document_contributes_nothing(
     assert [source.path for source in result.sources] == ["AGENTS.md"]
 
 
+def test_whitespace_only_nested_document_is_discarded_like_codex(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = git_root(tmp_path)
+    launch = write_sources(root, (b"root", b" \t\r\n"), nested=True)
+    install_fake(monkeypatch, root, (b"root", b" \t\r\n"))
+
+    result = guidance.verify_delivery(context(launch))
+
+    assert isinstance(result, guidance.GuidanceProof)
+    assert [source.path for source in result.sources] == ["AGENTS.md", "nested/AGENTS.md"]
+    assert result.expected_project_bytes == len(b"root")
+    assert result.delivered_project_bytes == result.expected_project_bytes
+
+
 def test_missing_root_contract_refuses_before_codex_capture(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -437,7 +484,7 @@ def test_containment_and_retirement_constants_are_explicit() -> None:
     assert guidance.CODEX_PROJECT_CHAIN_RETIREMENT_BYTES == 24 * 1024
 
 
-def test_current_checkout_tripwire_proves_default_truncation_and_containment(
+def test_fake_current_checkout_matrix_proves_default_truncation_and_containment(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     raw = (REPO / "AGENTS.md").read_bytes()
@@ -461,6 +508,44 @@ def test_current_checkout_tripwire_proves_default_truncation_and_containment(
     assert len(fake.calls) == 8
 
 
+def test_real_codex_current_checkout_tripwire_proves_default_truncation_and_containment() -> None:
+    """The permanent tripwire must exercise Codex's loader, not only its fake harness."""
+    executable = shutil.which("codex")
+    assert executable is not None, "the current-checkout tripwire requires the Codex binary"
+    raw = (REPO / "AGENTS.md").read_bytes()
+    assert len(raw) > guidance.CODEX_PROJECT_DOC_DEFAULT_BYTES
+    assert len(raw) > guidance.CODEX_PROJECT_CHAIN_RETIREMENT_BYTES
+
+    codex_home = tempfile.mkdtemp(prefix=".codex-home-", dir=REPO)
+    environment = dict(os.environ)
+    environment["CODEX_HOME"] = codex_home
+
+    def live_context(max_bytes: int) -> guidance.LaunchContext:
+        return guidance.LaunchContext(
+            executable=executable,
+            cwd=REPO,
+            environment=environment,
+            loader_config=guidance.loader_overrides(max_bytes),
+        )
+
+    try:
+        default = guidance.verify_delivery(live_context(guidance.CODEX_PROJECT_DOC_DEFAULT_BYTES))
+        assert isinstance(default, guidance.GuidanceFailure)
+        assert default.reason == "instruction_delivery_mismatch"
+        assert default.evidence is not None
+        assert default.evidence.expected_project_bytes == len(raw)
+        assert default.evidence.delivered_project_bytes == guidance.CODEX_PROJECT_DOC_DEFAULT_BYTES
+
+        contained = guidance.verify_delivery(
+            live_context(guidance.CODEX_PROJECT_DOC_CONTAINMENT_BYTES)
+        )
+        assert isinstance(contained, guidance.GuidanceProof)
+        assert contained.delivered_project_bytes == len(raw)
+        assert contained.delivered_project_sha256 == contained.expected_project_sha256
+    finally:
+        shutil.rmtree(codex_home)
+
+
 def test_codex_argv_carries_only_a_scoped_project_document_override(tmp_path: Path) -> None:
     argv = dispatch.build_argv(
         dispatch.LANES["codex"],
@@ -482,13 +567,13 @@ def test_public_dispatch_seam_types_preflight_failure_before_record_or_child(
     worktree = git_root(tmp_path)
     (worktree / "AGENTS.md").write_text("secret-source", encoding="utf-8")
     subprocess.run(
-        ["git", "add", "AGENTS.md"],  # noqa: S607
+        ["git", "add", "AGENTS.md"],  # noqa: S607 — fixed git setup command
         cwd=worktree,
         check=True,
         capture_output=True,
     )
     subprocess.run(
-        ["git", "commit", "-qm", "instructions"],  # noqa: S607
+        ["git", "commit", "-qm", "instructions"],  # noqa: S607 — fixed git setup command
         cwd=worktree,
         check=True,
         capture_output=True,
@@ -563,6 +648,105 @@ def test_public_dispatch_seam_types_preflight_failure_before_record_or_child(
     assert not plan.record.exists()
 
 
+def test_public_dispatch_seam_types_unavailable_preflight_before_record_or_child(
+    tmp_path: Path,
+) -> None:
+    worktree = git_root(tmp_path)
+    (worktree / "AGENTS.md").write_text("source", encoding="utf-8")
+    subprocess.run(
+        ["git", "add", "AGENTS.md"],  # noqa: S607 — fixed git setup command
+        cwd=worktree,
+        check=True,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "commit", "-qm", "instructions"],  # noqa: S607 — fixed git setup command
+        cwd=worktree,
+        check=True,
+        capture_output=True,
+    )
+    codex_bin = tmp_path / "codex-bin"
+    codex_bin.mkdir()
+    (codex_bin / "codex").write_text(
+        """#!/usr/bin/env python3
+import json
+import os
+import sys
+
+args = sys.argv[1:]
+if args == ["--version"]:
+    print("codex-cli 0.147.0")
+    raise SystemExit(0)
+if args[:2] == ["debug", "prompt-input"]:
+    maximum = next(
+        int(value.split("=", 1)[1])
+        for value in args
+        if value.startswith("project_doc_max_bytes=")
+    )
+    if maximum == 0:
+        print("{}")
+    else:
+        payload = {
+            "text": "# AGENTS.md instructions for /fixture\\n\\n<INSTRUCTIONS>\\n"
+            + "\\n--- project-doc ---\\n\\nsource\\n"
+            + "</INSTRUCTIONS>"
+        }
+        print(json.dumps([payload]))
+    raise SystemExit(0)
+if args and args[0] == "exec":
+    open(os.environ["CTI_CHILD_MARKER"], "w").close()
+    raise SystemExit(0)
+raise SystemExit(91)
+""",
+        encoding="utf-8",
+    )
+    (codex_bin / "codex").chmod(0o755)
+    queue_dir = open_queue(tmp_path)
+    record_root = tmp_path / "dispatches"
+    child_marker = tmp_path / "child-ran"
+    environment = dict(os.environ)
+    environment.update(
+        {
+            "PATH": f"{codex_bin}:{environment['PATH']}",
+            "CTI_BREAKER_DIR": str(tmp_path / "breaker"),
+            "CTI_READINESS_BODY": str(READY_BODY),
+            "CTI_QUEUE_DIR": str(queue_dir),
+            "CTI_QUEUE_ROOT": str(tmp_path / "queue-root"),
+            "CTI_CHILD_MARKER": str(child_marker),
+        }
+    )
+
+    result = subprocess.run(  # noqa: S603 — public dispatch seam with fixed test arguments
+        [
+            str(SEAM),
+            "--lane",
+            "codex",
+            "--profile",
+            "codex-luna-max",
+            "--seat",
+            "implementer",
+            "--issue",
+            "223",
+            "--worktree",
+            str(worktree),
+            "--dispatch-dir",
+            str(record_root),
+        ],
+        cwd=REPO,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == dispatch.EXIT_REFUSED, result.stderr
+    assert "refusal=instruction_preflight_unavailable" in result.stderr
+    assert "class=infra_unavailable" in result.stderr
+    assert "record=" not in result.stdout
+    assert not record_root.exists()
+    assert not child_marker.exists()
+
+
 def test_real_dispatch_command_refuses_codex_mismatch_before_forking(
     tmp_path: Path,
 ) -> None:
@@ -570,13 +754,13 @@ def test_real_dispatch_command_refuses_codex_mismatch_before_forking(
     sentinel = "secret-source"
     (worktree / "AGENTS.md").write_text(sentinel, encoding="utf-8")
     subprocess.run(
-        ["git", "add", "AGENTS.md"],  # noqa: S607
+        ["git", "add", "AGENTS.md"],  # noqa: S607 — fixed git setup command
         cwd=worktree,
         check=True,
         capture_output=True,
     )
     subprocess.run(
-        ["git", "commit", "-qm", "instructions"],  # noqa: S607
+        ["git", "commit", "-qm", "instructions"],  # noqa: S607 — fixed git setup command
         cwd=worktree,
         check=True,
         capture_output=True,
@@ -680,3 +864,115 @@ raise SystemExit(91)
     assert not record_root.exists()
     assert not child_marker.exists()
     assert sentinel not in result.stdout + result.stderr
+
+
+def test_successful_dispatch_record_and_log_do_not_leak_environment_secret(
+    tmp_path: Path,
+) -> None:
+    worktree = git_root(tmp_path)
+    (worktree / "AGENTS.md").write_text("source", encoding="utf-8")
+    subprocess.run(
+        ["git", "add", "AGENTS.md"],  # noqa: S607 — fixed git setup command
+        cwd=worktree,
+        check=True,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["git", "commit", "-qm", "instructions"],  # noqa: S607 — fixed git setup command
+        cwd=worktree,
+        check=True,
+        capture_output=True,
+    )
+    codex_bin = tmp_path / "codex-bin"
+    codex_bin.mkdir()
+    (codex_bin / "codex").write_text(
+        """#!/usr/bin/env python3
+import json
+import os
+import sys
+
+args = sys.argv[1:]
+if args == ["--version"]:
+    print("codex-cli 0.147.0")
+    raise SystemExit(0)
+if args[:2] == ["debug", "prompt-input"]:
+    maximum = next(
+        int(value.split("=", 1)[1])
+        for value in args
+        if value.startswith("project_doc_max_bytes=")
+    )
+    if maximum == 0:
+        print("[]")
+    else:
+        payload = {
+            "text": "# AGENTS.md instructions for /fixture\\n\\n<INSTRUCTIONS>\\n"
+            + "\\n--- project-doc ---\\n\\nsource\\n"
+            + "</INSTRUCTIONS>"
+        }
+        print(json.dumps([payload]))
+    raise SystemExit(0)
+if args and args[0] == "exec":
+    open(os.environ["CTI_CHILD_MARKER"], "w").close()
+    raise SystemExit(0)
+raise SystemExit(91)
+""",
+        encoding="utf-8",
+    )
+    (codex_bin / "codex").chmod(0o755)
+    queue_dir = open_queue(tmp_path)
+    record_root = tmp_path / "dispatches"
+    child_marker = tmp_path / "child-ran"
+    sentinel = "environment-secret-sentinel-" + ("x" * 80)
+    environment = dict(os.environ)
+    environment.update(
+        {
+            "PATH": f"{codex_bin}:{environment['PATH']}",
+            "CTI_BREAKER_DIR": str(tmp_path / "breaker"),
+            "CTI_READINESS_BODY": str(READY_BODY),
+            "CTI_QUEUE_DIR": str(queue_dir),
+            "CTI_QUEUE_ROOT": str(tmp_path / "queue-root"),
+            "CTI_CHILD_MARKER": str(child_marker),
+            "CTI_SECRET_FIXTURE": sentinel,
+        }
+    )
+
+    result = subprocess.run(  # noqa: S603 — public dispatch seam with fixed test arguments
+        [
+            str(SEAM),
+            "--lane",
+            "codex",
+            "--profile",
+            "codex-luna-max",
+            "--seat",
+            "implementer",
+            "--issue",
+            "223",
+            "--worktree",
+            str(worktree),
+            "--permission-mode",
+            "plan",
+            "--dispatch-dir",
+            str(record_root),
+        ],
+        cwd=REPO,
+        env=environment,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    record_line = next(line for line in result.stdout.splitlines() if line.startswith("record="))
+    record = Path(record_line.partition("=")[2])
+    result_file = record / "result.json"
+    deadline = time.monotonic() + 10
+    while not result_file.exists() and time.monotonic() < deadline:
+        time.sleep(0.02)
+    assert result_file.exists()
+    assert json.loads(result_file.read_text(encoding="utf-8"))["status"] == "child_finished"
+
+    dispatch_record = (record / "dispatch.json").read_text(encoding="utf-8")
+    dispatch_log = (record / "dispatch.log").read_text(encoding="utf-8")
+    assert sentinel not in dispatch_record
+    assert sentinel not in dispatch_log
+    assert child_marker.exists()

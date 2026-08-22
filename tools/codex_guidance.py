@@ -358,6 +358,15 @@ def _capture(  # noqa: PLR0913 — each capture needs its scope and safe diagnos
         )
     extracted = _instruction_body(payload)
     if isinstance(extracted, str):
+        if (
+            global_only
+            and max_bytes == 0
+            and extracted == "missing_wrapper"
+            and isinstance(payload, list)
+        ):
+            # Codex emits no wrapper when its global instruction prefix is empty. That is a
+            # valid empty capture, not an unreadable result.
+            return "", None
         reason = "unreadable_global_only_result" if global_only else extracted
         return None, _failure(
             reason,
@@ -465,7 +474,7 @@ def _read_sources(
 
 
 def _project_text(sources: tuple[SourceRecord, ...]) -> str:
-    return "\n\n".join(source.text for source in sources if source.text)
+    return "\n\n".join(source.text for source in sources if source.text.strip())
 
 
 def _evidence(  # noqa: PLR0913 — one immutable measurement object owns all proof fields
@@ -496,6 +505,20 @@ def _evidence(  # noqa: PLR0913 — one immutable measurement object owns all pr
         global_delivered_sha256=_sha256(global_delivered),
         combined_delivered_sha256=_sha256(combined_delivered),
     )
+
+
+def _project_capture(global_body: str, full_body: str) -> str | None:
+    """Extract project text from Codex's global-plus-project or project-only capture."""
+    if not global_body:
+        # Codex omits the separator when no global instruction prefix exists. The fake matrix
+        # retains the separator shape for older deterministic cases, so accept both forms.
+        return full_body.removeprefix(CODEX_PROJECT_SEPARATOR)
+    if not full_body.startswith(global_body):
+        return None
+    remainder = full_body[len(global_body) :]
+    if not remainder.startswith(CODEX_PROJECT_SEPARATOR):
+        return None
+    return remainder[len(CODEX_PROJECT_SEPARATOR) :]
 
 
 def verify_delivery(  # noqa: PLR0911 — fail-closed ladder
@@ -556,7 +579,8 @@ def verify_delivery(  # noqa: PLR0911 — fail-closed ladder
             source_paths=source_paths,
         )
 
-    if not full_body.startswith(global_body):
+    delivered_project = _project_capture(global_body, full_body)
+    if delivered_project is None:
         return _failure(
             "unreadable_global_only_result",
             context,
@@ -564,16 +588,6 @@ def verify_delivery(  # noqa: PLR0911 — fail-closed ladder
             codex_version=version,
             source_paths=source_paths,
         )
-    remainder = full_body[len(global_body) :]
-    if not remainder.startswith(CODEX_PROJECT_SEPARATOR):
-        return _failure(
-            "unreadable_global_only_result",
-            context,
-            launch_directory=launch,
-            codex_version=version,
-            source_paths=source_paths,
-        )
-    delivered_project = remainder[len(CODEX_PROJECT_SEPARATOR) :]
     # The prompt wrapper contributes one newline before its closing tag. Remove that
     # wrapper byte only; the source chain's own final-newline state remains untouched.
     delivered_project = delivered_project.removesuffix("\n")

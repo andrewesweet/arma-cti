@@ -11,6 +11,13 @@
   normalized byte counts and hashes, source paths and hashes, the launch and loader identity,
   and separate global-capture measurements without storing instruction or credential text.
 
+- Deterministic matrix cases use a fake Codex subprocess and establish parser, refusal, and
+  privacy behavior only; they do not establish Codex loader behavior. A separate
+  current-checkout tripwire invokes the installed real Codex binary and establishes that this
+  checkout mismatches at the default 32 KiB limit and matches at the 96 KiB containment limit.
+  That tripwire does not establish behavior for arbitrary future chains or source selection
+  semantics beyond this checkout.
+
 - The proof establishes exact delivered text under its recorded `lf-v1` normalization plus
   independently recorded expected source identities, but it cannot distinguish two source
   chains that render byte-identical text: `LoadedAgentsMd.sources()` exists internally, and no

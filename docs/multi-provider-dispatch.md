@@ -137,10 +137,13 @@ source-byte budget.
 
 The 96 KiB value is passed as per-invocation Codex configuration to both `debug
 prompt-input` and `codex exec`. It is not exported as a global setting, so interactive
-Codex sessions do not inherit the containment. A retirement tripwire asserts that the
-current chain still exceeds the 24 KiB retirement threshold; reducing every supported
-chain below that threshold therefore requires removing the override and its proof rather
-than leaving a stale containment in place.
+Codex sessions do not inherit the containment. A permanent current-checkout tripwire runs
+the real Codex binary and checks the delivery pair: the default 32 KiB setting must still
+mismatch this checkout, while the 96 KiB setting must match it. The tripwire also keeps the
+24 KiB retirement threshold visible. When every supported chain falls below that threshold,
+the scoped override retires, but the delivery check stays and changes to assert that the
+default setting delivers the complete chain; silent truncation must not return with the
+containment.
 
 A successful dispatch record stores the proof schema, CLI version, launch directory,
 selected source paths and hashes, expected and delivered byte counts and hashes, the
