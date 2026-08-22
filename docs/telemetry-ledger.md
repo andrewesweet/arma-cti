@@ -58,7 +58,8 @@ schema, materialised_at, dispatch_id, lane, profile, seat, issue, base_sha
 source   { kind, path, degraded }
 records  { total, metrics, logs, spans }
 guidance_manifest { schema, state, harness, source_provenance, loader_outcome,
-                     delivery { #502 proof fields } | sources, reason, launch_context }
+                     delivery { hashes, byte counts, categories } |
+                     sources, reason, launch_context }
 usage    { input_tokens, output_tokens, cache_read_tokens, cache_creation_tokens,
            list_price_usd, list_priced, list_price_note, unclassified }
 cap_fraction { pool, unit, basis, excludes, attribution, attribution_note,
@@ -82,11 +83,12 @@ and byte counts, loader outcome and launch context. Its `source_provenance` is
 be told apart.
 
 The proof's CLI release is parsed into numeric version components, and its launch
-directory is resolved in the repository before the manifest can hold it. A legacy proof
-is reconstructed only when that directory resolves to the dispatch record's canonical
-worktree. Serialization writes those typed values back into the existing string fields;
-it never retains their untrusted input spelling. The manifest never stores instruction or
-prompt bodies.
+directory is resolved in the repository when the dispatch captures it. `GuidanceProof`
+has no public constructor: only the capture and the persisted-record parser can construct
+one. A legacy proof is reconstructed only when its absolute launch-directory string is
+exactly the dispatch record's worktree string. The reader does not resolve either recorded
+path, because both are untrusted and the worktree may no longer exist. A numeric version
+too long for the parser is `unclassified`, never an exception.
 
 Claude Code has no equivalent bounded capture, so a new Claude dispatch records
 `state: unattributable`, `reason: no bounded capture`, `loader_outcome: not_observable`,
@@ -107,11 +109,22 @@ the one after-the-fact validation exception. The reader takes the harness from
 and emits `state: unclassified`, `reason: unclassified_guidance_record` when none can be
 constructed. Rejected fields are not retained or copied to the row.
 
-The ledger reads the manifest from `dispatch.json` and exposes it under the same
-`guidance_manifest` key. For records written by #502 before this field existed, it derives
-the verified wrapper from the existing `instruction_delivery` proof; for older records
-with neither field it emits `unknown`. It never edits the dispatch record or telemetry
-source. It writes only the constructed variant's document into the row.
+The ledger reads the manifest from `dispatch.json` and exposes a content-free projection
+under the same `guidance_manifest` key. That projection has schema
+`cti.guidance-ledger/1`; its verified delivery has schema `codex-guidance-ledger/1`.
+Ordered sources carry `path_sha256`, `path_bytes`, source-content `sha256`, and
+`raw_bytes`, never `path` or the redundant `source_paths`. The Codex version likewise
+becomes a hash and byte count. A reader needs equality across dispatches, which those
+hashes preserve, not the underlying text. Launch context becomes the closed
+`dispatch_worktree` category: the useful fact is that guidance was loaded from the
+assigned tree, not the tree's ephemeral absolute spelling.
+
+For records written by #502 before the manifest existed, the ledger derives the verified
+wrapper from the existing `instruction_delivery` proof; for older records with neither
+field it emits `unknown`. It never edits the dispatch record or telemetry source. Ledger
+schema `cti.ledger/4` writes only hashes, byte counts, enumerated categories and outcomes
+from the constructed guidance variant. Free text may remain in primary dispatch evidence
+for compatibility, but no guidance free-text field reaches `ledger.json`.
 
 ### Cross-lane normalisation
 

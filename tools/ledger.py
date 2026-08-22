@@ -109,7 +109,7 @@ if TYPE_CHECKING:
 
 EXIT_REFUSED: Final = 1
 
-SCHEMA: Final = "cti.ledger/3"
+SCHEMA: Final = "cti.ledger/4"
 
 DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 LEDGER_EXPORT: Final = Path("/var/log/claude-otel/dispatches")
@@ -1115,7 +1115,7 @@ def materialise(
         "base_sha": base_sha or None,
         "source": source.document(),
         "records": count_kinds(items),
-        "guidance_manifest": guidance_manifest.document(),
+        "guidance_manifest": guidance_manifest.ledger_document(),
         "usage": usage.document(),
         "cap_fraction": cap_fraction(lane if isinstance(lane, str) else None, usage).document(),
         "end_state": end_state.document(),

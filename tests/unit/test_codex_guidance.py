@@ -274,6 +274,26 @@ def test_match_records_sources_and_hashes_without_prompt_body(
     )
 
 
+def test_guidance_proof_cannot_be_constructed_with_unchecked_values() -> None:
+    with pytest.raises(TypeError):
+        guidance.GuidanceProof(
+            codex_version="arbitrary prompt text",
+            launch_directory="arbitrary prompt text",
+            project_doc_max_bytes=-1,
+            sources=(),
+            raw_project_bytes=-1,
+            expected_project_bytes=-1,
+            expected_project_sha256="arbitrary prompt text",
+            delivered_project_bytes=-1,
+            delivered_project_sha256="arbitrary prompt text",
+            global_expected_bytes=-1,
+            global_expected_sha256="arbitrary prompt text",
+            global_delivered_bytes=-1,
+            global_delivered_sha256="arbitrary prompt text",
+            combined_delivered_sha256="arbitrary prompt text",
+        )
+
+
 @pytest.mark.parametrize("field", ["codex_version", "launch_directory"])
 def test_legacy_proof_prompt_text_in_launch_metadata_is_unclassified_without_leaking(
     tmp_path: Path,
@@ -298,6 +318,24 @@ def test_legacy_proof_prompt_text_in_launch_metadata_is_unclassified_without_lea
 
     assert parsed.document()["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
     assert sentinel not in json.dumps(parsed.document())
+
+
+def test_overlong_numeric_codex_version_is_unclassified_not_an_exception(
+    tmp_path: Path,
+) -> None:
+    worktree = tmp_path / "worktree"
+    proof = codex_guidance_proof_document(guidance, worktree)
+    proof["codex_version"] = f"codex-cli {'9' * 10_000}.0.0"
+
+    parsed = read_manifest(
+        {
+            "lane": "codex",
+            "worktree": str(worktree),
+            "instruction_delivery": proof,
+        }
+    )
+
+    assert parsed.document()["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
 
 
 def test_explicit_unknown_manifest_is_unclassified_because_presence_is_evidence() -> None:
@@ -334,13 +372,12 @@ def test_a_legacy_proof_constructs_a_verified_manifest_variant(tmp_path: Path) -
     assert manifest.document()["state"] == guidance.GUIDANCE_STATE_VERIFIED
 
 
-def test_a_legacy_launch_directory_stores_its_worktree_resolution(tmp_path: Path) -> None:
-    worktree = tmp_path / "worktree"
-    worktree.mkdir()
-    alias = tmp_path / "worktree-alias"
-    alias.symlink_to(worktree, target_is_directory=True)
+def test_a_legacy_launch_directory_is_not_resolved_against_an_untrusted_worktree(
+    tmp_path: Path,
+) -> None:
+    worktree = tmp_path / "gone" / "worktree"
     proof = codex_guidance_proof_document(guidance, worktree)
-    proof["launch_directory"] = str(alias)
+    proof["launch_directory"] = str(tmp_path / "gone" / ".." / "gone" / "worktree")
 
     manifest = read_manifest(
         {
@@ -350,8 +387,7 @@ def test_a_legacy_launch_directory_stores_its_worktree_resolution(tmp_path: Path
         }
     )
 
-    assert isinstance(manifest, guidance.VerifiedGuidanceManifest)
-    assert manifest.delivery.document()["launch_directory"] == str(worktree.resolve())
+    assert isinstance(manifest, guidance.UnclassifiedGuidanceRecord)
 
 
 def test_an_unbounded_harness_is_explicitly_unattributable_not_empty(tmp_path: Path) -> None:

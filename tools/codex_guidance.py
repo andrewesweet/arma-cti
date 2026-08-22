@@ -23,11 +23,13 @@ CODEX_PROJECT_DOC_DEFAULT_BYTES: Final = 32 * 1024
 CODEX_PROJECT_DOC_CONTAINMENT_BYTES: Final = 96 * 1024
 CODEX_PROJECT_CHAIN_RETIREMENT_BYTES: Final = 24 * 1024
 CODEX_GUIDANCE_SCHEMA: Final = "codex-guidance-proof-v1"
+CODEX_GUIDANCE_LEDGER_SCHEMA: Final = "codex-guidance-ledger/1"
 CODEX_GUIDANCE_NORMALIZATION: Final = "lf-v1"
 CODEX_PROJECT_SEPARATOR: Final = "\n--- project-doc ---\n\n"
 CODEX_GUIDANCE_SCOPE: Final = "codex_project_instruction_chain"
 CODEX_GUIDANCE_TIMEOUT_SECONDS: Final = 30.0
 GUIDANCE_MANIFEST_SCHEMA: Final = "cti.guidance-manifest/1"
+GUIDANCE_LEDGER_SCHEMA: Final = "cti.guidance-ledger/1"
 GUIDANCE_STATE_VERIFIED: Final = "verified"
 GUIDANCE_STATE_UNKNOWN: Final = "unknown"
 GUIDANCE_STATE_MISSING: Final = "missing"
@@ -62,10 +64,16 @@ class CodexVersion:
         match = _CODEX_VERSION_PATTERN.fullmatch(value)
         if match is None:
             return None
+        try:
+            major = int(match.group("major"))
+            minor = int(match.group("minor"))
+            patch = int(match.group("patch"))
+        except ValueError:
+            return None
         parsed = object.__new__(cls)
-        object.__setattr__(parsed, "major", int(match.group("major")))
-        object.__setattr__(parsed, "minor", int(match.group("minor")))
-        object.__setattr__(parsed, "patch", int(match.group("patch")))
+        object.__setattr__(parsed, "major", major)
+        object.__setattr__(parsed, "minor", minor)
+        object.__setattr__(parsed, "patch", patch)
         return parsed
 
     def document(self) -> str:
@@ -75,7 +83,7 @@ class CodexVersion:
 
 @dataclass(frozen=True, init=False)
 class ResolvedLaunchDirectory:
-    """A canonical directory resolved against the repository that launched Codex."""
+    """A launch directory resolved at capture or matched to its recorded worktree."""
 
     path: Path
 
@@ -94,21 +102,13 @@ class ResolvedLaunchDirectory:
 
     @classmethod
     def matching_worktree(cls, value: object, worktree: object) -> Self | None:
-        """Resolve recorded text only when it names the record's own worktree."""
+        """Accept exact absolute record equality without resolving either untrusted path."""
         if not isinstance(value, str) or not isinstance(worktree, str):
             return None
-        try:
-            candidate = Path(value)
-            expected = Path(worktree)
-            if not candidate.is_absolute() or not expected.is_absolute():
-                return None
-            resolved = candidate.resolve(strict=False)
-            resolved_worktree = expected.resolve(strict=False)
-        except (OSError, ValueError):
+        candidate = Path(value)
+        if value != worktree or not candidate.is_absolute():
             return None
-        if resolved != resolved_worktree:
-            return None
-        return cls._from_resolved(resolved_worktree)
+        return cls._from_resolved(candidate)
 
     @classmethod
     def _from_resolved(cls, path: Path) -> Self:
@@ -126,6 +126,12 @@ class GuidanceHarness(StrEnum):
 
     CLAUDE_CODE = "claude-code"
     CODEX = "codex"
+
+
+class LaunchDirectoryCategory(StrEnum):
+    """Ledger-safe relationship between launch directory and dispatch record."""
+
+    DISPATCH_WORKTREE = "dispatch_worktree"
 
 
 def loader_overrides(max_bytes: int = CODEX_PROJECT_DOC_CONTAINMENT_BYTES) -> tuple[str, ...]:
@@ -161,10 +167,19 @@ class SourceRecord:
         """Render the source metadata without retaining instruction text."""
         return {"path": self.path, "raw_bytes": self.raw_bytes, "sha256": self.sha256}
 
+    def ledger_document(self) -> dict[str, object]:
+        """Identify the ordered source without sending its path to telemetry."""
+        return {
+            "path_sha256": _sha256(self.path),
+            "path_bytes": _byte_length(self.path),
+            "raw_bytes": self.raw_bytes,
+            "sha256": self.sha256,
+        }
 
-@dataclass(frozen=True)
+
+@dataclass(frozen=True, init=False)
 class GuidanceProof:
-    """The safe, content-free measurements recorded for an allowed Codex dispatch."""
+    """Matched measurements retained as the dispatch's primary evidence."""
 
     codex_version: CodexVersion
     launch_directory: ResolvedLaunchDirectory
@@ -181,8 +196,48 @@ class GuidanceProof:
     global_delivered_sha256: str
     combined_delivered_sha256: str
 
+    @classmethod
+    def _from_validated(  # noqa: PLR0913 — one proof owns every measured field
+        cls,
+        *,
+        codex_version: CodexVersion,
+        launch_directory: ResolvedLaunchDirectory,
+        project_doc_max_bytes: int,
+        sources: tuple[SourceRecord, ...],
+        raw_project_bytes: int,
+        expected_project_bytes: int,
+        expected_project_sha256: str,
+        delivered_project_bytes: int,
+        delivered_project_sha256: str,
+        global_expected_bytes: int,
+        global_expected_sha256: str,
+        global_delivered_bytes: int,
+        global_delivered_sha256: str,
+        combined_delivered_sha256: str,
+    ) -> Self:
+        """Construct only after capture computed, or boundary parsing validated, every field."""
+        proof = object.__new__(cls)
+        for name, value in (
+            ("codex_version", codex_version),
+            ("launch_directory", launch_directory),
+            ("project_doc_max_bytes", project_doc_max_bytes),
+            ("sources", sources),
+            ("raw_project_bytes", raw_project_bytes),
+            ("expected_project_bytes", expected_project_bytes),
+            ("expected_project_sha256", expected_project_sha256),
+            ("delivered_project_bytes", delivered_project_bytes),
+            ("delivered_project_sha256", delivered_project_sha256),
+            ("global_expected_bytes", global_expected_bytes),
+            ("global_expected_sha256", global_expected_sha256),
+            ("global_delivered_bytes", global_delivered_bytes),
+            ("global_delivered_sha256", global_delivered_sha256),
+            ("combined_delivered_sha256", combined_delivered_sha256),
+        ):
+            object.__setattr__(proof, name, value)
+        return proof
+
     def document(self) -> dict[str, object]:
-        """Render the proof record without prompt, global, brief, or environment text."""
+        """Render dispatch evidence without source bodies, prompt bodies, brief, or environment."""
         return {
             "schema": CODEX_GUIDANCE_SCHEMA,
             "normalization": CODEX_GUIDANCE_NORMALIZATION,
@@ -191,6 +246,29 @@ class GuidanceProof:
             "project_doc_max_bytes": self.project_doc_max_bytes,
             "source_paths": [source.path for source in self.sources],
             "sources": [source.document() for source in self.sources],
+            "raw_project_bytes": self.raw_project_bytes,
+            "expected_project_bytes": self.expected_project_bytes,
+            "expected_project_sha256": self.expected_project_sha256,
+            "delivered_project_bytes": self.delivered_project_bytes,
+            "delivered_project_sha256": self.delivered_project_sha256,
+            "global_expected_bytes": self.global_expected_bytes,
+            "global_expected_sha256": self.global_expected_sha256,
+            "global_delivered_bytes": self.global_delivered_bytes,
+            "global_delivered_sha256": self.global_delivered_sha256,
+            "combined_delivered_sha256": self.combined_delivered_sha256,
+        }
+
+    def ledger_document(self) -> dict[str, object]:
+        """Render only hashes, byte counts, and the launch-directory category."""
+        version = self.codex_version.document()
+        return {
+            "schema": CODEX_GUIDANCE_LEDGER_SCHEMA,
+            "normalization": CODEX_GUIDANCE_NORMALIZATION,
+            "codex_version_sha256": _sha256(version),
+            "codex_version_bytes": _byte_length(version),
+            "launch_directory": LaunchDirectoryCategory.DISPATCH_WORKTREE.value,
+            "project_doc_max_bytes": self.project_doc_max_bytes,
+            "sources": [source.ledger_document() for source in self.sources],
             "raw_project_bytes": self.raw_project_bytes,
             "expected_project_bytes": self.expected_project_bytes,
             "expected_project_sha256": self.expected_project_sha256,
@@ -227,6 +305,17 @@ class VerifiedGuidanceManifest:
             "delivery": self.delivery.document(),
         }
 
+    def ledger_document(self) -> dict[str, object]:
+        """Project the proof into the ledger's content-free schema."""
+        return {
+            "schema": GUIDANCE_LEDGER_SCHEMA,
+            "state": GUIDANCE_STATE_VERIFIED,
+            "harness": GuidanceHarness.CODEX.value,
+            "source_provenance": "expected_chain_only",
+            "loader_outcome": "matched",
+            "delivery": self.delivery.ledger_document(),
+        }
+
 
 @dataclass(frozen=True)
 class MissingGuidanceManifest:
@@ -245,6 +334,14 @@ class MissingGuidanceManifest:
             "reason": "missing_preflight_manifest",
             "sources": None,
             "launch_context": {"launch_directory": self.launch_directory.document()},
+        }
+
+    def ledger_document(self) -> dict[str, object]:
+        """Render the missing outcome without an absolute directory."""
+        return {
+            **self.document(),
+            "schema": GUIDANCE_LEDGER_SCHEMA,
+            "launch_context": {"launch_directory": LaunchDirectoryCategory.DISPATCH_WORKTREE.value},
         }
 
 
@@ -267,6 +364,14 @@ class UnattributableGuidanceManifest:
             "launch_context": {"launch_directory": self.launch_directory.document()},
         }
 
+    def ledger_document(self) -> dict[str, object]:
+        """Render the unattributable outcome without an absolute directory."""
+        return {
+            **self.document(),
+            "schema": GUIDANCE_LEDGER_SCHEMA,
+            "launch_context": {"launch_directory": LaunchDirectoryCategory.DISPATCH_WORKTREE.value},
+        }
+
 
 @dataclass(frozen=True)
 class EmptyGuidanceManifest:
@@ -287,6 +392,14 @@ class EmptyGuidanceManifest:
             "launch_context": {"launch_directory": self.launch_directory.document()},
         }
 
+    def ledger_document(self) -> dict[str, object]:
+        """Render the empty outcome without an absolute directory."""
+        return {
+            **self.document(),
+            "schema": GUIDANCE_LEDGER_SCHEMA,
+            "launch_context": {"launch_directory": LaunchDirectoryCategory.DISPATCH_WORKTREE.value},
+        }
+
 
 @dataclass(frozen=True)
 class GuidanceNotRecorded:
@@ -305,6 +418,10 @@ class GuidanceNotRecorded:
             "launch_context": {},
         }
 
+    def ledger_document(self) -> dict[str, object]:
+        """Render historical absence in the ledger schema."""
+        return {**self.document(), "schema": GUIDANCE_LEDGER_SCHEMA}
+
 
 @dataclass(frozen=True)
 class UnclassifiedGuidanceRecord:
@@ -322,6 +439,10 @@ class UnclassifiedGuidanceRecord:
             "sources": None,
             "launch_context": {},
         }
+
+    def ledger_document(self) -> dict[str, object]:
+        """Render rejection without copying the rejected document."""
+        return {**self.document(), "schema": GUIDANCE_LEDGER_SCHEMA}
 
 
 type GuidanceManifest = (
@@ -474,7 +595,7 @@ def _proof_from_document(value: object, worktree: object) -> GuidanceProof | Non
         or value["global_expected_sha256"] != value["global_delivered_sha256"]
     ):
         return None
-    proof = GuidanceProof(
+    proof = GuidanceProof._from_validated(  # noqa: SLF001 — boundary parser owns this factory
         codex_version=codex_version,
         launch_directory=launch_directory,
         project_doc_max_bytes=value["project_doc_max_bytes"],
@@ -924,7 +1045,7 @@ def _evidence(  # noqa: PLR0913 — one immutable measurement object owns all pr
     global_delivered: str,
     combined_delivered: str,
 ) -> GuidanceProof:
-    return GuidanceProof(
+    return GuidanceProof._from_validated(  # noqa: SLF001 — capture owns this factory
         codex_version=version,
         launch_directory=launch,
         project_doc_max_bytes=max_bytes,

@@ -1,14 +1,13 @@
 ### Added
 
-- New dispatch records carry a `guidance_manifest` constructed as one typed variant. Codex
-  records `verified` from its existing #502 delivery proof; Claude Code records
-  `unattributable` because it has no bounded non-interactive loader capture. Each variant
-  fixes every state-dependent field, including its harness, provenance, loader outcome,
-  source shape and, where present, reason.
-- Codex CLI releases are parsed into numeric version components, and launch directories are
-  resolved before serialization. Historical launch directories must resolve to their
-  dispatch worktree; rejected legacy metadata is classified without copying its text into
-  `ledger.json`.
-- `just ledger-sync` derives the harness from the dispatch lane registry and materializes the
-  manifest without writing dispatch evidence. Records with neither manifest nor legacy proof
-  are `unknown`; explicit unknown, malformed and contradictory records are `unclassified`.
+- New dispatch records carry one typed `guidance_manifest` variant. Codex records `verified`
+  from its instruction-delivery proof; Claude Code records `unattributable` because it has no
+  bounded non-interactive loader capture. Historical records without either form remain
+  `unknown`; explicit unknown, malformed and contradictory records are `unclassified`.
+- `just ledger-sync` materializes guidance without copying its free text. Ordered sources carry
+  path hashes and UTF-8 byte counts beside their content hashes and byte counts; the Codex
+  version becomes a hash and byte count; launch context becomes the closed
+  `dispatch_worktree` category.
+- `GuidanceProof` has no public constructor. Persisted overlong numeric versions and alternate
+  launch-directory spellings become `unclassified` instead of raising or resolving two
+  untrusted paths.
