@@ -1651,6 +1651,11 @@ def _cmd_adjudicate(
 ROUTING_READ_TIMEOUT_S: Final = 60
 
 
+def _routing_remote_git(*args: str, cwd: Path) -> str:
+    """Run one routing Git call that may dial, with its deadline owned here."""
+    return git(*args, cwd=cwd, timeout=ROUTING_READ_TIMEOUT_S)
+
+
 def _arbiter_routing_inputs(issue: int) -> tuple[routing_policy.Policy, tuple[str, ...]]:
     """Read the policy and the branch paths the arbiter walk's routing rung judges by.
 
@@ -1686,9 +1691,9 @@ def _arbiter_routing_inputs(issue: int) -> tuple[routing_policy.Policy, tuple[st
     if sha is None:
         raise ReviewLoopError(EXCHANGE_REF_ABSENT_ERROR.format(ref=ref))
     try:
-        git("fetch", "origin", "main", cwd=root, timeout=ROUTING_READ_TIMEOUT_S)
+        _routing_remote_git("fetch", "origin", "main", cwd=root)
         text = git("show", f"origin/main:{routing_policy.POLICY_RELATIVE.as_posix()}", cwd=root)
-        git("fetch", "origin", ref, cwd=root, timeout=ROUTING_READ_TIMEOUT_S)
+        _routing_remote_git("fetch", "origin", ref, cwd=root)
         listed = git("diff", "--name-only", f"origin/main...{sha}", cwd=root)
     except GitError as failure:
         raise ExternalError(ROUTING_INPUTS_ERROR.format(what=f"git: {failure.stderr}")) from failure
