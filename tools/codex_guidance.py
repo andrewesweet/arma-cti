@@ -25,6 +25,53 @@ CODEX_GUIDANCE_NORMALIZATION: Final = "lf-v1"
 CODEX_PROJECT_SEPARATOR: Final = "\n--- project-doc ---\n\n"
 CODEX_GUIDANCE_SCOPE: Final = "codex_project_instruction_chain"
 CODEX_GUIDANCE_TIMEOUT_SECONDS: Final = 30.0
+GUIDANCE_MANIFEST_SCHEMA: Final = "cti.guidance-manifest/1"
+GUIDANCE_STATE_VERIFIED: Final = "verified"
+GUIDANCE_STATE_UNKNOWN: Final = "unknown"
+GUIDANCE_STATE_MISSING: Final = "missing"
+GUIDANCE_STATE_UNATTRIBUTABLE: Final = "unattributable"
+GUIDANCE_STATE_EMPTY: Final = "empty"
+GUIDANCE_STATE_UNCLASSIFIED: Final = "unclassified"
+GUIDANCE_STATES: Final = (
+    GUIDANCE_STATE_VERIFIED,
+    GUIDANCE_STATE_UNKNOWN,
+    GUIDANCE_STATE_MISSING,
+    GUIDANCE_STATE_UNATTRIBUTABLE,
+    GUIDANCE_STATE_EMPTY,
+    GUIDANCE_STATE_UNCLASSIFIED,
+)
+_HASH_HEX_LENGTH: Final = 64
+_VERIFIED_MANIFEST_KEYS: Final = frozenset(
+    {"schema", "state", "harness", "source_provenance", "loader_outcome", "delivery"}
+)
+_NON_SUCCESS_MANIFEST_KEYS: Final = frozenset(
+    {
+        "schema",
+        "state",
+        "harness",
+        "source_provenance",
+        "loader_outcome",
+        "reason",
+        "sources",
+        "launch_context",
+    }
+)
+_NON_SUCCESS_HARNESSES: Final = frozenset({"codex", "claude-code"})
+_NON_SUCCESS_SOURCE_PROVENANCES: Final = frozenset(
+    {"not_available", "not_exposed", "loader_reported"}
+)
+_NON_SUCCESS_LOADER_OUTCOMES: Final = frozenset(
+    {"not_available", "not_observable", "not_run", "empty"}
+)
+_NON_SUCCESS_REASONS: Final = frozenset(
+    {
+        "historical_manifest_absent",
+        "missing_preflight_manifest",
+        "unattributable_loader",
+        "loader_returned_no_sources",
+        "unclassified_guidance_record",
+    }
+)
 _INSTRUCTION_START = "# AGENTS.md instructions"
 _INSTRUCTION_OPEN = "<INSTRUCTIONS>"
 _INSTRUCTION_CLOSE = "</INSTRUCTIONS>"
@@ -105,6 +152,19 @@ class GuidanceProof:
             "combined_delivered_sha256": self.combined_delivered_sha256,
         }
 
+    def manifest_document(self) -> dict[str, object]:
+        """Render the dispatch manifest from this proof, without another capture."""
+        return {
+            "schema": GUIDANCE_MANIFEST_SCHEMA,
+            "state": GUIDANCE_STATE_VERIFIED,
+            "harness": "codex",
+            # Codex reports delivered text but not LoadedAgentsMd.sources(). The paths below
+            # are the independently derived expected chain, never a claim about loader origin.
+            "source_provenance": "expected_chain_only",
+            "loader_outcome": "matched",
+            "delivery": self.document(),
+        }
+
 
 @dataclass(frozen=True)
 class GuidanceFailure:
@@ -149,6 +209,245 @@ class GuidanceFailure:
 
 
 GuidanceResult = GuidanceProof | GuidanceFailure
+
+
+def unattributable_manifest(harness: str, launch_directory: str, _reason: str) -> dict[str, object]:
+    """Describe a harness whose bounded non-interactive loader output is unavailable."""
+    return {
+        "schema": GUIDANCE_MANIFEST_SCHEMA,
+        "state": GUIDANCE_STATE_UNATTRIBUTABLE,
+        "harness": harness,
+        "source_provenance": "not_exposed",
+        "loader_outcome": "not_observable",
+        "reason": "unattributable_loader",
+        "sources": None,
+        "launch_context": {"launch_directory": launch_directory},
+    }
+
+
+def missing_manifest(harness: str, launch_directory: str) -> dict[str, object]:
+    """Describe a dispatch that lacks the preflight manifest it was required to carry."""
+    return {
+        "schema": GUIDANCE_MANIFEST_SCHEMA,
+        "state": GUIDANCE_STATE_MISSING,
+        "harness": harness,
+        "source_provenance": "not_available",
+        "loader_outcome": "not_run",
+        "reason": "missing_preflight_manifest",
+        "sources": None,
+        "launch_context": {"launch_directory": launch_directory},
+    }
+
+
+def _state_manifest(state: str, reason: str) -> dict[str, object]:
+    return {
+        "schema": GUIDANCE_MANIFEST_SCHEMA,
+        "state": state,
+        "harness": None,
+        "source_provenance": "not_available",
+        "loader_outcome": "not_available",
+        "reason": reason,
+        "sources": None,
+        "launch_context": {},
+    }
+
+
+def _unknown_manifest() -> dict[str, object]:
+    return _state_manifest(GUIDANCE_STATE_UNKNOWN, "historical_manifest_absent")
+
+
+def _unclassified_manifest() -> dict[str, object]:
+    return _state_manifest(GUIDANCE_STATE_UNCLASSIFIED, "unclassified_guidance_record")
+
+
+def _valid_hash(value: object) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) == _HASH_HEX_LENGTH
+        and all(character in "0123456789abcdef" for character in value)
+    )
+
+
+def _valid_nonnegative_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _valid_source(value: object) -> bool:
+    if not isinstance(value, Mapping) or set(value) != {"path", "raw_bytes", "sha256"}:
+        return False
+    path = value["path"]
+    return (
+        isinstance(path, str)
+        and "\r" not in path
+        and "\n" not in path
+        and _valid_nonnegative_int(value["raw_bytes"])
+        and _valid_hash(value["sha256"])
+    )
+
+
+def _valid_proof(value: object) -> bool:
+    required = {
+        "schema",
+        "normalization",
+        "codex_version",
+        "launch_directory",
+        "project_doc_max_bytes",
+        "source_paths",
+        "sources",
+        "raw_project_bytes",
+        "expected_project_bytes",
+        "expected_project_sha256",
+        "delivered_project_bytes",
+        "delivered_project_sha256",
+        "global_expected_bytes",
+        "global_expected_sha256",
+        "global_delivered_bytes",
+        "global_delivered_sha256",
+        "combined_delivered_sha256",
+    }
+    if not isinstance(value, Mapping) or set(value) != required:
+        return False
+    sources = value["sources"]
+    source_paths = value["source_paths"]
+    if (
+        not isinstance(sources, list)
+        or not sources
+        or not all(_valid_source(source) for source in sources)
+        or not isinstance(source_paths, list)
+        or source_paths != [source["path"] for source in sources]
+    ):
+        return False
+    if not all(isinstance(path, str) for path in source_paths):
+        return False
+    if (
+        value["schema"] != CODEX_GUIDANCE_SCHEMA
+        or value["normalization"] != CODEX_GUIDANCE_NORMALIZATION
+        or not isinstance(value["codex_version"], str)
+        or not isinstance(value["launch_directory"], str)
+        or not _valid_nonnegative_int(value["project_doc_max_bytes"])
+        or not _valid_nonnegative_int(value["raw_project_bytes"])
+        or not _valid_nonnegative_int(value["expected_project_bytes"])
+        or not _valid_nonnegative_int(value["delivered_project_bytes"])
+        or not _valid_nonnegative_int(value["global_expected_bytes"])
+        or not _valid_nonnegative_int(value["global_delivered_bytes"])
+        or not _valid_hash(value["expected_project_sha256"])
+        or not _valid_hash(value["delivered_project_sha256"])
+        or not _valid_hash(value["global_expected_sha256"])
+        or not _valid_hash(value["global_delivered_sha256"])
+        or not _valid_hash(value["combined_delivered_sha256"])
+    ):
+        return False
+    return (
+        value["raw_project_bytes"] == sum(source["raw_bytes"] for source in sources)
+        and value["expected_project_bytes"] == value["delivered_project_bytes"]
+        and value["expected_project_sha256"] == value["delivered_project_sha256"]
+        and value["global_expected_bytes"] == value["global_delivered_bytes"]
+        and value["global_expected_sha256"] == value["global_delivered_sha256"]
+    )
+
+
+def _manifest_from_proof(value: object) -> dict[str, object] | None:
+    if not _valid_proof(value):
+        return None
+    return {
+        "schema": GUIDANCE_MANIFEST_SCHEMA,
+        "state": GUIDANCE_STATE_VERIFIED,
+        "harness": "codex",
+        "source_provenance": "expected_chain_only",
+        "loader_outcome": "matched",
+        "delivery": dict(value),
+    }
+
+
+def _launch_context_document(value: object) -> dict[str, object] | None:
+    if not isinstance(value, Mapping) or set(value) != {"launch_directory"}:
+        return None
+    directory = value["launch_directory"]
+    if not isinstance(directory, str) or "\r" in directory or "\n" in directory:
+        return None
+    return {"launch_directory": directory}
+
+
+def _known_string(value: object, allowed: frozenset[str]) -> bool:
+    return isinstance(value, str) and value in allowed
+
+
+def _parse_verified_manifest(value: Mapping[str, object]) -> dict[str, object] | None:
+    if set(value) != _VERIFIED_MANIFEST_KEYS or value.get("harness") != "codex":
+        return None
+    if value.get("source_provenance") != "expected_chain_only":
+        return None
+    if value.get("loader_outcome") != "matched":
+        return None
+    return _manifest_from_proof(value.get("delivery"))
+
+
+def _parse_non_success_manifest(
+    value: Mapping[str, object], state: str
+) -> dict[str, object] | None:
+    launch_context = _launch_context_document(value.get("launch_context"))
+    if launch_context is None:
+        return None
+    sources = value.get("sources")
+    if state == GUIDANCE_STATE_EMPTY:
+        if sources != []:
+            return None
+    elif sources is not None:
+        return None
+    valid = (
+        set(value) == _NON_SUCCESS_MANIFEST_KEYS
+        and (
+            value.get("harness") is None
+            or _known_string(value.get("harness"), _NON_SUCCESS_HARNESSES)
+        )
+        and _known_string(value.get("source_provenance"), _NON_SUCCESS_SOURCE_PROVENANCES)
+        and _known_string(value.get("loader_outcome"), _NON_SUCCESS_LOADER_OUTCOMES)
+        and _known_string(value.get("reason"), _NON_SUCCESS_REASONS)
+    )
+    if not valid:
+        return None
+    return {
+        "schema": GUIDANCE_MANIFEST_SCHEMA,
+        "state": state,
+        "harness": value.get("harness"),
+        "source_provenance": value.get("source_provenance"),
+        "loader_outcome": value.get("loader_outcome"),
+        "reason": value.get("reason"),
+        "sources": sources,
+        "launch_context": launch_context,
+    }
+
+
+def _parse_manifest(value: object) -> dict[str, object] | None:
+    if not isinstance(value, Mapping) or value.get("schema") != GUIDANCE_MANIFEST_SCHEMA:
+        return None
+    state = value.get("state")
+    if state == GUIDANCE_STATE_VERIFIED:
+        return _parse_verified_manifest(value)
+    if not isinstance(state, str) or state not in GUIDANCE_STATES:
+        return None
+    return _parse_non_success_manifest(value, state)
+
+
+def manifest_from_record(record: Mapping[str, object]) -> dict[str, object]:
+    """Read one manifest from a dispatch record without copying arbitrary record data."""
+    value = record.get("guidance_manifest")
+    legacy = record.get("instruction_delivery")
+    if value is None:
+        if legacy is None:
+            return _unknown_manifest()
+        parsed_legacy = _manifest_from_proof(legacy)
+        return parsed_legacy or _unclassified_manifest()
+    parsed = _parse_manifest(value)
+    if parsed is None:
+        return _unclassified_manifest()
+    if legacy is not None:
+        parsed_legacy = _manifest_from_proof(legacy)
+        if parsed["state"] != GUIDANCE_STATE_VERIFIED or parsed_legacy is None:
+            return _unclassified_manifest()
+        if parsed["delivery"] != parsed_legacy["delivery"]:
+            return _unclassified_manifest()
+    return parsed
 
 
 def normalize(text: str) -> str:

@@ -57,6 +57,8 @@ lane's spend is invisible rather than zero.
 schema, materialised_at, dispatch_id, lane, profile, seat, issue, base_sha
 source   { kind, path, degraded }
 records  { total, metrics, logs, spans }
+guidance_manifest { schema, state, harness, source_provenance, loader_outcome,
+                     delivery { #502 proof fields } | sources, reason, launch_context }
 usage    { input_tokens, output_tokens, cache_read_tokens, cache_creation_tokens,
            list_price_usd, list_priced, list_price_note, unclassified }
 cap_fraction { pool, unit, basis, excludes, attribution, attribution_note,
@@ -66,6 +68,32 @@ cap_fraction { pool, unit, basis, excludes, attribution, attribution_note,
 end_state{ class, reason, evidence }
 gate     { outcome, landed { sha, commits, reason }, returncode, started_at, ended_at }
 ```
+
+### Guidance manifest
+
+The dispatch record's `guidance_manifest` is immutable evidence written at the dispatch
+boundary. For Codex, it is derived from #502's one `GuidanceProof` capture and carries
+`state: verified`, the ordered expected source records, normalized hashes and byte counts,
+the loader outcome, and launch context. Its `source_provenance` is
+`expected_chain_only`: Codex exposes the delivered text but no bounded
+non-interactive `LoadedAgentsMd.sources()` result, so two source chains that render the
+same text cannot be told apart. The manifest never stores instruction or prompt bodies.
+
+Claude Code has no equivalent bounded capture, so a new Claude dispatch records
+`state: unattributable`, `loader_outcome: not_observable`, and `sources: null`; it does
+not pretend that the repository's current files prove what the loader used. A dispatch
+record from before this field existed is `state: unknown`, while explicit `missing` and
+`empty` states remain different from `unattributable`; `empty` carries an explicitly
+empty source list from a loader that reported no sources. An unreadable, malformed or
+contradictory manifest is `state: unclassified`. None of these states is a successful
+empty manifest.
+
+The ledger reads the manifest from `dispatch.json` and exposes it under the same
+`guidance_manifest` key. For records written by #502 before this field existed, it derives
+the verified wrapper from the existing `instruction_delivery` proof; for older records
+with neither field it emits `unknown`. It never edits the dispatch record or telemetry
+source, and it rejects a malformed proof rather than copying arbitrary fields into the
+row.
 
 ### Cross-lane normalisation
 

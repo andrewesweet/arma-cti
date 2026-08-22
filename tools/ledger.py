@@ -100,6 +100,7 @@ from typing import TYPE_CHECKING, Any, Final, NamedTuple
 # import needs the script's own directory on the path, as `timeline.py` does.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import codex_guidance
 from telemetry_log import rows
 
 if TYPE_CHECKING:
@@ -107,7 +108,7 @@ if TYPE_CHECKING:
 
 EXIT_REFUSED: Final = 1
 
-SCHEMA: Final = "cti.ledger/2"
+SCHEMA: Final = "cti.ledger/3"
 
 DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 LEDGER_EXPORT: Final = Path("/var/log/claude-otel/dispatches")
@@ -1098,6 +1099,7 @@ def materialise(
     end_state = type_end_state(items, result, source)
     usage = normalise_usage(items)
     lane = plan.get("lane")
+    guidance_manifest = codex_guidance.manifest_from_record(plan)
     return {
         "schema": SCHEMA,
         "materialised_at": now.isoformat(),
@@ -1109,6 +1111,7 @@ def materialise(
         "base_sha": base_sha or None,
         "source": source.document(),
         "records": count_kinds(items),
+        "guidance_manifest": guidance_manifest,
         "usage": usage.document(),
         "cap_fraction": cap_fraction(lane if isinstance(lane, str) else None, usage).document(),
         "end_state": end_state.document(),
@@ -1146,6 +1149,7 @@ def row_line(row: Mapping[str, Any]) -> str:
             f"source={row['source']['kind']}",
             f"degraded={str(row['source']['degraded']).lower()}",
             f"records={row['records']['total']}",
+            f"guidance={row['guidance_manifest']['state']}",
             f"in={usage['input_tokens']}",
             f"out={usage['output_tokens']}",
             f"pool={row['cap_fraction']['pool'] or 'none'}",

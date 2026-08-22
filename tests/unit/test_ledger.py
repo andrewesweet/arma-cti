@@ -47,6 +47,7 @@ from conftest import REPO, load_tool
 
 ledger = load_tool("ledger")
 prereqs = load_tool("prereqs")
+guidance = load_tool("codex_guidance")
 
 NOW = datetime(2026, 8, 5, 12, 0, tzinfo=UTC)
 DISPATCH = "d-20260805-120000-abc123"
@@ -187,7 +188,7 @@ def stage_record(
     issue: int = 227,
     base_sha: str = "0" * 40,
     result: dict[str, Any] | None = None,
-    **plan: str,
+    **plan: object,
 ) -> Path:
     """Lay down a dispatch record the way `just dispatch` leaves one.
 
@@ -213,6 +214,42 @@ def stage_record(
     if result is not None:
         (record / "result.json").write_text(json.dumps(result), encoding="utf-8")
     return record
+
+
+def proof_document(*, source_sha: str = "a" * 64) -> dict[str, Any]:
+    """Build the bounded #502 proof shape without carrying instruction text."""
+    return {
+        "schema": guidance.CODEX_GUIDANCE_SCHEMA,
+        "normalization": guidance.CODEX_GUIDANCE_NORMALIZATION,
+        "codex_version": "codex-cli 0.147.0",
+        "launch_directory": "/fixture",
+        "project_doc_max_bytes": 98304,
+        "source_paths": ["AGENTS.md"],
+        "sources": [{"path": "AGENTS.md", "raw_bytes": 6, "sha256": source_sha}],
+        "raw_project_bytes": 6,
+        "expected_project_bytes": 6,
+        "expected_project_sha256": source_sha,
+        "delivered_project_bytes": 6,
+        "delivered_project_sha256": source_sha,
+        "global_expected_bytes": 0,
+        "global_expected_sha256": "b" * 64,
+        "global_delivered_bytes": 0,
+        "global_delivered_sha256": "b" * 64,
+        "combined_delivered_sha256": "c" * 64,
+    }
+
+
+def verified_manifest(proof: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Build the canonical manifest wrapper around one #502 proof."""
+    delivery = proof or proof_document()
+    return {
+        "schema": guidance.GUIDANCE_MANIFEST_SCHEMA,
+        "state": guidance.GUIDANCE_STATE_VERIFIED,
+        "harness": "codex",
+        "source_provenance": "expected_chain_only",
+        "loader_outcome": "matched",
+        "delivery": delivery,
+    }
 
 
 # ANN401: the tool is loaded by path rather than imported, so its `Options` NamedTuple
@@ -1073,6 +1110,146 @@ def test_a_dispatched_run_produces_one_durable_record_keyed_by_its_dispatch_id(
     assert row["end_state"]["class"] == "ok"
     assert (row["gate"]["outcome"], row["gate"]["landed"]["sha"]) == ("landed", landed_sha)
     assert any(line.startswith("ok=synced rows=1 degraded=0") for line in lines)
+
+
+def test_a_historical_record_without_a_manifest_is_unknown_not_an_empty_success(
+    tmp_path: Path,
+) -> None:
+    record = stage_record(tmp_path / "dispatches", result={"returncode": 0})
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+
+    ledger.sync(options(tmp_path), NOW)
+
+    manifest = json.loads((record / "ledger.json").read_text(encoding="utf-8"))["guidance_manifest"]
+    assert manifest["state"] == guidance.GUIDANCE_STATE_UNKNOWN
+    assert manifest["sources"] is None
+    assert manifest["state"] != guidance.GUIDANCE_STATE_VERIFIED
+
+
+def test_a_pre503_codex_proof_is_derived_into_the_ledger_manifest(tmp_path: Path) -> None:
+    proof = proof_document()
+    record = stage_record(
+        tmp_path / "dispatches",
+        result={"returncode": 0},
+        instruction_delivery=proof,
+    )
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+
+    ledger.sync(options(tmp_path), NOW)
+
+    manifest = json.loads((record / "ledger.json").read_text(encoding="utf-8"))["guidance_manifest"]
+    assert manifest == verified_manifest(proof)
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        guidance.GUIDANCE_STATE_MISSING,
+        guidance.GUIDANCE_STATE_UNATTRIBUTABLE,
+        guidance.GUIDANCE_STATE_EMPTY,
+    ],
+)
+def test_non_success_guidance_states_are_not_collapsed(tmp_path: Path, state: str) -> None:
+    dispatch_id = f"{DISPATCH}-{state}"
+    manifest = {
+        "schema": guidance.GUIDANCE_MANIFEST_SCHEMA,
+        "state": state,
+        "harness": "codex" if state == guidance.GUIDANCE_STATE_MISSING else "claude-code",
+        "source_provenance": "loader_reported"
+        if state == guidance.GUIDANCE_STATE_EMPTY
+        else "not_available"
+        if state == guidance.GUIDANCE_STATE_MISSING
+        else "not_exposed",
+        "loader_outcome": "empty"
+        if state == guidance.GUIDANCE_STATE_EMPTY
+        else "not_run"
+        if state == guidance.GUIDANCE_STATE_MISSING
+        else "not_observable",
+        "reason": {
+            guidance.GUIDANCE_STATE_MISSING: "missing_preflight_manifest",
+            guidance.GUIDANCE_STATE_UNATTRIBUTABLE: "unattributable_loader",
+            guidance.GUIDANCE_STATE_EMPTY: "loader_returned_no_sources",
+        }[state],
+        "sources": [] if state == guidance.GUIDANCE_STATE_EMPTY else None,
+        "launch_context": {"launch_directory": "/fixture"},
+    }
+    record = stage_record(
+        tmp_path / "dispatches",
+        dispatch_id=dispatch_id,
+        result={"returncode": 0},
+        guidance_manifest=manifest,
+    )
+    write_jsonl(tmp_path / "export" / f"dispatch-{dispatch_id}.jsonl", [])
+
+    ledger.sync(options(tmp_path), NOW)
+
+    written = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert written["guidance_manifest"]["state"] == state
+    assert written["guidance_manifest"]["sources"] == (
+        [] if state == guidance.GUIDANCE_STATE_EMPTY else None
+    )
+
+
+def test_a_tampered_manifest_is_unclassified_without_leaking_its_body(
+    tmp_path: Path,
+) -> None:
+    sentinel = "guidance-secret-sentinel-" + ("x" * 80)
+    manifest = verified_manifest()
+    manifest["delivery"] = {**manifest["delivery"], "prompt_body": sentinel}
+    record = stage_record(
+        tmp_path / "dispatches",
+        result={"returncode": 0},
+        guidance_manifest=manifest,
+    )
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+
+    ledger.sync(options(tmp_path), NOW)
+
+    rendered = (record / "ledger.json").read_text(encoding="utf-8")
+    assert sentinel not in rendered
+    assert json.loads(rendered)["guidance_manifest"]["state"] == (
+        guidance.GUIDANCE_STATE_UNCLASSIFIED
+    )
+
+
+def test_an_empty_verified_source_list_is_unclassified_not_successful(
+    tmp_path: Path,
+) -> None:
+    manifest = verified_manifest()
+    delivery = dict(manifest["delivery"])
+    delivery["sources"] = []
+    delivery["source_paths"] = []
+    manifest["delivery"] = delivery
+    record = stage_record(
+        tmp_path / "dispatches",
+        result={"returncode": 0},
+        guidance_manifest=manifest,
+    )
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+
+    ledger.sync(options(tmp_path), NOW)
+
+    written = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert written["guidance_manifest"]["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
+
+
+def test_manifest_and_legacy_delivery_disagreement_is_unclassified(
+    tmp_path: Path,
+) -> None:
+    legacy = proof_document()
+    manifest = verified_manifest(proof_document(source_sha="d" * 64))
+    record = stage_record(
+        tmp_path / "dispatches",
+        result={"returncode": 0},
+        instruction_delivery=legacy,
+        guidance_manifest=manifest,
+    )
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+
+    ledger.sync(options(tmp_path), NOW)
+
+    written = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert written["guidance_manifest"]["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
 
 
 def test_no_row_calls_anything_cost_usd_and_the_summary_line_carries_both_halves(

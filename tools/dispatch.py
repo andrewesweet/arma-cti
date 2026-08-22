@@ -1713,7 +1713,21 @@ class Plan(NamedTuple):
             "planned_at": self.planned_at.isoformat(),
         }
         if self.guidance is not None:
-            document["instruction_delivery"] = self.guidance.document()
+            # The manifest is derived from #502's one Codex capture. Keep the proof under
+            # its landed key as a compatibility alias; neither field starts a second capture.
+            delivery = self.guidance.document()
+            document["instruction_delivery"] = delivery
+            document["guidance_manifest"] = self.guidance.manifest_document()
+        elif lane.runner_family == "codex":
+            # `write_record` follows successful preflight, so this branch is a typed impossible
+            # state rather than an empty successful manifest if another caller bypasses it.
+            document["guidance_manifest"] = codex_guidance.missing_manifest(
+                "codex", str(self.worktree)
+            )
+        else:
+            document["guidance_manifest"] = codex_guidance.unattributable_manifest(
+                "claude-code", str(self.worktree), "no bounded capture"
+            )
         return document
 
 

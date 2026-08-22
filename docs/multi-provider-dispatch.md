@@ -155,6 +155,15 @@ identities, but it cannot distinguish two source chains that render byte-identic
 it. The source identities in the proof are therefore recorded by the dispatcher rather
 than recovered from Codex's capture.
 
+Every new dispatch record also carries `guidance_manifest`. A Codex manifest is derived
+from the same proof and is `state=verified` only when that proof is complete and matched;
+its source provenance remains `expected_chain_only` for the limitation above. Claude Code
+has no bounded non-interactive loader capture, so its manifest is explicitly
+`state=unattributable` with `sources=null`, never an empty successful source list. The
+ledger reads this field without becoming another writer; an explicit loader-reported
+empty source list is `state=empty`, records from before #503 are classified as `unknown`,
+and unreadable, malformed or contradictory records as `unclassified`.
+
 ## The worktree assertion
 
 The dispatched process asserts `git rev-parse --show-toplevel` against its assignment

@@ -251,6 +251,68 @@ def test_match_records_sources_and_hashes_without_prompt_body(
     assert fake.calls[1][1] == launch
     assert fake.calls[1][2]["CTI_SENTINEL"] == "not-output"
 
+    manifest = result.manifest_document()
+    assert manifest["schema"] == guidance.GUIDANCE_MANIFEST_SCHEMA
+    assert manifest["state"] == guidance.GUIDANCE_STATE_VERIFIED
+    assert manifest["harness"] == "codex"
+    assert manifest["source_provenance"] == "expected_chain_only"
+    assert manifest["loader_outcome"] == "matched"
+    assert manifest["delivery"] == result.document()
+    assert expected not in json.dumps(manifest)
+    assert guidance.manifest_from_record({"guidance_manifest": manifest}) == manifest
+
+
+def test_an_unbounded_harness_is_explicitly_unattributable_not_empty() -> None:
+    manifest = guidance.unattributable_manifest(
+        "claude-code", "/fixture", "a bounded capture is unavailable"
+    )
+
+    assert manifest["state"] == guidance.GUIDANCE_STATE_UNATTRIBUTABLE
+    assert manifest["loader_outcome"] == "not_observable"
+    assert manifest["source_provenance"] == "not_exposed"
+    assert manifest["sources"] is None
+    assert manifest["reason"] == "unattributable_loader"
+
+
+def test_claude_dispatch_records_unattributable_guidance_without_faking_sources(
+    tmp_path: Path,
+) -> None:
+    queue_dir = open_queue(tmp_path)
+    args = dispatch.parse_args(
+        [
+            "--lane",
+            "claude-native",
+            "--profile",
+            "opus-high",
+            "--seat",
+            "implementer",
+            "--issue",
+            "223",
+            "--worktree",
+            str(REPO),
+            "--dispatch-dir",
+            str(tmp_path / "dispatches"),
+            "--breaker-dir",
+            str(tmp_path / "breaker"),
+            "--issue-body",
+            str(READY_BODY),
+            "--queue-dir",
+            str(queue_dir),
+            "--queue-root",
+            str(tmp_path / "queue-root"),
+        ]
+    )
+    plan, _brief, refusal = dispatch.plan_dispatch(
+        args, REPO, dispatch.datetime.now(tz=dispatch.UTC)
+    )
+
+    assert refusal is None
+    assert plan is not None
+    manifest = plan.document()["guidance_manifest"]
+    assert manifest["state"] == guidance.GUIDANCE_STATE_UNATTRIBUTABLE
+    assert manifest["harness"] == "claude-code"
+    assert manifest["sources"] is None
+
 
 def test_exact_limit_excludes_inter_file_separators(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -632,9 +694,12 @@ def test_public_dispatch_seam_types_preflight_failure_before_record_or_child(
     verified, verification_refusal = dispatch.instruction_preflight(plan, os.environ)
     assert verification_refusal is None
     assert verified is not None
-    record = json.dumps(verified.document())
+    document = verified.document()
+    record = json.dumps(document)
     assert "instruction_delivery" in record
     assert "secret-source" not in record
+    assert document["guidance_manifest"] == guidance.manifest_from_record(document)
+    assert document["guidance_manifest"]["delivery"] == document["instruction_delivery"]
 
     failure = guidance.GuidanceFailure("loader_exit")
     monkeypatch.setattr(dispatch.codex_guidance, "verify_delivery", lambda _context: failure)
