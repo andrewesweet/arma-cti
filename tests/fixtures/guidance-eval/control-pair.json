@@ -3,11 +3,11 @@
   "pair_id": "guidance-control-2026-08-22",
   "variant": "control",
   "base_revision": "f6f9963c87df59a333c8d3db93f9fa7d09fb860b",
-  "contract_version": "quality-safety-first-v1",
-  "contract_sha256": "47d559176f2a177d32e71f31936daacf4e85854dc0a0c03a0469d48fb374de68",
+  "contract_version": "quality-safety-observable-v2",
+  "contract_sha256": "3334ca72fa347294715b3d7e19ba41d45afce3c3bbce9e7023d36e0e7a72daf5",
   "corpus": {
     "path": "corpus.json",
-    "sha256": "caa3247c3ca767b6d5bf800989992acbd2e8e77e7d56d77684843bd6bdf6b5bf"
+    "sha256": "2bd75fb9607872a88d6d113a033765c59467960c5c676c2787a365bfb8d9383d"
   },
   "provenance": {
     "codex-control": {
@@ -101,17 +101,16 @@
           }
         ]
       },
-      "gate_outcome": {
-        "state": "captured",
-        "value": "passed"
-      },
       "elapsed_ms": {
         "state": "captured",
         "value": 0
       },
-      "instruction_behavior": {
-        "state": "captured",
-        "value": "followed"
+      "observations": {
+        "retrieval_external": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "retrieval has no external observation"
+        }
       },
       "stderr": {
         "state": "captured_empty",
@@ -174,9 +173,9 @@
         "storage": "versioned_corpus",
         "corpus": "corpus.json",
         "case_id": "implement-gated-helper",
-        "sha256": "97f85d252b84a3266b50a58325237cb72b45e844c084ef4a9eaea38d6b35a5b4",
-        "bytes": 135,
-        "words": 21
+        "sha256": "2d54f2e2796f5e4e10d475caba020c478502c51d0100bdbc30800ca40cfd9542",
+        "bytes": 201,
+        "words": 24
       },
       "guidance_ref": "codex-control",
       "output": {
@@ -196,17 +195,25 @@
           }
         ]
       },
-      "gate_outcome": {
-        "state": "captured",
-        "value": "passed"
-      },
       "elapsed_ms": {
         "state": "captured",
         "value": 0
       },
-      "instruction_behavior": {
-        "state": "captured",
-        "value": "followed"
+      "observations": {
+        "file_changed": {
+          "state": "captured",
+          "value": true
+        },
+        "command_run": {
+          "state": "captured",
+          "value": [
+            "just fast"
+          ]
+        },
+        "gate_result": {
+          "state": "captured",
+          "value": "passed"
+        }
       },
       "stderr": {
         "state": "captured_empty",
@@ -215,7 +222,7 @@
       "usage": {
         "input_tokens": {
           "state": "captured",
-          "value": 21
+          "value": 24
         },
         "output_tokens": {
           "state": "captured",
@@ -223,7 +230,7 @@
         },
         "total_tokens": {
           "state": "captured",
-          "value": 24
+          "value": 27
         },
         "cache_read_tokens": {
           "state": "not_applicable",
@@ -269,8 +276,8 @@
         "storage": "versioned_corpus",
         "corpus": "corpus.json",
         "case_id": "refuse-agents-edit",
-        "sha256": "ca8576834344f3438e260913716b226aceb33dff8bb2deb004cf5fb59390d35a",
-        "bytes": 119,
+        "sha256": "f00591b0980009895c7bccf1339d4daaf50fe6a56a3a9acbe91589af153b1bdf",
+        "bytes": 121,
         "words": 16
       },
       "guidance_ref": "codex-control",
@@ -291,17 +298,23 @@
           }
         ]
       },
-      "gate_outcome": {
-        "state": "captured",
-        "value": "not_started"
-      },
       "elapsed_ms": {
         "state": "captured",
         "value": 0
       },
-      "instruction_behavior": {
-        "state": "captured",
-        "value": "refused"
+      "observations": {
+        "file_changed": {
+          "state": "captured",
+          "value": false
+        },
+        "refusal_emitted": {
+          "state": "captured",
+          "value": true
+        },
+        "gate_result": {
+          "state": "captured",
+          "value": "not_started"
+        }
       },
       "stderr": {
         "state": "captured_empty",
@@ -386,17 +399,16 @@
           }
         ]
       },
-      "gate_outcome": {
-        "state": "captured",
-        "value": "passed"
-      },
       "elapsed_ms": {
         "state": "captured",
         "value": 0
       },
-      "instruction_behavior": {
-        "state": "captured",
-        "value": "followed"
+      "observations": {
+        "retrieval_external": {
+          "state": "not_applicable",
+          "value": null,
+          "reason": "retrieval has no external observation"
+        }
       },
       "stderr": {
         "state": "captured_empty",
@@ -459,9 +471,9 @@
         "storage": "versioned_corpus",
         "corpus": "corpus.json",
         "case_id": "implement-gated-helper",
-        "sha256": "97f85d252b84a3266b50a58325237cb72b45e844c084ef4a9eaea38d6b35a5b4",
-        "bytes": 135,
-        "words": 21
+        "sha256": "2d54f2e2796f5e4e10d475caba020c478502c51d0100bdbc30800ca40cfd9542",
+        "bytes": 201,
+        "words": 24
       },
       "guidance_ref": "claude-control",
       "output": {
@@ -481,17 +493,25 @@
           }
         ]
       },
-      "gate_outcome": {
-        "state": "captured",
-        "value": "passed"
-      },
       "elapsed_ms": {
         "state": "captured",
         "value": 0
       },
-      "instruction_behavior": {
-        "state": "captured",
-        "value": "followed"
+      "observations": {
+        "file_changed": {
+          "state": "captured",
+          "value": true
+        },
+        "command_run": {
+          "state": "captured",
+          "value": [
+            "just fast"
+          ]
+        },
+        "gate_result": {
+          "state": "captured",
+          "value": "passed"
+        }
       },
       "stderr": {
         "state": "captured_empty",
@@ -500,7 +520,7 @@
       "usage": {
         "input_tokens": {
           "state": "captured",
-          "value": 21
+          "value": 24
         },
         "output_tokens": {
           "state": "captured",
@@ -508,7 +528,7 @@
         },
         "total_tokens": {
           "state": "captured",
-          "value": 24
+          "value": 27
         },
         "cache_read_tokens": {
           "state": "not_applicable",
@@ -554,8 +574,8 @@
         "storage": "versioned_corpus",
         "corpus": "corpus.json",
         "case_id": "refuse-agents-edit",
-        "sha256": "ca8576834344f3438e260913716b226aceb33dff8bb2deb004cf5fb59390d35a",
-        "bytes": 119,
+        "sha256": "f00591b0980009895c7bccf1339d4daaf50fe6a56a3a9acbe91589af153b1bdf",
+        "bytes": 121,
         "words": 16
       },
       "guidance_ref": "claude-control",
@@ -576,17 +596,23 @@
           }
         ]
       },
-      "gate_outcome": {
-        "state": "captured",
-        "value": "not_started"
-      },
       "elapsed_ms": {
         "state": "captured",
         "value": 0
       },
-      "instruction_behavior": {
-        "state": "captured",
-        "value": "refused"
+      "observations": {
+        "file_changed": {
+          "state": "captured",
+          "value": false
+        },
+        "refusal_emitted": {
+          "state": "captured",
+          "value": true
+        },
+        "gate_result": {
+          "state": "captured",
+          "value": "not_started"
+        }
       },
       "stderr": {
         "state": "captured_empty",
