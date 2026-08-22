@@ -169,8 +169,9 @@ numeric version components; a component too long for integer parsing is unclassi
 launch directory is resolved inside the repository during preflight. When historical JSON
 is read, its absolute spelling must equal the dispatch record's worktree spelling exactly;
 the reader never resolves either untrusted, possibly nonexistent path. `GuidanceProof` has
-no public constructor, so ordinary callers cannot assemble an unchecked proof; capture and
-persisted-record parsing are its only construction sites.
+no public constructor, and its private factory validates every supplied field's type and
+shape before construction. The verified-manifest constructor separately refuses unmatched
+measurements. Capture and persisted-record parsing are its production call sites.
 
 Serialized `dispatch.json` is the one unavoidable after-the-fact validation seam: external
 JSON must be read before a type can be constructed, and a record may have been tampered
@@ -184,9 +185,11 @@ Valid pre-#503 `instruction_delivery` proofs derive `verified`. The dispatch rec
 the primary evidence and retains its compatibility fields. The ledger reads it without
 becoming another writer, then emits a separate content-free projection: ordered source
 paths and the Codex version become SHA-256 identities plus UTF-8 byte counts, while the
-absolute launch directory becomes the closed `dispatch_worktree` category. These are the
-only readings the ledger needs — identity comparison and confirmation of launch context —
-so no guidance free text reaches `ledger.json`.
+absolute launch directory becomes the closed `recorded_worktree_match` category. That
+category claims only exact equality between the two persisted path strings, not assigned-tree
+provenance. These are the only readings the ledger needs, so no guidance free text reaches
+`ledger.json`. Persisted source text that cannot be encoded as UTF-8 constructs no variant
+and becomes `unclassified` before projection.
 
 ## The worktree assertion
 

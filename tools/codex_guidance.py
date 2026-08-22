@@ -48,6 +48,14 @@ _INSTRUCTION_OPEN = "<INSTRUCTIONS>"
 _INSTRUCTION_CLOSE = "</INSTRUCTIONS>"
 
 
+class InvalidGuidanceProofError(ValueError):
+    """A supplied proof field has an invalid type, shape, or source total."""
+
+
+class UnmatchedGuidanceProofError(ValueError):
+    """Failure evidence was offered as a verified guidance manifest."""
+
+
 @dataclass(frozen=True, init=False)
 class CodexVersion:
     """A parsed Codex CLI release, never an arbitrary metadata string."""
@@ -131,7 +139,7 @@ class GuidanceHarness(StrEnum):
 class LaunchDirectoryCategory(StrEnum):
     """Ledger-safe relationship between launch directory and dispatch record."""
 
-    DISPATCH_WORKTREE = "dispatch_worktree"
+    RECORDED_WORKTREE_MATCH = "recorded_worktree_match"
 
 
 def loader_overrides(max_bytes: int = CODEX_PROJECT_DOC_CONTAINMENT_BYTES) -> tuple[str, ...]:
@@ -215,7 +223,30 @@ class GuidanceProof:
         global_delivered_sha256: str,
         combined_delivered_sha256: str,
     ) -> Self:
-        """Construct only after capture computed, or boundary parsing validated, every field."""
+        """Validate and construct one proof from capture or parsed measurements."""
+        valid_sources = (
+            isinstance(sources, tuple)
+            and bool(sources)
+            and all(_valid_source_record(source) for source in sources)
+        )
+        if (
+            not _valid_codex_version(codex_version)
+            or not _valid_launch_directory(launch_directory)
+            or not _valid_nonnegative_int(project_doc_max_bytes)
+            or not valid_sources
+            or not _valid_nonnegative_int(raw_project_bytes)
+            or raw_project_bytes != sum(source.raw_bytes for source in sources)
+            or not _valid_nonnegative_int(expected_project_bytes)
+            or not _valid_hash(expected_project_sha256)
+            or not _valid_nonnegative_int(delivered_project_bytes)
+            or not _valid_hash(delivered_project_sha256)
+            or not _valid_nonnegative_int(global_expected_bytes)
+            or not _valid_hash(global_expected_sha256)
+            or not _valid_nonnegative_int(global_delivered_bytes)
+            or not _valid_hash(global_delivered_sha256)
+            or not _valid_hash(combined_delivered_sha256)
+        ):
+            raise InvalidGuidanceProofError
         proof = object.__new__(cls)
         for name, value in (
             ("codex_version", codex_version),
@@ -266,7 +297,7 @@ class GuidanceProof:
             "normalization": CODEX_GUIDANCE_NORMALIZATION,
             "codex_version_sha256": _sha256(version),
             "codex_version_bytes": _byte_length(version),
-            "launch_directory": LaunchDirectoryCategory.DISPATCH_WORKTREE.value,
+            "launch_directory": LaunchDirectoryCategory.RECORDED_WORKTREE_MATCH.value,
             "project_doc_max_bytes": self.project_doc_max_bytes,
             "sources": [source.ledger_document() for source in self.sources],
             "raw_project_bytes": self.raw_project_bytes,
@@ -291,6 +322,11 @@ class VerifiedGuidanceManifest:
     """A complete matched Codex proof; no state or tuple can be supplied by a caller."""
 
     delivery: GuidanceProof
+
+    def __post_init__(self) -> None:
+        """Refuse a non-proof or unmatched failure evidence as verified guidance."""
+        if not isinstance(self.delivery, GuidanceProof) or not _proof_matches(self.delivery):
+            raise UnmatchedGuidanceProofError
 
     def document(self) -> dict[str, object]:
         """Render the only valid verified-manifest shape."""
@@ -341,7 +377,9 @@ class MissingGuidanceManifest:
         return {
             **self.document(),
             "schema": GUIDANCE_LEDGER_SCHEMA,
-            "launch_context": {"launch_directory": LaunchDirectoryCategory.DISPATCH_WORKTREE.value},
+            "launch_context": {
+                "launch_directory": LaunchDirectoryCategory.RECORDED_WORKTREE_MATCH.value
+            },
         }
 
 
@@ -369,7 +407,9 @@ class UnattributableGuidanceManifest:
         return {
             **self.document(),
             "schema": GUIDANCE_LEDGER_SCHEMA,
-            "launch_context": {"launch_directory": LaunchDirectoryCategory.DISPATCH_WORKTREE.value},
+            "launch_context": {
+                "launch_directory": LaunchDirectoryCategory.RECORDED_WORKTREE_MATCH.value
+            },
         }
 
 
@@ -397,7 +437,9 @@ class EmptyGuidanceManifest:
         return {
             **self.document(),
             "schema": GUIDANCE_LEDGER_SCHEMA,
-            "launch_context": {"launch_directory": LaunchDirectoryCategory.DISPATCH_WORKTREE.value},
+            "launch_context": {
+                "launch_directory": LaunchDirectoryCategory.RECORDED_WORKTREE_MATCH.value
+            },
         }
 
 
@@ -511,16 +553,72 @@ def _valid_nonnegative_int(value: object) -> bool:
     return isinstance(value, int) and not isinstance(value, bool) and value >= 0
 
 
+def _valid_utf8_text(value: object) -> bool:
+    if not isinstance(value, str):
+        return False
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError:
+        return False
+    return True
+
+
+def _valid_codex_version(value: object) -> bool:
+    if not isinstance(value, CodexVersion):
+        return False
+    try:
+        canonical = value.document()
+    except (AttributeError, TypeError, ValueError):
+        return False
+    return CodexVersion.parse(canonical) == value
+
+
+def _valid_launch_directory(value: object) -> bool:
+    if not isinstance(value, ResolvedLaunchDirectory):
+        return False
+    try:
+        path = value.path
+    except AttributeError:
+        return False
+    return isinstance(path, Path) and path.is_absolute() and _valid_utf8_text(str(path))
+
+
+def _valid_source_record(value: object) -> bool:
+    if not isinstance(value, SourceRecord):
+        return False
+    try:
+        return (
+            _valid_utf8_text(value.path)
+            and "\r" not in value.path
+            and "\n" not in value.path
+            and _valid_nonnegative_int(value.raw_bytes)
+            and _valid_hash(value.sha256)
+            and _valid_utf8_text(value.text)
+        )
+    except AttributeError:
+        return False
+
+
 def _valid_source(value: object) -> bool:
     if not isinstance(value, Mapping) or set(value) != {"path", "raw_bytes", "sha256"}:
         return False
     path = value["path"]
     return (
         isinstance(path, str)
+        and _valid_utf8_text(path)
         and "\r" not in path
         and "\n" not in path
         and _valid_nonnegative_int(value["raw_bytes"])
         and _valid_hash(value["sha256"])
+    )
+
+
+def _proof_matches(proof: GuidanceProof) -> bool:
+    return (
+        proof.expected_project_bytes == proof.delivered_project_bytes
+        and proof.expected_project_sha256 == proof.delivered_project_sha256
+        and proof.global_expected_bytes == proof.global_delivered_bytes
+        and proof.global_expected_sha256 == proof.global_delivered_sha256
     )
 
 
@@ -595,33 +693,38 @@ def _proof_from_document(value: object, worktree: object) -> GuidanceProof | Non
         or value["global_expected_sha256"] != value["global_delivered_sha256"]
     ):
         return None
-    proof = GuidanceProof._from_validated(  # noqa: SLF001 — boundary parser owns this factory
-        codex_version=codex_version,
-        launch_directory=launch_directory,
-        project_doc_max_bytes=value["project_doc_max_bytes"],
-        sources=tuple(
-            SourceRecord(
-                path=source["path"],
-                raw_bytes=source["raw_bytes"],
-                sha256=source["sha256"],
-                text="",
-            )
-            for source in sources
-        ),
-        raw_project_bytes=value["raw_project_bytes"],
-        expected_project_bytes=value["expected_project_bytes"],
-        expected_project_sha256=value["expected_project_sha256"],
-        delivered_project_bytes=value["delivered_project_bytes"],
-        delivered_project_sha256=value["delivered_project_sha256"],
-        global_expected_bytes=value["global_expected_bytes"],
-        global_expected_sha256=value["global_expected_sha256"],
-        global_delivered_bytes=value["global_delivered_bytes"],
-        global_delivered_sha256=value["global_delivered_sha256"],
-        combined_delivered_sha256=value["combined_delivered_sha256"],
-    )
+    proof: GuidanceProof | None
+    try:
+        proof = GuidanceProof._from_validated(  # noqa: SLF001 — boundary owns this factory
+            codex_version=codex_version,
+            launch_directory=launch_directory,
+            project_doc_max_bytes=value["project_doc_max_bytes"],
+            sources=tuple(
+                SourceRecord(
+                    path=source["path"],
+                    raw_bytes=source["raw_bytes"],
+                    sha256=source["sha256"],
+                    text="",
+                )
+                for source in sources
+            ),
+            raw_project_bytes=value["raw_project_bytes"],
+            expected_project_bytes=value["expected_project_bytes"],
+            expected_project_sha256=value["expected_project_sha256"],
+            delivered_project_bytes=value["delivered_project_bytes"],
+            delivered_project_sha256=value["delivered_project_sha256"],
+            global_expected_bytes=value["global_expected_bytes"],
+            global_expected_sha256=value["global_expected_sha256"],
+            global_delivered_bytes=value["global_delivered_bytes"],
+            global_delivered_sha256=value["global_delivered_sha256"],
+            combined_delivered_sha256=value["combined_delivered_sha256"],
+        )
+    except InvalidGuidanceProofError:
+        proof = None
     canonical_input = dict(value)
-    canonical_input["launch_directory"] = launch_directory.document()
-    return proof if proof.document() == canonical_input else None
+    if proof is not None:
+        canonical_input["launch_directory"] = launch_directory.document()
+    return proof if proof is not None and proof.document() == canonical_input else None
 
 
 def _manifest_from_proof(value: object, worktree: object) -> VerifiedGuidanceManifest | None:

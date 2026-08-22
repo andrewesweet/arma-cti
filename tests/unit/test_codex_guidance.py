@@ -294,6 +294,48 @@ def test_guidance_proof_cannot_be_constructed_with_unchecked_values() -> None:
         )
 
 
+@pytest.mark.parametrize(
+    ("proof_sha", "source_sha"),
+    [
+        pytest.param("unchecked", "a" * 64, id="proof-hash"),
+        pytest.param("a" * 64, "unchecked", id="source-hash"),
+    ],
+)
+def test_guidance_proof_private_factory_rejects_unchecked_hashes(
+    tmp_path: Path,
+    proof_sha: str,
+    source_sha: str,
+) -> None:
+    worktree = tmp_path / "worktree"
+    worktree.mkdir()
+    version = guidance.CodexVersion.parse("codex-cli 0.147.0")
+    launch_directory = guidance.ResolvedLaunchDirectory.in_repository(worktree, worktree)
+    assert version is not None
+    assert launch_directory is not None
+
+    with pytest.raises(guidance.InvalidGuidanceProofError):
+        guidance.GuidanceProof._from_validated(  # noqa: SLF001 — regression for this door
+            codex_version=version,
+            launch_directory=launch_directory,
+            project_doc_max_bytes=98_304,
+            sources=(
+                guidance.SourceRecord(
+                    path="AGENTS.md", raw_bytes=6, sha256=source_sha, text="source"
+                ),
+            ),
+            raw_project_bytes=6,
+            expected_project_bytes=6,
+            expected_project_sha256=proof_sha,
+            delivered_project_bytes=6,
+            delivered_project_sha256=proof_sha,
+            global_expected_bytes=0,
+            global_expected_sha256="b" * 64,
+            global_delivered_bytes=0,
+            global_delivered_sha256="b" * 64,
+            combined_delivered_sha256="c" * 64,
+        )
+
+
 @pytest.mark.parametrize("field", ["codex_version", "launch_directory"])
 def test_legacy_proof_prompt_text_in_launch_metadata_is_unclassified_without_leaking(
     tmp_path: Path,
@@ -589,6 +631,8 @@ def test_multibyte_character_crossing_limit_is_a_mismatch(
     assert result.evidence is not None
     assert result.evidence.expected_project_bytes == 6
     assert result.evidence.delivered_project_bytes == 4
+    with pytest.raises(guidance.UnmatchedGuidanceProofError):
+        result.evidence.manifest()
 
 
 def test_reversed_root_and_nested_capture_is_rejected(

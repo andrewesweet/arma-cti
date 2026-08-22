@@ -1177,7 +1177,7 @@ def test_verified_guidance_reaches_the_ledger_as_hashes_counts_and_categories_on
                 "7aa31f8b0864fa0a787657d21167487f49ed01497802a4e5955ef02db3e94272"
             ),
             "codex_version_bytes": 17,
-            "launch_directory": "dispatch_worktree",
+            "launch_directory": "recorded_worktree_match",
             "project_doc_max_bytes": 98_304,
             "sources": [
                 {
@@ -1204,6 +1204,49 @@ def test_verified_guidance_reaches_the_ledger_as_hashes_counts_and_categories_on
     assert source_path not in rendered
     assert "codex-cli 0.147.0" not in rendered
     assert str((tmp_path / "worktree").resolve()) not in rendered
+
+
+def test_equal_arbitrary_recorded_paths_are_labelled_only_as_a_recorded_match(
+    tmp_path: Path,
+) -> None:
+    arbitrary_path = "/arbitrary/untrusted/worktree"
+    proof = proof_document(tmp_path)
+    proof["launch_directory"] = arbitrary_path
+    record = stage_record(
+        tmp_path / "dispatches",
+        result={"returncode": 0},
+        instruction_delivery=proof,
+        lane="codex",
+        worktree=arbitrary_path,
+    )
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+
+    ledger.sync(options(tmp_path), NOW)
+
+    manifest = json.loads((record / "ledger.json").read_text(encoding="utf-8"))["guidance_manifest"]
+    assert manifest["state"] == guidance.GUIDANCE_STATE_VERIFIED
+    assert manifest["delivery"]["launch_directory"] == "recorded_worktree_match"
+
+
+def test_surrogate_source_path_is_unclassified_instead_of_crashing_projection(
+    tmp_path: Path,
+) -> None:
+    surrogate_path = "\ud800"
+    proof = proof_document(tmp_path)
+    proof["source_paths"] = [surrogate_path]
+    proof["sources"] = [{"path": surrogate_path, "raw_bytes": 6, "sha256": "a" * 64}]
+    record = stage_record(
+        tmp_path / "dispatches",
+        result={"returncode": 0},
+        instruction_delivery=proof,
+        lane="codex",
+    )
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+
+    ledger.sync(options(tmp_path), NOW)
+
+    manifest = json.loads((record / "ledger.json").read_text(encoding="utf-8"))["guidance_manifest"]
+    assert manifest["state"] == guidance.GUIDANCE_STATE_UNCLASSIFIED
 
 
 @pytest.mark.parametrize("field", ["codex_version", "launch_directory"])
@@ -1272,7 +1315,7 @@ def test_non_success_guidance_states_are_not_collapsed(tmp_path: Path, state: st
         [] if state == guidance.GUIDANCE_STATE_EMPTY else None
     )
     assert written["guidance_manifest"]["launch_context"] == {
-        "launch_directory": "dispatch_worktree"
+        "launch_directory": "recorded_worktree_match"
     }
     assert str(worktree.resolve()) not in json.dumps(written["guidance_manifest"])
 

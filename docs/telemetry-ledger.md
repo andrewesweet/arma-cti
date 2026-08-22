@@ -84,11 +84,14 @@ be told apart.
 
 The proof's CLI release is parsed into numeric version components, and its launch
 directory is resolved in the repository when the dispatch captures it. `GuidanceProof`
-has no public constructor: only the capture and the persisted-record parser can construct
-one. A legacy proof is reconstructed only when its absolute launch-directory string is
-exactly the dispatch record's worktree string. The reader does not resolve either recorded
-path, because both are untrusted and the worktree may no longer exist. A numeric version
-too long for the parser is `unclassified`, never an exception.
+has no public constructor; its private factory validates every supplied field's type and
+shape before construction, and the verified-manifest constructor separately refuses
+unmatched measurements. Capture and persisted-record parsing are its production call sites.
+A legacy proof is reconstructed only when its absolute
+launch-directory string is exactly the dispatch record's worktree string. The reader does
+not resolve either recorded path, because both are untrusted and the worktree may no longer
+exist. A numeric version too long for the parser, or source text that cannot be encoded as
+UTF-8, is `unclassified`, never an exception.
 
 Claude Code has no equivalent bounded capture, so a new Claude dispatch records
 `state: unattributable`, `reason: no bounded capture`, `loader_outcome: not_observable`,
@@ -116,8 +119,9 @@ Ordered sources carry `path_sha256`, `path_bytes`, source-content `sha256`, and
 `raw_bytes`, never `path` or the redundant `source_paths`. The Codex version likewise
 becomes a hash and byte count. A reader needs equality across dispatches, which those
 hashes preserve, not the underlying text. Launch context becomes the closed
-`dispatch_worktree` category: the useful fact is that guidance was loaded from the
-assigned tree, not the tree's ephemeral absolute spelling.
+`recorded_worktree_match` category. It says only that the persisted launch-directory and
+worktree strings matched exactly; it does not claim that either string identifies the
+assigned tree.
 
 For records written by #502 before the manifest existed, the ledger derives the verified
 wrapper from the existing `instruction_delivery` proof; for older records with neither
