@@ -27,8 +27,11 @@ claim that Claude received no guidance.
 
 The contract is stored before `cases` in `corpus.json` and is hashed into the pair. It defines
 the case fields, allowed check sources/kinds/operators, and the minimum observable-check floor
-for each task class. `load_corpus` rejects a case that does not satisfy that contract, so the
-case shape is enforced rather than merely conventionally placed after the contract.
+for each task class. Each kind is bound to its corresponding value path: `file_changed` reads
+`observations.file_changed`, `process_exit` reads `observations.process_exit`, and the other
+observable kinds follow the same exact `observations.<kind>` rule; `model_output` reads `output`.
+`load_corpus` rejects a case that does not satisfy that contract, so a well-prefixed path cannot
+masquerade as a different observation kind.
 
 Every field uses one of five states: `captured`, `captured_empty`, `unavailable`,
 `not_applicable`, or `failed_capture`. A field that is unavailable or failed is not silently
@@ -94,14 +97,24 @@ constant in the evaluator.
 Replay compares run ID, case, provider, adapter, variant, base revision, harness version, model
 profile, effort, permissions, guidance reference, start and end timestamps, prompt metadata, and
 provider argv hash, working directory, timeout, and captured child environment. It also compares
-pair ID, corpus and contract hashes, and every guidance-manifest hash. Output names equal inputs,
-differing inputs, unavailable inputs, differing observations, and confounders; a field absent from
-both records is unavailable, never equal. An observation difference is attributed to the guidance
-variant only when a hashed guidance input changed, no non-guidance input changed, and no compared
-input is unavailable. Model/profile, effort, permissions, harness, time, prompt, invocation,
-environment, or other non-guidance drift makes the comparison explicitly
-`not_attributable_to_guidance`. Even `guidance_variant_only_among_recorded_inputs` is bounded to
-the artifact: it does not establish equality for external state the artifact did not capture.
+pair ID, corpus and contract hashes, and every parsed guidance-manifest identity. Caller-declared
+`manifest_sha256` values remain integrity checks; attribution compares
+`observed_manifest_sha256`, which is computed from the manifest returned by #503's parser. Output
+names equal inputs, differing inputs, unavailable inputs, differing observations, and confounders;
+a field absent from both records is unavailable, never equal. An observation difference is
+attributed to the guidance variant only when a parsed guidance-manifest identity changed, no
+non-guidance input changed, and no compared input is unavailable. Model/profile, effort,
+permissions, harness, time, prompt, invocation, environment, or other compared non-guidance drift
+makes the comparison explicitly `not_attributable_to_guidance`.
+
+The stored artifact remains strictly integrity-checked. The replay artifact may differ in its
+declared corpus hash, contract hash, manifest hash, expected manifest state, expected source
+provenance, or prompt metadata because those are the recorded inputs the comparison is examining.
+Every mismatch accepted on that basis is printed as `replay_integrity_relaxed=<check>` with its
+reason. Manifest structure and typed parsing are never relaxed, and a relaxed caller-declared
+manifest hash is excluded from attribution. Even
+`guidance_variant_only_among_recorded_inputs` is bounded to the artifact: it does not establish
+equality for external state the artifact did not capture.
 
 `--live-config` supplies fixed argv lists for a Claude Code and Codex subprocess; prompts go on
 stdin, never argv. The child environment inherits only `HOME`, `LANG`, `LC_ALL`, `LC_CTYPE`,

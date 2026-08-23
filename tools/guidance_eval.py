@@ -84,6 +84,14 @@ OBSERVABLE_KINDS: Final = (
     "process_exit",
 )
 SELF_REPORTED_KINDS: Final = ("model_output",)
+CHECK_PATH_BY_KIND: Final = {
+    "file_changed": "observations.file_changed",
+    "command_run": "observations.command_run",
+    "refusal_emitted": "observations.refusal_emitted",
+    "gate_result": "observations.gate_result",
+    "process_exit": "observations.process_exit",
+    "model_output": "output",
+}
 CHECK_OPERATORS: Final = ("equals", "contains", "includes", "not_equals")
 ADAPTER_SCORE_SOURCES: Final = {
     "fixture": "self_reported",
@@ -444,12 +452,12 @@ def load_corpus(path: Path) -> dict[str, object]:
             if kind not in allowed_kinds:
                 raise EvaluationError(f"case={case_id}.check={check_id}.kind={kind}")
             check_path = _string(check["path"], label=f"case={case_id}.check={check_id}.path")
+            if check_path != CHECK_PATH_BY_KIND[kind]:
+                raise EvaluationError(
+                    f"case={case_id}.check={check_id}.path_kind_mismatch kind={kind}"
+                )
             if source == "observable":
                 observable_count += 1
-                if not check_path.startswith("observations."):
-                    raise EvaluationError(f"case={case_id}.check={check_id}.path_not_observable")
-            elif check_path != "output":
-                raise EvaluationError(f"case={case_id}.check={check_id}.path_not_self_reported")
             operator = _string(check["operator"], label=f"case={case_id}.check={check_id}.operator")
             if operator not in CHECK_OPERATORS:
                 raise EvaluationError(f"case={case_id}.check={check_id}.operator={operator}")
@@ -507,6 +515,7 @@ def load_provenance(
     allow_hash_mismatch: bool = False,
 ) -> dict[str, object]:
     """Derive one evaluator provenance entry from #503's dispatch manifest."""
+    replay_integrity_relaxations: list[dict[str, str]] = []
     provider = Provider(
         _string(configuration.get("provider"), label=f"provenance={reference}.provider")
     )
@@ -522,22 +531,38 @@ def load_provenance(
         configuration.get("manifest_sha256"), label=f"provenance={reference}.manifest_sha256"
     )
     observed_hash = sha256_json(rendered)
-    if observed_hash != expected_hash and not allow_hash_mismatch:
-        raise EvaluationError(f"provenance={reference} manifest_hash_mismatch")
+    if observed_hash != expected_hash:
+        if not allow_hash_mismatch:
+            raise EvaluationError(f"provenance={reference} manifest_hash_mismatch")
+        replay_integrity_relaxations.append(
+            {
+                "check": f"provenance.{reference}.manifest_sha256",
+                "reason": (
+                    "replay compares recorded input drift; guidance attribution uses the parsed "
+                    "manifest identity"
+                ),
+            }
+        )
     expected_state = configuration.get("expected_state")
-    if (
-        expected_state is not None
-        and rendered.get("state") != expected_state
-        and not allow_hash_mismatch
-    ):
-        raise EvaluationError(f"provenance={reference} state_mismatch")
+    if expected_state is not None and rendered.get("state") != expected_state:
+        if not allow_hash_mismatch:
+            raise EvaluationError(f"provenance={reference} state_mismatch")
+        replay_integrity_relaxations.append(
+            {
+                "check": f"provenance.{reference}.expected_state",
+                "reason": "replay compares recorded input drift so the difference can be reported",
+            }
+        )
     expected_provenance = configuration.get("expected_source_provenance")
-    if (
-        expected_provenance is not None
-        and rendered.get("source_provenance") != expected_provenance
-        and not allow_hash_mismatch
-    ):
-        raise EvaluationError(f"provenance={reference} source_provenance_mismatch")
+    if expected_provenance is not None and rendered.get("source_provenance") != expected_provenance:
+        if not allow_hash_mismatch:
+            raise EvaluationError(f"provenance={reference} source_provenance_mismatch")
+        replay_integrity_relaxations.append(
+            {
+                "check": f"provenance.{reference}.expected_source_provenance",
+                "reason": "replay compares recorded input drift so the difference can be reported",
+            }
+        )
     word_counts = Evidence.from_document(
         configuration.get("word_counts"), field=f"provenance={reference}.word_counts"
     )
@@ -550,6 +575,7 @@ def load_provenance(
         "manifest": rendered,
         "manifest_sha256": expected_hash,
         "observed_manifest_sha256": observed_hash,
+        "replay_integrity_relaxations": replay_integrity_relaxations,
         "lane": record.get("lane"),
         "word_counts": word_counts.document(),
     }
@@ -579,13 +605,15 @@ def _validate_prompt_metadata(
     corpus_path: Path,
     *,
     allow_mismatch: bool = False,
-) -> None:
+) -> bool:
     prompt = _mapping(run.get("prompt"), label="run.prompt")
     if "body" in prompt:
         raise EvaluationError("run.prompt=body_must_stay_in_corpus")
     expected = prompt_document(case, corpus_path)
-    if dict(prompt) != expected and not allow_mismatch:
+    matches = dict(prompt) == expected
+    if not matches and not allow_mismatch:
         raise EvaluationError(f"run.prompt=metadata_mismatch case={case['case_id']}")
+    return matches
 
 
 def _validate_usage(run: Mapping[str, object]) -> None:
@@ -610,7 +638,7 @@ def _validate_run(  # noqa: PLR0913 — pair comparison has one explicit context
     corpus_path: Path,
     provenance: Mapping[str, Mapping[str, object]],
     allow_prompt_mismatch: bool = False,
-) -> None:
+) -> bool:
     run_id = _string(run.get("run_id"), label="run_id")
     if run.get("schema") != RUN_SCHEMA:
         raise EvaluationError(f"run={run_id}.schema_mismatch")
@@ -638,7 +666,9 @@ def _validate_run(  # noqa: PLR0913 — pair comparison has one explicit context
         raise EvaluationError(f"run={run_id}.guidance_ref_unknown")
     _require_utc(run.get("started_at"), label=f"run={run_id}.started_at")
     _require_utc(run.get("ended_at"), label=f"run={run_id}.ended_at")
-    _validate_prompt_metadata(run, case, corpus_path, allow_mismatch=allow_prompt_mismatch)
+    prompt_metadata_matches = _validate_prompt_metadata(
+        run, case, corpus_path, allow_mismatch=allow_prompt_mismatch
+    )
     for field in REQUIRED_RUN_FIELDS:
         if field == "observations":
             _validate_observations(run)
@@ -653,6 +683,7 @@ def _validate_run(  # noqa: PLR0913 — pair comparison has one explicit context
         raise EvaluationError(f"run={run_id}.stderr=not_empty")
     if "child_environment" in run:
         Evidence.from_document(run["child_environment"], field="child_environment")
+    return prompt_metadata_matches
 
 
 @dataclass(frozen=True)
@@ -868,7 +899,8 @@ def interpret_pair(
     corpus_path: Path,
     allow_input_drift: bool = False,
 ) -> dict[str, object]:
-    """Validate and score one pair, optionally retaining drift for a two-pair comparison."""
+    """Validate and score one pair, reporting any integrity check relaxed for replay."""
+    replay_integrity_relaxations: list[dict[str, str]] = []
     if pair.get("schema") != PAIR_SCHEMA:
         raise EvaluationError("pair=schema_mismatch")
     base_revision = _string(pair.get("base_revision"), label="pair.base_revision")
@@ -882,25 +914,51 @@ def interpret_pair(
     corpus_ref = _mapping(pair.get("corpus"), label="pair.corpus")
     observed_corpus_hash = sha256_json(corpus)
     corpus_hash_matches = corpus_ref.get("sha256") == observed_corpus_hash
-    if not corpus_hash_matches and not allow_input_drift:
-        raise EvaluationError("pair=corpus_hash_mismatch")
+    if not corpus_hash_matches:
+        if not allow_input_drift:
+            raise EvaluationError("pair=corpus_hash_mismatch")
+        replay_integrity_relaxations.append(
+            {
+                "check": "pair.corpus.sha256",
+                "reason": "replay compares recorded input drift so the difference can be reported",
+            }
+        )
     if corpus_ref.get("path") != corpus_path.name:
         raise EvaluationError("pair=corpus_path_mismatch")
     observed_contract_hash = sha256_json(contract)
     contract_hash_matches = pair.get("contract_sha256") == observed_contract_hash
-    if not contract_hash_matches and not allow_input_drift:
-        raise EvaluationError("pair=contract_hash_mismatch")
+    if not contract_hash_matches:
+        if not allow_input_drift:
+            raise EvaluationError("pair=contract_hash_mismatch")
+        replay_integrity_relaxations.append(
+            {
+                "check": "pair.contract_sha256",
+                "reason": "replay compares recorded input drift so the difference can be reported",
+            }
+        )
 
     raw_provenance = _mapping(pair.get("provenance"), label="pair.provenance")
     provenance: dict[str, Mapping[str, object]] = {}
     for reference, raw_entry in raw_provenance.items():
         entry = _mapping(raw_entry, label=f"provenance={reference}")
-        provenance[reference] = load_provenance(
+        loaded_provenance = load_provenance(
             pair_path,
             reference,
             entry,
             allow_hash_mismatch=allow_input_drift,
         )
+        provenance[reference] = loaded_provenance
+        for raw_relaxation in _list(
+            loaded_provenance["replay_integrity_relaxations"],
+            label=f"provenance={reference}.replay_integrity_relaxations",
+        ):
+            relaxation = _mapping(raw_relaxation, label="replay_integrity_relaxation")
+            replay_integrity_relaxations.append(
+                {
+                    "check": _string(relaxation.get("check"), label="relaxation.check"),
+                    "reason": _string(relaxation.get("reason"), label="relaxation.reason"),
+                }
+            )
 
     cases = case_by_id(corpus)
     raw_runs = _list(pair.get("runs"), label="pair.runs")
@@ -920,7 +978,7 @@ def interpret_pair(
         if pair_key in actual_pairs:
             raise EvaluationError(f"run={run.get('run_id')}.duplicate_pair_cell")
         actual_pairs.add(pair_key)
-        _validate_run(
+        prompt_metadata_matches = _validate_run(
             run,
             case=cases[case_id],
             pair=pair,
@@ -928,6 +986,15 @@ def interpret_pair(
             provenance=provenance,
             allow_prompt_mismatch=allow_input_drift,
         )
+        if not prompt_metadata_matches:
+            replay_integrity_relaxations.append(
+                {
+                    "check": f"run.{run.get('run_id')}.prompt.metadata",
+                    "reason": (
+                        "replay compares recorded input drift so the difference can be reported"
+                    ),
+                }
+            )
         scores.append(score_case(cases[case_id], run))
     if actual_pairs != expected_pairs:
         missing = sorted(expected_pairs - actual_pairs)
@@ -985,6 +1052,13 @@ def interpret_pair(
             else "reported_with_field_states"
         ),
         "provenance_interpretation": _provenance_interpretation(provenance),
+        "observed_manifest_sha256": {
+            reference: entry["observed_manifest_sha256"]
+            for reference, entry in sorted(provenance.items())
+        },
+        "replay_integrity_relaxations": sorted(
+            replay_integrity_relaxations, key=lambda item: item["check"]
+        ),
         "guidance_word_counts": {
             reference: entry["word_counts"] for reference, entry in sorted(provenance.items())
         },
@@ -1133,7 +1207,7 @@ def _aggregate_replay_interpretation(
     )
     confounding_inputs = sorted(input_different - set(guidance_inputs))
     guidance_content_changed = any(
-        name.startswith("provenance.") and name.endswith(".manifest_sha256")
+        name.startswith("provenance.") and name.endswith(".observed_manifest_sha256")
         for name in guidance_inputs
     )
     if not observation_different:
@@ -1189,7 +1263,7 @@ def compare_pair_replay(  # noqa: PLR0913 — both artifacts need their own reso
     corpus_path: Path,
 ) -> dict[str, object]:
     """Validate two artifacts, then compare all recorded inputs and run observations."""
-    interpret_pair(
+    stored_result = interpret_pair(
         corpus,
         stored_pair,
         pair_path=stored_pair_path,
@@ -1212,9 +1286,13 @@ def compare_pair_replay(  # noqa: PLR0913 — both artifacts need their own reso
         )
         for cell in sorted(stored_runs)
     }
-    stored_provenance = _mapping(stored_pair.get("provenance"), label="stored.provenance")
-    replayed_provenance = _mapping(replayed_pair.get("provenance"), label="replayed.provenance")
-    provenance_names = set(stored_provenance) | set(replayed_provenance)
+    stored_manifest_identities = _mapping(
+        stored_result["observed_manifest_sha256"], label="stored.observed_manifest_sha256"
+    )
+    replayed_manifest_identities = _mapping(
+        replayed_result["observed_manifest_sha256"], label="replayed.observed_manifest_sha256"
+    )
+    provenance_names = set(stored_manifest_identities) | set(replayed_manifest_identities)
     pair_inputs: dict[str, tuple[object, object]] = {
         "pair_id": (stored_pair.get("pair_id"), replayed_pair.get("pair_id")),
         "corpus.sha256": (
@@ -1226,13 +1304,9 @@ def compare_pair_replay(  # noqa: PLR0913 — both artifacts need their own reso
             replayed_pair.get("contract_sha256"),
         ),
         **{
-            f"provenance.{reference}.manifest_sha256": (
-                _mapping(stored_provenance.get(reference, {}), label="stored.provenance").get(
-                    "manifest_sha256"
-                ),
-                _mapping(replayed_provenance.get(reference, {}), label="replayed.provenance").get(
-                    "manifest_sha256"
-                ),
+            f"provenance.{reference}.observed_manifest_sha256": (
+                stored_manifest_identities.get(reference),
+                replayed_manifest_identities.get(reference),
             )
             for reference in provenance_names
         },
@@ -1525,6 +1599,18 @@ def render_summary(result: Mapping[str, object]) -> tuple[str, ...]:
     replay = result.get("replay_interpretation")
     if isinstance(replay, Mapping):
         replay_document = cast("Mapping[str, object]", replay)
+        relaxations = _list(
+            result.get("replay_integrity_relaxations", []),
+            label="result.replay_integrity_relaxations",
+        )
+        if relaxations:
+            for raw_relaxation in relaxations:
+                relaxation = _mapping(raw_relaxation, label="replay_integrity_relaxation")
+                lines.append(
+                    f"replay_integrity_relaxed={relaxation['check']} reason={relaxation['reason']}"
+                )
+        else:
+            lines.append("replay_integrity_relaxed=none")
         inputs = _mapping(replay_document["inputs"], label="replay.inputs")
         observations = _mapping(replay_document["observations"], label="replay.observations")
         unexplained = _list(replay_document["unexplained"], label="replay.unexplained")

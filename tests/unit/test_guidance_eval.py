@@ -50,6 +50,20 @@ def run_cell(document: dict[str, Any], provider: str, case_id: str) -> dict[str,
     )
 
 
+def capture_replay_inputs(*documents: dict[str, Any]) -> None:
+    for document in documents:
+        for run in document["runs"]:
+            run["invocation"] = {
+                "argv_sha256": "1" * 64,
+                "cwd": "/paired-worktree",
+                "timeout_seconds": 120.0,
+            }
+            run["child_environment"] = {
+                "state": "captured",
+                "value": {"PAIR_ENV": "same"},
+            }
+
+
 def test_the_committed_control_validates_every_paired_cell() -> None:
     result = evaluation.check_control(CORPUS, PAIR)
 
@@ -93,6 +107,14 @@ def test_cases_declare_contract_bound_observation_checks(tmp_path: Path) -> None
     invalid.write_text(json.dumps(raw), encoding="utf-8")
 
     with pytest.raises(evaluation.EvaluationError, match="case=implement-gated-helper"):
+        evaluation.load_corpus(invalid)
+
+    raw = json.loads(CORPUS.read_text(encoding="utf-8"))
+    raw["cases"][1]["checks"][0]["kind"] = "process_exit"
+    invalid = tmp_path / "kind-path-mismatch.json"
+    invalid.write_text(json.dumps(raw), encoding="utf-8")
+
+    with pytest.raises(evaluation.EvaluationError, match="path_kind_mismatch"):
         evaluation.load_corpus(invalid)
 
 
@@ -318,22 +340,20 @@ def test_replay_names_every_material_input_and_a_changed_model_as_a_confounder()
     assert "replay_confounders=model_profile" in summary
 
 
-def test_replay_attributes_only_a_hashed_guidance_input_difference() -> None:
+def test_replay_does_not_attribute_a_caller_declared_manifest_hash() -> None:
     stored = pair()
     replayed = pair()
-    for document in (stored, replayed):
-        for run in document["runs"]:
-            run["invocation"] = {
-                "argv_sha256": "1" * 64,
-                "cwd": "/paired-worktree",
-                "timeout_seconds": 120.0,
-            }
-            run["child_environment"] = {
-                "state": "captured",
-                "value": {"PAIR_ENV": "same"},
-            }
+    capture_replay_inputs(stored, replayed)
     replayed["provenance"]["codex-control"]["manifest_sha256"] = "0" * 64
     run_cell(replayed, "codex", "retrieve-just-fast")["trace"]["value"][0]["event"] = "changed"
+
+    with pytest.raises(evaluation.EvaluationError, match="manifest_hash_mismatch"):
+        evaluation.interpret_pair(
+            corpus(),
+            replayed,
+            pair_path=PAIR,
+            corpus_path=CORPUS,
+        )
 
     result = evaluation.compare_pair_replay(
         corpus(),
@@ -345,11 +365,79 @@ def test_replay_attributes_only_a_hashed_guidance_input_difference() -> None:
     )
 
     assert result["replay_interpretation"]["attribution"] == {
-        "status": "guidance_variant_only_among_recorded_inputs",
-        "guidance_inputs": ["provenance.codex-control.manifest_sha256"],
+        "status": "not_attributable_to_guidance",
+        "guidance_inputs": [],
         "confounding_inputs": [],
         "unavailable_inputs": [],
     }
+    assert result["replay_integrity_relaxations"] == [
+        {
+            "check": "provenance.codex-control.manifest_sha256",
+            "reason": (
+                "replay compares recorded input drift; guidance attribution uses the parsed "
+                "manifest identity"
+            ),
+        }
+    ]
+    assert (
+        "replay_integrity_relaxed=provenance.codex-control.manifest_sha256 "
+        "reason=replay compares recorded input drift; guidance attribution uses the parsed "
+        "manifest identity"
+    ) in evaluation.render_summary(result)
+
+
+def test_replay_attributes_only_a_changed_parsed_guidance_manifest(tmp_path: Path) -> None:
+    stored = pair()
+    replayed = pair()
+    capture_replay_inputs(stored, replayed)
+    replay_records = tmp_path / "dispatch-records"
+    replay_records.mkdir()
+    for name in ("claude.json", "codex.json"):
+        source = PAIR.parent / "dispatch-records" / name
+        (replay_records / name).write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+
+    codex_record_path = replay_records / "codex.json"
+    codex_record = json.loads(codex_record_path.read_text(encoding="utf-8"))
+    delivery = codex_record["guidance_manifest"]["delivery"]
+    changed_guidance_sha256 = "0" * 64
+    delivery["sources"][0]["sha256"] = changed_guidance_sha256
+    delivery["expected_project_sha256"] = changed_guidance_sha256
+    delivery["delivered_project_sha256"] = changed_guidance_sha256
+    delivery["combined_delivered_sha256"] = "1" * 64
+    codex_record_path.write_text(json.dumps(codex_record), encoding="utf-8")
+
+    parsed_manifest = evaluation.codex_guidance.manifest_from_record(
+        codex_record,
+        evaluation.codex_guidance.GuidanceHarness.CODEX,
+    ).document()
+    stored_manifest = evaluation.load_provenance(
+        PAIR,
+        "codex-control",
+        stored["provenance"]["codex-control"],
+    )["manifest"]
+    assert parsed_manifest != stored_manifest
+    replayed["provenance"]["codex-control"]["manifest_sha256"] = evaluation.sha256_json(
+        parsed_manifest
+    )
+    run_cell(replayed, "codex", "retrieve-just-fast")["trace"]["value"][0]["event"] = "changed"
+
+    result = evaluation.compare_pair_replay(
+        corpus(),
+        stored,
+        replayed,
+        stored_pair_path=PAIR,
+        replayed_pair_path=tmp_path / "replay-pair.json",
+        corpus_path=CORPUS,
+    )
+
+    assert result["replay_interpretation"]["attribution"] == {
+        "status": "guidance_variant_only_among_recorded_inputs",
+        "guidance_inputs": ["provenance.codex-control.observed_manifest_sha256"],
+        "confounding_inputs": [],
+        "unavailable_inputs": [],
+    }
+    assert result["replay_integrity_relaxations"] == []
+    assert "replay_integrity_relaxed=none" in evaluation.render_summary(result)
 
 
 def test_pair_requires_one_cell_per_case_and_provider() -> None:
