@@ -9,11 +9,17 @@ charges a scheduling penalty that scales with test count — every commit made t
 gate slightly worse and no bisect could stand out. A regression with no guilty
 commit is exactly the kind only a standing measurement catches.
 
-So every `just unit` and `just fast` run appends one row to
-`~/.arma-cti/gate-clock/records.jsonl` (outside every worktree, accumulating
-across branches and lanes), and this module's `report` — folded into
-`just watch-report` — compares a median of recent green runs against an
-**anchor** held in `tools/gate-clock-anchor.json`, in the tree.
+So every gate run appends one row to `~/.arma-cti/gate-clock/records.jsonl`
+(outside every worktree, accumulating across branches and lanes), and this
+module's `report` — folded into `just watch-report` — compares a median of
+recent green runs against an **anchor** held in `tools/gate-clock-anchor.json`,
+in the tree. Every recipe that gates a landing records (`RECIPES`, #483), and
+each row carries the run's legs — name, outcome and wall seconds each — so a
+red leg's identity and a doubled leg are on the record rather than lost in one
+aggregate status. The recipes hand their legs to this module's `run` verb and it
+runs them in order, records the row, and exits the legs' own status: the
+per-leg scaffold has one home rather than one per recipe, and a recipe run by
+hand records exactly as one the gate runs.
 
 **Anchored, not rolling, and that was measured rather than argued.** A
 self-normalising watcher — trailing N runs against the previous N — is the
@@ -72,7 +78,7 @@ would keep them in the window against the lowered anchor. A row whose `at`
 will not parse is excluded rather than guessed at.
 
 **A broken anchor is the one state where noise is correct.** The file ships in
-the tree with both recipes anchored, so a file that is missing, unparseable, or
+the tree with every recipe named, so a file that is missing, unparseable, or
 carrying a half-edited entry (a quoted number, a dropped key) is a broken
 instrument and not the shipped unset state: every recipe it leaves unreadable
 prints one line saying so, ahead of the Arma-tier suppression, because it
@@ -83,10 +89,14 @@ makes the same finding a red, so a half-edited anchor cannot land through its
 own gate. A file that fails to *name* a recipe the recorder writes is the same
 damage — a deleted key, or one misspelled into a key nothing reads — so a
 missing recipe is a problem too, and a key outside the recorder's recipes is
-flagged where it sits, which is how a misspelling presents. `assess`'s
-`anchor_unset` rung stays as a backstop for a state the loader no longer
-produces; the recipes the file must name are `RECIPES`, the set the recorder
-writes rows for, so the file and the loader cannot drift apart silently.
+flagged where it sits, which is how a misspelling presents. Since #483 widened
+`RECIPES` past the recipes an anchor exists for, the one entry that names a
+recipe without anchoring it is `anchor_seconds: null`: a deliberate, reviewed
+unset — no anchor has been derived for that recipe's rows yet — read by the
+loader and kept distinct from a dropped key, which is damage. `assess`'s
+`anchor_unset` rung is what it produces, the honest unknown; the recipes the
+file must name are `RECIPES`, the set the recorder writes rows for, so the
+file and the loader cannot drift apart silently.
 
 **The wall is read from the kernel's monotonic clock.** Both ends of a recorded
 wall read `/proc/uptime` — `CLOCK_REALTIME` steps under NTP and a step mid-run
@@ -190,13 +200,25 @@ rows' `load_1m` and `foreign_gate_processes` fields are what separates that case
 when it is investigated.
 
 **What recording costs.** One `uv run python` start per recorded recipe (~0.3 s
-against a ~190 s tier, under 0.2%) and one small file write at collection time;
-nothing is added to any assertion or test. The #466 count adds one import of
-`tools/mutation_smoke.py` and two passes of its `changed` git reads
-(`merge-base`, `diff --name-only`, `status --porcelain`) — stated as a count
-rather than a duration, because nobody has timed it. `just fast` invoking
-`just unit` records two rows — the unit tier's own wall and the whole
-recipe's — and both are real measurements of real invocations.
+each: a `just fast` now starts four — its own runner and the nested `check`,
+`unit` and `mutation` runners — against a ~190 s tier, under 1%) and one small
+file write at collection time; nothing is added to any assertion or test. The
+#466 count adds one import of `tools/mutation_smoke.py` and two passes of its
+`changed` git reads (`merge-base`, `diff --name-only`, `status --porcelain`) —
+stated as a count rather than a duration, because nobody has timed it. `just
+fast` invoking `just check`, `just unit` and `just mutation` records four rows —
+each nested recipe's own wall plus the whole recipe's — and all four are real
+measurements of real invocations.
+
+**Three leg outcomes, and absence as the fourth.** `passed` ran and exited
+zero; `failed` ran and did not; `not_run` was short-circuited by an earlier red
+leg and cost nothing; and a row whose `legs` is `None` predates #483 and claims
+no breakdown at all. None of these renders as another — a `not_run` leg with no
+wall is not a fast pass, and an absent breakdown is not an empty one — which is
+the standing rule `docs/observatory/hazards.md` states over the observatory's
+other three-state fields, applied here from the first row rather than after a
+conflation. A red run's shell line names every leg's outcome for the same
+reason: a FAIL that stops a run early must not be mistaken for a fast run.
 
 The state directory is `CTI_GATE_CLOCK_DIR`, the seam `CTI_WATCH_DIR`,
 `CTI_BREAKER_DIR` and `CTI_RC_HEALTH_DIR` exist for (#249): without it a unit
@@ -209,6 +231,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 from datetime import UTC, datetime, time
 from pathlib import Path
@@ -223,6 +246,7 @@ DEFAULT_GATE_CLOCK_DIR: Final = Path.home() / ".arma-cti" / "gate-clock"
 RECORDS_NAME: Final = "records.jsonl"
 ANCHOR_PATH: Final = Path(__file__).with_name("gate-clock-anchor.json")
 PROC_UPTIME: Final = Path("/proc/uptime")
+PROC_LOADAVG: Final = Path("/proc/loadavg")
 
 # The ref the mutation tier measures a landing against, and the tree it is
 # measured in — the same pair `just mutation` itself uses, so the count below
@@ -230,12 +254,16 @@ PROC_UPTIME: Final = Path("/proc/uptime")
 BASE_REF: Final = "origin/main"
 REPO_ROOT: Final = Path(__file__).resolve().parents[1]
 
-# The two recipes that run the gate (issue #446): a bare `just unit` is most of
-# the recorded population (22.27 h of the 57.51 h the investigation measured),
-# while the whole `just fast` is the figure the subagent-wait threshold applies
-# to. `just check` (~10 s) and `just mutation` (~0 s) are noise against a 200 s
-# tier, and a record nobody will read is not worth the line.
-RECIPES: Final = ("unit", "fast")
+# Every recipe that gates a landing (#483): `just fast` runs all four as legs,
+# and each is run alone while iterating. The two-recipe set this replaces
+# (#446) excluded `check` and `mutation` as noise against a 200 s tier — an
+# argument about the drift assessment, which a recorded row need not receive:
+# `assess` stays silent wherever no anchor is set, so recording a recipe costs
+# the file's append and nothing else. One home: adding a recipe is an edit here
+# plus a call site in the justfile, never a silent omission, and the anchor
+# file must name the newcomer (`anchor_seconds: null` until an anchor is
+# derived from its rows).
+RECIPES: Final = ("unit", "fast", "check", "mutation")
 
 # The recipes that carry `just mutation`, and so the only ones whose comparison
 # reads `mutation_targets` (#466). Every other leg of both recipes prices the
@@ -258,6 +286,33 @@ THRESHOLD: Final = 1.25
 # at 15 characters, which `arma3server_x64` exactly fits).
 ARMA_TIER_PREFIX: Final = "arma3server"
 
+# The three facts a leg's outcome carries (#483). They are different facts and
+# render differently, never as each other: `passed` ran and exited zero,
+# `failed` ran and did not, `not_run` was short-circuited by an earlier red leg
+# and cost nothing. The set this vocabulary comes from — absence, a value and a
+# third state conflated five separate times in one week — is the standing rule
+# in `docs/observatory/hazards.md`.
+LEG_OUTCOMES: Final = ("passed", "failed", "not_run")
+
+# What the row's `foreign_gate_processes` counts: any process whose command
+# line names the Python or Rust test runners, the two things that make a gate
+# slow by being a gate. The shell scaffold this module replaced counted them
+# with `pgrep -fc 'pytest|cargo test'` at start; this is the same match, read
+# from `/proc` so the recorder spawns nothing of its own.
+FOREIGN_GATE_PATTERN: Final = re.compile(r"pytest|cargo test")
+
+
+class Leg(NamedTuple):
+    """One leg inside a recipe's run, as the row carries it.
+
+    `wall_seconds` is `None` for a `not_run` leg — it was never measured — and
+    a number for every leg that ran, passed or failed alike.
+    """
+
+    name: str
+    outcome: str
+    wall_seconds: float | None
+
 
 class Record(NamedTuple):
     """One finished gate run, as `report` reads it back."""
@@ -271,6 +326,7 @@ class Record(NamedTuple):
     load_1m: float | None
     foreign_gate_processes: int | None
     mutation_targets: int | None
+    legs: tuple[Leg, ...] | None = None
 
 
 class Verdict(NamedTuple):
@@ -282,11 +338,16 @@ class Verdict(NamedTuple):
 
 
 class AnchorState(NamedTuple):
-    """What `load_anchors` read: the anchors, their `set` moments, and the unreadable entries."""
+    """What `load_anchors` read.
+
+    The anchors, their `set` moments, the deliberately unset recipes, and the
+    unreadable entries.
+    """
 
     anchors: dict[str, float]
     set_dates: dict[str, datetime]
     problems: dict[str, str]
+    unset: frozenset[str] = frozenset()
 
 
 def median(values: list[float]) -> float:
@@ -296,6 +357,30 @@ def median(values: list[float]) -> float:
     if len(ordered) % 2:
         return ordered[middle]
     return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def leg_document(leg: Leg) -> dict[str, object]:
+    """Render one leg as its object inside the row."""
+    return {"name": leg.name, "outcome": leg.outcome, "wall_seconds": leg.wall_seconds}
+
+
+def parse_leg(entry: object) -> Leg | None:
+    """Read one leg back, answering `None` for anything malformed."""
+    if not isinstance(entry, dict):
+        return None
+    try:
+        name = str(entry["name"])
+        outcome = str(entry["outcome"])
+        if outcome not in LEG_OUTCOMES:
+            return None
+        wall = entry["wall_seconds"]
+        return Leg(
+            name,
+            outcome,
+            None if wall is None else float(wall),
+        )
+    except (KeyError, TypeError, ValueError):
+        return None
 
 
 def record_document(row: Record) -> dict[str, object]:
@@ -310,6 +395,7 @@ def record_document(row: Record) -> dict[str, object]:
         "load_1m": row.load_1m,
         "foreign_gate_processes": row.foreign_gate_processes,
         "mutation_targets": row.mutation_targets,
+        "legs": None if row.legs is None else [leg_document(leg) for leg in row.legs],
     }
 
 
@@ -328,10 +414,28 @@ def parse_record(document: object) -> Record | None:
     deliberately: their count was taken by a definition that included the
     exempt targets, so reading them as unclassified is the honest fate of a
     figure derived by a rule that has since changed.
+
+    A row without `legs` predates #483 and reads as `None` the same way: no
+    breakdown claimed, never an empty one guessed at. A row whose `legs` list
+    carries an element that will not read also reads as `None`, declining the
+    whole breakdown rather than a part of it — a partial list would present a
+    recipe's later legs as absent when they ran, which is the exact reading
+    `not_run` exists to prevent.
     """
     if not isinstance(document, dict):
         return None
     try:
+        raw_legs = document.get("legs")
+        legs = None
+        if isinstance(raw_legs, list):
+            read_legs: list[Leg] = []
+            for entry in raw_legs:
+                one = parse_leg(entry)
+                if one is None:
+                    break
+                read_legs.append(one)
+            else:
+                legs = tuple(read_legs)
         return Record(
             at=str(document["at"]),
             recipe=str(document["recipe"]),
@@ -354,6 +458,7 @@ def parse_record(document: object) -> Record | None:
                 if document.get("mutation_targets") is not None
                 else None
             ),
+            legs=legs,
         )
     except (KeyError, TypeError, ValueError):
         return None
@@ -497,14 +602,24 @@ def had_mutation_target(row: Record) -> bool:
     return (row.mutation_targets or 0) > 0
 
 
-def _read_anchor_entry(name: str, entry: object) -> tuple[float, datetime] | str:
-    """Return one entry's `(anchor, set moment)`, or the problem with it as a string.
+def _read_anchor_entry(name: str, entry: object) -> tuple[float, datetime] | str | None:
+    """Return one entry's read: `(anchor, set moment)`, unset, or the problem.
+
+    `None` answers deliberately unset; a string answers the problem with the
+    entry as a message.
 
     Split out of `load_anchors` so the file-level failures (missing,
     unparseable, not an object) and the per-entry ladder read separately.
+
+    `anchor_seconds: null` is the deliberate unset state (#483): a recipe the
+    recorder writes but no anchor has been derived for yet. It is a value the
+    loader reads, not a half-edit — a dropped key or a misspelled one is still
+    damage below — and `assess`'s `anchor_unset` rung is what it produces.
     """
     if not isinstance(entry, dict):
         return f"{name} entry is not an object"
+    if "anchor_seconds" in entry and entry["anchor_seconds"] is None:
+        return None
     seconds = entry.get("anchor_seconds")
     if isinstance(seconds, bool) or not isinstance(seconds, (int, float)) or seconds <= 0:
         return f"{name}.anchor_seconds is not a positive number"
@@ -527,11 +642,15 @@ def load_anchors(path: Path) -> AnchorState:
     recorder writes, so a missing key — deleted, or misspelled into a key
     nothing reads — is damage rather than the unset state, and a key outside
     `RECIPES` is flagged where it sits, which is how a misspelling presents.
-    `set` is required because the report bounds its window by it: an anchor
-    without a set moment could not be lowered without false-firing against the
-    rows that predate the change. A date bounds from that day's start; a full
-    timestamp bounds from the moment it names, so a re-set on a day already run
-    excludes that morning's rows.
+    The one entry that names a recipe without anchoring it is
+    `anchor_seconds: null` (#483): an explicit, reviewed decision that no anchor
+    has been derived for that recipe, kept distinct from a missing key by being
+    a value the loader reads. `set` is required wherever an anchor is set,
+    because the report bounds its window by it: an anchor without a set moment
+    could not be lowered without false-firing against the rows that predate the
+    change. A date bounds from that day's start; a full timestamp bounds from
+    the moment it names, so a re-set on a day already run excludes that
+    morning's rows.
     """
     state = AnchorState({}, {}, {})
     try:
@@ -550,6 +669,7 @@ def load_anchors(path: Path) -> AnchorState:
     anchors: dict[str, float] = {}
     set_dates: dict[str, datetime] = {}
     problems: dict[str, str] = {}
+    unset: set[str] = set()
     for recipe, entry in document.items():
         if recipe.startswith("_"):
             continue
@@ -560,14 +680,16 @@ def load_anchors(path: Path) -> AnchorState:
             )
             continue
         read = _read_anchor_entry(name, entry)
-        if isinstance(read, str):
+        if read is None:
+            unset.add(name)
+        elif isinstance(read, str):
             problems[name] = read
         else:
             anchors[name], set_dates[name] = read
-    for recipe in RECIPES:
-        if recipe not in anchors and recipe not in problems:
-            problems[recipe] = f"{recipe} entry is missing from the anchor file"
-    return AnchorState(anchors, set_dates, problems)
+    named = anchors.keys() | problems.keys() | unset
+    for recipe in set(RECIPES) - named:
+        problems[recipe] = f"{recipe} entry is missing from the anchor file"
+    return AnchorState(anchors, set_dates, problems, frozenset(unset))
 
 
 def arma_tier_processes(proc: Path = Path("/proc")) -> int:
@@ -592,6 +714,52 @@ def arma_tier_processes(proc: Path = Path("/proc")) -> int:
         except OSError:
             continue
         if comm.startswith(ARMA_TIER_PREFIX):
+            count += 1
+    return count
+
+
+def read_loadavg(path: Path | None = None) -> float | None:
+    """Read the 1-minute load average, or answer `None` — never a guess.
+
+    Same shape as `proc_uptime`: a kernel file read at the run's start for the
+    row's `load_1m`, with `path` resolving the module's `PROC_LOADAVG` at call
+    time so a test can stage it. The shell scaffold this replaced read it with
+    `cut -d' ' -f1 /proc/loadavg` and passed it as `--load-1m`.
+    """
+    try:
+        first = (PROC_LOADAVG if path is None else path).read_text(encoding="utf-8").split()[0]
+    except (OSError, IndexError):
+        return None
+    try:
+        return float(first)
+    except ValueError:
+        return None
+
+
+def foreign_gate_processes(proc: Path = Path("/proc")) -> int | None:
+    """Count other gate processes at start, or `None` when `/proc` cannot be read.
+
+    The `FOREIGN_GATE_PATTERN` match the shell scaffold took from
+    `pgrep -fc 'pytest|cargo test'`, read from `/proc/*/cmdline` instead so the
+    recorder spawns nothing of its own and a test can stage a directory — the
+    same shape as `arma_tier_processes`. This recorder's own command line names
+    neither runner, so it never counts itself.
+    """
+    try:
+        entries = list(proc.iterdir())
+    except OSError:
+        return None
+    count = 0
+    for entry in entries:
+        if not entry.name.isdigit():
+            continue
+        try:
+            cmdline = (
+                (entry / "cmdline").read_bytes().replace(b"\0", b" ").decode("utf-8", "replace")
+            )
+        except OSError:
+            continue
+        if FOREIGN_GATE_PATTERN.search(cmdline):
             count += 1
     return count
 
@@ -797,8 +965,104 @@ def proc_uptime(path: Path | None = None) -> float | None:
         return None
 
 
+def runner_legs(names: list[str], forwarded: list[str]) -> list[tuple[str, list[str]]]:
+    """Turn the CLI's `--leg` names and forwarded tail into runnable argv pairs.
+
+    Every leg is its just recipe — the recording call site stays in the recipe,
+    so a recipe run by hand records exactly as one the gate runs does — and the
+    arguments after the leg list belong to the last leg alone, which is how
+    `just mutation --paths tests/unit/x.py` forwards through to its one body
+    recipe without the runner learning a second command shape.
+    """
+    legs = [(name, ["just", name]) for name in names]
+    if legs:
+        last_name, last_argv = legs[-1]
+        legs[-1] = (last_name, [*last_argv, *forwarded])
+    return legs
+
+
+def run_recipe(recipe: str, legs: list[tuple[str, list[str]]], gate_clock_dir: Path) -> int:
+    """Run one recipe's legs in order, record the row, and answer the legs' status.
+
+    The recipe bodies' own scaffold (#483): this is what a `just` recipe hands
+    its legs to, so the per-leg outcomes and the whole-recipe wall are taken by
+    the same code for every recipe. A red leg stops the run and every leg after
+    it is recorded `not_run` — a leg that did not run is a different fact from
+    one that ran and passed, and a row that could not tell them apart would let
+    a short-circuited recipe read as a fast green one (#83's shape).
+
+    Recording stays advisory: an unreadable clock or an unwritable records
+    directory prints to stderr and never changes the exit status, because a
+    gate that cannot record is still a gate. The wall is `/proc/uptime` at both
+    ends, per leg and for the recipe, exactly as `record` takes it.
+    """
+    import subprocess  # noqa: PLC0415 — kept beside its only caller, like head_sha's
+
+    start_up = proc_uptime()
+    start_load = read_loadavg()
+    start_foreign = foreign_gate_processes()
+    status = 0
+    leg_rows: list[Leg] = []
+    for name, argv in legs:
+        if status != 0:
+            leg_rows.append(Leg(name, "not_run", None))
+            continue
+        leg_start = proc_uptime()
+        done = subprocess.run(  # noqa: S603 — argv is the recipe's own leg list, never user text
+            argv,
+            check=False,
+        )
+        leg_end = proc_uptime()
+        wall = None if leg_start is None or leg_end is None else max(leg_end - leg_start, 0.0)
+        leg_rows.append(Leg(name, "passed" if done.returncode == 0 else "failed", wall))
+        if done.returncode != 0:
+            status = done.returncode
+    now_up = proc_uptime()
+    if start_up is None or now_up is None or start_up > now_up:
+        print(  # noqa: T201 — the shell reads this
+            "gate-clock: recording failed — /proc/uptime unreadable at one end",
+            file=sys.stderr,
+        )
+        return status
+    row = Record(
+        at=datetime.now(UTC).isoformat(),
+        recipe=recipe,
+        wall_seconds=max(now_up - start_up, 0.0),
+        status=status,
+        head=head_sha(),
+        tests_collected=read_collected_file(),
+        load_1m=start_load,
+        foreign_gate_processes=start_foreign,
+        mutation_targets=read_mutation_targets(),
+        legs=tuple(leg_rows),
+    )
+    try:
+        append_record(gate_clock_dir, row)
+    except OSError as error:
+        print(  # noqa: T201 — the shell reads this
+            f"gate-clock: recording failed — {error.strerror or error}", file=sys.stderr
+        )
+        return status
+    health = "green" if row.status == 0 else f"status {row.status}"
+    count = f" {row.tests_collected} tests" if row.tests_collected is not None else ""
+    targets = (
+        f", {row.mutation_targets} mutation target(s)" if row.mutation_targets is not None else ""
+    )
+    # A red run's line names its legs, so the short-circuit is visible in the
+    # run's own output rather than only in a row nobody opens — a FAIL that
+    # stops a run early must not be mistaken for a fast run (#483, story 16).
+    leg_text = ""
+    if row.status != 0 and row.legs:
+        leg_text = " (legs: " + ", ".join(f"{leg.name}={leg.outcome}" for leg in row.legs) + ")"
+    print(  # noqa: T201 — the shell reads this
+        f"gate-clock: recorded {row.recipe} {row.wall_seconds:.1f}s "
+        f"{health}{count}{targets}{leg_text}"
+    )
+    return status
+
+
 def parse_args(argv: list[str] | None) -> argparse.Namespace:
-    """Four verbs: record a finished run, report drift, read the history, check the anchor."""
+    """Five verbs: run, record, report, history, check."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--gate-clock-dir",
@@ -806,6 +1070,24 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
         default=Path(os.environ.get("CTI_GATE_CLOCK_DIR", str(DEFAULT_GATE_CLOCK_DIR))),
     )
     verbs = parser.add_subparsers(dest="verb", required=True)
+
+    entry = verbs.add_parser(
+        "run", help="run one recipe's legs, record the row, exit the legs' own status"
+    )
+    entry.add_argument("--recipe", choices=RECIPES, required=True)
+    entry.add_argument(
+        "--leg",
+        action="append",
+        required=True,
+        metavar="RECIPE",
+        help="one leg, named by the just recipe that runs it, in order",
+    )
+    entry.add_argument(
+        "forwarded",
+        nargs="*",
+        metavar="ARG",
+        help="arguments for the last leg's invocation only",
+    )
 
     entry = verbs.add_parser("record", help="append one finished gate run")
     entry.add_argument("--recipe", choices=RECIPES, required=True)
@@ -833,14 +1115,17 @@ def parse_args(argv: list[str] | None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Record, report, read history or check the anchor.
+    """Run a recipe, record, report, read history or check the anchor.
 
-    Exit 0 for every verb but `check` — the reads never gate. `check` is the
-    one exception and the reason it exists: a malformed anchor is a red at
-    `just check` time rather than a line nobody is obliged to read at
-    watch-report time.
+    `run` answers the legs' own status, not 0: it is the gate. Every other verb
+    exits 0 — the reads never gate — except `check`, the reason it exists: a
+    malformed anchor is a red at `just check` time rather than a line nobody is
+    obliged to read at watch-report time.
     """
     args = parse_args(argv)
+
+    if args.verb == "run":
+        return run_recipe(args.recipe, runner_legs(args.leg, args.forwarded), args.gate_clock_dir)
 
     if args.verb == "record":
         now_up = proc_uptime()

@@ -515,12 +515,13 @@ def test_no_authored_agent_surface_text_carries_a_pair() -> None:
 
 STUB: Final = "#!/usr/bin/env bash\nexit 0\n"
 
-# `uv run python tools/generate_seats.py --check` is the one command allowed through to a
-# real interpreter; `${@:3}` is the argument list with `run python` stripped. The
-# interpreter is this test run's own, so no environment is resolved and nothing is installed.
+# `uv run python tools/generate_seats.py --check` and the gate-clock runner that drives
+# `just check`'s legs since #483 are the commands allowed through to a real interpreter;
+# `${@:3}` is the argument list with `run python` stripped. The interpreter is this test
+# run's own, so no environment is resolved and nothing is installed.
 UV_STUB: Final = """#!/usr/bin/env bash
 case "$*" in
-  *tools/generate_seats.py*) exec {python} "${{@:3}}" ;;
+  *tools/generate_seats.py*|*tools/gate_clock.py*) exec {python} "${{@:3}}" ;;
   *) exit 0 ;;
 esac
 """
@@ -546,7 +547,13 @@ def gate(root: Path, justfile: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(  # noqa: S603 — fixed argv, no shell, no interpolation
         [just, "check"],
         cwd=root,
-        env={**os.environ, "PATH": f"{stubs}{os.pathsep}{os.environ['PATH']}"},
+        env={
+            **os.environ,
+            "PATH": f"{stubs}{os.pathsep}{os.environ['PATH']}",
+            # The runner records a row for every `just check` since #483; a staged root's
+            # rows belong to the staged tree, never to this box's live history.
+            "CTI_GATE_CLOCK_DIR": str(root / "gate-clock"),
+        },
         capture_output=True,
         text=True,
         check=False,
@@ -585,26 +592,25 @@ def test_orphaning_the_recipe_takes_the_check_off_the_gate_with_its_name_intact(
 ) -> None:
     """Negative control: the route the previous assertion could not see.
 
-    `check:` names `check-generated-disabled`, which no-ops, and the real recipe is left in
-    the file for anyone reading it. Both of round 1's assertions still hold on this text —
-    asserted here, so the control states exactly what it is a control for — and the drifted
-    seat sails through.
+    `check`'s runner names `check-generated-disabled`, which no-ops, and the real recipe is
+    left in the file for anyone reading it. Both of round 1's assertions still hold on this
+    text — asserted here, so the control states exactly what it is a control for — and the
+    drifted seat sails through.
     """
     assert generate_seats.main(["--root", str(root)]) == 0
     drift_a_seat(root)
     text = JUSTFILE.read_text(encoding="utf-8")
     orphaned = (
         text.replace(
-            "check: check-commits check-generated ",
-            "check: check-commits check-generated-disabled ",
+            "--leg check-generated ",
+            "--leg check-generated-disabled ",
             1,
         )
         + "\ncheck-generated-disabled:\n    @true\n"
     )
     assert orphaned != text
-    assert "check-generated" in next(
-        line for line in orphaned.splitlines() if line.startswith("check:")
-    )
+    assert "--leg check-generated-disabled" in orphaned
+    assert "\ncheck-generated:\n" in orphaned  # the real recipe stays, for anyone reading it
     assert "uv run python tools/generate_seats.py --check" in orphaned
     assert gate(root, orphaned).returncode == 0
 

@@ -3095,8 +3095,12 @@ def test_the_justfile_carries_the_dispatch_recipe_over_the_seam() -> None:
 
 def test_gitleaks_is_a_dependency_of_just_check() -> None:
     text = JUSTFILE.read_text(encoding="utf-8")
-    check = next(line for line in text.splitlines() if line.startswith("check:"))
-    assert "check-secrets" in check
+    # `just check` names its legs on the runner's `--leg` line rather than a dependency
+    # line since #483, so the block the recipe occupies carries the reach.
+    lines = text.splitlines()
+    start = next(i for i, line in enumerate(lines) if line.startswith("check:"))
+    block = "\n".join(lines[start : start + 20])
+    assert "--leg check-secrets" in block
     assert re.search(r"^check-secrets:\n(?:.*\n)*?\s+gitleaks dir \.", text, re.MULTILINE)
 
 

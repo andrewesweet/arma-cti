@@ -935,6 +935,12 @@ def just_check_tools(source: str | None = None) -> frozenset[str]:
     `check`'s direct dependencies, so a `check-foo` that gained a dependency of its own would
     hide that recipe's tools: they would never enter `reached`, both assertions below would
     stay green, and class 6's remedy would silently omit a gate `just check` runs.
+
+    #483 moved the leg list off the dependency line and into the runner invocation the
+    recipe body carries (`--leg check-foo`), so the walk seeds from both spellings: the
+    dependency line where a source still has one, and the body's `--leg` names where — as
+    in the repository's own justfile — that is where `just check`'s legs now live. Each leg
+    recipe's own dependencies are still walked transitively either way.
     """
     text = JUSTFILE.read_text(encoding="utf-8") if source is None else source
     recipe = re.compile(
@@ -944,7 +950,7 @@ def just_check_tools(source: str | None = None) -> frozenset[str]:
     assert "check" in bodies, "the justfile no longer has a `check` recipe"
     reached: set[str] = set()
     seen: set[str] = set()
-    pending = list(bodies["check"][0].split())
+    pending = [*bodies["check"][0].split(), *re.findall(r"--leg ([a-z0-9-]+)", bodies["check"][1])]
     while pending:
         name = pending.pop()
         assert name in bodies, name

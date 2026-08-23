@@ -43,25 +43,39 @@ the tier does work on, and the exempt case is asserted directly rather than
 assumed — the sibling divergences (a target that reaches `measure` and finds
 nothing to plant on, and one whose `measure` refuses) are paid for and red
 respectively, so neither reaches a green row cheaply.
+
+#483's round widens the record to every recipe that gates a landing and puts
+each leg's outcome on the row. What is pinned first is the distinction the
+issue is named for: `passed`, `failed` and `not_run` are three different facts
+and a row that could not tell a short-circuited leg from a fast one would let
+a red recipe read as a green one (#83's shape, the standing three-state rule
+in `docs/observatory/hazards.md`). Then the compatibilities the widening owes
+its readers: a historical row without the breakdown still parses, a `null`
+anchor entry is a deliberate unset rather than damage, recording stays
+advisory under an unwritable directory, and the justfile's recipes are the
+ones the recorder names — asserted against the file rather than restated.
 """
 
 from __future__ import annotations
 
 import json
+import re
 import subprocess
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, Final
 
 from conftest import load_tool
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     import pytest
 
 gate_clock = load_tool("gate_clock")
 # The exempt list is read from the tier rather than restated here, so an entry
 # added or removed there moves the target count's test with it (#466 round 2).
 mutation_smoke = load_tool("mutation_smoke")
+# The recipes the justfile records are read from the justfile itself, so the
+# call sites and `RECIPES` cannot drift apart without this module noticing.
+JUSTFILE = Path(__file__).resolve().parents[2] / "justfile"
 
 # The post-#197 median the issue's day table is anchored to, and three of its
 # days: the shapes the 1.25x threshold was derived to separate.
@@ -137,13 +151,22 @@ def verdict_for(
     arma_running: bool = False,
 ) -> gate_clock.Verdict:
     """Return the `unit` verdict of an assess call, so each test names only its subject."""
-    unit, _fast = gate_clock.assess(tuple(records), state, arma_running=arma_running)
+    unit, *_rest = gate_clock.assess(tuple(records), state, arma_running=arma_running)
     return unit
 
 
 def write_anchor(path: Path, entries: dict[str, object]) -> None:
     """Write an anchor file the way the tree ships one: `_read_me` plus entries."""
     path.write_text(json.dumps({"_read_me": "arranged", **entries}, indent=2), encoding="utf-8")
+
+
+# The two recipes no anchor has been derived for (#483): a `null` entry names
+# the recipe without anchoring it, and a file the loader must read clean carries
+# one for each.
+UNSET_ENTRIES: Final[dict[str, object]] = {
+    "check": {"anchor_seconds": None},
+    "mutation": {"anchor_seconds": None},
+}
 
 
 def stage_repo(tmp_path: Path, name: str = "repo") -> Path:
@@ -185,7 +208,7 @@ def fast_verdict_for(
     records: list[gate_clock.Record], state: gate_clock.AnchorState
 ) -> gate_clock.Verdict:
     """Return the `fast` verdict of an assess call, so each test names only its subject."""
-    _unit, fast = gate_clock.assess(tuple(records), state)
+    _unit, fast, *_rest = gate_clock.assess(tuple(records), state)
     return fast
 
 
@@ -300,21 +323,22 @@ def test_half_edited_entries_are_problems_for_their_recipe_alone(tmp_path: Path)
         {
             "unit": {"anchor_seconds": "110", "set": SET_ON},  # a string fails the read
             "fast": {"anchor_seconds": 195, "set": SET_ON},
+            **UNSET_ENTRIES,
         },
     )
     state = gate_clock.load_anchors(anchor_file)
     assert state.anchors == {"fast": 195.0}
     assert set(state.problems) == {"unit"}
 
-    good_fast = {"fast": {"anchor_seconds": 195, "set": SET_ON}}
+    good_rest = {"fast": {"anchor_seconds": 195, "set": SET_ON}, **UNSET_ENTRIES}
     anchor_file.write_text(
-        json.dumps({"unit": {"anchor_seconds": 110}, **good_fast}),
+        json.dumps({"unit": {"anchor_seconds": 110}, **good_rest}),
         encoding="utf-8",  # `set` dropped
     )
     assert set(gate_clock.load_anchors(anchor_file).problems) == {"unit"}
 
     anchor_file.write_text(
-        json.dumps({"unit": 176, **good_fast}),
+        json.dumps({"unit": 176, **good_rest}),
         encoding="utf-8",  # the entry itself is not an object
     )
     assert set(gate_clock.load_anchors(anchor_file).problems) == {"unit"}
@@ -402,7 +426,7 @@ def test_recipes_are_never_averaged_together() -> None:
         tuple(records),
         anchor_state({"unit": ANCHOR_SECONDS, "fast": 100.0}, {"unit": SET_ON, "fast": SET_ON}),
     )
-    unit, fast = verdicts
+    unit, fast, *_rest = verdicts
     assert unit.reason == "insufficient_sample"
     assert unit.line is None
     assert fast.reason == "slower"
@@ -422,6 +446,13 @@ def test_a_written_row_round_trips_every_field(tmp_path: Path) -> None:
         row(),
         row(recipe="fast", wall=271.5, status=0, at="2026-08-19T09:00:00+00:00"),
         row(recipe="unit", wall=221.0, status=1, tests=None, load=None, foreign=3),
+        row()._replace(
+            legs=(
+                gate_clock.Leg("unit-python", "passed", 71.2),
+                gate_clock.Leg("unit-rust", "failed", 0.4),
+                gate_clock.Leg("a-third-leg", "not_run", None),
+            )
+        ),
     )
     for one in written:
         gate_clock.append_record(tmp_path, one)
@@ -483,6 +514,7 @@ def test_the_anchor_loader_skips_provenance_only(tmp_path: Path) -> None:
         {
             "unit": {"anchor_seconds": 190, "set": SET_ON},
             "fast": {"anchor_seconds": 195, "set": SET_MOMENT},
+            **UNSET_ENTRIES,
         },
     )
     state = gate_clock.load_anchors(anchor_file)
@@ -502,7 +534,8 @@ def test_a_recipe_the_file_does_not_name_is_a_problem(tmp_path: Path) -> None:
     the broken-anchor rule exists to catch.
     """
     anchor_file = tmp_path / "gate-clock-anchor.json"
-    write_anchor(anchor_file, {"unit": {"anchor_seconds": 190, "set": SET_ON}})  # `fast` deleted
+    # `fast` deleted; the null entries keep the two post-#483 recipes legitimately unset
+    write_anchor(anchor_file, {"unit": {"anchor_seconds": 190, "set": SET_ON}, **UNSET_ENTRIES})
     state = gate_clock.load_anchors(anchor_file)
     assert state.anchors == {"unit": 190.0}
     assert set(state.problems) == {"fast"}
@@ -522,6 +555,7 @@ def test_a_misspelled_key_is_flagged_where_it_sits(tmp_path: Path) -> None:
         {
             "unti": {"anchor_seconds": 190, "set": SET_ON},
             "fast": {"anchor_seconds": 195, "set": SET_ON},
+            **UNSET_ENTRIES,
         },
     )
     state = gate_clock.load_anchors(anchor_file)
@@ -638,6 +672,7 @@ def test_report_through_the_cli_in_each_state(
         {
             "unit": {"anchor_seconds": ANCHOR_SECONDS, "set": SET_ON},
             "fast": {"anchor_seconds": ANCHOR_SECONDS, "set": SET_ON},
+            **UNSET_ENTRIES,
         },
     )
     assert gate_clock.main(run) == 0  # anchored at the current median: healthy
@@ -667,6 +702,7 @@ def test_the_check_verb_reds_a_broken_anchor_and_passes_a_good_one(
     good: dict[str, object] = {
         "unit": {"anchor_seconds": 176, "set": SET_ON},
         "fast": {"anchor_seconds": 195, "set": SET_ON},
+        **UNSET_ENTRIES,
     }
 
     anchor_file.write_text("{not json", encoding="utf-8")
@@ -808,7 +844,9 @@ def test_history_counts_the_kinds_and_medians_only_the_comparable_rows(tmp_path:
     for _ in range(2):
         gate_clock.append_record(tmp_path, row(recipe="fast", wall=81.0, targets=0))
     gate_clock.append_record(tmp_path, row(recipe="fast", wall=81.0, targets=None))
-    _unit_line, fast_line = gate_clock.history(tmp_path, fast_state())
+    fast_line = next(
+        line for line in gate_clock.history(tmp_path, fast_state()) if line.startswith("fast: ")
+    )
     assert "6 green" in fast_line
     assert "2 with no mutation target" in fast_line
     assert "1 predating the target count" in fast_line
@@ -855,3 +893,293 @@ def test_a_run_over_docs_and_a_run_over_code_land_as_different_rows(
     assert docs_row.mutation_targets == 0
     assert code_row.mutation_targets == 1
     assert docs_row.wall_seconds == code_row.wall_seconds
+
+
+# --- #483: every recipe records a row, every leg its own outcome ----------------
+
+
+def test_a_green_run_that_landed_nothing_is_recorded_leg_by_leg(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The invisible case the spec is named for: the work was done, the row exists.
+
+    Every leg that ran carries its own outcome and a wall — measured, not
+    derived from the recipe's — and a green run's line stays the shape it
+    always had, with no leg tail.
+    """
+    monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
+    status = gate_clock.run_recipe(
+        "unit", [("unit-python", ["true"]), ("unit-rust", ["sleep", "0.15"])], tmp_path
+    )
+    assert status == 0
+    (read_back,) = gate_clock.load_records(tmp_path)
+    assert read_back.status == 0
+    assert read_back.legs is not None
+    assert [(leg.name, leg.outcome) for leg in read_back.legs] == [
+        ("unit-python", "passed"),
+        ("unit-rust", "passed"),
+    ]
+    # /proc/uptime resolves to centiseconds, so a 150 ms leg is several ticks.
+    assert read_back.legs[1].wall_seconds is not None
+    assert read_back.legs[1].wall_seconds >= 0.05
+    out = capsys.readouterr().out
+    assert "recorded unit" in out
+    assert "legs:" not in out  # the tail is a red run's fact
+
+
+def test_a_leg_short_circuited_by_a_red_leg_reads_not_run_not_passed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """#83's shape, pinned: a recipe that stopped early is not a recipe whose legs passed.
+
+    `not_run` is a third fact with no wall of its own — it was never measured —
+    and the run's own line names every leg, so a FAIL that stops a run early
+    cannot be mistaken for a fast one.
+    """
+    monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
+    status = gate_clock.run_recipe(
+        "check",
+        [("ok", ["true"]), ("bad", ["false"]), ("never", ["true"])],
+        tmp_path,
+    )
+    assert status != 0
+    (read_back,) = gate_clock.load_records(tmp_path)
+    assert read_back.status == status
+    assert read_back.legs is not None
+    ok, bad, never = read_back.legs
+    assert (ok.name, ok.outcome) == ("ok", "passed")
+    assert ok.wall_seconds is not None
+    assert (bad.name, bad.outcome) == ("bad", "failed")
+    assert bad.wall_seconds is not None
+    assert (never.name, never.outcome) == ("never", "not_run")
+    assert never.wall_seconds is None
+    out = capsys.readouterr().out
+    assert "legs: ok=passed, bad=failed, never=not_run" in out
+
+
+def test_a_historical_row_without_legs_parses_and_claims_no_breakdown(
+    tmp_path: Path,
+) -> None:
+    """The archive is permanent: a row predating #483 reads back, its legs `None`.
+
+    `None` is absence — no breakdown claimed — and never an empty list, which
+    would present a recipe with no legs rather than one nobody recorded.
+    """
+    legacy = {
+        "at": ROW_AT,
+        "recipe": "fast",
+        "wall_seconds": 81.49,
+        "status": 0,
+        "head": "c0ffee" * 6,
+        "tests_collected": 5188,
+        "load_1m": 0.42,
+        "foreign_gate_processes": 0,
+        "mutation_targets": 2,
+    }
+    path = gate_clock.records_path(tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(legacy) + "\n", encoding="utf-8")
+    (read_back,) = gate_clock.load_records(tmp_path)
+    assert read_back.wall_seconds == 81.49
+    assert read_back.legs is None
+
+
+def test_a_leg_entry_that_will_not_read_declines_the_whole_breakdown(
+    tmp_path: Path,
+) -> None:
+    """A partial breakdown would present later legs as absent when they ran.
+
+    The row survives for its duration; the breakdown reads as `None` — no
+    breakdown claimed — rather than a list with the bad element dropped, which
+    is the reading `not_run` exists to prevent turned inside out.
+    """
+    path = gate_clock.records_path(tmp_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    document = gate_clock.record_document(row())
+    document["legs"] = [
+        {"name": "ok", "outcome": "passed", "wall_seconds": 1.0},
+        {"name": "bad", "outcome": "banana", "wall_seconds": 1.0},  # no such outcome
+    ]
+    path.write_text(json.dumps(document) + "\n", encoding="utf-8")
+    (read_back,) = gate_clock.load_records(tmp_path)
+    assert read_back.legs is None
+
+
+def test_a_null_anchor_entry_is_deliberately_unset_not_damage(tmp_path: Path) -> None:
+    """`anchor_seconds: null` names a recipe the recorder writes without anchoring it.
+
+    A dropped key is still damage — pinned above — so a recipe recorded since
+    #483 that no anchor has been derived for needs a spelling the loader reads
+    on purpose. It produces `anchor_unset`: unknown, never healthy, and no
+    drift assessment is attempted against rows that do exist.
+    """
+    anchor_file = tmp_path / "anchor.json"
+    write_anchor(
+        anchor_file,
+        {
+            "unit": {"anchor_seconds": 190, "set": SET_ON},
+            "fast": {"anchor_seconds": None},
+            **UNSET_ENTRIES,
+        },
+    )
+    state = gate_clock.load_anchors(anchor_file)
+    assert state.problems == {}
+    assert state.anchors == {"unit": 190.0}
+    assert state.unset == frozenset({"fast", "check", "mutation"})
+
+    records = greens([400.0] * gate_clock.MIN_SAMPLE, recipe="fast")
+    verdicts = gate_clock.assess(tuple(records), state)
+    by_recipe = {verdict.recipe: verdict for verdict in verdicts}
+    assert by_recipe["fast"].reason == "anchor_unset"
+    assert by_recipe["fast"].line is None
+    assert by_recipe["unit"].reason == "insufficient_sample"
+
+
+def test_two_recipes_recorded_in_one_session_keep_separate_medians(
+    tmp_path: Path,
+) -> None:
+    """Story 8's hazard: a new recipe's rows must not contaminate another's median."""
+    for wall in (400.0,) * gate_clock.MIN_SAMPLE:
+        gate_clock.append_record(tmp_path, row(recipe="check", wall=wall))
+        gate_clock.append_record(tmp_path, row(recipe="unit", wall=ANCHOR_SECONDS))
+    state = anchor_state(
+        {"unit": ANCHOR_SECONDS, "check": 100.0}, {"unit": SET_ON, "check": SET_ON}
+    )
+    by_recipe = {
+        verdict.recipe: verdict
+        for verdict in gate_clock.assess(gate_clock.load_records(tmp_path), state)
+    }
+    assert by_recipe["unit"].reason == "healthy"  # the slow check rows never entered it
+    assert by_recipe["check"].reason == "slower"  # and the healthy unit rows never diluted this
+
+    check_line = next(
+        line for line in gate_clock.history(tmp_path, state) if line.startswith("check: ")
+    )
+    assert "median(last 5 green) 400s" in check_line
+
+
+def test_an_unwritable_records_directory_preserves_the_status_and_reaches_stderr(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Advisory means the gate's own exit is untouched — not that nothing is said.
+
+    A full disk or a locked directory must never turn a green gate red (#483
+    story 5), but a silent failure is indistinguishable from nothing happening
+    (#496): the failure prints to stderr, and no row claims a run it did not
+    record.
+    """
+    monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
+    locked = tmp_path / "locked"
+    locked.mkdir()
+    locked.chmod(0o500)
+    try:
+        green = gate_clock.run_recipe("unit", [("unit-python", ["true"])], locked)
+        assert green == 0
+        red = gate_clock.run_recipe(
+            "unit", [("unit-python", ["false"]), ("unit-rust", ["true"])], locked
+        )
+        assert red != 0
+    finally:
+        locked.chmod(0o700)
+    captured = capsys.readouterr()
+    assert "recording failed" in captured.err
+    assert "recorded" not in captured.out
+    assert gate_clock.load_records(locked) == ()
+
+
+def test_the_forwarded_arguments_reach_only_the_last_leg() -> None:
+    """`just mutation --paths tests/unit/x.py` forwards through to its one body recipe.
+
+    The arguments after the leg list belong to the last leg alone — the shape a
+    single-leg recipe needs — and never to the legs before it.
+    """
+    assert gate_clock.runner_legs(["a", "b"], ["--paths", "tests/unit/x.py"]) == [
+        ("a", ["just", "a"]),
+        ("b", ["just", "b", "--paths", "tests/unit/x.py"]),
+    ]
+    assert gate_clock.runner_legs(["mutation-body"], []) == [
+        ("mutation-body", ["just", "mutation-body"])
+    ]
+
+
+def test_run_through_the_cli_records_a_row_and_exits_the_legs_own_status(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The verb the justfile drives, once: a red leg and a not-run leg, on the row.
+
+    The leg is a recipe `just` cannot name, which fails fast and cheaply — the
+    real wiring, `run --leg <name>` spawning `just <name>`, asserted as the
+    recipes invoke it rather than re-implemented here.
+    """
+    monkeypatch.delenv("CTI_GATE_CLOCK_COLLECTED_FILE", raising=False)
+    status = gate_clock.main(
+        [
+            "--gate-clock-dir",
+            str(tmp_path),
+            "run",
+            "--recipe",
+            "unit",
+            "--leg",
+            "no-such-recipe-here",
+            "--leg",
+            "also-absent",
+        ]
+    )
+    assert status != 0
+    (read_back,) = gate_clock.load_records(tmp_path)
+    assert read_back.recipe == "unit"
+    assert read_back.status == status
+    assert read_back.legs is not None
+    assert [(leg.name, leg.outcome) for leg in read_back.legs] == [
+        ("no-such-recipe-here", "failed"),
+        ("also-absent", "not_run"),
+    ]
+    assert "no-such-recipe-here=failed" in capsys.readouterr().out
+
+
+def test_the_justfile_records_exactly_the_recipes_the_recorder_names() -> None:
+    """One authority, asserted against the file: `RECIPES` and the call sites cannot drift.
+
+    The recipe set is stated once in `tools/gate_clock.py`; the justfile's
+    `run --recipe` call sites are its other half, so a recipe added to one and
+    not the other is a silent omission this catches — and `mutation`'s leg
+    names a body recipe that must exist for the wrapper to record at all.
+    """
+    text = JUSTFILE.read_text(encoding="utf-8")
+    recorded = set(re.findall(r"run --recipe ([a-z-]+)", text))
+    assert recorded == set(gate_clock.RECIPES)
+    assert "_mutation-body" in text
+
+
+def test_the_foreign_gate_scan_reads_proc_and_can_be_staged(tmp_path: Path) -> None:
+    """The start-of-run count matches `pytest|cargo test` command lines, spawning nothing.
+
+    Staged like the Arma scan it sits beside: a digit-named directory per
+    process, its `cmdline` NUL-separated. An unreadable `/proc` is `None` —
+    uncounted, never zero.
+    """
+    for pid, cmdline in (
+        ("3", b"uv\0run\0pytest\0"),
+        ("4", b"/home/u/.cargo/bin/cargo\0test\0--quiet\0"),
+        ("5", b"vim\0notes.txt\0"),
+    ):
+        entry = tmp_path / pid
+        entry.mkdir()
+        (entry / "cmdline").write_bytes(cmdline)
+    (tmp_path / "self").mkdir()  # not a pid: skipped
+    assert gate_clock.foreign_gate_processes(proc=tmp_path) == 2
+    assert gate_clock.foreign_gate_processes(proc=tmp_path / "nowhere") is None
+
+
+def test_the_load_average_reads_its_own_kernel_file_and_can_be_staged(
+    tmp_path: Path,
+) -> None:
+    """The row's `load_1m`, read where the shell scaffold read it; unreadable is None."""
+    staged = tmp_path / "loadavg"
+    staged.write_text("0.42 0.65 0.70 1/500 12345\n", encoding="utf-8")
+    assert gate_clock.read_loadavg(staged) == 0.42
+    assert gate_clock.read_loadavg(tmp_path / "absent") is None
+    staged.write_text("not a number 0.65 0.70 1/500 12345\n", encoding="utf-8")
+    assert gate_clock.read_loadavg(staged) is None

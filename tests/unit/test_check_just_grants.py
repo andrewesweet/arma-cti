@@ -120,6 +120,8 @@ def test_repository_grants_are_live_and_the_checker_is_on_check() -> None:
         text=True,
     )
     recipes = json.loads(completed.stdout)["recipes"]
-    dependencies = {dependency["recipe"] for dependency in recipes["check"]["dependencies"]}
-    assert "check-just-grants" in dependencies
+    # `just check` names its legs on the runner's `--leg` line rather than a dependency
+    # line since #483, so that is where the checker's own reach is asserted from.
+    check_body = str(recipes["check"]["body"])
+    assert "--leg check-just-grants" in check_body
     assert "tools/check_just_grants.py" in str(recipes["check-just-grants"]["body"])

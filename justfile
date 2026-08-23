@@ -16,7 +16,22 @@ _default:
     @just --list
 
 # No-Arma static tier: commit hygiene, lints, types, formatting, secrets.
-check: check-commits check-generated check-adr check-source-link check-gated-paths check-markers check-conflicts check-changelog check-gate-clock check-seats check-just-grants check-arbiter check-sqf check-secrets check-python check-machine-b check-rust
+# Recorded per leg since #483: the runner takes the legs the dependency line
+# used to name, in order, and stops at the first red one exactly as `just`
+# stopped on a failed dependency — the legs after it are recorded as not_run,
+# never as passed, and the row carries each leg's name, outcome and wall. The
+# runner exits the legs' own status; a recording failure prints to stderr and
+# never reddens the gate it measured.
+check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    exec uv run python tools/gate_clock.py run --recipe check \
+        --leg check-commits --leg check-generated --leg check-adr \
+        --leg check-source-link --leg check-gated-paths --leg check-markers \
+        --leg check-conflicts --leg check-changelog --leg check-gate-clock \
+        --leg check-seats --leg check-just-grants --leg check-arbiter \
+        --leg check-sqf --leg check-secrets --leg check-python \
+        --leg check-machine-b --leg check-rust
 
 # Static validation for the repository-managed Machine B playbooks. The live
 # inventory is deliberately absent here: syntax and lint must be available to
@@ -183,37 +198,30 @@ check-rust:
     cargo fmt {{shim}} --check
     cargo clippy {{shim}} --all-targets --all-features -- -D warnings
 
-# No-Arma unit tier. Timed end to end and recorded (#446): the gate's wall clock
-# is the project's largest consumer of agent time, and a 2x doubling ran two
-# weeks unnoticed because nothing recorded it. The nested `just` invocations
-# replace the dependency line so the wall covers both legs; a `just fast` that
-# runs this recipe records its own row too, and both rows are real measurements
-# of real invocations. The wall is read from /proc/uptime at both ends — the
-# kernel's monotonic clock, because CLOCK_REALTIME steps under NTP mid-run. The
-# recorder's inputs are each guarded because a measurement must never redden
-# the gate it measures, and the collected-count file is removed after the
-# recorder reads it, not before — rm-first left tests_collected null on every
-# bare-run row. Cost is one `uv run` start (~0.3s against a ~190s tier) plus
-# one file write at collection time.
+# No-Arma unit tier. Timed end to end and recorded (#446), per leg since #483:
+# the gate's wall clock is the project's largest consumer of agent time, and a
+# 2x doubling ran two weeks unnoticed because nothing recorded it. The runner
+# invokes the two legs as nested `just` recipes so the wall covers both and each
+# leg keeps its own outcome; a `just fast` that runs this recipe records its own
+# row too, and both rows are real measurements of real invocations. The wall is
+# read from /proc/uptime at both ends — the kernel's monotonic clock, because
+# CLOCK_REALTIME steps under NTP mid-run. The recorder's inputs are each
+# guarded because a measurement must never redden the gate it measures, and the
+# collected-count file is removed after the runner has read it, not before —
+# rm-first left tests_collected null on every bare-run row. Cost is one `uv
+# run` start (~0.3s against a ~190s tier) plus one file write at collection
+# time.
 unit:
     #!/usr/bin/env bash
     set -euo pipefail
-    start_up=$(cut -d' ' -f1 /proc/uptime) || start_up=""
-    start_load=$(cut -d' ' -f1 /proc/loadavg) || start_load=""
-    start_foreign=$(pgrep -fc 'pytest|cargo test' || true)
     created=0
     if [ -z "${CTI_GATE_CLOCK_COLLECTED_FILE:-}" ]; then
         export CTI_GATE_CLOCK_COLLECTED_FILE="$(mktemp)"
         created=1
     fi
     status=0
-    just unit-python && just unit-rust || status=$?
-    record_args=(record --recipe unit --status "$status")
-    if [ -n "$start_up" ]; then record_args+=(--start-uptime "$start_up"); fi
-    if [ -n "$start_load" ]; then record_args+=(--load-1m "$start_load"); fi
-    if [ -n "$start_foreign" ]; then record_args+=(--foreign-gate "$start_foreign"); fi
-    uv run python tools/gate_clock.py "${record_args[@]}" \
-        || echo "gate-clock: recording failed" >&2
+    uv run python tools/gate_clock.py run --recipe unit \
+        --leg unit-python --leg unit-rust || status=$?
     if [ "$created" = 1 ]; then rm -f "$CTI_GATE_CLOCK_COLLECTED_FILE"; fi
     exit "$status"
 
@@ -386,6 +394,16 @@ probe-contract:
 # — lowering is a hand-edit, in the diff, like `NO_MUTABLE_SUBJECT`.
 [positional-arguments]
 mutation *args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    exec uv run python tools/gate_clock.py run --recipe mutation \
+        --leg _mutation-body -- "$@"
+
+# mutation's one leg, in its own recipe so the runner can invoke it by name and
+# this recipe's own arguments still reach it (#483). Private: nothing runs it
+# but the runner.
+[positional-arguments]
+_mutation-body *args:
     uv run python tools/mutation_smoke.py "$@"
 
 alias mutation-compare := mutation
@@ -394,29 +412,24 @@ alias mutation-compare := mutation
 # nothing about mutants, and the smoke refuses rather than guesses when the
 # module it is asked about is not green on its own.
 #
-# Timed end to end and recorded (#446), same scaffold as `unit`: this whole
-# recipe's wall is the figure the subagent-wait threshold applies to, and it
-# would be lost if only its legs were recorded. It always mints the collected
-# count's temp file itself; the nested `just unit` sees one already exported and
-# leaves removal to this, the recipe that created it — after the recorder has
-# read it. The count it reads is the suite's: `tools/mutation_smoke.py` strips
-# the export from its judges' environment, so a judge's one-module collection
-# cannot overwrite the unit leg's suite count between the two records.
+# Timed end to end and recorded (#446), per leg since #483: this whole recipe's
+# wall is the figure the subagent-wait threshold applies to, and it would be
+# lost if only its legs were recorded. The three legs are the three recipes, so
+# each records its own nested row as well and a red `check` marks `unit` and
+# `mutation` not_run in this recipe's row — a short-circuited run never reads
+# as a fast green one. It always mints the collected count's temp file itself;
+# the nested `just unit` sees one already exported and leaves removal to this,
+# the recipe that created it — after the runner has read it. The count it reads
+# is the suite's: `tools/mutation_smoke.py` strips the export from its judges'
+# environment, so a judge's one-module collection cannot overwrite the unit
+# leg's suite count between the two records.
 fast:
     #!/usr/bin/env bash
     set -euo pipefail
-    start_up=$(cut -d' ' -f1 /proc/uptime) || start_up=""
-    start_load=$(cut -d' ' -f1 /proc/loadavg) || start_load=""
-    start_foreign=$(pgrep -fc 'pytest|cargo test' || true)
     export CTI_GATE_CLOCK_COLLECTED_FILE="$(mktemp)"
     status=0
-    just check && just unit && just mutation || status=$?
-    record_args=(record --recipe fast --status "$status")
-    if [ -n "$start_up" ]; then record_args+=(--start-uptime "$start_up"); fi
-    if [ -n "$start_load" ]; then record_args+=(--load-1m "$start_load"); fi
-    if [ -n "$start_foreign" ]; then record_args+=(--foreign-gate "$start_foreign"); fi
-    uv run python tools/gate_clock.py "${record_args[@]}" \
-        || echo "gate-clock: recording failed" >&2
+    uv run python tools/gate_clock.py run --recipe fast \
+        --leg check --leg unit --leg mutation || status=$?
     rm -f "$CTI_GATE_CLOCK_COLLECTED_FILE"
     exit "$status"
 
