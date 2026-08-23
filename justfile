@@ -37,6 +37,21 @@ generate:
     uv run python tools/export_command_schema.py
     uv run python tools/generate_seats.py
 
+# Render/check project-owned harness bundles through their tracked manifest.
+# Promotion remains contained by the tool's write boundary; this recipe grants
+# no dispatched-session exception.
+[positional-arguments]
+harness-render *args:
+    uv run python tools/harness_surface.py render --manifest config/harness-surfaces.json --source-root . "$@"
+
+[positional-arguments]
+harness-check *args:
+    uv run python tools/harness_surface.py check --manifest config/harness-surfaces.json --source-root . "$@"
+
+[positional-arguments]
+harness-promote *args:
+    uv run python tools/harness_surface.py promote --manifest config/harness-surfaces.json --source-root . "$@"
+
 # A stale export is a schema_stale failure, never a silent divergence. The seat
 # surfaces need it more than the schema does: both declaration surfaces fail
 # open (ADR-0068), so a drifted seat runs at a tier nobody ratified and says

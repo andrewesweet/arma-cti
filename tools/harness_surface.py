@@ -5,6 +5,10 @@ without a capability has no destination entry for that capability, so a
 renderer cannot turn an unsupported harness feature into an empty or
 equivalent surface. Rendering is useful for temporary layouts; promotion is a
 separate, guarded operation for the later installation issue (#505).
+
+Deterministic rendering covers destination ordering, file bytes, and generated
+file modes. File mtimes and created-directory modes are intentionally outside
+the contract: writes occur now, and directory modes remain subject to umask.
 """
 
 from __future__ import annotations
@@ -15,9 +19,12 @@ import os
 import re
 import stat
 import sys
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Iterator, Mapping, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
+from tempfile import TemporaryDirectory
+from types import MappingProxyType
 from typing import Final, NoReturn, cast
 
 SCHEMA_VERSION: Final = 1
@@ -25,6 +32,13 @@ DISPATCH_ID_ENV: Final = "CTI_DISPATCH_ID"
 TOKEN_PATTERN: Final = re.compile(r"^[a-z][a-z0-9_-]*$")
 CAPABILITY_PATTERN: Final = re.compile(r"^[a-z][a-z0-9_]*$")
 PATH_SEPARATORS: Final = frozenset({"\\", "\x00", "\n", "\r", "\t"})
+# Target adapters own capability truth. Manifest input may restate but never widen it.
+HARNESS_TARGET_CAPABILITIES: Final[Mapping[str, frozenset[str]]] = MappingProxyType(
+    {
+        "claude-code": frozenset({"hooks", "project_instructions"}),
+        "codex": frozenset({"project_instructions"}),
+    }
+)
 
 
 class HarnessSurfaceError(ValueError):
@@ -65,7 +79,17 @@ class Target:
     """One harness target and the capabilities it demonstrably provides."""
 
     name: str
-    capabilities: frozenset[str]
+
+    def __post_init__(self) -> None:
+        """Refuse target names without an implemented support entry."""
+        _token(self.name, "target name")
+        if self.name not in HARNESS_TARGET_CAPABILITIES:
+            _manifest_error(f"target has no harness support: {self.name}")
+
+    @property
+    def capabilities(self) -> frozenset[str]:
+        """Read capability truth from the target support registry."""
+        return HARNESS_TARGET_CAPABILITIES[self.name]
 
     def supports(self, capability: str) -> bool:
         """Return whether this target has a real surface for ``capability``."""
@@ -83,9 +107,53 @@ class Bundle:
     files: tuple[str, ...]
     destinations: tuple[tuple[str, str], ...]
 
+    def __post_init__(self) -> None:
+        """Keep direct construction inside the same boundary as JSON parsing."""
+        _validate_bundle_source(self)
+        _validate_bundle_destinations(self)
+
     def destination_for(self, target: str) -> str | None:
         """Return a target destination, absent when target lacks this bundle."""
         return next((path for name, path in self.destinations if name == target), None)
+
+
+def _validate_bundle_source(bundle: Bundle) -> None:
+    """Validate one bundle's identity and source declaration."""
+    _token(bundle.name, "bundle name")
+    _token(bundle.capability, f"bundle {bundle.name} capability", capability=True)
+    if bundle.kind not in {"file", "directory"}:
+        _manifest_error(f"bundle {bundle.name} kind must be file or directory")
+    _relative_path(bundle.source_root, f"bundle {bundle.name} source root", allow_dot=True)
+    if not isinstance(bundle.files, tuple) or not bundle.files:
+        _manifest_error(f"bundle {bundle.name} files must not be empty")
+    for relative in bundle.files:
+        _relative_path(relative, f"bundle {bundle.name} source file")
+    if len(set(bundle.files)) != len(bundle.files):
+        _manifest_error(f"bundle {bundle.name} source files contain duplicates")
+    if bundle.kind == "file" and len(bundle.files) != 1:
+        _manifest_error(f"bundle {bundle.name} file kind requires one source file")
+
+
+def _validate_bundle_destinations(bundle: Bundle) -> None:
+    """Validate one bundle's immutable target-to-path mapping."""
+    if not isinstance(bundle.destinations, tuple) or not bundle.destinations:
+        _manifest_error(f"bundle {bundle.name} destinations must not be empty")
+    destination_targets: list[str] = []
+    for item in bundle.destinations:
+        if not isinstance(item, tuple):
+            _manifest_error(f"bundle {bundle.name} destination must be a pair")
+        try:
+            target_name, destination = item
+        except ValueError:
+            _manifest_error(f"bundle {bundle.name} destination must be a pair")
+        destination_targets.append(_token(target_name, f"bundle {bundle.name} target"))
+        _relative_path(
+            destination,
+            f"bundle {bundle.name} destination for {target_name}",
+            allow_dot=True,
+        )
+    if len(set(destination_targets)) != len(destination_targets):
+        _manifest_error(f"bundle {bundle.name} destination targets contain duplicates")
 
 
 @dataclass(frozen=True)
@@ -94,6 +162,11 @@ class Manifest:
 
     targets: tuple[Target, ...]
     bundles: tuple[Bundle, ...]
+
+    def __post_init__(self) -> None:
+        """Validate cross-table invariants for parsed and directly constructed values."""
+        _validate_manifest_members(self.targets, self.bundles)
+        _validate_manifest_destinations(self.targets, self.bundles)
 
     def target(self, name: str) -> Target:
         """Resolve one declared target or refuse the unknown target."""
@@ -137,12 +210,49 @@ class Manifest:
         }
 
 
+def _validate_manifest_members(
+    targets: object,
+    bundles: object,
+) -> None:
+    """Validate manifest collection types, contents, and unique names."""
+    if not isinstance(targets, tuple) or not targets:
+        _manifest_error("manifest must declare at least one target")
+    if not all(isinstance(target, Target) for target in targets):
+        _manifest_error("manifest targets must be Target values")
+    if not isinstance(bundles, tuple) or not bundles:
+        _manifest_error("manifest must declare at least one bundle")
+    if not all(isinstance(bundle, Bundle) for bundle in bundles):
+        _manifest_error("manifest bundles must be Bundle values")
+    if len({target.name for target in targets}) != len(targets):
+        _manifest_error("manifest targets contain duplicates")
+    if len({bundle.name for bundle in bundles}) != len(bundles):
+        _manifest_error("manifest bundles contain duplicate names")
+
+
+def _validate_manifest_destinations(
+    targets: tuple[Target, ...],
+    bundles: tuple[Bundle, ...],
+) -> None:
+    """Bind every bundle destination to one supported target capability."""
+    target_map = {target.name: target for target in targets}
+    for bundle in bundles:
+        for target_name, _destination in bundle.destinations:
+            target = target_map.get(target_name)
+            if target is None:
+                _manifest_error(
+                    f"bundle {bundle.name} destination names unknown target {target_name}"
+                )
+            if not target.supports(bundle.capability):
+                _manifest_error(
+                    f"bundle {bundle.name} capability {bundle.capability} has no "
+                    f"harness support on target {target_name}"
+                )
+
+
 @dataclass(frozen=True)
 class PlannedFile:
     """One source byte sequence and its relative generated destination."""
 
-    bundle: str
-    source: Path
     destination: str
     content: bytes
     mode: int
@@ -154,6 +264,14 @@ class RenderResult:
 
     target: str
     files: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class TemporaryRender:
+    """One renderer-owned temporary destination available during its context."""
+
+    destination_root: Path
+    result: RenderResult
 
 
 @dataclass(frozen=True)
@@ -247,7 +365,21 @@ def _parse_targets(raw_targets: object) -> tuple[Target, ...]:
                 _manifest_error(
                     f"targets.{target_name}.capabilities contains invalid capability: {capability}"
                 )
-        targets.append(Target(target_name, frozenset(capabilities)))
+        target_value = Target(target_name)
+        declared = frozenset(capabilities)
+        if declared != target_value.capabilities:
+            missing = sorted(target_value.capabilities - declared)
+            unsupported = sorted(declared - target_value.capabilities)
+            detail = []
+            if missing:
+                detail.append(f"missing={','.join(missing)}")
+            if unsupported:
+                detail.append(f"unsupported={','.join(unsupported)}")
+            _manifest_error(
+                f"target {target_name} capabilities differ from harness support "
+                f"({' '.join(detail)})"
+            )
+        targets.append(target_value)
     if len({target.name for target in targets}) != len(targets):
         _manifest_error("targets contains duplicates")
     return tuple(sorted(targets, key=lambda item: item.name))
@@ -385,8 +517,6 @@ def _read_plan(
             seen_destinations.add(destination)
             plans.append(
                 PlannedFile(
-                    bundle=bundle.name,
-                    source=source,
                     destination=destination,
                     content=source.read_bytes(),
                     mode=stat.S_IMODE(source.stat().st_mode),
@@ -420,6 +550,29 @@ def _ensure_directory(path: Path) -> None:
         _surface_error(f"destination_directory_unusable={path}")
 
 
+def _write_plans(
+    target: str,
+    plans: Sequence[PlannedFile],
+    destination_root: Path,
+    *,
+    dispatched_temporary: bool,
+    promotion_preflight: bool,
+) -> RenderResult:
+    """Contain every filesystem write at one boundary."""
+    dispatch_id = os.environ.get(DISPATCH_ID_ENV, "").strip()
+    if dispatch_id and not dispatched_temporary:
+        _promotion_refusal("dispatch_identity_present", f"{DISPATCH_ID_ENV}={dispatch_id}")
+    if promotion_preflight:
+        _promotion_destination_check(destination_root, plans)
+    _ensure_directory(destination_root)
+    for plan in plans:
+        destination = _destination_path(destination_root, plan.destination)
+        _ensure_directory(destination.parent)
+        destination.write_bytes(plan.content)
+        destination.chmod(plan.mode)
+    return RenderResult(target, tuple(plan.destination for plan in plans))
+
+
 def render(
     manifest: Manifest,
     source_root: Path,
@@ -428,15 +581,37 @@ def render(
     *,
     bundle_names: Iterable[str] | None = None,
 ) -> RenderResult:
-    """Render selected supported bundles into a destination layout."""
+    """Render into a caller-selected layout from a non-dispatched process."""
     plans = _read_plan(manifest, source_root, target, bundle_names)
-    _ensure_directory(destination_root)
-    for plan in plans:
-        destination = _destination_path(destination_root, plan.destination)
-        _ensure_directory(destination.parent)
-        destination.write_bytes(plan.content)
-        destination.chmod(plan.mode)
-    return RenderResult(target, tuple(plan.destination for plan in plans))
+    return _write_plans(
+        target,
+        plans,
+        destination_root,
+        dispatched_temporary=False,
+        promotion_preflight=False,
+    )
+
+
+@contextmanager
+def render_temporary(
+    manifest: Manifest,
+    source_root: Path,
+    target: str,
+    *,
+    bundle_names: Iterable[str] | None = None,
+) -> Iterator[TemporaryRender]:
+    """Render into a renderer-owned temporary layout, including during dispatch."""
+    plans = _read_plan(manifest, source_root, target, bundle_names)
+    with TemporaryDirectory(prefix="cti-harness-surface-") as temporary:
+        destination_root = Path(temporary)
+        result = _write_plans(
+            target,
+            plans,
+            destination_root,
+            dispatched_temporary=True,
+            promotion_preflight=False,
+        )
+        yield TemporaryRender(destination_root, result)
 
 
 def _walk_files(root: Path) -> tuple[str, ...]:
@@ -527,15 +702,22 @@ def check(
     return CheckResult(target, missing, changed, stale)
 
 
-def _has_write_bit(path: Path) -> bool:
+def _has_effective_access(path: Path, mode: int) -> bool:
+    """Ask the filesystem about this process's current effective access."""
     try:
-        return bool(stat.S_IMODE(path.stat().st_mode) & 0o222)
-    except OSError:
-        return False
+        return os.access(path, mode, effective_ids=True)
+    except (NotImplementedError, TypeError):
+        return os.access(path, mode)
 
 
 def _promotion_destination_check(root: Path, plans: Sequence[PlannedFile]) -> None:
-    if not root.exists() or root.is_symlink() or not root.is_dir() or not _has_write_bit(root):
+    directory_access = os.W_OK | os.X_OK
+    if (
+        not root.exists()
+        or root.is_symlink()
+        or not root.is_dir()
+        or not _has_effective_access(root, directory_access)
+    ):
         _promotion_refusal("destination_unwritable", f"root={root}")
     for plan in plans:
         try:
@@ -545,16 +727,15 @@ def _promotion_destination_check(root: Path, plans: Sequence[PlannedFile]) -> No
         parent = destination.parent
         while not parent.exists() and parent != root:
             parent = parent.parent
-        if parent != root and (parent.is_symlink() or not parent.is_dir()):
+        if parent.is_symlink() or not parent.is_dir():
             _promotion_refusal("destination_unwritable", f"path={destination}")
-        if not _has_write_bit(parent):
+        if not _has_effective_access(parent, directory_access):
             _promotion_refusal("destination_unwritable", f"path={parent}")
-        if (
-            destination.exists()
-            and not destination.is_symlink()
-            and not _has_write_bit(destination)
-        ):
-            _promotion_refusal("destination_unwritable", f"path={destination}")
+        if destination.exists():
+            if destination.is_symlink() or not destination.is_file():
+                _promotion_refusal("destination_unwritable", f"path={destination}")
+            if not _has_effective_access(destination, os.W_OK):
+                _promotion_refusal("destination_unwritable", f"path={destination}")
 
 
 def promote(
@@ -565,9 +746,6 @@ def promote(
     bundle_names: Sequence[str],
 ) -> RenderResult:
     """Promote explicit bundles only from a non-dispatched, writable process."""
-    dispatch_id = os.environ.get(DISPATCH_ID_ENV, "").strip()
-    if dispatch_id:
-        _promotion_refusal("dispatch_identity_present", f"{DISPATCH_ID_ENV}={dispatch_id}")
     if not bundle_names:
         _promotion_refusal("bundle_selection_empty", "name at least one bundle")
     if len(set(bundle_names)) != len(bundle_names):
@@ -580,13 +758,12 @@ def promote(
                 f"target={target} bundle={name} capability={bundle.capability}",
             )
     plans = _read_plan(manifest, source_root, target, bundle_names)
-    _promotion_destination_check(destination_root, plans)
-    return render(
-        manifest,
-        source_root,
+    return _write_plans(
         target,
+        plans,
         destination_root,
-        bundle_names=bundle_names,
+        dispatched_temporary=False,
+        promotion_preflight=True,
     )
 
 
@@ -626,7 +803,9 @@ def _run(args: argparse.Namespace) -> int:
             args.destination,
             bundle_names=args.bundles or None,
         )
-        print(f"render=ok target={result.target} files={len(result.files)}")  # noqa: T201
+        print(  # noqa: T201 — CLI contract
+            f"render=ok target={result.target} files={len(result.files)}"
+        )
         return 0
     if args.action == "check":
         result = check(
@@ -645,7 +824,9 @@ def _run(args: argparse.Namespace) -> int:
         args.destination,
         args.bundles,
     )
-    print(f"promote=ok target={result.target} files={len(result.files)}")  # noqa: T201
+    print(  # noqa: T201 — CLI contract
+        f"promote=ok target={result.target} files={len(result.files)}"
+    )
     return 0
 
 
@@ -655,10 +836,14 @@ def main(argv: list[str] | None = None) -> int:
     try:
         result = _run(args)
     except PromotionRefusalError as error:
-        print(f"refusal={error.kind} detail={error.detail}", file=sys.stderr)  # noqa: T201
+        print(  # noqa: T201 — CLI contract
+            f"refusal={error.kind} detail={error.detail}", file=sys.stderr
+        )
         return 1
     except HarnessSurfaceError as error:
-        print(f"harness_surface_invalid={error}", file=sys.stderr)  # noqa: T201
+        print(  # noqa: T201 — CLI contract
+            f"harness_surface_invalid={error}", file=sys.stderr
+        )
         return 2
     else:
         return result
