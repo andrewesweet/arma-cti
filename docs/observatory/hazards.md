@@ -52,6 +52,23 @@ reason, never as zero. **If `from_ledger_rows` grows between rebuilds, your spen
 history for those dispatches is now only as good as the row** — a `log_records`
 figure for a pruned dispatch is gone for good.
 
+## 4. A percentile without a named method is not a number
+
+Nearest-rank picks a member of the sample; linear interpolation invents a value
+between two. On a four-item sample they disagree at every percentile worth quoting,
+and this store's windows will often be that small. A percentile whose method is not
+stated is not reproducible: the next reader re-derives it their way, the two figures
+carry the same name, and nothing disagrees out loud.
+
+The method is nearest-rank, stated in the schema reference and pinned by a test on a
+sample where the two methods differ — so a change of method is a red rather than a
+silent drift. Its twin: the distribution is right-skewed, and quoting its **mean**
+would summarise it by a number above its own 70th percentile. The one rendering path
+for lead time, the `flow_lead_time` view, holds percentiles and a sample size and
+nothing else — a mean cannot be emitted in that slot without the column-list test
+going red. And an open item's `age` is only as current as the as-of instant the query
+names: a stale as-of is a stale age, quietly.
+
 ## Standing rules beside the traps
 
 - **Never sum spend across lanes** — the negative test in `tests/unit/test_observatory.py`

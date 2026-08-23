@@ -24,12 +24,13 @@ silence. Both render as an absence with a reason, never as zero.
 
 | Key | Shape | Meaning |
 |---|---|---|
-| `schema` | string | `cti.observatory/1` |
+| `schema` | string | `cti.observatory/2` |
 | `inputs` | object | The three paths the rebuild read: `dispatch_root`, `export_dir`, `repo` |
 | `coverage` | object | The rebuild's own denominators — see below |
 | `malformed` | array | One entry per export file with unparseable lines: `file`, `lines` |
 | `dispatches` | array | One row per dispatch record — the `dispatches` table |
 | `issue_cost` | array | One row per (issue, lane) — the `issue_cost` table |
+| `work_items` | array | One row per issue — the `work_items` table |
 
 ### `coverage`
 
@@ -42,6 +43,11 @@ silence. Both render as an absence with a reason, never as zero.
 | `dispatches_without_telemetry` | The ids with neither an export file nor a ledger row, named |
 | `issues` | Distinct issues named by a usable record |
 | `issues_with_landings` | Of those, how many have a landing on `origin/main` |
+| `work_items` | Work items — issues — in the store, one per issue |
+| `work_items_landed` | Of those, how many landed |
+| `work_items_open` | Of those, how many have a dispatch still running |
+| `work_items_abandoned` | Of those, how many ended on a not-a-result class without landing |
+| `work_items_stopped` | Of those, the terminal residue — ended, never landed, no failure class |
 | `malformed_lines` | Total unparseable export lines, across all files |
 
 ## The rule every table obeys
@@ -70,6 +76,9 @@ One row per dispatch record under the dispatch root.
 | `cache_read_tokens` | + `cache_read_tokens_reason` | Cache reads |
 | `cache_creation_tokens` | + `cache_creation_tokens_reason` | Cache writes |
 | `landed_sha` | + `landed_sha_reason` | The commit this dispatch landed, bounded as `tools/ledger.py` bounds it |
+| `started_at` | + `started_at_reason` | When this dispatch began — the result's `started_at`, else the plan's `planned_at` (`ledger.dispatch_start`'s rule) |
+| `end_state_class` | + `end_state_class_reason` | How this dispatch ended, in `tools/ledger.py`'s own vocabulary; null only where a pruned row's `end_state` block is gone |
+| `gate_outcome` | + `gate_outcome_reason` | `gate_outcome`'s vocabulary: `landed`, `running`, `not_a_result`, `lands_nothing`, `not_landed` |
 
 `spend_encoding` is `metric` (token metrics or token-bearing spans, including the
 histogram body Codex uses), `log_records` (token counts as attributes on log records,
@@ -110,6 +119,51 @@ calibrated lane whose spend could not be derived — a pruned source, or no toke
 records — carries `null` with the reason that names which. **Absent, uncalibrated
 and zero are three different facts**, and the summary line renders each differently:
 a number, `uncalibrated`, `absent`.
+
+## The `work_items` table
+
+One row per issue (#486). Time is the one quantity commensurable across lanes, so the
+work item is per issue and never per lane.
+
+| Column | Null? | Meaning |
+|---|---|---|
+| `issue` | never | The issue |
+| `state` | never | `landed`, `open`, `abandoned`, or `stopped` — see below |
+| `clock_start` | + `clock_start_reason` | The issue's earliest dispatch `started_at` |
+| `clock_end` | + `clock_end_reason` | The committer date of the newest commit the issue's dispatches landed |
+| `lead_time_seconds` | + `lead_time_seconds_reason` | `clock_end` minus `clock_start`, exact integer seconds |
+
+**The clock's two points are named, not implied.** It starts at the issue's earliest
+dispatch start — a planner dispatch that preceded the implementer counts, because the
+clock measures the work system, not one seat — and it ends at the landing commit's
+committer date, the moment the work became visible on `origin/main`.
+
+**`state` is derived from the dispatch rows' own `gate_outcome`, in preference order.**
+`landed` where any dispatch of the issue landed; else `open` while any dispatch is
+still running; else `abandoned` where any dispatch ended `not_a_result`; else
+`stopped`. The boundary on `abandoned` is deliberate and narrow: it reuses the failure
+classes `gate_outcome` already names, read from the records at rebuild time, and
+excludes such items from the lead-time distribution while counting them separately in
+the coverage block. **#489 will widen it** — its recorded terminal state puts the
+failure class on the record itself — and `stopped` holds the terminal residue (ended,
+never landed, no failure class) until then. An issue dispatched only to seats that
+land nothing by construction reads `stopped` for the same reason: a fact about the
+seat is not a fact about this issue's completion.
+
+## The `flow_lead_time` view
+
+Lead time's one rendering path: `p50_seconds`, `p70_seconds`, `p85_seconds`,
+`p95_seconds`, `items` — percentiles and the sample size, and nothing else. **No mean
+can be emitted in this slot**, because the column list is the view's whole definition;
+the distribution is right-skewed and its mean would sit above its own 70th percentile.
+
+**The percentile method is nearest-rank and it is part of the contract.** The p-th
+percentile is the value at rank `ceil(p·n/100)` in the ascending sort — a member of
+the sample, never an interpolation between two. Nearest-rank because it is exact
+integer arithmetic in the standard library's SQL, so the shipped store answers it
+without a custom function. The tests pin the view's values on a sample where
+nearest-rank and linear interpolation disagree at every percentile, so a change of
+method is a red rather than a silent drift.
 
 ## Querying
 

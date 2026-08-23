@@ -43,6 +43,15 @@ than routes — nothing here excludes a profile, reroutes work or trips a breake
 - **Malformed input is counted and named, not swallowed and not fatal.** A truncated
   JSON line in the export increments a counter naming its file, the rebuild
   completes, and the count appears in the output (#496, #503).
+- **The flow view (#486) rides the same store and never a second one.** One `work_items`
+  row per issue — its state, and the clock its lead time runs on — over the same dispatch
+  rows the cost view reads. Lead time renders as nearest-rank percentiles through the one
+  view `flow_lead_time`, whose column list is percentiles and a sample size and nothing
+  else, because the distribution is right-skewed and its mean would sit above its own 70th
+  percentile. Abandoned work is typed by `tools/ledger.py`'s own `gate_outcome`
+  vocabulary — `not_a_result` — read from the records at rebuild time; #489's recorded
+  terminal state will widen that derivation, and `stopped` holds the terminal residue
+  until it does.
 
 Sources, all outside every worktree: the dispatch records at `~/.arma-cti/dispatches/`
 (`CTI_DISPATCH_DIR`), the per-dispatch OTel export at `/var/log/claude-otel/dispatches/`
@@ -70,6 +79,7 @@ import json
 import os
 import sqlite3
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final, NamedTuple
 
@@ -82,7 +92,7 @@ import ledger
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
-SCHEMA: Final = "cti.observatory/1"
+SCHEMA: Final = "cti.observatory/2"
 STORE_NAME: Final = "store.json"
 
 EXIT_REFUSED: Final = 1
@@ -146,6 +156,11 @@ ROW_SPEND_NOT_DERIVABLE: Final = (
     "so whether this dispatch spent is not derivable from what survives"
 )
 ROW_UNREADABLE: Final = "a ledger.json exists beside the dispatch record but would not parse"
+ROW_NO_END_STATE: Final = (
+    "the pruned source's ledger row carries no end_state block, so how this dispatch "
+    "ended is not derivable from what survives"
+)
+NO_START_REASON: Final = "neither the result nor the plan carries a start time"
 
 # Attribute keys a log record may carry its token counts under. `claude_code.api_request`
 # carries exactly these (docs/research/agent-observability-and-cost-ledgers.md); the
@@ -186,7 +201,63 @@ DISPATCH_COLUMNS: Final = (
     "cache_creation_tokens_reason",
     "landed_sha",
     "landed_sha_reason",
+    "started_at",
+    "started_at_reason",
+    "end_state_class",
+    "end_state_class_reason",
+    "gate_outcome",
+    "gate_outcome_reason",
 )
+
+WORK_ITEM_COLUMNS: Final = (
+    "issue",
+    "state",
+    "clock_start",
+    "clock_start_reason",
+    "clock_end",
+    "clock_end_reason",
+    "lead_time_seconds",
+    "lead_time_seconds_reason",
+)
+
+# One work item's state, in preference order. `abandoned` reuses `gate_outcome`'s
+# `not_a_result` — the classes `tools/ledger.py`'s own vocabulary already names — and is
+# derived at read time from the records, because #489's recorded terminal state does not
+# exist yet; when it lands it widens this derivation rather than competing with it.
+# `stopped` is the terminal residue: every dispatch ended, none landed, none carried a
+# not-a-result class. An issue whose dispatches are all review or recon seats lands in
+# the same residue, because a seat that lands nothing is a fact about the seat and not
+# about this issue's completion.
+STATE_LANDED: Final = "landed"
+STATE_OPEN: Final = "open"
+STATE_ABANDONED: Final = "abandoned"
+STATE_STOPPED: Final = "stopped"
+
+# Lead time's percentiles, nearest-rank: the p-th percentile is the value at rank
+# ceil(p·n/100) in the ascending sort, one member of the sample, never an interpolation
+# between two. Nearest-rank because it is exact integer arithmetic and expressible in
+# the standard library's SQL, so the shipped store answers it without a custom function
+# — and because a percentile whose method is unstated is not a reproducible number.
+# This view is the one rendering path for lead time and its column list is the whole
+# slot: percentiles and the sample size, no mean, so a skewed distribution cannot be
+# summarised by a number above its own 70th percentile. The tests pin the column list
+# and pin the values on a sample where nearest-rank and linear interpolation disagree.
+FLOW_LEAD_TIME_VIEW: Final = """
+CREATE VIEW flow_lead_time AS
+WITH ranked AS (
+    SELECT lead_time_seconds AS v,
+           ROW_NUMBER() OVER (ORDER BY lead_time_seconds) AS r,
+           COUNT(*) OVER () AS n
+    FROM work_items
+    WHERE state = 'landed' AND lead_time_seconds IS NOT NULL
+)
+SELECT MAX(CASE WHEN r = (n * 50 + 99) / 100 THEN v END) AS p50_seconds,
+       MAX(CASE WHEN r = (n * 70 + 99) / 100 THEN v END) AS p70_seconds,
+       MAX(CASE WHEN r = (n * 85 + 99) / 100 THEN v END) AS p85_seconds,
+       MAX(CASE WHEN r = (n * 95 + 99) / 100 THEN v END) AS p95_seconds,
+       MAX(n) AS items
+FROM ranked
+"""
 
 ISSUE_COST_COLUMNS: Final = (
     "issue",
@@ -404,6 +475,33 @@ def _issue_of(plan: Mapping[str, Any]) -> int | None:
 # ------------------------------------------------------------------------ the rebuild
 
 
+def _end_state_for(
+    items: Sequence[ledger.Item],
+    result: Mapping[str, Any] | None,
+    ledger_row: Mapping[str, Any] | None,
+    telemetry_source: str,
+    export_path: Path,
+) -> ledger.EndState | None:
+    """Type how this dispatch ended, reusing `ledger`'s reader wherever one applies.
+
+    The export-present case is `ledger.type_end_state` itself — the existing vocabulary
+    and the existing order of tests. A pruned dispatch is typed from the surviving row's
+    own `end_state` block, because the records the typing would have read are gone; a
+    row without the block is a null with a reason, never a guessed class. A dispatch with
+    no telemetry at all keeps the same reader over no records, which is what that reader
+    already says about silence: nothing, by name.
+    """
+    if telemetry_source == SOURCE_EXPORT:
+        return ledger.type_end_state(items, result, ledger.Source(SOURCE_EXPORT, export_path))
+    if telemetry_source == SOURCE_LEDGER_ROW:
+        block = ledger_row.get("end_state") if ledger_row is not None else None
+        state = block.get("class") if isinstance(block, dict) else None
+        if isinstance(state, str) and state:
+            return ledger.EndState(state, "read from the materialised ledger row", ())
+        return None
+    return ledger.type_end_state([], result, ledger.Source(SOURCE_ABSENT, None))
+
+
 def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[str, Any], int]:
     """Build one dispatch's row: identity, telemetry source, spend and landing.
 
@@ -415,6 +513,8 @@ def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[
     dispatch_id = str(plan.get("dispatch_id") or record_dir.name)
     export_path = export_dir / f"{EXPORT_PREFIX}{dispatch_id}{EXPORT_SUFFIX}"
     malformed = 0
+    items: list[ledger.Item] = []
+    ledger_row: Mapping[str, Any] | None = None
     if export_path.is_file():
         batches = read_export(export_path)
         malformed = batches.malformed
@@ -427,7 +527,8 @@ def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[
         # The pruned-source read: `ledger prune` only deletes a file a row was
         # materialised from, so where the file is gone the row is the surviving
         # record, taken visibly rather than silently.
-        spend = _row_spend(ledger.read_json(record_dir / LEDGER_FILE))
+        ledger_row = ledger.read_json(record_dir / LEDGER_FILE)
+        spend = _row_spend(ledger_row)
         telemetry_source = SOURCE_LEDGER_ROW
         telemetry_path = None
         telemetry_path_reason = PRUNED_EXPORT_REASON
@@ -438,6 +539,12 @@ def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[
         telemetry_path_reason = NO_TELEMETRY_REASON
     issue = _issue_of(plan)
     landing = _landing_for(plan, issue, result, repo)
+    started = ledger.dispatch_start(plan, result)
+    end_state = _end_state_for(items, result, ledger_row, telemetry_source, export_path)
+    outcome = (
+        ledger.gate_outcome(landing, result, end_state, plan.get("seat")) if end_state else None
+    )
+    end_state_reason = None if end_state else ROW_NO_END_STATE
     lane = plan.get("lane") if isinstance(plan.get("lane"), str) else None
     profile = plan.get("profile") if isinstance(plan.get("profile"), str) else None
     seat = plan.get("seat") if isinstance(plan.get("seat"), str) else None
@@ -468,6 +575,12 @@ def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[
         ),
         "landed_sha": landing.sha,
         "landed_sha_reason": None if landing.sha else landing.reason,
+        "started_at": started.isoformat() if started else None,
+        "started_at_reason": None if started else NO_START_REASON,
+        "end_state_class": end_state.class_ if end_state else None,
+        "end_state_class_reason": end_state_reason,
+        "gate_outcome": outcome,
+        "gate_outcome_reason": None if outcome else end_state_reason,
     }
     return row, malformed
 
@@ -547,6 +660,81 @@ def _issue_cost_row(issue: int, lane: str, rows: Sequence[Mapping[str, Any]]) ->
     return row
 
 
+def _commit_date(repo: Path, sha: str) -> str | None:
+    """Read one landing commit's committer date, strictly ISO, or say nothing.
+
+    Git owns commit dates; `ledger`'s runner is the project's one way to ask it. The
+    empty string it returns on refusal becomes a null with a reason at the caller.
+    """
+    return ledger.git("show", "-s", "--format=%cI", sha, cwd=repo).strip() or None
+
+
+def _work_item_state(outcomes: Sequence[str | None]) -> str:
+    """Reduce one issue's dispatch outcomes to its work-item state, in preference order.
+
+    A landing answers first; short of that, a dispatch still running keeps the item
+    open however its siblings ended, because re-dispatched work is work in flight. Only
+    with nothing running and nothing landed does a not-a-result outcome make the item
+    abandoned, and the residue — every dispatch terminal, none landed, none a not-a-result
+    — is `stopped`. An outcome the row could not derive counts as terminal here, and the
+    dispatch row's own reason is where a reader learns why.
+    """
+    if STATE_LANDED in outcomes:
+        return STATE_LANDED
+    if "running" in outcomes:
+        return STATE_OPEN
+    if "not_a_result" in outcomes:
+        return STATE_ABANDONED
+    return STATE_STOPPED
+
+
+def _work_item_row(issue: int, rows: Sequence[Mapping[str, Any]], repo: Path) -> dict[str, Any]:
+    """Build one work item's row: its state, and the clock its lead time runs on.
+
+    The clock's two points are named, not implied. It starts at the issue's earliest
+    dispatch start — `ledger.dispatch_start`'s rule, the result's `started_at` where the
+    run ended, else the plan's `planned_at` — and it ends at the committer date of the
+    newest commit any dispatch of the issue landed. Time is the one quantity that is
+    commensurable across lanes, so this is a per-issue row and never a per-lane one.
+    """
+    starts = sorted(str(row["started_at"]) for row in rows if row["started_at"])
+    shas = {str(row["landed_sha"]) for row in rows if row["landed_sha"]}
+    ends = sorted(filter(None, (_commit_date(repo, sha) for sha in shas)))
+    clock_start = starts[0] if starts else None
+    clock_end = ends[-1] if ends else None
+    lead_time: int | None = None
+    if clock_start is not None and clock_end is not None:
+        lead_time = int(
+            (
+                datetime.fromisoformat(clock_end) - datetime.fromisoformat(clock_start)
+            ).total_seconds()
+        )
+    return {
+        "issue": issue,
+        "state": _work_item_state([row["gate_outcome"] for row in rows]),
+        "clock_start": clock_start,
+        "clock_start_reason": None
+        if clock_start
+        else "no dispatch of this issue carries a start time",
+        "clock_end": clock_end,
+        "clock_end_reason": (
+            None
+            if clock_end
+            else (
+                "the landing commit's date could not be read from this checkout"
+                if shas
+                else "no dispatch of this issue landed a commit"
+            )
+        ),
+        "lead_time_seconds": lead_time,
+        "lead_time_seconds_reason": (
+            None
+            if lead_time is not None
+            else "lead time needs both clock points and at least one is missing"
+        ),
+    }
+
+
 def _iter_source_dir(root: Path, kind: str) -> tuple[Path, list[Path]] | Refusal:
     """Read one source directory's entries, or refuse naming it.
 
@@ -567,6 +755,26 @@ def _iter_source_dir(root: Path, kind: str) -> tuple[Path, list[Path]] | Refusal
     except OSError as error:
         return Refusal(f"{kind}_unreadable", (f"path={root}", f"error={error.strerror}"), remedy)
     return root, entries
+
+
+def _work_items(
+    rows: Sequence[Mapping[str, Any]], repo: Path
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    """Group the dispatch rows into one work item per issue, with the state counts.
+
+    A work item is an issue, and its members are every dispatch row that names it,
+    across every lane — time is the one quantity that commutes across lanes, so the
+    group key is the issue alone.
+    """
+    by_issue: dict[int, list[dict[str, Any]]] = {}
+    for row in rows:
+        if row["issue"] is not None:
+            by_issue.setdefault(int(row["issue"]), []).append(row)
+    items = [_work_item_row(issue, members, repo) for issue, members in sorted(by_issue.items())]
+    counts = dict.fromkeys((STATE_LANDED, STATE_OPEN, STATE_ABANDONED, STATE_STOPPED), 0)
+    for item in items:
+        counts[str(item["state"])] += 1
+    return items, counts
 
 
 def rebuild(dispatch_root: Path, export_dir: Path, repo: Path, store_dir: Path) -> dict[str, Any]:
@@ -610,6 +818,7 @@ def rebuild(dispatch_root: Path, export_dir: Path, repo: Path, store_dir: Path) 
     landed_issues = sorted(
         {int(row["issue"]) for row in issue_cost if row["landed"]}  # type: ignore[arg-type]
     )
+    work_items, state_counts = _work_items(rows, repo)
     store = {
         "schema": SCHEMA,
         "inputs": {
@@ -631,6 +840,11 @@ def rebuild(dispatch_root: Path, export_dir: Path, repo: Path, store_dir: Path) 
             ],
             "issues": len({row["issue"] for row in rows if row["issue"]}),
             "issues_with_landings": len(landed_issues),
+            "work_items": len(work_items),
+            "work_items_landed": state_counts[STATE_LANDED],
+            "work_items_open": state_counts[STATE_OPEN],
+            "work_items_abandoned": state_counts[STATE_ABANDONED],
+            "work_items_stopped": state_counts[STATE_STOPPED],
             "malformed_lines": sum(malformed_files.values()),
         },
         "malformed": [
@@ -638,6 +852,7 @@ def rebuild(dispatch_root: Path, export_dir: Path, repo: Path, store_dir: Path) 
         ],
         "dispatches": rows,
         "issue_cost": issue_cost,
+        "work_items": work_items,
     }
     store_dir.mkdir(parents=True, exist_ok=True)
     (store_dir / STORE_NAME).write_text(
@@ -681,6 +896,21 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
     ]
     lines.extend(
         f"malformed file={entry['file']} lines={entry['lines']}" for entry in store["malformed"]
+    )
+    # The flow line carries counts only. Lead time's percentiles are a query against
+    # `flow_lead_time` — the one rendering path for them — and this line cannot emit a
+    # mean in their place because it emits no lead-time figure at all.
+    lines.append(
+        " ".join(
+            (
+                "flow",
+                f"work_items={coverage['work_items']}",
+                f"landed={coverage['work_items_landed']}",
+                f"open={coverage['work_items_open']}",
+                f"abandoned={coverage['work_items_abandoned']}",
+                f"stopped={coverage['work_items_stopped']}",
+            )
+        )
     )
     for row in store["issue_cost"]:
         cost = row["cost"]
@@ -728,6 +958,7 @@ def connect(store_dir: Path) -> sqlite3.Connection:
     for table, columns in (
         ("dispatches", DISPATCH_COLUMNS),
         ("issue_cost", ISSUE_COST_COLUMNS),
+        ("work_items", WORK_ITEM_COLUMNS),
     ):
         names = ", ".join(columns)
         connection.execute(f"CREATE TABLE {table} ({names})")
@@ -737,6 +968,7 @@ def connect(store_dir: Path) -> sqlite3.Connection:
             f"INSERT INTO {table} ({names}) VALUES ({placeholders})",  # noqa: S608 — table and columns are this module's own constants, never input
             loaded,
         )
+    connection.execute(FLOW_LEAD_TIME_VIEW)
     return connection
 
 

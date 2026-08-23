@@ -31,6 +31,15 @@ before one.
 
 **The documentation runs.** The cookbook's first query is executed against the
 shipped store, because a cookbook that does not run is worse than none.
+
+**The flow view is percentiles, never a mean, and abandoned work is derived.** The
+staged world carries a right-skewed landed sample on which nearest-rank and linear
+interpolation disagree at every percentile, and the view's values are pinned to the
+nearest-rank ones so a change of method is a red. The view's column list is pinned
+exactly, so no mean can enter the headline slot. An abandoned work item is typed by
+its dispatch's own `gate_outcome` — `not_a_result`, the existing vocabulary — never
+by a list of issue numbers or an age heuristic, and the terminal residue without a
+failure class is `stopped`, the boundary #489 will widen.
 """
 
 from __future__ import annotations
@@ -57,6 +66,23 @@ CLAUDE_DISPATCH = "d-20260805-120000-claud1"
 CODEX_DISPATCH = "d-20260805-120000-codex1"
 ZAI_DISPATCH = "d-20260805-120000-zai001"
 BARE_DISPATCH = "d-20260805-120000-bare01"
+
+# The flow view's own issues: three more landings at one, two and three hours, one
+# abandoned by a dispatcher refusal, and one stopped — ended, never landed, no failure
+# class. Their lead times with ISSUE's 41400 give the percentile tests a sample,
+# [3600, 7200, 10800, 41400], on which nearest-rank and linear interpolation disagree
+# at every percentile pinned below.
+FLOW_A = "d-20260805-120000-flow01"
+FLOW_B = "d-20260805-120000-flow02"
+FLOW_C = "d-20260805-120000-flow03"
+FLOW_D = "d-20260805-120000-flow04"
+FLOW_E = "d-20260805-120000-flow05"
+
+LANDED_ONE_HOUR = 490
+LANDED_TWO_HOURS = 491
+LANDED_THREE_HOURS = 492
+ABANDONED_ISSUE = 493
+STOPPED_ISSUE = 494
 
 # One five-hour-window point exactly: the calibration's own numerator, so the cost
 # row's arithmetic is pinned against `ledger`'s constant rather than a restated 30209.
@@ -312,6 +338,41 @@ def world(tmp_path: Path) -> World:
     stage_record(dispatch_root, CODEX_DISPATCH, lane="codex")
     stage_record(dispatch_root, ZAI_DISPATCH, lane="zai")
     stage_record(dispatch_root, BARE_DISPATCH, issue=OTHER_ISSUE)
+    for dispatch, issue in (
+        (FLOW_A, LANDED_ONE_HOUR),
+        (FLOW_B, LANDED_TWO_HOURS),
+        (FLOW_C, LANDED_THREE_HOURS),
+        (FLOW_D, ABANDONED_ISSUE),
+        (FLOW_E, STOPPED_ISSUE),
+    ):
+        stage_record(dispatch_root, dispatch, issue=issue)
+    # FLOW_D ended child_not_launched with a failure class — the record's own terminal
+    # refusal, which is what makes the issue's work item abandoned rather than stopped.
+    (dispatch_root / FLOW_D / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": FLOW_D,
+                "status": "child_not_launched",
+                "refusal": "lane_breaker_open",
+                "failure_class": "provider_refused",
+                "ended_at": "2026-08-05T12:10:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    # FLOW_E ran to a clean exit and landed nothing — terminal without a failure class.
+    (dispatch_root / FLOW_E / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": FLOW_E,
+                "status": "child_finished",
+                "returncode": 0,
+                "started_at": "2026-08-05T12:30:00+00:00",
+                "ended_at": "2026-08-05T13:30:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
 
     # Claude: per-request log records, no metric — the encoding half no reader covered.
     write_export(
@@ -370,6 +431,20 @@ def world(tmp_path: Path) -> World:
     )
     # BARE: no export file at all.
 
+    for issue, hour, name in (
+        (LANDED_ONE_HOUR, 13, "c.txt"),
+        (LANDED_TWO_HOURS, 14, "d.txt"),
+        (LANDED_THREE_HOURS, 15, "e.txt"),
+    ):
+        (repo / name).write_text(name, encoding="utf-8")
+        run_git("add", ".", cwd=repo)
+        run_git(
+            "commit",
+            "-qm",
+            f"feat: flow {name}\n\nrefs #{issue}",
+            cwd=repo,
+            at=f"2026-08-05T{hour}:00:00+00:00",
+        )
     (repo / "b.txt").write_text("two", encoding="utf-8")
     run_git("add", ".", cwd=repo)
     run_git("commit", "-qm", f"feat: the landing\n\nrefs #{ISSUE}", cwd=repo, at=AFTER_PLANNED)
@@ -400,6 +475,17 @@ def rebuild_world(world: World) -> dict[str, Any]:
 def cost_row(store: dict[str, Any], issue: int, lane: str) -> dict[str, Any]:
     """Return one (issue, lane) cost row from the store."""
     return next(row for row in store["issue_cost"] if row["issue"] == issue and row["lane"] == lane)
+
+
+def work_item(store: dict[str, Any], issue: int) -> dict[str, Any]:
+    """Return one issue's work-item row from the store."""
+    return next(row for row in store["work_items"] if row["issue"] == issue)
+
+
+def cookbook_blocks() -> list[str]:
+    """Every SQL block the shipped cookbook carries, in document order."""
+    cookbook = (REPO / "docs" / "observatory" / "cookbook.md").read_text(encoding="utf-8")
+    return re.findall(r"```sql\n(.*?)```", cookbook, flags=re.DOTALL)
 
 
 # ---------------------------------------------------------------- both encodings read
@@ -547,7 +633,14 @@ def test_a_rebuild_after_a_prune_does_not_look_like_a_rebuild_before_one(world: 
     assert before_line != after_line
     assert "from_ledger_rows=0" in before_line
     assert "from_ledger_rows=1" in after_line
-    assert after["coverage"]["dispatches_without_telemetry"] == [BARE_DISPATCH]
+    assert after["coverage"]["dispatches_without_telemetry"] == [
+        BARE_DISPATCH,
+        FLOW_A,
+        FLOW_B,
+        FLOW_C,
+        FLOW_D,
+        FLOW_E,
+    ]
 
 
 def test_a_pruned_log_record_dispatch_is_visibly_absent_not_zero(world: World) -> None:
@@ -617,15 +710,22 @@ def test_a_truncated_line_is_counted_named_and_survived(world: World) -> None:
 def test_the_rebuild_states_its_own_coverage(world: World) -> None:
     store = rebuild_world(world)
     coverage = store["coverage"]
-    assert coverage["dispatches"] == 4
+    assert coverage["dispatches"] == 9
     assert coverage["dispatches_with_telemetry"] == 3
     assert coverage["dispatches_with_spend"] == 3
-    assert coverage["dispatches_without_telemetry"] == [BARE_DISPATCH]
-    assert coverage["issues"] == 2
-    assert coverage["issues_with_landings"] == 1
+    assert coverage["dispatches_without_telemetry"] == [
+        BARE_DISPATCH,
+        FLOW_A,
+        FLOW_B,
+        FLOW_C,
+        FLOW_D,
+        FLOW_E,
+    ]
+    assert coverage["issues"] == 7
+    assert coverage["issues_with_landings"] == 4
     lines = observatory.summary_lines(store, world.store_dir)
     assert any(
-        "dispatches=4" in line and "with_spend=3" in line and "issues_with_landings=1" in line
+        "dispatches=9" in line and "with_spend=3" in line and "issues_with_landings=4" in line
         for line in lines
     )
 
@@ -635,6 +735,100 @@ def test_the_landed_sha_is_attributed_to_the_issue_that_landed(world: World) -> 
     assert cost_row(store, ISSUE, "claude-native")["landed_sha"] == world.landed_sha
     assert cost_row(store, OTHER_ISSUE, "claude-native")["landed"] is False
     assert cost_row(store, OTHER_ISSUE, "claude-native")["landed_sha_reason"]
+
+
+# --------------------------------------------------------------------- the flow view
+
+
+def test_lead_time_percentiles_are_nearest_rank_pinned_where_linear_differs(
+    world: World,
+) -> None:
+    rebuild_world(world)
+    rows = observatory.query(world.store_dir, "SELECT * FROM flow_lead_time")
+    # Nearest-rank on the landed sample [3600, 7200, 10800, 41400]: the p-th percentile
+    # is the value at rank ceil(p*n/100), a member of the sample. Linear interpolation
+    # on the same sample gives (9000, 13860, 27630, 36810) — it disagrees with the
+    # pinned row at every percentile, so a change of method is a red, not a silent drift.
+    assert rows == ((7200, 10800, 41400, 41400, 4),)
+
+
+def test_the_lead_time_rendering_path_emits_percentiles_only(world: World) -> None:
+    rebuild_world(world)
+    with observatory.connect(world.store_dir) as connection:
+        columns = tuple(
+            str(row[1]) for row in connection.execute("PRAGMA table_info(flow_lead_time)")
+        )
+    # Exact-set equality: the headline slot holds percentiles and the sample size and
+    # nothing else, so a mean cannot be added to it without this test going red.
+    assert columns == ("p50_seconds", "p70_seconds", "p85_seconds", "p95_seconds", "items")
+
+
+def test_the_clock_runs_from_the_first_dispatch_start_to_the_landing_commit(
+    world: World,
+) -> None:
+    store = rebuild_world(world)
+    item = work_item(store, ISSUE)
+    assert item["state"] == "landed"
+    assert item["clock_start"] == "2026-08-05T12:00:00+00:00"
+    assert item["clock_end"] == "2026-08-05T23:30:00+00:00"
+    assert item["lead_time_seconds"] == 41400
+    short = work_item(store, LANDED_ONE_HOUR)
+    assert (short["clock_start"], short["lead_time_seconds"]) == (
+        "2026-08-05T12:00:00+00:00",
+        3600,
+    )
+
+
+def test_work_items_partition_into_four_states(world: World) -> None:
+    store = rebuild_world(world)
+    states = {item["issue"]: item["state"] for item in store["work_items"]}
+    assert states == {
+        ISSUE: "landed",
+        OTHER_ISSUE: "open",
+        LANDED_ONE_HOUR: "landed",
+        LANDED_TWO_HOURS: "landed",
+        LANDED_THREE_HOURS: "landed",
+        ABANDONED_ISSUE: "abandoned",
+        STOPPED_ISSUE: "stopped",
+    }
+    # The partition is derived, never declared: the abandoned item's own dispatch row
+    # carries the class that made it abandoned, and the stopped one carries not_landed.
+    abandoned = next(row for row in store["dispatches"] if row["dispatch_id"] == FLOW_D)
+    assert abandoned["end_state_class"] == "provider_refused"
+    assert abandoned["gate_outcome"] == "not_a_result"
+    stopped = next(row for row in store["dispatches"] if row["dispatch_id"] == FLOW_E)
+    assert stopped["gate_outcome"] == "not_landed"
+    lines = observatory.summary_lines(store, world.store_dir)
+    assert "flow work_items=7 landed=4 open=1 abandoned=1 stopped=1" in lines
+
+
+def test_abandoned_work_is_excluded_from_lead_time_and_counted_separately(
+    world: World,
+) -> None:
+    store = rebuild_world(world)
+    # Excluded: the distribution's denominator is the landed items alone, so the
+    # abandoned issue never enters it however long it sat; counted: its own row and the
+    # coverage block carry it as abandoned, not as a silently dropped item.
+    assert work_item(store, ABANDONED_ISSUE)["lead_time_seconds"] is None
+    assert store["coverage"]["work_items"] == 7
+    assert store["coverage"]["work_items_abandoned"] == 1
+    assert observatory.query(world.store_dir, "SELECT items FROM flow_lead_time") == ((4,),)
+
+
+def test_throughput_is_an_exact_count_of_landed_items_over_a_window(world: World) -> None:
+    rebuild_world(world)
+    block = next(block for block in cookbook_blocks() if "strftime" in block)
+    rows = observatory.query(world.store_dir, block.strip().rstrip(";"))
+    assert rows == (("2026-08", 4),)
+
+
+def test_an_open_item_s_age_reads_against_the_historical_band(world: World) -> None:
+    rebuild_world(world)
+    block = next(block for block in cookbook_blocks() if "age_seconds" in block)
+    rows = observatory.query(world.store_dir, block.strip().rstrip(";"))
+    # The staged as-of is one day after the open item's start, and its age sits above
+    # the historical 85th percentile — the one leading indicator in the set.
+    assert rows == ((OTHER_ISSUE, 86400, 7200, 10800, 41400),)
 
 
 # ------------------------------------------------------------- determinism, refusal
