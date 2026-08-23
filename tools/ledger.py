@@ -75,6 +75,14 @@ contract binds landing to a green `just fast`. So `landed` is the gate evidence 
 SHA is where to look; a green gate run that never landed is invisible here, which is
 stated rather than papered over.
 
+**The terminal state** (#489) is the row's own record of work that started and did
+not complete: `{"state": "abandoned", "class": <failure class>}`, present only where
+the run started and its end state carries one of the registry's four not-a-result
+classes, so abandoned and completed work are distinguishable by the record alone. A
+sync journals one `cti.terminal.state` event beside the record on the first record
+of the state, fail-open; the four classes live in `attribute_registry` and nowhere
+else, `gate_outcome` included.
+
 **Retention.** The materialised rows are kept indefinitely — they are the evidence quoted
 into an issue months later, and they are a few kilobytes each. The raw per-dispatch export
 grows without bound by construction, so `prune` deletes raw files older than
@@ -100,6 +108,8 @@ from typing import TYPE_CHECKING, Any, Final, NamedTuple
 # import needs the script's own directory on the path, as `timeline.py` does.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import attribute_registry
+import breaker
 import codex_guidance
 import dispatch
 from telemetry_log import rows
@@ -792,6 +802,34 @@ def _provider_end_state(items: Iterable[Item]) -> EndState | None:
     return None
 
 
+# The statuses the dispatcher's own closeout writes when its machinery — not the
+# child — failed: `_failed_result` for both, and `_run_dispatch_body`'s post-child
+# half for the first. A run that ended in one of these is the table's
+# `untyped_harness_failure`, the default where a class is missing and the row that
+# outranks every other, `infra_unavailable` included (#184). The names come from
+# `dispatch`'s own writers and are held in step by
+# `test_the_harness_failure_statuses_are_the_dispatchers_own_words`, which reds the
+# day the dispatcher renames one.
+HARNESS_FAILURE_STATUSES: Final = frozenset({"harness_failed_after_child", "child_state_unknown"})
+
+# The one status that means the child never launched — the line #489 draws between
+# work that started and work that never did. A refusal before the child exists is a
+# fact about the attempt, not a terminal state of the work. A result without the
+# key is read as started, so a historical record keeps the typing it always had.
+NEVER_STARTED_STATUS: Final = "child_not_launched"
+
+# The dispatcher's own run classification (`classify_finished_run` → the breaker's
+# `classify_run`) lands on `result.json` as `outcome`. Two of its values name facts
+# this view types by class: the provider's quota, and a provider error, which is a
+# lane that could not be reached — CLAUDE.md's own sentence for
+# `infra_unavailable`. `ok` and `unclassified` name nothing here and fall through
+# to the records. The mapping keys are the breaker's constants, never re-spelled.
+_OUTCOME_CLASSES: Final[dict[str, str]] = {
+    breaker.QUOTA_EXHAUSTED: "quota_exhausted",
+    breaker.PROVIDER_ERROR: "infra_unavailable",
+}
+
+
 def _silent_end_state(source: Source) -> EndState:
     """Type a dispatch that put nothing on the bus, by how much its source can be trusted.
 
@@ -816,8 +854,13 @@ def type_end_state(
 ) -> EndState:
     """Type how a dispatch ended, from provider records and the dispatcher's own refusal.
 
-    Order matters. A dispatcher refusal is decisive because it means the run never
-    started; after that the provider's own records speak; only then does silence get read.
+    Order matters, and the table's own ranking wrote it (#184). A dispatcher refusal
+    is decisive because it means the run never started; then the harness's own
+    failure statuses, because `untyped_harness_failure` outranks everything,
+    `infra_unavailable` included; then the provider's own records; then the
+    dispatcher's classification of its own run's log (`outcome`, the breaker's
+    word — #489's live quota death was typed by nothing else); only then does
+    silence get read.
 
     What a `quota_exhausted` lane must then wait for is #226's, not this function's. The
     `reset_at` here is whatever the record carried, copied verbatim and never computed.
@@ -830,14 +873,30 @@ def type_end_state(
             f"the dispatcher refused before the lane was reached ({kind})",
             (f"result.json refusal={kind}",),
         )
+    status = result.get("status") if result is not None else None
+    if status in HARNESS_FAILURE_STATUSES:
+        return EndState(
+            "untyped_harness_failure",
+            f"the harness's own closeout failed ({status})",
+            (f"result.json status={status}",),
+        )
     from_provider = _provider_end_state(collected)
     if from_provider is not None:
         return from_provider
+    outcome = result.get("outcome") if result is not None else None
+    if isinstance(outcome, str) and outcome in _OUTCOME_CLASSES:
+        return EndState(
+            _OUTCOME_CLASSES[outcome],
+            f"the dispatcher classified its own run's log (outcome={outcome})",
+            (f"result.json outcome={outcome}",),
+        )
     if result is None:
         return EndState("unknown", "the run has not ended: no result.json beside the plan")
-    if not collected:
-        return _silent_end_state(source)
-    return EndState("ok", "the run ended and its records carry no refusal or quota failure")
+    return (
+        _silent_end_state(source)
+        if not collected
+        else EndState("ok", "the run ended and its records carry no refusal or quota failure")
+    )
 
 
 # ------------------------------------------------------------------------- the join
@@ -1019,6 +1078,36 @@ def seat_lands(seat: object) -> bool:
     return seat_shape(seat) != "nothing"
 
 
+def started(result: Mapping[str, Any] | None) -> bool:
+    """Say whether the dispatched child launched — the line #489 draws.
+
+    Work that never started is not work that started and did not finish: a refusal
+    or a failure before the child exists is a fact about the attempt, never a
+    terminal state of the work. The status is the dispatcher's own word, and a
+    result without one is read as started so a historical record keeps the typing
+    it always had rather than being silently re-scored.
+    """
+    if result is None:
+        return False
+    return result.get("status") != NEVER_STARTED_STATUS
+
+
+def terminal_state(result: Mapping[str, Any] | None, end_state: EndState) -> dict[str, str] | None:
+    """Record work that started and did not complete, as a state distinct from completion.
+
+    `None` is the absence, and it is three different facts the caller already
+    holds: the work completed, is still running, or never started. The class is
+    the end state's own — `type_end_state` has already drawn it from the existing
+    vocabulary — and the row that carries this block is distinguishable from a
+    completed one by the block alone, with no inference over records (#489).
+    """
+    if not started(result):
+        return None
+    if end_state.class_ not in attribute_registry.NOT_A_RESULT_CLASSES:
+        return None
+    return {"state": attribute_registry.TERMINAL_ABANDONED, "class": end_state.class_}
+
+
 def gate_outcome(
     landing: Landing, result: Mapping[str, Any] | None, end_state: EndState, seat: object
 ) -> str:
@@ -1037,14 +1126,20 @@ def gate_outcome(
     journal that did land reads `landed` (#404). The typings that say the run was never a
     result, or is not over, still win — they are facts about this dispatch, and the seat
     rule is a fact about the seat.
+
+    A not-a-result class on work that never started reads `never_started`, not
+    `not_a_result` (#489): the four classes and their set are the registry's own
+    `NOT_A_RESULT_CLASSES` — one home, derived here — and a refusal before the child
+    existed never became work in flight, so it departs to the terminal residue
+    rather than inflating the abandoned count.
     """
     shape = seat_shape(seat)
     if landing.sha and shape != "nothing":
         return "landed"
     if result is None:
         return "running"
-    if end_state.class_ in ("provider_refused", "quota_exhausted", "infra_unavailable"):
-        return "not_a_result"
+    if end_state.class_ in attribute_registry.NOT_A_RESULT_CLASSES:
+        return "not_a_result" if started(result) else "never_started"
     if shape != "work":
         return "lands_nothing"
     return "not_landed"
@@ -1158,6 +1253,7 @@ def materialise(
             "usage": usage.document(),
             "cap_fraction": cap_fraction(lane if isinstance(lane, str) else None, usage).document(),
             "end_state": end_state.document(),
+            "terminal_state": terminal_state(result, end_state),
             "gate": {
                 "outcome": gate_outcome(landing, result, end_state, seat),
                 "landed": landing.document(),
@@ -1203,6 +1299,9 @@ def row_line(row: Mapping[str, Any], *, record_parse_failed: bool = False) -> st
         f"gate={row['gate']['outcome']}",
         f"landed={row['gate']['landed']['sha'] or 'none'}",
     ]
+    terminal = row.get("terminal_state")
+    if terminal:
+        fields.append(f"terminal={terminal['state']}:{terminal['class']}")
     if record_parse_failed:
         fields.insert(7, "record_parse=failed")
     return " ".join(fields)
@@ -1230,6 +1329,38 @@ def records_under(root: Path, only: str) -> list[Path]:
     if not root.is_dir():
         return []
     return sorted(path for path in root.iterdir() if (path / "dispatch.json").is_file())
+
+
+# Where a dispatch's recorded terminal state is journalled (#489): beside the
+# record it names, the `waits.jsonl` convention, so the family adds no directory
+# of its own.
+TERMINAL_JOURNAL: Final = "terminal.jsonl"
+
+
+def _record_terminal_state(record: Path, row: Mapping[str, Any], now: datetime) -> None:
+    """Emit one terminal-state event for a newly recorded abandonment, fail-open.
+
+    The row already carries the block — this is the emission half, and a failure
+    anywhere in it degrades to no event, never to an error reaching the sync. The
+    event fires only on the first record of the state: the journal is an append
+    log and a re-sync of an unchanged dispatch is not a new abandonment.
+    """
+    terminal = row.get("terminal_state")
+    if not terminal:
+        return
+    previous = read_json(record / "ledger.json")
+    if previous is not None and previous.get("terminal_state") == terminal:
+        return
+    attribute_registry.emit_terminal(
+        attribute_registry.terminal_event(
+            str(terminal["state"]),
+            str(terminal["class"]),
+            now.timestamp(),
+            dispatch_id=str(row["dispatch_id"]),
+            identity=row,
+        ),
+        journal=record / TERMINAL_JOURNAL,
+    )
 
 
 def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
@@ -1272,6 +1403,7 @@ def sync(options: Options, now: datetime) -> tuple[tuple[str, ...], int]:
             now=now,
         )
         row = materialised.row
+        _record_terminal_state(record, row, now)
         (record / "ledger.json").write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8")
         degraded += int(bool(row["source"]["degraded"]))
         lines.append(row_line(row, record_parse_failed=materialised.record_parse_failed))

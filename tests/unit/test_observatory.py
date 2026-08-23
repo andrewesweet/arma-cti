@@ -37,9 +37,13 @@ staged world carries a right-skewed landed sample on which nearest-rank and line
 interpolation disagree at every percentile, and the view's values are pinned to the
 nearest-rank ones so a change of method is a red. The view's column list is pinned
 exactly, so no mean can enter the headline slot. An abandoned work item is typed by
-its dispatch's own `gate_outcome` — `not_a_result`, the existing vocabulary — never
-by a list of issue numbers or an age heuristic, and the terminal residue without a
-failure class is `stopped`, the boundary #489 will widen.
+its dispatch's own `gate_outcome` — `not_a_result`, the existing vocabulary, every
+not-a-result class of it — never by a list of issue numbers or an age heuristic.
+The terminal residue is `stopped`: ended without a failure class, refused before
+any child launched (#489's line — work that never started is not work that started
+and did not finish, and the quota death that *did* start is the abandoned one), or
+abandoned only by a seat that lands nothing — a review-seat death keeps its own
+`not_a_result` row and never brands its item (#524).
 
 **The rework view ranks only where its denominator exists, and marks its own limits.**
 ADR-0071 ruling 6's key — fix rounds per landing — is computed for implementer-seat
@@ -97,21 +101,33 @@ ZAI_DISPATCH = "d-20260805-120000-zai001"
 BARE_DISPATCH = "d-20260805-120000-bare01"
 
 # The flow view's own issues: three more landings at one, two and three hours, one
-# abandoned by a dispatcher refusal, and one stopped — ended, never landed, no failure
-# class. Their lead times with ISSUE's 41400 give the percentile tests a sample,
-# [3600, 7200, 10800, 41400], on which nearest-rank and linear interpolation disagree
-# at every percentile pinned below.
+# abandoned by a quota death that started, one stopped — ended, never landed, no
+# failure class — and one refused before any child launched, which #489 keeps out
+# of abandoned and in the stopped residue. Their lead times with ISSUE's 41400 give
+# the percentile tests a sample, [3600, 7200, 10800, 41400], on which nearest-rank
+# and linear interpolation disagree at every percentile pinned below.
 FLOW_A = "d-20260805-120000-flow01"
 FLOW_B = "d-20260805-120000-flow02"
 FLOW_C = "d-20260805-120000-flow03"
 FLOW_D = "d-20260805-120000-flow04"
 FLOW_E = "d-20260805-120000-flow05"
+# Not `flow06`: the clock-endpoint test stages that id for its own issue, and two
+# ids this close want no reader wondering whether they ever met in one world.
+FLOW_F = "d-20260805-120000-flow07"
+# The review-death issue's two halves: the implementer that ended clean and unlanded,
+# and the review dispatch whose own harness closeout failed.
+FLOW_G = "d-20260805-120000-flow08"
+FLOW_H = "d-20260805-120000-flow09"
 
 LANDED_ONE_HOUR = 490
 LANDED_TWO_HOURS = 491
 LANDED_THREE_HOURS = 492
 ABANDONED_ISSUE = 493
 STOPPED_ISSUE = 494
+REFUSED_ISSUE = 496
+# #524's round-two shape: every implementer dispatch ended clean and unlanded, and a
+# review dispatch's own harness closeout died — which must not brand the item.
+REVIEW_DIED_ISSUE = 497
 # The rework view's own issue: five rounds recorded against a dispatch that never
 # lands — the zero-denominator row the ruled key must carry unranked, with its rounds
 # visible, rather than as a division.
@@ -439,7 +455,9 @@ class World(NamedTuple):
 
 
 @pytest.fixture
-def world(tmp_path: Path) -> World:
+def world(  # noqa: PLR0915 — the staged world is the arrangement, one statement per dispatch shape it owes the suites below
+    tmp_path: Path,
+) -> World:
     """Stage one dispatch per encoding, one without telemetry, and one landing.
 
     The Claude dispatch's spend exists **only** as `claude_code.api_request` log
@@ -486,23 +504,32 @@ def world(tmp_path: Path) -> World:
         (FLOW_C, LANDED_THREE_HOURS),
         (FLOW_D, ABANDONED_ISSUE),
         (FLOW_E, STOPPED_ISSUE),
+        (FLOW_F, REFUSED_ISSUE),
+        (FLOW_G, REVIEW_DIED_ISSUE),
     ):
         stage_record(dispatch_root, dispatch, issue=issue)
-    # FLOW_D ended child_not_launched with a failure class — the record's own terminal
-    # refusal, which is what makes the issue's work item abandoned rather than stopped.
+    # FLOW_D is #489's live quota death, in the shape the record actually carries: the
+    # child launched and exited 1, the OTel bus said nothing (no export file), and the
+    # only witness is the dispatcher's own classification of its run's log. A fixture
+    # modelling any other shape is what cost #488 a review round.
     (dispatch_root / FLOW_D / "result.json").write_text(
         json.dumps(
             {
                 "dispatch_id": FLOW_D,
-                "status": "child_not_launched",
-                "refusal": "lane_breaker_open",
-                "failure_class": "provider_refused",
-                "ended_at": "2026-08-05T12:10:00+00:00",
+                "status": "child_finished",
+                "returncode": 1,
+                "outcome": "quota_exhausted",
+                "started_at": "2026-08-05T12:30:00+00:00",
+                "ended_at": "2026-08-05T12:40:00+00:00",
             }
         ),
         encoding="utf-8",
     )
     # FLOW_E ran to a clean exit and landed nothing — terminal without a failure class.
+    # FLOW_G/FLOW_H are #524's round-two shape: the implementer half ended clean and
+    # unlanded (work complete, landing not yet ours to give), and the review half's own
+    # harness closeout failed after its child ran — the not-a-result typing that must
+    # stay on the review row and never brand the issue.
     (dispatch_root / FLOW_E / "result.json").write_text(
         json.dumps(
             {
@@ -511,6 +538,50 @@ def world(tmp_path: Path) -> World:
                 "returncode": 0,
                 "started_at": "2026-08-05T12:30:00+00:00",
                 "ended_at": "2026-08-05T13:30:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    # FLOW_F refused before any child launched — a failure class on work that never
+    # started, which is not "work that started and did not finish" (#489's line).
+    (dispatch_root / FLOW_F / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": FLOW_F,
+                "status": "child_not_launched",
+                "refusal": "worktree_missing",
+                "failure_class": "infra_unavailable",
+                "ended_at": "2026-08-05T12:10:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    stage_record(dispatch_root, FLOW_H, issue=REVIEW_DIED_ISSUE, seat="review")
+    # The implementer half: clean exit, nothing landed — `not_landed`, the outcome of
+    # work that ended and awaits a landing.
+    (dispatch_root / FLOW_G / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": FLOW_G,
+                "status": "child_finished",
+                "returncode": 0,
+                "started_at": "2026-08-05T12:30:00+00:00",
+                "ended_at": "2026-08-05T13:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    # The review half: the dispatcher's own closeout failed after the review child ran
+    # — #489's widened typing makes it `untyped_harness_failure`, and this test exists
+    # to hold that the typing stops at the dispatch row.
+    (dispatch_root / FLOW_H / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": FLOW_H,
+                "status": "harness_failed_after_child",
+                "returncode": 1,
+                "started_at": "2026-08-05T13:10:00+00:00",
+                "ended_at": "2026-08-05T13:40:00+00:00",
             }
         ),
         encoding="utf-8",
@@ -857,6 +928,9 @@ def test_a_rebuild_after_a_prune_does_not_look_like_a_rebuild_before_one(world: 
         FLOW_C,
         FLOW_D,
         FLOW_E,
+        FLOW_F,
+        FLOW_G,
+        FLOW_H,
     ]
 
 
@@ -961,7 +1035,7 @@ def test_a_truncated_line_is_counted_named_and_survived(world: World) -> None:
 def test_the_rebuild_states_its_own_coverage(world: World) -> None:
     store = rebuild_world(world)
     coverage = store["coverage"]
-    assert coverage["dispatches"] == 9
+    assert coverage["dispatches"] == 12
     assert coverage["dispatches_with_telemetry"] == 3
     assert coverage["dispatches_with_spend"] == 3
     assert coverage["dispatches_without_telemetry"] == [
@@ -971,12 +1045,15 @@ def test_the_rebuild_states_its_own_coverage(world: World) -> None:
         FLOW_C,
         FLOW_D,
         FLOW_E,
+        FLOW_F,
+        FLOW_G,
+        FLOW_H,
     ]
-    assert coverage["issues"] == 7
+    assert coverage["issues"] == 9
     assert coverage["issues_with_landings"] == 4
     lines = observatory.summary_lines(store, world.store_dir)
     assert any(
-        "dispatches=9" in line and "with_spend=3" in line and "issues_with_landings=4" in line
+        "dispatches=12" in line and "with_spend=3" in line and "issues_with_landings=4" in line
         for line in lines
     )
 
@@ -1041,16 +1118,62 @@ def test_work_items_partition_into_four_states(world: World) -> None:
         LANDED_THREE_HOURS: "landed",
         ABANDONED_ISSUE: "abandoned",
         STOPPED_ISSUE: "stopped",
+        REFUSED_ISSUE: "stopped",
+        REVIEW_DIED_ISSUE: "stopped",
     }
     # The partition is derived, never declared: the abandoned item's own dispatch row
     # carries the class that made it abandoned, and the stopped one carries not_landed.
     abandoned = next(row for row in store["dispatches"] if row["dispatch_id"] == FLOW_D)
-    assert abandoned["end_state_class"] == "provider_refused"
+    assert abandoned["end_state_class"] == "quota_exhausted"
     assert abandoned["gate_outcome"] == "not_a_result"
     stopped = next(row for row in store["dispatches"] if row["dispatch_id"] == FLOW_E)
     assert stopped["gate_outcome"] == "not_landed"
     lines = observatory.summary_lines(store, world.store_dir)
-    assert "flow work_items=7 landed=4 open=1 abandoned=1 stopped=1" in lines
+    assert "flow work_items=9 landed=4 open=1 abandoned=1 stopped=3" in lines
+
+
+def test_work_that_never_started_is_not_abandoned_work(world: World) -> None:
+    # #489's line, visible in the output: a refusal before the child launched carries
+    # its failure class and still does not make the item abandoned, because work that
+    # never started is not work that started and did not finish. The dispatch row says
+    # `never_started`, and the item departs to the stopped residue.
+    store = rebuild_world(world)
+    row = next(row for row in store["dispatches"] if row["dispatch_id"] == FLOW_F)
+    assert row["end_state_class"] == "infra_unavailable"
+    assert row["gate_outcome"] == "never_started"
+    assert work_item(store, REFUSED_ISSUE)["state"] == "stopped"
+    assert store["coverage"]["work_items_abandoned"] == 1
+
+
+def test_a_review_seat_death_never_brands_its_item_abandoned(world: World) -> None:
+    # Round 2's #524 finding: three review dispatches ended in harness closeout
+    # failures, every implementer dispatch on the issue succeeded, and the item read
+    # `abandoned` — half the live abandoned count was an issue nobody abandoned. The
+    # seat weighing holds the line: the review row keeps its own widened typing
+    # (`untyped_harness_failure` → `not_a_result`), and the item reads from its
+    # work-bearing dispatches alone, so it lands in the stopped residue.
+    store = rebuild_world(world)
+    review = next(row for row in store["dispatches"] if row["dispatch_id"] == FLOW_H)
+    assert review["seat"] == "review"
+    assert review["end_state_class"] == "untyped_harness_failure"
+    assert review["gate_outcome"] == "not_a_result"
+    item = work_item(store, REVIEW_DIED_ISSUE)
+    assert item["state"] == "stopped"
+    assert store["coverage"]["work_items_abandoned"] == 1
+
+
+def test_a_seatless_or_unknown_seat_dispatch_still_brands_its_item() -> None:
+    # The residual the docs state: `seat_shape` defaults a record with no seat — or a
+    # seat no registry knows — to work-bearing, so a historical dispatch's
+    # not-a-result still brands its item instead of falling silent, and the seat
+    # weighing never eats the pre-seat corpus.
+    for seat in (None, "a-seat-no-registry-knows"):
+        assert (
+            observatory._work_item_state(  # noqa: SLF001 — the seat-weighing reducer is the unit under test; staging a full rebuild for two row shapes would test the fixture instead
+                [{"gate_outcome": "not_a_result", "seat": seat}]
+            )
+            == "abandoned"
+        )
 
 
 def test_abandoned_work_is_excluded_from_lead_time_and_counted_separately(
@@ -1061,7 +1184,7 @@ def test_abandoned_work_is_excluded_from_lead_time_and_counted_separately(
     # abandoned issue never enters it however long it sat; counted: its own row and the
     # coverage block carry it as abandoned, not as a silently dropped item.
     assert work_item(store, ABANDONED_ISSUE)["lead_time_seconds"] is None
-    assert store["coverage"]["work_items"] == 7
+    assert store["coverage"]["work_items"] == 9
     assert store["coverage"]["work_items_abandoned"] == 1
     assert observatory.query(world.store_dir, "SELECT items FROM flow_lead_time") == ((4,),)
 

@@ -600,6 +600,91 @@ def test_a_run_that_ended_with_records_and_no_provider_failure_is_ok() -> None:
     assert state.class_ == "ok"
 
 
+def test_a_harness_closeout_failure_types_untyped_which_outranks_all() -> None:
+    # #184: `untyped_harness_failure` is the default where a class is missing and
+    # outranks everything, `infra_unavailable` included. The dispatcher's own closeout
+    # statuses are rows nobody typed — and before #489 such a run with records on the
+    # bus read `ok`, a harness failure presented as a clean end.
+    items = items_from([metric_batch("claude_code.token.usage", [({"type": "input"}, 1)])])
+    for status in sorted(ledger.HARNESS_FAILURE_STATUSES):
+        state = ledger.type_end_state(
+            items,
+            {"status": status, "returncode": 1},
+            ledger.Source(ledger.SOURCE_EXPORT, None),
+        )
+        assert state.class_ == "untyped_harness_failure", status
+        assert f"status={status}" in state.evidence[0]
+
+
+def test_an_untyped_harness_failure_outranks_the_provider_s_own_records() -> None:
+    items = items_from([log_batch("claude_code.api_refusal", {"refusal_category": "policy"})])
+    state = ledger.type_end_state(
+        items,
+        {"status": "harness_failed_after_child", "returncode": 1},
+        ledger.Source(ledger.SOURCE_EXPORT, None),
+    )
+    assert state.class_ == "untyped_harness_failure"
+
+
+def test_the_harness_failure_statuses_are_the_dispatchers_own_words() -> None:
+    # Round 2's finding 4 made real: the comment beside `HARNESS_FAILURE_STATUSES`
+    # promises a test holding them in step with `dispatch`'s writers, and none did.
+    # This is that test — every status `type_end_state` keys on must still be a
+    # literal the dispatcher writes, else the typing reads past a rename it never
+    # noticed. The converse needs no guard: `child_finished` and friends are not
+    # harness failures, and naming them there would be a second vocabulary.
+    source = Path(dispatch.__file__).read_text(encoding="utf-8")
+    for status in [*sorted(ledger.HARNESS_FAILURE_STATUSES), ledger.NEVER_STARTED_STATUS]:
+        assert f'"{status}"' in source, f"dispatch no longer writes {status}"
+
+
+def test_the_dispatchers_own_quota_classification_types_the_run(tmp_path: Path) -> None:
+    # #489's live shape: the child launched and exited 1, the bus carried nothing to
+    # say why, and the only witness is the dispatcher's classification of its own
+    # run's log — `outcome`, which `classify_finished_run` wrote at run end.
+    state = ledger.type_end_state(
+        [],
+        {"status": "child_finished", "returncode": 1, "outcome": "quota_exhausted"},
+        ledger.Source(ledger.SOURCE_EXPORT, tmp_path / "f.jsonl"),
+    )
+    assert state.class_ == "quota_exhausted"
+    assert "outcome=quota_exhausted" in state.evidence[0]
+
+
+def test_a_provider_error_outcome_is_a_lane_that_could_not_be_reached() -> None:
+    # CLAUDE.md's own sentence for `infra_unavailable` is a lane that cannot be
+    # reached; a connection the run's log names as refused or gateway-failed is that.
+    state = ledger.type_end_state(
+        [],
+        {"status": "child_finished", "returncode": 1, "outcome": "provider_error"},
+        ledger.Source(ledger.SOURCE_EXPORT, None),
+    )
+    assert state.class_ == "infra_unavailable"
+
+
+def test_the_provider_s_own_refusal_record_still_outranks_the_outcome() -> None:
+    items = items_from([log_batch("claude_code.api_refusal", {"refusal_category": "policy"})])
+    state = ledger.type_end_state(
+        items,
+        {"returncode": 1, "outcome": "quota_exhausted"},
+        ledger.Source(ledger.SOURCE_EXPORT, None),
+    )
+    assert state.class_ == "provider_refused"
+
+
+def test_an_outcome_the_table_has_no_class_for_falls_through() -> None:
+    # `ok` and `unclassified` name nothing in the failure-class vocabulary, so the
+    # records speak as they always did — this is the fall-through that keeps an
+    # unclassifiable run from being invented a class it never carried.
+    items = items_from([metric_batch("claude_code.token.usage", [({"type": "input"}, 1)])])
+    state = ledger.type_end_state(
+        items,
+        {"returncode": 1, "outcome": "unclassified"},
+        ledger.Source(ledger.SOURCE_EXPORT, None),
+    )
+    assert state.class_ == "ok"
+
+
 # -------------------------------------------------------------------- content logging
 
 
@@ -818,6 +903,144 @@ def test_the_gate_outcome_is_landed_when_a_commit_carries_the_issue() -> None:
         landing, {"returncode": 0}, ledger.EndState("ok", ""), "implementer"
     )
     assert outcome == "landed"
+
+
+# -------------------------------------------------- the recorded terminal state (#489)
+
+
+# The live quota death's own result document, in the shape `run_dispatch` writes:
+# started, ended, and classified by nobody but the dispatcher's own log read.
+STARTED_QUOTA_RESULT: dict[str, Any] = {
+    "dispatch_id": DISPATCH,
+    "status": "child_finished",
+    "returncode": 1,
+    "outcome": "quota_exhausted",
+    "started_at": "2026-08-05T12:30:00+00:00",
+    "ended_at": "2026-08-05T12:40:00+00:00",
+}
+
+
+@pytest.mark.parametrize("klass", sorted(ledger.attribute_registry.NOT_A_RESULT_CLASSES))
+def test_every_not_a_result_class_reaches_the_terminal_state(klass: str) -> None:
+    # Criterion three, one test per class: each of the four — including the one that
+    # outranks the rest and was missing from `gate_outcome`'s tuple until #489 —
+    # makes the dispatch not a result and records a terminal state distinct from
+    # completion on a run that started.
+    result = dict(STARTED_QUOTA_RESULT)
+    assert (
+        ledger.gate_outcome(
+            ledger.Landing(None, 0, "x"), result, ledger.EndState(klass, ""), "implementer"
+        )
+        == "not_a_result"
+    )
+    assert ledger.terminal_state(result, ledger.EndState(klass, "")) == {
+        "state": "abandoned",
+        "class": klass,
+    }
+
+
+def test_work_that_never_started_carries_its_class_but_no_terminal_state() -> None:
+    # #489's drawn line: a refusal before the child existed is a fact about the
+    # attempt, not a terminal state of the work. The class still types the end
+    # state; what it never becomes is abandoned work.
+    result = {
+        "dispatch_id": DISPATCH,
+        "status": "child_not_launched",
+        "refusal": "worktree_missing",
+        "failure_class": "infra_unavailable",
+        "ended_at": "2026-08-05T12:10:00+00:00",
+    }
+    state = ledger.type_end_state([], result, ledger.Source(ledger.SOURCE_EXPORT, None))
+    assert state.class_ == "infra_unavailable"
+    assert ledger.started(result) is False
+    assert (
+        ledger.gate_outcome(ledger.Landing(None, 0, "x"), result, state, "implementer")
+        == "never_started"
+    )
+    assert ledger.terminal_state(result, state) is None
+
+
+def test_a_historical_result_without_a_status_keeps_its_typing_and_reads_started() -> None:
+    # Criterion six, corrected by round 2: `status` is on 102 of the 770 live
+    # records, not on all of them — the round-one report assumed presence and the
+    # reviewer counted. Absence stays an absence — the record parses, reads
+    # as started, and keeps the typing it always had rather than being re-scored.
+    result: dict[str, Any] = {"dispatch_id": DISPATCH, "returncode": 1}
+    items = items_from([metric_batch("claude_code.token.usage", [({"type": "input"}, 1)])])
+    state = ledger.type_end_state(items, result, ledger.Source(ledger.SOURCE_EXPORT, None))
+    assert state.class_ == "ok"
+    assert ledger.started(result) is True
+    assert ledger.terminal_state(result, state) is None
+
+
+def test_completed_work_records_no_terminal_state() -> None:
+    result = {"dispatch_id": DISPATCH, "status": "child_finished", "returncode": 0}
+    items = items_from([metric_batch("claude_code.token.usage", [({"type": "input"}, 1)])])
+    state = ledger.type_end_state(items, result, ledger.Source(ledger.SOURCE_EXPORT, None))
+    assert ledger.terminal_state(result, state) is None
+
+
+def test_a_sync_records_the_terminal_state_and_journals_exactly_one_event(
+    tmp_path: Path,
+) -> None:
+    # The record alone distinguishes abandoned from completed: the row carries the
+    # block, the summary line names it, and one event is journalled beside the
+    # record — once, because a re-sync of an unchanged dispatch is not a new
+    # abandonment. The suite's dead-port endpoint keeps the export hermetic (#484).
+    record = stage_record(
+        tmp_path / "dispatches",
+        result=dict(STARTED_QUOTA_RESULT),
+        lane="codex",
+        profile="codex-luna-max",
+    )
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+    lines, code = ledger.sync(options(tmp_path), NOW)
+    assert code == 0
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert row["terminal_state"] == {"state": "abandoned", "class": "quota_exhausted"}
+    assert any("terminal=abandoned:quota_exhausted" in line for line in lines)
+    journal = (record / "terminal.jsonl").read_text(encoding="utf-8").splitlines()
+    assert len(journal) == 1
+    entry = json.loads(journal[0])
+    assert entry["event"] == "cti.terminal.state"
+    assert entry["exported"] is False
+    assert entry["attributes"]["cti.dispatch_id"] == DISPATCH
+    assert entry["attributes"]["cti.lane"] == "codex"
+    assert entry["attributes"]["cti.terminal.class"] == "quota_exhausted"
+    ledger.sync(options(tmp_path), NOW)
+    assert len((record / "terminal.jsonl").read_text(encoding="utf-8").splitlines()) == 1
+
+
+def test_a_sync_over_a_historical_row_without_the_block_adds_no_event(tmp_path: Path) -> None:
+    # The other half of criterion six, on the write side: a pre-#489 row that
+    # materialised before the state existed is not an abandonment when re-synced,
+    # because its run completed.
+    record = stage_record(
+        tmp_path / "dispatches",
+        result={"dispatch_id": DISPATCH, "status": "child_finished", "returncode": 0},
+    )
+    write_jsonl(
+        tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl",
+        [metric_batch("claude_code.token.usage", [({"type": "input"}, 1)])],
+    )
+    lines, code = ledger.sync(options(tmp_path), NOW)
+    assert code == 0
+    assert not any("terminal=" in line for line in lines)
+    assert not (record / "terminal.jsonl").exists()
+
+
+def test_an_unwritable_journal_degrades_to_no_record_never_an_error(tmp_path: Path) -> None:
+    # Criterion seven's own words: a failure to record degrades to no record, never
+    # to an error reaching the dispatch — the ledger row is still written and the
+    # sync still succeeds.
+    record = stage_record(tmp_path / "dispatches", result=dict(STARTED_QUOTA_RESULT), lane="codex")
+    write_jsonl(tmp_path / "export" / f"dispatch-{DISPATCH}.jsonl", [])
+    (record / "terminal.jsonl").mkdir()  # a directory where the journal would open
+    lines, code = ledger.sync(options(tmp_path), NOW)
+    assert code == 0
+    row = json.loads((record / "ledger.json").read_text(encoding="utf-8"))
+    assert row["terminal_state"] == {"state": "abandoned", "class": "quota_exhausted"}
+    assert any("terminal=abandoned:quota_exhausted" in line for line in lines)
 
 
 def test_a_run_still_going_is_running_rather_than_not_landed() -> None:

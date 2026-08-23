@@ -67,6 +67,7 @@ cap_fraction { pool, unit, basis, excludes, attribution, attribution_note,
                binding_window, binding_reason,
                windows { <window> { est, observed, tokens_per_point } } }
 end_state{ class, reason, evidence }
+terminal_state { state, class }   # absent unless the work started and did not complete (#489)
 gate     { outcome, landed { sha, commits, reason }, returncode, started_at, ended_at }
 ```
 
@@ -256,8 +257,15 @@ dispatch's file and no row reads them.
   started**. The newest survivor is reported, with the count, since an issue may land in
   several commits and the tip is what a reader wants to `git show`. Where nothing
   survives, the row's `reason` names which test answered.
-- **Gate outcome** — `landed`, `not_landed`, `lands_nothing`, `running`, or
-  `not_a_result`.
+- **Gate outcome** — `landed`, `not_landed`, `lands_nothing`, `running`,
+  `not_a_result`, or `never_started`.
+- **Terminal state** (#489) — `{"state": "abandoned", "class": <failure class>}` on
+  the row, only where the work started and its end state carries one of
+  `attribute_registry.NOT_A_RESULT_CLASSES`' four classes; absent otherwise, and the
+  absence is a fact (completed, running, or never started), never a default. One
+  `cti.terminal.state` event is journalled beside the record — `terminal.jsonl`,
+  the `waits.jsonl` convention — on the first sync that records the block,
+  fail-open.
 
 The two bounds are what make the row's claim narrower than "a commit exists". Neither was
 there at first, and #245 is what they cost: the review dispatch `d-20260805-221743-8957c3`,
@@ -289,9 +297,13 @@ coding agent's exit code is not a gate result. What is mechanical is that a comm
 `origin/main` cleared `cog verify` and the repo hooks, and that CLAUDE.md binds landing to
 a green `just fast`. The limit that leaves is stated rather than papered over: **a green
 gate run that never landed is invisible here.** A dispatch whose end state says it was
-never a result — `quota_exhausted`, `provider_refused`, `infra_unavailable` — is reported
-`not_a_result` rather than as a failed gate, so a routing fact never enters the quality
-record ADR-0061 Decision 6 reads.
+never a result — `quota_exhausted`, `provider_refused`, `infra_unavailable`,
+`untyped_harness_failure` — is reported `not_a_result` rather than as a failed gate, so a
+routing fact never enters the quality record ADR-0061 Decision 6 reads. The four classes
+are the registry's own set, one home for `gate_outcome` and the terminal state alike; a
+refusal that fired before the child launched keeps its class in the end state but reads
+`never_started`, because work that never started is not work that started and did not
+finish (#489).
 
 ## Content logging
 

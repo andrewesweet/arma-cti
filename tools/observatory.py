@@ -49,9 +49,14 @@ than routes — nothing here excludes a profile, reroutes work or trips a breake
   view `flow_lead_time`, whose column list is percentiles and a sample size and nothing
   else, because the distribution is right-skewed and its mean would sit above its own 70th
   percentile. Abandoned work is typed by `tools/ledger.py`'s own `gate_outcome`
-  vocabulary — `not_a_result` — read from the records at rebuild time; #489's recorded
-  terminal state will widen that derivation, and `stopped` holds the terminal residue
-  until it does.
+  vocabulary — `not_a_result`, the classes of `attribute_registry.NOT_A_RESULT_CLASSES`
+  — read from the records at rebuild time and recorded on the dispatch's own ledger row
+  by #489's terminal state, which widened this derivation rather than competing with it:
+  every not-a-result class on work that started makes the item abandoned, weighed by
+  seat — only a seat that lands work brands its item, so a review or recon dispatch
+  that died not-a-result never abandons work whose implementer dispatches succeeded —
+  work whose dispatches all refused before the child launched is `stopped` rather than
+  abandoned, and `stopped` still holds the terminal residue.
 - **The rework view (#487) reports ADR-0071 ruling 6's ranking key and never routes on
   it.** Fix rounds per landing is that key, computed for implementer-seat profiles and no
   others, and the seat set is **derived from the registries** — `dispatch.SEATS`' `lands`
@@ -270,13 +275,21 @@ WORK_ITEM_COLUMNS: Final = (
 )
 
 # One work item's state, in preference order. `abandoned` reuses `gate_outcome`'s
-# `not_a_result` — the classes `tools/ledger.py`'s own vocabulary already names — and is
-# derived at read time from the records, because #489's recorded terminal state does not
-# exist yet; when it lands it widens this derivation rather than competing with it.
-# `stopped` is the terminal residue: every dispatch ended, none landed, none carried a
-# not-a-result class. An issue whose dispatches are all review or recon seats lands in
-# the same residue, because a seat that lands nothing is a fact about the seat and not
-# about this issue's completion.
+# `not_a_result` — the classes of `attribute_registry.NOT_A_RESULT_CLASSES`, widened
+# to all four by #489, including `untyped_harness_failure`, which outranks the rest
+# (#184) — and the same widening is what the ledger row records as a terminal state.
+# It is weighed by seat (#489 round 2): only a dispatch of a seat that lands work
+# (`seat_shape` "work") may brand its item abandoned, because a not-a-result on a
+# review or recon dispatch is a fact about that dispatch — the review died — never
+# about work whose every implementer dispatch succeeded (#524 read abandoned on
+# exactly that shape). The dispatch row keeps its own outcome either way. A record
+# carrying no seat, or a seat no registry knows, reads as work-bearing by
+# `seat_shape`'s default, so a historical dispatch still brands its item.
+# `stopped` is the terminal residue: every dispatch ended, none landed, none carried
+# a not-a-result class on started work — a dispatch that refused before the
+# child launched carries `never_started`, not `not_a_result`, because work that never
+# started is not work that started and did not finish, and a review or recon
+# dispatch's `not_a_result` lands here too, for the seat reason above.
 STATE_LANDED: Final = "landed"
 STATE_OPEN: Final = "open"
 STATE_ABANDONED: Final = "abandoned"
@@ -895,21 +908,30 @@ def _commit_date(repo: Path, sha: str) -> str | None:
     return ledger.git("show", "-s", "--format=%cI", sha, cwd=repo).strip() or None
 
 
-def _work_item_state(outcomes: Sequence[str | None]) -> str:
-    """Reduce one issue's dispatch outcomes to its work-item state, in preference order.
+def _work_item_state(rows: Sequence[Mapping[str, Any]]) -> str:
+    """Reduce one issue's dispatch rows to its work-item state, in preference order.
 
     A landing answers first; short of that, a dispatch still running keeps the item
-    open however its siblings ended, because re-dispatched work is work in flight. Only
-    with nothing running and nothing landed does a not-a-result outcome make the item
-    abandoned, and the residue — every dispatch terminal, none landed, none a not-a-result
-    — is `stopped`. An outcome the row could not derive counts as terminal here, and the
+    open however its siblings ended, because re-dispatched work is work in flight.
+    Only with nothing running and nothing landed does a not-a-result outcome make the
+    item abandoned — and only from a dispatch of a seat that lands work, the seat
+    weighing the STATE comment above states: a review or recon dispatch that died
+    not-a-result keeps that outcome on its own row and never brands its item, whose
+    implementer dispatches may all have succeeded. The residue — every dispatch
+    terminal, none landed, no work-bearing dispatch not-a-result on work that started
+    (`never_started` lands here too, a refusal before the child launched) — is
+    `stopped`. An outcome the row could not derive counts as terminal here, and the
     dispatch row's own reason is where a reader learns why.
     """
+    outcomes = [row["gate_outcome"] for row in rows]
     if STATE_LANDED in outcomes:
         return STATE_LANDED
     if "running" in outcomes:
         return STATE_OPEN
-    if "not_a_result" in outcomes:
+    if any(
+        row["gate_outcome"] == "not_a_result" and ledger.seat_shape(row["seat"]) == "work"
+        for row in rows
+    ):
         return STATE_ABANDONED
     return STATE_STOPPED
 
@@ -941,7 +963,7 @@ def _work_item_row(issue: int, rows: Sequence[Mapping[str, Any]], repo: Path) ->
         )
     return {
         "issue": issue,
-        "state": _work_item_state([row["gate_outcome"] for row in rows]),
+        "state": _work_item_state(rows),
         "clock_start": clock_start,
         "clock_start_reason": None
         if clock_start

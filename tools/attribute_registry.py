@@ -245,6 +245,20 @@ NAMES: Final[dict[str, Name]] = {
         "The refusal kind that carried the cause; present wherever a refusal was"
         " the wait's evidence, and most worth reading beside `undetermined`.",
     ),
+    # ---- attributes: terminal state (#489) ----------------------------------
+    "cti.terminal.state": Name(
+        "event, attribute",
+        "required",
+        "One dispatch's recorded terminal state for work that started and did not"
+        " finish (#489); also an attribute on it, the `cti.review.round` dual"
+        " position — one name, two OTel slots.",
+    ),
+    "cti.terminal.class": Name(
+        "attribute",
+        "required",
+        "The failure class the terminal state carries, always one of"
+        " NOT_A_RESULT_CLASSES — the existing vocabulary, never a parallel one.",
+    ),
     # ---- scope ---------------------------------------------------------------
     "cti.breaker": Name(
         "scope",
@@ -299,6 +313,39 @@ BLOCK_REASONS: Final[dict[str, str]] = {
 UNDETERMINED: Final = "undetermined"
 
 WAIT_EVENT: Final = "cti.wait.blocked"
+
+# The terminal state's class vocabulary (#489): the failure-class table's own
+# not-a-result rows and nothing else. CLAUDE.md's table is the authority and lives
+# as prose, so this is its not-a-result half stated once, machine-readably, each
+# row's reason quoting what makes the class not a result — the same shape
+# `BLOCK_REASONS` gives a wait's causes. `tools/ledger.py`'s `gate_outcome` reads
+# this set rather than holding a second tuple of the same names, which is the
+# #501/#503/#504 defect class (a value relocated to a more principled-looking
+# place while staying declared rather than derived) not repeated: one home,
+# everyone derives. The table's other rows — `timeout`, `assertion_failed` and
+# their kin — are results a gate acted on, and are deliberately not restated
+# here because nothing this registry feeds classifies on them.
+NOT_A_RESULT_CLASSES: Final[dict[str, str]] = {
+    "infra_unavailable": (
+        "Not a result: a lane that cannot be reached says nothing about the work"
+        " dispatched to it, so the stop is never interpreted."
+    ),
+    "quota_exhausted": (
+        "Not a result: the provider's quota reopened at its own published boundary"
+        " and the partial run is never read."
+    ),
+    "provider_refused": (
+        "Not a result: the provider refused the request, or this project's own"
+        " breaker refused the dispatch."
+    ),
+    "untyped_harness_failure": (
+        "Not a result, and it outranks the other three (#184): the default where a"
+        " class is missing — a harness bug to fix first, never a verdict on the work."
+    ),
+}
+
+TERMINAL_EVENT: Final = "cti.terminal.state"
+TERMINAL_ABANDONED: Final = "abandoned"
 
 # Which refusal kind announces which cause, at the seams that emit waits. Kinds
 # not listed are not waits — a bad argument or an unknown seat refuses a request
@@ -383,5 +430,63 @@ def emit_wait(
     did, so a refusal is journalled with `exported: false` and never raised. The
     journal lives beside the surface's own state (`store.directory`, the
     dispatch records' root, the review root) — no new state directory (#484).
+    """
+    return otel_event.emit(event, journal=journal, endpoint=endpoint)
+
+
+def terminal_event(
+    state: str,
+    failure_class: str,
+    at: float,
+    *,
+    dispatch_id: str,
+    identity: Mapping[str, object] | None = None,
+) -> otel_event.Event:
+    """Build one `cti.terminal.state` event; the only place its attributes are spelled.
+
+    `identity` is the dispatch's own ledger row, read for the attributes it
+    carries (`lane`, `profile`, `seat`, `issue`) and never required to carry
+    them. Raises on a state or class outside the closed vocabulary, exactly as
+    `wait_event` does: a misspelling is a programming error this module exists
+    to make impossible, not a transport failure to swallow.
+    """
+    if state != TERMINAL_ABANDONED:
+        message = f"terminal state not in the closed vocabulary: {state!r}"
+        raise ValueError(message)
+    if failure_class not in NOT_A_RESULT_CLASSES:
+        message = f"terminal class not in the closed vocabulary: {failure_class!r}"
+        raise ValueError(message)
+    attributes: dict[str, object] = {
+        "cti.dispatch_id": dispatch_id,
+        "cti.terminal.state": state,
+        "cti.terminal.class": failure_class,
+    }
+    row = identity or {}
+    for column, key in (("lane", "cti.lane"), ("profile", "cti.profile"), ("seat", "cti.seat")):
+        value = row.get(column)
+        if isinstance(value, str) and value:
+            attributes[key] = value
+    issue = row.get("issue")
+    if isinstance(issue, int) and not isinstance(issue, bool):
+        attributes["cti.issue"] = issue
+    return otel_event.Event(
+        name=TERMINAL_EVENT,
+        at=at,
+        attributes=attributes,
+        resource={"service.name": "arma-cti-terminal"},
+    )
+
+
+def emit_terminal(
+    event: otel_event.Event,
+    journal: Path,
+    endpoint: str = "",
+) -> bool:
+    """Export one terminal-state event and journal it with its export's outcome.
+
+    Fail-open as `emit_wait` is: the abandonment was a fact whatever a collector
+    or a journal did, so a failure to record degrades to no record and never
+    reaches the dispatch the record is about (#489). The journal lives beside the
+    dispatch record it names, like `waits.jsonl` before it.
     """
     return otel_event.emit(event, journal=journal, endpoint=endpoint)

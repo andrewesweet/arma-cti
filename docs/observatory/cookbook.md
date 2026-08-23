@@ -84,10 +84,12 @@ ORDER BY w.issue
 
 An item whose age sits above the band's 85th percentile is an item that will set the
 next record if nothing intervenes. `state` is `open` only while a dispatch of the
-issue is still running; `abandoned` items (every dispatch terminal on a not-a-result
-class) are counted separately and never enter the lead-time distribution, and
-`stopped` holds the terminal residue — ended, never landed, no failure class — until
-#489's recorded terminal state types it.
+issue is still running; `abandoned` items (a dispatch terminal on a not-a-result
+class, on work that started, from a seat that lands work — a review-seat death never
+brands its item) are counted separately and never enter the lead-time
+distribution, and `stopped` holds the terminal residue — ended, never landed, no
+not-a-result class on started work of a seat that lands work, including every
+dispatch refusing before the child launched.
 
 ## Where rework appears, and how many dispatches an issue took
 

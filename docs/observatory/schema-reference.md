@@ -52,8 +52,8 @@ silence. Both render as an absence with a reason, never as zero.
 | `work_items` | Work items — issues — in the store, one per issue |
 | `work_items_landed` | Of those, how many landed |
 | `work_items_open` | Of those, how many have a dispatch still running |
-| `work_items_abandoned` | Of those, how many ended on a not-a-result class without landing |
-| `work_items_stopped` | Of those, the terminal residue — ended, never landed, no failure class |
+| `work_items_abandoned` | Of those, how many ended on a not-a-result class, on work that started, from a dispatch of a seat that lands work, without landing |
+| `work_items_stopped` | Of those, the terminal residue — ended, never landed, no not-a-result class on started work of a seat that lands work |
 | `review_loops` | Issue loops read from the review journal, any round count |
 | `review_loops_round_zero` | Of those, how many sit at round zero — the key's own spread |
 | `review_loops_unreadable` | The issues whose `loop.json` exists but would not parse, named |
@@ -92,7 +92,7 @@ One row per dispatch record under the dispatch root.
 | `landed_sha` | + `landed_sha_reason` | The commit this dispatch landed, bounded as `tools/ledger.py` bounds it |
 | `started_at` | + `started_at_reason` | When this dispatch began — the result's `started_at`, else the plan's `planned_at` (`ledger.dispatch_start`'s rule) |
 | `end_state_class` | + `end_state_class_reason` | How this dispatch ended, in `tools/ledger.py`'s own vocabulary; null only where a pruned row's `end_state` block is gone |
-| `gate_outcome` | + `gate_outcome_reason` | `gate_outcome`'s vocabulary: `landed`, `running`, `not_a_result`, `lands_nothing`, `not_landed` |
+| `gate_outcome` | + `gate_outcome_reason` | `gate_outcome`'s vocabulary: `landed`, `running`, `not_a_result`, `never_started`, `lands_nothing`, `not_landed` |
 
 `spend_encoding` is `metric` (token metrics or token-bearing spans, including the
 histogram body Codex uses), `log_records` (token counts as attributes on log records,
@@ -157,14 +157,29 @@ order by time.
 **`state` is derived from the dispatch rows' own `gate_outcome`, in preference order.**
 `landed` where any dispatch of the issue landed; else `open` while any dispatch is
 still running; else `abandoned` where any dispatch ended `not_a_result`; else
-`stopped`. The boundary on `abandoned` is deliberate and narrow: it reuses the failure
-classes `gate_outcome` already names, read from the records at rebuild time, and
-excludes such items from the lead-time distribution while counting them separately in
-the coverage block. **#489 will widen it** — its recorded terminal state puts the
-failure class on the record itself — and `stopped` holds the terminal residue (ended,
-never landed, no failure class) until then. An issue dispatched only to seats that
-land nothing by construction reads `stopped` for the same reason: a fact about the
-seat is not a fact about this issue's completion.
+`stopped`. The boundary on `abandoned` is deliberate and narrow: it reuses the
+failure classes of `attribute_registry.NOT_A_RESULT_CLASSES` — all four, including
+`untyped_harness_failure`, which outranks the rest (#184) and joined with #489 —
+read from the records at rebuild time, and the same widening is what
+`just ledger-sync` records as a `terminal_state` block on the dispatch's own ledger
+row, so abandoned and completed work are distinguishable by the record alone. It is
+also **weighed by seat**: only a dispatch of a seat that lands work (`ledger`'s
+`seat_shape` "work") may brand its item abandoned, so a not-a-result on a
+review-seat dispatch — its own review harness died — never abandons an issue whose
+implementer dispatches all succeeded and are merely unlanded (#524 read abandoned
+on exactly that shape); the dispatch row keeps its `not_a_result` outcome either
+way, and the item reads from its work-bearing dispatches alone. A record carrying
+no seat, or a seat no registry knows, reads as work-bearing by `seat_shape`'s
+default, so a historical dispatch still brands its item. A
+dispatch that refused before the child launched carries `never_started`, not
+`not_a_result`, because work that never started is not work that started and did
+not finish; its item departs to the residue. Abandoned items are excluded from the
+lead-time distribution while counting separately in the coverage block. `stopped`
+holds the terminal residue — ended, never landed, no not-a-result class on started
+work of a seat that lands work. An issue dispatched only to seats that land nothing
+by construction
+reads `stopped` for the same reason: a fact about the seat is not a fact about this
+issue's completion.
 
 ## The `flow_lead_time` view
 

@@ -196,7 +196,14 @@ def emit(
     on success. The export attempt is bounded first, so the journal write never waits.
     """
     exported, detail = post(log_record(event), endpoint, timeout)
-    journal.parent.mkdir(parents=True, exist_ok=True)
-    with journal.open("a", encoding="utf-8") as handle:
-        handle.write(journal_line(event, exported, detail) + "\n")
+    try:
+        journal.parent.mkdir(parents=True, exist_ok=True)
+        with journal.open("a", encoding="utf-8") as handle:
+            handle.write(journal_line(event, exported, detail) + "\n")
+    except OSError:
+        # The module's own contract is that emission never fails a caller, and this
+        # journal write was the last line that could: an unwritable path degrades to
+        # no record rather than raising into a decision that has already been taken
+        # (#489, whose terminal state is recorded fail-open over the record too).
+        return False
     return exported

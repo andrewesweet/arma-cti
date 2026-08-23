@@ -62,6 +62,68 @@ def test_every_reason_row_is_a_sentence_not_a_blank() -> None:
         assert len(reason) > 20, f"{name} carries its reason beside it"
 
 
+# --------------------------------------------------- the terminal state (#489)
+
+
+def test_the_not_a_result_vocabulary_is_the_four_and_nothing_else() -> None:
+    """Closed means closed here too: CLAUDE.md's not-a-result rows, all four.
+
+    The fourth is the one `gate_outcome`'s old tuple omitted — `untyped_harness_failure`,
+    which the table says outranks everything, `infra_unavailable` included (#184) — and
+    a class arriving any other way than an edit beside this lock is the parallel table
+    criterion four forbids.
+    """
+    assert set(attribute_registry.NOT_A_RESULT_CLASSES) == {
+        "infra_unavailable",
+        "quota_exhausted",
+        "provider_refused",
+        "untyped_harness_failure",
+    }
+    for name, reason in attribute_registry.NOT_A_RESULT_CLASSES.items():
+        assert len(reason) > 20, f"{name} carries its reason beside it"
+
+
+def test_a_terminal_event_journals_fail_open_with_its_export_outcome(tmp_path: Path) -> None:
+    """One abandonment, one journal line beside the record it names, export outcome kept."""
+    exported = attribute_registry.emit_terminal(
+        attribute_registry.terminal_event(
+            "abandoned",
+            "quota_exhausted",
+            NOW,
+            dispatch_id="d-20260823-112611-917c38",
+            identity={
+                "lane": "codex",
+                "profile": "codex-luna-max",
+                "seat": "implementer",
+                "issue": 486,
+            },
+        ),
+        journal=tmp_path / "terminal.jsonl",
+        endpoint=DEAD_ENDPOINT,
+    )
+    assert exported is False, "the dead endpoint is the arrangement, not a surprise"
+    (row,) = journal_rows(tmp_path / "terminal.jsonl")
+    assert row["event"] == "cti.terminal.state"
+    assert row["exported"] is False
+    assert row["export_detail"]
+    assert row["attributes"]["cti.dispatch_id"] == "d-20260823-112611-917c38"
+    assert row["attributes"]["cti.terminal.state"] == "abandoned"
+    assert row["attributes"]["cti.terminal.class"] == "quota_exhausted"
+    assert row["attributes"]["cti.lane"] == "codex"
+    assert row["attributes"]["cti.issue"] == 486
+
+
+def test_a_terminal_class_outside_the_vocabulary_is_refused_not_journalled(
+    tmp_path: Path,
+) -> None:
+    """The spelling is a programming error, never a transport failure to swallow."""
+    with pytest.raises(ValueError, match="closed vocabulary"):
+        attribute_registry.terminal_event("abandoned", "timed_out", NOW, dispatch_id="d")
+    with pytest.raises(ValueError, match="closed vocabulary"):
+        attribute_registry.terminal_event("vanished", "quota_exhausted", NOW, dispatch_id="d")
+    assert not (tmp_path / "terminal.jsonl").exists(), "and nothing was journalled for it"
+
+
 # ------------------------------------------------------------- wait emission
 
 

@@ -1133,6 +1133,9 @@ def apply_reading(
 # makes a wrong class a harness bug by definition.
 QUOTA_MARKERS: Final = (
     "usage limit reached",
+    # Codex's own phrasing for the same wall — #489's live quota death ended on
+    # exactly this sentence and no marker above caught it.
+    "hit your usage limit",
     "rate limit exceeded",
     "429",
     "quota exceeded",
