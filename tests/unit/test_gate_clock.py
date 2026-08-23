@@ -54,6 +54,14 @@ its readers: a historical row without the breakdown still parses, a `null`
 anchor entry is a deliberate unset rather than damage, recording stays
 advisory under an unwritable directory, and the justfile's recipes are the
 ones the recorder names — asserted against the file rather than restated.
+
+Round 2 of #483 tightens the two unset spellings the widening introduced: the
+deliberate unset is readable only for a recipe `ANCHORED_RECIPES` excludes —
+the same null on an anchored recipe is a disarmed instrument, damage — and the
+tuple cannot disagree with the file in either direction without a red. It also
+collects the mutation filter's second member: `mutation`'s whole wall is the
+diff-scoped tier, so its window declines the zero-target rows exactly as
+`fast`'s does, the filter the anchor file's `mutation` note names.
 """
 
 from __future__ import annotations
@@ -805,6 +813,34 @@ def test_a_fast_window_of_only_cheap_rows_is_insufficient_not_healthy() -> None:
     assert fast_verdict_for(cheap, fast_state()).reason == "insufficient_sample"
 
 
+def test_the_mutation_window_declines_the_cheap_kind_too() -> None:
+    """`mutation`'s whole wall is the diff-scoped tier, so it reads the kind.
+
+    Round 2 of #483: the anchor file's `mutation` note promises the filter —
+    "read against `mutation_targets`, as fast's is" — and `MUTATION_LEG_RECIPES`
+    is what owes it. A zero-target `mutation` row is a floor-priced run with
+    nothing else in it, the same bias one step purer, so an anchor derived for
+    the recipe is compared against the runs that gave the tier work.
+    """
+    mutation_state = anchor_state({"mutation": ANCHOR_SECONDS}, {"mutation": SET_ON})
+
+    def mutation_verdict(records: list[gate_clock.Record]) -> gate_clock.Verdict:
+        return gate_clock.assess(tuple(records), mutation_state)[
+            gate_clock.RECIPES.index("mutation")
+        ]
+
+    slow = [
+        row(recipe="mutation", wall=ANCHOR_SECONDS * 1.38, targets=2)
+        for _ in range(gate_clock.MIN_SAMPLE)
+    ]
+    cheap = [
+        row(recipe="mutation", wall=ANCHOR_SECONDS * 0.75, targets=0)
+        for _ in range(gate_clock.MIN_SAMPLE)
+    ]
+    assert mutation_verdict([*slow, *cheap]).reason == "slower"
+    assert mutation_verdict(cheap).reason == "insufficient_sample"
+
+
 def test_the_unit_window_reads_every_kind() -> None:
     """`unit` carries no diff-scoped leg, so a zero-target row is the same measurement."""
     rows = [row(wall=ANCHOR_SECONDS, targets=0) for _ in range(gate_clock.MIN_SAMPLE)]
@@ -1006,7 +1042,7 @@ def test_a_leg_entry_that_will_not_read_declines_the_whole_breakdown(
 
 
 def test_a_null_anchor_entry_is_deliberately_unset_not_damage(tmp_path: Path) -> None:
-    """`anchor_seconds: null` names a recipe the recorder writes without anchoring it.
+    """`anchor_seconds: null` names a recipe no anchor was ever derived for.
 
     A dropped key is still damage — pinned above — so a recipe recorded since
     #483 that no anchor has been derived for needs a spelling the loader reads
@@ -1018,21 +1054,68 @@ def test_a_null_anchor_entry_is_deliberately_unset_not_damage(tmp_path: Path) ->
         anchor_file,
         {
             "unit": {"anchor_seconds": 190, "set": SET_ON},
-            "fast": {"anchor_seconds": None},
+            "fast": {"anchor_seconds": 195, "set": SET_ON},
             **UNSET_ENTRIES,
         },
     )
     state = gate_clock.load_anchors(anchor_file)
     assert state.problems == {}
-    assert state.anchors == {"unit": 190.0}
-    assert state.unset == frozenset({"fast", "check", "mutation"})
+    assert state.anchors == {"unit": 190.0, "fast": 195.0}
+    assert state.unset == frozenset({"check", "mutation"})
 
-    records = greens([400.0] * gate_clock.MIN_SAMPLE, recipe="fast")
+    records = greens([400.0] * gate_clock.MIN_SAMPLE, recipe="check")
     verdicts = gate_clock.assess(tuple(records), state)
     by_recipe = {verdict.recipe: verdict for verdict in verdicts}
-    assert by_recipe["fast"].reason == "anchor_unset"
-    assert by_recipe["fast"].line is None
+    assert by_recipe["check"].reason == "anchor_unset"
+    assert by_recipe["check"].line is None
     assert by_recipe["unit"].reason == "insufficient_sample"
+
+
+def test_a_nulled_anchor_on_an_anchored_recipe_is_damage(tmp_path: Path) -> None:
+    """Round 2's finding: the unset spelling must not disarm a set anchor.
+
+    Before #483 widened the recipes, a null `anchor_seconds` failed the read
+    outright; the deliberate-unset spelling reopened that path for the anchored
+    recipes too, and an anchor that can be nulled without complaint is the
+    two-week doubling again, wearing a configuration choice's spelling. The
+    null is readable only where no anchor was ever derived — `ANCHORED_RECIPES`
+    decides which — and on a recipe it names the read is damage.
+    """
+    anchor_file = tmp_path / "anchor.json"
+    write_anchor(
+        anchor_file,
+        {
+            "unit": {"anchor_seconds": None},
+            "fast": {"anchor_seconds": 195, "set": SET_ON},
+            **UNSET_ENTRIES,
+        },
+    )
+    state = gate_clock.load_anchors(anchor_file)
+    assert "unit" not in state.unset
+    assert "unit.anchor_seconds is null" in state.problems["unit"]
+    assert state.unset == frozenset({"check", "mutation"})  # the never-anchored stay unset
+
+    records = greens([400.0] * gate_clock.MIN_SAMPLE, recipe="unit")
+    verdicts = gate_clock.assess(tuple(records), state)
+    by_recipe = {verdict.recipe: verdict for verdict in verdicts}
+    assert by_recipe["unit"].reason == "anchor_unreadable"
+    assert "nulled anchor is damage" in by_recipe["unit"].line
+
+
+def test_the_shipped_anchor_file_agrees_with_the_anchored_set() -> None:
+    """`ANCHORED_RECIPES` is the fact the null read turns on, so it cannot drift.
+
+    The other direction of the same disagreement: an anchor written into the
+    file for a recipe the tuple does not name is a hand-edit that stopped
+    halfway — the tuple would keep calling that recipe never-anchored, and
+    nulling the new value would read as the deliberate unset. Deriving an
+    anchor is one edit — the value in the file, the recipe in the tuple — and
+    this asserts the tree's own two halves of it agree.
+    """
+    state = gate_clock.load_anchors(gate_clock.ANCHOR_PATH)
+    assert state.problems == {}
+    assert set(state.anchors) == set(gate_clock.ANCHORED_RECIPES)
+    assert state.unset == frozenset(set(gate_clock.RECIPES) - set(gate_clock.ANCHORED_RECIPES))
 
 
 def test_two_recipes_recorded_in_one_session_keep_separate_medians(

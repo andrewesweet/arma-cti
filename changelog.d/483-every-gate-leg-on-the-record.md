@@ -20,14 +20,19 @@
 
 - The gate-duration anchor file names every recipe the recorder writes, and the
   two no anchor has been derived for (`check`, `mutation`) carry
-  `anchor_seconds: null`: a deliberate unset the loader reads, distinct from a
-  dropped key, which remains damage. Those recipes report no drift assessment —
-  recording widened, the assessment ladder, its threshold, its window and its
-  anchors did not, and setting an anchor for them is the same deliberate
-  hand-edit from `just gate-clock-history` it always was.
+  `anchor_seconds: null`: a deliberate unset the loader reads for a recipe no
+  anchor was ever derived for — distinct from a dropped key and from nulling an
+  anchored recipe's value, both of which remain damage and redden
+  `just check`, so the instrument cannot be silently disarmed. Those recipes
+  report no drift assessment — recording widened, the assessment ladder, its
+  threshold, its window and its anchors did not, and setting an anchor for them
+  is the same deliberate hand-edit from `just gate-clock-history` it always
+  was.
 - The per-recipe recording scaffold (`/proc/uptime` at both ends, load average,
-  foreign gate-process count, the collected-test count) moved from duplicated
-  shell in each recipe into the one `run` verb, so all four recipes take their
-  measurements with the same code. Recording stays advisory: an unreadable
-  clock or an unwritable records directory prints to stderr and never changes
-  the gate's own exit status.
+  foreign gate-process count) moved from duplicated shell in each recipe into
+  the one `run` verb, so all four recipes take their measurements with the same
+  code. The collected-test count's read already lived in the recorder's `record`
+  verb; what moved with the scaffold is the count's temp file, which the
+  wrapper recipes still mint and clean around the runner. Recording stays
+  advisory: an unreadable clock or an unwritable records directory prints to
+  stderr and never changes the gate's own exit status.

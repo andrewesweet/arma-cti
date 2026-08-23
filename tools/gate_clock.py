@@ -93,10 +93,15 @@ flagged where it sits, which is how a misspelling presents. Since #483 widened
 `RECIPES` past the recipes an anchor exists for, the one entry that names a
 recipe without anchoring it is `anchor_seconds: null`: a deliberate, reviewed
 unset — no anchor has been derived for that recipe's rows yet — read by the
-loader and kept distinct from a dropped key, which is damage. `assess`'s
-`anchor_unset` rung is what it produces, the honest unknown; the recipes the
-file must name are `RECIPES`, the set the recorder writes rows for, so the
-file and the loader cannot drift apart silently.
+loader and kept distinct from a dropped key, which is damage. Deliberately
+unset and nulled away are different facts, and `ANCHORED_RECIPES` is what
+tells them apart: the null is readable only for a recipe no anchor was ever
+derived for, while the same null on an anchored recipe is the one edit that
+would re-open the doubling unnoticed — an anchor removed reads as damage and
+reddens `just check`, never as a configuration choice. `assess`'s
+`anchor_unset` rung is what a readable unset produces, the honest unknown; the
+recipes the file must name are `RECIPES`, the set the recorder writes rows
+for, so the file and the loader cannot drift apart silently.
 
 **The wall is read from the kernel's monotonic clock.** Both ends of a recorded
 wall read `/proc/uptime` — `CLOCK_REALTIME` steps under NTP and a step mid-run
@@ -167,18 +172,21 @@ have had to call that third case a code run while it cost what a docs run
 costs; this field names what it counted instead, and answers "did the tier have
 work" rather than "was this documentation".
 
-**`fast`'s comparison excludes the zero rows; `unit` records the count and
-compares on it not at all.** Excluded rather than weighted, because the
-93.6 s anchor was derived from four runs whose diff carried
-`tests/unit/test_generate_seats.py` (`6a769cb`) and so paid the mutation leg:
-the like-for-like population is the runs that paid it too, and a second
-anchor derived from the cheap kind is a derivation nobody has done. Direction
-settles the rest — the issue's reading has #450's three docs-only landings at
-81.49, 82.53 and 81.35 s, the floor of a recorded span reaching 231 s, and a
-median those drag down makes a real slowdown read as ordinary, the
-false-negative direction on an instrument built to catch slow growth. `unit`
-is left unfiltered because its own legs are diff-independent: a zero-target
-`unit` row is the same measurement as any other, and filtering it would only
+**The mutation-carrying recipes' comparisons exclude the zero rows; `unit` and
+`check` record the count and compare on it not at all.** Excluded rather than
+weighted, because the 93.6 s anchor was derived from four runs whose diff
+carried `tests/unit/test_generate_seats.py` (`6a769cb`) and so paid the
+mutation leg: the like-for-like population is the runs that paid it too, and a
+second anchor derived from the cheap kind is a derivation nobody has done.
+Direction settles the rest — the issue's reading has #450's three docs-only
+landings at 81.49, 82.53 and 81.35 s, the floor of a recorded span reaching
+231 s, and a median those drag down makes a real slowdown read as ordinary,
+the false-negative direction on an instrument built to catch slow growth.
+`mutation` joins `fast` in `MUTATION_LEG_RECIPES` for the same reason one step
+purer: its whole wall is the diff-scoped tier, so a zero-target row is a
+floor-priced run with nothing else in it. `unit` and `check` are left
+unfiltered because their own legs are diff-independent: a zero-target row of
+either is the same measurement as any other, and filtering it would only
 shrink the sample.
 
 **Rows written before #466 carry no count and read as `None` — unclassified,
@@ -265,11 +273,25 @@ REPO_ROOT: Final = Path(__file__).resolve().parents[1]
 # derived from its rows).
 RECIPES: Final = ("unit", "fast", "check", "mutation")
 
-# The recipes that carry `just mutation`, and so the only ones whose comparison
-# reads `mutation_targets` (#466). Every other leg of both recipes prices the
-# whole tree, so a `unit` row's count is provenance and never a filter. One
-# home for that rule: `assess` and `history` both ask here.
-MUTATION_LEG_RECIPES: Final = ("fast",)
+# The recipes an anchor has been derived for. `anchor_seconds: null` reads as
+# the deliberate unset only for a recipe this tuple excludes — recorded, never
+# anchored — because the same null on a recipe this tuple names is a nulled
+# anchor: the disarm path #446 exists to catch, wearing the unset state's
+# spelling, and a gate that can be silently disarmed that way is the two-week
+# doubling again. The tuple and the shipped file cannot drift apart: deriving
+# an anchor writes the value in the file and adds the recipe here in the one
+# hand-edit, and the test module asserts the two agree on the tree's own file.
+ANCHORED_RECIPES: Final = ("unit", "fast")
+
+# The recipes whose cost the diff moves through the mutation tier, and so the
+# only ones whose comparison reads `mutation_targets` (#466): `fast`, which
+# carries `just mutation` as one leg of three, and `mutation`, whose whole wall
+# is that tier and so is diff-scoped end to end. Every other leg prices the
+# whole tree whatever the diff holds, so a `unit` or `check` row's count is
+# provenance and never a filter. One home for that rule: `assess` and `history`
+# both ask here, and the anchor file's `mutation` note states its anchor would
+# be read the same way.
+MUTATION_LEG_RECIPES: Final = ("fast", "mutation")
 
 # The comparison window and floor. The window is ten green runs because the
 # day medians the threshold was derived from are runs-of-a-day shapes; the floor
@@ -611,16 +633,27 @@ def _read_anchor_entry(name: str, entry: object) -> tuple[float, datetime] | str
     Split out of `load_anchors` so the file-level failures (missing,
     unparseable, not an object) and the per-entry ladder read separately.
 
-    `anchor_seconds: null` is the deliberate unset state (#483): a recipe the
-    recorder writes but no anchor has been derived for yet. It is a value the
-    loader reads, not a half-edit — a dropped key or a misspelled one is still
-    damage below — and `assess`'s `anchor_unset` rung is what it produces.
+    `anchor_seconds: null` is the deliberate unset state (#483) — a recipe the
+    recorder writes but no anchor has been derived for yet — and which recipes
+    those are is `ANCHORED_RECIPES`'s one statement, because the same null on a
+    recipe an anchor has been derived for is that anchor nulled away: the
+    disarm #446 exists to catch, and damage, not a configuration choice. A
+    dropped key or a misspelled one is damage either way, and `assess`'s
+    `anchor_unset` rung is what a readable unset produces.
     """
     if not isinstance(entry, dict):
         return f"{name} entry is not an object"
-    if "anchor_seconds" in entry and entry["anchor_seconds"] is None:
-        return None
-    seconds = entry.get("anchor_seconds")
+    if entry.get("anchor_seconds") is None:
+        if "anchor_seconds" not in entry:
+            return f"{name}.anchor_seconds is not a positive number"
+        return (
+            None
+            if name not in ANCHORED_RECIPES
+            else f"{name}.anchor_seconds is null but an anchor has been derived for "
+            f"{name} — a nulled anchor is damage, not the unset state; restore the "
+            "value or re-derive it"
+        )
+    seconds = entry["anchor_seconds"]
     if isinstance(seconds, bool) or not isinstance(seconds, (int, float)) or seconds <= 0:
         return f"{name}.anchor_seconds is not a positive number"
     try:
@@ -645,7 +678,10 @@ def load_anchors(path: Path) -> AnchorState:
     The one entry that names a recipe without anchoring it is
     `anchor_seconds: null` (#483): an explicit, reviewed decision that no anchor
     has been derived for that recipe, kept distinct from a missing key by being
-    a value the loader reads. `set` is required wherever an anchor is set,
+    a value the loader reads — and readable only where `ANCHORED_RECIPES` says
+    no anchor was ever derived, because on a recipe it names the same null is a
+    disarmed instrument and a problem, the same damage a dropped key is. `set`
+    is required wherever an anchor is set,
     because the report bounds its window by it: an anchor without a set moment
     could not be lowered without false-firing against the rows that predate the
     change. A date bounds from that day's start; a full timestamp bounds from
