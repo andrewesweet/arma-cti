@@ -79,6 +79,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import otel_event  # the path insert above is what makes this importable
 
+import attribute_registry  # as above
+
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Mapping, Sequence
 
@@ -90,6 +92,9 @@ DEFAULT_QUEUE_DIR: Final = Path.home() / ".arma-cti" / "queue"
 POLICY_FILE: Final = "policy.json"
 TRANSITION_JOURNAL: Final = "transitions.jsonl"
 TRANSITION_EVENT: Final = "cti.queue.transition"
+# Where the queue's recognised waits are journalled (#484): beside the policy and its
+# transitions, so the wait family adds a file to the surface's own state and no directory.
+WAIT_JOURNAL: Final = "waits.jsonl"
 
 # The document's own version. A file carrying anything else is refused rather than guessed at,
 # because a reader that "handles" a version it does not know is a reader inventing policy.
@@ -450,6 +455,27 @@ def emit_transition(store: Store, verb: str, detail: Mapping[str, object], at: f
             resource={"service.name": "arma-cti-queue"},
         ),
         journal=store.journal,
+        endpoint=store.endpoint,
+    )
+
+
+def note_wait(store: Store, reason: str, refusal_kind: str = "") -> None:
+    """Journal one wait this surface recognised, fail-open, with its cause (#484).
+
+    `reason` arrives from `attribute_registry.block_reason_for` or is the registry's
+    own `undetermined`, so the closed vocabulary is spelled here nowhere at all. The
+    `report` verb measures underfill without deciding anything and deliberately does
+    not call this: a wait is recorded where a decision was blocked, not wherever the
+    queue was observed.
+    """
+    attribute_registry.emit_wait(
+        attribute_registry.wait_event(
+            reason,
+            "queue",
+            datetime.now(tz=UTC).timestamp(),
+            refusal=refusal_kind,
+        ),
+        journal=store.directory / WAIT_JOURNAL,
         endpoint=store.endpoint,
     )
 
@@ -1332,13 +1358,16 @@ def _read_verb(
     if args.verb == "check":
         found = check_refusal(policy, args.issue, in_flight, surfaces_of(in_flight))
         if found is not None:
+            reason = attribute_registry.block_reason_for(found)
+            if reason is not None:
+                note_wait(store, reason, refusal_kind=found.kind)
             return found.lines(), EXIT_REFUSED
         return (f"issue={args.issue}", "queue=clear", *in_flight.lines()), 0
-    return _candidate_read(args, policy, in_flight)
+    return _candidate_read(args, store, policy, in_flight)
 
 
 def _candidate_read(
-    args: argparse.Namespace, policy: Policy, in_flight: InFlight
+    args: argparse.Namespace, store: Store, policy: Policy, in_flight: InFlight
 ) -> tuple[tuple[str, ...], int]:
     """Answer `next` and `report` from one candidate read and one selection."""
     before_candidates = (
@@ -1356,6 +1385,17 @@ def _candidate_read(
         line = underfill_line(policy, selection, in_flight)
         return ((line,) if line else ()), 0
     if selection.refusal is not None:
+        # A refusal here blocked a decision, so it is a wait with a cause — except
+        # `no_ready_issue`, where the queue stopped with candidates standing: the
+        # drops beside them are per-candidate and can be heterogeneous, and one
+        # closed-set value for that aggregate would be a guess. `undetermined` is
+        # the stated absence, never a picked cause. An empty `ready` label is not
+        # a wait at all — nothing was standing to be dispatched.
+        reason = attribute_registry.block_reason_for(selection.refusal)
+        if reason is None and candidates and not selection.chosen:
+            reason = attribute_registry.UNDETERMINED
+        if reason is not None:
+            note_wait(store, reason, refusal_kind=selection.refusal.kind)
         return (*selection.considered, *selection.refusal.lines()), EXIT_REFUSED
     return next_lines(selection, in_flight), 0
 

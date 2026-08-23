@@ -118,6 +118,7 @@ from typing import Final, NamedTuple
 # `review_loop.py` all use.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import attribute_registry
 import review_loop
 import worktree
 from worktree import Refusal, Report
@@ -125,6 +126,11 @@ from worktree import Refusal, Report
 VERDICT_NAME: Final = "verdict.json"
 REVIEW_SEAT: Final = "review"
 BOUND: Final = "bound"
+# Where a review's recognised waits are journalled (#484): beside the loop's per-issue
+# state, so the wait family adds a file to an existing directory and no new one. A
+# module constant rather than a parameter because `exchange` takes none and the wait is
+# the review root's fact, like the rebases beside it; the tests patch this one name.
+WAIT_JOURNAL: Final = review_loop.REVIEW_ROOT / "waits.jsonl"
 # Mirrors `dispatch.DISPATCH_ROOT` (`tools/dispatch.py` owns the shape); stated here so a
 # reader of this module needs no second file to know where records live. The CLI takes
 # `--dispatch-dir` for the tests and for reading a preserved evidence tree.
@@ -279,6 +285,15 @@ def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole
                 " collision this protocol exists to prevent.",
             )
         )
+    # The wait the handover opens (#484): from here until the verdict is recorded, the
+    # work is waiting on its reviewer, and that interval starts at this success — the
+    # one moment the loop is the writer of the fact. Fail-open like every family.
+    attribute_registry.emit_wait(
+        attribute_registry.wait_event(
+            "waiting_reviewer", "review", datetime.now(tz=UTC).timestamp(), issue=issue
+        ),
+        journal=WAIT_JOURNAL,
+    )
     return Report(
         (
             "ok=review_branch_exchanged",

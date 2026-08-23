@@ -835,14 +835,25 @@ def test_scan_of_an_empty_root_is_empty(tmp_path: Path) -> None:
 # --------------------------------------------------------------- the exchange
 
 
-def test_exchange_pushes_and_the_remote_holds_the_sha(tmp_path: Path) -> None:
+def test_exchange_pushes_and_the_remote_holds_the_sha(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     repo = init_repo(tmp_path)
     head = head_of(repo)
+    # The success opens the reviewer wait (#484), journalled beside the loop's state —
+    # patched to this tree so the assertion reads a fact this test made, and so a
+    # passing suite never writes the box's real review root.
+    journal = tmp_path / "waits.jsonl"
+    monkeypatch.setattr(review_exchange, "WAIT_JOURNAL", journal)
     report = review_exchange.exchange(repo, 332)
     assert report.code == 0
     assert "ok=review_branch_exchanged" in report.lines
     assert f"reviewed_sha={head}" in report.lines
     assert worktree.remote_ref_sha(repo, "refs/heads/issue-332") == head
+    rows = [json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines()]
+    assert rows[-1]["event"] == "cti.wait.blocked"
+    assert rows[-1]["attributes"]["cti.wait.block_reason"] == "waiting_reviewer"
+    assert rows[-1]["attributes"]["cti.issue"] == 332
 
 
 def test_exchange_refuses_a_dirty_tree_and_pushes_nothing(tmp_path: Path) -> None:
@@ -854,8 +865,11 @@ def test_exchange_refuses_a_dirty_tree_and_pushes_nothing(tmp_path: Path) -> Non
     assert worktree.remote_ref_sha(repo, "refs/heads/issue-332") is None
 
 
-def test_exchange_force_moves_the_ref_for_an_amended_round(tmp_path: Path) -> None:
+def test_exchange_force_moves_the_ref_for_an_amended_round(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     repo = init_repo(tmp_path)
+    monkeypatch.setattr(review_exchange, "WAIT_JOURNAL", tmp_path / "waits.jsonl")
     review_exchange.exchange(repo, 332)
     first = head_of(repo)
     (repo / "README").write_text("two", encoding="utf-8")

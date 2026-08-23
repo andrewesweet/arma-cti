@@ -3345,7 +3345,14 @@ def test_the_seam_refuses_a_tripped_lane_before_it_forks_anything(tmp_path: Path
     assert "refusal=lane_breaker_open" in done.stderr
     assert "class=provider_refused" in done.stderr
     assert "dispatch=" not in done.stdout
-    assert not (tmp_path / "dispatches").exists(), "nothing was written for a run that never was"
+    # No record, no child, no id — and #484's one intended write: the wait a tripped lane
+    # opens is journalled fail-open beside the records it never made, cause `breaker_open`
+    # because a quality trip waits on a human and not on a window.
+    written = sorted(path.name for path in (tmp_path / "dispatches").iterdir())
+    assert written == ["waits.jsonl"], "nothing was written for a run that never was"
+    line = json.loads((tmp_path / "dispatches" / "waits.jsonl").read_text(encoding="utf-8"))
+    assert line["attributes"]["cti.wait.block_reason"] == "breaker_open"
+    assert line["attributes"]["cti.wait.refusal"] == "lane_breaker_open"
     assert not capture.exists(), "and the runner was never reached"
 
 

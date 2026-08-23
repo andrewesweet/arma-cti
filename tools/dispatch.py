@@ -244,6 +244,7 @@ from urllib.parse import quote
 sys.path.insert(0, str(Path(__file__).parent))
 
 # The path insert above is what makes these importable.
+import attribute_registry
 import breaker
 import codex_guidance
 import dispatch_stop
@@ -5168,6 +5169,31 @@ def emit(lines: Iterable[str], code: int) -> int:
     return code
 
 
+# Where a dispatch's recognised waits are journalled (#484): a file beside the dispatch
+# records, so the wait family adds no directory of its own.
+WAIT_JOURNAL: Final = "waits.jsonl"
+
+
+def note_plan_wait(refusal: Refusal | None, dispatch_dir: Path, at: float) -> None:
+    """Journal one wait-shaped planning refusal with its cause (#484), fail-open.
+
+    Only the planning choke calls this, so a refusal that a candidate entry collected
+    internally is not a wait — the ladder skipped it and went on. The cause is never
+    spelled here: `attribute_registry.block_reason_for` maps the refusal, and a kind it
+    does not know is not a wait at all, except a `lane_breaker_open` on an unnamed
+    failure class, which is one and reads `undetermined`.
+    """
+    if refusal is None:
+        return
+    reason = attribute_registry.block_reason_for(refusal)
+    if reason is None:
+        return
+    attribute_registry.emit_wait(
+        attribute_registry.wait_event(reason, "dispatch", at, refusal=refusal.kind),
+        journal=dispatch_dir / WAIT_JOURNAL,
+    )
+
+
 def answer_directly(args: argparse.Namespace) -> int | None:
     """Serve the modes that dispatch nothing, or return `None` to plan a dispatch.
 
@@ -5220,10 +5246,10 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
             EXIT_REFUSED,
         )
 
-    plan, brief, refusal = plan_dispatch(
-        args, main_checkout(Path.cwd()), datetime.now(tz=UTC) if now is None else now
-    )
+    when = datetime.now(tz=UTC) if now is None else now
+    plan, brief, refusal = plan_dispatch(args, main_checkout(Path.cwd()), when)
     if refusal is not None or plan is None:
+        note_plan_wait(refusal, Path(args.dispatch_dir).expanduser(), when.timestamp())
         return emit(refusal.lines() if refusal else (), EXIT_REFUSED)
     if args.dry_run:
         return emit(dry_run_lines(plan, brief, os.environ), 0)

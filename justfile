@@ -30,8 +30,8 @@ check:
         --leg check-source-link --leg check-gated-paths --leg check-markers \
         --leg check-conflicts --leg check-changelog --leg check-gate-clock \
         --leg check-seats --leg check-just-grants --leg check-arbiter \
-        --leg check-sqf --leg check-secrets --leg check-python \
-        --leg check-machine-b --leg check-rust
+        --leg check-attributes --leg check-sqf --leg check-secrets \
+        --leg check-python --leg check-machine-b --leg check-rust
 
 # Static validation for the repository-managed Machine B playbooks. The live
 # inventory is deliberately absent here: syntax and lint must be available to
@@ -151,6 +151,13 @@ check-just-grants:
 [positional-arguments]
 check-arbiter *args:
     uv run python tools/check_arbiter_copies.py "$@"
+
+# Every cti.*/gen_ai.* name the tracked Python carries is one
+# tools/attribute_registry.py carries (#484). Derived from `git ls-files` for
+# the same reason check-arbiter derives: remembered path lists were wrong at
+# every count. The registry is the authority; this leg is what makes it one.
+check-attributes:
+    uv run python tools/check_attributes.py
 
 # -p adds the pedantic lints; -e makes findings fatal (without it the gate is a no-op).
 # The second step is the scoping HEMTT's banned_commands lint cannot express:

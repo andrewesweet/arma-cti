@@ -1253,7 +1253,13 @@ def test_a_dry_run_under_a_recorded_freeze_refuses_and_launches_nothing(
     assert f"ruling={RULING}" in captured.err
     assert "carve_out.initiative=issues=221-222 exempt=True" in captured.err
     assert "class=" not in captured.err, "#238's precedent: no failure class"
-    assert not (tmp_path / "dispatches").exists(), "nothing was written, so nothing was launched"
+    # Nothing a dispatch *runs* was written — no record, no plan — and #484's wait journal
+    # is the one intended exception: a freeze-refused dispatch is a wait, journalled
+    # fail-open with its cause, which is a fact about the queue rather than a launch.
+    written = sorted(path.name for path in (tmp_path / "dispatches").iterdir())
+    assert written == ["waits.jsonl"], "nothing was written but the wait itself"
+    line = json.loads((tmp_path / "dispatches" / "waits.jsonl").read_text(encoding="utf-8"))
+    assert line["attributes"]["cti.wait.block_reason"] == "waiting_human"
 
 
 def test_a_dry_run_for_a_carved_out_issue_is_planned_normally(
