@@ -216,7 +216,7 @@ repeated three-round state can mean the item was under-specified upstream.
 | `dispatches` | never | The row's dispatch count — an outcome measure |
 | `issues` | never | Distinct issues the row dispatched on — an outcome measure |
 | `rounds` | never | Fix rounds over those issues, from the review journal — an outcome measure |
-| `landings` | never | The row's dispatches whose issue landed while they were open — an outcome measure, bounded as described below |
+| `landings` | never | The row's dispatches whose issue landed at or after their own start — an outcome measure, bounded as described below |
 | `rounds_per_landing` | + `rounds_per_landing_reason` | The ruled key: `rounds` over `landings` |
 | `ranked` | never | `1` only where the key exists; every other row is reported and unranked |
 | `measures` | never | The marker naming the outcome columns as description, never strata |
@@ -234,12 +234,16 @@ both reaches `just land` and lands work rather than a journal. Today that is exa
 **The denominator is over-inclusive, and says so here.** `landings` is not "the row's
 dispatches that landed". A dispatch's `landed_sha` is derived by `tools/ledger.py`'s
 landing detection — commits referencing the issue that descend from the dispatch's base
-and postdate its start — so a dispatch counts whenever its issue landed while it was
-open, whether or not that dispatch produced the landing. Every dispatch an issue
+and postdate its start — so a dispatch counts whenever its issue landed at or after
+its start, whether or not that dispatch produced the landing. The tests bound the start
+and never the end, so a commit landing after the dispatch finished still counts; a
+degenerate record, one carrying no base SHA or no start time, clears none of the tests
+and never counts. Every dispatch an issue
 carried while it landed shares in that landing, superseded ones included. ADR-0071
 ruling 6 makes this column the key's denominator and says an implementer whose work
 never lands is a zero denominator; the code gives such a row a denominator wherever the
-issue landed during any of its dispatches. A number wrong in that known, bounded way
+issue landed at or after the start of any of its dispatches. A number wrong in that
+known, bounded way
 and saying so is honest; the same number silently is not. The semantics fix is filed
 separately as #542 and this view deliberately does not reach for it.
 
