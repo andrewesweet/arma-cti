@@ -3,9 +3,10 @@
 `just observatory` rebuilds `~/.arma-cti/observatory/store.json` in full on every run,
 from its sources — the per-dispatch OTel export under
 `/var/log/claude-otel/dispatches/`, the dispatch records under `~/.arma-cti/dispatches/`,
-the review journal under `~/.arma-cti/review/`, and git. The store is a cache and never
-a source of truth: a schema change is a re-run, not a migration, and a number you
-distrust is a number you rebuild.
+the review journal under `~/.arma-cti/review/`, the status-line spool under
+`~/.arma-cti/quota/` with its rolled generations, and git. The store is a cache and
+never a source of truth: a schema change is a re-run, not a migration, and a number
+you distrust is a number you rebuild.
 
 The rebuild is deterministic. Nothing in the document reads the wall clock, every list
 is sorted, and two runs over the same inputs produce the same bytes.
@@ -25,15 +26,17 @@ silence. Both render as an absence with a reason, never as zero.
 
 | Key | Shape | Meaning |
 |---|---|---|
-| `schema` | string | `cti.observatory/3` |
-| `inputs` | object | The four paths the rebuild read: `dispatch_root`, `export_dir`, `review_root`, `repo` |
+| `schema` | string | `cti.observatory/4` |
+| `inputs` | object | The five paths the rebuild read: `dispatch_root`, `export_dir`, `review_root`, `spool`, `repo` |
 | `coverage` | object | The rebuild's own denominators — see below |
-| `malformed` | array | One entry per export file with unparseable lines: `file`, `lines` |
+| `malformed` | array | One entry per source file with unparseable lines — export or spool: `file`, `lines` |
 | `dispatches` | array | One row per dispatch record — the `dispatches` table |
 | `issue_cost` | array | One row per (issue, lane) — the `issue_cost` table |
 | `work_items` | array | One row per issue — the `work_items` table |
 | `issue_rework` | array | One row per issue — the `issue_rework` table |
 | `profile_rework` | array | One row per (profile, seat) — the `profile_rework` table |
+| `session_period` | array | One row per (session, month) — the `session_period` table |
+| `period_overhead` | array | One row per period with overhead or a landing — the `period_overhead` table |
 
 ### `coverage`
 
@@ -54,7 +57,12 @@ silence. Both render as an absence with a reason, never as zero.
 | `review_loops` | Issue loops read from the review journal, any round count |
 | `review_loops_round_zero` | Of those, how many sit at round zero — the key's own spread |
 | `review_loops_unreadable` | The issues whose `loop.json` exists but would not parse, named |
-| `malformed_lines` | Total unparseable export lines, across all files |
+| `session_renders` | Status-line renders the session view read — timestamped, with a session id |
+| `session_renders_untimestamped` | Renders the view could not place in a period — pre-#488 bare lines — counted, never summed |
+| `session_renders_without_session_id` | Renders carrying no session id, counted and never attributed |
+| `session_spend_sessions` | Distinct sessions the view holds |
+| `session_spend_periods` | Distinct months those sessions span |
+| `malformed_lines` | Total unparseable lines, export and spool together, across all files |
 
 ## The rule every table obeys
 
@@ -270,6 +278,80 @@ key barely varies; the rebuild's `rework` line carries `round_zero` against `loo
 states `key_varies=no` when the ranked key does not vary, and marks the sample limit
 `estimate_not_measurement` — the ADR's own account of its "20 to 30 landings" figure:
 no power calculation, base rate or effect size stands behind it.
+
+## The `session_period` table
+
+One row per (session, month) (#488). The source is the status-line spool — the live
+file and its rolled generations — and every figure on the row is a **period delta** of
+the payload's session-lifetime running totals: a period's consumption is the difference
+between the cumulative totals at consecutive period ends, and a session's first
+timestamped period carries its total from the session's start.
+
+**The boundary is a column, never a footnote.** The spool is a record of interactive
+sessions: the tap fires on a status-line render, the orchestrator seat renders none,
+so this table omits the orchestrator's own turns — the largest non-dispatched consumer
+it claims to cover — while counting the human's interactive sessions alone. The
+`boundary` column says exactly that on every row, and the rebuild's `sessions` summary
+line carries `orchestrator=absent`. A figure quoted from this table without its
+boundary is the human's interactive spend presented as the overhead number.
+
+| Column | Null? | Meaning |
+|---|---|---|
+| `session_id` | never | The session, from the payload |
+| `period` | never | The month, `YYYY-MM`, from the render's own timestamp |
+| `renders` | never | Timestamped renders of this session in this period |
+| `last_render_at` | + `last_render_at_reason` | The period's last render — the instant the delta runs to |
+| `cost_usd_list_price` | + `cost_usd_list_price_reason` | The period's delta of `cost.total_cost_usd` — **list price, not spend** (#220) |
+| `duration_ms` | + `duration_ms_reason` | The period's delta of `cost.total_duration_ms` |
+| `lines_added` | + `lines_added_reason` | The period's delta of `cost.total_lines_added` |
+| `lines_removed` | + `lines_removed_reason` | The period's delta of `cost.total_lines_removed` |
+| `output_tokens` | + `output_tokens_reason` | The period's delta of the payload's output-token total, where it carries one |
+| `boundary` | never | The marker naming what this figure omits and why |
+
+Two absences carry two different reasons: a counter no render of the session ever
+carried is a ceiling of the source, and a counter present at one end of a period
+boundary and missing at the other is a difference that cannot be taken. The counters
+should be monotone; a delta that is not passes through raw, never clamped.
+
+## The `period_overhead` table
+
+One row per period with session overhead or a landing (#488). The fully-loaded figure
+is **direct plus overhead over the period's landings**, a period aggregate, offered in
+the one meter both halves can share — the Claude lane's five-hour-window points — and
+carrying the same `boundary` warning as the overhead it derives from, extended with the
+direct half's own scope: it covers the Claude lane alone, and every other lane's direct
+spend stays in its own unconverted meter outside the figure.
+
+**No overhead figure is attached to an issue, structurally.** Neither session table
+carries an issue column — a session-grain record names no issue, an orchestrator
+session dispatches many, and dividing across them is a conversion the project's rules
+forbid. A table that cannot express the apportionment is the structural form of that
+rule, the way `flow_lead_time`'s column list is the structural form of "no mean".
+
+| Column | Null? | Meaning |
+|---|---|---|
+| `period` | never | The month, `YYYY-MM` |
+| `sessions` | never | Sessions with renders in this period |
+| `renders` | never | Their renders |
+| `sessions_with_cost` | never | Of those, how many carried a cost figure — partial reads stay visible |
+| `cost_usd_list_price` | + `cost_usd_list_price_reason` | The period's overhead in list-price dollars — never a spend |
+| `sessions_with_output` | never | Of those, how many carried an output-token total |
+| `output_tokens` | + `output_tokens_reason` | The period's overhead output tokens, summed over the sessions that carried them |
+| `overhead_window_points` | + `overhead_window_points_reason` | That sum over the calibration's tokens-per-point — the meter the direct half uses |
+| `landings` | never | Work items landed in this period, every lane |
+| `direct_landings` | never | Of those, the Claude-lane landings whose cost was derivable |
+| `direct_window_points` | + `direct_window_points_reason` | The Claude lane's direct cost over the period's landings |
+| `fully_loaded_window_points` | + `fully_loaded_window_points_reason` | Direct plus overhead; null names which half is missing, never a sum of what survived |
+| `boundary` | never | The marker, extended with the direct half's lane scope |
+
+**Periods come from timestamps, never from generation boundaries.** The spool's
+rollover is not serialised (#464's review): two simultaneous rolls can drop the oldest
+generation one roll early, and nothing in the surviving files records that it happened.
+A generation boundary is therefore not a period boundary anywhere in this store, and a
+period whose lines were lost to an early drop reads short with no signal — rare,
+silent, and in the flattering direction; the hazards list carries it. What the store
+can see it says: renders older than the tap's timestamps carry none, cannot be placed
+in a period, and are counted in `session_renders_untimestamped` rather than summed.
 
 ## Querying
 

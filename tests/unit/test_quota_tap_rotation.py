@@ -20,8 +20,11 @@ without bound — an unbounded spool is the disk-filler the cap exists to stop.
 
 from __future__ import annotations
 
+import json
 import os
+import re
 import subprocess
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from conftest import REPO
@@ -30,6 +33,29 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 QUOTA_TAP = REPO / "tools" / "quota_tap.sh"
+
+# Every spooled line is an envelope (#488): the render's own timestamp under
+# `ts`, the payload byte-identical under `payload`. The timestamp's presence and
+# shape are asserted per line rather than per file, because one untimestamped
+# line is one render no period can hold.
+TS_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+00:00$")
+
+
+def spooled(path: Path) -> list[dict[str, object]]:
+    """Read one spool file's envelopes, asserting the timestamp contract."""
+    lines = [line for line in path.read_text().splitlines() if line]
+    envelopes = [json.loads(line) for line in lines]
+    for envelope in envelopes:
+        ts = envelope.get("ts")
+        assert isinstance(ts, str), f"no timestamp: {envelope}"
+        assert TS_PATTERN.match(ts), f"timestamp not ISO: {ts}"
+        datetime.fromisoformat(ts)
+    return envelopes
+
+
+def payloads(path: Path) -> list[object]:
+    """One spool file's payloads, in order — the content the rotation moves."""
+    return [envelope["payload"] for envelope in spooled(path)]
 
 
 def tap(spool: Path, payload: str, *, max_bytes: int, keep: int | None = None) -> None:
@@ -62,7 +88,7 @@ def test_a_spool_under_its_cap_does_not_roll(tmp_path: Path) -> None:
     tap(spool, '{"n":1}', max_bytes=1_000_000)
     tap(spool, '{"n":2}', max_bytes=1_000_000)
 
-    assert spool.read_text() == '{"n":1}\n{"n":2}\n'
+    assert payloads(spool) == [{"n": 1}, {"n": 2}]
     assert not (spool.parent / "statusline.jsonl.1").exists()
 
 
@@ -73,10 +99,10 @@ def test_rolled_content_moves_down_the_generations_in_order(tmp_path: Path) -> N
     for n in range(1, 5):
         tap(spool, f'{{"n":{n}}}', max_bytes=1, keep=8)
 
-    assert spool.read_text() == '{"n":4}\n'
-    assert (spool.parent / "statusline.jsonl.1").read_text() == '{"n":3}\n'
-    assert (spool.parent / "statusline.jsonl.2").read_text() == '{"n":2}\n'
-    assert (spool.parent / "statusline.jsonl.3").read_text() == '{"n":1}\n'
+    assert payloads(spool) == [{"n": 4}]
+    assert payloads(spool.parent / "statusline.jsonl.1") == [{"n": 3}]
+    assert payloads(spool.parent / "statusline.jsonl.2") == [{"n": 2}]
+    assert payloads(spool.parent / "statusline.jsonl.3") == [{"n": 1}]
 
 
 def test_the_oldest_generation_is_dropped_rather_than_accumulating(
@@ -89,10 +115,10 @@ def test_the_oldest_generation_is_dropped_rather_than_accumulating(
 
     # `keep` counts rolled generations, so keep=3 is `.1` through `.3` beside
     # the live spool — four payloads of history — and never a `.4`.
-    assert spool.read_text() == '{"n":7}\n'
-    assert (spool.parent / "statusline.jsonl.1").read_text() == '{"n":6}\n'
-    assert (spool.parent / "statusline.jsonl.2").read_text() == '{"n":5}\n'
-    assert (spool.parent / "statusline.jsonl.3").read_text() == '{"n":4}\n'
+    assert payloads(spool) == [{"n": 7}]
+    assert payloads(spool.parent / "statusline.jsonl.1") == [{"n": 6}]
+    assert payloads(spool.parent / "statusline.jsonl.2") == [{"n": 5}]
+    assert payloads(spool.parent / "statusline.jsonl.3") == [{"n": 4}]
     assert not (spool.parent / "statusline.jsonl.4").exists()
 
 

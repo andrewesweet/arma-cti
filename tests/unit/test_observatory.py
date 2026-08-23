@@ -50,6 +50,17 @@ unranked, its reason distinguishing the contract from a miss. The companion meas
 dispatches per issue, is reported beside the key and explicitly unranked; the outcome
 columns carry a `measures` marker naming them description; and the summary line states
 the key's own spread and that its sample limit is an estimate, not a measurement.
+
+**The session view states its boundary in every rendering path, and apportions to no
+issue.** The staged spool carries one session spanning two months with its July render
+in a rolled generation — so the period comes from the timestamp and not the file
+boundary — a second session whose payload never carries a token total, a pre-#488 bare
+line, a render with no session id and a truncated line. The counters are cumulative
+the way the real payload's are, so the per-period figures are pinned as deltas. The
+orchestrator's absence is asserted as a column on every row of both tables and a word
+on the summary line; the fully-loaded figure carries the same boundary as the overhead
+it derives from and names which half is missing where one is; and neither table holds
+an issue column, so per-issue overhead is not something the output can express.
 """
 
 from __future__ import annotations
@@ -106,6 +117,12 @@ ROUNDY_ISSUE = 495
 # row's arithmetic is pinned against `ledger`'s constant rather than a restated 30209.
 CLAUDE_OUTPUT = ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]
 CODEX_OUTPUT = 54321
+
+# The session view's own sessions: one spanning two months with token totals, one
+# brief August session whose payload never carries a token total — the two
+# arrangements the overhead's meter question turns on.
+HUMAN_SESSION = "019fd51b-835f-7732-8855-a73841a75d01"
+BRIEF_SESSION = "019fd51b-835f-7732-8855-a73841a75d02"
 
 
 # --------------------------------------------------------------------------- staging
@@ -344,6 +361,40 @@ def prune_export(world: World, dispatch_id: str, usage: dict[str, int]) -> None:
     write_ledger_row(world.dispatch_root / dispatch_id, usage)
 
 
+def write_render(  # noqa: PLR0913 — the seven parameters are the payload's own counters
+    path: Path,
+    ts: str,
+    session_id: str,
+    *,
+    cost_usd: float | None = None,
+    duration_ms: float | None = None,
+    lines_added: float | None = None,
+    lines_removed: float | None = None,
+    output_tokens: float | None = None,
+) -> None:
+    """Append one #488-envelope render to a spool file the way the tap now leaves one.
+
+    The payload's counters are session-lifetime running totals — what the status line
+    actually sends — so a caller stages consumption by raising them between renders.
+    """
+    cost = {
+        key: value
+        for key, value in (
+            ("total_cost_usd", cost_usd),
+            ("total_duration_ms", duration_ms),
+            ("total_lines_added", lines_added),
+            ("total_lines_removed", lines_removed),
+            ("total_output_tokens", output_tokens),
+        )
+        if value is not None
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as spool:
+        spool.write(
+            json.dumps({"ts": ts, "payload": {"session_id": session_id, "cost": cost}}) + "\n"
+        )
+
+
 def run_git(*args: str, cwd: Path, at: str = "") -> None:
     """Run one git command in the staged repo, failing the test if it refuses."""
     # S603/S607: fixed literals and a tmp_path, and `git` resolves off PATH as everywhere.
@@ -362,6 +413,7 @@ class World(NamedTuple):
     dispatch_root: Path
     export_dir: Path
     review_root: Path
+    spool: Path
     store_dir: Path
     repo: Path
     base_sha: str
@@ -503,6 +555,61 @@ def world(tmp_path: Path) -> World:
     )
     # BARE: no export file at all.
 
+    # The status-line spool: one session spanning two months — with its July render
+    # in a rolled generation, so the generation seam and the period boundary visibly
+    # disagree — one session whose payload carries no token total, one pre-#488 bare
+    # line, one render with no session id, and one truncated line. The counters are
+    # cumulative the way the real payload's are.
+    spool = tmp_path / "quota" / "statusline.jsonl"
+    write_render(
+        spool.parent / "statusline.jsonl.1",
+        "2026-07-31T23:00:00+00:00",
+        HUMAN_SESSION,
+        cost_usd=1.0,
+        duration_ms=100_000,
+        lines_added=50,
+        lines_removed=10,
+        output_tokens=1_000,
+    )
+    write_render(
+        spool,
+        "2026-08-01T01:00:00+00:00",
+        HUMAN_SESSION,
+        cost_usd=2.0,
+        duration_ms=200_000,
+        lines_added=80,
+        lines_removed=20,
+        output_tokens=2_000,
+    )
+    write_render(
+        spool,
+        "2026-08-05T12:00:00+00:00",
+        HUMAN_SESSION,
+        cost_usd=3.0,
+        duration_ms=300_000,
+        lines_added=120,
+        lines_removed=30,
+        output_tokens=3_000,
+    )
+    write_render(
+        spool,
+        "2026-08-05T13:00:00+00:00",
+        BRIEF_SESSION,
+        cost_usd=0.5,
+        duration_ms=10_000,
+        lines_added=5,
+        lines_removed=1,
+    )
+    # Append, never replace: the three lines above are already in the file. A bare
+    # pre-#488 line (untimestamped), an envelope with no session id, and a truncated
+    # line — one of each absence the reader must count rather than swallow.
+    with spool.open("a", encoding="utf-8") as handle:
+        handle.write(
+            '{"session_id":"s-pre-488","cost":{"total_cost_usd":0.4}}\n'
+            '{"ts":"2026-08-05T14:00:00+00:00","payload":{"cost":{"total_cost_usd":0.1}}}\n'
+            '{"ts":"2026-08-05T15:00:00+00:0'
+        )
+
     for issue, hour, name in (
         (LANDED_ONE_HOUR, 13, "c.txt"),
         (LANDED_TWO_HOURS, 14, "d.txt"),
@@ -536,13 +643,27 @@ def world(tmp_path: Path) -> World:
         plan["base_sha"] = base
         plan_path.write_text(json.dumps(plan), encoding="utf-8")
 
-    return World(dispatch_root, export_dir, review_root, tmp_path / "store", repo, base, landed_sha)
+    return World(
+        dispatch_root,
+        export_dir,
+        review_root,
+        spool,
+        tmp_path / "store",
+        repo,
+        base,
+        landed_sha,
+    )
 
 
 def rebuild_world(world: World) -> dict[str, Any]:
     """Rebuild the staged world's store and return the document."""
     return observatory.rebuild(
-        world.dispatch_root, world.export_dir, world.review_root, world.repo, world.store_dir
+        world.dispatch_root,
+        world.export_dir,
+        world.review_root,
+        world.spool,
+        world.repo,
+        world.store_dir,
     )
 
 
@@ -800,13 +921,19 @@ def test_an_absent_cost_renders_absent_and_an_uncalibrated_one_renders_uncalibra
 
 def test_a_truncated_line_is_counted_named_and_survived(world: World) -> None:
     store = rebuild_world(world)
-    assert store["coverage"]["malformed_lines"] == 1
-    assert store["malformed"] == [{"file": f"dispatch-{CODEX_DISPATCH}.jsonl", "lines": 1}]
+    # One truncated export line, one truncated spool line — the same discipline at
+    # both parse boundaries, each named for its own file.
+    assert store["coverage"]["malformed_lines"] == 2
+    assert store["malformed"] == [
+        {"file": f"dispatch-{CODEX_DISPATCH}.jsonl", "lines": 1},
+        {"file": "statusline.jsonl", "lines": 1},
+    ]
     # The dispatch's spend still read, from the lines that did parse.
     assert cost_row(store, ISSUE, "codex")["output_tokens"] == CODEX_OUTPUT
     lines = observatory.summary_lines(store, world.store_dir)
-    assert any("malformed_lines=1" in line for line in lines)
+    assert any("malformed_lines=2" in line for line in lines)
     assert any(f"file=dispatch-{CODEX_DISPATCH}.jsonl" in line for line in lines)
+    assert any("file=statusline.jsonl" in line for line in lines)
 
 
 def test_the_rebuild_states_its_own_coverage(world: World) -> None:
@@ -967,7 +1094,9 @@ def test_an_empty_landed_sample_states_itself_as_zero_items(tmp_path: Path) -> N
     dispatch_root.mkdir()
     export_dir.mkdir()
     review_root.mkdir()
-    observatory.rebuild(dispatch_root, export_dir, review_root, tmp_path, store_dir)
+    observatory.rebuild(
+        dispatch_root, export_dir, review_root, tmp_path / "spool.jsonl", tmp_path, store_dir
+    )
     assert observatory.query(store_dir, "SELECT * FROM flow_lead_time") == (
         (None, None, None, None, 0),
     )
@@ -1260,3 +1389,202 @@ def test_the_store_answers_sql_by_issue_and_lane(world: World) -> None:
         "SELECT lane, cost FROM issue_cost WHERE landed = 1 ORDER BY lane",
     )
     assert ("claude-native", CLAUDE_OUTPUT / ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]) in rows
+
+
+# ---------------------------------------------------------------- the session view
+
+
+def session_row(store: dict[str, Any], session_id: str, period: str) -> dict[str, Any]:
+    """Return one (session, period) row from the store."""
+    return next(
+        row
+        for row in store["session_period"]
+        if row["session_id"] == session_id and row["period"] == period
+    )
+
+
+def period_row(store: dict[str, Any], period: str) -> dict[str, Any]:
+    """Return one period's overhead row from the store."""
+    return next(row for row in store["period_overhead"] if row["period"] == period)
+
+
+def test_session_spend_is_reported_as_period_deltas_never_running_totals(
+    world: World,
+) -> None:
+    store = rebuild_world(world)
+    # July's render sits in the rolled generation, August's in the live spool: the
+    # periods come from the timestamps, so the seam between the files is nothing and
+    # the July period is July's by its own instant.
+    july = session_row(store, HUMAN_SESSION, "2026-07")
+    august = session_row(store, HUMAN_SESSION, "2026-08")
+    assert (july["renders"], july["cost_usd_list_price"]) == (1, 1.0)
+    assert (july["duration_ms"], july["lines_added"], july["lines_removed"]) == (
+        100_000.0,
+        50.0,
+        10.0,
+    )
+    # Deltas, never the running totals: August's end-of-period cumulatives are
+    # 3.0 / 300_000 / 120 / 30, and the row holds the differences from July's
+    # 1.0 / 100_000 / 50 / 10.
+    assert (august["renders"], august["cost_usd_list_price"]) == (2, 2.0)
+    assert (august["duration_ms"], august["lines_added"], august["lines_removed"]) == (
+        200_000.0,
+        70.0,
+        20.0,
+    )
+    assert august["last_render_at"] == "2026-08-05T12:00:00+00:00"
+
+
+def test_a_counter_the_source_never_carried_is_absent_with_its_own_reason(
+    world: World,
+) -> None:
+    store = rebuild_world(world)
+    brief = session_row(store, BRIEF_SESSION, "2026-08")
+    assert brief["cost_usd_list_price"] == 0.5
+    assert brief["output_tokens"] is None
+    assert brief["output_tokens_reason"] == observatory.NO_COUNTER_REASON
+    # The other session carries the counter, so its rows never see that reason.
+    human = session_row(store, HUMAN_SESSION, "2026-08")
+    assert human["output_tokens"] == 2_000.0
+    assert human["output_tokens_reason"] is None
+
+
+def test_every_rendering_path_names_the_orchestrator_s_absence(world: World) -> None:
+    store = rebuild_world(world)
+    # The boundary is a column on every row of both tables, so a reader querying the
+    # table directly — without the cookbook or the schema reference — still meets it,
+    # and it names the orchestrator specifically, never generic incompleteness.
+    for row in [*store["session_period"], *store["period_overhead"]]:
+        assert "orchestrator" in row["boundary"]
+        assert "renders none" in row["boundary"]
+    lines = observatory.summary_lines(store, world.store_dir)
+    assert any("orchestrator=absent" in line for line in lines)
+    assert any("meter=list_price_not_spend" in line for line in lines)
+
+
+def test_the_fully_loaded_figure_carries_its_parent_s_boundary(world: World) -> None:
+    store = rebuild_world(world)
+    august = period_row(store, "2026-08")
+    overhead = 2_000.0 / ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]
+    assert august["overhead_window_points"] == overhead
+    # The direct half is the fixture's one Claude-lane point; the other three
+    # landings of the period have no derivable cost and stay visible as a shortfall
+    # between `landings` and `direct_landings`, never as a smaller number.
+    assert august["landings"] == 4
+    assert august["direct_landings"] == 1
+    assert (
+        august["direct_window_points"]
+        == CLAUDE_OUTPUT / ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]
+    )
+    assert august["fully_loaded_window_points"] == (
+        overhead + CLAUDE_OUTPUT / ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]
+    )
+    # The derived figure carries the same boundary warning as the overhead it
+    # derives from — including the orchestrator clause.
+    assert august["boundary"] == observatory.PERIOD_BOUNDARY
+    assert observatory.PERIOD_BOUNDARY.startswith(observatory.SESSION_BOUNDARY)
+
+
+def test_a_period_missing_either_half_names_which_half(world: World) -> None:
+    store = rebuild_world(world)
+    july = period_row(store, "2026-07")
+    assert july["fully_loaded_window_points"] is None
+    assert "the direct half" in july["fully_loaded_window_points_reason"]
+    assert observatory.DIRECT_ABSENT_REASON in july["fully_loaded_window_points_reason"]
+    # A spool with no token totals at all: the overhead half is the missing one, and
+    # the reason names the source's ceiling rather than a small number.
+    bare = world.spool.parent / "bare.jsonl"
+    write_render(bare, "2026-08-05T16:00:00+00:00", HUMAN_SESSION, cost_usd=1.0)
+    observatory.rebuild(
+        world.dispatch_root,
+        world.export_dir,
+        world.review_root,
+        bare,
+        world.repo,
+        world.store_dir,
+    )
+    document = json.loads((world.store_dir / "store.json").read_text(encoding="utf-8"))
+    august = next(row for row in document["period_overhead"] if row["period"] == "2026-08")
+    assert august["fully_loaded_window_points"] is None
+    assert "the overhead half" in august["fully_loaded_window_points_reason"]
+    assert observatory.NO_OUTPUT_TOKENS_REASON in august["fully_loaded_window_points_reason"]
+
+
+def test_no_overhead_figure_is_attached_to_an_issue_anywhere(world: World) -> None:
+    store = rebuild_world(world)
+    # Structural, not a rule: neither table carries an issue column, so apportioning
+    # overhead to an issue is not something the output can express — the way #486
+    # made "no mean as the headline" the view's whole column list.
+    banned = re.compile(r"(?i)issue")
+    for table in ("session_period", "period_overhead"):
+        with observatory.connect(world.store_dir) as connection:
+            columns = tuple(
+                str(row[1]) for row in connection.execute(f"PRAGMA table_info({table})")
+            )
+        assert columns == getattr(observatory, f"{table.upper()}_COLUMNS")
+        assert not any(banned.search(column) for column in columns), table
+        for row in store[table]:
+            assert not any(banned.search(str(key)) for key in row), table
+
+
+def test_untimestamped_and_unattributable_renders_are_counted_never_summed(
+    world: World,
+) -> None:
+    store = rebuild_world(world)
+    coverage = store["coverage"]
+    # One bare pre-#488 line, one envelope without a session id, one truncated line:
+    # three absences, three counters, none read as a render and none swallowed.
+    assert coverage["session_renders_untimestamped"] == 1
+    assert coverage["session_renders_without_session_id"] == 1
+    assert coverage["session_renders"] == 4  # three HUMAN, one BRIEF
+    assert coverage["session_spend_sessions"] == 2
+    assert coverage["session_spend_periods"] == 2
+    assert {entry["file"] for entry in store["malformed"]} == {
+        f"dispatch-{CODEX_DISPATCH}.jsonl",
+        world.spool.name,
+    }
+    assert "s-pre-488" not in {row["session_id"] for row in store["session_period"]}
+
+
+def test_the_spool_is_read_generations_first_and_periods_come_from_timestamps(
+    world: World,
+) -> None:
+    store = rebuild_world(world)
+    # The July render lives only in `.1`; that it appears at all proves the
+    # generations were read, and that it is July's own period — not "generation one"
+    # — proves the period came from the timestamp and not the file boundary.
+    assert session_row(store, HUMAN_SESSION, "2026-07")["renders"] == 1
+    assert period_row(store, "2026-07")["sessions"] == 1
+
+
+def test_an_unreadable_spool_directory_refuses_by_name(
+    world: World, capsys: pytest.CaptureFixture[str]
+) -> None:
+    gone = world.spool.parent / "nowhere" / "statusline.jsonl"
+    code = observatory.main(
+        [
+            "--dispatch-root",
+            str(world.dispatch_root),
+            "--export-dir",
+            str(world.export_dir),
+            "--review-root",
+            str(world.review_root),
+            "--spool",
+            str(gone),
+            "--store-dir",
+            str(world.store_dir),
+            "--repo",
+            str(world.repo),
+        ]
+    )
+    assert code == 1
+    printed = capsys.readouterr().err
+    assert "refused=spool_unreadable" in printed
+    assert f"path={gone.parent}" in printed
+    assert not (world.store_dir / "store.json").exists()
+
+
+def test_the_spool_lives_outside_every_worktree() -> None:
+    expected = Path.home() / ".arma-cti" / "quota" / "statusline.jsonl"
+    assert expected == observatory.DEFAULT_SPOOL
+    assert not observatory.DEFAULT_SPOOL.is_relative_to(REPO)

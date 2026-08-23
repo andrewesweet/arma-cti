@@ -1162,7 +1162,12 @@ ledger-sync action="sync" *args:
 #
 # The analyst's contract — schema reference, cookbook, hazards — lives in
 # docs/observatory/, and the cookbook's queries run against the shipped store
-# in a test. Paths via CTI_DISPATCH_DIR, CTI_OTEL_EXPORT_DIR and
+# in a test. The session view (#488) reads the status-line spool with its
+# rolled generations, reports its spend per period and never per issue, and
+# carries its boundary on every row: the spool holds interactive sessions,
+# the orchestrator renders no status line, so the seat most likely to
+# dominate that figure is absent from it and the output says so. Paths via
+# CTI_DISPATCH_DIR, CTI_OTEL_EXPORT_DIR, CTI_QUOTA_SPOOL and
 # CTI_OBSERVATORY_DIR, the way every state-reading tool takes its seams.
 [positional-arguments]
 observatory action="rebuild" *args:

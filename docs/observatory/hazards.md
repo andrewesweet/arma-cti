@@ -92,10 +92,35 @@ landing, so a superseded implementer shares in the landing and the ruling's zero
 denominator arrives as one — a known, bounded limit stated in the schema reference,
 with the semantics fix filed as #542.
 
+## 6. The session view's source is interactive sessions, and its history has silent holes
+
+The status-line spool records what renders a status line — interactive sessions. The
+orchestrator seat renders none, so **the largest non-dispatched consumer is absent
+from the session figures while they present themselves as the overhead number**: a
+reader who skips the `boundary` column takes the human's interactive spend for the
+system's overhead, an understatement in the direction that flatters the system. The
+boundary is a column on every row of both tables and `orchestrator=absent` sits on the
+rebuild's `sessions` line; quoting a session figure without its boundary is the trap.
+
+Three more in the same source. The rollover is **not serialised** (#464's review): two
+simultaneous rolls can drop the oldest generation one roll early, nothing in the
+surviving files records it, and a period whose lines were lost reads short with no
+signal — which is why no period anywhere in the store derives from a generation
+boundary, only from render timestamps. Renders older than the timestamps (everything
+spooled before #488) carry no instant, cannot be placed in a period, and are counted in
+`session_renders_untimestamped` — excluded, never summed. And the money column is
+Claude Code's client-side figure, **list price, not spend** (#220): it is named
+`cost_usd_list_price`, and no rendering path calls it a cost.
+
 ## Standing rules beside the traps
 
 - **Never sum spend across lanes** — the negative test in `tests/unit/test_observatory.py`
   exists because this is enforced mechanically or not at all.
+- **Never apportion session overhead to an issue** — neither session table carries an
+  issue column, so the output cannot express it; that shape is the rule's mechanical
+  form, and widening it is a schema change, not a query.
+- **Never quote a session figure without its `boundary`** — the orchestrator's absence
+  is the one omission a reader quoting one number would otherwise never meet.
 - **Absent, uncalibrated and zero are three different facts, and each renders
   differently**: a number, `uncalibrated`, `absent`. A lane with no calibration
   renders `uncalibrated`, never zero, never a smaller number; a calibrated lane whose

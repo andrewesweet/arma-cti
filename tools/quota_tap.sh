@@ -70,7 +70,15 @@ payload="$(cat)"
             done
             mv -f -- "${spool}" "${spool}.1" 2>/dev/null || true
         fi
-        printf '%s\n' "${payload}" >>"${spool}" 2>/dev/null || true
+        # Every line carries the render's own timestamp, because the payload does
+        # not: without one the spool is ordered only by line position and no
+        # period can be derived from it (#488). The envelope keeps the payload
+        # byte-identical under a `payload` key, so a reader can tell a wrapped
+        # line from a pre-#488 bare one, and a `date` that fails leaves an empty
+        # `ts` rather than taking the status line down — that render counts as
+        # untimestamped at the reader, never as an error here.
+        ts="$(date -u +%Y-%m-%dT%H:%M:%S+00:00 2>/dev/null || true)"
+        printf '{"ts":"%s","payload":%s}\n' "${ts}" "${payload}" >>"${spool}" 2>/dev/null || true
     fi
 } || true
 

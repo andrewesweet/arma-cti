@@ -134,3 +134,52 @@ own account of its "20 to 30 landings" figure — no power calculation stands be
 The same issue's rounds appear on every profile-and-seat row that touched it, so
 summing `rounds` across rows double-counts; dispatches per issue is the measure with
 the real spread, and it stays beside the key.
+
+## What the sessions no dispatch covers spent, per period — and what that figure cannot see
+
+The session view (#488). Its source is the status-line spool, and the spool is a
+record of **interactive sessions**: the tap fires on a status-line render and the
+orchestrator seat renders none, so this figure omits the orchestrator's own turns —
+the largest non-dispatched consumer it claims to cover — while counting the human's
+interactive sessions alone. **Read the `boundary` column before quoting anything from
+these tables**; it carries that warning on every row, and the rebuild's `sessions`
+line carries `orchestrator=absent` beside it. A number quoted without the boundary is
+the human's interactive spend presented as the overhead number.
+
+```sql
+SELECT session_id, period, renders, cost_usd_list_price, output_tokens,
+       output_tokens_reason, boundary
+FROM session_period
+ORDER BY period, session_id
+```
+
+Reading it: the counters are period **deltas** of the payload's session-lifetime
+running totals, never the totals themselves. `cost_usd_list_price` is Claude Code's
+client-side figure — list price, not spend (#220) — named so in the column and never
+as a cost. `output_tokens` is null with a reason where the payload carries no
+per-session output-token total; window points, the direct figures' meter, appear only
+where that total exists, because nothing else in the spool converts into it.
+
+The period aggregate and the fully-loaded figure — direct plus overhead over the
+period's landings. Never attach either to an issue: neither table carries an issue
+column, so apportioning is not something the output can express, and a session-grain
+record names no issue to divide across.
+
+```sql
+SELECT period, landings, direct_landings, direct_window_points,
+       overhead_window_points, fully_loaded_window_points,
+       fully_loaded_window_points_reason, boundary
+FROM period_overhead
+ORDER BY period
+```
+
+Reading it: the fully-loaded figure exists only where both halves are derivable, and
+its reason names which half is missing where one is — never a sum of what survived.
+`direct_landings` beside `landings` is the partial-read visibility: a landing whose
+cost could not be derived is counted in `landings` and absent from the direct figure,
+never folded in as zero. The direct half is the Claude lane's meter alone; every other
+lane's direct spend stays in its own unconverted meter outside this figure, and the
+`boundary` column says so. Before quoting, read the rebuild's `sessions` line:
+`untimestamped` counts renders older than the tap's timestamps — excluded and counted,
+never summed into a period — and `without_session` counts renders carrying no session
+id at all.

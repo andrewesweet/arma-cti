@@ -20,6 +20,7 @@ import stat
 import subprocess
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -466,7 +467,11 @@ def test_the_tap_passes_the_downstream_output_through_byte_for_byte(tmp_path: Pa
 
     assert chained.returncode == alone.returncode == 0
     assert chained.stdout == alone.stdout
-    assert json.loads((tmp_path / "spool.jsonl").read_text()) == json.loads(payload)
+    # The spooled line is the #488 envelope: the payload byte-identical under
+    # `payload`, beside a timestamp the reader can place it by.
+    spooled = json.loads((tmp_path / "spool.jsonl").read_text())
+    assert spooled["payload"] == json.loads(payload)
+    assert datetime.fromisoformat(spooled["ts"])
 
 
 def test_the_tap_fails_open_when_it_cannot_spool(tmp_path: Path) -> None:
@@ -491,7 +496,9 @@ def test_the_tap_with_no_downstream_prints_nothing_and_still_spools(tmp_path: Pa
     )
     assert result.returncode == 0
     assert result.stdout == ""
-    assert spool.read_text() == '{"a":1}\n'
+    spooled = json.loads(spool.read_text())
+    assert spooled["payload"] == {"a": 1}
+    assert datetime.fromisoformat(spooled["ts"])
 
 
 def test_the_tap_rolls_over_rather_than_growing_without_bound(tmp_path: Path) -> None:
@@ -511,7 +518,7 @@ def test_the_tap_rolls_over_rather_than_growing_without_bound(tmp_path: Path) ->
         },
     )
     assert result.returncode == 0
-    assert spool.read_text() == '{"a":1}\n'
+    assert json.loads(spool.read_text())["payload"] == {"a": 1}
     assert (tmp_path / "spool.jsonl.1").read_text() == "x" * 200
 
 

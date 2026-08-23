@@ -69,12 +69,31 @@ than routes — nothing here excludes a profile, reroutes work or trips a breake
   stratifies. A profile with no landings keeps its rounds visible and its rate undefined
   — never a division — and a seat that lands nothing by contract keeps its rework
   reported and unranked, distinguished from a miss by the registry's own shape.
+- **The session view (#488) reads the status-line spool and states its boundary in every
+  rendering path.** The spool is the only per-session record for sessions no dispatch
+  covers, and it is a record of *interactive* sessions: the tap fires on a status-line
+  render and the orchestrator seat renders none, so this figure omits the orchestrator's
+  own turns — the seat most likely to dominate the number — while presenting the human's
+  interactive sessions. That absence is a `boundary` column on every row of both tables,
+  a word on the summary line, and a hazards entry, never a footnote; the fully-loaded
+  per-period figure derives from the overhead and carries the same warning, because a
+  derived number that drops its parent's caveat is how a caveat gets lost. Overhead is
+  reported per period and **never per issue** — the tables carry no issue column at all,
+  so apportioning is not something the output can express — and periods derive from the
+  render timestamps #488 added to the tap, never from the spool's generation boundaries,
+  whose unserialised rollover can drop a generation early (#464's review): renders older
+  than the timestamps are excluded and counted, never summed into a period. The money
+  column is Claude Code's client-side figure and is named `cost_usd_list_price` — list
+  price, not spend (#220) — and window points appear only where the spool carries an
+  output-token total, because no other quantity converts into the direct figure's meter.
 
 Sources, all outside every worktree: the dispatch records at `~/.arma-cti/dispatches/`
 (`CTI_DISPATCH_DIR`), the per-dispatch OTel export at `/var/log/claude-otel/dispatches/`
 (`CTI_OTEL_EXPORT_DIR`), the review journal at `~/.arma-cti/review/` (`CTI_REVIEW_DIR`,
-one `loop.json` per issue), the store's own home `~/.arma-cti/observatory/`
-(`CTI_OBSERVATORY_DIR`), and the repository for the landing join (`--repo`).
+one `loop.json` per issue), the status-line spool at `~/.arma-cti/quota/statusline.jsonl`
+(`CTI_QUOTA_SPOOL`, plus its rolled generations), the store's own home
+`~/.arma-cti/observatory/` (`CTI_OBSERVATORY_DIR`), and the repository for the landing
+join (`--repo`).
 
 A source directory this process cannot see is a **named refusal**, never a partial
 rebuild presented as complete. A dispatch whose export file is absent is a row with a
@@ -97,7 +116,8 @@ import json
 import os
 import sqlite3
 import sys
-from datetime import datetime
+from collections.abc import Mapping, Sequence
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final, NamedTuple
 
@@ -110,9 +130,9 @@ import ledger
 import review_loop
 
 if TYPE_CHECKING:
-    from collections.abc import Container, Mapping, Sequence
+    from collections.abc import Container
 
-SCHEMA: Final = "cti.observatory/3"
+SCHEMA: Final = "cti.observatory/4"
 STORE_NAME: Final = "store.json"
 
 EXIT_REFUSED: Final = 1
@@ -372,6 +392,105 @@ ISSUE_REWORK_COLUMNS: Final = (
     # ranking key would be a ruling, not a preference (ADR-0071 ruling 6).
     "ranked",
     "measures",
+)
+
+# The session view's spool: the live file plus its rolled generations, the source
+# `tools/quota_tap.sh` appends one status-line render to. Outside every worktree with
+# every other evidence store; read here, never written.
+DEFAULT_SPOOL: Final = Path.home() / ".arma-cti" / "quota" / "statusline.jsonl"
+
+# The boundary, carried as a never-null column on every row of both session tables —
+# the `measures` pattern — because the source's largest omission is the one a reader
+# quoting one number would otherwise never meet (#488's central criterion). Generic
+# incompleteness language is what the dispatch brief forbids: the reader must learn
+# that the seat most likely to dominate this figure is not in it.
+SESSION_BOUNDARY: Final = (
+    "interactive sessions only: the tap fires on a status-line render and the "
+    "orchestrator seat renders none, so this figure omits the orchestrator's own "
+    "turns — the largest non-dispatched consumer it claims to cover — and counts the "
+    "human's interactive sessions alone; renders older than the tap's timestamps are "
+    "excluded and counted in coverage, never summed into a period"
+)
+PERIOD_BOUNDARY: Final = (
+    SESSION_BOUNDARY + "; the direct half is the Claude lane's meter alone, and every other lane's "
+    "direct spend stays in its own unconverted meter outside this figure"
+)
+
+# The spool's money column is Claude Code's client-side figure — list price, not spend
+# (#220's rule: keep it only if plainly labelled) — so the column name carries the
+# label and no rendering path may call it a cost.
+NO_SESSION_COST_REASON: Final = "no session of this period carried a cost figure"
+NO_OUTPUT_TOKENS_REASON: Final = (
+    "the status-line payload carries no per-session output-token total, so no figure "
+    "in the direct columns' meter — five-hour-window points — can be derived from "
+    "this source"
+)
+NO_COUNTER_REASON: Final = (
+    "no render of this session carries this counter, so nothing of it can be derived"
+)
+COUNTER_LATE_REASON: Final = (
+    "the counter is absent at one end of this period's boundary, so the period's "
+    "consumption is not derivable from the difference"
+)
+DIRECT_ABSENT_REASON: Final = "no landing of this period on the Claude lane carries a cost figure"
+DIRECT_UNDERIVABLE_REASON: Final = (
+    "a landing of this period on the Claude lane carries no derivable cost"
+)
+
+# One cumulative counter on the render, to the column it lands in. Deltas, never the
+# running totals: the payload's counters are session-lifetime cumulative, so a period's
+# consumption is the difference between consecutive period ends.
+COUNTER_COLUMNS: Final = (
+    ("cost_usd", "cost_usd_list_price"),
+    ("duration_ms", "duration_ms"),
+    ("lines_added", "lines_added"),
+    ("lines_removed", "lines_removed"),
+    ("output_tokens", "output_tokens"),
+)
+
+SESSION_PERIOD_COLUMNS: Final = (
+    "session_id",
+    "period",
+    "renders",
+    "last_render_at",
+    "last_render_at_reason",
+    "cost_usd_list_price",
+    "cost_usd_list_price_reason",
+    "duration_ms",
+    "duration_ms_reason",
+    "lines_added",
+    "lines_added_reason",
+    "lines_removed",
+    "lines_removed_reason",
+    "output_tokens",
+    "output_tokens_reason",
+    # Never null, no reason sibling — the marker, like `measures`.
+    "boundary",
+)
+
+# No `issue` column, in either table: a session-grain record carries no issue and an
+# orchestrator session dispatches many, so per-issue overhead is a conversion this
+# project's rules forbid — and a table that cannot express it is the structural form of
+# that rule, the way #486 made "no mean as the headline" structural.
+PERIOD_OVERHEAD_COLUMNS: Final = (
+    "period",
+    "sessions",
+    "renders",
+    "sessions_with_cost",
+    "cost_usd_list_price",
+    "cost_usd_list_price_reason",
+    "sessions_with_output",
+    "output_tokens",
+    "output_tokens_reason",
+    "overhead_window_points",
+    "overhead_window_points_reason",
+    "landings",
+    "direct_landings",
+    "direct_window_points",
+    "direct_window_points_reason",
+    "fully_loaded_window_points",
+    "fully_loaded_window_points_reason",
+    "boundary",
 )
 
 
@@ -892,6 +1011,334 @@ def read_review_rounds(review_root: Path) -> tuple[dict[int, int], tuple[str, ..
     return rounds, tuple(unreadable)
 
 
+# ------------------------------------------------------------------- the session view
+
+
+class Render(NamedTuple):
+    """One status-line render: its session, its instant, and its cumulative totals.
+
+    The counters are the payload's own session-lifetime running totals; the period
+    deltas are derived later, never stored as though they were the render's.
+    """
+
+    session_id: str
+    at: datetime
+    order: int
+    cost_usd: float | None
+    duration_ms: float | None
+    lines_added: float | None
+    lines_removed: float | None
+    output_tokens: float | None
+
+
+class SpoolRead(NamedTuple):
+    """The spool's whole readable history, and the lines that could not enter it."""
+
+    renders: tuple[Render, ...]
+    untimestamped: int
+    without_session: int
+    malformed: int
+
+
+def _unwrap_render(document: Mapping[str, Any]) -> tuple[Mapping[str, Any] | None, object]:
+    """Split one spool line into its payload and its timestamp value.
+
+    A `payload` key holding a dict is the #488 envelope; a line without one is a
+    pre-#488 bare payload, which carries no timestamp by construction. No field the
+    status line itself sends is named `payload`, so the discriminator is safe.
+    """
+    payload = document.get("payload")
+    if isinstance(payload, dict):
+        return payload, document.get("ts")
+    return document, None
+
+
+def _parse_render_ts(value: object) -> datetime | None:
+    """Read one render's timestamp, strictly ISO; anything else is untimestamped."""
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    # The tap writes `+00:00`; a naive string is still an instant, assumed UTC rather
+    # than dropped, because a dropped render is the silent hole this reader exists not
+    # to make.
+    return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=UTC)
+
+
+def _number(value: object) -> float | None:
+    """Read one counter value, or nothing — a string or a bool is an absence."""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    return float(value)
+
+
+def _cumulative(payload: Mapping[str, Any]) -> tuple[float | None, ...]:
+    """Read the payload's session-lifetime counters, tolerantly, in `COUNTER_COLUMNS` order.
+
+    The output-token total is sought in both blocks that could carry it; where the
+    payload has neither, the absence is a fact about the source and renders with its
+    own reason — never zero.
+    """
+    cost = payload.get("cost")
+    context = payload.get("context_window")
+    cost = cost if isinstance(cost, Mapping) else {}
+    context = context if isinstance(context, Mapping) else {}
+    output = _number(cost.get("total_output_tokens"))
+    if output is None:
+        output = _number(context.get("total_output_tokens"))
+    return (
+        _number(cost.get("total_cost_usd")),
+        _number(cost.get("total_duration_ms")),
+        _number(cost.get("total_lines_added")),
+        _number(cost.get("total_lines_removed")),
+        output,
+    )
+
+
+def _render_from_line(line: str, order: int) -> tuple[Render | None, str | None]:
+    """Parse one spool line into a render, or name its absence.
+
+    The absence names are the reader's own three — `malformed`, `untimestamped`,
+    `without_session` — each counted by the caller, never swallowed and never read as
+    a render. A bare pre-#488 line and an envelope whose `date` failed land in the
+    same place: no period can hold either, so both are counted rather than summed.
+    """
+    try:
+        document = json.loads(line)
+    except ValueError:
+        return None, "malformed"
+    if not isinstance(document, Mapping):
+        return None, "malformed"
+    payload, raw_ts = _unwrap_render(document)
+    at = _parse_render_ts(raw_ts)
+    if at is None:
+        return None, "untimestamped"
+    session_id = payload.get("session_id") if payload is not None else None
+    if not isinstance(session_id, str) or not session_id:
+        return None, "without_session"
+    return Render(session_id, at, order, *_cumulative(payload)), None
+
+
+def read_spool(spool: Path, entries: Sequence[Path]) -> SpoolRead:
+    """Read the spool and every rolled generation beside it, oldest line first.
+
+    The concatenation order — generations by descending number, live spool last — is
+    the file's own append order, so a session's renders arrive in the order they
+    happened. Nothing here treats a generation boundary as a period boundary: periods
+    come from the timestamps, and the one damage #464's unserialised rollover can do —
+    dropping the oldest generation a roll early — is a hole in time this reader cannot
+    see and refuses to paper over by aligning anything to the seams.
+    """
+    prefix = f"{spool.name}."
+    numbered: list[tuple[int, Path]] = []
+    for entry in entries:
+        if not entry.name.startswith(prefix):
+            continue
+        suffix = entry.name[len(prefix) :]
+        if suffix.isdecimal():
+            numbered.append((int(suffix), entry))
+    ordered = [path for _, path in sorted(numbered, key=lambda pair: pair[0], reverse=True)]
+    ordered.extend(entry for entry in entries if entry == spool)
+
+    renders: list[Render] = []
+    untimestamped = 0
+    without_session = 0
+    malformed = 0
+    order = 0
+    for path in ordered:
+        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            if not line:
+                continue
+            order += 1
+            render, absence = _render_from_line(line, order)
+            if render is not None:
+                renders.append(render)
+            elif absence == "untimestamped":
+                untimestamped += 1
+            elif absence == "without_session":
+                without_session += 1
+            else:
+                malformed += 1
+    return SpoolRead(tuple(renders), untimestamped, without_session, malformed)
+
+
+def _session_period_rows(renders: Sequence[Render]) -> list[dict[str, Any]]:
+    """One row per (session, month): the period's consumption as counter deltas.
+
+    A period's figure is the difference between the cumulative totals at consecutive
+    period ends, so a session's first timestamped period carries its total from the
+    session's start — the schema reference states the rule. The counters should be
+    monotone; a delta that is not is passed through raw rather than clamped, because a
+    silent clamp is a silent edit of the source.
+    """
+    by_session: dict[str, list[Render]] = {}
+    for render in renders:
+        by_session.setdefault(render.session_id, []).append(render)
+    rows: list[dict[str, Any]] = []
+    for session_id, members in sorted(by_session.items()):
+        members.sort(key=lambda render: (render.at, render.order))
+        carries = {
+            field: any(getattr(render, field) is not None for render in members)
+            for field, _ in COUNTER_COLUMNS
+        }
+        period_ends: dict[str, Render] = {}
+        counts: dict[str, int] = {}
+        for render in members:
+            period = render.at.strftime("%Y-%m")
+            period_ends[period] = render
+            counts[period] = counts.get(period, 0) + 1
+        previous: Render | None = None
+        for period in sorted(period_ends):
+            last = period_ends[period]
+            row: dict[str, Any] = {
+                "session_id": session_id,
+                "period": period,
+                "renders": counts[period],
+                "last_render_at": last.at.isoformat(),
+                "last_render_at_reason": None,
+                "boundary": SESSION_BOUNDARY,
+            }
+            for field, column in COUNTER_COLUMNS:
+                value = getattr(last, field)
+                reason: str | None = None
+                if value is None:
+                    # Two absences, two reasons: the session never carried the counter
+                    # (a ceiling of the source) against the boundary losing it.
+                    reason = NO_COUNTER_REASON if not carries[field] else COUNTER_LATE_REASON
+                else:
+                    base = getattr(previous, field) if previous is not None else None
+                    if previous is not None and base is None:
+                        value, reason = None, COUNTER_LATE_REASON
+                    else:
+                        value = value - (base if base is not None else 0.0)
+                row[column] = value
+                row[f"{column}_reason"] = reason
+            rows.append(row)
+            previous = last
+    return rows
+
+
+def _landing_counts(work_items: Sequence[Mapping[str, Any]]) -> dict[str, int]:
+    """Count landings per period, off the work items' own clock ends."""
+    counts: dict[str, int] = {}
+    for item in work_items:
+        if item["state"] != STATE_LANDED or not item["clock_end"]:
+            continue
+        period = datetime.fromisoformat(str(item["clock_end"])).strftime("%Y-%m")
+        counts[period] = counts.get(period, 0) + 1
+    return counts
+
+
+def _direct_costs_by_period(
+    issue_cost: Sequence[Mapping[str, Any]], clock_by_issue: Mapping[int, Mapping[str, Any]]
+) -> dict[str, list[float | None]]:
+    """Collect the Claude lane's landed costs per period, absent entries kept as None.
+
+    A landing whose cost could not be derived stays in its period's list as `None`, so
+    the aggregate can distinguish a period with no derivable direct cost from one
+    whose derivations are merely partial — the `spend_dispatches` discipline.
+    """
+    costs: dict[str, list[float | None]] = {}
+    for row in issue_cost:
+        if row["lane"] != CLAUDE_LANE or not row["landed"]:
+            continue
+        item = clock_by_issue.get(int(row["issue"]))
+        if item is None or not item["clock_end"]:
+            continue
+        period = datetime.fromisoformat(str(item["clock_end"])).strftime("%Y-%m")
+        cost = row["cost"]
+        costs.setdefault(period, []).append(
+            float(cost) if isinstance(cost, (int, float)) and not isinstance(cost, bool) else None
+        )
+    return costs
+
+
+def _period_overhead_rows(
+    session_rows: Sequence[Mapping[str, Any]],
+    work_items: Sequence[Mapping[str, Any]],
+    issue_cost: Sequence[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """One row per period with overhead or a landing: the period aggregate, fully loaded.
+
+    The fully-loaded figure is overhead plus direct in the one meter both halves can
+    share — the Claude lane's window points — and where either half is not derivable
+    the figure is null with a reason naming which half is missing, never a sum of what
+    survived. It carries the same `boundary` column as the overhead it derives from:
+    a derived number that drops its parent's caveat is how a caveat gets lost.
+    """
+    clock_by_issue = {int(item["issue"]): item for item in work_items}
+    landings = _landing_counts(work_items)
+    direct_costs = _direct_costs_by_period(issue_cost, clock_by_issue)
+
+    by_period: dict[str, list[Mapping[str, Any]]] = {}
+    for row in session_rows:
+        by_period.setdefault(str(row["period"]), []).append(row)
+    built: list[dict[str, Any]] = []
+    for period in sorted(set(by_period) | set(landings) | set(direct_costs)):
+        members = by_period.get(period, [])
+        with_cost = [row for row in members if row["cost_usd_list_price"] is not None]
+        with_output = [row for row in members if row["output_tokens"] is not None]
+        cost_sum = (
+            sum(float(row["cost_usd_list_price"]) for row in with_cost) if with_cost else None
+        )
+        output_sum = (
+            sum(float(row["output_tokens"]) for row in with_output) if with_output else None
+        )
+        overhead_points = (
+            output_sum / ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]
+            if output_sum is not None
+            else None
+        )
+        costs = direct_costs.get(period, [])
+        derived = [cost for cost in costs if cost is not None]
+        direct_points: float | None = sum(derived) if derived else None
+        direct_reason = (
+            None
+            if direct_points is not None
+            else (DIRECT_UNDERIVABLE_REASON if costs else DIRECT_ABSENT_REASON)
+        )
+        fully_loaded: float | None = None
+        fully_loaded_reason: str | None = None
+        if overhead_points is not None and direct_points is not None:
+            fully_loaded = overhead_points + direct_points
+        else:
+            missing = []
+            if overhead_points is None:
+                missing.append(f"the overhead half ({NO_OUTPUT_TOKENS_REASON})")
+            if direct_points is None:
+                missing.append(f"the direct half ({direct_reason})")
+            fully_loaded_reason = "; ".join(missing)
+        built.append(
+            {
+                "period": period,
+                "sessions": len(members),
+                "renders": sum(int(row["renders"]) for row in members),
+                "sessions_with_cost": len(with_cost),
+                "cost_usd_list_price": cost_sum,
+                "cost_usd_list_price_reason": (
+                    None if cost_sum is not None else NO_SESSION_COST_REASON
+                ),
+                "sessions_with_output": len(with_output),
+                "output_tokens": output_sum,
+                "output_tokens_reason": None if output_sum is not None else NO_OUTPUT_TOKENS_REASON,
+                "overhead_window_points": overhead_points,
+                "overhead_window_points_reason": (
+                    None if overhead_points is not None else NO_OUTPUT_TOKENS_REASON
+                ),
+                "landings": landings.get(period, 0),
+                "direct_landings": len(derived),
+                "direct_window_points": direct_points,
+                "direct_window_points_reason": direct_reason,
+                "fully_loaded_window_points": fully_loaded,
+                "fully_loaded_window_points_reason": fully_loaded_reason,
+                "boundary": PERIOD_BOUNDARY,
+            }
+        )
+    return built
+
+
 def _group_by_issue(rows: Sequence[Mapping[str, Any]]) -> dict[int, list[dict[str, Any]]]:
     """Group the dispatch rows by the issue each names, the grain work items and rework share."""
     by_issue: dict[int, list[dict[str, Any]]] = {}
@@ -1026,26 +1473,33 @@ def _profile_rework(
     return built
 
 
-def rebuild(
-    dispatch_root: Path, export_dir: Path, review_root: Path, repo: Path, store_dir: Path
+def _source_entries(root: Path, kind: str) -> list[Path]:
+    """Read one source directory's entries, or raise the refusal that names it."""
+    read = _iter_source_dir(root, kind)
+    if isinstance(read, Refusal):
+        raise _RefusedError(read)
+    return read[1]
+
+
+def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own sources and destination
+    dispatch_root: Path,
+    export_dir: Path,
+    review_root: Path,
+    spool: Path,
+    repo: Path,
+    store_dir: Path,
 ) -> dict[str, Any]:
     """Rebuild the whole store from the sources, deterministically, in one pass.
 
     Every ordering in the output is a sorted ordering, nothing in it reads the wall
     clock, and the store file is rewritten whole — so two runs over the same inputs
-    produce the same bytes. Refuses by name before writing anything if either source
+    produce the same bytes. Refuses by name before writing anything if any source
     directory cannot be read.
     """
-    dispatches_read = _iter_source_dir(dispatch_root, "dispatch_root")
-    if isinstance(dispatches_read, Refusal):
-        raise _RefusedError(dispatches_read)
-    _, entries = dispatches_read
-    export_read = _iter_source_dir(export_dir, "export_dir")
-    if isinstance(export_read, Refusal):
-        raise _RefusedError(export_read)
-    review_read = _iter_source_dir(review_root, "review_root")
-    if isinstance(review_read, Refusal):
-        raise _RefusedError(review_read)
+    entries = _source_entries(dispatch_root, "dispatch_root")
+    _source_entries(export_dir, "export_dir")
+    _source_entries(review_root, "review_root")
+    spool_entries = _source_entries(spool.parent, "spool")
     rounds, unreadable_loops = read_review_rounds(review_root)
     unreadable_issues = {int(name) for name in unreadable_loops}
 
@@ -1059,6 +1513,10 @@ def rebuild(
         if malformed:
             malformed_files[row["telemetry_path"] or entry.name] = malformed
     rows.sort(key=lambda row: str(row["dispatch_id"]))
+
+    spool_read = read_spool(spool, spool_entries)
+    if spool_read.malformed:
+        malformed_files[spool.name] = spool_read.malformed
 
     grouped: dict[tuple[int, str], list[dict[str, Any]]] = {}
     for row in rows:
@@ -1081,12 +1539,15 @@ def rebuild(
         for issue, members in sorted(by_issue.items())
     ]
     profile_rework = _profile_rework(rows, rounds)
+    session_period = _session_period_rows(spool_read.renders)
+    period_overhead = _period_overhead_rows(session_period, work_items, issue_cost)
     store = {
         "schema": SCHEMA,
         "inputs": {
             "dispatch_root": str(dispatch_root),
             "export_dir": str(export_dir),
             "review_root": str(review_root),
+            "spool": str(spool),
             "repo": str(repo),
         },
         "coverage": {
@@ -1111,6 +1572,11 @@ def rebuild(
             "review_loops": len(rounds),
             "review_loops_round_zero": sum(1 for value in rounds.values() if not value),
             "review_loops_unreadable": list(unreadable_loops),
+            "session_renders": len(spool_read.renders),
+            "session_renders_untimestamped": spool_read.untimestamped,
+            "session_renders_without_session_id": spool_read.without_session,
+            "session_spend_sessions": len({render.session_id for render in spool_read.renders}),
+            "session_spend_periods": len({str(row["period"]) for row in session_period}),
             "malformed_lines": sum(malformed_files.values()),
         },
         "malformed": [
@@ -1121,6 +1587,8 @@ def rebuild(
         "work_items": work_items,
         "issue_rework": issue_rework,
         "profile_rework": profile_rework,
+        "session_period": session_period,
+        "period_overhead": period_overhead,
     }
     store_dir.mkdir(parents=True, exist_ok=True)
     (store_dir / STORE_NAME).write_text(
@@ -1204,6 +1672,24 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
         )
     )
     lines.extend(f"unreadable loop issue={issue}" for issue in coverage["review_loops_unreadable"])
+    # The session line names the source's largest omission in its own words — the seat
+    # the figure cannot see is the orchestrator, and `orchestrator=absent` says so
+    # where a coverage count alone would read as completeness. `meter=` names the
+    # money column for what it is: list price, never spend (#220).
+    lines.append(
+        " ".join(
+            (
+                "sessions",
+                f"renders={coverage['session_renders']}",
+                f"untimestamped={coverage['session_renders_untimestamped']}",
+                f"without_session={coverage['session_renders_without_session_id']}",
+                f"sessions={coverage['session_spend_sessions']}",
+                f"periods={coverage['session_spend_periods']}",
+                "orchestrator=absent",
+                "meter=list_price_not_spend",
+            )
+        )
+    )
     for row in store["issue_cost"]:
         cost = row["cost"]
         # Three facts, three renderings: a number is a cost, `uncalibrated` names a
@@ -1266,6 +1752,8 @@ def connect(store_dir: Path) -> sqlite3.Connection:
         ("work_items", WORK_ITEM_COLUMNS),
         ("issue_rework", ISSUE_REWORK_COLUMNS),
         ("profile_rework", PROFILE_REWORK_COLUMNS),
+        ("session_period", SESSION_PERIOD_COLUMNS),
+        ("period_overhead", PERIOD_OVERHEAD_COLUMNS),
     ):
         names = ", ".join(columns)
         connection.execute(f"CREATE TABLE {table} ({names})")
@@ -1313,6 +1801,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         type=Path,
         default=Path(os.environ.get("CTI_REVIEW_DIR", str(DEFAULT_REVIEW_ROOT))),
     )
+    parser.add_argument(
+        "--spool",
+        type=Path,
+        default=Path(os.environ.get("CTI_QUOTA_SPOOL", str(DEFAULT_SPOOL))),
+    )
     parser.add_argument("--repo", type=Path, default=Path.cwd())
     return parser.parse_args(argv)
 
@@ -1338,7 +1831,12 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     try:
         store = rebuild(
-            args.dispatch_root, args.export_dir, args.review_root, args.repo, args.store_dir
+            args.dispatch_root,
+            args.export_dir,
+            args.review_root,
+            args.spool,
+            args.repo,
+            args.store_dir,
         )
     except _RefusedError as refused:
         for line in refused.refusal.lines():
