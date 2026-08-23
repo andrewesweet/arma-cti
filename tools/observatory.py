@@ -95,19 +95,20 @@ than routes — nothing here excludes a profile, reroutes work or trips a breake
   half converts to no meter the direct half shares and the fully-loaded figure is an
   absence naming that incommensurability, never a sum of points and dollars (#488
   round 2).
-- **The occupancy view (#485) counts bounded work only, and names what it cannot bound.**
-  Occupied time is the count, at each whole minute of a window the reader names, of
-  the dispatches then live, summed — the published method of `tools/occupancy.py`
-  (#295), so the store
+- **The occupancy view (#485) counts spans the run's own records attest, and names
+  what it cannot bound.** Occupied time is the count, at each whole minute of a window
+  the reader names, of the dispatches then live, summed — the published method of
+  `tools/occupancy.py` (#295), so the store
   rebuilds the dated observation rather than inventing a sibling method — and a span
-  needs both its bounds. A dispatch that started and did not complete is read from
+  needs both its bounds from the run itself. A result the stop sweep closed
+  (`stopped_by`) carries the sweep's clock as its end, and a result that recorded no
+  start of its own would pair its end with the plan's `planned_at` — an attempt, not
+  occupancy — so both render `ended_at` null with their reason, contribute **no**
+  occupied time however long the dispatch may have run, and are named in the coverage
+  line's `unbounded` count. A dispatch that started and did not complete is read from
   #489's `terminal_state` block, never re-derived from timestamps or from an absence of
-  landing (#542), and a dispatch with no recorded end contributes **no** occupied time
-  and is named in the coverage line's `unbounded` count, because counting it to the
-  window's end is the inflation the criterion forbids — the dated observation counted
-  exactly that way, so a live comparison that disagrees on `used` is the store refusing
-  the document's inflation, not a rounding note. Every figure ships beside its window's
-  own bounds and its minute count, so no number is quotable without its denominator.
+  landing (#542). Every figure ships beside its window's own bounds and its minute
+  count, so no number is quotable without its denominator.
 
 Sources, all outside every worktree: the dispatch records at `~/.arma-cti/dispatches/`
 (`CTI_DISPATCH_DIR`), the per-dispatch OTel export at `/var/log/claude-otel/dispatches/`
@@ -238,6 +239,24 @@ NO_START_REASON: Final = "neither the result nor the plan carries a start time"
 NO_END_RUNNING_REASON: Final = "the run has not ended: no result.json beside the plan"
 NO_END_UNUSABLE_REASON: Final = "the dispatch record carries no usable ended_at"
 NO_END_ROW_REASON: Final = "the pruned source's ledger row carries no end time"
+# Two closeout shapes that look like an end and are not (#485 round 2). The stop
+# sweep writes a `result.json` of its own wherever the runner never did, and stamps
+# the sweep's clock into `ended_at` — a fact about the sweep, never about the work,
+# which may have stopped at any instant between the plan and the sweep. And a result
+# that recorded no `started_at` of its own would pair its end with the plan's
+# `planned_at` (`ledger.dispatch_start`'s fallback), opening the span at a launch
+# attempt rather than at work — the never-launched refusal and the
+# child-state-unknown failure both carry exactly that shape.
+NO_END_STOP_SWEEP_REASON: Final = (
+    "the result was written by the stop sweep (`stopped_by`), so its `ended_at` is the "
+    "sweep's clock and not the run's end — when the work stopped is not derivable from "
+    "what survives"
+)
+NO_END_NO_OWN_START_REASON: Final = (
+    "the run recorded no start of its own, so its end would open a span at the plan's "
+    "planned_at — a launch attempt, never occupancy — and no pair of the run's own "
+    "bounds survives to attest one"
+)
 TERMINAL_COMPLETED_REASON: Final = "the work completed"
 TERMINAL_RUNNING_REASON: Final = NO_END_RUNNING_REASON
 TERMINAL_NEVER_STARTED_REASON: Final = (
@@ -794,6 +813,28 @@ def _parse_moment(value: object) -> datetime | None:
     return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=UTC)
 
 
+def _bounded_end(
+    ended: datetime | None,
+    own_start: datetime | None,
+    absent_reason: str,
+) -> tuple[datetime | None, str | None]:
+    """Apply the occupancy view's both-bounds rule to one candidate end (#485 round 2).
+
+    An end bounds a span only beside a start the same run wrote: a result that
+    recorded no `started_at` of its own would pair its end with the plan's
+    `planned_at` — the launch attempt, never the work — so the pair attests no span
+    however plausible the arithmetic over it looks. Eleven closeouts shaped exactly
+    that way held 58% of the live store's `used` over the research window until
+    round 2 rejected them by this record-shape rule, never by a list of ids
+    (#485's review).
+    """
+    if ended is None:
+        return None, absent_reason
+    if own_start is None:
+        return None, NO_END_NO_OWN_START_REASON
+    return ended, None
+
+
 def _ended_for(
     result: Mapping[str, Any] | None,
     ledger_row: Mapping[str, Any] | None,
@@ -802,23 +843,27 @@ def _ended_for(
     """Read when this dispatch ended, bounding its occupancy (#485).
 
     The end is the runner's own `ended_at`, written when the run ended; a pruned
-    dispatch's survives under the row's `gate` block. An absence is a reason and
-    never a window's end: the dated observation this view rebuilds counted
-    end-less dispatches as occupied to the window's end and so reported capacity
-    the machine never held, which is the inflation the criterion forbids.
+    dispatch's survives under the row's `gate` block. One closeout shape is not an
+    end at all: a `result.json` the stop sweep laid down (`stopped_by`) stamps the
+    sweep's own clock, which says when the sweep ran and never when the work
+    stopped, so it is refused before the both-bounds rule is even reached.
     """
     if telemetry_source == SOURCE_LEDGER_ROW:
         gate = ledger_row.get("gate") if ledger_row is not None else None
-        ended = _parse_moment(gate.get("ended_at")) if isinstance(gate, dict) else None
-        if ended is not None:
-            return ended, None
-        return None, NO_END_ROW_REASON
+        return _bounded_end(
+            _parse_moment(gate.get("ended_at")) if isinstance(gate, dict) else None,
+            _parse_moment(gate.get("started_at")) if isinstance(gate, dict) else None,
+            NO_END_ROW_REASON,
+        )
     if result is None:
         return None, NO_END_RUNNING_REASON
-    ended = _parse_moment(result.get("ended_at"))
-    if ended is not None:
-        return ended, None
-    return None, NO_END_UNUSABLE_REASON
+    if result.get("stopped_by") is not None:
+        return None, NO_END_STOP_SWEEP_REASON
+    return _bounded_end(
+        _parse_moment(result.get("ended_at")),
+        _parse_moment(result.get("started_at")),
+        NO_END_UNUSABLE_REASON,
+    )
 
 
 def _terminal_for(

@@ -32,16 +32,20 @@ before one.
 **The documentation runs.** The cookbook's first query is executed against the
 shipped store, because a cookbook that does not run is worse than none.
 
-**The occupancy view counts bounded work only, and the method is pinned, not
-documented.** A dispatch's span is its `started_at` to its `ended_at`; occupied time
-is the live count at each whole minute of a window the reader names, summed — the
-method `tools/occupancy.py` published (#295). The staged world's spans are arranged
-so every headline figure is hand-derived in the test: used 80 of capacity 120 over
-sixty minutes, mean 1.3333, one twenty-minute gap, and a histogram that runs above
-the ruled limit so `used` is a count of live dispatches and never a clipped one. The
-mini-fixture pins the sampling itself: a dispatch whose forty seconds cross no minute
-boundary contributes zero minutes, which is what separates boundary sampling from
-duration rounding — two methods that disagree on exactly that dispatch. Work that
+**The occupancy view counts spans the run's own records attest, and the method is
+pinned, not documented.** A dispatch's span is its `started_at` to its `ended_at`;
+occupied time is the live count at each whole minute of a window the reader names,
+summed — the method `tools/occupancy.py` published (#295). The staged world's spans
+are arranged so every headline figure is hand-derived in the test: used 70 of
+capacity 120 over sixty minutes, mean 1.1667, one thirty-minute gap, and a histogram
+that runs above the ruled limit so `used` is a count of live dispatches and never a
+clipped one. The mini-fixture pins the sampling itself: a dispatch whose forty
+seconds cross no minute boundary contributes zero minutes, which is what separates
+boundary sampling from duration rounding — two methods that disagree on exactly that
+dispatch. A span is attested only by the run's own records: a closeout the stop
+sweep wrote and a result that recorded no start of its own each occupy nothing and
+are named by their reason — the fabrication that held 58% of the live store's
+`used` until round 2 rejected it by record shape, never by dispatch id. Work that
 started and did not complete is read from #489's `terminal_state` block (bounded
 abandoned work occupies its own span; unbounded work occupies nothing and is named),
 and a pruned dispatch's end and terminal state come from its row, never guessed.
@@ -1063,8 +1067,10 @@ def test_the_rebuild_states_its_own_coverage(world: World) -> None:
         FLOW_G,
         FLOW_H,
     ]
-    # The occupancy view's floor: seven dispatches carry a start and no end, so any
-    # window's used minutes is computed over the other five alone.
+    # The occupancy view's floor: eight dispatches attest no span — seven with no
+    # result.json at all and the never-launched refusal, whose closeout carries no
+    # start of the run's own — so any window's used minutes is computed over the
+    # other four alone.
     assert coverage["dispatches_unbounded"] == [
         BARE_DISPATCH,
         CLAUDE_DISPATCH,
@@ -1072,6 +1078,7 @@ def test_the_rebuild_states_its_own_coverage(world: World) -> None:
         FLOW_A,
         FLOW_B,
         FLOW_C,
+        FLOW_F,
         ZAI_DISPATCH,
     ]
     assert coverage["issues"] == 9
@@ -1080,7 +1087,7 @@ def test_the_rebuild_states_its_own_coverage(world: World) -> None:
     assert any(
         "dispatches=12" in line
         and "with_spend=3" in line
-        and "unbounded=7" in line
+        and "unbounded=8" in line
         and "issues_with_landings=4" in line
         for line in lines
     )
@@ -1567,9 +1574,10 @@ def test_the_store_answers_sql_by_issue_and_lane(world: World) -> None:
 # ------------------------------------------------------------------ the occupancy view
 
 # The staged world's window, chosen so every span the fixture carries is visible to
-# the arithmetic below: FLOW_D 12:30→12:40, FLOW_E 12:30→13:30, FLOW_F 12:00→12:10
-# (planned, never launched), FLOW_G 12:30→13:00, FLOW_H 13:10→13:40 (outside), and
-# the seven dispatches with no result.json at all — unbounded, contributing nothing.
+# the arithmetic below: FLOW_D 12:30→12:40, FLOW_E 12:30→13:30, FLOW_G 12:30→13:00,
+# FLOW_H 13:10→13:40 (outside), FLOW_F planned 12:00 and never launched — no span,
+# contributing nothing — and the seven dispatches with no result.json at all,
+# unbounded the same way.
 WINDOW_SINCE = "2026-08-05T12:00:00+00:00"
 WINDOW_UNTIL = "2026-08-05T13:00:00+00:00"
 WINDOW_MINUTES = 60
@@ -1657,10 +1665,11 @@ def occupancy(
 
 
 def test_occupancy_reports_capacity_used_lost_and_mean_over_any_window(world: World) -> None:
-    # Hand-derived over the staged spans, minute by minute: 12:00-12:09 FLOW_F alone
-    # (level 1, ten minutes), 12:10-12:29 nothing (level 0, twenty), 12:30-12:39
-    # FLOW_D, FLOW_E and FLOW_G together (level 3, ten), 12:40-12:59 FLOW_E and
-    # FLOW_G (level 2, twenty). Used 10*1 + 10*3 + 20*2 = 80 of capacity 2*60 = 120.
+    # Hand-derived over the staged spans, minute by minute: 12:00-12:29 nothing
+    # (level 0, thirty minutes — FLOW_F never launched and the seven unbounded
+    # dispatches occupy nothing), 12:30-12:39 FLOW_D, FLOW_E and FLOW_G together
+    # (level 3, ten), 12:40-12:59 FLOW_E and FLOW_G (level 2, twenty).
+    # Used 10*3 + 20*2 = 70 of capacity 2*60 = 120.
     rows = occupancy(
         world,
         OCCUPANCY_HEADLINE,
@@ -1674,12 +1683,12 @@ def test_occupancy_reports_capacity_used_lost_and_mean_over_any_window(world: Wo
             WINDOW_UNTIL,
             2,
             WINDOW_MINUTES,
-            80,
+            70,
             120,
-            40,
-            1.3333,
-            20,
-            7,
+            50,
+            1.1667,
+            30,
+            8,
         ),
     )
 
@@ -1694,7 +1703,7 @@ def test_the_concurrency_distribution_is_available_not_only_its_mean(world: Worl
     )
     # Level 3 against a ruled limit of 2: minutes above the limit count at their own
     # level, so `used` is a live count and never a clipped one.
-    assert rows == ((0, 20), (1, 10), (2, 20), (3, 10))
+    assert rows == ((0, 30), (2, 20), (3, 10))
 
 
 def test_idle_gaps_list_start_end_and_duration(world: World) -> None:
@@ -1705,9 +1714,10 @@ def test_idle_gaps_list_start_end_and_duration(world: World) -> None:
         until=WINDOW_UNTIL,
         ruled=2,
     )
-    # The one run of idle minutes is 12:10 through 12:29; the gap ends at the close
-    # of its last idle minute, and its duration is the histogram's level-0 row.
-    assert rows == (("2026-08-05T12:10:00Z", "2026-08-05T12:30:00Z", 1200),)
+    # The one run of idle minutes is 12:00 through 12:29 — the window opens idle,
+    # because FLOW_F never launched; the gap ends at the close of its last idle
+    # minute, and its duration is the histogram's level-0 row.
+    assert rows == (("2026-08-05T12:00:00Z", "2026-08-05T12:30:00Z", 1800),)
 
 
 def test_minute_boundaries_sample_the_grid_never_round_a_duration(
@@ -1772,6 +1782,103 @@ def test_minute_boundaries_sample_the_grid_never_round_a_duration(
     )
 
 
+def test_a_closeout_the_run_did_not_write_fabricates_no_span(world: World, tmp_path: Path) -> None:
+    # #485 round 2's live finding, staged in the shape the record actually carries:
+    # the stop sweep writes a result.json of its own wherever the runner never did,
+    # and stamps the sweep's clock into `ended_at`. Round 1 paired that end with the
+    # plan's `planned_at` fallback and booked a week of occupancy from one record —
+    # eleven of them held 58% of the live store's `used`. The rejection is by record
+    # shape (`stopped_by`, or an end beside no start of the run's own), never by a
+    # list of dispatch ids: a relocated declaration is what #501/#503/#504 closed.
+    root = tmp_path / "swept-dispatches"
+    export = tmp_path / "swept-export"
+    review = tmp_path / "swept-review"
+    spool_parent = tmp_path / "swept-quota"
+    export.mkdir()
+    review.mkdir()
+    spool_parent.mkdir()
+    swept = "d-20260805-120000-swept1"
+    # Planned a week before the sweep, exactly the live worst case, and no process
+    # existed to kill — the sweep's `killed` list is empty and the work's own end is
+    # not derivable from anything that survives.
+    (root / swept).mkdir(parents=True)
+    (root / swept / "dispatch.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": swept,
+                "lane": "claude-native",
+                "profile": "a-profile",
+                "seat": "implementer",
+                "issue": ISSUE,
+                "base_sha": "0" * 40,
+                "planned_at": "2026-08-05T12:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (root / swept / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": swept,
+                "stopped_by": "just dispatch --stop",
+                "stopped_at": "2026-08-12T09:00:00+00:00",
+                "killed": [],
+                "ended_at": "2026-08-12T09:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    # The same fabrication through the pruned-row path: a row whose `gate` block
+    # carries an end and no start attests no span either, because `started_at` there
+    # is the result's own and its absence is the same fact over that source.
+    row_bound = "d-20260805-120000-rowbnd1"
+    stage_record(root, row_bound)
+    write_ledger_row(
+        root / row_bound,
+        {"input_tokens": 1, "output_tokens": 2},
+        body=json.dumps(
+            {
+                "schema": ledger.SCHEMA,
+                "dispatch_id": row_bound,
+                "source": {"kind": "ledger_export", "path": "/gone", "degraded": False},
+                "records": {"total": 1, "metrics": 1, "logs": 0, "spans": 0},
+                "usage": {"input_tokens": 1, "output_tokens": 2},
+                "end_state": PRUNED_END_STATE,
+                "gate": {"ended_at": "2026-08-05T12:30:00+00:00"},
+            }
+        ),
+    )
+    observatory.rebuild(
+        root,
+        export,
+        review,
+        spool_parent / "statusline.jsonl",
+        world.repo,
+        tmp_path / "swept-store",
+    )
+    by_id = {
+        row["dispatch_id"]: row
+        for row in json.loads(
+            (tmp_path / "swept-store" / "store.json").read_text(encoding="utf-8")
+        )["dispatches"]
+    }
+    assert by_id[swept]["ended_at"] is None
+    assert by_id[swept]["ended_at_reason"] == observatory.NO_END_STOP_SWEEP_REASON
+    assert by_id[row_bound]["ended_at"] is None
+    assert by_id[row_bound]["ended_at_reason"] == observatory.NO_END_NO_OWN_START_REASON
+    # Over an hour that the fabricated span would have covered end to end, the
+    # swept dispatch contributes nothing and is counted, not hidden.
+    rows = observatory.query(
+        tmp_path / "swept-store",
+        OCCUPANCY_HEADLINE.format(
+            since="2026-08-05T12:00:00+00:00", until="2026-08-05T13:00:00+00:00", ruled=1
+        ),
+    )
+    assert rows == (
+        ("2026-08-05T12:00:00+00:00", "2026-08-05T13:00:00+00:00", 1, 60, 0, 60, 60, 0.0, 60, 2),
+    )
+
+
 def test_unbounded_work_occupies_nothing_and_is_named_by_fact_not_inference(
     world: World,
 ) -> None:
@@ -1781,22 +1888,26 @@ def test_unbounded_work_occupies_nothing_and_is_named_by_fact_not_inference(
     # ten real minutes are occupied, because the seat really held them.
     assert by_id[FLOW_D]["terminal_state"] == "abandoned"
     assert by_id[FLOW_D]["ended_at"] == "2026-08-05T12:40:00+00:00"
-    # The never-launched refusal is not "started and did not complete" either.
+    # The never-launched refusal is not "started and did not complete" either, and it
+    # attests no span: its closeout's end would open a span at the plan's `planned_at`,
+    # which is a launch attempt and never occupancy.
     assert by_id[FLOW_F]["terminal_state"] is None
     assert by_id[FLOW_F]["terminal_state_reason"] == observatory.TERMINAL_NEVER_STARTED_REASON
+    assert by_id[FLOW_F]["ended_at"] is None
+    assert by_id[FLOW_F]["ended_at_reason"] == observatory.NO_END_NO_OWN_START_REASON
     # A dispatch with no result.json has no bound, and the store says why without
     # guessing: still running and dead-without-closeout are indistinguishable here.
     assert by_id[CLAUDE_DISPATCH]["ended_at"] is None
     assert by_id[CLAUDE_DISPATCH]["ended_at_reason"] == observatory.NO_END_RUNNING_REASON
     assert by_id[CLAUDE_DISPATCH]["terminal_state_reason"] == observatory.TERMINAL_RUNNING_REASON
-    # The headline names the seven it could not bound, and its used minutes (80,
+    # The headline names the eight it could not bound, and its used minutes (70,
     # pinned above) contain none of them: unbounded work inflates nothing.
     rows = observatory.query(
         world.store_dir,
         OCCUPANCY_HEADLINE.format(since=WINDOW_SINCE, until=WINDOW_UNTIL, ruled=2),
     )
-    assert rows[0][9] == 7
-    assert rows[0][4] == 80
+    assert rows[0][9] == 8
+    assert rows[0][4] == 70
 
 
 def test_a_pruned_dispatch_s_end_and_terminal_state_come_from_its_row(world: World) -> None:
@@ -1812,7 +1923,10 @@ def test_a_pruned_dispatch_s_end_and_terminal_state_come_from_its_row(world: Wor
             "usage": {"input_tokens": 10, "output_tokens": 20},
             "end_state": PRUNED_END_STATE,
             "terminal_state": {"state": "abandoned", "class": "quota_exhausted"},
-            "gate": {"ended_at": "2026-08-05T12:45:00+00:00"},
+            "gate": {
+                "started_at": "2026-08-05T12:30:00+00:00",
+                "ended_at": "2026-08-05T12:45:00+00:00",
+            },
         }
     )
     # FLOW_D and FLOW_E carry no export file in this world, so a surviving ledger row
@@ -1850,7 +1964,7 @@ def test_the_cookbook_s_occupancy_queries_run_over_the_research_window(world: Wo
             67083,
             0.0,
             22361,
-            7,
+            8,
         ),
     )
     gaps = next(block for block in cookbook_blocks() if "gap_start" in block)

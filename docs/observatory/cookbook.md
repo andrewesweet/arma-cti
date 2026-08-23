@@ -240,10 +240,11 @@ SELECT (SELECT since_iso FROM bounds) AS window_since,
 FROM series
 ```
 
-Reading it: a span is `started_at` to `ended_at` — `started_at` under
-`ledger.dispatch_start`'s rule (the result's own start, else the plan's `planned_at`)
-— and a dispatch with no recorded end contributes **no** occupied time, however long
-it may have run: work that started and did not complete is named by the
+Reading it: a span is `started_at` to `ended_at`, and a non-null `ended_at` exists
+only where the run's own records attest both bounds — a closeout the stop sweep
+wrote (`stopped_by`) or a result with no start of its own renders `ended_at` null
+with its reason and contributes **no** occupied time, however long the dispatch may
+have run. Work that started and did not complete is named by the
 `terminal_state` column (#489's block, never re-derived from timestamps or an absence
 of landing), and the dispatches a window's `used` could not bound are counted in
 `unbounded_dispatches`, so `used` reads as the floor it is. `used` counts every live
@@ -325,9 +326,9 @@ ORDER BY MIN(t)
 Reading it: the gaps partition the histogram's `concurrency = 0` row, so their total
 is the window's idle minutes and never a second measure of it. Over §1's own window,
 a disagreement between these figures and §1's is a red and not a rounding note —
-report it with both figures rather than tuning either side. §1 states its own method
-nowhere and its two idle figures do not agree with each other (7,510 awake of 22,361
-minutes implies 247.5 idle hours; the gap list claims 251.8), so the live comparison
-the orchestrator runs is expected to name where the document's throwaway pass counted
-differently — and where it counted unbounded dispatches to the window's end, the
-store's lower `used` is the criterion's own correction, not a defect.
+report it with both figures rather than tuning either side. §1's `used` and mean
+concurrency stood up against the corrected store (within six percent on the window
+the review measured); its two idle figures do not agree with each other (7,510 awake
+of 22,361 minutes implies 247.5 idle hours; the gap list claims 251.8), and the
+corrected store sides with the gap list, so the awake-minus-total arithmetic is the
+document's error, not the store's.

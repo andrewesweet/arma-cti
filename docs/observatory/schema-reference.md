@@ -92,7 +92,7 @@ One row per dispatch record under the dispatch root.
 | `cache_creation_tokens` | + `cache_creation_tokens_reason` | Cache writes |
 | `landed_sha` | + `landed_sha_reason` | The commit this dispatch landed, bounded as `tools/ledger.py` bounds it |
 | `started_at` | + `started_at_reason` | When this dispatch began — the result's `started_at`, else the plan's `planned_at` (`ledger.dispatch_start`'s rule) |
-| `ended_at` | + `ended_at_reason` | When this dispatch ended — the result's `ended_at`, a pruned dispatch's from its row's `gate` block; null means unbounded, never "to the window's end", because that reading is the inflation #485 forbids |
+| `ended_at` | + `ended_at_reason` | When this dispatch ended — the run's own closeout, a pruned dispatch's from its row's `gate` block; a closeout the stop sweep wrote (`stopped_by`) or a run that recorded no start of its own attests no span and renders null with its reason, and null means unbounded, never "to the window's end" |
 | `terminal_state` | + `terminal_state_reason` | `abandoned` where #489's `terminal_state` block says this dispatch started and did not complete; the null reason names which of the three facts it is — completed, still running, never started — and the fact is never re-derived from timestamps or an absence of landing (#542) |
 | `end_state_class` | + `end_state_class_reason` | How this dispatch ended, in `tools/ledger.py`'s own vocabulary; null only where a pruned row's `end_state` block is gone |
 | `gate_outcome` | + `gate_outcome_reason` | `gate_outcome`'s vocabulary: `landed`, `running`, `not_a_result`, `never_started`, `lands_nothing`, `not_landed` |
