@@ -1114,6 +1114,34 @@ trial *args:
 ledger-sync action="sync" *args:
     uv run python tools/ledger.py "$@"
 
+# Rebuild the observatory store from the immutable sources (#482, spec #478).
+# No Arma, no lock: it reads the per-dispatch OTel export, the dispatch
+# records and git, and it never writes to the OTel bus.
+#
+#   just observatory                    full rebuild, coverage and cost lines
+#   just observatory query "<SQL>"      one SQL statement over the shipped store
+#
+# The store is a cache and never a source of truth: every run rebuilds
+# `~/.arma-cti/observatory/store.json` whole, deterministically — two runs over
+# the same inputs produce identical bytes. It reads **both** spend encodings,
+# Claude's per-request log records and Codex's histogram metric, because a
+# reader that models only one books an entire lane at zero while looking
+# correct (#458's defect in a new place). Spend is per lane and never summed;
+# the Claude lane's cost is five-hour-window points via the ledger's
+# calibration, every other lane reports its provider's own counters and is
+# marked uncalibrated — absent is never cheap. Every null carries a reason,
+# malformed export lines are counted and named rather than swallowed, and a
+# source directory this process cannot see is a named refusal, never a partial
+# rebuild presented as complete.
+#
+# The analyst's contract — schema reference, cookbook, hazards — lives in
+# docs/observatory/, and the cookbook's queries run against the shipped store
+# in a test. Paths via CTI_DISPATCH_DIR, CTI_OTEL_EXPORT_DIR and
+# CTI_OBSERVATORY_DIR, the way every state-reading tool takes its seams.
+[positional-arguments]
+observatory action="rebuild" *args:
+    uv run python tools/observatory.py "$@"
+
 # Print an issue's newest handoff comment, and nothing else (#210,
 # docs/agents/handoff.md). A continuation's first read.
 #
