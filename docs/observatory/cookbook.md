@@ -190,3 +190,144 @@ lane's direct spend stays in its own unconverted meter outside this figure, and 
 never summed into a period — and `without_session` counts timestamped renders
 carrying no session id; an untimestamped line without one belongs to the first
 counter, never the second.
+
+## How much of the ruled capacity a window used, and where the loss sits
+
+The occupancy view (#485). Capacity is the ruled work-in-progress limit times the
+window's minutes; `used` is the count of live dispatches at each whole minute of the
+window, summed — the method `tools/occupancy.py` published (#295), restated here over
+the store so any window is one query. The window below is the research document's
+observed one (`docs/research/system-of-work-observability.md` §1, ruled WIP 3);
+**replace the two instants and the limit with your own** — a figure is only quotable
+with the window it was computed over, which is why the bounds are columns of the
+output and not prose around it.
+
+```sql
+WITH RECURSIVE
+bounds(since_iso, until_iso, ruled) AS (
+    VALUES ('2026-08-05T17:28:00+00:00', '2026-08-21T06:09:00+00:00', 3)
+),
+spans AS (
+    SELECT CAST(strftime('%s', started_at) AS INTEGER) AS s,
+           CAST(strftime('%s', ended_at) AS INTEGER) AS e
+    FROM dispatches
+    WHERE started_at IS NOT NULL AND ended_at IS NOT NULL
+),
+minutes(t) AS (
+    SELECT CAST(strftime('%s', since_iso) AS INTEGER) FROM bounds
+    UNION ALL
+    SELECT minutes.t + 60 FROM minutes CROSS JOIN bounds
+    WHERE minutes.t + 60 < CAST(strftime('%s', until_iso) AS INTEGER)
+),
+series AS (
+    SELECT minutes.t AS t, COUNT(spans.s) AS level
+    FROM minutes LEFT JOIN spans ON spans.s <= minutes.t AND minutes.t < spans.e
+    GROUP BY minutes.t
+)
+SELECT (SELECT since_iso FROM bounds) AS window_since,
+       (SELECT until_iso FROM bounds) AS window_until,
+       (SELECT ruled FROM bounds) AS ruled_wip,
+       COUNT(*) AS minutes,
+       SUM(level) AS used_minutes,
+       (SELECT ruled FROM bounds) * COUNT(*) AS capacity_minutes,
+       (SELECT ruled FROM bounds) * COUNT(*) - SUM(level) AS lost_minutes,
+       ROUND(CAST(SUM(level) AS REAL) / COUNT(*), 4) AS mean_concurrency,
+       SUM(CASE WHEN level = 0 THEN 1 ELSE 0 END) AS idle_minutes,
+       (SELECT COUNT(*) FROM dispatches d CROSS JOIN bounds b
+         WHERE d.started_at IS NOT NULL AND d.ended_at IS NULL
+           AND strftime('%s', d.started_at) < CAST(strftime('%s', b.until_iso) AS INTEGER)
+       ) AS unbounded_dispatches
+FROM series
+```
+
+Reading it: a span is `started_at` to `ended_at` — `started_at` under
+`ledger.dispatch_start`'s rule (the result's own start, else the plan's `planned_at`)
+— and a dispatch with no recorded end contributes **no** occupied time, however long
+it may have run: work that started and did not complete is named by the
+`terminal_state` column (#489's block, never re-derived from timestamps or an absence
+of landing), and the dispatches a window's `used` could not bound are counted in
+`unbounded_dispatches`, so `used` reads as the floor it is. `used` counts every live
+dispatch at its own level, so a window whose concurrency ran above the ruled limit can
+show `lost_minutes` below zero — that is the overrun made visible, not a broken
+formula.
+
+The concurrency distribution, because a mean of 0.48 can hide five minutes at level
+three as easily as it hides sixteen idle hours:
+
+```sql
+WITH RECURSIVE
+bounds(since_iso, until_iso, ruled) AS (
+    VALUES ('2026-08-05T17:28:00+00:00', '2026-08-21T06:09:00+00:00', 3)
+),
+spans AS (
+    SELECT CAST(strftime('%s', started_at) AS INTEGER) AS s,
+           CAST(strftime('%s', ended_at) AS INTEGER) AS e
+    FROM dispatches
+    WHERE started_at IS NOT NULL AND ended_at IS NOT NULL
+),
+minutes(t) AS (
+    SELECT CAST(strftime('%s', since_iso) AS INTEGER) FROM bounds
+    UNION ALL
+    SELECT minutes.t + 60 FROM minutes CROSS JOIN bounds
+    WHERE minutes.t + 60 < CAST(strftime('%s', until_iso) AS INTEGER)
+),
+series AS (
+    SELECT minutes.t AS t, COUNT(spans.s) AS level
+    FROM minutes LEFT JOIN spans ON spans.s <= minutes.t AND minutes.t < spans.e
+    GROUP BY minutes.t
+)
+SELECT level AS concurrency, COUNT(*) AS minutes
+FROM series
+GROUP BY level
+ORDER BY level
+```
+
+And the idle gaps themselves, listed with their start, end and duration — many small
+stalls and a few long sleeps are different problems, and only the list tells them
+apart. A gap is a maximal run of idle minutes, so its bounds are the first idle
+minute and the end of the last one:
+
+```sql
+WITH RECURSIVE
+bounds(since_iso, until_iso, ruled) AS (
+    VALUES ('2026-08-05T17:28:00+00:00', '2026-08-21T06:09:00+00:00', 3)
+),
+spans AS (
+    SELECT CAST(strftime('%s', started_at) AS INTEGER) AS s,
+           CAST(strftime('%s', ended_at) AS INTEGER) AS e
+    FROM dispatches
+    WHERE started_at IS NOT NULL AND ended_at IS NOT NULL
+),
+minutes(t) AS (
+    SELECT CAST(strftime('%s', since_iso) AS INTEGER) FROM bounds
+    UNION ALL
+    SELECT minutes.t + 60 FROM minutes CROSS JOIN bounds
+    WHERE minutes.t + 60 < CAST(strftime('%s', until_iso) AS INTEGER)
+),
+series AS (
+    SELECT minutes.t AS t, COUNT(spans.s) AS level
+    FROM minutes LEFT JOIN spans ON spans.s <= minutes.t AND minutes.t < spans.e
+    GROUP BY minutes.t
+),
+zeros AS (
+    SELECT t, ROW_NUMBER() OVER (ORDER BY t) AS rn
+    FROM series
+    WHERE level = 0
+)
+SELECT strftime('%Y-%m-%dT%H:%M:%SZ', MIN(t), 'unixepoch') AS gap_start,
+       strftime('%Y-%m-%dT%H:%M:%SZ', MAX(t) + 60, 'unixepoch') AS gap_end,
+       COUNT(*) * 60 AS duration_seconds
+FROM zeros
+GROUP BY t - rn * 60
+ORDER BY MIN(t)
+```
+
+Reading it: the gaps partition the histogram's `concurrency = 0` row, so their total
+is the window's idle minutes and never a second measure of it. Over §1's own window,
+a disagreement between these figures and §1's is a red and not a rounding note —
+report it with both figures rather than tuning either side. §1 states its own method
+nowhere and its two idle figures do not agree with each other (7,510 awake of 22,361
+minutes implies 247.5 idle hours; the gap list claims 251.8), so the live comparison
+the orchestrator runs is expected to name where the document's throwaway pass counted
+differently — and where it counted unbounded dispatches to the window's end, the
+store's lower `used` is the criterion's own correction, not a defect.

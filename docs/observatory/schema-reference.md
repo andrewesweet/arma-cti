@@ -26,7 +26,7 @@ silence. Both render as an absence with a reason, never as zero.
 
 | Key | Shape | Meaning |
 |---|---|---|
-| `schema` | string | `cti.observatory/4` |
+| `schema` | string | `cti.observatory/5` |
 | `inputs` | object | The five paths the rebuild read: `dispatch_root`, `export_dir`, `review_root`, `spool`, `repo` |
 | `coverage` | object | The rebuild's own denominators — see below |
 | `malformed` | array | One entry per source file with unparseable lines — export or spool: `file`, `lines` |
@@ -46,6 +46,7 @@ silence. Both render as an absence with a reason, never as zero.
 | `dispatches_with_telemetry` | Of those, how many were read from their OTel export file |
 | `dispatches_from_ledger_rows` | Of those, how many were read from a materialised `ledger.json` — the file was pruned |
 | `dispatches_with_spend` | Of those, how many carried derivable spend |
+| `dispatches_unbounded` | Of those, the ids that carry a start and no end, named — the dispatches whose span the occupancy view cannot bound, so any window's `used` is a floor over this list |
 | `dispatches_without_telemetry` | The ids with neither an export file nor a ledger row, named |
 | `issues` | Distinct issues named by a usable record |
 | `issues_with_landings` | Of those, how many have a landing on `origin/main` |
@@ -91,6 +92,8 @@ One row per dispatch record under the dispatch root.
 | `cache_creation_tokens` | + `cache_creation_tokens_reason` | Cache writes |
 | `landed_sha` | + `landed_sha_reason` | The commit this dispatch landed, bounded as `tools/ledger.py` bounds it |
 | `started_at` | + `started_at_reason` | When this dispatch began — the result's `started_at`, else the plan's `planned_at` (`ledger.dispatch_start`'s rule) |
+| `ended_at` | + `ended_at_reason` | When this dispatch ended — the result's `ended_at`, a pruned dispatch's from its row's `gate` block; null means unbounded, never "to the window's end", because that reading is the inflation #485 forbids |
+| `terminal_state` | + `terminal_state_reason` | `abandoned` where #489's `terminal_state` block says this dispatch started and did not complete; the null reason names which of the three facts it is — completed, still running, never started — and the fact is never re-derived from timestamps or an absence of landing (#542) |
 | `end_state_class` | + `end_state_class_reason` | How this dispatch ended, in `tools/ledger.py`'s own vocabulary; null only where a pruned row's `end_state` block is gone |
 | `gate_outcome` | + `gate_outcome_reason` | `gate_outcome`'s vocabulary: `landed`, `running`, `not_a_result`, `never_started`, `lands_nothing`, `not_landed` |
 

@@ -32,6 +32,20 @@ before one.
 **The documentation runs.** The cookbook's first query is executed against the
 shipped store, because a cookbook that does not run is worse than none.
 
+**The occupancy view counts bounded work only, and the method is pinned, not
+documented.** A dispatch's span is its `started_at` to its `ended_at`; occupied time
+is the live count at each whole minute of a window the reader names, summed — the
+method `tools/occupancy.py` published (#295). The staged world's spans are arranged
+so every headline figure is hand-derived in the test: used 80 of capacity 120 over
+sixty minutes, mean 1.3333, one twenty-minute gap, and a histogram that runs above
+the ruled limit so `used` is a count of live dispatches and never a clipped one. The
+mini-fixture pins the sampling itself: a dispatch whose forty seconds cross no minute
+boundary contributes zero minutes, which is what separates boundary sampling from
+duration rounding — two methods that disagree on exactly that dispatch. Work that
+started and did not complete is read from #489's `terminal_state` block (bounded
+abandoned work occupies its own span; unbounded work occupies nothing and is named),
+and a pruned dispatch's end and terminal state come from its row, never guessed.
+
 **The flow view is percentiles, never a mean, and abandoned work is derived.** The
 staged world carries a right-skewed landed sample on which nearest-rank and linear
 interpolation disagree at every percentile, and the view's values are pinned to the
@@ -1049,11 +1063,25 @@ def test_the_rebuild_states_its_own_coverage(world: World) -> None:
         FLOW_G,
         FLOW_H,
     ]
+    # The occupancy view's floor: seven dispatches carry a start and no end, so any
+    # window's used minutes is computed over the other five alone.
+    assert coverage["dispatches_unbounded"] == [
+        BARE_DISPATCH,
+        CLAUDE_DISPATCH,
+        CODEX_DISPATCH,
+        FLOW_A,
+        FLOW_B,
+        FLOW_C,
+        ZAI_DISPATCH,
+    ]
     assert coverage["issues"] == 9
     assert coverage["issues_with_landings"] == 4
     lines = observatory.summary_lines(store, world.store_dir)
     assert any(
-        "dispatches=12" in line and "with_spend=3" in line and "issues_with_landings=4" in line
+        "dispatches=12" in line
+        and "with_spend=3" in line
+        and "unbounded=7" in line
+        and "issues_with_landings=4" in line
         for line in lines
     )
 
@@ -1534,6 +1562,303 @@ def test_the_store_answers_sql_by_issue_and_lane(world: World) -> None:
         "SELECT lane, cost FROM issue_cost WHERE landed = 1 ORDER BY lane",
     )
     assert ("claude-native", CLAUDE_OUTPUT / ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]) in rows
+
+
+# ------------------------------------------------------------------ the occupancy view
+
+# The staged world's window, chosen so every span the fixture carries is visible to
+# the arithmetic below: FLOW_D 12:30→12:40, FLOW_E 12:30→13:30, FLOW_F 12:00→12:10
+# (planned, never launched), FLOW_G 12:30→13:00, FLOW_H 13:10→13:40 (outside), and
+# the seven dispatches with no result.json at all — unbounded, contributing nothing.
+WINDOW_SINCE = "2026-08-05T12:00:00+00:00"
+WINDOW_UNTIL = "2026-08-05T13:00:00+00:00"
+WINDOW_MINUTES = 60
+
+OCCUPANCY_PREAMBLE = """
+WITH RECURSIVE
+bounds(since_iso, until_iso, ruled) AS (
+    VALUES ('{since}', '{until}', {ruled})
+),
+spans AS (
+    SELECT CAST(strftime('%s', started_at) AS INTEGER) AS s,
+           CAST(strftime('%s', ended_at) AS INTEGER) AS e
+    FROM dispatches
+    WHERE started_at IS NOT NULL AND ended_at IS NOT NULL
+),
+minutes(t) AS (
+    SELECT CAST(strftime('%s', since_iso) AS INTEGER) FROM bounds
+    UNION ALL
+    SELECT minutes.t + 60 FROM minutes CROSS JOIN bounds
+    WHERE minutes.t + 60 < CAST(strftime('%s', until_iso) AS INTEGER)
+),
+series AS (
+    SELECT minutes.t AS t, COUNT(spans.s) AS level
+    FROM minutes LEFT JOIN spans ON spans.s <= minutes.t AND minutes.t < spans.e
+    GROUP BY minutes.t
+)
+"""
+
+OCCUPANCY_HEADLINE = (
+    OCCUPANCY_PREAMBLE  # noqa: S608 — this module's own constant over the store's own tables, never input
+    + """
+SELECT (SELECT since_iso FROM bounds) AS window_since,
+       (SELECT until_iso FROM bounds) AS window_until,
+       (SELECT ruled FROM bounds) AS ruled_wip,
+       COUNT(*) AS minutes,
+       SUM(level) AS used_minutes,
+       (SELECT ruled FROM bounds) * COUNT(*) AS capacity_minutes,
+       (SELECT ruled FROM bounds) * COUNT(*) - SUM(level) AS lost_minutes,
+       ROUND(CAST(SUM(level) AS REAL) / COUNT(*), 4) AS mean_concurrency,
+       SUM(CASE WHEN level = 0 THEN 1 ELSE 0 END) AS idle_minutes,
+       (SELECT COUNT(*) FROM dispatches d CROSS JOIN bounds b
+         WHERE d.started_at IS NOT NULL AND d.ended_at IS NULL
+           AND strftime('%s', d.started_at) < CAST(strftime('%s', b.until_iso) AS INTEGER)
+       ) AS unbounded_dispatches
+FROM series
+"""
+)
+
+OCCUPANCY_HISTOGRAM = (
+    OCCUPANCY_PREAMBLE
+    + """
+SELECT level AS concurrency, COUNT(*) AS minutes
+FROM series
+GROUP BY level
+ORDER BY level
+"""
+)
+
+OCCUPANCY_GAPS = (
+    OCCUPANCY_PREAMBLE  # noqa: S608 — this module's own constant over the store's own tables, never input
+    + """,
+zeros AS (
+    SELECT t, ROW_NUMBER() OVER (ORDER BY t) AS rn
+    FROM series
+    WHERE level = 0
+)
+SELECT strftime('%Y-%m-%dT%H:%M:%SZ', MIN(t), 'unixepoch') AS gap_start,
+       strftime('%Y-%m-%dT%H:%M:%SZ', MAX(t) + 60, 'unixepoch') AS gap_end,
+       COUNT(*) * 60 AS duration_seconds
+FROM zeros
+GROUP BY t - rn * 60
+ORDER BY MIN(t)
+"""
+)
+
+
+def occupancy(
+    world: World, statement: str, *, since: str, until: str, ruled: int
+) -> tuple[tuple[Any, ...], ...]:
+    """Rebuild the staged world and run one occupancy statement over the window named."""
+    rebuild_world(world)
+    return observatory.query(
+        world.store_dir, statement.format(since=since, until=until, ruled=ruled)
+    )
+
+
+def test_occupancy_reports_capacity_used_lost_and_mean_over_any_window(world: World) -> None:
+    # Hand-derived over the staged spans, minute by minute: 12:00-12:09 FLOW_F alone
+    # (level 1, ten minutes), 12:10-12:29 nothing (level 0, twenty), 12:30-12:39
+    # FLOW_D, FLOW_E and FLOW_G together (level 3, ten), 12:40-12:59 FLOW_E and
+    # FLOW_G (level 2, twenty). Used 10*1 + 10*3 + 20*2 = 80 of capacity 2*60 = 120.
+    rows = occupancy(
+        world,
+        OCCUPANCY_HEADLINE,
+        since=WINDOW_SINCE,
+        until=WINDOW_UNTIL,
+        ruled=2,
+    )
+    assert rows == (
+        (
+            WINDOW_SINCE,
+            WINDOW_UNTIL,
+            2,
+            WINDOW_MINUTES,
+            80,
+            120,
+            40,
+            1.3333,
+            20,
+            7,
+        ),
+    )
+
+
+def test_the_concurrency_distribution_is_available_not_only_its_mean(world: World) -> None:
+    rows = occupancy(
+        world,
+        OCCUPANCY_HISTOGRAM,
+        since=WINDOW_SINCE,
+        until=WINDOW_UNTIL,
+        ruled=2,
+    )
+    # Level 3 against a ruled limit of 2: minutes above the limit count at their own
+    # level, so `used` is a live count and never a clipped one.
+    assert rows == ((0, 20), (1, 10), (2, 20), (3, 10))
+
+
+def test_idle_gaps_list_start_end_and_duration(world: World) -> None:
+    rows = occupancy(
+        world,
+        OCCUPANCY_GAPS,
+        since=WINDOW_SINCE,
+        until=WINDOW_UNTIL,
+        ruled=2,
+    )
+    # The one run of idle minutes is 12:10 through 12:29; the gap ends at the close
+    # of its last idle minute, and its duration is the histogram's level-0 row.
+    assert rows == (("2026-08-05T12:10:00Z", "2026-08-05T12:30:00Z", 1200),)
+
+
+def test_minute_boundaries_sample_the_grid_never_round_a_duration(
+    world: World, tmp_path: Path
+) -> None:
+    # The mini-fixture that separates the two candidate methods: boundary sampling
+    # and duration rounding disagree on exactly the forty-second dispatch, which
+    # crosses no minute boundary and so contributes zero minutes (#486's pinned-
+    # method pattern, applied to occupancy).
+    root = tmp_path / "mini-dispatches"
+    export = tmp_path / "mini-export"
+    review = tmp_path / "mini-review"
+    spool_parent = tmp_path / "mini-quota"
+    export.mkdir()
+    review.mkdir()
+    spool_parent.mkdir()
+    spans = {
+        # Forty seconds across no minute boundary: live at neither 12:00 nor 12:01.
+        "d-20260805-120000-occu01": ("2026-08-05T12:00:10+00:00", "2026-08-05T12:00:50+00:00"),
+        # Live at 12:01 and 12:02 only.
+        "d-20260805-120000-occu02": ("2026-08-05T12:00:20+00:00", "2026-08-05T12:02:10+00:00"),
+        # Exactly aligned: live at 12:03 and 12:04, not 12:05.
+        "d-20260805-120000-occu03": ("2026-08-05T12:03:00+00:00", "2026-08-05T12:05:00+00:00"),
+    }
+    for dispatch_id, (started, ended) in spans.items():
+        stage_record(root, dispatch_id)
+        (root / dispatch_id / "result.json").write_text(
+            json.dumps(
+                {
+                    "dispatch_id": dispatch_id,
+                    "status": "child_finished",
+                    "returncode": 0,
+                    "started_at": started,
+                    "ended_at": ended,
+                }
+            ),
+            encoding="utf-8",
+        )
+    observatory.rebuild(
+        root, export, review, spool_parent / "statusline.jsonl", world.repo, tmp_path / "mini-store"
+    )
+    rows = observatory.query(
+        tmp_path / "mini-store",
+        OCCUPANCY_HEADLINE.format(
+            since="2026-08-05T12:00:00+00:00", until="2026-08-05T12:06:00+00:00", ruled=1
+        ),
+    )
+    # Six minutes, four of them live (two at level 1 from the second span, two from
+    # the third) — the forty seconds of the first are not in the count anywhere.
+    assert rows == (
+        ("2026-08-05T12:00:00+00:00", "2026-08-05T12:06:00+00:00", 1, 6, 4, 6, 2, 0.6667, 2, 0),
+    )
+    gaps = observatory.query(
+        tmp_path / "mini-store",
+        OCCUPANCY_GAPS.format(
+            since="2026-08-05T12:00:00+00:00", until="2026-08-05T12:06:00+00:00", ruled=1
+        ),
+    )
+    assert gaps == (
+        ("2026-08-05T12:00:00Z", "2026-08-05T12:01:00Z", 60),
+        ("2026-08-05T12:05:00Z", "2026-08-05T12:06:00Z", 60),
+    )
+
+
+def test_unbounded_work_occupies_nothing_and_is_named_by_fact_not_inference(
+    world: World,
+) -> None:
+    store = rebuild_world(world)
+    by_id = {row["dispatch_id"]: row for row in store["dispatches"]}
+    # The quota death started and did not complete — #489's block says so — and its
+    # ten real minutes are occupied, because the seat really held them.
+    assert by_id[FLOW_D]["terminal_state"] == "abandoned"
+    assert by_id[FLOW_D]["ended_at"] == "2026-08-05T12:40:00+00:00"
+    # The never-launched refusal is not "started and did not complete" either.
+    assert by_id[FLOW_F]["terminal_state"] is None
+    assert by_id[FLOW_F]["terminal_state_reason"] == observatory.TERMINAL_NEVER_STARTED_REASON
+    # A dispatch with no result.json has no bound, and the store says why without
+    # guessing: still running and dead-without-closeout are indistinguishable here.
+    assert by_id[CLAUDE_DISPATCH]["ended_at"] is None
+    assert by_id[CLAUDE_DISPATCH]["ended_at_reason"] == observatory.NO_END_RUNNING_REASON
+    assert by_id[CLAUDE_DISPATCH]["terminal_state_reason"] == observatory.TERMINAL_RUNNING_REASON
+    # The headline names the seven it could not bound, and its used minutes (80,
+    # pinned above) contain none of them: unbounded work inflates nothing.
+    rows = observatory.query(
+        world.store_dir,
+        OCCUPANCY_HEADLINE.format(since=WINDOW_SINCE, until=WINDOW_UNTIL, ruled=2),
+    )
+    assert rows[0][9] == 7
+    assert rows[0][4] == 80
+
+
+def test_a_pruned_dispatch_s_end_and_terminal_state_come_from_its_row(world: World) -> None:
+    # The day-after-prune row carries both facts under its own keys: the end under
+    # `gate.ended_at`, the terminal state as #489's block. A row without them is an
+    # absence with its own reason, never a guess.
+    full_row = json.dumps(
+        {
+            "schema": ledger.SCHEMA,
+            "dispatch_id": FLOW_D,
+            "source": {"kind": "ledger_export", "path": "/gone", "degraded": False},
+            "records": {"total": 1, "metrics": 1, "logs": 0, "spans": 0},
+            "usage": {"input_tokens": 10, "output_tokens": 20},
+            "end_state": PRUNED_END_STATE,
+            "terminal_state": {"state": "abandoned", "class": "quota_exhausted"},
+            "gate": {"ended_at": "2026-08-05T12:45:00+00:00"},
+        }
+    )
+    # FLOW_D and FLOW_E carry no export file in this world, so a surviving ledger row
+    # is already the pruned-source read: `telemetry_source` goes to `ledger_row` and
+    # the row's own keys are all that answers.
+    write_ledger_row(
+        world.dispatch_root / FLOW_D, {"input_tokens": 10, "output_tokens": 20}, body=full_row
+    )
+    write_ledger_row(world.dispatch_root / FLOW_E, {"input_tokens": 30, "output_tokens": 40})
+    store = rebuild_world(world)
+    by_id = {row["dispatch_id"]: row for row in store["dispatches"]}
+    assert by_id[FLOW_D]["ended_at"] == "2026-08-05T12:45:00+00:00"
+    assert by_id[FLOW_D]["terminal_state"] == "abandoned"
+    assert by_id[FLOW_E]["ended_at"] is None
+    assert by_id[FLOW_E]["ended_at_reason"] == observatory.NO_END_ROW_REASON
+    assert by_id[FLOW_E]["terminal_state_reason"] == observatory.TERMINAL_ROW_REASON
+
+
+def test_the_cookbook_s_occupancy_queries_run_over_the_research_window(world: World) -> None:
+    # §1's own window, carried by the cookbook: 2026-08-05T17:28Z to 2026-08-21T06:09Z
+    # is 22,361 whole minutes — the document's own 22,361 wall minutes, restated by
+    # the query rather than trusted — and the staged world sits entirely before it,
+    # so the window is idle end to end and every figure is exact.
+    rebuild_world(world)
+    headline = next(block for block in cookbook_blocks() if "mean_concurrency" in block)
+    rows = observatory.query(world.store_dir, headline.strip().rstrip(";"))
+    assert rows == (
+        (
+            "2026-08-05T17:28:00+00:00",
+            "2026-08-21T06:09:00+00:00",
+            3,
+            22361,
+            0,
+            67083,
+            67083,
+            0.0,
+            22361,
+            7,
+        ),
+    )
+    gaps = next(block for block in cookbook_blocks() if "gap_start" in block)
+    assert observatory.query(world.store_dir, gaps.strip().rstrip(";")) == (
+        ("2026-08-05T17:28:00Z", "2026-08-21T06:09:00Z", 1341660),
+    )
+    histogram = next(block for block in cookbook_blocks() if "AS concurrency" in block)
+    assert observatory.query(world.store_dir, histogram.strip().rstrip(";")) == ((0, 22361),)
 
 
 # ---------------------------------------------------------------- the session view

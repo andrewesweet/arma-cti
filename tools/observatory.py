@@ -95,6 +95,19 @@ than routes — nothing here excludes a profile, reroutes work or trips a breake
   half converts to no meter the direct half shares and the fully-loaded figure is an
   absence naming that incommensurability, never a sum of points and dollars (#488
   round 2).
+- **The occupancy view (#485) counts bounded work only, and names what it cannot bound.**
+  Occupied time is the count, at each whole minute of a window the reader names, of
+  the dispatches then live, summed — the published method of `tools/occupancy.py`
+  (#295), so the store
+  rebuilds the dated observation rather than inventing a sibling method — and a span
+  needs both its bounds. A dispatch that started and did not complete is read from
+  #489's `terminal_state` block, never re-derived from timestamps or from an absence of
+  landing (#542), and a dispatch with no recorded end contributes **no** occupied time
+  and is named in the coverage line's `unbounded` count, because counting it to the
+  window's end is the inflation the criterion forbids — the dated observation counted
+  exactly that way, so a live comparison that disagrees on `used` is the store refusing
+  the document's inflation, not a rounding note. Every figure ships beside its window's
+  own bounds and its minute count, so no number is quotable without its denominator.
 
 Sources, all outside every worktree: the dispatch records at `~/.arma-cti/dispatches/`
 (`CTI_DISPATCH_DIR`), the per-dispatch OTel export at `/var/log/claude-otel/dispatches/`
@@ -141,7 +154,7 @@ import review_loop
 if TYPE_CHECKING:
     from collections.abc import Container
 
-SCHEMA: Final = "cti.observatory/4"
+SCHEMA: Final = "cti.observatory/5"
 STORE_NAME: Final = "store.json"
 
 EXIT_REFUSED: Final = 1
@@ -216,6 +229,25 @@ ROW_NO_END_STATE: Final = (
 )
 NO_START_REASON: Final = "neither the result nor the plan carries a start time"
 
+# The occupancy view's two absences (#485). An end time exists only once the run
+# ended, so a dispatch with no result.json is unbounded for either of two facts the
+# record cannot tell apart — still running, or dead without a closeout — and the
+# reason carries the runner's own wording. A terminal state is #489's block, and its
+# null is three different facts the caller already holds (completed, still running,
+# never started), so the reason names which rather than flattening them.
+NO_END_RUNNING_REASON: Final = "the run has not ended: no result.json beside the plan"
+NO_END_UNUSABLE_REASON: Final = "the dispatch record carries no usable ended_at"
+NO_END_ROW_REASON: Final = "the pruned source's ledger row carries no end time"
+TERMINAL_COMPLETED_REASON: Final = "the work completed"
+TERMINAL_RUNNING_REASON: Final = NO_END_RUNNING_REASON
+TERMINAL_NEVER_STARTED_REASON: Final = (
+    "work that never started is not work that started and did not finish"
+)
+TERMINAL_ROW_REASON: Final = (
+    "the pruned source's ledger row carries no terminal_state block, so whether this "
+    "dispatch started and did not complete is not derivable from what survives"
+)
+
 # Attribute keys a log record may carry its token counts under. `claude_code.api_request`
 # carries exactly these (docs/research/agent-observability-and-cost-ledgers.md); the
 # reader is name-tolerant because a log record's body name and its `event.name`
@@ -257,6 +289,10 @@ DISPATCH_COLUMNS: Final = (
     "landed_sha_reason",
     "started_at",
     "started_at_reason",
+    "ended_at",
+    "ended_at_reason",
+    "terminal_state",
+    "terminal_state_reason",
     "end_state_class",
     "end_state_class_reason",
     "gate_outcome",
@@ -741,6 +777,82 @@ def _end_state_for(
     return ledger.type_end_state([], result, ledger.Source(SOURCE_ABSENT, None))
 
 
+def _parse_moment(value: object) -> datetime | None:
+    """Read one instant from a record, strictly ISO, or nothing.
+
+    The same tolerance `ledger.dispatch_start` gives a start: a naive string is an
+    instant assumed UTC rather than a dropped value, because a dropped timestamp is
+    a hole in the occupancy series this reader exists not to make. Anything that is
+    not a parseable string is an absence its caller names.
+    """
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=UTC)
+
+
+def _ended_for(
+    result: Mapping[str, Any] | None,
+    ledger_row: Mapping[str, Any] | None,
+    telemetry_source: str,
+) -> tuple[datetime | None, str | None]:
+    """Read when this dispatch ended, bounding its occupancy (#485).
+
+    The end is the runner's own `ended_at`, written when the run ended; a pruned
+    dispatch's survives under the row's `gate` block. An absence is a reason and
+    never a window's end: the dated observation this view rebuilds counted
+    end-less dispatches as occupied to the window's end and so reported capacity
+    the machine never held, which is the inflation the criterion forbids.
+    """
+    if telemetry_source == SOURCE_LEDGER_ROW:
+        gate = ledger_row.get("gate") if ledger_row is not None else None
+        ended = _parse_moment(gate.get("ended_at")) if isinstance(gate, dict) else None
+        if ended is not None:
+            return ended, None
+        return None, NO_END_ROW_REASON
+    if result is None:
+        return None, NO_END_RUNNING_REASON
+    ended = _parse_moment(result.get("ended_at"))
+    if ended is not None:
+        return ended, None
+    return None, NO_END_UNUSABLE_REASON
+
+
+def _terminal_for(
+    result: Mapping[str, Any] | None,
+    end_state: ledger.EndState | None,
+    ledger_row: Mapping[str, Any] | None,
+    telemetry_source: str,
+) -> tuple[str | None, str | None]:
+    """Read whether this dispatch started and did not complete, from #489's own block.
+
+    The fact comes from `ledger.terminal_state` — the block the materialised row
+    already carries — never re-derived from timestamps or from an absence of
+    landing, which is what #542 is open over. A pruned dispatch is read from its
+    row's own block, and a row without one is an absence with a reason rather than
+    a guess. The null's reason names which of the three facts it is, because
+    "completed", "still running" and "never started" are different statements a
+    single generic string would flatten.
+    """
+    if telemetry_source == SOURCE_LEDGER_ROW:
+        block = ledger_row.get("terminal_state") if ledger_row is not None else None
+        state = block.get("state") if isinstance(block, dict) else None
+        if isinstance(state, str) and state:
+            return state, None
+        return None, TERMINAL_ROW_REASON
+    block = ledger.terminal_state(result, end_state)
+    if block is not None:
+        return str(block["state"]), None
+    if result is None:
+        return None, TERMINAL_RUNNING_REASON
+    if not ledger.started(result):
+        return None, TERMINAL_NEVER_STARTED_REASON
+    return None, TERMINAL_COMPLETED_REASON
+
+
 def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[str, Any], int]:
     """Build one dispatch's row: identity, telemetry source, spend and landing.
 
@@ -779,10 +891,12 @@ def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[
     issue = _issue_of(plan)
     landing = _landing_for(plan, issue, result, repo)
     started = ledger.dispatch_start(plan, result)
+    ended, ended_reason = _ended_for(result, ledger_row, telemetry_source)
     end_state = _end_state_for(items, result, ledger_row, telemetry_source, export_path)
     outcome = (
         ledger.gate_outcome(landing, result, end_state, plan.get("seat")) if end_state else None
     )
+    terminal_state, terminal_reason = _terminal_for(result, end_state, ledger_row, telemetry_source)
     end_state_reason = None if end_state else ROW_NO_END_STATE
     lane = plan.get("lane") if isinstance(plan.get("lane"), str) else None
     profile = plan.get("profile") if isinstance(plan.get("profile"), str) else None
@@ -816,6 +930,10 @@ def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[
         "landed_sha_reason": None if landing.sha else landing.reason,
         "started_at": started.isoformat() if started else None,
         "started_at_reason": None if started else NO_START_REASON,
+        "ended_at": ended.isoformat() if ended else None,
+        "ended_at_reason": ended_reason,
+        "terminal_state": terminal_state,
+        "terminal_state_reason": terminal_reason,
         "end_state_class": end_state.class_ if end_state else None,
         "end_state_class_reason": end_state_reason,
         "gate_outcome": outcome,
@@ -1586,6 +1704,12 @@ def rebuild(  # noqa: PLR0913, PLR0917 — the six paths are the rebuild's own s
                 1 for row in rows if row["telemetry_source"] == SOURCE_LEDGER_ROW
             ),
             "dispatches_with_spend": sum(1 for row in rows if row["spend_encoding"]),
+            # The occupancy view's own denominator: every dispatch whose span cannot
+            # be bounded contributes no occupied time (#485), so a window's `used`
+            # is a floor over exactly this list and the list is carried whole.
+            "dispatches_unbounded": [
+                str(row["dispatch_id"]) for row in rows if row["started_at"] and not row["ended_at"]
+            ],
             "dispatches_without_telemetry": [
                 str(row["dispatch_id"]) for row in rows if row["telemetry_source"] == SOURCE_ABSENT
             ],
@@ -1651,6 +1775,7 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
                 f"with_telemetry={coverage['dispatches_with_telemetry']}",
                 f"from_ledger_rows={coverage['dispatches_from_ledger_rows']}",
                 f"with_spend={coverage['dispatches_with_spend']}",
+                f"unbounded={len(coverage['dispatches_unbounded'])}",
                 f"issues={coverage['issues']}",
                 f"issues_with_landings={coverage['issues_with_landings']}",
                 f"malformed_lines={coverage['malformed_lines']}",
