@@ -52,10 +52,28 @@ than routes — nothing here excludes a profile, reroutes work or trips a breake
   vocabulary — `not_a_result` — read from the records at rebuild time; #489's recorded
   terminal state will widen that derivation, and `stopped` holds the terminal residue
   until it does.
+- **The rework view (#487) reports ADR-0071 ruling 6's ranking key and never routes on
+  it.** Fix rounds per landing is that key, computed for implementer-seat profiles and no
+  others, and the seat set is **derived from the registries** — `dispatch.SEATS`' `lands`
+  column crossed with `ledger`'s `seat_shape`, so the `retro` seat's journal landings are
+  not an implementer's denominator — never named as a list (#501's defect class). Rounds
+  come from the review journal and are read as where rework appears, never as who caused
+  it: they are booked to the implementer while the ADR's own second escalation condition
+  says a repeated three-round state can mean the item was under-specified upstream. Every
+  other measure — including dispatches per issue, the companion with the real spread —
+  is reported beside the key and explicitly unranked, because a different key is a
+  ruling. The outcome columns carry a `measures` marker naming them description, so a
+  reader quoting one number learns it is descriptive from the output and not from this
+  file; the stratification columns are the dispatch record's own `profile` and `seat`,
+  written before the child ran, and nothing known only after the work finished ever
+  stratifies. A profile with no landings keeps its rounds visible and its rate undefined
+  — never a division — and a seat that lands nothing by contract keeps its rework
+  reported and unranked, distinguished from a miss by the registry's own shape.
 
 Sources, all outside every worktree: the dispatch records at `~/.arma-cti/dispatches/`
 (`CTI_DISPATCH_DIR`), the per-dispatch OTel export at `/var/log/claude-otel/dispatches/`
-(`CTI_OTEL_EXPORT_DIR`), the store's own home `~/.arma-cti/observatory/`
+(`CTI_OTEL_EXPORT_DIR`), the review journal at `~/.arma-cti/review/` (`CTI_REVIEW_DIR`,
+one `loop.json` per issue), the store's own home `~/.arma-cti/observatory/`
 (`CTI_OBSERVATORY_DIR`), and the repository for the landing join (`--repo`).
 
 A source directory this process cannot see is a **named refusal**, never a partial
@@ -87,18 +105,25 @@ from typing import TYPE_CHECKING, Any, Final, NamedTuple
 # import needs the script's own directory on the path — the device `ledger.py` uses.
 sys.path.insert(0, str(Path(__file__).parent))
 
+import dispatch
 import ledger
+import review_loop
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
 
-SCHEMA: Final = "cti.observatory/2"
+SCHEMA: Final = "cti.observatory/3"
 STORE_NAME: Final = "store.json"
 
 EXIT_REFUSED: Final = 1
 
 DEFAULT_DISPATCH_ROOT: Final = Path.home() / ".arma-cti" / "dispatches"
 DEFAULT_EXPORT_DIR: Final = Path("/var/log/claude-otel/dispatches")
+# The review journal's root is `review_loop`'s own (`CTI_REVIEW_DIR`, `~/.arma-cti/review`),
+# one directory per issue holding the loop's `loop.json`. Read here for one field,
+# `review_rounds`, through `review_loop.parse_loop` itself so the validation never
+# forks (#445's finding 3 shape).
+DEFAULT_REVIEW_ROOT: Final = Path.home() / ".arma-cti" / "review"
 # Outside every worktree, like every other evidence store: a worktree removal must
 # not be able to destroy it (#478, user story 39).
 DEFAULT_STORE_DIR: Final = Path.home() / ".arma-cti" / "observatory"
@@ -285,6 +310,65 @@ ISSUE_COST_COLUMNS: Final = (
     "calibration_id_reason",
     "cost",
     "cost_reason",
+)
+
+# ADR-0071 ruling 6's ranking key is defined "only where its denominator exists": it
+# ranks profiles in the implementer seat, "the only seat this map leaves that reaches
+# `just land`". That fact is not restated as a list here — #501's defect class, closed
+# five times, is a value relocated to a more principled-looking place while staying
+# declared rather than derived. It is derived from the two registries that already hold
+# it: `dispatch.SEATS`' `lands` column is the brief-composed "reaches `just land`" fact
+# (implementer and retro carry `True`), and `ledger`'s `seat_shape` separates the retro's
+# journal artefact, which the ADR names "not an implementer's denominator", from the
+# work an implementer lands. Both registries are held in step by name-set by
+# `tests/unit/test_ledger.py`, so a new seat arrives in both or neither. Today this set
+# is exactly `{"implementer"}`; the day a second seat both lands and lands work, it
+# joins by its registry rows and not by an edit here.
+RANKED_SEATS: Final = frozenset(
+    name
+    for name, seat in dispatch.SEATS.items()
+    if seat.lands and ledger.seat_shape(name) == "work"
+)
+
+# The outcome-half marker, carried as a column so the output itself — not the schema
+# reference — tells a reader quoting one number that it is descriptive. Ruling 6: "It
+# stratifies on pre-work signals only ... Outcome measures are recorded beside the
+# strata as description, explicitly marked, never used to stratify."
+MEASURES_NOTE: Final = (
+    "outcome measures, description beside the strata, never strata (ADR-0071 ruling 6)"
+)
+
+NO_LANDING_KEY_REASON: Final = (
+    "no landing among this profile's dispatches on this seat — the rate is undefined, "
+    "its rounds stay visible, and it is never rendered as a division"
+)
+NO_LOOP_REASON: Final = "no review loop is recorded for this issue"
+
+PROFILE_REWORK_COLUMNS: Final = (
+    # The strata: written on the dispatch record before the child ran.
+    "profile",
+    "seat",
+    # The outcome measures — description, per the `measures` column.
+    "dispatches",
+    "issues",
+    "rounds",
+    "landings",
+    # The ruled key, and why it is absent where it is.
+    "rounds_per_landing",
+    "rounds_per_landing_reason",
+    "ranked",
+    "measures",
+)
+
+ISSUE_REWORK_COLUMNS: Final = (
+    "issue",
+    "dispatches",
+    "review_rounds",
+    "review_rounds_reason",
+    # Always 0: dispatches per issue is the unranked companion, and a different
+    # ranking key would be a ruling, not a preference (ADR-0071 ruling 6).
+    "ranked",
+    "measures",
 )
 
 
@@ -765,18 +849,14 @@ def _iter_source_dir(root: Path, kind: str) -> tuple[Path, list[Path]] | Refusal
 
 
 def _work_items(
-    rows: Sequence[Mapping[str, Any]], repo: Path
+    by_issue: Mapping[int, Sequence[Mapping[str, Any]]], repo: Path
 ) -> tuple[list[dict[str, Any]], dict[str, int]]:
-    """Group the dispatch rows into one work item per issue, with the state counts.
+    """Build one work item per issue from the issue-grouped rows, with the state counts.
 
     A work item is an issue, and its members are every dispatch row that names it,
     across every lane — time is the one quantity that commutes across lanes, so the
     group key is the issue alone.
     """
-    by_issue: dict[int, list[dict[str, Any]]] = {}
-    for row in rows:
-        if row["issue"] is not None:
-            by_issue.setdefault(int(row["issue"]), []).append(row)
     items = [_work_item_row(issue, members, repo) for issue, members in sorted(by_issue.items())]
     counts = dict.fromkeys((STATE_LANDED, STATE_OPEN, STATE_ABANDONED, STATE_STOPPED), 0)
     for item in items:
@@ -784,7 +864,151 @@ def _work_items(
     return items, counts
 
 
-def rebuild(dispatch_root: Path, export_dir: Path, repo: Path, store_dir: Path) -> dict[str, Any]:
+def read_review_rounds(review_root: Path) -> tuple[dict[int, int], tuple[str, ...]]:
+    """Read every issue's fix-round count from the review journal, counting the unreadable.
+
+    One `loop.json` per issue directory, parsed by `review_loop.parse_loop` itself so the
+    validation lives once. A loop that will not parse is counted and named — the store's
+    malformed-input discipline — never swallowed and never read as zero rounds, which
+    would be #225's silence-as-measurement on the ranking key's own numerator.
+    """
+    rounds: dict[int, int] = {}
+    unreadable: list[str] = []
+    for entry in sorted(review_root.iterdir()):
+        if not entry.is_dir() or not entry.name.isdecimal():
+            continue
+        path = entry / review_loop.LOOP_FILE
+        if not path.is_file():
+            continue
+        try:
+            loop = review_loop.parse_loop(json.loads(path.read_text(encoding="utf-8")))
+        except (OSError, ValueError):
+            unreadable.append(entry.name)
+            continue
+        rounds[int(entry.name)] = loop.review_rounds
+    return rounds, tuple(unreadable)
+
+
+def _group_by_issue(rows: Sequence[Mapping[str, Any]]) -> dict[int, list[dict[str, Any]]]:
+    """Group the dispatch rows by the issue each names, the grain work items and rework share."""
+    by_issue: dict[int, list[dict[str, Any]]] = {}
+    for row in rows:
+        if row["issue"] is not None:
+            by_issue.setdefault(int(row["issue"]), []).append(row)
+    return by_issue
+
+
+def _issue_rework_row(
+    issue: int, rows: Sequence[Mapping[str, Any]], rounds: Mapping[int, int]
+) -> dict[str, Any]:
+    """Build one issue's rework row: its dispatch count beside the key, unranked."""
+    found = rounds.get(issue)
+    return {
+        "issue": issue,
+        "dispatches": len(rows),
+        "review_rounds": found,
+        "review_rounds_reason": None if found is not None else NO_LOOP_REASON,
+        "ranked": 0,
+        "measures": MEASURES_NOTE,
+    }
+
+
+def _ranking_for(
+    seat: str | None, rounds: int, landings: int
+) -> tuple[float | None, str | None, int]:
+    """Return the ruled key, its reason where absent, and the ranked flag for one row.
+
+    The order of tests is the ADR's own: the key exists only where its denominator
+    exists, so a ranked seat with no landings is an undefined rate and never a division;
+    a seat that lands nothing by contract is a fact about the seat read from the
+    registries, not a poor score; a seat no registry knows is unranked because whether
+    it may rank is not derivable, not because it was judged.
+    """
+    if seat in RANKED_SEATS:
+        if landings:
+            return rounds / landings, None, 1
+        return None, NO_LANDING_KEY_REASON, 0
+    shape = ledger.seat_shape(seat)
+    if shape == "nothing":
+        return (
+            None,
+            (
+                f"the {seat} seat lands nothing by contract — its rework is reported and "
+                "never ranked (ADR-0071 ruling 6)"
+            ),
+            0,
+        )
+    if shape == "journal":
+        return (
+            None,
+            (
+                f"the {seat} seat lands only its journal, which is not an implementer's "
+                "denominator — reported and never ranked (ADR-0071 ruling 6)"
+            ),
+            0,
+        )
+    if seat in dispatch.SEATS or seat in dispatch.DECLARED_ONLY_SEATS:
+        return (
+            None,
+            (
+                f"the {seat} seat lands nothing by its registry row — reported and never "
+                "ranked (ADR-0071 ruling 6)"
+            ),
+            0,
+        )
+    return (
+        None,
+        (
+            f"the {seat} seat is in no seat registry, so whether it may rank is not "
+            "derivable — reported and never ranked"
+        ),
+        0,
+    )
+
+
+def _profile_rework(
+    rows: Sequence[Mapping[str, Any]], rounds: Mapping[int, int]
+) -> list[dict[str, Any]]:
+    """Group the dispatch rows into one rework row per (profile, seat).
+
+    The strata are the dispatch record's own `profile` and `seat`, written before the
+    child ran; nothing known only after the work finished enters the grouping key.
+    Rounds attach through the issue an issue's every (profile, seat) touched, which is
+    ruling 6's "where rework appears": the same issue's rounds legitimately appear on
+    several rows — the implementer's and the reviewer's among them — because this is
+    attribution of appearance, never partition and never cause.
+    """
+    grouped: dict[tuple[str | None, str | None], list[dict[str, Any]]] = {}
+    for row in rows:
+        grouped.setdefault((row["profile"], row["seat"]), []).append(row)
+    built: list[dict[str, Any]] = []
+    for (profile, seat), members in sorted(
+        grouped.items(), key=lambda pair: (str(pair[0][0]), str(pair[0][1]))
+    ):
+        issues = {int(row["issue"]) for row in members if row["issue"] is not None}
+        total_rounds = sum(rounds.get(issue, 0) for issue in issues)
+        landings = sum(1 for row in members if row["landed_sha"])
+        key, reason, ranked = _ranking_for(seat, total_rounds, landings)
+        built.append(
+            {
+                "profile": profile,
+                "seat": seat,
+                "dispatches": len(members),
+                "issues": len(issues),
+                "rounds": total_rounds,
+                "landings": landings,
+                "rounds_per_landing": key,
+                "rounds_per_landing_reason": reason,
+                "ranked": ranked,
+                "measures": MEASURES_NOTE,
+            }
+        )
+    return built
+
+
+def rebuild(
+    dispatch_root: Path, export_dir: Path, review_root: Path, repo: Path, store_dir: Path
+) -> dict[str, Any]:
     """Rebuild the whole store from the sources, deterministically, in one pass.
 
     Every ordering in the output is a sorted ordering, nothing in it reads the wall
@@ -799,6 +1023,10 @@ def rebuild(dispatch_root: Path, export_dir: Path, repo: Path, store_dir: Path) 
     export_read = _iter_source_dir(export_dir, "export_dir")
     if isinstance(export_read, Refusal):
         raise _RefusedError(export_read)
+    review_read = _iter_source_dir(review_root, "review_root")
+    if isinstance(review_read, Refusal):
+        raise _RefusedError(review_read)
+    rounds, unreadable_loops = read_review_rounds(review_root)
 
     rows: list[dict[str, Any]] = []
     malformed_files: dict[str, int] = {}
@@ -825,12 +1053,18 @@ def rebuild(dispatch_root: Path, export_dir: Path, repo: Path, store_dir: Path) 
     landed_issues = sorted(
         {int(row["issue"]) for row in issue_cost if row["landed"]}  # type: ignore[arg-type]
     )
-    work_items, state_counts = _work_items(rows, repo)
+    by_issue = _group_by_issue(rows)
+    work_items, state_counts = _work_items(by_issue, repo)
+    issue_rework = [
+        _issue_rework_row(issue, members, rounds) for issue, members in sorted(by_issue.items())
+    ]
+    profile_rework = _profile_rework(rows, rounds)
     store = {
         "schema": SCHEMA,
         "inputs": {
             "dispatch_root": str(dispatch_root),
             "export_dir": str(export_dir),
+            "review_root": str(review_root),
             "repo": str(repo),
         },
         "coverage": {
@@ -852,6 +1086,9 @@ def rebuild(dispatch_root: Path, export_dir: Path, repo: Path, store_dir: Path) 
             "work_items_open": state_counts[STATE_OPEN],
             "work_items_abandoned": state_counts[STATE_ABANDONED],
             "work_items_stopped": state_counts[STATE_STOPPED],
+            "review_loops": len(rounds),
+            "review_loops_round_zero": sum(1 for value in rounds.values() if not value),
+            "review_loops_unreadable": list(unreadable_loops),
             "malformed_lines": sum(malformed_files.values()),
         },
         "malformed": [
@@ -860,6 +1097,8 @@ def rebuild(dispatch_root: Path, export_dir: Path, repo: Path, store_dir: Path) 
         "dispatches": rows,
         "issue_cost": issue_cost,
         "work_items": work_items,
+        "issue_rework": issue_rework,
+        "profile_rework": profile_rework,
     }
     store_dir.mkdir(parents=True, exist_ok=True)
     (store_dir / STORE_NAME).write_text(
@@ -919,6 +1158,30 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
             )
         )
     )
+    # The rework line states what the ranking rests on rather than presenting a
+    # confident order: `round_zero` against `loops` is the key's own spread — most
+    # issues sit at round zero, so the key barely varies and a key that does not vary
+    # cannot rank — and `key_varies=no` says exactly that when it is true. The
+    # sample-limit marker is the ADR's own account of its figures: the "20 to 30
+    # landings" estimate carries no power calculation, base rate or effect size, so the
+    # output names it an estimate rather than a measurement (ADR-0071 ruling 6).
+    ranked_rows = [row for row in store["profile_rework"] if row["ranked"]]
+    key_values = {row["rounds_per_landing"] for row in ranked_rows}
+    lines.append(
+        " ".join(
+            (
+                "rework",
+                f"ranked_seats={','.join(sorted(RANKED_SEATS))}",
+                f"loops={coverage['review_loops']}",
+                f"round_zero={coverage['review_loops_round_zero']}",
+                f"ranked_profiles={len(ranked_rows)}",
+                f"key_varies={'yes' if len(key_values) > 1 else 'no'}",
+                "measures=description",
+                "sample_limit=estimate_not_measurement",
+            )
+        )
+    )
+    lines.extend(f"unreadable loop issue={issue}" for issue in coverage["review_loops_unreadable"])
     for row in store["issue_cost"]:
         cost = row["cost"]
         # Three facts, three renderings: a number is a cost, `uncalibrated` names a
@@ -979,6 +1242,8 @@ def connect(store_dir: Path) -> sqlite3.Connection:
         ("dispatches", DISPATCH_COLUMNS),
         ("issue_cost", ISSUE_COST_COLUMNS),
         ("work_items", WORK_ITEM_COLUMNS),
+        ("issue_rework", ISSUE_REWORK_COLUMNS),
+        ("profile_rework", PROFILE_REWORK_COLUMNS),
     ):
         names = ", ".join(columns)
         connection.execute(f"CREATE TABLE {table} ({names})")
@@ -1021,6 +1286,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         type=Path,
         default=Path(os.environ.get("CTI_OBSERVATORY_DIR", str(DEFAULT_STORE_DIR))),
     )
+    parser.add_argument(
+        "--review-root",
+        type=Path,
+        default=Path(os.environ.get("CTI_REVIEW_DIR", str(DEFAULT_REVIEW_ROOT))),
+    )
     parser.add_argument("--repo", type=Path, default=Path.cwd())
     return parser.parse_args(argv)
 
@@ -1045,7 +1315,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             print("|".join(str(value) for value in row))  # noqa: T201
         return 0
     try:
-        store = rebuild(args.dispatch_root, args.export_dir, args.repo, args.store_dir)
+        store = rebuild(
+            args.dispatch_root, args.export_dir, args.review_root, args.repo, args.store_dir
+        )
     except _RefusedError as refused:
         for line in refused.refusal.lines():
             print(line, file=sys.stderr)  # noqa: T201

@@ -3,8 +3,9 @@
 `just observatory` rebuilds `~/.arma-cti/observatory/store.json` in full on every run,
 from its sources — the per-dispatch OTel export under
 `/var/log/claude-otel/dispatches/`, the dispatch records under `~/.arma-cti/dispatches/`,
-and git. The store is a cache and never a source of truth: a schema change is a re-run,
-not a migration, and a number you distrust is a number you rebuild.
+the review journal under `~/.arma-cti/review/`, and git. The store is a cache and never
+a source of truth: a schema change is a re-run, not a migration, and a number you
+distrust is a number you rebuild.
 
 The rebuild is deterministic. Nothing in the document reads the wall clock, every list
 is sorted, and two runs over the same inputs produce the same bytes.
@@ -24,13 +25,15 @@ silence. Both render as an absence with a reason, never as zero.
 
 | Key | Shape | Meaning |
 |---|---|---|
-| `schema` | string | `cti.observatory/2` |
-| `inputs` | object | The three paths the rebuild read: `dispatch_root`, `export_dir`, `repo` |
+| `schema` | string | `cti.observatory/3` |
+| `inputs` | object | The four paths the rebuild read: `dispatch_root`, `export_dir`, `review_root`, `repo` |
 | `coverage` | object | The rebuild's own denominators — see below |
 | `malformed` | array | One entry per export file with unparseable lines: `file`, `lines` |
 | `dispatches` | array | One row per dispatch record — the `dispatches` table |
 | `issue_cost` | array | One row per (issue, lane) — the `issue_cost` table |
 | `work_items` | array | One row per issue — the `work_items` table |
+| `issue_rework` | array | One row per issue — the `issue_rework` table |
+| `profile_rework` | array | One row per (profile, seat) — the `profile_rework` table |
 
 ### `coverage`
 
@@ -48,6 +51,9 @@ silence. Both render as an absence with a reason, never as zero.
 | `work_items_open` | Of those, how many have a dispatch still running |
 | `work_items_abandoned` | Of those, how many ended on a not-a-result class without landing |
 | `work_items_stopped` | Of those, the terminal residue — ended, never landed, no failure class |
+| `review_loops` | Issue loops read from the review journal, any round count |
+| `review_loops_round_zero` | Of those, how many sit at round zero — the key's own spread |
+| `review_loops_unreadable` | The issues whose `loop.json` exists but would not parse, named |
 | `malformed_lines` | Total unparseable export lines, across all files |
 
 ## The rule every table obeys
@@ -171,6 +177,74 @@ method is a red rather than a silent drift.
 percentiles — no member exists to read — with `items` `0`, because an empty sample is
 a stated fact and not an unknown size: a null there would read as a sample the view
 could not count.
+
+## The `issue_rework` table
+
+One row per issue (#487). Dispatches per issue is the rework view's companion measure —
+a rework proxy with real spread, and the measure most likely to move under an
+intervention — and it is **explicitly unranked**: a different ranking key would be a
+ruling, not a preference (ADR-0071 ruling 6).
+
+| Column | Null? | Meaning |
+|---|---|---|
+| `issue` | never | The issue |
+| `dispatches` | never | Every dispatch that named it, across every seat and lane |
+| `review_rounds` | + `review_rounds_reason` | The issue's fix-round count from the review journal |
+| `ranked` | never | Always `0` — this table ranks nothing |
+| `measures` | never | The marker naming these outcome measures as description, never strata |
+
+An issue with no loop carries `null` rounds with the reason that names it — an absence
+is never zero rounds. A loop that would not parse is counted in the coverage block's
+`review_loops_unreadable` and rendered as `unreadable loop` by the rebuild, never read
+as zero.
+
+## The `profile_rework` table
+
+One row per (profile, seat) (#487). Fix rounds per landing is ADR-0071 ruling 6's
+ranking key, and this table is where it lives: computed for implementer-seat profiles
+and no others, read as **where rework appears**, never as who caused it — rounds are
+booked to the implementer while the ADR's own second escalation condition says a
+repeated three-round state can mean the item was under-specified upstream.
+
+| Column | Null? | Meaning |
+|---|---|---|
+| `profile` | never | The profile — a stratum, written on the dispatch record before the work started |
+| `seat` | never | The seat — a stratum, written on the dispatch record before the work started |
+| `dispatches` | never | The row's dispatch count — an outcome measure |
+| `issues` | never | Distinct issues the row dispatched on — an outcome measure |
+| `rounds` | never | Fix rounds over those issues, from the review journal — an outcome measure |
+| `landings` | never | The row's dispatches that landed — an outcome measure |
+| `rounds_per_landing` | + `rounds_per_landing_reason` | The ruled key: `rounds` over `landings` |
+| `ranked` | never | `1` only where the key exists; every other row is reported and unranked |
+| `measures` | never | The marker naming the outcome columns as description, never strata |
+
+**The stratification is pre-work only.** The grouping key is the dispatch record's own
+`profile` and `seat`, both written before the child ran. Nothing known only after the
+work finished — rounds, landing time, whether it landed at all — enters a stratum, and
+the `measures` column says so in the output itself.
+
+**The ranked seat set is derived, never named.** `dispatch.SEATS`' `lands` column
+crossed with `ledger`'s `seat_shape` answers which seats may rank: a seat ranks when it
+both reaches `just land` and lands work rather than a journal. Today that is exactly
+`implementer`; a new seat joins by its registry rows and not by an edit to the store.
+
+**Three absences, three reasons.** A ranked seat with no landings is an undefined rate —
+rounds visible, `ranked` `0`, never a division. A seat that lands nothing by contract
+(`review`, `recon`, `planner`) reports its rework unranked with a reason naming the
+contract, and the `retro` seat's journal landings are named not-an-implementer's-
+denominator by the same derivation. A seat no registry knows is unranked because
+whether it may rank is not derivable, not because it was judged.
+
+**Rounds are attributed, not partitioned.** The same issue's rounds legitimately appear
+on several rows — the implementer's and the reviewer's among them — because the
+attribution is where rework appeared, never who caused it. Quoting one row's `rounds`
+as a total across profiles double-counts.
+
+**The sample is small and the store says so.** Most issues sit at round zero, so the
+key barely varies; the rebuild's `rework` line carries `round_zero` against `loops`,
+states `key_varies=no` when the ranked key does not vary, and marks the sample limit
+`estimate_not_measurement` — the ADR's own account of its "20 to 30 landings" figure:
+no power calculation, base rate or effect size stands behind it.
 
 ## Querying
 

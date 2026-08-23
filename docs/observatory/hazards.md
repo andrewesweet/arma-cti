@@ -69,6 +69,24 @@ nothing else — a mean cannot be emitted in that slot without the column-list t
 going red. And an open item's `age` is only as current as the as-of instant the query
 names: a stale as-of is a stale age, quietly.
 
+## 5. The ranking key barely varies, and its rounds are attributed, not caused
+
+Most issues sit at round zero, so fix rounds per landing — the ruled key — barely
+moves, and an order over near-identical values reads as a verdict no sample supports.
+The "20 to 30 landings" figure behind any confidence in it is an estimate, not a
+measurement: no power calculation, base rate or effect size stands behind it
+(ADR-0071 ruling 6). **The rebuild's `rework` line states both** — `round_zero`
+against `loops`, `key_varies=no` when the key does not vary, and
+`sample_limit=estimate_not_measurement` — so read the line before quoting the order.
+
+Two more traps in the same table. Rounds are booked to every (profile, seat) row that
+touched an issue, so **summing `rounds` across rows double-counts**: the attribution
+is where rework appeared, never who caused it, and the ADR itself says a repeated
+three-round state can mean the item was under-specified upstream. And `null` in
+`rounds_per_landing` is one of three different facts — no landing, lands-nothing-by-
+contract, unknown seat — which is why the reason column exists; a reader who flattens
+them has turned a contract into a score.
+
 ## Standing rules beside the traps
 
 - **Never sum spend across lanes** — the negative test in `tests/unit/test_observatory.py`

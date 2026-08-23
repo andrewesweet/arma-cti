@@ -40,6 +40,16 @@ exactly, so no mean can enter the headline slot. An abandoned work item is typed
 its dispatch's own `gate_outcome` — `not_a_result`, the existing vocabulary — never
 by a list of issue numbers or an age heuristic, and the terminal residue without a
 failure class is `stopped`, the boundary #489 will widen.
+
+**The rework view ranks only where its denominator exists, and marks its own limits.**
+ADR-0071 ruling 6's key — fix rounds per landing — is computed for implementer-seat
+profiles and no others, with the seat set derived from the registries rather than
+named. A profile with no landings keeps its rounds visible and its rate undefined,
+never a division; a seat that lands nothing by contract keeps its rework reported and
+unranked, its reason distinguishing the contract from a miss. The companion measure,
+dispatches per issue, is reported beside the key and explicitly unranked; the outcome
+columns carry a `measures` marker naming them description; and the summary line states
+the key's own spread and that its sample limit is an estimate, not a measurement.
 """
 
 from __future__ import annotations
@@ -59,6 +69,7 @@ from conftest import REPO, load_tool
 
 observatory = load_tool("observatory")
 ledger = observatory.ledger
+dispatch = load_tool("dispatch")
 
 PLANNED = "2026-08-05T12:00:00+00:00"
 AFTER_PLANNED = "2026-08-05T23:30:00+00:00"
@@ -86,6 +97,10 @@ LANDED_TWO_HOURS = 491
 LANDED_THREE_HOURS = 492
 ABANDONED_ISSUE = 493
 STOPPED_ISSUE = 494
+# The rework view's own issue: five rounds recorded against a dispatch that never
+# lands — the zero-denominator row the ruled key must carry unranked, with its rounds
+# visible, rather than as a division.
+ROUNDY_ISSUE = 495
 
 # One five-hour-window point exactly: the calibration's own numerator, so the cost
 # row's arithmetic is pinned against `ledger`'s constant rather than a restated 30209.
@@ -230,14 +245,22 @@ def write_export(
     return path
 
 
-def stage_record(
+def stage_record(  # noqa: PLR0913 — the seven parameters are the dispatch record's own fields
     root: Path,
     dispatch_id: str,
     *,
     issue: int = ISSUE,
     lane: str = "claude-native",
+    profile: str = "a-profile",
+    seat: str = "implementer",
+    base_sha: str = "0" * 40,
 ) -> Path:
-    """Lay down a dispatch record the way `just dispatch` leaves one."""
+    """Lay down a dispatch record the way `just dispatch` leaves one.
+
+    `base_sha` defaults to the never-landable placeholder: a dispatch staged after the
+    fixture is a dispatch that lands nothing unless the test arms it from the world's
+    real base, which is the arrangement a landing needs.
+    """
     record = root / dispatch_id
     record.mkdir(parents=True, exist_ok=True)
     (record / "dispatch.json").write_text(
@@ -245,16 +268,33 @@ def stage_record(
             {
                 "dispatch_id": dispatch_id,
                 "lane": lane,
-                "profile": "a-profile",
-                "seat": "implementer",
+                "profile": profile,
+                "seat": seat,
                 "issue": issue,
-                "base_sha": "0" * 40,
+                "base_sha": base_sha,
                 "planned_at": PLANNED,
             }
         ),
         encoding="utf-8",
     )
     return record
+
+
+def write_loop(review_root: Path, issue: int, rounds: int) -> None:
+    """Lay down one issue's `loop.json` the way `review_loop.store_loop` leaves it."""
+    directory = review_root / str(issue)
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "loop.json").write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "issue": issue,
+                "review_rounds": rounds,
+                "findings": [],
+            }
+        ),
+        encoding="utf-8",
+    )
 
 
 # The `end_state` block every materialised row carries — `ledger.py` writes it
@@ -321,8 +361,10 @@ class World(NamedTuple):
 
     dispatch_root: Path
     export_dir: Path
+    review_root: Path
     store_dir: Path
     repo: Path
+    base_sha: str
     landed_sha: str
 
 
@@ -356,6 +398,14 @@ def world(tmp_path: Path) -> World:
 
     dispatch_root = tmp_path / "dispatches"
     export_dir = tmp_path / "export"
+    review_root = tmp_path / "review"
+    review_root.mkdir()
+    # Three loops over the fixture's own issues: zero, one and two rounds. Zero rounds
+    # is the common case the summary line has to state rather than hide — most issues
+    # sit at round zero — and the two-round issue gives the key a numerator.
+    write_loop(review_root, ISSUE, 0)
+    write_loop(review_root, LANDED_ONE_HOUR, 1)
+    write_loop(review_root, LANDED_TWO_HOURS, 2)
     stage_record(dispatch_root, CLAUDE_DISPATCH, lane="claude-native")
     stage_record(dispatch_root, CODEX_DISPATCH, lane="codex")
     stage_record(dispatch_root, ZAI_DISPATCH, lane="zai")
@@ -486,12 +536,14 @@ def world(tmp_path: Path) -> World:
         plan["base_sha"] = base
         plan_path.write_text(json.dumps(plan), encoding="utf-8")
 
-    return World(dispatch_root, export_dir, tmp_path / "store", repo, landed_sha)
+    return World(dispatch_root, export_dir, review_root, tmp_path / "store", repo, base, landed_sha)
 
 
 def rebuild_world(world: World) -> dict[str, Any]:
     """Rebuild the staged world's store and return the document."""
-    return observatory.rebuild(world.dispatch_root, world.export_dir, world.repo, world.store_dir)
+    return observatory.rebuild(
+        world.dispatch_root, world.export_dir, world.review_root, world.repo, world.store_dir
+    )
 
 
 def cost_row(store: dict[str, Any], issue: int, lane: str) -> dict[str, Any]:
@@ -910,10 +962,12 @@ def test_an_empty_landed_sample_states_itself_as_zero_items(tmp_path: Path) -> N
     # rather than rendered as an unknown size.
     dispatch_root = tmp_path / "dispatches"
     export_dir = tmp_path / "export"
+    review_root = tmp_path / "review"
     store_dir = tmp_path / "store"
     dispatch_root.mkdir()
     export_dir.mkdir()
-    observatory.rebuild(dispatch_root, export_dir, tmp_path, store_dir)
+    review_root.mkdir()
+    observatory.rebuild(dispatch_root, export_dir, review_root, tmp_path, store_dir)
     assert observatory.query(store_dir, "SELECT * FROM flow_lead_time") == (
         (None, None, None, None, 0),
     )
@@ -941,6 +995,8 @@ def test_an_unreadable_source_directory_is_a_named_refusal(
             str(world.dispatch_root),
             "--export-dir",
             str(gone),
+            "--review-root",
+            str(world.review_root),
             "--store-dir",
             str(world.store_dir),
             "--repo",
@@ -963,6 +1019,8 @@ def test_an_unreadable_dispatch_root_refuses_by_name(
             str(world.dispatch_root / "nowhere"),
             "--export-dir",
             str(world.export_dir),
+            "--review-root",
+            str(world.review_root),
             "--store-dir",
             str(world.store_dir),
             "--repo",
@@ -1003,6 +1061,161 @@ def test_the_store_lives_outside_every_worktree() -> None:
     expected_home = Path.home() / ".arma-cti" / "observatory"
     assert expected_home == observatory.DEFAULT_STORE_DIR
     assert not observatory.DEFAULT_STORE_DIR.is_relative_to(REPO)
+    assert not observatory.DEFAULT_REVIEW_ROOT.is_relative_to(REPO)
+
+
+# ------------------------------------------------------------------- the rework view
+
+
+def test_the_ruled_key_ranks_only_implementer_seat_profiles(world: World) -> None:
+    # A second seat on the same profile: the review seat dispatched the two-round
+    # issue, so rework appeared on its row too — reported, contract-named, unranked.
+    stage_record(
+        world.dispatch_root,
+        "d-20260805-120000-revw01",
+        issue=LANDED_TWO_HOURS,
+        seat="review",
+    )
+    store = rebuild_world(world)
+    rows = {(row["profile"], row["seat"]): row for row in store["profile_rework"]}
+    implementer = rows[("a-profile", "implementer")]
+    # Rounds over the implementer-dispatched issues with loops: 0 + 1 + 2; landings:
+    # the three ISSUE dispatches and FLOW_A/B/C each see their issue's commit.
+    assert (implementer["rounds"], implementer["landings"]) == (3, 6)
+    assert implementer["rounds_per_landing"] == 0.5
+    assert implementer["ranked"] == 1
+    assert implementer["rounds_per_landing_reason"] is None
+    review = rows[("a-profile", "review")]
+    assert review["rounds"] == 2
+    assert review["landings"] == 0
+    assert review["rounds_per_landing"] is None
+    assert "by contract" in review["rounds_per_landing_reason"]
+    assert review["ranked"] == 0
+    # The ranked seat set is derived from the registries, never named: today exactly
+    # the implementer seat both lands (`dispatch.SEATS`' column) and lands work rather
+    # than a journal (`ledger`'s shape). A new seat joins by its registry rows or not
+    # at all — this pin goes red the day one arrives, and that is its job.
+    expected_ranked = frozenset({"implementer"})
+    assert expected_ranked == observatory.RANKED_SEATS
+    assert all(
+        dispatch.SEATS[name].lands and ledger.seat_shape(name) == "work"
+        for name in observatory.RANKED_SEATS
+    )
+
+
+def test_a_profile_with_no_landings_is_unranked_with_its_rounds_visible(world: World) -> None:
+    write_loop(world.review_root, ROUNDY_ISSUE, 5)
+    stage_record(
+        world.dispatch_root, "d-20260805-120000-rndy01", issue=ROUNDY_ISSUE, profile="b-profile"
+    )
+    store = rebuild_world(world)
+    row = next(
+        row
+        for row in store["profile_rework"]
+        if row["profile"] == "b-profile" and row["seat"] == "implementer"
+    )
+    # Zero landings is an undefined rate, not zero rework and not an error: the rounds
+    # stay readable and the key stays null with its reason, never a division.
+    assert row["rounds"] == 5
+    assert row["landings"] == 0
+    assert row["rounds_per_landing"] is None
+    assert "never rendered as a division" in row["rounds_per_landing_reason"]
+    assert row["ranked"] == 0
+
+
+def test_seats_that_land_nothing_by_contract_report_and_never_rank(world: World) -> None:
+    for seat, dispatch_id in (
+        ("review", "d-20260805-120000-revw02"),
+        ("recon", "d-20260805-120000-recn01"),
+    ):
+        stage_record(world.dispatch_root, dispatch_id, issue=LANDED_TWO_HOURS, seat=seat)
+    store = rebuild_world(world)
+    for seat in ("review", "recon"):
+        row = next(row for row in store["profile_rework"] if row["seat"] == seat)
+        assert row["rounds"] == 2
+        assert row["rounds_per_landing"] is None
+        assert row["ranked"] == 0
+        assert "by contract" in row["rounds_per_landing_reason"]
+        # The contract reason and the no-landings reason are different facts; a reader
+        # must be able to tell "cannot land" from "did not land".
+        assert row["rounds_per_landing_reason"] != observatory.NO_LANDING_KEY_REASON
+
+
+def test_dispatches_per_issue_is_reported_beside_the_key_and_explicitly_unranked(
+    world: World,
+) -> None:
+    store = rebuild_world(world)
+    rows = {row["issue"]: row for row in store["issue_rework"]}
+    assert rows[LANDED_TWO_HOURS]["dispatches"] == 1
+    assert rows[LANDED_TWO_HOURS]["review_rounds"] == 2
+    # An issue with no loop carries null rounds and the reason that names it — an
+    # absence is never zero rounds.
+    assert rows[STOPPED_ISSUE]["review_rounds"] is None
+    assert "no review loop" in rows[STOPPED_ISSUE]["review_rounds_reason"]
+    for row in rows.values():
+        assert row["ranked"] == 0
+        assert "never strata" in row["measures"]
+
+
+def test_the_rework_summary_line_states_its_spread_and_its_estimate(world: World) -> None:
+    store = rebuild_world(world)
+    lines = observatory.summary_lines(store, world.store_dir)
+    # One ranked profile holding one key value: the key does not vary, and the line
+    # says so rather than presenting an order over near-identical values. The
+    # sample-limit marker carries the ADR's own account of its figures.
+    assert (
+        "rework ranked_seats=implementer loops=3 round_zero=1 ranked_profiles=1 "
+        "key_varies=no measures=description sample_limit=estimate_not_measurement" in lines
+    )
+    # A second ranked profile with a different key — one landing over the one-round
+    # issue — makes the key vary, and the line says that too.
+    stage_record(
+        world.dispatch_root,
+        "d-20260805-120000-vary01",
+        issue=LANDED_ONE_HOUR,
+        profile="c-profile",
+        base_sha=world.base_sha,
+    )
+    store = rebuild_world(world)
+    lines = observatory.summary_lines(store, world.store_dir)
+    assert (
+        "rework ranked_seats=implementer loops=3 round_zero=1 ranked_profiles=2 "
+        "key_varies=yes measures=description sample_limit=estimate_not_measurement" in lines
+    )
+
+
+def test_an_unparseable_loop_is_counted_named_and_survived(world: World) -> None:
+    loop_dir = world.review_root / str(ABANDONED_ISSUE)
+    loop_dir.mkdir()
+    (loop_dir / "loop.json").write_text("{ not json", encoding="utf-8")
+    store = rebuild_world(world)
+    assert store["coverage"]["review_loops_unreadable"] == [str(ABANDONED_ISSUE)]
+    assert "unreadable loop issue=493" in observatory.summary_lines(store, world.store_dir)
+    row = next(row for row in store["issue_rework"] if row["issue"] == ABANDONED_ISSUE)
+    assert row["review_rounds"] is None
+
+
+def test_an_unreadable_review_root_refuses_by_name(
+    world: World, capsys: pytest.CaptureFixture[str]
+) -> None:
+    gone = world.review_root / "nowhere"
+    code = observatory.main(
+        [
+            "--dispatch-root",
+            str(world.dispatch_root),
+            "--export-dir",
+            str(world.export_dir),
+            "--review-root",
+            str(gone),
+            "--store-dir",
+            str(world.store_dir),
+            "--repo",
+            str(world.repo),
+        ]
+    )
+    assert code == 1
+    assert "refused=review_root_unreadable" in capsys.readouterr().err
+    assert not (world.store_dir / "store.json").exists()
 
 
 # ---------------------------------------------------------------- documentation runs

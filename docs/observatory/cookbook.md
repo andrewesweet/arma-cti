@@ -88,3 +88,45 @@ issue is still running; `abandoned` items (every dispatch terminal on a not-a-re
 class) are counted separately and never enter the lead-time distribution, and
 `stopped` holds the terminal residue — ended, never landed, no failure class — until
 #489's recorded terminal state types it.
+
+## Where rework appears, and how many dispatches an issue took
+
+The rework view (#487). Fix rounds per landing is ADR-0071 ruling 6's ranking key:
+ranked for implementer-seat profiles and no others — a set derived from the seat
+registries, never named — and read as **where rework appears, never as who caused it**.
+Rounds are booked to the implementer while the ADR's own second escalation condition
+says a repeated three-round state can mean the item was under-specified upstream, so a
+bad row is a place to look and never a verdict on a profile.
+
+```sql
+SELECT profile, seat, dispatches, issues, rounds, landings,
+       rounds_per_landing, ranked, measures
+FROM profile_rework
+ORDER BY ranked DESC, rounds_per_landing
+```
+
+Reading it: `rounds_per_landing` is `null` outside the implementer seat and for an
+implementer with no landings — an undefined rate, with its rounds still visible in
+`rounds`, never a division. `ranked` is `0` on every such row, and the reason column
+distinguishes the three absences: no landing, lands-nothing-by-contract, and a seat no
+registry knows. The strata are `profile` and `seat` alone — both written on the
+dispatch record before the work started — and the `measures` column names every other
+column as description, so a number quoted from this table arrives already marked as
+descriptive.
+
+The companion, reported beside the key and explicitly unranked — `ranked` is `0` on
+every row, because a different ranking key would be a ruling:
+
+```sql
+SELECT issue, dispatches, review_rounds, ranked, measures
+FROM issue_rework
+ORDER BY issue
+```
+
+Before quoting an order, read the rebuild's `rework` line: `round_zero` against
+`loops` is the key's own spread, `key_varies=no` says the ranked key does not vary and
+therefore cannot rank, and `sample_limit=estimate_not_measurement` carries the ADR's
+own account of its "20 to 30 landings" figure — no power calculation stands behind it.
+The same issue's rounds appear on every profile-and-seat row that touched it, so
+summing `rounds` across rows double-counts; dispatches per issue is the measure with
+the real spread, and it stays beside the key.
