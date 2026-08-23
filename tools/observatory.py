@@ -110,7 +110,7 @@ import ledger
 import review_loop
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Container, Mapping, Sequence
 
 SCHEMA: Final = "cti.observatory/3"
 STORE_NAME: Final = "store.json"
@@ -343,6 +343,9 @@ NO_LANDING_KEY_REASON: Final = (
     "its rounds stay visible, and it is never rendered as a division"
 )
 NO_LOOP_REASON: Final = "no review loop is recorded for this issue"
+# The other absence a `review_rounds` null can be: a loop exists and would not parse, so
+# "no loop is recorded" would be false of it. Two absences, two strings, one column.
+UNREADABLE_LOOP_REASON: Final = "a review loop is recorded for this issue but would not parse"
 
 PROFILE_REWORK_COLUMNS: Final = (
     # The strata: written on the dispatch record before the child ran.
@@ -899,15 +902,26 @@ def _group_by_issue(rows: Sequence[Mapping[str, Any]]) -> dict[int, list[dict[st
 
 
 def _issue_rework_row(
-    issue: int, rows: Sequence[Mapping[str, Any]], rounds: Mapping[int, int]
+    issue: int,
+    rows: Sequence[Mapping[str, Any]],
+    rounds: Mapping[int, int],
+    unreadable_loops: Container[int],
 ) -> dict[str, Any]:
-    """Build one issue's rework row: its dispatch count beside the key, unranked."""
+    """Build one issue's rework row: its dispatch count beside the key, unranked.
+
+    The null reason keeps the two absences distinct: no loop recorded is not a loop
+    that would not parse, and flattening them is the silence a reason column exists
+    to prevent.
+    """
     found = rounds.get(issue)
+    reason = None
+    if found is None:
+        reason = UNREADABLE_LOOP_REASON if issue in unreadable_loops else NO_LOOP_REASON
     return {
         "issue": issue,
         "dispatches": len(rows),
         "review_rounds": found,
-        "review_rounds_reason": None if found is not None else NO_LOOP_REASON,
+        "review_rounds_reason": reason,
         "ranked": 0,
         "measures": MEASURES_NOTE,
     }
@@ -959,8 +973,8 @@ def _ranking_for(
     return (
         None,
         (
-            f"the {seat} seat is in no seat registry, so whether it may rank is not "
-            "derivable — reported and never ranked"
+            f"the {seat or 'unnamed'} seat is in no seat registry, so whether it may rank "
+            "is not derivable — reported and never ranked"
         ),
         0,
     )
@@ -987,6 +1001,12 @@ def _profile_rework(
     ):
         issues = {int(row["issue"]) for row in members if row["issue"] is not None}
         total_rounds = sum(rounds.get(issue, 0) for issue in issues)
+        # Not "dispatches that landed": `landed_sha` derives from commits referencing
+        # the issue that descend from the dispatch's base and postdate its start, so a
+        # dispatch counts whenever the issue landed while it was open — whether or not
+        # that dispatch produced the landing. The ruling's zero denominator therefore
+        # arrives as one here; a known limit, bounded and stated in the schema
+        # reference, with the semantics fix filed as #542.
         landings = sum(1 for row in members if row["landed_sha"])
         key, reason, ranked = _ranking_for(seat, total_rounds, landings)
         built.append(
@@ -1027,6 +1047,7 @@ def rebuild(
     if isinstance(review_read, Refusal):
         raise _RefusedError(review_read)
     rounds, unreadable_loops = read_review_rounds(review_root)
+    unreadable_issues = {int(name) for name in unreadable_loops}
 
     rows: list[dict[str, Any]] = []
     malformed_files: dict[str, int] = {}
@@ -1056,7 +1077,8 @@ def rebuild(
     by_issue = _group_by_issue(rows)
     work_items, state_counts = _work_items(by_issue, repo)
     issue_rework = [
-        _issue_rework_row(issue, members, rounds) for issue, members in sorted(by_issue.items())
+        _issue_rework_row(issue, members, rounds, unreadable_issues)
+        for issue, members in sorted(by_issue.items())
     ]
     profile_rework = _profile_rework(rows, rounds)
     store = {

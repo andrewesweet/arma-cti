@@ -83,9 +83,14 @@ Two more traps in the same table. Rounds are booked to every (profile, seat) row
 touched an issue, so **summing `rounds` across rows double-counts**: the attribution
 is where rework appeared, never who caused it, and the ADR itself says a repeated
 three-round state can mean the item was under-specified upstream. And `null` in
-`rounds_per_landing` is one of three different facts — no landing, lands-nothing-by-
-contract, unknown seat — which is why the reason column exists; a reader who flattens
-them has turned a contract into a score.
+`rounds_per_landing` is one of five different facts — no landing, lands-nothing-by-
+contract, journal-only landing, a registry row that lands nothing, unknown seat —
+which is why the reason column exists; a reader who flattens them has turned a
+contract into a score. The denominator has its own trap: `landings` counts a dispatch
+whenever its issue landed while it was open, not that the dispatch produced the
+landing, so a superseded implementer shares in the landing and the ruling's zero
+denominator arrives as one — a known, bounded limit stated in the schema reference,
+with the semantics fix filed as #542.
 
 ## Standing rules beside the traps
 

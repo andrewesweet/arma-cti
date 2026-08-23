@@ -252,7 +252,7 @@ def stage_record(  # noqa: PLR0913 — the seven parameters are the dispatch rec
     issue: int = ISSUE,
     lane: str = "claude-native",
     profile: str = "a-profile",
-    seat: str = "implementer",
+    seat: str | None = "implementer",
     base_sha: str = "0" * 40,
 ) -> Path:
     """Lay down a dispatch record the way `just dispatch` leaves one.
@@ -1141,6 +1141,22 @@ def test_seats_that_land_nothing_by_contract_report_and_never_rank(world: World)
         assert row["rounds_per_landing_reason"] != observatory.NO_LANDING_KEY_REASON
 
 
+def test_a_record_with_no_seat_names_the_absence_not_a_python_repr(world: World) -> None:
+    stage_record(
+        world.dispatch_root, "d-20260805-120000-noseat1", issue=LANDED_TWO_HOURS, seat=None
+    )
+    store = rebuild_world(world)
+    row = next(row for row in store["profile_rework"] if row["seat"] is None)
+    assert row["rounds_per_landing"] is None
+    assert row["ranked"] == 0
+    # The reason renders the absence, never the Python repr of what is missing —
+    # "the None seat is in no seat registry" reads as a seat named None.
+    assert row["rounds_per_landing_reason"] == (
+        "the unnamed seat is in no seat registry, so whether it may rank is not "
+        "derivable — reported and never ranked"
+    )
+
+
 def test_dispatches_per_issue_is_reported_beside_the_key_and_explicitly_unranked(
     world: World,
 ) -> None:
@@ -1193,6 +1209,12 @@ def test_an_unparseable_loop_is_counted_named_and_survived(world: World) -> None
     assert "unreadable loop issue=493" in observatory.summary_lines(store, world.store_dir)
     row = next(row for row in store["issue_rework"] if row["issue"] == ABANDONED_ISSUE)
     assert row["review_rounds"] is None
+    # The reason, not only the null: a loop that exists and would not parse is a
+    # different absence from no loop at all, and the column must not flatten them.
+    assert row["review_rounds_reason"] == observatory.UNREADABLE_LOOP_REASON
+    no_loop = next(row for row in store["issue_rework"] if row["issue"] == STOPPED_ISSUE)
+    assert no_loop["review_rounds_reason"] == observatory.NO_LOOP_REASON
+    assert observatory.UNREADABLE_LOOP_REASON != observatory.NO_LOOP_REASON
 
 
 def test_an_unreadable_review_root_refuses_by_name(

@@ -194,7 +194,10 @@ ruling, not a preference (ADR-0071 ruling 6).
 | `measures` | never | The marker naming these outcome measures as description, never strata |
 
 An issue with no loop carries `null` rounds with the reason that names it — an absence
-is never zero rounds. A loop that would not parse is counted in the coverage block's
+is never zero rounds — and an issue whose loop exists but would not parse carries a
+different reason saying exactly that, so a reader querying the table meets two
+different absences as two different strings rather than one flattened "no loop". A
+loop that would not parse is also counted in the coverage block's
 `review_loops_unreadable` and rendered as `unreadable loop` by the rebuild, never read
 as zero.
 
@@ -213,7 +216,7 @@ repeated three-round state can mean the item was under-specified upstream.
 | `dispatches` | never | The row's dispatch count — an outcome measure |
 | `issues` | never | Distinct issues the row dispatched on — an outcome measure |
 | `rounds` | never | Fix rounds over those issues, from the review journal — an outcome measure |
-| `landings` | never | The row's dispatches that landed — an outcome measure |
+| `landings` | never | The row's dispatches whose issue landed while they were open — an outcome measure, bounded as described below |
 | `rounds_per_landing` | + `rounds_per_landing_reason` | The ruled key: `rounds` over `landings` |
 | `ranked` | never | `1` only where the key exists; every other row is reported and unranked |
 | `measures` | never | The marker naming the outcome columns as description, never strata |
@@ -228,12 +231,30 @@ crossed with `ledger`'s `seat_shape` answers which seats may rank: a seat ranks 
 both reaches `just land` and lands work rather than a journal. Today that is exactly
 `implementer`; a new seat joins by its registry rows and not by an edit to the store.
 
-**Three absences, three reasons.** A ranked seat with no landings is an undefined rate —
+**The denominator is over-inclusive, and says so here.** `landings` is not "the row's
+dispatches that landed". A dispatch's `landed_sha` is derived by `tools/ledger.py`'s
+landing detection — commits referencing the issue that descend from the dispatch's base
+and postdate its start — so a dispatch counts whenever its issue landed while it was
+open, whether or not that dispatch produced the landing. Every dispatch an issue
+carried while it landed shares in that landing, superseded ones included. ADR-0071
+ruling 6 makes this column the key's denominator and says an implementer whose work
+never lands is a zero denominator; the code gives such a row a denominator wherever the
+issue landed during any of its dispatches. A number wrong in that known, bounded way
+and saying so is honest; the same number silently is not. The semantics fix is filed
+separately as #542 and this view deliberately does not reach for it.
+
+**Five absences, five reasons.** A ranked seat with no landings is an undefined rate —
 rounds visible, `ranked` `0`, never a division. A seat that lands nothing by contract
 (`review`, `recon`, `planner`) reports its rework unranked with a reason naming the
 contract, and the `retro` seat's journal landings are named not-an-implementer's-
-denominator by the same derivation. A seat no registry knows is unranked because
-whether it may rank is not derivable, not because it was judged.
+denominator by a reason of their own, not the contract one. A seat whose registry row
+says it lands nothing while its ledger shape says it lands work (`fable`,
+`orchestrator`) carries the registry-row reason, and a seat no registry knows is
+unranked because whether it may rank is not derivable, not because it was judged — a
+dispatch record carrying no seat at all meets that same reason rendered against an
+unnamed seat. The companion table's `review_rounds_reason` adds its own pair: no loop
+recorded, and a loop recorded that would not parse — never one absence flattened into
+another.
 
 **Rounds are attributed, not partitioned.** The same issue's rounds legitimately appear
 on several rows — the implementer's and the reviewer's among them — because the

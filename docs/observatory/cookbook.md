@@ -108,8 +108,12 @@ ORDER BY ranked DESC, rounds_per_landing
 Reading it: `rounds_per_landing` is `null` outside the implementer seat and for an
 implementer with no landings — an undefined rate, with its rounds still visible in
 `rounds`, never a division. `ranked` is `0` on every such row, and the reason column
-distinguishes the three absences: no landing, lands-nothing-by-contract, and a seat no
-registry knows. The strata are `profile` and `seat` alone — both written on the
+distinguishes the five absences: no landing, lands-nothing-by-contract, the retro
+seat's journal-only landing, a registry row that lands nothing, and a seat no registry
+knows. `landings` itself counts a dispatch whenever its issue landed while it was open
+— not that the dispatch produced the landing — so the key's denominator is
+over-inclusive in a known, bounded way; the schema reference states the limit and #542
+carries the fix. The strata are `profile` and `seat` alone — both written on the
 dispatch record before the work started — and the `measures` column names every other
 column as description, so a number quoted from this table arrives already marked as
 descriptive.
