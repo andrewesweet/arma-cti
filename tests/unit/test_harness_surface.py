@@ -203,7 +203,7 @@ def test_temporary_render_destination_expires_with_its_capability(tmp_path: Path
     assert not destination.exists()
 
 
-def test_write_boundary_derives_dispatched_authority_from_temporary_directory(
+def test_write_boundary_refuses_retargeted_caller_temporary_directory(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     document = manifest()
@@ -212,19 +212,23 @@ def test_write_boundary_derives_dispatched_authority_from_temporary_directory(
         document, source, "codex"
     )
     monkeypatch.setenv(surface.DISPATCH_ID_ENV, "test-dispatch")
+    live_root = tmp_path / "live-root"
+    live_root.mkdir()
     temporary = TemporaryDirectory(prefix="cti-harness-test-", dir=tmp_path)
+    recorded_name = temporary.name
     try:
-        result = surface._write_plans(  # noqa: SLF001 — exercise central write boundary
-            "codex",
-            plans,
-            temporary,
-            promotion_preflight=False,
-        )
+        temporary.name = str(live_root)
+        with pytest.raises(surface.HarnessSurfaceError):
+            surface._write_plans(  # noqa: SLF001 — exercise central write boundary
+                "codex",
+                plans,
+                temporary,
+                promotion_preflight=False,
+            )
 
-        destination = Path(temporary.name)
-        assert result.files == ("AGENTS.md",)
-        assert (destination / "AGENTS.md").is_file()
+        assert not (live_root / "AGENTS.md").exists()
     finally:
+        temporary.name = recorded_name
         temporary.cleanup()
 
 
