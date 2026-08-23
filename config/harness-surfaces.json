@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "targets": {
+    "claude-code": {
+      "capabilities": [
+        "hooks",
+        "project_instructions"
+      ]
+    },
+    "codex": {
+      "capabilities": [
+        "project_instructions"
+      ]
+    }
+  },
+  "bundles": [
+    {
+      "name": "claude-hooks",
+      "capability": "hooks",
+      "kind": "directory",
+      "source": {
+        "root": ".claude/hooks",
+        "files": [
+          "block-no-verify.py",
+          "deny-closing-trailer.py",
+          "deny-dispatched-background.py",
+          "deny-oversized-reads.py",
+          "deny-subagent-waits.py",
+          "format-on-edit.py",
+          "lint-after-edit.py",
+          "protect-gated-paths.py",
+          "shell_reading.py"
+        ]
+      },
+      "destinations": {
+        "claude-code": ".claude/hooks"
+      }
+    },
+    {
+      "name": "project-instructions",
+      "capability": "project_instructions",
+      "kind": "file",
+      "source": {
+        "root": ".",
+        "files": [
+          "AGENTS.md"
+        ]
+      },
+      "destinations": {
+        "claude-code": "AGENTS.md",
+        "codex": "AGENTS.md"
+      }
+    }
+  ]
+}
