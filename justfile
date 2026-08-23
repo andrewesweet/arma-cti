@@ -1114,7 +1114,7 @@ trial *args:
 ledger-sync action="sync" *args:
     uv run python tools/ledger.py "$@"
 
-# Rebuild the observatory store from the immutable sources (#482, spec #478).
+# Rebuild the observatory store from its sources (#482, spec #478).
 # No Arma, no lock: it reads the per-dispatch OTel export, the dispatch
 # records and git, and it never writes to the OTel bus.
 #
@@ -1126,10 +1126,16 @@ ledger-sync action="sync" *args:
 # the same inputs produce identical bytes. It reads **both** spend encodings,
 # Claude's per-request log records and Codex's histogram metric, because a
 # reader that models only one books an entire lane at zero while looking
-# correct (#458's defect in a new place). Spend is per lane and never summed;
-# the Claude lane's cost is five-hour-window points via the ledger's
-# calibration, every other lane reports its provider's own counters and is
-# marked uncalibrated — absent is never cheap. Every null carries a reason,
+# correct (#458's defect in a new place). The export is pruned after thirty
+# days once a ledger row exists, so where the file is gone the row is read
+# from the dispatch's materialised ledger.json — visibly, in telemetry_source
+# and the coverage line — and what the row cannot carry renders absent with a
+# reason, never zero: a rebuild after a prune never looks like a rebuild
+# before one. Spend is per lane and never summed; the Claude lane's cost is
+# five-hour-window points via the ledger's calibration, every other lane
+# reports its provider's own counters and is marked uncalibrated — absent,
+# uncalibrated and zero are three different facts, and each renders
+# differently. Every null carries a reason,
 # malformed export lines are counted and named rather than swallowed, and a
 # source directory this process cannot see is a named refusal, never a partial
 # rebuild presented as complete.

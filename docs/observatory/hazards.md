@@ -37,10 +37,28 @@ count in its coverage line. **If `malformed_lines` grows between rebuilds, that 
 finding about the writers, not noise to absorb** — and a dispatch whose spend was read
 despite malformed lines read only the lines that parsed, so its figure is a floor.
 
+## 3. The export directory is pruned
+
+`just ledger-sync prune --apply` deletes an export file older than thirty days once a
+ledger row materialised from that file exists. **A rebuild over a pruned directory
+returns rows, looks complete, and silently loses whatever only the raw file carried**
+— the store's sources are durable, but only one of them is immutable.
+
+The store falls back to the dispatch's materialised `ledger.json` and names that in
+`telemetry_source=ledger_row` and the coverage line's `from_ledger_rows=`. What the
+fallback cannot recover: the log-record encoding (the row's reader never read it) and
+any distinction between a true zero and a silence. Both render as an absence with a
+reason, never as zero. **If `from_ledger_rows` grows between rebuilds, your spend
+history for those dispatches is now only as good as the row** — a `log_records`
+figure for a pruned dispatch is gone for good.
+
 ## Standing rules beside the traps
 
 - **Never sum spend across lanes** — the negative test in `tests/unit/test_observatory.py`
   exists because this is enforced mechanically or not at all.
-- **A lane with no calibration renders `uncalibrated`, never zero, never a smaller
-  number.** This session has already conflated absence with a value four separate
-  times (#502 twice, #503, #527).
+- **Absent, uncalibrated and zero are three different facts, and each renders
+  differently**: a number, `uncalibrated`, `absent`. A lane with no calibration
+  renders `uncalibrated`, never zero, never a smaller number; a calibrated lane whose
+  spend could not be derived renders `absent` — it is not cheap and it is not
+  uncalibrated. This session has already conflated absence with a value four separate
+  times (#502 twice, #503, #527), and #482's own summary line did it a fifth.

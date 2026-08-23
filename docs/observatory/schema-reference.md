@@ -1,13 +1,24 @@
 # The observatory store's schema reference
 
 `just observatory` rebuilds `~/.arma-cti/observatory/store.json` in full on every run,
-from the immutable sources — the per-dispatch OTel export under
+from its sources — the per-dispatch OTel export under
 `/var/log/claude-otel/dispatches/`, the dispatch records under `~/.arma-cti/dispatches/`,
 and git. The store is a cache and never a source of truth: a schema change is a re-run,
 not a migration, and a number you distrust is a number you rebuild.
 
 The rebuild is deterministic. Nothing in the document reads the wall clock, every list
 is sorted, and two runs over the same inputs produce the same bytes.
+
+## Retention: the raw export is not immutable
+
+`just ledger-sync prune --apply` deletes an export file older than thirty days once a
+ledger row materialised from that file exists (`tools/ledger.py`, `RETENTION_DAYS`).
+Where the file is gone, the store reads the dispatch's materialised `ledger.json`
+instead, and names that in `telemetry_source` — a rebuild after a prune never looks
+like a rebuild before one. The row carries the metric and span encodings' numbers, so
+a pruned dispatch's spend survives; what does not survive is the log-record encoding,
+which the row's reader never read, and any distinction between a true zero and a
+silence. Both render as an absence with a reason, never as zero.
 
 ## The document
 
@@ -25,9 +36,10 @@ is sorted, and two runs over the same inputs produce the same bytes.
 | Column | Meaning |
 |---|---|
 | `dispatches` | Dispatch records seen |
-| `dispatches_with_telemetry` | Of those, how many had an OTel export file |
-| `dispatches_with_spend` | Of those, how many carried token records in either encoding |
-| `dispatches_without_telemetry` | The ids with no export file, named |
+| `dispatches_with_telemetry` | Of those, how many were read from their OTel export file |
+| `dispatches_from_ledger_rows` | Of those, how many were read from a materialised `ledger.json` — the file was pruned |
+| `dispatches_with_spend` | Of those, how many carried derivable spend |
+| `dispatches_without_telemetry` | The ids with neither an export file nor a ledger row, named |
 | `issues` | Distinct issues named by a usable record |
 | `issues_with_landings` | Of those, how many have a landing on `origin/main` |
 | `malformed_lines` | Total unparseable export lines, across all files |
@@ -50,7 +62,7 @@ One row per dispatch record under the dispatch root.
 | `profile` | + `profile_reason` | The profile the record names |
 | `seat` | + `seat_reason` | The seat the record names |
 | `issue` | + `issue_reason` | The issue the record names |
-| `telemetry_source` | never | `ledger_export` or `absent` |
+| `telemetry_source` | never | `ledger_export`, `ledger_row`, or `absent` |
 | `telemetry_path` | + `telemetry_path_reason` | The export file's name, when one exists |
 | `spend_encoding` | + `spend_encoding_reason` | Which of the two spend encodings was read — see below |
 | `input_tokens` | + `input_tokens_reason` | Input tokens, in the provider's own units |
@@ -61,7 +73,10 @@ One row per dispatch record under the dispatch root.
 
 `spend_encoding` is `metric` (token metrics or token-bearing spans, including the
 histogram body Codex uses), `log_records` (token counts as attributes on log records,
-which is how Claude Code reports per-request spend), or `null` with a reason.
+which is how Claude Code reports per-request spend), or `null` with a reason. A row
+read from a materialised `ledger.json` can only ever read `metric` — the row's reader
+never read the log-record encoding — so `telemetry_source` is what says whether a
+`log_records` figure was even possible for this dispatch.
 
 ## The `issue_cost` table
 
@@ -85,12 +100,16 @@ single lane and a single issue: one meter, one currency.
 | `cache_creation_tokens` | + `cache_creation_tokens_reason` | As above |
 | `meter` | never | `claude_five_hour_window_points`, or `uncalibrated_provider_tokens` |
 | `calibration_id` | + `calibration_id_reason` | The Claude calibration `tools/ledger.py` carries, or why none exists |
-| `cost` | + `cost_reason` | Five-hour-window points on the Claude lane; `null` with an `uncalibrated` reason on every other |
+| `cost` | + `cost_reason` | Five-hour-window points on the Claude lane; `null` elsewhere — see below |
 
 A Claude-lane `cost` is the exact quotient of `output_tokens` over the calibration's
 measured tokens-per-point, unrounded, and its accuracy is the calibration's (±8%,
 #218). An uncalibrated lane's counters are its provider's own and no conversion to
-any other lane's meter exists; the row says so rather than printing a number.
+any other lane's meter exists; the row says so rather than printing a number. A
+calibrated lane whose spend could not be derived — a pruned source, or no token
+records — carries `null` with the reason that names which. **Absent, uncalibrated
+and zero are three different facts**, and the summary line renders each differently:
+a number, `uncalibrated`, `absent`.
 
 ## Querying
 

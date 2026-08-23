@@ -1,16 +1,25 @@
 """`just observatory`: the observatory store (#482, spec #478, ADR-0071 ruling 6).
 
-A derived store over the work system, rebuilt in full from the immutable sources on
-every run, answering one question end to end: **what a landed issue cost, per lane,
-in that lane's own meter.** It reads and never writes the OTel bus, and it reports
-rather than routes — nothing here excludes a profile, reroutes work or trips a
-breaker.
+A derived store over the work system, rebuilt in full from its sources on every run,
+answering one question end to end: **what a landed issue cost, per lane, in that
+lane's own meter.** It reads and never writes the OTel bus, and it reports rather
+than routes — nothing here excludes a profile, reroutes work or trips a breaker.
 
 - **The store is a cache and never a source of truth.** Every run rebuilds it from
-  the durable per-dispatch OTel export and the dispatch records, whole, with no
+  the per-dispatch OTel export, the dispatch records and git, whole, with no
   incremental append and no migration path. A schema change is a re-run. The output
   is deterministic: no wall-clock, no ordering but the sorted one, no mtimes — two
   runs over the same inputs produce the same bytes (#504).
+- **The raw export is not immutable, and the store says so.** `ledger prune` deletes
+  an export file after `RETENTION_DAYS` once a materialised row exists, so a rebuild
+  after a prune reads a different world from a rebuild before one. Where the file is
+  gone the row is read from the dispatch's own `ledger.json`, visibly: the
+  `telemetry_source` column names it and the coverage line counts it. The row carries
+  the metric and span encodings' numbers, so a pruned dispatch's spend survives —
+  except where the row cannot answer. A row that reads zero cannot distinguish a true
+  zero from a silence, and it cannot carry the log-record encoding at all, so there
+  the spend is absent with a reason naming the ceiling, never zero: silent loss over
+  a pruned source is this ticket's own trap in a different disguise.
 - **Both spend encodings are read, and this is the ticket's whole point.** Claude
   emits per-request token counts as attributes on `claude_code.api_request` log
   records; Codex emits `codex.turn.token_usage` as a histogram metric carrying a
@@ -24,8 +33,10 @@ breaker.
   store's shape has nowhere to put one: one row per (issue, lane), each in its own
   meter. The Claude lane is expressed in five-hour-window points via `ledger`'s
   calibration; every other lane reports its provider's own token counters and is
-  marked **uncalibrated** — absent and cheap are different facts, and a lane at zero
-  must be impossible to confuse with a lane that is cheap.
+  marked **uncalibrated** — and on every lane an absent cost renders as `absent`,
+  because absent, uncalibrated and zero are three different facts and a lane at zero
+  must be impossible to confuse with a lane that is cheap or a lane whose spend could
+  not be derived.
 - **Every null carries a reason.** A column that cannot be derived says why, in a
   sibling `<column>_reason` key that is non-null exactly when its column is null —
   the `cap_fraction` pattern, applied store-wide.
@@ -88,6 +99,7 @@ EXPORT_PREFIX: Final = "dispatch-"
 EXPORT_SUFFIX: Final = ".jsonl"
 
 SOURCE_EXPORT: Final = "ledger_export"
+SOURCE_LEDGER_ROW: Final = "ledger_row"
 SOURCE_ABSENT: Final = "absent"
 
 ENCODING_METRIC: Final = "metric"
@@ -108,11 +120,32 @@ UNCALIBRATED_REASON: Final = (
     "NO_ESTIMATOR carries the per-lane detail)"
 )
 
-NO_TELEMETRY_REASON: Final = "no per-dispatch OTel export file exists for this dispatch"
+NO_TELEMETRY_REASON: Final = (
+    "no per-dispatch OTel export file exists for this dispatch, and no materialised "
+    "ledger row survives it"
+)
 NO_TOKEN_RECORDS_REASON: Final = (
     "the export file carries no token records in either encoding — no token metric "  # noqa: S105 — a reason string, not a secret; the name carries "token" because the absence it names is of token records
     "and no token-bearing log record"
 )
+
+# The fallback's own account of itself. `ledger prune` deletes an export file only
+# once a row materialised from that same file exists (`prunable`, RETENTION_DAYS), so
+# where the file is gone the row is the surviving record — but only of the encodings
+# `normalise_usage` reads. A row's zeros cannot distinguish a measurement from a
+# silence, and a log-record-only dispatch's numbers never reached the row at all.
+LEDGER_FILE: Final = "ledger.json"
+PRUNED_EXPORT_REASON: Final = (
+    "the raw export file is gone — `ledger prune` deletes it once a materialised row "
+    "exists (`tools/ledger.py`, RETENTION_DAYS) — so this row is read from the "
+    "dispatch's own ledger.json"
+)
+ROW_SPEND_NOT_DERIVABLE: Final = (
+    "the raw export file is gone and the surviving ledger row reads zero, which cannot "
+    "distinguish a true zero from a silence and never carried the log-record encoding, "
+    "so whether this dispatch spent is not derivable from what survives"
+)
+ROW_UNREADABLE: Final = "a ledger.json exists beside the dispatch record but would not parse"
 
 # Attribute keys a log record may carry its token counts under. `claude_code.api_request`
 # carries exactly these (docs/research/agent-observability-and-cost-ledgers.md); the
@@ -307,6 +340,36 @@ def read_spend(items: Sequence[ledger.Item]) -> Spend:
     return Spend(None, None, None, None, None, NO_TOKEN_RECORDS_REASON)
 
 
+def _row_spend(row: Mapping[str, Any] | None) -> Spend:
+    """Read one dispatch's spend from its materialised ledger row, or say it cannot.
+
+    The fallback for a pruned export file. A row with token numbers carries the metric
+    and span encodings' figures verbatim — `normalise_usage` is the same reader the
+    metric half above uses — so a pruned dispatch's spend survives except where the row
+    cannot answer: all-zero usage is ambiguous (a true zero, a silence, or a
+    log-record-only dispatch whose numbers never reached the row), and an absence is
+    never resolved to a zero.
+    """
+    if row is None:
+        return Spend(None, None, None, None, None, ROW_UNREADABLE)
+    usage = row.get("usage")
+    buckets = (
+        {bucket: usage.get(bucket) for bucket in LOG_TOKEN_KEYS.values()}
+        if isinstance(usage, dict)
+        else {}
+    )
+    if not any(isinstance(value, int) and value for value in buckets.values()):
+        return Spend(None, None, None, None, None, ROW_SPEND_NOT_DERIVABLE)
+    return Spend(
+        ENCODING_METRIC,
+        int(buckets.get("input_tokens") or 0),
+        int(buckets.get("output_tokens") or 0),
+        int(buckets.get("cache_read_tokens") or 0),
+        int(buckets.get("cache_creation_tokens") or 0),
+        None,
+    )
+
+
 def _landing_for(
     plan: Mapping[str, Any], issue: int | None, result: Mapping[str, Any] | None, repo: Path
 ) -> ledger.Landing:
@@ -357,10 +420,20 @@ def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[
         malformed = batches.malformed
         items = [item for batch in batches.batches for item in ledger.items_for(batch, dispatch_id)]
         spend = read_spend(items)
+        telemetry_source: str = SOURCE_EXPORT
         telemetry_path: str | None = export_path.name
         telemetry_path_reason: str | None = None
+    elif (record_dir / LEDGER_FILE).is_file():
+        # The pruned-source read: `ledger prune` only deletes a file a row was
+        # materialised from, so where the file is gone the row is the surviving
+        # record, taken visibly rather than silently.
+        spend = _row_spend(ledger.read_json(record_dir / LEDGER_FILE))
+        telemetry_source = SOURCE_LEDGER_ROW
+        telemetry_path = None
+        telemetry_path_reason = PRUNED_EXPORT_REASON
     else:
         spend = Spend(None, None, None, None, None, NO_TELEMETRY_REASON)
+        telemetry_source = SOURCE_ABSENT
         telemetry_path = None
         telemetry_path_reason = NO_TELEMETRY_REASON
     issue = _issue_of(plan)
@@ -378,7 +451,7 @@ def _dispatch_row(record_dir: Path, export_dir: Path, repo: Path) -> tuple[dict[
         "seat_reason": None if seat else "the dispatch record carries no seat",
         "issue": issue,
         "issue_reason": None if issue else "the dispatch record names no usable issue number",
-        "telemetry_source": SOURCE_EXPORT if telemetry_path else SOURCE_ABSENT,
+        "telemetry_source": telemetry_source,
         "telemetry_path": telemetry_path,
         "telemetry_path_reason": telemetry_path_reason,
         "spend_encoding": spend.encoding,
@@ -419,10 +492,14 @@ def _issue_cost_row(issue: int, lane: str, rows: Sequence[Mapping[str, Any]]) ->
     elif len(encodings) > 1:
         encoding = ENCODING_MIXED
     else:
-        encoding_reason = (
-            with_spend[0]["spend_encoding_reason"]
-            if with_spend and with_spend[0]["spend_encoding_reason"]
-            else "no dispatch of this issue on this lane carried spend records"
+        # No dispatch of the pair carried derivable spend, so the row quotes the first
+        # dispatch's own reason — a pruned log-record dispatch names the prune here,
+        # where the generic string would falsely say no spend records ever existed.
+        encoding_reason = str(
+            next(
+                (row["spend_encoding_reason"] for row in rows if row["spend_encoding_reason"]),
+                "no dispatch of this issue on this lane carried spend records",
+            )
         )
     row: dict[str, Any] = {
         "issue": issue,
@@ -545,6 +622,9 @@ def rebuild(dispatch_root: Path, export_dir: Path, repo: Path, store_dir: Path) 
             "dispatches_with_telemetry": sum(
                 1 for row in rows if row["telemetry_source"] == SOURCE_EXPORT
             ),
+            "dispatches_from_ledger_rows": sum(
+                1 for row in rows if row["telemetry_source"] == SOURCE_LEDGER_ROW
+            ),
             "dispatches_with_spend": sum(1 for row in rows if row["spend_encoding"]),
             "dispatches_without_telemetry": [
                 str(row["dispatch_id"]) for row in rows if row["telemetry_source"] == SOURCE_ABSENT
@@ -591,6 +671,7 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
                 "coverage",
                 f"dispatches={coverage['dispatches']}",
                 f"with_telemetry={coverage['dispatches_with_telemetry']}",
+                f"from_ledger_rows={coverage['dispatches_from_ledger_rows']}",
                 f"with_spend={coverage['dispatches_with_spend']}",
                 f"issues={coverage['issues']}",
                 f"issues_with_landings={coverage['issues_with_landings']}",
@@ -603,7 +684,16 @@ def summary_lines(store: Mapping[str, Any], store_dir: Path) -> tuple[str, ...]:
     )
     for row in store["issue_cost"]:
         cost = row["cost"]
-        rendered = f"{cost:.4f}" if isinstance(cost, (int, float)) else "uncalibrated"
+        # Three facts, three renderings: a number is a cost, `uncalibrated` names a
+        # meter no calibration exists for, `absent` names a calibrated meter whose
+        # spend could not be derived — a pruned source renders absent, never cheap and
+        # never uncalibrated (#146's live row did exactly this).
+        if isinstance(cost, (int, float)):
+            rendered = f"{cost:.4f}"
+        elif row["meter"] == METER_CLAUDE:
+            rendered = "absent"
+        else:
+            rendered = "uncalibrated"
         lines.append(
             " ".join(
                 (

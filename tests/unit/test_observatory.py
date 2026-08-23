@@ -22,6 +22,13 @@ the staged world; the rebuild completes and the count appears in the output.
 bytes, and a source directory the process cannot see is a named refusal that writes
 nothing.
 
+**A pruned source is read visibly, never silently.** `ledger prune` deletes an export
+file once a row materialised from it exists, so the staged world also stages the day
+after a prune: file gone, `ledger.json` left. The numbers the row carries survive, the
+numbers it cannot carry (the log-record encoding) render absent with a reason, and the
+coverage line itself changes — a rebuild after a prune must not look like a rebuild
+before one.
+
 **The documentation runs.** The cookbook's first query is executed against the
 shipped store, because a cookbook that does not run is worse than none.
 """
@@ -219,6 +226,34 @@ def stage_record(
         encoding="utf-8",
     )
     return record
+
+
+def write_ledger_row(record: Path, usage: dict[str, int], *, body: str | None = None) -> None:
+    """Lay down the `ledger.json` a sync leaves, or the exact bytes `body` names.
+
+    The usage block is the only part the fallback reads; the rest is the row's own
+    shape, abbreviated to what a reader could plausibly reach for.
+    """
+    document = (
+        body
+        if body is not None
+        else json.dumps(
+            {
+                "schema": ledger.SCHEMA,
+                "dispatch_id": record.name,
+                "source": {"kind": "ledger_export", "path": "/gone", "degraded": False},
+                "records": {"total": 3, "metrics": 3, "logs": 0, "spans": 0},
+                "usage": usage,
+            }
+        )
+    )
+    (record / "ledger.json").write_text(document, encoding="utf-8")
+
+
+def prune_export(world: World, dispatch_id: str, usage: dict[str, int]) -> None:
+    """Stage the day after a prune: export file deleted, materialised row left."""
+    (world.export_dir / f"dispatch-{dispatch_id}.jsonl").unlink()
+    write_ledger_row(world.dispatch_root / dispatch_id, usage)
 
 
 def run_git(*args: str, cwd: Path, at: str = "") -> None:
@@ -478,6 +513,91 @@ def test_every_null_in_the_store_carries_a_reason(world: World) -> None:
         return bad
 
     assert not unreasoned(store), f"nulls without reasons: {unreasoned(store)}"
+
+
+# ------------------------------------------------------------ the pruned-source read
+
+
+def test_a_pruned_export_falls_back_to_the_row_and_keeps_its_numbers(world: World) -> None:
+    prune_export(world, ZAI_DISPATCH, {"input_tokens": 1_500, "output_tokens": 3_500})
+    store = rebuild_world(world)
+    row = next(row for row in store["dispatches"] if row["dispatch_id"] == ZAI_DISPATCH)
+    assert row["telemetry_source"] == "ledger_row"
+    assert row["telemetry_path"] is None
+    assert "prune" in str(row["telemetry_path_reason"])
+    assert row["spend_encoding"] == "metric"
+    assert (row["input_tokens"], row["output_tokens"]) == (1_500, 3_500)
+    assert cost_row(store, ISSUE, "zai")["output_tokens"] == 3_500
+
+
+def test_a_rebuild_after_a_prune_does_not_look_like_a_rebuild_before_one(world: World) -> None:
+    before = rebuild_world(world)
+    before_line = next(
+        line
+        for line in observatory.summary_lines(before, world.store_dir)
+        if line.startswith("coverage")
+    )
+    prune_export(world, ZAI_DISPATCH, {"input_tokens": 1_500, "output_tokens": 3_500})
+    after = rebuild_world(world)
+    after_line = next(
+        line
+        for line in observatory.summary_lines(after, world.store_dir)
+        if line.startswith("coverage")
+    )
+    assert before_line != after_line
+    assert "from_ledger_rows=0" in before_line
+    assert "from_ledger_rows=1" in after_line
+    assert after["coverage"]["dispatches_without_telemetry"] == [BARE_DISPATCH]
+
+
+def test_a_pruned_log_record_dispatch_is_visibly_absent_not_zero(world: World) -> None:
+    # The Claude dispatch's spend lives only in log records; the materialised row
+    # never carried it, so the day after a prune nothing surviving can answer.
+    prune_export(
+        world,
+        CLAUDE_DISPATCH,
+        {"input_tokens": 0, "output_tokens": 0, "cache_read_tokens": 0, "cache_creation_tokens": 0},
+    )
+    store = rebuild_world(world)
+    row = next(row for row in store["dispatches"] if row["dispatch_id"] == CLAUDE_DISPATCH)
+    assert row["telemetry_source"] == "ledger_row"
+    assert row["spend_encoding"] is None
+    assert row["output_tokens"] is None
+    assert "not derivable" in str(row["output_tokens_reason"])
+    cost = cost_row(store, ISSUE, "claude-native")
+    assert cost["output_tokens"] is None
+    assert "not derivable" in str(cost["output_tokens_reason"])
+    assert cost["cost"] is None
+    assert "not derivable" in str(cost["cost_reason"])
+
+
+def test_an_unparseable_ledger_row_is_a_row_with_a_reason(world: World) -> None:
+    prune_export(world, ZAI_DISPATCH, {})
+    write_ledger_row(world.dispatch_root / ZAI_DISPATCH, {}, body="{not json")
+    store = rebuild_world(world)
+    row = next(row for row in store["dispatches"] if row["dispatch_id"] == ZAI_DISPATCH)
+    assert row["telemetry_source"] == "ledger_row"
+    assert row["spend_encoding"] is None
+    assert "would not parse" in str(row["spend_encoding_reason"])
+
+
+def test_an_absent_cost_renders_absent_and_an_uncalibrated_one_renders_uncalibrated(
+    world: World,
+) -> None:
+    store = rebuild_world(world)
+    lines = observatory.summary_lines(store, world.store_dir)
+    # OTHER_ISSUE's bare dispatch: a calibrated meter whose spend is absent.
+    assert any(
+        "cost=absent" in line and "meter=claude_five_hour_window_points" in line
+        for line in lines
+        if f"issue={OTHER_ISSUE}" in line
+    )
+    # The z.ai row: a cost that exists as a concept for no calibration.
+    assert any(
+        "cost=uncalibrated" in line
+        for line in lines
+        if f"issue={ISSUE}" in line and "lane=zai" in line
+    )
 
 
 # ------------------------------------------------------------- malformed and coverage

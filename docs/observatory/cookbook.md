@@ -29,5 +29,8 @@ Reading it: the Claude lane's `cost` is five-hour-window points; every other lan
 provider's own counter — the number to read, not a substitute cost.
 
 Before quoting any figure, read its denominator in the rebuild's coverage line: how
-many dispatches were seen, how many carried spend, how many issues landed. A lane
-whose rows rest on three dispatches out of forty is a lane whose cost is a floor.
+many dispatches were seen, how many carried spend, how many were read from a
+materialised row because their export file was pruned (`from_ledger_rows`), how many
+issues landed. A lane whose rows rest on three dispatches out of forty is a lane
+whose cost is a floor, and a lane whose dispatches were pruned is a lane whose
+log-record spend is gone for good.
