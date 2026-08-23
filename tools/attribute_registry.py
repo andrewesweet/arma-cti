@@ -284,7 +284,9 @@ BLOCK_REASONS: Final[dict[str, str]] = {
     "breaker_open": "This project's own quality breaker tripped; it reopens only by a"
     " human's hand, never on a timer.",
     "waiting_reviewer": "Work exchanged and awaiting its reviewer's verdict.",
-    "worktree_occupied": "Another holder owns the worktree; it frees when they land or leave.",
+    "worktree_occupied": "Another holder owns the worktree; it frees when they land or"
+    " leave. Registered ahead of the surface, not emitted by one: `tools/worktree.py`"
+    " refuses with this kind and no seam journals it yet (#484 round 2, finding 2).",
     "wip_limit": "The ruled work-in-progress limit is reached; it clears when something lands.",
     "slot_unavailable": "No regression-tier slot is free; reserved for the tier's"
     " no-slot stop, whose bash seam (ADR-0049) does not yet emit — the value is"

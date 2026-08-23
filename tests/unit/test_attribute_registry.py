@@ -12,7 +12,9 @@ including the journal's `exported` flag.
 
 from __future__ import annotations
 
+import argparse
 import json
+import os
 from typing import TYPE_CHECKING, Any, Final
 
 import pytest
@@ -135,31 +137,79 @@ def test_a_refusal_that_names_no_wait_emits_nothing() -> None:
     assert attribute_registry.block_reason_for(missing) is None
 
 
-def test_a_queue_that_stops_with_candidates_standing_waits_undetermined() -> None:
+def _next_read(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    policy: queue_policy.Policy,
+    candidates: tuple[queue_policy.Candidate, ...],
+) -> tuple[tuple[str, ...], int]:
+    """Drive the queue's `next` seam over staged candidates and return its verdict.
+
+    The seam, not a re-statement of it (#484 round 2, finding 4): `_candidate_read`
+    is where a blocked selection decides its cause and calls `note_wait`, so the
+    assertion below reads the journal the seam wrote rather than re-deriving the
+    branch beside it. `ready_candidates` is staged because the real one reads the
+    tracker live, which would make the arrangement somebody else's issue list.
+    """
+    monkeypatch.setattr(
+        queue_policy,
+        "ready_candidates",
+        lambda: (candidates, None),
+    )
+    args = argparse.Namespace(verb="next", count=1)
+    store = queue_policy.Store(directory=tmp_path)
+    return queue_policy._candidate_read(  # noqa: SLF001 — the seam's own branch is the subject
+        args, store, policy, queue_policy.InFlight((), (), "read")
+    )
+
+
+def _open_policy() -> queue_policy.Policy:
+    return queue_policy.Policy(
+        freeze=queue_policy.Freeze("open", "", ""),
+        wip_limit=queue_policy.WipLimit(3, "", ""),
+        packages=(),
+    )
+
+
+def test_a_queue_that_stops_with_candidates_standing_journals_undetermined(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """`no_ready_issue` over standing candidates: per-candidate causes, no single value.
 
-    The drops are known one by one and heterogeneous in kind, so picking any
-    one of the eight would be the guess `undetermined` exists to refuse. The
-    freeze is deliberately open here: a frozen queue refuses as `dispatch_frozen`
-    and names its cause, which is the other test's subject, not this one's.
+    The drops are known one by one and heterogeneous in kind, so picking any one of
+    the eight would be the guess `undetermined` exists to refuse — and the decision
+    is the seam's own, read back from the journal it wrote rather than re-stated
+    here. The freeze is deliberately open: a frozen queue names its cause, which is
+    the next test's subject, not this one's.
     """
     blocked_a = queue_policy.Candidate(601, "waiting on another issue", "Blocked-by: #600")
     blocked_b = queue_policy.Candidate(602, "waiting on another issue", "Blocked-by: #601")
-    selection = queue_policy.select(
-        queue_policy.Policy(
-            freeze=queue_policy.Freeze("open", "", ""),
-            wip_limit=queue_policy.WipLimit(3, "", ""),
-            packages=(),
-        ),
-        (blocked_a, blocked_b),
-        queue_policy.InFlight((), (), ""),
-        1,
+    lines, code = _next_read(tmp_path, monkeypatch, _open_policy(), (blocked_a, blocked_b))
+    assert code != 0
+    assert any("no_ready_issue" in line for line in lines)
+    (row,) = journal_rows(tmp_path / "waits.jsonl")
+    assert row["event"] == "cti.wait.blocked"
+    assert row["attributes"]["cti.wait.block_reason"] == "undetermined"
+    assert row["attributes"]["cti.wait.surface"] == "queue"
+    assert row["attributes"]["cti.wait.refusal"] == "no_ready_issue"
+
+
+def test_a_frozen_queue_journals_the_human_it_waits_on(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The queue seam's named cause: a freeze is a wait on the human's own hand."""
+    standing = (queue_policy.Candidate(601, "anything", ""),)
+    frozen = queue_policy.Policy(
+        freeze=queue_policy.Freeze("frozen", "", "a ruling"),
+        wip_limit=queue_policy.WipLimit(3, "", ""),
+        packages=(),
     )
-    assert selection.refusal is not None
-    reason = attribute_registry.block_reason_for(selection.refusal)
-    if reason is None and (blocked_a, blocked_b) and not selection.chosen:
-        reason = attribute_registry.UNDETERMINED
-    assert reason == "undetermined"
+    lines, code = _next_read(tmp_path, monkeypatch, frozen, standing)
+    assert code != 0
+    assert any("dispatch_frozen" in line for line in lines)
+    (row,) = journal_rows(tmp_path / "waits.jsonl")
+    assert row["attributes"]["cti.wait.block_reason"] == "waiting_human"
+    assert row["attributes"]["cti.wait.refusal"] == "dispatch_frozen"
 
 
 def test_an_empty_ready_queue_is_not_a_wait() -> None:
@@ -177,6 +227,40 @@ def test_an_empty_ready_queue_is_not_a_wait() -> None:
     assert selection.refusal is not None
     reason = attribute_registry.block_reason_for(selection.refusal)
     assert reason is None, "no candidates stood, so no wait is recorded"
+
+
+# --------------------------------------------------------------- hermeticity
+
+
+def test_the_suite_resolves_every_default_emission_to_the_dead_port() -> None:
+    """No emission this suite makes can reach the box's real collector (#484 round 2).
+
+    `conftest` forces `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`, which is the structural
+    closure: an emission that forgot to point anywhere exported for real while the
+    collector was up, and did — wait records for live issues in the JSONL
+    `just ledger-sync` materialises. This pins the line's presence, so removing it
+    reddens the suite on any box, including one where nothing listens on 4318 and
+    the leak would otherwise hide.
+    """
+    assert os.environ.get("OTEL_EXPORTER_OTLP_LOGS_ENDPOINT") == DEAD_ENDPOINT
+    assert otel_event.endpoint_from_environment() == DEAD_ENDPOINT
+
+
+def test_an_emission_with_no_endpoint_named_is_refused_not_exported(tmp_path: Path) -> None:
+    """The leak's own shape, run through the fix: unset endpoint, live collector, no write.
+
+    On this box the collector is up, so before the fix this returned `True` and the
+    record reached `http://127.0.0.1:4318`; after it the resolution lands on the dead
+    port and the journal carries the refusal as the export's outcome.
+    """
+    exported = attribute_registry.emit_wait(
+        attribute_registry.wait_event("wip_limit", "queue", NOW, refusal="wip_reached"),
+        journal=tmp_path / "waits.jsonl",
+    )
+    assert exported is False
+    (row,) = journal_rows(tmp_path / "waits.jsonl")
+    assert row["exported"] is False
+    assert row["export_detail"].startswith("unreachable:"), row["export_detail"]
 
 
 # --------------------------------------------------------- reading the journal
