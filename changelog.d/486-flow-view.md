@@ -17,6 +17,10 @@
   the terminal residue without a failure class, the boundary #489's recorded terminal
   state will widen. The dispatches table gains the columns the derivation reads
   (`started_at`, `end_state_class`, `gate_outcome`, each null with its reason), the
-  store's schema is now `cti.observatory/2`, and the cookbook's flow entry — lead
+  store's schema is now `cti.observatory/2` — and the schema is read, not just
+  written: a store of any other version refuses by name at open (`schema_mismatch`,
+  naming the version found and the version needed) rather than raising on a table
+  that version never had. On an empty landed sample the view states `items` as 0
+  with null percentiles, and the cookbook's flow entry — lead
   time, throughput per month, and open-item age against the band — runs against the
   shipped store in a test.

@@ -136,7 +136,9 @@ work item is per issue and never per lane.
 **The clock's two points are named, not implied.** It starts at the issue's earliest
 dispatch start — a planner dispatch that preceded the implementer counts, because the
 clock measures the work system, not one seat — and it ends at the landing commit's
-committer date, the moment the work became visible on `origin/main`.
+committer date, the moment the work became visible on `origin/main`. Both picks
+compare instants, never ISO strings, so timestamps carrying different UTC offsets
+order by time.
 
 **`state` is derived from the dispatch rows' own `gate_outcome`, in preference order.**
 `landed` where any dispatch of the issue landed; else `open` while any dispatch is
@@ -165,6 +167,11 @@ without a custom function. The tests pin the view's values on a sample where
 nearest-rank and linear interpolation disagree at every percentile, so a change of
 method is a red rather than a silent drift.
 
+**An empty landed sample states itself.** The view's one row then carries null
+percentiles — no member exists to read — with `items` `0`, because an empty sample is
+a stated fact and not an unknown size: a null there would read as a sample the view
+could not count.
+
 ## Querying
 
 The store is SQL-queryable through the standard library:
@@ -172,6 +179,12 @@ The store is SQL-queryable through the standard library:
 ```
 just observatory query "SELECT * FROM issue_cost WHERE landed = 1"
 ```
+
+**A store of another schema refuses at open.** The `schema` the store carries is read
+before any table: a store naming any other version — a `/1` store predates
+`work_items` — refuses by name, `schema_mismatch`, naming the version found and the
+version needed, rather than raising on a table that version never had. The remedy is
+the store's own first rule: rebuild it.
 
 The tables and columns above are the SQL schema verbatim. The cookbook
 (`docs/observatory/cookbook.md`) carries the queries this project has already asked,

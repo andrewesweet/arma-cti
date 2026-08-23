@@ -242,6 +242,9 @@ STATE_STOPPED: Final = "stopped"
 # slot: percentiles and the sample size, no mean, so a skewed distribution cannot be
 # summarised by a number above its own 70th percentile. The tests pin the column list
 # and pin the values on a sample where nearest-rank and linear interpolation disagree.
+# An empty landed sample states itself: the percentiles are null — no member exists to
+# read — while `items` is 0, because an empty sample is a fact the view states rather
+# than an absence; a null sample size would read as an unknown one.
 FLOW_LEAD_TIME_VIEW: Final = """
 CREATE VIEW flow_lead_time AS
 WITH ranked AS (
@@ -255,7 +258,7 @@ SELECT MAX(CASE WHEN r = (n * 50 + 99) / 100 THEN v END) AS p50_seconds,
        MAX(CASE WHEN r = (n * 70 + 99) / 100 THEN v END) AS p70_seconds,
        MAX(CASE WHEN r = (n * 85 + 99) / 100 THEN v END) AS p85_seconds,
        MAX(CASE WHEN r = (n * 95 + 99) / 100 THEN v END) AS p95_seconds,
-       MAX(n) AS items
+       COALESCE(MAX(n), 0) AS items
 FROM ranked
 """
 
@@ -697,11 +700,15 @@ def _work_item_row(issue: int, rows: Sequence[Mapping[str, Any]], repo: Path) ->
     newest commit any dispatch of the issue landed. Time is the one quantity that is
     commensurable across lanes, so this is a per-issue row and never a per-lane one.
     """
-    starts = sorted(str(row["started_at"]) for row in rows if row["started_at"])
+    # Both endpoints pick by instant, never by ISO string: a mixed-offset pair —
+    # `13:00+02:00` beside `12:30+00:00` — orders one way as text and the other as
+    # time. Latent today, every record carries `+00:00`; kept because a comparison
+    # correct only until the data varies is the kind this project keeps finding.
+    starts = [str(row["started_at"]) for row in rows if row["started_at"]]
     shas = {str(row["landed_sha"]) for row in rows if row["landed_sha"]}
-    ends = sorted(filter(None, (_commit_date(repo, sha) for sha in shas)))
-    clock_start = starts[0] if starts else None
-    clock_end = ends[-1] if ends else None
+    ends = list(filter(None, (_commit_date(repo, sha) for sha in shas)))
+    clock_start = min(starts, key=datetime.fromisoformat) if starts else None
+    clock_end = max(ends, key=datetime.fromisoformat) if ends else None
     lead_time: int | None = None
     if clock_start is not None and clock_end is not None:
         lead_time = int(
@@ -951,9 +958,22 @@ def connect(store_dir: Path) -> sqlite3.Connection:
     The tables are the store's own tables with their own column names, so the
     cookbook's queries are queries against the store and not against a translation of
     it. Nulls keep their reason siblings, because SQL is where an absence is most
-    easily misread as a zero.
+    easily misread as a zero. A store whose `schema` names another version refuses by
+    name rather than being read until it breaks, because every other failure this
+    module can produce is a refusal too.
     """
     document = json.loads((store_dir / STORE_NAME).read_text(encoding="utf-8"))
+    found = document.get("schema") if isinstance(document, dict) else None
+    if found != SCHEMA:
+        # A `/1` store predates `work_items`, and the KeyError its load would raise on
+        # that absent table is a traceback where a named refusal belongs.
+        raise _RefusedError(
+            Refusal(
+                "schema_mismatch",
+                (f"found={found}", f"needed={SCHEMA}"),
+                "Rebuild the store: `just observatory rebuild` over the same sources.",
+            )
+        )
     connection = sqlite3.connect(":memory:")
     for table, columns in (
         ("dispatches", DISPATCH_COLUMNS),
@@ -1014,6 +1034,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             return EXIT_REFUSED
         try:
             rows = query(args.store_dir, " ".join(args.sql))
+        except _RefusedError as refused:
+            for line in refused.refusal.lines():
+                print(line, file=sys.stderr)  # noqa: T201
+            return EXIT_REFUSED
         except (OSError, ValueError, sqlite3.Error) as error:
             print(f"refused=query_failed error={error}")  # noqa: T201
             return EXIT_REFUSED

@@ -49,7 +49,10 @@ import os
 import re
 import subprocess
 from pathlib import Path
-from typing import Any, NamedTuple
+from typing import TYPE_CHECKING, Any, NamedTuple
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 import pytest
 from conftest import REPO, load_tool
@@ -254,11 +257,29 @@ def stage_record(
     return record
 
 
-def write_ledger_row(record: Path, usage: dict[str, int], *, body: str | None = None) -> None:
+# The `end_state` block every materialised row carries — `ledger.py` writes it
+# unconditionally — is where a pruned dispatch's typing is derived from, so the
+# fixture writes the block a real row carries rather than omitting it.
+PRUNED_END_STATE: dict[str, Any] = {
+    "class": "ok",
+    "reason": "the run ended and its records carry no refusal or quota failure",
+    "evidence": [],
+}
+
+
+def write_ledger_row(
+    record: Path,
+    usage: dict[str, int],
+    *,
+    body: str | None = None,
+    end_state: Mapping[str, Any] | None = PRUNED_END_STATE,
+) -> None:
     """Lay down the `ledger.json` a sync leaves, or the exact bytes `body` names.
 
-    The usage block is the only part the fallback reads; the rest is the row's own
-    shape, abbreviated to what a reader could plausibly reach for.
+    The `end_state` block is written by default exactly as `ledger` writes it, because
+    the post-prune read derives a dispatch's typing from it; pass `None` to reach the
+    row-without-block read. The rest is the row's own shape, abbreviated to what a
+    reader could plausibly reach for.
     """
     document = (
         body
@@ -270,6 +291,7 @@ def write_ledger_row(record: Path, usage: dict[str, int], *, body: str | None = 
                 "source": {"kind": "ledger_export", "path": "/gone", "degraded": False},
                 "records": {"total": 3, "metrics": 3, "logs": 0, "spans": 0},
                 "usage": usage,
+                "end_state": end_state,
             }
         )
     )
@@ -674,6 +696,34 @@ def test_an_unparseable_ledger_row_is_a_row_with_a_reason(world: World) -> None:
     assert "would not parse" in str(row["spend_encoding_reason"])
 
 
+def test_a_pruned_dispatch_s_typing_is_derived_from_the_row_it_left(world: World) -> None:
+    # The records the typing would have read are gone; the row's own `end_state` block
+    # — which every materialised row carries — is what answers, so the abandoned
+    # typing survives its export's prune rather than degrading to a null.
+    write_ledger_row(
+        world.dispatch_root / FLOW_D,
+        {},
+        end_state={
+            "class": "provider_refused",
+            "reason": "the provider refused the request",
+            "evidence": [],
+        },
+    )
+    store = rebuild_world(world)
+    row = next(row for row in store["dispatches"] if row["dispatch_id"] == FLOW_D)
+    assert row["telemetry_source"] == "ledger_row"
+    assert row["end_state_class"] == "provider_refused"
+    assert row["gate_outcome"] == "not_a_result"
+    assert work_item(store, ABANDONED_ISSUE)["state"] == "abandoned"
+    # A row without the block is a null with its reason, never a guessed class.
+    write_ledger_row(world.dispatch_root / FLOW_D, {}, end_state=None)
+    store = rebuild_world(world)
+    row = next(row for row in store["dispatches"] if row["dispatch_id"] == FLOW_D)
+    assert row["end_state_class"] is None
+    assert row["gate_outcome"] is None
+    assert row["gate_outcome_reason"]
+
+
 def test_an_absent_cost_renders_absent_and_an_uncalibrated_one_renders_uncalibrated(
     world: World,
 ) -> None:
@@ -831,6 +881,44 @@ def test_an_open_item_s_age_reads_against_the_historical_band(world: World) -> N
     assert rows == ((OTHER_ISSUE, 86400, 7200, 10800, 41400),)
 
 
+def test_the_clock_s_endpoints_pick_by_instant_never_by_iso_string(world: World) -> None:
+    # `13:00+02:00` is 11:00Z — earlier than `12:00+00:00` as an instant and later
+    # than it as a string. Both the pick and the subtraction must go by time: under a
+    # string sort this item's clock would start at 12:00Z and read 3600.
+    extra = stage_record(world.dispatch_root, "d-20260805-120000-flow06", issue=LANDED_ONE_HOUR)
+    (extra / "result.json").write_text(
+        json.dumps(
+            {
+                "dispatch_id": "d-20260805-120000-flow06",
+                "status": "child_finished",
+                "returncode": 0,
+                "started_at": "2026-08-05T13:00:00+02:00",
+                "ended_at": "2026-08-05T13:30:00+02:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+    store = rebuild_world(world)
+    item = work_item(store, LANDED_ONE_HOUR)
+    assert item["clock_start"] == "2026-08-05T13:00:00+02:00"
+    assert item["lead_time_seconds"] == 7200
+
+
+def test_an_empty_landed_sample_states_itself_as_zero_items(tmp_path: Path) -> None:
+    # No dispatches at all is the empty store's own arrangement: the percentiles are
+    # null — no member exists to read — while `items` is 0, an empty sample stated
+    # rather than rendered as an unknown size.
+    dispatch_root = tmp_path / "dispatches"
+    export_dir = tmp_path / "export"
+    store_dir = tmp_path / "store"
+    dispatch_root.mkdir()
+    export_dir.mkdir()
+    observatory.rebuild(dispatch_root, export_dir, tmp_path, store_dir)
+    assert observatory.query(store_dir, "SELECT * FROM flow_lead_time") == (
+        (None, None, None, None, 0),
+    )
+
+
 # ------------------------------------------------------------- determinism, refusal
 
 
@@ -884,6 +972,28 @@ def test_an_unreadable_dispatch_root_refuses_by_name(
     assert code == 1
     assert "refused=dispatch_root_unreadable" in capsys.readouterr().err
     assert not (world.store_dir / "store.json").exists()
+
+
+def test_a_store_of_another_schema_refuses_by_name(
+    world: World, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # The shape a `/1` store actually has: no `work_items`, because that table is what
+    # `/2` added. Reading it as SQL has to refuse by name — the schema it carries, the
+    # schema needed — not die on the absent table's KeyError.
+    rebuild_world(world)
+    store_path = world.store_dir / "store.json"
+    document = json.loads(store_path.read_text(encoding="utf-8"))
+    del document["work_items"]
+    document["schema"] = "cti.observatory/1"
+    store_path.write_text(json.dumps(document), encoding="utf-8")
+    code = observatory.main(
+        ["query", "SELECT * FROM flow_lead_time", "--store-dir", str(world.store_dir)]
+    )
+    assert code == 1
+    printed = capsys.readouterr().err
+    assert "refused=schema_mismatch" in printed
+    assert "found=cti.observatory/1" in printed
+    assert f"needed={observatory.SCHEMA}" in printed
 
 
 # --------------------------------------------------------------- the store's home
