@@ -106,6 +106,7 @@ def test_an_exact_tool_owned_approval_clears_the_gate(tmp_path: Path) -> None:
     assert report.exit_code == 0
     assert report.lines[0] == "gated_paths=ok changed=1 authorization=recorded"
     assert any(f"content_id={content_id}" in line for line in report.lines)
+    assert "verified=path_scan,record_shape,change_binding" in report.lines
 
 
 def test_an_approval_written_before_commit_still_binds_after_commit(tmp_path: Path) -> None:
@@ -419,6 +420,7 @@ def test_a_delegated_adr_travels_with_an_approved_path_without_covering_it(
     assert report.lines[0] == "gated_paths=ok changed=2 authorization=recorded"
     assert any(f"content_id={content_id}" in line for line in report.lines)
     assert "delegated_record=docs/adr/9999-delegated.md" in report.lines
+    assert "verified=path_scan,record_shape,change_binding,delegated_marker" in report.lines
     assert gated_paths.LIMIT_LINE in report.lines
 
 

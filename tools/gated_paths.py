@@ -927,12 +927,15 @@ def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read a
                     " A session must not run it."
                 ),
             )
+    verified = "verified=path_scan,record_shape,change_binding"
+    if delegated:
+        verified += ",delegated_marker"
     return Report(
         (
             f"gated_paths=ok changed={len(gated) + len(delegated)} authorization=recorded",
             *approved,
             *covered,
-            "verified=path_scan,record_shape,change_binding",
+            verified,
             LIMIT_LINE,
             SAME_USER_LIMIT,
         ),
