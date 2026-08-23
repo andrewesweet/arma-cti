@@ -1,30 +1,28 @@
-"""The attribute registry, its check leg, and `block_reason` on waits (#484).
+"""The attribute registry and `block_reason` on waits (#484).
 
 Every assertion here reads what a reader would find — the journal line, the
-rendered OTLP document, the checker's findings over real sources — never the
-internals of a helper, which is #480's Testing Decisions line: a test that a
-helper produced a particular attribute list passes while the posted body is
-wrong.
+rendered OTLP document — never the internals of a helper, which is #480's
+Testing Decisions line: a test that a helper produced a particular attribute
+list passes while the posted body is wrong. The check leg's own tests, over
+real sources, live in `tests/unit/test_check_attributes.py`.
 
 Prior art: `tests/unit/test_breaker.py` covers one family's emission end to end
-including the journal's `exported` flag; `tests/unit/test_routing_policy.py`'s
-`just_check_tools` covers a registry-versus-reality derivation.
+including the journal's `exported` flag.
 """
 
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
 import pytest
 from conftest import load_tool
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from types import ModuleType
 
 attribute_registry: ModuleType = load_tool("attribute_registry")
-check_attributes: ModuleType = load_tool("check_attributes")
 dispatch: ModuleType = load_tool("dispatch")
 otel_event: ModuleType = load_tool("otel_event")
 queue_policy: ModuleType = load_tool("queue_policy")
@@ -34,40 +32,6 @@ NOW: Final = 1_772_000_000.0
 
 
 # ------------------------------------------------------------------- the registry
-
-
-def test_the_registry_covers_every_name_the_tracked_python_carries() -> None:
-    """The leg's own assertion, run against the real tree rather than a sample.
-
-    This is the test that makes the registry an authority rather than a fourth
-    copy: the checker derives its subject set from `git ls-files`, so a name
-    hand-typed into any tracked module reddens here before it reddens the leg.
-    """
-    root = Path(__file__).resolve().parent.parent.parent
-    sources = check_attributes.tracked_sources(root)
-    assert "tools/attribute_registry.py" in sources, "the derivation reads the real tree"
-    assert not check_attributes.check(sources), "every emitted name is a registered one"
-
-
-def test_an_attribute_emitted_but_absent_from_the_registry_reds() -> None:
-    """The negative criterion: the leg catches a hand-typed name, all three forms.
-
-    The unregistered names are assembled from fragments rather than spelled,
-    because this module is itself a tracked source the leg scans — a literal
-    fake name here would redden the very coverage test above, which is the leg
-    working, just on its own fixture.
-    """
-    unregistered = f"cti.{'unregistered'}.attribute"
-    nowhere = f"cti.{'nowhere'}."
-
-    exact = check_attributes.check({"tools/example.py": f'X = "{unregistered}"\n'})
-    assert [(f.name, f.form) for f in exact] == [(unregistered, "exact")]
-
-    rendered = check_attributes.check({"tools/example.py": 'X = f"cti.issue={n}"\n'})
-    assert rendered == [], "a name the registry carries, in the key=value form, stays green"
-
-    prefix = check_attributes.check({"tools/example.py": f'X = f"{nowhere}{{k}}"\n'})
-    assert [(f.name, f.form) for f in prefix] == [(nowhere.rstrip("."), "prefix")]
 
 
 def test_the_block_reason_vocabulary_is_the_nine_and_nothing_else() -> None:
