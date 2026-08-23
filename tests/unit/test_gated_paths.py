@@ -364,13 +364,62 @@ def test_a_changed_delegated_adr_keeps_adr_0013s_authorisation_route(tmp_path: P
         "# Delegated\n\nDelegated-decision: yes\nDate: 2026-08-22\n",
         encoding="utf-8",
     )
-    (repo / "AGENTS.md").write_text("delegated instructions\n", encoding="utf-8")
 
     report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
 
     assert report.exit_code == 0
-    assert report.lines[0] == "gated_paths=ok changed=2 authorization=delegated_decision"
+    assert report.lines[0] == "gated_paths=ok changed=1 authorization=delegated_decision"
     assert "delegated_record=docs/adr/9999-delegated.md" in report.lines
+    assert gated_paths.LIMIT_LINE in report.lines
+
+
+def test_a_delegated_adr_does_not_authorise_another_gated_path_in_the_same_diff(
+    tmp_path: Path,
+) -> None:
+    repo = repository(tmp_path)
+    adr = repo / "docs" / "adr" / "9999-delegated.md"
+    adr.parent.mkdir(parents=True)
+    adr.write_text(
+        "# Delegated\n\nDelegated-decision: yes\nDate: 2026-08-22\n",
+        encoding="utf-8",
+    )
+    (repo / "AGENTS.md").write_text("delegated instructions\n", encoding="utf-8")
+    content_id = gated_paths.content_id_of(repo, "AGENTS.md")
+
+    report = gated_paths.check(repo, tmp_path / "approvals", issue=ISSUE)
+
+    assert report.exit_code == 1
+    assert report.lines[0] == "gated_paths=refused"
+    assert "refusal=approval_missing" in report.lines
+    assert "path=AGENTS.md" in report.lines
+    assert f"content_id={content_id}" in report.lines
+    assert "delegated_record=docs/adr/9999-delegated.md" in report.lines
+    command = f"just gated-paths approve --issue {ISSUE} --path AGENTS.md --content-id {content_id}"
+    assert any(line.startswith("action=") and command in line for line in report.lines)
+    assert gated_paths.LIMIT_LINE in report.lines
+
+
+def test_a_delegated_adr_travels_with_an_approved_path_without_covering_it(
+    tmp_path: Path,
+) -> None:
+    repo = repository(tmp_path)
+    store = tmp_path / "approvals"
+    adr = repo / "docs" / "adr" / "9999-delegated.md"
+    adr.parent.mkdir(parents=True)
+    adr.write_text(
+        "# Delegated\n\nDelegated-decision: yes\nDate: 2026-08-22\n",
+        encoding="utf-8",
+    )
+    (repo / "AGENTS.md").write_text("approved instructions\n", encoding="utf-8")
+    content_id = approve(repo, store)
+
+    report = gated_paths.check(repo, store, issue=ISSUE)
+
+    assert report.exit_code == 0
+    assert report.lines[0] == "gated_paths=ok changed=2 authorization=recorded"
+    assert any(f"content_id={content_id}" in line for line in report.lines)
+    assert "delegated_record=docs/adr/9999-delegated.md" in report.lines
+    assert gated_paths.LIMIT_LINE in report.lines
 
 
 def test_a_body_marker_does_not_authorise_a_gated_edit(tmp_path: Path) -> None:

@@ -19,7 +19,9 @@ identical hunk moved elsewhere reuse approval.  Another branch-side hunk or an
 altered approved hunk cannot carry.  Binary and non-regular diffs need fresh
 approval after a same-path baseline change.  A changed ADR carrying ADR-0013's
 exact ``Delegated-decision: yes`` line in the field block parsed by
-``check_adr_form.py`` remains the standing-authorisation route AGENTS.md defines.
+``check_adr_form.py`` remains the standing-authorisation route AGENTS.md defines,
+for that record alone (#548): every other gated path in the same diff still needs
+its own approval or its own marker.
 
 The approval command refuses a dispatched session.  Like #398's interactive
 authorship record, that is a mechanical floor rather than an identity proof: a
@@ -812,20 +814,30 @@ def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read a
             0,
         )
 
+    # ADR-0013's marker authorises the record that carries it, not the paths
+    # travelling beside it (#548): drop the delegated records from the gated set
+    # and hold every remaining path to its own approval or its own marker.
     delegated = delegated_decisions(root, paths)
-    if delegated:
+    covered = tuple(f"delegated_record={path}" for path in delegated)
+    gated = tuple(path for path in gated if path not in delegated)
+    if not gated:
         return Report(
             (
-                f"gated_paths=ok changed={len(gated)} authorization=delegated_decision",
-                *(f"delegated_record={path}" for path in delegated),
+                f"gated_paths=ok changed={len(delegated)} authorization=delegated_decision",
+                *covered,
                 "verified=path_scan,delegated_marker",
                 LIMIT_LINE,
                 SAME_USER_LIMIT,
             ),
             0,
         )
+
+    def refused(kind: str, found: Sequence[str], action: str) -> Report:
+        """Refuse while still naming the delegated records the diff did cover."""
+        return _refused(kind, (*covered, *found), action)
+
     if issue is None:
-        return _refused(
+        return refused(
             "approval_issue_unknown",
             tuple(f"path={path}" for path in gated),
             (
@@ -839,7 +851,7 @@ def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read a
         try:
             binding = binding_of(root, path)
         except GitError as failure:
-            return _refused(
+            return refused(
                 GATED_CONTENT_UNREADABLE,
                 (
                     f"path={path}",
@@ -858,7 +870,7 @@ def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read a
             try:
                 read_approval(record, expected)
             except ApprovalError as refusal:
-                return _refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
+                return refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
             approved.append(
                 f"approval=recorded issue={issue} path={path} content_id={content_id}"
                 f" record={record}"
@@ -869,14 +881,14 @@ def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read a
         try:
             stored = _stored_approvals(approvals, issue)
         except ApprovalError as refusal:
-            return _refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
+            return refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
         for prior_path, prior in stored:
             if prior.issue != issue or prior.path != path or prior.change_id != binding.change_id:
                 continue
             try:
                 carries, reason = _approval_carries(root, path, prior, binding)
             except GitError as failure:
-                return _refused(
+                return refused(
                     GATED_CONTENT_UNREADABLE,
                     (
                         f"path={path}",
@@ -887,7 +899,7 @@ def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read a
                     "Restore readable approval and baseline history; an unproven replay fails.",
                 )
             except ApprovalError as refusal:
-                return _refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
+                return refused(refusal.kind, (f"path={path}", refusal.detail), refusal.action)
             if carries:
                 approved.append(
                     f"approval=carried issue={issue} path={path}"
@@ -900,7 +912,7 @@ def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read a
                 "just gated-paths approve"
                 f" --issue {issue} --path {shlex.quote(path)} --content-id {content_id}"
             )
-            return _refused(
+            return refused(
                 "approval_missing",
                 (
                     f"issue={issue}",
@@ -917,8 +929,9 @@ def check(  # noqa: C901, PLR0911, PLR0912 — one report per fail-closed read a
             )
     return Report(
         (
-            f"gated_paths=ok changed={len(gated)} authorization=recorded",
+            f"gated_paths=ok changed={len(gated) + len(delegated)} authorization=recorded",
             *approved,
+            *covered,
             "verified=path_scan,record_shape,change_binding",
             LIMIT_LINE,
             SAME_USER_LIMIT,

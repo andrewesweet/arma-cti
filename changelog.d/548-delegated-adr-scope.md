@@ -1,0 +1,3 @@
+### Fixed
+
+- `just check`'s gated-path leg scopes ADR-0013's standing authorisation to the record that carries it (#548). A changed ADR with an exact `Delegated-decision: yes` line in the field block parsed by `check_adr_form.py` authorises that ADR alone; previously one such ADR in a diff returned `gated_paths=ok` for every other gated path travelling with it. A diff carrying a delegated ADR and another gated path now refuses on that other path, naming it and its own `content_id` with its own `approve` command, and `delegated_record=` lines still name what the marker did cover. A diff of only delegated ADRs passes exactly as before, and an approval-covered path still travels beside a delegated ADR under `authorization=recorded`.
