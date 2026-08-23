@@ -102,7 +102,19 @@ system's overhead, an understatement in the direction that flatters the system. 
 boundary is a column on every row of both tables and `orchestrator=absent` sits on the
 rebuild's `sessions` line; quoting a session figure without its boundary is the trap.
 
-Three more in the same source. The rollover is **not serialised** (#464's review): two
+Four more in the same source. The payload's token keys are **gauges, not counters**:
+every one lives under `context_window` and measures the current window — across the
+live spool the output gauge falls 2,678 times and rises 2,145 times between
+consecutive renders of one session — so a reader that deltas one produces routinely
+negative noise and presents it in the meter the direct half fills with genuinely
+billed tokens. The store reads none of them; `session_period.output_tokens` and both
+`period_overhead` window-point columns are absences whose reason names the gauge. Its
+consequence: **the fully-loaded figure is absent, not small** — the overhead half
+converts only to list-price dollars, the direct half is window points, and dollars do
+not commensurate across lanes either, so `fully_loaded_window_points` is null with
+the reason naming that incommensurability; a reader who wants "direct plus overhead"
+must quote two numbers in two meters, never one. The rollover is **not serialised**
+(#464's review): two
 simultaneous rolls can drop the oldest generation one roll early, nothing in the
 surviving files records it, and a period whose lines were lost reads short with no
 signal — which is why no period anywhere in the store derives from a generation

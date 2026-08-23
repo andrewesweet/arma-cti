@@ -59,7 +59,7 @@ silence. Both render as an absence with a reason, never as zero.
 | `review_loops_unreadable` | The issues whose `loop.json` exists but would not parse, named |
 | `session_renders` | Status-line renders the session view read — timestamped, with a session id |
 | `session_renders_untimestamped` | Renders the view could not place in a period — pre-#488 bare lines — counted, never summed |
-| `session_renders_without_session_id` | Renders carrying no session id, counted and never attributed |
+| `session_renders_without_session_id` | Timestamped renders carrying no session id, counted and never attributed — an untimestamped line without one counts as untimestamped, never here |
 | `session_spend_sessions` | Distinct sessions the view holds |
 | `session_spend_periods` | Distinct months those sessions span |
 | `malformed_lines` | Total unparseable lines, export and spool together, across all files |
@@ -282,10 +282,11 @@ no power calculation, base rate or effect size stands behind it.
 ## The `session_period` table
 
 One row per (session, month) (#488). The source is the status-line spool — the live
-file and its rolled generations — and every figure on the row is a **period delta** of
-the payload's session-lifetime running totals: a period's consumption is the difference
-between the cumulative totals at consecutive period ends, and a session's first
-timestamped period carries its total from the session's start.
+file and its rolled generations — and every derivable figure on the row is a
+**period delta** of the payload's session-lifetime running totals: a period's
+consumption is the difference between the cumulative totals at consecutive period
+ends, and a session's first timestamped period carries its total from the session's
+start. The output-token column is the one figure no row can carry — see below.
 
 **The boundary is a column, never a footnote.** The spool is a record of interactive
 sessions: the tap fires on a status-line render, the orchestrator seat renders none,
@@ -305,20 +306,32 @@ boundary is the human's interactive spend presented as the overhead number.
 | `duration_ms` | + `duration_ms_reason` | The period's delta of `cost.total_duration_ms` |
 | `lines_added` | + `lines_added_reason` | The period's delta of `cost.total_lines_added` |
 | `lines_removed` | + `lines_removed_reason` | The period's delta of `cost.total_lines_removed` |
-| `output_tokens` | + `output_tokens_reason` | The period's delta of the payload's output-token total, where it carries one |
+| `output_tokens` | + `output_tokens_reason` | Always null: the payload's token keys are context-window gauges, not session-lifetime counters, so no per-period output total exists — the reason says so, never a gauge delta |
 | `boundary` | never | The marker naming what this figure omits and why |
 
 Two absences carry two different reasons: a counter no render of the session ever
 carried is a ceiling of the source, and a counter present at one end of a period
 boundary and missing at the other is a difference that cannot be taken. The counters
-should be monotone; a delta that is not passes through raw, never clamped.
+should be monotone; a delta that is not passes through raw, never clamped. The
+output-token column is a third absence, and the reason it always carries names the
+mechanism: every token key in the payload (`context_window.total_output_tokens`
+among them) gauges the current context window — the gauge falls and rises between
+renders of one session — so a delta of it is noise, and the column is absent rather
+than noise-shaped.
 
 ## The `period_overhead` table
 
 One row per period with session overhead or a landing (#488). The fully-loaded figure
-is **direct plus overhead over the period's landings**, a period aggregate, offered in
-the one meter both halves can share — the Claude lane's five-hour-window points — and
-carrying the same `boundary` warning as the overhead it derives from, extended with the
+is **direct plus overhead over the period's landings**, a period aggregate — and it is
+**absent on every row, with the reason naming why**: the payload carries no
+session-lifetime output-token counter (its token keys are context-window gauges), so
+the overhead half converts to no meter the direct half shares. The direct half is the
+Claude lane's five-hour-window points; the overhead half's sound figures are
+list-price dollars; and dollars do not commensurate across lanes either, since
+non-Claude lanes report `cost=uncalibrated`. A number that adds points to dollars is a
+number in no meter at all, so the column is null with that reason rather than zero —
+absent is a fact about the source, not a small value. The row still carries the same
+`boundary` warning as the overhead it derives from, extended with the
 direct half's own scope: it covers the Claude lane alone, and every other lane's direct
 spend stays in its own unconverted meter outside the figure.
 
@@ -335,13 +348,13 @@ rule, the way `flow_lead_time`'s column list is the structural form of "no mean"
 | `renders` | never | Their renders |
 | `sessions_with_cost` | never | Of those, how many carried a cost figure — partial reads stay visible |
 | `cost_usd_list_price` | + `cost_usd_list_price_reason` | The period's overhead in list-price dollars — never a spend |
-| `sessions_with_output` | never | Of those, how many carried an output-token total |
-| `output_tokens` | + `output_tokens_reason` | The period's overhead output tokens, summed over the sessions that carried them |
-| `overhead_window_points` | + `overhead_window_points_reason` | That sum over the calibration's tokens-per-point — the meter the direct half uses |
+| `sessions_with_output` | never | Always 0 — no session can carry a derivable output total, and the constant says so |
+| `output_tokens` | + `output_tokens_reason` | Always null: no session-lifetime output-token counter exists in the payload, only window gauges |
+| `overhead_window_points` | + `overhead_window_points_reason` | Always null, with the same reason — no numerator exists to divide by the calibration's tokens-per-point |
 | `landings` | never | Work items landed in this period, every lane |
 | `direct_landings` | never | Of those, the Claude-lane landings whose cost was derivable |
 | `direct_window_points` | + `direct_window_points_reason` | The Claude lane's direct cost over the period's landings |
-| `fully_loaded_window_points` | + `fully_loaded_window_points_reason` | Direct plus overhead; null names which half is missing, never a sum of what survived |
+| `fully_loaded_window_points` | + `fully_loaded_window_points_reason` | Always null, a period aggregate named but not computed: the halves share no meter, and the reason names the incommensurability — never a sum of what survived |
 | `boundary` | never | The marker, extended with the direct half's lane scope |
 
 **Periods come from timestamps, never from generation boundaries.** The spool's

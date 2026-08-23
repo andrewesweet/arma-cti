@@ -54,12 +54,16 @@ the key's own spread and that its sample limit is an estimate, not a measurement
 **The session view states its boundary in every rendering path, and apportions to no
 issue.** The staged spool carries one session spanning two months with its July render
 in a rolled generation — so the period comes from the timestamp and not the file
-boundary — a second session whose payload never carries a token total, a pre-#488 bare
-line, a render with no session id and a truncated line. The counters are cumulative
-the way the real payload's are, so the per-period figures are pinned as deltas. The
-orchestrator's absence is asserted as a column on every row of both tables and a word
-on the summary line; the fully-loaded figure carries the same boundary as the overhead
-it derives from and names which half is missing where one is; and neither table holds
+boundary — a second session whose payload never carries the duration or lines
+counters, a pre-#488 bare line, a render with no session id and a truncated line. The
+cost counters are cumulative the way the real payload's are, so the per-period
+figures are pinned as deltas; the token keys are staged as the window gauges the live
+spool carries — falling and rising between renders — so a reader that mistakes one
+for a counter is caught, not flattered. The orchestrator's absence is asserted as a
+column on every row of both tables and a word on the summary line; the output-token
+columns are absences whose reason names the gauge; the fully-loaded figure is absent
+with the reason naming the halves' incommensurability, and carries the same boundary
+as the overhead it derives from; and neither table holds
 an issue column, so per-issue overhead is not something the output can express.
 """
 
@@ -361,7 +365,7 @@ def prune_export(world: World, dispatch_id: str, usage: dict[str, int]) -> None:
     write_ledger_row(world.dispatch_root / dispatch_id, usage)
 
 
-def write_render(  # noqa: PLR0913 — the seven parameters are the payload's own counters
+def write_render(  # noqa: PLR0913 — the eight parameters are the payload's own fields
     path: Path,
     ts: str,
     session_id: str,
@@ -370,12 +374,18 @@ def write_render(  # noqa: PLR0913 — the seven parameters are the payload's ow
     duration_ms: float | None = None,
     lines_added: float | None = None,
     lines_removed: float | None = None,
-    output_tokens: float | None = None,
+    window_output_tokens: float | None = None,
+    window_input_tokens: float | None = None,
 ) -> None:
     """Append one #488-envelope render to a spool file the way the tap now leaves one.
 
-    The payload's counters are session-lifetime running totals — what the status line
-    actually sends — so a caller stages consumption by raising them between renders.
+    The payload is the shape the live spool carries: `cost` holds the four
+    session-lifetime running totals, and every token key lives under
+    `context_window` as a gauge of the current window — falling and rising between
+    renders of one session, never a counter. A fixture that models a payload the
+    source does not emit is what let the first round read a numerator that does not
+    exist (#486's F2 raised in this very store), so this one emits no
+    `cost.total_output_tokens` at all.
     """
     cost = {
         key: value
@@ -384,15 +394,23 @@ def write_render(  # noqa: PLR0913 — the seven parameters are the payload's ow
             ("total_duration_ms", duration_ms),
             ("total_lines_added", lines_added),
             ("total_lines_removed", lines_removed),
-            ("total_output_tokens", output_tokens),
         )
         if value is not None
     }
+    context_window = {
+        key: value
+        for key, value in (
+            ("total_output_tokens", window_output_tokens),
+            ("total_input_tokens", window_input_tokens),
+        )
+        if value is not None
+    }
+    payload: dict[str, Any] = {"session_id": session_id, "cost": cost}
+    if context_window:
+        payload["context_window"] = context_window
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as spool:
-        spool.write(
-            json.dumps({"ts": ts, "payload": {"session_id": session_id, "cost": cost}}) + "\n"
-        )
+        spool.write(json.dumps({"ts": ts, "payload": payload}) + "\n")
 
 
 def run_git(*args: str, cwd: Path, at: str = "") -> None:
@@ -557,9 +575,11 @@ def world(tmp_path: Path) -> World:
 
     # The status-line spool: one session spanning two months — with its July render
     # in a rolled generation, so the generation seam and the period boundary visibly
-    # disagree — one session whose payload carries no token total, one pre-#488 bare
-    # line, one render with no session id, and one truncated line. The counters are
-    # cumulative the way the real payload's are.
+    # disagree — one session whose payload carries the window gauges alone, one
+    # pre-#488 bare line, one render with no session id, and one truncated line. The
+    # cost counters are cumulative the way the real payload's are; the window gauges
+    # fall and rise the way the live ones measurably do, so a reader that mistakes
+    # one for a counter is caught by the tests below, not flattered.
     spool = tmp_path / "quota" / "statusline.jsonl"
     write_render(
         spool.parent / "statusline.jsonl.1",
@@ -569,7 +589,8 @@ def world(tmp_path: Path) -> World:
         duration_ms=100_000,
         lines_added=50,
         lines_removed=10,
-        output_tokens=1_000,
+        window_output_tokens=5_000,
+        window_input_tokens=90_000,
     )
     write_render(
         spool,
@@ -579,7 +600,8 @@ def world(tmp_path: Path) -> World:
         duration_ms=200_000,
         lines_added=80,
         lines_removed=20,
-        output_tokens=2_000,
+        window_output_tokens=6_000,
+        window_input_tokens=60_000,
     )
     write_render(
         spool,
@@ -589,16 +611,16 @@ def world(tmp_path: Path) -> World:
         duration_ms=300_000,
         lines_added=120,
         lines_removed=30,
-        output_tokens=3_000,
+        window_output_tokens=4_000,
+        window_input_tokens=80_000,
     )
     write_render(
         spool,
         "2026-08-05T13:00:00+00:00",
         BRIEF_SESSION,
         cost_usd=0.5,
-        duration_ms=10_000,
-        lines_added=5,
-        lines_removed=1,
+        window_output_tokens=500,
+        window_input_tokens=9_000,
     )
     # Append, never replace: the three lines above are already in the file. A bare
     # pre-#488 line (untimestamped), an envelope with no session id, and a truncated
@@ -1441,12 +1463,34 @@ def test_a_counter_the_source_never_carried_is_absent_with_its_own_reason(
     store = rebuild_world(world)
     brief = session_row(store, BRIEF_SESSION, "2026-08")
     assert brief["cost_usd_list_price"] == 0.5
-    assert brief["output_tokens"] is None
-    assert brief["output_tokens_reason"] == observatory.NO_COUNTER_REASON
-    # The other session carries the counter, so its rows never see that reason.
+    # The brief session's payload never carried the duration or lines counters, so
+    # those absences name the source's ceiling.
+    assert brief["duration_ms_reason"] == observatory.NO_COUNTER_REASON
+    assert brief["lines_added_reason"] == observatory.NO_COUNTER_REASON
+    # The other session carries every counter, so its rows never see that reason.
     human = session_row(store, HUMAN_SESSION, "2026-08")
-    assert human["output_tokens"] == 2_000.0
-    assert human["output_tokens_reason"] is None
+    assert human["duration_ms"] == 200_000.0
+    assert human["duration_ms_reason"] is None
+
+
+def test_no_token_key_is_read_as_a_counter_where_every_render_carries_the_gauge(
+    world: World,
+) -> None:
+    store = rebuild_world(world)
+    # Every staged render carries `context_window.total_output_tokens`, and the
+    # gauge falls and rises between renders of the one session — the shape the live
+    # spool measurably carries. A reader that mistakes it for a session-lifetime
+    # counter would emit a negative August delta here; the column must be absent
+    # with the reason that names the gauge instead (#488 round 2).
+    for row in store["session_period"]:
+        assert row["output_tokens"] is None
+        assert row["output_tokens_reason"] == observatory.NO_OUTPUT_TOKENS_REASON
+    august = period_row(store, "2026-08")
+    assert august["sessions_with_output"] == 0
+    assert august["output_tokens"] is None
+    assert august["output_tokens_reason"] == observatory.NO_OUTPUT_TOKENS_REASON
+    assert august["overhead_window_points"] is None
+    assert august["overhead_window_points_reason"] == observatory.NO_OUTPUT_TOKENS_REASON
 
 
 def test_every_rendering_path_names_the_orchestrator_s_absence(world: World) -> None:
@@ -1462,52 +1506,42 @@ def test_every_rendering_path_names_the_orchestrator_s_absence(world: World) -> 
     assert any("meter=list_price_not_spend" in line for line in lines)
 
 
-def test_the_fully_loaded_figure_carries_its_parent_s_boundary(world: World) -> None:
+def test_the_fully_loaded_figure_is_an_absence_naming_the_incommensurability(
+    world: World,
+) -> None:
     store = rebuild_world(world)
     august = period_row(store, "2026-08")
-    overhead = 2_000.0 / ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]
-    assert august["overhead_window_points"] == overhead
-    # The direct half is the fixture's one Claude-lane point; the other three
-    # landings of the period have no derivable cost and stay visible as a shortfall
-    # between `landings` and `direct_landings`, never as a smaller number.
+    # The direct half still exists — the fixture's one Claude-lane point, with the
+    # other three landings of the period visible as a shortfall between `landings`
+    # and `direct_landings`, never as a smaller number — and the overhead half
+    # exists in list-price dollars. No single meter holds both, so the sum the
+    # column names is null on every row with the reason saying why — never a
+    # partial sum and never zero (#488 round 2).
     assert august["landings"] == 4
     assert august["direct_landings"] == 1
     assert (
         august["direct_window_points"]
         == CLAUDE_OUTPUT / ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]
     )
-    assert august["fully_loaded_window_points"] == (
-        overhead + CLAUDE_OUTPUT / ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]
+    assert august["cost_usd_list_price"] == 2.5
+    assert august["fully_loaded_window_points"] is None
+    assert (
+        august["fully_loaded_window_points_reason"]
+        == observatory.FULLY_LOADED_INCOMMENSURABLE_REASON
     )
-    # The derived figure carries the same boundary warning as the overhead it
+    # A period whose direct half is absent gets the same absence, not a different
+    # one: the incommensurability holds before either half is even missing.
+    july = period_row(store, "2026-07")
+    assert july["direct_window_points"] is None
+    assert july["direct_window_points_reason"] == observatory.DIRECT_ABSENT_REASON
+    assert july["fully_loaded_window_points"] is None
+    assert (
+        july["fully_loaded_window_points_reason"] == observatory.FULLY_LOADED_INCOMMENSURABLE_REASON
+    )
+    # The derived column carries the same boundary warning as the overhead it
     # derives from — including the orchestrator clause.
     assert august["boundary"] == observatory.PERIOD_BOUNDARY
     assert observatory.PERIOD_BOUNDARY.startswith(observatory.SESSION_BOUNDARY)
-
-
-def test_a_period_missing_either_half_names_which_half(world: World) -> None:
-    store = rebuild_world(world)
-    july = period_row(store, "2026-07")
-    assert july["fully_loaded_window_points"] is None
-    assert "the direct half" in july["fully_loaded_window_points_reason"]
-    assert observatory.DIRECT_ABSENT_REASON in july["fully_loaded_window_points_reason"]
-    # A spool with no token totals at all: the overhead half is the missing one, and
-    # the reason names the source's ceiling rather than a small number.
-    bare = world.spool.parent / "bare.jsonl"
-    write_render(bare, "2026-08-05T16:00:00+00:00", HUMAN_SESSION, cost_usd=1.0)
-    observatory.rebuild(
-        world.dispatch_root,
-        world.export_dir,
-        world.review_root,
-        bare,
-        world.repo,
-        world.store_dir,
-    )
-    document = json.loads((world.store_dir / "store.json").read_text(encoding="utf-8"))
-    august = next(row for row in document["period_overhead"] if row["period"] == "2026-08")
-    assert august["fully_loaded_window_points"] is None
-    assert "the overhead half" in august["fully_loaded_window_points_reason"]
-    assert observatory.NO_OUTPUT_TOKENS_REASON in august["fully_loaded_window_points_reason"]
 
 
 def test_no_overhead_figure_is_attached_to_an_issue_anywhere(world: World) -> None:

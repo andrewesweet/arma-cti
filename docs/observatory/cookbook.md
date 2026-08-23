@@ -156,30 +156,35 @@ ORDER BY period, session_id
 Reading it: the counters are period **deltas** of the payload's session-lifetime
 running totals, never the totals themselves. `cost_usd_list_price` is Claude Code's
 client-side figure — list price, not spend (#220) — named so in the column and never
-as a cost. `output_tokens` is null with a reason where the payload carries no
-per-session output-token total; window points, the direct figures' meter, appear only
-where that total exists, because nothing else in the spool converts into it.
+as a cost. `output_tokens` is null on every row: the payload's token keys are
+context-window gauges, not session-lifetime counters, and the reason says so — never
+a gauge delta, and never a small number.
 
-The period aggregate and the fully-loaded figure — direct plus overhead over the
-period's landings. Never attach either to an issue: neither table carries an issue
-column, so apportioning is not something the output can express, and a session-grain
-record names no issue to divide across.
+The period aggregate and the fully-loaded column — direct plus overhead over the
+period's landings, named but never computed. Never attach either to an issue: neither
+table carries an issue column, so apportioning is not something the output can
+express, and a session-grain record names no issue to divide across.
 
 ```sql
 SELECT period, landings, direct_landings, direct_window_points,
-       overhead_window_points, fully_loaded_window_points,
+       cost_usd_list_price, overhead_window_points, fully_loaded_window_points,
        fully_loaded_window_points_reason, boundary
 FROM period_overhead
 ORDER BY period
 ```
 
-Reading it: the fully-loaded figure exists only where both halves are derivable, and
-its reason names which half is missing where one is — never a sum of what survived.
-`direct_landings` beside `landings` is the partial-read visibility: a landing whose
+Reading it: `fully_loaded_window_points` is null on every row, and its reason names
+the incommensurability — the direct half is five-hour-window points, the overhead
+half converts only to list-price dollars, and no meter holds both. Quote the two
+halves as two numbers in two meters, never as one; a sum of points and dollars is a
+number in no meter at all. The overhead half's sound figure is
+`cost_usd_list_price` — the period's overhead in list-price dollars. `direct_landings`
+beside `landings` is the partial-read visibility: a landing whose
 cost could not be derived is counted in `landings` and absent from the direct figure,
 never folded in as zero. The direct half is the Claude lane's meter alone; every other
 lane's direct spend stays in its own unconverted meter outside this figure, and the
 `boundary` column says so. Before quoting, read the rebuild's `sessions` line:
 `untimestamped` counts renders older than the tap's timestamps — excluded and counted,
-never summed into a period — and `without_session` counts renders carrying no session
-id at all.
+never summed into a period — and `without_session` counts timestamped renders
+carrying no session id; an untimestamped line without one belongs to the first
+counter, never the second.

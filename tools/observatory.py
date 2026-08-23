@@ -75,17 +75,21 @@ than routes — nothing here excludes a profile, reroutes work or trips a breake
   render and the orchestrator seat renders none, so this figure omits the orchestrator's
   own turns — the seat most likely to dominate the number — while presenting the human's
   interactive sessions. That absence is a `boundary` column on every row of both tables,
-  a word on the summary line, and a hazards entry, never a footnote; the fully-loaded
-  per-period figure derives from the overhead and carries the same warning, because a
-  derived number that drops its parent's caveat is how a caveat gets lost. Overhead is
+  a word on the summary line, and a hazards entry, never a footnote; the period
+  aggregate and its fully-loaded column derive from the overhead and carry the same
+  warning, because a derived number that drops its parent's caveat is how a caveat
+  gets lost. Overhead is
   reported per period and **never per issue** — the tables carry no issue column at all,
   so apportioning is not something the output can express — and periods derive from the
   render timestamps #488 added to the tap, never from the spool's generation boundaries,
   whose unserialised rollover can drop a generation early (#464's review): renders older
   than the timestamps are excluded and counted, never summed into a period. The money
   column is Claude Code's client-side figure and is named `cost_usd_list_price` — list
-  price, not spend (#220) — and window points appear only where the spool carries an
-  output-token total, because no other quantity converts into the direct figure's meter.
+  price, not spend (#220) — and no output-token figure appears at all: the payload's
+  token keys are context-window gauges, not session-lifetime counters, so the overhead
+  half converts to no meter the direct half shares and the fully-loaded figure is an
+  absence naming that incommensurability, never a sum of points and dollars (#488
+  round 2).
 
 Sources, all outside every worktree: the dispatch records at `~/.arma-cti/dispatches/`
 (`CTI_DISPATCH_DIR`), the per-dispatch OTel export at `/var/log/claude-otel/dispatches/`
@@ -421,9 +425,21 @@ PERIOD_BOUNDARY: Final = (
 # label and no rendering path may call it a cost.
 NO_SESSION_COST_REASON: Final = "no session of this period carried a cost figure"
 NO_OUTPUT_TOKENS_REASON: Final = (
-    "the status-line payload carries no per-session output-token total, so no figure "
-    "in the direct columns' meter — five-hour-window points — can be derived from "
-    "this source"
+    "the payload carries a context-window gauge and no session-lifetime "
+    "output-token counter, so no per-period output total — and no figure in "
+    "the direct columns' meter, five-hour-window points — can be derived "
+    "from this source"
+)
+# The fully-loaded figure's two halves share no meter once that numerator is gone:
+# the direct half is window points, the overhead half converts only to list-price
+# dollars, and dollars do not commensurate across lanes either — non-Claude lanes
+# report `cost=uncalibrated`. Adding the halves would be a number in no meter at
+# all, so the figure is an absence naming that, never zero and never a partial sum.
+FULLY_LOADED_INCOMMENSURABLE_REASON: Final = (
+    "the two halves share no meter: the direct half is five-hour-window points "
+    "and the overhead half, with no session-lifetime output-token counter to "
+    "convert it, is list-price dollars — which do not commensurate across lanes "
+    "either — so no fully-loaded figure in one meter can be derived from this source"
 )
 NO_COUNTER_REASON: Final = (
     "no render of this session carries this counter, so nothing of it can be derived"
@@ -439,13 +455,14 @@ DIRECT_UNDERIVABLE_REASON: Final = (
 
 # One cumulative counter on the render, to the column it lands in. Deltas, never the
 # running totals: the payload's counters are session-lifetime cumulative, so a period's
-# consumption is the difference between consecutive period ends.
+# consumption is the difference between consecutive period ends. No token key is
+# among them: every token key the payload carries lives under `context_window` and
+# gauges the current window, so none is a counter and none is read (#488 round 2).
 COUNTER_COLUMNS: Final = (
     ("cost_usd", "cost_usd_list_price"),
     ("duration_ms", "duration_ms"),
     ("lines_added", "lines_added"),
     ("lines_removed", "lines_removed"),
-    ("output_tokens", "output_tokens"),
 )
 
 SESSION_PERIOD_COLUMNS: Final = (
@@ -1018,7 +1035,9 @@ class Render(NamedTuple):
     """One status-line render: its session, its instant, and its cumulative totals.
 
     The counters are the payload's own session-lifetime running totals; the period
-    deltas are derived later, never stored as though they were the render's.
+    deltas are derived later, never stored as though they were the render's. No
+    output-token total is held because the source carries none — its token keys are
+    context-window gauges, not counters.
     """
 
     session_id: str
@@ -1028,7 +1047,6 @@ class Render(NamedTuple):
     duration_ms: float | None
     lines_added: float | None
     lines_removed: float | None
-    output_tokens: float | None
 
 
 class SpoolRead(NamedTuple):
@@ -1077,23 +1095,19 @@ def _number(value: object) -> float | None:
 def _cumulative(payload: Mapping[str, Any]) -> tuple[float | None, ...]:
     """Read the payload's session-lifetime counters, tolerantly, in `COUNTER_COLUMNS` order.
 
-    The output-token total is sought in both blocks that could carry it; where the
-    payload has neither, the absence is a fact about the source and renders with its
-    own reason — never zero.
+    The four counters are the payload's own session-lifetime running totals. The
+    payload's token keys are not among them and are never read: every one lives
+    under `context_window` and gauges the current window — the gauge falls and
+    rises between renders of one session — so a delta of it is noise, and the
+    output-token absence renders with its own reason instead (#488 round 2).
     """
     cost = payload.get("cost")
-    context = payload.get("context_window")
     cost = cost if isinstance(cost, Mapping) else {}
-    context = context if isinstance(context, Mapping) else {}
-    output = _number(cost.get("total_output_tokens"))
-    if output is None:
-        output = _number(context.get("total_output_tokens"))
     return (
         _number(cost.get("total_cost_usd")),
         _number(cost.get("total_duration_ms")),
         _number(cost.get("total_lines_added")),
         _number(cost.get("total_lines_removed")),
-        output,
     )
 
 
@@ -1215,6 +1229,12 @@ def _session_period_rows(renders: Sequence[Render]) -> list[dict[str, Any]]:
                         value = value - (base if base is not None else 0.0)
                 row[column] = value
                 row[f"{column}_reason"] = reason
+            # The one column with no counter behind it: the source carries no
+            # session-lifetime output-token total, only a context-window gauge, so
+            # this is an absence on every row with the reason that says so — never
+            # a delta of the gauge and never zero.
+            row["output_tokens"] = None
+            row["output_tokens_reason"] = NO_OUTPUT_TOKENS_REASON
             rows.append(row)
             previous = last
     return rows
@@ -1262,11 +1282,14 @@ def _period_overhead_rows(
 ) -> list[dict[str, Any]]:
     """One row per period with overhead or a landing: the period aggregate, fully loaded.
 
-    The fully-loaded figure is overhead plus direct in the one meter both halves can
-    share — the Claude lane's window points — and where either half is not derivable
-    the figure is null with a reason naming which half is missing, never a sum of what
-    survived. It carries the same `boundary` column as the overhead it derives from:
-    a derived number that drops its parent's caveat is how a caveat gets lost.
+    The fully-loaded figure is overhead plus direct over the period's landings — a
+    period aggregate — but no meter holds both halves: the direct half is the
+    Claude lane's window points and the overhead half, its output-token numerator
+    absent from the source, converts only to list-price dollars. The column is
+    therefore null on every row with the reason naming that incommensurability —
+    never a sum of points and dollars — and it carries the same `boundary` column
+    as the overhead it derives from: a derived number that drops its parent's
+    caveat is how a caveat gets lost.
     """
     clock_by_issue = {int(item["issue"]): item for item in work_items}
     landings = _landing_counts(work_items)
@@ -1279,17 +1302,8 @@ def _period_overhead_rows(
     for period in sorted(set(by_period) | set(landings) | set(direct_costs)):
         members = by_period.get(period, [])
         with_cost = [row for row in members if row["cost_usd_list_price"] is not None]
-        with_output = [row for row in members if row["output_tokens"] is not None]
         cost_sum = (
             sum(float(row["cost_usd_list_price"]) for row in with_cost) if with_cost else None
-        )
-        output_sum = (
-            sum(float(row["output_tokens"]) for row in with_output) if with_output else None
-        )
-        overhead_points = (
-            output_sum / ledger.CLAUDE_TOKENS_PER_POINT["five_hour"]
-            if output_sum is not None
-            else None
         )
         costs = direct_costs.get(period, [])
         derived = [cost for cost in costs if cost is not None]
@@ -1299,17 +1313,6 @@ def _period_overhead_rows(
             if direct_points is not None
             else (DIRECT_UNDERIVABLE_REASON if costs else DIRECT_ABSENT_REASON)
         )
-        fully_loaded: float | None = None
-        fully_loaded_reason: str | None = None
-        if overhead_points is not None and direct_points is not None:
-            fully_loaded = overhead_points + direct_points
-        else:
-            missing = []
-            if overhead_points is None:
-                missing.append(f"the overhead half ({NO_OUTPUT_TOKENS_REASON})")
-            if direct_points is None:
-                missing.append(f"the direct half ({direct_reason})")
-            fully_loaded_reason = "; ".join(missing)
         built.append(
             {
                 "period": period,
@@ -1320,19 +1323,21 @@ def _period_overhead_rows(
                 "cost_usd_list_price_reason": (
                     None if cost_sum is not None else NO_SESSION_COST_REASON
                 ),
-                "sessions_with_output": len(with_output),
-                "output_tokens": output_sum,
-                "output_tokens_reason": None if output_sum is not None else NO_OUTPUT_TOKENS_REASON,
-                "overhead_window_points": overhead_points,
-                "overhead_window_points_reason": (
-                    None if overhead_points is not None else NO_OUTPUT_TOKENS_REASON
-                ),
+                # No numerator exists: the source's token keys are window gauges, so
+                # the output columns are absences with the reason that names the
+                # gauge — `sessions_with_output` is 0 because no session's figure
+                # can be other than null.
+                "sessions_with_output": 0,
+                "output_tokens": None,
+                "output_tokens_reason": NO_OUTPUT_TOKENS_REASON,
+                "overhead_window_points": None,
+                "overhead_window_points_reason": NO_OUTPUT_TOKENS_REASON,
                 "landings": landings.get(period, 0),
                 "direct_landings": len(derived),
                 "direct_window_points": direct_points,
                 "direct_window_points_reason": direct_reason,
-                "fully_loaded_window_points": fully_loaded,
-                "fully_loaded_window_points_reason": fully_loaded_reason,
+                "fully_loaded_window_points": None,
+                "fully_loaded_window_points_reason": FULLY_LOADED_INCOMMENSURABLE_REASON,
                 "boundary": PERIOD_BOUNDARY,
             }
         )

@@ -3,12 +3,16 @@
 - **Non-dispatched session spend, reported per period and never per issue (#488).**
   The observatory store grows a session view over the status-line spool: one
   `session_period` row per (session, month) holding the period's consumption as
-  deltas of the payload's session-lifetime running totals, and one `period_overhead`
-  row per period holding the aggregate beside a fully-loaded figure — direct plus
-  overhead over the period's landings, in the Claude lane's window points, null with
-  a reason naming which half is missing where one is. Neither table carries an issue
-  column, so apportioning overhead to an issue is not something the output can
-  express. The spool's money column is Claude Code's client-side figure and is named
+  deltas of the payload's session-lifetime running totals — cost, duration and the
+  two line counters; the payload's token keys are context-window gauges rather than
+  counters, so the output-token column is null on every row with a reason naming
+  that, never a gauge delta. One `period_overhead` row per period holds the
+  aggregate in list-price dollars beside a fully-loaded column that is null on
+  every row: the direct half is five-hour-window points, the overhead half has no
+  output-token counter to convert it, and the reason names that incommensurability
+  rather than adding across meters. Neither table carries an issue column, so
+  apportioning overhead to an issue is not something the output can express. The
+  spool's money column is Claude Code's client-side figure and is named
   `cost_usd_list_price` — list price, not spend — and no rendering path calls it a
   cost.
 
@@ -27,5 +31,5 @@
   the largest non-dispatched consumer it claims to cover — while counting the human's
   interactive sessions alone. That absence is a `boundary` column on every row of
   both tables, `orchestrator=absent` on the rebuild's summary line, and a hazards
-  entry; the fully-loaded figure carries the same warning as the overhead it derives
-  from.
+  entry; the period aggregate and its fully-loaded column carry the same warning as
+  the overhead they derive from.
