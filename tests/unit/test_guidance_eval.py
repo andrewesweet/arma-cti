@@ -16,6 +16,12 @@ if TYPE_CHECKING:
 evaluation = load_tool("guidance_eval")
 CORPUS = REPO / "tests" / "fixtures" / "guidance-eval" / "corpus.json"
 PAIR = REPO / "tests" / "fixtures" / "guidance-eval" / "control-pair.json"
+CODEX_GUIDANCE = evaluation.GuidanceSelector(
+    "codex-control", evaluation.Provider.CODEX, "d-control-codex"
+)
+CLAUDE_GUIDANCE = evaluation.GuidanceSelector(
+    "claude-control", evaluation.Provider.CLAUDE, "d-control-claude"
+)
 
 
 def corpus() -> dict[str, Any]:
@@ -386,6 +392,36 @@ def test_replay_does_not_attribute_a_caller_declared_manifest_hash() -> None:
     ) in evaluation.render_summary(result)
 
 
+@pytest.mark.parametrize(
+    ("selector", "expected_refusal"),
+    [
+        ({"provider": "claude-code"}, "provider_run_mismatch"),
+        (
+            {"dispatch_record": "dispatch-records/claude.json"},
+            "dispatch_record_run_mismatch",
+        ),
+    ],
+)
+def test_replay_refuses_a_provenance_selector_not_bound_to_the_run(
+    selector: dict[str, str], expected_refusal: str
+) -> None:
+    stored = pair()
+    replayed = pair()
+    capture_replay_inputs(stored, replayed)
+    replayed["provenance"]["codex-control"].update(selector)
+    run_cell(replayed, "codex", "retrieve-just-fast")["trace"]["value"][0]["event"] = "changed"
+
+    with pytest.raises(evaluation.EvaluationError, match=expected_refusal):
+        evaluation.compare_pair_replay(
+            corpus(),
+            stored,
+            replayed,
+            stored_pair_path=PAIR,
+            replayed_pair_path=PAIR,
+            corpus_path=CORPUS,
+        )
+
+
 def test_replay_attributes_only_a_changed_parsed_guidance_manifest(tmp_path: Path) -> None:
     stored = pair()
     replayed = pair()
@@ -398,6 +434,8 @@ def test_replay_attributes_only_a_changed_parsed_guidance_manifest(tmp_path: Pat
 
     codex_record_path = replay_records / "codex.json"
     codex_record = json.loads(codex_record_path.read_text(encoding="utf-8"))
+    replay_dispatch_id = "d-replay-codex"
+    codex_record["dispatch_id"] = replay_dispatch_id
     delivery = codex_record["guidance_manifest"]["delivery"]
     changed_guidance_sha256 = "0" * 64
     delivery["sources"][0]["sha256"] = changed_guidance_sha256
@@ -412,13 +450,16 @@ def test_replay_attributes_only_a_changed_parsed_guidance_manifest(tmp_path: Pat
     ).document()
     stored_manifest = evaluation.load_provenance(
         PAIR,
-        "codex-control",
         stored["provenance"]["codex-control"],
+        CODEX_GUIDANCE,
     )["manifest"]
     assert parsed_manifest != stored_manifest
     replayed["provenance"]["codex-control"]["manifest_sha256"] = evaluation.sha256_json(
         parsed_manifest
     )
+    for run in replayed["runs"]:
+        if run["guidance_ref"] == "codex-control":
+            run["guidance_dispatch_id"] = replay_dispatch_id
     run_cell(replayed, "codex", "retrieve-just-fast")["trace"]["value"][0]["event"] = "changed"
 
     result = evaluation.compare_pair_replay(
@@ -432,7 +473,10 @@ def test_replay_attributes_only_a_changed_parsed_guidance_manifest(tmp_path: Pat
 
     assert result["replay_interpretation"]["attribution"] == {
         "status": "guidance_variant_only_among_recorded_inputs",
-        "guidance_inputs": ["provenance.codex-control.observed_manifest_sha256"],
+        "guidance_inputs": [
+            "guidance_dispatch_id",
+            "provenance.codex-control.observed_manifest_sha256",
+        ],
         "confounding_inputs": [],
         "unavailable_inputs": [],
     }
@@ -466,8 +510,8 @@ def test_manifest_projection_keeps_codex_source_order_and_hashes() -> None:
     document = pair()
     provenance = evaluation.load_provenance(
         PAIR,
-        "codex-control",
         document["provenance"]["codex-control"],
+        CODEX_GUIDANCE,
     )
     manifest = provenance["manifest"]
 
@@ -520,7 +564,7 @@ def test_subprocess_adapter_retains_output_trace_and_explicit_unavailable_usage(
         },
         corpus_path=CORPUS,
         base_revision=evaluation.BASELINE_SHA,
-        guidance_ref="codex-control",
+        guidance=CODEX_GUIDANCE,
     )
 
     assert observed["argv"] == ["codex", "exec"]
@@ -585,7 +629,7 @@ def test_subprocess_child_receives_only_the_explicit_environment_allowlist(
         },
         corpus_path=CORPUS,
         base_revision=evaluation.BASELINE_SHA,
-        guidance_ref="codex-control",
+        guidance=CODEX_GUIDANCE,
     )
 
     child = json.loads(cast("str", run["output"]["value"]))
@@ -629,7 +673,7 @@ def test_subprocess_file_observation_comes_from_the_child_run(tmp_path: Path) ->
         },
         corpus_path=CORPUS,
         base_revision=evaluation.BASELINE_SHA,
-        guidance_ref="codex-control",
+        guidance=CODEX_GUIDANCE,
     )
 
     assert run["observations"]["file_changed"] == {"state": "captured", "value": True}
@@ -667,7 +711,7 @@ def test_subprocess_timeout_is_failed_capture_and_elapsed_remains_captured(
         },
         corpus_path=CORPUS,
         base_revision=evaluation.BASELINE_SHA,
-        guidance_ref="claude-control",
+        guidance=CLAUDE_GUIDANCE,
     )
 
     assert run["output"]["state"] == "failed_capture"

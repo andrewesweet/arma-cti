@@ -83,10 +83,21 @@ to `ledger.json`, which remains the materialized view of the existing OTel bus.
 
 ## Provenance, replay, and adapters
 
-`tools/guidance_eval.py` reads each configured dispatch record and calls #503's manifest parser.
-It copies the resulting typed manifest into the evaluator's in-memory result and uses its source
+Each run records `provider`, `guidance_ref`, and `guidance_dispatch_id`. Before reading a manifest,
+`tools/guidance_eval.py` derives one selector per guidance reference from those run fields. Every
+run using a reference must agree on its provider and guidance dispatch ID, and the pair's
+provenance references must exactly equal the references its runs use. The provenance entry still
+supplies a provider label and a dispatch-record path so an artifact can point at another run's
+record. The provider label must equal the run provider, and the named record's parsed
+`dispatch_id` must equal the run's `guidance_dispatch_id`; either mismatch refuses even during
+replay. The run provider then chooses #503's manifest parser. The path does not choose the parser
+or the accepted dispatch identity.
+
+The evaluator copies the resulting typed manifest into its in-memory result and uses its source
 order, hashes, bytes, state, provenance, and loader outcome. It never calls `verify_delivery`,
-reads `AGENTS.md`, or performs a third prompt capture.
+reads `AGENTS.md`, or performs a third prompt capture. Selector binding validates the relationship
+among fields in the artifact and named record; it does not attest that persisted JSON was never
+changed after dispatch.
 
 The committed `fixture` adapter stores a record; it does not regenerate outcomes. Running
 `just guidance-eval` validates and scores that record with `replay=not_requested`. Supplying an
@@ -95,29 +106,34 @@ file, command, gate, refusal, safety, elapsed-time, or usage result comes from a
 constant in the evaluator.
 
 Replay compares run ID, case, provider, adapter, variant, base revision, harness version, model
-profile, effort, permissions, guidance reference, start and end timestamps, prompt metadata, and
-provider argv hash, working directory, timeout, and captured child environment. It also compares
-pair ID, corpus and contract hashes, and every parsed guidance-manifest identity. Caller-declared
-`manifest_sha256` values remain integrity checks; attribution compares
-`observed_manifest_sha256`, which is computed from the manifest returned by #503's parser. Output
-names equal inputs, differing inputs, unavailable inputs, differing observations, and confounders;
-a field absent from both records is unavailable, never equal. An observation difference is
-attributed to the guidance variant only when a parsed guidance-manifest identity changed, no
-non-guidance input changed, and no compared input is unavailable. Model/profile, effort,
-permissions, harness, time, prompt, invocation, environment, or other compared non-guidance drift
-makes the comparison explicitly `not_attributable_to_guidance`.
+profile, effort, permissions, guidance reference, guidance dispatch ID, start and end timestamps,
+prompt metadata, provider argv hash, working directory, timeout, and captured child environment.
+It also compares pair ID, corpus and contract hashes, and every selector-bound parsed
+guidance-manifest identity. Caller-declared `manifest_sha256` values remain integrity checks;
+attribution compares `observed_manifest_sha256`, which is computed from the manifest returned by
+#503's parser after the selector checks above. Output names equal inputs, differing inputs,
+unavailable inputs, differing observations, and confounders; a field absent from both records is
+unavailable, never equal. An observation difference is attributed to the guidance variant only
+when a parsed guidance-manifest identity changed, no non-guidance input changed, and no compared
+input is unavailable. Model/profile, effort, permissions, harness, time, prompt, invocation,
+environment, or other compared non-guidance drift makes the comparison explicitly
+`not_attributable_to_guidance`.
 
 The stored artifact remains strictly integrity-checked. The replay artifact may differ in its
 declared corpus hash, contract hash, manifest hash, expected manifest state, expected source
 provenance, or prompt metadata because those are the recorded inputs the comparison is examining.
 Every mismatch accepted on that basis is printed as `replay_integrity_relaxed=<check>` with its
-reason. Manifest structure and typed parsing are never relaxed, and a relaxed caller-declared
-manifest hash is excluded from attribution. Even
+reason. Manifest structure, typed parsing, provider-to-run equality, and dispatch-ID-to-run
+equality are never relaxed, and a relaxed caller-declared manifest hash is excluded from
+attribution. Even
 `guidance_variant_only_among_recorded_inputs` is bounded to the artifact: it does not establish
 equality for external state the artifact did not capture.
 
-`--live-config` supplies fixed argv lists for a Claude Code and Codex subprocess; prompts go on
-stdin, never argv. The child environment inherits only `HOME`, `LANG`, `LC_ALL`, `LC_CTYPE`,
+`--live-config` supplies fixed argv lists, provider labels, dispatch-record paths, and
+`guidance_dispatch_id` values for Claude Code and Codex subprocesses. Each provider and dispatch
+ID is checked against its record, then copied into every resulting run before the output artifact
+is interpreted. Prompts go on stdin, never argv. The child environment inherits only `HOME`,
+`LANG`, `LC_ALL`, `LC_CTYPE`,
 `PATH`, `SSL_CERT_DIR`, `SSL_CERT_FILE`, and `TMPDIR` when present. The evaluator adds fresh
 `CTI_DISPATCH_*` values and an `OTEL_RESOURCE_ATTRIBUTES` value containing only the new run's six
 `cti.*` attributes. The exact allowlisted environment is captured in the live run record. Parent

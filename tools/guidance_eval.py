@@ -69,6 +69,15 @@ class Provider(StrEnum):
     CODEX = "codex"
 
 
+@dataclass(frozen=True)
+class GuidanceSelector:
+    """Run-owned identity that selects one guidance dispatch record and parser."""
+
+    reference: str
+    provider: Provider
+    dispatch_id: str
+
+
 TASK_CLASS_ORDER: Final = (
     "direct-instruction-retrieval",
     "routine-implementation",
@@ -134,6 +143,7 @@ REPLAY_RUN_INPUT_FIELDS: Final = (
     "effort",
     "permissions",
     "guidance_ref",
+    "guidance_dispatch_id",
     "started_at",
     "ended_at",
     "prompt.storage",
@@ -509,23 +519,31 @@ def _resolved_reference(base: Path, value: object, *, label: str) -> Path:
 
 def load_provenance(
     pair_path: Path,
-    reference: str,
     configuration: Mapping[str, object],
+    selector: GuidanceSelector,
     *,
     allow_hash_mismatch: bool = False,
 ) -> dict[str, object]:
-    """Derive one evaluator provenance entry from #503's dispatch manifest."""
+    """Parse one named record only after its selectors match the run identity."""
+    reference = selector.reference
     replay_integrity_relaxations: list[dict[str, str]] = []
-    provider = Provider(
+    configured_provider = Provider(
         _string(configuration.get("provider"), label=f"provenance={reference}.provider")
     )
+    if configured_provider is not selector.provider:
+        raise EvaluationError(f"provenance={reference} provider_run_mismatch")
     dispatch_path = _resolved_reference(
         pair_path.parent,
         configuration.get("dispatch_record"),
         label=f"provenance={reference}.dispatch_record",
     )
     record = read_json(dispatch_path)
-    manifest = codex_guidance.manifest_from_record(record, _provider_harness(provider))
+    record_dispatch_id = _string(
+        record.get("dispatch_id"), label=f"provenance={reference}.dispatch_id"
+    )
+    if record_dispatch_id != selector.dispatch_id:
+        raise EvaluationError(f"provenance={reference} dispatch_record_run_mismatch")
+    manifest = codex_guidance.manifest_from_record(record, _provider_harness(selector.provider))
     rendered = manifest.document()
     expected_hash = _string(
         configuration.get("manifest_sha256"), label=f"provenance={reference}.manifest_sha256"
@@ -567,10 +585,8 @@ def load_provenance(
         configuration.get("word_counts"), field=f"provenance={reference}.word_counts"
     )
     return {
-        "provider": provider.value,
-        "dispatch_id": _string(
-            record.get("dispatch_id"), label=f"provenance={reference}.dispatch_id"
-        ),
+        "provider": selector.provider.value,
+        "dispatch_id": record_dispatch_id,
         "dispatch_record": str(dispatch_path),
         "manifest": rendered,
         "manifest_sha256": expected_hash,
@@ -653,6 +669,7 @@ def _validate_run(  # noqa: PLR0913 — pair comparison has one explicit context
         "effort",
         "permissions",
         "guidance_ref",
+        "guidance_dispatch_id",
     ):
         _string(run.get(field), label=f"run={run_id}.{field}")
     if run.get("case_id") != case.get("case_id"):
@@ -891,6 +908,29 @@ def _provenance_interpretation(
     return result
 
 
+def _run_provenance_selectors(
+    raw_runs: Sequence[object],
+) -> dict[str, GuidanceSelector]:
+    """Derive each provenance parser and dispatch identity from its run records."""
+    selectors: dict[str, GuidanceSelector] = {}
+    for raw_run in raw_runs:
+        run = _mapping(raw_run, label="run")
+        run_id = _string(run.get("run_id"), label="run_id")
+        provider = Provider(_string(run.get("provider"), label=f"run={run_id}.provider"))
+        reference = _string(run.get("guidance_ref"), label=f"run={run_id}.guidance_ref")
+        dispatch_id = _string(
+            run.get("guidance_dispatch_id"),
+            label=f"run={run_id}.guidance_dispatch_id",
+        )
+        selector = GuidanceSelector(reference, provider, dispatch_id)
+        prior = selectors.get(reference)
+        if prior is not None and prior != selector:
+            field = "provider" if prior.provider is not provider else "guidance_dispatch_id"
+            raise EvaluationError(f"provenance={reference} run_identity_mismatch field={field}")
+        selectors[reference] = selector
+    return selectors
+
+
 def interpret_pair(
     corpus: Mapping[str, object],
     pair: Mapping[str, object],
@@ -937,14 +977,19 @@ def interpret_pair(
             }
         )
 
+    raw_runs = _list(pair.get("runs"), label="pair.runs")
+    run_selectors = _run_provenance_selectors(raw_runs)
     raw_provenance = _mapping(pair.get("provenance"), label="pair.provenance")
+    if set(raw_provenance) != set(run_selectors):
+        raise EvaluationError("pair=provenance_run_identity_mismatch")
     provenance: dict[str, Mapping[str, object]] = {}
     for reference, raw_entry in raw_provenance.items():
         entry = _mapping(raw_entry, label=f"provenance={reference}")
+        selector = run_selectors[reference]
         loaded_provenance = load_provenance(
             pair_path,
-            reference,
             entry,
+            selector,
             allow_hash_mismatch=allow_input_drift,
         )
         provenance[reference] = loaded_provenance
@@ -961,7 +1006,6 @@ def interpret_pair(
             )
 
     cases = case_by_id(corpus)
-    raw_runs = _list(pair.get("runs"), label="pair.runs")
     providers = _mapping(pair.get("providers"), label="pair.providers")
     expected_pairs = {(case_id, provider) for case_id in cases for provider in providers}
     actual_pairs: set[tuple[str, str]] = set()
@@ -1203,7 +1247,8 @@ def _aggregate_replay_interpretation(
     guidance_inputs = sorted(
         name
         for name in input_different
-        if name in {"guidance_ref", "variant"} or name.startswith("provenance.")
+        if name in {"guidance_dispatch_id", "guidance_ref", "variant"}
+        or name.startswith("provenance.")
     )
     confounding_inputs = sorted(input_different - set(guidance_inputs))
     guidance_content_changed = any(
@@ -1443,10 +1488,10 @@ def run_subprocess_case(
     *,
     corpus_path: Path,
     base_revision: str,
-    guidance_ref: str,
+    guidance: GuidanceSelector,
 ) -> dict[str, object]:
     """Run one provider command with prompt on stdin, retaining every field state."""
-    provider_name = Provider(_string(provider.get("provider"), label="provider"))
+    provider_name = guidance.provider
     case_id = _string(case.get("case_id"), label="case_id")
     prompt = _string(case.get("prompt"), label=f"case={case_id}.prompt")
     argv_value = provider.get("argv")
@@ -1539,7 +1584,8 @@ def run_subprocess_case(
         "started_at": started_at.isoformat(),
         "ended_at": ended_at.isoformat(),
         "prompt": prompt_document(case, corpus_path),
-        "guidance_ref": guidance_ref,
+        "guidance_ref": guidance.reference,
+        "guidance_dispatch_id": guidance.dispatch_id,
         "telemetry_identity": {
             "dispatch_id": run_id,
             "lane": child_environment["CTI_DISPATCH_LANE"],
@@ -1698,7 +1744,17 @@ def run_live(config_path: Path, output_path: Path) -> dict[str, object]:
     runs: list[dict[str, object]] = []
     for reference, raw_provider in providers.items():
         provider = _mapping(raw_provider, label=f"provider={reference}")
-        provider_entry = load_provenance(config_path, reference, provider)
+        run_provider = Provider(_string(provider.get("provider"), label="provider"))
+        run_dispatch_id = _string(
+            provider.get("guidance_dispatch_id"),
+            label=f"provider={reference}.guidance_dispatch_id",
+        )
+        guidance = GuidanceSelector(reference, run_provider, run_dispatch_id)
+        provider_entry = load_provenance(
+            config_path,
+            provider,
+            guidance,
+        )
         provenance[reference] = {
             "provider": provider_entry["provider"],
             "dispatch_record": provider_entry["dispatch_record"],
@@ -1718,7 +1774,7 @@ def run_live(config_path: Path, output_path: Path) -> dict[str, object]:
                     },
                     corpus_path=corpus_path,
                     base_revision=_string(pair.get("base_revision"), label="config.base_revision"),
-                    guidance_ref=reference,
+                    guidance=guidance,
                 )
             )
     pair["schema"] = PAIR_SCHEMA
