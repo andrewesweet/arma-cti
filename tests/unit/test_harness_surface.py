@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any, cast
 
 import pytest
@@ -113,6 +114,32 @@ def test_manifest_rejects_caller_declared_codex_hooks_with_a_destination() -> No
         surface.parse(document_with(declare_codex_hooks))
 
 
+def test_rebinding_declared_capabilities_cannot_invent_adapter_support(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def declare_codex_hooks(document: dict[str, object]) -> None:
+        targets = cast("dict[str, dict[str, object]]", document["targets"])
+        capabilities = cast("list[str]", targets["codex"]["capabilities"])
+        capabilities.append("hooks")
+        hooks = bundle_table(document, "claude-hooks")
+        destinations = cast("dict[str, object]", hooks["destinations"])
+        destinations["codex"] = ".codex/hooks"
+
+    forged_document = document_with(declare_codex_hooks)
+    monkeypatch.setattr(
+        surface,
+        "HARNESS_TARGET_CAPABILITIES",
+        {
+            "claude-code": frozenset({"hooks", "project_instructions"}),
+            "codex": frozenset({"hooks", "project_instructions"}),
+        },
+        raising=False,
+    )
+
+    with pytest.raises(surface.ManifestError, match="harness support"):
+        surface.parse(forged_document)
+
+
 def test_manifest_constructor_cannot_bypass_target_capability_support() -> None:
     codex = surface.Target("codex")
     hooks = surface.Bundle(
@@ -125,6 +152,29 @@ def test_manifest_constructor_cannot_bypass_target_capability_support() -> None:
     )
 
     with pytest.raises(surface.ManifestError, match="harness support"):
+        surface.Manifest((codex,), (hooks,))
+
+
+def test_target_subclass_cannot_override_adapter_support() -> None:
+    class LyingTarget(surface.Target):
+        """Caller-defined target that claims support no adapter implements."""
+
+        @property
+        def capabilities(self) -> frozenset[str]:
+            """Invent hook support for the regression case."""
+            return frozenset({"hooks", "project_instructions"})
+
+    codex = LyingTarget("codex")
+    hooks = surface.Bundle(
+        name="invented-hooks",
+        capability="hooks",
+        kind="directory",
+        source_root=".claude/hooks",
+        files=("protect-gated-paths.py",),
+        destinations=(("codex", ".codex/hooks"),),
+    )
+
+    with pytest.raises(surface.ManifestError, match="Target values"):
         surface.Manifest((codex,), (hooks,))
 
 
@@ -151,6 +201,31 @@ def test_temporary_render_destination_expires_with_its_capability(tmp_path: Path
         assert destination.is_dir()
 
     assert not destination.exists()
+
+
+def test_write_boundary_derives_dispatched_authority_from_temporary_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    document = manifest()
+    source = copied_sources(tmp_path, document)
+    plans = surface._read_plan(  # noqa: SLF001 — exercise central write boundary
+        document, source, "codex"
+    )
+    monkeypatch.setenv(surface.DISPATCH_ID_ENV, "test-dispatch")
+    temporary = TemporaryDirectory(prefix="cti-harness-test-", dir=tmp_path)
+    try:
+        result = surface._write_plans(  # noqa: SLF001 — exercise central write boundary
+            "codex",
+            plans,
+            temporary,
+            promotion_preflight=False,
+        )
+
+        destination = Path(temporary.name)
+        assert result.files == ("AGENTS.md",)
+        assert (destination / "AGENTS.md").is_file()
+    finally:
+        temporary.cleanup()
 
 
 def test_source_perturbation_is_reported_without_editing_generated_output(tmp_path: Path) -> None:

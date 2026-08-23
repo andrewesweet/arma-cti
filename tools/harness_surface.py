@@ -24,21 +24,14 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from tempfile import TemporaryDirectory
-from types import MappingProxyType
-from typing import Final, NoReturn, cast
+from typing import ClassVar, Final, NoReturn, cast
 
 SCHEMA_VERSION: Final = 1
 DISPATCH_ID_ENV: Final = "CTI_DISPATCH_ID"
 TOKEN_PATTERN: Final = re.compile(r"^[a-z][a-z0-9_-]*$")
 CAPABILITY_PATTERN: Final = re.compile(r"^[a-z][a-z0-9_]*$")
 PATH_SEPARATORS: Final = frozenset({"\\", "\x00", "\n", "\r", "\t"})
-# Target adapters own capability truth. Manifest input may restate but never widen it.
-HARNESS_TARGET_CAPABILITIES: Final[Mapping[str, frozenset[str]]] = MappingProxyType(
-    {
-        "claude-code": frozenset({"hooks", "project_instructions"}),
-        "codex": frozenset({"project_instructions"}),
-    }
-)
+CAPABILITY_HANDLER_PREFIX: Final = "_adapt_"
 
 
 class HarnessSurfaceError(ValueError):
@@ -74,6 +67,78 @@ def _promotion_refusal(kind: str, detail: str) -> NoReturn:
     raise PromotionRefusalError(kind, detail)
 
 
+class _TargetAdapter:
+    """One implemented target layout whose methods define its capabilities."""
+
+    target_name: ClassVar[str]
+
+    @property
+    def capabilities(self) -> frozenset[str]:
+        """Derive support from capability handlers implemented on this adapter."""
+        return frozenset(
+            name.removeprefix(CAPABILITY_HANDLER_PREFIX)
+            for name in vars(type(self))
+            if name.startswith(CAPABILITY_HANDLER_PREFIX) and callable(getattr(self, name, None))
+        )
+
+    def adapt_destination(self, capability: str, destination: str) -> str:
+        """Apply target-specific handling for one implemented capability."""
+        handler = getattr(self, f"{CAPABILITY_HANDLER_PREFIX}{capability}", None)
+        if not callable(handler):
+            _manifest_error(
+                f"capability {capability} has no harness support on target {self.target_name}"
+            )
+        return cast("str", handler(destination))
+
+
+class _ClaudeCodeAdapter(_TargetAdapter):
+    """Render capabilities implemented by Claude Code's project layout."""
+
+    target_name = "claude-code"
+
+    @staticmethod
+    def _adapt_hooks(destination: str) -> str:
+        """Place project-owned hook files at their declared Claude destination."""
+        return destination
+
+    @staticmethod
+    def _adapt_project_instructions(destination: str) -> str:
+        """Place project instructions at their declared Claude destination."""
+        return destination
+
+
+class _CodexAdapter(_TargetAdapter):
+    """Render capabilities implemented by Codex's project layout."""
+
+    target_name = "codex"
+
+    @staticmethod
+    def _adapt_project_instructions(destination: str) -> str:
+        """Place project instructions at their declared Codex destination."""
+        return destination
+
+
+def _implemented_adapters() -> tuple[_TargetAdapter, ...]:
+    """Discover adapters implemented in this module, without a support table."""
+    return tuple(
+        adapter_type()
+        for adapter_type in _TargetAdapter.__subclasses__()
+        if adapter_type.__module__ == __name__
+    )
+
+
+def _adapter_for(target_name: str) -> _TargetAdapter:
+    """Resolve exactly one implemented adapter for a target name."""
+    adapters = tuple(
+        adapter for adapter in _implemented_adapters() if adapter.target_name == target_name
+    )
+    if not adapters:
+        _manifest_error(f"target has no harness adapter support: {target_name}")
+    if len(adapters) != 1:
+        _manifest_error(f"target has ambiguous harness adapter support: {target_name}")
+    return adapters[0]
+
+
 @dataclass(frozen=True)
 class Target:
     """One harness target and the capabilities it demonstrably provides."""
@@ -81,19 +146,22 @@ class Target:
     name: str
 
     def __post_init__(self) -> None:
-        """Refuse target names without an implemented support entry."""
+        """Refuse target names without one implemented adapter."""
         _token(self.name, "target name")
-        if self.name not in HARNESS_TARGET_CAPABILITIES:
-            _manifest_error(f"target has no harness support: {self.name}")
+        _adapter_for(self.name)
 
     @property
     def capabilities(self) -> frozenset[str]:
-        """Read capability truth from the target support registry."""
-        return HARNESS_TARGET_CAPABILITIES[self.name]
+        """Derive capability truth from the target's implemented adapter."""
+        return _adapter_for(self.name).capabilities
 
     def supports(self, capability: str) -> bool:
         """Return whether this target has a real surface for ``capability``."""
         return capability in self.capabilities
+
+    def adapt_destination(self, capability: str, destination: str) -> str:
+        """Route one destination through the implementing target adapter."""
+        return _adapter_for(self.name).adapt_destination(capability, destination)
 
 
 @dataclass(frozen=True)
@@ -217,7 +285,7 @@ def _validate_manifest_members(
     """Validate manifest collection types, contents, and unique names."""
     if not isinstance(targets, tuple) or not targets:
         _manifest_error("manifest must declare at least one target")
-    if not all(isinstance(target, Target) for target in targets):
+    if not all(type(target) is Target for target in targets):
         _manifest_error("manifest targets must be Target values")
     if not isinstance(bundles, tuple) or not bundles:
         _manifest_error("manifest must declare at least one bundle")
@@ -489,7 +557,7 @@ def _read_plan(
     target: str,
     bundle_names: Iterable[str] | None = None,
 ) -> tuple[PlannedFile, ...]:
-    manifest.target(target)
+    target_value = manifest.target(target)
     selected = (
         manifest.bundles_for(target)
         if bundle_names is None
@@ -498,12 +566,13 @@ def _read_plan(
     plans: list[PlannedFile] = []
     seen_destinations: set[str] = set()
     for bundle in sorted(selected, key=lambda item: item.name):
-        destination_root = bundle.destination_for(target)
-        if destination_root is None:
+        declared_destination = bundle.destination_for(target)
+        if declared_destination is None:
             _promotion_refusal(
                 "unsupported_destination",
                 f"target={target} bundle={bundle.name} capability={bundle.capability}",
             )
+        destination_root = target_value.adapt_destination(bundle.capability, declared_destination)
         source_directory = source_root.joinpath(*PurePosixPath(bundle.source_root).parts)
         for relative in bundle.files:
             source = _source_path(source_directory, relative, f"bundle={bundle.name}")
@@ -553,14 +622,26 @@ def _ensure_directory(path: Path) -> None:
 def _write_plans(
     target: str,
     plans: Sequence[PlannedFile],
-    destination_root: Path,
+    destination: Path | TemporaryDirectory[str],
     *,
-    dispatched_temporary: bool,
     promotion_preflight: bool,
 ) -> RenderResult:
     """Contain every filesystem write at one boundary."""
+    temporary_destination = (
+        cast("TemporaryDirectory[str]", destination)
+        if type(destination) is TemporaryDirectory
+        else None
+    )
+    if temporary_destination is not None:
+        destination_root = Path(temporary_destination.name)
+        if destination_root.is_symlink() or not destination_root.is_dir():
+            _surface_error(f"temporary_destination_unusable={destination_root}")
+    elif isinstance(destination, Path):
+        destination_root = destination
+    else:
+        _surface_error(f"destination_authority_unusable={type(destination).__name__}")
     dispatch_id = os.environ.get(DISPATCH_ID_ENV, "").strip()
-    if dispatch_id and not dispatched_temporary:
+    if dispatch_id and temporary_destination is None:
         _promotion_refusal("dispatch_identity_present", f"{DISPATCH_ID_ENV}={dispatch_id}")
     if promotion_preflight:
         _promotion_destination_check(destination_root, plans)
@@ -587,7 +668,6 @@ def render(
         target,
         plans,
         destination_root,
-        dispatched_temporary=False,
         promotion_preflight=False,
     )
 
@@ -602,13 +682,13 @@ def render_temporary(
 ) -> Iterator[TemporaryRender]:
     """Render into a renderer-owned temporary layout, including during dispatch."""
     plans = _read_plan(manifest, source_root, target, bundle_names)
-    with TemporaryDirectory(prefix="cti-harness-surface-") as temporary:
-        destination_root = Path(temporary)
+    temporary = TemporaryDirectory(prefix="cti-harness-surface-")
+    with temporary:
+        destination_root = Path(temporary.name)
         result = _write_plans(
             target,
             plans,
-            destination_root,
-            dispatched_temporary=True,
+            temporary,
             promotion_preflight=False,
         )
         yield TemporaryRender(destination_root, result)
@@ -762,7 +842,6 @@ def promote(
         target,
         plans,
         destination_root,
-        dispatched_temporary=False,
         promotion_preflight=True,
     )
 
