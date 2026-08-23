@@ -967,6 +967,19 @@ def emit_terminus(end: Terminus, issue: str, at: float, journal: Path = JOURNAL)
 # caller that drives all of it — every `emit_*` helper's first production caller.
 
 REVIEW_ROOT: Final = Path.home() / ".arma-cti" / "review"
+
+
+def review_root() -> Path:
+    """Return the review state root, `CTI_REVIEW_DIR` overridable like the queue's `CTI_QUEUE_DIR`.
+
+    Read at call time rather than import time (#484 round 2, finding 3): a module
+    constant binds `Path.home()` once, so a test that forgot to arrange its own root
+    wrote the real one — hermeticity by remembered `monkeypatch.setattr` is the shape
+    #458 closed. The constant stays as the default the CLI's `--root` names.
+    """
+    return Path(os.environ.get("CTI_REVIEW_DIR", str(REVIEW_ROOT)))
+
+
 LOOP_VERSION: Final = 1
 LOOP_FILE: Final = "loop.json"
 ESCALATION_FILE: Final = "escalation.json"

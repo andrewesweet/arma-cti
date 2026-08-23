@@ -126,11 +126,20 @@ from worktree import Refusal, Report
 VERDICT_NAME: Final = "verdict.json"
 REVIEW_SEAT: Final = "review"
 BOUND: Final = "bound"
+
+
 # Where a review's recognised waits are journalled (#484): beside the loop's per-issue
 # state, so the wait family adds a file to an existing directory and no new one. A
-# module constant rather than a parameter because `exchange` takes none and the wait is
-# the review root's fact, like the rebases beside it; the tests patch this one name.
-WAIT_JOURNAL: Final = review_loop.REVIEW_ROOT / "waits.jsonl"
+# function rather than a parameter because `exchange` takes none, and resolved at call
+# time through `review_loop.review_root()` — an import-time constant bound
+# `Path.home()` and left hermeticity to every success-path test remembering a
+# `monkeypatch.setattr` (#484 round 2, finding 3); the root now reads
+# `CTI_REVIEW_DIR` the way the queue reads `CTI_QUEUE_DIR`.
+def wait_journal() -> Path:
+    """Return the review root's wait journal, resolved where the emission happens."""
+    return review_loop.review_root() / "waits.jsonl"
+
+
 # Mirrors `dispatch.DISPATCH_ROOT` (`tools/dispatch.py` owns the shape); stated here so a
 # reader of this module needs no second file to know where records live. The CLI takes
 # `--dispatch-dir` for the tests and for reading a preserved evidence tree.
@@ -292,7 +301,7 @@ def exchange(  # noqa: PLR0911 — one return per refusal, so each stays a whole
         attribute_registry.wait_event(
             "waiting_reviewer", "review", datetime.now(tz=UTC).timestamp(), issue=issue
         ),
-        journal=WAIT_JOURNAL,
+        journal=wait_journal(),
     )
     return Report(
         (

@@ -24,6 +24,7 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import pytest
 from hypothesis import settings
 
 from cti_daemon import campaign, economy, loadouts, manifest
@@ -40,6 +41,36 @@ from cti_daemon.outbox import Outbox
 # by this; pathological slowness still fails the suite via its wall clock.
 settings.register_profile("arma-cti", deadline=None)
 settings.load_profile("arma-cti")
+
+# Every emission the suite makes resolves its endpoint here, not at the box's real
+# loopback collector (#484 round 2, finding 1). `otel_event.emit` with no explicit
+# endpoint falls back through `endpoint_from_environment()` to `DEFAULT_ENDPOINT` —
+# a live collector on 127.0.0.1:4318 — so a test that forgot to point its emission
+# somewhere dead exported for real, and did, on every run: wait records for live
+# issues landed in the very JSONL `just ledger-sync` materialises. Hermeticity is
+# structural rather than remembered (#458): the standard OTLP variable the module
+# already documents as its redirection seam is forced to a port nothing listens on,
+# so an unset endpoint is a refused connection and a journalled `exported: false`,
+# never a write to the real collector. The dead port matches the test modules' own
+# `DEAD_ENDPOINT`, and `tests/unit/test_attribute_registry.py` pins this line's
+# presence so removing it reddens a suite, not a box.
+os.environ["OTEL_EXPORTER_OTLP_LOGS_ENDPOINT"] = "http://127.0.0.1:2999/v1/logs"
+
+
+@pytest.fixture(scope="session", autouse=True)
+def hermetic_review_root(tmp_path_factory: pytest.TempPathFactory) -> None:
+    """Point the review state root at pytest's own tmp, never at `~/.arma-cti` (#484 round 2).
+
+    `review_loop.review_root()` reads `CTI_REVIEW_DIR` at call time the way the queue
+    reads `CTI_QUEUE_DIR`, so a success-path test that forgot to arrange a journal
+    still writes inside a throwaway directory instead of the box's real review root.
+    Session-scoped and autouse because the default needs holding for the whole run,
+    not arranging per test; a test that wants its own root sets the same variable
+    with `monkeypatch.setenv`, which restores this one afterwards. Under `-n auto`
+    each worker gets its own directory, so concurrent workers never share a journal.
+    """
+    os.environ["CTI_REVIEW_DIR"] = str(tmp_path_factory.mktemp("review-root"))
+
 
 if TYPE_CHECKING:
     from types import ModuleType

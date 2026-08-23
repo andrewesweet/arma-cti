@@ -835,16 +835,28 @@ def test_scan_of_an_empty_root_is_empty(tmp_path: Path) -> None:
 # --------------------------------------------------------------- the exchange
 
 
+def test_the_review_root_reads_the_environment_not_only_the_home_directory() -> None:
+    """The journal's hermeticity is structural, not remembered (#484 round 2, finding 3).
+
+    `conftest` holds `CTI_REVIEW_DIR` at pytest's own tmp for the whole session, so
+    this pins that arrangement the way the dead-port test pins the export one: a
+    suite whose fixture went missing writes the box's real review root again, and
+    this reddens on any box rather than only where the damage shows.
+    """
+    assert review_exchange.review_loop.review_root() != review_exchange.review_loop.REVIEW_ROOT
+
+
 def test_exchange_pushes_and_the_remote_holds_the_sha(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     repo = init_repo(tmp_path)
     head = head_of(repo)
     # The success opens the reviewer wait (#484), journalled beside the loop's state —
-    # patched to this tree so the assertion reads a fact this test made, and so a
-    # passing suite never writes the box's real review root.
+    # the root set to this tree so the assertion reads a fact this test made, which is
+    # also the environment treatment the journal itself reads (`CTI_REVIEW_DIR`, as
+    # the queue reads `CTI_QUEUE_DIR`) rather than a patched module constant.
     journal = tmp_path / "waits.jsonl"
-    monkeypatch.setattr(review_exchange, "WAIT_JOURNAL", journal)
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(tmp_path))
     report = review_exchange.exchange(repo, 332)
     assert report.code == 0
     assert "ok=review_branch_exchanged" in report.lines
@@ -869,7 +881,7 @@ def test_exchange_force_moves_the_ref_for_an_amended_round(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     repo = init_repo(tmp_path)
-    monkeypatch.setattr(review_exchange, "WAIT_JOURNAL", tmp_path / "waits.jsonl")
+    monkeypatch.setenv("CTI_REVIEW_DIR", str(tmp_path))
     review_exchange.exchange(repo, 332)
     first = head_of(repo)
     (repo / "README").write_text("two", encoding="utf-8")
